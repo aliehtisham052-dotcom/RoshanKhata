@@ -27,9 +27,29 @@ jobs:
           gradle-version: 8.7
 
       - name: Build Debug APK
-        run: gradle assembleDebug --no-daemon --stacktrace
+        run: |
+          set +e
+          gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee /tmp/build_output.txt
+          EXIT=${PIPESTATUS[0]}
+          exit $EXIT
+
+      - name: Publish error to summary (on failure)
+        if: failure()
+        run: |
+          echo "## Build Failure Output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -100 /tmp/build_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: /tmp/build_output.txt
 
       - name: Upload APK artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: RoshanKhata-debug-apk
