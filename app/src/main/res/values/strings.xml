@@ -85,4 +85,18 @@
     <string name="recovery_certain">Expect to collect</string>
     <string name="recovery_doubtful">Doubtful</string>
     <string name="recovery_label">Chance of recovery</string>
+
+    <!-- Reminders -->
+    <string name="remind_whatsapp">WhatsApp</string>
+    <string name="remind_sms">SMS</string>
+    <string name="reminder_preview_help">Read it over before sending. You can edit anything here — Roshan Khata will hand it to WhatsApp or your SMS app, and you press send yourself.</string>
+    <string name="reminder_they_owe">Assalam-o-Alaikum %1$s,\n\nAs per our records, an amount of %2$s is outstanding on your account.\n\nKindly clear it at your convenience. If you have already paid, please ignore this message and let us know.\n\nJazakAllah.</string>
+    <string name="reminder_i_owe">Assalam-o-Alaikum %1$s,\n\nAs per our records, we owe you %2$s.\n\nWe will settle it soon, InshaAllah. Please let us know if our figure differs from yours.\n\nJazakAllah.</string>
+    <string name="send_reminder">Send Reminder</string>
+    <string name="open_whatsapp">Open WhatsApp</string>
+    <string name="open_sms">Open SMS</string>
+    <string name="no_phone_number">No phone number saved for this party. Add one first.</string>
+    <string name="whatsapp_not_installed">WhatsApp is not installed on this phone.</string>
+    <string name="no_sms_app">No SMS app found on this phone.</string>
+    <string name="nothing_outstanding">Nothing outstanding — the account is settled.</string>
 </resources>

@@ -22,6 +22,7 @@ import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.ui.EntryAdapter
 import com.innovation313.roshankhata.ui.EntryRow
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.ui.Reminder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -36,6 +37,9 @@ class PartyDetailActivity : AppCompatActivity() {
     }
 
     private var partyId: Long = 0
+    private var partyName: String = ""
+    private var partyPhone: String? = null
+    private var currentBalance: Double = 0.0
     private lateinit var adapter: EntryAdapter
     private lateinit var tvPartyName: TextView
     private lateinit var tvPartyBalance: TextView
@@ -67,13 +71,24 @@ class PartyDetailActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnGave).setOnClickListener { showAddEntryDialog(true) }
         findViewById<MaterialButton>(R.id.btnGot).setOnClickListener { showAddEntryDialog(false) }
 
+        findViewById<MaterialButton>(R.id.btnWhatsApp).setOnClickListener {
+            showReminderPreview(viaWhatsApp = true)
+        }
+        findViewById<MaterialButton>(R.id.btnSms).setOnClickListener {
+            showReminderPreview(viaWhatsApp = false)
+        }
+
         loadParty()
         observeEntries()
     }
 
     private fun loadParty() {
         lifecycleScope.launch {
-            dao.getParty(partyId)?.let { tvPartyName.text = it.name }
+            dao.getParty(partyId)?.let { p ->
+                partyName = p.name
+                partyPhone = p.phone
+                tvPartyName.text = p.name
+            }
         }
     }
 
@@ -100,6 +115,7 @@ class PartyDetailActivity : AppCompatActivity() {
     }
 
     private fun updateBalanceHeader(balance: Double) {
+        currentBalance = balance
         tvPartyBalance.text = Format.money(balance)
         when {
             balance > 0 -> {
@@ -184,6 +200,50 @@ class PartyDetailActivity : AppCompatActivity() {
                         R.string.moved_to_bin,
                         Toast.LENGTH_SHORT
                     ).show()
+                }
+            }
+            .show()
+    }
+
+    /**
+     * Shows the message before it goes anywhere. The owner can edit every word,
+     * then hands it off to WhatsApp or SMS and presses send themselves.
+     * Roshan Khata never sends anything on its own.
+     */
+    private fun showReminderPreview(viaWhatsApp: Boolean) {
+        if (currentBalance == 0.0) {
+            Toast.makeText(this, R.string.nothing_outstanding, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (partyPhone.isNullOrBlank()) {
+            Toast.makeText(this, R.string.no_phone_number, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val view = layoutInflater.inflate(R.layout.dialog_reminder_preview, null)
+        val etMessage: EditText = view.findViewById(R.id.etMessage)
+        etMessage.setText(
+            Reminder.buildMessage(
+                context = this,
+                partyName = partyName,
+                balance = currentBalance,
+                businessName = null
+            )
+        )
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.send_reminder)
+            .setView(view)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(
+                if (viaWhatsApp) R.string.open_whatsapp else R.string.open_sms
+            ) { _, _ ->
+                val message = etMessage.text.toString()
+                if (viaWhatsApp) {
+                    Reminder.sendViaWhatsApp(this, partyPhone, message)
+                } else {
+                    Reminder.sendViaSms(this, partyPhone, message)
                 }
             }
             .show()

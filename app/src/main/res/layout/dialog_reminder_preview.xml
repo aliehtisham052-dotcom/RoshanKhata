@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reminder_preview_help"
+        android:textColor="@color/text_muted"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/etMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="#F0EFEA"
+        android:gravity="top|start"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:minLines="5"
+        android:padding="12dp"
+        android:textSize="14sp" />
+
+</LinearLayout>
