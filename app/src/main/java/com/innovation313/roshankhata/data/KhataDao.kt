@@ -127,4 +127,59 @@ interface KhataDao {
         """
     )
     fun observeNetBalance(): Flow<Double>
+
+    // ---------- Zakat inputs ----------
+
+    /**
+     * What customers owe me, where I am confident of collecting it,
+     * excluding Qarz-e-Hasna (counted separately) and doubtful debts.
+     */
+    @Query(
+        """
+        SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0)
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0
+          AND t.isQarzeHasna = 0
+          AND t.recovery = 0
+        """
+    )
+    fun observeCertainReceivables(): Flow<Double>
+
+    /** Debts the owner has marked as doubtful. */
+    @Query(
+        """
+        SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0)
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0
+          AND t.isQarzeHasna = 0
+          AND t.recovery = 1
+        """
+    )
+    fun observeDoubtfulReceivables(): Flow<Double>
+
+    /** Interest-free loans the owner has given out — still their wealth. */
+    @Query(
+        """
+        SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0)
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0
+          AND t.isQarzeHasna = 1
+        """
+    )
+    fun observeQarzeHasnaGiven(): Flow<Double>
+
+    // ---------- Qarz-e-Hasna listing ----------
+
+    @Query(
+        """
+        SELECT t.* FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND t.isQarzeHasna = 1
+        ORDER BY t.timestamp DESC
+        """
+    )
+    fun observeQarzeHasnaEntries(): Flow<List<LedgerEntry>>
 }

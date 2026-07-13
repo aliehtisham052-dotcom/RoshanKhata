@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [Party::class, LedgerEntry::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class KhataDatabase : RoomDatabase() {
@@ -24,7 +24,13 @@ abstract class KhataDatabase : RoomDatabase() {
                     context.applicationContext,
                     KhataDatabase::class.java,
                     "roshan_khata.db"
-                ).build().also { INSTANCE = it }
+                )
+                    // Pre-release only: no real user data exists yet, so a clean
+                    // rebuild is safe. This MUST be replaced with a proper
+                    // Migration before the app ever ships to a real user.
+                    .fallbackToDestructiveMigration()
+                    .build()
+                    .also { INSTANCE = it }
             }
     }
 }

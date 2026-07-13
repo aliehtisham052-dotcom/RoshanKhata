@@ -48,4 +48,41 @@
     <string name="delete_entry_confirm">This entry will move to the Recycle Bin. You can restore it within 30 days.</string>
     <string name="moved_to_bin">Moved to Recycle Bin</string>
     <string name="long_press_to_delete">Long-press a party to delete it</string>
+
+    <!-- Zakat -->
+    <string name="zakat_calculator">Zakat Calculator</string>
+    <string name="zakat_subtitle">A reference aid — not a ruling</string>
+    <string name="zakat_disclaimer">This tool is only a reference. Zakat has real fiqhi detail — the nisab standard, how doubtful debts are treated, the lunar year, and which liabilities may be deducted all differ between scholars. Roshan Khata is not a mufti. Please take the final ruling from a qualified scholar.</string>
+
+    <string name="nisab_section">Nisab</string>
+    <string name="nisab_help">Nisab is set here against the silver standard (612.36 g), the position generally taken as more careful toward the rights of the poor. Enter today\'s silver price per gram.</string>
+    <string name="silver_price_hint">Silver price per gram (Rs)</string>
+    <string name="nisab_value">Nisab = %1$s</string>
+    <string name="nisab_enter_price">Enter the silver price to work out nisab</string>
+    <string name="nisab_needed_first">Enter the silver price first</string>
+    <string name="above_nisab">Your wealth has reached nisab — Zakat is due (subject to the lunar year being complete).</string>
+    <string name="below_nisab">Your wealth is below nisab — no Zakat is due on this amount.</string>
+
+    <string name="cash_stock_section">Cash &amp; stock</string>
+    <string name="cash_stock_help">Cash in hand, bank balances, and the value of trade stock. Roshan Khata cannot see these, so enter them yourself.</string>
+    <string name="cash_stock_hint">Cash + stock value (Rs)</string>
+
+    <string name="from_your_ledger">From your ledger</string>
+    <string name="certain_receivables">Receivables you expect to collect: %1$s</string>
+    <string name="qarze_hasna_given">Qarz-e-Hasna given out: %1$s</string>
+    <string name="doubtful_receivables">Doubtful receivables: %1$s (excluded)</string>
+    <string name="you_owe_others">What you owe others: %1$s (deducted)</string>
+    <string name="include_doubtful">Also count doubtful receivables</string>
+    <string name="include_doubtful_help">Many scholars hold that Zakat on a doubtful debt falls due only once it is actually received. Tick this only if you wish to be more cautious.</string>
+
+    <string name="zakatable_wealth">Zakatable wealth</string>
+    <string name="zakat_due_label">Zakat due (2.5%)</string>
+    <string name="zakat_footer_note">Zakat also requires a full lunar year (hawl) to pass over the wealth. Roshan Khata does not track that for you — please account for it yourself, and confirm the ruling with a scholar.</string>
+
+    <!-- Qarz-e-Hasna -->
+    <string name="qarze_hasna">Qarz-e-Hasna (interest-free loan)</string>
+    <string name="qarze_hasna_help">Marked separately from trade. No interest or late fee is ever applied to it.</string>
+    <string name="recovery_certain">Expect to collect</string>
+    <string name="recovery_doubtful">Doubtful</string>
+    <string name="recovery_label">Chance of recovery</string>
 </resources>

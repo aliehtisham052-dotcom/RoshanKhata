@@ -20,6 +20,18 @@ data class Party(
     val deletedAt: Long? = null
 )
 
+/**
+ * How confident the owner is of collecting a receivable.
+ * This matters for Zakat: scholars treat a debt you're sure of differently
+ * from one you may never see again.
+ */
+object Recovery {
+    /** Confident of collection — commonly treated as Zakat-liable each year. */
+    const val CERTAIN = 0
+    /** Doubtful — many scholars hold Zakat is due only once it is actually received. */
+    const val DOUBTFUL = 1
+}
+
 /** A single ledger entry against a party. */
 @Entity(
     tableName = "transactions",
@@ -44,9 +56,20 @@ data class LedgerEntry(
      */
     val isGiven: Boolean,
     val note: String? = null,
-    /** Human-facing reference number, e.g. "RK-000123". Unique per entry. */
+    /** Human-facing reference number, e.g. "RK-000123". */
     val entryNumber: String,
     val timestamp: Long = System.currentTimeMillis(),
+
+    /**
+     * Qarz-e-Hasna: a benevolent, interest-free loan.
+     * Flagged so it is never mixed into trade receivables, and so no
+     * interest or late-fee logic can ever be applied to it.
+     */
+    val isQarzeHasna: Boolean = false,
+
+    /** One of [Recovery.CERTAIN] or [Recovery.DOUBTFUL]. */
+    val recovery: Int = Recovery.CERTAIN,
+
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null
 )
@@ -63,4 +86,12 @@ data class PartyWithBalance(
      * Negative  => I owe party (I should pay)
      */
     val balance: Double
+)
+
+/** Receivables split by recovery confidence, for the Zakat screen. */
+data class ZakatInputs(
+    val certainReceivables: Double,
+    val doubtfulReceivables: Double,
+    val qarzeHasnaGiven: Double,
+    val payables: Double
 )

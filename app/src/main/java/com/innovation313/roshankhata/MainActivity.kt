@@ -73,6 +73,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_zakat -> {
+                startActivity(Intent(this, ZakatActivity::class.java))
+                true
+            }
             R.id.action_recycle_bin -> {
                 startActivity(Intent(this, RecycleBinActivity::class.java))
                 true

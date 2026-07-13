@@ -3,6 +3,8 @@ package com.innovation313.roshankhata
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -11,10 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.ui.EntryAdapter
 import com.innovation313.roshankhata.ui.EntryRow
 import com.innovation313.roshankhata.ui.Format
@@ -117,6 +121,18 @@ class PartyDetailActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
         val etNote: EditText = view.findViewById(R.id.etNote)
+        val cbQarzeHasna: MaterialCheckBox = view.findViewById(R.id.cbQarzeHasna)
+        val rgRecovery: RadioGroup = view.findViewById(R.id.rgRecovery)
+        val rbDoubtful: RadioButton = view.findViewById(R.id.rbDoubtful)
+        val tvRecoveryLabel: TextView = view.findViewById(R.id.tvRecoveryLabel)
+
+        // Recovery confidence only means something for money going *out*
+        // (something I expect back). On an "I Got" entry there is nothing to
+        // recover, so the choice is hidden rather than left to confuse.
+        if (!isGiven) {
+            tvRecoveryLabel.visibility = View.GONE
+            rgRecovery.visibility = View.GONE
+        }
 
         MaterialAlertDialogBuilder(this)
             .setTitle(if (isGiven) R.string.i_gave else R.string.i_got)
@@ -130,6 +146,12 @@ class PartyDetailActivity : AppCompatActivity() {
                 }
                 val note = etNote.text.toString().trim().ifEmpty { null }
 
+                val recovery = if (isGiven && rbDoubtful.isChecked) {
+                    Recovery.DOUBTFUL
+                } else {
+                    Recovery.CERTAIN
+                }
+
                 lifecycleScope.launch {
                     val count = dao.totalEntryCount()
                     dao.insertEntry(
@@ -138,7 +160,9 @@ class PartyDetailActivity : AppCompatActivity() {
                             amount = amount,
                             isGiven = isGiven,
                             note = note,
-                            entryNumber = EntryNumber.next(count)
+                            entryNumber = EntryNumber.next(count),
+                            isQarzeHasna = cbQarzeHasna.isChecked,
+                            recovery = recovery
                         )
                     )
                 }
