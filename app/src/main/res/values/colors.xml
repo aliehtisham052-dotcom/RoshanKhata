@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bahi khata identity: oxblood cover + cream ruled page -->
+    <color name="oxblood_cover">#7A1F2B</color>
+    <color name="oxblood_cover_dark">#5A1620</color>
+    <color name="cream_page">#F5EFE0</color>
+    <color name="cream_page_line">#E3D8BE</color>
+    <color name="gold_accent">#C89B3C</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#1A1A1A</color>

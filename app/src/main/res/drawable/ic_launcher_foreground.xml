@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple open-book / ledger silhouette, placeholder until final logo -->
+    <path
+        android:fillColor="#C89B3C"
+        android:pathData="M54,34 L54,80 C48,76 38,74 30,74 L30,40 C38,40 48,42 54,46 Z" />
+    <path
+        android:fillColor="#F5EFE0"
+        android:pathData="M54,34 L54,80 C60,76 70,74 78,74 L78,40 C70,40 60,42 54,46 Z" />
+</vector>

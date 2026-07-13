@@ -1,0 +1,26 @@
+# Build outputs
+*.iml
+.gradle/
+/build/
+/app/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# Local machine config — never shared
+/local.properties
+.idea/
+.DS_Store
+
+# ============================================
+# SECRETS — these must NEVER be committed
+# ============================================
+*.keystore
+*.jks
+key.properties
+keystore.properties
+google-services.json
+/app/release/
+*.env
+secrets.xml
+apikey.properties
