@@ -18,64 +18,85 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/tvPartyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
             android:textColor="@color/cream_page"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvPartyBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/gold_accent"
             android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvBalanceHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/net_balance"
             android:textColor="@color/cream_page_line"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/tvNetBalance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rs 0"
-            android:textColor="@color/gold_accent"
-            android:textSize="26sp"
-            android:textStyle="bold" />
+            android:textSize="12sp" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvParties"
+        android:id="@+id/rvEntries"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="88dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/buttonBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header" />
 
     <TextView
-        android:id="@+id/tvEmpty"
+        android:id="@+id/tvNoEntries"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_parties_yet"
+        android:text="@string/no_entries_yet"
         android:textColor="@color/oxblood_cover"
         android:textSize="15sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/rvParties"
+        app:layout_constraintBottom_toBottomOf="@id/rvEntries"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rvParties" />
+        app:layout_constraintTop_toTopOf="@id/rvEntries" />
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabAddParty"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttonBar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:text="@string/add_party"
-        android:textColor="@color/cream_page"
-        app:backgroundTint="@color/oxblood_cover"
+        android:orientation="horizontal"
+        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGave"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="@string/i_gave"
+            android:textSize="16sp"
+            app:backgroundTint="@color/red_gave"
+            app:cornerRadius="10dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGot"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:text="@string/i_got"
+            android:textSize="16sp"
+            app:backgroundTint="@color/green_got"
+            app:cornerRadius="10dp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

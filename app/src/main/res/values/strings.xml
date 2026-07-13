@@ -1,4 +1,27 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
     <string name="app_tagline">Aapka digital bahi khata — Innovation-313</string>
+
+    <string name="net_balance">Net balance</string>
+    <string name="add_party">Add Party</string>
+    <string name="no_parties_yet">No customers or suppliers yet.\nTap Add Party to begin.</string>
+    <string name="no_entries_yet">No entries yet.</string>
+
+    <string name="i_gave">I Gave</string>
+    <string name="i_got">I Got</string>
+
+    <string name="you_will_get">You will get</string>
+    <string name="you_will_give">You will give</string>
+    <string name="settled">Settled</string>
+
+    <string name="name">Name</string>
+    <string name="phone_optional">Phone (optional)</string>
+    <string name="amount">Amount</string>
+    <string name="note_optional">Note (optional)</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="customer">Customer</string>
+    <string name="supplier">Supplier</string>
+    <string name="enter_name">Please enter a name</string>
+    <string name="enter_valid_amount">Please enter a valid amount</string>
 </resources>

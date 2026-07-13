@@ -8,4 +8,8 @@
     <color name="gold_accent">#C89B3C</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#1A1A1A</color>
+
+    <!-- Ledger direction -->
+    <color name="red_gave">#C0392B</color>
+    <color name="green_got">#1E8449</color>
 </resources>
