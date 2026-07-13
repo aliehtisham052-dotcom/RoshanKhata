@@ -15,7 +15,9 @@ data class EntryRow(
     val runningBalance: Double
 )
 
-class EntryAdapter : RecyclerView.Adapter<EntryAdapter.VH>() {
+class EntryAdapter(
+    private val onLongClick: (LedgerEntry) -> Unit
+) : RecyclerView.Adapter<EntryAdapter.VH>() {
 
     private var rows: List<EntryRow> = emptyList()
 
@@ -33,8 +35,7 @@ class EntryAdapter : RecyclerView.Adapter<EntryAdapter.VH>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_entry, parent, false)
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_entry, parent, false)
         return VH(v)
     }
 
@@ -57,5 +58,10 @@ class EntryAdapter : RecyclerView.Adapter<EntryAdapter.VH>() {
         holder.tvAmount.setTextColor(ContextCompat.getColor(ctx, colour))
 
         holder.tvRunningBalance.text = "Bal: ${Format.money(row.runningBalance)}"
+
+        holder.itemView.setOnLongClickListener {
+            onLongClick(e)
+            true
+        }
     }
 }

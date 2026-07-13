@@ -12,7 +12,8 @@ import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.PartyWithBalance
 
 class PartyAdapter(
-    private val onClick: (PartyWithBalance) -> Unit
+    private val onClick: (PartyWithBalance) -> Unit,
+    private val onLongClick: (PartyWithBalance) -> Unit
 ) : ListAdapter<PartyWithBalance, PartyAdapter.VH>(DIFF) {
 
     companion object {
@@ -30,8 +31,7 @@ class PartyAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_party, parent, false)
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_party, parent, false)
         return VH(v)
     }
 
@@ -47,12 +47,10 @@ class PartyAdapter(
 
         when {
             item.balance > 0 -> {
-                // Party owes me — I will receive.
                 holder.tvBalance.setTextColor(ContextCompat.getColor(ctx, R.color.green_got))
                 holder.tvBalanceLabel.setText(R.string.you_will_get)
             }
             item.balance < 0 -> {
-                // I owe the party — I will pay.
                 holder.tvBalance.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave))
                 holder.tvBalanceLabel.setText(R.string.you_will_give)
             }
@@ -63,5 +61,9 @@ class PartyAdapter(
         }
 
         holder.itemView.setOnClickListener { onClick(item) }
+        holder.itemView.setOnLongClickListener {
+            onLongClick(item)
+            true
+        }
     }
 }

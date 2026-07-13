@@ -55,7 +55,7 @@ class PartyDetailActivity : AppCompatActivity() {
         tvBalanceHint = findViewById(R.id.tvBalanceHint)
         tvNoEntries = findViewById(R.id.tvNoEntries)
 
-        adapter = EntryAdapter()
+        adapter = EntryAdapter { entry -> confirmDeleteEntry(entry) }
         val rv: RecyclerView = findViewById(R.id.rvEntries)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
@@ -141,6 +141,25 @@ class PartyDetailActivity : AppCompatActivity() {
                             entryNumber = EntryNumber.next(count)
                         )
                     )
+                }
+            }
+            .show()
+    }
+
+    /** Deleting an entry is reversible — it moves to the Recycle Bin. */
+    private fun confirmDeleteEntry(entry: LedgerEntry) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_entry_title)
+            .setMessage(R.string.delete_entry_confirm)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                lifecycleScope.launch {
+                    dao.softDeleteEntry(entry.id)
+                    Toast.makeText(
+                        this@PartyDetailActivity,
+                        R.string.moved_to_bin,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             .show()

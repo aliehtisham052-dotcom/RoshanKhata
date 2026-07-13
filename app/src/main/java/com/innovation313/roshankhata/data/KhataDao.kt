@@ -40,10 +40,6 @@ interface KhataDao {
     )
     fun observePartiesWithBalance(): Flow<List<PartyWithBalance>>
 
-    /** Soft delete — party goes to the Recycle Bin, not gone for good. */
-    @Query("UPDATE parties SET isDeleted = 1, deletedAt = :now WHERE id = :id")
-    suspend fun softDeleteParty(id: Long, now: Long = System.currentTimeMillis())
-
     // ---------- Ledger entries ----------
 
     @Insert
@@ -55,14 +51,72 @@ interface KhataDao {
     @Query("SELECT COUNT(*) FROM transactions")
     suspend fun totalEntryCount(): Int
 
-    /** Soft delete — entry goes to the Recycle Bin. */
+    // ---------- Recycle Bin: soft delete ----------
+
+    /** Party goes to the bin. Its entries go with it, so a restore brings back the whole ledger intact. */
+    @Query("UPDATE parties SET isDeleted = 1, deletedAt = :now WHERE id = :id")
+    suspend fun softDeleteParty(id: Long, now: Long = System.currentTimeMillis())
+
+    @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE partyId = :partyId AND isDeleted = 0")
+    suspend fun softDeleteEntriesOfParty(partyId: Long, now: Long = System.currentTimeMillis())
+
     @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteEntry(id: Long, now: Long = System.currentTimeMillis())
+
+    // ---------- Recycle Bin: restore ----------
+
+    @Query("UPDATE parties SET isDeleted = 0, deletedAt = NULL WHERE id = :id")
+    suspend fun restoreParty(id: Long)
+
+    /** Restores only entries that were binned together with the party (same deletedAt window). */
+    @Query("UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE partyId = :partyId AND deletedAt = :deletedAt")
+    suspend fun restoreEntriesOfParty(partyId: Long, deletedAt: Long)
 
     @Query("UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE id = :id")
     suspend fun restoreEntry(id: Long)
 
-    // ---------- Totals for the home summary ----------
+    /** An entry cannot live in an active ledger if its party is still in the bin. */
+    @Query("SELECT isDeleted FROM parties WHERE id = :partyId")
+    suspend fun isPartyDeleted(partyId: Long): Boolean?
+
+    // ---------- Recycle Bin: listing ----------
+
+    @Query("SELECT * FROM parties WHERE isDeleted = 1 ORDER BY deletedAt DESC")
+    fun observeDeletedParties(): Flow<List<Party>>
+
+    /**
+     * Entries shown in the bin are only those deleted *on their own*.
+     * Entries that were swept in alongside a deleted party are hidden here —
+     * they reappear automatically when the party is restored.
+     */
+    @Query(
+        """
+        SELECT t.* FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 1 AND p.isDeleted = 0
+        ORDER BY t.deletedAt DESC
+        """
+    )
+    fun observeDeletedEntries(): Flow<List<LedgerEntry>>
+
+    @Query("SELECT name FROM parties WHERE id = :id")
+    suspend fun getPartyName(id: Long): String?
+
+    // ---------- Recycle Bin: permanent purge ----------
+
+    @Query("DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff")
+    suspend fun purgeOldEntries(cutoff: Long)
+
+    @Query("DELETE FROM parties WHERE isDeleted = 1 AND deletedAt < :cutoff")
+    suspend fun purgeOldParties(cutoff: Long)
+
+    @Query("DELETE FROM transactions WHERE isDeleted = 1")
+    suspend fun purgeAllEntries()
+
+    @Query("DELETE FROM parties WHERE isDeleted = 1")
+    suspend fun purgeAllParties()
+
+    // ---------- Totals ----------
 
     @Query(
         """
