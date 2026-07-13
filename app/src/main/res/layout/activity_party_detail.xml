@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream_page">
+    android:background="@color/page_bg">
 
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/oxblood_cover"
+        android:background="@color/navy_primary"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,7 +21,7 @@
             android:id="@+id/tvPartyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/cream_page"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -38,7 +38,7 @@
             android:id="@+id/tvBalanceHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/cream_page_line"
+            android:textColor="@color/gold_bright"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_entries_yet"
-        android:textColor="@color/oxblood_cover"
+        android:textColor="@color/navy_primary"
         android:textSize="15sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/rvEntries"
