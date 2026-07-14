@@ -29,6 +29,7 @@ class EntryAdapter(
     inner class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvDateTime: TextView = view.findViewById(R.id.tvDateTime)
         val tvNote: TextView = view.findViewById(R.id.tvNote)
+        val tvGoods: TextView = view.findViewById(R.id.tvGoods)
         val tvEntryNumber: TextView = view.findViewById(R.id.tvEntryNumber)
         val tvAmount: TextView = view.findViewById(R.id.tvAmount)
         val tvRunningBalance: TextView = view.findViewById(R.id.tvRunningBalance)
@@ -50,6 +51,11 @@ class EntryAdapter(
 
         holder.tvNote.text = e.note.orEmpty()
         holder.tvNote.visibility = if (e.note.isNullOrBlank()) View.GONE else View.VISIBLE
+
+        // Show the goods only when something actually moved.
+        val goods = Format.goods(e.itemName, e.quantity, e.unit)
+        holder.tvGoods.text = goods.orEmpty()
+        holder.tvGoods.visibility = if (goods == null) View.GONE else View.VISIBLE
 
         holder.tvEntryNumber.text = e.entryNumber
 

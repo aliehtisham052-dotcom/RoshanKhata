@@ -70,6 +70,17 @@ data class LedgerEntry(
     /** One of [Recovery.CERTAIN] or [Recovery.DOUBTFUL]. */
     val recovery: Int = Recovery.CERTAIN,
 
+    /**
+     * What actually moved, alongside the money — e.g. 5 bags of urea,
+     * 2 litres of pesticide. An agri-dealer's ledger is not only rupees;
+     * the goods matter as much as the amount. Optional: a plain cash
+     * entry leaves these null.
+     */
+    val itemName: String? = null,
+    val quantity: Double? = null,
+    /** Free text so it fits any trade: bag, litre, kg, maund, packet, piece. */
+    val unit: String? = null,
+
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null
 )

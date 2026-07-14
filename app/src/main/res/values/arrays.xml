@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Units a Pakistani agri-dealer actually uses. Maund and seer are still
+      the working units in much of the trade, so they belong here alongside
+      metric — the app should speak the shopkeeper's language, not force
+      him into ours.
+    -->
+    <string-array name="units">
+        <item>bag</item>
+        <item>kg</item>
+        <item>maund</item>
+        <item>seer</item>
+        <item>litre</item>
+        <item>ml</item>
+        <item>packet</item>
+        <item>bottle</item>
+        <item>piece</item>
+        <item>box</item>
+        <item>ton</item>
+    </string-array>
+</resources>

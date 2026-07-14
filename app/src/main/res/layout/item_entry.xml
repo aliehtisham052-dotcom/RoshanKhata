@@ -29,6 +29,14 @@
             android:textSize="13sp" />
 
         <TextView
+            android:id="@+id/tvGoods"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/navy_primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/tvEntryNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

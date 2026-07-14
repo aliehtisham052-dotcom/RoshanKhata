@@ -2,6 +2,8 @@ package com.innovation313.roshankhata
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -137,7 +139,20 @@ class PartyDetailActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
         val etNote: EditText = view.findViewById(R.id.etNote)
+        val etItemName: EditText = view.findViewById(R.id.etItemName)
+        val etQuantity: EditText = view.findViewById(R.id.etQuantity)
+        val etUnit: AutoCompleteTextView = view.findViewById(R.id.etUnit)
         val cbQarzeHasna: MaterialCheckBox = view.findViewById(R.id.cbQarzeHasna)
+
+        // Suggest the units this trade actually uses — bag, maund, seer,
+        // litre — rather than making the shopkeeper type them out each time.
+        etUnit.setAdapter(
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                resources.getStringArray(R.array.units)
+            )
+        )
         val rgRecovery: RadioGroup = view.findViewById(R.id.rgRecovery)
         val rbDoubtful: RadioButton = view.findViewById(R.id.rbDoubtful)
         val tvRecoveryLabel: TextView = view.findViewById(R.id.tvRecoveryLabel)
@@ -168,6 +183,10 @@ class PartyDetailActivity : AppCompatActivity() {
                     Recovery.CERTAIN
                 }
 
+                val itemName = etItemName.text.toString().trim().ifEmpty { null }
+                val quantity = etQuantity.text.toString().trim().toDoubleOrNull()
+                val unit = etUnit.text.toString().trim().ifEmpty { null }
+
                 lifecycleScope.launch {
                     val count = dao.totalEntryCount()
                     dao.insertEntry(
@@ -178,7 +197,10 @@ class PartyDetailActivity : AppCompatActivity() {
                             note = note,
                             entryNumber = EntryNumber.next(count),
                             isQarzeHasna = cbQarzeHasna.isChecked,
-                            recovery = recovery
+                            recovery = recovery,
+                            itemName = itemName,
+                            quantity = quantity,
+                            unit = unit
                         )
                     )
                 }

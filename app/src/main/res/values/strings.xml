@@ -99,4 +99,11 @@
     <string name="whatsapp_not_installed">WhatsApp is not installed on this phone.</string>
     <string name="no_sms_app">No SMS app found on this phone.</string>
     <string name="nothing_outstanding">Nothing outstanding — the account is settled.</string>
+
+    <!-- Goods / quantity (agri-dealer ledger) -->
+    <string name="goods_section">Goods (optional)</string>
+    <string name="goods_help">If stock moved with this entry — 5 bags of urea, 2 litres of pesticide — record it here. Leave blank for a plain cash entry.</string>
+    <string name="item_name_hint">Item (e.g. Urea, Pesticide, Feed)</string>
+    <string name="quantity_hint">Quantity</string>
+    <string name="unit_hint">Unit (bag, litre, kg…)</string>
 </resources>
