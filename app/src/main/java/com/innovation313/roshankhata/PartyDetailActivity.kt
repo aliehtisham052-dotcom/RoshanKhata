@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -11,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,13 +22,16 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.PdfExport
 import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.ui.EntryAdapter
 import com.innovation313.roshankhata.ui.EntryRow
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.Reminder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * A single party's ledger: full entry history with running balances,
@@ -42,6 +47,7 @@ class PartyDetailActivity : AppCompatActivity() {
     private var partyName: String = ""
     private var partyPhone: String? = null
     private var currentBalance: Double = 0.0
+    private var currentRows: List<EntryRow> = emptyList()
     private lateinit var adapter: EntryAdapter
     private lateinit var tvPartyName: TextView
     private lateinit var tvPartyBalance: TextView
@@ -79,6 +85,9 @@ class PartyDetailActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnSms).setOnClickListener {
             showReminderPreview(viaWhatsApp = false)
         }
+        findViewById<MaterialButton>(R.id.btnPdf).setOnClickListener {
+            exportStatement()
+        }
 
         loadParty()
         observeEntries()
@@ -108,7 +117,8 @@ class PartyDetailActivity : AppCompatActivity() {
                     EntryRow(e, running)
                 }
 
-                adapter.submit(rowsOldestFirst.reversed())
+                currentRows = rowsOldestFirst.reversed()
+                adapter.submit(currentRows)
                 tvNoEntries.visibility = if (newestFirst.isEmpty()) View.VISIBLE else View.GONE
 
                 updateBalanceHeader(running)
@@ -269,5 +279,59 @@ class PartyDetailActivity : AppCompatActivity() {
                 }
             }
             .show()
+    }
+
+    /**
+     * Builds the statement and hands it to whichever app the owner picks —
+     * WhatsApp, email, the printer. The PDF lives in cache and is shared under
+     * a temporary grant, so no other app can reach into our storage.
+     */
+    private fun exportStatement() {
+        if (currentRows.isEmpty()) {
+            Toast.makeText(this, R.string.no_entries_to_export, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Toast.makeText(this, R.string.generating_statement, Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            // Rendering a long ledger is real work — keep it off the main thread.
+            val file = withContext(Dispatchers.IO) {
+                PdfExport.buildStatement(
+                    context = this@PartyDetailActivity,
+                    partyName = partyName,
+                    partyPhone = partyPhone,
+                    rows = currentRows.map {
+                        PdfExport.StatementRow(it.entry, it.runningBalance)
+                    },
+                    closingBalance = currentBalance,
+                    businessName = null
+                )
+            }
+
+            if (file == null) {
+                Toast.makeText(
+                    this@PartyDetailActivity,
+                    R.string.statement_failed,
+                    Toast.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            val uri = FileProvider.getUriForFile(
+                this@PartyDetailActivity,
+                "$packageName.fileprovider",
+                file
+            )
+
+            val share = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_statement))
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            startActivity(Intent.createChooser(share, getString(R.string.share_statement)))
+        }
     }
 }

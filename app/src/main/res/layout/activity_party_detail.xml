@@ -70,6 +70,18 @@
                 android:textSize="12sp"
                 app:cornerRadius="8dp"
                 app:strokeColor="@color/gold_accent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPdf"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:text="@string/statement_pdf"
+                android:textColor="@color/gold_bright"
+                android:textSize="12sp"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/gold_accent" />
         </LinearLayout>
     </LinearLayout>
 

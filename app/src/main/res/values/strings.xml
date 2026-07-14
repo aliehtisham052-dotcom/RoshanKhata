@@ -122,4 +122,11 @@
     <string name="contacts_permission_rationale">Roshan Khata will read your contact list only to show it here, so you can pick who to add. Nothing is uploaded, and only the contacts you actually choose are saved — just their name and number.\n\nIf you would rather not, you can still add every party by hand.</string>
     <string name="contacts_permission_denied">Permission was not granted, so contacts cannot be shown. You can still add parties by hand from the home screen.</string>
     <string name="add_manually">Add Manually</string>
+
+    <!-- PDF statement -->
+    <string name="statement_pdf">Statement</string>
+    <string name="generating_statement">Preparing statement\u2026</string>
+    <string name="share_statement">Share statement</string>
+    <string name="statement_failed">Could not create the statement. Please try again.</string>
+    <string name="no_entries_to_export">There are no entries to put in a statement yet.</string>
 </resources>

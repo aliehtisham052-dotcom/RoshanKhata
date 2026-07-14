@@ -1,0 +1,210 @@
+package com.innovation313.roshankhata.data
+
+import android.content.Context
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.pdf.PdfDocument
+import com.innovation313.roshankhata.ui.Format
+import java.io.File
+import java.io.FileOutputStream
+
+/**
+ * Renders a party's ledger as a PDF statement.
+ *
+ * This document goes to a real customer, so it is built to be read and
+ * trusted: every entry carries its reference number and running balance, and
+ * the closing balance is stated plainly in words the customer will understand
+ * ("You will pay" / "You will receive") rather than an accounting sign that
+ * could be read the wrong way round.
+ */
+object PdfExport {
+
+    // A4 at 72dpi
+    private const val PAGE_W = 595
+    private const val PAGE_H = 842
+    private const val MARGIN = 40f
+
+    private const val NAVY = 0xFF152238.toInt()
+    private const val GOLD = 0xFFD4A438.toInt()
+    private const val RED = 0xFFC0392B.toInt()
+    private const val GREEN = 0xFF1E8449.toInt()
+    private const val GREY = 0xFF7A7A7A.toInt()
+
+    data class StatementRow(
+        val entry: LedgerEntry,
+        val runningBalance: Double
+    )
+
+    /**
+     * @return the written file, or null if nothing could be written.
+     */
+    fun buildStatement(
+        context: Context,
+        partyName: String,
+        partyPhone: String?,
+        rows: List<StatementRow>,
+        closingBalance: Double,
+        businessName: String?
+    ): File? {
+        val doc = PdfDocument()
+
+        val title = Paint().apply {
+            color = Color.WHITE
+            textSize = 20f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            isAntiAlias = true
+        }
+        val subtitle = Paint().apply {
+            color = GOLD
+            textSize = 10f
+            isAntiAlias = true
+        }
+        val header = Paint().apply {
+            color = NAVY
+            textSize = 10f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            isAntiAlias = true
+        }
+        val body = Paint().apply {
+            color = Color.BLACK
+            textSize = 10f
+            isAntiAlias = true
+        }
+        val muted = Paint().apply {
+            color = GREY
+            textSize = 8f
+            isAntiAlias = true
+        }
+        val navyFill = Paint().apply { color = NAVY }
+        val goldFill = Paint().apply { color = GOLD }
+        val lineFill = Paint().apply {
+            color = 0xFFDDDDDD.toInt()
+            strokeWidth = 0.5f
+        }
+
+        // Column positions
+        val xDate = MARGIN
+        val xGave = 300f
+        val xGot = 390f
+        val xBal = 480f
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
+        var c = page.canvas
+        var y: Float
+
+        fun drawHeader(): Float {
+            c.drawRect(0f, 0f, PAGE_W.toFloat(), 78f, navyFill)
+            c.drawText(businessName?.takeIf { it.isNotBlank() } ?: "Roshan Khata", MARGIN, 32f, title)
+            c.drawText("Account Statement — $partyName", MARGIN, 52f, subtitle)
+            partyPhone?.takeIf { it.isNotBlank() }?.let {
+                c.drawText(it, MARGIN, 66f, subtitle)
+            }
+
+            var yy = 100f
+            c.drawText("Date", xDate, yy, header)
+            c.drawText("You Gave", xGave, yy, header)
+            c.drawText("You Got", xGot, yy, header)
+            c.drawText("Balance", xBal, yy, header)
+            yy += 6f
+            c.drawLine(MARGIN, yy, PAGE_W - MARGIN, yy, lineFill)
+            return yy + 16f
+        }
+
+        y = drawHeader()
+
+        for (row in rows) {
+            // Two lines per entry (details + reference), so break before we run off.
+            if (y > PAGE_H - 110f) {
+                doc.finishPage(page)
+                pageNo++
+                page = doc.startPage(
+                    PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
+                )
+                c = page.canvas
+                y = drawHeader()
+            }
+
+            val e = row.entry
+
+            c.drawText(Format.dateTime(e.timestamp), xDate, y, body)
+
+            if (e.isGiven) {
+                body.color = RED
+                c.drawText(Format.money(e.amount), xGave, y, body)
+            } else {
+                body.color = GREEN
+                c.drawText(Format.money(e.amount), xGot, y, body)
+            }
+            body.color = Color.BLACK
+
+            c.drawText(Format.money(row.runningBalance), xBal, y, body)
+
+            // Second line: reference number, note, and any goods that moved.
+            y += 12f
+            val detail = buildList {
+                add(e.entryNumber)
+                Format.goods(e.itemName, e.quantity, e.unit)?.let { add(it) }
+                e.note?.takeIf { it.isNotBlank() }?.let { add(it) }
+                if (e.isQarzeHasna) add("Qarz-e-Hasna")
+            }.joinToString("  ·  ")
+
+            c.drawText(detail, xDate, y, muted)
+
+            y += 8f
+            c.drawLine(MARGIN, y, PAGE_W - MARGIN, y, lineFill)
+            y += 16f
+        }
+
+        // Closing balance — stated in the customer's terms, not accounting signs.
+        if (y > PAGE_H - 100f) {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
+            c = page.canvas
+            y = drawHeader()
+        }
+
+        y += 8f
+        c.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 52f, navyFill)
+        c.drawRect(MARGIN, y, MARGIN + 4f, y + 52f, goldFill)
+
+        val closingLabel = when {
+            closingBalance > 0 -> "You will pay"
+            closingBalance < 0 -> "You will receive"
+            else -> "Settled — nothing outstanding"
+        }
+
+        subtitle.color = GOLD
+        c.drawText(closingLabel, MARGIN + 16f, y + 20f, subtitle)
+
+        title.textSize = 18f
+        c.drawText(Format.money(closingBalance), MARGIN + 16f, y + 42f, title)
+
+        y += 70f
+        c.drawText(
+            "Generated by Roshan Khata · Innovation-313",
+            MARGIN,
+            y,
+            muted
+        )
+
+        doc.finishPage(page)
+
+        // Written to cache: a statement is a throwaway artefact, not something
+        // to quietly accumulate in the user's storage.
+        val dir = File(context.cacheDir, "statements").apply { mkdirs() }
+        val safeName = partyName.replace(Regex("[^A-Za-z0-9 ]"), "").trim().replace(" ", "_")
+        val file = File(dir, "Statement_${safeName.ifEmpty { "Party" }}.pdf")
+
+        return try {
+            FileOutputStream(file).use { doc.writeTo(it) }
+            file
+        } catch (e: Exception) {
+            null
+        } finally {
+            doc.close()
+        }
+    }
+}
