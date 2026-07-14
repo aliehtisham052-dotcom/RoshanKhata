@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <!--
-      Only the statements folder is exposed, and only from cache. Nothing else
-      in the app's storage is reachable by another app through this provider.
+      Only these two cache folders are exposed, and only for sharing out.
+      Nothing else in the app's storage is reachable through this provider.
     -->
     <cache-path
         name="statements"
         path="statements/" />
+    <cache-path
+        name="backups"
+        path="backups/" />
 </paths>

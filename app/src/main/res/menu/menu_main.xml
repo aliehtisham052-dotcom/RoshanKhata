@@ -18,6 +18,10 @@
         android:title="@string/business_settings"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_backup"
+        android:title="@string/backup_restore"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_app_lock"
         android:title="@string/app_lock"
         app:showAsAction="never" />

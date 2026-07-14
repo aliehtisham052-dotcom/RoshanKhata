@@ -262,4 +262,49 @@ interface KhataDao {
 
     @Query("UPDATE cashbook SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteCashEntry(id: Long, now: Long = System.currentTimeMillis())
+
+    // ---------- Backup / restore ----------
+    //
+    // Backup reads EVERYTHING, including soft-deleted rows: the Recycle Bin is
+    // part of the user's data, and a restore that silently emptied it would be
+    // destroying something they still had a right to get back.
+
+    @Query("SELECT * FROM parties")
+    suspend fun allPartiesForBackup(): List<Party>
+
+    @Query("SELECT * FROM transactions")
+    suspend fun allEntriesForBackup(): List<LedgerEntry>
+
+    @Query("SELECT * FROM cheques")
+    suspend fun allChequesForBackup(): List<Cheque>
+
+    @Query("SELECT * FROM cashbook")
+    suspend fun allCashForBackup(): List<CashEntry>
+
+    // Restore wipes and rewrites. Guarded behind an explicit warning in the UI,
+    // because it replaces the current books entirely.
+
+    @Query("DELETE FROM transactions")
+    suspend fun wipeEntries()
+
+    @Query("DELETE FROM cheques")
+    suspend fun wipeCheques()
+
+    @Query("DELETE FROM cashbook")
+    suspend fun wipeCash()
+
+    @Query("DELETE FROM parties")
+    suspend fun wipeParties()
+
+    @Insert
+    suspend fun restoreParties(items: List<Party>)
+
+    @Insert
+    suspend fun restoreEntries(items: List<LedgerEntry>)
+
+    @Insert
+    suspend fun restoreCheques(items: List<Cheque>)
+
+    @Insert
+    suspend fun restoreCash(items: List<CashEntry>)
 }

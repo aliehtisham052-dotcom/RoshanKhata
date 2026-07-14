@@ -293,4 +293,24 @@
     <string name="enter_category">Please enter a category</string>
     <string name="delete_cash_entry">Delete this entry?</string>
     <string name="delete_cash_confirm">It will move to the Recycle Bin.</string>
+
+    <!-- Backup & restore -->
+    <string name="backup_restore">Backup &amp; Restore</string>
+    <string name="backup_subtitle">Your books, in your hands</string>
+    <string name="backup_now">Back up now</string>
+    <string name="restore_from_file">Restore from a backup</string>
+    <string name="backup_explain">Everything — customers, ledger, cheques, cashbook, and the Recycle Bin — is written to a single file you can save to Drive, WhatsApp to yourself, or keep on a memory card.\n\nThe file is plain, readable text. Even years from now, even without this app, your records will still be recoverable. Data you cannot get back without our help is not really yours.</string>
+    <string name="backup_warning">Roshan Khata keeps everything on this phone alone. If the phone is lost, broken, or the app is uninstalled, the records go with it. Please take a backup regularly and keep it somewhere else.</string>
+    <string name="backup_created">Backup ready — choose where to save it</string>
+    <string name="backup_failed">The backup could not be created.</string>
+    <string name="save_backup">Save backup</string>
+
+    <string name="restore_warning_title">Replace everything?</string>
+    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
+    <string name="restore_replace">Replace everything</string>
+    <string name="restore_done">Restored</string>
+    <string name="restore_failed">Restore failed: %1$s</string>
+    <string name="reading_backup">Reading the file\u2026</string>
+    <string name="restoring">Restoring\u2026</string>
+    <string name="creating_backup">Creating backup\u2026</string>
 </resources>

@@ -119,6 +119,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, BusinessSettingsActivity::class.java))
                 true
             }
+            R.id.action_backup -> {
+                startActivity(Intent(this, BackupActivity::class.java))
+                true
+            }
             R.id.action_app_lock -> {
                 showAppLockSettings()
                 true
