@@ -255,10 +255,17 @@ class BillsActivity : AppCompatActivity() {
         var expiry: Long? = null
 
         btnExpiry.setOnClickListener {
-            // Default the picker a year out — pesticide typically carries a
-            // long shelf life, and starting at today would mean scrolling.
-            val start = Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.timeInMillis
-            pickDate(start) { picked ->
+            // Opens on TODAY, not a year ahead.
+            //
+            // It used to jump forward twelve months on the reasoning that
+            // pesticide carries a long shelf life. That was backwards. The
+            // stock that matters most is the stock expiring SOON — the drum
+            // with two months left, the one that can still be sold or returned.
+            // Opening a year out buried exactly that case behind a scroll back,
+            // and made the easy stock easy while making the urgent stock hard.
+            //
+            // Today is also simply where a person's thumb expects to land.
+            pickDate(System.currentTimeMillis()) { picked ->
                 expiry = picked
                 btnExpiry.text = getString(R.string.due_date_set, Format.dateOnly(picked))
             }
