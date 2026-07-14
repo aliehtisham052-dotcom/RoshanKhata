@@ -38,7 +38,7 @@ class ExpiringAdapter : RecyclerView.Adapter<ExpiringAdapter.VH>() {
         val ctx = holder.itemView.context
 
         holder.tvProduct.text = e.productName
-        holder.tvQty.text = Format.goods(e.quantity, e.unit)
+        holder.tvQty.text = Format.qty(e.quantity, e.unit)
 
         // Expired stock is already a loss. Stock merely approaching expiry can
         // still be saved. Those are different situations and they must not look

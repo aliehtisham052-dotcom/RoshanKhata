@@ -47,4 +47,18 @@ object Format {
     /** Bare number for an input field — no currency symbol, no thousands separator. */
     fun plain(value: Double): String =
         if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
+
+    /**
+     * Quantity and unit alone — "5 bottles", "12.5 litre".
+     *
+     * Separate from goods(), which folds the item name in too. On a supplier
+     * bill the product is already shown on its own line, so goods() would print
+     * it twice.
+     */
+    fun qty(quantity: Double, unit: String?): String {
+        val n = if (quantity % 1.0 == 0.0) "%,.0f".format(quantity)
+        else "%,.2f".format(quantity)
+        val u = unit?.trim().orEmpty()
+        return if (u.isEmpty()) n else "$n $u"
+    }
 }

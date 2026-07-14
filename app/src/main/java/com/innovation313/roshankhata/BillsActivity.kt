@@ -393,7 +393,7 @@ class BillsActivity : AppCompatActivity() {
                     buildString {
                         append(i.productName)
                         append("\n")
-                        append(Format.goods(i.quantity, i.unit))
+                        append(Format.qty(i.quantity, i.unit))
                         i.rate?.let {
                             append(" @ ")
                             append(Format.money(it))
