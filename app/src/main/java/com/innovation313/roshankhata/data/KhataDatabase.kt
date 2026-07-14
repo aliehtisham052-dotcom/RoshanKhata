@@ -12,9 +12,11 @@ import androidx.room.RoomDatabase
         Cheque::class,
         CashEntry::class,
         PaymentPlan::class,
-        Installment::class
+        Installment::class,
+        SupplierBill::class,
+        BillItem::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = true
 )
 abstract class KhataDatabase : RoomDatabase() {

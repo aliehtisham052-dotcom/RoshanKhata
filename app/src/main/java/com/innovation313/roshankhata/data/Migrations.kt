@@ -179,6 +179,64 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
     }
 }
 
+/**
+ * v7 -> v8: supplier bills, with batch numbers and expiry dates.
+ *
+ * Two tables. Items cascade from their bill, bills cascade from their supplier.
+ *
+ * Note what these tables do NOT contain: a balance. What is owed to a supplier
+ * lives in the ledger, like every other debt in this app. A bill holds the
+ * paperwork — bill number, batches, expiry, what was in the delivery — and
+ * points at the ledger entry for the money. If it kept its own running total,
+ * the two would drift and there would be two different answers to "what do I
+ * owe them?", with no way to tell which was true.
+ */
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS supplier_bills (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                partyId INTEGER NOT NULL,
+                billNumber TEXT,
+                totalAmount REAL NOT NULL,
+                billDate INTEGER NOT NULL,
+                dueDate INTEGER,
+                ledgerEntryId INTEGER,
+                isPaidInFull INTEGER NOT NULL,
+                note TEXT,
+                createdAt INTEGER NOT NULL,
+                isDeleted INTEGER NOT NULL,
+                deletedAt INTEGER,
+                FOREIGN KEY(partyId) REFERENCES parties(id) ON UPDATE NO ACTION ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS index_supplier_bills_partyId ON supplier_bills(partyId)"
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS bill_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                billId INTEGER NOT NULL,
+                productName TEXT NOT NULL,
+                batchNumber TEXT,
+                expiryDate INTEGER,
+                quantity REAL NOT NULL,
+                unit TEXT,
+                rate REAL,
+                note TEXT,
+                isDeleted INTEGER NOT NULL,
+                FOREIGN KEY(billId) REFERENCES supplier_bills(id) ON UPDATE NO ACTION ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS index_bill_items_billId ON bill_items(billId)")
+    }
+}
+
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
     MIGRATION_1_2,
@@ -186,5 +244,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_3_4,
     MIGRATION_4_5,
     MIGRATION_5_6,
-    MIGRATION_6_7
+    MIGRATION_6_7,
+    MIGRATION_7_8
 )

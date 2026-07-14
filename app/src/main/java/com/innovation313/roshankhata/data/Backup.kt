@@ -23,7 +23,7 @@ import java.util.Locale
  */
 object Backup {
 
-    const val FORMAT_VERSION = 2
+    const val FORMAT_VERSION = 3
 
     private val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
@@ -59,6 +59,12 @@ object Backup {
         root.put("installments", JSONArray().apply {
             dao.allInstallmentsForBackup().forEach { put(installmentToJson(it)) }
         })
+        root.put("bills", JSONArray().apply {
+            dao.allBillsForBackup().forEach { put(billToJson(it)) }
+        })
+        root.put("billItems", JSONArray().apply {
+            dao.allBillItemsForBackup().forEach { put(billItemToJson(it)) }
+        })
 
         return root.toString(2)
     }
@@ -82,7 +88,8 @@ object Backup {
             val entries: Int,
             val cheques: Int,
             val cash: Int,
-            val plans: Int = 0
+            val plans: Int = 0,
+            val bills: Int = 0
         ) : ImportResult()
 
         data class Failed(val reason: String) : ImportResult()
@@ -145,15 +152,29 @@ object Backup {
                 (0 until arr.length()).map { jsonToInstallment(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Absent in older backups. Not an error — an old file is still a
+            // valid file, and rejecting it would strand anyone who backed up
+            // before this release.
+            val bills = root.optJSONArray("bills")?.let { arr ->
+                (0 until arr.length()).map { jsonToBill(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
+            val billItems = root.optJSONArray("billItems")?.let { arr ->
+                (0 until arr.length()).map { jsonToBillItem(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
             // An entry pointing at a party that is not in the file would be
             // orphaned on insert — better to refuse than to import a ledger
             // with holes in it.
             val partyIds = parties.map { it.id }.toSet()
             val planIds = plans.map { it.id }.toSet()
+            val billIds = bills.map { it.id }.toSet()
             val orphans = entries.count { it.partyId !in partyIds } +
                 cheques.count { it.partyId !in partyIds } +
                 plans.count { it.partyId !in partyIds } +
-                installments.count { it.planId !in planIds }
+                installments.count { it.planId !in planIds } +
+                bills.count { it.partyId !in partyIds } +
+                billItems.count { it.billId !in billIds }
 
             if (orphans > 0) {
                 return ImportResult.Failed(
@@ -167,8 +188,9 @@ object Backup {
                 entries = entries.size,
                 cheques = cheques.size,
                 cash = cash.size,
-                plans = plans.size
-            ) to ParsedBackup(parties, entries, cheques, cash, plans, installments)
+                plans = plans.size,
+                bills = bills.size
+            ) to ParsedBackup(parties, entries, cheques, cash, plans, installments, bills, billItems)
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
         }
@@ -180,13 +202,17 @@ object Backup {
         val cheques: List<Cheque>,
         val cash: List<CashEntry>,
         val plans: List<PaymentPlan> = emptyList(),
-        val installments: List<Installment> = emptyList()
+        val installments: List<Installment> = emptyList(),
+        val bills: List<SupplierBill> = emptyList(),
+        val billItems: List<BillItem> = emptyList()
     )
 
     /** Replaces everything. Only called after the user has confirmed. */
     suspend fun restore(dao: KhataDao, data: ParsedBackup) {
         // Children first, then parents: foreign keys will not allow a party to
         // be removed while its entries still point at it.
+        dao.wipeBillItems()
+        dao.wipeBills()
         dao.wipeInstallments()
         dao.wipePlans()
         dao.wipeEntries()
@@ -200,6 +226,8 @@ object Backup {
         dao.restoreCash(data.cash)
         dao.restorePlans(data.plans)
         dao.restoreInstallments(data.installments)
+        dao.restoreBills(data.bills)
+        dao.restoreBillItems(data.billItems)
     }
 
     // ---------- Mapping ----------
@@ -363,6 +391,63 @@ object Backup {
         amount = o.getDouble("amount"),
         ledgerEntryId = o.optLong("ledgerEntryId", 0),
         paidAt = o.optLong("paidAt", System.currentTimeMillis()),
+        note = o.optNullableString("note"),
+        isDeleted = o.optBoolean("isDeleted", false)
+    )
+
+
+    private fun billToJson(b: SupplierBill) = JSONObject().apply {
+        put("id", b.id)
+        put("partyId", b.partyId)
+        put("billNumber", b.billNumber ?: JSONObject.NULL)
+        put("totalAmount", b.totalAmount)
+        put("billDate", b.billDate)
+        put("dueDate", b.dueDate ?: JSONObject.NULL)
+        put("ledgerEntryId", b.ledgerEntryId ?: JSONObject.NULL)
+        put("isPaidInFull", b.isPaidInFull)
+        put("note", b.note ?: JSONObject.NULL)
+        put("createdAt", b.createdAt)
+        put("isDeleted", b.isDeleted)
+        put("deletedAt", b.deletedAt ?: JSONObject.NULL)
+    }
+
+    private fun jsonToBill(o: JSONObject) = SupplierBill(
+        id = o.getLong("id"),
+        partyId = o.getLong("partyId"),
+        billNumber = o.optNullableString("billNumber"),
+        totalAmount = o.getDouble("totalAmount"),
+        billDate = o.optLong("billDate", System.currentTimeMillis()),
+        dueDate = o.optNullableLong("dueDate"),
+        ledgerEntryId = o.optNullableLong("ledgerEntryId"),
+        isPaidInFull = o.optBoolean("isPaidInFull", false),
+        note = o.optNullableString("note"),
+        createdAt = o.optLong("createdAt", System.currentTimeMillis()),
+        isDeleted = o.optBoolean("isDeleted", false),
+        deletedAt = o.optNullableLong("deletedAt")
+    )
+
+    private fun billItemToJson(i: BillItem) = JSONObject().apply {
+        put("id", i.id)
+        put("billId", i.billId)
+        put("productName", i.productName)
+        put("batchNumber", i.batchNumber ?: JSONObject.NULL)
+        put("expiryDate", i.expiryDate ?: JSONObject.NULL)
+        put("quantity", i.quantity)
+        put("unit", i.unit ?: JSONObject.NULL)
+        put("rate", i.rate ?: JSONObject.NULL)
+        put("note", i.note ?: JSONObject.NULL)
+        put("isDeleted", i.isDeleted)
+    }
+
+    private fun jsonToBillItem(o: JSONObject) = BillItem(
+        id = o.getLong("id"),
+        billId = o.getLong("billId"),
+        productName = o.optString("productName", ""),
+        batchNumber = o.optNullableString("batchNumber"),
+        expiryDate = o.optNullableLong("expiryDate"),
+        quantity = o.optDouble("quantity", 0.0),
+        unit = o.optNullableString("unit"),
+        rate = o.optNullableDouble("rate"),
         note = o.optNullableString("note"),
         isDeleted = o.optBoolean("isDeleted", false)
     )

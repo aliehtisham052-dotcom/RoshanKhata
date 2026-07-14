@@ -307,7 +307,7 @@
     <string name="save_backup">Save backup</string>
 
     <string name="restore_warning_title">Replace everything?</string>
-    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
+    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n%6$d supplier bills\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
     <string name="restore_replace">Replace everything</string>
     <string name="restore_done">Restored</string>
     <string name="restore_failed">Restore failed: %1$s</string>
@@ -363,4 +363,70 @@
     <string name="more_data">Your data</string>
 
     <string name="more_options">More</string>
+
+    <!-- Supplier bills -->
+    <string name="supplier_bills">Supplier Bills</string>
+    <string name="bills_subtitle">Stock you bought in</string>
+    <string name="bill_ledger_note">What you owe a supplier lives in your ledger, same as everything else. A bill adds the paperwork on top: bill number, batch numbers, expiry dates.</string>
+    <string name="add_bill">Add Bill</string>
+    <string name="no_bills">No supplier bills yet.\n\nRecord what you buy in — with batch numbers and expiry dates. Those are what an inspector asks for, and what saves you from stock going bad on the shelf.</string>
+
+    <string name="bill_number_hint">Bill number (from their paper)</string>
+    <string name="bill_total_hint">Bill total (Rs)</string>
+    <string name="bill_supplier_hint">Supplier name</string>
+    <string name="bill_date">Bill date</string>
+    <string name="bill_due_date">Payment due (optional)</string>
+    <string name="bill_paid_cash">Paid in cash on delivery</string>
+    <string name="bill_paid_cash_help">Tick this only if you paid outright. Otherwise the amount goes on their account in your ledger, which is what you owe them.</string>
+    <string name="bill_credit_note">This will add %1$s to what you owe %2$s, as one entry in your ledger.</string>
+
+    <string name="bill_items_title">What was in the delivery</string>
+    <string name="add_item">Add item</string>
+    <string name="product_name_hint">Product name</string>
+    <string name="batch_number_hint">Batch number</string>
+    <string name="batch_why">Write the batch number from the container. If a sample is ever questioned, or the Agriculture Department asks, this is the record that shows exactly where the stock came from. It cannot be reconstructed later.</string>
+    <string name="expiry_date">Expiry date</string>
+    <string name="expiry_why">Roshan Khata will warn you 60 days before this expires — early enough to sell it, discount it, or return it while the supplier will still take it.</string>
+    <string name="pick_expiry">Pick expiry date</string>
+    <string name="pick_bill_date">Pick bill date</string>
+    <string name="pick_due_date">Pick due date</string>
+    <string name="rate_hint">Rate per unit (Rs)</string>
+    <string name="qty_hint">Quantity</string>
+    <string name="unit_hint">Unit (bottle, litre, kg, bag)</string>
+    <string name="item_added">Item added</string>
+    <string name="no_items_yet">No items added yet</string>
+    <string name="items_count">%1$d items</string>
+
+    <string name="bill_saved">Bill saved</string>
+    <string name="bill_saved_credit">Bill saved and posted to your ledger</string>
+    <string name="enter_supplier">Please choose a supplier</string>
+    <string name="enter_product">Please enter a product name</string>
+    <string name="bill_deleted">Bill deleted. The ledger entry stays — the stock really did arrive and you really do owe for it.</string>
+    <string name="delete_bill">Delete bill</string>
+    <string name="delete_bill_confirm">The bill and its batch records will be removed, but the ledger entry stays. The stock really did arrive and the money is really owed — deleting the paperwork does not undo that.</string>
+    <string name="bill_actions">Bill</string>
+    <string name="view_items">View items and batches</string>
+
+    <!-- Expiry alerts -->
+    <string name="expiring_stock">Expiring Stock</string>
+    <string name="expiring_subtitle">Sell it, discount it, or return it — while you still can</string>
+    <string name="no_expiring">Nothing expiring in the next 60 days.\n\nOnly stock with an expiry date recorded can be watched. If you leave that field blank on a bill, Roshan Khata cannot warn you about it.</string>
+    <string name="expiring_note">Only stock with an expiry date recorded appears here. Roshan Khata can only warn you about what it was told.</string>
+    <string name="expired_days">EXPIRED %1$d days ago</string>
+    <string name="expires_days">Expires in %1$d days</string>
+    <string name="expires_today">Expires today</string>
+    <string name="batch_label">Batch: %1$s</string>
+    <string name="batch_none">No batch number recorded</string>
+    <string name="from_supplier">From %1$s</string>
+    <string name="from_supplier_bill">From %1$s — bill %2$s</string>
+    <string name="expiring_badge">%1$d expiring</string>
+
+    <!-- Batch trace -->
+    <string name="trace_batch">Trace a batch</string>
+    <string name="trace_batch_hint">Enter a batch number</string>
+    <string name="trace_batch_help">If a sample is questioned or an inspector asks, search the batch number here to see which supplier it came from, on which bill, and when.</string>
+    <string name="trace_no_results">No stock found with that batch number.</string>
+    <string name="trace_results">%1$d records found</string>
+
+    <string name="search_action">Search</string>
 </resources>

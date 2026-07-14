@@ -387,4 +387,119 @@ interface KhataDao {
 
     @Query("SELECT * FROM installments WHERE planId = :planId AND isDeleted = 0 ORDER BY paidAt DESC")
     fun observeInstallments(planId: Long): Flow<List<Installment>>
+
+    // ---------- Supplier bills ----------
+
+    @Insert
+    suspend fun insertBill(bill: SupplierBill): Long
+
+    @Update
+    suspend fun updateBill(bill: SupplierBill)
+
+    @Query("SELECT * FROM supplier_bills WHERE id = :id")
+    suspend fun getBill(id: Long): SupplierBill?
+
+    @Query(
+        """
+        SELECT b.id, b.partyId, p.name AS partyName, b.billNumber,
+               b.totalAmount, b.billDate, b.dueDate, b.isPaidInFull,
+               (SELECT COUNT(*) FROM bill_items i
+                WHERE i.billId = b.id AND i.isDeleted = 0) AS itemCount,
+               b.note
+        FROM supplier_bills b
+        JOIN parties p ON p.id = b.partyId
+        WHERE b.isDeleted = 0 AND p.isDeleted = 0
+        ORDER BY b.billDate DESC
+        """
+    )
+    fun observeBills(): Flow<List<BillSummary>>
+
+    @Query("UPDATE supplier_bills SET isDeleted = 1, deletedAt = :now WHERE id = :id")
+    suspend fun softDeleteBill(id: Long, now: Long = System.currentTimeMillis())
+
+    // ---------- Bill items (batch + expiry) ----------
+
+    @Insert
+    suspend fun insertBillItem(item: BillItem): Long
+
+    @Query("SELECT * FROM bill_items WHERE billId = :billId AND isDeleted = 0 ORDER BY id ASC")
+    fun observeBillItems(billId: Long): Flow<List<BillItem>>
+
+    @Query("SELECT * FROM bill_items WHERE billId = :billId AND isDeleted = 0 ORDER BY id ASC")
+    suspend fun billItems(billId: Long): List<BillItem>
+
+    /**
+     * Batches at or near expiry.
+     *
+     * Soonest first, expired ones at the very top — those are the ones already
+     * costing money, and burying them under merely-approaching stock would get
+     * the order exactly backwards.
+     *
+     * Only stock that actually has an expiry date recorded can appear here.
+     * That is a real limit and the screen says so: the app can only warn about
+     * what it was told.
+     */
+    @Query(
+        """
+        SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
+               i.quantity, i.unit, p.name AS partyName, b.billNumber
+        FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        JOIN parties p ON p.id = b.partyId
+        WHERE i.isDeleted = 0 AND b.isDeleted = 0
+          AND i.expiryDate IS NOT NULL
+          AND i.expiryDate <= :cutoff
+        ORDER BY i.expiryDate ASC
+        """
+    )
+    fun observeExpiringBatches(cutoff: Long): Flow<List<ExpiringBatch>>
+
+    /** For the home badge: how many batches need attention right now. */
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        WHERE i.isDeleted = 0 AND b.isDeleted = 0
+          AND i.expiryDate IS NOT NULL
+          AND i.expiryDate <= :cutoff
+        """
+    )
+    fun observeExpiringCount(cutoff: Long): Flow<Int>
+
+    /** Trace a batch back to where it came from — for an inspector, or a bad sample. */
+    @Query(
+        """
+        SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
+               i.quantity, i.unit, p.name AS partyName, b.billNumber
+        FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        JOIN parties p ON p.id = b.partyId
+        WHERE i.isDeleted = 0 AND b.isDeleted = 0
+          AND i.batchNumber LIKE '%' || :query || '%'
+        ORDER BY b.billDate DESC
+        """
+    )
+    suspend fun findByBatch(query: String): List<ExpiringBatch>
+
+    // Backup coverage — a restore that dropped bills would lose the batch
+    // records the dealer may legally need.
+
+    @Query("SELECT * FROM supplier_bills")
+    suspend fun allBillsForBackup(): List<SupplierBill>
+
+    @Query("SELECT * FROM bill_items")
+    suspend fun allBillItemsForBackup(): List<BillItem>
+
+    @Query("DELETE FROM bill_items")
+    suspend fun wipeBillItems()
+
+    @Query("DELETE FROM supplier_bills")
+    suspend fun wipeBills()
+
+    @Insert
+    suspend fun restoreBills(items: List<SupplierBill>)
+
+    @Insert
+    suspend fun restoreBillItems(items: List<BillItem>)
 }

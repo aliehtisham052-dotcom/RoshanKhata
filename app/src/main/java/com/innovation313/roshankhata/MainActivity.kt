@@ -367,6 +367,7 @@ class MainActivity : AppCompatActivity() {
     /** Everything that does not earn a permanent place in the bar. */
     private fun showMoreSheet() {
         val options = arrayOf(
+            getString(R.string.supplier_bills),
             getString(R.string.zakat_calculator),
             getString(R.string.business_settings),
             getString(R.string.backup_restore),
@@ -378,11 +379,12 @@ class MainActivity : AppCompatActivity() {
             .setTitle(R.string.more_title)
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> startActivity(Intent(this, ZakatActivity::class.java))
-                    1 -> startActivity(Intent(this, BusinessSettingsActivity::class.java))
-                    2 -> startActivity(Intent(this, BackupActivity::class.java))
-                    3 -> showAppLockSettings()
-                    4 -> startActivity(Intent(this, RecycleBinActivity::class.java))
+                    0 -> startActivity(Intent(this, BillsActivity::class.java))
+                    1 -> startActivity(Intent(this, ZakatActivity::class.java))
+                    2 -> startActivity(Intent(this, BusinessSettingsActivity::class.java))
+                    3 -> startActivity(Intent(this, BackupActivity::class.java))
+                    4 -> showAppLockSettings()
+                    5 -> startActivity(Intent(this, RecycleBinActivity::class.java))
                 }
             }
             .show()
