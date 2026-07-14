@@ -389,10 +389,8 @@
     <string name="expiry_why">Roshan Khata will warn you 60 days before this expires — early enough to sell it, discount it, or return it while the supplier will still take it.</string>
     <string name="pick_expiry">Pick expiry date</string>
     <string name="pick_bill_date">Pick bill date</string>
-    <string name="pick_due_date">Pick due date</string>
     <string name="rate_hint">Rate per unit (Rs)</string>
     <string name="qty_hint">Quantity</string>
-    <string name="unit_hint">Unit (bottle, litre, kg, bag)</string>
     <string name="item_added">Item added</string>
     <string name="no_items_yet">No items added yet</string>
     <string name="items_count">%1$d items</string>
@@ -429,4 +427,6 @@
     <string name="trace_results">%1$d records found</string>
 
     <string name="search_action">Search</string>
+
+    <string name="pick_bill_due_date">Pick payment due date</string>
 </resources>
