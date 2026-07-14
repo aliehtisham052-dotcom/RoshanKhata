@@ -36,13 +36,23 @@ jobs:
           EXIT=${PIPESTATUS[0]}
           exit $EXIT
 
-      - name: Publish error to summary (on failure)
+      - name: Publish error (on failure)
         if: failure()
         run: |
           echo "## Build Failure Output" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -100 /tmp/build_output.txt >> $GITHUB_STEP_SUMMARY
+          tail -120 /tmp/build_output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Also emit each error line as a workflow annotation. Annotations come
+          # back through the REST API even when log blobs do not, which is the
+          # only channel that actually reaches us.
+          grep -iE "^e: |error:|FAILURE:|Caused by|Unresolved reference|not found" /tmp/build_output.txt \
+            | head -25 \
+            | while IFS= read -r line; do
+                clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                echo "::error::$clean"
+              done
 
       - name: Rename APK
         if: success()
