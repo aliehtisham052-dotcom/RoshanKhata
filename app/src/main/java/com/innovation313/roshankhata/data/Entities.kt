@@ -15,6 +15,15 @@ data class Party(
     val isCustomer: Boolean = true,
     /** Local file path to the party's photo, if set. Never leaves the device. */
     val photoPath: String? = null,
+    /**
+     * The most the owner is willing to let this party owe.
+     *
+     * Null means no limit is set — and that is the honest default. A limit
+     * invented on the owner's behalf would be a number they never agreed to,
+     * warning them against their own business decisions.
+     */
+    val creditLimit: Double? = null,
+
     val createdAt: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null
@@ -98,7 +107,8 @@ data class PartyWithBalance(
      */
     val balance: Double,
     /** Timestamp of the most recent entry, or 0 if the ledger is empty. */
-    val lastActivity: Long = 0
+    val lastActivity: Long = 0,
+    val creditLimit: Double? = null
 )
 
 /** Receivables split by recovery confidence, for the Zakat screen. */

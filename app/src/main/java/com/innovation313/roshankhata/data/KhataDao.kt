@@ -30,7 +30,8 @@ interface KhataDao {
         """
         SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath,
                COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0) AS balance,
-               COALESCE(MAX(t.timestamp), 0) AS lastActivity
+               COALESCE(MAX(t.timestamp), 0) AS lastActivity,
+               p.creditLimit AS creditLimit
         FROM parties p
         LEFT JOIN transactions t
                ON t.partyId = p.id AND t.isDeleted = 0

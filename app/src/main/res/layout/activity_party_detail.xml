@@ -12,10 +12,19 @@
         android:layout_height="wrap_content"
         android:background="@color/navy_primary"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/detailToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginStart="-16dp"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
         <LinearLayout
             android:layout_width="match_parent"

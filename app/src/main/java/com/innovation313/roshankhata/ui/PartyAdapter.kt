@@ -32,6 +32,7 @@ class PartyAdapter(
         val tvPhone: TextView = view.findViewById(R.id.tvPhone)
         val tvBalance: TextView = view.findViewById(R.id.tvBalance)
         val tvBalanceLabel: TextView = view.findViewById(R.id.tvBalanceLabel)
+        val tvLimitWarning: TextView = view.findViewById(R.id.tvLimitWarning)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -78,6 +79,32 @@ class PartyAdapter(
                 holder.tvBalance.setTextColor(ContextCompat.getColor(ctx, R.color.black))
                 holder.tvBalanceLabel.setText(R.string.settled)
             }
+        }
+
+        // The badge only speaks when a limit was actually set and the party
+        // is at or beyond it. Below the line it stays quiet — a warning that
+        // fires all the time stops being a warning.
+        val limit = item.creditLimit
+        if (limit != null && limit > 0 && item.balance > 0) {
+            when {
+                item.balance >= limit -> {
+                    holder.tvLimitWarning.visibility = View.VISIBLE
+                    holder.tvLimitWarning.setText(R.string.over_limit_badge)
+                    holder.tvLimitWarning.setTextColor(
+                        ContextCompat.getColor(ctx, R.color.red_gave)
+                    )
+                }
+                item.balance >= limit * 0.9 -> {
+                    holder.tvLimitWarning.visibility = View.VISIBLE
+                    holder.tvLimitWarning.setText(R.string.near_limit_badge)
+                    holder.tvLimitWarning.setTextColor(
+                        ContextCompat.getColor(ctx, R.color.gold_accent)
+                    )
+                }
+                else -> holder.tvLimitWarning.visibility = View.GONE
+            }
+        } else {
+            holder.tvLimitWarning.visibility = View.GONE
         }
 
         holder.itemView.setOnClickListener { onClick(item) }

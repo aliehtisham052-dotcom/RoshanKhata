@@ -238,4 +238,23 @@
     <string name="party_options">Options</string>
     <string name="edit_party">Edit details</string>
     <string name="delete_party">Delete</string>
+
+    <!-- Credit limit -->
+    <string name="credit_limit">Credit limit</string>
+    <string name="set_credit_limit">Set credit limit</string>
+    <string name="credit_limit_help">The most you are willing to let this party owe you. Roshan Khata will warn you before an entry takes them past it.</string>
+    <string name="credit_limit_hint">Limit (Rs) — leave blank for no limit</string>
+    <string name="credit_limit_advisory">This is a warning, not a block. It is your business — you can always proceed anyway.</string>
+    <string name="credit_limit_current">Currently owes you %1$s</string>
+    <string name="credit_limit_none">No limit set</string>
+    <string name="credit_limit_set_to">Limit: %1$s</string>
+    <string name="credit_limit_removed">Credit limit removed</string>
+    <string name="credit_limit_saved">Credit limit saved</string>
+
+    <string name="over_limit_badge">Over limit</string>
+    <string name="near_limit_badge">Near limit</string>
+
+    <string name="limit_warning_title">This will pass their credit limit</string>
+    <string name="limit_warning_message">%1$s currently owes you %2$s.\n\nThis entry of %3$s takes them to %4$s, which is over the %5$s limit you set.\n\nYou can still go ahead — this is only a warning.</string>
+    <string name="proceed_anyway">Go ahead</string>
 </resources>

@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -17,6 +19,7 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
@@ -55,6 +58,7 @@ class PartyDetailActivity : AppCompatActivity() {
     private var partyName: String = ""
     private var partyPhone: String? = null
     private var currentBalance: Double = 0.0
+    private var creditLimit: Double? = null
     private var currentRows: List<EntryRow> = emptyList()
     private lateinit var etSearchEntries: EditText
     private lateinit var ivAvatar: ImageView
@@ -88,6 +92,10 @@ class PartyDetailActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        setSupportActionBar(findViewById<Toolbar>(R.id.detailToolbar))
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         tvPartyName = findViewById(R.id.tvPartyName)
         tvPartyBalance = findViewById(R.id.tvPartyBalance)
@@ -136,6 +144,7 @@ class PartyDetailActivity : AppCompatActivity() {
             dao.getParty(partyId)?.let { p ->
                 partyName = p.name
                 partyPhone = p.phone
+                creditLimit = p.creditLimit
                 tvPartyName.text = p.name
                 refreshAvatar()
             }
@@ -241,22 +250,28 @@ class PartyDetailActivity : AppCompatActivity() {
                 val quantity = etQuantity.text.toString().trim().toDoubleOrNull()
                 val unit = etUnit.text.toString().trim().ifEmpty { null }
 
-                lifecycleScope.launch {
-                    val count = dao.totalEntryCount()
-                    dao.insertEntry(
-                        LedgerEntry(
-                            partyId = partyId,
-                            amount = amount,
-                            isGiven = isGiven,
-                            note = note,
-                            entryNumber = EntryNumber.next(count),
-                            isQarzeHasna = cbQarzeHasna.isChecked,
-                            recovery = recovery,
-                            itemName = itemName,
-                            quantity = quantity,
-                            unit = unit
-                        )
-                    )
+                val entry = LedgerEntry(
+                    partyId = partyId,
+                    amount = amount,
+                    isGiven = isGiven,
+                    note = note,
+                    entryNumber = "",
+                    isQarzeHasna = cbQarzeHasna.isChecked,
+                    recovery = recovery,
+                    itemName = itemName,
+                    quantity = quantity,
+                    unit = unit
+                )
+
+                // Warn BEFORE writing, not after — a warning that arrives once
+                // the entry is already in the ledger is just an accusation.
+                val limit = creditLimit
+                val projected = currentBalance + (if (isGiven) amount else -amount)
+
+                if (isGiven && limit != null && limit > 0 && projected > limit && currentBalance <= limit) {
+                    warnOverLimit(entry, limit, projected)
+                } else {
+                    saveEntry(entry)
                 }
             }
             .show()
@@ -523,6 +538,95 @@ class PartyDetailActivity : AppCompatActivity() {
 
             refreshAvatar()
             Toast.makeText(this@PartyDetailActivity, R.string.photo_saved, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveEntry(entry: LedgerEntry) {
+        lifecycleScope.launch {
+            val count = dao.totalEntryCount()
+            dao.insertEntry(entry.copy(entryNumber = EntryNumber.next(count)))
+        }
+    }
+
+    /**
+     * The limit is advice, not a gate. The owner knows their customer and their
+     * own risk better than a number in a database does — so we tell them
+     * plainly what this entry will do, and let them decide.
+     */
+    private fun warnOverLimit(entry: LedgerEntry, limit: Double, projected: Double) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.limit_warning_title)
+            .setMessage(
+                getString(
+                    R.string.limit_warning_message,
+                    partyName,
+                    Format.money(currentBalance),
+                    Format.money(entry.amount),
+                    Format.money(projected),
+                    Format.money(limit)
+                )
+            )
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.proceed_anyway) { _, _ -> saveEntry(entry) }
+            .show()
+    }
+
+    private fun showCreditLimitDialog() {
+        val view = layoutInflater.inflate(R.layout.dialog_credit_limit, null)
+        val etLimit: EditText = view.findViewById(R.id.etCreditLimit)
+        val tvOwed: TextView = view.findViewById(R.id.tvCurrentOwed)
+
+        tvOwed.text = if (currentBalance > 0) {
+            getString(R.string.credit_limit_current, Format.money(currentBalance))
+        } else {
+            getString(R.string.settled)
+        }
+
+        creditLimit?.let { etLimit.setText(Format.plain(it)) }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.set_credit_limit)
+            .setView(view)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.save) { _, _ ->
+                // A blank field means "no limit" — that is a real choice, not
+                // an error, and it must be able to undo a limit set earlier.
+                val newLimit = etLimit.text.toString().trim().toDoubleOrNull()
+                    ?.takeIf { it > 0 }
+
+                lifecycleScope.launch {
+                    dao.getParty(partyId)?.let { p ->
+                        dao.updateParty(p.copy(creditLimit = newLimit))
+                    }
+                    creditLimit = newLimit
+
+                    Toast.makeText(
+                        this@PartyDetailActivity,
+                        if (newLimit == null) R.string.credit_limit_removed
+                        else R.string.credit_limit_saved,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            .show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_party_detail, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_credit_limit -> {
+                showCreditLimitDialog()
+                true
+            }
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

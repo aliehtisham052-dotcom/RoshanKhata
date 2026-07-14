@@ -75,6 +75,16 @@
             android:layout_height="wrap_content"
             android:textColor="#777777"
             android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tvLimitWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/red_gave"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>
