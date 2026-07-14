@@ -16,6 +16,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -93,6 +94,8 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
 
+        setupBottomNav()
+
         observeData()
     }
 
@@ -105,18 +108,6 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_zakat -> {
                 startActivity(Intent(this, ZakatActivity::class.java))
-                true
-            }
-            R.id.action_plans -> {
-                startActivity(Intent(this, PlansActivity::class.java))
-                true
-            }
-            R.id.action_cashbook -> {
-                startActivity(Intent(this, CashbookActivity::class.java))
-                true
-            }
-            R.id.action_cheques -> {
-                startActivity(Intent(this, ChequesActivity::class.java))
                 true
             }
             R.id.action_business_settings -> {
@@ -332,5 +323,73 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    /**
+     * The main sections, visible instead of buried.
+     *
+     * They lived in an overflow menu until now, which in practice meant most
+     * shopkeepers would never have discovered that a Cashbook or a Cheque
+     * register existed at all. A feature nobody can find may as well not have
+     * been built.
+     */
+    private fun setupBottomNav() {
+        val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        nav.selectedItemId = R.id.nav_khata
+
+        nav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_khata -> true // already here
+
+                R.id.nav_cashbook -> {
+                    startActivity(Intent(this, CashbookActivity::class.java))
+                    false
+                }
+                R.id.nav_cheques -> {
+                    startActivity(Intent(this, ChequesActivity::class.java))
+                    false
+                }
+                R.id.nav_plans -> {
+                    startActivity(Intent(this, PlansActivity::class.java))
+                    false
+                }
+                R.id.nav_more -> {
+                    showMoreSheet()
+                    false
+                }
+                else -> false
+            }
+        }
+    }
+
+    /** Everything that does not earn a permanent place in the bar. */
+    private fun showMoreSheet() {
+        val options = arrayOf(
+            getString(R.string.zakat_calculator),
+            getString(R.string.business_settings),
+            getString(R.string.backup_restore),
+            getString(R.string.app_lock),
+            getString(R.string.recycle_bin)
+        )
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.more_title)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> startActivity(Intent(this, ZakatActivity::class.java))
+                    1 -> startActivity(Intent(this, BusinessSettingsActivity::class.java))
+                    2 -> startActivity(Intent(this, BackupActivity::class.java))
+                    3 -> showAppLockSettings()
+                    4 -> startActivity(Intent(this, RecycleBinActivity::class.java))
+                }
+            }
+            .show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Coming back from another section, the bar must show Khata again —
+        // otherwise it would still be highlighting wherever the user last went.
+        findViewById<BottomNavigationView>(R.id.bottomNav)?.selectedItemId = R.id.nav_khata
     }
 }

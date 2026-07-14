@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
     <string name="app_tagline">Apka hisab, hamesha Roshan</string>
+    <string name="brand_line">Innovation — Waqt Hai Badalne Ka</string>
 
     <string name="net_balance">Net balance</string>
     <string name="add_party">Add Party</string>
@@ -347,4 +348,17 @@
     <string name="plan_note_prefix">Instalment payment</string>
     <string name="plan_deleted">Plan deleted. Payments already posted to the ledger stay there — the money really was received.</string>
     <string name="delete_plan_confirm">The plan will be removed, but the payments already recorded stay in the ledger. That money really was received, and deleting the arrangement does not undo it.</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_khata">Khata</string>
+    <string name="nav_cashbook">Cashbook</string>
+    <string name="nav_cheques">Cheques</string>
+    <string name="nav_plans">Plans</string>
+    <string name="nav_more">More</string>
+
+    <!-- More sheet -->
+    <string name="more_title">More</string>
+    <string name="more_reports">Reports &amp; Zakat</string>
+    <string name="more_settings">Settings</string>
+    <string name="more_data">Your data</string>
 </resources>
