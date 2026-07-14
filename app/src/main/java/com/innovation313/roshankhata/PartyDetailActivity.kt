@@ -618,6 +618,13 @@ class PartyDetailActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_report -> {
+                startActivity(
+                    Intent(this, ReportActivity::class.java)
+                        .putExtra(ReportActivity.EXTRA_PARTY_ID, partyId)
+                )
+                true
+            }
             R.id.action_credit_limit -> {
                 showCreditLimitDialog()
                 true

@@ -257,4 +257,24 @@
     <string name="limit_warning_title">This will pass their credit limit</string>
     <string name="limit_warning_message">%1$s currently owes you %2$s.\n\nThis entry of %3$s takes them to %4$s, which is over the %5$s limit you set.\n\nYou can still go ahead — this is only a warning.</string>
     <string name="proceed_anyway">Go ahead</string>
+
+    <!-- Report -->
+    <string name="report">Report</string>
+    <string name="report_title">%1$s\u2019s Report</string>
+    <string name="range_all">All</string>
+    <string name="range_today">Today</string>
+    <string name="range_week">Last week</string>
+    <string name="range_month">Last month</string>
+    <string name="range_custom">Custom</string>
+    <string name="range_label_all">The whole ledger</string>
+    <string name="range_label">%1$s to %2$s</string>
+    <string name="net_change">Net change</string>
+    <string name="no_entries_in_range">No entries in this period.</string>
+    <string name="share_report">Share as PDF</string>
+    <string name="pick_start_date">Pick the start date</string>
+    <string name="pick_end_date">Pick the end date</string>
+    <string name="closing_note_range">The three figures above cover only this period. The closing balance below is the full account — %1$s — because a part-period total is not what your customer owes.</string>
+    <string name="closing_note_all">Closing balance: %1$s</string>
+    <string name="report_period">Period: %1$s</string>
+    <string name="invalid_range">The end date cannot be before the start date.</string>
 </resources>
