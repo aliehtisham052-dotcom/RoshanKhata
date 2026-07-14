@@ -19,12 +19,13 @@
         <item name="colorOnSurface">@color/ink</item>
 
         <!--
-          A pale status bar with light icons shows nothing at all. The flag below
-          tells Android to draw the clock, battery and signal in DARK — without
-          it, the top of the screen would simply be blank.
+          The status bar sits directly above the section header, which is dark.
+          A white strip there would look like a mistake, and the clock would be
+          fighting the header for attention. Match the header and let Android
+          draw the clock and battery in light.
         -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/section_khata</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
 
         <item name="android:navigationBarColor" tools:targetApi="l">@color/white</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
@@ -33,14 +34,17 @@
     </style>
 
     <!--
-      The toolbar sits on paper. Its overflow icon and any title text inherit
-      colorControlNormal, which was light because the toolbar used to be navy.
-      A white ⋮ on a white header is a menu button nobody can see — and that is
-      how the owner lost track of the settings in the first place.
+      The toolbar sits ON THE SECTION HEADER, which is dark. Its overflow icon
+      must therefore be light, or the ⋮ is a menu button nobody can see — and an
+      invisible menu button is exactly how the owner lost the settings the first
+      time round.
+
+      Named for where it sits rather than what colour it is, because the header
+      colour has now changed twice and this style had to follow it both times.
     -->
     <style name="ToolbarInk" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
-        <item name="colorControlNormal">@color/ink</item>
-        <item name="android:textColorPrimary">@color/ink</item>
-        <item name="android:textColorSecondary">@color/ink</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
     </style>
 </resources>

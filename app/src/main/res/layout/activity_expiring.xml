@@ -10,7 +10,7 @@
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/navy_primary"
+        android:background="@color/section_bills"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/expiring_stock"
-            android:textColor="@color/ink"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="@string/expiring_subtitle"
-            android:textColor="@color/gold_bright"
+            android:textColor="@color/section_bills_soft"
             android:textSize="12sp" />
     </LinearLayout>
 

@@ -66,7 +66,7 @@ class PlanAdapter(
             holder.itemView.alpha = 0.6f
         } else {
             holder.tvStatus.setText(R.string.plan_open)
-            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.navy_primary))
+            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.ink))
             holder.itemView.alpha = 1f
 
             holder.tvDue.visibility = View.VISIBLE
@@ -84,7 +84,7 @@ class PlanAdapter(
                 holder.tvDue.setTextColor(
                     ContextCompat.getColor(
                         ctx,
-                        if (overdue) R.color.red_gave else R.color.navy_primary
+                        if (overdue) R.color.red_gave else R.color.ink
                     )
                 )
             }

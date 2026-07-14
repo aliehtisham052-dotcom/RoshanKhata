@@ -51,4 +51,34 @@
     <!-- Ink: text on paper -->
     <color name="ink">#1A1A18</color>
     <color name="ink_soft">#5F5E5A</color>
+
+    <!--
+      Section colours.
+
+      Each screen gets its own header so the owner knows where they are at a
+      glance — a shopkeeper mid-transaction should not have to read a title to
+      tell the Cashbook from the cheque register.
+
+      Every one of these was chosen to carry WHITE text at 7:1 or better. A
+      header that looks handsome and cannot be read is worse than a plain one.
+      The list beneath stays paper, so the numbers — which are the point — keep
+      the contrast they need.
+    -->
+    <color name="section_khata">#152238</color>
+    <color name="section_khata_soft">#9BA6BC</color>
+
+    <color name="section_cashbook">#0F5C42</color>
+    <color name="section_cashbook_soft">#9FD9C2</color>
+
+    <color name="section_cheques">#1B4A73</color>
+    <color name="section_cheques_soft">#A9C9E4</color>
+
+    <color name="section_plans">#5A3277</color>
+    <color name="section_plans_soft">#D8C4E6</color>
+
+    <color name="section_bills">#6E3B17</color>
+    <color name="section_bills_soft">#EBCEB0</color>
+
+    <color name="section_tools">#3C4657</color>
+    <color name="section_tools_soft">#AAB3C2</color>
 </resources>

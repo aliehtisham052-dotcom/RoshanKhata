@@ -71,7 +71,7 @@ class BillAdapter(
                 holder.tvStatus.setTextColor(
                     ContextCompat.getColor(
                         ctx,
-                        if (overdue) R.color.red_gave else R.color.navy_primary
+                        if (overdue) R.color.red_gave else R.color.ink
                     )
                 )
             }

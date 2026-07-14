@@ -73,7 +73,7 @@ class ChequeAdapter(
             holder.tvDue.setTextColor(
                 ContextCompat.getColor(
                     ctx,
-                    if (days <= 0) R.color.red_gave else R.color.navy_primary
+                    if (days <= 0) R.color.red_gave else R.color.ink
                 )
             )
         } else {
@@ -81,7 +81,7 @@ class ChequeAdapter(
         }
 
         val (statusText, statusColour) = when (c.status) {
-            ChequeStatus.PENDING -> R.string.cheque_pending to R.color.navy_primary
+            ChequeStatus.PENDING -> R.string.cheque_pending to R.color.ink
             ChequeStatus.CLEARED -> R.string.cheque_cleared to R.color.green_got
             ChequeStatus.BOUNCED -> R.string.cheque_bounced to R.color.red_gave
             else -> R.string.cheque_cancelled to R.color.text_muted
