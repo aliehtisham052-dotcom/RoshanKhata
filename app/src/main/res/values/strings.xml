@@ -277,4 +277,20 @@
     <string name="closing_note_all">Closing balance: %1$s</string>
     <string name="report_period">Period: %1$s</string>
     <string name="invalid_range">The end date cannot be before the start date.</string>
+
+    <!-- Cashbook -->
+    <string name="cashbook">Cashbook</string>
+    <string name="cashbook_subtitle">Business money in and out</string>
+    <string name="cashbook_separate_note">The Cashbook is separate from your customer ledger. Rent, wages, a walk-in cash sale — money with no customer attached. It does not change what anyone owes you.</string>
+    <string name="add_cash_entry">Add Entry</string>
+    <string name="cash_in">Cash in</string>
+    <string name="cash_out">Cash out</string>
+    <string name="cash_net">Net</string>
+    <string name="cash_income">Money in</string>
+    <string name="cash_expense">Money out</string>
+    <string name="cash_category_hint">Category (e.g. Rent, Wages, Cash Sale)</string>
+    <string name="no_cash_entries">No cashbook entries yet.\n\nThis is for money that is not tied to a customer — rent, electricity, wages, fuel, a walk-in sale.</string>
+    <string name="enter_category">Please enter a category</string>
+    <string name="delete_cash_entry">Delete this entry?</string>
+    <string name="delete_cash_confirm">It will move to the Recycle Bin.</string>
 </resources>

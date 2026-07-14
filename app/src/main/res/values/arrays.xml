@@ -19,4 +19,23 @@
         <item>box</item>
         <item>ton</item>
     </string-array>
+
+    <!--
+      Starting suggestions only. The owner's own categories, once they use
+      them, are offered first — their words for their business beat ours.
+    -->
+    <string-array name="cash_categories">
+        <item>Cash Sale</item>
+        <item>Rent</item>
+        <item>Electricity</item>
+        <item>Wages</item>
+        <item>Fuel</item>
+        <item>Transport</item>
+        <item>Repairs</item>
+        <item>Tea / Refreshments</item>
+        <item>Stationery</item>
+        <item>Charity / Sadqa</item>
+        <item>Personal Withdrawal</item>
+        <item>Other</item>
+    </string-array>
 </resources>

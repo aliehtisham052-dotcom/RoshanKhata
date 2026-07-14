@@ -6,6 +6,10 @@
         android:title="@string/zakat_calculator"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_cashbook"
+        android:title="@string/cashbook"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_cheques"
         android:title="@string/cheques"
         app:showAsAction="never" />

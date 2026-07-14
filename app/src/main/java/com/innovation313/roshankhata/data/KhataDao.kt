@@ -241,4 +241,25 @@ interface KhataDao {
 
     @Query("SELECT * FROM cheques WHERE partyId = :partyId AND isDeleted = 0 ORDER BY dueDate ASC")
     fun observeChequesOfParty(partyId: Long): Flow<List<Cheque>>
+
+    // ---------- Cashbook ----------
+
+    @Insert
+    suspend fun insertCashEntry(entry: CashEntry): Long
+
+    @Query("SELECT * FROM cashbook WHERE isDeleted = 0 ORDER BY timestamp DESC")
+    fun observeCashEntries(): Flow<List<CashEntry>>
+
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 1")
+    fun observeCashIncome(): Flow<Double>
+
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0")
+    fun observeCashExpense(): Flow<Double>
+
+    /** Categories the owner has already used, so they need not retype them. */
+    @Query("SELECT DISTINCT category FROM cashbook WHERE isDeleted = 0 ORDER BY category COLLATE NOCASE ASC")
+    suspend fun cashCategories(): List<String>
+
+    @Query("UPDATE cashbook SET isDeleted = 1, deletedAt = :now WHERE id = :id")
+    suspend fun softDeleteCashEntry(id: Long, now: Long = System.currentTimeMillis())
 }

@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Party::class, LedgerEntry::class, Cheque::class],
-    version = 5,
+    entities = [Party::class, LedgerEntry::class, Cheque::class, CashEntry::class],
+    version = 6,
     exportSchema = false
 )
 abstract class KhataDatabase : RoomDatabase() {
