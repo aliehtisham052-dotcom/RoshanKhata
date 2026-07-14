@@ -96,7 +96,9 @@ data class PartyWithBalance(
      * Positive  => party owes me (I should receive)
      * Negative  => I owe party (I should pay)
      */
-    val balance: Double
+    val balance: Double,
+    /** Timestamp of the most recent entry, or 0 if the ledger is empty. */
+    val lastActivity: Long = 0
 )
 
 /** Receivables split by recovery confidence, for the Zakat screen. */

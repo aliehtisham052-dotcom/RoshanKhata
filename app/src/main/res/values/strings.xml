@@ -203,4 +203,26 @@
     <string name="select_party_first">Pick a customer or supplier from your list first.</string>
     <string name="pick_date_first">Please pick the date written on the cheque.</string>
     <string name="cheque_note_prefix">Cheque %1$s</string>
+
+    <!-- Search & sort -->
+    <string name="search_parties">Search by name or number</string>
+    <string name="search_entries">Search notes, goods, or reference</string>
+    <string name="sort">Sort</string>
+    <string name="sort_by">Sort by</string>
+
+    <string name="sort_name_az">Name (A\u2013Z)</string>
+    <string name="sort_name_za">Name (Z\u2013A)</string>
+    <string name="sort_owes_most">Owes me most first</string>
+    <string name="sort_i_owe_most">I owe most first</string>
+    <string name="sort_recent_activity">Most recent activity</string>
+
+    <string name="sort_newest">Newest first</string>
+    <string name="sort_oldest">Oldest first</string>
+    <string name="sort_amount_high">Amount (high to low)</string>
+    <string name="sort_amount_low">Amount (low to high)</string>
+
+    <string name="no_matching_parties">No customers or suppliers match your search.</string>
+    <string name="no_matching_entries">No entries match your search.</string>
+    <string name="showing_filtered">Showing %1$d of %2$d</string>
+    <string name="running_balance_note">Running balance follows the ledger\'s own order, so it stays correct however you sort or search.</string>
 </resources>

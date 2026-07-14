@@ -2,6 +2,8 @@ package com.innovation313.roshankhata
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -49,6 +51,13 @@ class PartyDetailActivity : AppCompatActivity() {
     private var partyPhone: String? = null
     private var currentBalance: Double = 0.0
     private var currentRows: List<EntryRow> = emptyList()
+    private lateinit var etSearchEntries: EditText
+
+    /** Every row, with running balances already computed. Views derive from this. */
+    private var allRows: List<EntryRow> = emptyList()
+    private var entrySortMode = EntrySort.NEWEST
+
+    private enum class EntrySort { NEWEST, OLDEST, AMOUNT_HIGH, AMOUNT_LOW }
     private lateinit var adapter: EntryAdapter
     private lateinit var tvPartyName: TextView
     private lateinit var tvPartyBalance: TextView
@@ -90,6 +99,17 @@ class PartyDetailActivity : AppCompatActivity() {
             exportStatement()
         }
 
+        etSearchEntries = findViewById(R.id.etSearchEntries)
+        etSearchEntries.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun afterTextChanged(s: Editable?) = renderEntries()
+        })
+
+        findViewById<MaterialButton>(R.id.btnSortEntries).setOnClickListener {
+            showEntrySortDialog()
+        }
+
         loadParty()
         observeEntries()
     }
@@ -118,11 +138,16 @@ class PartyDetailActivity : AppCompatActivity() {
                     EntryRow(e, running)
                 }
 
-                currentRows = rowsOldestFirst.reversed()
-                adapter.submit(currentRows)
-                tvNoEntries.visibility = if (newestFirst.isEmpty()) View.VISIBLE else View.GONE
+                // Running balances are computed once, against the ledger's own
+                // chronological order. Sorting or searching afterwards only
+                // reorders or hides rows — it never recomputes the balance, so
+                // each row keeps the balance it genuinely had at that moment.
+                // (Recomputing per view would produce a running total of
+                // whatever happened to be on screen, which would be a lie.)
+                allRows = rowsOldestFirst.reversed()
 
                 updateBalanceHeader(running)
+                renderEntries()
             }
         }
     }
@@ -288,7 +313,7 @@ class PartyDetailActivity : AppCompatActivity() {
      * a temporary grant, so no other app can reach into our storage.
      */
     private fun exportStatement() {
-        if (currentRows.isEmpty()) {
+        if (allRows.isEmpty()) {
             Toast.makeText(this, R.string.no_entries_to_export, Toast.LENGTH_SHORT).show()
             return
         }
@@ -302,7 +327,11 @@ class PartyDetailActivity : AppCompatActivity() {
                     context = this@PartyDetailActivity,
                     partyName = partyName,
                     partyPhone = partyPhone,
-                    rows = currentRows.map {
+                    // Always the full ledger, in the ledger's own order —
+                    // never the filtered view. A statement that silently drops
+                    // rows because a search box was open would be a false
+                    // document, and it goes to a customer.
+                    rows = allRows.map {
                         PdfExport.StatementRow(it.entry, it.runningBalance)
                     },
                     closingBalance = currentBalance,
@@ -335,5 +364,66 @@ class PartyDetailActivity : AppCompatActivity() {
 
             startActivity(Intent.createChooser(share, getString(R.string.share_statement)))
         }
+    }
+
+    /**
+     * Filter and sort the rows for display. The running balance carried by each
+     * row was fixed when it was computed chronologically — it is never
+     * recalculated here, so it stays truthful no matter how the list is
+     * arranged or narrowed.
+     */
+    private fun renderEntries() {
+        val query = etSearchEntries.text.toString().trim().lowercase()
+
+        val filtered = if (query.isEmpty()) {
+            allRows
+        } else {
+            allRows.filter { row ->
+                val e = row.entry
+                val haystack = listOfNotNull(
+                    e.note,
+                    e.itemName,
+                    e.unit,
+                    e.entryNumber,
+                    Format.money(e.amount)
+                ).joinToString(" ").lowercase()
+
+                haystack.contains(query)
+            }
+        }
+
+        val sorted = when (entrySortMode) {
+            EntrySort.NEWEST -> filtered.sortedByDescending { it.entry.timestamp }
+            EntrySort.OLDEST -> filtered.sortedBy { it.entry.timestamp }
+            EntrySort.AMOUNT_HIGH -> filtered.sortedByDescending { it.entry.amount }
+            EntrySort.AMOUNT_LOW -> filtered.sortedBy { it.entry.amount }
+        }
+
+        currentRows = sorted
+        adapter.submit(sorted)
+
+        tvNoEntries.visibility = if (sorted.isEmpty()) View.VISIBLE else View.GONE
+        tvNoEntries.setText(
+            if (allRows.isEmpty()) R.string.no_entries_yet
+            else R.string.no_matching_entries
+        )
+    }
+
+    private fun showEntrySortDialog() {
+        val options = arrayOf(
+            getString(R.string.sort_newest),
+            getString(R.string.sort_oldest),
+            getString(R.string.sort_amount_high),
+            getString(R.string.sort_amount_low)
+        )
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.sort_by)
+            .setSingleChoiceItems(options, entrySortMode.ordinal) { dialog, which ->
+                entrySortMode = EntrySort.values()[which]
+                renderEntries()
+                dialog.dismiss()
+            }
+            .show()
     }
 }

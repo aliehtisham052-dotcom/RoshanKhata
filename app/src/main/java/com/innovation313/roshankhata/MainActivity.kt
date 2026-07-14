@@ -2,6 +2,8 @@ package com.innovation313.roshankhata
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,6 +16,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppLock
@@ -42,6 +45,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var adapter: PartyAdapter
+    private lateinit var etSearch: EditText
+
+    /** Everything from the DB. The list on screen is a view onto this. */
+    private var allParties: List<PartyWithBalance> = emptyList()
+    private var sortMode = SortMode.NAME_AZ
+
+    private enum class SortMode { NAME_AZ, NAME_ZA, OWES_MOST, I_OWE_MOST, RECENT }
     private lateinit var tvNetBalance: TextView
     private lateinit var tvEmpty: TextView
 
@@ -73,6 +83,15 @@ class MainActivity : AppCompatActivity() {
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddParty).setOnClickListener {
             showAddPartyChoice()
         }
+
+        etSearch = findViewById(R.id.etSearchParties)
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun afterTextChanged(s: Editable?) = render()
+        })
+
+        findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
 
         observeData()
     }
@@ -111,8 +130,8 @@ class MainActivity : AppCompatActivity() {
     private fun observeData() {
         lifecycleScope.launch {
             dao.observePartiesWithBalance().collectLatest { list ->
-                adapter.submitList(list)
-                tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+                allParties = list
+                render()
             }
         }
         lifecycleScope.launch {
@@ -238,6 +257,67 @@ class MainActivity : AppCompatActivity() {
                     if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+            .show()
+    }
+
+    /**
+     * Filter, then sort. Search matches name or number — and the number match
+     * strips separators from both sides, so "3001234" finds "0300-123 4567"
+     * the way a person would expect it to.
+     */
+    private fun render() {
+        val query = etSearch.text.toString().trim().lowercase()
+
+        val filtered = if (query.isEmpty()) {
+            allParties
+        } else {
+            val queryDigits = query.filter { it.isDigit() }
+            allParties.filter { p ->
+                p.name.lowercase().contains(query) ||
+                    (queryDigits.isNotEmpty() &&
+                        p.phone?.filter { it.isDigit() }?.contains(queryDigits) == true)
+            }
+        }
+
+        val sorted = when (sortMode) {
+            SortMode.NAME_AZ -> filtered.sortedBy { it.name.lowercase() }
+            SortMode.NAME_ZA -> filtered.sortedByDescending { it.name.lowercase() }
+            // "Owes me most" means the largest positive balance at the top.
+            SortMode.OWES_MOST -> filtered.sortedByDescending { it.balance }
+            // "I owe most" is the mirror: the most negative balance first.
+            SortMode.I_OWE_MOST -> filtered.sortedBy { it.balance }
+            SortMode.RECENT -> filtered.sortedByDescending { it.lastActivity }
+        }
+
+        adapter.submitList(sorted)
+
+        tvEmpty.visibility = when {
+            allParties.isEmpty() -> View.VISIBLE
+            sorted.isEmpty() -> View.VISIBLE
+            else -> View.GONE
+        }
+        tvEmpty.setText(
+            if (allParties.isEmpty()) R.string.no_parties_yet
+            else R.string.no_matching_parties
+        )
+    }
+
+    private fun showSortDialog() {
+        val options = arrayOf(
+            getString(R.string.sort_name_az),
+            getString(R.string.sort_name_za),
+            getString(R.string.sort_owes_most),
+            getString(R.string.sort_i_owe_most),
+            getString(R.string.sort_recent_activity)
+        )
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.sort_by)
+            .setSingleChoiceItems(options, sortMode.ordinal) { dialog, which ->
+                sortMode = SortMode.values()[which]
+                render()
+                dialog.dismiss()
             }
             .show()
     }
