@@ -89,6 +89,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".ReportProblemActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".PlansActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

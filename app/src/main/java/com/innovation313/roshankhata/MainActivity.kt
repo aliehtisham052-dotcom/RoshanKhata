@@ -372,7 +372,8 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.business_settings),
             getString(R.string.backup_restore),
             getString(R.string.app_lock),
-            getString(R.string.recycle_bin)
+            getString(R.string.recycle_bin),
+            getString(R.string.report_problem)
         )
 
         MaterialAlertDialogBuilder(this)
@@ -385,6 +386,7 @@ class MainActivity : AppCompatActivity() {
                     3 -> startActivity(Intent(this, BackupActivity::class.java))
                     4 -> showAppLockSettings()
                     5 -> startActivity(Intent(this, RecycleBinActivity::class.java))
+                    6 -> startActivity(Intent(this, ReportProblemActivity::class.java))
                 }
             }
             .show()
