@@ -164,4 +164,43 @@
     <string name="qr_confirm_yes">Yes, it is mine</string>
     <string name="profile_saved">Saved</string>
     <string name="attach_qr_to_reminder">Attach payment QR</string>
+
+    <!-- Cheques -->
+    <string name="cheques">Cheques</string>
+    <string name="add_cheque">Add Cheque</string>
+    <string name="no_cheques">No cheques yet.\n\nPost-dated cheques are tracked here separately from the ledger — a cheque is not money until it clears.</string>
+    <string name="cheque_not_money_yet">A cheque is not money until it clears, so it will not touch the balance yet. When you mark it cleared, the payment is posted to the ledger then.</string>
+    <string name="cheque_party_hint">Customer or supplier name</string>
+    <string name="cheque_received">Received from them</string>
+    <string name="cheque_issued">Issued to them</string>
+    <string name="pick_due_date">Pick the date on the cheque</string>
+    <string name="due_date_set">Due: %1$s</string>
+    <string name="cheque_number_hint">Cheque number (optional)</string>
+    <string name="bank_name_hint">Bank (optional)</string>
+
+    <string name="cheque_pending">Pending</string>
+    <string name="cheque_cleared">Cleared</string>
+    <string name="cheque_bounced">Bounced</string>
+    <string name="cheque_cancelled">Cancelled</string>
+
+    <string name="due_today">Due today</string>
+    <string name="due_in_days">Due in %1$d days</string>
+    <string name="overdue_by_days">Overdue by %1$d days</string>
+    <string name="due_summary">%1$d cheque(s) ready to bank</string>
+    <string name="due_summary_none">Nothing due yet</string>
+
+    <string name="cheque_actions">What happened to this cheque?</string>
+    <string name="mark_cleared">Mark as Cleared</string>
+    <string name="mark_bounced">Mark as Bounced</string>
+    <string name="mark_cancelled">Mark as Cancelled</string>
+    <string name="delete_cheque">Delete cheque</string>
+
+    <string name="cleared_confirm">Marking this cleared will post the payment to %1$s\'s ledger and change the balance. Only do this once the money is actually in the account.</string>
+    <string name="bounced_confirm">A bounced cheque is not a payment — the amount stays owed. Nothing will be posted to the ledger.</string>
+    <string name="cheque_cleared_posted">Cleared — payment posted to the ledger</string>
+    <string name="cheque_marked_bounced">Marked as bounced. The amount is still owed.</string>
+    <string name="cheque_marked_cancelled">Marked as cancelled</string>
+    <string name="select_party_first">Pick a customer or supplier from your list first.</string>
+    <string name="pick_date_first">Please pick the date written on the cheque.</string>
+    <string name="cheque_note_prefix">Cheque %1$s</string>
 </resources>

@@ -191,4 +191,52 @@ interface KhataDao {
 
     @Insert
     suspend fun insertParties(parties: List<Party>): List<Long>
+
+    // ---------- Cheques ----------
+
+    @Insert
+    suspend fun insertCheque(cheque: Cheque): Long
+
+    @Update
+    suspend fun updateCheque(cheque: Cheque)
+
+    @Query("SELECT * FROM cheques WHERE id = :id")
+    suspend fun getCheque(id: Long): Cheque?
+
+    /**
+     * All live cheques, soonest due first — because the one about to mature
+     * is the one that needs attention today.
+     */
+    @Query(
+        """
+        SELECT c.id, c.partyId, p.name AS partyName, p.phone AS partyPhone,
+               c.amount, c.isReceived, c.chequeNumber, c.bankName,
+               c.dueDate, c.status, c.note
+        FROM cheques c
+        JOIN parties p ON p.id = c.partyId
+        WHERE c.isDeleted = 0 AND p.isDeleted = 0
+        ORDER BY
+            CASE WHEN c.status = 0 THEN 0 ELSE 1 END,
+            c.dueDate ASC
+        """
+    )
+    fun observeCheques(): Flow<List<ChequeWithParty>>
+
+    /** Pending cheques already at or past their date — these are the urgent ones. */
+    @Query(
+        """
+        SELECT COUNT(*) FROM cheques c
+        JOIN parties p ON p.id = c.partyId
+        WHERE c.isDeleted = 0 AND p.isDeleted = 0
+          AND c.status = 0
+          AND c.dueDate <= :now
+        """
+    )
+    fun observeDueChequeCount(now: Long): Flow<Int>
+
+    @Query("UPDATE cheques SET isDeleted = 1, deletedAt = :now WHERE id = :id")
+    suspend fun softDeleteCheque(id: Long, now: Long = System.currentTimeMillis())
+
+    @Query("SELECT * FROM cheques WHERE partyId = :partyId AND isDeleted = 0 ORDER BY dueDate ASC")
+    fun observeChequesOfParty(partyId: Long): Flow<List<Cheque>>
 }

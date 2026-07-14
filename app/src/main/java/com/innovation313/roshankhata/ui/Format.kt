@@ -8,6 +8,7 @@ import kotlin.math.abs
 object Format {
 
     private val dateTimeFmt = SimpleDateFormat("d MMM yyyy, h:mm a", Locale.ENGLISH)
+    private val dateOnlyFmt = SimpleDateFormat("d MMM yyyy", Locale.ENGLISH)
 
     fun money(value: Double): String {
         val rounded = abs(value)
@@ -19,6 +20,8 @@ object Format {
     }
 
     fun dateTime(millis: Long): String = dateTimeFmt.format(Date(millis))
+
+    fun dateOnly(millis: Long): String = dateOnlyFmt.format(Date(millis))
 
     /**
      * "5 bag — Urea", or just "Urea" if no quantity was given.
