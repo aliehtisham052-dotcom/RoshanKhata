@@ -59,15 +59,40 @@
             android:textColor="@color/section_khata_soft"
             android:textSize="12sp" />
 
-        <TextView
-            android:id="@+id/tvNetBalance"
+        <!--
+          Tappable. The eye tells the owner this can be hidden without anyone
+          having to explain it to them.
+        -->
+        <LinearLayout
+            android:id="@+id/balanceRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
-            android:text="Rs 0"
-            android:textColor="@color/white"
-            android:textSize="32sp"
-            android:textStyle="bold" />
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="2dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="2dp">
+
+            <TextView
+                android:id="@+id/tvNetBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rs 0"
+                android:textColor="@color/white"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/ivEye"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="10dp"
+                android:contentDescription="@string/hide_balance"
+                android:src="@drawable/ic_eye_open"
+                app:tint="@color/section_khata_soft" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

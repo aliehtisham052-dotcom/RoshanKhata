@@ -471,4 +471,7 @@
     <string name="report_no_email">No email app found. Please write to innovation313.support@gmail.com</string>
     <string name="report_empty">Please describe what happened first.</string>
     <string name="report_subject">Roshan Khata \u2014 %1$s</string>
+
+    <string name="hide_balance">Hide balance</string>
+    <string name="show_balance">Show balance</string>
 </resources>

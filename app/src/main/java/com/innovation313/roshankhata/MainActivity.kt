@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
@@ -21,6 +22,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppLock
+import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
@@ -51,6 +53,11 @@ class MainActivity : AppCompatActivity() {
     /** Everything from the DB. The list on screen is a view onto this. */
     private var allParties: List<PartyWithBalance> = emptyList()
     private var sortMode = SortMode.NAME_AZ
+
+    private lateinit var ivEye: ImageView
+
+    /** The real figure. The view may be showing a mask over it. */
+    private var netBalance: Double = 0.0
 
     private enum class SortMode { NAME_AZ, NAME_ZA, OWES_MOST, I_OWE_MOST, RECENT }
     private lateinit var tvNetBalance: TextView
@@ -94,7 +101,21 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
 
+        ivEye = findViewById(R.id.ivEye)
+
+        findViewById<View>(R.id.balanceRow).setOnClickListener {
+            BalancePrivacy.toggle(this)
+            renderNetBalance()
+        }
+
         setupBottomNav()
+
+        ivEye = findViewById(R.id.ivEye)
+
+        findViewById<View>(R.id.balanceRow).setOnClickListener {
+            BalancePrivacy.toggle(this)
+            renderNetBalance()
+        }
 
         setupBottomNav()
 
@@ -141,7 +162,8 @@ class MainActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             dao.observeNetBalance().collectLatest { net ->
-                tvNetBalance.text = Format.money(net)
+                netBalance = net
+                renderNetBalance()
             }
         }
     }
@@ -397,5 +419,30 @@ class MainActivity : AppCompatActivity() {
         // Coming back from another section, the bar must show Khata again —
         // otherwise it would still be highlighting wherever the user last went.
         findViewById<BottomNavigationView>(R.id.bottomNav)?.selectedItemId = R.id.nav_khata
+    }
+
+    /**
+     * Show the net balance, or a mask over it.
+     *
+     * This runs on every update, not just on the tap — so a balance that
+     * changes while hidden STAYS hidden. Revealing the figure the moment an
+     * entry lands would defeat the whole point, and it would do so at the exact
+     * moment the owner is holding the phone where someone can see it.
+     */
+    private fun renderNetBalance() {
+        val hidden = BalancePrivacy.isHidden(this)
+
+        tvNetBalance.text = if (hidden) {
+            BalancePrivacy.MASK
+        } else {
+            Format.money(netBalance)
+        }
+
+        ivEye.setImageResource(
+            if (hidden) R.drawable.ic_eye_closed else R.drawable.ic_eye_open
+        )
+        ivEye.contentDescription = getString(
+            if (hidden) R.string.show_balance else R.string.hide_balance
+        )
     }
 }
