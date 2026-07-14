@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--
+      Used only on the "Import from Contacts" screen, to show the owner their
+      contact list so they can pick who to add as a customer. Requested at the
+      moment they open that screen, never at launch. Contacts are not uploaded
+      or stored; only the ones deliberately chosen are saved. The app works
+      fully without this permission — parties can always be added by hand.
+    -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -30,6 +39,11 @@
 
         <activity
             android:name=".ZakatActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".ImportContactsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
 

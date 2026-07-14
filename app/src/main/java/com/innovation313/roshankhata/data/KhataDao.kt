@@ -182,4 +182,13 @@ interface KhataDao {
         """
     )
     fun observeQarzeHasnaEntries(): Flow<List<LedgerEntry>>
+
+    // ---------- Contact import ----------
+
+    /** Phone numbers already on the books, so a contact is never added twice. */
+    @Query("SELECT phone FROM parties WHERE isDeleted = 0 AND phone IS NOT NULL")
+    suspend fun existingPhones(): List<String>
+
+    @Insert
+    suspend fun insertParties(parties: List<Party>): List<Long>
 }

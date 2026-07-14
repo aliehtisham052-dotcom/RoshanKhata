@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         rv.adapter = adapter
 
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddParty).setOnClickListener {
-            showAddPartyDialog()
+            showAddPartyChoice()
         }
 
         observeData()
@@ -97,6 +97,28 @@ class MainActivity : AppCompatActivity() {
                 tvNetBalance.text = Format.money(net)
             }
         }
+    }
+
+    /**
+     * Two ways in: pull from the phone's contacts, or type it in.
+     * Manual entry is listed second but works identically — nobody is forced
+     * to hand over their contact list to use the app.
+     */
+    private fun showAddPartyChoice() {
+        val options = arrayOf(
+            getString(R.string.import_contacts),
+            getString(R.string.add_manually)
+        )
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.add_party)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> startActivity(Intent(this, ImportContactsActivity::class.java))
+                    1 -> showAddPartyDialog()
+                }
+            }
+            .show()
     }
 
     private fun showAddPartyDialog() {

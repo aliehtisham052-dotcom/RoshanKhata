@@ -106,4 +106,20 @@
     <string name="item_name_hint">Item (e.g. Urea, Pesticide, Feed)</string>
     <string name="quantity_hint">Quantity</string>
     <string name="unit_hint">Unit (bag, litre, kg…)</string>
+
+    <!-- Contact import -->
+    <string name="import_contacts">Import from Contacts</string>
+    <string name="import_selected">Import Selected</string>
+    <string name="search_contacts">Search by name or number</string>
+    <string name="selected_count">%1$d selected</string>
+    <string name="imported_count">%1$d contacts imported</string>
+    <string name="already_added">Added</string>
+    <string name="loading_contacts">Loading contacts\u2026</string>
+    <string name="no_contacts_found">No contacts found on this phone.</string>
+    <string name="no_matching_contacts">No contacts match your search.</string>
+    <string name="continue_action">Continue</string>
+    <string name="contacts_permission_title">Access your contacts?</string>
+    <string name="contacts_permission_rationale">Roshan Khata will read your contact list only to show it here, so you can pick who to add. Nothing is uploaded, and only the contacts you actually choose are saved — just their name and number.\n\nIf you would rather not, you can still add every party by hand.</string>
+    <string name="contacts_permission_denied">Permission was not granted, so contacts cannot be shown. You can still add parties by hand from the home screen.</string>
+    <string name="add_manually">Add Manually</string>
 </resources>
