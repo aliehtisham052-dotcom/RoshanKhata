@@ -4,6 +4,13 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+// Room writes the schema out here. With this in place a future migration can be
+// verified against the real schema at build time — a broken one fails the build
+// instead of failing on a shopkeeper's phone.
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 android {
     namespace = "com.innovation313.roshankhata"
     compileSdk = 34

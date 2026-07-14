@@ -15,7 +15,7 @@ import androidx.room.RoomDatabase
         Installment::class
     ],
     version = 7,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class KhataDatabase : RoomDatabase() {
 
@@ -32,10 +32,21 @@ abstract class KhataDatabase : RoomDatabase() {
                     KhataDatabase::class.java,
                     "roshan_khata.db"
                 )
-                    // Pre-release only: no real user data exists yet, so a clean
-                    // rebuild is safe. This MUST be replaced with a proper
-                    // Migration before the app ever ships to a real user.
-                    .fallbackToDestructiveMigration()
+                    // Real migrations, not a destructive rebuild.
+                    //
+                    // This database holds a shopkeeper's entire book of debts.
+                    // An app update must never be the thing that destroys it —
+                    // so every schema step from v1 onwards is written out and
+                    // registered here.
+                    //
+                    // Note what is deliberately NOT called:
+                    // fallbackToDestructiveMigration(). If a future version bump
+                    // ever arrives without its migration, the app will crash on
+                    // open rather than silently wipe the ledger. A crash is
+                    // reported and fixed; a silent wipe is discovered by a
+                    // shopkeeper who has lost a year of records and has no idea
+                    // why. Loud failure is the kinder failure.
+                    .addMigrations(*ALL_MIGRATIONS)
                     .build()
                     .also { INSTANCE = it }
             }
