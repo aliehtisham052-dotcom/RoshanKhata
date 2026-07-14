@@ -12,9 +12,11 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Backup
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 /**
  * Backup and restore.
@@ -40,43 +42,87 @@ class BackupActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnBackup).setOnClickListener { createBackup() }
 
         findViewById<MaterialButton>(R.id.btnRestore).setOnClickListener {
-            // Accept anything: some file managers hand JSON back as
-            // octet-stream, and refusing the user's own backup on a MIME
-            // technicality would be maddening. The parser validates it anyway.
-            pickBackupFile.launch(arrayOf("*/*"))
+            showRestoreOptions()
         }
     }
 
+    /**
+     * Save the backup in three places, because the owner could not find it in one.
+     *
+     * The file used to be written only to the cache directory and handed
+     * straight to a share sheet. Two things went wrong with that, and both of
+     * them cost the owner their backup:
+     *
+     *   - Android empties the cache whenever it wants space. The single file
+     *     standing between a shopkeeper and the loss of their whole ledger
+     *     could vanish with nobody touching it.
+     *   - It was declared as application/json, which WhatsApp will not send and
+     *     most file managers hide. The owner watched the share sheet succeed
+     *     and then could not find the file anywhere.
+     *
+     * So now: Downloads (visible, permanent, no permission needed), an internal
+     * copy the app can always restore from without the owner hunting for
+     * anything, and only then the share sheet as an extra.
+     */
     private fun createBackup() {
         Toast.makeText(this, R.string.creating_backup, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
-            val file = withContext(Dispatchers.IO) {
+            val result = withContext(Dispatchers.IO) {
                 val json = Backup.export(dao)
-                Backup.writeToCache(this@BackupActivity, json)
+
+                val downloadPath = Backup.saveToDownloads(this@BackupActivity, json)
+                Backup.writeInternalCopy(this@BackupActivity, json)
+                val shareFile = Backup.writeToCache(this@BackupActivity, json)
+
+                Pair(downloadPath, shareFile)
             }
 
-            if (file == null) {
+            val (downloadPath, shareFile) = result
+
+            if (downloadPath == null && shareFile == null) {
                 Toast.makeText(this@BackupActivity, R.string.backup_failed, Toast.LENGTH_LONG)
                     .show()
                 return@launch
             }
 
-            val uri = FileProvider.getUriForFile(
-                this@BackupActivity,
-                "$packageName.fileprovider",
-                file
-            )
-
-            val share = Intent(Intent.ACTION_SEND).apply {
-                type = "application/json"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, file.name)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            startActivity(Intent.createChooser(share, getString(R.string.save_backup)))
+            // Tell the owner exactly where it went. "Backup created" is useless
+            // if they cannot then find the thing.
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.backup_done_title)
+                .setMessage(
+                    if (downloadPath != null) {
+                        getString(R.string.backup_done_saved, downloadPath)
+                    } else {
+                        getString(R.string.backup_done_internal)
+                    }
+                )
+                .setNegativeButton(R.string.ok, null)
+                .setPositiveButton(R.string.share_copy) { _, _ ->
+                    if (shareFile != null) shareBackup(shareFile)
+                }
+                .show()
         }
+    }
+
+    private fun shareBackup(file: File) {
+        val uri = FileProvider.getUriForFile(
+            this,
+            "$packageName.fileprovider",
+            file
+        )
+
+        // text/plain, not application/json. WhatsApp refuses to send an unknown
+        // type, and that refusal is why the owner's backup never arrived. It is
+        // text; declaring it as text lets every app handle it.
+        val share = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, file.name)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        startActivity(Intent.createChooser(share, getString(R.string.save_backup)))
     }
 
     private fun beginRestore(uri: Uri) {
@@ -90,19 +136,30 @@ class BackupActivity : AppCompatActivity() {
                 Backup.parse(this@BackupActivity, uri)
             }
 
-            when (result) {
-                is Backup.ImportResult.Failed -> {
-                    MaterialAlertDialogBuilder(this@BackupActivity)
-                        .setTitle(R.string.restore_from_file)
-                        .setMessage(getString(R.string.restore_failed, result.reason))
-                        .setPositiveButton(R.string.ok, null)
-                        .show()
-                }
+            handleParseResult(result, data)
+        }
+    }
 
-                is Backup.ImportResult.Ok -> {
-                    if (data == null) return@launch
-                    confirmRestore(result, data)
-                }
+    /**
+     * Shared by both restore routes — the file picker and the app's own saved
+     * copies. Neither can skip the validation the other performs.
+     */
+    private fun handleParseResult(
+        result: Backup.ImportResult,
+        data: Backup.ParsedBackup?
+    ) {
+        when (result) {
+            is Backup.ImportResult.Failed -> {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.restore_from_file)
+                    .setMessage(getString(R.string.restore_failed, result.reason))
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+            }
+
+            is Backup.ImportResult.Ok -> {
+                if (data == null) return
+                confirmRestore(result, data)
             }
         }
     }
@@ -153,6 +210,75 @@ class BackupActivity : AppCompatActivity() {
                     .putExtra(MainActivity.EXTRA_UNLOCKED, true)
             )
             finish()
+        }
+    }
+
+    /**
+     * Two ways back in, because hunting for a file is the step where people
+     * give up.
+     *
+     * The app keeps its own recent backups, so the ordinary case — "restore
+     * what I saved last week" — needs no file manager, no permissions, and no
+     * searching. Picking a file from storage is still there for a backup that
+     * came from another phone.
+     */
+    private fun showRestoreOptions() {
+        val saved = Backup.internalBackups(this)
+
+        if (saved.isEmpty()) {
+            pickFromStorage()
+            return
+        }
+
+        val options = arrayOf(
+            getString(R.string.restore_from_app),
+            getString(R.string.restore_from_storage)
+        )
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.restore_from_file)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showSavedBackups(saved)
+                    1 -> pickFromStorage()
+                }
+            }
+            .show()
+    }
+
+    private fun showSavedBackups(files: List<File>) {
+        val labels = files.map { f ->
+            getString(
+                R.string.backup_saved_at,
+                Format.dateTime(f.lastModified()),
+                (f.length() / 1024).coerceAtLeast(1)
+            )
+        }.toTypedArray()
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.restore_from_app)
+            .setItems(labels) { _, which ->
+                restoreFromFile(files[which])
+            }
+            .show()
+    }
+
+    private fun pickFromStorage() {
+        // Accept anything. A backup is plain text, but file managers report it
+        // as octet-stream, text/plain, or nothing at all depending on the
+        // phone. Refusing the owner's own backup on a MIME technicality would
+        // be maddening, and the parser validates the contents regardless.
+        pickBackupFile.launch(arrayOf("*/*"))
+    }
+
+    private fun restoreFromFile(file: File) {
+        Toast.makeText(this, R.string.reading_backup, Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            val (result, data) = withContext(Dispatchers.IO) {
+                Backup.parseFile(file)
+            }
+            handleParseResult(result, data)
         }
     }
 }

@@ -429,4 +429,13 @@
     <string name="search_action">Search</string>
 
     <string name="pick_bill_due_date">Pick payment due date</string>
+
+    <!-- Backup: saved location + restore sources -->
+    <string name="backup_done_title">Backup saved</string>
+    <string name="backup_done_saved">Saved to:\n\n%1$s\n\nYou will find it in your phone\u2019s Downloads folder, and in any file manager. Roshan Khata also keeps its own copy, so you can restore without hunting for the file.</string>
+    <string name="backup_done_internal">Saved inside Roshan Khata. You can restore it any time from this screen.</string>
+    <string name="share_copy">Send a copy</string>
+    <string name="restore_from_app">Restore from a saved backup</string>
+    <string name="restore_from_storage">Choose a file from storage</string>
+    <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
 </resources>

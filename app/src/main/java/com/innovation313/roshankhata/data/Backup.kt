@@ -1,6 +1,10 @@
 package com.innovation313.roshankhata.data
 
+import android.content.ContentValues
 import android.content.Context
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.net.Uri
 import org.json.JSONArray
 import org.json.JSONObject
@@ -69,6 +73,108 @@ object Backup {
         return root.toString(2)
     }
 
+    /**
+     * Write the backup where the owner can actually find it again: Downloads.
+     *
+     * It used to go to the cache directory, which was a mistake with real
+     * consequences. Android empties the cache whenever it feels the need for
+     * space — so the one file standing between a shopkeeper and the loss of
+     * their entire ledger could vanish without anyone touching it. A backup
+     * that quietly disappears is worse than no backup, because the owner
+     * believes they are covered.
+     *
+     * Downloads survives. It is visible in every file manager, WhatsApp,
+     * Drive, and the phone's own Files app. And on Android 10+ this needs no
+     * storage permission at all — MediaStore hands the app a place to write
+     * without handing it the run of the user's storage.
+     *
+     * @return a human-readable location to show the owner, or null on failure.
+     */
+    fun saveToDownloads(context: Context, json: String): String? {
+        val name = suggestedFileName()
+
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val values = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, name)
+                    // Declared as plain text, not application/json. Android and
+                    // most apps treat an unknown MIME type as a file to be
+                    // hidden — which is exactly why the owner could not see
+                    // their own backup afterwards. It IS text; saying so makes
+                    // it visible everywhere.
+                    put(MediaStore.Downloads.MIME_TYPE, "text/plain")
+                    put(MediaStore.Downloads.IS_PENDING, 1)
+                }
+
+                val resolver = context.contentResolver
+                val uri = resolver.insert(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    values
+                ) ?: return null
+
+                resolver.openOutputStream(uri)?.use { out ->
+                    out.write(json.toByteArray())
+                } ?: return null
+
+                values.clear()
+                values.put(MediaStore.Downloads.IS_PENDING, 0)
+                resolver.update(uri, values, null, null)
+
+                "Downloads/$name"
+            } else {
+                // Pre-Android 10: write to the public Downloads folder directly.
+                @Suppress("DEPRECATION")
+                val dir = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS
+                )
+                dir.mkdirs()
+                val file = File(dir, name)
+                file.writeText(json)
+                file.absolutePath
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * A second copy inside the app's own storage.
+     *
+     * Kept so the owner is never left with nothing: even if the Downloads copy
+     * is deleted, moved, or lost with the phone's file manager, the app can
+     * still offer its own most recent backup. This is filesDir, not cacheDir —
+     * the system does not clear it behind the owner's back.
+     */
+    fun writeInternalCopy(context: Context, json: String): File? {
+        return try {
+            val dir = File(context.filesDir, "backups").apply { mkdirs() }
+            val file = File(dir, suggestedFileName())
+            file.writeText(json)
+
+            // Keep the last few, then stop. An unbounded pile of backups would
+            // quietly eat the phone's storage.
+            dir.listFiles()
+                ?.sortedByDescending { it.lastModified() }
+                ?.drop(5)
+                ?.forEach { it.delete() }
+
+            file
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** The app's own saved backups, newest first. */
+    fun internalBackups(context: Context): List<File> {
+        val dir = File(context.filesDir, "backups")
+        if (!dir.exists()) return emptyList()
+        return dir.listFiles()
+            ?.filter { it.isFile }
+            ?.sortedByDescending { it.lastModified() }
+            ?: emptyList()
+    }
+
+    /** Shareable copy, for sending to Drive or another phone. */
     fun writeToCache(context: Context, json: String): File? {
         return try {
             val dir = File(context.cacheDir, "backups").apply { mkdirs() }
@@ -77,6 +183,15 @@ object Backup {
             file
         } catch (e: Exception) {
             null
+        }
+    }
+
+    /** Read a backup the app saved itself. */
+    fun parseFile(file: File): Pair<ImportResult, ParsedBackup?> {
+        return try {
+            parseText(file.readText())
+        } catch (e: Exception) {
+            ImportResult.Failed("The file could not be read.") to null
         }
     }
 
@@ -103,12 +218,24 @@ object Backup {
      * was rubbish afterwards would destroy the owner's books to import nothing.
      */
     fun parse(context: Context, uri: Uri): Pair<ImportResult, ParsedBackup?> {
-        return try {
-            val text = context.contentResolver.openInputStream(uri)
+        val text = try {
+            context.contentResolver.openInputStream(uri)
                 ?.bufferedReader()
                 ?.use { it.readText() }
-                ?: return ImportResult.Failed("Could not read the file.") to null
+        } catch (e: Exception) {
+            null
+        } ?: return ImportResult.Failed("Could not read the file.") to null
 
+        return parseText(text)
+    }
+
+    /**
+     * Validate a backup's contents. Shared by every route in — a file picked
+     * from storage and one restored from the app's own copy get identical
+     * checks, so neither can slip past on a technicality the other would catch.
+     */
+    fun parseText(text: String): Pair<ImportResult, ParsedBackup?> {
+        return try {
             val root = JSONObject(text)
 
             if (root.optString("format") != "RoshanKhata") {
