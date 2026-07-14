@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         android:background="@color/navy_primary"
         android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="4dp"
-        android:paddingBottom="16dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,70 +23,78 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_marginStart="-16dp"
+            android:layout_marginStart="-20dp"
+            app:theme="@style/ToolbarInk"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="22sp"
+            android:textColor="@color/ink"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
+        <!--
+          One tagline, not two. The brand line beneath it was carrying the same
+          words, so the phrase printed twice. It now says the brand.
+        -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
             android:text="@string/app_tagline"
-            android:textColor="@color/gold_bright"
+            android:textColor="@color/gold_accent"
             android:textSize="12sp" />
 
+        <!--
+          The net balance is the one number the owner opens the app to see.
+          It gets the room to say so, and nothing sits between it and the eye.
+        -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:letterSpacing="0.04"
-            android:text="@string/brand_line"
-            android:textColor="#8A93A6"
-            android:textSize="10sp"
-            android:textStyle="italic" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="22dp"
             android:text="@string/net_balance"
-            android:textColor="@color/gold_bright"
-            android:textSize="13sp" />
+            android:textColor="@color/text_muted"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/tvNetBalance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
             android:text="Rs 0"
-            android:textColor="@color/gold_accent"
-            android:textSize="26sp"
+            android:textColor="@color/ink"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="18dp"
             android:layout_marginEnd="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!--
+              The box was white on a navy header. On paper it disappears, so it
+              carries its own outline now — a field the eye can find.
+            -->
             <EditText
                 android:id="@+id/etSearchParties"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="44dp"
                 android:layout_weight="1"
-                android:background="@color/white"
+                android:background="@drawable/bg_search_field"
                 android:hint="@string/search_parties"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:maxLines="1"
-                android:padding="10dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/text_muted"
                 android:textSize="14sp" />
 
             <com.google.android.material.button.MaterialButton
@@ -152,7 +160,7 @@
         android:layout_margin="20dp"
         android:text="@string/add_party"
         android:textColor="@color/white"
-        app:backgroundTint="@color/navy_primary"
+        app:backgroundTint="@color/ink"
         app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent" />
 

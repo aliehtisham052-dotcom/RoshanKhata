@@ -1,19 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Roshan Khata brand: navy + gold (matches logo & Innovation-313 identity) -->
-    <color name="navy_deep">#0D1117</color>
-    <color name="navy_primary">#152238</color>
-    <color name="navy_surface">#1C2C47</color>
-    <color name="gold_accent">#D4A438</color>
-    <color name="gold_bright">#E8C063</color>
+    <!--
+      Roshan Khata — "Ink & Paper".
 
-    <color name="page_bg">#F7F5F0</color>
-    <color name="page_line">#E4E0D6</color>
+      A shopkeeper reads this standing in the sun, on a cheap screen, often in
+      a hurry. Dark text on a pale ground is what survives that. The navy header
+      looked handsome indoors and washed out on a shop counter at two in the
+      afternoon.
+
+      The NAMES are deliberately unchanged. Twenty-odd layouts reference
+      @color/navy_primary and @color/gold_accent; renaming them would mean
+      touching every one of those files and inviting a mistake in each. Only the
+      values move. The whole app re-themes at once, and nothing breaks.
+    -->
+
+    <!-- Surfaces: what was navy is now paper -->
+    <color name="navy_deep">#EFEDE5</color>
+    <color name="navy_primary">#FFFFFF</color>
+    <color name="navy_surface">#FAF9F5</color>
+
+    <!--
+      Gold, darkened until it is legible AS TEXT.
+
+      The old #D4A438 was a fill colour pressed into service as a label, and on
+      white it barely registers. This is the same gold taken down to where it
+      actually reads. Money is not the place to be subtle.
+    -->
+    <color name="gold_accent">#8A6E1C</color>
+    <color name="gold_bright">#8A6E1C</color>
+
+    <!-- The page beneath the cards -->
+    <color name="page_bg">#F7F6F2</color>
+    <color name="page_line">#E5E3DC</color>
+
     <color name="white">#FFFFFF</color>
-    <color name="black">#1A1A1A</color>
-    <color name="text_muted">#7A7A7A</color>
+    <color name="black">#1A1A18</color>
+    <color name="text_muted">#6B6B66</color>
 
-    <!-- Ledger direction -->
-    <color name="red_gave">#C0392B</color>
-    <color name="green_got">#1E8449</color>
+    <!--
+      Ledger direction. Both darkened for the pale ground.
+
+      These two carry the most important meaning in the app — who owes whom —
+      and they now sit on white rather than navy, where the old shades would be
+      too light to be sure of. Anyone who cannot easily tell red from green still
+      has the label beneath the number.
+    -->
+    <color name="red_gave">#A32D2D</color>
+    <color name="green_got">#0F6E56</color>
+
+    <!-- Ink: text on paper -->
+    <color name="ink">#1A1A18</color>
+    <color name="ink_soft">#5F5E5A</color>
 </resources>

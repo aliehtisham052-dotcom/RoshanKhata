@@ -21,7 +21,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/zakat_calculator"
-                android:textColor="@color/white"
+                android:textColor="@color/ink"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -190,7 +190,7 @@
                     android:id="@+id/tvWealth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
+                    android:textColor="@color/ink"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -221,7 +221,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/ink"
                     android:textSize="12sp" />
             </LinearLayout>
 

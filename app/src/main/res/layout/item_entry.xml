@@ -40,7 +40,7 @@
             android:id="@+id/tvEntryNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#AAAAAA"
+            android:textColor="@color/text_muted"
             android:textSize="11sp" />
     </LinearLayout>
 

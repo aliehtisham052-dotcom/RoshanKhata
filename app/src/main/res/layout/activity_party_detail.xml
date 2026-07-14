@@ -24,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginStart="-16dp"
+            app:theme="@style/ToolbarInk"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
         <LinearLayout
@@ -44,7 +45,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_avatar_circle"
                     android:gravity="center"
-                    android:textColor="@color/gold_bright"
+                    android:textColor="@color/ink_soft"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -62,7 +63,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/white"
+                android:textColor="@color/ink"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>

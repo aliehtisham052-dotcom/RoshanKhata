@@ -21,7 +21,7 @@
             android:id="@+id/tvReportTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:textColor="@color/ink"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -116,7 +116,7 @@
                 android:id="@+id/tvTotalGave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#FF8A80"
+                android:textColor="@color/red_gave"
                 android:textSize="17sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -138,7 +138,7 @@
                 android:id="@+id/tvTotalGot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#69F0AE"
+                android:textColor="@color/green_got"
                 android:textSize="17sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -160,7 +160,7 @@
                 android:id="@+id/tvNetChange"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:textColor="@color/ink"
                 android:textSize="17sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -213,7 +213,7 @@
         android:layout_height="52dp"
         android:layout_margin="16dp"
         android:text="@string/share_report"
-        app:backgroundTint="@color/navy_primary"
+        app:backgroundTint="@color/ink"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

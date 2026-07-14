@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="@color/navy_surface" />
+    <!--
+      Was navy filled with gold initials. navy_primary is white now, which would
+      have made this an invisible circle on a white row. A soft stone fill with
+      dark initials reads on paper.
+    -->
+    <solid android:color="@color/navy_deep" />
 </shape>

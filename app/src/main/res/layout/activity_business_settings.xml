@@ -21,7 +21,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/business_settings"
-                android:textColor="@color/white"
+                android:textColor="@color/ink"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -129,7 +129,7 @@
                     android:layout_height="48dp"
                     android:layout_weight="1"
                     android:text="@string/choose_qr_image"
-                    app:backgroundTint="@color/navy_primary"
+                    app:backgroundTint="@color/ink"
                     app:cornerRadius="10dp"
                     xmlns:app="http://schemas.android.com/apk/res-auto" />
 

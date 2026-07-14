@@ -1,11 +1,46 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      Ink & Paper.
+
+      Every one of these used to name a dark colour. colorOnPrimary was white
+      because colorPrimary was navy; with a paper primary, white-on-primary is
+      white-on-white. The status bar was navy_deep, which is now a pale stone —
+      a light status bar needs DARK icons, or the clock and battery vanish.
+    -->
     <style name="Theme.RoshanKhata" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/navy_primary</item>
-        <item name="colorPrimaryVariant">@color/navy_deep</item>
+        <item name="colorPrimary">@color/ink</item>
+        <item name="colorPrimaryVariant">@color/ink_soft</item>
         <item name="colorOnPrimary">@color/white</item>
+
         <item name="colorSecondary">@color/gold_accent</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="android:statusBarColor" tools:targetApi="l">@color/navy_deep</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/ink</item>
+
+        <!--
+          A pale status bar with light icons shows nothing at all. The flag below
+          tells Android to draw the clock, battery and signal in DARK — without
+          it, the top of the screen would simply be blank.
+        -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+
+        <item name="android:navigationBarColor" tools:targetApi="l">@color/white</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
         <item name="android:windowBackground">@color/page_bg</item>
+    </style>
+
+    <!--
+      The toolbar sits on paper. Its overflow icon and any title text inherit
+      colorControlNormal, which was light because the toolbar used to be navy.
+      A white ⋮ on a white header is a menu button nobody can see — and that is
+      how the owner lost track of the settings in the first place.
+    -->
+    <style name="ToolbarInk" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+        <item name="colorControlNormal">@color/ink</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="android:textColorSecondary">@color/ink</item>
     </style>
 </resources>

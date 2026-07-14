@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/navy_primary" android:state_checked="true" />
+    <!--
+      The selected tab used to be navy_primary. That colour is white now, and
+      the nav bar is white — so the selected tab would have been invisible, and
+      the owner would have had no idea which screen they were on.
+    -->
+    <item android:color="@color/ink" android:state_checked="true" />
     <item android:color="@color/text_muted" />
 </selector>
