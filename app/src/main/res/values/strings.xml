@@ -129,4 +129,17 @@
     <string name="share_statement">Share statement</string>
     <string name="statement_failed">Could not create the statement. Please try again.</string>
     <string name="no_entries_to_export">There are no entries to put in a statement yet.</string>
+
+    <!-- App Lock -->
+    <string name="app_lock">App Lock</string>
+    <string name="lock_title">Unlock Roshan Khata</string>
+    <string name="lock_subtitle">Your ledger is private. Confirm it is you.</string>
+    <string name="app_lock_enabled">App Lock is on. You will be asked to confirm each time you open the app.</string>
+    <string name="app_lock_disabled">App Lock is off.</string>
+    <string name="app_lock_turn_on">Turn on App Lock</string>
+    <string name="app_lock_turn_off">Turn off App Lock</string>
+    <string name="app_lock_explain">Uses your fingerprint, face, or the screen lock you already have on this phone. Roshan Khata does not store a PIN of its own — Android keeps that safer than we could.</string>
+    <string name="app_lock_no_screen_lock">This phone has no screen lock set. Set a fingerprint, PIN, or pattern in your phone\'s settings first, then App Lock can protect your ledger.</string>
+    <string name="app_lock_unavailable">App Lock is not available on this phone.</string>
+    <string name="ok">OK</string>
 </resources>

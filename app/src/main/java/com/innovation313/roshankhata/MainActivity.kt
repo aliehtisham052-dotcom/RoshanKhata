@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.innovation313.roshankhata.data.AppLock
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
@@ -29,6 +30,16 @@ import kotlinx.coroutines.launch
  * Home: customers and suppliers with their outstanding balances.
  */
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        /**
+         * Set by the gate. MainActivity is not exported and cannot be launched
+         * from outside the app, so this is a routing hint rather than a
+         * security boundary — the real boundary is that the gate never starts
+         * this activity until the lock has been cleared.
+         */
+        const val EXTRA_UNLOCKED = "unlocked"
+    }
 
     private lateinit var adapter: PartyAdapter
     private lateinit var tvNetBalance: TextView
@@ -75,6 +86,10 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_zakat -> {
                 startActivity(Intent(this, ZakatActivity::class.java))
+                true
+            }
+            R.id.action_app_lock -> {
+                showAppLockSettings()
                 true
             }
             R.id.action_recycle_bin -> {
@@ -165,6 +180,56 @@ class MainActivity : AppCompatActivity() {
                     dao.softDeleteParty(party.id, now)
                     Toast.makeText(this@MainActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT).show()
                 }
+            }
+            .show()
+    }
+
+    /**
+     * App Lock settings.
+     *
+     * If the phone has no screen lock at all there is nothing to authenticate
+     * against, so we say so plainly instead of offering a switch that would do
+     * nothing — a lock that only looks like a lock is worse than none.
+     */
+    private fun showAppLockSettings() {
+        if (AppLock.noneEnrolled(this)) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.app_lock)
+                .setMessage(R.string.app_lock_no_screen_lock)
+                .setPositiveButton(R.string.ok, null)
+                .show()
+            return
+        }
+
+        if (!AppLock.isAvailable(this)) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.app_lock)
+                .setMessage(R.string.app_lock_unavailable)
+                .setPositiveButton(R.string.ok, null)
+                .show()
+            return
+        }
+
+        val enabled = AppLock.isEnabled(this)
+
+        val status = getString(
+            if (enabled) R.string.app_lock_enabled else R.string.app_lock_disabled
+        )
+        val message = status + "\n\n" + getString(R.string.app_lock_explain)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.app_lock)
+            .setMessage(message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(
+                if (enabled) R.string.app_lock_turn_off else R.string.app_lock_turn_on
+            ) { _, _ ->
+                AppLock.setEnabled(this, !enabled)
+                Toast.makeText(
+                    this,
+                    if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             .show()
     }

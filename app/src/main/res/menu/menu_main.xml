@@ -6,6 +6,10 @@
         android:title="@string/zakat_calculator"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_app_lock"
+        android:title="@string/app_lock"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_recycle_bin"
         android:title="@string/recycle_bin"
         app:showAsAction="never" />

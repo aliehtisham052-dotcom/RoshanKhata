@@ -48,6 +48,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
     implementation("androidx.activity:activity-ktx:1.9.0")
 
+    // Biometric: fingerprint/face with automatic fallback to the device
+    // PIN, pattern, or password. Deliberately NOT a home-grown PIN — the OS
+    // already stores credentials in hardware-backed secure storage, and we
+    // have no business duplicating that badly.
+    implementation("androidx.biometric:biometric:1.1.0")
+
     // Room — offline-first local database
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
