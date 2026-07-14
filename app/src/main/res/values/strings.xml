@@ -306,11 +306,45 @@
     <string name="save_backup">Save backup</string>
 
     <string name="restore_warning_title">Replace everything?</string>
-    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
+    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
     <string name="restore_replace">Replace everything</string>
     <string name="restore_done">Restored</string>
     <string name="restore_failed">Restore failed: %1$s</string>
     <string name="reading_backup">Reading the file\u2026</string>
     <string name="restoring">Restoring\u2026</string>
     <string name="creating_backup">Creating backup\u2026</string>
+
+    <!-- Payment plans -->
+    <string name="payment_plans">Payment Plans</string>
+    <string name="plans_subtitle">Paying off in instalments</string>
+    <string name="plan_not_a_debt_note">A plan is an arrangement, not a new debt. What they owe is already in the ledger. Recording a payment here posts it to the ledger once — it is never counted twice.</string>
+    <string name="add_plan">Add Plan</string>
+    <string name="no_plans">No payment plans yet.\n\nUse these when a customer will clear an amount in instalments — after the harvest, or across a few months.</string>
+    <string name="plan_dialog_help">Set up an arrangement for clearing what this party already owes. This does not add to their balance — it only records what they have agreed to pay, and when.</string>
+    <string name="plan_total_hint">Total to be paid off (Rs)</string>
+    <string name="plan_installment_hint">Each instalment (Rs) — optional</string>
+    <string name="plan_pick_next_due">Next payment due (optional)</string>
+    <string name="plan_owes_now">They currently owe %1$s</string>
+    <string name="plan_owes_nothing">This party owes nothing right now</string>
+
+    <string name="plan_paid">Paid %1$s of %2$s</string>
+    <string name="plan_remaining">%1$s left</string>
+    <string name="plan_open">Open</string>
+    <string name="plan_closed">Complete</string>
+    <string name="plan_next_due">Next: %1$s</string>
+    <string name="plan_next_due_none">No date set</string>
+    <string name="plan_overdue">Overdue since %1$s</string>
+
+    <string name="plan_actions">Payment plan</string>
+    <string name="record_payment">Record a payment</string>
+    <string name="close_plan">Mark complete</string>
+    <string name="delete_plan">Delete plan</string>
+    <string name="record_payment_title">Record a payment</string>
+    <string name="record_payment_help">This posts one entry to %1$s\u2019s ledger, reducing what they owe. It is not counted twice.</string>
+    <string name="payment_recorded">Payment recorded and posted to the ledger</string>
+    <string name="plan_closed_msg">Plan marked complete</string>
+    <string name="plan_overpay_warning">This payment is more than what is left on the plan (%1$s). It will still be posted in full to the ledger — check the amount before you save.</string>
+    <string name="plan_note_prefix">Instalment payment</string>
+    <string name="plan_deleted">Plan deleted. Payments already posted to the ledger stay there — the money really was received.</string>
+    <string name="delete_plan_confirm">The plan will be removed, but the payments already recorded stay in the ledger. That money really was received, and deleting the arrangement does not undo it.</string>
 </resources>

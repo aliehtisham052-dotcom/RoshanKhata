@@ -125,7 +125,8 @@ class BackupActivity : AppCompatActivity() {
                     counts.parties,
                     counts.entries,
                     counts.cheques,
-                    counts.cash
+                    counts.cash,
+                    counts.plans
                 )
             )
             .setNegativeButton(R.string.cancel, null)

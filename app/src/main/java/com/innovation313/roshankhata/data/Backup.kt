@@ -23,7 +23,7 @@ import java.util.Locale
  */
 object Backup {
 
-    const val FORMAT_VERSION = 1
+    const val FORMAT_VERSION = 2
 
     private val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
@@ -53,6 +53,12 @@ object Backup {
         root.put("cashbook", JSONArray().apply {
             dao.allCashForBackup().forEach { put(cashToJson(it)) }
         })
+        root.put("plans", JSONArray().apply {
+            dao.allPlansForBackup().forEach { put(planToJson(it)) }
+        })
+        root.put("installments", JSONArray().apply {
+            dao.allInstallmentsForBackup().forEach { put(installmentToJson(it)) }
+        })
 
         return root.toString(2)
     }
@@ -75,7 +81,8 @@ object Backup {
             val parties: Int,
             val entries: Int,
             val cheques: Int,
-            val cash: Int
+            val cash: Int,
+            val plans: Int = 0
         ) : ImportResult()
 
         data class Failed(val reason: String) : ImportResult()
@@ -127,12 +134,26 @@ object Backup {
                 (0 until arr.length()).map { jsonToCash(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Absent in a version-1 backup. Not an error — an old file is
+            // still a valid file, and rejecting it would strand anyone who
+            // backed up before this release.
+            val plans = root.optJSONArray("plans")?.let { arr ->
+                (0 until arr.length()).map { jsonToPlan(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
+            val installments = root.optJSONArray("installments")?.let { arr ->
+                (0 until arr.length()).map { jsonToInstallment(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
             // An entry pointing at a party that is not in the file would be
             // orphaned on insert — better to refuse than to import a ledger
             // with holes in it.
             val partyIds = parties.map { it.id }.toSet()
+            val planIds = plans.map { it.id }.toSet()
             val orphans = entries.count { it.partyId !in partyIds } +
-                cheques.count { it.partyId !in partyIds }
+                cheques.count { it.partyId !in partyIds } +
+                plans.count { it.partyId !in partyIds } +
+                installments.count { it.planId !in planIds }
 
             if (orphans > 0) {
                 return ImportResult.Failed(
@@ -145,8 +166,9 @@ object Backup {
                 parties = parties.size,
                 entries = entries.size,
                 cheques = cheques.size,
-                cash = cash.size
-            ) to ParsedBackup(parties, entries, cheques, cash)
+                cash = cash.size,
+                plans = plans.size
+            ) to ParsedBackup(parties, entries, cheques, cash, plans, installments)
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
         }
@@ -156,13 +178,17 @@ object Backup {
         val parties: List<Party>,
         val entries: List<LedgerEntry>,
         val cheques: List<Cheque>,
-        val cash: List<CashEntry>
+        val cash: List<CashEntry>,
+        val plans: List<PaymentPlan> = emptyList(),
+        val installments: List<Installment> = emptyList()
     )
 
     /** Replaces everything. Only called after the user has confirmed. */
     suspend fun restore(dao: KhataDao, data: ParsedBackup) {
         // Children first, then parents: foreign keys will not allow a party to
         // be removed while its entries still point at it.
+        dao.wipeInstallments()
+        dao.wipePlans()
         dao.wipeEntries()
         dao.wipeCheques()
         dao.wipeCash()
@@ -172,6 +198,8 @@ object Backup {
         dao.restoreEntries(data.entries)
         dao.restoreCheques(data.cheques)
         dao.restoreCash(data.cash)
+        dao.restorePlans(data.plans)
+        dao.restoreInstallments(data.installments)
     }
 
     // ---------- Mapping ----------
@@ -288,6 +316,55 @@ object Backup {
         timestamp = o.optLong("timestamp", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")
+    )
+
+
+    private fun planToJson(p: PaymentPlan) = JSONObject().apply {
+        put("id", p.id)
+        put("partyId", p.partyId)
+        put("totalAmount", p.totalAmount)
+        put("installmentAmount", p.installmentAmount ?: JSONObject.NULL)
+        put("note", p.note ?: JSONObject.NULL)
+        put("nextDueDate", p.nextDueDate ?: JSONObject.NULL)
+        put("createdAt", p.createdAt)
+        put("isClosed", p.isClosed)
+        put("closedAt", p.closedAt ?: JSONObject.NULL)
+        put("isDeleted", p.isDeleted)
+        put("deletedAt", p.deletedAt ?: JSONObject.NULL)
+    }
+
+    private fun jsonToPlan(o: JSONObject) = PaymentPlan(
+        id = o.getLong("id"),
+        partyId = o.getLong("partyId"),
+        totalAmount = o.getDouble("totalAmount"),
+        installmentAmount = o.optNullableDouble("installmentAmount"),
+        note = o.optNullableString("note"),
+        nextDueDate = o.optNullableLong("nextDueDate"),
+        createdAt = o.optLong("createdAt", System.currentTimeMillis()),
+        isClosed = o.optBoolean("isClosed", false),
+        closedAt = o.optNullableLong("closedAt"),
+        isDeleted = o.optBoolean("isDeleted", false),
+        deletedAt = o.optNullableLong("deletedAt")
+    )
+
+    private fun installmentToJson(i: Installment) = JSONObject().apply {
+        put("id", i.id)
+        put("planId", i.planId)
+        put("amount", i.amount)
+        put("ledgerEntryId", i.ledgerEntryId)
+        put("paidAt", i.paidAt)
+        put("note", i.note ?: JSONObject.NULL)
+        put("isDeleted", i.isDeleted)
+    }
+
+    private fun jsonToInstallment(o: JSONObject) = Installment(
+        id = o.getLong("id"),
+        planId = o.getLong("planId"),
+        amount = o.getDouble("amount"),
+        ledgerEntryId = o.optLong("ledgerEntryId", 0),
+        paidAt = o.optLong("paidAt", System.currentTimeMillis()),
+        note = o.optNullableString("note"),
+        isDeleted = o.optBoolean("isDeleted", false)
     )
 
     // JSONObject.optString returns "" for null, which would turn an absent

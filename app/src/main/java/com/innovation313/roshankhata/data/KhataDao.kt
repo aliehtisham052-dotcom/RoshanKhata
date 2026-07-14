@@ -281,6 +281,12 @@ interface KhataDao {
     @Query("SELECT * FROM cashbook")
     suspend fun allCashForBackup(): List<CashEntry>
 
+    @Query("SELECT * FROM payment_plans")
+    suspend fun allPlansForBackup(): List<PaymentPlan>
+
+    @Query("SELECT * FROM installments")
+    suspend fun allInstallmentsForBackup(): List<Installment>
+
     // Restore wipes and rewrites. Guarded behind an explicit warning in the UI,
     // because it replaces the current books entirely.
 
@@ -292,6 +298,12 @@ interface KhataDao {
 
     @Query("DELETE FROM cashbook")
     suspend fun wipeCash()
+
+    @Query("DELETE FROM installments")
+    suspend fun wipeInstallments()
+
+    @Query("DELETE FROM payment_plans")
+    suspend fun wipePlans()
 
     @Query("DELETE FROM parties")
     suspend fun wipeParties()
@@ -307,4 +319,72 @@ interface KhataDao {
 
     @Insert
     suspend fun restoreCash(items: List<CashEntry>)
+
+    @Insert
+    suspend fun restorePlans(items: List<PaymentPlan>)
+
+    @Insert
+    suspend fun restoreInstallments(items: List<Installment>)
+
+    // ---------- Payment plans ----------
+
+    @Insert
+    suspend fun insertPlan(plan: PaymentPlan): Long
+
+    @Update
+    suspend fun updatePlan(plan: PaymentPlan)
+
+    @Query("SELECT * FROM payment_plans WHERE id = :id")
+    suspend fun getPlan(id: Long): PaymentPlan?
+
+    /**
+     * Plans with what has actually been paid against them.
+     * Open plans first, then by soonest due — a closed plan needs no attention.
+     */
+    @Query(
+        """
+        SELECT pl.id, pl.partyId, p.name AS partyName,
+               pl.totalAmount, pl.installmentAmount,
+               COALESCE((
+                   SELECT SUM(i.amount) FROM installments i
+                   WHERE i.planId = pl.id AND i.isDeleted = 0
+               ), 0) AS paidSoFar,
+               pl.nextDueDate, pl.note, pl.isClosed
+        FROM payment_plans pl
+        JOIN parties p ON p.id = pl.partyId
+        WHERE pl.isDeleted = 0 AND p.isDeleted = 0
+        ORDER BY pl.isClosed ASC,
+                 CASE WHEN pl.nextDueDate IS NULL THEN 1 ELSE 0 END,
+                 pl.nextDueDate ASC
+        """
+    )
+    fun observePlans(): Flow<List<PlanProgress>>
+
+    @Query(
+        """
+        SELECT pl.id, pl.partyId, p.name AS partyName,
+               pl.totalAmount, pl.installmentAmount,
+               COALESCE((
+                   SELECT SUM(i.amount) FROM installments i
+                   WHERE i.planId = pl.id AND i.isDeleted = 0
+               ), 0) AS paidSoFar,
+               pl.nextDueDate, pl.note, pl.isClosed
+        FROM payment_plans pl
+        JOIN parties p ON p.id = pl.partyId
+        WHERE pl.isDeleted = 0 AND p.isDeleted = 0 AND pl.partyId = :partyId
+        ORDER BY pl.isClosed ASC, pl.createdAt DESC
+        """
+    )
+    fun observePlansOfParty(partyId: Long): Flow<List<PlanProgress>>
+
+    @Query("UPDATE payment_plans SET isDeleted = 1, deletedAt = :now WHERE id = :id")
+    suspend fun softDeletePlan(id: Long, now: Long = System.currentTimeMillis())
+
+    // ---------- Instalments ----------
+
+    @Insert
+    suspend fun insertInstallment(item: Installment): Long
+
+    @Query("SELECT * FROM installments WHERE planId = :planId AND isDeleted = 0 ORDER BY paidAt DESC")
+    fun observeInstallments(planId: Long): Flow<List<Installment>>
 }

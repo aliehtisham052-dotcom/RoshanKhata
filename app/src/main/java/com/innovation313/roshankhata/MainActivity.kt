@@ -107,6 +107,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, ZakatActivity::class.java))
                 true
             }
+            R.id.action_plans -> {
+                startActivity(Intent(this, PlansActivity::class.java))
+                true
+            }
             R.id.action_cashbook -> {
                 startActivity(Intent(this, CashbookActivity::class.java))
                 true
