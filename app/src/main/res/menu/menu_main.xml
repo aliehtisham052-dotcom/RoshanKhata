@@ -2,13 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!--
-      The main sections now live in the bottom bar, where they can be seen.
-      What remains here is the occasional stuff: settings, safety, tools.
+      Kept deliberately short. The everyday books now live in the bottom bar
+      where they can be seen; this is only for the occasional things.
     -->
-    <item
-        android:id="@+id/action_zakat"
-        android:title="@string/zakat_calculator"
-        app:showAsAction="never" />
     <item
         android:id="@+id/action_business_settings"
         android:title="@string/business_settings"
@@ -16,6 +12,10 @@
     <item
         android:id="@+id/action_backup"
         android:title="@string/backup_restore"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_zakat"
+        android:title="@string/zakat_calculator"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_app_lock"

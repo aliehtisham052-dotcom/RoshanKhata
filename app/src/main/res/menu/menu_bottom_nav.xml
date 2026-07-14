@@ -10,7 +10,7 @@
         android:title="@string/nav_cashbook" />
     <item
         android:id="@+id/nav_cheques"
-        android:icon="@drawable/ic_nav_cheque"
+        android:icon="@drawable/ic_nav_cheques"
         android:title="@string/nav_cheques" />
     <item
         android:id="@+id/nav_plans"
