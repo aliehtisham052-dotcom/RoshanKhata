@@ -103,10 +103,14 @@
             android:orientation="horizontal">
 
             <!--
-              The box was white on a navy header. On paper it disappears, so it
-              carries its own outline now — a field the eye can find.
+              An AutoCompleteTextView, not a plain field.
+              
+              Typing two letters should offer the name, the way every other app
+              a shopkeeper uses already does. Filtering the list below is not the
+              same thing: with two hundred customers, the owner still has to
+              find the row and tap it. A suggestion goes straight there.
             -->
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/etSearchParties"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
@@ -118,7 +122,10 @@
                 android:maxLines="1"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
-                android:textColor="@color/white"
+                android:completionThreshold="1"
+                android:dropDownVerticalOffset="4dp"
+                android:popupBackground="@color/white"
+                android:textColor="@color/ink"
                 android:textColorHint="@color/text_muted"
                 android:textSize="14sp" />
 

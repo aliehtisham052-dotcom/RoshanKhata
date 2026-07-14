@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioButton
@@ -28,6 +29,7 @@ import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.PartyAdapter
+import com.innovation313.roshankhata.ui.PartySuggestionAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -48,7 +50,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var adapter: PartyAdapter
-    private lateinit var etSearch: EditText
+    private lateinit var etSearch: AutoCompleteTextView
+    private lateinit var suggestions: PartySuggestionAdapter
 
     /** Everything from the DB. The list on screen is a view onto this. */
     private var allParties: List<PartyWithBalance> = emptyList()
@@ -77,12 +80,7 @@ class MainActivity : AppCompatActivity() {
 
         val rv: RecyclerView = findViewById(R.id.rvParties)
         adapter = PartyAdapter(
-            onClick = { party ->
-                startActivity(
-                    Intent(this, PartyDetailActivity::class.java)
-                        .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
-                )
-            },
+            onClick = { party -> openParty(party) },
             onLongClick = { party -> confirmDeleteParty(party) }
         )
         rv.layoutManager = LinearLayoutManager(this)
@@ -93,6 +91,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         etSearch = findViewById(R.id.etSearchParties)
+
+        // Tapping a suggestion goes STRAIGHT to the account. That is the whole
+        // point — filtering the list still leaves the owner hunting for a row.
+        suggestions = PartySuggestionAdapter(this) { party ->
+            openParty(party)
+        }
+        etSearch.setAdapter(suggestions)
+
+        etSearch.setOnItemClickListener { _, _, position, _ ->
+            suggestions.getItem(position)?.let { party ->
+                // Clear the box before leaving. Coming back to a stale query and
+                // a filtered list — with no memory of having typed it — is a
+                // small bewilderment the owner does not need.
+                etSearch.setText("")
+                openParty(party)
+            }
+        }
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -157,6 +172,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             dao.observePartiesWithBalance().collectLatest { list ->
                 allParties = list
+                suggestions.setSource(list)
                 render()
             }
         }
@@ -443,6 +459,21 @@ class MainActivity : AppCompatActivity() {
         )
         ivEye.contentDescription = getString(
             if (hidden) R.string.show_balance else R.string.hide_balance
+        )
+    }
+
+    /**
+     * One way into a party's ledger, used by the list AND the suggestions.
+     *
+     * Two paths to the same screen would eventually drift apart — one gaining a
+     * check or an extra the other lacked — and the difference would show up as a
+     * bug nobody could reproduce, because it would depend on how the owner got
+     * there.
+     */
+    private fun openParty(party: PartyWithBalance) {
+        startActivity(
+            Intent(this, PartyDetailActivity::class.java)
+                .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
         )
     }
 }
