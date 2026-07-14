@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
@@ -260,7 +261,7 @@ class PartyDetailActivity : AppCompatActivity() {
                 context = this,
                 partyName = partyName,
                 balance = currentBalance,
-                businessName = null
+                businessName = BusinessProfile.businessName(this)
             )
         )
 
@@ -305,7 +306,8 @@ class PartyDetailActivity : AppCompatActivity() {
                         PdfExport.StatementRow(it.entry, it.runningBalance)
                     },
                     closingBalance = currentBalance,
-                    businessName = null
+                    businessName = BusinessProfile.businessName(this@PartyDetailActivity),
+                    paymentQr = BusinessProfile.loadQr(this@PartyDetailActivity)
                 )
             }
 

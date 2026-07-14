@@ -88,6 +88,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, ZakatActivity::class.java))
                 true
             }
+            R.id.action_business_settings -> {
+                startActivity(Intent(this, BusinessSettingsActivity::class.java))
+                true
+            }
             R.id.action_app_lock -> {
                 showAppLockSettings()
                 true

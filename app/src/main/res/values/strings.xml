@@ -142,4 +142,26 @@
     <string name="app_lock_no_screen_lock">This phone has no screen lock set. Set a fingerprint, PIN, or pattern in your phone\'s settings first, then App Lock can protect your ledger.</string>
     <string name="app_lock_unavailable">App Lock is not available on this phone.</string>
     <string name="ok">OK</string>
+
+    <!-- Business settings / payment QR -->
+    <string name="business_settings">Business Settings</string>
+    <string name="business_settings_subtitle">Your name and payment code on statements</string>
+    <string name="business_name">Business name</string>
+    <string name="business_name_help">Appears at the top of every statement and at the end of every reminder you send.</string>
+    <string name="business_name_hint">e.g. Bhatti Traders</string>
+
+    <string name="payment_qr">Payment QR code</string>
+    <string name="payment_qr_help">A screenshot or photo of your EasyPaisa or JazzCash QR code. It will be attached to statements so a customer can scan and pay you.</string>
+    <string name="payment_qr_caveat">Check the code carefully before saving. Roshan Khata cannot verify whose account a QR belongs to — if the wrong image is saved, a customer\'s payment will go to the wrong account.\n\nAlso note: a personal EasyPaisa/JazzCash QR does not carry the amount. Your customer will still type it in themselves, so the amount is written clearly alongside.</string>
+    <string name="no_qr_yet">No payment QR saved yet.</string>
+    <string name="choose_qr_image">Choose Image</string>
+    <string name="remove_qr">Remove</string>
+    <string name="qr_saved">Payment QR saved</string>
+    <string name="qr_save_failed">That image could not be saved. Please pick another.</string>
+    <string name="qr_removed">Payment QR removed</string>
+    <string name="qr_confirm_title">Is this the right code?</string>
+    <string name="qr_confirm_message">Look at the code above and confirm it is your own EasyPaisa or JazzCash account. If it is not, your customers\' payments will reach someone else.</string>
+    <string name="qr_confirm_yes">Yes, it is mine</string>
+    <string name="profile_saved">Saved</string>
+    <string name="attach_qr_to_reminder">Attach payment QR</string>
 </resources>
