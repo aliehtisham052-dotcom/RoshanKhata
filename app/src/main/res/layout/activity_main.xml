@@ -13,19 +13,12 @@
         android:background="@color/section_khata"
         android:orientation="vertical"
         android:paddingStart="20dp"
-        android:paddingEnd="8dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="20dp"
         android:paddingBottom="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_marginStart="-20dp"
-            app:theme="@style/ToolbarInk"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
         <TextView
             android:layout_width="wrap_content"

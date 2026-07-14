@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
@@ -14,7 +12,6 @@ import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -72,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         tvNetBalance = findViewById(R.id.tvNetBalance)
@@ -135,37 +131,6 @@ class MainActivity : AppCompatActivity() {
         setupBottomNav()
 
         observeData()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_zakat -> {
-                startActivity(Intent(this, ZakatActivity::class.java))
-                true
-            }
-            R.id.action_business_settings -> {
-                startActivity(Intent(this, BusinessSettingsActivity::class.java))
-                true
-            }
-            R.id.action_backup -> {
-                startActivity(Intent(this, BackupActivity::class.java))
-                true
-            }
-            R.id.action_app_lock -> {
-                showAppLockSettings()
-                true
-            }
-            R.id.action_recycle_bin -> {
-                startActivity(Intent(this, RecycleBinActivity::class.java))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     private fun observeData() {
