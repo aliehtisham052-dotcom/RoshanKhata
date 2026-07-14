@@ -26,6 +26,7 @@ import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.ChequeAdapter
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -75,14 +76,27 @@ class ChequesActivity : AppCompatActivity() {
             }
         }
 
+        // The subtitle should describe what is actually on the screen.
+        //
+        // It used to count only cheques falling due and say "Nothing due yet"
+        // otherwise — which read as nonsense once a cheque had been cleared.
+        // There was nothing "yet" about it: the cheque was settled, and the
+        // header was still talking as though something were pending.
         lifecycleScope.launch {
-            dao.observeDueChequeCount(System.currentTimeMillis()).collectLatest { count ->
-                tvDueSummary.text = if (count > 0) {
-                    getString(R.string.due_summary, count)
-                } else {
-                    getString(R.string.due_summary_none)
+            combine(
+                dao.observeCheques(),
+                dao.observeDueChequeCount(System.currentTimeMillis())
+            ) { all, dueCount -> all to dueCount }
+                .collectLatest { (all, dueCount) ->
+                    val pending = all.count { it.status == ChequeStatus.PENDING }
+
+                    tvDueSummary.text = when {
+                        all.isEmpty() -> getString(R.string.due_summary_empty)
+                        dueCount > 0 -> getString(R.string.due_summary, dueCount)
+                        pending > 0 -> getString(R.string.due_summary_pending, pending)
+                        else -> getString(R.string.due_summary_all_settled)
+                    }
                 }
-            }
         }
 
         lifecycleScope.launch {

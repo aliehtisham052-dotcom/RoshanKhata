@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
     <string name="app_tagline">Innovation \u2014 Waqt Hai Badalne Ka</string>
-    <string name="brand_line">Innovation — Waqt Hai Badalne Ka</string>
+    <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Net balance</string>
     <string name="add_party">Add Party</string>
@@ -188,7 +188,10 @@
     <string name="due_in_days">Due in %1$d days</string>
     <string name="overdue_by_days">Overdue by %1$d days</string>
     <string name="due_summary">%1$d cheque(s) ready to bank</string>
-    <string name="due_summary_none">Nothing due yet</string>
+    <string name="due_summary_none">Nothing due</string>
+    <string name="due_summary_pending">%1$d waiting to clear</string>
+    <string name="due_summary_empty">No cheques</string>
+    <string name="due_summary_all_settled">All settled</string>
 
     <string name="cheque_actions">What happened to this cheque?</string>
     <string name="mark_cleared">Mark as Cleared</string>
