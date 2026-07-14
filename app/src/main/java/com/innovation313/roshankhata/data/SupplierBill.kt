@@ -128,10 +128,19 @@ data class BillItem(
     val note: String? = null,
 
     val isDeleted: Boolean = false
-) {
-    /** Line total, where a rate was recorded. */
-    val lineTotal: Double? get() = rate?.let { it * quantity }
-}
+)
+
+/**
+ * Line total, where a rate was recorded.
+ *
+ * An extension property, not a member. Room maps every property declared inside
+ * an @Entity to a database column, and there is no lineTotal column — so
+ * declaring it in the class body makes Room's code generation fail. Outside the
+ * body it is just Kotlin, invisible to Room, and still reads the same at the
+ * call site.
+ */
+val BillItem.lineTotal: Double?
+    get() = rate?.let { it * quantity }
 
 /** A bill with its supplier and what has actually been paid against it. */
 data class BillSummary(
