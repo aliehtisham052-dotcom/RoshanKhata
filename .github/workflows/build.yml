@@ -7,6 +7,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,12 +44,32 @@ jobs:
           tail -100 /tmp/build_output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: Upload build log
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Rename APK
+        if: success()
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/debug/*.apk out/RoshanKhata-latest.apk
+          ls -lh out/
+
+      # A rolling "latest" release: one clean, permanent download link that
+      # always points at the newest build. No zip, no login, no digging
+      # through Actions artifacts — just tap and install on the phone.
+      - name: Publish to Releases
+        if: success() && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
         with:
-          name: build-log
-          path: /tmp/build_output.txt
+          tag_name: latest
+          name: "Roshan Khata — Latest Build"
+          body: |
+            Latest development build of Roshan Khata.
+
+            **Commit:** ${{ github.sha }}
+            **Built:** ${{ github.event.head_commit.timestamp }}
+
+            Tap `RoshanKhata-latest.apk` below to download and install.
+            You may need to allow installs from unknown sources.
+          files: out/RoshanKhata-latest.apk
+          make_latest: true
 
       - name: Upload APK artifact
         if: success()
