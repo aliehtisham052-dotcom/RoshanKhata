@@ -103,6 +103,24 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!--
+      The main sections, out in the open. They were buried in an overflow menu
+      before, which in practice meant most shopkeepers would never have
+      discovered that a Cashbook or a Cheque register existed at all.
+    -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:itemIconTint="@color/nav_item_colour"
+        app:itemTextColor="@color/nav_item_colour"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_bottom_nav" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvParties"
         android:layout_width="0dp"
@@ -135,7 +153,7 @@
         android:text="@string/add_party"
         android:textColor="@color/white"
         app:backgroundTint="@color/navy_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
