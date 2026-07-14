@@ -438,4 +438,12 @@
     <string name="restore_from_app">Restore from a saved backup</string>
     <string name="restore_from_storage">Choose a file from storage</string>
     <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
+
+    <!-- Printable business report -->
+    <string name="report_section_title">Printable report</string>
+    <string name="report_not_backup">A PDF of your whole business \u2014 balances, cheques, plans, expiring stock. For reading, printing, or showing to someone.\n\nThis is NOT a backup. Roshan Khata cannot restore your records from a PDF.</string>
+    <string name="make_report">Make PDF report</string>
+    <string name="making_report">Making the report\u2026</string>
+    <string name="report_failed">The report could not be created.</string>
+    <string name="share_report_pdf">Share report</string>
 </resources>

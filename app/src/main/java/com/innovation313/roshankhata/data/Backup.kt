@@ -31,8 +31,20 @@ object Backup {
 
     private val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
+    /**
+     * Named .txt, not .json.
+     *
+     * WhatsApp — which is how a Pakistani shopkeeper actually moves a file
+     * between phones — refuses to send an extension it does not recognise. The
+     * owner would watch the send appear to work and then find nothing at the
+     * other end.
+     *
+     * The contents are unchanged: it is still JSON, and the app still reads it
+     * back exactly the same way. Only the label differs, because the label is
+     * what was standing between the owner and a backup that actually travelled.
+     */
     fun suggestedFileName(): String =
-        "RoshanKhata_Backup_${stamp.format(Date())}.json"
+        "RoshanKhata_Backup_${stamp.format(Date())}.txt"
 
     // ---------- Export ----------
 

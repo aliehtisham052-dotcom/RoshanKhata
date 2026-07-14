@@ -502,4 +502,73 @@ interface KhataDao {
 
     @Insert
     suspend fun restoreBillItems(items: List<BillItem>)
+
+    // ---------- One-shot reads, for the printed report ----------
+    //
+    // A report is a snapshot, not a live view, so these return a value rather
+    // than a Flow. Using the observing queries here would mean subscribing to
+    // updates for a document that is written once and never changes again.
+
+    @Query(
+        """
+        SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath,
+               COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0) AS balance,
+               COALESCE(MAX(t.timestamp), 0) AS lastActivity,
+               p.creditLimit AS creditLimit
+        FROM parties p
+        LEFT JOIN transactions t
+               ON t.partyId = p.id AND t.isDeleted = 0
+        WHERE p.isDeleted = 0
+        GROUP BY p.id
+        ORDER BY p.name COLLATE NOCASE ASC
+        """
+    )
+    suspend fun partiesWithBalanceOnce(): List<PartyWithBalance>
+
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 1")
+    suspend fun cashIncomeOnce(): Double
+
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0")
+    suspend fun cashExpenseOnce(): Double
+
+    @Query(
+        """
+        SELECT * FROM cheques
+        WHERE isDeleted = 0 AND status = ${ChequeStatus.PENDING}
+        ORDER BY dueDate ASC
+        """
+    )
+    suspend fun pendingChequesOnce(): List<Cheque>
+
+    @Query(
+        """
+        SELECT pl.id, pl.partyId, p.name AS partyName,
+               pl.totalAmount, pl.installmentAmount,
+               COALESCE((
+                   SELECT SUM(i.amount) FROM installments i
+                   WHERE i.planId = pl.id AND i.isDeleted = 0
+               ), 0) AS paidSoFar,
+               pl.nextDueDate, pl.note, pl.isClosed
+        FROM payment_plans pl
+        JOIN parties p ON p.id = pl.partyId
+        WHERE pl.isDeleted = 0 AND p.isDeleted = 0 AND pl.isClosed = 0
+        ORDER BY pl.nextDueDate ASC
+        """
+    )
+    suspend fun openPlansOnce(): List<PlanProgress>
+
+    @Query(
+        """
+        SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
+               i.quantity, i.unit, p.name AS partyName, b.billNumber
+        FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        JOIN parties p ON p.id = b.partyId
+        WHERE i.isDeleted = 0 AND b.isDeleted = 0
+          AND i.expiryDate IS NOT NULL
+          AND i.expiryDate <= :cutoff
+        ORDER BY i.expiryDate ASC
+        """
+    )
+    suspend fun expiringBatchesOnce(cutoff: Long): List<ExpiringBatch>
 }

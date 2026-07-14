@@ -74,12 +74,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="12dp"
-                android:layout_marginBottom="24dp"
                 android:text="@string/restore_from_file"
                 android:textColor="@color/navy_primary"
                 android:textSize="15sp"
                 app:cornerRadius="10dp"
                 app:strokeColor="@color/navy_primary" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:background="#DDDDDD" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/report_section_title"
+                android:textColor="@color/navy_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/report_not_backup"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReport"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp"
+                android:text="@string/make_report"
+                android:textColor="@color/gold_accent"
+                android:textSize="15sp"
+                app:cornerRadius="10dp"
+                app:strokeColor="@color/gold_accent" />
 
         </LinearLayout>
     </LinearLayout>
