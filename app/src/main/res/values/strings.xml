@@ -225,4 +225,17 @@
     <string name="no_matching_entries">No entries match your search.</string>
     <string name="showing_filtered">Showing %1$d of %2$d</string>
     <string name="running_balance_note">Running balance follows the ledger\'s own order, so it stays correct however you sort or search.</string>
+
+    <!-- Party photo -->
+    <string name="party_photo">Photo</string>
+    <string name="set_photo">Set photo</string>
+    <string name="change_photo">Change photo</string>
+    <string name="remove_photo">Remove photo</string>
+    <string name="photo_saved">Photo saved</string>
+    <string name="photo_removed">Photo removed</string>
+    <string name="photo_save_failed">That image could not be saved. Please pick another.</string>
+    <string name="photo_privacy_note">The photo stays on this phone. It is never uploaded, and it is deliberately left OFF statements — a statement gets forwarded, and your customer did not agree to their face travelling with it.</string>
+    <string name="party_options">Options</string>
+    <string name="edit_party">Edit details</string>
+    <string name="delete_party">Delete</string>
 </resources>

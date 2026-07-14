@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,10 +9,13 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -25,6 +29,7 @@ import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
 import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.ui.EntryAdapter
@@ -52,6 +57,14 @@ class PartyDetailActivity : AppCompatActivity() {
     private var currentBalance: Double = 0.0
     private var currentRows: List<EntryRow> = emptyList()
     private lateinit var etSearchEntries: EditText
+    private lateinit var ivAvatar: ImageView
+    private lateinit var tvInitials: TextView
+
+    private val pickPhoto = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) savePhoto(uri)
+    }
 
     /** Every row, with running balances already computed. Views derive from this. */
     private var allRows: List<EntryRow> = emptyList()
@@ -99,6 +112,10 @@ class PartyDetailActivity : AppCompatActivity() {
             exportStatement()
         }
 
+        ivAvatar = findViewById(R.id.ivDetailAvatar)
+        tvInitials = findViewById(R.id.tvDetailInitials)
+        findViewById<View>(R.id.flAvatar).setOnClickListener { showPhotoOptions() }
+
         etSearchEntries = findViewById(R.id.etSearchEntries)
         etSearchEntries.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -120,6 +137,7 @@ class PartyDetailActivity : AppCompatActivity() {
                 partyName = p.name
                 partyPhone = p.phone
                 tvPartyName.text = p.name
+                refreshAvatar()
             }
         }
     }
@@ -425,5 +443,86 @@ class PartyDetailActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    private fun refreshAvatar() {
+        val photo = PartyPhoto.load(this, partyId)
+        if (photo != null) {
+            ivAvatar.setImageBitmap(photo)
+            ivAvatar.clipToOutline = true
+            ivAvatar.background = ContextCompat.getDrawable(this, R.drawable.bg_avatar_circle)
+            ivAvatar.visibility = View.VISIBLE
+            tvInitials.visibility = View.GONE
+        } else {
+            ivAvatar.visibility = View.GONE
+            tvInitials.visibility = View.VISIBLE
+            tvInitials.text = initialsOf(partyName)
+        }
+    }
+
+    private fun initialsOf(name: String): String {
+        val words = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        return when {
+            words.isEmpty() -> "?"
+            words.size == 1 -> words[0].take(1).uppercase()
+            else -> (words[0].take(1) + words[1].take(1)).uppercase()
+        }
+    }
+
+    /**
+     * The photo is optional in every sense: it can be set, changed, or taken
+     * away at any time, and nothing in the app depends on it existing.
+     */
+    private fun showPhotoOptions() {
+        val hasPhoto = PartyPhoto.exists(this, partyId)
+
+        val options = if (hasPhoto) {
+            arrayOf(getString(R.string.change_photo), getString(R.string.remove_photo))
+        } else {
+            arrayOf(getString(R.string.set_photo))
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.party_photo)
+            .setMessage(R.string.photo_privacy_note)
+            .setItems(options) { _, which ->
+                when {
+                    !hasPhoto || which == 0 -> pickPhoto.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                    else -> {
+                        PartyPhoto.remove(this, partyId)
+                        refreshAvatar()
+                        Toast.makeText(this, R.string.photo_removed, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun savePhoto(uri: Uri) {
+        lifecycleScope.launch {
+            val path = withContext(Dispatchers.IO) {
+                PartyPhoto.save(this@PartyDetailActivity, partyId, uri)
+            }
+
+            if (path == null) {
+                Toast.makeText(
+                    this@PartyDetailActivity,
+                    R.string.photo_save_failed,
+                    Toast.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            // Keep the DB in step with what is actually on disk, so a future
+            // export or backup knows the photo exists.
+            dao.getParty(partyId)?.let { p ->
+                dao.updateParty(p.copy(photoPath = path))
+            }
+
+            refreshAvatar()
+            Toast.makeText(this@PartyDetailActivity, R.string.photo_saved, Toast.LENGTH_SHORT).show()
+        }
     }
 }
