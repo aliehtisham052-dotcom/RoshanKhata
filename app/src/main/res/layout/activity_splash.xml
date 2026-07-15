@@ -7,6 +7,18 @@
     android:clickable="true"
     android:focusable="true">
 
+    <!--
+      Logo AND branding together, centred as one group.
+
+      The tagline used to be pinned to the very bottom. That put it exactly where
+      the biometric sheet rises from — so when the sensor appeared, it slid up
+      over the tagline and shoved "Powered by Innovation-313" out of sight. The
+      owner watched their own brand line get swallowed by the system prompt.
+
+      Keeping the whole group centred, slightly above the middle, keeps the brand
+      in the clear upper two-thirds where the sheet never reaches. Logo, then the
+      mark beneath it, both always visible.
+    -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,45 +28,18 @@
         android:paddingStart="32dp"
         android:paddingEnd="32dp">
 
-        <!--
-          The logo is the whole point of the splash — it is the brand the owner
-          is being asked to remember. It gets the centre of the screen and room
-          to breathe.
-        -->
-        <!--
-          A capped, aspect-correct logo that fits any screen. The parent is a
-          LinearLayout, not a Constraint, so a width-percent won't apply here —
-          adjustViewBounds + fitCenter keeps the aspect ratio and maxWidth caps
-          it so it never reaches the edges on a narrow phone. The old fixed
-          240dp square could overflow a small display.
-        -->
         <ImageView
             android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:contentDescription="@string/app_name"
             android:scaleType="fitCenter"
             android:src="@drawable/logo_full" />
 
-    </LinearLayout>
-
-    <!--
-      "Powered by Innovation-313" sits at the foot, quiet but present. This is
-      the brand line the owner asked to carry through the app — the maker's
-      mark, not a heading. It belongs at the bottom, the way a colophon does.
-    -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="48dp"
-        android:gravity="center"
-        android:orientation="vertical">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
             android:text="@string/powered_by"
             android:textColor="@color/brand_green"
             android:textSize="13sp"
@@ -68,6 +53,7 @@
             android:text="@string/tap_to_continue"
             android:textColor="@color/text_muted"
             android:textSize="11sp" />
+
     </LinearLayout>
 
 </FrameLayout>
