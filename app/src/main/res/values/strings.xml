@@ -521,6 +521,6 @@
     <string name="nisab_silver">Silver</string>
     <string name="nisab_gold">Gold</string>
     <string name="gold_price_hint">Gold price per gram (Rs)</string>
-    <string name="nisab_silver_note">Silver standard: 612.36 g. Lower nisab \u2014 more people owe Zakat (more careful toward the poor).</string>
-    <string name="nisab_gold_note">Gold standard: 87.48 g. Higher nisab \u2014 fewer people owe Zakat. Confirm the right standard with a scholar.</string>
+    <string name="nisab_silver_note">Silver nisab: 612.36 g (52.5 tola) of silver. This is the lower threshold, so more people owe Zakat \u2014 the position generally taken as more careful toward the rights of the poor.</string>
+    <string name="nisab_gold_note">Gold nisab: 87.48 g (7.5 tola) of gold. This is the higher threshold, so fewer people owe Zakat. Confirm which standard applies to you with a scholar.</string>
 </resources>

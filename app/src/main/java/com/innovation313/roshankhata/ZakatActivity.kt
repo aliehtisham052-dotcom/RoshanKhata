@@ -38,6 +38,7 @@ class ZakatActivity : AppCompatActivity() {
     private lateinit var tvZakatDue: TextView
     private lateinit var tvNisabStatus: TextView
     private lateinit var toggleNisab: com.google.android.material.button.MaterialButtonToggleGroup
+    private lateinit var tvNisabStandardNote: TextView
     private var useGold = false
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -51,15 +52,20 @@ class ZakatActivity : AppCompatActivity() {
 
         etSilverPrice = findViewById(R.id.etSilverPrice)
         toggleNisab = findViewById(R.id.toggleNisab)
+        tvNisabStandardNote = findViewById(R.id.tvNisabStandardNote)
 
         // Default to silver (lower nisab). Selecting gold swaps the standard and
         // the field hint; the note under the result explains what each means.
         toggleNisab.check(R.id.btnSilver)
+        tvNisabStandardNote.setText(R.string.nisab_silver_note)
         toggleNisab.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             useGold = checkedId == R.id.btnGold
             etSilverPrice.setHint(
                 if (useGold) R.string.gold_price_hint else R.string.silver_price_hint
+            )
+            tvNisabStandardNote.setText(
+                if (useGold) R.string.nisab_gold_note else R.string.nisab_silver_note
             )
             recalculate()
         }

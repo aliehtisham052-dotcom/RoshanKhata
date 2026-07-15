@@ -105,6 +105,19 @@
                     app:strokeColor="@color/section_tools" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
+            <!--
+              The chosen standard, spelled out in grams (and tola). This is the
+              detail the owner asked to see plainly — not just "silver" or "gold"
+              but exactly how much metal the nisab is measured against.
+            -->
+            <TextView
+                android:id="@+id/tvNisabStandardNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
             <EditText
                 android:id="@+id/etSilverPrice"
                 android:layout_width="match_parent"
