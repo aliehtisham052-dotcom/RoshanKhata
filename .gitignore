@@ -24,3 +24,5 @@ google-services.json
 *.env
 secrets.xml
 apikey.properties
+*.jks
+keystore_base64.txt

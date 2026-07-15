@@ -23,6 +23,26 @@ android {
         versionName = "0.1.0"
     }
 
+    signingConfigs {
+        create("release") {
+            // The keystore is supplied by CI as a decoded file + secrets, never
+            // committed. A stable key matters for two reasons: Google Sign-In is
+            // registered against ONE SHA-1 that must not change, and the Play
+            // Store will only accept updates signed by the same key forever.
+            //
+            // If the env vars aren't present (a local build without the key),
+            // this stays null and the build falls back to debug signing below —
+            // so the project still builds for anyone, just without a release key.
+            val storePathValue = System.getenv("RELEASE_STORE_FILE")
+            if (storePathValue != null) {
+                storeFile = file(storePathValue)
+                storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -30,9 +50,22 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Use the release key when it's available, otherwise leave unsigned
+            // (CI signs release; local debug builds don't need it).
+            if (System.getenv("RELEASE_STORE_FILE") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         debug {
             isDebuggable = true
+            // Sign the DEBUG build with the release key too when it's present,
+            // so the APK the owner installs from CI has the STABLE SHA-1 that
+            // Google Sign-In needs. Without this, each CI debug build would be
+            // signed by a throwaway key and Drive sign-in would break on every
+            // update.
+            if (System.getenv("RELEASE_STORE_FILE") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
