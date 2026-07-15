@@ -27,8 +27,8 @@ object PdfExport {
     private const val PAGE_H = 842
     private const val MARGIN = 40f
 
-    private const val NAVY = 0xFF152238.toInt()
-    private const val GOLD = 0xFFD4A438.toInt()
+    private const val NAVY = 0xFF094C2E.toInt()
+    private const val GOLD = 0xFFE1AF3F.toInt()
     private const val RED = 0xFFC0392B.toInt()
     private const val GREEN = 0xFF1E8449.toInt()
     private const val GREY = 0xFF7A7A7A.toInt()
@@ -97,6 +97,8 @@ object PdfExport {
         var c = page.canvas
         var y: Float
 
+        val brandLogo = PdfBranding.logo(context)
+
         fun drawHeader(): Float {
             c.drawRect(0f, 0f, PAGE_W.toFloat(), 78f, navyFill)
             c.drawText(businessName?.takeIf { it.isNotBlank() } ?: "Roshan Khata", MARGIN, 32f, title)
@@ -104,6 +106,10 @@ object PdfExport {
             partyPhone?.takeIf { it.isNotBlank() }?.let {
                 c.drawText(it, MARGIN, 66f, subtitle)
             }
+
+            // The logo, top-right of the band. The statement leaves the shop and
+            // becomes the app's best advertisement; the mark should ride with it.
+            PdfBranding.drawInHeader(c, brandLogo, PAGE_W, MARGIN, 78f)
 
             var yy = 100f
             c.drawText("Date", xDate, yy, header)

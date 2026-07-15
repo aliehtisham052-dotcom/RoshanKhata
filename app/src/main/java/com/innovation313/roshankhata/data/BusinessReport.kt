@@ -31,8 +31,8 @@ object BusinessReport {
     private const val PAGE_H = 842
     private const val MARGIN = 40f
 
-    private const val NAVY = 0xFF152238.toInt()
-    private const val GOLD = 0xFFD4A438.toInt()
+    private const val NAVY = 0xFF094C2E.toInt()
+    private const val GOLD = 0xFFE1AF3F.toInt()
     private const val RED = 0xFFC0392B.toInt()
     private const val GREEN = 0xFF1E8449.toInt()
     private const val GREY = 0xFF7A7A7A.toInt()
@@ -142,16 +142,19 @@ object BusinessReport {
         var y: Float
         var pageNo = 1
 
+        val brandLogo = PdfBranding.logo(context)
+
         fun header(): Float {
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 74f, navyFill)
             canvas.drawText(d.businessName ?: "Roshan Khata", MARGIN, 34f, title)
-            canvas.drawText("Innovation \u2014 Waqt Hai Badalne Ka", MARGIN, 52f, tagline)
+            canvas.drawText("Roshan Khata \u00B7 Har Hisaab Roshan", MARGIN, 52f, tagline)
             canvas.drawText(
                 "Report generated ${dateFmt.format(Date())}",
                 MARGIN,
                 66f,
                 tagline
             )
+            PdfBranding.drawInHeader(canvas, brandLogo, PAGE_W, MARGIN, 74f)
             return 100f
         }
 
