@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The logo, centred, for the system splash. A plain bitmap wrapper so Android
+  places our mark where it would otherwise put a bare launcher icon.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/logo_full"
+        android:gravity="center" />
+</layer-list>
