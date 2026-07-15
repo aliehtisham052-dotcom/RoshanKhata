@@ -3,7 +3,6 @@ package com.innovation313.roshankhata
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -35,35 +34,27 @@ class SplashActivity : AppCompatActivity() {
 
         val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
 
-        val fingerprint = findViewById<ImageView>(R.id.ivFingerprint)
-        val unlockHint = findViewById<TextView>(R.id.tvUnlockHint)
         val tapHint = findViewById<TextView>(R.id.tvTapHint)
 
         if (locked) {
-            // Locked: the fingerprint icon is shown, but only as a SIGN of what
-            // is about to happen. The owner does not tap it — the real unlock
-            // prompt comes up on its own, the way the apps they already use
-            // behave. A splash that makes them tap first, then authenticate, is
-            // two steps where one will do.
-            fingerprint.visibility = View.VISIBLE
-            unlockHint.visibility = View.VISIBLE
+            // Locked: the logo shows, then the REAL fingerprint prompt comes up
+            // on its own. Nothing else. The drawn fingerprint that used to sit
+            // here was a second mark the eye met before the actual sensor — the
+            // owner rightly asked why it was there, because the apps they use
+            // show only the logo and then the system prompt. There is no reason
+            // to draw a picture of the sensor a beat before the sensor itself.
             tapHint.visibility = View.GONE
 
-            // Go straight to the gate, which raises the biometric prompt. A
-            // short delay lets the logo actually register first — otherwise the
-            // system sheet slides up over a splash nobody had time to see.
-            fingerprint.postDelayed({
+            // A short beat so the logo registers, then straight to the gate,
+            // which raises the biometric sheet.
+            tapHint.postDelayed({
                 if (!isFinishing) {
                     startActivity(Intent(this, GateActivity::class.java))
                     finish()
                 }
             }, 550)
         } else {
-            // Not locked: nothing to authenticate, so a plain tap advances. No
-            // fingerprint — a lock symbol on an unlocked app is a promise the
-            // app is not keeping.
-            fingerprint.visibility = View.GONE
-            unlockHint.visibility = View.GONE
+            // Not locked: nothing to authenticate, so a plain tap advances.
             tapHint.visibility = View.VISIBLE
 
             findViewById<View>(R.id.splashRoot).setOnClickListener {

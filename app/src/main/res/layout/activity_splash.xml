@@ -60,38 +60,6 @@
             android:textSize="13sp"
             android:textStyle="bold" />
 
-        <!--
-          The fingerprint. Shown ONLY when app lock is on — the owner's point,
-          and the right one: a lock symbol on an unlocked app is a promise the
-          app is not keeping. When it appears, tapping it goes straight to the
-          unlock prompt.
-        -->
-        <ImageView
-            android:id="@+id/ivFingerprint"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="14dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/unlock_to_open"
-            android:padding="4dp"
-            android:src="@drawable/ic_fingerprint"
-            android:visibility="gone" />
-
-        <!--
-          The two prompts are mutually exclusive. Lock on -> "Touch to unlock"
-          under the fingerprint. Lock off -> the plain "Tap to continue". Never
-          both, because the app either needs unlocking or it does not.
-        -->
-        <TextView
-            android:id="@+id/tvUnlockHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/unlock_to_open"
-            android:textColor="@color/text_muted"
-            android:textSize="11sp"
-            android:visibility="gone" />
-
         <TextView
             android:id="@+id/tvTapHint"
             android:layout_width="wrap_content"
