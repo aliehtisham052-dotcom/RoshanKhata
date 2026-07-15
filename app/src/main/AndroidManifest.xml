@@ -136,6 +136,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+            <activity
+            android:name=".InsightsActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

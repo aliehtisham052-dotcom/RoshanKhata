@@ -110,4 +110,6 @@
     <!-- Bright variants for use ON the dark green party header only -->
     <color name="bal_owed_to_me_on_dark">#FFA8A8</color>
     <color name="bal_i_owe_on_dark">#7FE3C4</color>
+    <color name="section_insights">#1E5A4E</color>
+    <color name="section_insights_soft">#A8CBC2</color>
 </resources>

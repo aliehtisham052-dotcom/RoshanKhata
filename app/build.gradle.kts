@@ -99,6 +99,7 @@ dependencies {
     // already stores credentials in hardware-backed secure storage, and we
     // have no business duplicating that badly.
     implementation("androidx.biometric:biometric:1.1.0")
+    implementation("androidx.cardview:cardview:1.0.0")
 
     // Google Sign-In + Drive, for cloud backup to the user's OWN Drive.
     // The backup file lives in the app's private "appDataFolder" on their

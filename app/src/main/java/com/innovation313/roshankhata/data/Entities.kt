@@ -118,3 +118,17 @@ data class ZakatInputs(
     val qarzeHasnaGiven: Double,
     val payables: Double
 )
+
+/** One row of the "top products" insight. */
+data class ProductStat(
+    val name: String,
+    val qty: Double,
+    val unit: String?,
+    val lines: Int
+)
+
+/** One row of the "top customers" insight. */
+data class CustomerStat(
+    val name: String,
+    val total: Double
+)

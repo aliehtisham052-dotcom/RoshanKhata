@@ -620,4 +620,42 @@ interface KhataDao {
         restoreBills(bills)
         restoreBillItems(billItems)
     }
+
+
+    // ---------- Sale Insights (all read-only, all on-device) ----------
+    //
+    // "A sale" here means an entry where goods/money went OUT to the customer
+    // (isGiven = 1) — that is the shop selling something. Money coming back in
+    // is a payment, not a new sale, so it is excluded from these totals. All
+    // queries skip deleted rows.
+
+    /** Total value of sales between two timestamps. */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions " +
+           "WHERE isGiven = 1 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
+    suspend fun salesTotalBetween(from: Long, to: Long): Double
+
+    /** How many sales (entry count) between two timestamps. */
+    @Query("SELECT COUNT(*) FROM transactions " +
+           "WHERE isGiven = 1 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
+    suspend fun salesCountBetween(from: Long, to: Long): Int
+
+    /**
+     * Top products by quantity sold in a period. Only entries that actually
+     * named a product and gave a quantity count — a bare cash sale has no
+     * product to rank.
+     */
+    @Query("SELECT itemName AS name, SUM(quantity) AS qty, unit AS unit, COUNT(*) AS lines " +
+           "FROM transactions " +
+           "WHERE isGiven = 1 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to " +
+           "AND itemName IS NOT NULL AND itemName != '' AND quantity IS NOT NULL " +
+           "GROUP BY itemName, unit ORDER BY qty DESC LIMIT :limit")
+    suspend fun topProductsBetween(from: Long, to: Long, limit: Int): List<ProductStat>
+
+    /** Top customers by total purchases in a period. */
+    @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
+           "FROM transactions t JOIN parties p ON p.id = t.partyId " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+           "AND t.timestamp >= :from AND t.timestamp < :to " +
+           "GROUP BY t.partyId ORDER BY total DESC LIMIT :limit")
+    suspend fun topCustomersBetween(from: Long, to: Long, limit: Int): List<CustomerStat>
 }

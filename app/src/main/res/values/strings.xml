@@ -507,4 +507,15 @@
     <string name="drive_restore_confirm">This will replace everything currently in the app with the backup from your Google Drive. Continue?</string>
     <string name="i_have_to_get">I have to get</string>
     <string name="i_have_to_give">I have to give</string>
+    <string name="insights_title">Sale Insights</string>
+    <string name="insights_subtitle">What\'s moving in your shop</string>
+    <string name="insights_total_sale">Total Sale \u00b7 This month</string>
+    <string name="insights_top_products">Top Products</string>
+    <string name="insights_top_customers">Top Customers</string>
+    <string name="insights_up">\u25b2 %1$d%% more than last month (%2$s)</string>
+    <string name="insights_down">\u25bc %1$d%% less than last month (%2$s)</string>
+    <string name="insights_no_compare">First month of sales \u2014 nothing to compare yet.</string>
+    <string name="insights_no_products">No products recorded this month. Add a product name when you make an entry to see this.</string>
+    <string name="insights_no_sales">No sales recorded this month yet.</string>
+    <string name="insights_privacy_note">All calculated on your phone. Nothing leaves your device.</string>
 </resources>
