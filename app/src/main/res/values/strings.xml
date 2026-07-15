@@ -483,4 +483,6 @@
     <string name="brand_har_hisaab">Har Hisaab Roshan</string>
 
     <string name="unlock_to_open">Touch to unlock</string>
+
+    <string name="restore_done_with_bin">Your data is back.\n\n%1$d customer(s) in this backup had been deleted before it was made, so they have been restored to the Recycle Bin \u2014 not the main list. Open More \u2192 Recycle Bin to find them, where you can restore any of them fully.</string>
 </resources>

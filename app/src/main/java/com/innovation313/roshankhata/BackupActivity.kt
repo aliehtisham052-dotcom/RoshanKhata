@@ -203,17 +203,43 @@ class BackupActivity : AppCompatActivity() {
                 Backup.restore(dao, data)
             }
 
-            Toast.makeText(this@BackupActivity, R.string.restore_done, Toast.LENGTH_LONG).show()
+            // A backup preserves EXACTLY what was in the ledger when it was
+            // taken — including anyone who was already in the Recycle Bin at
+            // that moment. Restored, they go back to the Recycle Bin, not the
+            // home list. That is correct, but to the owner it looks like the
+            // customer "did not come back" — so if any deleted rows were part of
+            // this backup, say so plainly, and point to where they are.
+            val deletedParties = data.parties.count { it.isDeleted }
 
-            // Back to a clean home screen — the ledger it was showing no longer
-            // exists, and leaving stale rows on screen would be alarming.
-            startActivity(
-                Intent(this@BackupActivity, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    .putExtra(MainActivity.EXTRA_UNLOCKED, true)
-            )
-            finish()
+            if (deletedParties > 0) {
+                MaterialAlertDialogBuilder(this@BackupActivity)
+                    .setTitle(R.string.restore_done)
+                    .setMessage(
+                        getString(R.string.restore_done_with_bin, deletedParties)
+                    )
+                    .setPositiveButton(R.string.ok) { _, _ -> goHome() }
+                    .setCancelable(false)
+                    .show()
+            } else {
+                Toast.makeText(
+                    this@BackupActivity,
+                    R.string.restore_done,
+                    Toast.LENGTH_LONG
+                ).show()
+                goHome()
+            }
         }
+    }
+
+    private fun goHome() {
+        // Back to a clean home screen — the ledger it was showing no longer
+        // exists, and leaving stale rows on screen would be alarming.
+        startActivity(
+            Intent(this, MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                .putExtra(MainActivity.EXTRA_UNLOCKED, true)
+        )
+        finish()
     }
 
     /**
