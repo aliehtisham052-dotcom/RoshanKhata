@@ -348,25 +348,20 @@ object Backup {
 
     /** Replaces everything. Only called after the user has confirmed. */
     suspend fun restore(dao: KhataDao, data: ParsedBackup) {
-        // Children first, then parents: foreign keys will not allow a party to
-        // be removed while its entries still point at it.
-        dao.wipeBillItems()
-        dao.wipeBills()
-        dao.wipeInstallments()
-        dao.wipePlans()
-        dao.wipeEntries()
-        dao.wipeCheques()
-        dao.wipeCash()
-        dao.wipeParties()
-
-        dao.restoreParties(data.parties)
-        dao.restoreEntries(data.entries)
-        dao.restoreCheques(data.cheques)
-        dao.restoreCash(data.cash)
-        dao.restorePlans(data.plans)
-        dao.restoreInstallments(data.installments)
-        dao.restoreBills(data.bills)
-        dao.restoreBillItems(data.billItems)
+        // One transaction, all-or-nothing. If any step fails, the whole thing
+        // rolls back and the existing ledger is left untouched — rather than the
+        // old behaviour, where a failure partway through wiped data and restored
+        // nothing, losing the customer the owner was trying to bring back.
+        dao.restoreAll(
+            parties = data.parties,
+            entries = data.entries,
+            cheques = data.cheques,
+            cash = data.cash,
+            plans = data.plans,
+            installments = data.installments,
+            bills = data.bills,
+            billItems = data.billItems
+        )
     }
 
     // ---------- Mapping ----------

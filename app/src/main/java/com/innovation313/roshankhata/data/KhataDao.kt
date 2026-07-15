@@ -3,6 +3,7 @@ package com.innovation313.roshankhata.data
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -571,4 +572,52 @@ interface KhataDao {
         """
     )
     suspend fun expiringBatchesOnce(cutoff: Long): List<ExpiringBatch>
+
+    /**
+     * Wipe everything and load a backup, as ONE transaction.
+     *
+     * This is the single most dangerous operation in the app: it deletes the
+     * entire ledger and rebuilds it. If it runs as a series of separate steps
+     * and any one of them fails partway — a foreign-key timing, a constraint, a
+     * bad row — the owner is left with a ledger half-erased and half-restored,
+     * having LOST data in the act of trying to recover it. That is the worst
+     * possible outcome for a backup feature.
+     *
+     * Inside @Transaction it is all-or-nothing. Either the whole restore
+     * succeeds, or it rolls back and the existing ledger is left exactly as it
+     * was. A failed restore should cost nothing.
+     *
+     * Order matters even within the transaction: children are cleared before
+     * parents, and parents are inserted before children, so a foreign key never
+     * points at a row that is not there yet.
+     */
+    @Transaction
+    suspend fun restoreAll(
+        parties: List<Party>,
+        entries: List<LedgerEntry>,
+        cheques: List<Cheque>,
+        cash: List<CashEntry>,
+        plans: List<PaymentPlan>,
+        installments: List<Installment>,
+        bills: List<SupplierBill>,
+        billItems: List<BillItem>
+    ) {
+        wipeBillItems()
+        wipeBills()
+        wipeInstallments()
+        wipePlans()
+        wipeEntries()
+        wipeCheques()
+        wipeCash()
+        wipeParties()
+
+        restoreParties(parties)
+        restoreEntries(entries)
+        restoreCheques(cheques)
+        restoreCash(cash)
+        restorePlans(plans)
+        restoreInstallments(installments)
+        restoreBills(bills)
+        restoreBillItems(billItems)
+    }
 }
