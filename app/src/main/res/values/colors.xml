@@ -93,6 +93,7 @@
     <color name="brand_green">#1B5E3A</color>
     <color name="brand_green_dark">#134228</color>
     <color name="brand_gold">#D4A02A</color>
+    <color name="gold_on_dark">#F0C351</color>  <!-- bright gold for text/borders ON the dark green header -->
     <color name="brand_gold_soft">#A9C4B0</color>
 
     <!--

@@ -183,7 +183,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/zakatable_wealth"
-                    android:textColor="@color/gold_bright"
+                    android:textColor="@color/gold_on_dark"
                     android:textSize="12sp" />
 
                 <TextView
@@ -205,7 +205,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/zakat_due_label"
-                    android:textColor="@color/gold_bright"
+                    android:textColor="@color/gold_on_dark"
                     android:textSize="12sp" />
 
                 <TextView

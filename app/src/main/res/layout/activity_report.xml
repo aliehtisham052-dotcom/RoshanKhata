@@ -109,7 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/i_gave"
-                android:textColor="@color/gold_bright"
+                android:textColor="@color/gold_on_dark"
                 android:textSize="11sp" />
 
             <TextView
@@ -131,7 +131,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/i_got"
-                android:textColor="@color/gold_bright"
+                android:textColor="@color/gold_on_dark"
                 android:textSize="11sp" />
 
             <TextView
@@ -153,7 +153,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/net_change"
-                android:textColor="@color/gold_bright"
+                android:textColor="@color/gold_on_dark"
                 android:textSize="11sp" />
 
             <TextView
