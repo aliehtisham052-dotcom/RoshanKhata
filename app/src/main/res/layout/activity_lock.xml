@@ -4,56 +4,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/navy_deep">
+    android:background="@color/white">
 
+    <!--
+      Everything is one packed, centred chain. Nothing is pinned to the bottom.
+
+      The tagline used to be constrained to the bottom of the screen, and a
+      second brand line sat right at the foot. When the fingerprint sheet rose,
+      both were exactly in its path — so they slid down and hid behind it, which
+      is what the owner filmed: the name and tagline dropping to the very bottom.
+
+      Centred and packed, the whole group sits in the clear upper-middle where
+      the system sheet never reaches. Logo, name, tagline — together, and always
+      visible while the sensor does its work below.
+    -->
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/app_name"
-        android:src="@mipmap/ic_launcher"
-        app:layout_constraintBottom_toTopOf="@id/tvLockAppName"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo_full"
+        app:layout_constraintBottom_toTopOf="@id/tvLockTagline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <TextView
-        android:id="@+id/tvLockAppName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/app_name"
-        android:textColor="@color/ink"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
-
+    <!--
+      The logo already carries the "Roshan Khata" name and "Har Hisaab Roshan",
+      so there is no separate name TextView — it would only repeat what the image
+      already says. Just the tagline beneath it.
+    -->
     <TextView
         android:id="@+id/tvLockTagline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="24dp"
         android:text="@string/app_tagline"
-        android:textColor="@color/gold_bright"
-        android:textSize="13sp"
+        android:textColor="@color/gold_accent"
+        android:textSize="14sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvLockAppName" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
-        android:letterSpacing="0.06"
-        android:text="@string/brand_line"
-        android:textColor="@color/text_muted"
-        android:textSize="11sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
