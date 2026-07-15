@@ -3,8 +3,12 @@ package com.innovation313.roshankhata
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.innovation313.roshankhata.data.AppLock
 
 /**
  * The opening screen: the logo, and "Powered by Innovation-313".
@@ -30,10 +34,37 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        findViewById<View>(R.id.splashRoot).setOnClickListener {
+        // Show the fingerprint ONLY when app lock is actually on. A lock symbol
+        // on an app that isn't locked is a promise the app isn't keeping — so
+        // the owner who set no lock sees the plain "Tap to continue", and the
+        // owner who did set one sees the fingerprint and "Touch to unlock". The
+        // two are mutually exclusive: the app either needs unlocking or it does
+        // not.
+        val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
+
+        val fingerprint = findViewById<ImageView>(R.id.ivFingerprint)
+        val unlockHint = findViewById<TextView>(R.id.tvUnlockHint)
+        val tapHint = findViewById<TextView>(R.id.tvTapHint)
+
+        if (locked) {
+            fingerprint.visibility = View.VISIBLE
+            unlockHint.visibility = View.VISIBLE
+            tapHint.visibility = View.GONE
+        } else {
+            fingerprint.visibility = View.GONE
+            unlockHint.visibility = View.GONE
+            tapHint.visibility = View.VISIBLE
+        }
+
+        val proceed = View.OnClickListener {
+            // GateActivity is the real decision point — it sends a locked app to
+            // the unlock screen and an unlocked one straight in. The splash only
+            // hands off; it never decides. One gate, not two.
             startActivity(Intent(this, GateActivity::class.java))
-            // No going "back" to the splash — it has done its job.
             finish()
         }
+
+        findViewById<View>(R.id.splashRoot).setOnClickListener(proceed)
+        fingerprint.setOnClickListener(proceed)
     }
 }
