@@ -33,12 +33,6 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Show the fingerprint ONLY when app lock is actually on. A lock symbol
-        // on an app that isn't locked is a promise the app isn't keeping — so
-        // the owner who set no lock sees the plain "Tap to continue", and the
-        // owner who did set one sees the fingerprint and "Touch to unlock". The
-        // two are mutually exclusive: the app either needs unlocking or it does
-        // not.
         val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
 
         val fingerprint = findViewById<ImageView>(R.id.ivFingerprint)
@@ -46,24 +40,36 @@ class SplashActivity : AppCompatActivity() {
         val tapHint = findViewById<TextView>(R.id.tvTapHint)
 
         if (locked) {
+            // Locked: the fingerprint icon is shown, but only as a SIGN of what
+            // is about to happen. The owner does not tap it — the real unlock
+            // prompt comes up on its own, the way the apps they already use
+            // behave. A splash that makes them tap first, then authenticate, is
+            // two steps where one will do.
             fingerprint.visibility = View.VISIBLE
             unlockHint.visibility = View.VISIBLE
             tapHint.visibility = View.GONE
+
+            // Go straight to the gate, which raises the biometric prompt. A
+            // short delay lets the logo actually register first — otherwise the
+            // system sheet slides up over a splash nobody had time to see.
+            fingerprint.postDelayed({
+                if (!isFinishing) {
+                    startActivity(Intent(this, GateActivity::class.java))
+                    finish()
+                }
+            }, 550)
         } else {
+            // Not locked: nothing to authenticate, so a plain tap advances. No
+            // fingerprint — a lock symbol on an unlocked app is a promise the
+            // app is not keeping.
             fingerprint.visibility = View.GONE
             unlockHint.visibility = View.GONE
             tapHint.visibility = View.VISIBLE
-        }
 
-        val proceed = View.OnClickListener {
-            // GateActivity is the real decision point — it sends a locked app to
-            // the unlock screen and an unlocked one straight in. The splash only
-            // hands off; it never decides. One gate, not two.
-            startActivity(Intent(this, GateActivity::class.java))
-            finish()
+            findViewById<View>(R.id.splashRoot).setOnClickListener {
+                startActivity(Intent(this, GateActivity::class.java))
+                finish()
+            }
         }
-
-        findViewById<View>(R.id.splashRoot).setOnClickListener(proceed)
-        fingerprint.setOnClickListener(proceed)
     }
 }

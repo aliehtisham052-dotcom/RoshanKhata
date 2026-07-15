@@ -21,10 +21,20 @@
           is being asked to remember. It gets the centre of the screen and room
           to breathe.
         -->
+        <!--
+          A capped, aspect-correct logo that fits any screen. The parent is a
+          LinearLayout, not a Constraint, so a width-percent won't apply here —
+          adjustViewBounds + fitCenter keeps the aspect ratio and maxWidth caps
+          it so it never reaches the edges on a narrow phone. The old fixed
+          240dp square could overflow a small display.
+        -->
         <ImageView
-            android:layout_width="240dp"
-            android:layout_height="240dp"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/app_name"
+            android:scaleType="fitCenter"
             android:src="@drawable/logo_full" />
 
     </LinearLayout>

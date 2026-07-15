@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The logo, centred, for the system splash. A plain bitmap wrapper so Android
-  places our mark where it would otherwise put a bare launcher icon.
+  The system splash icon.
+
+  Android reserves a fixed circle for this and does NOT scale the artwork down
+  to fit — a full-bleed logo overflows the circle and looks broken. So the logo
+  is inset with generous padding, leaving it sitting inside the reserved space
+  rather than bursting out of it.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:drawable="@drawable/logo_full"
-        android:gravity="center" />
+        android:left="26dp"
+        android:top="26dp"
+        android:right="26dp"
+        android:bottom="26dp" />
 </layer-list>
