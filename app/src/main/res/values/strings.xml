@@ -518,4 +518,9 @@
     <string name="insights_no_products">No products recorded this month. Add a product name when you make an entry to see this.</string>
     <string name="insights_no_sales">No sales recorded this month yet.</string>
     <string name="insights_privacy_note">All calculated on your phone. Nothing leaves your device.</string>
+    <string name="nisab_silver">Silver</string>
+    <string name="nisab_gold">Gold</string>
+    <string name="gold_price_hint">Gold price per gram (Rs)</string>
+    <string name="nisab_silver_note">Silver standard: 612.36 g. Lower nisab \u2014 more people owe Zakat (more careful toward the poor).</string>
+    <string name="nisab_gold_note">Gold standard: 87.48 g. Higher nisab \u2014 fewer people owe Zakat. Confirm the right standard with a scholar.</string>
 </resources>

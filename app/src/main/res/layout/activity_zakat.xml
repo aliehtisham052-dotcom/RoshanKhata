@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/page_bg"
@@ -67,6 +68,42 @@
                 android:text="@string/nisab_help"
                 android:textColor="@color/text_muted"
                 android:textSize="12sp" />
+
+            <!--
+              Silver or gold standard, the owner's choice. Silver is the default
+              because its nisab is lower, which brings more people into the
+              obligation — the position generally taken as more careful toward
+              the rights of the poor. A toggle, not a hidden setting, so the
+              choice and its effect are visible.
+            -->
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleNisab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSilver"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/nisab_silver"
+                    android:textColor="@color/ink"
+                    app:strokeColor="@color/section_tools" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGold"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/nisab_gold"
+                    android:textColor="@color/ink"
+                    app:strokeColor="@color/section_tools" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <EditText
                 android:id="@+id/etSilverPrice"

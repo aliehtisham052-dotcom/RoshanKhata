@@ -37,6 +37,8 @@ class ZakatActivity : AppCompatActivity() {
     private lateinit var tvWealth: TextView
     private lateinit var tvZakatDue: TextView
     private lateinit var tvNisabStatus: TextView
+    private lateinit var toggleNisab: com.google.android.material.button.MaterialButtonToggleGroup
+    private var useGold = false
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
@@ -48,6 +50,19 @@ class ZakatActivity : AppCompatActivity() {
         setContentView(R.layout.activity_zakat)
 
         etSilverPrice = findViewById(R.id.etSilverPrice)
+        toggleNisab = findViewById(R.id.toggleNisab)
+
+        // Default to silver (lower nisab). Selecting gold swaps the standard and
+        // the field hint; the note under the result explains what each means.
+        toggleNisab.check(R.id.btnSilver)
+        toggleNisab.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            useGold = checkedId == R.id.btnGold
+            etSilverPrice.setHint(
+                if (useGold) R.string.gold_price_hint else R.string.silver_price_hint
+            )
+            recalculate()
+        }
         etCashStock = findViewById(R.id.etCashStock)
         cbIncludeDoubtful = findViewById(R.id.cbIncludeDoubtful)
 
@@ -110,10 +125,14 @@ class ZakatActivity : AppCompatActivity() {
     }
 
     private fun recalculate() {
-        val silverPrice = etSilverPrice.text.toString().trim().toDoubleOrNull() ?: 0.0
+        val pricePerGram = etSilverPrice.text.toString().trim().toDoubleOrNull() ?: 0.0
         val cashStock = etCashStock.text.toString().trim().toDoubleOrNull() ?: 0.0
 
-        val nisab = Zakat.nisabFromSilverPrice(silverPrice)
+        val nisab = if (useGold) {
+            Zakat.nisabFromGoldPrice(pricePerGram)
+        } else {
+            Zakat.nisabFromSilverPrice(pricePerGram)
+        }
 
         tvNisabValue.text = if (nisab > 0) {
             getString(R.string.nisab_value, Format.money(nisab))
