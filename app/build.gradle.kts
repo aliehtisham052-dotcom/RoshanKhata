@@ -67,6 +67,20 @@ dependencies {
     // have no business duplicating that badly.
     implementation("androidx.biometric:biometric:1.1.0")
 
+    // Google Sign-In + Drive, for cloud backup to the user's OWN Drive.
+    // The backup file lives in the app's private "appDataFolder" on their
+    // Drive — invisible in their file list, tied to this app, and counted
+    // against their 15GB but effectively weightless (a backup is a few KB).
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.api-client:google-api-client-android:2.2.0") {
+        exclude(group = "org.apache.httpcomponents")
+        exclude(group = "com.google.guava")
+    }
+    implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0") {
+        exclude(group = "org.apache.httpcomponents")
+        exclude(group = "com.google.guava")
+    }
+
     // Room — offline-first local database
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")

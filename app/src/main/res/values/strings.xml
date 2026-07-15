@@ -485,4 +485,24 @@
     <string name="unlock_to_open">Touch to unlock</string>
 
     <string name="restore_done_with_bin">Your data is back.\n\n%1$d customer(s) in this backup had been deleted before it was made, so they have been restored to the Recycle Bin \u2014 not the main list. Open More \u2192 Recycle Bin to find them, where you can restore any of them fully.</string>
+
+    <!-- Google Drive backup -->
+    <string name="drive_section">Automatic cloud backup</string>
+    <string name="file_section">Backup to a file</string>
+    <string name="drive_not_connected">Connect your Google account and your Khata backs up to your OWN Google Drive \u2014 automatically. Change your phone, sign in again, and it is all back. Your data stays in your Drive; it never goes to us.</string>
+    <string name="drive_connected">Connected as %1$s. Last cloud backup: %2$s</string>
+    <string name="drive_connected_never">Connected as %1$s. No cloud backup yet \u2014 tap \u201CBack up to Drive\u201D.</string>
+    <string name="drive_connect">Connect Google Drive</string>
+    <string name="drive_backup_now">Back up to Drive now</string>
+    <string name="drive_restore">Restore from Drive</string>
+    <string name="drive_sign_out">Disconnect Google account</string>
+    <string name="drive_backing_up">Backing up to Drive\u2026</string>
+    <string name="drive_backup_done">Backed up to your Google Drive.</string>
+    <string name="drive_backup_failed">Cloud backup failed. Your previous backup, if any, is untouched. Check your internet and try again.</string>
+    <string name="drive_restoring">Restoring from Drive\u2026</string>
+    <string name="drive_no_backup">No backup found in your Google Drive yet.</string>
+    <string name="drive_restore_failed">Could not restore from Drive. Check your internet and try again.</string>
+    <string name="drive_signin_failed">Google sign-in did not complete. Please try again.</string>
+    <string name="drive_permission_needed">Roshan Khata needs permission to save to its own folder in your Drive. Please allow it when asked.</string>
+    <string name="drive_restore_confirm">This will replace everything currently in the app with the backup from your Google Drive. Continue?</string>
 </resources>

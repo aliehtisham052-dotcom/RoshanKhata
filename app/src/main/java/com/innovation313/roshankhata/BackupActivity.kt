@@ -10,7 +10,10 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.innovation313.roshankhata.data.Backup
+import com.innovation313.roshankhata.data.DriveAuth
+import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.BusinessReport
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.Format
@@ -47,6 +50,15 @@ class BackupActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnReport).setOnClickListener { makeReport() }
+
+        findViewById<MaterialButton>(R.id.btnDriveConnect).setOnClickListener {
+            driveSignIn.launch(DriveAuth.signInIntent(this))
+        }
+        findViewById<MaterialButton>(R.id.btnDriveBackupNow).setOnClickListener { driveBackup() }
+        findViewById<MaterialButton>(R.id.btnDriveRestore).setOnClickListener { confirmDriveRestore() }
+        findViewById<MaterialButton>(R.id.btnDriveSignOut).setOnClickListener { driveSignOut() }
+
+        refreshDriveUi()
     }
 
     /**
@@ -352,5 +364,126 @@ class BackupActivity : AppCompatActivity() {
                 Intent.createChooser(share, getString(R.string.share_report_pdf))
             )
         }
+    }
+
+    // ---------- Google Drive backup ----------
+
+    private val driveSignIn = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        // The sign-in sheet returns here. Success or not, GoogleSignIn tells us
+        // what actually happened — we do not assume the account is usable just
+        // because the sheet closed.
+        try {
+            GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                .getResult(com.google.android.gms.common.api.ApiException::class.java)
+
+            if (DriveAuth.hasDrivePermission(this)) {
+                refreshDriveUi()
+            } else {
+                // Signed in, but declined the Drive permission. Nothing works
+                // without it, so say what is needed rather than failing quietly.
+                Toast.makeText(this, R.string.drive_permission_needed, Toast.LENGTH_LONG).show()
+                refreshDriveUi()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, R.string.drive_signin_failed, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /** Show the right Drive controls for whether someone is signed in. */
+    private fun refreshDriveUi() {
+        val name = DriveAuth.accountName(this)
+        val connected = name != null && DriveAuth.hasDrivePermission(this)
+
+        val status = findViewById<android.widget.TextView>(R.id.tvDriveStatus)
+        val connect = findViewById<MaterialButton>(R.id.btnDriveConnect)
+        val backupNow = findViewById<MaterialButton>(R.id.btnDriveBackupNow)
+        val restore = findViewById<MaterialButton>(R.id.btnDriveRestore)
+        val signOut = findViewById<MaterialButton>(R.id.btnDriveSignOut)
+
+        if (!connected) {
+            status.setText(R.string.drive_not_connected)
+            connect.visibility = android.view.View.VISIBLE
+            backupNow.visibility = android.view.View.GONE
+            restore.visibility = android.view.View.GONE
+            signOut.visibility = android.view.View.GONE
+            return
+        }
+
+        connect.visibility = android.view.View.GONE
+        backupNow.visibility = android.view.View.VISIBLE
+        restore.visibility = android.view.View.VISIBLE
+        signOut.visibility = android.view.View.VISIBLE
+
+        // Fetch the last-backup time so the owner knows how current they are.
+        lifecycleScope.launch {
+            val last = withContext(Dispatchers.IO) {
+                DriveBackup.lastBackupTime(this@BackupActivity, name!!)
+            }
+            status.text = if (last != null) {
+                getString(R.string.drive_connected, name, Format.dateTime(last))
+            } else {
+                getString(R.string.drive_connected_never, name)
+            }
+        }
+    }
+
+    private fun driveBackup() {
+        val name = DriveAuth.accountName(this) ?: return
+        Toast.makeText(this, R.string.drive_backing_up, Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            val json = withContext(Dispatchers.IO) { Backup.export(dao) }
+            val result = DriveBackup.backup(this@BackupActivity, name, json)
+
+            if (result.isSuccess) {
+                Toast.makeText(this@BackupActivity, R.string.drive_backup_done, Toast.LENGTH_LONG).show()
+                refreshDriveUi()
+            } else {
+                Toast.makeText(this@BackupActivity, R.string.drive_backup_failed, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun confirmDriveRestore() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.drive_restore)
+            .setMessage(R.string.drive_restore_confirm)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.restore_replace) { _, _ -> driveRestore() }
+            .show()
+    }
+
+    private fun driveRestore() {
+        val name = DriveAuth.accountName(this) ?: return
+        Toast.makeText(this, R.string.drive_restoring, Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            val download = DriveBackup.restore(this@BackupActivity, name)
+
+            if (download.isFailure) {
+                Toast.makeText(this@BackupActivity, R.string.drive_restore_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+
+            val text = download.getOrNull()
+            if (text == null) {
+                Toast.makeText(this@BackupActivity, R.string.drive_no_backup, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+
+            // Reuse the exact same parse+validate path as a file restore, so a
+            // cloud backup gets identical checks — a bad download cannot slip in
+            // where a bad file would be caught.
+            val (result, data) = withContext(Dispatchers.IO) {
+                Backup.parseText(text)
+            }
+            handleParseResult(result, data)
+        }
+    }
+
+    private fun driveSignOut() {
+        DriveAuth.signOut(this) { refreshDriveUi() }
     }
 }
