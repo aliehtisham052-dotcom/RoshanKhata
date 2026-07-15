@@ -187,10 +187,10 @@
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/tvWealth"
+android:id="@+id/tvWealth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/ink"
+                    android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -212,7 +212,7 @@
                     android:id="@+id/tvZakatDue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gold_accent"
+                    android:textColor="@color/gold_on_dark"
                     android:textSize="26sp"
                     android:textStyle="bold" />
 
@@ -221,7 +221,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:textColor="@color/ink"
+                    android:textColor="@color/section_tools_soft"
                     android:textSize="12sp" />
             </LinearLayout>
 
