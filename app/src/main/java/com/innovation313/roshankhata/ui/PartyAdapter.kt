@@ -64,22 +64,20 @@ class PartyAdapter(
         holder.tvPhone.text = item.phone.orEmpty()
         holder.tvPhone.visibility = if (item.phone.isNullOrBlank()) View.GONE else View.VISIBLE
 
-        holder.tvBalance.text = Format.money(item.balance)
-
-        when {
-            item.balance > 0 -> {
-                holder.tvBalance.setTextColor(ContextCompat.getColor(ctx, R.color.green_got))
-                holder.tvBalanceLabel.setText(R.string.you_will_get)
+        // Sign, amount, and colour all come from one place so every screen
+        // agrees: money to collect is red and negative, money owed out is green
+        // and positive.
+        holder.tvBalance.text = Format.customerBalance(item.balance)
+        holder.tvBalance.setTextColor(
+            ContextCompat.getColor(ctx, Format.customerBalanceColour(item.balance))
+        )
+        holder.tvBalanceLabel.setText(
+            when {
+                item.balance > 0 -> R.string.you_will_get
+                item.balance < 0 -> R.string.you_will_give
+                else -> R.string.settled
             }
-            item.balance < 0 -> {
-                holder.tvBalance.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave))
-                holder.tvBalanceLabel.setText(R.string.you_will_give)
-            }
-            else -> {
-                holder.tvBalance.setTextColor(ContextCompat.getColor(ctx, R.color.black))
-                holder.tvBalanceLabel.setText(R.string.settled)
-            }
-        }
+        )
 
         // The badge only speaks when a limit was actually set and the party
         // is at or beyond it. Below the line it stays quiet — a warning that

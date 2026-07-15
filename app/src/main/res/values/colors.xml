@@ -94,4 +94,20 @@
     <color name="brand_green_dark">#134228</color>
     <color name="brand_gold">#D4A02A</color>
     <color name="brand_gold_soft">#A9C4B0</color>
+
+    <!--
+      Customer-balance colours, deliberately separate from green_got/red_gave.
+
+      The owner wants the shopkeeper's convention: money a customer OWES the shop
+      (a receivable the owner must collect) shows RED with a minus, and money the
+      SHOP owes shows GREEN with a plus. That is the opposite of the good=green
+      instinct, so these live on their own names — flipping them here can never
+      reach into the cashbook, cheques, expiry, or plans, which keep the plain
+      green=good / red=bad meaning.
+    -->
+    <color name="bal_owed_to_me">#A32D2D</color>
+    <color name="bal_i_owe">#0F6E56</color>
+    <!-- Bright variants for use ON the dark green party header only -->
+    <color name="bal_owed_to_me_on_dark">#FFA8A8</color>
+    <color name="bal_i_owe_on_dark">#7FE3C4</color>
 </resources>

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.R
+
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -17,6 +19,34 @@ object Format {
         } else {
             "Rs %,.2f".format(rounded)
         }
+    }
+
+    /**
+     * A customer balance with its sign, the shopkeeper's way round.
+     *
+     * A positive balance means the customer owes the shop — money the owner has
+     * to collect — and shows as "- Rs X". A negative balance means the shop owes
+     * the customer and shows as "+ Rs X". This is the opposite of a bank
+     * statement, and deliberately so: it matches how a dukandaar reads their
+     * own khata, and how the apps they already use present it.
+     */
+    fun customerBalance(value: Double): String {
+        val amount = money(value)
+        return when {
+            value > 0 -> "- $amount"
+            value < 0 -> "+ $amount"
+            else -> amount
+        }
+    }
+
+    /**
+     * The colour that goes with customerBalance(): red for money to collect,
+     * green for money owed out, neutral when settled. Returns a colour RES id.
+     */
+    fun customerBalanceColour(value: Double): Int = when {
+        value > 0 -> R.color.bal_owed_to_me
+        value < 0 -> R.color.bal_i_owe
+        else -> R.color.text_muted
     }
 
     fun dateTime(millis: Long): String = dateTimeFmt.format(Date(millis))

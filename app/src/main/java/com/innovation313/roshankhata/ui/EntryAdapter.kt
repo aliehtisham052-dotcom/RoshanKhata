@@ -59,8 +59,12 @@ class EntryAdapter(
 
         holder.tvEntryNumber.text = e.entryNumber
 
+        // Coloured to match the balance they build: goods given out (a
+        // receivable) in red, payments received in green — the same convention
+        // as the party's total, so a column of red entries clearly sums to a
+        // red "to collect" balance.
         holder.tvAmount.text = Format.money(e.amount)
-        val colour = if (e.isGiven) R.color.red_gave else R.color.green_got
+        val colour = if (e.isGiven) R.color.bal_owed_to_me else R.color.bal_i_owe
         holder.tvAmount.setTextColor(ContextCompat.getColor(ctx, colour))
 
         holder.tvRunningBalance.text = "Bal: ${Format.money(row.runningBalance)}"

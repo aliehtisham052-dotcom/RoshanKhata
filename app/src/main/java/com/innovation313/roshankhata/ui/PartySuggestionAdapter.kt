@@ -54,20 +54,14 @@ class PartySuggestionAdapter(
         phone.visibility = if (p.phone.isNullOrBlank()) View.GONE else View.VISIBLE
 
         val tvBal = view.findViewById<TextView>(R.id.tvSuggestBalance)
-        when {
-            p.balance > 0 -> {
-                tvBal.text = Format.money(p.balance)
-                tvBal.setTextColor(ContextCompat.getColor(context, R.color.green_got))
-            }
-            p.balance < 0 -> {
-                tvBal.text = Format.money(-p.balance)
-                tvBal.setTextColor(ContextCompat.getColor(context, R.color.red_gave))
-            }
-            else -> {
-                tvBal.setText(R.string.settled)
-                tvBal.setTextColor(ContextCompat.getColor(context, R.color.text_muted))
-            }
+        if (p.balance == 0.0) {
+            tvBal.setText(R.string.settled)
+        } else {
+            tvBal.text = Format.customerBalance(p.balance)
         }
+        tvBal.setTextColor(
+            ContextCompat.getColor(context, Format.customerBalanceColour(p.balance))
+        )
 
         return view
     }

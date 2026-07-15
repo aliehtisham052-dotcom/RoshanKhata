@@ -181,18 +181,18 @@ class PartyDetailActivity : AppCompatActivity() {
 
     private fun updateBalanceHeader(balance: Double) {
         currentBalance = balance
-        tvPartyBalance.text = Format.money(balance)
+        tvPartyBalance.text = Format.customerBalance(balance)
         when {
             balance > 0 -> {
-                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.green_got))
+                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me_on_dark))
                 tvBalanceHint.setText(R.string.you_will_get)
             }
             balance < 0 -> {
-                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.red_gave))
+                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe_on_dark))
                 tvBalanceHint.setText(R.string.you_will_give)
             }
             else -> {
-                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.gold_accent))
+                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.white))
                 tvBalanceHint.setText(R.string.settled)
             }
         }
