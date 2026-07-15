@@ -23,8 +23,9 @@
           straight through when App Lock is off, so an unlocked app costs the
           user nothing.
         -->
+        <!-- Splash is the launcher now; Gate is reached from it. -->
         <activity
-            android:name=".GateActivity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:noHistory="true"
             android:theme="@style/Theme.RoshanKhata">
@@ -33,6 +34,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".GateActivity"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@style/Theme.RoshanKhata" />
 
         <activity
             android:name=".LockActivity"

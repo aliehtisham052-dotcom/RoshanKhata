@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
-    <string name="app_tagline">Innovation \u2014 Waqt Hai Badalne Ka</string>
+    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Net balance</string>
@@ -474,4 +474,7 @@
 
     <string name="hide_balance">Hide balance</string>
     <string name="show_balance">Show balance</string>
+
+    <string name="powered_by">Powered by Innovation-313</string>
+    <string name="tap_to_start">Tap anywhere to continue</string>
 </resources>
