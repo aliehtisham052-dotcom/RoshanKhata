@@ -52,6 +52,23 @@
             android:padding="16dp">
 
             <!--
+              The whole cloud-backup section is wrapped so it can be shown or
+              hidden as one unit. It stays HIDDEN until Google has verified the
+              app for the Drive scope — until then, a real user tapping Connect
+              would meet an alarming "Google hasn't verified this app" screen,
+              which for a ledger app is the opposite of reassuring. The code is
+              finished and tested; it simply waits behind DriveFeature.ENABLED,
+              which flips to true the day verification comes through. Nothing to
+              rebuild but one flag.
+            -->
+            <LinearLayout
+                android:id="@+id/driveSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+            <!--
               Cloud backup, given the top of the screen because it is the one
               that protects the owner without them having to remember. The file
               options below still matter — for a phone with no Google account, or
@@ -127,6 +144,9 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="4dp"
                 android:background="@color/page_line" />
+
+            </LinearLayout>
+            <!-- end of the cloud-backup section (hidden until verified) -->
 
             <TextView
                 android:layout_width="match_parent"

@@ -14,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.innovation313.roshankhata.data.Backup
 import com.innovation313.roshankhata.data.DriveAuth
 import com.innovation313.roshankhata.data.DriveBackup
+import com.innovation313.roshankhata.data.DriveFeature
 import com.innovation313.roshankhata.data.BusinessReport
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.Format
@@ -51,14 +52,23 @@ class BackupActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.btnReport).setOnClickListener { makeReport() }
 
-        findViewById<MaterialButton>(R.id.btnDriveConnect).setOnClickListener {
-            driveSignIn.launch(DriveAuth.signInIntent(this))
-        }
-        findViewById<MaterialButton>(R.id.btnDriveBackupNow).setOnClickListener { driveBackup() }
-        findViewById<MaterialButton>(R.id.btnDriveRestore).setOnClickListener { confirmDriveRestore() }
-        findViewById<MaterialButton>(R.id.btnDriveSignOut).setOnClickListener { driveSignOut() }
+        // The cloud-backup section stays hidden until the app is verified by
+        // Google for the Drive scope. Until then, showing "Connect" would only
+        // lead a real user into Google's "unverified app" warning. The whole
+        // section is gated on one flag; when it is off, we neither show it nor
+        // wire any of its buttons.
+        if (DriveFeature.ENABLED) {
+            findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
 
-        refreshDriveUi()
+            findViewById<MaterialButton>(R.id.btnDriveConnect).setOnClickListener {
+                driveSignIn.launch(DriveAuth.signInIntent(this))
+            }
+            findViewById<MaterialButton>(R.id.btnDriveBackupNow).setOnClickListener { driveBackup() }
+            findViewById<MaterialButton>(R.id.btnDriveRestore).setOnClickListener { confirmDriveRestore() }
+            findViewById<MaterialButton>(R.id.btnDriveSignOut).setOnClickListener { driveSignOut() }
+
+            refreshDriveUi()
+        }
     }
 
     /**
