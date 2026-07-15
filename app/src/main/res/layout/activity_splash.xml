@@ -1,58 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/splashRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:clickable="true"
     android:focusable="true">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp">
+
+        <!--
+          The logo is the whole point of the splash — it is the brand the owner
+          is being asked to remember. It gets the centre of the screen and room
+          to breathe.
+        -->
+        <ImageView
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/logo_full" />
+
+    </LinearLayout>
+
     <!--
-      The whole screen is the tap target. The owner asked for the splash to wait
-      for a tap rather than time out, so ANYWHERE they touch moves them on — no
-      hunting for a button.
+      "Powered by Innovation-313" sits at the foot, quiet but present. This is
+      the brand line the owner asked to carry through the app — the maker's
+      mark, not a heading. It belongs at the bottom, the way a colophon does.
     -->
-    <ImageView
-        android:id="@+id/ivSplashLogo"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginEnd="48dp"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/splash_logo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.42" />
-
-    <TextView
-        android:id="@+id/tvPoweredBy"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:letterSpacing="0.08"
-        android:text="@string/powered_by"
-        android:textColor="@color/section_khata"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/tvTapToStart"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="48dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvTapToStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:text="@string/tap_to_start"
-        android:textColor="@color/text_muted"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/powered_by"
+            android:textColor="@color/brand_green"
+            android:textSize="13sp"
+            android:textStyle="bold" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Gentle nudge so the owner knows the screen is waiting on them -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/tap_to_continue"
+            android:textColor="@color/text_muted"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+</FrameLayout>

@@ -64,21 +64,34 @@
       The list beneath stays paper, so the numbers — which are the point — keep
       the contrast they need.
     -->
-    <color name="section_khata">#094C2E</color>
-    <color name="section_khata_soft">#A9D5BE</color>
+    <color name="section_khata">#1B5E3A</color>
+    <color name="section_khata_soft">#B8D0C0</color>
 
-    <color name="section_cashbook">#0F5C42</color>
-    <color name="section_cashbook_soft">#9FD9C2</color>
+    <color name="section_cashbook">#0E5236</color>
+    <color name="section_cashbook_soft">#9FCBB0</color>
 
-    <color name="section_cheques">#1B4A73</color>
-    <color name="section_cheques_soft">#A9C9E4</color>
+    <color name="section_cheques">#12564E</color>
+    <color name="section_cheques_soft">#9FC9C0</color>
 
-    <color name="section_plans">#5A3277</color>
-    <color name="section_plans_soft">#D8C4E6</color>
+    <color name="section_plans">#3E5B2A</color>
+    <color name="section_plans_soft">#C3D4A8</color>
 
-    <color name="section_bills">#6E3B17</color>
-    <color name="section_bills_soft">#EBCEB0</color>
+    <color name="section_bills">#5C4A16</color>
+    <color name="section_bills_soft">#E0D2A0</color>
 
-    <color name="section_tools">#3C4657</color>
-    <color name="section_tools_soft">#AAB3C2</color>
+    <color name="section_tools">#374A40</color>
+    <color name="section_tools_soft">#A6BBAC</color>
+
+    <!--
+      Brand colours, taken from the logo.
+
+      The deep green of the book and the gold of the R. These are the identity
+      the owner chose; the section colours below are tuned to sit in the same
+      family so the app reads as one thing rather than a row of unrelated
+      headers.
+    -->
+    <color name="brand_green">#1B5E3A</color>
+    <color name="brand_green_dark">#134228</color>
+    <color name="brand_gold">#D4A02A</color>
+    <color name="brand_gold_soft">#A9C4B0</color>
 </resources>

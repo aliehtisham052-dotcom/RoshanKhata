@@ -477,4 +477,8 @@
 
     <string name="powered_by">Powered by Innovation-313</string>
     <string name="tap_to_start">Tap anywhere to continue</string>
+
+    <!-- Splash / branding -->
+    <string name="tap_to_continue">Tap to continue</string>
+    <string name="brand_har_hisaab">Har Hisaab Roshan</string>
 </resources>

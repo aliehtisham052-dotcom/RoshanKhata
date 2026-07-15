@@ -8,16 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 /**
  * The opening screen: the logo, and "Powered by Innovation-313".
  *
- * The owner asked for this to WAIT for a tap rather than time out. That is a
- * deliberate choice and worth respecting exactly — a splash that vanishes on a
- * timer is a splash nobody reads. This one holds until touched, so the brand
- * actually registers, and the whole screen is the target so there is nothing
- * to aim for.
+ * It waits for a tap rather than timing out on its own — the owner asked for
+ * this deliberately, and there is sense in it. A splash that vanishes after two
+ * seconds is a splash nobody reads; one that waits lets the brand actually land
+ * before the work begins. The owner controls the moment, not a timer.
  *
- * It sits IN FRONT of the gate, not in place of it. Once tapped it hands off to
- * GateActivity, which decides whether the App Lock must be cleared first. The
- * splash makes no security decision of its own — it only shows the brand and
- * steps aside.
+ * It is exported and set as the launcher, so it is the first thing seen. It
+ * carries no data and touches no ledger — it only shows the mark and steps
+ * aside.
  */
 class SplashActivity : AppCompatActivity() {
 
@@ -25,8 +23,9 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        findViewById<View>(android.R.id.content).setOnClickListener {
+        findViewById<View>(R.id.splashRoot).setOnClickListener {
             startActivity(Intent(this, GateActivity::class.java))
+            // No going "back" to the splash — it has done its job.
             finish()
         }
     }
