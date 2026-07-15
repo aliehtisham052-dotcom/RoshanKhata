@@ -61,6 +61,10 @@ class MainActivity : AppCompatActivity() {
 
     private enum class SortMode { NAME_AZ, NAME_ZA, OWES_MOST, I_OWE_MOST, RECENT }
     private lateinit var tvNetBalance: TextView
+    private lateinit var tvTotalGet: TextView
+    private lateinit var tvTotalGive: TextView
+    private var totalGet = 0.0
+    private var totalGive = 0.0
     private lateinit var tvEmpty: TextView
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -72,6 +76,8 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         tvNetBalance = findViewById(R.id.tvNetBalance)
+        tvTotalGet = findViewById(R.id.tvTotalGet)
+        tvTotalGive = findViewById(R.id.tvTotalGive)
         tvEmpty = findViewById(R.id.tvEmpty)
 
         val rv: RecyclerView = findViewById(R.id.rvParties)
@@ -138,6 +144,13 @@ class MainActivity : AppCompatActivity() {
             dao.observePartiesWithBalance().collectLatest { list ->
                 allParties = list
                 suggestions.setSource(list)
+
+                // The two box totals: everything owed TO the shop (positive
+                // balances, money to collect) and everything the shop owes OUT
+                // (negative balances). These are the parts the net figure above
+                // nets together.
+                totalGet = list.filter { it.balance > 0 }.sumOf { it.balance }
+                totalGive = list.filter { it.balance < 0 }.sumOf { -it.balance }
                 render()
             }
         }
@@ -418,6 +431,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             Format.money(netBalance)
         }
+
+        // The boxes follow the same mask as the net figure — if the owner
+        // has hidden their balance, they should not leak through the totals.
+        tvTotalGet.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGet)
+        tvTotalGive.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGive)
 
         ivEye.setImageResource(
             if (hidden) R.drawable.ic_eye_closed else R.drawable.ic_eye_open

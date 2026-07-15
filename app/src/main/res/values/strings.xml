@@ -505,4 +505,6 @@
     <string name="drive_signin_failed">Google sign-in did not complete. Please try again.</string>
     <string name="drive_permission_needed">Roshan Khata needs permission to save to its own folder in your Drive. Please allow it when asked.</string>
     <string name="drive_restore_confirm">This will replace everything currently in the app with the backup from your Google Drive. Continue?</string>
+    <string name="i_have_to_get">I have to get</string>
+    <string name="i_have_to_give">I have to give</string>
 </resources>
