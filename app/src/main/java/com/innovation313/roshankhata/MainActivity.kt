@@ -151,6 +151,7 @@ class MainActivity : AppCompatActivity() {
                 // nets together.
                 totalGet = list.filter { it.balance > 0 }.sumOf { it.balance }
                 totalGive = list.filter { it.balance < 0 }.sumOf { -it.balance }
+                renderTotals()
                 render()
             }
         }
@@ -425,6 +426,19 @@ class MainActivity : AppCompatActivity() {
      * entry lands would defeat the whole point, and it would do so at the exact
      * moment the owner is holding the phone where someone can see it.
      */
+    /**
+     * Fill the two summary boxes. Called from BOTH the party-list stream (which
+     * has just computed the totals) and renderNetBalance (for the privacy
+     * toggle). The old code only filled them inside renderNetBalance, which runs
+     * off the net-balance stream BEFORE the party list has set the totals — so
+     * the boxes were stuck at zero even though the net figure was right.
+     */
+    private fun renderTotals() {
+        val hidden = BalancePrivacy.isHidden(this)
+        tvTotalGet.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGet)
+        tvTotalGive.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGive)
+    }
+
     private fun renderNetBalance() {
         val hidden = BalancePrivacy.isHidden(this)
 
@@ -434,10 +448,7 @@ class MainActivity : AppCompatActivity() {
             Format.money(netBalance)
         }
 
-        // The boxes follow the same mask as the net figure — if the owner
-        // has hidden their balance, they should not leak through the totals.
-        tvTotalGet.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGet)
-        tvTotalGive.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGive)
+        renderTotals()
 
         ivEye.setImageResource(
             if (hidden) R.drawable.ic_eye_closed else R.drawable.ic_eye_open
