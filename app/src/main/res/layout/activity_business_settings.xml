@@ -155,7 +155,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/save"
-                app:backgroundTint="@color/gold_accent"
+                app:backgroundTint="@color/brand_green"
                 app:cornerRadius="10dp"
                 xmlns:app="http://schemas.android.com/apk/res-auto" />
 

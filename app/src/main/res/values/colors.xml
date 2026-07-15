@@ -16,7 +16,7 @@
 
     <!-- Surfaces: what was navy is now paper -->
     <color name="navy_deep">#EFEDE5</color>
-    <color name="navy_primary">#FFFFFF</color>
+    <color name="navy_primary">#1B5E3A</color>  <!-- was #FFFFFF: only ever used as a heading text colour, so it must be dark to read on pale screens -->
     <color name="navy_surface">#FAF9F5</color>
 
     <!--
