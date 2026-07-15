@@ -26,8 +26,8 @@
       white it barely registers. This is the same gold taken down to where it
       actually reads. Money is not the place to be subtle.
     -->
-    <color name="gold_accent">#8A6E1C</color>
-    <color name="gold_bright">#8A6E1C</color>
+    <color name="gold_accent">#8A6A15</color>
+    <color name="gold_bright">#8A6A15</color>
 
     <!-- The page beneath the cards -->
     <color name="page_bg">#F7F6F2</color>
@@ -64,8 +64,8 @@
       The list beneath stays paper, so the numbers — which are the point — keep
       the contrast they need.
     -->
-    <color name="section_khata">#152238</color>
-    <color name="section_khata_soft">#9BA6BC</color>
+    <color name="section_khata">#094C2E</color>
+    <color name="section_khata_soft">#A9D5BE</color>
 
     <color name="section_cashbook">#0F5C42</color>
     <color name="section_cashbook_soft">#9FD9C2</color>
