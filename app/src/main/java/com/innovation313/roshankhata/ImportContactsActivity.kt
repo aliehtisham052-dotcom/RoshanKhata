@@ -133,12 +133,20 @@ class ImportContactsActivity : AppCompatActivity() {
     private fun applyFilter() {
         val query = etSearch.text.toString().trim().lowercase()
 
+        val queryDigits = query.filter { ch -> ch.isDigit() }
+
         val filtered = if (query.isEmpty()) {
             allContacts
         } else {
-            allContacts.filter {
-                it.name.lowercase().contains(query) ||
-                    it.phone.filter { ch -> ch.isDigit() }.contains(query.filter { ch -> ch.isDigit() })
+            allContacts.filter { c ->
+                // Name match always applies. Phone match ONLY when the query
+                // actually contains digits — otherwise an all-letters query
+                // like "ty" produces an empty digit string, which every phone
+                // number "contains", dragging the whole list back in. That was
+                // the bug: typing a name still showed everyone.
+                c.name.lowercase().contains(query) ||
+                    (queryDigits.isNotEmpty() &&
+                        c.phone.filter { ch -> ch.isDigit() }.contains(queryDigits))
             }
         }
 
