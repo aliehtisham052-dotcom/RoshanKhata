@@ -110,6 +110,20 @@ class PartyDetailActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnGave).setOnClickListener { showAddEntryDialog(true) }
         findViewById<MaterialButton>(R.id.btnGot).setOnClickListener { showAddEntryDialog(false) }
 
+        findViewById<MaterialButton>(R.id.btnCall).setOnClickListener {
+            if (partyPhone.isNullOrBlank()) {
+                Toast.makeText(this, R.string.no_phone_number, Toast.LENGTH_SHORT).show()
+            } else {
+                // Opens the dialer with the number filled in. We never place the
+                // call ourselves — the owner presses the green button. That also
+                // means no CALL_PHONE permission is needed.
+                try {
+                    startActivity(Intent(Intent.ACTION_DIAL, android.net.Uri.parse("tel:" + partyPhone)))
+                } catch (e: Exception) {
+                    Toast.makeText(this, R.string.no_dialer, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
         findViewById<MaterialButton>(R.id.btnWhatsApp).setOnClickListener {
             showReminderPreview(viaWhatsApp = true)
         }

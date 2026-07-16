@@ -448,10 +448,20 @@ class MainActivity : AppCompatActivity() {
         val overdue = list.count { it.balance > 0 && it.lastActivity in 1 until cutoff }
 
         val countText = resources.getQuantityString(R.plurals.customer_count, count, count)
-        tvPartySummary.text = if (overdue > 0) {
+        val base = if (overdue > 0) {
             getString(R.string.summary_with_overdue, countText, overdue)
         } else {
             countText
+        }
+
+        // A quiet once-a-week nudge to back up, shown only when there's data to
+        // protect. It rides on the same summary line so it costs no extra space.
+        val backupDue = com.innovation313.roshankhata.data.BackupReminder
+            .isReminderDue(this, hasData = count > 0)
+        tvPartySummary.text = if (backupDue) {
+            base + "  ·  " + getString(R.string.backup_reminder_hint)
+        } else {
+            base
         }
     }
 

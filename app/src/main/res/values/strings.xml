@@ -529,4 +529,7 @@
         <item quantity="one">%d customer</item>
         <item quantity="other">%d customers</item>
     </plurals>
+    <string name="call">Call</string>
+    <string name="no_dialer">No phone dialer found</string>
+    <string name="backup_reminder_hint">Backup due</string>
 </resources>

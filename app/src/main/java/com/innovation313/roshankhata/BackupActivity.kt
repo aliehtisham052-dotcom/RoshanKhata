@@ -111,6 +111,9 @@ class BackupActivity : AppCompatActivity() {
                 return@launch
             }
 
+            // A successful backup clears the home-screen reminder.
+            com.innovation313.roshankhata.data.BackupReminder.recordBackup(this@BackupActivity)
+
             // Tell the owner exactly where it went. "Backup created" is useless
             // if they cannot then find the thing.
             MaterialAlertDialogBuilder(this@BackupActivity)
