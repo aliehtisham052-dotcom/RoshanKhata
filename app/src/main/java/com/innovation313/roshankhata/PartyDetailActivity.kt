@@ -237,8 +237,8 @@ class PartyDetailActivity : AppCompatActivity() {
         key(R.id.calc2, "2"); key(R.id.calc3, "3"); key(R.id.calc4, "4")
         key(R.id.calc5, "5"); key(R.id.calc6, "6"); key(R.id.calc7, "7")
         key(R.id.calc8, "8"); key(R.id.calc9, "9"); key(R.id.calcDot, ".")
-        key(R.id.calcPlus, "+"); key(R.id.calcMinus, "-")
-        key(R.id.calcTimes, "*"); key(R.id.calcDivide, "/")
+        key(R.id.calcPlus, "+"); key(R.id.calcMinus, "\u2212")
+        key(R.id.calcTimes, "\u00d7"); key(R.id.calcDivide, "\u00f7")
 
         view.findViewById<android.widget.Button>(R.id.calcClear).setOnClickListener {
             etAmount.setText("")
@@ -247,8 +247,12 @@ class PartyDetailActivity : AppCompatActivity() {
             val t = etAmount.text
             if (t.isNotEmpty()) etAmount.text.delete(t.length - 1, t.length)
         }
+        // The pad shows × ÷ − for looks; the evaluator wants * / -.
+        fun normalizeOps(t: String): String =
+            t.replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
+
         view.findViewById<android.widget.Button>(R.id.calcEquals).setOnClickListener {
-            val result = Calc.eval(etAmount.text.toString())
+            val result = Calc.eval(normalizeOps(etAmount.text.toString()))
             if (result != null) {
                 val clean = if (result % 1.0 == 0.0) result.toLong().toString() else result.toString()
                 etAmount.setText(clean)
@@ -287,7 +291,10 @@ class PartyDetailActivity : AppCompatActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.eval(etAmount.text.toString())
+                val amount = Calc.eval(
+                    etAmount.text.toString()
+                        .replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
+                )
                 if (amount == null || amount <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
