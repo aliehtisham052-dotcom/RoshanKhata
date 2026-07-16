@@ -81,7 +81,10 @@ class ReportActivity : AppCompatActivity() {
         tvClosingNote = findViewById(R.id.tvClosingNote)
         tvEmpty = findViewById(R.id.tvReportEmpty)
 
-        adapter = EntryAdapter { /* read-only here — a report is not the place to delete */ }
+        adapter = EntryAdapter(
+            onClick = { /* read-only report — tapping does nothing here */ },
+            onLongClick = { /* read-only here — a report is not the place to delete */ }
+        )
         val rv: RecyclerView = findViewById(R.id.rvReport)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
