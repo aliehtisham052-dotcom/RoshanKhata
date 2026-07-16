@@ -218,6 +218,31 @@ class PartyDetailActivity : AppCompatActivity() {
     private fun showAddEntryDialog(isGiven: Boolean) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
+
+        // The little calculator strip: operators and backspace append to the
+        // field, "=" evaluates it in place. Kept here so the field the owner is
+        // already looking at doubles as the calculator — no separate app.
+        fun appendToAmount(ch: String) {
+            etAmount.append(ch)
+        }
+        view.findViewById<MaterialButton>(R.id.btnCalcPlus).setOnClickListener { appendToAmount("+") }
+        view.findViewById<MaterialButton>(R.id.btnCalcMinus).setOnClickListener { appendToAmount("-") }
+        view.findViewById<MaterialButton>(R.id.btnCalcTimes).setOnClickListener { appendToAmount("*") }
+        view.findViewById<MaterialButton>(R.id.btnCalcDivide).setOnClickListener { appendToAmount("/") }
+        view.findViewById<MaterialButton>(R.id.btnCalcBack).setOnClickListener {
+            val t = etAmount.text
+            if (t.isNotEmpty()) etAmount.text.delete(t.length - 1, t.length)
+        }
+        view.findViewById<MaterialButton>(R.id.btnCalcEquals).setOnClickListener {
+            val result = Calc.eval(etAmount.text.toString())
+            if (result != null) {
+                // Show a clean number: no trailing .0 on whole rupees.
+                val clean = if (result % 1.0 == 0.0) result.toLong().toString()
+                            else result.toString()
+                etAmount.setText(clean)
+                etAmount.setSelection(etAmount.text.length)
+            }
+        }
         val etNote: EditText = view.findViewById(R.id.etNote)
         val etItemName: EditText = view.findViewById(R.id.etItemName)
         val etQuantity: EditText = view.findViewById(R.id.etQuantity)
