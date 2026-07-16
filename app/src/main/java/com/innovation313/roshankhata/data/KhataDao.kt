@@ -658,4 +658,22 @@ interface KhataDao {
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "GROUP BY t.partyId ORDER BY total DESC LIMIT :limit")
     suspend fun topCustomersBetween(from: Long, to: Long, limit: Int): List<CustomerStat>
+
+
+    // ---------- Today's summary (a day's activity at a glance) ----------
+
+    /** Total GIVEN (goods/money out to parties) in a time range. */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions " +
+           "WHERE isGiven = 1 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
+    suspend fun givenBetween(from: Long, to: Long): Double
+
+    /** Total RECEIVED (payments in) in a time range. */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions " +
+           "WHERE isGiven = 0 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
+    suspend fun receivedBetween(from: Long, to: Long): Double
+
+    /** How many ledger entries in a time range. */
+    @Query("SELECT COUNT(*) FROM transactions " +
+           "WHERE isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
+    suspend fun entryCountBetween(from: Long, to: Long): Int
 }

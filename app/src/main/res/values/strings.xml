@@ -534,4 +534,15 @@
     <string name="backup_reminder_hint">Backup due</string>
     <string name="select_all">Select all</string>
     <string name="clear_all">Clear all</string>
+    <string name="insights_today">Today</string>
+    <string name="insights_today_received">Received</string>
+    <string name="insights_today_given">Given out</string>
+    <plurals name="entries_today">
+        <item quantity="one">%d entry today</item>
+        <item quantity="other">%d entries today</item>
+    </plurals>
+    <string name="copy_balance_owed">%1$s: %2$s baqi hai (you will get)</string>
+    <string name="copy_balance_i_owe">%1$s: %2$s (you will give)</string>
+    <string name="copy_balance_settled">%1$s: settled (Rs 0)</string>
+    <string name="copied">Copied</string>
 </resources>

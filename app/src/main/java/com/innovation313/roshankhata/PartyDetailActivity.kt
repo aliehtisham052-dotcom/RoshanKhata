@@ -101,6 +101,7 @@ class PartyDetailActivity : AppCompatActivity() {
 
         tvPartyName = findViewById(R.id.tvPartyName)
         tvPartyBalance = findViewById(R.id.tvPartyBalance)
+        tvPartyBalance.setOnClickListener { copyBalance() }
         tvBalanceHint = findViewById(R.id.tvBalanceHint)
         tvNoEntries = findViewById(R.id.tvNoEntries)
 
@@ -317,6 +318,22 @@ class PartyDetailActivity : AppCompatActivity() {
      * then hands it off to WhatsApp or SMS and presses send themselves.
      * Roshan Khata never sends anything on its own.
      */
+    /**
+     * Copy a short, ready-to-send line about this balance to the clipboard —
+     * the owner can paste it straight into WhatsApp. Tapping the balance is the
+     * quick path when they don't want the full reminder dialog.
+     */
+    private fun copyBalance() {
+        val line = when {
+            currentBalance > 0 -> getString(R.string.copy_balance_owed, partyName, Format.money(currentBalance))
+            currentBalance < 0 -> getString(R.string.copy_balance_i_owe, partyName, Format.money(-currentBalance))
+            else -> getString(R.string.copy_balance_settled, partyName)
+        }
+        val clip = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        clip.setPrimaryClip(android.content.ClipData.newPlainText("balance", line))
+        Toast.makeText(this, R.string.copied, Toast.LENGTH_SHORT).show()
+    }
+
     private fun showReminderPreview(viaWhatsApp: Boolean) {
         if (currentBalance == 0.0) {
             Toast.makeText(this, R.string.nothing_outstanding, Toast.LENGTH_SHORT).show()

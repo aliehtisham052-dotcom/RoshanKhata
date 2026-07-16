@@ -44,6 +44,12 @@ class InsightsActivity : AppCompatActivity() {
     }
 
     private fun render(data: SaleInsights) {
+        // Today's activity — received (green), given out (red), and entry count.
+        findViewById<TextView>(R.id.tvTodayReceived).text = Format.money(data.todayReceived)
+        findViewById<TextView>(R.id.tvTodayGiven).text = Format.money(data.todayGiven)
+        findViewById<TextView>(R.id.tvTodayCount).text =
+            resources.getQuantityString(R.plurals.entries_today, data.todayCount, data.todayCount)
+
         findViewById<TextView>(R.id.tvTotalSale).text = Format.money(data.thisMonthTotal)
 
         // Trend line: green up / red down / neutral when there's no prior month.
