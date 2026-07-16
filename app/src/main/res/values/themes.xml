@@ -72,39 +72,21 @@
         <item name="postSplashScreenTheme">@style/Theme.RoshanKhata</item>
     </style>
 
-    <!-- Calculator keypad keys -->
-    <style name="CalcKey" parent="Widget.AppCompat.Button">
+    <!-- Calculator keys for the GridLayout pad -->
+    <style name="CalcCell" parent="Widget.AppCompat.Button">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">54dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_margin">3dp</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_margin">4dp</item>
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/ink</item>
-        <item name="android:background">@drawable/bg_calc_key</item>
-        <item name="android:backgroundTint">@null</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:includeFontPadding">false</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:stateListAnimator">@null</item>
     </style>
 
-    <style name="CalcKeyMuted" parent="CalcKey">
-        <item name="android:textColor">@color/section_tools</item>
-        <item name="android:background">@drawable/bg_calc_key_muted</item>
-        <item name="android:backgroundTint">@null</item>
-    </style>
-
-    <style name="CalcKeyOp" parent="CalcKey">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:background">@drawable/bg_calc_key_op</item>
-        <item name="android:backgroundTint">@null</item>
-    </style>
-
-    <style name="CalcKeyEquals" parent="CalcKey">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:background">@drawable/bg_calc_key_equals</item>
-        <item name="android:backgroundTint">@null</item>
+    <style name="CalcCellTall" parent="CalcCell">
+        <item name="android:layout_height">108dp</item>
     </style>
 
 </resources>
