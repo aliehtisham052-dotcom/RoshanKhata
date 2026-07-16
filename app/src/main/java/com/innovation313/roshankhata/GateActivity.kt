@@ -2,6 +2,7 @@ package com.innovation313.roshankhata
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.appcompat.app.AppCompatActivity
 import com.innovation313.roshankhata.data.AppLock
 
@@ -19,6 +20,7 @@ import com.innovation313.roshankhata.data.AppLock
 class GateActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
