@@ -38,7 +38,7 @@
             android:name=".GateActivity"
             android:exported="true"
             android:noHistory="true"
-            android:theme="@style/Theme.RoshanKhata.Splash">
+            android:theme="@style/Theme.RoshanKhata">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
