@@ -34,9 +34,8 @@
           shows our mark once during cold start (the Splash theme below), then
           Gate decides lock-or-home. One logo, then straight in.
         -->
-        <!-- A brief "Powered by Innovation-313" screen, then Gate routes on. -->
         <activity
-            android:name=".SplashActivity"
+            android:name=".GateActivity"
             android:exported="true"
             android:noHistory="true"
             android:theme="@style/Theme.RoshanKhata">
@@ -45,12 +44,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".GateActivity"
-            android:exported="false"
-            android:noHistory="true"
-            android:theme="@style/Theme.RoshanKhata" />
 
         <activity
             android:name=".LockActivity"

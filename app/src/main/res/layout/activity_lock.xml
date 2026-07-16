@@ -42,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="@string/app_tagline"
+        android:text="@string/lock_tagline"
         android:textColor="@color/gold_accent"
         android:textSize="14sp"
         android:textStyle="bold"
