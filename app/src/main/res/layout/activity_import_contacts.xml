@@ -25,13 +25,35 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvSelectedCount"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:textColor="@color/section_tools_soft"
-            android:textSize="12sp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvSelectedCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/section_tools_soft"
+                android:textSize="12sp" />
+
+            <!--
+              One tap to select everyone the current search shows — the thing you
+              want when importing a whole contact list. It toggles to "Clear all"
+              once everything visible is selected, so the same button undoes it.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSelectAll"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_all"
+                android:textColor="@color/gold_on_dark"
+                android:textSize="13sp" />
+        </LinearLayout>
 
         <EditText
             android:id="@+id/etSearch"

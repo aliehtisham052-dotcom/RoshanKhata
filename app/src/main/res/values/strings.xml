@@ -532,4 +532,6 @@
     <string name="call">Call</string>
     <string name="no_dialer">No phone dialer found</string>
     <string name="backup_reminder_hint">Backup due</string>
+    <string name="select_all">Select all</string>
+    <string name="clear_all">Clear all</string>
 </resources>

@@ -48,6 +48,8 @@ class ImportContactsActivity : AppCompatActivity() {
 
     private var allContacts: List<PhoneContact> = emptyList()
     private val selected = linkedSetOf<String>()
+    private var visible = listOf<PhoneContact>()
+    private lateinit var btnSelectAll: MaterialButton
 
     private val requestPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -66,6 +68,7 @@ class ImportContactsActivity : AppCompatActivity() {
         tvStatus = findViewById(R.id.tvStatus)
         tvSelectedCount = findViewById(R.id.tvSelectedCount)
         btnImport = findViewById(R.id.btnImport)
+        btnSelectAll = findViewById(R.id.btnSelectAll)
         etSearch = findViewById(R.id.etSearch)
 
         adapter = ContactAdapter { contact -> toggle(contact) }
@@ -80,6 +83,7 @@ class ImportContactsActivity : AppCompatActivity() {
         })
 
         btnImport.setOnClickListener { importSelected() }
+        btnSelectAll.setOnClickListener { toggleSelectAll() }
 
         updateSelectedCount()
         ensurePermission()
@@ -150,7 +154,9 @@ class ImportContactsActivity : AppCompatActivity() {
             }
         }
 
+        visible = filtered
         adapter.submit(filtered, selected)
+        refreshSelectAllLabel()
 
         if (filtered.isEmpty() && allContacts.isNotEmpty()) {
             showStatus(getString(R.string.no_matching_contacts))
@@ -165,6 +171,28 @@ class ImportContactsActivity : AppCompatActivity() {
 
         updateSelectedCount()
         applyFilter()
+    }
+
+    /**
+     * Select (or clear) everyone currently visible. Works on the filtered list,
+     * so searching first and then "Select all" imports just that subset — the
+     * natural way to grab, say, every contact with "Mandi" in the name.
+     */
+    private fun toggleSelectAll() {
+        val allVisibleSelected = visible.isNotEmpty() && visible.all { it.phone in selected }
+        if (allVisibleSelected) {
+            visible.forEach { selected.remove(it.phone) }
+        } else {
+            visible.forEach { selected.add(it.phone) }
+        }
+        updateSelectedCount()
+        applyFilter()
+    }
+
+    private fun refreshSelectAllLabel() {
+        val allVisibleSelected = visible.isNotEmpty() && visible.all { it.phone in selected }
+        btnSelectAll.setText(if (allVisibleSelected) R.string.clear_all else R.string.select_all)
+        btnSelectAll.isEnabled = visible.isNotEmpty()
     }
 
     private fun updateSelectedCount() {
