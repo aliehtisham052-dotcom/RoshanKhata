@@ -203,6 +203,22 @@
                 app:cornerRadius="8dp"
                 app:strokeColor="@color/section_khata_soft" />
         </LinearLayout>
+
+        <!--
+          A one-line summary under the search: how many customers, and how many
+          have a balance that has gone quiet for a while (nothing for 30 days).
+          The overdue count is what the competitor surfaces as "reminders" — the
+          owner's cue for who to follow up with. Both sit on the green header, so
+          they use the soft on-header tint.
+        -->
+        <TextView
+            android:id="@+id/tvPartySummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="12dp"
+            android:textColor="@color/section_khata_soft"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <!--
@@ -236,10 +252,14 @@
 
     <TextView
         android:id="@+id/tvEmpty"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
         android:text="@string/no_parties_yet"
-        android:textColor="@color/navy_primary"
+        android:textColor="@color/text_muted"
         android:textSize="15sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/rvParties"

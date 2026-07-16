@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
+    private lateinit var tvPartySummary: TextView
     private var totalGet = 0.0
     private var totalGive = 0.0
     private lateinit var tvEmpty: TextView
@@ -78,6 +79,7 @@ class MainActivity : AppCompatActivity() {
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvTotalGet = findViewById(R.id.tvTotalGet)
         tvTotalGive = findViewById(R.id.tvTotalGive)
+        tvPartySummary = findViewById(R.id.tvPartySummary)
         tvEmpty = findViewById(R.id.tvEmpty)
 
         val rv: RecyclerView = findViewById(R.id.rvParties)
@@ -152,6 +154,7 @@ class MainActivity : AppCompatActivity() {
                 totalGet = list.filter { it.balance > 0 }.sumOf { it.balance }
                 totalGive = list.filter { it.balance < 0 }.sumOf { -it.balance }
                 renderTotals()
+                renderPartySummary(list)
                 render()
             }
         }
@@ -433,6 +436,25 @@ class MainActivity : AppCompatActivity() {
      * off the net-balance stream BEFORE the party list has set the totals — so
      * the boxes were stuck at zero even though the net figure was right.
      */
+    /**
+     * One line under the search: total customers, and how many with an
+     * outstanding balance have gone quiet for 30+ days — the ones worth a
+     * reminder. Both counts come straight from the live list, so they always
+     * agree with what's on screen.
+     */
+    private fun renderPartySummary(list: List<com.innovation313.roshankhata.data.PartyWithBalance>) {
+        val count = list.size
+        val cutoff = System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000
+        val overdue = list.count { it.balance > 0 && it.lastActivity in 1 until cutoff }
+
+        val countText = resources.getQuantityString(R.plurals.customer_count, count, count)
+        tvPartySummary.text = if (overdue > 0) {
+            getString(R.string.summary_with_overdue, countText, overdue)
+        } else {
+            countText
+        }
+    }
+
     private fun renderTotals() {
         val hidden = BalancePrivacy.isHidden(this)
         tvTotalGet.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGet)

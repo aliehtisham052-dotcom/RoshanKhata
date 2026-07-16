@@ -30,6 +30,7 @@ class PartyAdapter(
         val tvInitials: TextView = view.findViewById(R.id.tvInitials)
         val tvName: TextView = view.findViewById(R.id.tvName)
         val tvPhone: TextView = view.findViewById(R.id.tvPhone)
+        val tvLastActivity: TextView = view.findViewById(R.id.tvLastActivity)
         val tvBalance: TextView = view.findViewById(R.id.tvBalance)
         val tvBalanceLabel: TextView = view.findViewById(R.id.tvBalanceLabel)
         val tvLimitWarning: TextView = view.findViewById(R.id.tvLimitWarning)
@@ -63,6 +64,15 @@ class PartyAdapter(
 
         holder.tvPhone.text = item.phone.orEmpty()
         holder.tvPhone.visibility = if (item.phone.isNullOrBlank()) View.GONE else View.VISIBLE
+
+        // "last transacted on ..." — only when there is activity to date.
+        if (item.lastActivity > 0) {
+            holder.tvLastActivity.text =
+                holder.itemView.context.getString(R.string.last_transacted, Format.dateOnly(item.lastActivity))
+            holder.tvLastActivity.visibility = View.VISIBLE
+        } else {
+            holder.tvLastActivity.visibility = View.GONE
+        }
 
         // Sign, amount, and colour all come from one place so every screen
         // agrees: money to collect is red and negative, money owed out is green

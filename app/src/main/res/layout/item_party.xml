@@ -54,6 +54,20 @@
             android:layout_height="wrap_content"
             android:textColor="#777777"
             android:textSize="13sp" />
+
+        <!--
+          Last activity, the way the competitor shows it ("last transacted on
+          12th Jul"). It tells the owner at a glance whether a customer is active
+          or has gone quiet — a quiet customer with a balance is the one to
+          chase. Hidden when the ledger is empty (nothing to date yet).
+        -->
+        <TextView
+            android:id="@+id/tvLastActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#999999"
+            android:textSize="11sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
