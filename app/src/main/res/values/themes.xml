@@ -59,8 +59,14 @@
       be invisible.
     -->
     <style name="Theme.RoshanKhata.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <!--
+          Android 12+ forces a cold-start splash; it cannot be removed. So make
+          it disappear into the app: the background matches the home screen and
+          there is no icon, so the mandatory frame reads as nothing at all rather
+          than a logo flashing by. postSplashScreenTheme hands straight to the
+          app theme.
+        -->
+        <item name="windowSplashScreenBackground">@color/page_bg</item>
         <item name="postSplashScreenTheme">@style/Theme.RoshanKhata</item>
     </style>
 
