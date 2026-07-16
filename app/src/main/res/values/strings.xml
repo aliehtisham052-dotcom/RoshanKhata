@@ -546,4 +546,18 @@
     <string name="copy_balance_i_owe">%1$s: %2$s (you will give)</string>
     <string name="copy_balance_settled">%1$s: settled (Rs 0)</string>
     <string name="copied">Copied</string>
+    <string name="receipt_title">Receipt</string>
+    <string name="payment_receipt">Payment Receipt</string>
+    <string name="you_gave">You gave</string>
+    <string name="you_got">You got</string>
+    <string name="details">Details</string>
+    <string name="party">Party</string>
+    <string name="receipt_no">Receipt No.</string>
+    <string name="date_label">Date</string>
+    <string name="note_label">Note</string>
+    <string name="goods_label">Goods</string>
+    <string name="balance_label">Balance after</string>
+    <string name="edit">Edit</string>
+    <string name="share">Share</string>
+    <string name="back">Back</string>
 </resources>
