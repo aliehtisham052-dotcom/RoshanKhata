@@ -19,123 +19,18 @@
             android:layout_height="wrap_content"
             android:hint="@string/amount"
             android:importantForAutofill="no"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:cursorVisible="true"
             android:inputType="phone"
             android:digits="0123456789.+-*/" />
 
         <!--
-          A small calculator strip under the amount. The owner adds up several
-          figures right in the field — tap +, −, ×, ÷ to append the operator,
-          = to total it in place, ⌫ to delete the last character. The field
-          still accepts typing directly; this is the on-screen shortcut so they
-          don't need a separate calculator app.
+          The system keyboard is suppressed on the amount field; the calculator
+          pad below is the only input. That keeps entry to a single, familiar
+          number pad instead of a keyboard plus a separate strip.
         -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcPlus"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:text="+"
-                android:textColor="@color/brand_green"
-                android:textSize="18sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/brand_green" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcMinus"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:text="−"
-                android:textColor="@color/brand_green"
-                android:textSize="18sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/brand_green" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcTimes"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:text="×"
-                android:textColor="@color/brand_green"
-                android:textSize="18sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/brand_green" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcDivide"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:text="÷"
-                android:textColor="@color/brand_green"
-                android:textSize="18sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/brand_green" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcBack"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:text="⌫"
-                android:textColor="@color/bal_owed_to_me"
-                android:textSize="16sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/bal_owed_to_me" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcEquals"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:text="="
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                app:backgroundTint="@color/brand_green"
-                app:cornerRadius="8dp" />
-        </LinearLayout>
+        <include layout="@layout/view_calculator" />
 
         <EditText
             android:id="@+id/etNote"

@@ -219,26 +219,38 @@ class PartyDetailActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
 
-        // The little calculator strip: operators and backspace append to the
-        // field, "=" evaluates it in place. Kept here so the field the owner is
-        // already looking at doubles as the calculator — no separate app.
-        fun appendToAmount(ch: String) {
-            etAmount.append(ch)
+        // Suppress the system keyboard — the on-screen pad is the only input.
+        etAmount.showSoftInputOnFocus = false
+        etAmount.setOnClickListener {
+            etAmount.requestFocus()
+            (getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                as android.view.inputmethod.InputMethodManager)
+                .hideSoftInputFromWindow(etAmount.windowToken, 0)
         }
-        view.findViewById<MaterialButton>(R.id.btnCalcPlus).setOnClickListener { appendToAmount("+") }
-        view.findViewById<MaterialButton>(R.id.btnCalcMinus).setOnClickListener { appendToAmount("-") }
-        view.findViewById<MaterialButton>(R.id.btnCalcTimes).setOnClickListener { appendToAmount("*") }
-        view.findViewById<MaterialButton>(R.id.btnCalcDivide).setOnClickListener { appendToAmount("/") }
-        view.findViewById<MaterialButton>(R.id.btnCalcBack).setOnClickListener {
+
+        // Full calculator pad. Digits, 00, and the dot append; operators append;
+        // ⌫ deletes the last character; C clears; = evaluates in place.
+        fun append(ch: String) { etAmount.append(ch); etAmount.setSelection(etAmount.text.length) }
+        fun key(id: Int, ch: String) = view.findViewById<android.widget.Button>(id).setOnClickListener { append(ch) }
+
+        key(R.id.calc0, "0"); key(R.id.calc00, "00"); key(R.id.calc1, "1")
+        key(R.id.calc2, "2"); key(R.id.calc3, "3"); key(R.id.calc4, "4")
+        key(R.id.calc5, "5"); key(R.id.calc6, "6"); key(R.id.calc7, "7")
+        key(R.id.calc8, "8"); key(R.id.calc9, "9"); key(R.id.calcDot, ".")
+        key(R.id.calcPlus, "+"); key(R.id.calcMinus, "-")
+        key(R.id.calcTimes, "*"); key(R.id.calcDivide, "/")
+
+        view.findViewById<android.widget.Button>(R.id.calcClear).setOnClickListener {
+            etAmount.setText("")
+        }
+        view.findViewById<android.widget.Button>(R.id.calcBack).setOnClickListener {
             val t = etAmount.text
             if (t.isNotEmpty()) etAmount.text.delete(t.length - 1, t.length)
         }
-        view.findViewById<MaterialButton>(R.id.btnCalcEquals).setOnClickListener {
+        view.findViewById<android.widget.Button>(R.id.calcEquals).setOnClickListener {
             val result = Calc.eval(etAmount.text.toString())
             if (result != null) {
-                // Show a clean number: no trailing .0 on whole rupees.
-                val clean = if (result % 1.0 == 0.0) result.toLong().toString()
-                            else result.toString()
+                val clean = if (result % 1.0 == 0.0) result.toLong().toString() else result.toString()
                 etAmount.setText(clean)
                 etAmount.setSelection(etAmount.text.length)
             }

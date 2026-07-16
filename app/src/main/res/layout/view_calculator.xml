@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A full on-screen number pad for amount entry, in place of the system keyboard.
+  Laid out like a phone calculator so figures can be totalled without leaving the
+  field: C clears, backspace deletes, = evaluates in place, and + - × ÷ build an
+  expression the safe Calc evaluator reads. Every key just edits the amount
+  field's text; nothing leaves the device.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="6dp">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/calcClear" style="@style/CalcKeyMuted" android:text="C" />
+        <Button android:id="@+id/calcDivide" style="@style/CalcKeyMuted" android:text="÷" />
+        <Button android:id="@+id/calcTimes" style="@style/CalcKeyMuted" android:text="×" />
+        <Button android:id="@+id/calcBack" style="@style/CalcKeyMuted" android:text="⌫" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/calc7" style="@style/CalcKey" android:text="7" />
+        <Button android:id="@+id/calc8" style="@style/CalcKey" android:text="8" />
+        <Button android:id="@+id/calc9" style="@style/CalcKey" android:text="9" />
+        <Button android:id="@+id/calcMinus" style="@style/CalcKeyOp" android:text="−" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/calc4" style="@style/CalcKey" android:text="4" />
+        <Button android:id="@+id/calc5" style="@style/CalcKey" android:text="5" />
+        <Button android:id="@+id/calc6" style="@style/CalcKey" android:text="6" />
+        <Button android:id="@+id/calcPlus" style="@style/CalcKeyOp" android:text="+" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/calc1" style="@style/CalcKey" android:text="1" />
+        <Button android:id="@+id/calc2" style="@style/CalcKey" android:text="2" />
+        <Button android:id="@+id/calc3" style="@style/CalcKey" android:text="3" />
+        <Button android:id="@+id/calcDot" style="@style/CalcKey" android:text="." />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/calc0" style="@style/CalcKey" android:text="0" />
+        <Button android:id="@+id/calc00" style="@style/CalcKey" android:text="00" />
+        <Button android:id="@+id/calcEquals" style="@style/CalcKeyEquals" android:text="=" />
+    </LinearLayout>
+
+</LinearLayout>
