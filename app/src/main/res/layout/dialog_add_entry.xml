@@ -18,7 +18,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/amount"
             android:importantForAutofill="no"
-            android:inputType="numberDecimal" />
+            android:inputType="phone"
+            android:digits="0123456789.+-*/" />
 
         <EditText
             android:id="@+id/etNote"

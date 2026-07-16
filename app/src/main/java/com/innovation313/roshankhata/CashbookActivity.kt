@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.Calc
+
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -123,7 +125,7 @@ class CashbookActivity : AppCompatActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                val amount = etAmount.text.toString().trim().toDoubleOrNull()
+                val amount = Calc.eval(etAmount.text.toString())
                 if (amount == null || amount <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
