@@ -61,6 +61,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".EntryDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RoshanKhata" />
+
+        <activity
             android:name=".RecycleBinActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

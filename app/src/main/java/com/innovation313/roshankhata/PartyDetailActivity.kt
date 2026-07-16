@@ -105,7 +105,16 @@ class PartyDetailActivity : AppCompatActivity() {
         tvBalanceHint = findViewById(R.id.tvBalanceHint)
         tvNoEntries = findViewById(R.id.tvNoEntries)
 
-        adapter = EntryAdapter { entry -> confirmDeleteEntry(entry) }
+        adapter = EntryAdapter(
+            onClick = { entry ->
+                startActivity(
+                    Intent(this, EntryDetailActivity::class.java)
+                        .putExtra(EntryDetailActivity.EXTRA_ENTRY_ID, entry.id)
+                        .putExtra(EntryDetailActivity.EXTRA_PARTY_NAME, partyName)
+                )
+            },
+            onLongClick = { entry -> confirmDeleteEntry(entry) }
+        )
         val rv: RecyclerView = findViewById(R.id.rvEntries)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter

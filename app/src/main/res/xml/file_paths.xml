@@ -10,4 +10,7 @@
     <cache-path
         name="backups"
         path="backups/" />
+    <cache-path
+        name="receipts"
+        path="receipts/" />
 </paths>

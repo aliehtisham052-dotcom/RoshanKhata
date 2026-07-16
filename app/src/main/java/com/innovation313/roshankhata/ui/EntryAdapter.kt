@@ -16,6 +16,7 @@ data class EntryRow(
 )
 
 class EntryAdapter(
+    private val onClick: (LedgerEntry) -> Unit,
     private val onLongClick: (LedgerEntry) -> Unit
 ) : RecyclerView.Adapter<EntryAdapter.VH>() {
 
@@ -69,6 +70,9 @@ class EntryAdapter(
 
         holder.tvRunningBalance.text = "Bal: ${Format.money(row.runningBalance)}"
 
+        holder.itemView.setOnClickListener {
+            onClick(e)
+        }
         holder.itemView.setOnLongClickListener {
             onLongClick(e)
             true

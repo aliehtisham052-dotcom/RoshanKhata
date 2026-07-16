@@ -676,4 +676,13 @@ interface KhataDao {
     @Query("SELECT COUNT(*) FROM transactions " +
            "WHERE isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
     suspend fun entryCountBetween(from: Long, to: Long): Int
+
+
+    // ---------- Single entry detail (view / edit) ----------
+
+    @Query("SELECT * FROM transactions WHERE id = :id LIMIT 1")
+    suspend fun getEntry(id: Long): LedgerEntry?
+
+    @Update
+    suspend fun updateEntry(entry: LedgerEntry)
 }

@@ -560,4 +560,10 @@
     <string name="edit">Edit</string>
     <string name="share">Share</string>
     <string name="back">Back</string>
+    <string name="entry_not_found">Entry not found</string>
+    <string name="delete_entry_message">This entry will be removed from the ledger.</string>
+    <string name="entry_deleted">Entry deleted</string>
+    <string name="share_failed">Could not create the receipt image</string>
+    <string name="invalid_amount">Enter a valid amount</string>
+    <string name="saved">Saved</string>
 </resources>
