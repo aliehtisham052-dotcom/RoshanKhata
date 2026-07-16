@@ -3,6 +3,7 @@ package com.innovation313.roshankhata
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.innovation313.roshankhata.data.AppLock
 
 /**
@@ -12,10 +13,17 @@ import com.innovation313.roshankhata.data.AppLock
  * it was there. If it is on, the ledger is not started at all until the lock
  * screen has been cleared — so a locked app leaks nothing, not even in the
  * recent-apps thumbnail.
+ *
+ * This also carries the system splash — the single logo beat during cold
+ * start — so there is no separate splash screen to show the mark a second time.
  */
 class GateActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // The OS shows our logo on our background for the cold-start frame, then
+        // hands over. One mark, then straight to lock-or-home.
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
 
         val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)

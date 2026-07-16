@@ -27,24 +27,23 @@
           straight through when App Lock is off, so an unlocked app costs the
           user nothing.
         -->
-        <!-- Splash is the launcher now; Gate is reached from it. -->
+        <!--
+          The launcher is now GateActivity directly. The old SplashActivity
+          showed the logo a second time after the system splash already had —
+          two logo beats that read as the app opening twice. Removed it: the OS
+          shows our mark once during cold start (the Splash theme below), then
+          Gate decides lock-or-home. One logo, then straight in.
+        -->
         <activity
-            android:name=".SplashActivity"
+            android:name=".GateActivity"
             android:exported="true"
             android:noHistory="true"
-            android:windowSoftInputMode="adjustNothing"
             android:theme="@style/Theme.RoshanKhata.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".GateActivity"
-            android:exported="false"
-            android:noHistory="true"
-            android:theme="@style/Theme.RoshanKhata" />
 
         <activity
             android:name=".LockActivity"
