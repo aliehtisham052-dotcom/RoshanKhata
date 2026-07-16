@@ -72,6 +72,7 @@
         <item name="postSplashScreenTheme">@style/Theme.RoshanKhata</item>
     </style>
 
+
     <!-- Calculator keys for the GridLayout pad -->
     <style name="CalcCell" parent="Widget.AppCompat.Button">
         <item name="android:layout_width">0dp</item>
