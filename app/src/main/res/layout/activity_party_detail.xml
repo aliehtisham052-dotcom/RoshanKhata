@@ -84,12 +84,23 @@
             android:textColor="@color/gold_on_dark"
             android:textSize="12sp" />
 
-        <LinearLayout
-            android:id="@+id/reminderBar"
-            android:layout_width="wrap_content"
+        <!--
+          The action buttons live in a horizontal scroller now. With Call added
+          there are four, and on a narrow phone the last one (Statement) ran off
+          the edge — half-visible, as the owner spotted. Scrolling keeps every
+          button reachable without shrinking the text.
+        -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:orientation="horizontal">
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/reminderBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCall"
@@ -137,7 +148,8 @@
                 android:textSize="12sp"
                 app:cornerRadius="8dp"
                 app:strokeColor="@color/gold_on_dark" />
-        </LinearLayout>
+            </LinearLayout>
+        </HorizontalScrollView>
 
         <LinearLayout
             android:layout_width="match_parent"
