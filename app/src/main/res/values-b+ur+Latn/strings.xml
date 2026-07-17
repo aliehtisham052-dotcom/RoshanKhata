@@ -541,4 +541,16 @@
     <string name="select_language">Apni zaban chunein</string>
     <string name="language_change_note">Zaban kabhi bhi "Mazeed" se badal sakte hain.</string>
     <string name="language">Zaban</string>
+
+    <!-- Daily reminder notifications -->
+    <string name="notif_channel_name">Yaad-dehaniyan</string>
+    <string name="notif_channel_desc">Cheque, qistain, expire hota maal aur backup ki yaad-dehani</string>
+    <string name="notif_cheques_title">Cheque bank mein lagane ke liye tayyar</string>
+    <string name="notif_cheques_body">%1$d cheque aaj ya pehle ke wajib hain.</string>
+    <string name="notif_plans_title">Qist wajib hai</string>
+    <string name="notif_plans_body">%1$d payment plan ki qist ka waqt ho gaya hai.</string>
+    <string name="notif_expiry_title">Maal jald expire ho ga</string>
+    <string name="notif_expiry_body">%1$d cheezein 60 din mein expire hongi. Bechein, riayat dein ya wapas karein.</string>
+    <string name="notif_backup_title">Backup ki yaad-dehani</string>
+    <string name="notif_backup_body">Aakhri backup ko hafte se zyada ho gaya. Aap ka record sirf isi phone par hai.</string>
 </resources>

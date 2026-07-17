@@ -541,4 +541,16 @@
     <string name="select_language">اپنی زبان چنیں</string>
     <string name="language_change_note">زبان کبھی بھی ”مزید“ سے بدل سکتے ہیں۔</string>
     <string name="language">زبان</string>
+
+    <!-- Daily reminder notifications -->
+    <string name="notif_channel_name">یاد دہانیاں</string>
+    <string name="notif_channel_desc">چیک، قسطیں، ایکسپائر ہوتا مال اور بیک اپ کی یاد دہانی</string>
+    <string name="notif_cheques_title">چیک بینک میں لگانے کے لیے تیار</string>
+    <string name="notif_cheques_body">%1$d چیک آج یا پہلے کے واجب ہیں۔</string>
+    <string name="notif_plans_title">قسط واجب ہے</string>
+    <string name="notif_plans_body">%1$d ادائیگی منصوبوں کی قسط کا وقت ہو گیا ہے۔</string>
+    <string name="notif_expiry_title">مال جلد ایکسپائر ہو گا</string>
+    <string name="notif_expiry_body">%1$d چیزیں 60 دن میں ایکسپائر ہوں گی۔ بیچیں، رعایت دیں یا واپس کریں۔</string>
+    <string name="notif_backup_title">بیک اپ کی یاد دہانی</string>
+    <string name="notif_backup_body">آخری بیک اپ کو ہفتے سے زیادہ ہو گیا۔ آپ کا ریکارڈ صرف اسی فون پر ہے۔</string>
 </resources>

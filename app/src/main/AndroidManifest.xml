@@ -13,6 +13,7 @@
       fully without this permission — parties can always be added by hand.
     -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"

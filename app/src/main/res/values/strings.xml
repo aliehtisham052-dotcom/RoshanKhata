@@ -569,4 +569,16 @@
     <string name="select_language">Select your language</string>
     <string name="language_change_note">You can change the language any time from More.</string>
     <string name="language">Language</string>
+
+    <!-- Daily reminder notifications -->
+    <string name="notif_channel_name">Reminders</string>
+    <string name="notif_channel_desc">Cheques due, instalments due, expiring stock and backup nudges</string>
+    <string name="notif_cheques_title">Cheques ready to bank</string>
+    <string name="notif_cheques_body">%1$d cheque(s) are due today or overdue.</string>
+    <string name="notif_plans_title">Instalment due</string>
+    <string name="notif_plans_body">%1$d payment plan(s) are due for a payment.</string>
+    <string name="notif_expiry_title">Stock expiring soon</string>
+    <string name="notif_expiry_body">%1$d item(s) expire within 60 days. Sell, discount or return them.</string>
+    <string name="notif_backup_title">Backup reminder</string>
+    <string name="notif_backup_body">Over a week since your last backup. Your records live only on this phone.</string>
 </resources>

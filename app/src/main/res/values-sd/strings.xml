@@ -569,4 +569,16 @@
     <string name="select_language">پنهنجي ٻولي چونڊيو</string>
     <string name="language_change_note">ٻولي ڪڏهن به «وڌيڪ» مان بدلائي سگهو ٿا.</string>
     <string name="language">ٻولي</string>
+
+    <!-- Daily reminder notifications -->
+    <string name="notif_channel_name">ياد ڏياريندڙ</string>
+    <string name="notif_channel_desc">چيڪ، قسطون، ختم ٿيندڙ مال ۽ بيڪ اپ جي يادگيري</string>
+    <string name="notif_cheques_title">چيڪ بينڪ ۾ رکڻ لاءِ تيار</string>
+    <string name="notif_cheques_body">%1$d چيڪ اڄ يا اڳ جا مقرر آهن.</string>
+    <string name="notif_plans_title">قسط جو وقت ٿي ويو</string>
+    <string name="notif_plans_body">%1$d ادائيگي رٿائن جي قسط جو وقت ٿي ويو آهي.</string>
+    <string name="notif_expiry_title">مال جلد ختم ٿيندو</string>
+    <string name="notif_expiry_body">%1$d شيون 60 ڏينهن ۾ ختم ٿينديون. وڪڻو، گهٽ اگهه تي ڏيو يا موٽايو.</string>
+    <string name="notif_backup_title">بيڪ اپ جي يادگيري</string>
+    <string name="notif_backup_body">آخري بيڪ اپ کي هفتي کان وڌيڪ ٿي ويو. توهان جو رڪارڊ رڳو هن فون تي آهي.</string>
 </resources>

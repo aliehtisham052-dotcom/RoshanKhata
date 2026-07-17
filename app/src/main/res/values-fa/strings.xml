@@ -569,4 +569,16 @@
     <string name="select_language">زبان خود را انتخاب کنید</string>
     <string name="language_change_note">هر وقت خواستید از «بیشتر» زبان را عوض کنید.</string>
     <string name="language">زبان</string>
+
+    <!-- Daily reminder notifications -->
+    <string name="notif_channel_name">یادآوری‌ها</string>
+    <string name="notif_channel_desc">چک‌های سررسید، اقساط، کالای رو به انقضا و یادآوری پشتیبان‌گیری</string>
+    <string name="notif_cheques_title">چک‌ها آماده وصول</string>
+    <string name="notif_cheques_body">%1$d چک امروز یا پیش‌تر سررسید شده است.</string>
+    <string name="notif_plans_title">قسط سررسید شده</string>
+    <string name="notif_plans_body">%1$d برنامه پرداخت موعد پرداخت دارد.</string>
+    <string name="notif_expiry_title">کالا رو به انقضا</string>
+    <string name="notif_expiry_body">%1$d قلم تا 60 روز دیگر منقضی می‌شود. بفروشید، تخفیف دهید یا برگردانید.</string>
+    <string name="notif_backup_title">یادآوری پشتیبان‌گیری</string>
+    <string name="notif_backup_body">بیش از یک هفته از آخرین پشتیبان گذشته است. سوابق شما فقط روی همین گوشی است.</string>
 </resources>

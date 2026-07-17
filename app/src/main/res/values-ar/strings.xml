@@ -549,4 +549,16 @@
     <string name="select_language">اختر لغتك</string>
     <string name="language_change_note">يمكنك تغيير اللغة في أي وقت من «المزيد».</string>
     <string name="language">اللغة</string>
+
+    <!-- Daily reminder notifications -->
+    <string name="notif_channel_name">تذكيرات</string>
+    <string name="notif_channel_desc">شيكات مستحقة وأقساط وبضاعة قاربت الانتهاء وتذكير النسخ الاحتياطي</string>
+    <string name="notif_cheques_title">شيكات جاهزة للإيداع</string>
+    <string name="notif_cheques_body">%1$d شيك مستحق اليوم أو متأخر.</string>
+    <string name="notif_plans_title">قسط مستحق</string>
+    <string name="notif_plans_body">%1$d خطة دفع حان موعد سدادها.</string>
+    <string name="notif_expiry_title">بضاعة قاربت الانتهاء</string>
+    <string name="notif_expiry_body">%1$d صنف تنتهي صلاحيته خلال 60 يومًا. بِع أو خفّض السعر أو أرجِع.</string>
+    <string name="notif_backup_title">تذكير النسخ الاحتياطي</string>
+    <string name="notif_backup_body">مضى أكثر من أسبوع على آخر نسخة احتياطية. سجلاتك على هذا الهاتف فقط.</string>
 </resources>

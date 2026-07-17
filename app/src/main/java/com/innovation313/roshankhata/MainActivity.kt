@@ -1,6 +1,8 @@
 package com.innovation313.roshankhata
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +14,8 @@ import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -162,6 +166,33 @@ class MainActivity : AppCompatActivity() {
             dao.observeNetBalance().collectLatest { net ->
                 netBalance = net
                 renderNetBalance()
+            }
+        }
+
+        setupReminders()
+    }
+
+    /**
+     * Daily reminders (cheques due, instalments, expiring stock, backup nudge).
+     * Scheduling is idempotent. On Android 13+ notifications need a runtime
+     * permission — asked exactly once, and a "no" is remembered and respected.
+     */
+    private fun setupReminders() {
+        ReminderWorker.ensureChannel(this)
+        ReminderWorker.schedule(this)
+        if (Build.VERSION.SDK_INT >= 33) {
+            val granted = ContextCompat.checkSelfPermission(
+                this, android.Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) {
+                // No "asked once" flag: allowBackup restores SharedPreferences
+                // across reinstalls, so a remembered flag silently blocked the
+                // dialog forever (found on the owner's device). Android itself
+                // stops showing the dialog after two denials, so requesting on
+                // every launch until granted cannot become spam.
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 313
+                )
             }
         }
     }
