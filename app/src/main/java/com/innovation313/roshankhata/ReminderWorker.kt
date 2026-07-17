@@ -39,7 +39,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         }
         ensureChannel(ctx)
 
-        val dao = KhataDatabase.get(ctx).dao()
+        val dao = KhataDatabase.get(ctx).khataDao()
         val endOfToday = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59)
             set(Calendar.SECOND, 59); set(Calendar.MILLISECOND, 999)
