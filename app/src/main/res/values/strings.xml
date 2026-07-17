@@ -566,4 +566,7 @@
     <string name="share_failed">Could not create the receipt image</string>
     <string name="invalid_amount">Enter a valid amount</string>
     <string name="saved">Saved</string>
+    <string name="select_language">Select your language</string>
+    <string name="language_change_note">You can change the language any time from More.</string>
+    <string name="language">Language</string>
 </resources>

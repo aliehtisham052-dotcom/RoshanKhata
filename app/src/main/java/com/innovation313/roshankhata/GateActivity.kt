@@ -21,6 +21,14 @@ class GateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // First run: the language picker comes before everything else, the way
+        // the competitor opens. Once chosen it never appears here again.
+        if (!LanguageActivity.isChosen(this)) {
+            startActivity(Intent(this, LanguageActivity::class.java))
+            finish()
+            return
+        }
+
         val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
 
         // If the owner turned the lock on but has since removed their screen

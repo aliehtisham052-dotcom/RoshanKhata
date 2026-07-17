@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  First-run language picker, the way the competitor opens: a clean sheet of
+  twelve language buttons. Each button shows the language in its own script so
+  every reader finds their own tongue instantly. The choice is applied through
+  AppCompat's per-app locales and remembered; it can be changed later from More.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brand_green"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:text="@string/powered_by"
+            android:textColor="@color/section_khata_soft"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvChooseLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="14dp"
+            android:text="@string/select_language"
+            android:textColor="@color/white"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <!-- Rows of language buttons, three per row like the competitor -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <Button android:id="@+id/langEnglish" style="@style/LangKey" android:text="English" />
+            <Button android:id="@+id/langRomanUrdu" style="@style/LangKey" android:text="Roman Urdu" />
+            <Button android:id="@+id/langUrdu" style="@style/LangKey" android:text="اردو" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <Button android:id="@+id/langSindhi" style="@style/LangKey" android:text="سنڌي" />
+            <Button android:id="@+id/langPashto" style="@style/LangKey" android:text="پښتو" />
+            <Button android:id="@+id/langPersian" style="@style/LangKey" android:text="فارسی" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <Button android:id="@+id/langArabic" style="@style/LangKey" android:text="العربية" />
+            <Button android:id="@+id/langBengali" style="@style/LangKey" android:text="বাংলা" />
+            <Button android:id="@+id/langHindi" style="@style/LangKey" android:text="हिंदी" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <Button android:id="@+id/langFrench" style="@style/LangKey" android:text="Français" />
+            <Button android:id="@+id/langTurkish" style="@style/LangKey" android:text="Türkçe" />
+            <Button android:id="@+id/langMalay" style="@style/LangKey" android:text="Malay" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvLangNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="@string/language_change_note"
+            android:textColor="@color/section_khata_soft"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+</ScrollView>
