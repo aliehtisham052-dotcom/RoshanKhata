@@ -5,10 +5,13 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import androidx.core.widget.TextViewCompat
+import com.google.android.material.button.MaterialButton
 
 /**
  * The first screen a new user sees: pick your language, in your own script.
@@ -46,6 +49,7 @@ class LanguageActivity : AppCompatActivity() {
             R.id.langArabic to "ar"
         )
 
+        val density = resources.displayMetrics.density
         for ((id, tag) in choices) {
             val btn = findViewById<Button>(id)
             btn.setOnClickListener { choose(tag) }
@@ -54,6 +58,13 @@ class LanguageActivity : AppCompatActivity() {
             // linking. Setting the tint list in code is honored unconditionally.
             btn.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
             btn.setTextColor(0xFF1A1A18.toInt())
+            // Uniform, polished shape: rounded corners and a text size that
+            // shrinks just enough for longer labels (Roman Urdu) instead of
+            // truncating, so all six buttons read as one tidy set.
+            (btn as? MaterialButton)?.cornerRadius = (14 * density).toInt()
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                btn, 11, 15, 1, TypedValue.COMPLEX_UNIT_SP
+            )
         }
     }
 

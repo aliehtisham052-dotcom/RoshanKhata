@@ -50,13 +50,13 @@
             android:textStyle="bold" />
 
         <!-- Rows of language buttons, three per row like the competitor -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:baselineAligned="false" android:orientation="horizontal">
             <Button android:id="@+id/langEnglish" style="@style/LangKey" android:textColor="#1A1A18" android:text="English" />
             <Button android:id="@+id/langRomanUrdu" style="@style/LangKey" android:textColor="#1A1A18" android:text="Roman Urdu" />
             <Button android:id="@+id/langUrdu" style="@style/LangKey" android:textColor="#1A1A18" android:text="اردو" />
         </LinearLayout>
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:baselineAligned="false" android:orientation="horizontal">
             <Button android:id="@+id/langSindhi" style="@style/LangKey" android:textColor="#1A1A18" android:text="سنڌي" />
             <Button android:id="@+id/langPersian" style="@style/LangKey" android:textColor="#1A1A18" android:text="فارسی" />
             <Button android:id="@+id/langArabic" style="@style/LangKey" android:textColor="#1A1A18" android:text="العربية" />
