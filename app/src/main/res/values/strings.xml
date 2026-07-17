@@ -59,8 +59,8 @@
     <string name="nisab_help">Nisab is set here against the silver standard (612.36 g), the position generally taken as more careful toward the rights of the poor. Enter today\'s silver price per gram.</string>
     <string name="silver_price_hint">Silver price per gram (Rs)</string>
     <string name="nisab_value">Nisab = %1$s</string>
-    <string name="nisab_enter_price">Enter the silver price to work out nisab</string>
-    <string name="nisab_needed_first">Enter the silver price first</string>
+    <string name="nisab_enter_price">Enter the price to calculate nisab</string>
+    <string name="nisab_needed_first">Enter the price first</string>
     <string name="above_nisab">Your wealth has reached nisab — Zakat is due (subject to the lunar year being complete).</string>
     <string name="below_nisab">Your wealth is below nisab — no Zakat is due on this amount.</string>
 

@@ -56,8 +56,8 @@
     <string name="nisab_help">یہاں نصاب چاندی کے معیار (612.36 گرام) پر رکھا گیا ہے — یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔ آج کی چاندی کی فی گرام قیمت لکھیں۔</string>
     <string name="silver_price_hint">چاندی کی قیمت فی گرام (روپے)</string>
     <string name="nisab_value">نصاب = %1$s</string>
-    <string name="nisab_enter_price">نصاب معلوم کرنے کے لیے چاندی کی قیمت لکھیں</string>
-    <string name="nisab_needed_first">پہلے چاندی کی قیمت لکھیں</string>
+    <string name="nisab_enter_price">نصاب معلوم کرنے کے لیے قیمت لکھیں</string>
+    <string name="nisab_needed_first">پہلے قیمت لکھیں</string>
     <string name="above_nisab">آپ کا مال نصاب کو پہنچ گیا ہے — زکوٰۃ واجب ہے (بشرطیکہ قمری سال مکمل ہو)۔</string>
     <string name="below_nisab">آپ کا مال نصاب سے کم ہے — اس رقم پر زکوٰۃ واجب نہیں۔</string>
 

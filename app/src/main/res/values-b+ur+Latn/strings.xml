@@ -56,8 +56,8 @@
     <string name="nisab_help">Yahan nisab chandi ke miyaar (612.36 gram) par rakha gaya hai — ye mauqif aam tor par ghareebon ke haq mein zyada mohtat samjha jata hai. Aaj ki chandi ki fi gram qeemat likhein.</string>
     <string name="silver_price_hint">Chandi ki qeemat fi gram (Rs)</string>
     <string name="nisab_value">Nisab = %1$s</string>
-    <string name="nisab_enter_price">Nisab maloom karne ke liye chandi ki qeemat likhein</string>
-    <string name="nisab_needed_first">Pehle chandi ki qeemat likhein</string>
+    <string name="nisab_enter_price">Nisab maloom karne ke liye qeemat likhein</string>
+    <string name="nisab_needed_first">Pehle qeemat likhein</string>
     <string name="above_nisab">Aap ka maal nisab ko pahunch gaya hai — Zakat wajib hai (basharte qamari saal mukammal ho).</string>
     <string name="below_nisab">Aap ka maal nisab se kam hai — is raqam par Zakat wajib nahi.</string>
 

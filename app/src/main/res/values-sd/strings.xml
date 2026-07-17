@@ -59,8 +59,8 @@
     <string name="nisab_help">نصاب هتي چانديءَ جي معيار (۶۱۲.۳۶ گرام) تي رکيل آهي — اهو موقف جيڪو عام طور غريبن جي حق ۾ وڌيڪ محتاط سمجهيو وڃي ٿو. اڄ جي چانديءَ جي في گرام قيمت لکو.</string>
     <string name="silver_price_hint">چانديءَ جي في گرام قيمت (Rs)</string>
     <string name="nisab_value">نصاب = %1$s</string>
-    <string name="nisab_enter_price">نصاب ڳڻڻ لاءِ چانديءَ جي قيمت لکو</string>
-    <string name="nisab_needed_first">پهرين چانديءَ جي قيمت لکو</string>
+    <string name="nisab_enter_price">نصاب ڳڻڻ لاءِ قيمت لکو</string>
+    <string name="nisab_needed_first">پهرين قيمت لکو</string>
     <string name="above_nisab">توهان جو مال نصاب تي پهچي ويو آهي — زڪوات واجب آهي (قمري سال پوري ٿيڻ جي شرط سان).</string>
     <string name="below_nisab">توهان جو مال نصاب کان گهٽ آهي — هن رقم تي زڪوات واجب ناهي.</string>
 

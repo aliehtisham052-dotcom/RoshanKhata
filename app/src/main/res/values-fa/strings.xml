@@ -59,8 +59,8 @@
     <string name="nisab_help">نصاب در اینجا بر پایه معیار نقره (۶۱۲٫۳۶ گرم) تنظیم شده — دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود. قیمت امروز هر گرم نقره را وارد کنید.</string>
     <string name="silver_price_hint">قیمت هر گرم نقره (Rs)</string>
     <string name="nisab_value">نصاب = %1$s</string>
-    <string name="nisab_enter_price">برای محاسبه نصاب، قیمت نقره را وارد کنید</string>
-    <string name="nisab_needed_first">ابتدا قیمت نقره را وارد کنید</string>
+    <string name="nisab_enter_price">برای محاسبه نصاب، قیمت را وارد کنید</string>
+    <string name="nisab_needed_first">ابتدا قیمت را وارد کنید</string>
     <string name="above_nisab">دارایی شما به نصاب رسیده است — زکات واجب است (مشروط به کامل شدن سال قمری).</string>
     <string name="below_nisab">دارایی شما کمتر از نصاب است — بر این مبلغ زکات واجب نیست.</string>
 

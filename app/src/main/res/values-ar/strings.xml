@@ -56,8 +56,8 @@
     <string name="nisab_help">النصاب هنا على معيار الفضة (612.36 غرامًا)، وهو الرأي الأحوط لحق الفقراء غالبًا. أدخل سعر غرام الفضة اليوم.</string>
     <string name="silver_price_hint">سعر غرام الفضة (Rs)</string>
     <string name="nisab_value">النصاب = %1$s</string>
-    <string name="nisab_enter_price">أدخل سعر الفضة لحساب النصاب</string>
-    <string name="nisab_needed_first">أدخل سعر الفضة أولًا</string>
+    <string name="nisab_enter_price">أدخل السعر لحساب النصاب</string>
+    <string name="nisab_needed_first">أدخل السعر أولاً</string>
     <string name="above_nisab">بلغ مالك النصاب — الزكاة واجبة (بشرط تمام الحول القمري).</string>
     <string name="below_nisab">مالك دون النصاب — لا زكاة على هذا المبلغ.</string>
 
