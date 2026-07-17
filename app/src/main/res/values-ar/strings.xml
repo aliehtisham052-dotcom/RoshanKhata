@@ -1,0 +1,552 @@
+<resources>
+    <string name="app_name">روشن كهاتا</string>
+    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="brand_line">Innovation-313</string>
+
+    <string name="net_balance">الرصيد الصافي</string>
+    <string name="add_party">إضافة طرف</string>
+    <string name="no_parties_yet">لا عملاء بعد.\n\nاضغط «إضافة طرف» بالأسفل لإضافة أول عميل وبدء دفترك.</string>
+    <string name="no_entries_yet">لا قيود بعد.</string>
+
+    <string name="i_gave">أعطيت</string>
+    <string name="i_got">استلمت</string>
+
+    <string name="you_will_get">لك</string>
+    <string name="you_will_give">عليك</string>
+    <string name="settled">الحساب مسدد</string>
+
+    <string name="name">الاسم</string>
+    <string name="phone_optional">الهاتف (اختياري)</string>
+    <string name="amount">المبلغ</string>
+    <string name="note_optional">ملاحظة (اختياري)</string>
+    <string name="save">حفظ</string>
+    <string name="cancel">إلغاء</string>
+    <string name="customer">عميل</string>
+    <string name="supplier">مورّد</string>
+    <string name="enter_name">يرجى إدخال الاسم</string>
+    <string name="enter_valid_amount">يرجى إدخال مبلغ صحيح</string>
+
+    <string name="recycle_bin">سلة المحذوفات</string>
+    <string name="bin_retention_note">تُحفظ العناصر المحذوفة 30 يومًا ثم تُزال نهائيًا.</string>
+    <string name="bin_empty">السلة فارغة.</string>
+    <string name="bin_party_note">طرف (قيوده محفوظة معه)</string>
+    <string name="restore">استعادة</string>
+    <string name="restored">تمت الاستعادة</string>
+    <string name="deleted_on">حُذف في: %1$s</string>
+    <string name="restore_party_confirm">استعادة \"%1$s\"؟ ستعود قيود دفتره أيضًا.</string>
+    <string name="restore_entry_confirm">استعادة هذا القيد؟ سيظهر مجددًا في دفتر الطرف ويؤثر على الرصيد.</string>
+    <string name="empty_bin">إفراغ السلة</string>
+    <string name="empty_bin_confirm">سيُحذف كل ما في السلة نهائيًا. لا يمكن التراجع.</string>
+    <string name="delete_forever">حذف نهائي</string>
+    <string name="bin_emptied">أُفرغت السلة</string>
+
+    <string name="delete">حذف</string>
+    <string name="delete_party_title">حذف الطرف؟</string>
+    <string name="delete_party_confirm">سينتقل \"%1$s\" وقيوده إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</string>
+    <string name="delete_entry_title">حذف القيد؟</string>
+    <string name="delete_entry_confirm">سينتقل هذا القيد إلى سلة المحذوفات. يمكنك استعادته خلال 30 يومًا.</string>
+    <string name="moved_to_bin">نُقل إلى سلة المحذوفات</string>
+    <string name="long_press_to_delete">اضغط مطولًا على الطرف لحذفه</string>
+
+    <string name="zakat_calculator">حاسبة الزكاة</string>
+    <string name="zakat_subtitle">أداة استرشادية — ليست فتوى</string>
+    <string name="zakat_disclaimer">هذه الأداة للاسترشاد فقط. للزكاة تفاصيل فقهية مهمة — معيار النصاب، وحكم الديون المشكوك فيها، والحول القمري، وما يُخصم من الالتزامات، كلها مما تختلف فيه آراء العلماء. روشن كهاتا ليس مفتيًا. خذ الحكم النهائي من عالم موثوق.</string>
+
+    <string name="nisab_section">النصاب</string>
+    <string name="nisab_help">النصاب هنا على معيار الفضة (612.36 غرامًا)، وهو الرأي الأحوط لحق الفقراء غالبًا. أدخل سعر غرام الفضة اليوم.</string>
+    <string name="silver_price_hint">سعر غرام الفضة (Rs)</string>
+    <string name="nisab_value">النصاب = %1$s</string>
+    <string name="nisab_enter_price">أدخل سعر الفضة لحساب النصاب</string>
+    <string name="nisab_needed_first">أدخل سعر الفضة أولًا</string>
+    <string name="above_nisab">بلغ مالك النصاب — الزكاة واجبة (بشرط تمام الحول القمري).</string>
+    <string name="below_nisab">مالك دون النصاب — لا زكاة على هذا المبلغ.</string>
+
+    <string name="cash_stock_section">النقد والبضاعة</string>
+    <string name="cash_stock_help">النقد في اليد وأرصدة البنوك وقيمة بضاعة التجارة. لا يراها روشن كهاتا، فأدخلها بنفسك.</string>
+    <string name="cash_stock_hint">النقد + قيمة البضاعة (Rs)</string>
+
+    <string name="from_your_ledger">من دفترك</string>
+    <string name="certain_receivables">مستحقات تتوقع تحصيلها: %1$s</string>
+    <string name="qarze_hasna_given">قرض حسن مُعطى: %1$s</string>
+    <string name="doubtful_receivables">مستحقات مشكوك فيها: %1$s (غير مشمولة)</string>
+    <string name="you_owe_others">ما عليك للآخرين: %1$s (مخصوم)</string>
+    <string name="include_doubtful">احسب المستحقات المشكوك فيها أيضًا</string>
+    <string name="include_doubtful_help">يرى كثير من العلماء أن زكاة الدين المشكوك فيه تجب عند قبضه فقط. فعّل هذا إن أردت مزيد الاحتياط.</string>
+
+    <string name="zakatable_wealth">المال الزكوي</string>
+    <string name="zakat_due_label">الزكاة الواجبة (2.5%)</string>
+    <string name="zakat_footer_note">تشترط الزكاة أيضًا مرور حول قمري كامل على المال. لا يتتبع روشن كهاتا ذلك — فاحسبه بنفسك، وتأكد من الحكم عند عالم.</string>
+
+    <string name="qarze_hasna">قرض حسن (بلا فائدة)</string>
+    <string name="qarze_hasna_help">مميّز عن التجارة. لا تُطبق عليه فائدة ولا غرامة تأخير أبدًا.</string>
+    <string name="recovery_certain">أتوقع تحصيله</string>
+    <string name="recovery_doubtful">مشكوك فيه</string>
+    <string name="recovery_label">احتمال التحصيل</string>
+
+    <string name="remind_whatsapp">واتساب</string>
+    <string name="remind_sms">رسالة نصية</string>
+    <string name="reminder_preview_help">اقرأها قبل الإرسال. يمكنك تعديل أي شيء هنا — سيسلّمها روشن كهاتا إلى واتساب أو تطبيق الرسائل، وأنت تضغط إرسال بنفسك.</string>
+    <string name="reminder_they_owe">السلام عليكم %1$s،\n\nبحسب سجلاتنا، عليكم مبلغ %2$s. نرجو التكرم بسداده عند الإمكان. إن كنتم قد سددتم فتجاهلوا هذه الرسالة وأخبرونا.\n\nجزاكم الله خيرًا.\n\n\u2014\nأُرسلت عبر روشن كهاتا</string>
+    <string name="reminder_i_owe">السلام عليكم %1$s،\n\nبحسب سجلاتنا، لكم علينا مبلغ %2$s. سنسدده قريبًا إن شاء الله. إن اختلف حسابكم عن حسابنا فأخبرونا.\n\nجزاكم الله خيرًا.\n\n\u2014\nأُرسلت عبر روشن كهاتا</string>
+    <string name="send_reminder">إرسال تذكير</string>
+    <string name="open_whatsapp">فتح واتساب</string>
+    <string name="open_sms">فتح الرسائل</string>
+    <string name="no_phone_number">لا رقم هاتف محفوظ لهذا الطرف. أضف رقمًا أولًا.</string>
+    <string name="whatsapp_not_installed">واتساب غير مثبت على هذا الهاتف.</string>
+    <string name="no_sms_app">لا يوجد تطبيق رسائل على هذا الهاتف.</string>
+    <string name="nothing_outstanding">لا مستحقات — الحساب مسدد.</string>
+
+    <string name="goods_section">البضاعة (اختياري)</string>
+    <string name="goods_help">إن تحركت بضاعة مع هذا القيد — 5 أكياس يوريا، لتران مبيد — فسجلها هنا. اتركه فارغًا لقيد نقدي بسيط.</string>
+    <string name="item_name_hint">الصنف (مثل يوريا، مبيد، علف)</string>
+    <string name="quantity_hint">الكمية</string>
+    <string name="unit_hint">الوحدة (كيس، لتر، كغ…)</string>
+
+    <string name="import_contacts">استيراد من جهات الاتصال</string>
+    <string name="import_selected">استيراد المحدد</string>
+    <string name="search_contacts">ابحث بالاسم أو الرقم</string>
+    <string name="selected_count">%1$d محدد</string>
+    <string name="imported_count">استُورد %1$d من جهات الاتصال</string>
+    <string name="already_added">مضاف</string>
+    <string name="loading_contacts">جارٍ تحميل جهات الاتصال\u2026</string>
+    <string name="no_contacts_found">لا جهات اتصال على هذا الهاتف.</string>
+    <string name="no_matching_contacts">لا جهات اتصال تطابق بحثك.</string>
+    <string name="continue_action">متابعة</string>
+    <string name="contacts_permission_title">الوصول إلى جهات اتصالك؟</string>
+    <string name="contacts_permission_rationale">سيقرأ روشن كهاتا قائمة جهات اتصالك لعرضها هنا فقط، لتختار من تضيف. لا يُرفع شيء، ولا يُحفظ إلا من تختارهم بنفسك — اسمهم ورقمهم فقط.\n\nوإن لم ترد ذلك، يمكنك إضافة كل طرف يدويًا.</string>
+    <string name="contacts_permission_denied">لم يُمنح الإذن، فلا يمكن عرض جهات الاتصال. يمكنك إضافة الأطراف يدويًا من الشاشة الرئيسية.</string>
+    <string name="add_manually">إضافة يدويًا</string>
+
+    <string name="statement_pdf">كشف حساب</string>
+    <string name="generating_statement">جارٍ تجهيز الكشف\u2026</string>
+    <string name="share_statement">مشاركة الكشف</string>
+    <string name="statement_failed">تعذر إنشاء الكشف. حاول مجددًا.</string>
+    <string name="no_entries_to_export">لا قيود لوضعها في كشف بعد.</string>
+
+    <string name="app_lock">قفل التطبيق</string>
+    <string name="lock_title">فتح روشن كهاتا</string>
+    <string name="lock_subtitle">دفترك خاص. أكّد أنك أنت.</string>
+    <string name="app_lock_enabled">قفل التطبيق مفعّل. سيُطلب التأكيد عند كل فتح.</string>
+    <string name="app_lock_disabled">قفل التطبيق معطّل.</string>
+    <string name="app_lock_turn_on">تفعيل قفل التطبيق</string>
+    <string name="app_lock_turn_off">تعطيل قفل التطبيق</string>
+    <string name="app_lock_explain">يستخدم بصمتك أو وجهك أو قفل الشاشة الموجود على هاتفك. لا يحفظ روشن كهاتا رقمًا سريًا خاصًا به — أندرويد يحفظه بأمان أكبر مما نستطيع.</string>
+    <string name="app_lock_no_screen_lock">لا قفل شاشة على هذا الهاتف. عيّن بصمة أو رقمًا سريًا أو نمطًا في إعدادات هاتفك أولًا، ثم يحمي قفل التطبيق دفترك.</string>
+    <string name="app_lock_unavailable">قفل التطبيق غير متاح على هذا الهاتف.</string>
+    <string name="ok">حسنًا</string>
+
+    <string name="business_settings">إعدادات النشاط التجاري</string>
+    <string name="business_settings_subtitle">اسمك ورمز الدفع على الكشوف</string>
+    <string name="business_name">اسم النشاط التجاري</string>
+    <string name="business_name_help">يظهر أعلى كل كشف وفي نهاية كل تذكير ترسله.</string>
+    <string name="business_name_hint">مثل بهاتي للتجارة</string>
+
+    <string name="payment_qr">رمز QR للدفع</string>
+    <string name="payment_qr_help">لقطة شاشة أو صورة لرمز QR الخاص بحسابك في EasyPaisa أو JazzCash. سيُرفق بالكشوف ليتمكن العميل من المسح والدفع لك.</string>
+    <string name="payment_qr_caveat">افحص الرمز جيدًا قبل الحفظ. لا يستطيع روشن كهاتا التحقق لمن يعود الرمز — إن حُفظت صورة خاطئة ذهب دفع العميل إلى حساب آخر.\n\nولاحظ: رمز QR الشخصي لا يحمل المبلغ. سيكتبه عميلك بنفسه، لذا يُكتب المبلغ بوضوح بجانبه.</string>
+    <string name="no_qr_yet">لا رمز دفع محفوظ بعد.</string>
+    <string name="choose_qr_image">اختيار صورة</string>
+    <string name="remove_qr">إزالة</string>
+    <string name="qr_saved">حُفظ رمز الدفع</string>
+    <string name="qr_save_failed">تعذر حفظ هذه الصورة. اختر أخرى.</string>
+    <string name="qr_removed">أُزيل رمز الدفع</string>
+    <string name="qr_confirm_title">هل هذا هو الرمز الصحيح؟</string>
+    <string name="qr_confirm_message">انظر إلى الرمز أعلاه وأكّد أنه حسابك أنت في EasyPaisa أو JazzCash. وإلا وصلت مدفوعات عملائك إلى شخص آخر.</string>
+    <string name="qr_confirm_yes">نعم، هو حسابي</string>
+    <string name="profile_saved">تم الحفظ</string>
+    <string name="attach_qr_to_reminder">إرفاق رمز الدفع</string>
+
+    <string name="cheques">الشيكات</string>
+    <string name="add_cheque">إضافة شيك</string>
+    <string name="no_cheques">لا شيكات بعد.\n\nتُتابع الشيكات المؤجلة هنا منفصلة عن الدفتر — الشيك ليس مالًا حتى يُصرف.</string>
+    <string name="cheque_not_money_yet">الشيك ليس مالًا حتى يُصرف، فلن يمس الرصيد الآن. عند تعليمه «مصروفًا» يُقيد الدفع في الدفتر حينها.</string>
+    <string name="cheque_party_hint">اسم العميل أو المورّد</string>
+    <string name="cheque_received">مستلم منهم</string>
+    <string name="cheque_issued">صادر لهم</string>
+    <string name="pick_due_date">اختر التاريخ المكتوب على الشيك</string>
+    <string name="due_date_set">الاستحقاق: %1$s</string>
+    <string name="cheque_number_hint">رقم الشيك (اختياري)</string>
+    <string name="bank_name_hint">البنك (اختياري)</string>
+
+    <string name="cheque_pending">قيد الانتظار</string>
+    <string name="cheque_cleared">مصروف</string>
+    <string name="cheque_bounced">مرتجع</string>
+    <string name="cheque_cancelled">ملغى</string>
+
+    <string name="due_today">يستحق اليوم</string>
+    <string name="due_in_days">يستحق خلال %1$d يومًا</string>
+    <string name="overdue_by_days">متأخر %1$d يومًا</string>
+    <string name="due_summary">%1$d شيك جاهز للإيداع</string>
+    <string name="due_summary_none">لا مستحقات</string>
+    <string name="due_summary_pending">%1$d بانتظار الصرف</string>
+    <string name="due_summary_empty">لا شيكات</string>
+    <string name="due_summary_all_settled">الكل مسدد</string>
+
+    <string name="cheque_actions">ماذا حدث لهذا الشيك؟</string>
+    <string name="mark_cleared">تعليم كمصروف</string>
+    <string name="mark_bounced">تعليم كمرتجع</string>
+    <string name="mark_cancelled">تعليم كملغى</string>
+    <string name="delete_cheque">حذف الشيك</string>
+
+    <string name="cleared_confirm">تعليمه مصروفًا سيقيد الدفع في دفتر %1$s ويغير الرصيد. لا تفعل ذلك إلا بعد وصول المال فعلًا إلى الحساب.</string>
+    <string name="bounced_confirm">الشيك المرتجع ليس دفعًا — يبقى المبلغ مستحقًا. لن يُقيد شيء في الدفتر.</string>
+    <string name="cheque_cleared_posted">مصروف — قُيد الدفع في الدفتر</string>
+    <string name="cheque_marked_bounced">عُلّم كمرتجع. المبلغ ما زال مستحقًا.</string>
+    <string name="cheque_marked_cancelled">عُلّم كملغى</string>
+    <string name="select_party_first">اختر عميلًا أو مورّدًا من قائمتك أولًا.</string>
+    <string name="pick_date_first">يرجى اختيار التاريخ المكتوب على الشيك.</string>
+    <string name="cheque_note_prefix">شيك %1$s</string>
+
+    <string name="search_parties">ابحث بالاسم أو الرقم</string>
+    <string name="search_entries">ابحث في الملاحظات أو البضاعة أو المرجع</string>
+    <string name="sort">ترتيب</string>
+    <string name="sort_by">ترتيب حسب</string>
+
+    <string name="sort_name_az">الاسم (أ\u2013ي)</string>
+    <string name="sort_name_za">الاسم (ي\u2013أ)</string>
+    <string name="sort_owes_most">الأكثر مديونية لي أولًا</string>
+    <string name="sort_i_owe_most">الأكثر استحقاقًا عليّ أولًا</string>
+    <string name="sort_recent_activity">الأحدث نشاطًا</string>
+
+    <string name="sort_newest">الأحدث أولًا</string>
+    <string name="sort_oldest">الأقدم أولًا</string>
+    <string name="sort_amount_high">المبلغ (من الأعلى)</string>
+    <string name="sort_amount_low">المبلغ (من الأدنى)</string>
+
+    <string name="no_matching_parties">لا عملاء أو مورّدون يطابقون بحثك.</string>
+    <string name="no_matching_entries">لا قيود تطابق بحثك.</string>
+    <string name="showing_filtered">عرض %1$d من %2$d</string>
+    <string name="running_balance_note">الرصيد الجاري يتبع ترتيب الدفتر نفسه، فيبقى صحيحًا مهما رتبت أو بحثت.</string>
+
+    <string name="party_photo">الصورة</string>
+    <string name="set_photo">تعيين صورة</string>
+    <string name="change_photo">تغيير الصورة</string>
+    <string name="remove_photo">إزالة الصورة</string>
+    <string name="photo_saved">حُفظت الصورة</string>
+    <string name="photo_removed">أُزيلت الصورة</string>
+    <string name="photo_save_failed">تعذر حفظ هذه الصورة. اختر أخرى.</string>
+    <string name="photo_privacy_note">تبقى الصورة على هذا الهاتف. لا تُرفع أبدًا، وتُترك عمدًا خارج الكشوف — فالكشف يُعاد توجيهه، وعميلك لم يوافق على سفر وجهه معه.</string>
+    <string name="party_options">خيارات</string>
+    <string name="edit_party">تعديل البيانات</string>
+    <string name="delete_party">حذف</string>
+
+    <string name="credit_limit">حد الائتمان</string>
+    <string name="set_credit_limit">تعيين حد الائتمان</string>
+    <string name="credit_limit_help">أقصى ما تسمح به على هذا الطرف. سيحذرك روشن كهاتا قبل قيدٍ يتجاوزه.</string>
+    <string name="credit_limit_hint">الحد (Rs) — اتركه فارغًا بلا حد</string>
+    <string name="credit_limit_advisory">هذا تحذير لا منع. النشاط نشاطك — يمكنك المتابعة دائمًا.</string>
+    <string name="credit_limit_current">عليه لك حاليًا %1$s</string>
+    <string name="credit_limit_none">لا حد معين</string>
+    <string name="credit_limit_set_to">الحد: %1$s</string>
+    <string name="credit_limit_removed">أُزيل حد الائتمان</string>
+    <string name="credit_limit_saved">حُفظ حد الائتمان</string>
+
+    <string name="over_limit_badge">فوق الحد</string>
+    <string name="near_limit_badge">قرب الحد</string>
+
+    <string name="limit_warning_title">سيتجاوز هذا حد ائتمانه</string>
+    <string name="limit_warning_message">على %1$s لك حاليًا %2$s.\n\nهذا القيد بمبلغ %3$s يوصله إلى %4$s، وهو فوق حد %5$s الذي عيّنته.\n\nيمكنك المتابعة — هذا تحذير فقط.</string>
+    <string name="proceed_anyway">متابعة</string>
+
+    <string name="report">تقرير</string>
+    <string name="report_title">تقرير %1$s</string>
+    <string name="range_all">الكل</string>
+    <string name="range_today">اليوم</string>
+    <string name="range_week">الأسبوع الماضي</string>
+    <string name="range_month">الشهر الماضي</string>
+    <string name="range_custom">مخصص</string>
+    <string name="range_label_all">الدفتر كله</string>
+    <string name="range_label">%1$s إلى %2$s</string>
+    <string name="net_change">صافي التغيير</string>
+    <string name="no_entries_in_range">لا قيود في هذه الفترة.</string>
+    <string name="share_report">مشاركة PDF</string>
+    <string name="pick_start_date">اختر تاريخ البداية</string>
+    <string name="pick_end_date">اختر تاريخ النهاية</string>
+    <string name="closing_note_range">الأرقام الثلاثة أعلاه لهذه الفترة فقط. الرصيد الختامي أدناه هو الحساب الكامل — %1$s — لأن مجموع فترة جزئية ليس ما يستحق على عميلك.</string>
+    <string name="closing_note_all">الرصيد الختامي: %1$s</string>
+    <string name="report_period">الفترة: %1$s</string>
+    <string name="invalid_range">لا يمكن أن يسبق تاريخ النهاية تاريخ البداية.</string>
+
+    <string name="cashbook">دفتر النقد</string>
+    <string name="cashbook_subtitle">دخول المال التجاري وخروجه</string>
+    <string name="cashbook_separate_note">دفتر النقد منفصل عن دفتر عملائك. الإيجار والأجور وبيع نقدي عابر — مال بلا عميل. لا يغيّر ما يستحق على أحد.</string>
+    <string name="add_cash_entry">إضافة قيد</string>
+    <string name="cash_in">نقد داخل</string>
+    <string name="cash_out">نقد خارج</string>
+    <string name="cash_net">الصافي</string>
+    <string name="cash_income">مال داخل</string>
+    <string name="cash_expense">مال خارج</string>
+    <string name="cash_category_hint">البند (مثل إيجار، أجور، بيع نقدي)</string>
+    <string name="no_cash_entries">لا قيود في دفتر النقد بعد.\n\nهذا للمال غير المرتبط بعميل — إيجار، كهرباء، أجور، وقود، بيع نقدي.</string>
+    <string name="enter_category">يرجى إدخال البند</string>
+    <string name="delete_cash_entry">حذف هذا القيد؟</string>
+    <string name="delete_cash_confirm">سينتقل إلى سلة المحذوفات.</string>
+
+    <string name="backup_restore">النسخ الاحتياطي والاستعادة</string>
+    <string name="backup_subtitle">دفاترك بين يديك</string>
+    <string name="backup_now">نسخ احتياطي الآن</string>
+    <string name="restore_from_file">استعادة من نسخة احتياطية</string>
+    <string name="backup_explain">كل شيء — العملاء والدفتر والشيكات ودفتر النقد وسلة المحذوفات — يُكتب في ملف واحد تحفظه في Drive أو ترسله لنفسك على واتساب أو تبقيه على بطاقة ذاكرة.\n\nالملف نص بسيط مقروء. حتى بعد سنوات، وحتى بدون هذا التطبيق، تبقى سجلاتك قابلة للاسترجاع. البيانات التي لا تستعيدها إلا بمساعدتنا ليست ملكك حقًا.</string>
+    <string name="backup_warning">يحفظ روشن كهاتا كل شيء على هذا الهاتف وحده. إن ضاع الهاتف أو تعطل أو أُزيل التطبيق ذهبت السجلات معه. خذ نسخة احتياطية بانتظام واحفظها في مكان آخر.</string>
+    <string name="backup_created">النسخة جاهزة — اختر مكان الحفظ</string>
+    <string name="backup_failed">تعذر إنشاء النسخة الاحتياطية.</string>
+    <string name="save_backup">حفظ النسخة</string>
+
+    <string name="restore_warning_title">استبدال كل شيء؟</string>
+    <string name="restore_warning_message">الاستعادة ستستبدل كل ما في روشن كهاتا بما في هذا الملف:\n\n%1$d عملاء/مورّدون\n%2$d قيود دفتر\n%3$d شيكات\n%4$d قيود نقد\n%5$d خطط سداد\n%6$d فواتير مورّدين\n\nكل ما على هذا الهاتف الآن سيزول. إن كانت لديك قيود هنا ليست في النسخة، فخذ نسخة من هذا أولًا.\n\nلا يمكن التراجع.</string>
+    <string name="restore_replace">استبدال كل شيء</string>
+    <string name="restore_done">تمت الاستعادة</string>
+    <string name="restore_failed">فشلت الاستعادة: %1$s</string>
+    <string name="reading_backup">جارٍ قراءة الملف\u2026</string>
+    <string name="restoring">جارٍ الاستعادة\u2026</string>
+    <string name="creating_backup">جارٍ إنشاء النسخة\u2026</string>
+
+    <string name="payment_plans">خطط السداد</string>
+    <string name="plans_subtitle">السداد على أقساط</string>
+    <string name="plan_not_a_debt_note">الخطة ترتيب لا دين جديد. ما عليه موجود في الدفتر أصلًا. تسجيل دفعة هنا يقيدها في الدفتر مرة واحدة — لا تُحسب مرتين أبدًا.</string>
+    <string name="add_plan">إضافة خطة</string>
+    <string name="no_plans">لا خطط سداد بعد.\n\nاستخدمها حين يسدد العميل مبلغًا على أقساط — بعد الحصاد أو عبر بضعة أشهر.</string>
+    <string name="plan_dialog_help">رتّب سداد ما على هذا الطرف أصلًا. لا يزيد هذا رصيده — يسجل فقط ما اتفق على دفعه ومتى.</string>
+    <string name="plan_total_hint">إجمالي المطلوب سداده (Rs)</string>
+    <string name="plan_installment_hint">قيمة القسط (Rs) — اختياري</string>
+    <string name="plan_pick_next_due">موعد الدفعة القادمة (اختياري)</string>
+    <string name="plan_owes_now">عليه حاليًا %1$s</string>
+    <string name="plan_owes_nothing">لا شيء على هذا الطرف الآن</string>
+
+    <string name="plan_paid">سُدد %1$s من %2$s</string>
+    <string name="plan_remaining">المتبقي %1$s</string>
+    <string name="plan_open">مفتوحة</string>
+    <string name="plan_closed">مكتملة</string>
+    <string name="plan_next_due">القادمة: %1$s</string>
+    <string name="plan_next_due_none">لا موعد محدد</string>
+    <string name="plan_overdue">متأخرة منذ %1$s</string>
+
+    <string name="plan_actions">خطة السداد</string>
+    <string name="record_payment">تسجيل دفعة</string>
+    <string name="close_plan">تعليم كمكتملة</string>
+    <string name="delete_plan">حذف الخطة</string>
+    <string name="record_payment_title">تسجيل دفعة</string>
+    <string name="record_payment_help">يقيد هذا قيدًا واحدًا في دفتر %1$s يخفض ما عليه. لا يُحسب مرتين.</string>
+    <string name="payment_recorded">سُجلت الدفعة وقُيدت في الدفتر</string>
+    <string name="plan_closed_msg">عُلمت الخطة مكتملة</string>
+    <string name="plan_overpay_warning">هذه الدفعة أكبر من المتبقي على الخطة (%1$s). ستُقيد كاملة في الدفتر — راجع المبلغ قبل الحفظ.</string>
+    <string name="plan_note_prefix">دفعة قسط</string>
+    <string name="plan_deleted">حُذفت الخطة. الدفعات المقيدة في الدفتر تبقى — المال قُبض فعلًا.</string>
+    <string name="delete_plan_confirm">ستُزال الخطة، لكن الدفعات المسجلة تبقى في الدفتر. ذلك المال قُبض فعلًا، وحذف الترتيب لا يلغيه.</string>
+
+    <string name="nav_khata">الدفتر</string>
+    <string name="nav_cashbook">النقد</string>
+    <string name="nav_cheques">الشيكات</string>
+    <string name="nav_plans">الخطط</string>
+    <string name="nav_more">المزيد</string>
+
+    <string name="more_title">المزيد</string>
+    <string name="more_reports">التقارير والزكاة</string>
+    <string name="more_settings">الإعدادات</string>
+    <string name="more_data">بياناتك</string>
+
+    <string name="more_options">المزيد</string>
+
+    <string name="supplier_bills">فواتير المورّدين</string>
+    <string name="bills_subtitle">البضاعة التي اشتريتها</string>
+    <string name="bill_ledger_note">ما عليك للمورّد في دفترك كسائر الأشياء. الفاتورة تضيف الورقيات فوقه: رقم الفاتورة، أرقام الدُفعات، تواريخ الانتهاء.</string>
+    <string name="add_bill">إضافة فاتورة</string>
+    <string name="no_bills">لا فواتير مورّدين بعد.\n\nسجّل ما تشتريه — بأرقام الدُفعات وتواريخ الانتهاء. هذا ما يسأل عنه المفتش، وما ينقذك من فساد البضاعة على الرف.</string>
+
+    <string name="bill_number_hint">رقم الفاتورة (من ورقتهم)</string>
+    <string name="bill_total_hint">إجمالي الفاتورة (Rs)</string>
+    <string name="bill_supplier_hint">اسم المورّد</string>
+    <string name="bill_date">تاريخ الفاتورة</string>
+    <string name="bill_due_date">استحقاق الدفع (اختياري)</string>
+    <string name="bill_paid_cash">مدفوعة نقدًا عند التسليم</string>
+    <string name="bill_paid_cash_help">فعّله فقط إن دفعت فورًا. وإلا ذهب المبلغ على حسابهم في دفترك، وهو ما عليك لهم.</string>
+    <string name="bill_credit_note">سيضيف هذا %1$s إلى ما عليك لـ %2$s، كقيد واحد في دفترك.</string>
+
+    <string name="bill_items_title">ما كان في التسليم</string>
+    <string name="add_item">إضافة صنف</string>
+    <string name="product_name_hint">اسم المنتج</string>
+    <string name="batch_number_hint">رقم الدُفعة</string>
+    <string name="batch_why">اكتب رقم الدُفعة من العبوة. إن شُكك في عينة يومًا أو سألت وزارة الزراعة، فهذا السجل يثبت من أين أتت البضاعة. لا يمكن إعادة بنائه لاحقًا.</string>
+    <string name="expiry_date">تاريخ الانتهاء</string>
+    <string name="expiry_why">سيحذرك روشن كهاتا قبل الانتهاء بـ60 يومًا — وقت يكفي لبيعها أو تخفيضها أو إرجاعها والمورّد ما زال يقبلها.</string>
+    <string name="pick_expiry">اختر تاريخ الانتهاء</string>
+    <string name="pick_bill_date">اختر تاريخ الفاتورة</string>
+    <string name="rate_hint">سعر الوحدة (Rs)</string>
+    <string name="qty_hint">الكمية</string>
+    <string name="item_added">أُضيف الصنف</string>
+    <string name="no_items_yet">لا أصناف مضافة بعد</string>
+    <string name="items_count">%1$d أصناف</string>
+
+    <string name="bill_saved">حُفظت الفاتورة</string>
+    <string name="bill_saved_credit">حُفظت الفاتورة وقُيدت في دفترك</string>
+    <string name="enter_supplier">يرجى اختيار مورّد</string>
+    <string name="enter_product">يرجى إدخال اسم المنتج</string>
+    <string name="bill_deleted">حُذفت الفاتورة. قيد الدفتر يبقى — البضاعة وصلت فعلًا والمبلغ مستحق فعلًا.</string>
+    <string name="delete_bill">حذف الفاتورة</string>
+    <string name="delete_bill_confirm">ستُزال الفاتورة وسجلات دُفعاتها، لكن قيد الدفتر يبقى. البضاعة وصلت فعلًا والمال مستحق فعلًا — حذف الورق لا يلغي ذلك.</string>
+    <string name="bill_actions">الفاتورة</string>
+    <string name="view_items">عرض الأصناف والدُفعات</string>
+
+    <string name="expiring_stock">بضاعة قاربت الانتهاء</string>
+    <string name="expiring_subtitle">بعها أو خفّضها أو أرجعها — ما دمت تستطيع</string>
+    <string name="no_expiring">لا شيء ينتهي خلال 60 يومًا.\n\nلا تُراقب إلا البضاعة المسجل تاريخ انتهائها. إن تركت ذلك الحقل فارغًا في فاتورة، فلن يستطيع روشن كهاتا تحذيرك عنها.</string>
+    <string name="expiring_note">لا يظهر هنا إلا ما سُجل تاريخ انتهائه. لا يحذر روشن كهاتا إلا مما أُخبر به.</string>
+    <string name="expired_days">انتهى منذ %1$d يومًا</string>
+    <string name="expires_days">ينتهي خلال %1$d يومًا</string>
+    <string name="expires_today">ينتهي اليوم</string>
+    <string name="batch_label">الدُفعة: %1$s</string>
+    <string name="batch_none">لا رقم دُفعة مسجل</string>
+    <string name="from_supplier">من %1$s</string>
+    <string name="from_supplier_bill">من %1$s — فاتورة %2$s</string>
+    <string name="expiring_badge">%1$d قارب الانتهاء</string>
+
+    <string name="trace_batch">تتبع دُفعة</string>
+    <string name="trace_batch_hint">أدخل رقم الدُفعة</string>
+    <string name="trace_batch_help">إن شُكك في عينة أو سأل مفتش، ابحث هنا برقم الدُفعة — من أي مورّد وعلى أي فاتورة ومتى.</string>
+    <string name="trace_no_results">لا بضاعة بهذا الرقم.</string>
+    <string name="trace_results">وُجد %1$d سجل</string>
+
+    <string name="search_action">بحث</string>
+
+    <string name="pick_bill_due_date">اختر موعد استحقاق الدفع</string>
+
+    <string name="backup_done_title">حُفظت النسخة الاحتياطية</string>
+    <string name="backup_done_saved">حُفظت في:\n\n%1$s\n\nستجدها في مجلد التنزيلات وفي أي مدير ملفات. يحتفظ روشن كهاتا بنسخته أيضًا، فتستعيد دون البحث عن الملف.</string>
+    <string name="backup_done_internal">حُفظت داخل روشن كهاتا. يمكنك الاستعادة من هذه الشاشة متى شئت.</string>
+    <string name="share_copy">إرسال نسخة</string>
+    <string name="restore_from_app">استعادة من نسخة محفوظة</string>
+    <string name="restore_from_storage">اختيار ملف من التخزين</string>
+    <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
+
+    <string name="report_section_title">تقرير للطباعة</string>
+    <string name="report_not_backup">‏PDF لكامل نشاطك \u2014 الأرصدة والشيكات والخطط والبضاعة المنتهية. للقراءة أو الطباعة أو العرض.\n\nهذا ليس نسخة احتياطية. لا يستطيع روشن كهاتا استعادة سجلاتك من PDF.</string>
+    <string name="make_report">إنشاء تقرير PDF</string>
+    <string name="making_report">جارٍ إنشاء التقرير\u2026</string>
+    <string name="report_failed">تعذر إنشاء التقرير.</string>
+    <string name="share_report_pdf">مشاركة التقرير</string>
+
+    <string name="report_problem">الإبلاغ عن مشكلة</string>
+    <string name="report_problem_sub">أخبرنا بما حدث</string>
+    <string name="report_privacy">أسماء عملائك وأرقامهم وأرصدتهم لا تُرسل أبدًا. يذهب مع البلاغ إصدار التطبيق وطراز هاتفك فقط \u2014 وهذا ما يعيننا على إيجاد الخلل.\n\nيفتح البريد في تطبيقك أنت، فترى ما يُرسل قبل أن يذهب.</string>
+
+    <string name="report_what_kind">أي نوع من المشاكل؟</string>
+    <string name="report_kind_wrong_number">رصيد أو مبلغ بدا خاطئًا</string>
+    <string name="report_kind_crash">أُغلق التطبيق من تلقاء نفسه</string>
+    <string name="report_kind_lost">شيء حفظته اختفى</string>
+    <string name="report_kind_confusing">شاشة لم أفهمها</string>
+    <string name="report_kind_suggestion">اقتراح لا عطل</string>
+    <string name="report_kind_other">شيء آخر</string>
+
+    <string name="report_describe">ماذا حدث؟</string>
+    <string name="report_describe_help">اكتب بالعربية أو الإنجليزية \u2014 أيهما أسهل. ماذا كنت تفعل حين حدث الخلل؟</string>
+    <string name="report_hint">مثال: أضفت شيكًا بـ5,000 وتغير الرصيد فورًا قبل صرفه.</string>
+    <string name="report_send">إرسال البلاغ</string>
+    <string name="report_email_note">سيفتح هذا تطبيق بريدك. إن لم يكن لديك بريد، فاكتب إلى innovation313.support@gmail.com من أي هاتف.</string>
+    <string name="report_no_email">لا تطبيق بريد. يرجى الكتابة إلى innovation313.support@gmail.com</string>
+    <string name="report_empty">صف ما حدث أولًا.</string>
+    <string name="report_subject">روشن كهاتا \u2014 %1$s</string>
+
+    <string name="hide_balance">إخفاء الرصيد</string>
+    <string name="show_balance">إظهار الرصيد</string>
+
+    <string name="powered_by">Powered by Innovation-313</string>
+    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="tap_to_start">المس أي مكان للمتابعة</string>
+
+    <string name="tap_to_continue">المس للمتابعة</string>
+    <string name="brand_har_hisaab">Har Hisaab Roshan</string>
+
+    <string name="unlock_to_open">المس للفتح</string>
+
+    <string name="restore_done_with_bin">عادت بياناتك.\n\n%1$d من عملاء هذه النسخة كانوا محذوفين قبل إنشائها، فاستُعيدوا إلى سلة المحذوفات \u2014 لا القائمة الرئيسية. افتح المزيد \u2190 سلة المحذوفات لتجدهم وتستعيد من تشاء كاملًا.</string>
+
+    <string name="drive_section">نسخ احتياطي سحابي تلقائي</string>
+    <string name="file_section">نسخ احتياطي إلى ملف</string>
+    <string name="drive_not_connected">اربط حساب Google ويُنسخ دفترك تلقائيًا إلى Drive الخاص بك أنت. غيّر هاتفك وسجّل الدخول ثانية فيعود كل شيء. بياناتك في Drive حسابك؛ لا تصلنا أبدًا.</string>
+    <string name="drive_connected">متصل باسم %1$s. آخر نسخة سحابية: %2$s</string>
+    <string name="drive_connected_never">متصل باسم %1$s. لا نسخة سحابية بعد \u2014 اضغط «نسخ إلى Drive».</string>
+    <string name="drive_connect">ربط Google Drive</string>
+    <string name="drive_backup_now">نسخ إلى Drive الآن</string>
+    <string name="drive_restore">استعادة من Drive</string>
+    <string name="drive_sign_out">فصل حساب Google</string>
+    <string name="drive_backing_up">جارٍ النسخ إلى Drive\u2026</string>
+    <string name="drive_backup_done">نُسخ إلى Google Drive الخاص بك.</string>
+    <string name="drive_backup_failed">فشل النسخ السحابي. نسختك السابقة، إن وُجدت، سليمة. تحقق من الإنترنت وحاول ثانية.</string>
+    <string name="drive_restoring">جارٍ الاستعادة من Drive\u2026</string>
+    <string name="drive_no_backup">لا نسخة في Google Drive بعد.</string>
+    <string name="drive_restore_failed">تعذرت الاستعادة من Drive. تحقق من الإنترنت وحاول ثانية.</string>
+    <string name="drive_signin_failed">لم يكتمل تسجيل دخول Google. حاول ثانية.</string>
+    <string name="drive_permission_needed">يحتاج روشن كهاتا إذنًا للحفظ في مجلده داخل Drive حسابك. اسمح عند السؤال.</string>
+    <string name="drive_restore_confirm">سيستبدل هذا كل ما في التطبيق بنسخة Google Drive. متابعة؟</string>
+    <string name="i_have_to_get">لي عند الناس</string>
+    <string name="i_have_to_give">عليّ للناس</string>
+    <string name="insights_title">نظرة على المبيعات</string>
+    <string name="insights_subtitle">ما يتحرك في متجرك</string>
+    <string name="insights_total_sale">إجمالي المبيعات \u00b7 هذا الشهر</string>
+    <string name="insights_top_products">أكثر المنتجات مبيعًا</string>
+    <string name="insights_top_customers">أكبر العملاء</string>
+    <string name="insights_up">\u25b2 %1$d%% أكثر من الشهر الماضي (%2$s)</string>
+    <string name="insights_down">\u25bc %1$d%% أقل من الشهر الماضي (%2$s)</string>
+    <string name="insights_no_compare">أول شهر مبيعات \u2014 لا شيء للمقارنة بعد.</string>
+    <string name="insights_no_products">لا منتجات مسجلة هذا الشهر. اكتب اسم المنتج عند القيد ليظهر هذا.</string>
+    <string name="insights_no_sales">لا مبيعات مسجلة هذا الشهر بعد.</string>
+    <string name="insights_privacy_note">يُحسب كل شيء على هاتفك. لا يغادر شيء جهازك.</string>
+    <string name="nisab_silver">الفضة</string>
+    <string name="nisab_gold">الذهب</string>
+    <string name="gold_price_hint">سعر غرام الذهب (Rs)</string>
+    <string name="nisab_silver_note">نصاب الفضة: 612.36 غرامًا (52.5 تولة). هذا الحد الأدنى، فتجب الزكاة على أكثر الناس \u2014 وهو الرأي الأحوط لحق الفقراء غالبًا.</string>
+    <string name="nisab_gold_note">نصاب الذهب: 87.48 غرامًا (7.5 تولة). هذا الحد الأعلى، فتجب الزكاة على أقل الناس. تأكد أي معيار يلزمك عند عالم.</string>
+    <string name="last_transacted">آخر معاملة %1$s</string>
+    <string name="summary_with_overdue">%1$s \u00b7 %2$d يحتاجون تذكيرًا</string>
+    <plurals name="customer_count">
+        <item quantity="zero">%d عملاء</item>
+        <item quantity="one">عميل واحد</item>
+        <item quantity="two">عميلان</item>
+        <item quantity="few">%d عملاء</item>
+        <item quantity="many">%d عميلًا</item>
+        <item quantity="other">%d عميل</item>
+    </plurals>
+    <string name="call">اتصال</string>
+    <string name="no_dialer">لا تطبيق اتصال</string>
+    <string name="backup_reminder_hint">حان وقت النسخ الاحتياطي</string>
+    <string name="select_all">تحديد الكل</string>
+    <string name="clear_all">إلغاء الكل</string>
+    <string name="insights_today">اليوم</string>
+    <string name="insights_today_received">المقبوض</string>
+    <string name="insights_today_given">المعطى</string>
+    <plurals name="entries_today">
+        <item quantity="zero">%d قيود اليوم</item>
+        <item quantity="one">قيد واحد اليوم</item>
+        <item quantity="two">قيدان اليوم</item>
+        <item quantity="few">%d قيود اليوم</item>
+        <item quantity="many">%d قيدًا اليوم</item>
+        <item quantity="other">%d قيد اليوم</item>
+    </plurals>
+    <string name="copy_balance_owed">%1$s: %2$s مستحق (لك)</string>
+    <string name="copy_balance_i_owe">%1$s: %2$s (عليك)</string>
+    <string name="copy_balance_settled">%1$s: مسدد (Rs 0)</string>
+    <string name="copied">نُسخ</string>
+    <string name="receipt_title">إيصال</string>
+    <string name="payment_receipt">إيصال دفع</string>
+    <string name="you_gave">أعطيت</string>
+    <string name="you_got">استلمت</string>
+    <string name="details">التفاصيل</string>
+    <string name="party">الطرف</string>
+    <string name="receipt_no">رقم الإيصال</string>
+    <string name="date_label">التاريخ</string>
+    <string name="note_label">ملاحظة</string>
+    <string name="goods_label">البضاعة</string>
+    <string name="balance_label">الرصيد بعده</string>
+    <string name="edit">تعديل</string>
+    <string name="share">مشاركة</string>
+    <string name="back">رجوع</string>
+    <string name="entry_not_found">القيد غير موجود</string>
+    <string name="delete_entry_message">سيُزال هذا القيد من الدفتر.</string>
+    <string name="entry_deleted">حُذف القيد</string>
+    <string name="share_failed">تعذر إنشاء صورة الإيصال</string>
+    <string name="invalid_amount">أدخل مبلغًا صحيحًا</string>
+    <string name="saved">تم الحفظ</string>
+    <string name="select_language">اختر لغتك</string>
+    <string name="language_change_note">يمكنك تغيير اللغة في أي وقت من «المزيد».</string>
+    <string name="language">اللغة</string>
+</resources>
