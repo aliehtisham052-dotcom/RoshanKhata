@@ -1,0 +1,572 @@
+<resources>
+    <string name="app_name">روشن کاتو</string>
+    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="brand_line">Innovation-313</string>
+
+    <string name="net_balance">خالص بيلنس</string>
+    <string name="add_party">ڌر شامل ڪريو</string>
+    <string name="no_parties_yet">اڃا ڪو گراهڪ ناهي.\n\nپنهنجو پهريون گراهڪ شامل ڪرڻ ۽ کاتو شروع ڪرڻ لاءِ هيٺ «ڌر شامل ڪريو» دٻايو.</string>
+    <string name="no_entries_yet">اڃا ڪا داخلا ناهي.</string>
+
+    <string name="i_gave">مون ڏنا</string>
+    <string name="i_got">مون ورتا</string>
+
+    <string name="you_will_get">توهان کي ملندو</string>
+    <string name="you_will_give">توهان کي ڏيڻو</string>
+    <string name="settled">حساب برابر</string>
+
+    <string name="name">نالو</string>
+    <string name="phone_optional">فون (اختياري)</string>
+    <string name="amount">رقم</string>
+    <string name="note_optional">نوٽ (اختياري)</string>
+    <string name="save">محفوظ ڪريو</string>
+    <string name="cancel">منسوخ</string>
+    <string name="customer">گراهڪ</string>
+    <string name="supplier">سپلائر</string>
+    <string name="enter_name">مهرباني ڪري نالو لکو</string>
+    <string name="enter_valid_amount">مهرباني ڪري صحيح رقم لکو</string>
+
+    <!-- Recycle Bin -->
+    <string name="recycle_bin">ردي جي ٽوڪري</string>
+    <string name="bin_retention_note">هٽايل شيون ۳۰ ڏينهن رکيون وينديون آهن، پوءِ هميشه لاءِ ختم ٿي وينديون.</string>
+    <string name="bin_empty">ٽوڪري خالي آهي.</string>
+    <string name="bin_party_note">ڌر (ان جون داخلائون ان سان گڏ رهن ٿيون)</string>
+    <string name="restore">بحال ڪريو</string>
+    <string name="restored">بحال ٿيو</string>
+    <string name="deleted_on">%1$s تي هٽايو ويو</string>
+    <string name="restore_party_confirm">«%1$s» بحال ڪريو؟ ان جون کاتي جون داخلائون به واپس اينديون.</string>
+    <string name="restore_entry_confirm">هيءَ داخلا بحال ڪريو؟ ٻيهر ڌر جي کاتي ۾ ايندي ۽ بيلنس تي اثر ڪندي.</string>
+    <string name="empty_bin">ٽوڪري خالي ڪريو</string>
+    <string name="empty_bin_confirm">ٽوڪريءَ ۾ سڀ ڪجهه هميشه لاءِ ختم ٿي ويندو. اهو واپس نٿو ٿي سگهي.</string>
+    <string name="delete_forever">هميشه لاءِ ختم ڪريو</string>
+    <string name="bin_emptied">ٽوڪري خالي ٿي وئي</string>
+
+    <!-- Delete actions -->
+    <string name="delete">هٽايو</string>
+    <string name="delete_party_title">ڌر هٽايو؟</string>
+    <string name="delete_party_confirm">«%1$s» ۽ ان جون داخلائون ردي جي ٽوڪري ۾ هليون وينديون. ۳۰ ڏينهن اندر واپس آڻي سگهو ٿا.</string>
+    <string name="delete_entry_title">داخلا هٽايو؟</string>
+    <string name="delete_entry_confirm">هيءَ داخلا ردي جي ٽوڪري ۾ هلي ويندي. ۳۰ ڏينهن اندر واپس آڻي سگهو ٿا.</string>
+    <string name="moved_to_bin">ردي جي ٽوڪري ۾ ويو</string>
+    <string name="long_press_to_delete">ڌر هٽائڻ لاءِ ان تي دير تائين دٻايو</string>
+
+    <!-- Zakat -->
+    <string name="zakat_calculator">زڪوات ڪيلڪيوليٽر</string>
+    <string name="zakat_subtitle">صرف رهنمائي لاءِ — فتويٰ ناهي</string>
+    <string name="zakat_disclaimer">هي اوزار صرف رهنمائي لاءِ آهي. زڪوات ۾ حقيقي فقهي تفصيل آهن — نصاب جو معيار، مشڪوڪ قرضن جو حڪم، قمري سال، ۽ ڪهڙيون ذميواريون ڪٽجن ٿيون — اهي عالمن ۾ مختلف آهن. روشن کاتو مفتي ناهي. مهرباني ڪري آخري حڪم ڪنهن اهل عالم کان وٺو.</string>
+
+    <string name="nisab_section">نصاب</string>
+    <string name="nisab_help">نصاب هتي چانديءَ جي معيار (۶۱۲.۳۶ گرام) تي رکيل آهي — اهو موقف جيڪو عام طور غريبن جي حق ۾ وڌيڪ محتاط سمجهيو وڃي ٿو. اڄ جي چانديءَ جي في گرام قيمت لکو.</string>
+    <string name="silver_price_hint">چانديءَ جي في گرام قيمت (Rs)</string>
+    <string name="nisab_value">نصاب = %1$s</string>
+    <string name="nisab_enter_price">نصاب ڳڻڻ لاءِ چانديءَ جي قيمت لکو</string>
+    <string name="nisab_needed_first">پهرين چانديءَ جي قيمت لکو</string>
+    <string name="above_nisab">توهان جو مال نصاب تي پهچي ويو آهي — زڪوات واجب آهي (قمري سال پوري ٿيڻ جي شرط سان).</string>
+    <string name="below_nisab">توهان جو مال نصاب کان گهٽ آهي — هن رقم تي زڪوات واجب ناهي.</string>
+
+    <string name="cash_stock_section">نقد ۽ مال</string>
+    <string name="cash_stock_help">هٿ ۾ نقد، بينڪ بيلنس، ۽ واپاري مال جي قيمت. روشن کاتو اهي نٿو ڏسي سگهي، پاڻ لکو.</string>
+    <string name="cash_stock_hint">نقد + مال جي قيمت (Rs)</string>
+
+    <string name="from_your_ledger">توهان جي کاتي مان</string>
+    <string name="certain_receivables">جيڪي رقمون ملڻ جي اميد آهي: %1$s</string>
+    <string name="qarze_hasna_given">ڏنل قرض حسنه: %1$s</string>
+    <string name="doubtful_receivables">مشڪوڪ رقمون: %1$s (شامل ناهن)</string>
+    <string name="you_owe_others">جيڪو توهان ٻين کي ڏيڻو آهي: %1$s (ڪٽيل)</string>
+    <string name="include_doubtful">مشڪوڪ رقمون به ڳڻيو</string>
+    <string name="include_doubtful_help">گهڻن عالمن جو چوڻ آهي ته مشڪوڪ قرض تي زڪوات تڏهن واجب ٿئي ٿي جڏهن اهو واقعي وصول ٿئي. صرف وڌيڪ احتياط چاهيو ته هي نشان لڳايو.</string>
+
+    <string name="zakatable_wealth">زڪوات جوڳو مال</string>
+    <string name="zakat_due_label">زڪوات (۲.۵٪)</string>
+    <string name="zakat_footer_note">زڪوات لاءِ مال تي پورو قمري سال (حول) گذرڻ به ضروري آهي. روشن کاتو اهو توهان لاءِ نٿو ڳڻي — پاڻ خيال رکو، ۽ حڪم ڪنهن عالم کان پڪو ڪريو.</string>
+
+    <!-- Qarz-e-Hasna -->
+    <string name="qarze_hasna">قرض حسنه (بنا وياج قرض)</string>
+    <string name="qarze_hasna_help">واپار کان الڳ نشان ٿيل. ان تي ڪڏهن به وياج يا دير جو ڏنڊ نٿو لڳي.</string>
+    <string name="recovery_certain">وصولي جي اميد آهي</string>
+    <string name="recovery_doubtful">مشڪوڪ</string>
+    <string name="recovery_label">وصولي جو امڪان</string>
+
+    <!-- Reminders -->
+    <string name="remind_whatsapp">واٽس ايپ</string>
+    <string name="remind_sms">SMS</string>
+    <string name="reminder_preview_help">موڪلڻ کان اڳ پڙهي وٺو. هتي سڀ ڪجهه بدلائي سگهو ٿا — روشن کاتو اهو واٽس ايپ يا SMS ايپ کي ڏيندو، ۽ موڪلڻ جو بٽڻ توهان پاڻ دٻائيندا.</string>
+    <string name="reminder_they_owe">السلام عليڪم %1$s،\n\nاسان جي کاتي موجب، توهان تي %2$s باقي آهي. مهرباني ڪري جڏهن ممڪن ٿئي ادا ڪري ڇڏيو. جيڪڏهن ادا ڪري چڪا آهيو ته هي پيغام نظرانداز ڪريو ۽ اسان کي ٻڌايو.\n\nجزاڪ الله.\n\n\u2014\nروشن کاتي ذريعي موڪليل</string>
+    <string name="reminder_i_owe">السلام عليڪم %1$s،\n\nاسان تي توهان جو %2$s باقي آهي. انشاءالله جلد ادا ڪنداسين. جيڪڏهن توهان جو حساب اسان کان مختلف آهي ته ٻڌايو.\n\nجزاڪ الله.\n\n\u2014\nروشن کاتي ذريعي موڪليل</string>
+    <string name="send_reminder">ياد ڏياريو</string>
+    <string name="open_whatsapp">واٽس ايپ کوليو</string>
+    <string name="open_sms">SMS کوليو</string>
+    <string name="no_phone_number">هن ڌر جو ڪو فون نمبر محفوظ ناهي. پهرين نمبر شامل ڪريو.</string>
+    <string name="whatsapp_not_installed">هن فون تي واٽس ايپ انسٽال ناهي.</string>
+    <string name="no_sms_app">هن فون تي ڪا SMS ايپ نه ملي.</string>
+    <string name="nothing_outstanding">ڪجهه به باقي ناهي — حساب برابر آهي.</string>
+
+    <!-- Goods / quantity (agri-dealer ledger) -->
+    <string name="goods_section">مال (اختياري)</string>
+    <string name="goods_help">جيڪڏهن هن داخلا سان مال ويو آهي — ۵ ٻوريون يوريا، ۲ لٽر دوا — ته هتي لکو. رڳو نقد داخلا لاءِ خالي ڇڏيو.</string>
+    <string name="item_name_hint">شيءِ (مثال: يوريا، دوا، چارو)</string>
+    <string name="quantity_hint">مقدار</string>
+    <string name="unit_hint">ماپ (ٻوري، لٽر، ڪلوگرام…)</string>
+
+    <!-- Contact import -->
+    <string name="import_contacts">رابطن مان آڻيو</string>
+    <string name="import_selected">چونڊيل شامل ڪريو</string>
+    <string name="search_contacts">نالي يا نمبر سان ڳوليو</string>
+    <string name="selected_count">%1$d چونڊيل</string>
+    <string name="imported_count">%1$d رابطا شامل ٿيا</string>
+    <string name="already_added">شامل ٿيل</string>
+    <string name="loading_contacts">رابطا لوڊ ٿي رهيا آهن\u2026</string>
+    <string name="no_contacts_found">هن فون تي ڪي به رابطا نه مليا.</string>
+    <string name="no_matching_contacts">توهان جي ڳولا سان ڪو رابطو نٿو ملي.</string>
+    <string name="continue_action">اڳتي هلو</string>
+    <string name="contacts_permission_title">توهان جي رابطن تائين رسائي؟</string>
+    <string name="contacts_permission_rationale">روشن کاتو توهان جي رابطن جي فهرست صرف هتي ڏيکارڻ لاءِ پڙهندو، ته جيئن توهان چونڊي سگهو ته ڪنهن کي شامل ڪرڻو آهي. ڪجهه به اپلوڊ نٿو ٿئي، ۽ صرف اهي رابطا محفوظ ٿين ٿا جيڪي توهان پاڻ چونڊيو — رڳو نالو ۽ نمبر.\n\nجيڪڏهن نٿا چاهيو ته پوءِ به هر ڌر هٿ سان شامل ڪري سگهو ٿا.</string>
+    <string name="contacts_permission_denied">اجازت نه ملي، تنهنڪري رابطا نٿا ڏيکاري سگهجن. پوءِ به گهر واري اسڪرين تان ڌريون هٿ سان شامل ڪري سگهو ٿا.</string>
+    <string name="add_manually">هٿ سان شامل ڪريو</string>
+
+    <!-- PDF statement -->
+    <string name="statement_pdf">اسٽيٽمينٽ</string>
+    <string name="generating_statement">اسٽيٽمينٽ تيار ٿي رهي آهي\u2026</string>
+    <string name="share_statement">اسٽيٽمينٽ شيئر ڪريو</string>
+    <string name="statement_failed">اسٽيٽمينٽ نه ٺهي سگهي. ٻيهر ڪوشش ڪريو.</string>
+    <string name="no_entries_to_export">اڃا اسٽيٽمينٽ ۾ وجهڻ لاءِ ڪا داخلا ناهي.</string>
+
+    <!-- App Lock -->
+    <string name="app_lock">ايپ لاڪ</string>
+    <string name="lock_title">روشن کاتو کوليو</string>
+    <string name="lock_subtitle">توهان جو کاتو خانگي آهي. تصديق ڪريو ته اهو توهان آهيو.</string>
+    <string name="app_lock_enabled">ايپ لاڪ آن آهي. هر ڀيري ايپ کولڻ وقت تصديق گهري ويندي.</string>
+    <string name="app_lock_disabled">ايپ لاڪ بند آهي.</string>
+    <string name="app_lock_turn_on">ايپ لاڪ آن ڪريو</string>
+    <string name="app_lock_turn_off">ايپ لاڪ بند ڪريو</string>
+    <string name="app_lock_explain">توهان جي آڱر جو نشان، منهن، يا فون جو اڳ ۾ موجود اسڪرين لاڪ استعمال ٿئي ٿو. روشن کاتو پنهنجو ڪو پن محفوظ نٿو ڪري — اينڊرائيڊ اهو اسان کان وڌيڪ محفوظ رکي ٿو.</string>
+    <string name="app_lock_no_screen_lock">هن فون تي اسڪرين لاڪ رکيل ناهي. پهرين فون جي سيٽنگن ۾ آڱر جو نشان، پن يا نمونو رکو، پوءِ ايپ لاڪ توهان جي کاتي جي حفاظت ڪري سگهندو.</string>
+    <string name="app_lock_unavailable">هن فون تي ايپ لاڪ موجود ناهي.</string>
+    <string name="ok">ٺيڪ</string>
+
+    <!-- Business settings / payment QR -->
+    <string name="business_settings">ڪاروبار جون سيٽنگون</string>
+    <string name="business_settings_subtitle">اسٽيٽمينٽن تي توهان جو نالو ۽ ادائيگي ڪوڊ</string>
+    <string name="business_name">ڪاروبار جو نالو</string>
+    <string name="business_name_help">هر اسٽيٽمينٽ جي مٿان ۽ توهان جي موڪليل هر ياد ڏياريندڙ پيغام جي آخر ۾ ايندو.</string>
+    <string name="business_name_hint">مثال: ڀٽي ٽريڊرز</string>
+
+    <string name="payment_qr">ادائيگي جو QR ڪوڊ</string>
+    <string name="payment_qr_help">توهان جي ايزي پئسا يا جاز ڪيش QR ڪوڊ جي تصوير يا اسڪرين شاٽ. اها اسٽيٽمينٽن سان ڳنڍي ويندي ته جيئن گراهڪ اسڪين ڪري توهان کي ادائيگي ڪري سگهي.</string>
+    <string name="payment_qr_caveat">محفوظ ڪرڻ کان اڳ ڪوڊ غور سان جانچيو. روشن کاتو اهو نٿو ٻڌائي سگهي ته QR ڪنهن جي کاتي جو آهي — غلط تصوير محفوظ ٿي ته گراهڪ جي ادائيگي غلط کاتي ۾ هلي ويندي.\n\nاهو به ڌيان رکو: ذاتي ايزي پئسا/جاز ڪيش QR ۾ رقم شامل نه هوندي آهي. گراهڪ رقم پاڻ لکندو، تنهنڪري رقم ان سان گڏ صاف لکيل هوندي آهي.</string>
+    <string name="no_qr_yet">اڃا ڪو ادائيگي QR محفوظ ناهي.</string>
+    <string name="choose_qr_image">تصوير چونڊيو</string>
+    <string name="remove_qr">هٽايو</string>
+    <string name="qr_saved">ادائيگي QR محفوظ ٿيو</string>
+    <string name="qr_save_failed">اها تصوير محفوظ نه ٿي سگهي. مهرباني ڪري ٻي چونڊيو.</string>
+    <string name="qr_removed">ادائيگي QR هٽايو ويو</string>
+    <string name="qr_confirm_title">ڇا اهو ئي صحيح ڪوڊ آهي؟</string>
+    <string name="qr_confirm_message">مٿيون ڪوڊ ڏسو ۽ تصديق ڪريو ته اهو توهان جو پنهنجو ايزي پئسا يا جاز ڪيش کاتو آهي. جيڪڏهن ناهي ته گراهڪن جون ادائيگيون ڪنهن ٻئي وٽ پهچنديون.</string>
+    <string name="qr_confirm_yes">ها، اهو منهنجو آهي</string>
+    <string name="profile_saved">محفوظ ٿيو</string>
+    <string name="attach_qr_to_reminder">ادائيگي QR ڳنڍيو</string>
+
+    <!-- Cheques -->
+    <string name="cheques">چيڪ</string>
+    <string name="add_cheque">چيڪ شامل ڪريو</string>
+    <string name="no_cheques">اڃا ڪو چيڪ ناهي.\n\nپوسٽ ڊيٽيڊ چيڪ هتي کاتي کان الڳ رکيا وڃن ٿا — چيڪ تيستائين پئسا ناهي جيستائين ڪليئر نه ٿئي.</string>
+    <string name="cheque_not_money_yet">چيڪ ڪليئر ٿيڻ تائين پئسا ناهي، تنهنڪري اڃا بيلنس تي اثر نه ڪندو. جڏهن ان کي ڪليئر نشان لڳائيندا، ادائيگي تڏهن کاتي ۾ داخل ٿيندي.</string>
+    <string name="cheque_party_hint">گراهڪ يا سپلائر جو نالو</string>
+    <string name="cheque_received">انهن کان مليو</string>
+    <string name="cheque_issued">انهن کي ڏنو</string>
+    <string name="pick_due_date">چيڪ تي لکيل تاريخ چونڊيو</string>
+    <string name="due_date_set">مقرر تاريخ: %1$s</string>
+    <string name="cheque_number_hint">چيڪ نمبر (اختياري)</string>
+    <string name="bank_name_hint">بينڪ (اختياري)</string>
+
+    <string name="cheque_pending">انتظار ۾</string>
+    <string name="cheque_cleared">ڪليئر ٿيل</string>
+    <string name="cheque_bounced">بائونس ٿيل</string>
+    <string name="cheque_cancelled">منسوخ ٿيل</string>
+
+    <string name="due_today">اڄ مقرر</string>
+    <string name="due_in_days">%1$d ڏينهن ۾ مقرر</string>
+    <string name="overdue_by_days">%1$d ڏينهن مٿي ٿي ويا</string>
+    <string name="due_summary">%1$d چيڪ بينڪ ۾ رکڻ لاءِ تيار</string>
+    <string name="due_summary_none">ڪجهه به مقرر ناهي</string>
+    <string name="due_summary_pending">%1$d ڪليئر ٿيڻ جي انتظار ۾</string>
+    <string name="due_summary_empty">ڪو چيڪ ناهي</string>
+    <string name="due_summary_all_settled">سڀ برابر</string>
+
+    <string name="cheque_actions">هن چيڪ سان ڇا ٿيو؟</string>
+    <string name="mark_cleared">ڪليئر نشان لڳايو</string>
+    <string name="mark_bounced">بائونس نشان لڳايو</string>
+    <string name="mark_cancelled">منسوخ نشان لڳايو</string>
+    <string name="delete_cheque">چيڪ هٽايو</string>
+
+    <string name="cleared_confirm">ڪليئر نشان لڳائڻ سان ادائيگي %1$s جي کاتي ۾ داخل ٿيندي ۽ بيلنس بدلجي ويندو. اهو تڏهن ڪريو جڏهن پئسا واقعي کاتي ۾ اچي ويا هجن.</string>
+    <string name="bounced_confirm">بائونس ٿيل چيڪ ادائيگي ناهي — رقم اڃا به قرض آهي. کاتي ۾ ڪجهه به داخل نه ٿيندو.</string>
+    <string name="cheque_cleared_posted">ڪليئر ٿيو — ادائيگي کاتي ۾ داخل ٿي</string>
+    <string name="cheque_marked_bounced">بائونس نشان لڳو. رقم اڃا به باقي آهي.</string>
+    <string name="cheque_marked_cancelled">منسوخ نشان لڳو</string>
+    <string name="select_party_first">پهرين پنهنجي فهرست مان گراهڪ يا سپلائر چونڊيو.</string>
+    <string name="pick_date_first">مهرباني ڪري چيڪ تي لکيل تاريخ چونڊيو.</string>
+    <string name="cheque_note_prefix">چيڪ %1$s</string>
+
+    <!-- Search & sort -->
+    <string name="search_parties">نالي يا نمبر سان ڳوليو</string>
+    <string name="search_entries">نوٽ، مال يا حوالو ڳوليو</string>
+    <string name="sort">ترتيب</string>
+    <string name="sort_by">ترتيب جو بنياد</string>
+
+    <string name="sort_name_az">نالو (الف\u2013ي)</string>
+    <string name="sort_name_za">نالو (ي\u2013الف)</string>
+    <string name="sort_owes_most">سڀ کان وڏو قرضدار پهرين</string>
+    <string name="sort_i_owe_most">جنهن کي مان گهڻو ڏيڻو، پهرين</string>
+    <string name="sort_recent_activity">تازي سرگرمي</string>
+
+    <string name="sort_newest">نئون پهرين</string>
+    <string name="sort_oldest">پراڻو پهرين</string>
+    <string name="sort_amount_high">رقم (وڌ کان گهٽ)</string>
+    <string name="sort_amount_low">رقم (گهٽ کان وڌ)</string>
+
+    <string name="no_matching_parties">توهان جي ڳولا سان ڪو گراهڪ يا سپلائر نٿو ملي.</string>
+    <string name="no_matching_entries">توهان جي ڳولا سان ڪا داخلا نٿي ملي.</string>
+    <string name="showing_filtered">%2$d مان %1$d ڏيکاريل</string>
+    <string name="running_balance_note">هلندڙ بيلنس کاتي جي پنهنجي ترتيب تي هلي ٿو، تنهنڪري ڪهڙي به ترتيب يا ڳولا ۾ صحيح رهي ٿو.</string>
+
+    <!-- Party photo -->
+    <string name="party_photo">تصوير</string>
+    <string name="set_photo">تصوير رکو</string>
+    <string name="change_photo">تصوير بدلايو</string>
+    <string name="remove_photo">تصوير هٽايو</string>
+    <string name="photo_saved">تصوير محفوظ ٿي</string>
+    <string name="photo_removed">تصوير هٽي وئي</string>
+    <string name="photo_save_failed">اها تصوير محفوظ نه ٿي سگهي. مهرباني ڪري ٻي چونڊيو.</string>
+    <string name="photo_privacy_note">تصوير هن فون تي ئي رهي ٿي. ڪڏهن به اپلوڊ نٿي ٿئي، ۽ ڄاڻي واڻي اسٽيٽمينٽن تي نٿي رکجي — اسٽيٽمينٽ اڳتي موڪلجي ويندي آهي، ۽ توهان جي گراهڪ اها اجازت نه ڏني آهي ته سندس منهن ان سان گڏ وڃي.</string>
+    <string name="party_options">اختيار</string>
+    <string name="edit_party">تفصيل بدلايو</string>
+    <string name="delete_party">هٽايو</string>
+
+    <!-- Credit limit -->
+    <string name="credit_limit">اوڌر جي حد</string>
+    <string name="set_credit_limit">اوڌر جي حد رکو</string>
+    <string name="credit_limit_help">وڌ ۾ وڌ رقم جيڪا توهان هن ڌر تي قرض ڇڏڻ لاءِ تيار آهيو. ڪا داخلا ان کان ٽپي ته روشن کاتو اڳواٽ خبردار ڪندو.</string>
+    <string name="credit_limit_hint">حد (Rs) — بنا حد لاءِ خالي ڇڏيو</string>
+    <string name="credit_limit_advisory">هي خبرداري آهي، رڪاوٽ ناهي. ڪاروبار توهان جو آهي — توهان هميشه اڳتي وڌي سگهو ٿا.</string>
+    <string name="credit_limit_current">هن وقت توهان جو %1$s باقي اٿس</string>
+    <string name="credit_limit_none">ڪا حد رکيل ناهي</string>
+    <string name="credit_limit_set_to">حد: %1$s</string>
+    <string name="credit_limit_removed">اوڌر جي حد هٽي وئي</string>
+    <string name="credit_limit_saved">اوڌر جي حد محفوظ ٿي</string>
+
+    <string name="over_limit_badge">حد کان مٿي</string>
+    <string name="near_limit_badge">حد جي ويجهو</string>
+
+    <string name="limit_warning_title">هي سندن اوڌر جي حد ٽپي ويندي</string>
+    <string name="limit_warning_message">%1$s تي هن وقت توهان جو %2$s باقي آهي.\n\n%3$s جي هيءَ داخلا کيس %4$s تي پهچائيندي، جيڪا توهان جي رکيل %5$s حد کان مٿي آهي.\n\nپوءِ به اڳتي وڌي سگهو ٿا — هي رڳو خبرداري آهي.</string>
+    <string name="proceed_anyway">اڳتي وڌو</string>
+
+    <!-- Report -->
+    <string name="report">رپورٽ</string>
+    <string name="report_title">%1$s جي رپورٽ</string>
+    <string name="range_all">سڀ</string>
+    <string name="range_today">اڄ</string>
+    <string name="range_week">گذريل هفتو</string>
+    <string name="range_month">گذريل مهينو</string>
+    <string name="range_custom">پنهنجي مرضي</string>
+    <string name="range_label_all">پورو کاتو</string>
+    <string name="range_label">%1$s کان %2$s</string>
+    <string name="net_change">خالص تبديلي</string>
+    <string name="no_entries_in_range">هن عرصي ۾ ڪا داخلا ناهي.</string>
+    <string name="share_report">PDF طور شيئر ڪريو</string>
+    <string name="pick_start_date">شروعاتي تاريخ چونڊيو</string>
+    <string name="pick_end_date">آخري تاريخ چونڊيو</string>
+    <string name="closing_note_range">مٿيان ٽي انگ رڳو هن عرصي جا آهن. هيٺيون آخري بيلنس پوري کاتي جو آهي — %1$s — ڇو ته اڌ عرصي جو ڪل اهو ناهي جيڪو توهان جي گراهڪ تي باقي آهي.</string>
+    <string name="closing_note_all">آخري بيلنس: %1$s</string>
+    <string name="report_period">عرصو: %1$s</string>
+    <string name="invalid_range">آخري تاريخ شروعاتي تاريخ کان اڳ نٿي ٿي سگهي.</string>
+
+    <!-- Cashbook -->
+    <string name="cashbook">روڪڙ ڪتاب</string>
+    <string name="cashbook_subtitle">ڪاروبار جا پئسا اندر ۽ ٻاهر</string>
+    <string name="cashbook_separate_note">روڪڙ ڪتاب توهان جي گراهڪ کاتي کان الڳ آهي. مسواڙ، پگهارون، اچي وٺي ويندڙ نقد وڪرو — اهي پئسا جن سان ڪو گراهڪ ڳنڍيل ناهي. اهو ڪنهن جي قرض کي نٿو بدلائي.</string>
+    <string name="add_cash_entry">داخلا شامل ڪريو</string>
+    <string name="cash_in">روڪڙ اندر</string>
+    <string name="cash_out">روڪڙ ٻاهر</string>
+    <string name="cash_net">خالص</string>
+    <string name="cash_income">پئسا اندر</string>
+    <string name="cash_expense">پئسا ٻاهر</string>
+    <string name="cash_category_hint">قسم (مثال: مسواڙ، پگهار، نقد وڪرو)</string>
+    <string name="no_cash_entries">اڃا روڪڙ ڪتاب ۾ ڪا داخلا ناهي.\n\nهي انهن پئسن لاءِ آهي جيڪي ڪنهن گراهڪ سان ڳنڍيل ناهن — مسواڙ، بجلي، پگهار، تيل، اچي وٺي ويندڙ وڪرو.</string>
+    <string name="enter_category">مهرباني ڪري قسم لکو</string>
+    <string name="delete_cash_entry">هيءَ داخلا هٽايو؟</string>
+    <string name="delete_cash_confirm">ردي جي ٽوڪري ۾ هلي ويندي.</string>
+
+    <!-- Backup & restore -->
+    <string name="backup_restore">بيڪ اپ ۽ بحالي</string>
+    <string name="backup_subtitle">توهان جو حساب، توهان جي هٿن ۾</string>
+    <string name="backup_now">هاڻي بيڪ اپ وٺو</string>
+    <string name="restore_from_file">بيڪ اپ مان بحال ڪريو</string>
+    <string name="backup_explain">سڀ ڪجهه — گراهڪ، کاتو، چيڪ، روڪڙ ڪتاب، ۽ ردي جي ٽوڪري — هڪ فائل ۾ لکجي ٿو جيڪا Drive تي محفوظ ڪري سگهو ٿا، واٽس ايپ تي پاڻ کي موڪلي سگهو ٿا، يا ميموري ڪارڊ تي رکي سگهو ٿا.\n\nفائل سادي، پڙهڻ جوڳي لکت آهي. سالن کان پوءِ به، هن ايپ کان سواءِ به، توهان جو رڪارڊ واپس ملي سگهندو. جيڪا ڊيٽا اسان جي مدد کان سواءِ واپس نه ملي، اها حقيقت ۾ توهان جي ناهي.</string>
+    <string name="backup_warning">روشن کاتو سڀ ڪجهه رڳو هن فون تي رکي ٿو. فون گم ٿيو، ڀڄي پيو، يا ايپ اڻ انسٽال ٿي ته رڪارڊ به هليو ويندو. مهرباني ڪري باقاعدي بيڪ اپ وٺو ۽ ڪنهن ٻئي هنڌ رکو.</string>
+    <string name="backup_created">بيڪ اپ تيار آهي — ڪٿي محفوظ ڪرڻو آهي چونڊيو</string>
+    <string name="backup_failed">بيڪ اپ نه ٺهي سگهيو.</string>
+    <string name="save_backup">بيڪ اپ محفوظ ڪريو</string>
+
+    <string name="restore_warning_title">سڀ ڪجهه مٽايو؟</string>
+    <string name="restore_warning_message">بحالي روشن کاتي ۾ موجود سڀ ڪجهه هن فائل واري مواد سان مٽائي ڇڏيندي:\n\n%1$d گراهڪ/سپلائر\n%2$d کاتي جون داخلائون\n%3$d چيڪ\n%4$d روڪڙ ڪتاب داخلائون\n%5$d ادائيگي رٿائون\n%6$d سپلائر بل\n\nجيڪو هن وقت فون تي آهي سو ختم ٿي ويندو. جيڪڏهن هتي اهڙيون داخلائون آهن جيڪي بيڪ اپ ۾ ناهن، ته پهرين هن جو بيڪ اپ وٺو.\n\nاهو واپس نٿو ٿي سگهي.</string>
+    <string name="restore_replace">سڀ ڪجهه مٽايو</string>
+    <string name="restore_done">بحال ٿيو</string>
+    <string name="restore_failed">بحالي ناڪام: %1$s</string>
+    <string name="reading_backup">فائل پڙهجي رهي آهي\u2026</string>
+    <string name="restoring">بحال ٿي رهيو آهي\u2026</string>
+    <string name="creating_backup">بيڪ اپ ٺهي رهيو آهي\u2026</string>
+
+    <!-- Payment plans -->
+    <string name="payment_plans">ادائيگي رٿائون</string>
+    <string name="plans_subtitle">قسطن ۾ ادائيگي</string>
+    <string name="plan_not_a_debt_note">رٿا هڪ ٺاهه آهي، نئون قرض ناهي. جيڪو کين ڏيڻو آهي اهو اڳ ۾ ئي کاتي ۾ آهي. هتي ادائيگي لکڻ سان اها کاتي ۾ هڪ ڀيرو داخل ٿئي ٿي — ڪڏهن به ٻه ڀيرا نٿي ڳڻجي.</string>
+    <string name="add_plan">رٿا شامل ڪريو</string>
+    <string name="no_plans">اڃا ڪا ادائيگي رٿا ناهي.\n\nجڏهن گراهڪ ڪا رقم قسطن ۾ لاهيندو — فصل کان پوءِ، يا ڪجهه مهينن ۾ — تڏهن اهي استعمال ڪريو.</string>
+    <string name="plan_dialog_help">هن ڌر تي اڳ ۾ باقي رقم لاهڻ جو ٺاهه رکو. اهو سندس بيلنس ۾ اضافو نٿو ڪري — رڳو اهو لکي ٿو ته ڇا ۽ ڪڏهن ڏيڻ تي راضي ٿيا آهن.</string>
+    <string name="plan_total_hint">ڪل لاهڻي رقم (Rs)</string>
+    <string name="plan_installment_hint">هر قسط (Rs) — اختياري</string>
+    <string name="plan_pick_next_due">ايندڙ ادائيگي (اختياري)</string>
+    <string name="plan_owes_now">هن وقت %1$s باقي اٿس</string>
+    <string name="plan_owes_nothing">هن ڌر تي هن وقت ڪجهه به باقي ناهي</string>
+
+    <string name="plan_paid">%2$s مان %1$s ادا ٿيو</string>
+    <string name="plan_remaining">%1$s باقي</string>
+    <string name="plan_open">کليل</string>
+    <string name="plan_closed">مڪمل</string>
+    <string name="plan_next_due">ايندڙ: %1$s</string>
+    <string name="plan_next_due_none">تاريخ رکيل ناهي</string>
+    <string name="plan_overdue">%1$s کان رهيل</string>
+
+    <string name="plan_actions">ادائيگي رٿا</string>
+    <string name="record_payment">ادائيگي لکو</string>
+    <string name="close_plan">مڪمل نشان لڳايو</string>
+    <string name="delete_plan">رٿا هٽايو</string>
+    <string name="record_payment_title">ادائيگي لکو</string>
+    <string name="record_payment_help">هي %1$s جي کاتي ۾ هڪ داخلا وجهي ٿو، جنهن سان سندس باقي گهٽجي ٿو. ٻه ڀيرا نٿو ڳڻجي.</string>
+    <string name="payment_recorded">ادائيگي لکجي وئي ۽ کاتي ۾ داخل ٿي</string>
+    <string name="plan_closed_msg">رٿا کي مڪمل نشان لڳو</string>
+    <string name="plan_overpay_warning">هيءَ ادائيگي رٿا جي باقي (%1$s) کان وڌيڪ آهي. پوءِ به پوري کاتي ۾ داخل ٿيندي — محفوظ ڪرڻ کان اڳ رقم جانچيو.</string>
+    <string name="plan_note_prefix">قسط جي ادائيگي</string>
+    <string name="plan_deleted">رٿا هٽي وئي. کاتي ۾ لکيل ادائيگيون اتي ئي رهنديون — اهي پئسا واقعي مليا هئا.</string>
+    <string name="delete_plan_confirm">رٿا هٽي ويندي، پر اڳ ۾ لکيل ادائيگيون کاتي ۾ رهنديون. اهي پئسا واقعي مليا هئا، ۽ ٺاهه هٽائڻ سان اهي واپس نٿا ٿين.</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_khata">کاتو</string>
+    <string name="nav_cashbook">روڪڙ</string>
+    <string name="nav_cheques">چيڪ</string>
+    <string name="nav_plans">رٿائون</string>
+    <string name="nav_more">وڌيڪ</string>
+
+    <!-- More sheet -->
+    <string name="more_title">وڌيڪ</string>
+    <string name="more_reports">رپورٽون ۽ زڪوات</string>
+    <string name="more_settings">سيٽنگون</string>
+    <string name="more_data">توهان جي ڊيٽا</string>
+
+    <string name="more_options">وڌيڪ</string>
+
+    <!-- Supplier bills -->
+    <string name="supplier_bills">سپلائر بل</string>
+    <string name="bills_subtitle">جيڪو مال خريد ڪيو</string>
+    <string name="bill_ledger_note">جيڪو توهان سپلائر کي ڏيڻو آهي اهو ٻين سڀني وانگر توهان جي کاتي ۾ آهي. بل مٿان رڳو ڪاغذي رڪارڊ وجهي ٿو: بل نمبر، بيچ نمبر، ختم ٿيڻ جون تاريخون.</string>
+    <string name="add_bill">بل شامل ڪريو</string>
+    <string name="no_bills">اڃا ڪو سپلائر بل ناهي.\n\nجيڪو خريد ڪريو سو لکو — بيچ نمبرن ۽ ختم ٿيڻ جي تاريخن سان. اهو ئي انسپيڪٽر پڇندو آهي، ۽ اهو ئي مال کي شيلف تي خراب ٿيڻ کان بچائي ٿو.</string>
+
+    <string name="bill_number_hint">بل نمبر (سندن پني تان)</string>
+    <string name="bill_total_hint">بل جو ڪل (Rs)</string>
+    <string name="bill_supplier_hint">سپلائر جو نالو</string>
+    <string name="bill_date">بل جي تاريخ</string>
+    <string name="bill_due_date">ادائيگي جي مقرر تاريخ (اختياري)</string>
+    <string name="bill_paid_cash">پهچڻ تي نقد ادا ڪيو</string>
+    <string name="bill_paid_cash_help">رڳو تڏهن نشان لڳايو جڏهن پوري ادائيگي ڪري چڪا هجو. نه ته رقم توهان جي کاتي ۾ سندن حساب تي چڙهندي، يعني جيڪو توهان کين ڏيڻو آهي.</string>
+    <string name="bill_credit_note">هي %2$s ڏانهن توهان جي قرض ۾ %1$s وڌائيندو، توهان جي کاتي ۾ هڪ داخلا طور.</string>
+
+    <string name="bill_items_title">کيپ ۾ ڇا هو</string>
+    <string name="add_item">شيءِ شامل ڪريو</string>
+    <string name="product_name_hint">پراڊڪٽ جو نالو</string>
+    <string name="batch_number_hint">بيچ نمبر</string>
+    <string name="batch_why">دٻي تي لکيل بيچ نمبر لکو. جيڪڏهن ڪڏهن ڪو نمونو سواليه ٿيو، يا زرعي کاتو پڇيو، ته اهو ئي رڪارڊ ڏيکاريندو ته مال ڪٿان آيو. پوءِ اهو ٻيهر ٺاهي نٿو سگهجي.</string>
+    <string name="expiry_date">ختم ٿيڻ جي تاريخ</string>
+    <string name="expiry_why">روشن کاتو ختم ٿيڻ کان ۶۰ ڏينهن اڳ خبردار ڪندو — ايترو اڳ جو وڪڻي سگهو، گهٽ اگهه تي ڏئي سگهو، يا جيستائين سپلائر واپس وٺي، موٽائي سگهو.</string>
+    <string name="pick_expiry">ختم ٿيڻ جي تاريخ چونڊيو</string>
+    <string name="pick_bill_date">بل جي تاريخ چونڊيو</string>
+    <string name="rate_hint">في يونٽ اگهه (Rs)</string>
+    <string name="qty_hint">مقدار</string>
+    <string name="item_added">شيءِ شامل ٿي</string>
+    <string name="no_items_yet">اڃا ڪا شيءِ شامل ناهي</string>
+    <string name="items_count">%1$d شيون</string>
+
+    <string name="bill_saved">بل محفوظ ٿيو</string>
+    <string name="bill_saved_credit">بل محفوظ ٿيو ۽ کاتي ۾ داخل ٿيو</string>
+    <string name="enter_supplier">مهرباني ڪري سپلائر چونڊيو</string>
+    <string name="enter_product">مهرباني ڪري پراڊڪٽ جو نالو لکو</string>
+    <string name="bill_deleted">بل هٽيو. کاتي جي داخلا رهندي — مال واقعي آيو هو ۽ توهان واقعي ان جا ڏيڻا آهيو.</string>
+    <string name="delete_bill">بل هٽايو</string>
+    <string name="delete_bill_confirm">بل ۽ ان جا بيچ رڪارڊ هٽي ويندا، پر کاتي جي داخلا رهندي. مال واقعي آيو هو ۽ پئسا واقعي ڏيڻا آهن — ڪاغذ هٽائڻ سان اهو ختم نٿو ٿئي.</string>
+    <string name="bill_actions">بل</string>
+    <string name="view_items">شيون ۽ بيچ ڏسو</string>
+
+    <!-- Expiry alerts -->
+    <string name="expiring_stock">ختم ٿيندڙ مال</string>
+    <string name="expiring_subtitle">وڪڻو، گهٽ اگهه تي ڏيو، يا موٽايو — جيستائين ٿي سگهي</string>
+    <string name="no_expiring">ايندڙ ۶۰ ڏينهن ۾ ڪجهه به ختم نٿو ٿئي.\n\nرڳو اهو مال جنهن جي ختم ٿيڻ جي تاريخ لکيل آهي، نظر ۾ رکي سگهجي ٿو. بل ۾ اهو خانو خالي ڇڏيندا ته روشن کاتو ان بابت خبردار نه ڪري سگهندو.</string>
+    <string name="expiring_note">رڳو اهو مال هتي اچي ٿو جنهن جي ختم ٿيڻ جي تاريخ لکيل آهي. روشن کاتو رڳو ان بابت خبردار ڪري سگهي ٿو جيڪو کيس ٻڌايو ويو.</string>
+    <string name="expired_days">%1$d ڏينهن اڳ ختم ٿيو</string>
+    <string name="expires_days">%1$d ڏينهن ۾ ختم ٿيندو</string>
+    <string name="expires_today">اڄ ختم ٿئي ٿو</string>
+    <string name="batch_label">بيچ: %1$s</string>
+    <string name="batch_none">ڪو بيچ نمبر لکيل ناهي</string>
+    <string name="from_supplier">%1$s کان</string>
+    <string name="from_supplier_bill">%1$s کان \u2014 بل %2$s</string>
+    <string name="expiring_badge">%1$d ختم ٿيندڙ</string>
+
+    <!-- Batch trace -->
+    <string name="trace_batch">بيچ ڳوليو</string>
+    <string name="trace_batch_hint">بيچ نمبر لکو</string>
+    <string name="trace_batch_help">جيڪڏهن ڪو نمونو سواليه ٿئي يا انسپيڪٽر پڇي، ته بيچ نمبر هتي ڳوليو ته خبر پوي ته ڪهڙي سپلائر کان، ڪهڙي بل تي، ۽ ڪڏهن آيو.</string>
+    <string name="trace_no_results">ان بيچ نمبر سان ڪو مال نه مليو.</string>
+    <string name="trace_results">%1$d رڪارڊ مليا</string>
+
+    <string name="search_action">ڳوليو</string>
+
+    <string name="pick_bill_due_date">ادائيگي جي مقرر تاريخ چونڊيو</string>
+
+    <!-- Backup: saved location + restore sources -->
+    <string name="backup_done_title">بيڪ اپ محفوظ ٿيو</string>
+    <string name="backup_done_saved">هتي محفوظ ٿيو:\n\n%1$s\n\nاها توهان کي فون جي Downloads فولڊر ۾، ۽ هر فائل مئنيجر ۾ ملندي. روشن کاتو پنهنجي ڪاپي به رکي ٿو، ته جيئن فائل ڳولڻ کان سواءِ بحال ڪري سگهو.</string>
+    <string name="backup_done_internal">روشن کاتي اندر محفوظ ٿيو. ڪڏهن به هن اسڪرين تان بحال ڪري سگهو ٿا.</string>
+    <string name="share_copy">ڪاپي موڪليو</string>
+    <string name="restore_from_app">محفوظ ٿيل بيڪ اپ مان بحال ڪريو</string>
+    <string name="restore_from_storage">اسٽوريج مان فائل چونڊيو</string>
+    <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
+
+    <!-- Printable business report -->
+    <string name="report_section_title">ڇپائي جوڳي رپورٽ</string>
+    <string name="report_not_backup">توهان جي پوري ڪاروبار جي PDF \u2014 بيلنس، چيڪ، رٿائون، ختم ٿيندڙ مال. پڙهڻ، ڇپائڻ يا ڪنهن کي ڏيکارڻ لاءِ.\n\nهي بيڪ اپ ناهي. روشن کاتو PDF مان توهان جو رڪارڊ بحال نٿو ڪري سگهي.</string>
+    <string name="make_report">PDF رپورٽ ٺاهيو</string>
+    <string name="making_report">رپورٽ ٺهي رهي آهي\u2026</string>
+    <string name="report_failed">رپورٽ نه ٺهي سگهي.</string>
+    <string name="share_report_pdf">رپورٽ شيئر ڪريو</string>
+
+    <!-- Report a problem -->
+    <string name="report_problem">مسئلو ٻڌايو</string>
+    <string name="report_problem_sub">ٻڌايو ڇا خراب ٿيو</string>
+    <string name="report_privacy">توهان جي گراهڪن جا نالا، نمبر ۽ بيلنس ڪڏهن به نه موڪليا ويندا. رپورٽ سان رڳو ايپ جو ورزن ۽ فون جو ماڊل ويندو \u2014 اهو ئي خرابي ڳولڻ ۾ مدد ڪري ٿو.\n\nاي ميل توهان جي پنهنجي ميل ايپ ۾ کلندي، تنهنڪري موڪلڻ کان اڳ ڏسي سگهو ٿا ته ڇا وڃي رهيو آهي.</string>
+
+    <string name="report_what_kind">ڪهڙي قسم جو مسئلو؟</string>
+    <string name="report_kind_wrong_number">ڪو بيلنس يا رقم غلط لڳي</string>
+    <string name="report_kind_crash">ايپ پاڻ بند ٿي وئي</string>
+    <string name="report_kind_lost">ڪا محفوظ ڪيل شيءِ گم ٿي وئي</string>
+    <string name="report_kind_confusing">ڪا اسڪرين سمجهه ۾ نه آئي</string>
+    <string name="report_kind_suggestion">صلاح آهي، خرابي ناهي</string>
+    <string name="report_kind_other">ٻيو ڪجهه</string>
+
+    <string name="report_describe">ڇا ٿيو؟</string>
+    <string name="report_describe_help">سنڌي، اردو يا انگريزيءَ ۾ لکو \u2014 جيڪا سولي هجي. جڏهن خرابي ٿي تڏهن ڇا ڪري رهيا هئا؟</string>
+    <string name="report_hint">مثال: مون ۵,۰۰۰ رپين جو چيڪ شامل ڪيو ۽ ڪليئر ڪرڻ کان اڳ ئي بيلنس بدلجي ويو.</string>
+    <string name="report_send">رپورٽ موڪليو</string>
+    <string name="report_email_note">هي توهان جي اي ميل ايپ کوليندو. جيڪڏهن اي ميل رکيل ناهي ته ڪنهن به فون تان innovation313.support@gmail.com تي لکو.</string>
+    <string name="report_no_email">ڪا اي ميل ايپ نه ملي. مهرباني ڪري innovation313.support@gmail.com تي لکو</string>
+    <string name="report_empty">مهرباني ڪري پهرين لکو ته ڇا ٿيو.</string>
+    <string name="report_subject">روشن کاتو \u2014 %1$s</string>
+
+    <string name="hide_balance">بيلنس لڪايو</string>
+    <string name="show_balance">بيلنس ڏيکاريو</string>
+
+    <string name="powered_by">Powered by Innovation-313</string>
+    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="tap_to_start">اڳتي وڌڻ لاءِ ڪٿي به ڇهو</string>
+
+    <!-- Splash / branding -->
+    <string name="tap_to_continue">اڳتي وڌڻ لاءِ ڇهو</string>
+    <string name="brand_har_hisaab">هر حساب روشن</string>
+
+    <string name="unlock_to_open">کولڻ لاءِ ڇهو</string>
+
+    <string name="restore_done_with_bin">توهان جي ڊيٽا واپس اچي وئي.\n\nهن بيڪ اپ ۾ %1$d گراهڪ اهڙا هئا جيڪي بيڪ اپ ٺهڻ کان اڳ هٽايا ويا هئا، تنهنڪري اهي ردي جي ٽوڪري ۾ بحال ٿيا آهن \u2014 مکيه فهرست ۾ نه. «وڌيڪ \u2190 ردي جي ٽوڪري» کوليو، اتان ڪنهن کي به پورو بحال ڪري سگهو ٿا.</string>
+
+    <!-- Google Drive backup -->
+    <string name="drive_section">پاڻمرادو ڪلائوڊ بيڪ اپ</string>
+    <string name="file_section">فائل ۾ بيڪ اپ</string>
+    <string name="drive_not_connected">پنهنجو Google اڪائونٽ ڳنڍيو ته توهان جو کاتو پاڻمرادو توهان جي پنهنجي Google Drive تي بيڪ اپ ٿيندو. فون بدلايو، ٻيهر سائن ان ڪريو، سڀ واپس. توهان جي ڊيٽا توهان جي Drive ۾ رهي ٿي؛ اسان وٽ ڪڏهن به نٿي اچي.</string>
+    <string name="drive_connected">%1$s طور ڳنڍيل. آخري ڪلائوڊ بيڪ اپ: %2$s</string>
+    <string name="drive_connected_never">%1$s طور ڳنڍيل. اڃا ڪو ڪلائوڊ بيڪ اپ ناهي \u2014 «هاڻي Drive تي بيڪ اپ» دٻايو.</string>
+    <string name="drive_connect">Google Drive ڳنڍيو</string>
+    <string name="drive_backup_now">هاڻي Drive تي بيڪ اپ</string>
+    <string name="drive_restore">Drive مان بحال ڪريو</string>
+    <string name="drive_sign_out">Google اڪائونٽ ڌار ڪريو</string>
+    <string name="drive_backing_up">Drive تي بيڪ اپ ٿي رهيو آهي\u2026</string>
+    <string name="drive_backup_done">توهان جي Google Drive تي بيڪ اپ ٿيو.</string>
+    <string name="drive_backup_failed">ڪلائوڊ بيڪ اپ ناڪام. اڳيون بيڪ اپ، جي هو، ته جيئن جو تيئن آهي. انٽرنيٽ جانچي ٻيهر ڪوشش ڪريو.</string>
+    <string name="drive_restoring">Drive مان بحال ٿي رهيو آهي\u2026</string>
+    <string name="drive_no_backup">اڃا توهان جي Google Drive ۾ ڪو بيڪ اپ نه مليو.</string>
+    <string name="drive_restore_failed">Drive مان بحال نه ٿي سگهيو. انٽرنيٽ جانچي ٻيهر ڪوشش ڪريو.</string>
+    <string name="drive_signin_failed">Google سائن ان مڪمل نه ٿيو. ٻيهر ڪوشش ڪريو.</string>
+    <string name="drive_permission_needed">روشن کاتي کي توهان جي Drive ۾ پنهنجي فولڊر ۾ محفوظ ڪرڻ جي اجازت گهرجي. پڇڻ تي اجازت ڏيو.</string>
+    <string name="drive_restore_confirm">ايپ ۾ موجود سڀ ڪجهه توهان جي Google Drive واري بيڪ اپ سان مٽجي ويندو. اڳتي وڌو؟</string>
+    <string name="i_have_to_get">مون کي وٺڻا آهن</string>
+    <string name="i_have_to_give">مون کي ڏيڻا آهن</string>
+    <string name="insights_title">وڪري جو جائزو</string>
+    <string name="insights_subtitle">توهان جي دڪان تي ڇا هلي رهيو آهي</string>
+    <string name="insights_total_sale">ڪل وڪرو \u00b7 هي مهينو</string>
+    <string name="insights_top_products">مٿيان پراڊڪٽ</string>
+    <string name="insights_top_customers">مٿيان گراهڪ</string>
+    <string name="insights_up">\u25b2 گذريل مهيني کان %1$d%% وڌيڪ (%2$s)</string>
+    <string name="insights_down">\u25bc گذريل مهيني کان %1$d%% گهٽ (%2$s)</string>
+    <string name="insights_no_compare">وڪري جو پهريون مهينو \u2014 اڃا ڀيٽ لاءِ ڪجهه ناهي.</string>
+    <string name="insights_no_products">هن مهيني ڪو پراڊڪٽ نه لکيو ويو. داخلا وقت پراڊڪٽ جو نالو لکو ته هي ڏسي سگهو.</string>
+    <string name="insights_no_sales">هن مهيني اڃا ڪو وڪرو نه لکيو ويو.</string>
+    <string name="insights_privacy_note">سڀ حساب توهان جي فون تي ٿئي ٿو. ڪجهه به ڊوائيس کان ٻاهر نٿو وڃي.</string>
+    <string name="nisab_silver">چاندي</string>
+    <string name="nisab_gold">سون</string>
+    <string name="gold_price_hint">سون جي في گرام قيمت (Rs)</string>
+    <string name="nisab_silver_note">چانديءَ جو نصاب: ۶۱۲.۳۶ گرام (۵۲.۵ تولا) چاندي. هي هيٺين حد آهي، تنهنڪري وڌيڪ ماڻهن تي زڪوات واجب ٿئي ٿي \u2014 اهو موقف جيڪو عام طور غريبن جي حق ۾ وڌيڪ محتاط سمجهيو وڃي ٿو.</string>
+    <string name="nisab_gold_note">سون جو نصاب: ۸۷.۴۸ گرام (۷.۵ تولا) سون. هي مٿين حد آهي، تنهنڪري گهٽ ماڻهن تي زڪوات واجب ٿئي ٿي. ڪهڙو معيار توهان تي لاڳو آهي، اهو ڪنهن عالم کان پڪو ڪريو.</string>
+    <string name="last_transacted">آخري وهنوار %1$s</string>
+    <string name="summary_with_overdue">%1$s \u00b7 %2$d کي ياد ڏيارڻ گهرجي</string>
+    <plurals name="customer_count">
+        <item quantity="one">%d گراهڪ</item>
+        <item quantity="other">%d گراهڪ</item>
+    </plurals>
+    <string name="call">ڪال</string>
+    <string name="no_dialer">ڪا ڊائلر ايپ نه ملي</string>
+    <string name="backup_reminder_hint">بيڪ اپ جو وقت ٿي ويو</string>
+    <string name="select_all">سڀ چونڊيو</string>
+    <string name="clear_all">سڀ هٽايو</string>
+    <string name="insights_today">اڄ</string>
+    <string name="insights_today_received">مليا</string>
+    <string name="insights_today_given">ڏنا</string>
+    <plurals name="entries_today">
+        <item quantity="one">اڄ %d داخلا</item>
+        <item quantity="other">اڄ %d داخلائون</item>
+    </plurals>
+    <string name="copy_balance_owed">%1$s: %2$s باقي آهي (توهان کي ملندو)</string>
+    <string name="copy_balance_i_owe">%1$s: %2$s (توهان کي ڏيڻو)</string>
+    <string name="copy_balance_settled">%1$s: حساب برابر (Rs 0)</string>
+    <string name="copied">ڪاپي ٿيو</string>
+    <string name="receipt_title">رسيد</string>
+    <string name="payment_receipt">ادائيگي جي رسيد</string>
+    <string name="you_gave">توهان ڏنو</string>
+    <string name="you_got">توهان ورتو</string>
+    <string name="details">تفصيل</string>
+    <string name="party">ڌر</string>
+    <string name="receipt_no">رسيد نمبر</string>
+    <string name="date_label">تاريخ</string>
+    <string name="note_label">نوٽ</string>
+    <string name="goods_label">مال</string>
+    <string name="balance_label">پوءِ بيلنس</string>
+    <string name="edit">بدلايو</string>
+    <string name="share">شيئر</string>
+    <string name="back">واپس</string>
+    <string name="entry_not_found">داخلا نه ملي</string>
+    <string name="delete_entry_message">هيءَ داخلا کاتي مان هٽي ويندي.</string>
+    <string name="entry_deleted">داخلا هٽي وئي</string>
+    <string name="share_failed">رسيد جي تصوير نه ٺهي سگهي</string>
+    <string name="invalid_amount">صحيح رقم لکو</string>
+    <string name="saved">محفوظ ٿيو</string>
+    <string name="select_language">پنهنجي ٻولي چونڊيو</string>
+    <string name="language_change_note">ٻولي ڪڏهن به «وڌيڪ» مان بدلائي سگهو ٿا.</string>
+    <string name="language">ٻولي</string>
+</resources>
