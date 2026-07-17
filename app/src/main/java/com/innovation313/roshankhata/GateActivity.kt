@@ -2,6 +2,8 @@ package com.innovation313.roshankhata
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.innovation313.roshankhata.data.AppLock
 
@@ -29,6 +31,17 @@ class GateActivity : AppCompatActivity() {
             return
         }
 
+        // The branded beat — logo and tagline — shown on every launch, so the
+        // door looks the same whether the lock is waiting behind it or not.
+        // (Previously only locked launches ever saw it, via the lock screen.)
+        setContentView(R.layout.activity_gate)
+
+        Handler(Looper.getMainLooper()).postDelayed({ route() }, SPLASH_MS)
+    }
+
+    private fun route() {
+        if (isFinishing || isDestroyed) return
+
         val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
 
         // If the owner turned the lock on but has since removed their screen
@@ -42,5 +55,9 @@ class GateActivity : AppCompatActivity() {
             Intent(this, next).putExtra(MainActivity.EXTRA_UNLOCKED, !locked)
         )
         finish()
+    }
+
+    companion object {
+        private const val SPLASH_MS = 1200L
     }
 }
