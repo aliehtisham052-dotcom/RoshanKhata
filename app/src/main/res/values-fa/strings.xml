@@ -1,0 +1,572 @@
+<resources>
+    <string name="app_name">روشن خاتا</string>
+    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="brand_line">Innovation-313</string>
+
+    <string name="net_balance">مانده خالص</string>
+    <string name="add_party">افزودن طرف‌حساب</string>
+    <string name="no_parties_yet">هنوز مشتری‌ای ثبت نشده است.\n\nبرای افزودن نخستین مشتری و آغاز دفتر خود، روی «افزودن طرف‌حساب» در پایین بزنید.</string>
+    <string name="no_entries_yet">هنوز ثبتی وجود ندارد.</string>
+
+    <string name="i_gave">دادم</string>
+    <string name="i_got">گرفتم</string>
+
+    <string name="you_will_get">طلب شما</string>
+    <string name="you_will_give">بدهی شما</string>
+    <string name="settled">تسویه‌شده</string>
+
+    <string name="name">نام</string>
+    <string name="phone_optional">تلفن (اختیاری)</string>
+    <string name="amount">مبلغ</string>
+    <string name="note_optional">یادداشت (اختیاری)</string>
+    <string name="save">ذخیره</string>
+    <string name="cancel">انصراف</string>
+    <string name="customer">مشتری</string>
+    <string name="supplier">تأمین‌کننده</string>
+    <string name="enter_name">لطفاً نامی وارد کنید</string>
+    <string name="enter_valid_amount">لطفاً مبلغ معتبری وارد کنید</string>
+
+    <!-- Recycle Bin -->
+    <string name="recycle_bin">سطل بازیافت</string>
+    <string name="bin_retention_note">موارد حذف‌شده ۳۰ روز نگه داشته می‌شوند و سپس برای همیشه پاک می‌شوند.</string>
+    <string name="bin_empty">سطل خالی است.</string>
+    <string name="bin_party_note">طرف‌حساب (ثبت‌هایش همراه خودش نگه داشته می‌شود)</string>
+    <string name="restore">بازگردانی</string>
+    <string name="restored">بازگردانی شد</string>
+    <string name="deleted_on">حذف‌شده در %1$s</string>
+    <string name="restore_party_confirm">«%1$s» بازگردانی شود؟ ثبت‌های دفترش نیز بازمی‌گردند.</string>
+    <string name="restore_entry_confirm">این ثبت بازگردانی شود؟ دوباره در دفتر طرف‌حساب ظاهر می‌شود و روی مانده اثر می‌گذارد.</string>
+    <string name="empty_bin">خالی کردن سطل</string>
+    <string name="empty_bin_confirm">همه محتویات سطل برای همیشه حذف می‌شود. این کار قابل بازگشت نیست.</string>
+    <string name="delete_forever">حذف همیشگی</string>
+    <string name="bin_emptied">سطل خالی شد</string>
+
+    <!-- Delete actions -->
+    <string name="delete">حذف</string>
+    <string name="delete_party_title">طرف‌حساب حذف شود؟</string>
+    <string name="delete_party_confirm">«%1$s» و ثبت‌هایش به سطل بازیافت می‌رود. تا ۳۰ روز می‌توانید بازگردانید.</string>
+    <string name="delete_entry_title">ثبت حذف شود؟</string>
+    <string name="delete_entry_confirm">این ثبت به سطل بازیافت می‌رود. تا ۳۰ روز می‌توانید بازگردانید.</string>
+    <string name="moved_to_bin">به سطل بازیافت منتقل شد</string>
+    <string name="long_press_to_delete">برای حذف، روی طرف‌حساب لمس طولانی کنید</string>
+
+    <!-- Zakat -->
+    <string name="zakat_calculator">محاسبه زکات</string>
+    <string name="zakat_subtitle">صرفاً ابزار کمکی — نه فتوا</string>
+    <string name="zakat_disclaimer">این ابزار فقط برای راهنمایی است. زکات جزئیات فقهی واقعی دارد — معیار نصاب، حکم طلب‌های مشکوک، سال قمری، و اینکه کدام بدهی‌ها کسر می‌شود، میان علما متفاوت است. روشن خاتا مفتی نیست. لطفاً حکم نهایی را از عالم واجد شرایط بگیرید.</string>
+
+    <string name="nisab_section">نصاب</string>
+    <string name="nisab_help">نصاب در اینجا بر پایه معیار نقره (۶۱۲٫۳۶ گرم) تنظیم شده — دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود. قیمت امروز هر گرم نقره را وارد کنید.</string>
+    <string name="silver_price_hint">قیمت هر گرم نقره (Rs)</string>
+    <string name="nisab_value">نصاب = %1$s</string>
+    <string name="nisab_enter_price">برای محاسبه نصاب، قیمت نقره را وارد کنید</string>
+    <string name="nisab_needed_first">ابتدا قیمت نقره را وارد کنید</string>
+    <string name="above_nisab">دارایی شما به نصاب رسیده است — زکات واجب است (مشروط به کامل شدن سال قمری).</string>
+    <string name="below_nisab">دارایی شما کمتر از نصاب است — بر این مبلغ زکات واجب نیست.</string>
+
+    <string name="cash_stock_section">نقد و کالا</string>
+    <string name="cash_stock_help">پول نقد، موجودی بانک و ارزش کالای تجاری. روشن خاتا این‌ها را نمی‌بیند؛ خودتان وارد کنید.</string>
+    <string name="cash_stock_hint">نقد + ارزش کالا (Rs)</string>
+
+    <string name="from_your_ledger">از دفتر شما</string>
+    <string name="certain_receivables">طلب‌هایی که انتظار وصول دارید: %1$s</string>
+    <string name="qarze_hasna_given">قرض‌الحسنه پرداختی: %1$s</string>
+    <string name="doubtful_receivables">طلب‌های مشکوک: %1$s (به‌حساب نیامده)</string>
+    <string name="you_owe_others">بدهی شما به دیگران: %1$s (کسر شده)</string>
+    <string name="include_doubtful">طلب‌های مشکوک هم حساب شود</string>
+    <string name="include_doubtful_help">بسیاری از علما بر این‌اند که زکاتِ طلبِ مشکوک تنها پس از وصول واجب می‌شود. فقط اگر می‌خواهید محتاط‌تر باشید این را علامت بزنید.</string>
+
+    <string name="zakatable_wealth">دارایی مشمول زکات</string>
+    <string name="zakat_due_label">زکات (۲٫۵٪)</string>
+    <string name="zakat_footer_note">زکات همچنین نیازمند گذشت یک سال کامل قمری (حَول) بر دارایی است. روشن خاتا آن را برای شما پیگیری نمی‌کند — خودتان در نظر بگیرید و حکم را از عالم بپرسید.</string>
+
+    <!-- Qarz-e-Hasna -->
+    <string name="qarze_hasna">قرض‌الحسنه (وام بدون بهره)</string>
+    <string name="qarze_hasna_help">جدا از معاملات تجاری ثبت می‌شود. هرگز بهره یا جریمه دیرکرد به آن تعلق نمی‌گیرد.</string>
+    <string name="recovery_certain">انتظار وصول دارم</string>
+    <string name="recovery_doubtful">مشکوک</string>
+    <string name="recovery_label">احتمال وصول</string>
+
+    <!-- Reminders -->
+    <string name="remind_whatsapp">واتساپ</string>
+    <string name="remind_sms">پیامک</string>
+    <string name="reminder_preview_help">پیش از ارسال آن را بخوانید. همه‌چیز اینجا قابل ویرایش است — روشن خاتا آن را به واتساپ یا برنامه پیامک می‌سپارد و ارسال را خودتان می‌زنید.</string>
+    <string name="reminder_they_owe">سلام علیکم %1$s،\n\nطبق دفتر ما، مبلغ %2$s بر عهده شماست. لطفاً هر وقت ممکن شد بپردازید. اگر پرداخته‌اید، این پیام را نادیده بگیرید و به ما خبر دهید.\n\nجزاکم‌الله خیر.\n\n\u2014\nارسال‌شده با روشن خاتا</string>
+    <string name="reminder_i_owe">سلام علیکم %1$s،\n\nطبق دفتر ما، مبلغ %2$s از شما بر عهده ماست. ان‌شاءالله به‌زودی می‌پردازیم. اگر حساب شما با ما متفاوت است، خبر دهید.\n\nجزاکم‌الله خیر.\n\n\u2014\nارسال‌شده با روشن خاتا</string>
+    <string name="send_reminder">ارسال یادآوری</string>
+    <string name="open_whatsapp">باز کردن واتساپ</string>
+    <string name="open_sms">باز کردن پیامک</string>
+    <string name="no_phone_number">برای این طرف‌حساب شماره تلفنی ذخیره نشده است. ابتدا شماره اضافه کنید.</string>
+    <string name="whatsapp_not_installed">واتساپ روی این گوشی نصب نیست.</string>
+    <string name="no_sms_app">برنامه پیامکی روی این گوشی یافت نشد.</string>
+    <string name="nothing_outstanding">چیزی باقی نمانده — حساب تسویه است.</string>
+
+    <!-- Goods / quantity (agri-dealer ledger) -->
+    <string name="goods_section">کالا (اختیاری)</string>
+    <string name="goods_help">اگر همراه این ثبت کالایی جابه‌جا شده — ۵ کیسه اوره، ۲ لیتر سم — اینجا ثبت کنید. برای ثبت نقدی ساده خالی بگذارید.</string>
+    <string name="item_name_hint">کالا (مثلاً اوره، سم، خوراک دام)</string>
+    <string name="quantity_hint">مقدار</string>
+    <string name="unit_hint">واحد (کیسه، لیتر، کیلوگرم…)</string>
+
+    <!-- Contact import -->
+    <string name="import_contacts">افزودن از مخاطبین</string>
+    <string name="import_selected">افزودن منتخب‌ها</string>
+    <string name="search_contacts">جستجو با نام یا شماره</string>
+    <string name="selected_count">%1$d انتخاب شد</string>
+    <string name="imported_count">%1$d مخاطب اضافه شد</string>
+    <string name="already_added">اضافه شده</string>
+    <string name="loading_contacts">در حال بارگیری مخاطبین\u2026</string>
+    <string name="no_contacts_found">مخاطبی روی این گوشی یافت نشد.</string>
+    <string name="no_matching_contacts">مخاطبی با جستجوی شما مطابقت ندارد.</string>
+    <string name="continue_action">ادامه</string>
+    <string name="contacts_permission_title">دسترسی به مخاطبین؟</string>
+    <string name="contacts_permission_rationale">روشن خاتا فهرست مخاطبین شما را فقط برای نمایش در همین‌جا می‌خواند تا انتخاب کنید چه کسی اضافه شود. چیزی بارگذاری نمی‌شود و تنها مخاطبانی که خودتان انتخاب می‌کنید ذخیره می‌شوند — فقط نام و شماره.\n\nاگر مایل نیستید، همچنان می‌توانید هر طرف‌حساب را دستی اضافه کنید.</string>
+    <string name="contacts_permission_denied">اجازه داده نشد، پس مخاطبین قابل نمایش نیستند. همچنان می‌توانید از صفحه اصلی طرف‌حساب‌ها را دستی اضافه کنید.</string>
+    <string name="add_manually">افزودن دستی</string>
+
+    <!-- PDF statement -->
+    <string name="statement_pdf">صورت‌حساب</string>
+    <string name="generating_statement">در حال آماده‌سازی صورت‌حساب\u2026</string>
+    <string name="share_statement">اشتراک صورت‌حساب</string>
+    <string name="statement_failed">صورت‌حساب ساخته نشد. دوباره تلاش کنید.</string>
+    <string name="no_entries_to_export">هنوز ثبتی برای صورت‌حساب وجود ندارد.</string>
+
+    <!-- App Lock -->
+    <string name="app_lock">قفل برنامه</string>
+    <string name="lock_title">باز کردن روشن خاتا</string>
+    <string name="lock_subtitle">دفتر شما خصوصی است. هویت خود را تأیید کنید.</string>
+    <string name="app_lock_enabled">قفل برنامه روشن است. هر بار هنگام باز کردن برنامه تأیید خواسته می‌شود.</string>
+    <string name="app_lock_disabled">قفل برنامه خاموش است.</string>
+    <string name="app_lock_turn_on">روشن کردن قفل برنامه</string>
+    <string name="app_lock_turn_off">خاموش کردن قفل برنامه</string>
+    <string name="app_lock_explain">از اثر انگشت، چهره یا همان قفل صفحه گوشی شما استفاده می‌کند. روشن خاتا پین جداگانه‌ای ذخیره نمی‌کند — اندروید آن را امن‌تر از ما نگه می‌دارد.</string>
+    <string name="app_lock_no_screen_lock">این گوشی قفل صفحه ندارد. ابتدا در تنظیمات گوشی اثر انگشت، پین یا الگو تنظیم کنید، سپس قفل برنامه می‌تواند از دفتر شما محافظت کند.</string>
+    <string name="app_lock_unavailable">قفل برنامه روی این گوشی در دسترس نیست.</string>
+    <string name="ok">باشه</string>
+
+    <!-- Business settings / payment QR -->
+    <string name="business_settings">تنظیمات کسب‌وکار</string>
+    <string name="business_settings_subtitle">نام و کد پرداخت شما روی صورت‌حساب‌ها</string>
+    <string name="business_name">نام کسب‌وکار</string>
+    <string name="business_name_help">بالای هر صورت‌حساب و در پایان هر یادآوری ارسالی شما نمایش داده می‌شود.</string>
+    <string name="business_name_hint">مثلاً بهاتی تریدرز</string>
+
+    <string name="payment_qr">کد QR پرداخت</string>
+    <string name="payment_qr_help">عکس یا اسکرین‌شات کد QR ایزی‌پیسه یا جاز کش شما. به صورت‌حساب‌ها پیوست می‌شود تا مشتری اسکن کند و به شما بپردازد.</string>
+    <string name="payment_qr_caveat">پیش از ذخیره، کد را با دقت بررسی کنید. روشن خاتا نمی‌تواند تشخیص دهد QR متعلق به چه حسابی است — اگر تصویر اشتباه ذخیره شود، پرداخت مشتری به حساب دیگری می‌رود.\n\nهمچنین: QR شخصی ایزی‌پیسه/جاز کش مبلغ را در خود ندارد. مشتری مبلغ را خودش وارد می‌کند، پس مبلغ به‌روشنی کنارش نوشته می‌شود.</string>
+    <string name="no_qr_yet">هنوز QR پرداختی ذخیره نشده است.</string>
+    <string name="choose_qr_image">انتخاب تصویر</string>
+    <string name="remove_qr">حذف</string>
+    <string name="qr_saved">QR پرداخت ذخیره شد</string>
+    <string name="qr_save_failed">آن تصویر ذخیره نشد. لطفاً تصویر دیگری انتخاب کنید.</string>
+    <string name="qr_removed">QR پرداخت حذف شد</string>
+    <string name="qr_confirm_title">آیا این همان کد درست است؟</string>
+    <string name="qr_confirm_message">کد بالا را ببینید و تأیید کنید که حساب ایزی‌پیسه یا جاز کش خود شماست. اگر نباشد، پرداخت مشتریان به شخص دیگری می‌رسد.</string>
+    <string name="qr_confirm_yes">بله، مال من است</string>
+    <string name="profile_saved">ذخیره شد</string>
+    <string name="attach_qr_to_reminder">پیوست QR پرداخت</string>
+
+    <!-- Cheques -->
+    <string name="cheques">چک‌ها</string>
+    <string name="add_cheque">افزودن چک</string>
+    <string name="no_cheques">هنوز چکی ثبت نشده است.\n\nچک‌های مدت‌دار اینجا جدا از دفتر پیگیری می‌شوند — چک تا وصول نشود پول نیست.</string>
+    <string name="cheque_not_money_yet">چک تا وصول نشود پول نیست، پس فعلاً روی مانده اثری ندارد. وقتی آن را «وصول‌شده» علامت بزنید، پرداخت همان موقع در دفتر ثبت می‌شود.</string>
+    <string name="cheque_party_hint">نام مشتری یا تأمین‌کننده</string>
+    <string name="cheque_received">از او گرفته‌ام</string>
+    <string name="cheque_issued">به او داده‌ام</string>
+    <string name="pick_due_date">تاریخ روی چک را انتخاب کنید</string>
+    <string name="due_date_set">سررسید: %1$s</string>
+    <string name="cheque_number_hint">شماره چک (اختیاری)</string>
+    <string name="bank_name_hint">بانک (اختیاری)</string>
+
+    <string name="cheque_pending">در انتظار</string>
+    <string name="cheque_cleared">وصول‌شده</string>
+    <string name="cheque_bounced">برگشتی</string>
+    <string name="cheque_cancelled">باطل‌شده</string>
+
+    <string name="due_today">سررسید امروز</string>
+    <string name="due_in_days">سررسید تا %1$d روز</string>
+    <string name="overdue_by_days">%1$d روز از سررسید گذشته</string>
+    <string name="due_summary">%1$d چک آماده وصول</string>
+    <string name="due_summary_none">چیزی سررسید نیست</string>
+    <string name="due_summary_pending">%1$d در انتظار وصول</string>
+    <string name="due_summary_empty">چکی نیست</string>
+    <string name="due_summary_all_settled">همه تسویه شد</string>
+
+    <string name="cheque_actions">این چک چه شد؟</string>
+    <string name="mark_cleared">علامت «وصول‌شده»</string>
+    <string name="mark_bounced">علامت «برگشتی»</string>
+    <string name="mark_cancelled">علامت «باطل‌شده»</string>
+    <string name="delete_cheque">حذف چک</string>
+
+    <string name="cleared_confirm">با علامت «وصول‌شده»، پرداخت در دفتر %1$s ثبت و مانده تغییر می‌کند. فقط وقتی این کار را بکنید که پول واقعاً به حساب رسیده باشد.</string>
+    <string name="bounced_confirm">چک برگشتی پرداخت نیست — مبلغ همچنان بدهکاری است. چیزی در دفتر ثبت نمی‌شود.</string>
+    <string name="cheque_cleared_posted">وصول شد — پرداخت در دفتر ثبت شد</string>
+    <string name="cheque_marked_bounced">برگشتی علامت خورد. مبلغ همچنان طلب است.</string>
+    <string name="cheque_marked_cancelled">باطل‌شده علامت خورد</string>
+    <string name="select_party_first">ابتدا مشتری یا تأمین‌کننده‌ای از فهرست خود انتخاب کنید.</string>
+    <string name="pick_date_first">لطفاً تاریخ نوشته‌شده روی چک را انتخاب کنید.</string>
+    <string name="cheque_note_prefix">چک %1$s</string>
+
+    <!-- Search & sort -->
+    <string name="search_parties">جستجو با نام یا شماره</string>
+    <string name="search_entries">جستجو در یادداشت، کالا یا شماره</string>
+    <string name="sort">مرتب‌سازی</string>
+    <string name="sort_by">مرتب‌سازی بر اساس</string>
+
+    <string name="sort_name_az">نام (الف\u2013ی)</string>
+    <string name="sort_name_za">نام (ی\u2013الف)</string>
+    <string name="sort_owes_most">بیشترین طلب من اول</string>
+    <string name="sort_i_owe_most">بیشترین بدهی من اول</string>
+    <string name="sort_recent_activity">تازه‌ترین فعالیت</string>
+
+    <string name="sort_newest">جدیدترین اول</string>
+    <string name="sort_oldest">قدیمی‌ترین اول</string>
+    <string name="sort_amount_high">مبلغ (زیاد به کم)</string>
+    <string name="sort_amount_low">مبلغ (کم به زیاد)</string>
+
+    <string name="no_matching_parties">هیچ مشتری یا تأمین‌کننده‌ای با جستجوی شما مطابقت ندارد.</string>
+    <string name="no_matching_entries">هیچ ثبتی با جستجوی شما مطابقت ندارد.</string>
+    <string name="showing_filtered">نمایش %1$d از %2$d</string>
+    <string name="running_balance_note">مانده تجمعی از ترتیب خود دفتر پیروی می‌کند، پس با هر مرتب‌سازی یا جستجویی درست می‌ماند.</string>
+
+    <!-- Party photo -->
+    <string name="party_photo">عکس</string>
+    <string name="set_photo">تنظیم عکس</string>
+    <string name="change_photo">تغییر عکس</string>
+    <string name="remove_photo">حذف عکس</string>
+    <string name="photo_saved">عکس ذخیره شد</string>
+    <string name="photo_removed">عکس حذف شد</string>
+    <string name="photo_save_failed">آن تصویر ذخیره نشد. لطفاً تصویر دیگری انتخاب کنید.</string>
+    <string name="photo_privacy_note">عکس روی همین گوشی می‌ماند. هرگز بارگذاری نمی‌شود و عمداً روی صورت‌حساب‌ها نمی‌آید — صورت‌حساب دست‌به‌دست می‌شود و مشتری شما رضایت نداده که چهره‌اش همراه آن برود.</string>
+    <string name="party_options">گزینه‌ها</string>
+    <string name="edit_party">ویرایش مشخصات</string>
+    <string name="delete_party">حذف</string>
+
+    <!-- Credit limit -->
+    <string name="credit_limit">سقف نسیه</string>
+    <string name="set_credit_limit">تعیین سقف نسیه</string>
+    <string name="credit_limit_help">بیشترین مبلغی که حاضرید این طرف‌حساب به شما بدهکار باشد. روشن خاتا پیش از ثبتی که از آن بگذرد هشدار می‌دهد.</string>
+    <string name="credit_limit_hint">سقف (Rs) — برای بدون سقف خالی بگذارید</string>
+    <string name="credit_limit_advisory">این یک هشدار است، نه مانع. کسب‌وکار خودتان است — همیشه می‌توانید ادامه دهید.</string>
+    <string name="credit_limit_current">اکنون %1$s به شما بدهکار است</string>
+    <string name="credit_limit_none">سقفی تعیین نشده</string>
+    <string name="credit_limit_set_to">سقف: %1$s</string>
+    <string name="credit_limit_removed">سقف نسیه حذف شد</string>
+    <string name="credit_limit_saved">سقف نسیه ذخیره شد</string>
+
+    <string name="over_limit_badge">بالای سقف</string>
+    <string name="near_limit_badge">نزدیک سقف</string>
+
+    <string name="limit_warning_title">از سقف نسیه‌اش می‌گذرد</string>
+    <string name="limit_warning_message">%1$s اکنون %2$s به شما بدهکار است.\n\nاین ثبتِ %3$s او را به %4$s می‌رساند که از سقف %5$s تعیین‌شده شما بیشتر است.\n\nباز هم می‌توانید ادامه دهید — این فقط یک هشدار است.</string>
+    <string name="proceed_anyway">ادامه بده</string>
+
+    <!-- Report -->
+    <string name="report">گزارش</string>
+    <string name="report_title">گزارش %1$s</string>
+    <string name="range_all">همه</string>
+    <string name="range_today">امروز</string>
+    <string name="range_week">هفته گذشته</string>
+    <string name="range_month">ماه گذشته</string>
+    <string name="range_custom">دلخواه</string>
+    <string name="range_label_all">کل دفتر</string>
+    <string name="range_label">%1$s تا %2$s</string>
+    <string name="net_change">تغییر خالص</string>
+    <string name="no_entries_in_range">در این بازه ثبتی نیست.</string>
+    <string name="share_report">اشتراک به‌صورت PDF</string>
+    <string name="pick_start_date">تاریخ شروع را انتخاب کنید</string>
+    <string name="pick_end_date">تاریخ پایان را انتخاب کنید</string>
+    <string name="closing_note_range">سه رقم بالا فقط همین بازه را پوشش می‌دهد. مانده پایانی زیر، کل حساب است — %1$s — چون جمعِ بخشی از دوره، آن چیزی نیست که مشتری شما بدهکار است.</string>
+    <string name="closing_note_all">مانده پایانی: %1$s</string>
+    <string name="report_period">دوره: %1$s</string>
+    <string name="invalid_range">تاریخ پایان نمی‌تواند پیش از تاریخ شروع باشد.</string>
+
+    <!-- Cashbook -->
+    <string name="cashbook">دفتر صندوق</string>
+    <string name="cashbook_subtitle">پول ورودی و خروجی کسب‌وکار</string>
+    <string name="cashbook_separate_note">دفتر صندوق از دفتر مشتریان شما جداست. اجاره، دستمزد، فروش نقدی گذری — پولی که مشتری خاصی ندارد. بدهی هیچ‌کس را تغییر نمی‌دهد.</string>
+    <string name="add_cash_entry">افزودن ثبت</string>
+    <string name="cash_in">ورود نقد</string>
+    <string name="cash_out">خروج نقد</string>
+    <string name="cash_net">خالص</string>
+    <string name="cash_income">پول ورودی</string>
+    <string name="cash_expense">پول خروجی</string>
+    <string name="cash_category_hint">دسته (مثلاً اجاره، دستمزد، فروش نقدی)</string>
+    <string name="no_cash_entries">هنوز ثبتی در دفتر صندوق نیست.\n\nاینجا برای پولی است که به مشتری وابسته نیست — اجاره، برق، دستمزد، سوخت، فروش گذری.</string>
+    <string name="enter_category">لطفاً دسته‌ای وارد کنید</string>
+    <string name="delete_cash_entry">این ثبت حذف شود؟</string>
+    <string name="delete_cash_confirm">به سطل بازیافت می‌رود.</string>
+
+    <!-- Backup & restore -->
+    <string name="backup_restore">پشتیبان‌گیری و بازگردانی</string>
+    <string name="backup_subtitle">دفترتان، در دستان خودتان</string>
+    <string name="backup_now">اکنون پشتیبان بگیر</string>
+    <string name="restore_from_file">بازگردانی از پشتیبان</string>
+    <string name="backup_explain">همه‌چیز — مشتریان، دفتر، چک‌ها، دفتر صندوق و سطل بازیافت — در یک فایل نوشته می‌شود که می‌توانید در Drive ذخیره کنید، در واتساپ برای خودتان بفرستید یا روی کارت حافظه نگه دارید.\n\nفایل، متن ساده و خواندنی است. حتی سال‌ها بعد، حتی بدون این برنامه، سوابق شما قابل بازیابی می‌ماند. داده‌ای که بدون کمک ما پس نگیرید، واقعاً مال شما نیست.</string>
+    <string name="backup_warning">روشن خاتا همه‌چیز را فقط روی همین گوشی نگه می‌دارد. اگر گوشی گم یا خراب شود یا برنامه حذف شود، سوابق هم می‌رود. لطفاً مرتب پشتیبان بگیرید و جای دیگری نگه دارید.</string>
+    <string name="backup_created">پشتیبان آماده است — محل ذخیره را انتخاب کنید</string>
+    <string name="backup_failed">پشتیبان ساخته نشد.</string>
+    <string name="save_backup">ذخیره پشتیبان</string>
+
+    <string name="restore_warning_title">همه‌چیز جایگزین شود؟</string>
+    <string name="restore_warning_message">بازگردانی، همه محتوای فعلی روشن خاتا را با محتوای این فایل جایگزین می‌کند:\n\n%1$d مشتری/تأمین‌کننده\n%2$d ثبت دفتر\n%3$d چک\n%4$d ثبت دفتر صندوق\n%5$d برنامه پرداخت\n%6$d فاکتور تأمین‌کننده\n\nهرچه اکنون روی این گوشی است از بین می‌رود. اگر ثبت‌هایی دارید که در پشتیبان نیست، اول از همین وضعیت پشتیبان بگیرید.\n\nاین کار قابل بازگشت نیست.</string>
+    <string name="restore_replace">همه‌چیز جایگزین شود</string>
+    <string name="restore_done">بازگردانی شد</string>
+    <string name="restore_failed">بازگردانی ناموفق: %1$s</string>
+    <string name="reading_backup">در حال خواندن فایل\u2026</string>
+    <string name="restoring">در حال بازگردانی\u2026</string>
+    <string name="creating_backup">در حال ساخت پشتیبان\u2026</string>
+
+    <!-- Payment plans -->
+    <string name="payment_plans">برنامه‌های پرداخت</string>
+    <string name="plans_subtitle">تسویه قسطی</string>
+    <string name="plan_not_a_debt_note">برنامه یک توافق است، نه بدهی تازه. بدهی او از قبل در دفتر است. ثبت پرداخت در اینجا یک‌بار در دفتر می‌نشیند — هرگز دوبار حساب نمی‌شود.</string>
+    <string name="add_plan">افزودن برنامه</string>
+    <string name="no_plans">هنوز برنامه پرداختی نیست.\n\nوقتی مشتری قرار است مبلغی را قسطی تسویه کند — بعد از برداشت محصول یا طی چند ماه — از این‌ها استفاده کنید.</string>
+    <string name="plan_dialog_help">برای تسویه بدهی فعلی این طرف‌حساب توافقی تنظیم کنید. این چیزی به مانده‌اش اضافه نمی‌کند — فقط ثبت می‌کند چه مبلغی و چه زمانی قرار است بپردازد.</string>
+    <string name="plan_total_hint">کل مبلغ تسویه (Rs)</string>
+    <string name="plan_installment_hint">هر قسط (Rs) — اختیاری</string>
+    <string name="plan_pick_next_due">پرداخت بعدی (اختیاری)</string>
+    <string name="plan_owes_now">اکنون %1$s بدهکار است</string>
+    <string name="plan_owes_nothing">این طرف‌حساب اکنون بدهی ندارد</string>
+
+    <string name="plan_paid">%1$s از %2$s پرداخت شد</string>
+    <string name="plan_remaining">%1$s مانده</string>
+    <string name="plan_open">باز</string>
+    <string name="plan_closed">کامل</string>
+    <string name="plan_next_due">بعدی: %1$s</string>
+    <string name="plan_next_due_none">تاریخی تعیین نشده</string>
+    <string name="plan_overdue">عقب‌افتاده از %1$s</string>
+
+    <string name="plan_actions">برنامه پرداخت</string>
+    <string name="record_payment">ثبت یک پرداخت</string>
+    <string name="close_plan">علامت «کامل»</string>
+    <string name="delete_plan">حذف برنامه</string>
+    <string name="record_payment_title">ثبت یک پرداخت</string>
+    <string name="record_payment_help">این یک ثبت در دفتر %1$s می‌نشاند و بدهی‌اش را کم می‌کند. دوبار حساب نمی‌شود.</string>
+    <string name="payment_recorded">پرداخت ثبت شد و در دفتر نشست</string>
+    <string name="plan_closed_msg">برنامه «کامل» علامت خورد</string>
+    <string name="plan_overpay_warning">این پرداخت از باقیمانده برنامه (%1$s) بیشتر است. با این حال به‌طور کامل در دفتر ثبت می‌شود — پیش از ذخیره، مبلغ را بررسی کنید.</string>
+    <string name="plan_note_prefix">پرداخت قسط</string>
+    <string name="plan_deleted">برنامه حذف شد. پرداخت‌های ثبت‌شده در دفتر می‌مانند — آن پول واقعاً دریافت شده است.</string>
+    <string name="delete_plan_confirm">برنامه حذف می‌شود، اما پرداخت‌های ثبت‌شده در دفتر می‌مانند. آن پول واقعاً دریافت شده و حذف توافق آن را برنمی‌گرداند.</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_khata">دفتر</string>
+    <string name="nav_cashbook">صندوق</string>
+    <string name="nav_cheques">چک‌ها</string>
+    <string name="nav_plans">برنامه‌ها</string>
+    <string name="nav_more">بیشتر</string>
+
+    <!-- More sheet -->
+    <string name="more_title">بیشتر</string>
+    <string name="more_reports">گزارش‌ها و زکات</string>
+    <string name="more_settings">تنظیمات</string>
+    <string name="more_data">داده‌های شما</string>
+
+    <string name="more_options">بیشتر</string>
+
+    <!-- Supplier bills -->
+    <string name="supplier_bills">فاکتورهای تأمین‌کننده</string>
+    <string name="bills_subtitle">کالایی که خریده‌اید</string>
+    <string name="bill_ledger_note">بدهی شما به تأمین‌کننده مثل بقیه چیزها در دفترتان است. فاکتور فقط کاغذبازی را رویش می‌افزاید: شماره فاکتور، شماره بچ، تاریخ انقضا.</string>
+    <string name="add_bill">افزودن فاکتور</string>
+    <string name="no_bills">هنوز فاکتوری ثبت نشده است.\n\nخریدهای خود را ثبت کنید — با شماره بچ و تاریخ انقضا. همین‌هاست که بازرس می‌پرسد و همین است که جلوی فاسد شدن کالا روی قفسه را می‌گیرد.</string>
+
+    <string name="bill_number_hint">شماره فاکتور (از برگه خودشان)</string>
+    <string name="bill_total_hint">جمع فاکتور (Rs)</string>
+    <string name="bill_supplier_hint">نام تأمین‌کننده</string>
+    <string name="bill_date">تاریخ فاکتور</string>
+    <string name="bill_due_date">سررسید پرداخت (اختیاری)</string>
+    <string name="bill_paid_cash">هنگام تحویل نقد پرداخت شد</string>
+    <string name="bill_paid_cash_help">فقط اگر تمام مبلغ را پرداخته‌اید علامت بزنید. وگرنه مبلغ به حسابش در دفتر شما می‌رود، یعنی بدهی شما به او.</string>
+    <string name="bill_credit_note">این کار %1$s به بدهی شما به %2$s می‌افزاید، به‌صورت یک ثبت در دفترتان.</string>
+
+    <string name="bill_items_title">در محموله چه بود</string>
+    <string name="add_item">افزودن قلم</string>
+    <string name="product_name_hint">نام محصول</string>
+    <string name="batch_number_hint">شماره بچ</string>
+    <string name="batch_why">شماره بچ روی ظرف را بنویسید. اگر روزی نمونه‌ای زیر سؤال رفت یا اداره کشاورزی پرسید، همین رکورد نشان می‌دهد کالا دقیقاً از کجا آمده. بعداً نمی‌شود آن را بازسازی کرد.</string>
+    <string name="expiry_date">تاریخ انقضا</string>
+    <string name="expiry_why">روشن خاتا ۶۰ روز پیش از انقضا هشدار می‌دهد — به‌قدری زود که بتوانید بفروشید، تخفیف بدهید یا تا وقتی تأمین‌کننده هنوز پس می‌گیرد، برگردانید.</string>
+    <string name="pick_expiry">انتخاب تاریخ انقضا</string>
+    <string name="pick_bill_date">انتخاب تاریخ فاکتور</string>
+    <string name="rate_hint">قیمت هر واحد (Rs)</string>
+    <string name="qty_hint">مقدار</string>
+    <string name="item_added">قلم اضافه شد</string>
+    <string name="no_items_yet">هنوز قلمی اضافه نشده</string>
+    <string name="items_count">%1$d قلم</string>
+
+    <string name="bill_saved">فاکتور ذخیره شد</string>
+    <string name="bill_saved_credit">فاکتور ذخیره و در دفتر شما ثبت شد</string>
+    <string name="enter_supplier">لطفاً تأمین‌کننده‌ای انتخاب کنید</string>
+    <string name="enter_product">لطفاً نام محصولی وارد کنید</string>
+    <string name="bill_deleted">فاکتور حذف شد. ثبت دفتر می‌ماند — کالا واقعاً رسیده و شما واقعاً بدهکار آن هستید.</string>
+    <string name="delete_bill">حذف فاکتور</string>
+    <string name="delete_bill_confirm">فاکتور و سوابق بچ آن حذف می‌شود، اما ثبت دفتر می‌ماند. کالا واقعاً رسیده و پول واقعاً بدهکاری است — حذف کاغذها آن را برنمی‌گرداند.</string>
+    <string name="bill_actions">فاکتور</string>
+    <string name="view_items">دیدن اقلام و بچ‌ها</string>
+
+    <!-- Expiry alerts -->
+    <string name="expiring_stock">کالای رو به انقضا</string>
+    <string name="expiring_subtitle">بفروشید، تخفیف بدهید یا برگردانید — تا هنوز می‌شود</string>
+    <string name="no_expiring">در ۶۰ روز آینده چیزی منقضی نمی‌شود.\n\nفقط کالایی که تاریخ انقضایش ثبت شده قابل پایش است. اگر آن خانه را در فاکتور خالی بگذارید، روشن خاتا نمی‌تواند درباره‌اش هشدار دهد.</string>
+    <string name="expiring_note">فقط کالایی که تاریخ انقضایش ثبت شده اینجا می‌آید. روشن خاتا فقط درباره چیزی هشدار می‌دهد که به او گفته شده.</string>
+    <string name="expired_days">%1$d روز پیش منقضی شده</string>
+    <string name="expires_days">%1$d روز تا انقضا</string>
+    <string name="expires_today">امروز منقضی می‌شود</string>
+    <string name="batch_label">بچ: %1$s</string>
+    <string name="batch_none">شماره بچی ثبت نشده</string>
+    <string name="from_supplier">از %1$s</string>
+    <string name="from_supplier_bill">از %1$s — فاکتور %2$s</string>
+    <string name="expiring_badge">%1$d رو به انقضا</string>
+
+    <!-- Batch trace -->
+    <string name="trace_batch">ردیابی بچ</string>
+    <string name="trace_batch_hint">شماره بچ را وارد کنید</string>
+    <string name="trace_batch_help">اگر نمونه‌ای زیر سؤال رفت یا بازرس پرسید، شماره بچ را اینجا جستجو کنید تا ببینید از کدام تأمین‌کننده، روی کدام فاکتور و چه زمانی آمده.</string>
+    <string name="trace_no_results">کالایی با این شماره بچ یافت نشد.</string>
+    <string name="trace_results">%1$d رکورد یافت شد</string>
+
+    <string name="search_action">جستجو</string>
+
+    <string name="pick_bill_due_date">انتخاب سررسید پرداخت</string>
+
+    <!-- Backup: saved location + restore sources -->
+    <string name="backup_done_title">پشتیبان ذخیره شد</string>
+    <string name="backup_done_saved">ذخیره شد در:\n\n%1$s\n\nآن را در پوشه Downloads گوشی و در هر مدیر فایلی خواهید یافت. روشن خاتا نسخه‌ای هم نزد خودش نگه می‌دارد تا بدون گشتن دنبال فایل، بازگردانی کنید.</string>
+    <string name="backup_done_internal">داخل روشن خاتا ذخیره شد. هر وقت خواستید از همین صفحه بازگردانی کنید.</string>
+    <string name="share_copy">ارسال یک نسخه</string>
+    <string name="restore_from_app">بازگردانی از پشتیبان ذخیره‌شده</string>
+    <string name="restore_from_storage">انتخاب فایل از حافظه</string>
+    <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
+
+    <!-- Printable business report -->
+    <string name="report_section_title">گزارش چاپی</string>
+    <string name="report_not_backup">یک PDF از کل کسب‌وکار شما \u2014 مانده‌ها، چک‌ها، برنامه‌ها، کالای رو به انقضا. برای خواندن، چاپ یا نشان دادن به کسی.\n\nاین پشتیبان نیست. روشن خاتا نمی‌تواند سوابق شما را از PDF بازگرداند.</string>
+    <string name="make_report">ساخت گزارش PDF</string>
+    <string name="making_report">در حال ساخت گزارش\u2026</string>
+    <string name="report_failed">گزارش ساخته نشد.</string>
+    <string name="share_report_pdf">اشتراک گزارش</string>
+
+    <!-- Report a problem -->
+    <string name="report_problem">گزارش مشکل</string>
+    <string name="report_problem_sub">بگویید چه اشتباهی رخ داد</string>
+    <string name="report_privacy">نام، شماره و مانده مشتریان شما هرگز ارسال نمی‌شود. فقط نسخه برنامه و مدل گوشی همراه گزارش می‌رود \u2014 همین برای یافتن عیب کمک می‌کند.\n\nایمیل در برنامه ایمیل خودتان باز می‌شود، پس پیش از ارسال دقیقاً می‌بینید چه چیزی می‌رود.</string>
+
+    <string name="report_what_kind">چه نوع مشکلی؟</string>
+    <string name="report_kind_wrong_number">مانده یا مبلغی اشتباه به نظر رسید</string>
+    <string name="report_kind_crash">برنامه خودش بسته شد</string>
+    <string name="report_kind_lost">چیزی که ذخیره کرده بودم گم شد</string>
+    <string name="report_kind_confusing">صفحه‌ای را نفهمیدم</string>
+    <string name="report_kind_suggestion">پیشنهاد است، نه عیب</string>
+    <string name="report_kind_other">چیز دیگری</string>
+
+    <string name="report_describe">چه اتفاقی افتاد؟</string>
+    <string name="report_describe_help">به فارسی یا انگلیسی بنویسید \u2014 هرکدام آسان‌تر است. وقتی مشکل پیش آمد مشغول چه کاری بودید؟</string>
+    <string name="report_hint">مثلاً چکی به مبلغ ۵٬۰۰۰ روپیه اضافه کردم و مانده همان لحظه تغییر کرد، پیش از آنکه وصولش کنم.</string>
+    <string name="report_send">ارسال گزارش</string>
+    <string name="report_email_note">این کار برنامه ایمیل شما را باز می‌کند. اگر ایمیلی تنظیم نیست، از هر گوشی به innovation313.support@gmail.com بنویسید.</string>
+    <string name="report_no_email">برنامه ایمیلی یافت نشد. لطفاً به innovation313.support@gmail.com بنویسید</string>
+    <string name="report_empty">لطفاً اول بنویسید چه اتفاقی افتاد.</string>
+    <string name="report_subject">روشن خاتا \u2014 %1$s</string>
+
+    <string name="hide_balance">پنهان کردن مانده</string>
+    <string name="show_balance">نمایش مانده</string>
+
+    <string name="powered_by">Powered by Innovation-313</string>
+    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="tap_to_start">برای ادامه هر جا را لمس کنید</string>
+
+    <!-- Splash / branding -->
+    <string name="tap_to_continue">برای ادامه لمس کنید</string>
+    <string name="brand_har_hisaab">هر حساب روشن</string>
+
+    <string name="unlock_to_open">برای باز کردن لمس کنید</string>
+
+    <string name="restore_done_with_bin">داده‌های شما برگشت.\n\n%1$d مشتری در این پشتیبان، پیش از تهیه آن حذف شده بودند، پس به سطل بازیافت بازگردانده شدند \u2014 نه فهرست اصلی. «بیشتر \u2190 سطل بازیافت» را باز کنید؛ آنجا می‌توانید هرکدام را کامل بازگردانید.</string>
+
+    <!-- Google Drive backup -->
+    <string name="drive_section">پشتیبان‌گیری خودکار ابری</string>
+    <string name="file_section">پشتیبان‌گیری در فایل</string>
+    <string name="drive_not_connected">حساب Google خود را وصل کنید تا دفترتان خودکار در Google Drive خودتان پشتیبان‌گیری شود. گوشی را عوض کنید، دوباره وارد شوید، همه‌چیز برمی‌گردد. داده‌ها در Drive خودتان می‌ماند؛ هرگز نزد ما نمی‌آید.</string>
+    <string name="drive_connected">متصل به‌عنوان %1$s. آخرین پشتیبان ابری: %2$s</string>
+    <string name="drive_connected_never">متصل به‌عنوان %1$s. هنوز پشتیبان ابری نیست \u2014 روی «اکنون در Drive پشتیبان بگیر» بزنید.</string>
+    <string name="drive_connect">اتصال Google Drive</string>
+    <string name="drive_backup_now">اکنون در Drive پشتیبان بگیر</string>
+    <string name="drive_restore">بازگردانی از Drive</string>
+    <string name="drive_sign_out">قطع اتصال حساب Google</string>
+    <string name="drive_backing_up">در حال پشتیبان‌گیری در Drive\u2026</string>
+    <string name="drive_backup_done">در Google Drive شما پشتیبان‌گیری شد.</string>
+    <string name="drive_backup_failed">پشتیبان‌گیری ابری ناموفق بود. پشتیبان قبلی، اگر باشد، دست‌نخورده است. اینترنت را بررسی و دوباره تلاش کنید.</string>
+    <string name="drive_restoring">در حال بازگردانی از Drive\u2026</string>
+    <string name="drive_no_backup">هنوز پشتیبانی در Google Drive شما یافت نشد.</string>
+    <string name="drive_restore_failed">بازگردانی از Drive انجام نشد. اینترنت را بررسی و دوباره تلاش کنید.</string>
+    <string name="drive_signin_failed">ورود به Google کامل نشد. دوباره تلاش کنید.</string>
+    <string name="drive_permission_needed">روشن خاتا برای ذخیره در پوشه خودش در Drive شما اجازه می‌خواهد. هنگام پرسش، اجازه دهید.</string>
+    <string name="drive_restore_confirm">همه محتوای فعلی برنامه با پشتیبان Google Drive شما جایگزین می‌شود. ادامه؟</string>
+    <string name="i_have_to_get">باید بگیرم</string>
+    <string name="i_have_to_give">باید بدهم</string>
+    <string name="insights_title">تحلیل فروش</string>
+    <string name="insights_subtitle">در مغازه شما چه می‌گذرد</string>
+    <string name="insights_total_sale">کل فروش \u00b7 این ماه</string>
+    <string name="insights_top_products">پرفروش‌ترین محصولات</string>
+    <string name="insights_top_customers">بهترین مشتریان</string>
+    <string name="insights_up">\u25b2 %1$d%% بیشتر از ماه گذشته (%2$s)</string>
+    <string name="insights_down">\u25bc %1$d%% کمتر از ماه گذشته (%2$s)</string>
+    <string name="insights_no_compare">نخستین ماه فروش \u2014 هنوز چیزی برای مقایسه نیست.</string>
+    <string name="insights_no_products">این ماه محصولی ثبت نشده. هنگام ثبت، نام محصول را بنویسید تا این را ببینید.</string>
+    <string name="insights_no_sales">این ماه هنوز فروشی ثبت نشده.</string>
+    <string name="insights_privacy_note">همه‌چیز روی گوشی شما محاسبه می‌شود. چیزی از دستگاه خارج نمی‌شود.</string>
+    <string name="nisab_silver">نقره</string>
+    <string name="nisab_gold">طلا</string>
+    <string name="gold_price_hint">قیمت هر گرم طلا (Rs)</string>
+    <string name="nisab_silver_note">نصاب نقره: ۶۱۲٫۳۶ گرم (۵۲٫۵ توله) نقره. این آستانه پایین‌تر است، پس زکات بر افراد بیشتری واجب می‌شود \u2014 دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود.</string>
+    <string name="nisab_gold_note">نصاب طلا: ۸۷٫۴۸ گرم (۷٫۵ توله) طلا. این آستانه بالاتر است، پس زکات بر افراد کمتری واجب می‌شود. اینکه کدام معیار بر شما صدق می‌کند را از عالم بپرسید.</string>
+    <string name="last_transacted">آخرین معامله %1$s</string>
+    <string name="summary_with_overdue">%1$s \u00b7 %2$d نیازمند یادآوری</string>
+    <plurals name="customer_count">
+        <item quantity="one">%d مشتری</item>
+        <item quantity="other">%d مشتری</item>
+    </plurals>
+    <string name="call">تماس</string>
+    <string name="no_dialer">برنامه شماره‌گیری یافت نشد</string>
+    <string name="backup_reminder_hint">موعد پشتیبان‌گیری</string>
+    <string name="select_all">انتخاب همه</string>
+    <string name="clear_all">پاک کردن همه</string>
+    <string name="insights_today">امروز</string>
+    <string name="insights_today_received">دریافتی</string>
+    <string name="insights_today_given">پرداختی</string>
+    <plurals name="entries_today">
+        <item quantity="one">%d ثبت امروز</item>
+        <item quantity="other">%d ثبت امروز</item>
+    </plurals>
+    <string name="copy_balance_owed">%1$s: %2$s باقی است (طلب شما)</string>
+    <string name="copy_balance_i_owe">%1$s: %2$s (بدهی شما)</string>
+    <string name="copy_balance_settled">%1$s: تسویه (Rs 0)</string>
+    <string name="copied">کپی شد</string>
+    <string name="receipt_title">رسید</string>
+    <string name="payment_receipt">رسید پرداخت</string>
+    <string name="you_gave">شما دادید</string>
+    <string name="you_got">شما گرفتید</string>
+    <string name="details">جزئیات</string>
+    <string name="party">طرف‌حساب</string>
+    <string name="receipt_no">شماره رسید</string>
+    <string name="date_label">تاریخ</string>
+    <string name="note_label">یادداشت</string>
+    <string name="goods_label">کالا</string>
+    <string name="balance_label">مانده پس از آن</string>
+    <string name="edit">ویرایش</string>
+    <string name="share">اشتراک</string>
+    <string name="back">بازگشت</string>
+    <string name="entry_not_found">ثبت یافت نشد</string>
+    <string name="delete_entry_message">این ثبت از دفتر حذف می‌شود.</string>
+    <string name="entry_deleted">ثبت حذف شد</string>
+    <string name="share_failed">تصویر رسید ساخته نشد</string>
+    <string name="invalid_amount">مبلغ معتبری وارد کنید</string>
+    <string name="saved">ذخیره شد</string>
+    <string name="select_language">زبان خود را انتخاب کنید</string>
+    <string name="language_change_note">هر وقت خواستید از «بیشتر» زبان را عوض کنید.</string>
+    <string name="language">زبان</string>
+</resources>
