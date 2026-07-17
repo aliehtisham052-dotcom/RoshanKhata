@@ -2,6 +2,8 @@ package com.innovation313.roshankhata
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -45,7 +47,13 @@ class LanguageActivity : AppCompatActivity() {
         )
 
         for ((id, tag) in choices) {
-            findViewById<Button>(id).setOnClickListener { choose(tag) }
+            val btn = findViewById<Button>(id)
+            btn.setOnClickListener { choose(tag) }
+            // MaterialButton paints itself with colorPrimary (ink) and ignores
+            // backgroundTint from styles; the app: attribute failed resource
+            // linking. Setting the tint list in code is honored unconditionally.
+            btn.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+            btn.setTextColor(0xFF1A1A18.toInt())
         }
     }
 
