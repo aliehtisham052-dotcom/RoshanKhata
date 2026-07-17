@@ -40,14 +40,8 @@ class LanguageActivity : AppCompatActivity() {
             R.id.langRomanUrdu to "ur-Latn",
             R.id.langUrdu to "ur",
             R.id.langSindhi to "sd",
-            R.id.langPashto to "ps",
             R.id.langPersian to "fa",
-            R.id.langArabic to "ar",
-            R.id.langBengali to "bn",
-            R.id.langHindi to "hi",
-            R.id.langFrench to "fr",
-            R.id.langTurkish to "tr",
-            R.id.langMalay to "ms"
+            R.id.langArabic to "ar"
         )
 
         for ((id, tag) in choices) {
