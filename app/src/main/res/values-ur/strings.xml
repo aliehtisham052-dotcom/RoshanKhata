@@ -1,0 +1,544 @@
+<resources>
+    <string name="app_name">روشن کھاتہ</string>
+    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="brand_line">Innovation-313</string>
+
+    <string name="net_balance">کل بیلنس</string>
+    <string name="add_party">پارٹی شامل کریں</string>
+    <string name="no_parties_yet">ابھی کوئی گاہک نہیں۔\n\nپہلا گاہک شامل کرنے اور اپنا کھاتہ شروع کرنے کے لیے نیچے ”پارٹی شامل کریں“ دبائیں۔</string>
+    <string name="no_entries_yet">ابھی کوئی اندراج نہیں۔</string>
+
+    <string name="i_gave">میں نے دیا</string>
+    <string name="i_got">میں نے لیا</string>
+
+    <string name="you_will_get">آپ کو ملیں گے</string>
+    <string name="you_will_give">آپ کو دینے ہیں</string>
+    <string name="settled">حساب برابر</string>
+
+    <string name="name">نام</string>
+    <string name="phone_optional">فون (اختیاری)</string>
+    <string name="amount">رقم</string>
+    <string name="note_optional">نوٹ (اختیاری)</string>
+    <string name="save">محفوظ کریں</string>
+    <string name="cancel">منسوخ</string>
+    <string name="customer">گاہک</string>
+    <string name="supplier">سپلائر</string>
+    <string name="enter_name">براہِ کرم نام لکھیں</string>
+    <string name="enter_valid_amount">براہِ کرم درست رقم لکھیں</string>
+
+    <string name="recycle_bin">ری سائیکل بن</string>
+    <string name="bin_retention_note">حذف شدہ چیزیں 30 دن رکھی جاتی ہیں، پھر ہمیشہ کے لیے مٹا دی جاتی ہیں۔</string>
+    <string name="bin_empty">بن خالی ہے۔</string>
+    <string name="bin_party_note">پارٹی (اس کے اندراجات اسی کے ساتھ محفوظ ہیں)</string>
+    <string name="restore">واپس لائیں</string>
+    <string name="restored">واپس آ گیا</string>
+    <string name="deleted_on">حذف ہوا: %1$s</string>
+    <string name="restore_party_confirm">\"%1$s\" کو واپس لائیں؟ اس کے کھاتے کے اندراجات بھی واپس آ جائیں گے۔</string>
+    <string name="restore_entry_confirm">یہ اندراج واپس لائیں؟ یہ پارٹی کے کھاتے میں دوبارہ آئے گا اور بیلنس پر اثر ڈالے گا۔</string>
+    <string name="empty_bin">بن خالی کریں</string>
+    <string name="empty_bin_confirm">بن کی ہر چیز ہمیشہ کے لیے حذف ہو جائے گی۔ یہ واپس نہیں ہو سکتا۔</string>
+    <string name="delete_forever">ہمیشہ کے لیے حذف کریں</string>
+    <string name="bin_emptied">بن خالی کر دیا گیا</string>
+
+    <string name="delete">حذف کریں</string>
+    <string name="delete_party_title">پارٹی حذف کریں؟</string>
+    <string name="delete_party_confirm">\"%1$s\" اور اس کے اندراجات ری سائیکل بن میں چلے جائیں گے۔ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
+    <string name="delete_entry_title">اندراج حذف کریں؟</string>
+    <string name="delete_entry_confirm">یہ اندراج ری سائیکل بن میں چلا جائے گا۔ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
+    <string name="moved_to_bin">ری سائیکل بن میں منتقل ہو گیا</string>
+    <string name="long_press_to_delete">پارٹی حذف کرنے کے لیے اسے دیر تک دبائیں</string>
+
+    <string name="zakat_calculator">زکوٰۃ کیلکولیٹر</string>
+    <string name="zakat_subtitle">صرف رہنمائی کے لیے — فتویٰ نہیں</string>
+    <string name="zakat_disclaimer">یہ سہولت صرف رہنمائی کے لیے ہے۔ زکوٰۃ کی فقہی تفصیل اہم ہے — نصاب کا معیار، مشکوک قرضوں کا حکم، قمری سال، اور کون سی ادائیگیاں منہا ہوں گی، ان سب میں علماء کی آراء مختلف ہیں۔ روشن کھاتہ مفتی نہیں ہے۔ حتمی حکم کسی مستند عالم سے ضرور لیں۔</string>
+
+    <string name="nisab_section">نصاب</string>
+    <string name="nisab_help">یہاں نصاب چاندی کے معیار (612.36 گرام) پر رکھا گیا ہے — یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔ آج کی چاندی کی فی گرام قیمت لکھیں۔</string>
+    <string name="silver_price_hint">چاندی کی قیمت فی گرام (روپے)</string>
+    <string name="nisab_value">نصاب = %1$s</string>
+    <string name="nisab_enter_price">نصاب معلوم کرنے کے لیے چاندی کی قیمت لکھیں</string>
+    <string name="nisab_needed_first">پہلے چاندی کی قیمت لکھیں</string>
+    <string name="above_nisab">آپ کا مال نصاب کو پہنچ گیا ہے — زکوٰۃ واجب ہے (بشرطیکہ قمری سال مکمل ہو)۔</string>
+    <string name="below_nisab">آپ کا مال نصاب سے کم ہے — اس رقم پر زکوٰۃ واجب نہیں۔</string>
+
+    <string name="cash_stock_section">نقدی اور مال</string>
+    <string name="cash_stock_help">ہاتھ میں نقدی، بینک بیلنس، اور تجارتی مال کی قیمت۔ روشن کھاتہ انہیں نہیں دیکھ سکتا، اس لیے خود لکھیں۔</string>
+    <string name="cash_stock_hint">نقدی + مال کی قیمت (روپے)</string>
+
+    <string name="from_your_ledger">آپ کے کھاتے سے</string>
+    <string name="certain_receivables">وصولی جن کی امید ہے: %1$s</string>
+    <string name="qarze_hasna_given">قرضِ حسنہ دیا ہوا: %1$s</string>
+    <string name="doubtful_receivables">مشکوک وصولیاں: %1$s (شامل نہیں)</string>
+    <string name="you_owe_others">جو آپ نے دوسروں کو دینا ہے: %1$s (منہا)</string>
+    <string name="include_doubtful">مشکوک وصولیاں بھی شمار کریں</string>
+    <string name="include_doubtful_help">بہت سے علماء کے نزدیک مشکوک قرض کی زکوٰۃ وصول ہونے پر واجب ہوتی ہے۔ یہ صرف اس وقت لگائیں جب آپ زیادہ احتیاط چاہیں۔</string>
+
+    <string name="zakatable_wealth">قابلِ زکوٰۃ مال</string>
+    <string name="zakat_due_label">واجب زکوٰۃ (2.5%)</string>
+    <string name="zakat_footer_note">زکوٰۃ کے لیے مال پر پورا قمری سال (حول) گزرنا بھی شرط ہے۔ روشن کھاتہ اس کا حساب نہیں رکھتا — اس کا خیال خود رکھیں، اور حکم کسی عالم سے تصدیق کریں۔</string>
+
+    <string name="qarze_hasna">قرضِ حسنہ (بلا سود قرض)</string>
+    <string name="qarze_hasna_help">تجارت سے الگ نشان زد۔ اس پر کبھی سود یا تاخیری فیس نہیں لگتی۔</string>
+    <string name="recovery_certain">وصولی کی امید ہے</string>
+    <string name="recovery_doubtful">مشکوک</string>
+    <string name="recovery_label">وصولی کا امکان</string>
+
+    <string name="remind_whatsapp">واٹس ایپ</string>
+    <string name="remind_sms">ایس ایم ایس</string>
+    <string name="reminder_preview_help">بھیجنے سے پہلے پڑھ لیں۔ یہاں کچھ بھی بدل سکتے ہیں — روشن کھاتہ اسے واٹس ایپ یا ایس ایم ایس ایپ کو دے گا، اور بھیجنے کا بٹن آپ خود دبائیں گے۔</string>
+    <string name="reminder_they_owe">السلام علیکم %1$s،\n\nآپ کے ذمے %2$s باقی ہے۔ مہربانی فرما کر جب ممکن ہو ادا کر دیں۔ اگر آپ ادا کر چکے ہیں تو اس پیغام کو نظر انداز کریں اور ہمیں بتا دیں۔\n\nجزاک اللہ۔\n\n\u2014\nروشن کھاتہ کے ذریعے بھیجا گیا</string>
+    <string name="reminder_i_owe">السلام علیکم %1$s،\n\nہمارے ذمے آپ کا %2$s باقی ہے۔ ان شاء اللہ جلد ادا کر دیں گے۔ اگر آپ کا حساب ہم سے مختلف ہو تو بتا دیں۔\n\nجزاک اللہ۔\n\n\u2014\nروشن کھاتہ کے ذریعے بھیجا گیا</string>
+    <string name="send_reminder">یاد دہانی بھیجیں</string>
+    <string name="open_whatsapp">واٹس ایپ کھولیں</string>
+    <string name="open_sms">ایس ایم ایس کھولیں</string>
+    <string name="no_phone_number">اس پارٹی کا فون نمبر محفوظ نہیں۔ پہلے نمبر شامل کریں۔</string>
+    <string name="whatsapp_not_installed">اس فون پر واٹس ایپ موجود نہیں۔</string>
+    <string name="no_sms_app">اس فون پر کوئی ایس ایم ایس ایپ نہیں ملی۔</string>
+    <string name="nothing_outstanding">کچھ باقی نہیں — حساب برابر ہے۔</string>
+
+    <string name="goods_section">مال (اختیاری)</string>
+    <string name="goods_help">اگر اس اندراج کے ساتھ مال بھی گیا — 5 بوری یوریا، 2 لیٹر زہر — تو یہاں لکھیں۔ سادہ نقد اندراج کے لیے خالی چھوڑ دیں۔</string>
+    <string name="item_name_hint">چیز (مثلاً یوریا، زہر، ونڈا)</string>
+    <string name="quantity_hint">مقدار</string>
+    <string name="unit_hint">اکائی (بوری، لیٹر، کلو…)</string>
+
+    <string name="import_contacts">رابطوں سے شامل کریں</string>
+    <string name="import_selected">منتخب شامل کریں</string>
+    <string name="search_contacts">نام یا نمبر سے تلاش کریں</string>
+    <string name="selected_count">%1$d منتخب</string>
+    <string name="imported_count">%1$d رابطے شامل ہو گئے</string>
+    <string name="already_added">شامل ہے</string>
+    <string name="loading_contacts">رابطے لوڈ ہو رہے ہیں\u2026</string>
+    <string name="no_contacts_found">اس فون پر کوئی رابطہ نہیں ملا۔</string>
+    <string name="no_matching_contacts">آپ کی تلاش سے کوئی رابطہ نہیں ملتا۔</string>
+    <string name="continue_action">جاری رکھیں</string>
+    <string name="contacts_permission_title">آپ کے رابطوں تک رسائی؟</string>
+    <string name="contacts_permission_rationale">روشن کھاتہ آپ کی رابطہ فہرست صرف یہاں دکھانے کے لیے پڑھے گا، تاکہ آپ چن سکیں کسے شامل کرنا ہے۔ کچھ بھی اپ لوڈ نہیں ہوتا، اور صرف وہی رابطے محفوظ ہوتے ہیں جو آپ خود چنیں — صرف ان کا نام اور نمبر۔\n\nاگر آپ نہ چاہیں تو ہر پارٹی ہاتھ سے بھی شامل کر سکتے ہیں۔</string>
+    <string name="contacts_permission_denied">اجازت نہیں ملی، اس لیے رابطے نہیں دکھائے جا سکتے۔ آپ ہوم اسکرین سے پارٹیاں ہاتھ سے شامل کر سکتے ہیں۔</string>
+    <string name="add_manually">ہاتھ سے شامل کریں</string>
+
+    <string name="statement_pdf">اسٹیٹمنٹ</string>
+    <string name="generating_statement">اسٹیٹمنٹ تیار ہو رہی ہے\u2026</string>
+    <string name="share_statement">اسٹیٹمنٹ شیئر کریں</string>
+    <string name="statement_failed">اسٹیٹمنٹ نہیں بن سکی۔ دوبارہ کوشش کریں۔</string>
+    <string name="no_entries_to_export">ابھی اسٹیٹمنٹ میں ڈالنے کے لیے کوئی اندراج نہیں۔</string>
+
+    <string name="app_lock">ایپ لاک</string>
+    <string name="lock_title">روشن کھاتہ کھولیں</string>
+    <string name="lock_subtitle">آپ کا کھاتہ نجی ہے۔ تصدیق کریں کہ یہ آپ ہیں۔</string>
+    <string name="app_lock_enabled">ایپ لاک آن ہے۔ ہر بار ایپ کھولنے پر تصدیق مانگی جائے گی۔</string>
+    <string name="app_lock_disabled">ایپ لاک آف ہے۔</string>
+    <string name="app_lock_turn_on">ایپ لاک آن کریں</string>
+    <string name="app_lock_turn_off">ایپ لاک آف کریں</string>
+    <string name="app_lock_explain">آپ کے فنگر پرنٹ، چہرے، یا فون کے موجودہ اسکرین لاک سے کام لیتا ہے۔ روشن کھاتہ اپنا کوئی PIN محفوظ نہیں کرتا — اینڈرائیڈ اسے ہم سے زیادہ محفوظ رکھتا ہے۔</string>
+    <string name="app_lock_no_screen_lock">اس فون پر کوئی اسکرین لاک نہیں۔ پہلے فون کی ترتیبات میں فنگر پرنٹ، PIN یا پیٹرن لگائیں، پھر ایپ لاک آپ کے کھاتے کی حفاظت کر سکے گا۔</string>
+    <string name="app_lock_unavailable">اس فون پر ایپ لاک دستیاب نہیں۔</string>
+    <string name="ok">ٹھیک ہے</string>
+
+    <string name="business_settings">کاروباری ترتیبات</string>
+    <string name="business_settings_subtitle">اسٹیٹمنٹ پر آپ کا نام اور پیمنٹ کوڈ</string>
+    <string name="business_name">کاروبار کا نام</string>
+    <string name="business_name_help">ہر اسٹیٹمنٹ کے اوپر اور ہر یاد دہانی کے آخر میں آتا ہے۔</string>
+    <string name="business_name_hint">مثلاً بھٹی ٹریڈرز</string>
+
+    <string name="payment_qr">پیمنٹ QR کوڈ</string>
+    <string name="payment_qr_help">آپ کے ایزی پیسہ یا جاز کیش QR کوڈ کا اسکرین شاٹ یا تصویر۔ یہ اسٹیٹمنٹ کے ساتھ لگے گا تاکہ گاہک اسکین کر کے آپ کو ادائیگی کر سکے۔</string>
+    <string name="payment_qr_caveat">محفوظ کرنے سے پہلے کوڈ غور سے دیکھ لیں۔ روشن کھاتہ یہ تصدیق نہیں کر سکتا کہ QR کس کے اکاؤنٹ کا ہے — اگر غلط تصویر محفوظ ہوئی تو گاہک کی ادائیگی غلط اکاؤنٹ میں جائے گی۔\n\nیہ بھی جان لیں: ذاتی ایزی پیسہ/جاز کیش QR میں رقم شامل نہیں ہوتی۔ گاہک رقم خود لکھے گا، اس لیے رقم ساتھ صاف لکھی جاتی ہے۔</string>
+    <string name="no_qr_yet">ابھی کوئی پیمنٹ QR محفوظ نہیں۔</string>
+    <string name="choose_qr_image">تصویر چنیں</string>
+    <string name="remove_qr">ہٹائیں</string>
+    <string name="qr_saved">پیمنٹ QR محفوظ ہو گیا</string>
+    <string name="qr_save_failed">یہ تصویر محفوظ نہیں ہو سکی۔ دوسری چنیں۔</string>
+    <string name="qr_removed">پیمنٹ QR ہٹا دیا گیا</string>
+    <string name="qr_confirm_title">کیا یہ درست کوڈ ہے؟</string>
+    <string name="qr_confirm_message">اوپر کوڈ دیکھیں اور تصدیق کریں کہ یہ آپ ہی کا ایزی پیسہ یا جاز کیش اکاؤنٹ ہے۔ اگر نہیں، تو آپ کے گاہکوں کی ادائیگیاں کسی اور کو پہنچیں گی۔</string>
+    <string name="qr_confirm_yes">جی، یہ میرا ہے</string>
+    <string name="profile_saved">محفوظ ہو گیا</string>
+    <string name="attach_qr_to_reminder">پیمنٹ QR ساتھ لگائیں</string>
+
+    <string name="cheques">چیک</string>
+    <string name="add_cheque">چیک شامل کریں</string>
+    <string name="no_cheques">ابھی کوئی چیک نہیں۔\n\nبعد کی تاریخ کے چیک یہاں کھاتے سے الگ رکھے جاتے ہیں — چیک اس وقت تک رقم نہیں جب تک کیش نہ ہو جائے۔</string>
+    <string name="cheque_not_money_yet">چیک کیش ہونے تک رقم نہیں، اس لیے یہ ابھی بیلنس کو نہیں چھوئے گا۔ جب آپ اسے کلیئر نشان زد کریں گے، تب ادائیگی کھاتے میں درج ہو گی۔</string>
+    <string name="cheque_party_hint">گاہک یا سپلائر کا نام</string>
+    <string name="cheque_received">ان سے ملا</string>
+    <string name="cheque_issued">ان کو دیا</string>
+    <string name="pick_due_date">چیک پر لکھی تاریخ چنیں</string>
+    <string name="due_date_set">تاریخ: %1$s</string>
+    <string name="cheque_number_hint">چیک نمبر (اختیاری)</string>
+    <string name="bank_name_hint">بینک (اختیاری)</string>
+
+    <string name="cheque_pending">زیرِ التوا</string>
+    <string name="cheque_cleared">کلیئر</string>
+    <string name="cheque_bounced">باؤنس</string>
+    <string name="cheque_cancelled">منسوخ</string>
+
+    <string name="due_today">آج واجب</string>
+    <string name="due_in_days">%1$d دن میں واجب</string>
+    <string name="overdue_by_days">%1$d دن گزر چکے</string>
+    <string name="due_summary">%1$d چیک بینک لے جانے کے لیے تیار</string>
+    <string name="due_summary_none">کچھ واجب نہیں</string>
+    <string name="due_summary_pending">%1$d کلیئر ہونے کے منتظر</string>
+    <string name="due_summary_empty">کوئی چیک نہیں</string>
+    <string name="due_summary_all_settled">سب برابر</string>
+
+    <string name="cheque_actions">اس چیک کا کیا ہوا؟</string>
+    <string name="mark_cleared">کلیئر نشان زد کریں</string>
+    <string name="mark_bounced">باؤنس نشان زد کریں</string>
+    <string name="mark_cancelled">منسوخ نشان زد کریں</string>
+    <string name="delete_cheque">چیک حذف کریں</string>
+
+    <string name="cleared_confirm">کلیئر نشان زد کرنے سے ادائیگی %1$s کے کھاتے میں درج ہو گی اور بیلنس بدلے گا۔ یہ صرف اس وقت کریں جب رقم واقعی اکاؤنٹ میں آ جائے۔</string>
+    <string name="bounced_confirm">باؤنس چیک ادائیگی نہیں — رقم بدستور واجب رہتی ہے۔ کھاتے میں کچھ درج نہیں ہو گا۔</string>
+    <string name="cheque_cleared_posted">کلیئر — ادائیگی کھاتے میں درج ہو گئی</string>
+    <string name="cheque_marked_bounced">باؤنس نشان زد ہوا۔ رقم اب بھی واجب ہے۔</string>
+    <string name="cheque_marked_cancelled">منسوخ نشان زد ہوا</string>
+    <string name="select_party_first">پہلے اپنی فہرست سے گاہک یا سپلائر چنیں۔</string>
+    <string name="pick_date_first">براہِ کرم چیک پر لکھی تاریخ چنیں۔</string>
+    <string name="cheque_note_prefix">چیک %1$s</string>
+
+    <string name="search_parties">نام یا نمبر سے تلاش کریں</string>
+    <string name="search_entries">نوٹ، مال یا حوالہ تلاش کریں</string>
+    <string name="sort">ترتیب</string>
+    <string name="sort_by">ترتیب دیں</string>
+
+    <string name="sort_name_az">نام (الف\u2013ی)</string>
+    <string name="sort_name_za">نام (ی\u2013الف)</string>
+    <string name="sort_owes_most">سب سے زیادہ مقروض پہلے</string>
+    <string name="sort_i_owe_most">جن کا میں زیادہ مقروض پہلے</string>
+    <string name="sort_recent_activity">تازہ ترین لین دین</string>
+
+    <string name="sort_newest">نیا پہلے</string>
+    <string name="sort_oldest">پرانا پہلے</string>
+    <string name="sort_amount_high">رقم (زیادہ سے کم)</string>
+    <string name="sort_amount_low">رقم (کم سے زیادہ)</string>
+
+    <string name="no_matching_parties">آپ کی تلاش سے کوئی گاہک یا سپلائر نہیں ملتا۔</string>
+    <string name="no_matching_entries">آپ کی تلاش سے کوئی اندراج نہیں ملتا۔</string>
+    <string name="showing_filtered">%2$d میں سے %1$d دکھائے جا رہے ہیں</string>
+    <string name="running_balance_note">رواں بیلنس کھاتے کی اپنی ترتیب پر چلتا ہے، اس لیے آپ جیسے بھی ترتیب دیں یا تلاش کریں، یہ درست رہتا ہے۔</string>
+
+    <string name="party_photo">تصویر</string>
+    <string name="set_photo">تصویر لگائیں</string>
+    <string name="change_photo">تصویر بدلیں</string>
+    <string name="remove_photo">تصویر ہٹائیں</string>
+    <string name="photo_saved">تصویر محفوظ ہو گئی</string>
+    <string name="photo_removed">تصویر ہٹا دی گئی</string>
+    <string name="photo_save_failed">یہ تصویر محفوظ نہیں ہو سکی۔ دوسری چنیں۔</string>
+    <string name="photo_privacy_note">تصویر اسی فون پر رہتی ہے۔ کبھی اپ لوڈ نہیں ہوتی، اور جان بوجھ کر اسٹیٹمنٹ پر نہیں لگائی جاتی — اسٹیٹمنٹ آگے بھیجی جاتی ہے، اور آپ کے گاہک نے اپنی تصویر کے سفر کی اجازت نہیں دی۔</string>
+    <string name="party_options">اختیارات</string>
+    <string name="edit_party">تفصیل بدلیں</string>
+    <string name="delete_party">حذف کریں</string>
+
+    <string name="credit_limit">ادھار کی حد</string>
+    <string name="set_credit_limit">ادھار کی حد مقرر کریں</string>
+    <string name="credit_limit_help">زیادہ سے زیادہ جتنا ادھار آپ اس پارٹی کو دینا چاہتے ہیں۔ حد سے بڑھنے والے اندراج سے پہلے روشن کھاتہ آپ کو خبردار کرے گا۔</string>
+    <string name="credit_limit_hint">حد (روپے) — بغیر حد کے لیے خالی چھوڑیں</string>
+    <string name="credit_limit_advisory">یہ صرف انتباہ ہے، رکاوٹ نہیں۔ کاروبار آپ کا ہے — آپ ہمیشہ آگے بڑھ سکتے ہیں۔</string>
+    <string name="credit_limit_current">اس وقت آپ کے %1$s واجب ہیں</string>
+    <string name="credit_limit_none">کوئی حد مقرر نہیں</string>
+    <string name="credit_limit_set_to">حد: %1$s</string>
+    <string name="credit_limit_removed">ادھار کی حد ہٹا دی گئی</string>
+    <string name="credit_limit_saved">ادھار کی حد محفوظ ہو گئی</string>
+
+    <string name="over_limit_badge">حد سے زیادہ</string>
+    <string name="near_limit_badge">حد کے قریب</string>
+
+    <string name="limit_warning_title">یہ ان کی ادھار کی حد سے بڑھ جائے گا</string>
+    <string name="limit_warning_message">%1$s کے ذمے اس وقت %2$s ہیں۔\n\n%3$s کا یہ اندراج انہیں %4$s پر لے جائے گا، جو آپ کی مقرر کردہ %5$s حد سے زیادہ ہے۔\n\nآپ پھر بھی آگے بڑھ سکتے ہیں — یہ صرف انتباہ ہے۔</string>
+    <string name="proceed_anyway">آگے بڑھیں</string>
+
+    <string name="report">رپورٹ</string>
+    <string name="report_title">%1$s کی رپورٹ</string>
+    <string name="range_all">تمام</string>
+    <string name="range_today">آج</string>
+    <string name="range_week">پچھلا ہفتہ</string>
+    <string name="range_month">پچھلا مہینہ</string>
+    <string name="range_custom">اپنی مرضی</string>
+    <string name="range_label_all">پورا کھاتہ</string>
+    <string name="range_label">%1$s تا %2$s</string>
+    <string name="net_change">کل تبدیلی</string>
+    <string name="no_entries_in_range">اس مدت میں کوئی اندراج نہیں۔</string>
+    <string name="share_report">PDF شیئر کریں</string>
+    <string name="pick_start_date">شروع کی تاریخ چنیں</string>
+    <string name="pick_end_date">آخری تاریخ چنیں</string>
+    <string name="closing_note_range">اوپر کے تین اعداد صرف اس مدت کے ہیں۔ نیچے اختتامی بیلنس پورا حساب ہے — %1$s — کیونکہ جزوی مدت کا مجموعہ وہ نہیں جو آپ کے گاہک کے ذمے ہے۔</string>
+    <string name="closing_note_all">اختتامی بیلنس: %1$s</string>
+    <string name="report_period">مدت: %1$s</string>
+    <string name="invalid_range">آخری تاریخ شروع کی تاریخ سے پہلے نہیں ہو سکتی۔</string>
+
+    <string name="cashbook">کیش بک</string>
+    <string name="cashbook_subtitle">کاروباری رقم کی آمد و خرچ</string>
+    <string name="cashbook_separate_note">کیش بک آپ کے گاہک کھاتے سے الگ ہے۔ کرایہ، تنخواہیں، نقد فروخت — وہ رقم جس کا کوئی گاہک نہیں۔ اس سے کسی کے ذمے کچھ نہیں بدلتا۔</string>
+    <string name="add_cash_entry">اندراج شامل کریں</string>
+    <string name="cash_in">رقم آئی</string>
+    <string name="cash_out">رقم گئی</string>
+    <string name="cash_net">خالص</string>
+    <string name="cash_income">آمدنی</string>
+    <string name="cash_expense">خرچ</string>
+    <string name="cash_category_hint">مد (مثلاً کرایہ، تنخواہ، نقد فروخت)</string>
+    <string name="no_cash_entries">کیش بک میں ابھی کوئی اندراج نہیں۔\n\nیہ اس رقم کے لیے ہے جو کسی گاہک سے جڑی نہیں — کرایہ، بجلی، تنخواہیں، تیل، نقد فروخت۔</string>
+    <string name="enter_category">براہِ کرم مد لکھیں</string>
+    <string name="delete_cash_entry">یہ اندراج حذف کریں؟</string>
+    <string name="delete_cash_confirm">یہ ری سائیکل بن میں چلا جائے گا۔</string>
+
+    <string name="backup_restore">بیک اپ اور بحالی</string>
+    <string name="backup_subtitle">آپ کا کھاتہ، آپ کے ہاتھ میں</string>
+    <string name="backup_now">ابھی بیک اپ لیں</string>
+    <string name="restore_from_file">بیک اپ فائل سے واپس لائیں</string>
+    <string name="backup_explain">سب کچھ — گاہک، کھاتہ، چیک، کیش بک، اور ری سائیکل بن — ایک فائل میں لکھا جاتا ہے جسے آپ ڈرائیو میں محفوظ کر سکتے ہیں، خود کو واٹس ایپ کر سکتے ہیں، یا میموری کارڈ پر رکھ سکتے ہیں۔\n\nفائل سادہ، پڑھنے کے قابل متن ہے۔ برسوں بعد بھی، اس ایپ کے بغیر بھی، آپ کا ریکارڈ بازیاب ہو سکے گا۔ جو ڈیٹا ہماری مدد کے بغیر واپس نہ مل سکے وہ حقیقت میں آپ کا نہیں۔</string>
+    <string name="backup_warning">روشن کھاتہ سب کچھ صرف اسی فون پر رکھتا ہے۔ فون گم ہو، ٹوٹ جائے، یا ایپ ان انسٹال ہو تو ریکارڈ بھی ساتھ جاتا ہے۔ براہِ کرم باقاعدگی سے بیک اپ لیں اور کہیں اور محفوظ رکھیں۔</string>
+    <string name="backup_created">بیک اپ تیار — محفوظ کرنے کی جگہ چنیں</string>
+    <string name="backup_failed">بیک اپ نہیں بن سکا۔</string>
+    <string name="save_backup">بیک اپ محفوظ کریں</string>
+
+    <string name="restore_warning_title">سب کچھ بدل دیں؟</string>
+    <string name="restore_warning_message">بحالی روشن کھاتہ میں موجود ہر چیز کو اس فائل کے مواد سے بدل دے گی:\n\n%1$d گاہک/سپلائر\n%2$d کھاتہ اندراجات\n%3$d چیک\n%4$d کیش بک اندراجات\n%5$d ادائیگی منصوبے\n%6$d سپلائر بل\n\nجو کچھ اس فون پر اب ہے وہ چلا جائے گا۔ اگر یہاں ایسے اندراجات ہیں جو بیک اپ میں نہیں، تو پہلے اِس کا بیک اپ لیں۔\n\nیہ واپس نہیں ہو سکتا۔</string>
+    <string name="restore_replace">سب کچھ بدل دیں</string>
+    <string name="restore_done">بحال ہو گیا</string>
+    <string name="restore_failed">بحالی ناکام: %1$s</string>
+    <string name="reading_backup">فائل پڑھی جا رہی ہے\u2026</string>
+    <string name="restoring">بحال ہو رہا ہے\u2026</string>
+    <string name="creating_backup">بیک اپ بن رہا ہے\u2026</string>
+
+    <string name="payment_plans">ادائیگی منصوبے</string>
+    <string name="plans_subtitle">قسطوں میں ادائیگی</string>
+    <string name="plan_not_a_debt_note">منصوبہ ایک بندوبست ہے، نیا قرض نہیں۔ جو ان کے ذمے ہے وہ پہلے ہی کھاتے میں ہے۔ یہاں ادائیگی درج کرنے سے وہ کھاتے میں ایک بار جاتی ہے — کبھی دو بار شمار نہیں ہوتی۔</string>
+    <string name="add_plan">منصوبہ شامل کریں</string>
+    <string name="no_plans">ابھی کوئی ادائیگی منصوبہ نہیں۔\n\nیہ اس وقت کام آتے ہیں جب گاہک رقم قسطوں میں ادا کرے گا — فصل کے بعد، یا چند مہینوں میں۔</string>
+    <string name="plan_dialog_help">جو اس پارٹی کے ذمے پہلے سے ہے اسے ادا کرنے کا بندوبست بنائیں۔ اس سے ان کے بیلنس میں اضافہ نہیں ہوتا — صرف یہ درج ہوتا ہے کہ انہوں نے کتنا اور کب دینا مانا ہے۔</string>
+    <string name="plan_total_hint">کل ادا کرنی رقم (روپے)</string>
+    <string name="plan_installment_hint">فی قسط (روپے) — اختیاری</string>
+    <string name="plan_pick_next_due">اگلی ادائیگی کی تاریخ (اختیاری)</string>
+    <string name="plan_owes_now">ان کے ذمے اس وقت %1$s ہیں</string>
+    <string name="plan_owes_nothing">اس پارٹی کے ذمے ابھی کچھ نہیں</string>
+
+    <string name="plan_paid">%2$s میں سے %1$s ادا</string>
+    <string name="plan_remaining">%1$s باقی</string>
+    <string name="plan_open">جاری</string>
+    <string name="plan_closed">مکمل</string>
+    <string name="plan_next_due">اگلی: %1$s</string>
+    <string name="plan_next_due_none">کوئی تاریخ مقرر نہیں</string>
+    <string name="plan_overdue">%1$s سے تاخیر</string>
+
+    <string name="plan_actions">ادائیگی منصوبہ</string>
+    <string name="record_payment">ادائیگی درج کریں</string>
+    <string name="close_plan">مکمل نشان زد کریں</string>
+    <string name="delete_plan">منصوبہ حذف کریں</string>
+    <string name="record_payment_title">ادائیگی درج کریں</string>
+    <string name="record_payment_help">اس سے %1$s کے کھاتے میں ایک اندراج ہو گا، جو ان کا واجب کم کرے گا۔ دو بار شمار نہیں ہوتا۔</string>
+    <string name="payment_recorded">ادائیگی درج ہو کر کھاتے میں چلی گئی</string>
+    <string name="plan_closed_msg">منصوبہ مکمل نشان زد ہوا</string>
+    <string name="plan_overpay_warning">یہ ادائیگی منصوبے کی باقی رقم (%1$s) سے زیادہ ہے۔ پھر بھی پوری رقم کھاتے میں درج ہو گی — محفوظ کرنے سے پہلے رقم دیکھ لیں۔</string>
+    <string name="plan_note_prefix">قسط کی ادائیگی</string>
+    <string name="plan_deleted">منصوبہ حذف ہو گیا۔ جو ادائیگیاں کھاتے میں درج ہو چکیں وہ وہیں رہیں گی — رقم واقعی وصول ہوئی تھی۔</string>
+    <string name="delete_plan_confirm">منصوبہ ہٹا دیا جائے گا، لیکن درج شدہ ادائیگیاں کھاتے میں رہیں گی۔ وہ رقم واقعی وصول ہوئی تھی، اور بندوبست حذف کرنے سے وہ واپس نہیں ہوتی۔</string>
+
+    <string name="nav_khata">کھاتہ</string>
+    <string name="nav_cashbook">کیش بک</string>
+    <string name="nav_cheques">چیک</string>
+    <string name="nav_plans">منصوبے</string>
+    <string name="nav_more">مزید</string>
+
+    <string name="more_title">مزید</string>
+    <string name="more_reports">رپورٹس اور زکوٰۃ</string>
+    <string name="more_settings">ترتیبات</string>
+    <string name="more_data">آپ کا ڈیٹا</string>
+
+    <string name="more_options">مزید</string>
+
+    <string name="supplier_bills">سپلائر بل</string>
+    <string name="bills_subtitle">جو مال آپ نے خریدا</string>
+    <string name="bill_ledger_note">سپلائر کا واجب آپ کے کھاتے میں رہتا ہے، باقی سب کی طرح۔ بل اوپر کاغذی ریکارڈ جوڑتا ہے: بل نمبر، بیچ نمبر، ایکسپائری تاریخیں۔</string>
+    <string name="add_bill">بل شامل کریں</string>
+    <string name="no_bills">ابھی کوئی سپلائر بل نہیں۔\n\nجو خریدیں اسے درج کریں — بیچ نمبر اور ایکسپائری کے ساتھ۔ یہی انسپکٹر پوچھتا ہے، اور یہی مال کو شیلف پر خراب ہونے سے بچاتا ہے۔</string>
+
+    <string name="bill_number_hint">بل نمبر (ان کے کاغذ سے)</string>
+    <string name="bill_total_hint">کل بل (روپے)</string>
+    <string name="bill_supplier_hint">سپلائر کا نام</string>
+    <string name="bill_date">بل کی تاریخ</string>
+    <string name="bill_due_date">ادائیگی کی تاریخ (اختیاری)</string>
+    <string name="bill_paid_cash">ڈلیوری پر نقد ادا کیا</string>
+    <string name="bill_paid_cash_help">یہ صرف اس وقت لگائیں جب فوری ادا کیا ہو۔ ورنہ رقم آپ کے کھاتے میں ان کے حساب پر جائے گی، جو آپ کا واجب ہے۔</string>
+    <string name="bill_credit_note">یہ آپ کے کھاتے میں ایک اندراج کے طور پر %2$s کے واجب میں %1$s جوڑ دے گا۔</string>
+
+    <string name="bill_items_title">ڈلیوری میں کیا تھا</string>
+    <string name="add_item">چیز شامل کریں</string>
+    <string name="product_name_hint">مصنوعات کا نام</string>
+    <string name="batch_number_hint">بیچ نمبر</string>
+    <string name="batch_why">ڈبے پر لکھا بیچ نمبر درج کریں۔ اگر کبھی نمونے پر سوال ہو، یا محکمہ زراعت پوچھے، تو یہی ریکارڈ بتاتا ہے مال کہاں سے آیا۔ بعد میں یہ دوبارہ نہیں بن سکتا۔</string>
+    <string name="expiry_date">ایکسپائری تاریخ</string>
+    <string name="expiry_why">روشن کھاتہ ایکسپائری سے 60 دن پہلے خبردار کرے گا — اتنا پہلے کہ مال بیچ سکیں، رعایت دے سکیں، یا واپس کر سکیں جب تک سپلائر لے لے۔</string>
+    <string name="pick_expiry">ایکسپائری تاریخ چنیں</string>
+    <string name="pick_bill_date">بل کی تاریخ چنیں</string>
+    <string name="rate_hint">فی اکائی ریٹ (روپے)</string>
+    <string name="qty_hint">مقدار</string>
+    <string name="item_added">چیز شامل ہو گئی</string>
+    <string name="no_items_yet">ابھی کوئی چیز شامل نہیں</string>
+    <string name="items_count">%1$d چیزیں</string>
+
+    <string name="bill_saved">بل محفوظ ہو گیا</string>
+    <string name="bill_saved_credit">بل محفوظ ہو کر کھاتے میں درج ہو گیا</string>
+    <string name="enter_supplier">براہِ کرم سپلائر چنیں</string>
+    <string name="enter_product">براہِ کرم مصنوعات کا نام لکھیں</string>
+    <string name="bill_deleted">بل حذف ہو گیا۔ کھاتے کا اندراج رہے گا — مال واقعی آیا تھا اور رقم واقعی واجب ہے۔</string>
+    <string name="delete_bill">بل حذف کریں</string>
+    <string name="delete_bill_confirm">بل اور اس کے بیچ ریکارڈ ہٹ جائیں گے، لیکن کھاتے کا اندراج رہے گا۔ مال واقعی آیا تھا اور رقم واقعی واجب ہے — کاغذ حذف کرنے سے یہ واپس نہیں ہوتا۔</string>
+    <string name="bill_actions">بل</string>
+    <string name="view_items">چیزیں اور بیچ دیکھیں</string>
+
+    <string name="expiring_stock">ایکسپائر ہوتا مال</string>
+    <string name="expiring_subtitle">بیچیں، رعایت دیں، یا واپس کریں — جب تک وقت ہے</string>
+    <string name="no_expiring">اگلے 60 دنوں میں کچھ ایکسپائر نہیں ہو رہا۔\n\nصرف وہی مال دیکھا جا سکتا ہے جس کی ایکسپائری درج ہو۔ بل پر وہ خانہ خالی چھوڑیں گے تو روشن کھاتہ خبردار نہیں کر سکے گا۔</string>
+    <string name="expiring_note">صرف ایکسپائری درج شدہ مال یہاں آتا ہے۔ روشن کھاتہ صرف اسی سے خبردار کر سکتا ہے جو اسے بتایا گیا۔</string>
+    <string name="expired_days">%1$d دن پہلے ایکسپائر ہو چکا</string>
+    <string name="expires_days">%1$d دن میں ایکسپائر ہو گا</string>
+    <string name="expires_today">آج ایکسپائر ہو رہا ہے</string>
+    <string name="batch_label">بیچ: %1$s</string>
+    <string name="batch_none">کوئی بیچ نمبر درج نہیں</string>
+    <string name="from_supplier">%1$s سے</string>
+    <string name="from_supplier_bill">%1$s سے — بل %2$s</string>
+    <string name="expiring_badge">%1$d ایکسپائر ہونے والے</string>
+
+    <string name="trace_batch">بیچ تلاش کریں</string>
+    <string name="trace_batch_hint">بیچ نمبر لکھیں</string>
+    <string name="trace_batch_help">اگر نمونے پر سوال ہو یا انسپکٹر پوچھے، یہاں بیچ نمبر تلاش کریں — کس سپلائر سے، کس بل پر، اور کب آیا۔</string>
+    <string name="trace_no_results">اس بیچ نمبر کا کوئی مال نہیں ملا۔</string>
+    <string name="trace_results">%1$d ریکارڈ ملے</string>
+
+    <string name="search_action">تلاش</string>
+
+    <string name="pick_bill_due_date">ادائیگی کی تاریخ چنیں</string>
+
+    <string name="backup_done_title">بیک اپ محفوظ ہو گیا</string>
+    <string name="backup_done_saved">یہاں محفوظ ہوا:\n\n%1$s\n\nیہ آپ کو فون کے ڈاؤن لوڈز فولڈر اور کسی بھی فائل مینیجر میں ملے گا۔ روشن کھاتہ اپنی کاپی بھی رکھتا ہے، تاکہ فائل ڈھونڈے بغیر بحال کر سکیں۔</string>
+    <string name="backup_done_internal">روشن کھاتہ کے اندر محفوظ ہوا۔ اس اسکرین سے کبھی بھی بحال کر سکتے ہیں۔</string>
+    <string name="share_copy">کاپی بھیجیں</string>
+    <string name="restore_from_app">محفوظ بیک اپ سے بحال کریں</string>
+    <string name="restore_from_storage">اسٹوریج سے فائل چنیں</string>
+    <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
+
+    <string name="report_section_title">پرنٹ ہونے والی رپورٹ</string>
+    <string name="report_not_backup">آپ کے پورے کاروبار کی PDF \u2014 بیلنس، چیک، منصوبے، ایکسپائر ہوتا مال۔ پڑھنے، پرنٹ کرنے، یا کسی کو دکھانے کے لیے۔\n\nیہ بیک اپ نہیں ہے۔ روشن کھاتہ PDF سے ریکارڈ بحال نہیں کر سکتا۔</string>
+    <string name="make_report">PDF رپورٹ بنائیں</string>
+    <string name="making_report">رپورٹ بن رہی ہے\u2026</string>
+    <string name="report_failed">رپورٹ نہیں بن سکی۔</string>
+    <string name="share_report_pdf">رپورٹ شیئر کریں</string>
+
+    <string name="report_problem">مسئلہ بتائیں</string>
+    <string name="report_problem_sub">بتائیں کیا خراب ہوا</string>
+    <string name="report_privacy">آپ کے گاہکوں کے نام، نمبر اور بیلنس کبھی نہیں بھیجے جاتے۔ رپورٹ کے ساتھ صرف ایپ ورژن اور فون ماڈل جاتا ہے \u2014 یہی خرابی ڈھونڈنے میں مدد دیتا ہے۔\n\nای میل آپ کی اپنی میل ایپ میں کھلتی ہے، اس لیے بھیجنے سے پہلے آپ دیکھ سکتے ہیں کہ کیا جا رہا ہے۔</string>
+
+    <string name="report_what_kind">کس قسم کا مسئلہ؟</string>
+    <string name="report_kind_wrong_number">کوئی بیلنس یا رقم غلط لگی</string>
+    <string name="report_kind_crash">ایپ خود بند ہو گئی</string>
+    <string name="report_kind_lost">کوئی محفوظ چیز غائب ہو گئی</string>
+    <string name="report_kind_confusing">کوئی اسکرین سمجھ نہیں آئی</string>
+    <string name="report_kind_suggestion">تجویز ہے، خرابی نہیں</string>
+    <string name="report_kind_other">کچھ اور</string>
+
+    <string name="report_describe">کیا ہوا؟</string>
+    <string name="report_describe_help">اردو یا انگریزی میں لکھیں \u2014 جو آسان ہو۔ جب خرابی ہوئی آپ کیا کر رہے تھے؟</string>
+    <string name="report_hint">مثلاً میں نے 5,000 روپے کا چیک شامل کیا اور کلیئر کرنے سے پہلے ہی بیلنس بدل گیا۔</string>
+    <string name="report_send">رپورٹ بھیجیں</string>
+    <string name="report_email_note">یہ آپ کی ای میل ایپ کھولے گا۔ اگر ای میل سیٹ نہیں، تو کسی بھی فون سے innovation313.support@gmail.com پر لکھیں۔</string>
+    <string name="report_no_email">کوئی ای میل ایپ نہیں ملی۔ براہِ کرم innovation313.support@gmail.com پر لکھیں</string>
+    <string name="report_empty">پہلے بتائیں کیا ہوا۔</string>
+    <string name="report_subject">روشن کھاتہ \u2014 %1$s</string>
+
+    <string name="hide_balance">بیلنس چھپائیں</string>
+    <string name="show_balance">بیلنس دکھائیں</string>
+
+    <string name="powered_by">Powered by Innovation-313</string>
+    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="tap_to_start">جاری رکھنے کے لیے کہیں بھی چھوئیں</string>
+
+    <string name="tap_to_continue">جاری رکھنے کے لیے چھوئیں</string>
+    <string name="brand_har_hisaab">ہر حساب روشن</string>
+
+    <string name="unlock_to_open">کھولنے کے لیے چھوئیں</string>
+
+    <string name="restore_done_with_bin">آپ کا ڈیٹا واپس آ گیا۔\n\nاس بیک اپ کے %1$d گاہک بیک اپ بننے سے پہلے حذف ہو چکے تھے، اس لیے وہ ری سائیکل بن میں بحال ہوئے ہیں \u2014 مرکزی فہرست میں نہیں۔ مزید \u2190 ری سائیکل بن کھولیں، وہاں سے کسی کو بھی مکمل بحال کر سکتے ہیں۔</string>
+
+    <string name="drive_section">خودکار کلاؤڈ بیک اپ</string>
+    <string name="file_section">فائل میں بیک اپ</string>
+    <string name="drive_not_connected">اپنا گوگل اکاؤنٹ جوڑیں تو آپ کا کھاتہ آپ کی اپنی گوگل ڈرائیو میں خودکار بیک اپ ہوتا رہے گا۔ فون بدلیں، دوبارہ سائن اِن کریں، سب واپس۔ ڈیٹا آپ کی ڈرائیو میں رہتا ہے؛ ہمارے پاس کبھی نہیں آتا۔</string>
+    <string name="drive_connected">%1$s کے طور پر جڑا ہے۔ آخری کلاؤڈ بیک اپ: %2$s</string>
+    <string name="drive_connected_never">%1$s کے طور پر جڑا ہے۔ ابھی کوئی کلاؤڈ بیک اپ نہیں \u2014 ”ڈرائیو میں بیک اپ“ دبائیں۔</string>
+    <string name="drive_connect">گوگل ڈرائیو جوڑیں</string>
+    <string name="drive_backup_now">ابھی ڈرائیو میں بیک اپ لیں</string>
+    <string name="drive_restore">ڈرائیو سے بحال کریں</string>
+    <string name="drive_sign_out">گوگل اکاؤنٹ الگ کریں</string>
+    <string name="drive_backing_up">ڈرائیو میں بیک اپ ہو رہا ہے\u2026</string>
+    <string name="drive_backup_done">آپ کی گوگل ڈرائیو میں بیک اپ ہو گیا۔</string>
+    <string name="drive_backup_failed">کلاؤڈ بیک اپ ناکام۔ پچھلا بیک اپ، اگر تھا، محفوظ ہے۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔</string>
+    <string name="drive_restoring">ڈرائیو سے بحال ہو رہا ہے\u2026</string>
+    <string name="drive_no_backup">آپ کی گوگل ڈرائیو میں ابھی کوئی بیک اپ نہیں ملا۔</string>
+    <string name="drive_restore_failed">ڈرائیو سے بحالی نہیں ہو سکی۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔</string>
+    <string name="drive_signin_failed">گوگل سائن اِن مکمل نہیں ہوا۔ دوبارہ کوشش کریں۔</string>
+    <string name="drive_permission_needed">روشن کھاتہ کو آپ کی ڈرائیو میں اپنے فولڈر میں محفوظ کرنے کی اجازت چاہیے۔ پوچھے جانے پر اجازت دیں۔</string>
+    <string name="drive_restore_confirm">یہ ایپ کی موجودہ ہر چیز کو آپ کی گوگل ڈرائیو کے بیک اپ سے بدل دے گا۔ جاری رکھیں؟</string>
+    <string name="i_have_to_get">مجھے لینے ہیں</string>
+    <string name="i_have_to_give">مجھے دینے ہیں</string>
+    <string name="insights_title">فروخت کا جائزہ</string>
+    <string name="insights_subtitle">آپ کی دکان میں کیا چل رہا ہے</string>
+    <string name="insights_total_sale">کل فروخت \u00b7 اس مہینے</string>
+    <string name="insights_top_products">سب سے زیادہ بکنے والی چیزیں</string>
+    <string name="insights_top_customers">سب سے بڑے گاہک</string>
+    <string name="insights_up">\u25b2 پچھلے مہینے سے %1$d%% زیادہ (%2$s)</string>
+    <string name="insights_down">\u25bc پچھلے مہینے سے %1$d%% کم (%2$s)</string>
+    <string name="insights_no_compare">فروخت کا پہلا مہینہ \u2014 موازنے کے لیے ابھی کچھ نہیں۔</string>
+    <string name="insights_no_products">اس مہینے کوئی مصنوعات درج نہیں۔ اندراج کرتے وقت مصنوعات کا نام لکھیں تو یہ نظر آئے گا۔</string>
+    <string name="insights_no_sales">اس مہینے ابھی کوئی فروخت درج نہیں۔</string>
+    <string name="insights_privacy_note">سب حساب آپ کے فون پر ہوتا ہے۔ کچھ بھی فون سے باہر نہیں جاتا۔</string>
+    <string name="nisab_silver">چاندی</string>
+    <string name="nisab_gold">سونا</string>
+    <string name="gold_price_hint">سونے کی قیمت فی گرام (روپے)</string>
+    <string name="nisab_silver_note">چاندی کا نصاب: 612.36 گرام (52.5 تولہ) چاندی۔ یہ کم حد ہے، اس لیے زیادہ لوگوں پر زکوٰۃ آتی ہے \u2014 یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔</string>
+    <string name="nisab_gold_note">سونے کا نصاب: 87.48 گرام (7.5 تولہ) سونا۔ یہ اونچی حد ہے، اس لیے کم لوگوں پر زکوٰۃ آتی ہے۔ کون سا معیار آپ پر لاگو ہے، عالم سے تصدیق کریں۔</string>
+    <string name="last_transacted">آخری لین دین %1$s</string>
+    <string name="summary_with_overdue">%1$s \u00b7 %2$d کو یاد دہانی چاہیے</string>
+    <plurals name="customer_count">
+        <item quantity="one">%d گاہک</item>
+        <item quantity="other">%d گاہک</item>
+    </plurals>
+    <string name="call">کال</string>
+    <string name="no_dialer">کوئی ڈائلر نہیں ملا</string>
+    <string name="backup_reminder_hint">بیک اپ کا وقت ہو گیا</string>
+    <string name="select_all">سب چنیں</string>
+    <string name="clear_all">سب ہٹائیں</string>
+    <string name="insights_today">آج</string>
+    <string name="insights_today_received">وصول ہوئے</string>
+    <string name="insights_today_given">دیے گئے</string>
+    <plurals name="entries_today">
+        <item quantity="one">آج %d اندراج</item>
+        <item quantity="other">آج %d اندراجات</item>
+    </plurals>
+    <string name="copy_balance_owed">%1$s: %2$s باقی ہیں (آپ کو ملیں گے)</string>
+    <string name="copy_balance_i_owe">%1$s: %2$s (آپ کو دینے ہیں)</string>
+    <string name="copy_balance_settled">%1$s: حساب برابر (0 روپے)</string>
+    <string name="copied">کاپی ہو گیا</string>
+    <string name="receipt_title">رسید</string>
+    <string name="payment_receipt">ادائیگی کی رسید</string>
+    <string name="you_gave">آپ نے دیے</string>
+    <string name="you_got">آپ نے لیے</string>
+    <string name="details">تفصیل</string>
+    <string name="party">پارٹی</string>
+    <string name="receipt_no">رسید نمبر</string>
+    <string name="date_label">تاریخ</string>
+    <string name="note_label">نوٹ</string>
+    <string name="goods_label">مال</string>
+    <string name="balance_label">بعد کا بیلنس</string>
+    <string name="edit">ترمیم</string>
+    <string name="share">شیئر</string>
+    <string name="back">واپس</string>
+    <string name="entry_not_found">اندراج نہیں ملا</string>
+    <string name="delete_entry_message">یہ اندراج کھاتے سے ہٹا دیا جائے گا۔</string>
+    <string name="entry_deleted">اندراج حذف ہو گیا</string>
+    <string name="share_failed">رسید کی تصویر نہیں بن سکی</string>
+    <string name="invalid_amount">درست رقم لکھیں</string>
+    <string name="saved">محفوظ ہو گیا</string>
+    <string name="select_language">اپنی زبان چنیں</string>
+    <string name="language_change_note">زبان کبھی بھی ”مزید“ سے بدل سکتے ہیں۔</string>
+    <string name="language">زبان</string>
+</resources>
