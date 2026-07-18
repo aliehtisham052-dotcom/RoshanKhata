@@ -2,6 +2,8 @@ package com.innovation313.roshankhata
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.widget.Button
@@ -9,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.widget.TextViewCompat
+import com.google.android.material.button.MaterialButton
 
 /**
  * The first screen a new user sees: pick your language, in your own script.
@@ -49,12 +52,18 @@ class LanguageActivity : AppCompatActivity() {
         for ((id, tag) in choices) {
             val btn = findViewById<Button>(id)
             btn.setOnClickListener { choose(tag) }
-            // Colour and shape both come from bg_lang_key now. A tint here
-            // would repaint that drawable and flatten its corners back to a
-            // rectangle, and the cornerRadius this used to set was being
-            // applied to null: the LangKey style descends from
-            // Widget.AppCompat.Button, so these never inflate as MaterialButtons.
             btn.setTextColor(0xFF1A1A18.toInt())
+
+            // The style sets these too. Repeating them here because this
+            // screen is the first thing a new owner sees, and it has now
+            // been white-on-white once and black-on-black once: if the tag
+            // resolves to a MaterialButton these take effect, and if the
+            // style somehow does not reach it, the keys are still legible.
+            (btn as? MaterialButton)?.let { material ->
+                material.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+                material.cornerRadius = (28 * resources.displayMetrics.density).toInt()
+            }
+
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
                 btn, 11, 15, 1, TypedValue.COMPLEX_UNIT_SP
             )

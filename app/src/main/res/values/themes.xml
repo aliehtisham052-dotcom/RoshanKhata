@@ -93,7 +93,14 @@
 
 
     <!-- Language picker buttons: white cards on the green welcome sheet -->
-    <style name="LangKey" parent="Widget.AppCompat.Button">
+    <!--
+      A MaterialButton parent, and every visual set through Material's own
+      attributes. These tags become MaterialButtons under this theme whatever
+      the style says, and a MaterialButton ignores android:background outright
+      — it paints itself from backgroundTint, which is why dropping the tint
+      turned the keys black: they fell back to colorPrimary, which is ink.
+    -->
+    <style name="LangKey" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">56dp</item>
         <item name="android:layout_weight">1</item>
@@ -106,7 +113,9 @@
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:stateListAnimator">@null</item>
-        <item name="android:background">@drawable/bg_lang_key</item>
+        <item name="backgroundTint">#FFFFFF</item>
+        <!-- Larger than half the height; MaterialButton clamps it to a full pill. -->
+        <item name="cornerRadius">28dp</item>
     </style>
 
 </resources>
