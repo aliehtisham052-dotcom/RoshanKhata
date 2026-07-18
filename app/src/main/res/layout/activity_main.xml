@@ -157,6 +157,16 @@
       Every feature, in the open. Scrolls, so the grid can grow without the
       last row falling off a short screen.
     -->
+    <!--
+      Every feature, in the open. Scrolls, so the grid can grow without the
+      last row falling off a short screen.
+
+      The rows are built in code rather than <include>d twelve times over:
+      an <include> keeps the ids of the layout it pulls in, so all twelve
+      copies shared one ivFeatureIcon and one tvFeatureLabel. Looking those
+      up per card returned the first copy every time, and the icon lookup
+      came back null on every card but the first.
+    -->
     <ScrollView
         android:id="@+id/featureScroll"
         android:layout_width="0dp"
@@ -188,60 +198,10 @@
                 android:textStyle="bold" />
 
             <LinearLayout
+                android:id="@+id/gridDaily"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="3">
-
-                <include
-                    android:id="@+id/cardParty"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <include
-                    android:id="@+id/cardCashbook"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <include
-                    android:id="@+id/cardCheques"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="3">
-
-                <include
-                    android:id="@+id/cardBills"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <include
-                    android:id="@+id/cardPlans"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <include
-                    android:id="@+id/cardStock"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
+                android:orientation="vertical" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -256,60 +216,10 @@
                 android:textStyle="bold" />
 
             <LinearLayout
+                android:id="@+id/gridBusiness"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="3">
-
-                <include
-                    android:id="@+id/cardInsights"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <include
-                    android:id="@+id/cardZakat"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <include
-                    android:id="@+id/cardBizCard"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="3">
-
-                <include
-                    android:id="@+id/cardBackup"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <include
-                    android:id="@+id/cardSettings"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <include
-                    android:id="@+id/cardAppLock"
-                    layout="@layout/item_home_feature"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
+                android:orientation="vertical" />
         </LinearLayout>
     </ScrollView>
 

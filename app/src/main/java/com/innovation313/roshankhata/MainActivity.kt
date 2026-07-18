@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,6 +38,9 @@ class MainActivity : AppCompatActivity() {
     private var totalGet = 0.0
     private var totalGive = 0.0
 
+    /** Tile views by label resource — the walkthrough needs them by name. */
+    private val featureViews = mutableMapOf<Int, View>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -51,60 +55,85 @@ class MainActivity : AppCompatActivity() {
             renderBalance()
         }
 
-        bindFeatureCards()
+        buildFeatureGrid()
         setupBottomNav()
         observeTotals()
         maybeShowCoachMarks()
     }
 
     /**
-     * Fill each tile in the grid. The layout is one reusable card included
-     * repeatedly, so a new feature costs one <include> and one line here.
+     * One tile in the grid: which screen it opens, and how it is labelled.
+     * Kept as data so the rows below read as a list of features rather than
+     * a wall of view plumbing.
      */
-    private fun bindFeatureCards() {
-        bindCard(R.id.cardParty, R.drawable.ic_nav_khata, R.string.nav_khata) {
-            startActivity(Intent(this, KhataActivity::class.java))
-        }
-        bindCard(R.id.cardCashbook, R.drawable.ic_nav_cashbook, R.string.nav_cashbook) {
-            startActivity(Intent(this, CashbookActivity::class.java))
-        }
-        bindCard(R.id.cardCheques, R.drawable.ic_nav_cheques, R.string.nav_cheques) {
-            startActivity(Intent(this, ChequesActivity::class.java))
-        }
-        bindCard(R.id.cardBills, R.drawable.ic_feature_bills, R.string.supplier_bills) {
-            startActivity(Intent(this, BillsActivity::class.java))
-        }
-        bindCard(R.id.cardPlans, R.drawable.ic_nav_plans, R.string.nav_plans) {
-            startActivity(Intent(this, PlansActivity::class.java))
-        }
-        bindCard(R.id.cardStock, R.drawable.ic_feature_stock, R.string.expiring_stock) {
-            startActivity(Intent(this, ExpiringActivity::class.java))
-        }
-        bindCard(R.id.cardInsights, R.drawable.ic_feature_insights, R.string.insights_title) {
-            startActivity(Intent(this, InsightsActivity::class.java))
-        }
-        bindCard(R.id.cardZakat, R.drawable.ic_feature_zakat, R.string.zakat_calculator) {
-            startActivity(Intent(this, ZakatActivity::class.java))
-        }
-        bindCard(R.id.cardBizCard, R.drawable.ic_feature_card, R.string.biz_card) {
-            startActivity(Intent(this, BusinessCardActivity::class.java))
-        }
-        bindCard(R.id.cardBackup, R.drawable.ic_feature_backup, R.string.backup_restore) {
-            startActivity(Intent(this, BackupActivity::class.java))
-        }
-        bindCard(R.id.cardSettings, R.drawable.ic_feature_settings, R.string.business_settings) {
-            startActivity(Intent(this, BusinessSettingsActivity::class.java))
-        }
-        bindCard(R.id.cardAppLock, R.drawable.ic_feature_lock, R.string.recycle_bin) {
-            startActivity(Intent(this, RecycleBinActivity::class.java))
+    private data class Feature(
+        val iconRes: Int,
+        val labelRes: Int,
+        val destination: Class<*>
+    )
+
+    /**
+     * Build the grid three tiles to a row.
+     *
+     * The tiles are inflated here rather than <include>d in the layout. An
+     * <include> keeps the ids of the layout it pulls in, so twelve copies
+     * would have shared one ivFeatureIcon between them — every lookup after
+     * the first came back null, which is what crashed Home on open.
+     */
+    private fun buildFeatureGrid() {
+        val daily = listOf(
+            Feature(R.drawable.ic_nav_khata, R.string.nav_khata, KhataActivity::class.java),
+            Feature(R.drawable.ic_nav_cashbook, R.string.nav_cashbook, CashbookActivity::class.java),
+            Feature(R.drawable.ic_nav_cheques, R.string.nav_cheques, ChequesActivity::class.java),
+            Feature(R.drawable.ic_feature_bills, R.string.supplier_bills, BillsActivity::class.java),
+            Feature(R.drawable.ic_nav_plans, R.string.nav_plans, PlansActivity::class.java),
+            Feature(R.drawable.ic_feature_stock, R.string.expiring_stock, ExpiringActivity::class.java)
+        )
+        val business = listOf(
+            Feature(R.drawable.ic_feature_insights, R.string.insights_title, InsightsActivity::class.java),
+            Feature(R.drawable.ic_feature_zakat, R.string.zakat_calculator, ZakatActivity::class.java),
+            Feature(R.drawable.ic_feature_card, R.string.biz_card, BusinessCardActivity::class.java),
+            Feature(R.drawable.ic_feature_backup, R.string.backup_restore, BackupActivity::class.java),
+            Feature(R.drawable.ic_feature_settings, R.string.business_settings, BusinessSettingsActivity::class.java),
+            Feature(R.drawable.ic_feature_lock, R.string.recycle_bin, RecycleBinActivity::class.java)
+        )
+
+        featureViews.clear()
+        fillGrid(findViewById(R.id.gridDaily), daily)
+        fillGrid(findViewById(R.id.gridBusiness), business)
+    }
+
+    private fun fillGrid(container: LinearLayout, features: List<Feature>) {
+        container.removeAllViews()
+        features.chunked(COLUMNS).forEach { rowFeatures ->
+            val row = LinearLayout(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                orientation = LinearLayout.HORIZONTAL
+            }
+            rowFeatures.forEach { feature -> row.addView(createTile(feature)) }
+
+            // Pad a short last row with empty weight, so three tiles and two
+            // tiles come out the same width instead of the pair stretching.
+            repeat(COLUMNS - rowFeatures.size) {
+                row.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
+            }
+            container.addView(row)
         }
     }
 
-    private fun bindCard(cardId: Int, iconRes: Int, labelRes: Int, onClick: () -> Unit) {
-        val card = findViewById<View>(cardId)
-        card.findViewById<ImageView>(R.id.ivFeatureIcon).setImageResource(iconRes)
-        card.findViewById<TextView>(R.id.tvFeatureLabel).setText(labelRes)
-        card.setOnClickListener { onClick() }
+    private fun createTile(feature: Feature): View {
+        val tile = layoutInflater.inflate(R.layout.item_home_feature, null)
+        tile.layoutParams = LinearLayout.LayoutParams(
+            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+        )
+        tile.findViewById<ImageView>(R.id.ivFeatureIcon).setImageResource(feature.iconRes)
+        tile.findViewById<TextView>(R.id.tvFeatureLabel).setText(feature.labelRes)
+        tile.setOnClickListener { startActivity(Intent(this, feature.destination)) }
+        featureViews[feature.labelRes] = tile
+        return tile
     }
 
     private fun setupBottomNav() {
@@ -236,30 +265,38 @@ class MainActivity : AppCompatActivity() {
             .getChildAt(0) as? android.view.ViewGroup ?: return
 
         val steps = listOfNotNull(
-            step(R.id.balanceRow, R.string.coach_title_balance, R.string.coach_desc_balance),
-            step(R.id.cardParty, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
-            step(R.id.cardCashbook, R.string.coach_title_nav_cashbook, R.string.coach_desc_nav_cashbook),
-            step(R.id.cardCheques, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques),
-            step(R.id.cardBills, R.string.coach_title_bills, R.string.coach_desc_bills),
-            step(R.id.cardPlans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
-            step(R.id.cardStock, R.string.coach_title_stock, R.string.coach_desc_stock),
-            step(R.id.cardInsights, R.string.coach_title_insights, R.string.coach_desc_insights),
-            step(R.id.cardZakat, R.string.coach_title_zakat, R.string.coach_desc_zakat),
-            step(R.id.cardBizCard, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
-            step(R.id.cardBackup, R.string.coach_title_backup, R.string.coach_desc_backup),
-            step(R.id.cardAppLock, R.string.coach_title_applock, R.string.coach_desc_applock)
+            findViewById<View>(R.id.balanceRow)?.let {
+                CoachMarkController.Step(
+                    it, R.string.coach_title_balance, R.string.coach_desc_balance, cornerRadiusDp = 8f
+                )
+            },
+            tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
+            tileStep(R.string.nav_cashbook, R.string.coach_title_nav_cashbook, R.string.coach_desc_nav_cashbook),
+            tileStep(R.string.nav_cheques, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques),
+            tileStep(R.string.supplier_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
+            tileStep(R.string.nav_plans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
+            tileStep(R.string.expiring_stock, R.string.coach_title_stock, R.string.coach_desc_stock),
+            tileStep(R.string.insights_title, R.string.coach_title_insights, R.string.coach_desc_insights),
+            tileStep(R.string.zakat_calculator, R.string.coach_title_zakat, R.string.coach_desc_zakat),
+            tileStep(R.string.biz_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
+            tileStep(R.string.backup_restore, R.string.coach_title_backup, R.string.coach_desc_backup),
+            tileStep(R.string.recycle_bin, R.string.coach_title_applock, R.string.coach_desc_applock)
         )
+
         if (steps.isEmpty()) return
 
         root.post { CoachMarkController(this, root, steps).start() }
     }
 
-    private fun step(viewId: Int, titleRes: Int, descRes: Int): CoachMarkController.Step? =
-        findViewById<View>(viewId)?.let {
+    private fun tileStep(labelRes: Int, titleRes: Int, descRes: Int): CoachMarkController.Step? =
+        featureViews[labelRes]?.let {
             CoachMarkController.Step(it, titleRes, descRes, cornerRadiusDp = 16f)
         }
 
     companion object {
+        /** Tiles per row in the feature grid. */
+        private const val COLUMNS = 3
+
         /**
          * Set by the gate. MainActivity is not exported and cannot be launched
          * from outside the app, so this is a routing hint rather than a

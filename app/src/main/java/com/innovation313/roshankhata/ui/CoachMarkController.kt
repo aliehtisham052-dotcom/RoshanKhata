@@ -117,7 +117,10 @@ class CoachMarkController(
                         overlayView.holePadding = dp(6f)
                         overlayView.holeRadius = dp(step.cornerRadiusDp)
                         overlayView.holeRect = rect
-                        positionCard(cardView, rect)
+                        // Post rather than place inline: assigning layoutParams
+                        // during a layout pass re-enters layout, which Android
+                        // may treat as a loop.
+                        cardView.post { positionCard(cardView, rect) }
                     }
                 }
             )
