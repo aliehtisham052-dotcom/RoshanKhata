@@ -61,11 +61,14 @@ class LanguageActivity : AppCompatActivity() {
             // style somehow does not reach it, the keys are still legible.
             (btn as? MaterialButton)?.let { material ->
                 material.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
-                material.cornerRadius = (28 * resources.displayMetrics.density).toInt()
+                material.cornerRadius = (32 * resources.displayMetrics.density).toInt()
             }
 
+            // The keys wrap to two lines now, so the text no longer has to
+            // shrink far to fit — 12sp is the floor rather than 9sp, which was
+            // small enough to strain on the one label that needed it.
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                btn, 11, 15, 1, TypedValue.COMPLEX_UNIT_SP
+                btn, 12, 15, 1, TypedValue.COMPLEX_UNIT_SP
             )
         }
     }

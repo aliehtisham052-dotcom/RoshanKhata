@@ -80,10 +80,21 @@
         <item name="android:layout_height">52dp</item>
         <item name="android:layout_margin">4dp</item>
         <item name="android:textSize">20sp</item>
-        <item name="android:maxLines">1</item>
+        <item name="android:maxLines">2</item>
         <item name="android:includeFontPadding">false</item>
+        <!--
+          MaterialButton's own padding is 16dp a side, which took 32dp out of
+          a key barely a third of the screen wide — enough that "Roman Urdu"
+          had nowhere to go and was clipped to "Roman". The label needs the
+          width more than the key needs the inset.
+        -->
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:minWidth">0dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
         <item name="android:stateListAnimator">@null</item>
     </style>
 
@@ -102,20 +113,32 @@
     -->
     <style name="LangKey" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">56dp</item>
+        <!-- Room for two lines at full size, so a wrapped label is not squeezed. -->
+        <item name="android:layout_height">64dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_margin">5dp</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">#1A1A18</item>
-        <item name="android:maxLines">1</item>
+        <item name="android:maxLines">2</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:includeFontPadding">false</item>
+        <!--
+          MaterialButton's own padding is 16dp a side, which took 32dp out of
+          a key barely a third of the screen wide — enough that "Roman Urdu"
+          had nowhere to go and was clipped to "Roman". The label needs the
+          width more than the key needs the inset.
+        -->
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:minWidth">0dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
         <item name="android:stateListAnimator">@null</item>
         <item name="backgroundTint">#FFFFFF</item>
-        <!-- Larger than half the height; MaterialButton clamps it to a full pill. -->
-        <item name="cornerRadius">28dp</item>
+        <!-- Half the height, so the ends stay properly round. -->
+        <item name="cornerRadius">32dp</item>
     </style>
 
 </resources>
