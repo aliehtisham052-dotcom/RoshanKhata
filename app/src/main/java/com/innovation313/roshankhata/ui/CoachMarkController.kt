@@ -9,6 +9,7 @@ import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import com.innovation313.roshankhata.R
 
@@ -100,19 +101,50 @@ class CoachMarkController(
 
         renderDots(cardView)
 
-        // Wait for a layout pass so the target's bounds are current — a bottom
-        // nav item can shift slightly on first measure.
-        overlayView.viewTreeObserver.addOnGlobalLayoutListener(
-            object : ViewTreeObserver.OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    overlayView.holePadding = dp(6f)
-                    overlayView.holeRadius = dp(step.cornerRadiusDp)
-                    overlayView.holeRect = CoachMarkOverlay.boundsWithin(step.target, root)
+        // The feature grid scrolls, so a tile further down can be off-screen
+        // when its turn comes. Bring it into view first — a spotlight measured
+        // before the scroll would land on empty space.
+        scrollIntoView(step.target) {
+            // Wait for a layout pass so the target's bounds are current — a bottom
+            // nav item can shift slightly on first measure.
+            overlayView.viewTreeObserver.addOnGlobalLayoutListener(
+                object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                        overlayView.holePadding = dp(6f)
+                        overlayView.holeRadius = dp(step.cornerRadiusDp)
+                        overlayView.holeRect = CoachMarkOverlay.boundsWithin(step.target, root)
+                    }
                 }
-            }
-        )
-        overlayView.requestLayout()
+            )
+            overlayView.requestLayout()
+        }
+    }
+
+    /**
+     * Scroll the nearest scrolling ancestor so [target] sits in view, then run
+     * [then]. Targets outside any scroller run [then] straight away.
+     */
+    private fun scrollIntoView(target: View, then: () -> Unit) {
+        var parent = target.parent
+        while (parent != null && parent !is ScrollView) {
+            parent = (parent as? View)?.parent
+        }
+        val scroller = parent as? ScrollView
+        if (scroller == null) {
+            then()
+            return
+        }
+
+        val topWithin = CoachMarkOverlay.boundsWithin(target, scroller).top.toInt() + scroller.scrollY
+        val desired = (topWithin - scroller.height / 3).coerceAtLeast(0)
+        if (kotlin.math.abs(desired - scroller.scrollY) < dp(4f)) {
+            then()
+            return
+        }
+        scroller.smoothScrollTo(0, desired)
+        // Let the scroll settle before the bounds are read.
+        scroller.postDelayed({ then() }, SCROLL_SETTLE_MS)
     }
 
     /**
@@ -150,6 +182,9 @@ class CoachMarkController(
     }
 
     companion object {
+        /** Long enough for smoothScrollTo to land before bounds are measured. */
+        private const val SCROLL_SETTLE_MS = 320L
+
         private const val PREFS = "coach_marks"
         private const val KEY_RUN = "home_tour_done"
 

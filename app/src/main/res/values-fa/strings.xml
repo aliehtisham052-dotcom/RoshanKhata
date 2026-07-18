@@ -20,6 +20,20 @@
     <string name="coach_desc_nav_plans">طرح‌های اقساطی برای مشتریانی که به‌صورت قسطی پرداخت می‌کنند.</string>
     <string name="coach_title_nav_more">بیشتر</string>
     <string name="coach_desc_nav_more">محاسبه‌گر زکات، کارت مغازه، پشتیبان‌گیری، قفل برنامه و تنظیمات.</string>
+        <string name="coach_title_bills">فاکتورهای تأمین‌کننده</string>
+    <string name="coach_desc_bills">آنچه از تأمین‌کنندگان می‌خرید و آنچه هنوز بدهکارید را ثبت کنید.</string>
+    <string name="coach_title_stock">موجودی رو به انقضا</string>
+    <string name="coach_desc_stock">بفروشید، تخفیف بدهید یا مرجوع کنید — تا وقت هست.</string>
+    <string name="coach_title_insights">تحلیل فروش</string>
+    <string name="coach_desc_insights">ببینید چه می‌فروشد، چه می‌ماند، و پول شما کجا گیر کرده است.</string>
+    <string name="coach_title_zakat">محاسبه‌گر زکات</string>
+    <string name="coach_desc_zakat">ابزاری مرجع برای برآورد زکات — حکم را از عالم واجد شرایط بگیرید.</string>
+    <string name="coach_title_bizcard">کارت ویزیت</string>
+    <string name="coach_desc_bizcard">در چند ثانیه کارتی قابل اشتراک برای مغازه‌تان بسازید، در سه سبک.</string>
+    <string name="coach_title_backup">پشتیبان‌گیری</string>
+    <string name="coach_desc_backup">دفتر خود را با خیال راحت در گوگل درایو خودتان ذخیره کنید.</string>
+    <string name="coach_title_applock">سطل بازیافت</string>
+    <string name="coach_desc_applock">مشتری را اشتباهی حذف کردید؟ از اینجا بازگردانید.</string>
     <string name="coach_title_add">افزودن مشتری</string>
     <string name="coach_desc_add">برای افزودن اولین مشتری و شروع دفتر حساب، اینجا را بزنید.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
@@ -376,6 +390,9 @@
 
     <!-- Bottom navigation -->
     <string name="nav_khata">دفتر</string>
+    <string name="nav_home">خانه</string>
+    <string name="home_section_daily">هر روز</string>
+    <string name="home_section_business">کسب‌وکار شما</string>
     <string name="nav_cashbook">صندوق</string>
     <string name="nav_cheques">چک‌ها</string>
     <string name="nav_plans">برنامه‌ها</string>

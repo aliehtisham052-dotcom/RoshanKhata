@@ -20,6 +20,20 @@
     <string name="coach_desc_nav_plans">ان گاہکوں کے لیے قسطوں کے پلان جو حصوں میں ادائیگی کرتے ہیں۔</string>
     <string name="coach_title_nav_more">مزید</string>
     <string name="coach_desc_nav_more">زکوٰۃ کیلکولیٹر، دکان کارڈ، بیک اپ، ایپ لاک، اور سیٹنگز۔</string>
+        <string name="coach_title_bills">سپلائر بلز</string>
+    <string name="coach_desc_bills">سپلائر سے جو خریدا اور جو ابھی دینا باقی ہے، وہ درج کریں۔</string>
+    <string name="coach_title_stock">ختم ہوتا اسٹاک</string>
+    <string name="coach_desc_stock">بیچیں، رعایت دیں، یا واپس کریں — جب تک وقت ہے۔</string>
+    <string name="coach_title_insights">سیل انسائٹس</string>
+    <string name="coach_desc_insights">دیکھیں کیا بک رہا ہے، کیا پڑا ہے، اور آپ کا پیسہ کہاں پھنسا ہے۔</string>
+    <string name="coach_title_zakat">زکوٰۃ کیلکولیٹر</string>
+    <string name="coach_desc_zakat">زکوٰۃ کا اندازہ لگانے کا رہنما ٹول — حکم کسی مستند عالم سے معلوم کریں۔</string>
+    <string name="coach_title_bizcard">بزنس کارڈ</string>
+    <string name="coach_desc_bizcard">اپنی دکان کے لیے سیکنڈوں میں شیئر ہونے والا کارڈ بنائیں، تین انداز میں۔</string>
+    <string name="coach_title_backup">بیک اپ</string>
+    <string name="coach_desc_backup">اپنا کھاتہ محفوظ طریقے سے اپنے گوگل ڈرائیو پر رکھیں۔</string>
+    <string name="coach_title_applock">ری سائیکل بن</string>
+    <string name="coach_desc_applock">غلطی سے کوئی گاہک ڈیلیٹ ہو گیا؟ یہاں سے واپس لائیں۔</string>
     <string name="coach_title_add">گاہک شامل کریں</string>
     <string name="coach_desc_add">اپنا پہلا گاہک شامل کرنے اور کھاتہ شروع کرنے کے لیے یہاں ٹیپ کریں۔</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
@@ -357,6 +371,9 @@
     <string name="delete_plan_confirm">منصوبہ ہٹا دیا جائے گا، لیکن درج شدہ ادائیگیاں کھاتے میں رہیں گی۔ وہ رقم واقعی وصول ہوئی تھی، اور بندوبست حذف کرنے سے وہ واپس نہیں ہوتی۔</string>
 
     <string name="nav_khata">کھاتہ</string>
+    <string name="nav_home">ہوم</string>
+    <string name="home_section_daily">ہر روز</string>
+    <string name="home_section_business">آپ کا کاروبار</string>
     <string name="nav_cashbook">کیش بک</string>
     <string name="nav_cheques">چیک</string>
     <string name="nav_plans">منصوبے</string>

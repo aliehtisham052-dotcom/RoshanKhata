@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One tile in the Home grid: an icon over a label, sized for a thumb. Included
+  several times over and filled in from code, so a new feature is one <include>
+  and one binding call rather than a fresh block of XML each time.
+-->
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:id="@+id/featureRoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="14dp">
+
+        <ImageView
+            android:id="@+id/ivFeatureIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:contentDescription="@null"
+            tools:src="@drawable/ic_nav_khata" />
+
+        <TextView
+            android:id="@+id/tvFeatureLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:gravity="center"
+            android:maxLines="2"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:textColor="@color/ink"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Khata" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

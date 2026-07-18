@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Home. The net balance stays at the top, because that is the number the owner
+  opens the app to see. Everything the app can do sits below it as a grid of
+  cards, each one leading to its own screen.
+
+  The features used to live behind a More menu, which in practice meant most
+  shopkeepers never found out the app had a Zakat calculator or a bills book
+  at all. A feature nobody can find may as well not have been built.
+-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -29,10 +38,6 @@
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <!--
-          One tagline, not two. The brand line beneath it was carrying the same
-          words, so the phrase printed twice. It now says the brand.
-        -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,22 +46,15 @@
             android:textColor="@color/section_khata_soft"
             android:textSize="12sp" />
 
-        <!--
-          The net balance is the one number the owner opens the app to see.
-          It gets the room to say so, and nothing sits between it and the eye.
-        -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="20dp"
             android:text="@string/net_balance"
             android:textColor="@color/section_khata_soft"
             android:textSize="12sp" />
 
-        <!--
-          Tappable. The eye tells the owner this can be hidden without anyone
-          having to explain it to them.
-        -->
+        <!-- Tappable: the eye says this can be hidden without anyone explaining it. -->
         <LinearLayout
             android:id="@+id/balanceRow"
             android:layout_width="wrap_content"
@@ -75,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:text="Rs 0"
                 android:textColor="@color/white"
-                android:textSize="32sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <ImageView
@@ -89,33 +87,31 @@
         </LinearLayout>
 
         <!--
-          Two boxes below the net figure, the way a shopkeeper actually thinks:
-          one total for everything owed TO them (money to collect, red), one for
-          everything they owe OUT (green). The net line above is the single
-          summary; these two break it into the parts the owner chases and pays.
+          The two halves of that net figure, the way a shopkeeper thinks: what
+          is owed TO them, and what they owe OUT.
         -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:orientation="horizontal"
             android:weightSum="2">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="6dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_summary_get"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/tvTotalGet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/bal_owed_to_me"
-                    android:textSize="18sp"
+                    android:textSize="17sp"
                     android:textStyle="bold"
                     tools:text="Rs 7,520" />
 
@@ -125,24 +121,24 @@
                     android:layout_marginTop="2dp"
                     android:text="@string/i_have_to_get"
                     android:textColor="@color/bal_owed_to_me"
-                    android:textSize="12sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="6dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_summary_give"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/tvTotalGive"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/bal_i_owe"
-                    android:textSize="18sp"
+                    android:textSize="17sp"
                     android:textStyle="bold"
                     tools:text="Rs 167,665" />
 
@@ -152,130 +148,182 @@
                     android:layout_marginTop="2dp"
                     android:text="@string/i_have_to_give"
                     android:textColor="@color/bal_i_owe"
-                    android:textSize="12sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>
+    </LinearLayout>
+
+    <!--
+      Every feature, in the open. Scrolls, so the grid can grow without the
+      last row falling off a short screen.
+    -->
+    <ScrollView
+        android:id="@+id/featureScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:layout_marginEnd="12dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="14dp">
 
-            <!--
-              An AutoCompleteTextView, not a plain field.
-              
-              Typing two letters should offer the name, the way every other app
-              a shopkeeper uses already does. Filtering the list below is not the
-              same thing: with two hundred customers, the owner still has to
-              find the row and tap it. A suggestion goes straight there.
-            -->
-            <AutoCompleteTextView
-                android:id="@+id/etSearchParties"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_search_field"
-                android:hint="@string/search_parties"
-                android:importantForAutofill="no"
-                android:inputType="text"
-                android:maxLines="1"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:completionThreshold="1"
-                android:dropDownVerticalOffset="4dp"
-                android:popupBackground="@color/white"
-                android:textColor="@color/ink"
-                android:textColorHint="@color/text_muted"
-                android:textSize="14sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSortParties"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_marginStart="8dp"
-                android:text="@string/sort"
-                android:textColor="@color/section_khata_soft"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="10dp"
+                android:letterSpacing="0.08"
+                android:text="@string/home_section_daily"
+                android:textColor="@color/text_muted"
                 android:textSize="12sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/section_khata_soft" />
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <include
+                    android:id="@+id/cardParty"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/cardCashbook"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/cardCheques"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <include
+                    android:id="@+id/cardBills"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/cardPlans"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/cardStock"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="10dp"
+                android:letterSpacing="0.08"
+                android:text="@string/home_section_business"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <include
+                    android:id="@+id/cardInsights"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/cardZakat"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/cardBizCard"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <include
+                    android:id="@+id/cardBackup"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/cardSettings"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/cardAppLock"
+                    layout="@layout/item_home_feature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
         </LinearLayout>
+    </ScrollView>
 
-        <!--
-          A one-line summary under the search: how many customers, and how many
-          have a balance that has gone quiet for a while (nothing for 30 days).
-          The overdue count is what the competitor surfaces as "reminders" — the
-          owner's cue for who to follow up with. Both sit on the green header, so
-          they use the soft on-header tint.
-        -->
-        <TextView
-            android:id="@+id/tvPartySummary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="12dp"
-            android:textColor="@color/section_khata_soft"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <!--
-      The main sections, out in the open. They were buried in an overflow menu
-      before, which in practice meant most shopkeepers would never have
-      discovered that a Cashbook or a Cheque register existed at all.
-    -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:itemIconTint="@color/nav_item_colour"
-        app:itemTextColor="@color/nav_item_colour"
+        app:elevation="8dp"
+        app:itemActiveIndicatorStyle="@null"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_bottom_nav" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvParties"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingBottom="88dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header" />
-
-    <TextView
-        android:id="@+id/tvEmpty"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:gravity="center"
-        android:lineSpacingExtra="4dp"
-        android:text="@string/no_parties_yet"
-        android:textColor="@color/text_muted"
-        android:textSize="15sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/rvParties"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rvParties" />
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabAddParty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:text="@string/add_party"
-        android:textColor="@color/white"
-        app:backgroundTint="@color/ink"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:menu="@menu/menu_home_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

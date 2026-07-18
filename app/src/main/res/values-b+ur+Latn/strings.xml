@@ -20,6 +20,20 @@
     <string name="coach_desc_nav_plans">Un customers ke liye installment plans jo hisson mein payment karte hain.</string>
     <string name="coach_title_nav_more">More</string>
     <string name="coach_desc_nav_more">Zakat calculator, Dukan Card, backup, App Lock, aur settings.</string>
+        <string name="coach_title_bills">Supplier Bills</string>
+    <string name="coach_desc_bills">Supplier se jo khareeda aur jo abhi dena baaki hai, wo darj karein.</string>
+    <string name="coach_title_stock">Khatam Hota Stock</string>
+    <string name="coach_desc_stock">Bechein, riayat dein, ya wapis karein — jab tak waqt hai.</string>
+    <string name="coach_title_insights">Sale Insights</string>
+    <string name="coach_desc_insights">Dekhein kya bik raha hai, kya para hai, aur aap ka paisa kahan phansa hai.</string>
+    <string name="coach_title_zakat">Zakat Calculator</string>
+    <string name="coach_desc_zakat">Zakat ka andaza lagane ka rahnuma tool — hukm kisi mustanad aalim se maloom karein.</string>
+    <string name="coach_title_bizcard">Business Card</string>
+    <string name="coach_desc_bizcard">Apni dukan ke liye seconds mein share hone wala card banayein, teen andaaz mein.</string>
+    <string name="coach_title_backup">Backup</string>
+    <string name="coach_desc_backup">Apna khata mehfooz tareeqe se apni Google Drive par rakhein.</string>
+    <string name="coach_title_applock">Recycle Bin</string>
+    <string name="coach_desc_applock">Ghalti se koi customer delete ho gaya? Yahan se wapis layein.</string>
     <string name="coach_title_add">Customer Shamil Karein</string>
     <string name="coach_desc_add">Apna pehla customer shamil karne aur khata shuru karne ke liye yahan tap karein.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
@@ -357,6 +371,9 @@
     <string name="delete_plan_confirm">Mansooba hata diya jayega, lekin darj shuda adaigiyan khate mein rahengi. Wo raqam waqai wasool hui thi, aur bandobast delete karne se wo wapas nahi hoti.</string>
 
     <string name="nav_khata">Khata</string>
+    <string name="nav_home">Home</string>
+    <string name="home_section_daily">HAR ROZ</string>
+    <string name="home_section_business">AAP KA KAROBAR</string>
     <string name="nav_cashbook">Cashbook</string>
     <string name="nav_cheques">Cheque</string>
     <string name="nav_plans">Mansoobay</string>

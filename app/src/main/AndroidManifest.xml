@@ -62,9 +62,14 @@
             android:exported="false" />
 
         <activity
-            android:name=".PartyDetailActivity"
+            android:name=".KhataActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".PartyDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".KhataActivity" />
 
         <activity
             android:name=".EntryDetailActivity"

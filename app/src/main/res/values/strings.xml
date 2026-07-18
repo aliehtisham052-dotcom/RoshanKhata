@@ -24,6 +24,20 @@
     <string name="coach_desc_nav_plans">Installment plans for customers paying in parts.</string>
     <string name="coach_title_nav_more">More</string>
     <string name="coach_desc_nav_more">Zakat calculator, Dukan Card, backup, App Lock, and settings.</string>
+        <string name="coach_title_bills">Supplier Bills</string>
+    <string name="coach_desc_bills">Record what you buy from suppliers and what you still owe them.</string>
+    <string name="coach_title_stock">Expiring Stock</string>
+    <string name="coach_desc_stock">Sell it, discount it, or return it — while there is still time.</string>
+    <string name="coach_title_insights">Sale Insights</string>
+    <string name="coach_desc_insights">See what sells, what sits, and where your money is tied up.</string>
+    <string name="coach_title_zakat">Zakat Calculator</string>
+    <string name="coach_desc_zakat">A reference aid to estimate your Zakat — confirm the ruling with a qualified scholar.</string>
+    <string name="coach_title_bizcard">Business Card</string>
+    <string name="coach_desc_bizcard">Make a shareable card for your shop in seconds, in three styles.</string>
+    <string name="coach_title_backup">Backup</string>
+    <string name="coach_desc_backup">Save your ledger safely to your own Google Drive.</string>
+    <string name="coach_title_applock">Recycle Bin</string>
+    <string name="coach_desc_applock">Deleted a customer by mistake? Restore them from here.</string>
     <string name="coach_title_add">Add a Customer</string>
     <string name="coach_desc_add">Tap here to add your first customer and start your khata.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
@@ -380,6 +394,9 @@
 
     <!-- Bottom navigation -->
     <string name="nav_khata">Khata</string>
+    <string name="nav_home">Home</string>
+    <string name="home_section_daily">EVERY DAY</string>
+    <string name="home_section_business">YOUR BUSINESS</string>
     <string name="nav_cashbook">Cashbook</string>
     <string name="nav_cheques">Cheques</string>
     <string name="nav_plans">Plans</string>

@@ -20,6 +20,20 @@
     <string name="coach_desc_nav_plans">انهن گراهڪن لاءِ قسطن جا پلان جيڪي حصن ۾ ادائيگي ڪن ٿا.</string>
     <string name="coach_title_nav_more">وڌيڪ</string>
     <string name="coach_desc_nav_more">زڪوات ڪئلڪوليٽر، دڪان ڪارڊ، بيڪ اپ، ايپ لاڪ ۽ سيٽنگون.</string>
+        <string name="coach_title_bills">سپلائر بل</string>
+    <string name="coach_desc_bills">لکو ته توهان سپلائر کان ڇا خريد ڪيو ۽ اڃا ڪيترو ڏيڻو آهي.</string>
+    <string name="coach_title_stock">ختم ٿيندڙ اسٽاڪ</string>
+    <string name="coach_desc_stock">وڪڻو، رعايت ڏيو، يا واپس ڪريو — جيستائين وقت آهي.</string>
+    <string name="coach_title_insights">وڪري جو جائزو</string>
+    <string name="coach_desc_insights">ڏسو ڇا وڪامي ٿو، ڇا رکيو رهي ٿو، ۽ توهان جا پيسا ڪٿي ڦاٿل آهن.</string>
+    <string name="coach_title_zakat">زڪوات ڪئلڪوليٽر</string>
+    <string name="coach_desc_zakat">زڪوات جو اندازو لڳائڻ لاءِ رهنما اوزار — حڪم لاءِ قابل عالم کان پڇو.</string>
+    <string name="coach_title_bizcard">بزنس ڪارڊ</string>
+    <string name="coach_desc_bizcard">پنهنجي دڪان لاءِ سيڪنڊن ۾ شيئر ڪرڻ جوڳو ڪارڊ ٺاهيو، ٽن انداز ۾.</string>
+    <string name="coach_title_backup">بيڪ اپ</string>
+    <string name="coach_desc_backup">پنهنجو کاتو محفوظ طريقي سان پنهنجي گوگل ڊرائيو تي رکو.</string>
+    <string name="coach_title_applock">ري سائيڪل بن</string>
+    <string name="coach_desc_applock">غلطي سان ڪو گراهڪ ڊليٽ ڪيو؟ هتان واپس آڻيو.</string>
     <string name="coach_title_add">گراهڪ شامل ڪريو</string>
     <string name="coach_desc_add">پنهنجو پهريون گراهڪ شامل ڪرڻ ۽ کاتو شروع ڪرڻ لاءِ هتي دٻايو.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
@@ -376,6 +390,9 @@
 
     <!-- Bottom navigation -->
     <string name="nav_khata">کاتو</string>
+    <string name="nav_home">مکيه</string>
+    <string name="home_section_daily">هر روز</string>
+    <string name="home_section_business">توهان جو ڪاروبار</string>
     <string name="nav_cashbook">روڪڙ</string>
     <string name="nav_cheques">چيڪ</string>
     <string name="nav_plans">رٿائون</string>

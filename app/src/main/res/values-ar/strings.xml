@@ -20,6 +20,20 @@
     <string name="coach_desc_nav_plans">خطط التقسيط للعملاء الذين يدفعون على دفعات.</string>
     <string name="coach_title_nav_more">المزيد</string>
     <string name="coach_desc_nav_more">حاسبة الزكاة، بطاقة المتجر، النسخ الاحتياطي، قفل التطبيق، والإعدادات.</string>
+        <string name="coach_title_bills">فواتير الموردين</string>
+    <string name="coach_desc_bills">سجّل ما تشتريه من الموردين وما لا يزال عليك لهم.</string>
+    <string name="coach_title_stock">مخزون قارب على الانتهاء</string>
+    <string name="coach_desc_stock">بِعه أو خفّض سعره أو أرجعه — ما دام في الوقت متسع.</string>
+    <string name="coach_title_insights">تحليلات المبيعات</string>
+    <string name="coach_desc_insights">اعرف ما يُباع، وما يبقى راكدًا، وأين تتجمّد أموالك.</string>
+    <string name="coach_title_zakat">حاسبة الزكاة</string>
+    <string name="coach_desc_zakat">أداة مرجعية لتقدير زكاتك — تأكّد من الحكم مع عالم مؤهل.</string>
+    <string name="coach_title_bizcard">بطاقة العمل</string>
+    <string name="coach_desc_bizcard">أنشئ بطاقة قابلة للمشاركة لمتجرك في ثوانٍ، بثلاثة أنماط.</string>
+    <string name="coach_title_backup">النسخ الاحتياطي</string>
+    <string name="coach_desc_backup">احفظ دفترك بأمان على درايف الخاص بك.</string>
+    <string name="coach_title_applock">سلة المحذوفات</string>
+    <string name="coach_desc_applock">حذفت عميلًا بالخطأ؟ استعده من هنا.</string>
     <string name="coach_title_add">أضف عميلًا</string>
     <string name="coach_desc_add">اضغط هنا لإضافة عميلك الأول وبدء دفتر حساباتك.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
@@ -357,6 +371,9 @@
     <string name="delete_plan_confirm">ستُزال الخطة، لكن الدفعات المسجلة تبقى في الدفتر. ذلك المال قُبض فعلًا، وحذف الترتيب لا يلغيه.</string>
 
     <string name="nav_khata">الدفتر</string>
+    <string name="nav_home">الرئيسية</string>
+    <string name="home_section_daily">كل يوم</string>
+    <string name="home_section_business">عملك</string>
     <string name="nav_cashbook">النقد</string>
     <string name="nav_cheques">الشيكات</string>
     <string name="nav_plans">الخطط</string>
