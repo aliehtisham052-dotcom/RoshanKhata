@@ -51,6 +51,13 @@ class CoachMarkController(
          */
         val cornerRadiusDp: Float = 999f,
         /**
+         * Breathing room drawn around the target, in dp. Small where
+         * something sits close above or below the target — the balance row
+         * has its own caption directly overhead, and a wide ring lights that
+         * too, which reads as pointing at the wrong thing.
+         */
+        val paddingDp: Float = 10f,
+        /**
          * What the card must clear, if that is larger than [target]. A tile's
          * circle is drawn round its icon alone, but the card still has to sit
          * below the label underneath — otherwise it lands on top of it.
@@ -150,7 +157,7 @@ class CoachMarkController(
                     override fun onGlobalLayout() {
                         overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                         val rect = CoachMarkOverlay.boundsWithin(step.target, host)
-                        overlayView.holePadding = dp(10f)
+                        overlayView.holePadding = dp(step.paddingDp)
                         overlayView.holeRadius = dp(step.cornerRadiusDp)
                         overlayView.holeRect = rect
                         // Post rather than place inline: assigning layoutParams

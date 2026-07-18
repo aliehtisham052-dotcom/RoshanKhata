@@ -277,7 +277,10 @@ class MainActivity : AppCompatActivity() {
                 CoachMarkController.Step(
                     target = row,
                     titleRes = R.string.coach_title_balance,
-                    descRes = R.string.coach_desc_balance
+                    descRes = R.string.coach_desc_balance,
+                    // Tight. "Net balance" sits directly above this row, and a
+                    // wider ring lights the caption along with the figure.
+                    paddingDp = 2f
                 )
             },
             tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
