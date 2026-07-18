@@ -20,7 +20,7 @@
     android:layout_margin="3dp"
     android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="12dp"
+    app:cardCornerRadius="100dp"
     app:cardElevation="1dp">
 
     <LinearLayout
@@ -29,8 +29,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="9dp"
-        android:paddingBottom="8dp">
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp">
 
         <FrameLayout
             android:layout_width="28dp"
@@ -54,8 +54,8 @@
             android:gravity="center"
             android:lineSpacingExtra="1dp"
             android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:textColor="@color/ink"
             android:textSize="10sp"
             android:textStyle="bold"

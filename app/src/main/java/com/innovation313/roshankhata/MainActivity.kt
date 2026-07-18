@@ -317,8 +317,10 @@ class MainActivity : AppCompatActivity() {
             CoachMarkController.Step(
                 target = tile,
                 titleRes = titleRes,
-                descRes = descRes,
-                cornerRadiusDp = 22f
+                descRes = descRes
+                // No radius given: the default rounds fully, and the overlay
+                // clamps it to half the shorter side — so the lit shape
+                // follows the tile, which is now a round one.
             )
         }
 
