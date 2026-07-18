@@ -1,5 +1,8 @@
 package com.innovation313.roshankhata.ui
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.graphics.RectF
@@ -7,6 +10,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.animation.DecelerateInterpolator
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -40,15 +44,12 @@ class CoachMarkController(
         val target: View,
         val titleRes: Int,
         val descRes: Int,
-        val cornerRadiusDp: Float = 12f,
         /**
-         * Light a circle around the target's centre instead of its full
-         * rectangle. A grid tile is mostly padding around a small icon, so
-         * lighting the whole tile draws the eye to empty space.
+         * Corner radius in dp. The overlay clamps this to half the shorter
+         * side, so a generous value rounds a small square target fully while
+         * a wide one keeps sensible ends.
          */
-        val circular: Boolean = false,
-        /** Radius of that circle in dp. Ignored unless [circular]. */
-        val circleRadiusDp: Float = 34f,
+        val cornerRadiusDp: Float = 999f,
         /**
          * What the card must clear, if that is larger than [target]. A tile's
          * circle is drawn round its icon alone, but the card still has to sit
@@ -61,6 +62,7 @@ class CoachMarkController(
     private var overlay: CoachMarkOverlay? = null
     private var card: View? = null
     private var container: FrameLayout? = null
+    private var scrollAnimator: ValueAnimator? = null
 
     fun start() {
         if (steps.isEmpty()) return
@@ -148,10 +150,8 @@ class CoachMarkController(
                     override fun onGlobalLayout() {
                         overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                         val rect = CoachMarkOverlay.boundsWithin(step.target, host)
-                        overlayView.holePadding = dp(6f)
+                        overlayView.holePadding = dp(10f)
                         overlayView.holeRadius = dp(step.cornerRadiusDp)
-                        overlayView.circular = step.circular
-                        overlayView.circleRadius = dp(step.circleRadiusDp)
                         overlayView.holeRect = rect
                         // Post rather than place inline: assigning layoutParams
                         // during a layout pass re-enters layout, which Android
@@ -231,19 +231,33 @@ class CoachMarkController(
             return
         }
 
-        // Park every row at the same height in the viewport. Scrolling by a
-        // fixed offset from each tile meant the first row barely moved and a
-        // later row swung most of a screen, so the tour lurched from step to
-        // step instead of advancing evenly.
+        // Park every row at the same height in the viewport, so the tour
+        // advances by the same visual step each time rather than barely moving
+        // on one row and swinging a screenful on the next.
         val topWithin = CoachMarkOverlay.boundsWithin(target, scroller).top.toInt() + scroller.scrollY
         val desired = (topWithin - dp(16f).toInt()).coerceAtLeast(0)
         if (kotlin.math.abs(desired - scroller.scrollY) < dp(4f)) {
             then()
             return
         }
-        scroller.smoothScrollTo(0, desired)
-        // Let the scroll settle before the bounds are read.
-        scroller.postDelayed({ then() }, SCROLL_SETTLE_MS)
+
+        // An animator rather than smoothScrollTo. smoothScrollTo takes as long
+        // as it likes depending on the distance, so pairing it with a fixed
+        // wait meant the spotlight was measured mid-flight on the long jumps
+        // and sat idle after the short ones — the lurch between steps. This
+        // runs to a known duration and reports the moment it lands.
+        scrollAnimator?.cancel()
+        scrollAnimator = ValueAnimator.ofInt(scroller.scrollY, desired).apply {
+            duration = SCROLL_MS
+            interpolator = DecelerateInterpolator(1.6f)
+            addUpdateListener { scroller.scrollTo(0, it.animatedValue as Int) }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    then()
+                }
+            })
+            start()
+        }
     }
 
     /**
@@ -273,6 +287,8 @@ class CoachMarkController(
     }
 
     private fun finish() {
+        scrollAnimator?.cancel()
+        scrollAnimator = null
         // Removing the host removes the scrim and the card with it.
         container?.let { root.removeView(it) }
         container = null
@@ -291,8 +307,8 @@ class CoachMarkController(
          */
         private const val CARD_RESTING_FRACTION = 0.52f
 
-        /** Long enough for smoothScrollTo to land before bounds are measured. */
-        private const val SCROLL_SETTLE_MS = 320L
+        /** How long a row takes to travel, whatever the distance. */
+        private const val SCROLL_MS = 340L
 
         private const val PREFS = "coach_marks"
         private const val KEY_RUN = "home_tour_done"

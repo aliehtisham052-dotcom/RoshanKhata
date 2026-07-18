@@ -275,14 +275,9 @@ class MainActivity : AppCompatActivity() {
         val steps = listOfNotNull(
             findViewById<View>(R.id.balanceRow)?.let { row ->
                 CoachMarkController.Step(
-                    // Centre on the figure and its eye, so this step reads the
-                    // same as the twelve that follow it.
-                    target = findViewById<View>(R.id.tvNetBalance) ?: row,
+                    target = row,
                     titleRes = R.string.coach_title_balance,
-                    descRes = R.string.coach_desc_balance,
-                    circular = true,
-                    circleRadiusDp = 62f,
-                    clearance = row
+                    descRes = R.string.coach_desc_balance
                 )
             },
             tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
@@ -316,18 +311,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun tileStep(labelRes: Int, titleRes: Int, descRes: Int): CoachMarkController.Step? =
         featureViews[labelRes]?.let { tile ->
-            val icon = tile.findViewById<View>(R.id.ivFeatureIcon) ?: tile
+            // The whole tile, icon and label together. Highlighting the icon
+            // alone left its own name outside the lit area, which read as
+            // pointing at half a thing.
             CoachMarkController.Step(
-                // Circle the icon, not the tile: a circle wide enough to hold
-                // the label as well spills past the tile on either side and
-                // clips the longer names.
-                target = icon,
+                target = tile,
                 titleRes = titleRes,
                 descRes = descRes,
-                circular = true,
-                circleRadiusDp = 34f,
-                // The card still has to clear the label below the icon.
-                clearance = tile
+                cornerRadiusDp = 22f
             )
         }
 

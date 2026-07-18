@@ -38,24 +38,22 @@ class CoachMarkOverlay(context: Context) : View(context) {
 
     /** Extra breathing room, in px, drawn around the target view's real bounds. */
     var holePadding: Float = 0f
-
-    /** Corner radius of the punched hole, in px. Ignored when [circular]. */
-    var holeRadius: Float = 0f
-
-    /**
-     * Draw the hole as a circle around the target's centre rather than a
-     * rounded rectangle. A tile is mostly empty space around a small icon, so
-     * a rectangle the size of the whole tile lights far more than the thing
-     * being pointed at; a circle sized to the icon reads as a spotlight.
-     */
-    var circular: Boolean = false
         set(value) {
             field = value
             invalidate()
         }
 
-    /** Radius of the circular hole, in px. Used only when [circular]. */
-    var circleRadius: Float = 0f
+    /**
+     * Corner radius of the punched hole, in px.
+     *
+     * The shape is always the target's own rectangle plus [holePadding], so
+     * the lit area is the size of the thing being pointed at and nothing
+     * more. Fixed radii were tried and did not work: a circle sized by hand
+     * fitted the tile icons and then ran off the edge of the screen on the
+     * balance row, because a number is far wider than it is tall. Whatever is
+     * highlighted, the hole is measured from it.
+     */
+    var holeRadius: Float = 0f
         set(value) {
             field = value
             invalidate()
@@ -70,17 +68,17 @@ class CoachMarkOverlay(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), scrimPaint)
         holeRect?.let { rect ->
-            if (circular) {
-                canvas.drawCircle(rect.centerX(), rect.centerY(), circleRadius, holePaint)
-            } else {
-                val padded = RectF(
-                    rect.left - holePadding,
-                    rect.top - holePadding,
-                    rect.right + holePadding,
-                    rect.bottom + holePadding
-                )
-                canvas.drawRoundRect(padded, holeRadius, holeRadius, holePaint)
-            }
+            val padded = RectF(
+                rect.left - holePadding,
+                rect.top - holePadding,
+                rect.right + holePadding,
+                rect.bottom + holePadding
+            )
+            // Never wider than the hole is round: clamping to half the shorter
+            // side keeps a squat shape from bulging into a lens.
+            val maxRadius = minOf(padded.width(), padded.height()) / 2f
+            val radius = holeRadius.coerceAtMost(maxRadius)
+            canvas.drawRoundRect(padded, radius, radius, holePaint)
         }
     }
 
