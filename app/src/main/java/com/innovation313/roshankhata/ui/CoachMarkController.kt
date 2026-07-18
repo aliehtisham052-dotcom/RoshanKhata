@@ -3,12 +3,10 @@ package com.innovation313.roshankhata.ui
 import android.app.Activity
 import android.content.Context
 import android.graphics.RectF
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -63,14 +61,17 @@ class CoachMarkController(
         overlay = overlayView
 
         val cardView = activity.layoutInflater.inflate(R.layout.view_coach_bubble, root, false)
-        val lp = FrameLayout.LayoutParams(
+        // Plain MarginLayoutParams rather than a FrameLayout's: Home's root is
+        // a ConstraintLayout, and every ViewGroup converts these into its own
+        // type on addView. Handing over foreign params would mean the cast in
+        // positionCard throws when it reads them back.
+        val lp = ViewGroup.MarginLayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply {
-            // Placed per step by positionCard; these are only the side insets.
-            gravity = Gravity.TOP or Gravity.START
             marginStart = dp(20f).toInt()
             marginEnd = dp(20f).toInt()
+            topMargin = dp(20f).toInt()
         }
         root.addView(cardView, lp)
         card = cardView
@@ -120,7 +121,14 @@ class CoachMarkController(
                         // Post rather than place inline: assigning layoutParams
                         // during a layout pass re-enters layout, which Android
                         // may treat as a loop.
-                        cardView.post { positionCard(cardView, rect) }
+                        cardView.post {
+                            try {
+                                positionCard(cardView, rect)
+                            } catch (e: Exception) {
+                                // A misplaced card is a blemish; a crash is not.
+                                android.util.Log.e(TAG, "positioning failed", e)
+                            }
+                        }
                     }
                 }
             )
@@ -138,11 +146,18 @@ class CoachMarkController(
      * card goes above instead rather than running off the screen.
      */
     private fun positionCard(cardView: View, target: RectF) {
-        val lp = cardView.layoutParams as FrameLayout.LayoutParams
+        // root is whatever the screen's own root happens to be — a
+        // ConstraintLayout on Home — and it rewrites the params it is handed
+        // into its own type. Casting to FrameLayout.LayoutParams here would
+        // throw; ask for the margin type they all share instead.
+        val lp = cardView.layoutParams as? ViewGroup.MarginLayoutParams ?: return
         val gap = dp(14f).toInt()
 
-        // Measure at the width the card will actually occupy.
-        val available = root.width - dp(40f).toInt()
+        val rootWidth = root.width
+        val rootHeight = root.height
+        if (rootWidth <= 0 || rootHeight <= 0) return
+
+        val available = (rootWidth - dp(40f).toInt()).coerceAtLeast(1)
         cardView.measure(
             View.MeasureSpec.makeMeasureSpec(available, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
@@ -150,9 +165,8 @@ class CoachMarkController(
         val cardHeight = cardView.measuredHeight
 
         val below = target.bottom.toInt() + gap
-        val fitsBelow = below + cardHeight <= root.height - dp(12f)
+        val fitsBelow = below + cardHeight <= rootHeight - dp(12f)
 
-        lp.gravity = Gravity.TOP or Gravity.START
         lp.topMargin = if (fitsBelow) {
             below
         } else {
@@ -224,6 +238,8 @@ class CoachMarkController(
     }
 
     companion object {
+        private const val TAG = "CoachMarks"
+
         /** Long enough for smoothScrollTo to land before bounds are measured. */
         private const val SCROLL_SETTLE_MS = 320L
 

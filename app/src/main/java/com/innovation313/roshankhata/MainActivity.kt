@@ -285,7 +285,18 @@ class MainActivity : AppCompatActivity() {
 
         if (steps.isEmpty()) return
 
-        root.post { CoachMarkController(this, root, steps).start() }
+        // The tour is a nicety, not the app. If anything in it goes wrong on a
+        // device we have not seen, mark it done and carry on — a shopkeeper
+        // locked out of their own ledger by a broken tutorial is far worse
+        // than one who never sees the tutorial.
+        root.post {
+            try {
+                CoachMarkController(this, root, steps).start()
+            } catch (e: Exception) {
+                android.util.Log.e("Home", "walkthrough failed", e)
+                CoachMarkController.markRun(this)
+            }
+        }
     }
 
     private fun tileStep(labelRes: Int, titleRes: Int, descRes: Int): CoachMarkController.Step? =
