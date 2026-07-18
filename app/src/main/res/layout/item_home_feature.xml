@@ -46,14 +46,20 @@
                 tools:src="@drawable/ic_nav_khata" />
         </FrameLayout>
 
+        <!--
+          Two lines' worth of room whether the name needs it or not. Left to
+          wrap_content, "Khata" made a short tile and "Business Settings" a
+          tall one, and a grid of tiles at differing heights reads as a
+          mistake however carefully each one is drawn.
+        -->
         <TextView
             android:id="@+id/tvFeatureLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:lines="2"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:lineSpacingExtra="1dp"
-            android:maxLines="2"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:textColor="@color/ink"
