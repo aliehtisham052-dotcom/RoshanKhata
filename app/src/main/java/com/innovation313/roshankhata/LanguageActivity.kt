@@ -74,15 +74,32 @@ class LanguageActivity : AppCompatActivity() {
     }
 
     private fun choose(tag: String) {
+        val firstRun = !isChosen(this)
+
         getSharedPreferences(PREFS, MODE_PRIVATE)
             .edit().putBoolean(KEY_CHOSEN, true).apply()
 
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
 
-        // setApplicationLocales recreates activities as needed; move on to the
-        // gate (lock-or-home) with a clean stack.
+        if (!firstRun) {
+            // Opened from More to change language. The app is already running
+            // and the lock, if any, was cleared on the way in — so just go
+            // back where they came from.
+            finish()
+            return
+        }
+
+        // First run: straight to the ledger, not back through the gate. The
+        // gate shows the splash, and the owner has just watched it — sending
+        // them back would play the same logo a second time on the one launch
+        // where they are least in the mood for it.
+        //
+        // Skipping the gate skips its lock check too, which costs nothing on
+        // a first run: App Lock cannot have been turned on yet, since this
+        // screen is the first thing the app has shown.
         startActivity(
-            Intent(this, GateActivity::class.java)
+            Intent(this, MainActivity::class.java)
+                .putExtra(MainActivity.EXTRA_UNLOCKED, true)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         )
         finish()

@@ -23,24 +23,31 @@ class GateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // First run: the language picker comes before everything else, the way
-        // the competitor opens. Once chosen it never appears here again.
+        // The branded beat comes first, always — before the language picker on
+        // a first run and before the ledger on every one after. It used to be
+        // skipped entirely on the very first launch, which meant a new owner
+        // met the language list before they had seen the app's own name.
+        setContentView(R.layout.activity_gate)
+
+        // Long enough to read on the first launch, brief on the rest. Someone
+        // opening the app for the tenth time today wants their ledger, not the
+        // logo they already know.
+        val firstRun = !LanguageActivity.isChosen(this)
+        val hold = if (firstRun) SPLASH_FIRST_MS else SPLASH_MS
+
+        Handler(Looper.getMainLooper()).postDelayed({ route() }, hold)
+    }
+
+    private fun route() {
+        if (isFinishing || isDestroyed) return
+
+        // First run: the language picker, now that the mark has been shown.
+        // Once chosen it never appears here again.
         if (!LanguageActivity.isChosen(this)) {
             startActivity(Intent(this, LanguageActivity::class.java))
             finish()
             return
         }
-
-        // The branded beat — logo and tagline — shown on every launch, so the
-        // door looks the same whether the lock is waiting behind it or not.
-        // (Previously only locked launches ever saw it, via the lock screen.)
-        setContentView(R.layout.activity_gate)
-
-        Handler(Looper.getMainLooper()).postDelayed({ route() }, SPLASH_MS)
-    }
-
-    private fun route() {
-        if (isFinishing || isDestroyed) return
 
         val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
 
@@ -58,6 +65,10 @@ class GateActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val SPLASH_MS = 1200L
+        /** The first launch, where the name is worth a moment. */
+        private const val SPLASH_FIRST_MS = 1200L
+
+        /** Every launch after: enough to see, not enough to wait through. */
+        private const val SPLASH_MS = 500L
     }
 }
