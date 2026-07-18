@@ -173,6 +173,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingBottom="12dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -220,6 +221,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
+
+            <!--
+              Room beneath the last row so the walkthrough can scroll it to the
+              top of the viewport. Without this the final tiles could never
+              rise far enough for their card to sit below them.
+            -->
+            <Space
+                android:id="@+id/gridTailSpace"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
         </LinearLayout>
     </ScrollView>
 

@@ -58,10 +58,10 @@ class LanguageActivity : AppCompatActivity() {
             // linking. Setting the tint list in code is honored unconditionally.
             btn.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
             btn.setTextColor(0xFF1A1A18.toInt())
-            // Uniform, polished shape: rounded corners and a text size that
-            // shrinks just enough for longer labels (Roman Urdu) instead of
-            // truncating, so all six buttons read as one tidy set.
-            (btn as? MaterialButton)?.cornerRadius = (14 * density).toInt()
+            // Full pills. Half the button's height rounds the ends exactly;
+            // MaterialButton clamps anything larger to the same, so the shape
+            // holds even if the height in the style changes later.
+            (btn as? MaterialButton)?.cornerRadius = (28 * density).toInt()
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
                 btn, 11, 15, 1, TypedValue.COMPLEX_UNIT_SP
             )

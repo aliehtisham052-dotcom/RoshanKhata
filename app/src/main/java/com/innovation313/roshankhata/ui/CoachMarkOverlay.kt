@@ -39,8 +39,27 @@ class CoachMarkOverlay(context: Context) : View(context) {
     /** Extra breathing room, in px, drawn around the target view's real bounds. */
     var holePadding: Float = 0f
 
-    /** Corner radius of the punched hole, in px. */
+    /** Corner radius of the punched hole, in px. Ignored when [circular]. */
     var holeRadius: Float = 0f
+
+    /**
+     * Draw the hole as a circle around the target's centre rather than a
+     * rounded rectangle. A tile is mostly empty space around a small icon, so
+     * a rectangle the size of the whole tile lights far more than the thing
+     * being pointed at; a circle sized to the icon reads as a spotlight.
+     */
+    var circular: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    /** Radius of the circular hole, in px. Used only when [circular]. */
+    var circleRadius: Float = 0f
+        set(value) {
+            field = value
+            invalidate()
+        }
 
     init {
         // This view paints its own hole with CLEAR; it must not be flattened
@@ -51,13 +70,17 @@ class CoachMarkOverlay(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), scrimPaint)
         holeRect?.let { rect ->
-            val padded = RectF(
-                rect.left - holePadding,
-                rect.top - holePadding,
-                rect.right + holePadding,
-                rect.bottom + holePadding
-            )
-            canvas.drawRoundRect(padded, holeRadius, holeRadius, holePaint)
+            if (circular) {
+                canvas.drawCircle(rect.centerX(), rect.centerY(), circleRadius, holePaint)
+            } else {
+                val padded = RectF(
+                    rect.left - holePadding,
+                    rect.top - holePadding,
+                    rect.right + holePadding,
+                    rect.bottom + holePadding
+                )
+                canvas.drawRoundRect(padded, holeRadius, holeRadius, holePaint)
+            }
         }
     }
 

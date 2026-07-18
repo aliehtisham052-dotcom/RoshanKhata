@@ -39,7 +39,15 @@ class CoachMarkController(
         val target: View,
         val titleRes: Int,
         val descRes: Int,
-        val cornerRadiusDp: Float = 12f
+        val cornerRadiusDp: Float = 12f,
+        /**
+         * Light a circle around the target's centre instead of its full
+         * rectangle. A grid tile is mostly padding around a small icon, so
+         * lighting the whole tile draws the eye to empty space.
+         */
+        val circular: Boolean = false,
+        /** Radius of that circle in dp. Ignored unless [circular]. */
+        val circleRadiusDp: Float = 34f
     )
 
     private var index = 0
@@ -135,6 +143,8 @@ class CoachMarkController(
                         val rect = CoachMarkOverlay.boundsWithin(step.target, host)
                         overlayView.holePadding = dp(6f)
                         overlayView.holeRadius = dp(step.cornerRadiusDp)
+                        overlayView.circular = step.circular
+                        overlayView.circleRadius = dp(step.circleRadiusDp)
                         overlayView.holeRect = rect
                         // Post rather than place inline: assigning layoutParams
                         // during a layout pass re-enters layout, which Android
@@ -181,14 +191,13 @@ class CoachMarkController(
         )
         val cardHeight = cardView.measuredHeight
 
+        // Always below, never above: the owner should read the tile and then
+        // its explanation, in that order, on every step. The grid scrolls the
+        // tile high enough to leave the room, and the last rows have padding
+        // beneath them for the same reason.
         val below = target.bottom.toInt() + gap
-        val fitsBelow = below + cardHeight <= rootHeight - dp(12f)
-
-        lp.topMargin = if (fitsBelow) {
-            below
-        } else {
-            (target.top.toInt() - gap - cardHeight).coerceAtLeast(dp(12f).toInt())
-        }
+        val lowestTop = rootHeight - cardHeight - dp(12f).toInt()
+        lp.topMargin = below.coerceAtMost(lowestTop.coerceAtLeast(dp(12f).toInt()))
         cardView.layoutParams = lp
     }
 
@@ -207,10 +216,12 @@ class CoachMarkController(
             return
         }
 
-        // Aim to land the tile in the upper third. The card sits beneath it,
-        // so a tile parked mid-screen would leave the card nowhere to go.
+        // Park the tile near the top of the viewport. The card always sits
+        // beneath it, so anything lower leaves the card nowhere to go — and
+        // "somewhere else" would mean the explanation appearing above the
+        // thing it explains.
         val topWithin = CoachMarkOverlay.boundsWithin(target, scroller).top.toInt() + scroller.scrollY
-        val desired = (topWithin - scroller.height / 5).coerceAtLeast(0)
+        val desired = (topWithin - dp(24f).toInt()).coerceAtLeast(0)
         if (kotlin.math.abs(desired - scroller.scrollY) < dp(4f)) {
             then()
             return

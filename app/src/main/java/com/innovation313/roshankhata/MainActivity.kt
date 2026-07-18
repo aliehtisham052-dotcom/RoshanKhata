@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         buildFeatureGrid()
+        sizeGridTail()
         setupBottomNav()
         observeTotals()
         maybeShowCoachMarks()
@@ -312,8 +313,27 @@ class MainActivity : AppCompatActivity() {
 
     private fun tileStep(labelRes: Int, titleRes: Int, descRes: Int): CoachMarkController.Step? =
         featureViews[labelRes]?.let {
-            CoachMarkController.Step(it, titleRes, descRes, cornerRadiusDp = 16f)
+            CoachMarkController.Step(
+                it, titleRes, descRes,
+                circular = true,
+                circleRadiusDp = 38f
+            )
         }
+
+    /**
+     * Leave a screenful of room under the last row so the walkthrough can
+     * scroll any tile — including the bottom ones — to the top, where there is
+     * space for its card underneath.
+     */
+    private fun sizeGridTail() {
+        val tail = findViewById<View>(R.id.gridTailSpace) ?: return
+        val scroll = findViewById<View>(R.id.featureScroll) ?: return
+        scroll.post {
+            val params = tail.layoutParams
+            params.height = (scroll.height * 0.55f).toInt().coerceAtLeast(0)
+            tail.layoutParams = params
+        }
+    }
 
     companion object {
         /** Tiles per row in the feature grid. */
