@@ -379,12 +379,12 @@ class KhataActivity : AppCompatActivity() {
      */
     private fun setupBottomNav() {
         val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        nav.selectedItemId = R.id.nav_khata
+        // Khata has no item of its own in the bar — it is one of the twelve
+        // cards on Home. Home stays lit while its ledger is open.
+        nav.selectedItemId = R.id.nav_home
 
         nav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_khata -> true // already here
-
                 R.id.nav_home -> {
                     // Home is below this screen in the stack — finish rather
                     // than stacking a second copy of it on top.
@@ -425,7 +425,7 @@ class KhataActivity : AppCompatActivity() {
         super.onResume()
         // Coming back from another section, the bar must show Khata again —
         // otherwise it would still be highlighting wherever the user last went.
-        findViewById<BottomNavigationView>(R.id.bottomNav)?.selectedItemId = R.id.nav_khata
+        findViewById<BottomNavigationView>(R.id.bottomNav)?.selectedItemId = R.id.nav_home
     }
 
     /**

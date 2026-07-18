@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  One tile in the Home grid: an icon over a label, sized for a thumb. Included
-  several times over and filled in from code, so a new feature is one <include>
-  and one binding call rather than a fresh block of XML each time.
+  One tile in the Home grid.
+
+  The icon sits on a tinted disc rather than floating on white: twelve flat
+  glyphs on twelve flat cards read as a list with decoration above each label,
+  and the disc gives every tile a centre of gravity. Elevation is kept low and
+  the corner radius generous, so the grid reads as a set of surfaces rather
+  than a stack of raised boxes competing for depth.
+
+  Inflated once per feature from code — an <include> would hand all twelve
+  copies the same ids.
 -->
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -10,11 +17,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
+    android:layout_margin="6dp"
     android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp">
+    app:cardCornerRadius="18dp"
+    app:cardElevation="1dp">
 
     <LinearLayout
         android:id="@+id/featureRoot"
@@ -22,25 +29,33 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="16dp"
-        android:paddingBottom="14dp">
+        android:paddingTop="18dp"
+        android:paddingBottom="16dp">
 
-        <ImageView
-            android:id="@+id/ivFeatureIcon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:contentDescription="@null"
-            tools:src="@drawable/ic_nav_khata" />
+        <FrameLayout
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_feature_icon">
+
+            <ImageView
+                android:id="@+id/ivFeatureIcon"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                tools:src="@drawable/ic_nav_khata" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tvFeatureLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
+            android:lineSpacingExtra="1dp"
             android:maxLines="2"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
             android:textColor="@color/ink"
             android:textSize="12sp"
             android:textStyle="bold"

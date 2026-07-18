@@ -154,10 +154,6 @@ class MainActivity : AppCompatActivity() {
         nav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> true // already here
-                R.id.nav_khata -> {
-                    startActivity(Intent(this, KhataActivity::class.java))
-                    false
-                }
                 R.id.nav_more -> {
                     showMoreSheet()
                     false
@@ -329,7 +325,7 @@ class MainActivity : AppCompatActivity() {
                 titleRes = titleRes,
                 descRes = descRes,
                 circular = true,
-                circleRadiusDp = 30f,
+                circleRadiusDp = 34f,
                 // The card still has to clear the label below the icon.
                 clearance = tile
             )

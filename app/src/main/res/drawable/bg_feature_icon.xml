@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The disc behind a tile's icon. A flat glyph on flat white left the grid
+  looking like a list of labels with decoration above them; seating each icon
+  on a tinted disc gives the row a rhythm and makes the tile read as a button.
+
+  The tint is the brand green at low opacity rather than a separate colour, so
+  it stays in key with the header above it.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#141B5E3A" />
+</shape>

@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Three destinations, not five. Every feature now has a card on Home, so a bar
-  that repeated Cashbook, Cheques and Plans would have been saying the same
-  thing twice. What is left is the shape of the app: the grid, the customer
-  ledger, and the settings that are set once and forgotten.
+  Two destinations. Every feature has a card on Home, Khata included — a bar
+  that repeated one of the twelve would be giving it a second door for no
+  reason, and singling it out from the eleven beside it. What is left is the
+  shape of the app: everything it does, and the settings set once and
+  forgotten.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_nav_home"
         android:title="@string/nav_home" />
-    <item
-        android:id="@+id/nav_khata"
-        android:icon="@drawable/ic_nav_khata"
-        android:title="@string/nav_khata" />
     <item
         android:id="@+id/nav_more"
         android:icon="@drawable/ic_nav_more"
