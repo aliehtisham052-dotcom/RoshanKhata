@@ -17,7 +17,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="76dp"
-    android:layout_margin="10dp"
+    android:layout_margin="14dp"
     android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="100dp"

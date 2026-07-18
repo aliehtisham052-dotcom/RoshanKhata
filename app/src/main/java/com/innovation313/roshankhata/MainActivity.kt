@@ -324,6 +324,12 @@ class MainActivity : AppCompatActivity() {
                 // No radius given: the default rounds fully, and the overlay
                 // clamps it to half the shorter side — so the lit shape
                 // follows the tile, which is now a round one.
+                //
+                // No padding either. The default 10dp ringed an oval that is
+                // already most of a third of the screen wide, which pushed the
+                // left column's spotlight off the edge. Lit at its own size,
+                // the hole is the tile.
+                paddingDp = 0f
             )
         }
 
