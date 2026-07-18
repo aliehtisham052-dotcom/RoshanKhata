@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.ui
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.RectF
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -66,7 +67,8 @@ class CoachMarkController(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply {
-            gravity = Gravity.CENTER
+            // Placed per step by positionCard; these are only the side insets.
+            gravity = Gravity.TOP or Gravity.START
             marginStart = dp(20f).toInt()
             marginEnd = dp(20f).toInt()
         }
@@ -111,14 +113,49 @@ class CoachMarkController(
                 object : ViewTreeObserver.OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
                         overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                        val rect = CoachMarkOverlay.boundsWithin(step.target, root)
                         overlayView.holePadding = dp(6f)
                         overlayView.holeRadius = dp(step.cornerRadiusDp)
-                        overlayView.holeRect = CoachMarkOverlay.boundsWithin(step.target, root)
+                        overlayView.holeRect = rect
+                        positionCard(cardView, rect)
                     }
                 }
             )
             overlayView.requestLayout()
         }
+    }
+
+    /**
+     * Put the card directly beneath the tile it describes, so the owner reads
+     * the name and the explanation in one downward glance.
+     *
+     * Centring it looked neater in the abstract and buried the highlighted
+     * tile behind the card in practice — the one thing the step exists to
+     * show. If a tile sits so low that the card will not fit beneath it, the
+     * card goes above instead rather than running off the screen.
+     */
+    private fun positionCard(cardView: View, target: RectF) {
+        val lp = cardView.layoutParams as FrameLayout.LayoutParams
+        val gap = dp(14f).toInt()
+
+        // Measure at the width the card will actually occupy.
+        val available = root.width - dp(40f).toInt()
+        cardView.measure(
+            View.MeasureSpec.makeMeasureSpec(available, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        val cardHeight = cardView.measuredHeight
+
+        val below = target.bottom.toInt() + gap
+        val fitsBelow = below + cardHeight <= root.height - dp(12f)
+
+        lp.gravity = Gravity.TOP or Gravity.START
+        lp.topMargin = if (fitsBelow) {
+            below
+        } else {
+            (target.top.toInt() - gap - cardHeight).coerceAtLeast(dp(12f).toInt())
+        }
+        cardView.layoutParams = lp
     }
 
     /**
@@ -136,8 +173,10 @@ class CoachMarkController(
             return
         }
 
+        // Aim to land the tile in the upper third. The card sits beneath it,
+        // so a tile parked mid-screen would leave the card nowhere to go.
         val topWithin = CoachMarkOverlay.boundsWithin(target, scroller).top.toInt() + scroller.scrollY
-        val desired = (topWithin - scroller.height / 3).coerceAtLeast(0)
+        val desired = (topWithin - scroller.height / 5).coerceAtLeast(0)
         if (kotlin.math.abs(desired - scroller.scrollY) < dp(4f)) {
             then()
             return
