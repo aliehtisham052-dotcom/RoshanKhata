@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">روشن کھاتہ</string>
+
+    <string name="coach_skip">نظر انداز کریں</string>
+    <string name="coach_next">اگلا</string>
+    <string name="coach_done">سمجھ گیا</string>
+    <string name="coach_step_of">%1$d میں سے %2$d</string>
+    <string name="coach_title_balance">آپ کا بیلنس</string>
+    <string name="coach_desc_balance">ایک نظر میں دیکھیں آپ کو کتنا ملنا ہے اور کتنا دینا ہے۔ چھپانے کے لیے آنکھ کے آئیکن پر ٹیپ کریں۔</string>
+    <string name="coach_title_search">گاہک تلاش کریں</string>
+    <string name="coach_desc_search">یہاں سے اپنی گاہکوں کی فہرست تلاش یا ترتیب دیں۔</string>
+    <string name="coach_title_nav_khata">کھاتہ</string>
+    <string name="coach_desc_nav_khata">آپ کے گاہکوں کے کھاتے — کون آپ کا مقروض ہے اور آپ کس کے مقروض ہیں۔</string>
+    <string name="coach_title_nav_cashbook">کیش بک</string>
+    <string name="coach_desc_nav_cashbook">اپنا روزانہ نقد آمد و خرچ درج کریں۔</string>
+    <string name="coach_title_nav_cheques">چیک</string>
+    <string name="coach_desc_nav_cheques">وہ چیک جو آپ نے دیے یا وصول کیے، مقررہ تاریخوں کے ساتھ ان کا حساب رکھیں۔</string>
+    <string name="coach_title_nav_plans">پلانز</string>
+    <string name="coach_desc_nav_plans">ان گاہکوں کے لیے قسطوں کے پلان جو حصوں میں ادائیگی کرتے ہیں۔</string>
+    <string name="coach_title_nav_more">مزید</string>
+    <string name="coach_desc_nav_more">زکوٰۃ کیلکولیٹر، دکان کارڈ، بیک اپ، ایپ لاک، اور سیٹنگز۔</string>
+    <string name="coach_title_add">گاہک شامل کریں</string>
+    <string name="coach_desc_add">اپنا پہلا گاہک شامل کرنے اور کھاتہ شروع کرنے کے لیے یہاں ٹیپ کریں۔</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
     <string name="brand_line">Innovation-313</string>
 

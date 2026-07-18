@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">روشن خاتا</string>
+
+    <string name="coach_skip">رد کردن</string>
+    <string name="coach_next">بعدی</string>
+    <string name="coach_done">متوجه شدم</string>
+    <string name="coach_step_of">%1$d از %2$d</string>
+    <string name="coach_title_balance">موجودی شما</string>
+    <string name="coach_desc_balance">در یک نگاه ببینید چقدر طلبکار و چقدر بدهکار هستید. برای پنهان کردن، روی آیکون چشم بزنید.</string>
+    <string name="coach_title_search">جستجوی مشتری</string>
+    <string name="coach_desc_search">از اینجا لیست مشتریان خود را جستجو یا مرتب کنید.</string>
+    <string name="coach_title_nav_khata">دفتر حساب</string>
+    <string name="coach_desc_nav_khata">دفترهای حساب مشتریان شما — چه کسی به شما بدهکار است و شما به چه کسی.</string>
+    <string name="coach_title_nav_cashbook">دفتر نقدی</string>
+    <string name="coach_desc_nav_cashbook">نقدی روزانه ورودی و خروجی خود را ثبت کنید.</string>
+    <string name="coach_title_nav_cheques">چک‌ها</string>
+    <string name="coach_desc_nav_cheques">چک‌هایی که داده یا دریافت کرده‌اید را همراه با سررسید پیگیری کنید.</string>
+    <string name="coach_title_nav_plans">طرح‌ها</string>
+    <string name="coach_desc_nav_plans">طرح‌های اقساطی برای مشتریانی که به‌صورت قسطی پرداخت می‌کنند.</string>
+    <string name="coach_title_nav_more">بیشتر</string>
+    <string name="coach_desc_nav_more">محاسبه‌گر زکات، کارت مغازه، پشتیبان‌گیری، قفل برنامه و تنظیمات.</string>
+    <string name="coach_title_add">افزودن مشتری</string>
+    <string name="coach_desc_add">برای افزودن اولین مشتری و شروع دفتر حساب، اینجا را بزنید.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
     <string name="brand_line">Innovation-313</string>
 

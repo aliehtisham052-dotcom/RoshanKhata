@@ -1,5 +1,30 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
+
+    <!-- Onboarding: first-run coach marks on the Home screen — a bubble with
+         an arrow points at each real control in turn, Skip / Next / Got it.
+         Follows the device's system language since it appears before the
+         language picker. Kept short: these render inside a small bubble. -->
+    <string name="coach_skip">Skip</string>
+    <string name="coach_next">Next</string>
+    <string name="coach_done">Got it</string>
+    <string name="coach_step_of">%1$d of %2$d</string>
+    <string name="coach_title_balance">Your Balance</string>
+    <string name="coach_desc_balance">See what you\'re owed and what you owe, at a glance. Tap the eye to hide it.</string>
+    <string name="coach_title_search">Find a Customer</string>
+    <string name="coach_desc_search">Search or sort your customer list here.</string>
+    <string name="coach_title_nav_khata">Khata</string>
+    <string name="coach_desc_nav_khata">Your customer ledgers — who owes you, and who you owe.</string>
+    <string name="coach_title_nav_cashbook">Cash Book</string>
+    <string name="coach_desc_nav_cashbook">Log your daily cash in and out.</string>
+    <string name="coach_title_nav_cheques">Cheques</string>
+    <string name="coach_desc_nav_cheques">Track cheques you\'ve given or received, with due dates.</string>
+    <string name="coach_title_nav_plans">Plans</string>
+    <string name="coach_desc_nav_plans">Installment plans for customers paying in parts.</string>
+    <string name="coach_title_nav_more">More</string>
+    <string name="coach_desc_nav_more">Zakat calculator, Dukan Card, backup, App Lock, and settings.</string>
+    <string name="coach_title_add">Add a Customer</string>
+    <string name="coach_desc_add">Tap here to add your first customer and start your khata.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
     <string name="brand_line">Innovation-313</string>
 

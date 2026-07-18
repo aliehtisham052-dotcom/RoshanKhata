@@ -143,6 +143,72 @@ class MainActivity : AppCompatActivity() {
         setupBottomNav()
 
         observeData()
+
+        maybeShowCoachMarks()
+    }
+
+    /**
+     * First-run only: a short tour of the Home screen's real controls, each
+     * one spotlit in turn with a bubble explaining what it does. Never a
+     * full-screen slide — every step points at the actual button.
+     */
+    private fun maybeShowCoachMarks() {
+        if (com.innovation313.roshankhata.ui.CoachMarkController.hasRun(this)) return
+
+        val root = findViewById<android.view.ViewGroup>(android.R.id.content)
+            .getChildAt(0) as? android.view.ViewGroup ?: return
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+
+        fun navItemView(id: Int): View? = bottomNav.findViewById(id)
+
+        val steps = listOfNotNull(
+            findViewById<View>(R.id.balanceRow)?.let {
+                com.innovation313.roshankhata.ui.CoachMarkController.Step(
+                    it, R.string.coach_title_balance, R.string.coach_desc_balance
+                )
+            },
+            findViewById<View>(R.id.etSearchParties)?.let {
+                com.innovation313.roshankhata.ui.CoachMarkController.Step(
+                    it, R.string.coach_title_search, R.string.coach_desc_search
+                )
+            },
+            navItemView(R.id.nav_khata)?.let {
+                com.innovation313.roshankhata.ui.CoachMarkController.Step(
+                    it, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata
+                )
+            },
+            navItemView(R.id.nav_cashbook)?.let {
+                com.innovation313.roshankhata.ui.CoachMarkController.Step(
+                    it, R.string.coach_title_nav_cashbook, R.string.coach_desc_nav_cashbook
+                )
+            },
+            navItemView(R.id.nav_cheques)?.let {
+                com.innovation313.roshankhata.ui.CoachMarkController.Step(
+                    it, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques
+                )
+            },
+            navItemView(R.id.nav_plans)?.let {
+                com.innovation313.roshankhata.ui.CoachMarkController.Step(
+                    it, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans
+                )
+            },
+            navItemView(R.id.nav_more)?.let {
+                com.innovation313.roshankhata.ui.CoachMarkController.Step(
+                    it, R.string.coach_title_nav_more, R.string.coach_desc_nav_more
+                )
+            },
+            findViewById<View>(R.id.fabAddParty)?.let {
+                com.innovation313.roshankhata.ui.CoachMarkController.Step(
+                    it, R.string.coach_title_add, R.string.coach_desc_add, cornerRadiusDp = 24f
+                )
+            }
+        )
+
+        if (steps.isEmpty()) return
+
+        root.post {
+            com.innovation313.roshankhata.ui.CoachMarkController(this, root, steps).start()
+        }
     }
 
     private fun observeData() {

@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">روشن کاتو</string>
+
+    <string name="coach_skip">ڇڏي ڏيو</string>
+    <string name="coach_next">اڳتي</string>
+    <string name="coach_done">سمجهي ويس</string>
+    <string name="coach_step_of">%1$d مان %2$d</string>
+    <string name="coach_title_balance">توهان جو بيلنس</string>
+    <string name="coach_desc_balance">هڪ نظر ۾ ڏسو ته توهان کي ڪيترو ملڻو آهي ۽ ڪيترو ڏيڻو آهي. لڪائڻ لاءِ اکين واري آئڪن تي دٻايو.</string>
+    <string name="coach_title_search">گراهڪ ڳوليو</string>
+    <string name="coach_desc_search">هتان پنهنجي گراهڪن جي فهرست ڳوليو يا ترتيب ڏيو.</string>
+    <string name="coach_title_nav_khata">کاتو</string>
+    <string name="coach_desc_nav_khata">توهان جي گراهڪن جا کاتا — ڪير توهان جو مقروض آهي ۽ توهان ڪنهن جا مقروض آهيو.</string>
+    <string name="coach_title_nav_cashbook">ڪئش بڪ</string>
+    <string name="coach_desc_nav_cashbook">پنهنجو روزانو نقد اچڻ ۽ وڃڻ لکو.</string>
+    <string name="coach_title_nav_cheques">چيڪ</string>
+    <string name="coach_desc_nav_cheques">اهي چيڪ جيڪي توهان ڏنا يا ورتا، مقرر تاريخن سميت انهن جو حساب رکو.</string>
+    <string name="coach_title_nav_plans">پلانس</string>
+    <string name="coach_desc_nav_plans">انهن گراهڪن لاءِ قسطن جا پلان جيڪي حصن ۾ ادائيگي ڪن ٿا.</string>
+    <string name="coach_title_nav_more">وڌيڪ</string>
+    <string name="coach_desc_nav_more">زڪوات ڪئلڪوليٽر، دڪان ڪارڊ، بيڪ اپ، ايپ لاڪ ۽ سيٽنگون.</string>
+    <string name="coach_title_add">گراهڪ شامل ڪريو</string>
+    <string name="coach_desc_add">پنهنجو پهريون گراهڪ شامل ڪرڻ ۽ کاتو شروع ڪرڻ لاءِ هتي دٻايو.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
     <string name="brand_line">Innovation-313</string>
 

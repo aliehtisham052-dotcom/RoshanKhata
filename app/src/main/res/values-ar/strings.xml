@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">روشن كهاتا</string>
+
+    <string name="coach_skip">تخطي</string>
+    <string name="coach_next">التالي</string>
+    <string name="coach_done">فهمت</string>
+    <string name="coach_step_of">%1$d من %2$d</string>
+    <string name="coach_title_balance">رصيدك</string>
+    <string name="coach_desc_balance">اطّلع على ما لك وما عليك بلمحة. اضغط على أيقونة العين لإخفائه.</string>
+    <string name="coach_title_search">ابحث عن عميل</string>
+    <string name="coach_desc_search">ابحث في قائمة عملائك أو رتّبها من هنا.</string>
+    <string name="coach_title_nav_khata">كهاتا</string>
+    <string name="coach_desc_nav_khata">سجلات عملائك — من يدين لك ومن تدين له.</string>
+    <string name="coach_title_nav_cashbook">دفتر النقدية</string>
+    <string name="coach_desc_nav_cashbook">سجّل نقدك الوارد والصادر يوميًا.</string>
+    <string name="coach_title_nav_cheques">الشيكات</string>
+    <string name="coach_desc_nav_cheques">تتبّع الشيكات التي أعطيتها أو استلمتها، مع مواعيد الاستحقاق.</string>
+    <string name="coach_title_nav_plans">الخطط</string>
+    <string name="coach_desc_nav_plans">خطط التقسيط للعملاء الذين يدفعون على دفعات.</string>
+    <string name="coach_title_nav_more">المزيد</string>
+    <string name="coach_desc_nav_more">حاسبة الزكاة، بطاقة المتجر، النسخ الاحتياطي، قفل التطبيق، والإعدادات.</string>
+    <string name="coach_title_add">أضف عميلًا</string>
+    <string name="coach_desc_add">اضغط هنا لإضافة عميلك الأول وبدء دفتر حساباتك.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
     <string name="brand_line">Innovation-313</string>
 

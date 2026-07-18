@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
+
+    <string name="coach_skip">Skip Karein</string>
+    <string name="coach_next">Agla</string>
+    <string name="coach_done">Samajh Gaya</string>
+    <string name="coach_step_of">%1$d mein se %2$d</string>
+    <string name="coach_title_balance">Aap Ka Balance</string>
+    <string name="coach_desc_balance">Ek nazar mein dekhein aap ko kitna milna hai aur kitna dena hai. Chupane ke liye eye icon par tap karein.</string>
+    <string name="coach_title_search">Customer Talash Karein</string>
+    <string name="coach_desc_search">Yahan se apni customer list search ya sort karein.</string>
+    <string name="coach_title_nav_khata">Khata</string>
+    <string name="coach_desc_nav_khata">Aap ke customers ke khaate — kaun aap ka madion hai aur aap kis ke madion hain.</string>
+    <string name="coach_title_nav_cashbook">Cash Book</string>
+    <string name="coach_desc_nav_cashbook">Apna rozana nakad aamad-o-kharch darj karein.</string>
+    <string name="coach_title_nav_cheques">Cheques</string>
+    <string name="coach_desc_nav_cheques">Wo cheques jo aap ne diye ya wasool kiye, due dates ke sath unka hisaab rakhein.</string>
+    <string name="coach_title_nav_plans">Plans</string>
+    <string name="coach_desc_nav_plans">Un customers ke liye installment plans jo hisson mein payment karte hain.</string>
+    <string name="coach_title_nav_more">More</string>
+    <string name="coach_desc_nav_more">Zakat calculator, Dukan Card, backup, App Lock, aur settings.</string>
+    <string name="coach_title_add">Customer Shamil Karein</string>
+    <string name="coach_desc_add">Apna pehla customer shamil karne aur khata shuru karne ke liye yahan tap karein.</string>
     <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
     <string name="brand_line">Innovation-313</string>
 
