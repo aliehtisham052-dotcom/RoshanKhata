@@ -134,71 +134,6 @@ class KhataActivity : AppCompatActivity() {
 
         observeData()
 
-        maybeShowCoachMarks()
-    }
-
-    /**
-     * First-run only: a short tour of the Home screen's real controls, each
-     * one spotlit in turn with a bubble explaining what it does. Never a
-     * full-screen slide — every step points at the actual button.
-     */
-    private fun maybeShowCoachMarks() {
-        if (com.innovation313.roshankhata.ui.CoachMarkController.hasRun(this)) return
-
-        val root = findViewById<android.view.ViewGroup>(android.R.id.content)
-            .getChildAt(0) as? android.view.ViewGroup ?: return
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-
-        fun navItemView(id: Int): View? = bottomNav.findViewById(id)
-
-        val steps = listOfNotNull(
-            findViewById<View>(R.id.balanceRow)?.let {
-                com.innovation313.roshankhata.ui.CoachMarkController.Step(
-                    it, R.string.coach_title_balance, R.string.coach_desc_balance
-                )
-            },
-            findViewById<View>(R.id.etSearchParties)?.let {
-                com.innovation313.roshankhata.ui.CoachMarkController.Step(
-                    it, R.string.coach_title_search, R.string.coach_desc_search
-                )
-            },
-            navItemView(R.id.nav_khata)?.let {
-                com.innovation313.roshankhata.ui.CoachMarkController.Step(
-                    it, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata
-                )
-            },
-            navItemView(R.id.nav_cashbook)?.let {
-                com.innovation313.roshankhata.ui.CoachMarkController.Step(
-                    it, R.string.coach_title_nav_cashbook, R.string.coach_desc_nav_cashbook
-                )
-            },
-            navItemView(R.id.nav_cheques)?.let {
-                com.innovation313.roshankhata.ui.CoachMarkController.Step(
-                    it, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques
-                )
-            },
-            navItemView(R.id.nav_plans)?.let {
-                com.innovation313.roshankhata.ui.CoachMarkController.Step(
-                    it, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans
-                )
-            },
-            navItemView(R.id.nav_more)?.let {
-                com.innovation313.roshankhata.ui.CoachMarkController.Step(
-                    it, R.string.coach_title_nav_more, R.string.coach_desc_nav_more
-                )
-            },
-            findViewById<View>(R.id.fabAddParty)?.let {
-                com.innovation313.roshankhata.ui.CoachMarkController.Step(
-                    it, R.string.coach_title_add, R.string.coach_desc_add, cornerRadiusDp = 24f
-                )
-            }
-        )
-
-        if (steps.isEmpty()) return
-
-        root.post {
-            com.innovation313.roshankhata.ui.CoachMarkController(this, root, steps).start()
-        }
     }
 
     private fun observeData() {
@@ -450,16 +385,10 @@ class KhataActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_khata -> true // already here
 
-                R.id.nav_cashbook -> {
-                    startActivity(Intent(this, CashbookActivity::class.java))
-                    false
-                }
-                R.id.nav_cheques -> {
-                    startActivity(Intent(this, ChequesActivity::class.java))
-                    false
-                }
-                R.id.nav_plans -> {
-                    startActivity(Intent(this, PlansActivity::class.java))
+                R.id.nav_home -> {
+                    // Home is below this screen in the stack — finish rather
+                    // than stacking a second copy of it on top.
+                    finish()
                     false
                 }
                 R.id.nav_more -> {
@@ -471,18 +400,11 @@ class KhataActivity : AppCompatActivity() {
         }
     }
 
-    /** Everything that does not earn a permanent place in the bar. */
+    /** The set-once items, the same short list Home offers. */
     private fun showMoreSheet() {
         val options = arrayOf(
-            getString(R.string.insights_title),
-            getString(R.string.supplier_bills),
-            getString(R.string.zakat_calculator),
-            getString(R.string.business_settings),
-            getString(R.string.biz_card),
-            getString(R.string.language),
-            getString(R.string.backup_restore),
             getString(R.string.app_lock),
-            getString(R.string.recycle_bin),
+            getString(R.string.language),
             getString(R.string.report_problem)
         )
 
@@ -490,20 +412,14 @@ class KhataActivity : AppCompatActivity() {
             .setTitle(R.string.more_title)
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> startActivity(Intent(this, InsightsActivity::class.java))
-                    1 -> startActivity(Intent(this, BillsActivity::class.java))
-                    2 -> startActivity(Intent(this, ZakatActivity::class.java))
-                    3 -> startActivity(Intent(this, BusinessSettingsActivity::class.java))
-                    4 -> startActivity(Intent(this, BusinessCardActivity::class.java))
-                    5 -> startActivity(Intent(this, LanguageActivity::class.java))
-                    6 -> startActivity(Intent(this, BackupActivity::class.java))
-                    7 -> showAppLockSettings()
-                    8 -> startActivity(Intent(this, RecycleBinActivity::class.java))
-                    9 -> startActivity(Intent(this, ReportProblemActivity::class.java))
+                    0 -> showAppLockSettings()
+                    1 -> startActivity(Intent(this, LanguageActivity::class.java))
+                    2 -> startActivity(Intent(this, ReportProblemActivity::class.java))
                 }
             }
             .show()
     }
+
 
     override fun onResume() {
         super.onResume()
