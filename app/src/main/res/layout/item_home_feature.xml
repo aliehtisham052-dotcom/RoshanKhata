@@ -33,14 +33,14 @@
         android:paddingBottom="11dp">
 
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
             android:background="@drawable/bg_feature_icon">
 
             <ImageView
                 android:id="@+id/ivFeatureIcon"
-                android:layout_width="21dp"
-                android:layout_height="21dp"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
                 android:layout_gravity="center"
                 android:contentDescription="@null"
                 tools:src="@drawable/ic_nav_khata" />
