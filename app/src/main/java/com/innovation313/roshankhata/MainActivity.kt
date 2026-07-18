@@ -277,9 +277,16 @@ class MainActivity : AppCompatActivity() {
             .getChildAt(0) as? android.view.ViewGroup ?: return
 
         val steps = listOfNotNull(
-            findViewById<View>(R.id.balanceRow)?.let {
+            findViewById<View>(R.id.balanceRow)?.let { row ->
                 CoachMarkController.Step(
-                    it, R.string.coach_title_balance, R.string.coach_desc_balance, cornerRadiusDp = 8f
+                    // Centre on the figure and its eye, so this step reads the
+                    // same as the twelve that follow it.
+                    target = findViewById<View>(R.id.tvNetBalance) ?: row,
+                    titleRes = R.string.coach_title_balance,
+                    descRes = R.string.coach_desc_balance,
+                    circular = true,
+                    circleRadiusDp = 62f,
+                    clearance = row
                 )
             },
             tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
@@ -312,11 +319,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun tileStep(labelRes: Int, titleRes: Int, descRes: Int): CoachMarkController.Step? =
-        featureViews[labelRes]?.let {
+        featureViews[labelRes]?.let { tile ->
+            val icon = tile.findViewById<View>(R.id.ivFeatureIcon) ?: tile
             CoachMarkController.Step(
-                it, titleRes, descRes,
+                // Circle the icon, not the tile: a circle wide enough to hold
+                // the label as well spills past the tile on either side and
+                // clips the longer names.
+                target = icon,
+                titleRes = titleRes,
+                descRes = descRes,
                 circular = true,
-                circleRadiusDp = 38f
+                circleRadiusDp = 30f,
+                // The card still has to clear the label below the icon.
+                clearance = tile
             )
         }
 

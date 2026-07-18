@@ -36,6 +36,7 @@ class CoachMarkController(
 
     /** One stop on the tour: the view to spotlight, and the strings beside it. */
     data class Step(
+        /** The view the spotlight is centred on. */
         val target: View,
         val titleRes: Int,
         val descRes: Int,
@@ -47,7 +48,13 @@ class CoachMarkController(
          */
         val circular: Boolean = false,
         /** Radius of that circle in dp. Ignored unless [circular]. */
-        val circleRadiusDp: Float = 34f
+        val circleRadiusDp: Float = 34f,
+        /**
+         * What the card must clear, if that is larger than [target]. A tile's
+         * circle is drawn round its icon alone, but the card still has to sit
+         * below the label underneath — otherwise it lands on top of it.
+         */
+        val clearance: View? = null
     )
 
     private var index = 0
@@ -133,7 +140,7 @@ class CoachMarkController(
         // The feature grid scrolls, so a tile further down can be off-screen
         // when its turn comes. Bring it into view first — a spotlight measured
         // before the scroll would land on empty space.
-        scrollIntoView(step.target) {
+        scrollIntoView(step.clearance ?: step.target) {
             // Wait for a layout pass so the target's bounds are current — a bottom
             // nav item can shift slightly on first measure.
             overlayView.viewTreeObserver.addOnGlobalLayoutListener(
@@ -149,9 +156,12 @@ class CoachMarkController(
                         // Post rather than place inline: assigning layoutParams
                         // during a layout pass re-enters layout, which Android
                         // may treat as a loop.
+                        val cardAnchor = step.clearance
+                            ?.let { CoachMarkOverlay.boundsWithin(it, host) }
+                            ?: rect
                         cardView.post {
                             try {
-                                positionCard(cardView, rect)
+                                positionCard(cardView, cardAnchor)
                             } catch (e: Exception) {
                                 // A misplaced card is a blemish; a crash is not.
                                 android.util.Log.e(TAG, "positioning failed", e)
@@ -191,13 +201,18 @@ class CoachMarkController(
         )
         val cardHeight = cardView.measuredHeight
 
-        // Always below, never above: the owner should read the tile and then
-        // its explanation, in that order, on every step. The grid scrolls the
-        // tile high enough to leave the room, and the last rows have padding
-        // beneath them for the same reason.
-        val below = target.bottom.toInt() + gap
+        // The card holds one position for the whole tour rather than tracking
+        // each tile exactly. Following the tile meant the card jumped a row's
+        // height every time the grid moved on, and sat somewhere different
+        // again for the balance step — so the eye had to hunt for NEXT on
+        // every step. A fixed seat below the scrolled-to row is steadier, and
+        // the tour scrolls each tile to the same place anyway.
+        val restingTop = (rootHeight * CARD_RESTING_FRACTION).toInt()
+        val clearsTarget = target.bottom.toInt() + gap
         val lowestTop = rootHeight - cardHeight - dp(12f).toInt()
-        lp.topMargin = below.coerceAtMost(lowestTop.coerceAtLeast(dp(12f).toInt()))
+
+        lp.topMargin = maxOf(restingTop, clearsTarget)
+            .coerceAtMost(lowestTop.coerceAtLeast(dp(12f).toInt()))
         cardView.layoutParams = lp
     }
 
@@ -216,12 +231,12 @@ class CoachMarkController(
             return
         }
 
-        // Park the tile near the top of the viewport. The card always sits
-        // beneath it, so anything lower leaves the card nowhere to go — and
-        // "somewhere else" would mean the explanation appearing above the
-        // thing it explains.
+        // Park every row at the same height in the viewport. Scrolling by a
+        // fixed offset from each tile meant the first row barely moved and a
+        // later row swung most of a screen, so the tour lurched from step to
+        // step instead of advancing evenly.
         val topWithin = CoachMarkOverlay.boundsWithin(target, scroller).top.toInt() + scroller.scrollY
-        val desired = (topWithin - dp(24f).toInt()).coerceAtLeast(0)
+        val desired = (topWithin - dp(16f).toInt()).coerceAtLeast(0)
         if (kotlin.math.abs(desired - scroller.scrollY) < dp(4f)) {
             then()
             return
@@ -268,6 +283,13 @@ class CoachMarkController(
 
     companion object {
         private const val TAG = "CoachMarks"
+
+        /**
+         * Where the card sits, as a fraction of the screen height. Low enough
+         * to leave the top rows of the grid visible above it, high enough that
+         * NEXT stays within thumb reach.
+         */
+        private const val CARD_RESTING_FRACTION = 0.52f
 
         /** Long enough for smoothScrollTo to land before bounds are measured. */
         private const val SCROLL_SETTLE_MS = 320L
