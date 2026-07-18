@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.innovation313.roshankhata.data.AppDatabase
+import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.AppLock
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.ui.CoachMarkController
@@ -203,7 +203,7 @@ class MainActivity : AppCompatActivity() {
      * database so the two can never drift apart.
      */
     private fun observeTotals() {
-        val dao = AppDatabase.get(this).khataDao()
+        val dao = KhataDatabase.get(this).khataDao()
         lifecycleScope.launch {
             dao.observePartiesWithBalance().collectLatest { parties ->
                 totalGet = parties.filter { it.balance > 0 }.sumOf { it.balance }
