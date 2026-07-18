@@ -129,7 +129,18 @@ class MainActivity : AppCompatActivity() {
         tile.layoutParams = LinearLayout.LayoutParams(
             0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
         )
-        tile.findViewById<ImageView>(R.id.ivFeatureIcon).setImageResource(feature.iconRes)
+        tile.findViewById<ImageView>(R.id.ivFeatureIcon).apply {
+            setImageResource(feature.iconRes)
+            // The icon set was drawn white for the old dark nav bar. On a white
+            // tile that is white on white — the icons were there all along and
+            // simply could not be seen. Tint them to the brand green here
+            // rather than redrawing twelve files.
+            setColorFilter(
+                androidx.core.content.ContextCompat.getColor(
+                    this@MainActivity, R.color.brand_green
+                )
+            )
+        }
         tile.findViewById<TextView>(R.id.tvFeatureLabel).setText(feature.labelRes)
         tile.setOnClickListener { startActivity(Intent(this, feature.destination)) }
         featureViews[feature.labelRes] = tile

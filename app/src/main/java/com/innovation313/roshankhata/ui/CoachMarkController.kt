@@ -3,10 +3,12 @@ package com.innovation313.roshankhata.ui
 import android.app.Activity
 import android.content.Context
 import android.graphics.RectF
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -43,15 +45,33 @@ class CoachMarkController(
     private var index = 0
     private var overlay: CoachMarkOverlay? = null
     private var card: View? = null
+    private var container: FrameLayout? = null
 
     fun start() {
         if (steps.isEmpty()) return
-        val overlayView = CoachMarkOverlay(activity)
+
+        // Everything the tour draws goes in a FrameLayout of our own rather
+        // than straight into the screen's root. Home's root is a
+        // ConstraintLayout, where a plain topMargin positions nothing without
+        // constraints to hang it from — the card would sit at the top corner
+        // whatever it was told. A FrameLayout honours margins as offsets,
+        // which is exactly what placing a card beneath a tile needs.
+        val host = FrameLayout(activity)
         root.addView(
-            overlayView,
+            host,
             ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        container = host
+
+        val overlayView = CoachMarkOverlay(activity)
+        host.addView(
+            overlayView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
             )
         )
         // Swallow taps on the scrim: during the tour the only ways forward are
@@ -60,20 +80,17 @@ class CoachMarkController(
         overlayView.isFocusable = true
         overlay = overlayView
 
-        val cardView = activity.layoutInflater.inflate(R.layout.view_coach_bubble, root, false)
-        // Plain MarginLayoutParams rather than a FrameLayout's: Home's root is
-        // a ConstraintLayout, and every ViewGroup converts these into its own
-        // type on addView. Handing over foreign params would mean the cast in
-        // positionCard throws when it reads them back.
-        val lp = ViewGroup.MarginLayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+        val cardView = activity.layoutInflater.inflate(R.layout.view_coach_bubble, host, false)
+        val lp = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
         ).apply {
+            gravity = Gravity.TOP or Gravity.START
             marginStart = dp(20f).toInt()
             marginEnd = dp(20f).toInt()
             topMargin = dp(20f).toInt()
         }
-        root.addView(cardView, lp)
+        host.addView(cardView, lp)
         card = cardView
 
         cardView.findViewById<TextView>(R.id.tvCoachSkip).setOnClickListener { finish() }
@@ -89,6 +106,7 @@ class CoachMarkController(
         val step = steps.getOrNull(index) ?: return finish()
         val overlayView = overlay ?: return
         val cardView = card ?: return
+        val host = container ?: return
 
         cardView.findViewById<TextView>(R.id.tvCoachTitle).setText(step.titleRes)
         cardView.findViewById<TextView>(R.id.tvCoachDesc).setText(step.descRes)
@@ -114,7 +132,7 @@ class CoachMarkController(
                 object : ViewTreeObserver.OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
                         overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                        val rect = CoachMarkOverlay.boundsWithin(step.target, root)
+                        val rect = CoachMarkOverlay.boundsWithin(step.target, host)
                         overlayView.holePadding = dp(6f)
                         overlayView.holeRadius = dp(step.cornerRadiusDp)
                         overlayView.holeRect = rect
@@ -146,15 +164,14 @@ class CoachMarkController(
      * card goes above instead rather than running off the screen.
      */
     private fun positionCard(cardView: View, target: RectF) {
-        // root is whatever the screen's own root happens to be — a
-        // ConstraintLayout on Home — and it rewrites the params it is handed
-        // into its own type. Casting to FrameLayout.LayoutParams here would
-        // throw; ask for the margin type they all share instead.
-        val lp = cardView.layoutParams as? ViewGroup.MarginLayoutParams ?: return
+        // The card lives in the tour's own FrameLayout, so these params are
+        // the ones we set and a topMargin means what it says.
+        val lp = cardView.layoutParams as? FrameLayout.LayoutParams ?: return
+        val host = container ?: return
         val gap = dp(14f).toInt()
 
-        val rootWidth = root.width
-        val rootHeight = root.height
+        val rootWidth = host.width
+        val rootHeight = host.height
         if (rootWidth <= 0 || rootHeight <= 0) return
 
         val available = (rootWidth - dp(40f).toInt()).coerceAtLeast(1)
@@ -230,8 +247,9 @@ class CoachMarkController(
     }
 
     private fun finish() {
-        card?.let { root.removeView(it) }
-        overlay?.let { root.removeView(it) }
+        // Removing the host removes the scrim and the card with it.
+        container?.let { root.removeView(it) }
+        container = null
         card = null
         overlay = null
         markRun(activity)
