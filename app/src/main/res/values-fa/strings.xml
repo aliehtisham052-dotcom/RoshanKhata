@@ -581,4 +581,20 @@
     <string name="notif_expiry_body">%1$d قلم تا 60 روز دیگر منقضی می‌شود. بفروشید، تخفیف دهید یا برگردانید.</string>
     <string name="notif_backup_title">یادآوری پشتیبان‌گیری</string>
     <string name="notif_backup_body">بیش از یک هفته از آخرین پشتیبان گذشته است. سوابق شما فقط روی همین گوشی است.</string>
+
+    <!-- Business card -->
+    <string name="biz_card">کارت فروشگاه</string>
+    <string name="biz_card_sub">کارتی برای مغازه شما، آماده اشتراک</string>
+    <string name="biz_card_name_hint">نام کسب‌وکار</string>
+    <string name="biz_card_owner_hint">نام مالک</string>
+    <string name="biz_card_phone_hint">تلفن</string>
+    <string name="biz_card_type_hint">چه می‌فروشید (مثلاً سم و بذر)</string>
+    <string name="biz_card_address_hint">نشانی / شهر (اختیاری)</string>
+    <string name="biz_card_template">طرح</string>
+    <string name="biz_tpl_classic">کلاسیک</string>
+    <string name="biz_tpl_gold">طلایی</string>
+    <string name="biz_tpl_green">سبز</string>
+    <string name="biz_card_share">اشتراک کارت</string>
+    <string name="biz_card_note">کارت روی گوشی شما ساخته و به‌صورت تصویر به اشتراک گذاشته می‌شود. چیزی بارگذاری نمی‌شود.</string>
+    <string name="biz_card_enter_name">لطفاً نام کسب‌وکار را وارد کنید</string>
 </resources>

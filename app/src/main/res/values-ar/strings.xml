@@ -561,4 +561,20 @@
     <string name="notif_expiry_body">%1$d صنف تنتهي صلاحيته خلال 60 يومًا. بِع أو خفّض السعر أو أرجِع.</string>
     <string name="notif_backup_title">تذكير النسخ الاحتياطي</string>
     <string name="notif_backup_body">مضى أكثر من أسبوع على آخر نسخة احتياطية. سجلاتك على هذا الهاتف فقط.</string>
+
+    <!-- Business card -->
+    <string name="biz_card">بطاقة المتجر</string>
+    <string name="biz_card_sub">بطاقة لمتجرك جاهزة للمشاركة</string>
+    <string name="biz_card_name_hint">اسم النشاط التجاري</string>
+    <string name="biz_card_owner_hint">اسم المالك</string>
+    <string name="biz_card_phone_hint">الهاتف</string>
+    <string name="biz_card_type_hint">ماذا تبيع (مثلاً مبيدات وبذور)</string>
+    <string name="biz_card_address_hint">العنوان / المدينة (اختياري)</string>
+    <string name="biz_card_template">التصميم</string>
+    <string name="biz_tpl_classic">كلاسيكي</string>
+    <string name="biz_tpl_gold">ذهبي</string>
+    <string name="biz_tpl_green">أخضر</string>
+    <string name="biz_card_share">مشاركة البطاقة</string>
+    <string name="biz_card_note">تُرسم البطاقة على هاتفك وتُشارَك كصورة. لا يُرفع أي شيء.</string>
+    <string name="biz_card_enter_name">يرجى إدخال اسم النشاط التجاري</string>
 </resources>

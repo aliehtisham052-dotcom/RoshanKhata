@@ -553,4 +553,20 @@
     <string name="notif_expiry_body">%1$d چیزیں 60 دن میں ایکسپائر ہوں گی۔ بیچیں، رعایت دیں یا واپس کریں۔</string>
     <string name="notif_backup_title">بیک اپ کی یاد دہانی</string>
     <string name="notif_backup_body">آخری بیک اپ کو ہفتے سے زیادہ ہو گیا۔ آپ کا ریکارڈ صرف اسی فون پر ہے۔</string>
+
+    <!-- Business card -->
+    <string name="biz_card">دکان کارڈ</string>
+    <string name="biz_card_sub">آپ کی دکان کا کارڈ، شیئر کے لیے تیار</string>
+    <string name="biz_card_name_hint">کاروبار کا نام</string>
+    <string name="biz_card_owner_hint">مالک کا نام</string>
+    <string name="biz_card_phone_hint">فون</string>
+    <string name="biz_card_type_hint">آپ کیا بیچتے ہیں (مثلاً زرعی ادویات اور بیج)</string>
+    <string name="biz_card_address_hint">پتہ / شہر (اختیاری)</string>
+    <string name="biz_card_template">ڈیزائن</string>
+    <string name="biz_tpl_classic">سادہ</string>
+    <string name="biz_tpl_gold">سنہری</string>
+    <string name="biz_tpl_green">سبز</string>
+    <string name="biz_card_share">کارڈ شیئر کریں</string>
+    <string name="biz_card_note">کارڈ آپ کے فون پر بنتا ہے اور تصویر کے طور پر شیئر ہوتا ہے۔ کچھ بھی اپ لوڈ نہیں ہوتا۔</string>
+    <string name="biz_card_enter_name">براہ کرم کاروبار کا نام لکھیں</string>
 </resources>

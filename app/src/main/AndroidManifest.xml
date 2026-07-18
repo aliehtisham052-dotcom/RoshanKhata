@@ -92,6 +92,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".BusinessCardActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".ChequesActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

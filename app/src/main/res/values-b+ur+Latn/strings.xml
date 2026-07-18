@@ -553,4 +553,20 @@
     <string name="notif_expiry_body">%1$d cheezein 60 din mein expire hongi. Bechein, riayat dein ya wapas karein.</string>
     <string name="notif_backup_title">Backup ki yaad-dehani</string>
     <string name="notif_backup_body">Aakhri backup ko hafte se zyada ho gaya. Aap ka record sirf isi phone par hai.</string>
+
+    <!-- Business card -->
+    <string name="biz_card">Dukan Card</string>
+    <string name="biz_card_sub">Aap ki dukan ka card, share ke liye tayyar</string>
+    <string name="biz_card_name_hint">Karobar ka naam</string>
+    <string name="biz_card_owner_hint">Malik ka naam</string>
+    <string name="biz_card_phone_hint">Phone</string>
+    <string name="biz_card_type_hint">Aap kya bechte hain (maslan zarai adwiyat aur beej)</string>
+    <string name="biz_card_address_hint">Pata / shehar (ikhtiyari)</string>
+    <string name="biz_card_template">Design</string>
+    <string name="biz_tpl_classic">Sada</string>
+    <string name="biz_tpl_gold">Sunehri</string>
+    <string name="biz_tpl_green">Sabz</string>
+    <string name="biz_card_share">Card share karein</string>
+    <string name="biz_card_note">Card aap ke phone par banta hai aur tasveer ke tor par share hota hai. Kuch bhi upload nahi hota.</string>
+    <string name="biz_card_enter_name">Barah-e-karam karobar ka naam likhein</string>
 </resources>

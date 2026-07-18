@@ -581,4 +581,20 @@
     <string name="notif_expiry_body">%1$d شيون 60 ڏينهن ۾ ختم ٿينديون. وڪڻو، گهٽ اگهه تي ڏيو يا موٽايو.</string>
     <string name="notif_backup_title">بيڪ اپ جي يادگيري</string>
     <string name="notif_backup_body">آخري بيڪ اپ کي هفتي کان وڌيڪ ٿي ويو. توهان جو رڪارڊ رڳو هن فون تي آهي.</string>
+
+    <!-- Business card -->
+    <string name="biz_card">دڪان ڪارڊ</string>
+    <string name="biz_card_sub">توهان جي دڪان جو ڪارڊ، شيئر لاءِ تيار</string>
+    <string name="biz_card_name_hint">ڪاروبار جو نالو</string>
+    <string name="biz_card_owner_hint">مالڪ جو نالو</string>
+    <string name="biz_card_phone_hint">فون</string>
+    <string name="biz_card_type_hint">ڇا وڪڻو ٿا (مثال: زرعي دوائون ۽ ٻج)</string>
+    <string name="biz_card_address_hint">پتو / شهر (اختياري)</string>
+    <string name="biz_card_template">ڊيزائن</string>
+    <string name="biz_tpl_classic">سادو</string>
+    <string name="biz_tpl_gold">سونهري</string>
+    <string name="biz_tpl_green">سائو</string>
+    <string name="biz_card_share">ڪارڊ شيئر ڪريو</string>
+    <string name="biz_card_note">ڪارڊ توهان جي فون تي ٺهي ٿو ۽ تصوير طور شيئر ٿئي ٿو. ڪجهه به اپلوڊ نٿو ٿئي.</string>
+    <string name="biz_card_enter_name">مهرباني ڪري ڪاروبار جو نالو لکو</string>
 </resources>

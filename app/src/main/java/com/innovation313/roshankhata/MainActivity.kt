@@ -422,6 +422,7 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.supplier_bills),
             getString(R.string.zakat_calculator),
             getString(R.string.business_settings),
+            getString(R.string.biz_card),
             getString(R.string.language),
             getString(R.string.backup_restore),
             getString(R.string.app_lock),
@@ -437,11 +438,12 @@ class MainActivity : AppCompatActivity() {
                     1 -> startActivity(Intent(this, BillsActivity::class.java))
                     2 -> startActivity(Intent(this, ZakatActivity::class.java))
                     3 -> startActivity(Intent(this, BusinessSettingsActivity::class.java))
-                    4 -> startActivity(Intent(this, LanguageActivity::class.java))
-                    5 -> startActivity(Intent(this, BackupActivity::class.java))
-                    6 -> showAppLockSettings()
-                    7 -> startActivity(Intent(this, RecycleBinActivity::class.java))
-                    8 -> startActivity(Intent(this, ReportProblemActivity::class.java))
+                    4 -> startActivity(Intent(this, BusinessCardActivity::class.java))
+                    5 -> startActivity(Intent(this, LanguageActivity::class.java))
+                    6 -> startActivity(Intent(this, BackupActivity::class.java))
+                    7 -> showAppLockSettings()
+                    8 -> startActivity(Intent(this, RecycleBinActivity::class.java))
+                    9 -> startActivity(Intent(this, ReportProblemActivity::class.java))
                 }
             }
             .show()

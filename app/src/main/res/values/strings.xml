@@ -581,4 +581,20 @@
     <string name="notif_expiry_body">%1$d item(s) expire within 60 days. Sell, discount or return them.</string>
     <string name="notif_backup_title">Backup reminder</string>
     <string name="notif_backup_body">Over a week since your last backup. Your records live only on this phone.</string>
+
+    <!-- Business card -->
+    <string name="biz_card">Business Card</string>
+    <string name="biz_card_sub">A card for your shop, ready to share</string>
+    <string name="biz_card_name_hint">Business name</string>
+    <string name="biz_card_owner_hint">Owner name</string>
+    <string name="biz_card_phone_hint">Phone</string>
+    <string name="biz_card_type_hint">What you sell (e.g. pesticides &amp; seeds)</string>
+    <string name="biz_card_address_hint">Address / city (optional)</string>
+    <string name="biz_card_template">Design</string>
+    <string name="biz_tpl_classic">Classic</string>
+    <string name="biz_tpl_gold">Gold</string>
+    <string name="biz_tpl_green">Green</string>
+    <string name="biz_card_share">Share card</string>
+    <string name="biz_card_note">The card is drawn on your phone and shared as an image. Nothing is uploaded.</string>
+    <string name="biz_card_enter_name">Please enter a business name</string>
 </resources>
