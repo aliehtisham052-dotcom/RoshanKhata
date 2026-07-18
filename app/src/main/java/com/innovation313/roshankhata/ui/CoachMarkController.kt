@@ -2,23 +2,29 @@ package com.innovation313.roshankhata.ui
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.RectF
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.innovation313.roshankhata.R
 
 /**
- * Drives the first-run Home screen tour: a dimmed scrim with a spotlight hole
- * over one real control at a time, and a small bubble beside it explaining
- * what it does. No full-screen slides — every step points at the actual
- * button the owner will tap later.
+ * Drives the first-run Home screen walkthrough: a dimmed scrim with a
+ * spotlight hole over one real control at a time, and a card describing it.
+ * No full-screen slides — every step points at the actual button the owner
+ * will tap later.
  *
- * Shown once. [hasRun] / [markRun] persist that on-device, the same pattern
- * LanguageActivity and BackupReminder already use for their own one-shot flags.
+ * The card is CENTRED rather than pinned beside the target. Pinning looked
+ * tidier on a large screen and collided with the very control it was
+ * describing on a small one; the spotlight already says which control is
+ * meant, so the card does not need to crowd it.
+ *
+ * Shown once. [hasRun] / [markRun] persist that on-device, the same one-shot
+ * pattern LanguageActivity already uses.
  */
 class CoachMarkController(
     private val activity: Activity,
@@ -26,27 +32,49 @@ class CoachMarkController(
     private val steps: List<Step>
 ) {
 
-    /** One stop on the tour: the view to spotlight, and the strings to show beside it. */
+    /** One stop on the tour: the view to spotlight, and the strings beside it. */
     data class Step(
         val target: View,
         val titleRes: Int,
         val descRes: Int,
-        /** For a BottomNavigationView item, pass the menu item's id-bearing icon/label view. */
         val cornerRadiusDp: Float = 12f
     )
 
     private var index = 0
     private var overlay: CoachMarkOverlay? = null
-    private var bubble: View? = null
+    private var card: View? = null
 
     fun start() {
         if (steps.isEmpty()) return
         val overlayView = CoachMarkOverlay(activity)
         root.addView(
             overlayView,
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         )
+        // Swallow taps on the scrim: during the tour the only ways forward are
+        // NEXT and Skip, so a stray tap cannot fire the control underneath.
+        overlayView.isClickable = true
+        overlayView.isFocusable = true
         overlay = overlayView
+
+        val cardView = activity.layoutInflater.inflate(R.layout.view_coach_bubble, root, false)
+        val lp = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.CENTER
+            marginStart = dp(20f).toInt()
+            marginEnd = dp(20f).toInt()
+        }
+        root.addView(cardView, lp)
+        card = cardView
+
+        cardView.findViewById<TextView>(R.id.tvCoachSkip).setOnClickListener { finish() }
+        cardView.findViewById<Button>(R.id.btnCoachNext).setOnClickListener { advance() }
+
         index = 0
         showStep()
     }
@@ -56,63 +84,56 @@ class CoachMarkController(
     private fun showStep() {
         val step = steps.getOrNull(index) ?: return finish()
         val overlayView = overlay ?: return
+        val cardView = card ?: return
 
-        // Wait one layout pass so target bounds are current — a bottom nav
-        // item's position can shift very slightly on first measure.
-        overlayView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                positionStep(step, overlayView)
+        cardView.findViewById<TextView>(R.id.tvCoachTitle).setText(step.titleRes)
+        cardView.findViewById<TextView>(R.id.tvCoachDesc).setText(step.descRes)
+
+        val isLast = index == steps.size - 1
+        cardView.findViewById<Button>(R.id.btnCoachNext)
+            .setText(if (isLast) R.string.coach_done else R.string.coach_next)
+
+        // Skip stops offering an exit on the final step — there is nothing left
+        // to skip past, and "Skip" beside "Got it" only invites a misread.
+        cardView.findViewById<TextView>(R.id.tvCoachSkip).visibility =
+            if (isLast) View.INVISIBLE else View.VISIBLE
+
+        renderDots(cardView)
+
+        // Wait for a layout pass so the target's bounds are current — a bottom
+        // nav item can shift slightly on first measure.
+        overlayView.viewTreeObserver.addOnGlobalLayoutListener(
+            object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    overlayView.holePadding = dp(6f)
+                    overlayView.holeRadius = dp(step.cornerRadiusDp)
+                    overlayView.holeRect = CoachMarkOverlay.boundsWithin(step.target, root)
+                }
             }
-        })
+        )
         overlayView.requestLayout()
     }
 
-    private fun positionStep(step: Step, overlayView: CoachMarkOverlay) {
-        val rect = CoachMarkOverlay.boundsWithin(step.target, root)
-        overlayView.holePadding = dp(6f)
-        overlayView.holeRadius = dp(step.cornerRadiusDp)
-        overlayView.holeRect = rect
-
-        bubble?.let { root.removeView(it) }
-        val bubbleView = activity.layoutInflater.inflate(R.layout.view_coach_bubble, root, false)
-        bubble = bubbleView
-
-        bubbleView.findViewById<TextView>(R.id.tvCoachStep).text =
-            activity.getString(R.string.coach_step_of, index + 1, steps.size)
-        bubbleView.findViewById<TextView>(R.id.tvCoachTitle).setText(step.titleRes)
-        bubbleView.findViewById<TextView>(R.id.tvCoachDesc).setText(step.descRes)
-
-        val isLast = index == steps.size - 1
-        bubbleView.findViewById<android.widget.Button>(R.id.btnCoachNext).apply {
-            setText(if (isLast) R.string.coach_done else R.string.coach_next)
-            setOnClickListener { advance() }
+    /**
+     * The progress dots. Rebuilt each step rather than animated: eight views
+     * is nothing, and a rebuild cannot drift out of sync with [index].
+     */
+    private fun renderDots(cardView: View) {
+        val holder = cardView.findViewById<LinearLayout>(R.id.coachDots)
+        holder.removeAllViews()
+        for (i in steps.indices) {
+            val dot = View(activity)
+            val size = if (i == index) dp(26f).toInt() else dp(10f).toInt()
+            val params = LinearLayout.LayoutParams(size, dp(10f).toInt()).apply {
+                marginEnd = dp(6f).toInt()
+            }
+            dot.layoutParams = params
+            dot.setBackgroundResource(
+                if (i == index) R.drawable.coach_dot_active else R.drawable.coach_dot_inactive
+            )
+            holder.addView(dot)
         }
-        bubbleView.findViewById<TextView>(R.id.tvCoachSkip).setOnClickListener { finish() }
-
-        val lp = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        val screenHeight = root.height.takeIf { it > 0 } ?: activity.resources.displayMetrics.heightPixels
-        val margin = dp(16f).toInt()
-        val bubbleWidthPx = dp(280f).toInt()
-
-        // Prefer sitting below the target; flip above it if there isn't room
-        // (e.g. the bottom nav sits at the very bottom of the screen).
-        val spaceBelow = screenHeight - rect.bottom
-        val putBelow = spaceBelow > dp(160f)
-
-        lp.topMargin = if (putBelow) {
-            (rect.bottom + dp(10f)).toInt()
-        } else {
-            (rect.top - dp(10f) - dp(140f)).toInt().coerceAtLeast(margin)
-        }
-
-        val rootWidth = root.width.takeIf { it > 0 } ?: activity.resources.displayMetrics.widthPixels
-        val centeredStart = (rect.centerX() - bubbleWidthPx / 2f)
-            .coerceIn(margin.toFloat(), (rootWidth - bubbleWidthPx - margin).toFloat())
-        lp.marginStart = centeredStart.toInt()
-        lp.gravity = Gravity.TOP or Gravity.START
-
-        root.addView(bubbleView, lp)
     }
 
     private fun advance() {
@@ -121,9 +142,9 @@ class CoachMarkController(
     }
 
     private fun finish() {
-        bubble?.let { root.removeView(it) }
+        card?.let { root.removeView(it) }
         overlay?.let { root.removeView(it) }
-        bubble = null
+        card = null
         overlay = null
         markRun(activity)
     }

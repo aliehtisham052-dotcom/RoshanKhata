@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
 
+    <string name="coach_walkthrough">Taarufi Jaiza</string>
+    <string name="coach_home_screen">Home Screen</string>
     <string name="coach_skip">Skip Karein</string>
     <string name="coach_next">Agla</string>
     <string name="coach_done">Samajh Gaya</string>
-    <string name="coach_step_of">%1$d mein se %2$d</string>
     <string name="coach_title_balance">Aap Ka Balance</string>
     <string name="coach_desc_balance">Ek nazar mein dekhein aap ko kitna milna hai aur kitna dena hai. Chupane ke liye eye icon par tap karein.</string>
     <string name="coach_title_search">Customer Talash Karein</string>

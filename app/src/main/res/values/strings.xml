@@ -5,10 +5,11 @@
          an arrow points at each real control in turn, Skip / Next / Got it.
          Follows the device's system language since it appears before the
          language picker. Kept short: these render inside a small bubble. -->
+    <string name="coach_walkthrough">Walk Through</string>
+    <string name="coach_home_screen">Home Screen</string>
     <string name="coach_skip">Skip</string>
     <string name="coach_next">Next</string>
     <string name="coach_done">Got it</string>
-    <string name="coach_step_of">%1$d of %2$d</string>
     <string name="coach_title_balance">Your Balance</string>
     <string name="coach_desc_balance">See what you\'re owed and what you owe, at a glance. Tap the eye to hide it.</string>
     <string name="coach_title_search">Find a Customer</string>

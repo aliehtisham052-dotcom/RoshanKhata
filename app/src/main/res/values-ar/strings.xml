@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">روشن كهاتا</string>
 
+    <string name="coach_walkthrough">جولة تعريفية</string>
+    <string name="coach_home_screen">الشاشة الرئيسية</string>
     <string name="coach_skip">تخطي</string>
     <string name="coach_next">التالي</string>
     <string name="coach_done">فهمت</string>
-    <string name="coach_step_of">%1$d من %2$d</string>
     <string name="coach_title_balance">رصيدك</string>
     <string name="coach_desc_balance">اطّلع على ما لك وما عليك بلمحة. اضغط على أيقونة العين لإخفائه.</string>
     <string name="coach_title_search">ابحث عن عميل</string>
