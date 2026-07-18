@@ -17,7 +17,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="3dp"
+    android:layout_margin="5dp"
     android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="100dp"
@@ -29,8 +29,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="18dp"
-        android:paddingBottom="18dp">
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
         <FrameLayout
             android:layout_width="28dp"
