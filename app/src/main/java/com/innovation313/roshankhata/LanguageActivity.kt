@@ -2,8 +2,6 @@ package com.innovation313.roshankhata
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.widget.Button
@@ -11,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.widget.TextViewCompat
-import com.google.android.material.button.MaterialButton
 
 /**
  * The first screen a new user sees: pick your language, in your own script.
@@ -49,19 +46,15 @@ class LanguageActivity : AppCompatActivity() {
             R.id.langArabic to "ar"
         )
 
-        val density = resources.displayMetrics.density
         for ((id, tag) in choices) {
             val btn = findViewById<Button>(id)
             btn.setOnClickListener { choose(tag) }
-            // MaterialButton paints itself with colorPrimary (ink) and ignores
-            // backgroundTint from styles; the app: attribute failed resource
-            // linking. Setting the tint list in code is honored unconditionally.
-            btn.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+            // Colour and shape both come from bg_lang_key now. A tint here
+            // would repaint that drawable and flatten its corners back to a
+            // rectangle, and the cornerRadius this used to set was being
+            // applied to null: the LangKey style descends from
+            // Widget.AppCompat.Button, so these never inflate as MaterialButtons.
             btn.setTextColor(0xFF1A1A18.toInt())
-            // Full pills. Half the button's height rounds the ends exactly;
-            // MaterialButton clamps anything larger to the same, so the shape
-            // holds even if the height in the style changes later.
-            (btn as? MaterialButton)?.cornerRadius = (28 * density).toInt()
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
                 btn, 11, 15, 1, TypedValue.COMPLEX_UNIT_SP
             )
