@@ -358,7 +358,13 @@ class MainActivity : AppCompatActivity() {
         val scroll = findViewById<View>(R.id.featureScroll) ?: return
         scroll.post {
             val params = tail.layoutParams
-            params.height = (scroll.height * 0.55f).toInt().coerceAtLeast(0)
+            // Nearly a full viewport. At 0.55 the last row could only rise to
+            // about the middle of the screen, so the walkthrough card — which
+            // sits below its tile — had to climb over the tile to fit, hiding
+            // the very thing the step was pointing at. With room to scroll the
+            // whole way, the row reaches the top and the card has the rest of
+            // the screen beneath it.
+            params.height = (scroll.height * 0.9f).toInt().coerceAtLeast(0)
             tail.layoutParams = params
         }
     }

@@ -222,8 +222,13 @@ class CoachMarkController(
         val floor = rootHeight - barHeight - dp(12f).toInt()
         val lowestTop = floor - cardHeight
 
+        // Below the tile, always — never over it. Clamping to lowestTop alone
+        // pulled the card up over its own target when the fit was tight,
+        // covering the one tile the step exists to show. Clearing the target
+        // wins that argument; the grid has room to scroll a row high enough
+        // that both fit.
         lp.topMargin = maxOf(restingTop, clearsTarget)
-            .coerceAtMost(lowestTop.coerceAtLeast(dp(12f).toInt()))
+            .coerceAtMost(maxOf(lowestTop, clearsTarget))
         cardView.layoutParams = lp
     }
 
