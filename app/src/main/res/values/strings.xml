@@ -36,6 +36,8 @@
     <string name="coach_desc_bizcard">Make a shareable card for your shop in seconds, in three styles.</string>
     <string name="coach_title_backup">Backup</string>
     <string name="coach_desc_backup">Save your ledger safely to your own Google Drive.</string>
+        <string name="coach_title_settings">Business Settings</string>
+    <string name="coach_desc_settings">Your shop\'s name, contact and preferences — set once, used everywhere.</string>
     <string name="coach_title_applock">Recycle Bin</string>
     <string name="coach_desc_applock">Deleted a customer by mistake? Restore them from here.</string>
     <string name="coach_title_add">Add a Customer</string>

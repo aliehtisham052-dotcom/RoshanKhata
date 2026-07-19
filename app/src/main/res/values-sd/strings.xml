@@ -32,6 +32,8 @@
     <string name="coach_desc_bizcard">پنهنجي دڪان لاءِ سيڪنڊن ۾ شيئر ڪرڻ جوڳو ڪارڊ ٺاهيو، ٽن انداز ۾.</string>
     <string name="coach_title_backup">بيڪ اپ</string>
     <string name="coach_desc_backup">پنهنجو کاتو محفوظ طريقي سان پنهنجي گوگل ڊرائيو تي رکو.</string>
+        <string name="coach_title_settings">ڪاروباري سيٽنگون</string>
+    <string name="coach_desc_settings">توهان جي دڪان جو نالو، رابطو ۽ ترجيحون — هڪ ڀيرو مقرر ڪريو، هر هنڌ استعمال ٿينديون.</string>
     <string name="coach_title_applock">ري سائيڪل بن</string>
     <string name="coach_desc_applock">غلطي سان ڪو گراهڪ ڊليٽ ڪيو؟ هتان واپس آڻيو.</string>
     <string name="coach_title_add">گراهڪ شامل ڪريو</string>

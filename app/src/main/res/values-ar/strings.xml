@@ -32,6 +32,8 @@
     <string name="coach_desc_bizcard">أنشئ بطاقة قابلة للمشاركة لمتجرك في ثوانٍ، بثلاثة أنماط.</string>
     <string name="coach_title_backup">النسخ الاحتياطي</string>
     <string name="coach_desc_backup">احفظ دفترك بأمان على درايف الخاص بك.</string>
+        <string name="coach_title_settings">إعدادات العمل</string>
+    <string name="coach_desc_settings">اسم متجرك وبيانات الاتصال وتفضيلاتك — تُضبط مرة وتُستخدم في كل مكان.</string>
     <string name="coach_title_applock">سلة المحذوفات</string>
     <string name="coach_desc_applock">حذفت عميلًا بالخطأ؟ استعده من هنا.</string>
     <string name="coach_title_add">أضف عميلًا</string>

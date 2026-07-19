@@ -308,6 +308,7 @@ class MainActivity : AppCompatActivity() {
             tileStep(R.string.zakat_calculator, R.string.coach_title_zakat, R.string.coach_desc_zakat),
             tileStep(R.string.biz_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
             tileStep(R.string.backup_restore, R.string.coach_title_backup, R.string.coach_desc_backup),
+            tileStep(R.string.business_settings, R.string.coach_title_settings, R.string.coach_desc_settings),
             tileStep(R.string.recycle_bin, R.string.coach_title_applock, R.string.coach_desc_applock)
         )
 

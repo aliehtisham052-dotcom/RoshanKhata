@@ -32,6 +32,8 @@
     <string name="coach_desc_bizcard">در چند ثانیه کارتی قابل اشتراک برای مغازه‌تان بسازید، در سه سبک.</string>
     <string name="coach_title_backup">پشتیبان‌گیری</string>
     <string name="coach_desc_backup">دفتر خود را با خیال راحت در گوگل درایو خودتان ذخیره کنید.</string>
+        <string name="coach_title_settings">تنظیمات کسب‌وکار</string>
+    <string name="coach_desc_settings">نام مغازه، اطلاعات تماس و ترجیحات شما — یک بار تنظیم، همه‌جا استفاده.</string>
     <string name="coach_title_applock">سطل بازیافت</string>
     <string name="coach_desc_applock">مشتری را اشتباهی حذف کردید؟ از اینجا بازگردانید.</string>
     <string name="coach_title_add">افزودن مشتری</string>

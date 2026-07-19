@@ -32,6 +32,8 @@
     <string name="coach_desc_bizcard">Apni dukan ke liye seconds mein share hone wala card banayein, teen andaaz mein.</string>
     <string name="coach_title_backup">Backup</string>
     <string name="coach_desc_backup">Apna khata mehfooz tareeqe se apni Google Drive par rakhein.</string>
+        <string name="coach_title_settings">Business Settings</string>
+    <string name="coach_desc_settings">Aap ki dukan ka naam, rabta aur tarjeehat — ek baar set karein, har jagah istemal hongi.</string>
     <string name="coach_title_applock">Recycle Bin</string>
     <string name="coach_desc_applock">Ghalti se koi customer delete ho gaya? Yahan se wapis layein.</string>
     <string name="coach_title_add">Customer Shamil Karein</string>

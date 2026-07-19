@@ -32,6 +32,8 @@
     <string name="coach_desc_bizcard">اپنی دکان کے لیے سیکنڈوں میں شیئر ہونے والا کارڈ بنائیں، تین انداز میں۔</string>
     <string name="coach_title_backup">بیک اپ</string>
     <string name="coach_desc_backup">اپنا کھاتہ محفوظ طریقے سے اپنے گوگل ڈرائیو پر رکھیں۔</string>
+        <string name="coach_title_settings">کاروباری سیٹنگز</string>
+    <string name="coach_desc_settings">آپ کی دکان کا نام، رابطہ اور ترجیحات — ایک بار سیٹ کریں، ہر جگہ استعمال ہوں گی۔</string>
     <string name="coach_title_applock">ری سائیکل بن</string>
     <string name="coach_desc_applock">غلطی سے کوئی گاہک ڈیلیٹ ہو گیا؟ یہاں سے واپس لائیں۔</string>
     <string name="coach_title_add">گاہک شامل کریں</string>
