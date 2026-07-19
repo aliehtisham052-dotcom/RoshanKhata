@@ -318,7 +318,7 @@ class CoachMarkController(
         private const val CARD_RESTING_FRACTION = 0.52f
 
         /** How long a row takes to travel, whatever the distance. */
-        private const val SCROLL_MS = 340L
+        private const val SCROLL_MS = 200L
 
         private const val PREFS = "coach_marks"
         private const val KEY_RUN = "home_tour_done"
