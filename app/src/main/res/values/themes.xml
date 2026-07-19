@@ -159,6 +159,15 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
+        <!--
+          One line, whatever the key says. Without this "00" wrapped to two
+          lines in the narrow keys, and a wrapped key is taller than the ones
+          beside it.
+        -->
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:minWidth">0dp</item>
         <item name="backgroundTint">@color/white</item>
         <item name="cornerRadius">16dp</item>
     </style>
