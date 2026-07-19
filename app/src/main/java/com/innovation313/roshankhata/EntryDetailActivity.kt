@@ -122,7 +122,7 @@ class EntryDetailActivity : AppCompatActivity() {
             .setTitle(R.string.edit)
             .setView(view)
             .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.eval(etAmount.text.toString())
+                val amount = Calc.evalPad(etAmount.text.toString())
                 if (amount == null || amount <= 0) {
                     Toast.makeText(this, R.string.invalid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton

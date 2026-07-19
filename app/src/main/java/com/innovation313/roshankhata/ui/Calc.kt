@@ -13,6 +13,61 @@ package com.innovation313.roshankhata.ui
 object Calc {
 
     /**
+     * Evaluate an expression that may contain percentages and the pad's own
+     * symbols, and is otherwise [eval]'s business.
+     *
+     * This is what every amount field and the calculator screen should call.
+     * [eval] itself is left alone: it is the same four-operator evaluator it
+     * always was, and percentages are rewritten into plain arithmetic before
+     * it ever sees them.
+     */
+    fun evalPad(input: String): Double? = eval(resolvePercent(normalize(input)))
+
+    /** The pad prints × ÷ − for looks; the evaluator wants * / -. */
+    fun normalize(text: String): String =
+        text.replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
+
+    /**
+     * Rewrite percentages into plain arithmetic.
+     *
+     * What a percentage resolves to depends on the operator in front of it,
+     * the way it is read aloud behind a counter:
+     *
+     *   500*32%   the 32% of 500                 160
+     *   3500-32%  3500 less 32% of itself       2380
+     *   3500+32%  3500 plus 32% of itself       4620
+     *
+     * After * and / it is simply a hundredth. After + and - it is taken of the
+     * running total to its left, which is what makes a discount come out the
+     * way it does on paper.
+     */
+    fun resolvePercent(input: String): String {
+        var out = input
+        while (true) {
+            val at = out.indexOf('%')
+            if (at < 0) return out
+
+            val numStart = out.lastIndexOfAny(charArrayOf('+', '-', '*', '/'), at - 1) + 1
+            val number = out.substring(numStart, at).toDoubleOrNull() ?: return out
+
+            val opIndex = numStart - 1
+            val op = if (opIndex >= 0) out[opIndex] else ' '
+            val base = if (opIndex > 0) eval(out.substring(0, opIndex)) else null
+
+            val replacement = when {
+                (op == '+' || op == '-') && base != null -> trim(base * number / 100.0)
+                else -> trim(number / 100.0)
+            }
+            out = out.substring(0, numStart) + replacement + out.substring(at + 1)
+        }
+    }
+
+    /** Drop a trailing .0 so a whole number reads as one. */
+    fun trim(value: Double): String =
+        if (value == value.toLong().toDouble()) value.toLong().toString()
+        else value.toString()
+
+    /**
      * Evaluate a plain-number or arithmetic string. "500" -> 500.0,
      * "500+300" -> 800.0, "1200-150" -> 1050.0. Returns null if the text isn't
      * a clean number-or-expression, so callers can keep their existing

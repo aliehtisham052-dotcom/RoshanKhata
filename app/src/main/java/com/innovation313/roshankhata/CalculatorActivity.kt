@@ -39,6 +39,7 @@ class CalculatorActivity : AppCompatActivity() {
         digit(R.id.btn3, "3"); digit(R.id.btn4, "4"); digit(R.id.btn5, "5")
         digit(R.id.btn6, "6"); digit(R.id.btn7, "7"); digit(R.id.btn8, "8")
         digit(R.id.btn9, "9"); digit(R.id.btnDot, ".")
+        digit(R.id.btn00, "00")
 
         operator(R.id.btnPlus, "+")
         operator(R.id.btnMinus, "-")
@@ -114,49 +115,10 @@ class CalculatorActivity : AppCompatActivity() {
         render()
     }
 
-    /**
-     * Rewrite percentages into plain arithmetic, so [Calc.eval] never has to
-     * know about them.
-     *
-     * The evaluator is load-bearing for five screens where money is entered.
-     * Teaching it a fifth operator to serve one key here would put those at
-     * risk for no gain.
-     */
-    private fun resolvePercents(text: String): String {
-        var out = text
-        while (true) {
-            val at = out.indexOf('%')
-            if (at < 0) return out
-
-            // The number the % applies to.
-            val numStart = out.lastIndexOfAny(charArrayOf('+', '-', '*', '/'), at - 1) + 1
-            val number = out.substring(numStart, at).toDoubleOrNull() ?: return out
-
-            val opIndex = numStart - 1
-            val op = if (opIndex >= 0) out[opIndex] else ' '
-
-            // Everything to the left of that operator — the base the
-            // percentage is taken of, for + and -.
-            val base = if (opIndex > 0) Calc.eval(out.substring(0, opIndex)) else null
-
-            val replacement = when {
-                // "3500 - 32%" is 3500 less a third of itself, not 3500 less
-                // 0.32. Rewritten as a subtraction of the actual amount.
-                (op == '+' || op == '-') && base != null ->
-                    trimNumber(base * number / 100.0)
-
-                // "500 * 32%" and "500 / 32%" act on the fraction itself.
-                else -> trimNumber(number / 100.0)
-            }
-
-            out = out.substring(0, numStart) + replacement + out.substring(at + 1)
-        }
-    }
-
     /** Replace the expression with its result, so the next sum can build on it. */
     private fun settle() {
-        val value = Calc.eval(resolvePercents(expression)) ?: return
-        expression = trimNumber(value)
+        val value = Calc.evalPad(expression) ?: return
+        expression = Calc.trim(value)
         render()
     }
 
@@ -166,7 +128,7 @@ class CalculatorActivity : AppCompatActivity() {
 
     private fun render() {
         tvExpression.text = display(expression)
-        val value = Calc.eval(resolvePercents(expression))
+        val value = Calc.evalPad(expression)
         tvResult.text = if (value == null) "" else Format.money(value)
     }
 
@@ -175,8 +137,4 @@ class CalculatorActivity : AppCompatActivity() {
         text.replace("*", " × ").replace("/", " ÷ ")
             .replace("+", " + ").replace("-", " − ")
 
-    /** Drop a trailing .0 so a whole number reads as one. */
-    private fun trimNumber(value: Double): String =
-        if (value == value.toLong().toDouble()) value.toLong().toString()
-        else value.toString()
 }

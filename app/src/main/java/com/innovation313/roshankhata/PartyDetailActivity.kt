@@ -248,6 +248,7 @@ class PartyDetailActivity : AppCompatActivity() {
         key(R.id.calc8, "8"); key(R.id.calc9, "9"); key(R.id.calcDot, ".")
         key(R.id.calcPlus, "+"); key(R.id.calcMinus, "\u2212")
         key(R.id.calcTimes, "\u00d7"); key(R.id.calcDivide, "\u00f7")
+        key(R.id.calcPercent, "%")
 
         view.findViewById<android.widget.Button>(R.id.calcClear).setOnClickListener {
             etAmount.setText("")
@@ -256,15 +257,14 @@ class PartyDetailActivity : AppCompatActivity() {
             val t = etAmount.text
             if (t.isNotEmpty()) etAmount.text.delete(t.length - 1, t.length)
         }
-        // The pad shows × ÷ − for looks; the evaluator wants * / -.
-        fun normalizeOps(t: String): String =
-            t.replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
 
         view.findViewById<android.widget.Button>(R.id.calcEquals).setOnClickListener {
-            val result = Calc.eval(normalizeOps(etAmount.text.toString()))
+            // evalPad, not eval: it translates the pad's × ÷ − and resolves a
+            // percentage before the arithmetic runs, so "1200-15%" comes out
+            // as 1020 rather than as nothing at all.
+            val result = Calc.evalPad(etAmount.text.toString())
             if (result != null) {
-                val clean = if (result % 1.0 == 0.0) result.toLong().toString() else result.toString()
-                etAmount.setText(clean)
+                etAmount.setText(Calc.trim(result))
                 etAmount.setSelection(etAmount.text.length)
             }
         }
@@ -300,10 +300,7 @@ class PartyDetailActivity : AppCompatActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.eval(
-                    etAmount.text.toString()
-                        .replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
-                )
+                val amount = Calc.evalPad(etAmount.text.toString())
                 if (amount == null || amount <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton

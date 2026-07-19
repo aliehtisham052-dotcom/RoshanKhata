@@ -225,7 +225,7 @@ class PlansActivity : AppCompatActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.eval(etAmount.text.toString())
+                val amount = Calc.evalPad(etAmount.text.toString())
                 if (amount == null || amount <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton

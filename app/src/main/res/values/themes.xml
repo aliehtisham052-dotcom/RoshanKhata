@@ -175,4 +175,26 @@
         <item name="backgroundTint">@color/page_line</item>
     </style>
 
+    <!--
+      The amount pad's keys. Same shape and colours as the Calculator screen's,
+      a size down: this pad sits inside a dialog that also has to hold the
+      amount, a note, item and quantity fields.
+    -->
+    <style name="CalcPadKey" parent="CalcKey">
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <style name="CalcPadKeyOp" parent="CalcPadKey">
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/brand_green</item>
+    </style>
+
+    <style name="CalcPadKeyMuted" parent="CalcPadKey">
+        <item name="android:textColor">@color/ink_soft</item>
+        <item name="backgroundTint">@color/page_line</item>
+    </style>
+
 </resources>

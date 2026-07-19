@@ -1,57 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Even grid with = filling the bottom-right corner. Left three columns hold the
-  digits and dot in equal keys; the right column holds ⌫, −, +, then a taller =
-  that fills the last two slots so there's no empty gap. Every key is the same
-  width; only = is taller, by request. Plain LinearLayouts, no GridLayout.
+  The amount pad, shown under the amount field when money is entered against a
+  party.
+
+  Same grid as the Calculator screen — four columns, five rows, every key the
+  same size — so the pad a shopkeeper uses ten times a day and the one they
+  open from Home are not two different calculators to learn. The styles are
+  shared for the same reason: change a key there and it changes here.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="6dp">
+    android:orientation="vertical"
+    android:paddingStart="4dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="4dp"
+    android:paddingBottom="4dp">
 
-    <!-- LEFT: three columns (C÷×, 789, 456, 123, 0-00-dot) -->
-    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="3" android:orientation="vertical">
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-            <Button android:id="@+id/calcClear" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="C" android:textColor="#1B5E3A" android:textSize="17sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#DCE7E0" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calcDivide" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="÷" android:textColor="#1B5E3A" android:textSize="17sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#DCE7E0" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calcTimes" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="×" android:textColor="#1B5E3A" android:textSize="17sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#DCE7E0" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-            <Button android:id="@+id/calc7" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="7" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calc8" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="8" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calc9" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="9" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-            <Button android:id="@+id/calc4" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="4" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calc5" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="5" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calc6" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="6" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-            <Button android:id="@+id/calc1" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="1" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calc2" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="2" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calc3" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="3" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-            <Button android:id="@+id/calc0" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="0" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calc00" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="00" android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-            <Button android:id="@+id/calcDot" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="." android:textColor="#1A1A18" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#EFF1EF" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-        </LinearLayout>
-
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/calcClear" style="@style/CalcPadKeyMuted" android:text="@string/calc_clear" />
+        <Button android:id="@+id/calcBack" style="@style/CalcPadKeyMuted" android:text="@string/calc_backspace" />
+        <Button android:id="@+id/calcPercent" style="@style/CalcPadKeyMuted" android:text="@string/calc_percent" />
+        <Button android:id="@+id/calcDivide" style="@style/CalcPadKeyOp" android:text="@string/calc_divide" />
     </LinearLayout>
 
-    <!-- RIGHT: ⌫, −, +, then tall = filling the last two slots -->
-    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-        <Button android:id="@+id/calcBack" android:layout_width="match_parent" android:layout_height="54dp" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="⌫" android:textColor="#A32D2D" android:textSize="17sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#DCE7E0" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-        <Button android:id="@+id/calcMinus" android:layout_width="match_parent" android:layout_height="54dp" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="−" android:textColor="#FFFFFF" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#2E8B6B" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-        <Button android:id="@+id/calcPlus" android:layout_width="match_parent" android:layout_height="54dp" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="+" android:textColor="#FFFFFF" android:textSize="19sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#2E8B6B" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
-        <Button android:id="@+id/calcEquals" android:layout_width="match_parent" android:layout_height="114dp" android:layout_margin="3dp" android:padding="0dp" android:minWidth="0dp" android:minHeight="0dp" android:text="=" android:textColor="#FFFFFF" android:textSize="22sp" android:maxLines="1" android:textAllCaps="false" android:includeFontPadding="false" android:backgroundTint="#1B5E3A" android:insetTop="0dp" android:insetBottom="0dp" android:insetLeft="0dp" android:insetRight="0dp" />
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/calc7" style="@style/CalcPadKey" android:text="7" />
+        <Button android:id="@+id/calc8" style="@style/CalcPadKey" android:text="8" />
+        <Button android:id="@+id/calc9" style="@style/CalcPadKey" android:text="9" />
+        <Button android:id="@+id/calcTimes" style="@style/CalcPadKeyOp" android:text="@string/calc_multiply" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/calc4" style="@style/CalcPadKey" android:text="4" />
+        <Button android:id="@+id/calc5" style="@style/CalcPadKey" android:text="5" />
+        <Button android:id="@+id/calc6" style="@style/CalcPadKey" android:text="6" />
+        <Button android:id="@+id/calcMinus" style="@style/CalcPadKeyOp" android:text="@string/calc_minus" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/calc1" style="@style/CalcPadKey" android:text="1" />
+        <Button android:id="@+id/calc2" style="@style/CalcPadKey" android:text="2" />
+        <Button android:id="@+id/calc3" style="@style/CalcPadKey" android:text="3" />
+        <Button android:id="@+id/calcPlus" style="@style/CalcPadKeyOp" android:text="@string/calc_plus" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/calc0" style="@style/CalcPadKey" android:text="0" />
+        <Button android:id="@+id/calc00" style="@style/CalcPadKey" android:text="@string/calc_double_zero" />
+        <Button android:id="@+id/calcDot" style="@style/CalcPadKey" android:text="@string/calc_dot" />
+        <Button android:id="@+id/calcEquals" style="@style/CalcPadKeyOp" android:text="@string/calc_equals" />
     </LinearLayout>
 
 </LinearLayout>

@@ -43,6 +43,7 @@
     <string name="calc_minus">\u2212</string>
     <string name="calc_plus">+</string>
     <string name="calc_equals">=</string>
+    <string name="calc_double_zero">00</string>
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">ڪئلڪوليٽر</string>
     <string name="coach_desc_calc">کاتي سان گڏ تڪڙا حساب — منافعو، ڪل ميزان ۽ ورهاست.</string>

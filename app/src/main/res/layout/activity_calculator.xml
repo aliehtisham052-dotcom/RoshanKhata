@@ -115,12 +115,9 @@
 
             <LinearLayout style="@style/CalcRow">
                 <Button android:id="@+id/btn0" style="@style/CalcKey" android:text="0" />
+                <Button android:id="@+id/btn00" style="@style/CalcKey" android:text="@string/calc_double_zero" />
                 <Button android:id="@+id/btnDot" style="@style/CalcKey" android:text="@string/calc_dot" />
-                <Button
-                    android:id="@+id/btnEquals"
-                    style="@style/CalcKeyOp"
-                    android:layout_weight="2"
-                    android:text="@string/calc_equals" />
+                <Button android:id="@+id/btnEquals" style="@style/CalcKeyOp" android:text="@string/calc_equals" />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
