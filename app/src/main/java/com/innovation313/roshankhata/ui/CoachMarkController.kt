@@ -212,11 +212,29 @@ class CoachMarkController(
         // the tour scrolls each tile to the same place anyway.
         val restingTop = (rootHeight * CARD_RESTING_FRACTION).toInt()
         val clearsTarget = target.bottom.toInt() + gap
-        val lowestTop = rootHeight - cardHeight - dp(12f).toInt()
+
+        // The host spans the whole screen, bottom bar included, so a card
+        // pushed to the foot of it sat behind that bar — which is where NEXT
+        // was disappearing to on the last rows. Measured from the bar itself
+        // rather than assumed: it is wrap_content and its height depends on
+        // the device's font scale.
+        val barHeight = bottomBarHeight()
+        val floor = rootHeight - barHeight - dp(12f).toInt()
+        val lowestTop = floor - cardHeight
 
         lp.topMargin = maxOf(restingTop, clearsTarget)
             .coerceAtMost(lowestTop.coerceAtLeast(dp(12f).toInt()))
         cardView.layoutParams = lp
+    }
+
+    /**
+     * Height of whatever sits pinned to the bottom of the screen behind the
+     * scrim — the navigation bar on both screens that run this tour. Zero if
+     * there is nothing there.
+     */
+    private fun bottomBarHeight(): Int {
+        val bar = activity.findViewById<View>(R.id.bottomNav) ?: return 0
+        return if (bar.isShown) bar.height else 0
     }
 
     /**
