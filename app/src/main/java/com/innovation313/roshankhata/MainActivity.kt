@@ -127,9 +127,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun createTile(feature: Feature): View {
         val tile = layoutInflater.inflate(R.layout.item_home_feature, null)
+
+        // Inflating against a null parent throws away every layout_* attribute
+        // in the file — the margin and the height included — and replacing
+        // layoutParams here finishes the job. That is why widening the gap in
+        // XML twice over changed nothing on screen: the value was being
+        // discarded before it was ever measured. Set here instead, where it
+        // survives.
+        val gap = (TILE_GAP_DP * resources.displayMetrics.density).toInt()
         tile.layoutParams = LinearLayout.LayoutParams(
-            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-        )
+            0,
+            (TILE_HEIGHT_DP * resources.displayMetrics.density).toInt(),
+            1f
+        ).apply {
+            marginStart = gap
+            marginEnd = gap
+            topMargin = gap
+            bottomMargin = gap
+        }
         tile.findViewById<ImageView>(R.id.ivFeatureIcon).apply {
             setImageResource(feature.iconRes)
             // The icon set was drawn white for the old dark nav bar. On a white
@@ -351,6 +366,13 @@ class MainActivity : AppCompatActivity() {
     companion object {
         /** Tiles per row in the feature grid. */
         private const val COLUMNS = 3
+
+        /** Tile height, in dp. Set here because the layout file's value is
+         *  discarded when a tile is inflated against a null parent. */
+        private const val TILE_HEIGHT_DP = 76f
+
+        /** Space around each tile, in dp. Neighbours end up twice this apart. */
+        private const val TILE_GAP_DP = 8f
 
         /**
          * Set by the gate. MainActivity is not exported and cannot be launched

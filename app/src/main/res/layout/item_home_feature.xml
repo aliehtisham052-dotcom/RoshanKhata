@@ -9,15 +9,16 @@
   than a stack of raised boxes competing for depth.
 
   Inflated once per feature from code — an <include> would hand all twelve
-  copies the same ids.
+  copies the same ids. Height and margin are set in createTile rather than
+  here: inflating against a null parent discards every layout_* attribute in
+  this file, so values written here would silently do nothing.
 -->
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="76dp"
-    android:layout_margin="14dp"
+    android:layout_height="wrap_content"
     android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="100dp"
