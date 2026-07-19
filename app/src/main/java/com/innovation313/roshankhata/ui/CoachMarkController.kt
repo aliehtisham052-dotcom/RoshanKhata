@@ -244,6 +244,13 @@ class CoachMarkController(
             return
         }
 
+        // Darken while the grid moves. The hole is still sitting over the
+        // previous step's tile, and as the rows slide past it another tile
+        // takes that spot — so the wrong feature stood lit for the length of
+        // the scroll before the right one arrived. Nothing is lit in transit;
+        // the hole reopens on the new target when the scroll lands.
+        overlay?.holeRect = null
+
         // An animator rather than smoothScrollTo. smoothScrollTo takes as long
         // as it likes depending on the distance, so pairing it with a fixed
         // wait meant the spotlight was measured mid-flight on the long jumps
