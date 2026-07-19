@@ -38,6 +38,18 @@
     <string name="coach_desc_backup">Save your ledger safely to your own Google Drive.</string>
         <string name="coach_title_settings">Business Settings</string>
     <string name="coach_desc_settings">Your shop\'s name, contact and preferences — set once, used everywhere.</string>
+        <string name="calculator">Calculator</string>
+    <string name="calc_clear">C</string>
+    <string name="calc_backspace">\u232B</string>
+    <string name="calc_percent">%</string>
+    <string name="calc_divide">\u00F7</string>
+    <string name="calc_multiply">\u00D7</string>
+    <string name="calc_minus">\u2212</string>
+    <string name="calc_plus">+</string>
+    <string name="calc_equals">=</string>
+    <string name="calc_dot">.</string>
+    <string name="coach_title_calc">Calculator</string>
+    <string name="coach_desc_calc">Quick sums beside your ledger — margins, totals, splits.</string>
     <string name="coach_title_applock">Recycle Bin</string>
     <string name="coach_desc_applock">Deleted a customer by mistake? Restore them from here.</string>
     <string name="coach_title_add">Add a Customer</string>

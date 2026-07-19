@@ -34,6 +34,18 @@
     <string name="coach_desc_backup">Apna khata mehfooz tareeqe se apni Google Drive par rakhein.</string>
         <string name="coach_title_settings">Business Settings</string>
     <string name="coach_desc_settings">Aap ki dukan ka naam, rabta aur tarjeehat — ek baar set karein, har jagah istemal hongi.</string>
+        <string name="calculator">Calculator</string>
+    <string name="calc_clear">C</string>
+    <string name="calc_backspace">\u232B</string>
+    <string name="calc_percent">%</string>
+    <string name="calc_divide">\u00F7</string>
+    <string name="calc_multiply">\u00D7</string>
+    <string name="calc_minus">\u2212</string>
+    <string name="calc_plus">+</string>
+    <string name="calc_equals">=</string>
+    <string name="calc_dot">.</string>
+    <string name="coach_title_calc">Calculator</string>
+    <string name="coach_desc_calc">Khaate ke sath foran hisaab — munafa, kul meezan aur taqseem.</string>
     <string name="coach_title_applock">Recycle Bin</string>
     <string name="coach_desc_applock">Ghalti se koi customer delete ho gaya? Yahan se wapis layein.</string>
     <string name="coach_title_add">Customer Shamil Karein</string>

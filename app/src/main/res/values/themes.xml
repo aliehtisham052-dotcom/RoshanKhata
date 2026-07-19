@@ -141,4 +141,38 @@
         <item name="cornerRadius">32dp</item>
     </style>
 
+    <!-- Calculator keypad. Four keys to a row, each row an equal share. -->
+    <style name="CalcRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="CalcKey" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <!-- Operators, in the brand green so the eye finds them without reading. -->
+    <style name="CalcKeyOp" parent="CalcKey">
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/brand_green</item>
+    </style>
+
+    <!-- Clear, backspace, percent: present but not competing for attention. -->
+    <style name="CalcKeyMuted" parent="CalcKey">
+        <item name="android:textColor">@color/ink_soft</item>
+        <item name="backgroundTint">@color/page_line</item>
+    </style>
+
 </resources>

@@ -34,6 +34,18 @@
     <string name="coach_desc_backup">پنهنجو کاتو محفوظ طريقي سان پنهنجي گوگل ڊرائيو تي رکو.</string>
         <string name="coach_title_settings">ڪاروباري سيٽنگون</string>
     <string name="coach_desc_settings">توهان جي دڪان جو نالو، رابطو ۽ ترجيحون — هڪ ڀيرو مقرر ڪريو، هر هنڌ استعمال ٿينديون.</string>
+        <string name="calculator">ڪئلڪوليٽر</string>
+    <string name="calc_clear">C</string>
+    <string name="calc_backspace">\u232B</string>
+    <string name="calc_percent">%</string>
+    <string name="calc_divide">\u00F7</string>
+    <string name="calc_multiply">\u00D7</string>
+    <string name="calc_minus">\u2212</string>
+    <string name="calc_plus">+</string>
+    <string name="calc_equals">=</string>
+    <string name="calc_dot">.</string>
+    <string name="coach_title_calc">ڪئلڪوليٽر</string>
+    <string name="coach_desc_calc">کاتي سان گڏ تڪڙا حساب — منافعو، ڪل ميزان ۽ ورهاست.</string>
     <string name="coach_title_applock">ري سائيڪل بن</string>
     <string name="coach_desc_applock">غلطي سان ڪو گراهڪ ڊليٽ ڪيو؟ هتان واپس آڻيو.</string>
     <string name="coach_title_add">گراهڪ شامل ڪريو</string>

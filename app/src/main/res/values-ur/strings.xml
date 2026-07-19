@@ -34,6 +34,18 @@
     <string name="coach_desc_backup">اپنا کھاتہ محفوظ طریقے سے اپنے گوگل ڈرائیو پر رکھیں۔</string>
         <string name="coach_title_settings">کاروباری سیٹنگز</string>
     <string name="coach_desc_settings">آپ کی دکان کا نام، رابطہ اور ترجیحات — ایک بار سیٹ کریں، ہر جگہ استعمال ہوں گی۔</string>
+        <string name="calculator">کیلکولیٹر</string>
+    <string name="calc_clear">C</string>
+    <string name="calc_backspace">\u232B</string>
+    <string name="calc_percent">%</string>
+    <string name="calc_divide">\u00F7</string>
+    <string name="calc_multiply">\u00D7</string>
+    <string name="calc_minus">\u2212</string>
+    <string name="calc_plus">+</string>
+    <string name="calc_equals">=</string>
+    <string name="calc_dot">.</string>
+    <string name="coach_title_calc">کیلکولیٹر</string>
+    <string name="coach_desc_calc">کھاتے کے ساتھ فوری حساب — منافع، کل میزان اور تقسیم۔</string>
     <string name="coach_title_applock">ری سائیکل بن</string>
     <string name="coach_desc_applock">غلطی سے کوئی گاہک ڈیلیٹ ہو گیا؟ یہاں سے واپس لائیں۔</string>
     <string name="coach_title_add">گاہک شامل کریں</string>

@@ -88,7 +88,8 @@ class MainActivity : AppCompatActivity() {
             Feature(R.drawable.ic_nav_cheques, R.string.nav_cheques, ChequesActivity::class.java),
             Feature(R.drawable.ic_feature_bills, R.string.supplier_bills, BillsActivity::class.java),
             Feature(R.drawable.ic_nav_plans, R.string.nav_plans, PlansActivity::class.java),
-            Feature(R.drawable.ic_feature_stock, R.string.expiring_stock, ExpiringActivity::class.java)
+            Feature(R.drawable.ic_feature_stock, R.string.expiring_stock, ExpiringActivity::class.java),
+            Feature(R.drawable.ic_feature_calc, R.string.calculator, CalculatorActivity::class.java)
         )
         val business = listOf(
             Feature(R.drawable.ic_feature_insights, R.string.insights_title, InsightsActivity::class.java),
@@ -304,6 +305,7 @@ class MainActivity : AppCompatActivity() {
             tileStep(R.string.supplier_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
             tileStep(R.string.nav_plans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
             tileStep(R.string.expiring_stock, R.string.coach_title_stock, R.string.coach_desc_stock),
+            tileStep(R.string.calculator, R.string.coach_title_calc, R.string.coach_desc_calc),
             tileStep(R.string.insights_title, R.string.coach_title_insights, R.string.coach_desc_insights),
             tileStep(R.string.zakat_calculator, R.string.coach_title_zakat, R.string.coach_desc_zakat),
             tileStep(R.string.biz_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),

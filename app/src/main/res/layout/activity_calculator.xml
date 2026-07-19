@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A plain four-function calculator, for the sums a shopkeeper does beside the
+  ledger rather than inside it — a margin, a rough total, a split.
+
+  The arithmetic is Calc.eval, the same evaluator the amount fields already
+  use, so a sum typed here and a sum typed into an entry agree by
+  construction. This screen is only the keypad and the display.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/section_khata"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/white"
+        app:title="@string/calculator"
+        app:titleTextColor="@color/white" />
+
+    <!--
+      The running expression above, its result below. Both are read-only: the
+      keypad is the only way in, so there is no soft keyboard to fight with.
+    -->
+    <LinearLayout
+        android:id="@+id/display"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="end"
+        android:orientation="vertical"
+        android:paddingStart="22dp"
+        android:paddingTop="26dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <TextView
+            android:id="@+id/tvExpression"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:maxLines="2"
+            android:textColor="@color/ink"
+            android:textSize="30sp"
+            tools:text="1200-150" />
+
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="end"
+            android:maxLines="1"
+            android:textColor="@color/brand_green"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            tools:text="1,050" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/display">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <LinearLayout style="@style/CalcRow">
+                <Button android:id="@+id/btnClear" style="@style/CalcKeyMuted" android:text="@string/calc_clear" />
+                <Button android:id="@+id/btnBack" style="@style/CalcKeyMuted" android:text="@string/calc_backspace" />
+                <Button android:id="@+id/btnPercent" style="@style/CalcKeyMuted" android:text="@string/calc_percent" />
+                <Button android:id="@+id/btnDivide" style="@style/CalcKeyOp" android:text="@string/calc_divide" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/CalcRow">
+                <Button android:id="@+id/btn7" style="@style/CalcKey" android:text="7" />
+                <Button android:id="@+id/btn8" style="@style/CalcKey" android:text="8" />
+                <Button android:id="@+id/btn9" style="@style/CalcKey" android:text="9" />
+                <Button android:id="@+id/btnMultiply" style="@style/CalcKeyOp" android:text="@string/calc_multiply" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/CalcRow">
+                <Button android:id="@+id/btn4" style="@style/CalcKey" android:text="4" />
+                <Button android:id="@+id/btn5" style="@style/CalcKey" android:text="5" />
+                <Button android:id="@+id/btn6" style="@style/CalcKey" android:text="6" />
+                <Button android:id="@+id/btnMinus" style="@style/CalcKeyOp" android:text="@string/calc_minus" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/CalcRow">
+                <Button android:id="@+id/btn1" style="@style/CalcKey" android:text="1" />
+                <Button android:id="@+id/btn2" style="@style/CalcKey" android:text="2" />
+                <Button android:id="@+id/btn3" style="@style/CalcKey" android:text="3" />
+                <Button android:id="@+id/btnPlus" style="@style/CalcKeyOp" android:text="@string/calc_plus" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/CalcRow">
+                <Button android:id="@+id/btn0" style="@style/CalcKey" android:text="0" />
+                <Button android:id="@+id/btnDot" style="@style/CalcKey" android:text="@string/calc_dot" />
+                <Button
+                    android:id="@+id/btnEquals"
+                    style="@style/CalcKeyOp"
+                    android:layout_weight="2"
+                    android:text="@string/calc_equals" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

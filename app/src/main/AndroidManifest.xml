@@ -77,6 +77,11 @@
             android:theme="@style/Theme.RoshanKhata" />
 
         <activity
+            android:name=".CalculatorActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".RecycleBinActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

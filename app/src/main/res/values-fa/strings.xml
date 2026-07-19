@@ -34,6 +34,18 @@
     <string name="coach_desc_backup">دفتر خود را با خیال راحت در گوگل درایو خودتان ذخیره کنید.</string>
         <string name="coach_title_settings">تنظیمات کسب‌وکار</string>
     <string name="coach_desc_settings">نام مغازه، اطلاعات تماس و ترجیحات شما — یک بار تنظیم، همه‌جا استفاده.</string>
+        <string name="calculator">ماشین‌حساب</string>
+    <string name="calc_clear">C</string>
+    <string name="calc_backspace">\u232B</string>
+    <string name="calc_percent">%</string>
+    <string name="calc_divide">\u00F7</string>
+    <string name="calc_multiply">\u00D7</string>
+    <string name="calc_minus">\u2212</string>
+    <string name="calc_plus">+</string>
+    <string name="calc_equals">=</string>
+    <string name="calc_dot">.</string>
+    <string name="coach_title_calc">ماشین‌حساب</string>
+    <string name="coach_desc_calc">محاسبات سریع در کنار دفترتان — سود، جمع کل و تقسیم.</string>
     <string name="coach_title_applock">سطل بازیافت</string>
     <string name="coach_desc_applock">مشتری را اشتباهی حذف کردید؟ از اینجا بازگردانید.</string>
     <string name="coach_title_add">افزودن مشتری</string>
