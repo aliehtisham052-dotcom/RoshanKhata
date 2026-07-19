@@ -54,7 +54,7 @@
             android:gravity="end"
             android:maxLines="2"
             android:textColor="@color/ink"
-            android:textSize="30sp"
+            android:textSize="34sp"
             tools:text="1200-150" />
 
         <TextView
@@ -65,7 +65,7 @@
             android:gravity="end"
             android:maxLines="1"
             android:textColor="@color/brand_green"
-            android:textSize="22sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             tools:text="1,050" />
     </LinearLayout>

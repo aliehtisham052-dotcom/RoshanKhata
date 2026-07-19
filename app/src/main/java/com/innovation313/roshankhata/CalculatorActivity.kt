@@ -63,6 +63,9 @@ class CalculatorActivity : AppCompatActivity() {
         findViewById<Button>(id).setOnClickListener {
             // One decimal point per number, or the evaluator rejects the lot.
             if (text == "." && currentNumber().contains(".")) return@setOnClickListener
+            // A digit after "32%" would read as part of that number when the
+            // percentage is resolved; the % has to be closed off first.
+            if (expression.endsWith("%")) return@setOnClickListener
             expression += text
             render()
         }
@@ -90,25 +93,69 @@ class CalculatorActivity : AppCompatActivity() {
     }
 
     /**
-     * Turn the number being typed into a hundredth of itself: "500*15" with
-     * percent pressed becomes "500*0.15" — the margin a shopkeeper actually
-     * wants.
+     * Mark the number being typed as a percentage. The % stays in the
+     * expression and on the display — replacing it with a decimal the moment
+     * it was pressed turned "32%" into "0.32" on screen, which is not what
+     * anybody typed and not what they meant.
      *
-     * Resolved to a plain number rather than wrapped in brackets. Calc.eval's
-     * parser understands parentheses but its input filter rejects them, and
-     * widening that filter would mean touching the evaluator five money-entry
-     * screens depend on. Not worth it for one key.
+     * What it resolves to depends on the operator in front of it, the way a
+     * shopkeeper reads it aloud:
+     *
+     *   500 × 32%   the 32% of 500                    160
+     *   3500 − 32%  3500 less 32% of itself          2380
+     *   3500 + 32%  3500 plus 32% of itself          4620
+     *
+     * A bare "32%" with nothing before it is 0.32.
      */
     private fun appendPercent() {
-        val number = currentNumber()
-        val value = number.toDoubleOrNull() ?: return
-        expression = expression.dropLast(number.length) + trimNumber(value / 100.0)
+        if (currentNumber().isEmpty()) return
+        if (expression.endsWith("%")) return
+        expression += "%"
         render()
+    }
+
+    /**
+     * Rewrite percentages into plain arithmetic, so [Calc.eval] never has to
+     * know about them.
+     *
+     * The evaluator is load-bearing for five screens where money is entered.
+     * Teaching it a fifth operator to serve one key here would put those at
+     * risk for no gain.
+     */
+    private fun resolvePercents(text: String): String {
+        var out = text
+        while (true) {
+            val at = out.indexOf('%')
+            if (at < 0) return out
+
+            // The number the % applies to.
+            val numStart = out.lastIndexOfAny(charArrayOf('+', '-', '*', '/'), at - 1) + 1
+            val number = out.substring(numStart, at).toDoubleOrNull() ?: return out
+
+            val opIndex = numStart - 1
+            val op = if (opIndex >= 0) out[opIndex] else ' '
+
+            // Everything to the left of that operator — the base the
+            // percentage is taken of, for + and -.
+            val base = if (opIndex > 0) Calc.eval(out.substring(0, opIndex)) else null
+
+            val replacement = when {
+                // "3500 - 32%" is 3500 less a third of itself, not 3500 less
+                // 0.32. Rewritten as a subtraction of the actual amount.
+                (op == '+' || op == '-') && base != null ->
+                    trimNumber(base * number / 100.0)
+
+                // "500 * 32%" and "500 / 32%" act on the fraction itself.
+                else -> trimNumber(number / 100.0)
+            }
+
+            out = out.substring(0, numStart) + replacement + out.substring(at + 1)
+        }
     }
 
     /** Replace the expression with its result, so the next sum can build on it. */
     private fun settle() {
-        val value = Calc.eval(expression) ?: return
+        val value = Calc.eval(resolvePercents(expression)) ?: return
         expression = trimNumber(value)
         render()
     }
@@ -119,7 +166,7 @@ class CalculatorActivity : AppCompatActivity() {
 
     private fun render() {
         tvExpression.text = display(expression)
-        val value = Calc.eval(expression)
+        val value = Calc.eval(resolvePercents(expression))
         tvResult.text = if (value == null) "" else Format.money(value)
     }
 
