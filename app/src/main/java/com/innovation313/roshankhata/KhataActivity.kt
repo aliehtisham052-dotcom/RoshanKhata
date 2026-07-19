@@ -121,14 +121,7 @@ class KhataActivity : AppCompatActivity() {
             renderNetBalance()
         }
 
-        setupBottomNav()
-
         ivEye = findViewById(R.id.ivEye)
-
-        findViewById<View>(R.id.balanceRow).setOnClickListener {
-            BalancePrivacy.toggle(this)
-            renderNetBalance()
-        }
 
         setupBottomNav()
 
@@ -379,8 +372,14 @@ class KhataActivity : AppCompatActivity() {
      */
     private fun setupBottomNav() {
         val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
+
         // Khata has no item of its own in the bar — it is one of the twelve
         // cards on Home. Home stays lit while its ledger is open.
+        //
+        // Selected BEFORE the listener is attached. Setting selectedItemId
+        // fires the listener exactly as a tap would, and the Home branch
+        // finishes this screen: with the listener already in place, opening
+        // the ledger closed it again on the spot.
         nav.selectedItemId = R.id.nav_home
 
         nav.setOnItemSelectedListener { item ->
@@ -423,9 +422,9 @@ class KhataActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Coming back from another section, the bar must show Khata again —
-        // otherwise it would still be highlighting wherever the user last went.
-        findViewById<BottomNavigationView>(R.id.bottomNav)?.selectedItemId = R.id.nav_home
+        // Nothing to re-select here: Khata has no item in the bar, and
+        // assigning selectedItemId would fire the listener and finish this
+        // screen the moment it came back to the front.
     }
 
     /**
