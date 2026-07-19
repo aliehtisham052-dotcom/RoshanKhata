@@ -369,7 +369,7 @@ class MainActivity : AppCompatActivity() {
 
         /** Tile height, in dp. Set here because the layout file's value is
          *  discarded when a tile is inflated against a null parent. */
-        private const val TILE_HEIGHT_DP = 76f
+        private const val TILE_HEIGHT_DP = 86f
 
         /** Space around each tile, in dp. Neighbours end up twice this apart. */
         private const val TILE_GAP_DP = 8f

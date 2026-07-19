@@ -9,7 +9,6 @@ import android.graphics.RectF
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
 import android.widget.Button
 import android.widget.FrameLayout
@@ -150,34 +149,31 @@ class CoachMarkController(
         // when its turn comes. Bring it into view first — a spotlight measured
         // before the scroll would land on empty space.
         scrollIntoView(step.clearance ?: step.target) {
-            // Wait for a layout pass so the target's bounds are current — a bottom
-            // nav item can shift slightly on first measure.
-            overlayView.viewTreeObserver.addOnGlobalLayoutListener(
-                object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                        val rect = CoachMarkOverlay.boundsWithin(step.target, host)
-                        overlayView.holePadding = dp(step.paddingDp)
-                        overlayView.holeRadius = dp(step.cornerRadiusDp)
-                        overlayView.holeRect = rect
-                        // Post rather than place inline: assigning layoutParams
-                        // during a layout pass re-enters layout, which Android
-                        // may treat as a loop.
-                        val cardAnchor = step.clearance
-                            ?.let { CoachMarkOverlay.boundsWithin(it, host) }
-                            ?: rect
-                        cardView.post {
-                            try {
-                                positionCard(cardView, cardAnchor)
-                            } catch (e: Exception) {
-                                // A misplaced card is a blemish; a crash is not.
-                                android.util.Log.e(TAG, "positioning failed", e)
-                            }
-                        }
-                    }
+            // Measured here, straight after the scroll reports it has landed.
+            //
+            // This used to wait on the overlay's next layout pass instead, and
+            // the overlay covers the whole screen — scrolling the grid beneath
+            // it does not resize it, so that pass often never came. The hole
+            // stayed where the previous step had left it, which looked like
+            // the tour skipping to the wrong tile.
+            val rect = CoachMarkOverlay.boundsWithin(step.target, host)
+            overlayView.holePadding = dp(step.paddingDp)
+            overlayView.holeRadius = dp(step.cornerRadiusDp)
+            overlayView.holeRect = rect
+
+            val cardAnchor = step.clearance
+                ?.let { CoachMarkOverlay.boundsWithin(it, host) }
+                ?: rect
+            // Post rather than place inline: assigning layoutParams during a
+            // layout pass re-enters layout, which Android may treat as a loop.
+            cardView.post {
+                try {
+                    positionCard(cardView, cardAnchor)
+                } catch (e: Exception) {
+                    // A misplaced card is a blemish; a crash is not.
+                    android.util.Log.e(TAG, "positioning failed", e)
                 }
-            )
-            overlayView.requestLayout()
+            }
         }
     }
 
