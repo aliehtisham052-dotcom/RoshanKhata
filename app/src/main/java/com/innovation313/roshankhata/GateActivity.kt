@@ -23,6 +23,16 @@ class GateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // With App Lock on, the lock screen carries the same logo and tagline
+        // while it waits for a fingerprint — so holding the splash here first
+        // played that mark twice in a row, which reads as the app starting
+        // over. Hand straight to the lock and let it be the branded beat.
+        val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
+        if (locked && LanguageActivity.isChosen(this)) {
+            route()
+            return
+        }
+
         // The branded beat comes first, always — before the language picker on
         // a first run and before the ledger on every one after. It used to be
         // skipped entirely on the very first launch, which meant a new owner
