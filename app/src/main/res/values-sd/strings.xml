@@ -651,4 +651,28 @@
     <string name="biz_card_share">ڪارڊ شيئر ڪريو</string>
     <string name="biz_card_note">ڪارڊ توهان جي فون تي ٺهي ٿو ۽ تصوير طور شيئر ٿئي ٿو. ڪجهه به اپلوڊ نٿو ٿئي.</string>
     <string name="biz_card_enter_name">مهرباني ڪري ڪاروبار جو نالو لکو</string>
+    <string name="help_support">مدد ۽ سهڪار</string>
+    <string name="help_questions">عام سوال</string>
+    <string name="help_still_stuck">مسئلو حل نه ٿيو؟</string>
+    <string name="help_contact_blurb">اسان کي لکو، اسان ضرور پڙهنداسين. ٻڌايو ته توهان ڇا ڪري رهيا هئا ۽ ڇا ٿيو — عام طور تي ايترو ئي ڪافي هوندو آهي.</string>
+    <string name="help_email_us">اي ميل ڪريو</string>
+    <string name="help_email_subject">روشن کاتو — مدد</string>
+    <string name="help_version">ورزن %1$s</string>
+
+    <string name="faq_q_backup">فون گم ٿي وڃي ته کاتو ڪيئن محفوظ رهندو؟</string>
+    <string name="faq_a_backup">مکيه اسڪرين مان بيڪ اپ ۽ ريسٽور کوليو ۽ پنهنجي گوگل اڪائونٽ سان سائن اِن ڪريو. توهان جو کاتو توهان جي ئي ڊرائيو تي محفوظ ٿيندو، جتي رڳو توهان پهچي سگهو ٿا. هفتي ۾ هڪ ڀيرو ڪريو، پوءِ فون گم ٿيڻ تي رڳو فون ويندو، حساب نه.</string>
+    <string name="faq_q_restore">فون مٽايو آهي. کاتو واپس ڪيئن آڻيان؟</string>
+    <string name="faq_a_restore">نئين فون تي روشن کاتو انسٽال ڪريو، بيڪ اپ ۽ ريسٽور کوليو، ۽ ساڳي گوگل اڪائونٽ سان سائن اِن ڪريو. آخري بيڪ اپ واپس ايندو. ان کان پوءِ جو اندراج ان ۾ نه هوندو.</string>
+    <string name="faq_q_lock">کاتو ٻين کان ڪيئن لڪايان؟</string>
+    <string name="faq_a_lock">وڌيڪ ← ايپ لاڪ. اهو اُهو ئي فنگر پرنٽ يا پن استعمال ڪري ٿو جيڪو توهان جي فون تي اڳ ۾ آهي، الڳ پاسورڊ ياد رکڻ جي ضرورت ناهي. ان لاءِ فون تي اسڪرين لاڪ لڳل هجڻ ضروري آهي.</string>
+    <string name="faq_q_hide">ڪو ڀرسان بيٺو هجي ته بيلنس لڪائي سگهان ٿو؟</string>
+    <string name="faq_a_hide">مکيه اسڪرين تي بيلنس سان گڏ اکين واري نشان تي دٻايو. ٻيهر دٻائڻ تائين هر هنڌ لڪل رهندو.</string>
+    <string name="faq_q_percent">رقم واري خاني ۾ رعايت جو حساب لڳائي سگهان ٿو؟</string>
+    <string name="faq_a_percent">ها. سڌو لکو — 1200-15%% جو جواب 1020 ۽ 500*32%% جو 160. اهو هر رقم واري خاني ۽ ڪئلڪوليٽر ۾ ڪم ڪري ٿو.</string>
+    <string name="faq_q_delete">غلطي سان گراهڪ ڊليٽ ٿي ويو.</string>
+    <string name="faq_a_delete">مکيه اسڪرين تي ري سائيڪل بن. ڊليٽ ٿيل گراهڪ ۽ اندراج اُتي رهن ٿا ۽ واپس آڻي سگهجن ٿا.</string>
+    <string name="faq_q_language">ٻولي پوءِ مٽائي سگهان ٿو؟</string>
+    <string name="faq_a_language">وڌيڪ ← ٻولي، جڏهن به چاهيو. کاتي تي ڪو اثر نه پوندو.</string>
+    <string name="faq_q_data">منهنجو ڊيٽا ڪٿي رهي ٿو؟ ڇا ٻيو ڪو ڏسي سگهي ٿو؟</string>
+    <string name="faq_a_data">توهان جي فون تي، ۽ ٻئي ڪٿي به نه — سواءِ ان جي ته توهان بيڪ اپ ڪريو، ۽ اهو به توهان جي ئي گوگل ڊرائيو تي وڃي ٿو، اسان وٽ نه. اسان توهان جا گراهڪ، سندن نمبر، يا ڪنهن جو حساب ڪڏهن به نه ٿا ڏسون.</string>
 </resources>

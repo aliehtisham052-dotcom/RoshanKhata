@@ -631,4 +631,28 @@
     <string name="biz_card_share">مشاركة البطاقة</string>
     <string name="biz_card_note">تُرسم البطاقة على هاتفك وتُشارَك كصورة. لا يُرفع أي شيء.</string>
     <string name="biz_card_enter_name">يرجى إدخال اسم النشاط التجاري</string>
+    <string name="help_support">المساعدة والدعم</string>
+    <string name="help_questions">أسئلة شائعة</string>
+    <string name="help_still_stuck">لم تجد حلاً؟</string>
+    <string name="help_contact_blurb">اكتب إلينا وسنقرأ رسالتك. أخبرنا بما كنت تفعله وما الذي حدث — هذا يكفي عادةً للعثور على المشكلة.</string>
+    <string name="help_email_us">راسلنا بالبريد</string>
+    <string name="help_email_subject">روشن كهاتا — مساعدة</string>
+    <string name="help_version">الإصدار %1$s</string>
+
+    <string name="faq_q_backup">كيف أحافظ على دفتري إذا فقدت هاتفي؟</string>
+    <string name="faq_a_backup">افتح النسخ الاحتياطي والاستعادة من الشاشة الرئيسية وسجّل الدخول بحساب جوجل الخاص بك. يُحفظ دفترك في درايف الخاص بك، حيث لا يصل إليه أحد سواك. افعل ذلك مرة كل أسبوع، وعندها يكلّفك فقدان الهاتف هاتفًا فقط لا حساباتك.</string>
+    <string name="faq_q_restore">غيّرت هاتفي. كيف أستعيد دفتري؟</string>
+    <string name="faq_a_restore">ثبّت روشن كهاتا على الهاتف الجديد، وافتح النسخ الاحتياطي والاستعادة، وسجّل الدخول بالحساب نفسه. ستعود آخر نسخة احتياطية. أما ما سُجّل بعدها فليس فيها.</string>
+    <string name="faq_q_lock">كيف أمنع الآخرين من رؤية دفتري؟</string>
+    <string name="faq_a_lock">المزيد ← قفل التطبيق. يستخدم البصمة أو رمز PIN الموجود على هاتفك أصلًا، فلا كلمة سر جديدة تُحفظ. يلزم أن يكون بهاتفك قفل شاشة.</string>
+    <string name="faq_q_hide">هل أستطيع إخفاء الرصيد إذا وقف أحدهم بجانبي؟</string>
+    <string name="faq_a_hide">اضغط على أيقونة العين بجوار الرصيد في الشاشة الرئيسية. يبقى مخفيًا في كل مكان حتى تضغط عليها ثانية.</string>
+    <string name="faq_q_percent">هل أحسب خصمًا داخل خانة المبلغ؟</string>
+    <string name="faq_a_percent">نعم. اكتب العملية مباشرة — 1200-15%% تعطي 1020، و 500*32%% تعطي 160. تعمل في كل خانة مبلغ وفي الآلة الحاسبة.</string>
+    <string name="faq_q_delete">حذفت عميلاً بالخطأ.</string>
+    <string name="faq_a_delete">سلة المحذوفات في الشاشة الرئيسية. يبقى فيها العملاء والقيود المحذوفة ويمكن إعادتها.</string>
+    <string name="faq_q_language">هل أغيّر اللغة لاحقًا؟</string>
+    <string name="faq_a_language">المزيد ← اللغة، في أي وقت. لا يتأثر دفترك بذلك.</string>
+    <string name="faq_q_data">أين تُحفظ بياناتي؟ وهل يراها أحد غيري؟</string>
+    <string name="faq_a_data">على هاتفك، ولا مكان غيره ما لم تأخذ نسخة احتياطية — وهذه تذهب إلى درايف الخاص بك لا إلينا. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين.</string>
 </resources>

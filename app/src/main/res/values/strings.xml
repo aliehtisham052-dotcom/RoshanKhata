@@ -655,4 +655,28 @@
     <string name="biz_card_share">Share card</string>
     <string name="biz_card_note">The card is drawn on your phone and shared as an image. Nothing is uploaded.</string>
     <string name="biz_card_enter_name">Please enter a business name</string>
+    <string name="help_support">Help &amp; Support</string>
+    <string name="help_questions">COMMON QUESTIONS</string>
+    <string name="help_still_stuck">STILL STUCK?</string>
+    <string name="help_contact_blurb">Write to us and we will read it. Tell us what you were doing and what happened — that is usually enough for us to find it.</string>
+    <string name="help_email_us">Email us</string>
+    <string name="help_email_subject">Roshan Khata — help</string>
+    <string name="help_version">Version %1$s</string>
+
+    <string name="faq_q_backup">How do I keep my khata safe if I lose my phone?</string>
+    <string name="faq_a_backup">Open Backup &amp; Restore from the home screen and sign in with your own Google account. Your ledger is saved to your Drive, where only you can reach it. Do this once a week and a lost phone costs you a phone, not your accounts.</string>
+    <string name="faq_q_restore">I changed my phone. How do I get my khata back?</string>
+    <string name="faq_a_restore">Install Roshan Khata on the new phone, open Backup &amp; Restore, and sign in with the same Google account. Your last backup comes back. Anything entered after that backup was made is not in it.</string>
+    <string name="faq_q_lock">How do I stop others seeing my khata?</string>
+    <string name="faq_a_lock">More → App Lock. It uses the same fingerprint or PIN your phone already uses, so there is no extra password to remember. Your phone must have a screen lock set for this to work.</string>
+    <string name="faq_q_hide">Can I hide the balance when someone is standing beside me?</string>
+    <string name="faq_a_hide">Tap the eye next to the balance on the home screen. It hides everywhere until you tap it again.</string>
+    <string name="faq_q_percent">Can I work out a discount inside the amount box?</string>
+    <string name="faq_a_percent">Yes. Type the sum straight in — 1200-15%% gives 1020, and 500*32%% gives 160. It works in every amount field and on the Calculator.</string>
+    <string name="faq_q_delete">I deleted a customer by mistake.</string>
+    <string name="faq_a_delete">Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back.</string>
+    <string name="faq_q_language">Can I change the language later?</string>
+    <string name="faq_a_language">More → Language, any time. Your ledger is not affected.</string>
+    <string name="faq_q_data">Where is my data kept? Can anyone else see it?</string>
+    <string name="faq_a_data">On your phone, and nowhere else unless you back it up — and a backup goes to your own Google Drive, not to us. We never see your customers, their numbers, or what anyone owes.</string>
 </resources>

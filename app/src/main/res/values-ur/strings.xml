@@ -623,4 +623,28 @@
     <string name="biz_card_share">کارڈ شیئر کریں</string>
     <string name="biz_card_note">کارڈ آپ کے فون پر بنتا ہے اور تصویر کے طور پر شیئر ہوتا ہے۔ کچھ بھی اپ لوڈ نہیں ہوتا۔</string>
     <string name="biz_card_enter_name">براہ کرم کاروبار کا نام لکھیں</string>
+    <string name="help_support">مدد اور سپورٹ</string>
+    <string name="help_questions">عام سوالات</string>
+    <string name="help_still_stuck">مسئلہ حل نہ ہوا؟</string>
+    <string name="help_contact_blurb">ہمیں لکھیں، ہم ضرور پڑھیں گے۔ بتائیں آپ کیا کر رہے تھے اور کیا ہوا — عام طور پر اتنا ہی کافی ہوتا ہے۔</string>
+    <string name="help_email_us">ای میل کریں</string>
+    <string name="help_email_subject">روشن کھاتہ — مدد</string>
+    <string name="help_version">ورژن %1$s</string>
+
+    <string name="faq_q_backup">فون گم ہو جائے تو کھاتہ کیسے محفوظ رہے گا؟</string>
+    <string name="faq_a_backup">ہوم اسکرین سے بیک اپ اینڈ ریسٹور کھولیں اور اپنے گوگل اکاؤنٹ سے سائن ان کریں۔ آپ کا کھاتہ آپ ہی کی ڈرائیو پر محفوظ ہو جائے گا، جہاں صرف آپ پہنچ سکتے ہیں۔ ہفتے میں ایک بار کر لیں، پھر فون گمنے پر صرف فون جائے گا، حساب نہیں۔</string>
+    <string name="faq_q_restore">فون بدل لیا ہے۔ کھاتہ واپس کیسے لاؤں؟</string>
+    <string name="faq_a_restore">نئے فون پر روشن کھاتہ انسٹال کریں، بیک اپ اینڈ ریسٹور کھولیں، اور اسی گوگل اکاؤنٹ سے سائن ان کریں۔ آخری بیک اپ واپس آ جائے گا۔ اس کے بعد کا اندراج اس میں نہیں ہوگا۔</string>
+    <string name="faq_q_lock">کھاتہ دوسروں سے کیسے چھپاؤں؟</string>
+    <string name="faq_a_lock">مزید ← ایپ لاک۔ یہ وہی فنگر پرنٹ یا پن استعمال کرتا ہے جو آپ کے فون پر پہلے سے ہے، الگ پاس ورڈ یاد رکھنے کی ضرورت نہیں۔ اس کے لیے فون پر اسکرین لاک لگا ہونا ضروری ہے۔</string>
+    <string name="faq_q_hide">کوئی پاس کھڑا ہو تو بیلنس چھپا سکتا ہوں؟</string>
+    <string name="faq_a_hide">ہوم اسکرین پر بیلنس کے ساتھ آنکھ کے نشان پر ٹیپ کریں۔ دوبارہ ٹیپ کرنے تک ہر جگہ چھپا رہے گا۔</string>
+    <string name="faq_q_percent">رقم والے خانے میں رعایت کا حساب لگا سکتا ہوں؟</string>
+    <string name="faq_a_percent">جی ہاں۔ سیدھا لکھ دیں — 1200-15%% کا جواب 1020 اور 500*32%% کا 160۔ یہ ہر رقم والے خانے اور کیلکولیٹر میں کام کرتا ہے۔</string>
+    <string name="faq_q_delete">غلطی سے گاہک ڈیلیٹ ہو گیا۔</string>
+    <string name="faq_a_delete">ہوم اسکرین پر ری سائیکل بن۔ ڈیلیٹ کیے گئے گاہک اور اندراج وہیں رہتے ہیں اور واپس لائے جا سکتے ہیں۔</string>
+    <string name="faq_q_language">زبان بعد میں بدل سکتا ہوں؟</string>
+    <string name="faq_a_language">مزید ← زبان، جب چاہیں۔ کھاتے پر کوئی اثر نہیں پڑے گا۔</string>
+    <string name="faq_q_data">میرا ڈیٹا کہاں رہتا ہے؟ کیا کوئی اور دیکھ سکتا ہے؟</string>
+    <string name="faq_a_data">آپ کے فون پر، اور کہیں نہیں — سوائے اس کے کہ آپ بیک اپ کریں، اور وہ بھی آپ ہی کی گوگل ڈرائیو پر جاتا ہے، ہمارے پاس نہیں۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا حساب کبھی نہیں دیکھتے۔</string>
 </resources>

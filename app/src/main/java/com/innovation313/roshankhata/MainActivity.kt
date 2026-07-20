@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
         val options = arrayOf(
             getString(R.string.app_lock),
             getString(R.string.language),
-            getString(R.string.report_problem)
+            getString(R.string.help_support)
         )
 
         MaterialAlertDialogBuilder(this)
@@ -196,7 +196,9 @@ class MainActivity : AppCompatActivity() {
                 when (which) {
                     0 -> showAppLockSettings()
                     1 -> startActivity(Intent(this, LanguageActivity::class.java))
-                    2 -> startActivity(Intent(this, ReportProblemActivity::class.java))
+                    // Reporting a problem lives inside Help now, so there is
+                    // one door marked "something is wrong" rather than two.
+                    2 -> startActivity(Intent(this, HelpActivity::class.java))
                 }
             }
             .show()

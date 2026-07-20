@@ -623,4 +623,28 @@
     <string name="biz_card_share">Card share karein</string>
     <string name="biz_card_note">Card aap ke phone par banta hai aur tasveer ke tor par share hota hai. Kuch bhi upload nahi hota.</string>
     <string name="biz_card_enter_name">Barah-e-karam karobar ka naam likhein</string>
+    <string name="help_support">Madad aur Support</string>
+    <string name="help_questions">AAM SAWALAT</string>
+    <string name="help_still_stuck">MASLA HAL NA HUA?</string>
+    <string name="help_contact_blurb">Hamein likhein, hum zaroor parhenge. Batayein aap kya kar rahe the aur kya hua — aam taur par itna hi kafi hota hai.</string>
+    <string name="help_email_us">Email karein</string>
+    <string name="help_email_subject">Roshan Khata — madad</string>
+    <string name="help_version">Version %1$s</string>
+
+    <string name="faq_q_backup">Phone gum ho jaye to khata kaise mehfooz rahega?</string>
+    <string name="faq_a_backup">Home screen se Backup &amp; Restore kholein aur apne Google account se sign in karein. Aap ka khata aap hi ki Drive par mehfooz ho jayega, jahan sirf aap pahunch sakte hain. Hafte mein ek baar kar lein, phir phone gumne par sirf phone jayega, hisaab nahi.</string>
+    <string name="faq_q_restore">Phone badal liya hai. Khata wapis kaise laun?</string>
+    <string name="faq_a_restore">Naye phone par Roshan Khata install karein, Backup &amp; Restore kholein, aur usi Google account se sign in karein. Aakhri backup wapis aa jayega. Uske baad ka indraj us mein nahi hoga.</string>
+    <string name="faq_q_lock">Khata doosron se kaise chupaun?</string>
+    <string name="faq_a_lock">More → App Lock. Ye wahi fingerprint ya PIN istemal karta hai jo aap ke phone par pehle se hai, alag password yaad rakhne ki zaroorat nahi. Iske liye phone par screen lock laga hona zaroori hai.</string>
+    <string name="faq_q_hide">Koi paas khara ho to balance chupa sakta hoon?</string>
+    <string name="faq_a_hide">Home screen par balance ke sath aankh ke nishan par tap karein. Dobara tap karne tak har jagah chupa rahega.</string>
+    <string name="faq_q_percent">Raqam wale khane mein riayat ka hisaab laga sakta hoon?</string>
+    <string name="faq_a_percent">Ji haan. Seedha likh dein — 1200-15%% ka jawab 1020 aur 500*32%% ka 160. Ye har raqam wale khane aur Calculator mein kaam karta hai.</string>
+    <string name="faq_q_delete">Ghalti se gahak delete ho gaya.</string>
+    <string name="faq_a_delete">Home screen par Recycle Bin. Delete kiye gaye gahak aur indraj wahin rehte hain aur wapis laye ja sakte hain.</string>
+    <string name="faq_q_language">Zubaan baad mein badal sakta hoon?</string>
+    <string name="faq_a_language">More → Language, jab chahein. Khaate par koi asar nahi parega.</string>
+    <string name="faq_q_data">Mera data kahan rehta hai? Kya koi aur dekh sakta hai?</string>
+    <string name="faq_a_data">Aap ke phone par, aur kahin nahi — siwaye iske ke aap backup karein, aur wo bhi aap hi ki Google Drive par jata hai, hamare paas nahi. Hum aap ke gahak, unke number, ya kisi ka hisaab kabhi nahi dekhte.</string>
 </resources>
