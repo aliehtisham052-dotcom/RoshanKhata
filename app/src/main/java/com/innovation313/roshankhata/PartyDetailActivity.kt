@@ -237,6 +237,30 @@ class PartyDetailActivity : AppCompatActivity() {
                 .hideSoftInputFromWindow(etAmount.windowToken, 0)
         }
 
+        // The running total, shown as the sum is typed rather than waiting on
+        // the equals key — the Calculator screen answers as you go, and this
+        // pad looked broken beside it.
+        val tvResult = view.findViewById<android.widget.TextView>(R.id.tvAmountResult)
+        fun showResult() {
+            val text = etAmount.text.toString()
+            // Nothing to total until there is arithmetic in the box: a plain
+            // "3500" repeated underneath as "Rs 3,500" is noise.
+            val isSum = text.any { it in "+-\u2212*\u00d7/\u00f7%" }
+            val value = if (isSum) Calc.evalPad(text) else null
+            if (value == null) {
+                tvResult.visibility = android.view.View.GONE
+            } else {
+                tvResult.text = Format.money(value)
+                tvResult.visibility = android.view.View.VISIBLE
+            }
+        }
+
+        etAmount.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) = showResult()
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, cc: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, cc: Int) {}
+        })
+
         // Full calculator pad. Digits, 00, and the dot append; operators append;
         // ⌫ deletes the last character; C clears; = evaluates in place.
         fun append(ch: String) { etAmount.append(ch); etAmount.setSelection(etAmount.text.length) }

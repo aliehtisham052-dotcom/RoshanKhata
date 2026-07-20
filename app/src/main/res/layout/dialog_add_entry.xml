@@ -26,6 +26,24 @@
             android:digits="0123456789.+−×÷*/-%" />
 
         <!--
+          The running total, the moment there is a sum to total. The pad had an
+          equals key and nothing else, so "3500-32%" sat there looking like
+          text until it was pressed — while the Calculator screen answered as
+          you typed. Same behaviour in both places now.
+        -->
+        <TextView
+            android:id="@+id/tvAmountResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="end"
+            android:maxLines="1"
+            android:textColor="@color/brand_green"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <!--
           The system keyboard is suppressed on the amount field; the calculator
           pad below is the only input. That keeps entry to a single, familiar
           number pad instead of a keyboard plus a separate strip.
