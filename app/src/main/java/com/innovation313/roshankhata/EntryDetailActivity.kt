@@ -118,6 +118,47 @@ class EntryDetailActivity : AppCompatActivity() {
         etAmount.setText(Format.plain(e.amount))
         etNote.setText(e.note.orEmpty())
 
+        // Starts at whatever the entry already carries, so leaving it alone
+        // leaves it alone.
+        var chosenTime = e.timestamp
+        val btnDate = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnEditDate)
+        val dateFmt = java.text.SimpleDateFormat("dd MMM yyyy, hh:mm a", java.util.Locale.getDefault())
+
+        fun showChosenDate() {
+            btnDate.text = getString(R.string.entry_date, dateFmt.format(java.util.Date(chosenTime)))
+        }
+        showChosenDate()
+
+        btnDate.setOnClickListener {
+            val cal = java.util.Calendar.getInstance().apply { timeInMillis = chosenTime }
+            android.app.DatePickerDialog(
+                this,
+                { _, year, month, day ->
+                    cal.set(java.util.Calendar.YEAR, year)
+                    cal.set(java.util.Calendar.MONTH, month)
+                    cal.set(java.util.Calendar.DAY_OF_MONTH, day)
+                    android.app.TimePickerDialog(
+                        this,
+                        { _, hour, minute ->
+                            cal.set(java.util.Calendar.HOUR_OF_DAY, hour)
+                            cal.set(java.util.Calendar.MINUTE, minute)
+                            chosenTime = cal.timeInMillis
+                            showChosenDate()
+                        },
+                        cal.get(java.util.Calendar.HOUR_OF_DAY),
+                        cal.get(java.util.Calendar.MINUTE),
+                        false
+                    ).show()
+                },
+                cal.get(java.util.Calendar.YEAR),
+                cal.get(java.util.Calendar.MONTH),
+                cal.get(java.util.Calendar.DAY_OF_MONTH)
+            ).apply {
+                // Same rule as a new entry: nothing in the future.
+                datePicker.maxDate = System.currentTimeMillis()
+            }.show()
+        }
+
         AlertDialog.Builder(this)
             .setTitle(R.string.edit)
             .setView(view)
@@ -127,7 +168,11 @@ class EntryDetailActivity : AppCompatActivity() {
                     Toast.makeText(this, R.string.invalid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
-                val updated = e.copy(amount = amount, note = etNote.text.toString().trim().ifBlank { null })
+                val updated = e.copy(
+                    amount = amount,
+                    note = etNote.text.toString().trim().ifBlank { null },
+                    timestamp = chosenTime
+                )
                 lifecycleScope.launch {
                     KhataDatabase.get(this@EntryDetailActivity).khataDao().updateEntry(updated)
                     entry = updated
