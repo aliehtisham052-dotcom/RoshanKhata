@@ -23,7 +23,7 @@
             android:focusableInTouchMode="true"
             android:cursorVisible="true"
             android:inputType="phone"
-            android:digits="0123456789.+−×÷*/-" />
+            android:digits="0123456789.+−×÷*/-%" />
 
         <!--
           The system keyboard is suppressed on the amount field; the calculator

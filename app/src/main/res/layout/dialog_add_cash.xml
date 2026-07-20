@@ -15,7 +15,7 @@
         android:hint="@string/amount"
         android:importantForAutofill="no"
         android:inputType="phone"
-            android:digits="0123456789.+-*/" />
+            android:digits="0123456789.+-*/%" />
 
     <AutoCompleteTextView
         android:id="@+id/etCashCategory"
