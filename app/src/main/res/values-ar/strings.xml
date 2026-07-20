@@ -655,4 +655,7 @@
     <string name="faq_a_language">المزيد ← اللغة، في أي وقت. لا يتأثر دفترك بذلك.</string>
     <string name="faq_q_data">أين تُحفظ بياناتي؟ وهل يراها أحد غيري؟</string>
     <string name="faq_a_data">على هاتفك، ولا مكان غيره ما لم تأخذ نسخة احتياطية — وهذه تذهب إلى درايف الخاص بك لا إلينا. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين.</string>
+    <string name="entry_date">التاريخ: %1$s</string>
+    <string name="pick_date">اختر التاريخ</string>
+    <string name="pick_time">اختر الوقت</string>
 </resources>

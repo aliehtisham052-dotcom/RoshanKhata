@@ -679,4 +679,7 @@
     <string name="faq_a_language">More → Language, any time. Your ledger is not affected.</string>
     <string name="faq_q_data">Where is my data kept? Can anyone else see it?</string>
     <string name="faq_a_data">On your phone, and nowhere else unless you back it up — and a backup goes to your own Google Drive, not to us. We never see your customers, their numbers, or what anyone owes.</string>
+    <string name="entry_date">Date: %1$s</string>
+    <string name="pick_date">Choose date</string>
+    <string name="pick_time">Choose time</string>
 </resources>

@@ -50,6 +50,26 @@
         -->
         <include layout="@layout/view_calculator" />
 
+        <!--
+          When it happened, not when it was typed. An entry is often written up
+          in the evening for something that changed hands at noon, and a ledger
+          that insists otherwise is a ledger the owner has to argue with.
+          Defaults to now, which is right most of the time.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEntryDate"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="start|center_vertical"
+            android:textAllCaps="false"
+            android:textColor="@color/brand_green"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_calendar"
+            app:iconGravity="textStart"
+            app:iconTint="@color/brand_green" />
+
         <EditText
             android:id="@+id/etNote"
             android:layout_width="match_parent"

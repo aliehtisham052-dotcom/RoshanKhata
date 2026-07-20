@@ -647,4 +647,7 @@
     <string name="faq_a_language">مزید ← زبان، جب چاہیں۔ کھاتے پر کوئی اثر نہیں پڑے گا۔</string>
     <string name="faq_q_data">میرا ڈیٹا کہاں رہتا ہے؟ کیا کوئی اور دیکھ سکتا ہے؟</string>
     <string name="faq_a_data">آپ کے فون پر، اور کہیں نہیں — سوائے اس کے کہ آپ بیک اپ کریں، اور وہ بھی آپ ہی کی گوگل ڈرائیو پر جاتا ہے، ہمارے پاس نہیں۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا حساب کبھی نہیں دیکھتے۔</string>
+    <string name="entry_date">تاریخ: %1$s</string>
+    <string name="pick_date">تاریخ منتخب کریں</string>
+    <string name="pick_time">وقت منتخب کریں</string>
 </resources>

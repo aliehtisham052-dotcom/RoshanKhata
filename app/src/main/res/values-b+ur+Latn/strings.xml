@@ -647,4 +647,7 @@
     <string name="faq_a_language">More → Language, jab chahein. Khaate par koi asar nahi parega.</string>
     <string name="faq_q_data">Mera data kahan rehta hai? Kya koi aur dekh sakta hai?</string>
     <string name="faq_a_data">Aap ke phone par, aur kahin nahi — siwaye iske ke aap backup karein, aur wo bhi aap hi ki Google Drive par jata hai, hamare paas nahi. Hum aap ke gahak, unke number, ya kisi ka hisaab kabhi nahi dekhte.</string>
+    <string name="entry_date">Tareekh: %1$s</string>
+    <string name="pick_date">Tareekh chunein</string>
+    <string name="pick_time">Waqt chunein</string>
 </resources>

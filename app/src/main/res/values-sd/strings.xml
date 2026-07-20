@@ -675,4 +675,7 @@
     <string name="faq_a_language">وڌيڪ ← ٻولي، جڏهن به چاهيو. کاتي تي ڪو اثر نه پوندو.</string>
     <string name="faq_q_data">منهنجو ڊيٽا ڪٿي رهي ٿو؟ ڇا ٻيو ڪو ڏسي سگهي ٿو؟</string>
     <string name="faq_a_data">توهان جي فون تي، ۽ ٻئي ڪٿي به نه — سواءِ ان جي ته توهان بيڪ اپ ڪريو، ۽ اهو به توهان جي ئي گوگل ڊرائيو تي وڃي ٿو، اسان وٽ نه. اسان توهان جا گراهڪ، سندن نمبر، يا ڪنهن جو حساب ڪڏهن به نه ٿا ڏسون.</string>
+    <string name="entry_date">تاريخ: %1$s</string>
+    <string name="pick_date">تاريخ چونڊيو</string>
+    <string name="pick_time">وقت چونڊيو</string>
 </resources>

@@ -675,4 +675,7 @@
     <string name="faq_a_language">بیشتر ← زبان، هر وقت خواستید. دفترتان تغییری نمی‌کند.</string>
     <string name="faq_q_data">اطلاعاتم کجا نگه داشته می‌شود؟ کس دیگری می‌بیندش؟</string>
     <string name="faq_a_data">روی گوشی خودتان، و جای دیگری نه — مگر پشتیبان بگیرید، که آن هم به درایو خودتان می‌رود نه به ما. ما هرگز مشتریان شما، شماره‌هایشان، یا بدهی کسی را نمی‌بینیم.</string>
+    <string name="entry_date">تاریخ: %1$s</string>
+    <string name="pick_date">انتخاب تاریخ</string>
+    <string name="pick_time">انتخاب زمان</string>
 </resources>
