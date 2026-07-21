@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.ui.Calc
+import com.innovation313.roshankhata.ui.DateTimeField
 
 import android.content.Intent
 import android.net.Uri
@@ -241,46 +242,11 @@ class PartyDetailActivity : AppCompatActivity() {
         // entry written up in the evening for something that changed hands at
         // noon should carry noon, not the evening.
         var chosenTime = System.currentTimeMillis()
-        val btnDate = view.findViewById<MaterialButton>(R.id.btnEntryDate)
-        val dateFmt = java.text.SimpleDateFormat("dd MMM yyyy, hh:mm a", java.util.Locale.getDefault())
-
-        fun showChosenDate() {
-            btnDate.text = getString(R.string.entry_date, dateFmt.format(java.util.Date(chosenTime)))
-        }
-        showChosenDate()
-
-        btnDate.setOnClickListener {
-            val cal = java.util.Calendar.getInstance().apply { timeInMillis = chosenTime }
-            android.app.DatePickerDialog(
-                this,
-                { _, year, month, day ->
-                    cal.set(java.util.Calendar.YEAR, year)
-                    cal.set(java.util.Calendar.MONTH, month)
-                    cal.set(java.util.Calendar.DAY_OF_MONTH, day)
-                    // Straight on to the time, so one tap sets both rather than
-                    // leaving the hour at whatever it happened to be.
-                    android.app.TimePickerDialog(
-                        this,
-                        { _, hour, minute ->
-                            cal.set(java.util.Calendar.HOUR_OF_DAY, hour)
-                            cal.set(java.util.Calendar.MINUTE, minute)
-                            chosenTime = cal.timeInMillis
-                            showChosenDate()
-                        },
-                        cal.get(java.util.Calendar.HOUR_OF_DAY),
-                        cal.get(java.util.Calendar.MINUTE),
-                        false
-                    ).show()
-                },
-                cal.get(java.util.Calendar.YEAR),
-                cal.get(java.util.Calendar.MONTH),
-                cal.get(java.util.Calendar.DAY_OF_MONTH)
-            ).apply {
-                // No future entries: a ledger records what has happened, and a
-                // date that has not arrived yet is a mistake every time.
-                datePicker.maxDate = System.currentTimeMillis()
-            }.show()
-        }
+        DateTimeField.attach(
+            activity = this,
+            button = view.findViewById(R.id.btnEntryDate),
+            initial = chosenTime
+        ) { chosenTime = it }
 
         // The running total, shown as the sum is typed rather than waiting on
         // the equals key — the Calculator screen answers as you go, and this

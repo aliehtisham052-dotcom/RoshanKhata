@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.ui.Calc
+import com.innovation313.roshankhata.ui.DateTimeField
 
 import android.os.Bundle
 import android.view.View
@@ -120,6 +121,15 @@ class CashbookActivity : AppCompatActivity() {
             )
         }
 
+        // When the cash actually moved. Defaults to now, which is right most of
+        // the time, but the day's takings are often written up at closing.
+        var chosenTime = System.currentTimeMillis()
+        DateTimeField.attach(
+            activity = this,
+            button = view.findViewById(R.id.btnCashDate),
+            initial = chosenTime
+        ) { chosenTime = it }
+
         MaterialAlertDialogBuilder(this)
             .setTitle(if (isIncome) R.string.cash_income else R.string.cash_expense)
             .setView(view)
@@ -143,7 +153,8 @@ class CashbookActivity : AppCompatActivity() {
                             amount = amount,
                             isIncome = isIncome,
                             category = category,
-                            note = etNote.text.toString().trim().ifEmpty { null }
+                            note = etNote.text.toString().trim().ifEmpty { null },
+                            timestamp = chosenTime
                         )
                     )
                 }
