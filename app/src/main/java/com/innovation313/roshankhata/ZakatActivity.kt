@@ -11,6 +11,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Zakat
 import com.innovation313.roshankhata.data.ZakatInputs
+import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
@@ -131,8 +132,12 @@ class ZakatActivity : AppCompatActivity() {
     }
 
     private fun recalculate() {
-        val pricePerGram = etSilverPrice.text.toString().trim().toDoubleOrNull() ?: 0.0
-        val cashStock = etCashStock.text.toString().trim().toDoubleOrNull() ?: 0.0
+        // evalPad, not toDoubleOrNull. Every other amount field in the app
+        // totals a sum typed into it — "2500+1200" or "300*40" — and this one
+        // silently read the whole thing as zero, so a shopkeeper adding up
+        // their stock in the box got no answer and no reason why.
+        val pricePerGram = Calc.evalPad(etSilverPrice.text.toString()) ?: 0.0
+        val cashStock = Calc.evalPad(etCashStock.text.toString()) ?: 0.0
 
         val nisab = if (useGold) {
             Zakat.nisabFromGoldPrice(pricePerGram)

@@ -125,7 +125,8 @@
                 android:layout_marginTop="8dp"
                 android:hint="@string/silver_price_hint"
                 android:importantForAutofill="no"
-                android:inputType="numberDecimal" />
+                android:inputType="phone"
+                android:digits="0123456789.+-*/%" />
 
             <TextView
                 android:id="@+id/tvNisabValue"
@@ -161,7 +162,8 @@
                 android:layout_marginTop="8dp"
                 android:hint="@string/cash_stock_hint"
                 android:importantForAutofill="no"
-                android:inputType="numberDecimal" />
+                android:inputType="phone"
+                android:digits="0123456789.+-*/%" />
 
             <!-- From the ledger -->
             <TextView
