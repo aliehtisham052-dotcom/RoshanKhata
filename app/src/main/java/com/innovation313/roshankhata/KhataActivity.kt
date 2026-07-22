@@ -250,6 +250,35 @@ class KhataActivity : AppCompatActivity() {
                 }
                 val phone = etPhone.text.toString().trim().ifEmpty { null }
                 lifecycleScope.launch {
+                    // One name, one ledger. Nothing stopped the same customer
+                    // being added twice, and a second "Bilal" got a second
+                    // page — so a single account appeared as two, with the
+                    // balance split between them and neither one right.
+                    val existing = dao.findPartyByName(name)
+                    if (existing != null) {
+                        Toast.makeText(
+                            this@KhataActivity,
+                            getString(R.string.party_exists, existing.name),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        // Open the one they already have rather than making
+                        // them find it: this is almost always the account they
+                        // were reaching for.
+                        openParty(
+                            PartyWithBalance(
+                                id = existing.id,
+                                name = existing.name,
+                                phone = existing.phone,
+                                isCustomer = existing.isCustomer,
+                                photoPath = existing.photoPath,
+                                creditLimit = existing.creditLimit,
+                                balance = 0.0,
+                                lastActivity = 0L
+                            )
+                        )
+                        return@launch
+                    }
+
                     dao.insertParty(
                         Party(
                             name = name,

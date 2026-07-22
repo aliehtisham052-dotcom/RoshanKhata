@@ -685,4 +685,5 @@
     <string name="about_privacy_body">همه چیز روی همین گوشی ذخیره می‌شود. ما هرگز مشتریان شما، شماره‌هایشان، یا بدهی کسی را نمی‌بینیم. پشتیبان هم به درایو خودتان می‌رود — نه به ما.</string>
     <string name="about_privacy_policy">سیاست حریم خصوصی</string>
     <string name="about_maker">ساخته‌شده توسط Innovation-313</string>
+    <string name="party_exists">%1$s از قبل در دفتر شما هست — باز می‌شود.</string>
 </resources>

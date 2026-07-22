@@ -689,4 +689,5 @@
     <string name="about_privacy_body">Everything is stored on this phone. We never see your customers, their numbers, or what anyone owes. A backup goes to your own Google Drive — not to us.</string>
     <string name="about_privacy_policy">Privacy policy</string>
     <string name="about_maker">Built by Innovation-313</string>
+    <string name="party_exists">%1$s is already in your khata — opening it.</string>
 </resources>

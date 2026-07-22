@@ -657,4 +657,5 @@
     <string name="about_privacy_body">سب کچھ اسی فون پر محفوظ ہے۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا واجب کبھی نہیں دیکھتے۔ بیک اپ بھی آپ ہی کی گوگل ڈرائیو پر جاتا ہے — ہمارے پاس نہیں۔</string>
     <string name="about_privacy_policy">پرائیویسی پالیسی</string>
     <string name="about_maker">Innovation-313 کی تیار کردہ</string>
+    <string name="party_exists">%1$s پہلے سے آپ کے کھاتے میں ہے — کھولا جا رہا ہے۔</string>
 </resources>

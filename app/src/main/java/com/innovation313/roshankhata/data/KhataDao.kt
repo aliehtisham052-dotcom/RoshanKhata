@@ -22,6 +22,21 @@ interface KhataDao {
     suspend fun getParty(id: Long): Party?
 
     /**
+     * An existing customer of this name, if there is one.
+     *
+     * Case- and space-insensitive, because "Bilal", "bilal" and " Bilal " are
+     * one person to the shopkeeper who typed them. Deleted parties are ignored
+     * — a name freed by deleting someone should be usable again.
+     */
+    @Query(
+        "SELECT * FROM parties " +
+            "WHERE isDeleted = 0 " +
+            "AND LOWER(TRIM(name)) = LOWER(TRIM(:name)) " +
+            "LIMIT 1"
+    )
+    suspend fun findPartyByName(name: String): Party?
+
+    /**
      * Balance convention:
      *   "I Gave"  (isGiven = 1) => party owes me more  => +amount
      *   "I Got"   (isGiven = 0) => party owes me less  => -amount

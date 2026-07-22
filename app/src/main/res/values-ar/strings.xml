@@ -665,4 +665,5 @@
     <string name="about_privacy_body">كل شيء محفوظ على هذا الهاتف. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين. والنسخة الاحتياطية تذهب إلى درايف الخاص بك — لا إلينا.</string>
     <string name="about_privacy_policy">سياسة الخصوصية</string>
     <string name="about_maker">من إنتاج Innovation-313</string>
+    <string name="party_exists">%1$s موجود بالفعل في دفترك — يتم فتحه الآن.</string>
 </resources>

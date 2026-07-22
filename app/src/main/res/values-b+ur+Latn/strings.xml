@@ -657,4 +657,5 @@
     <string name="about_privacy_body">Sab kuch isi phone par mehfooz hai. Hum aap ke gahak, unke number, ya kisi ka wajib kabhi nahi dekhte. Backup bhi aap hi ki Google Drive par jata hai — hamare paas nahi.</string>
     <string name="about_privacy_policy">Privacy Policy</string>
     <string name="about_maker">Innovation-313 ki tayyar karda</string>
+    <string name="party_exists">%1$s pehle se aap ke khaate mein hai — khola ja raha hai.</string>
 </resources>
