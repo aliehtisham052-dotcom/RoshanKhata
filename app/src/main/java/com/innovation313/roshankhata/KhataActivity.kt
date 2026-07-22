@@ -404,7 +404,8 @@ class KhataActivity : AppCompatActivity() {
         val options = arrayOf(
             getString(R.string.app_lock),
             getString(R.string.language),
-            getString(R.string.help_support)
+            getString(R.string.help_support),
+            getString(R.string.about_us)
         )
 
         MaterialAlertDialogBuilder(this)
@@ -416,6 +417,7 @@ class KhataActivity : AppCompatActivity() {
                     // Reporting a problem lives inside Help now, so there is
                     // one door marked "something is wrong" rather than two.
                     2 -> startActivity(Intent(this, HelpActivity::class.java))
+                    3 -> startActivity(Intent(this, AboutActivity::class.java))
                 }
             }
             .show()

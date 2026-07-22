@@ -678,4 +678,11 @@
     <string name="entry_date">تاریخ: %1$s</string>
     <string name="pick_date">انتخاب تاریخ</string>
     <string name="pick_time">انتخاب زمان</string>
+    <string name="about_us">درباره</string>
+    <string name="about_version">نسخه %1$s</string>
+    <string name="about_what">دفتری برای پیشخوان مغازه. حساب مشتریان، نقدی روزانه، چک‌ها، فاکتورهای تأمین‌کننده و اقساط — همان‌طور که روی کاغذ نگه داشته می‌شوند، و به زبانی که مغازه با آن اداره می‌شود.</string>
+    <string name="about_privacy_title">حساب‌های شما مال خودتان می‌ماند</string>
+    <string name="about_privacy_body">همه چیز روی همین گوشی ذخیره می‌شود. ما هرگز مشتریان شما، شماره‌هایشان، یا بدهی کسی را نمی‌بینیم. پشتیبان هم به درایو خودتان می‌رود — نه به ما.</string>
+    <string name="about_privacy_policy">سیاست حریم خصوصی</string>
+    <string name="about_maker">ساخته‌شده توسط Innovation-313</string>
 </resources>

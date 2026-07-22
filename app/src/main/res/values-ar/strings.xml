@@ -658,4 +658,11 @@
     <string name="entry_date">التاريخ: %1$s</string>
     <string name="pick_date">اختر التاريخ</string>
     <string name="pick_time">اختر الوقت</string>
+    <string name="about_us">حول التطبيق</string>
+    <string name="about_version">الإصدار %1$s</string>
+    <string name="about_what">دفتر حسابات لطاولة المتجر. حسابات العملاء، النقد اليومي، الشيكات، فواتير الموردين والأقساط — محفوظة كما تُحفظ على الورق، وباللغة التي يُدار بها المتجر.</string>
+    <string name="about_privacy_title">حساباتك تبقى لك</string>
+    <string name="about_privacy_body">كل شيء محفوظ على هذا الهاتف. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين. والنسخة الاحتياطية تذهب إلى درايف الخاص بك — لا إلينا.</string>
+    <string name="about_privacy_policy">سياسة الخصوصية</string>
+    <string name="about_maker">من إنتاج Innovation-313</string>
 </resources>

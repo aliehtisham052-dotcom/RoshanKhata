@@ -682,4 +682,11 @@
     <string name="entry_date">Date: %1$s</string>
     <string name="pick_date">Choose date</string>
     <string name="pick_time">Choose time</string>
+    <string name="about_us">About</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_what">A ledger for the shop counter. Customer accounts, daily cash, cheques, supplier bills and instalments — kept the way they are kept on paper, in the language the shop is run in.</string>
+    <string name="about_privacy_title">Your accounts stay yours</string>
+    <string name="about_privacy_body">Everything is stored on this phone. We never see your customers, their numbers, or what anyone owes. A backup goes to your own Google Drive — not to us.</string>
+    <string name="about_privacy_policy">Privacy policy</string>
+    <string name="about_maker">Built by Innovation-313</string>
 </resources>

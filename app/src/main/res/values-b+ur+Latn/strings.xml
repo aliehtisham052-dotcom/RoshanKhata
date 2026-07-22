@@ -650,4 +650,11 @@
     <string name="entry_date">Tareekh: %1$s</string>
     <string name="pick_date">Tareekh chunein</string>
     <string name="pick_time">Waqt chunein</string>
+    <string name="about_us">Taaruf</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_what">Dukan ke counter ka khata. Gahakon ke hisaab, rozana nakad, cheques, supplier bills aur qisten — jaise kaghaz par rakhe jate hain waise, aur usi zubaan mein jis mein dukan chalti hai.</string>
+    <string name="about_privacy_title">Aap ka hisaab aap hi ka rehta hai</string>
+    <string name="about_privacy_body">Sab kuch isi phone par mehfooz hai. Hum aap ke gahak, unke number, ya kisi ka wajib kabhi nahi dekhte. Backup bhi aap hi ki Google Drive par jata hai — hamare paas nahi.</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_maker">Innovation-313 ki tayyar karda</string>
 </resources>

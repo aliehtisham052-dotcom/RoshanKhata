@@ -650,4 +650,11 @@
     <string name="entry_date">تاریخ: %1$s</string>
     <string name="pick_date">تاریخ منتخب کریں</string>
     <string name="pick_time">وقت منتخب کریں</string>
+    <string name="about_us">تعارف</string>
+    <string name="about_version">ورژن %1$s</string>
+    <string name="about_what">دکان کے کاؤنٹر کا کھاتہ۔ گاہکوں کے حساب، روزانہ نقد، چیک، سپلائر بلز اور قسطیں — جیسے کاغذ پر رکھے جاتے ہیں ویسے، اور اسی زبان میں جس میں دکان چلتی ہے۔</string>
+    <string name="about_privacy_title">آپ کا حساب آپ ہی کا رہتا ہے</string>
+    <string name="about_privacy_body">سب کچھ اسی فون پر محفوظ ہے۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا واجب کبھی نہیں دیکھتے۔ بیک اپ بھی آپ ہی کی گوگل ڈرائیو پر جاتا ہے — ہمارے پاس نہیں۔</string>
+    <string name="about_privacy_policy">پرائیویسی پالیسی</string>
+    <string name="about_maker">Innovation-313 کی تیار کردہ</string>
 </resources>

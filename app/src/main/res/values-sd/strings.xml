@@ -678,4 +678,11 @@
     <string name="entry_date">تاريخ: %1$s</string>
     <string name="pick_date">تاريخ چونڊيو</string>
     <string name="pick_time">وقت چونڊيو</string>
+    <string name="about_us">ايپ بابت</string>
+    <string name="about_version">ورزن %1$s</string>
+    <string name="about_what">دڪان جي ڪائونٽر لاءِ کاتو. گراهڪن جا حساب، روزانو نقد، چيڪ، سپلائر بل ۽ قسطون — جيئن ڪاغذ تي رکيا وڃن ٿا تيئن، ۽ ان ٻولي ۾ جنهن ۾ دڪان هلي ٿو.</string>
+    <string name="about_privacy_title">توهان جا حساب توهان جا ئي رهندا</string>
+    <string name="about_privacy_body">سڀ ڪجهه هن فون تي محفوظ آهي. اسان توهان جا گراهڪ، سندن نمبر، يا ڪنهن جو قرض ڪڏهن به نه ٿا ڏسون. بيڪ اپ به توهان جي پنهنجي گوگل ڊرائيو تي وڃي ٿو — اسان وٽ نه.</string>
+    <string name="about_privacy_policy">رازداري پاليسي</string>
+    <string name="about_maker">Innovation-313 پاران ٺاهيل</string>
 </resources>
