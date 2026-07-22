@@ -45,7 +45,12 @@ class PartySuggestionAdapter(
         val view = convertView ?: LayoutInflater.from(context)
             .inflate(R.layout.item_party_suggestion, parent, false)
 
-        val p = matches[position]
+        // getOrNull, not [position]. The dropdown asks for rows against the
+        // count it last read, and a fresh keystroke can shrink the list before
+        // it gets there — indexing straight in throws, or worse, hands back
+        // whatever now sits at that slot. That is the wrong name appearing
+        // under a query it does not match.
+        val p = matches.getOrNull(position) ?: return view
 
         view.findViewById<TextView>(R.id.tvSuggestName).text = p.name
 
@@ -106,6 +111,20 @@ class PartySuggestionAdapter(
         @Suppress("UNCHECKED_CAST")
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             matches = (results?.values as? List<PartyWithBalance>).orEmpty()
+
+            // Keep ArrayAdapter's own backing list in step with ours. It is
+            // what the dropdown measures itself against, and while it held a
+            // stale count the rows drawn came from one list and the height
+            // from another — a name from the previous query showing under the
+            // current one.
+            //
+            // setNotifyOnChange(false) around the rebuild, or each call below
+            // fires its own redraw mid-edit.
+            setNotifyOnChange(false)
+            clear()
+            addAll(matches)
+            setNotifyOnChange(true)
+
             if (matches.isEmpty()) notifyDataSetInvalidated() else notifyDataSetChanged()
         }
 
