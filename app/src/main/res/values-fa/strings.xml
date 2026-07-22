@@ -686,4 +686,8 @@
     <string name="about_privacy_policy">سیاست حریم خصوصی</string>
     <string name="about_maker">ساخته‌شده توسط Innovation-313</string>
     <string name="party_exists">%1$s از قبل در دفتر شما هست — باز می‌شود.</string>
+    <string name="party_exists_title">شاید این از قبل در دفتر شما باشد</string>
+    <string name="party_exists_message">حسابی شبیه این از قبل باز است:\n\n%1$s\n\nاگر همان شخص است، همان را باز کنید. اگر کس دیگری است — یا حساب دومی که عمداً نگه می‌دارید — اضافه کنید.</string>
+    <string name="open_existing">باز کردن حساب موجود</string>
+    <string name="create_new_anyway">به هر حال اضافه کن</string>
 </resources>

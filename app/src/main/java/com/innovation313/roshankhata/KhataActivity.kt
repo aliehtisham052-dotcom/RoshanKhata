@@ -250,46 +250,86 @@ class KhataActivity : AppCompatActivity() {
                 }
                 val phone = etPhone.text.toString().trim().ifEmpty { null }
                 lifecycleScope.launch {
-                    // One name, one ledger. Nothing stopped the same customer
-                    // being added twice, and a second "Bilal" got a second
-                    // page — so a single account appeared as two, with the
-                    // balance split between them and neither one right.
-                    val existing = dao.findPartyByName(name)
-                    if (existing != null) {
-                        Toast.makeText(
-                            this@KhataActivity,
-                            getString(R.string.party_exists, existing.name),
-                            Toast.LENGTH_LONG
-                        ).show()
-                        // Open the one they already have rather than making
-                        // them find it: this is almost always the account they
-                        // were reaching for.
-                        openParty(
-                            PartyWithBalance(
-                                id = existing.id,
-                                name = existing.name,
-                                phone = existing.phone,
-                                isCustomer = existing.isCustomer,
-                                photoPath = existing.photoPath,
-                                creditLimit = existing.creditLimit,
-                                balance = 0.0,
-                                lastActivity = 0L
+                    // A match on the number or the name is worth raising, but
+                    // it is not the app's decision.
+                    //
+                    // Three different things look identical from here: two
+                    // different men both called Ahmad, one man whose shop and
+                    // land the owner keeps as separate accounts, and the same
+                    // customer entered twice by mistake. Only the shopkeeper
+                    // knows which. Opening the existing account silently gets
+                    // the first two wrong; creating a second one silently gets
+                    // the third wrong. So it asks.
+                    //
+                    // The number is checked first: a man goes in as "Bilal"
+                    // one week and "Bilal Bhai" the next, but the number he
+                    // answers on does not change.
+                    val existing = (phone?.let { dao.findPartyByPhone(it) })
+                        ?: dao.findPartyByName(name)
+
+                    if (existing == null) {
+                        dao.insertParty(
+                            Party(
+                                name = name,
+                                phone = phone,
+                                isCustomer = rbCustomer.isChecked
                             )
                         )
                         return@launch
                     }
 
-                    dao.insertParty(
-                        Party(
-                            name = name,
-                            phone = phone,
-                            isCustomer = rbCustomer.isChecked
-                        )
-                    )
+                    confirmDuplicate(existing) { openExisting ->
+                        lifecycleScope.launch {
+                            if (openExisting) {
+                                openParty(existing.toRow())
+                            } else {
+                                dao.insertParty(
+                                    Party(
+                                        name = name,
+                                        phone = phone,
+                                        isCustomer = rbCustomer.isChecked
+                                    )
+                                )
+                            }
+                        }
+                    }
                 }
             }
             .show()
     }
+
+    /**
+     * Ask whether a near-match is the same customer.
+     *
+     * Shows the number alongside the name, because that is what tells two
+     * Ahmads apart at a glance — and the shopkeeper reading it already knows
+     * which of theirs is which.
+     */
+    private fun confirmDuplicate(existing: Party, onChoice: (openExisting: Boolean) -> Unit) {
+        val detail = existing.phone?.let { "${existing.name}\n$it" } ?: existing.name
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.party_exists_title)
+            .setMessage(getString(R.string.party_exists_message, detail))
+            .setPositiveButton(R.string.open_existing) { _, _ -> onChoice(true) }
+            .setNegativeButton(R.string.create_new_anyway) { _, _ -> onChoice(false) }
+            .setNeutralButton(R.string.cancel, null)
+            .show()
+    }
+
+    /** The list row shape, for a party fetched on its own. */
+    private fun Party.toRow() = PartyWithBalance(
+        id = id,
+        name = name,
+        phone = phone,
+        isCustomer = isCustomer,
+        photoPath = photoPath,
+        creditLimit = creditLimit,
+        // Filled in by the detail screen from the ledger itself; these are
+        // only here because the row type carries them.
+        balance = 0.0,
+        lastActivity = 0L
+    )
 
     /** Deleting a party is never destructive — it goes to the Recycle Bin, entries and all. */
     private fun confirmDeleteParty(party: PartyWithBalance) {

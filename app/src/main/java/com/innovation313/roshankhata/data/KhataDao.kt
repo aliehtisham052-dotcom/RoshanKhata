@@ -37,6 +37,27 @@ interface KhataDao {
     suspend fun findPartyByName(name: String): Party?
 
     /**
+     * An existing customer on this number, if there is one.
+     *
+     * A phone number identifies a person more reliably than a name does — the
+     * same man may be entered as "Bilal" one week and "Bilal Bhai" the next,
+     * but the number he answers on does not change. Matching on it catches
+     * the duplicate a name check would let through.
+     *
+     * Spaces and dashes are stripped before comparing, so 0300-1234567 and
+     * 03001234567 are one number.
+     */
+    @Query(
+        "SELECT * FROM parties " +
+            "WHERE isDeleted = 0 " +
+            "AND phone IS NOT NULL " +
+            "AND REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', '') = " +
+            "REPLACE(REPLACE(REPLACE(:phone, ' ', ''), '-', ''), '+', '') " +
+            "LIMIT 1"
+    )
+    suspend fun findPartyByPhone(phone: String): Party?
+
+    /**
      * Balance convention:
      *   "I Gave"  (isGiven = 1) => party owes me more  => +amount
      *   "I Got"   (isGiven = 0) => party owes me less  => -amount

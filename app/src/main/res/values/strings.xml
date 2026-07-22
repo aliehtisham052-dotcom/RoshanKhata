@@ -690,4 +690,8 @@
     <string name="about_privacy_policy">Privacy policy</string>
     <string name="about_maker">Built by Innovation-313</string>
     <string name="party_exists">%1$s is already in your khata — opening it.</string>
+    <string name="party_exists_title">This may already be in your khata</string>
+    <string name="party_exists_message">An account like this one is already open:\n\n%1$s\n\nIf it is the same person, open what you already have. If it is someone else — or a second account you keep on purpose — go ahead and add it.</string>
+    <string name="open_existing">Open existing</string>
+    <string name="create_new_anyway">Add anyway</string>
 </resources>

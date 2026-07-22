@@ -658,4 +658,8 @@
     <string name="about_privacy_policy">Privacy Policy</string>
     <string name="about_maker">Innovation-313 ki tayyar karda</string>
     <string name="party_exists">%1$s pehle se aap ke khaate mein hai — khola ja raha hai.</string>
+    <string name="party_exists_title">Ye shayad pehle se aap ke khaate mein hai</string>
+    <string name="party_exists_message">Is jaisa ek khata pehle se khula hai:\n\n%1$s\n\nAgar ye wahi shakhs hai to jo pehle se hai wahi kholein. Agar koi aur hai — ya doosra khata jo aap jaan boojh kar rakhte hain — to shamil kar lein.</string>
+    <string name="open_existing">Maujooda khata kholein</string>
+    <string name="create_new_anyway">Phir bhi shamil karein</string>
 </resources>

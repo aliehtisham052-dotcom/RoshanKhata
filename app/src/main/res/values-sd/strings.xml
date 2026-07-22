@@ -686,4 +686,8 @@
     <string name="about_privacy_policy">رازداري پاليسي</string>
     <string name="about_maker">Innovation-313 پاران ٺاهيل</string>
     <string name="party_exists">%1$s اڳ ۾ ئي توهان جي کاتي ۾ آهي — کوليو پيو وڃي.</string>
+    <string name="party_exists_title">ٿي سگهي ٿو اهو اڳ ۾ ئي توهان جي کاتي ۾ هجي</string>
+    <string name="party_exists_message">هن جهڙو هڪ کاتو اڳ ۾ ئي کليل آهي:\n\n%1$s\n\nجيڪڏهن اهو ساڳيو ماڻهو آهي ته جيڪو اڳ ۾ آهي اهو کوليو. جيڪڏهن ٻيو ڪو آهي — يا ٻيو کاتو جيڪو توهان ڄاڻي واڻي رکو ٿا — ته شامل ڪري ڇڏيو.</string>
+    <string name="open_existing">موجود کاتو کوليو</string>
+    <string name="create_new_anyway">پوءِ به شامل ڪريو</string>
 </resources>
