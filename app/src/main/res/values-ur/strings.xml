@@ -662,4 +662,8 @@
     <string name="party_exists_message">اس جیسا ایک کھاتہ پہلے سے کھلا ہے:\n\n%1$s\n\nاگر یہ وہی شخص ہے تو جو پہلے سے ہے وہی کھولیں۔ اگر کوئی اور ہے — یا دوسرا کھاتہ جو آپ جان بوجھ کر رکھتے ہیں — تو شامل کر لیں۔</string>
     <string name="open_existing">موجودہ کھاتہ کھولیں</string>
     <string name="create_new_anyway">پھر بھی شامل کریں</string>
+    <string name="add_bill_photo">بل کی تصویر لگائیں</string>
+    <string name="bill_photo_attached">بل لگ گیا — بدلنے کے لیے ٹیپ کریں</string>
+    <string name="bill_photo_label">بل</string>
+    <string name="bill_photo_failed">وہ تصویر پڑھی نہیں جا سکی۔</string>
 </resources>

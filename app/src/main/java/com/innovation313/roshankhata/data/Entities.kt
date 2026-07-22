@@ -90,6 +90,16 @@ data class LedgerEntry(
     /** Free text so it fits any trade: bag, litre, kg, maund, packet, piece. */
     val unit: String? = null,
 
+    /**
+     * A photograph of the bill or slip this entry came from, kept on this
+     * phone under the app's own files.
+     *
+     * Deliberately left out of statements and shares, the same way a
+     * customer's photo is: a bill often carries another buyer's name or a
+     * rate the owner would rather not forward with it.
+     */
+    val billPhotoPath: String? = null,
+
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null
 )

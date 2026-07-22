@@ -37,6 +37,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
+import com.innovation313.roshankhata.data.BillPhoto
 import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.ui.EntryAdapter
 import com.innovation313.roshankhata.ui.EntryRow
@@ -55,6 +56,39 @@ class PartyDetailActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PARTY_ID = "party_id"
+    }
+
+    /**
+     * Set while an entry dialog is open and waiting for a bill photo.
+     *
+     * The picker takes over the screen, so the dialog is not on top when the
+     * result comes back — the callback updates this and the button, and the
+     * dialog reads it when Save is pressed.
+     */
+    private var pendingBillPhoto: String? = null
+    private var billButton: com.google.android.material.button.MaterialButton? = null
+
+    private val pickBillPhoto = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia()
+    ) { uri: android.net.Uri? ->
+        if (uri == null) return@registerForActivityResult
+        lifecycleScope.launch {
+            val path = withContext(Dispatchers.IO) {
+                BillPhoto.save(this@PartyDetailActivity, uri)
+            }
+            if (path == null) {
+                Toast.makeText(
+                    this@PartyDetailActivity,
+                    R.string.bill_photo_failed,
+                    Toast.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+            // Replacing an earlier pick: the old file is nothing but bytes now.
+            BillPhoto.delete(pendingBillPhoto)
+            pendingBillPhoto = path
+            billButton?.setText(R.string.bill_photo_attached)
+        }
     }
 
     private var partyId: Long = 0
@@ -238,6 +272,22 @@ class PartyDetailActivity : AppCompatActivity() {
                 .hideSoftInputFromWindow(etAmount.windowToken, 0)
         }
 
+        // Fresh dialog, fresh attachment. Anything picked for a dialog that was
+        // then cancelled is a file nobody will ever look at.
+        BillPhoto.delete(pendingBillPhoto)
+        pendingBillPhoto = null
+
+        billButton = view.findViewById(R.id.btnAddBill)
+        billButton?.setText(R.string.add_bill_photo)
+        billButton?.setOnClickListener {
+            pickBillPhoto.launch(
+                androidx.activity.result.PickVisualMediaRequest(
+                    androidx.activity.result.contract.ActivityResultContracts
+                        .PickVisualMedia.ImageOnly
+                )
+            )
+        }
+
         // When it happened. Defaults to now — right most of the time — but an
         // entry written up in the evening for something that changed hands at
         // noon should carry noon, not the evening.
@@ -363,7 +413,8 @@ class PartyDetailActivity : AppCompatActivity() {
                     itemName = itemName,
                     quantity = quantity,
                     unit = unit,
-                    timestamp = chosenTime
+                    timestamp = chosenTime,
+                    billPhotoPath = pendingBillPhoto
                 )
 
                 // Warn BEFORE writing, not after — a warning that arrives once

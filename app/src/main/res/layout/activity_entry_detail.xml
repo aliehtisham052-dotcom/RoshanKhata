@@ -183,6 +183,38 @@
                         </TableRow>
                     </TableLayout>
 
+                    <!--
+                      The bill this entry came from. Below the figures rather
+                      than beside them: it is evidence for the numbers above,
+                      and it is the thing the owner scrolls to when a customer
+                      disputes one.
+                    -->
+                    <LinearLayout
+                        android:id="@+id/blockBillPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="6dp"
+                            android:text="@string/bill_photo_label"
+                            android:textColor="@color/text_muted"
+                            android:textSize="14sp" />
+
+                        <ImageView
+                            android:id="@+id/ivBillPhoto"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:adjustViewBounds="true"
+                            android:background="@color/page_bg"
+                            android:contentDescription="@string/bill_photo_label"
+                            android:scaleType="centerCrop" />
+                    </LinearLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

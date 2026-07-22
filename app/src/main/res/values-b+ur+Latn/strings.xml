@@ -662,4 +662,8 @@
     <string name="party_exists_message">Is jaisa ek khata pehle se khula hai:\n\n%1$s\n\nAgar ye wahi shakhs hai to jo pehle se hai wahi kholein. Agar koi aur hai — ya doosra khata jo aap jaan boojh kar rakhte hain — to shamil kar lein.</string>
     <string name="open_existing">Maujooda khata kholein</string>
     <string name="create_new_anyway">Phir bhi shamil karein</string>
+    <string name="add_bill_photo">Bill ki tasveer lagayein</string>
+    <string name="bill_photo_attached">Bill lag gaya — badalne ke liye tap karein</string>
+    <string name="bill_photo_label">Bill</string>
+    <string name="bill_photo_failed">Wo tasveer parhi nahi ja saki.</string>
 </resources>

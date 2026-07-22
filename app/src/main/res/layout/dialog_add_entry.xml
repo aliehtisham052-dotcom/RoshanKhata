@@ -51,6 +51,26 @@
         <include layout="@layout/view_calculator" />
 
         <!--
+          The bill this entry came from, if there is one. Sits beside the date
+          because both answer "which transaction was this" rather than "how
+          much" — and the photo stays on this phone, out of statements, the
+          same way a customer's photo does.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddBill"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
+            android:text="@string/add_bill_photo"
+            android:textAllCaps="false"
+            android:textColor="@color/brand_green"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_camera"
+            app:iconGravity="textStart"
+            app:iconTint="@color/brand_green" />
+
+        <!--
           When it happened, not when it was typed. An entry is often written up
           in the evening for something that changed hands at noon, and a ledger
           that insists otherwise is a ledger the owner has to argue with.

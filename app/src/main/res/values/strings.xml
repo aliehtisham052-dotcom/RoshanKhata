@@ -694,4 +694,8 @@
     <string name="party_exists_message">An account like this one is already open:\n\n%1$s\n\nIf it is the same person, open what you already have. If it is someone else — or a second account you keep on purpose — go ahead and add it.</string>
     <string name="open_existing">Open existing</string>
     <string name="create_new_anyway">Add anyway</string>
+    <string name="add_bill_photo">Attach bill photo</string>
+    <string name="bill_photo_attached">Bill attached — tap to change</string>
+    <string name="bill_photo_label">Bill</string>
+    <string name="bill_photo_failed">That image could not be read.</string>
 </resources>

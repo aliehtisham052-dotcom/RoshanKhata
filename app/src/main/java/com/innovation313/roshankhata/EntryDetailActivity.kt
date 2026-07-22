@@ -17,11 +17,14 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.data.BillPhoto
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.DateTimeField
 import com.innovation313.roshankhata.ui.Format
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
@@ -90,6 +93,26 @@ class EntryDetailActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvParty).text = partyName
         findViewById<TextView>(R.id.tvEntryNumber).text = e.entryNumber
         findViewById<TextView>(R.id.tvDateTime).text = Format.dateTime(e.timestamp)
+
+        // The bill, if one was attached. Loaded off the main thread — it is a
+        // file read, and a receipt should not stutter on the way in.
+        val block = findViewById<View>(R.id.blockBillPhoto)
+        val image = findViewById<android.widget.ImageView>(R.id.ivBillPhoto)
+        if (e.billPhotoPath.isNullOrBlank()) {
+            block.visibility = View.GONE
+        } else {
+            lifecycleScope.launch {
+                val bitmap = withContext(Dispatchers.IO) { BillPhoto.load(e.billPhotoPath) }
+                if (bitmap == null) {
+                    // The file has gone — cleared by the system, or restored
+                    // from a backup that carried the ledger but not the photos.
+                    block.visibility = View.GONE
+                } else {
+                    image.setImageBitmap(bitmap)
+                    block.visibility = View.VISIBLE
+                }
+            }
+        }
 
         val rowNote = findViewById<TableRow>(R.id.rowNote)
         if (e.note.isNullOrBlank()) {

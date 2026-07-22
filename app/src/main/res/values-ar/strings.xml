@@ -670,4 +670,8 @@
     <string name="party_exists_message">هناك حساب مشابه مفتوح بالفعل:\n\n%1$s\n\nإن كان الشخص نفسه فافتح ما لديك. وإن كان شخصًا آخر — أو حسابًا ثانيًا تحتفظ به عن قصد — فأضفه.</string>
     <string name="open_existing">افتح الحساب الحالي</string>
     <string name="create_new_anyway">أضِف على أي حال</string>
+    <string name="add_bill_photo">أرفق صورة الفاتورة</string>
+    <string name="bill_photo_attached">أُرفقت الفاتورة — اضغط للتغيير</string>
+    <string name="bill_photo_label">الفاتورة</string>
+    <string name="bill_photo_failed">تعذّرت قراءة تلك الصورة.</string>
 </resources>

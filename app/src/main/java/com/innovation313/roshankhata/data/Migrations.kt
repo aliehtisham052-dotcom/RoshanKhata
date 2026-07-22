@@ -237,6 +237,18 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
     }
 }
 
+/**
+ * A photograph of the bill an entry came from.
+ *
+ * Nullable with no default, so every ledger already written keeps exactly
+ * what it had — the column simply arrives empty on the rows that predate it.
+ */
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE transactions ADD COLUMN billPhotoPath TEXT")
+    }
+}
+
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
     MIGRATION_1_2,
@@ -245,5 +257,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_4_5,
     MIGRATION_5_6,
     MIGRATION_6_7,
-    MIGRATION_7_8
+    MIGRATION_7_8,
+    MIGRATION_8_9
 )

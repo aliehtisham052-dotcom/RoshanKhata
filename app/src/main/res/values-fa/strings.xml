@@ -690,4 +690,8 @@
     <string name="party_exists_message">حسابی شبیه این از قبل باز است:\n\n%1$s\n\nاگر همان شخص است، همان را باز کنید. اگر کس دیگری است — یا حساب دومی که عمداً نگه می‌دارید — اضافه کنید.</string>
     <string name="open_existing">باز کردن حساب موجود</string>
     <string name="create_new_anyway">به هر حال اضافه کن</string>
+    <string name="add_bill_photo">پیوست عکس فاکتور</string>
+    <string name="bill_photo_attached">فاکتور پیوست شد — برای تغییر بزنید</string>
+    <string name="bill_photo_label">فاکتور</string>
+    <string name="bill_photo_failed">آن تصویر خوانده نشد.</string>
 </resources>

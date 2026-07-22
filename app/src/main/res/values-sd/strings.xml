@@ -690,4 +690,8 @@
     <string name="party_exists_message">هن جهڙو هڪ کاتو اڳ ۾ ئي کليل آهي:\n\n%1$s\n\nجيڪڏهن اهو ساڳيو ماڻهو آهي ته جيڪو اڳ ۾ آهي اهو کوليو. جيڪڏهن ٻيو ڪو آهي — يا ٻيو کاتو جيڪو توهان ڄاڻي واڻي رکو ٿا — ته شامل ڪري ڇڏيو.</string>
     <string name="open_existing">موجود کاتو کوليو</string>
     <string name="create_new_anyway">پوءِ به شامل ڪريو</string>
+    <string name="add_bill_photo">بل جي تصوير لڳايو</string>
+    <string name="bill_photo_attached">بل لڳي ويو — بدلائڻ لاءِ دٻايو</string>
+    <string name="bill_photo_label">بل</string>
+    <string name="bill_photo_failed">اها تصوير پڙهي نه سگهي.</string>
 </resources>
