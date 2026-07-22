@@ -46,7 +46,9 @@ class KhataActivity : AppCompatActivity() {
 
     /** Everything from the DB. The list on screen is a view onto this. */
     private var allParties: List<PartyWithBalance> = emptyList()
-    private var sortMode = SortMode.NAME_AZ
+    // Newest dealing first. Sorting A-Z buried the customer just served
+    // somewhere in the middle of the alphabet.
+    private var sortMode = SortMode.RECENT
 
     private lateinit var ivEye: ImageView
 
@@ -54,6 +56,17 @@ class KhataActivity : AppCompatActivity() {
     private var netBalance: Double = 0.0
 
     private enum class SortMode { NAME_AZ, NAME_ZA, OWES_MOST, I_OWE_MOST, RECENT }
+
+    /**
+     * Which side of the ledger the list is showing.
+     *
+     * ALL is the default and shows everyone, newest dealing first — the order
+     * the shop actually works in. The other two come from tapping the summary
+     * boxes above the list: a shopkeeper looking at "I have to get" wants the
+     * people behind that figure, not a total.
+     */
+    private enum class SideFilter { ALL, TO_GET, TO_GIVE }
+    private var sideFilter = SideFilter.ALL
     private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
@@ -113,6 +126,22 @@ class KhataActivity : AppCompatActivity() {
         })
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
+
+        // The two summary boxes are the filter. Tapping "I have to get" shows
+        // the people behind that figure; tapping it again puts everyone back.
+        // A shopkeeper reading a total is usually about to ask who is in it.
+        findViewById<View>(R.id.boxTotalGet).setOnClickListener {
+            sideFilter = if (sideFilter == SideFilter.TO_GET) SideFilter.ALL else SideFilter.TO_GET
+            render()
+        }
+        findViewById<View>(R.id.boxTotalGive).setOnClickListener {
+            sideFilter = if (sideFilter == SideFilter.TO_GIVE) SideFilter.ALL else SideFilter.TO_GIVE
+            render()
+        }
+
+        // Show which box is doing the filtering. Without this a shortened list
+        // looks like customers have gone missing rather than been narrowed.
+        renderFilterState()
 
         ivEye = findViewById(R.id.ivEye)
 
@@ -320,17 +349,26 @@ class KhataActivity : AppCompatActivity() {
             }
         }
 
+        // Then the side, if one is chosen. Settled accounts fall out of both:
+        // someone at zero is neither owed nor owing.
+        val bySide = when (sideFilter) {
+            SideFilter.ALL -> filtered
+            SideFilter.TO_GET -> filtered.filter { it.balance > 0 }
+            SideFilter.TO_GIVE -> filtered.filter { it.balance < 0 }
+        }
+
         val sorted = when (sortMode) {
-            SortMode.NAME_AZ -> filtered.sortedBy { it.name.lowercase() }
-            SortMode.NAME_ZA -> filtered.sortedByDescending { it.name.lowercase() }
+            SortMode.NAME_AZ -> bySide.sortedBy { it.name.lowercase() }
+            SortMode.NAME_ZA -> bySide.sortedByDescending { it.name.lowercase() }
             // "Owes me most" means the largest positive balance at the top.
-            SortMode.OWES_MOST -> filtered.sortedByDescending { it.balance }
+            SortMode.OWES_MOST -> bySide.sortedByDescending { it.balance }
             // "I owe most" is the mirror: the most negative balance first.
-            SortMode.I_OWE_MOST -> filtered.sortedBy { it.balance }
-            SortMode.RECENT -> filtered.sortedByDescending { it.lastActivity }
+            SortMode.I_OWE_MOST -> bySide.sortedBy { it.balance }
+            SortMode.RECENT -> bySide.sortedByDescending { it.lastActivity }
         }
 
         adapter.submitList(sorted)
+        renderFilterState()
 
         tvEmpty.visibility = when {
             allParties.isEmpty() -> View.VISIBLE
@@ -341,6 +379,21 @@ class KhataActivity : AppCompatActivity() {
             if (allParties.isEmpty()) R.string.no_parties_yet
             else R.string.no_matching_parties
         )
+    }
+
+    /**
+     * Dim whichever box is not filtering. Fading the other is quieter than
+     * outlining the active one, and it reads at a glance: one box bright, the
+     * list belongs to it.
+     */
+    private fun renderFilterState() {
+        val get = findViewById<View>(R.id.boxTotalGet) ?: return
+        val give = findViewById<View>(R.id.boxTotalGive) ?: return
+        when (sideFilter) {
+            SideFilter.ALL -> { get.alpha = 1f; give.alpha = 1f }
+            SideFilter.TO_GET -> { get.alpha = 1f; give.alpha = 0.45f }
+            SideFilter.TO_GIVE -> { get.alpha = 0.45f; give.alpha = 1f }
+        }
     }
 
     private fun showSortDialog() {

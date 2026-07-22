@@ -102,11 +102,14 @@
             android:weightSum="2">
 
             <LinearLayout
+                android:id="@+id/boxTotalGet"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="6dp"
                 android:background="@drawable/bg_summary_get"
+                android:clickable="true"
+                android:focusable="true"
                 android:orientation="vertical"
                 android:padding="12dp">
 
@@ -129,11 +132,14 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/boxTotalGive"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="6dp"
                 android:background="@drawable/bg_summary_give"
+                android:clickable="true"
+                android:focusable="true"
                 android:orientation="vertical"
                 android:padding="12dp">
 
