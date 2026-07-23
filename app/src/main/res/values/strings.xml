@@ -698,4 +698,11 @@
     <string name="bill_photo_attached">Bill attached — tap to change</string>
     <string name="bill_photo_label">Bill</string>
     <string name="bill_photo_failed">That image could not be read.</string>
+    <string name="filter_by_date">Filter by date</string>
+    <string name="range_all">All dates</string>
+    <string name="range_today">Today</string>
+    <string name="range_yesterday">Yesterday</string>
+    <string name="range_this_week">This week</string>
+    <string name="range_this_month">This month</string>
+    <string name="range_custom">Choose dates</string>
 </resources>

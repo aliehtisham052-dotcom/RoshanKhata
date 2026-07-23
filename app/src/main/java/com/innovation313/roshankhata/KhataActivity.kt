@@ -29,6 +29,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.PartyAdapter
 import com.innovation313.roshankhata.ui.PartySuggestionAdapter
 import kotlinx.coroutines.flow.collectLatest
@@ -67,6 +68,9 @@ class KhataActivity : AppCompatActivity() {
      */
     private enum class SideFilter { ALL, TO_GET, TO_GIVE }
     private var sideFilter = SideFilter.ALL
+
+    /** Which stretch of days the list is showing. All of them, until asked. */
+    private var dateRange = DateRangeFilter.Range.ALL
     private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
@@ -124,6 +128,15 @@ class KhataActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) = render()
         })
+
+        val btnDateFilter = findViewById<MaterialButton>(R.id.btnFilterPartyDate)
+        btnDateFilter.setOnClickListener {
+            DateRangeFilter.choose(this, dateRange) { picked ->
+                dateRange = picked
+                btnDateFilter.text = DateRangeFilter.label(this, picked)
+                render()
+            }
+        }
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
 
@@ -418,12 +431,21 @@ class KhataActivity : AppCompatActivity() {
             }
         }
 
+        // Days first. A customer belongs in the window if their last dealing
+        // falls inside it — "who did I deal with today" is the question, and
+        // someone untouched for a month is not part of today's answer.
+        val inRange = if (dateRange == DateRangeFilter.Range.ALL) {
+            filtered
+        } else {
+            filtered.filter { dateRange.contains(it.lastActivity) }
+        }
+
         // Then the side, if one is chosen. Settled accounts fall out of both:
         // someone at zero is neither owed nor owing.
         val bySide = when (sideFilter) {
-            SideFilter.ALL -> filtered
-            SideFilter.TO_GET -> filtered.filter { it.balance > 0 }
-            SideFilter.TO_GIVE -> filtered.filter { it.balance < 0 }
+            SideFilter.ALL -> inRange
+            SideFilter.TO_GET -> inRange.filter { it.balance > 0 }
+            SideFilter.TO_GIVE -> inRange.filter { it.balance < 0 }
         }
 
         val sorted = when (sortMode) {

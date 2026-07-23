@@ -56,6 +56,22 @@
                     android:contentDescription="@string/party_photo"
                     android:scaleType="centerCrop"
                     android:visibility="gone" />
+
+                <!--
+                  A camera on the corner of the circle. Tapping the avatar
+                  already set a photo, but nothing said so — it looked like a
+                  monogram, and a control nobody can see is a control nobody
+                  uses.
+                -->
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="bottom|end"
+                    android:background="@drawable/bg_avatar_camera"
+                    android:contentDescription="@null"
+                    android:padding="3dp"
+                    android:src="@drawable/ic_camera"
+                    app:tint="@color/white" />
             </FrameLayout>
 
             <TextView
@@ -194,6 +210,25 @@
                 android:maxLines="1"
                 android:padding="10dp"
                 android:textSize="14sp" />
+
+            <!--
+              Which stretch of days to show. Beside the sort because both
+              narrow the same list, and a shopkeeper reaching for one is often
+              reaching for the other.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilterEntryDate"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/range_all"
+                android:textColor="@color/gold_on_dark"
+                android:textSize="12sp"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/gold_on_dark" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSortEntries"

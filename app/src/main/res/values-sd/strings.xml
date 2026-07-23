@@ -694,4 +694,11 @@
     <string name="bill_photo_attached">بل لڳي ويو — بدلائڻ لاءِ دٻايو</string>
     <string name="bill_photo_label">بل</string>
     <string name="bill_photo_failed">اها تصوير پڙهي نه سگهي.</string>
+    <string name="filter_by_date">تاريخ موجب ڇاڻيو</string>
+    <string name="range_all">سڀ تاريخون</string>
+    <string name="range_today">اڄ</string>
+    <string name="range_yesterday">ڪالهه</string>
+    <string name="range_this_week">هن هفتي</string>
+    <string name="range_this_month">هن مهيني</string>
+    <string name="range_custom">تاريخون چونڊيو</string>
 </resources>

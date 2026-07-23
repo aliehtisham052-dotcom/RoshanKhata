@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.ui.Calc
+import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.DateTimeField
 
 import android.content.Intent
@@ -111,6 +112,9 @@ class PartyDetailActivity : AppCompatActivity() {
     private var allRows: List<EntryRow> = emptyList()
     private var entrySortMode = EntrySort.NEWEST
 
+    /** Which stretch of days the ledger is showing. All of them, until asked. */
+    private var entryDateRange = DateRangeFilter.Range.ALL
+
     private enum class EntrySort { NEWEST, OLDEST, AMOUNT_HIGH, AMOUNT_LOW }
     private lateinit var adapter: EntryAdapter
     private lateinit var tvPartyName: TextView
@@ -191,6 +195,15 @@ class PartyDetailActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) = renderEntries()
         })
+
+        val btnDateFilter = findViewById<MaterialButton>(R.id.btnFilterEntryDate)
+        btnDateFilter.setOnClickListener {
+            DateRangeFilter.choose(this, entryDateRange) { picked ->
+                entryDateRange = picked
+                btnDateFilter.text = DateRangeFilter.label(this, picked)
+                renderEntries()
+            }
+        }
 
         findViewById<MaterialButton>(R.id.btnSortEntries).setOnClickListener {
             showEntrySortDialog()
@@ -578,10 +591,19 @@ class PartyDetailActivity : AppCompatActivity() {
     private fun renderEntries() {
         val query = etSearchEntries.text.toString().trim().lowercase()
 
-        val filtered = if (query.isEmpty()) {
+        // Days first, then the search box. Narrowing to a date and then
+        // searching within it is how the question is usually asked: "what did
+        // he take on the 21st".
+        val inRange = if (entryDateRange == DateRangeFilter.Range.ALL) {
             allRows
         } else {
-            allRows.filter { row ->
+            allRows.filter { entryDateRange.contains(it.entry.timestamp) }
+        }
+
+        val filtered = if (query.isEmpty()) {
+            inRange
+        } else {
+            inRange.filter { row ->
                 val e = row.entry
                 val haystack = listOfNotNull(
                     e.note,

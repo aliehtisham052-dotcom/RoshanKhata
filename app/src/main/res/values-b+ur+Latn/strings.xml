@@ -666,4 +666,11 @@
     <string name="bill_photo_attached">Bill lag gaya — badalne ke liye tap karein</string>
     <string name="bill_photo_label">Bill</string>
     <string name="bill_photo_failed">Wo tasveer parhi nahi ja saki.</string>
+    <string name="filter_by_date">Tareekh ke hisaab se chhantein</string>
+    <string name="range_all">Sab tareekhein</string>
+    <string name="range_today">Aaj</string>
+    <string name="range_yesterday">Kal</string>
+    <string name="range_this_week">Is hafte</string>
+    <string name="range_this_month">Is mahine</string>
+    <string name="range_custom">Tareekhein chunein</string>
 </resources>
