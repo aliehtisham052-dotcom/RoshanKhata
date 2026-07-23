@@ -708,4 +708,22 @@
     <string name="delete_all_parties_final">%1$d customers and their whole history will go to the Recycle Bin. You can restore them from there.</string>
     <string name="no_parties_to_delete">There are no customers to delete.</string>
     <string name="continue_label">Continue</string>
+    <string name="biz_tpl_corner">Corner</string>
+    <string name="biz_tpl_spine">Spine</string>
+    <string name="biz_tpl_split">Split</string>
+    <string name="biz_tpl_monogram">Monogram</string>
+    <string name="biz_tpl_ledger">Ledger</string>
+    <string name="biz_tpl_arch">Arch</string>
+    <string name="biz_tpl_slate">Slate</string>
+    <string name="biz_tpl_olive">Field</string>
+    <string name="biz_tpl_stamp">Stamp</string>
+    <string name="signature">Signature</string>
+    <string name="signature_help">Photograph your signature on plain paper. It is printed at the foot of statements you send, and stays on this phone.</string>
+    <string name="no_signature_yet">No signature added yet.</string>
+    <string name="choose_signature">Choose signature</string>
+    <string name="remove_signature">Remove</string>
+    <string name="signature_saved">Signature saved.</string>
+    <string name="signature_save_failed">That image could not be saved.</string>
+    <string name="photo_on_statement">Include customer photo on statements</string>
+    <string name="photo_on_statement_help">Off by default. Turning it on prints the customer\u2019s photo on their statement, which makes it harder to dispute — but a statement can be forwarded, and their photo travels with it.</string>
 </resources>

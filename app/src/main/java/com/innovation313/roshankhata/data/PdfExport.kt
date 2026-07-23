@@ -48,7 +48,16 @@ object PdfExport {
         rows: List<StatementRow>,
         closingBalance: Double,
         businessName: String?,
-        paymentQr: Bitmap? = null
+        paymentQr: Bitmap? = null,
+        /**
+         * The customer's own photo, when the owner has chosen to include it.
+         *
+         * Null unless that setting is on, and it is off by default: a
+         * statement gets forwarded, and the customer agreed to the shopkeeper
+         * holding their photo — not to it travelling on to whoever the
+         * statement is passed to next.
+         */
+        partyPhoto: Bitmap? = null
     ): File? {
         val doc = PdfDocument()
 
@@ -105,6 +114,20 @@ object PdfExport {
             c.drawText("Account Statement — $partyName", MARGIN, 52f, subtitle)
             partyPhone?.takeIf { it.isNotBlank() }?.let {
                 c.drawText(it, MARGIN, 66f, subtitle)
+            }
+
+            // The customer's photo, beside their name — the same face the
+            // owner sees in the ledger, so the statement is plainly about this
+            // person and not another of the same name.
+            partyPhoto?.let { photo ->
+                val size = 54
+                val left = PAGE_W - MARGIN - 90 - size
+                c.drawBitmap(
+                    photo,
+                    null,
+                    Rect(left.toInt(), 12, left.toInt() + size, 12 + size),
+                    null
+                )
             }
 
             // The logo, top-right of the band. The statement leaves the shop and
@@ -246,6 +269,48 @@ object PdfExport {
             )
 
             y += qrSize + 24f
+        }
+
+        // The owner's signature, if they have set one.
+        //
+        // A statement is a claim about money, and a shopkeeper has always put
+        // their name at the bottom of one. Drawn on the right, above a ruled
+        // line, where a signature goes on paper.
+        val signature = BusinessProfile.loadSignature(context)
+        if (signature != null) {
+            if (y > PAGE_H - 150f) {
+                doc.finishPage(page)
+                pageNo++
+                page = doc.startPage(
+                    PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
+                )
+                c = page.canvas
+                y = drawHeader()
+            }
+
+            y += 20f
+            val sigW = 150
+            val sigH = 60
+            val sigLeft = PAGE_W - MARGIN - sigW
+
+            val ratio = signature.height.toFloat() / signature.width.toFloat()
+            val drawH = (sigW * ratio).toInt().coerceAtMost(sigH)
+            c.drawBitmap(
+                signature,
+                null,
+                Rect(sigLeft.toInt(), y.toInt(), (sigLeft + sigW).toInt(), y.toInt() + drawH),
+                null
+            )
+            y += drawH + 6f
+
+            c.drawLine(sigLeft, y, PAGE_W - MARGIN, y, muted)
+            y += 14f
+            muted.textSize = 9f
+            c.drawText(
+                BusinessProfile.businessName(context) ?: "Signature",
+                sigLeft, y, muted
+            )
+            y += 22f
         }
 
         c.drawText(

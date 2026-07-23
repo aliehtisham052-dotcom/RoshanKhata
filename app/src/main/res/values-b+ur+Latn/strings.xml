@@ -676,4 +676,22 @@
     <string name="delete_all_parties_final">%1$d gahak aur unki poori tareekh Recycle Bin mein chali jayegi. Wahan se wapis la sakte hain.</string>
     <string name="no_parties_to_delete">Delete karne ke liye koi gahak nahi.</string>
     <string name="continue_label">Jari rakhein</string>
+    <string name="biz_tpl_corner">Kona</string>
+    <string name="biz_tpl_spine">Kinara</string>
+    <string name="biz_tpl_split">Do Hisse</string>
+    <string name="biz_tpl_monogram">Harf</string>
+    <string name="biz_tpl_ledger">Khata</string>
+    <string name="biz_tpl_arch">Mehraab</string>
+    <string name="biz_tpl_slate">Slate</string>
+    <string name="biz_tpl_olive">Khet</string>
+    <string name="biz_tpl_stamp">Mohar</string>
+    <string name="signature">Dastkhat</string>
+    <string name="signature_help">Apne dastkhat sadah kaghaz par bana kar tasveer lein. Ye un khaaton ke neeche chhapenge jo aap bhejenge, aur isi phone par rahenge.</string>
+    <string name="no_signature_yet">Abhi koi dastkhat shamil nahi kiye gaye.</string>
+    <string name="choose_signature">Dastkhat muntakhib karein</string>
+    <string name="remove_signature">Hatayein</string>
+    <string name="signature_saved">Dastkhat mehfooz ho gaye.</string>
+    <string name="signature_save_failed">Wo tasveer mehfooz nahi ho saki.</string>
+    <string name="photo_on_statement">Khaate par gahak ki tasveer shamil karein</string>
+    <string name="photo_on_statement_help">Pehle se band hai. On karne par gahak ki tasveer uske khaate par chhapegi, jis se inkar mushkil ho jata hai — lekin khata aage bhi bheja ja sakta hai, aur tasveer uske sath jayegi.</string>
 </resources>

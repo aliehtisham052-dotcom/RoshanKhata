@@ -32,10 +32,25 @@ class BusinessSettingsActivity : AppCompatActivity() {
     private lateinit var tvNoQr: TextView
     private lateinit var btnRemoveQr: MaterialButton
 
+    private lateinit var ivSignaturePreview: ImageView
+    private lateinit var tvNoSignature: TextView
+    private lateinit var btnRemoveSignature: MaterialButton
+
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         if (uri != null) saveQr(uri)
+    }
+
+    /**
+     * A launcher of its own rather than one shared with a flag: two images are
+     * being chosen on this screen, and a payment code saved as a signature —
+     * or the reverse — is not a mistake worth risking to save a few lines.
+     */
+    private val pickSignature = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) saveSignature(uri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +61,9 @@ class BusinessSettingsActivity : AppCompatActivity() {
         ivQrPreview = findViewById(R.id.ivQrPreview)
         tvNoQr = findViewById(R.id.tvNoQr)
         btnRemoveQr = findViewById(R.id.btnRemoveQr)
+        ivSignaturePreview = findViewById(R.id.ivSignaturePreview)
+        tvNoSignature = findViewById(R.id.tvNoSignature)
+        btnRemoveSignature = findViewById(R.id.btnRemoveSignature)
 
         etBusinessName.setText(BusinessProfile.businessName(this).orEmpty())
 
@@ -57,6 +75,16 @@ class BusinessSettingsActivity : AppCompatActivity() {
 
         btnRemoveQr.setOnClickListener { confirmRemoveQr() }
 
+        findViewById<MaterialButton>(R.id.btnPickSignature).setOnClickListener {
+            pickSignature.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+        btnRemoveSignature.setOnClickListener {
+            BusinessProfile.removeSignature(this)
+            refreshSignature()
+        }
+
         findViewById<MaterialButton>(R.id.btnSaveProfile).setOnClickListener {
             BusinessProfile.setBusinessName(
                 this,
@@ -66,7 +94,44 @@ class BusinessSettingsActivity : AppCompatActivity() {
             finish()
         }
 
+        val swPhoto = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(
+            R.id.swPhotoOnStatement
+        )
+        swPhoto.isChecked = BusinessProfile.photoOnStatement(this)
+        swPhoto.setOnCheckedChangeListener { _, on ->
+            BusinessProfile.setPhotoOnStatement(this, on)
+        }
+
         refreshQr()
+        refreshSignature()
+    }
+
+    private fun saveSignature(uri: Uri) {
+        lifecycleScope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                BusinessProfile.saveSignature(this@BusinessSettingsActivity, uri)
+            }
+            Toast.makeText(
+                this@BusinessSettingsActivity,
+                if (ok) R.string.signature_saved else R.string.signature_save_failed,
+                Toast.LENGTH_SHORT
+            ).show()
+            refreshSignature()
+        }
+    }
+
+    private fun refreshSignature() {
+        val signature = BusinessProfile.loadSignature(this)
+        if (signature == null) {
+            ivSignaturePreview.visibility = android.view.View.GONE
+            tvNoSignature.visibility = android.view.View.VISIBLE
+            btnRemoveSignature.visibility = android.view.View.GONE
+        } else {
+            ivSignaturePreview.setImageBitmap(signature)
+            ivSignaturePreview.visibility = android.view.View.VISIBLE
+            tvNoSignature.visibility = android.view.View.GONE
+            btnRemoveSignature.visibility = android.view.View.VISIBLE
+        }
     }
 
     private fun saveQr(uri: Uri) {

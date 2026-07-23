@@ -23,7 +23,10 @@ object BusinessProfile {
     private const val PREFS = "roshan_khata_prefs"
     private const val KEY_BUSINESS_NAME = "business_name"
     private const val KEY_QR_SAVED = "payment_qr_saved"
+    private const val KEY_SIGNATURE_SAVED = "signature_saved"
+    private const val KEY_PHOTO_ON_STATEMENT = "photo_on_statement"
     private const val QR_FILE = "payment_qr.png"
+    private const val SIGNATURE_FILE = "signature.png"
 
     /** Long edge of the stored QR. Big enough to scan, small enough to attach. */
     private const val MAX_EDGE = 1000
@@ -92,6 +95,80 @@ object BusinessProfile {
     fun removeQr(context: Context) {
         qrFile(context).delete()
         prefs(context).edit().putBoolean(KEY_QR_SAVED, false).apply()
+    }
+
+    // ---------- Signature ----------
+
+    /**
+     * The owner's signature, printed under a statement.
+     *
+     * A khata sent to a customer is a claim about money, and a signature is
+     * what a shopkeeper has always put at the bottom of one. Held the same way
+     * as the payment QR: the owner's own file, in the app's own storage,
+     * never uploaded.
+     */
+    fun signatureFile(context: Context): File =
+        File(context.filesDir, SIGNATURE_FILE)
+
+    fun hasSignature(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_SIGNATURE_SAVED, false) && signatureFile(context).exists()
+
+    fun loadSignature(context: Context): Bitmap? {
+        if (!hasSignature(context)) return null
+        return try {
+            BitmapFactory.decodeFile(signatureFile(context).absolutePath)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * @return true if it was saved. A signature that failed to save must not
+     *         be marked present — the owner would send statements believing
+     *         they were signed when they were not.
+     */
+    fun saveSignature(context: Context, source: Uri): Boolean {
+        return try {
+            val input = context.contentResolver.openInputStream(source) ?: return false
+            val original = input.use { BitmapFactory.decodeStream(it) } ?: return false
+            val scaled = downscale(original)
+
+            FileOutputStream(signatureFile(context)).use { out ->
+                // PNG so a signature photographed on white paper keeps its
+                // edges, and so a transparent one stays transparent.
+                scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
+            }
+            if (scaled !== original) original.recycle()
+
+            prefs(context).edit().putBoolean(KEY_SIGNATURE_SAVED, true).apply()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun removeSignature(context: Context) {
+        signatureFile(context).delete()
+        prefs(context).edit().putBoolean(KEY_SIGNATURE_SAVED, false).apply()
+    }
+
+    // ---------- Customer photo on statements ----------
+
+    /**
+     * Whether a customer's photo is printed on their statement.
+     *
+     * Off unless the owner turns it on, and deliberately so. A statement gets
+     * forwarded — to a partner, a family member, whoever is chasing the
+     * money — and the customer agreed to the shopkeeper holding their photo,
+     * not to it travelling on with the document. Including it makes the
+     * statement harder to dispute, which is why the option exists; the
+     * default is off because the choice should be made, not inherited.
+     */
+    fun photoOnStatement(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_PHOTO_ON_STATEMENT, false)
+
+    fun setPhotoOnStatement(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean(KEY_PHOTO_ON_STATEMENT, enabled).apply()
     }
 
     private fun downscale(src: Bitmap): Bitmap {

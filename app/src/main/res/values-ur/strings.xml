@@ -676,4 +676,22 @@
     <string name="delete_all_parties_final">%1$d گاہک اور ان کی پوری تاریخ ری سائیکل بن میں چلی جائے گی۔ وہاں سے واپس لا سکتے ہیں۔</string>
     <string name="no_parties_to_delete">ڈیلیٹ کرنے کے لیے کوئی گاہک نہیں۔</string>
     <string name="continue_label">جاری رکھیں</string>
+    <string name="biz_tpl_corner">کونہ</string>
+    <string name="biz_tpl_spine">کنارہ</string>
+    <string name="biz_tpl_split">دو حصے</string>
+    <string name="biz_tpl_monogram">حرف</string>
+    <string name="biz_tpl_ledger">کھاتہ</string>
+    <string name="biz_tpl_arch">محراب</string>
+    <string name="biz_tpl_slate">سلیٹ</string>
+    <string name="biz_tpl_olive">کھیت</string>
+    <string name="biz_tpl_stamp">مہر</string>
+    <string name="signature">دستخط</string>
+    <string name="signature_help">اپنے دستخط سادہ کاغذ پر بنا کر تصویر لیں۔ یہ ان کھاتوں کے نیچے چھپیں گے جو آپ بھیجیں گے، اور اسی فون پر رہیں گے۔</string>
+    <string name="no_signature_yet">ابھی کوئی دستخط شامل نہیں کیے گئے۔</string>
+    <string name="choose_signature">دستخط منتخب کریں</string>
+    <string name="remove_signature">ہٹائیں</string>
+    <string name="signature_saved">دستخط محفوظ ہو گئے۔</string>
+    <string name="signature_save_failed">وہ تصویر محفوظ نہیں ہو سکی۔</string>
+    <string name="photo_on_statement">کھاتے پر گاہک کی تصویر شامل کریں</string>
+    <string name="photo_on_statement_help">پہلے سے بند ہے۔ آن کرنے پر گاہک کی تصویر اس کے کھاتے پر چھپے گی، جس سے انکار مشکل ہو جاتا ہے — لیکن کھاتہ آگے بھی بھیجا جا سکتا ہے، اور تصویر اس کے ساتھ جائے گی۔</string>
 </resources>

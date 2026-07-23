@@ -148,6 +148,103 @@
                     xmlns:app="http://schemas.android.com/apk/res-auto" />
             </LinearLayout>
 
+            <!--
+              The signature that goes at the foot of a statement. A khata sent
+              to a customer is a claim about money, and a shopkeeper has always
+              signed one. Photograph it on plain paper; it stays on this phone.
+            -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/signature"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/signature_help"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/ivSignaturePreview"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/white"
+                android:contentDescription="@string/signature"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvNoSignature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:text="@string/no_signature_yet"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPickSignature"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="@string/choose_signature"
+                    app:backgroundTint="@color/ink"
+                    app:cornerRadius="10dp"
+                    xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRemoveSignature"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/remove_signature"
+                    android:textColor="@color/red_gave"
+                    android:visibility="gone"
+                    app:cornerRadius="10dp"
+                    app:strokeColor="@color/red_gave"
+                    xmlns:app="http://schemas.android.com/apk/res-auto" />
+            </LinearLayout>
+
+            <!--
+              Whether a customer's photo rides along on their statement.
+              Off unless turned on: the customer agreed to the shopkeeper
+              holding their photo, not to it travelling on with a document
+              that gets forwarded.
+            -->
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swPhotoOnStatement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/photo_on_statement"
+                android:textColor="@color/ink"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/photo_on_statement_help"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveProfile"
                 android:layout_width="match_parent"

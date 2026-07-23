@@ -704,4 +704,22 @@
     <string name="delete_all_parties_final">%1$d مشتری و تمام سابقه‌شان به سطل بازیافت می‌رود. از آنجا می‌توانید بازشان گردانید.</string>
     <string name="no_parties_to_delete">مشتری‌ای برای حذف نیست.</string>
     <string name="continue_label">ادامه</string>
+    <string name="biz_tpl_corner">گوشه‌ای</string>
+    <string name="biz_tpl_spine">ستونی</string>
+    <string name="biz_tpl_split">دوبخشی</string>
+    <string name="biz_tpl_monogram">حرف</string>
+    <string name="biz_tpl_ledger">دفتری</string>
+    <string name="biz_tpl_arch">قوسی</string>
+    <string name="biz_tpl_slate">خاکستری</string>
+    <string name="biz_tpl_olive">مزرعه</string>
+    <string name="biz_tpl_stamp">مهر</string>
+    <string name="signature">امضا</string>
+    <string name="signature_help">امضایتان را روی کاغذ سفید عکس بگیرید. پای صورت‌حساب‌هایی که می‌فرستید چاپ می‌شود و روی همین گوشی می‌ماند.</string>
+    <string name="no_signature_yet">هنوز امضایی افزوده نشده.</string>
+    <string name="choose_signature">انتخاب امضا</string>
+    <string name="remove_signature">حذف</string>
+    <string name="signature_saved">امضا ذخیره شد.</string>
+    <string name="signature_save_failed">آن تصویر ذخیره نشد.</string>
+    <string name="photo_on_statement">درج عکس مشتری روی صورت‌حساب</string>
+    <string name="photo_on_statement_help">به‌طور پیش‌فرض خاموش. روشن کنید تا عکس مشتری روی صورت‌حسابش چاپ شود و انکارش سخت‌تر باشد — اما صورت‌حساب ممکن است فرستاده شود و عکس با آن برود.</string>
 </resources>

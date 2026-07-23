@@ -552,7 +552,13 @@ class PartyDetailActivity : AppCompatActivity() {
                     },
                     closingBalance = currentBalance,
                     businessName = BusinessProfile.businessName(this@PartyDetailActivity),
-                    paymentQr = BusinessProfile.loadQr(this@PartyDetailActivity)
+                    paymentQr = BusinessProfile.loadQr(this@PartyDetailActivity),
+                    // Only if the owner has turned it on. Off by default.
+                    partyPhoto = if (BusinessProfile.photoOnStatement(this@PartyDetailActivity)) {
+                        PartyPhoto.load(this@PartyDetailActivity, partyId)
+                    } else {
+                        null
+                    }
                 )
             }
 

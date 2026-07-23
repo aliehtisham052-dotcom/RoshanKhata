@@ -684,4 +684,22 @@
     <string name="delete_all_parties_final">سينتقل %1$d عميلاً وسجلّهم بالكامل إلى سلة المحذوفات. يمكنك استعادتهم من هناك.</string>
     <string name="no_parties_to_delete">لا يوجد عملاء لحذفهم.</string>
     <string name="continue_label">متابعة</string>
+    <string name="biz_tpl_corner">ركني</string>
+    <string name="biz_tpl_spine">شريطي</string>
+    <string name="biz_tpl_split">منقسم</string>
+    <string name="biz_tpl_monogram">حرف</string>
+    <string name="biz_tpl_ledger">دفتري</string>
+    <string name="biz_tpl_arch">قوسي</string>
+    <string name="biz_tpl_slate">رمادي</string>
+    <string name="biz_tpl_olive">حقلي</string>
+    <string name="biz_tpl_stamp">ختم</string>
+    <string name="signature">التوقيع</string>
+    <string name="signature_help">صوّر توقيعك على ورقة بيضاء. يُطبع أسفل كشوف الحساب التي ترسلها، ويبقى على هذا الهاتف.</string>
+    <string name="no_signature_yet">لم تتم إضافة توقيع بعد.</string>
+    <string name="choose_signature">اختر التوقيع</string>
+    <string name="remove_signature">إزالة</string>
+    <string name="signature_saved">تم حفظ التوقيع.</string>
+    <string name="signature_save_failed">تعذّر حفظ تلك الصورة.</string>
+    <string name="photo_on_statement">تضمين صورة العميل في كشف الحساب</string>
+    <string name="photo_on_statement_help">معطّل افتراضيًا. تفعيله يطبع صورة العميل على كشف حسابه فيصعب إنكاره — لكن الكشف قد يُعاد إرساله، وتنتقل صورته معه.</string>
 </resources>

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.PdfExport
 import com.innovation313.roshankhata.ui.EntryAdapter
@@ -237,7 +238,13 @@ class ReportActivity : AppCompatActivity() {
                     // this PDF goes to the customer.
                     closingBalance = closingBalance,
                     businessName = BusinessProfile.businessName(this@ReportActivity),
-                    paymentQr = BusinessProfile.loadQr(this@ReportActivity)
+                    paymentQr = BusinessProfile.loadQr(this@ReportActivity),
+                    // Only if the owner has turned it on. Off by default.
+                    partyPhoto = if (BusinessProfile.photoOnStatement(this@ReportActivity)) {
+                        PartyPhoto.load(this@ReportActivity, partyId)
+                    } else {
+                        null
+                    }
                 )
             }
 

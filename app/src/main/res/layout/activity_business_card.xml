@@ -45,39 +45,23 @@
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <LinearLayout
+<!--
+          Twelve designs, so the row scrolls rather than squeezing them onto
+          one line. Filled in code, one chip per template, so adding a
+          thirteenth is a line in CardTemplates and nothing here.
+        -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
+            android:scrollbars="none">
 
-            <Button
-                android:id="@+id/btnTplClassic"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                android:textAllCaps="false"
-                android:text="@string/biz_tpl_classic" />
-
-            <Button
-                android:id="@+id/btnTplGold"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                android:textAllCaps="false"
-                android:text="@string/biz_tpl_gold" />
-
-            <Button
-                android:id="@+id/btnTplGreen"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:textAllCaps="false"
-                android:text="@string/biz_tpl_green" />
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/templateRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
 
         <EditText
             android:id="@+id/etBizName"
