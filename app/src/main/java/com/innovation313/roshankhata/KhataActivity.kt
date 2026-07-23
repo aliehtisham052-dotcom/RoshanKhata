@@ -433,7 +433,19 @@ class KhataActivity : AppCompatActivity() {
             SideFilter.TO_GIVE -> inRange.filter { it.balance < 0 }
         }
 
-        val sorted = when (sortMode) {
+        val sorted = if (query.isNotEmpty()) {
+            // While searching, the chosen sort steps aside for relevance.
+            //
+            // Typing "tou" and getting Touqeer below a Chapra Touri Wala is
+            // the list answering a question nobody asked: recency is a fine
+            // default for browsing and useless once a name has been typed.
+            // A name that starts with what was typed comes first, then a word
+            // inside it that does, then anything else that contains it.
+            bySide.sortedWith(
+                compareBy<PartyWithBalance> { matchRank(it, query) }
+                    .thenBy { it.name.lowercase() }
+            )
+        } else when (sortMode) {
             SortMode.NAME_AZ -> bySide.sortedBy { it.name.lowercase() }
             SortMode.NAME_ZA -> bySide.sortedByDescending { it.name.lowercase() }
             // "Owes me most" means the largest positive balance at the top.
@@ -469,6 +481,25 @@ class KhataActivity : AppCompatActivity() {
             SideFilter.ALL -> { get.alpha = 1f; give.alpha = 1f }
             SideFilter.TO_GET -> { get.alpha = 1f; give.alpha = 0.45f }
             SideFilter.TO_GIVE -> { get.alpha = 0.45f; give.alpha = 1f }
+        }
+    }
+
+    /**
+     * How well a customer matches what was typed. Lower is better.
+     *
+     * 0 — the name begins with it: "tou" finds "Touseef".
+     * 1 — a word inside the name begins with it: "tou" finds "Chapra Touri",
+     *     which is how a shopkeeper thinks of the second word of a name.
+     * 2 — it appears somewhere in the name, mid-word.
+     * 3 — the name does not match at all; the phone number did.
+     */
+    private fun matchRank(party: PartyWithBalance, query: String): Int {
+        val name = party.name.lowercase()
+        return when {
+            name.startsWith(query) -> 0
+            name.split(' ', '(', ')', '-', '.').any { it.startsWith(query) } -> 1
+            name.contains(query) -> 2
+            else -> 3
         }
     }
 
