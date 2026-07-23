@@ -70,7 +70,10 @@ class MainActivity : AppCompatActivity() {
     private data class Feature(
         val iconRes: Int,
         val labelRes: Int,
-        val destination: Class<*>
+        val destination: Class<*>,
+        /** The tile's own tint, and the colour its icon is drawn in. */
+        val tintRes: Int,
+        val iconColorRes: Int
     )
 
     /**
@@ -83,21 +86,34 @@ class MainActivity : AppCompatActivity() {
      */
     private fun buildFeatureGrid() {
         val daily = listOf(
-            Feature(R.drawable.ic_nav_khata, R.string.nav_khata, KhataActivity::class.java),
-            Feature(R.drawable.ic_nav_cashbook, R.string.nav_cashbook, CashbookActivity::class.java),
-            Feature(R.drawable.ic_nav_cheques, R.string.nav_cheques, ChequesActivity::class.java),
-            Feature(R.drawable.ic_feature_bills, R.string.supplier_bills, BillsActivity::class.java),
-            Feature(R.drawable.ic_nav_plans, R.string.nav_plans, PlansActivity::class.java),
-            Feature(R.drawable.ic_feature_stock, R.string.expiring_stock, ExpiringActivity::class.java),
-            Feature(R.drawable.ic_feature_calc, R.string.calculator, CalculatorActivity::class.java)
+            Feature(R.drawable.ic_nav_khata, R.string.nav_khata, KhataActivity::class.java,
+                R.color.tile_khata_bg, R.color.section_khata),
+            Feature(R.drawable.ic_nav_cashbook, R.string.nav_cashbook, CashbookActivity::class.java,
+                R.color.tile_cashbook_bg, R.color.section_cashbook),
+            Feature(R.drawable.ic_nav_cheques, R.string.nav_cheques, ChequesActivity::class.java,
+                R.color.tile_cheques_bg, R.color.section_cheques),
+            Feature(R.drawable.ic_feature_bills, R.string.supplier_bills, BillsActivity::class.java,
+                R.color.tile_bills_bg, R.color.section_bills),
+            Feature(R.drawable.ic_nav_plans, R.string.nav_plans, PlansActivity::class.java,
+                R.color.tile_plans_bg, R.color.section_plans),
+            Feature(R.drawable.ic_feature_stock, R.string.expiring_stock, ExpiringActivity::class.java,
+                R.color.tile_stock_bg, R.color.tile_stock_fg),
+            Feature(R.drawable.ic_feature_calc, R.string.calculator, CalculatorActivity::class.java,
+                R.color.tile_calc_bg, R.color.tile_calc_fg)
         )
         val business = listOf(
-            Feature(R.drawable.ic_feature_insights, R.string.insights_title, InsightsActivity::class.java),
-            Feature(R.drawable.ic_feature_zakat, R.string.zakat_calculator, ZakatActivity::class.java),
-            Feature(R.drawable.ic_feature_card, R.string.biz_card, BusinessCardActivity::class.java),
-            Feature(R.drawable.ic_feature_backup, R.string.backup_restore, BackupActivity::class.java),
-            Feature(R.drawable.ic_feature_settings, R.string.business_settings, BusinessSettingsActivity::class.java),
-            Feature(R.drawable.ic_feature_lock, R.string.recycle_bin, RecycleBinActivity::class.java)
+            Feature(R.drawable.ic_feature_insights, R.string.insights_title, InsightsActivity::class.java,
+                R.color.tile_insights_bg, R.color.tile_insights_fg),
+            Feature(R.drawable.ic_feature_zakat, R.string.zakat_calculator, ZakatActivity::class.java,
+                R.color.tile_zakat_bg, R.color.gold_accent),
+            Feature(R.drawable.ic_feature_card, R.string.biz_card, BusinessCardActivity::class.java,
+                R.color.tile_card_bg, R.color.tile_card_fg),
+            Feature(R.drawable.ic_feature_backup, R.string.backup_restore, BackupActivity::class.java,
+                R.color.tile_backup_bg, R.color.tile_backup_fg),
+            Feature(R.drawable.ic_feature_settings, R.string.business_settings, BusinessSettingsActivity::class.java,
+                R.color.tile_settings_bg, R.color.tile_settings_fg),
+            Feature(R.drawable.ic_feature_lock, R.string.recycle_bin, RecycleBinActivity::class.java,
+                R.color.tile_bin_bg, R.color.tile_bin_fg)
         )
 
         featureViews.clear()
@@ -146,17 +162,27 @@ class MainActivity : AppCompatActivity() {
             topMargin = gap
             bottomMargin = gap
         }
+        // The card takes the feature's tint; the disc behind the icon and the
+        // icon itself take the full-strength colour. The icon set was drawn
+        // white for the old dark nav bar, so it is tinted here rather than
+        // thirteen files being redrawn.
+        val iconColor = androidx.core.content.ContextCompat.getColor(this, feature.iconColorRes)
+
+        (tile as? androidx.cardview.widget.CardView)?.setCardBackgroundColor(
+            androidx.core.content.ContextCompat.getColor(this, feature.tintRes)
+        )
+
+        tile.findViewById<View>(R.id.featureIconDisc)?.background =
+            androidx.core.content.ContextCompat.getDrawable(this, R.drawable.bg_feature_icon)
+                ?.mutate()?.apply {
+                    // A tenth of the icon's own colour: present enough to seat
+                    // the glyph, faint enough not to become a second card.
+                    setTint(androidx.core.graphics.ColorUtils.setAlphaComponent(iconColor, 28))
+                }
+
         tile.findViewById<ImageView>(R.id.ivFeatureIcon).apply {
             setImageResource(feature.iconRes)
-            // The icon set was drawn white for the old dark nav bar. On a white
-            // tile that is white on white — the icons were there all along and
-            // simply could not be seen. Tint them to the brand green here
-            // rather than redrawing twelve files.
-            setColorFilter(
-                androidx.core.content.ContextCompat.getColor(
-                    this@MainActivity, R.color.brand_green
-                )
-            )
+            setColorFilter(iconColor)
         }
         tile.findViewById<TextView>(R.id.tvFeatureLabel).setText(feature.labelRes)
         tile.setOnClickListener { startActivity(Intent(this, feature.destination)) }

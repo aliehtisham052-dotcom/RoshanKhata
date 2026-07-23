@@ -113,4 +113,42 @@
     <color name="bal_i_owe_on_dark">#7FE3C4</color>
     <color name="section_insights">#1E5A4E</color>
     <color name="section_insights_soft">#A8CBC2</color>
+
+    <!--
+      Home tiles. Each feature gets a tint of the section colour it already
+      belongs to — khata green, cheques teal, plans olive, bills gold — so the
+      grid is coloured by meaning rather than decoration, and a shopkeeper
+      reaching for the cheque book finds the same teal it has always had.
+
+      Kept pale on purpose: thirteen saturated cards would fight each other
+      and the header above them. The icon carries the full-strength colour.
+    -->
+    <color name="tile_khata_bg">#E6F0EA</color>
+    <color name="tile_cashbook_bg">#E4EFE8</color>
+    <color name="tile_cheques_bg">#E3EEEC</color>
+    <color name="tile_bills_bg">#F3EEDD</color>
+    <color name="tile_plans_bg">#EBF0E2</color>
+    <color name="tile_stock_bg">#F5EAE4</color>
+    <color name="tile_calc_bg">#E9EDF0</color>
+    <color name="tile_insights_bg">#E8EDF2</color>
+    <color name="tile_zakat_bg">#F1EDE0</color>
+    <color name="tile_card_bg">#EDEAF2</color>
+    <color name="tile_backup_bg">#E5EEF0</color>
+    <color name="tile_settings_bg">#ECEDEA</color>
+    <color name="tile_bin_bg">#F2E9E9</color>
+
+    <color name="tile_stock_fg">#8A4B2A</color>
+    <color name="tile_calc_fg">#3A5068</color>
+    <color name="tile_insights_fg">#2F4C6B</color>
+    <color name="tile_card_fg">#514476</color>
+    <color name="tile_backup_fg">#1D5C66</color>
+    <color name="tile_settings_fg">#4A4A45</color>
+    <color name="tile_bin_fg">#8C3A3A</color>
+
+    <!--
+      The screen behind the grid: page colour easing into the header's green
+      at the very top, so the tiles sit on something rather than a flat sheet.
+    -->
+    <color name="page_grad_top">#EDF1EC</color>
+    <color name="page_grad_bottom">#F7F6F2</color>
 </resources>
