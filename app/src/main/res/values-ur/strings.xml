@@ -667,10 +667,7 @@
     <string name="bill_photo_label">بل</string>
     <string name="bill_photo_failed">وہ تصویر پڑھی نہیں جا سکی۔</string>
     <string name="filter_by_date">تاریخ کے حساب سے چھانٹیں</string>
-    <string name="range_all">تمام تاریخیں</string>
-    <string name="range_today">آج</string>
     <string name="range_yesterday">کل</string>
     <string name="range_this_week">اس ہفتے</string>
     <string name="range_this_month">اس مہینے</string>
-    <string name="range_custom">تاریخیں منتخب کریں</string>
 </resources>

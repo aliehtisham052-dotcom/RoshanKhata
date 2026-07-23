@@ -675,10 +675,7 @@
     <string name="bill_photo_label">الفاتورة</string>
     <string name="bill_photo_failed">تعذّرت قراءة تلك الصورة.</string>
     <string name="filter_by_date">تصفية حسب التاريخ</string>
-    <string name="range_all">كل التواريخ</string>
-    <string name="range_today">اليوم</string>
     <string name="range_yesterday">أمس</string>
     <string name="range_this_week">هذا الأسبوع</string>
     <string name="range_this_month">هذا الشهر</string>
-    <string name="range_custom">اختر التواريخ</string>
 </resources>

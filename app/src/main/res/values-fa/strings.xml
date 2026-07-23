@@ -695,10 +695,7 @@
     <string name="bill_photo_label">فاکتور</string>
     <string name="bill_photo_failed">آن تصویر خوانده نشد.</string>
     <string name="filter_by_date">فیلتر بر اساس تاریخ</string>
-    <string name="range_all">همه تاریخ‌ها</string>
-    <string name="range_today">امروز</string>
     <string name="range_yesterday">دیروز</string>
     <string name="range_this_week">این هفته</string>
     <string name="range_this_month">این ماه</string>
-    <string name="range_custom">انتخاب تاریخ</string>
 </resources>
