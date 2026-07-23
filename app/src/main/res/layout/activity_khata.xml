@@ -171,14 +171,10 @@
             android:orientation="horizontal">
 
             <!--
-              An AutoCompleteTextView, not a plain field.
-              
-              Typing two letters should offer the name, the way every other app
-              a shopkeeper uses already does. Filtering the list below is not the
-              same thing: with two hundred customers, the owner still has to
-              find the row and tap it. A suggestion goes straight there.
+              A plain search box. Typing narrows the list below; there is no
+              dropdown floating over it.
             -->
-            <AutoCompleteTextView
+            <EditText
                 android:id="@+id/etSearchParties"
                 android:layout_width="0dp"
                 android:layout_height="44dp"

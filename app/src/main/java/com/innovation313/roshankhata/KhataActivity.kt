@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioButton
@@ -31,7 +30,6 @@ import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.PartyAdapter
-import com.innovation313.roshankhata.ui.PartySuggestionAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -42,8 +40,7 @@ import kotlinx.coroutines.launch
 class KhataActivity : AppCompatActivity() {
 
     private lateinit var adapter: PartyAdapter
-    private lateinit var etSearch: AutoCompleteTextView
-    private lateinit var suggestions: PartySuggestionAdapter
+    private lateinit var etSearch: EditText
 
     /** Everything from the DB. The list on screen is a view onto this. */
     private var allParties: List<PartyWithBalance> = emptyList()
@@ -107,22 +104,11 @@ class KhataActivity : AppCompatActivity() {
 
         etSearch = findViewById(R.id.etSearchParties)
 
-        // Tapping a suggestion goes STRAIGHT to the account. That is the whole
-        // point — filtering the list still leaves the owner hunting for a row.
-        suggestions = PartySuggestionAdapter(this) { party ->
-            openParty(party)
-        }
-        etSearch.setAdapter(suggestions)
-
-        etSearch.setOnItemClickListener { _, _, position, _ ->
-            suggestions.getItem(position)?.let { party ->
-                // Clear the box before leaving. Coming back to a stale query and
-                // a filtered list — with no memory of having typed it — is a
-                // small bewilderment the owner does not need.
-                etSearch.setText("")
-                openParty(party)
-            }
-        }
+        // No dropdown. It floated over the list while the list narrowed
+        // underneath it, so the same customer appeared twice — once in a panel
+        // and once in a row — and the owner had to work out which to tap. The
+        // list itself is the answer; typing narrows it and the row is right
+        // there.
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -175,7 +161,6 @@ class KhataActivity : AppCompatActivity() {
         lifecycleScope.launch {
             dao.observePartiesWithBalance().collectLatest { list ->
                 allParties = list
-                suggestions.setSource(list)
 
                 // The two box totals: everything owed TO the shop (positive
                 // balances, money to collect) and everything the shop owes OUT
@@ -645,7 +630,7 @@ class KhataActivity : AppCompatActivity() {
     }
 
     /**
-     * One way into a party's ledger, used by the list AND the suggestions.
+     * One way into a party's ledger.
      *
      * Two paths to the same screen would eventually drift apart — one gaining a
      * check or an extra the other lacked — and the difference would show up as a
