@@ -58,11 +58,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/rvBin" />
 
+    <!--
+      Clearing the whole customer list lives here rather than in the More
+      sheet. That sheet is opened routinely — for the language, for App Lock —
+      and a control that empties the ledger does not belong one careless tap
+      from the ones that do not. Nobody arrives in the Recycle Bin by
+      accident; whoever is here is already thinking about deletion.
+    -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDeleteAllParties"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/delete_all_parties"
+        android:textColor="@color/red_gave"
+        android:textSize="14sp"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@id/btnEmptyBin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:strokeColor="@color/red_gave" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEmptyBin"
         android:layout_width="0dp"
         android:layout_height="52dp"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/empty_bin"
         app:backgroundTint="@color/red_gave"
         app:cornerRadius="10dp"

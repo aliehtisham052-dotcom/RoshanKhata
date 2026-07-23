@@ -46,9 +46,61 @@ class RecycleBinActivity : AppCompatActivity() {
         rv.adapter = adapter
 
         findViewById<MaterialButton>(R.id.btnEmptyBin).setOnClickListener { confirmEmptyBin() }
+        findViewById<MaterialButton>(R.id.btnDeleteAllParties).setOnClickListener {
+            confirmDeleteAllParties()
+        }
 
         purgeExpired()
         observeBin()
+    }
+
+    /**
+     * Clear the whole customer list into the bin.
+     *
+     * Asked twice, and the second question carries the count — "delete 1162
+     * customers" is a different sentence from "delete all", and the number is
+     * what makes someone stop. Nothing is destroyed: this is the same soft
+     * delete a single customer gets, so it all lands here and can be restored.
+     */
+    private fun confirmDeleteAllParties() {
+        lifecycleScope.launch {
+            val count = dao.countActiveParties()
+            if (count == 0) {
+                Toast.makeText(
+                    this@RecycleBinActivity,
+                    R.string.no_parties_to_delete,
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@launch
+            }
+
+            MaterialAlertDialogBuilder(this@RecycleBinActivity)
+                .setTitle(R.string.delete_all_parties)
+                .setMessage(getString(R.string.delete_all_parties_confirm, count))
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.continue_label) { _, _ ->
+                    // Second ask. The first is a question; this one is the
+                    // decision, and it says plainly what will be gone.
+                    MaterialAlertDialogBuilder(this@RecycleBinActivity)
+                        .setTitle(R.string.delete_all_parties_final_title)
+                        .setMessage(getString(R.string.delete_all_parties_final, count))
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.delete) { _, _ -> deleteAllParties() }
+                        .show()
+                }
+                .show()
+        }
+    }
+
+    private fun deleteAllParties() {
+        lifecycleScope.launch {
+            val now = System.currentTimeMillis()
+            // Entries first, then the parties, both stamped the same — a
+            // restore reunites them by that timestamp.
+            dao.softDeleteAllEntries(now)
+            dao.softDeleteAllParties(now)
+            Toast.makeText(this@RecycleBinActivity, R.string.moved_to_bin, Toast.LENGTH_LONG).show()
+        }
     }
 
     /** Anything past the retention window is genuinely gone — no silent hoarding. */

@@ -702,4 +702,10 @@
     <string name="range_yesterday">Yesterday</string>
     <string name="range_this_week">This week</string>
     <string name="range_this_month">This month</string>
+    <string name="delete_all_parties">Delete all customers</string>
+    <string name="delete_all_parties_confirm">This will move all %1$d customers and every entry against them to the Recycle Bin.</string>
+    <string name="delete_all_parties_final_title">Delete all customers?</string>
+    <string name="delete_all_parties_final">%1$d customers and their whole history will go to the Recycle Bin. You can restore them from there.</string>
+    <string name="no_parties_to_delete">There are no customers to delete.</string>
+    <string name="continue_label">Continue</string>
 </resources>

@@ -99,6 +99,23 @@ interface KhataDao {
     @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE partyId = :partyId AND isDeleted = 0")
     suspend fun softDeleteEntriesOfParty(partyId: Long, now: Long = System.currentTimeMillis())
 
+    /**
+     * Move every customer to the bin at once, with their entries.
+     *
+     * Both statements take the same timestamp, so a restore can tell exactly
+     * which deletion a row belonged to and put the whole set back together
+     * rather than a scattering of parts.
+     */
+    /** How many customers are still in the ledger — the number the confirmation shows. */
+    @Query("SELECT COUNT(*) FROM parties WHERE isDeleted = 0")
+    suspend fun countActiveParties(): Int
+
+    @Query("UPDATE parties SET isDeleted = 1, deletedAt = :now WHERE isDeleted = 0")
+    suspend fun softDeleteAllParties(now: Long = System.currentTimeMillis())
+
+    @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE isDeleted = 0")
+    suspend fun softDeleteAllEntries(now: Long = System.currentTimeMillis())
+
     @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteEntry(id: Long, now: Long = System.currentTimeMillis())
 

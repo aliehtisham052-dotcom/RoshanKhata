@@ -698,4 +698,10 @@
     <string name="range_yesterday">دیروز</string>
     <string name="range_this_week">این هفته</string>
     <string name="range_this_month">این ماه</string>
+    <string name="delete_all_parties">حذف همه مشتریان</string>
+    <string name="delete_all_parties_confirm">این کار همه %1$d مشتری و تمام ثبت‌هایشان را به سطل بازیافت می‌برد.</string>
+    <string name="delete_all_parties_final_title">همه مشتریان حذف شوند؟</string>
+    <string name="delete_all_parties_final">%1$d مشتری و تمام سابقه‌شان به سطل بازیافت می‌رود. از آنجا می‌توانید بازشان گردانید.</string>
+    <string name="no_parties_to_delete">مشتری‌ای برای حذف نیست.</string>
+    <string name="continue_label">ادامه</string>
 </resources>

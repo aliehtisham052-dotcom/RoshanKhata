@@ -670,4 +670,10 @@
     <string name="range_yesterday">Kal</string>
     <string name="range_this_week">Is hafte</string>
     <string name="range_this_month">Is mahine</string>
+    <string name="delete_all_parties">Tamam gahak delete karein</string>
+    <string name="delete_all_parties_confirm">Ye tamam %1$d gahakon aur unke saare indraj Recycle Bin mein bhej dega.</string>
+    <string name="delete_all_parties_final_title">Tamam gahak delete kar dein?</string>
+    <string name="delete_all_parties_final">%1$d gahak aur unki poori tareekh Recycle Bin mein chali jayegi. Wahan se wapis la sakte hain.</string>
+    <string name="no_parties_to_delete">Delete karne ke liye koi gahak nahi.</string>
+    <string name="continue_label">Jari rakhein</string>
 </resources>

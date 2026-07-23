@@ -698,4 +698,10 @@
     <string name="range_yesterday">ڪالهه</string>
     <string name="range_this_week">هن هفتي</string>
     <string name="range_this_month">هن مهيني</string>
+    <string name="delete_all_parties">سڀ گراهڪ ڊليٽ ڪريو</string>
+    <string name="delete_all_parties_confirm">هي سڀ %1$d گراهڪ ۽ انهن جا سمورا اندراج ري سائيڪل بن ۾ منتقل ڪندو.</string>
+    <string name="delete_all_parties_final_title">سڀ گراهڪ ڊليٽ ڪجن؟</string>
+    <string name="delete_all_parties_final">%1$d گراهڪ ۽ انهن جي پوري تاريخ ري سائيڪل بن ۾ ويندي. اتان واپس آڻي سگهو ٿا.</string>
+    <string name="no_parties_to_delete">ڊليٽ ڪرڻ لاءِ ڪو گراهڪ ناهي.</string>
+    <string name="continue_label">جاري رکو</string>
 </resources>

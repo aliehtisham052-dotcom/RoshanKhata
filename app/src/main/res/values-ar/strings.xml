@@ -678,4 +678,10 @@
     <string name="range_yesterday">أمس</string>
     <string name="range_this_week">هذا الأسبوع</string>
     <string name="range_this_month">هذا الشهر</string>
+    <string name="delete_all_parties">حذف كل العملاء</string>
+    <string name="delete_all_parties_confirm">سيؤدي هذا إلى نقل جميع العملاء البالغ عددهم %1$d وكل قيودهم إلى سلة المحذوفات.</string>
+    <string name="delete_all_parties_final_title">حذف كل العملاء؟</string>
+    <string name="delete_all_parties_final">سينتقل %1$d عميلاً وسجلّهم بالكامل إلى سلة المحذوفات. يمكنك استعادتهم من هناك.</string>
+    <string name="no_parties_to_delete">لا يوجد عملاء لحذفهم.</string>
+    <string name="continue_label">متابعة</string>
 </resources>

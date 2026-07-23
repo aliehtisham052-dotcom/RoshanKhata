@@ -670,4 +670,10 @@
     <string name="range_yesterday">کل</string>
     <string name="range_this_week">اس ہفتے</string>
     <string name="range_this_month">اس مہینے</string>
+    <string name="delete_all_parties">تمام گاہک ڈیلیٹ کریں</string>
+    <string name="delete_all_parties_confirm">یہ تمام %1$d گاہکوں اور ان کے سارے اندراج ری سائیکل بن میں بھیج دے گا۔</string>
+    <string name="delete_all_parties_final_title">تمام گاہک ڈیلیٹ کر دیں؟</string>
+    <string name="delete_all_parties_final">%1$d گاہک اور ان کی پوری تاریخ ری سائیکل بن میں چلی جائے گی۔ وہاں سے واپس لا سکتے ہیں۔</string>
+    <string name="no_parties_to_delete">ڈیلیٹ کرنے کے لیے کوئی گاہک نہیں۔</string>
+    <string name="continue_label">جاری رکھیں</string>
 </resources>
