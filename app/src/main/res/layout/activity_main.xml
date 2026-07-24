@@ -20,7 +20,7 @@
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/section_khata"
+        android:background="@drawable/bg_header_gradient"
         android:orientation="vertical"
         android:paddingStart="20dp"
         android:paddingTop="20dp"

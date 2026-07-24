@@ -2,6 +2,6 @@
 <!-- Soft green card for the "to pay" total -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#E4F3EC" />
+    <solid android:color="@color/summary_give_bg" />
     <corners android:radius="12dp" />
 </shape>

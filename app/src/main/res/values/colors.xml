@@ -106,8 +106,8 @@
       reach into the cashbook, cheques, expiry, or plans, which keep the plain
       green=good / red=bad meaning.
     -->
-    <color name="bal_owed_to_me">#A32D2D</color>
-    <color name="bal_i_owe">#0F6E56</color>
+    <color name="bal_owed_to_me">#8E2226</color>
+    <color name="bal_i_owe">#0A5A44</color>
     <!-- Bright variants for use ON the dark green party header only -->
     <color name="bal_owed_to_me_on_dark">#FFA8A8</color>
     <color name="bal_i_owe_on_dark">#7FE3C4</color>
@@ -151,4 +151,25 @@
     -->
     <color name="page_grad_top">#EDF1EC</color>
     <color name="page_grad_bottom">#F7F6F2</color>
+
+    <!--
+      The home header, gold running into green.
+
+      Taken from the reference the owner chose, held a few shades deeper: that
+      one sits on black, where a bright lime is legible, and this sits under
+      white type. White on bright yellow cannot be read across a counter.
+    -->
+    <color name="header_grad_start">#8A7614</color>
+    <color name="header_grad_mid">#4E6B26</color>
+    <color name="header_grad_end">#12522F</color>
+
+    <!--
+      The two summary boxes, brought up a step.
+
+      Against a flat green header their pale fills held their own; against a
+      gradient that carries gold at one end, they washed out. Stronger fills
+      and darker figures so "I have to get" still reads as the number it is.
+    -->
+    <color name="summary_get_bg">#F6DDDC</color>
+    <color name="summary_give_bg">#D3EADD</color>
 </resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The header behind the balance.
+
+  Gold on the left easing into the brand green on the right — the same warm-
+  to-green run as the reference, held a few shades deeper. The reference sits
+  on black, where a bright lime reads beautifully; this sits under white type,
+  and white on bright yellow cannot be read at arm's length across a counter.
+  Deeper keeps the mood and keeps the figures legible.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="0"
+        android:startColor="@color/header_grad_start"
+        android:centerColor="@color/header_grad_mid"
+        android:endColor="@color/header_grad_end"
+        android:type="linear" />
+</shape>
