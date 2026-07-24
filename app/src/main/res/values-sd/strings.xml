@@ -645,9 +645,9 @@
     <string name="biz_card_type_hint">ڇا وڪڻو ٿا (مثال: زرعي دوائون ۽ ٻج)</string>
     <string name="biz_card_address_hint">پتو / شهر (اختياري)</string>
     <string name="biz_card_template">ڊيزائن</string>
-    <string name="biz_tpl_classic">سادو</string>
-    <string name="biz_tpl_gold">سونهري</string>
-    <string name="biz_tpl_green">سائو</string>
+    <string name="biz_tpl_classic">ترڇو</string>
+    <string name="biz_tpl_gold">فريم</string>
+    <string name="biz_tpl_green">شام</string>
     <string name="biz_card_share">ڪارڊ شيئر ڪريو</string>
     <string name="biz_card_note">ڪارڊ توهان جي فون تي ٺهي ٿو ۽ تصوير طور شيئر ٿئي ٿو. ڪجهه به اپلوڊ نٿو ٿئي.</string>
     <string name="biz_card_enter_name">مهرباني ڪري ڪاروبار جو نالو لکو</string>
@@ -705,14 +705,14 @@
     <string name="no_parties_to_delete">ڊليٽ ڪرڻ لاءِ ڪو گراهڪ ناهي.</string>
     <string name="continue_label">جاري رکو</string>
     <string name="biz_tpl_corner">ڪنڊ</string>
-    <string name="biz_tpl_spine">ڪنارو</string>
-    <string name="biz_tpl_split">ورهايل</string>
-    <string name="biz_tpl_monogram">اکر</string>
-    <string name="biz_tpl_ledger">کاتو</string>
-    <string name="biz_tpl_arch">محراب</string>
+    <string name="biz_tpl_spine">ٿنڀو</string>
+    <string name="biz_tpl_split">ورهاست</string>
+    <string name="biz_tpl_monogram">تير</string>
+    <string name="biz_tpl_ledger">پٽي</string>
+    <string name="biz_tpl_arch">لهر</string>
     <string name="biz_tpl_slate">سليٽ</string>
-    <string name="biz_tpl_olive">ٻنيءَ وارو</string>
-    <string name="biz_tpl_stamp">مهر</string>
+    <string name="biz_tpl_olive">موڙ</string>
+    <string name="biz_tpl_stamp">ڪَٽ</string>
     <string name="signature">صحيح</string>
     <string name="signature_help">پنهنجي صحيح کي سادي ڪاغذ تي فوٽو ڪريو. اها انهن اسٽيٽمينٽن جي هيٺان ڇپبي جيڪي توهان موڪليندا، ۽ هن فون تي ئي رهندي.</string>
     <string name="no_signature_yet">اڃا ڪا صحيح شامل نه ڪئي وئي.</string>
@@ -722,4 +722,5 @@
     <string name="signature_save_failed">اها تصوير محفوظ نه ٿي سگهي.</string>
     <string name="photo_on_statement">اسٽيٽمينٽ تي گراهڪ جي تصوير شامل ڪريو</string>
     <string name="photo_on_statement_help">ڊفالٽ طور بند. کوليندؤ ته گراهڪ جي تصوير سندس اسٽيٽمينٽ تي ڇپبي، جنهن سان انڪار ڏکيو ٿيندو — پر اسٽيٽمينٽ اڳتي به موڪلي سگهجي ٿي، ۽ تصوير ان سان گڏ ويندي.</string>
+    <string name="made_with_app">روشن کاتو</string>
 </resources>

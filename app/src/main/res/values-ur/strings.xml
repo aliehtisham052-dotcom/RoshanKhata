@@ -617,9 +617,9 @@
     <string name="biz_card_type_hint">آپ کیا بیچتے ہیں (مثلاً زرعی ادویات اور بیج)</string>
     <string name="biz_card_address_hint">پتہ / شہر (اختیاری)</string>
     <string name="biz_card_template">ڈیزائن</string>
-    <string name="biz_tpl_classic">سادہ</string>
-    <string name="biz_tpl_gold">سنہری</string>
-    <string name="biz_tpl_green">سبز</string>
+    <string name="biz_tpl_classic">ترچھا</string>
+    <string name="biz_tpl_gold">فریم</string>
+    <string name="biz_tpl_green">شام</string>
     <string name="biz_card_share">کارڈ شیئر کریں</string>
     <string name="biz_card_note">کارڈ آپ کے فون پر بنتا ہے اور تصویر کے طور پر شیئر ہوتا ہے۔ کچھ بھی اپ لوڈ نہیں ہوتا۔</string>
     <string name="biz_card_enter_name">براہ کرم کاروبار کا نام لکھیں</string>
@@ -677,14 +677,14 @@
     <string name="no_parties_to_delete">ڈیلیٹ کرنے کے لیے کوئی گاہک نہیں۔</string>
     <string name="continue_label">جاری رکھیں</string>
     <string name="biz_tpl_corner">کونہ</string>
-    <string name="biz_tpl_spine">کنارہ</string>
+    <string name="biz_tpl_spine">ستون</string>
     <string name="biz_tpl_split">دو حصے</string>
-    <string name="biz_tpl_monogram">حرف</string>
-    <string name="biz_tpl_ledger">کھاتہ</string>
-    <string name="biz_tpl_arch">محراب</string>
+    <string name="biz_tpl_monogram">تیر</string>
+    <string name="biz_tpl_ledger">پٹی</string>
+    <string name="biz_tpl_arch">لہر</string>
     <string name="biz_tpl_slate">سلیٹ</string>
-    <string name="biz_tpl_olive">کھیت</string>
-    <string name="biz_tpl_stamp">مہر</string>
+    <string name="biz_tpl_olive">موڑ</string>
+    <string name="biz_tpl_stamp">کاٹ</string>
     <string name="signature">دستخط</string>
     <string name="signature_help">اپنے دستخط سادہ کاغذ پر بنا کر تصویر لیں۔ یہ ان کھاتوں کے نیچے چھپیں گے جو آپ بھیجیں گے، اور اسی فون پر رہیں گے۔</string>
     <string name="no_signature_yet">ابھی کوئی دستخط شامل نہیں کیے گئے۔</string>
@@ -694,4 +694,5 @@
     <string name="signature_save_failed">وہ تصویر محفوظ نہیں ہو سکی۔</string>
     <string name="photo_on_statement">کھاتے پر گاہک کی تصویر شامل کریں</string>
     <string name="photo_on_statement_help">پہلے سے بند ہے۔ آن کرنے پر گاہک کی تصویر اس کے کھاتے پر چھپے گی، جس سے انکار مشکل ہو جاتا ہے — لیکن کھاتہ آگے بھی بھیجا جا سکتا ہے، اور تصویر اس کے ساتھ جائے گی۔</string>
+    <string name="made_with_app">روشن کھاتہ</string>
 </resources>

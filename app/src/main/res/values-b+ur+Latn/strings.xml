@@ -617,9 +617,9 @@
     <string name="biz_card_type_hint">Aap kya bechte hain (maslan zarai adwiyat aur beej)</string>
     <string name="biz_card_address_hint">Pata / shehar (ikhtiyari)</string>
     <string name="biz_card_template">Design</string>
-    <string name="biz_tpl_classic">Sada</string>
-    <string name="biz_tpl_gold">Sunehri</string>
-    <string name="biz_tpl_green">Sabz</string>
+    <string name="biz_tpl_classic">Tirchha</string>
+    <string name="biz_tpl_gold">Frame</string>
+    <string name="biz_tpl_green">Shaam</string>
     <string name="biz_card_share">Card share karein</string>
     <string name="biz_card_note">Card aap ke phone par banta hai aur tasveer ke tor par share hota hai. Kuch bhi upload nahi hota.</string>
     <string name="biz_card_enter_name">Barah-e-karam karobar ka naam likhein</string>
@@ -677,14 +677,14 @@
     <string name="no_parties_to_delete">Delete karne ke liye koi gahak nahi.</string>
     <string name="continue_label">Jari rakhein</string>
     <string name="biz_tpl_corner">Kona</string>
-    <string name="biz_tpl_spine">Kinara</string>
+    <string name="biz_tpl_spine">Sutoon</string>
     <string name="biz_tpl_split">Do Hisse</string>
-    <string name="biz_tpl_monogram">Harf</string>
-    <string name="biz_tpl_ledger">Khata</string>
-    <string name="biz_tpl_arch">Mehraab</string>
+    <string name="biz_tpl_monogram">Teer</string>
+    <string name="biz_tpl_ledger">Patti</string>
+    <string name="biz_tpl_arch">Lehar</string>
     <string name="biz_tpl_slate">Slate</string>
-    <string name="biz_tpl_olive">Khet</string>
-    <string name="biz_tpl_stamp">Mohar</string>
+    <string name="biz_tpl_olive">Mor</string>
+    <string name="biz_tpl_stamp">Kaat</string>
     <string name="signature">Dastkhat</string>
     <string name="signature_help">Apne dastkhat sadah kaghaz par bana kar tasveer lein. Ye un khaaton ke neeche chhapenge jo aap bhejenge, aur isi phone par rahenge.</string>
     <string name="no_signature_yet">Abhi koi dastkhat shamil nahi kiye gaye.</string>
@@ -694,4 +694,5 @@
     <string name="signature_save_failed">Wo tasveer mehfooz nahi ho saki.</string>
     <string name="photo_on_statement">Khaate par gahak ki tasveer shamil karein</string>
     <string name="photo_on_statement_help">Pehle se band hai. On karne par gahak ki tasveer uske khaate par chhapegi, jis se inkar mushkil ho jata hai — lekin khata aage bhi bheja ja sakta hai, aur tasveer uske sath jayegi.</string>
+    <string name="made_with_app">Roshan Khata</string>
 </resources>

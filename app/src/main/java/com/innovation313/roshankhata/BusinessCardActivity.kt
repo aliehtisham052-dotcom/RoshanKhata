@@ -135,7 +135,7 @@ class BusinessCardActivity : AppCompatActivity() {
             owner = etOwner.text.toString().trim(),
             phone = etPhone.text.toString().trim(),
             address = etAddress.text.toString().trim(),
-            footer = getString(R.string.powered_by)
+            footer = getString(R.string.made_with_app)
         )
         CardTemplates.byId(template).draw(
             Canvas(bmp), data, CardTemplates.W, CardTemplates.H

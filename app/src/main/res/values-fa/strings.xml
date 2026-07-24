@@ -645,9 +645,9 @@
     <string name="biz_card_type_hint">چه می‌فروشید (مثلاً سم و بذر)</string>
     <string name="biz_card_address_hint">نشانی / شهر (اختیاری)</string>
     <string name="biz_card_template">طرح</string>
-    <string name="biz_tpl_classic">کلاسیک</string>
-    <string name="biz_tpl_gold">طلایی</string>
-    <string name="biz_tpl_green">سبز</string>
+    <string name="biz_tpl_classic">قطری</string>
+    <string name="biz_tpl_gold">قاب</string>
+    <string name="biz_tpl_green">غروب</string>
     <string name="biz_card_share">اشتراک کارت</string>
     <string name="biz_card_note">کارت روی گوشی شما ساخته و به‌صورت تصویر به اشتراک گذاشته می‌شود. چیزی بارگذاری نمی‌شود.</string>
     <string name="biz_card_enter_name">لطفاً نام کسب‌وکار را وارد کنید</string>
@@ -704,15 +704,15 @@
     <string name="delete_all_parties_final">%1$d مشتری و تمام سابقه‌شان به سطل بازیافت می‌رود. از آنجا می‌توانید بازشان گردانید.</string>
     <string name="no_parties_to_delete">مشتری‌ای برای حذف نیست.</string>
     <string name="continue_label">ادامه</string>
-    <string name="biz_tpl_corner">گوشه‌ای</string>
-    <string name="biz_tpl_spine">ستونی</string>
+    <string name="biz_tpl_corner">گوشه</string>
+    <string name="biz_tpl_spine">ستون</string>
     <string name="biz_tpl_split">دوبخشی</string>
-    <string name="biz_tpl_monogram">حرف</string>
-    <string name="biz_tpl_ledger">دفتری</string>
-    <string name="biz_tpl_arch">قوسی</string>
+    <string name="biz_tpl_monogram">پیکان</string>
+    <string name="biz_tpl_ledger">روبان</string>
+    <string name="biz_tpl_arch">موج</string>
     <string name="biz_tpl_slate">خاکستری</string>
-    <string name="biz_tpl_olive">مزرعه</string>
-    <string name="biz_tpl_stamp">مهر</string>
+    <string name="biz_tpl_olive">تا</string>
+    <string name="biz_tpl_stamp">تیغه</string>
     <string name="signature">امضا</string>
     <string name="signature_help">امضایتان را روی کاغذ سفید عکس بگیرید. پای صورت‌حساب‌هایی که می‌فرستید چاپ می‌شود و روی همین گوشی می‌ماند.</string>
     <string name="no_signature_yet">هنوز امضایی افزوده نشده.</string>
@@ -722,4 +722,5 @@
     <string name="signature_save_failed">آن تصویر ذخیره نشد.</string>
     <string name="photo_on_statement">درج عکس مشتری روی صورت‌حساب</string>
     <string name="photo_on_statement_help">به‌طور پیش‌فرض خاموش. روشن کنید تا عکس مشتری روی صورت‌حسابش چاپ شود و انکارش سخت‌تر باشد — اما صورت‌حساب ممکن است فرستاده شود و عکس با آن برود.</string>
+    <string name="made_with_app">روشن خاتا</string>
 </resources>

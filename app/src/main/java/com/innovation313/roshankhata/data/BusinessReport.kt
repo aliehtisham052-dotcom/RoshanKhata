@@ -346,7 +346,7 @@ object BusinessReport {
         if (y > PAGE_H - 60f) newPage()
         y = PAGE_H - 34f
         canvas.drawText(
-            "Roshan Khata \u00B7 Innovation-313 \u00B7 Page $pageNo",
+            "Roshan Khata \u00B7 Page $pageNo",
             MARGIN,
             y,
             muted

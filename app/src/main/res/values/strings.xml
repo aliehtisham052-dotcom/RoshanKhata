@@ -649,9 +649,9 @@
     <string name="biz_card_type_hint">What you sell (e.g. pesticides &amp; seeds)</string>
     <string name="biz_card_address_hint">Address / city (optional)</string>
     <string name="biz_card_template">Design</string>
-    <string name="biz_tpl_classic">Classic</string>
-    <string name="biz_tpl_gold">Gold</string>
-    <string name="biz_tpl_green">Green</string>
+    <string name="biz_tpl_classic">Diagonal</string>
+    <string name="biz_tpl_gold">Frame</string>
+    <string name="biz_tpl_green">Dusk</string>
     <string name="biz_card_share">Share card</string>
     <string name="biz_card_note">The card is drawn on your phone and shared as an image. Nothing is uploaded.</string>
     <string name="biz_card_enter_name">Please enter a business name</string>
@@ -709,14 +709,14 @@
     <string name="no_parties_to_delete">There are no customers to delete.</string>
     <string name="continue_label">Continue</string>
     <string name="biz_tpl_corner">Corner</string>
-    <string name="biz_tpl_spine">Spine</string>
+    <string name="biz_tpl_spine">Sidebar</string>
     <string name="biz_tpl_split">Split</string>
-    <string name="biz_tpl_monogram">Monogram</string>
-    <string name="biz_tpl_ledger">Ledger</string>
-    <string name="biz_tpl_arch">Arch</string>
+    <string name="biz_tpl_monogram">Arrow</string>
+    <string name="biz_tpl_ledger">Ribbon</string>
+    <string name="biz_tpl_arch">Wave</string>
     <string name="biz_tpl_slate">Slate</string>
-    <string name="biz_tpl_olive">Field</string>
-    <string name="biz_tpl_stamp">Stamp</string>
+    <string name="biz_tpl_olive">Fold</string>
+    <string name="biz_tpl_stamp">Blade</string>
     <string name="signature">Signature</string>
     <string name="signature_help">Photograph your signature on plain paper. It is printed at the foot of statements you send, and stays on this phone.</string>
     <string name="no_signature_yet">No signature added yet.</string>
@@ -726,4 +726,5 @@
     <string name="signature_save_failed">That image could not be saved.</string>
     <string name="photo_on_statement">Include customer photo on statements</string>
     <string name="photo_on_statement_help">Off by default. Turning it on prints the customer\u2019s photo on their statement, which makes it harder to dispute — but a statement can be forwarded, and their photo travels with it.</string>
+    <string name="made_with_app">Roshan Khata</string>
 </resources>

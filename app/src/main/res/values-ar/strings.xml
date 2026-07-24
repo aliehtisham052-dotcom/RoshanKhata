@@ -625,9 +625,9 @@
     <string name="biz_card_type_hint">ماذا تبيع (مثلاً مبيدات وبذور)</string>
     <string name="biz_card_address_hint">العنوان / المدينة (اختياري)</string>
     <string name="biz_card_template">التصميم</string>
-    <string name="biz_tpl_classic">كلاسيكي</string>
-    <string name="biz_tpl_gold">ذهبي</string>
-    <string name="biz_tpl_green">أخضر</string>
+    <string name="biz_tpl_classic">قُطري</string>
+    <string name="biz_tpl_gold">إطار</string>
+    <string name="biz_tpl_green">غسق</string>
     <string name="biz_card_share">مشاركة البطاقة</string>
     <string name="biz_card_note">تُرسم البطاقة على هاتفك وتُشارَك كصورة. لا يُرفع أي شيء.</string>
     <string name="biz_card_enter_name">يرجى إدخال اسم النشاط التجاري</string>
@@ -684,15 +684,15 @@
     <string name="delete_all_parties_final">سينتقل %1$d عميلاً وسجلّهم بالكامل إلى سلة المحذوفات. يمكنك استعادتهم من هناك.</string>
     <string name="no_parties_to_delete">لا يوجد عملاء لحذفهم.</string>
     <string name="continue_label">متابعة</string>
-    <string name="biz_tpl_corner">ركني</string>
-    <string name="biz_tpl_spine">شريطي</string>
-    <string name="biz_tpl_split">منقسم</string>
-    <string name="biz_tpl_monogram">حرف</string>
-    <string name="biz_tpl_ledger">دفتري</string>
-    <string name="biz_tpl_arch">قوسي</string>
+    <string name="biz_tpl_corner">ركن</string>
+    <string name="biz_tpl_spine">عمود</string>
+    <string name="biz_tpl_split">انقسام</string>
+    <string name="biz_tpl_monogram">سهم</string>
+    <string name="biz_tpl_ledger">شريط</string>
+    <string name="biz_tpl_arch">موجة</string>
     <string name="biz_tpl_slate">رمادي</string>
-    <string name="biz_tpl_olive">حقلي</string>
-    <string name="biz_tpl_stamp">ختم</string>
+    <string name="biz_tpl_olive">طيّة</string>
+    <string name="biz_tpl_stamp">نصل</string>
     <string name="signature">التوقيع</string>
     <string name="signature_help">صوّر توقيعك على ورقة بيضاء. يُطبع أسفل كشوف الحساب التي ترسلها، ويبقى على هذا الهاتف.</string>
     <string name="no_signature_yet">لم تتم إضافة توقيع بعد.</string>
@@ -702,4 +702,5 @@
     <string name="signature_save_failed">تعذّر حفظ تلك الصورة.</string>
     <string name="photo_on_statement">تضمين صورة العميل في كشف الحساب</string>
     <string name="photo_on_statement_help">معطّل افتراضيًا. تفعيله يطبع صورة العميل على كشف حسابه فيصعب إنكاره — لكن الكشف قد يُعاد إرساله، وتنتقل صورته معه.</string>
+    <string name="made_with_app">روشن كهاتا</string>
 </resources>
