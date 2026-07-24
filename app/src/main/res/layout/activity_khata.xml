@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:text="@string/app_tagline"
-            android:textColor="@color/section_khata_soft"
+            android:textColor="@color/header_on_dark"
             android:textSize="12sp" />
 
         <!--
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
             android:text="@string/net_balance"
-            android:textColor="@color/section_khata_soft"
+            android:textColor="@color/header_on_dark"
             android:textSize="12sp" />
 
         <!--
@@ -85,7 +85,7 @@
                 android:layout_marginStart="10dp"
                 android:contentDescription="@string/hide_balance"
                 android:src="@drawable/ic_eye_open"
-                app:tint="@color/section_khata_soft" />
+                app:tint="@color/header_on_dark" />
         </LinearLayout>
 
         <!--
@@ -219,10 +219,10 @@
                 android:layout_height="44dp"
                 android:layout_marginStart="8dp"
                 android:text="@string/sort"
-                android:textColor="@color/section_khata_soft"
+                android:textColor="@color/header_on_dark"
                 android:textSize="12sp"
                 app:cornerRadius="8dp"
-                app:strokeColor="@color/section_khata_soft" />
+                app:strokeColor="@color/header_on_dark" />
         </LinearLayout>
 
         <!--
@@ -238,7 +238,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="12dp"
-            android:textColor="@color/section_khata_soft"
+            android:textColor="@color/header_on_dark"
             android:textSize="12sp" />
     </LinearLayout>
 

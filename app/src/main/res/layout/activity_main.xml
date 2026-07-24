@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:text="@string/app_tagline"
-            android:textColor="@color/section_khata_soft"
+            android:textColor="@color/header_on_dark"
             android:textSize="12sp" />
 
         <TextView
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/net_balance"
-            android:textColor="@color/section_khata_soft"
+            android:textColor="@color/header_on_dark"
             android:textSize="12sp" />
 
         <!-- Tappable: the eye says this can be hidden without anyone explaining it. -->
@@ -83,7 +83,7 @@
                 android:layout_marginStart="10dp"
                 android:contentDescription="@string/hide_balance"
                 android:src="@drawable/ic_eye_open"
-                app:tint="@color/section_khata_soft" />
+                app:tint="@color/header_on_dark" />
         </LinearLayout>
 
         <!--

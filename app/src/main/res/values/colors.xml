@@ -153,23 +153,32 @@
     <color name="page_grad_bottom">#F7F6F2</color>
 
     <!--
-      The home header, gold running into green.
+      The home header: maroon easing into plum.
 
-      Taken from the reference the owner chose, held a few shades deeper: that
-      one sits on black, where a bright lime is legible, and this sits under
-      white type. White on bright yellow cannot be read across a counter.
+      Deep enough that white figures stay readable in daylight, and warm
+      rather than green — the ledger's own reds and greens then read as
+      information rather than as more of the background.
     -->
-    <color name="header_grad_start">#8A7614</color>
-    <color name="header_grad_mid">#4E6B26</color>
-    <color name="header_grad_end">#12522F</color>
+    <color name="header_grad_start">#6E1F2A</color>
+    <color name="header_grad_mid">#552334</color>
+    <color name="header_grad_end">#3A2340</color>
+
+    <!--
+      The quiet type on that header — the tagline, the "Net balance" label.
+      A warm off-white rather than the pale green it used to use: green on
+      maroon reads as a mistake, and pure white would compete with the figure
+      it is meant to introduce.
+    -->
+    <color name="header_on_dark">#E3CDCF</color>
 
     <!--
       The two summary boxes, brought up a step.
 
-      Against a flat green header their pale fills held their own; against a
-      gradient that carries gold at one end, they washed out. Stronger fills
-      and darker figures so "I have to get" still reads as the number it is.
+      The header is maroon at one end, and "I have to get" is red — the same
+      family. Its fill is warmed towards apricot so the two separate; the
+      figure inside stays red, because red is what "money owed to me" means
+      in this ledger and that must not move.
     -->
-    <color name="summary_get_bg">#F6DDDC</color>
+    <color name="summary_get_bg">#FBEAE6</color>
     <color name="summary_give_bg">#D3EADD</color>
 </resources>
