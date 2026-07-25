@@ -214,6 +214,40 @@ object CardTemplates {
         return y
     }
 
+    private fun roundStroke(colour: Int, width: Float) = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.color = colour
+        style = Paint.Style.STROKE
+        strokeWidth = width
+        strokeCap = Paint.Cap.ROUND
+    }
+
+    /**
+     * Contact lines with a hairline rule under each, and the icon on the far
+     * side — the arrangement on the red-and-white reference, where the rules
+     * do the work a box would otherwise have to.
+     */
+    private fun ruledContacts(
+        c: Canvas,
+        d: CardData,
+        left: Float,
+        right: Float,
+        top: Float,
+        textColour: Int,
+        accent: Int
+    ) {
+        var y = top
+        listOfNotNull(
+            d.address.takeIf { it.isNotEmpty() },
+            d.phone.takeIf { it.isNotEmpty() },
+            d.owner.takeIf { it.isNotEmpty() }
+        ).forEach { line ->
+            c.drawText(line, right - 54f, y, paint(28f, textColour, false, Paint.Align.RIGHT))
+            c.drawCircle(right - 22f, y - 10f, 13f, fill(accent))
+            c.drawLine(left, y + 16f, right, y + 16f, fill(accent).apply { strokeWidth = 1.6f })
+            y += 62f
+        }
+    }
+
     // ---------- the twelve ----------
 
     /** 1. Sweep: a diagonal band of colour across a pale card. */
@@ -291,50 +325,6 @@ object CardTemplates {
         c.drawText(d.footer, right, h - 44f, paint(24f, GOLD_PALE, false, Paint.Align.RIGHT))
     }
 
-    /** 4. Bar: a solid field above, details below a coloured rule. */
-    private fun bar(c: Canvas, d: CardData, w: Int, h: Int) {
-        c.drawColor(WHITE)
-        c.drawRect(0f, 0f, w.toFloat(), h * 0.4f, fill(TEAL))
-        c.drawRect(0f, h * 0.4f, w.toFloat(), h * 0.4f + 14f, fill(GOLD))
-
-        c.drawText(d.name, 70f, 160f, fitted(d.name, w - 140f, 70f, WHITE, true))
-        if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 214f, paint(32f, GOLD_PALE, false))
-        contacts(c, d, 70f, h * 0.4f + 100f, INK, TEAL, gap = 56f)
-        c.drawText(d.footer, w - 70f, h - 40f, paint(24f, TEAL, false, Paint.Align.RIGHT))
-    }
-
-    /** 5. Wedge: two triangles meeting at a bright seam. */
-    private fun wedge(c: Canvas, d: CardData, w: Int, h: Int) {
-        c.drawColor(PAPER)
-        c.drawPath(
-            path { moveTo(0f, 0f); lineTo(w * 0.46f, 0f); lineTo(0f, h.toFloat()); close() },
-            fill(GREEN_DEEP)
-        )
-        c.drawPath(
-            path {
-                moveTo(w * 0.46f, 0f); lineTo(w * 0.58f, 0f)
-                lineTo(w * 0.12f, h.toFloat()); lineTo(0f, h.toFloat()); close()
-            },
-            fill(LIME)
-        )
-
-        val right = w - 70f
-        c.drawText(d.name, right, 190f, fitted(d.name, w * 0.5f, 62f, INK, true, Paint.Align.RIGHT))
-        if (d.type.isNotEmpty()) {
-            c.drawText(d.type, right, 240f, paint(30f, GREEN_DEEP, false, Paint.Align.RIGHT))
-        }
-
-        var y = 340f
-        listOfNotNull(
-            d.owner.takeIf { it.isNotEmpty() },
-            d.phone.takeIf { it.isNotEmpty() },
-            d.address.takeIf { it.isNotEmpty() }
-        ).forEach { line ->
-            c.drawText(line, right, y, paint(32f, INK, false, Paint.Align.RIGHT)); y += 52f
-        }
-        c.drawText(d.footer, right, h - 44f, paint(24f, GREEN_DEEP, false, Paint.Align.RIGHT))
-    }
-
     /** 6. Arc: a quarter circle anchoring the corner. */
     private fun arc(c: Canvas, d: CardData, w: Int, h: Int) {
         c.drawColor(WHITE)
@@ -372,29 +362,6 @@ object CardTemplates {
             c.drawText(d.owner, 70f, h * 0.5f, fitted(d.owner, w * 0.38f, 52f, INK, true))
         }
         c.drawText(d.footer, 70f, h - 46f, paint(24f, CHARCOAL, false))
-    }
-
-    /** 8. Ribbon: a bright band across a deep field, name inside it. */
-    private fun ribbon(c: Canvas, d: CardData, w: Int, h: Int) {
-        c.drawColor(NAVY)
-        c.drawPath(
-            path {
-                moveTo(0f, h * 0.2f); lineTo(w.toFloat(), h * 0.1f)
-                lineTo(w.toFloat(), h * 0.42f); lineTo(0f, h * 0.52f); close()
-            },
-            fill(CRIMSON)
-        )
-        c.drawPath(
-            path {
-                moveTo(0f, h * 0.52f); lineTo(w.toFloat(), h * 0.42f)
-                lineTo(w.toFloat(), h * 0.45f); lineTo(0f, h * 0.55f); close()
-            },
-            fill(WHITE)
-        )
-
-        c.drawText(d.name, 70f, h * 0.36f, fitted(d.name, w - 200f, 62f, WHITE, true))
-        if (d.type.isNotEmpty()) c.drawText(d.type, 70f, h * 0.63f, paint(30f, GOLD_PALE, false))
-        contacts(c, d, 70f, h * 0.75f, WHITE, CRIMSON, size = 28f, gap = 44f)
     }
 
     /** 9. Gild: a dark field with a fine gold frame and rule. */
@@ -456,35 +423,172 @@ object CardTemplates {
         c.drawText(d.footer, w - 70f, h - 44f, paint(24f, GREEN, false, Paint.Align.RIGHT))
     }
 
-    /** 12. Peak: layered chevrons rising from the foot of the card. */
-    private fun peak(c: Canvas, d: CardData, w: Int, h: Int) {
+    /**
+     * Stripes: a red rule across the top and thick rounded ribbons running
+     * diagonally out of two corners.
+     *
+     * The ribbons are strokes with round caps rather than filled shapes —
+     * that rounded end is the whole character of this layout, and a polygon
+     * cannot give it.
+     */
+    private fun stripes(c: Canvas, d: CardData, w: Int, h: Int) {
         c.drawColor(WHITE)
+
+        c.drawRect(w * 0.13f, 0f, w.toFloat(), 26f, fill(CRIMSON))
         c.drawPath(
             path {
-                moveTo(0f, h.toFloat()); lineTo(w * 0.42f, h * 0.34f)
-                lineTo(w * 0.56f, h * 0.34f); lineTo(w * 0.14f, h.toFloat()); close()
+                moveTo(w * 0.78f, 0f); lineTo(w.toFloat(), 0f)
+                lineTo(w.toFloat(), h * 0.24f); close()
             },
-            fill(Color.parseColor("#DCE3E8"))
+            fill(Color.parseColor("#8E1B22"))
+        )
+
+        // Out of the top-right corner, and mirrored out of the bottom-left.
+        listOf(0f, 62f, 124f).forEachIndexed { i, off ->
+            val shade = if (i == 1) CRIMSON else Color.parseColor("#D8434B")
+            c.drawLine(
+                w * 0.62f + off, h * 0.06f,
+                w * 0.86f + off, h * 0.34f,
+                roundStroke(shade, 34f)
+            )
+            c.drawLine(
+                w * 0.06f + off, h * 0.94f,
+                w * 0.3f + off, h * 0.66f,
+                roundStroke(shade, 34f)
+            )
+        }
+        c.drawRect(0f, h - 26f, w * 0.62f, h.toFloat(), fill(CRIMSON))
+
+        c.drawText(d.name, 70f, 170f, fitted(d.name, w * 0.55f, 62f, CRIMSON, true))
+        if (d.type.isNotEmpty()) {
+            c.drawText(d.type, 70f, 218f, paint(28f, INK, true))
+            c.drawLine(70f, 234f, 330f, 234f, fill(CRIMSON).apply { strokeWidth = 3f })
+        }
+        contacts(c, d, 70f, 320f, INK, CRIMSON, size = 28f, gap = 52f)
+    }
+
+    /**
+     * Flap: a deep field with a bright rail down one edge and two folded
+     * corners on the other, as if an envelope had been opened.
+     */
+    private fun flap(c: Canvas, d: CardData, w: Int, h: Int) {
+        c.drawColor(Color.parseColor("#123A38"))
+
+        // The rail, and the run of dots beside it.
+        c.drawRect(w * 0.045f, 0f, w * 0.105f, h * 0.72f, fill(AMBER))
+        listOf(0.44f, 0.52f, 0.6f, 0.68f).forEach { t ->
+            c.drawCircle(w * 0.135f, h * t, 7f, fill(INK))
+        }
+
+        c.drawPath(
+            path {
+                moveTo(w.toFloat(), 0f); lineTo(w.toFloat(), h * 0.62f)
+                lineTo(w * 0.62f, h * 0.06f); close()
+            },
+            fill(Color.parseColor("#F0E7C0"))
         )
         c.drawPath(
             path {
-                moveTo(w * 0.16f, h.toFloat()); lineTo(w * 0.58f, h * 0.34f)
-                lineTo(w * 0.72f, h * 0.34f); lineTo(w * 0.3f, h.toFloat()); close()
+                moveTo(w * 0.6f, h.toFloat()); lineTo(w.toFloat(), h * 0.5f)
+                lineTo(w.toFloat(), h.toFloat()); close()
             },
             fill(AMBER)
         )
+
+        val left = w * 0.18f
+        c.drawText(d.name, left, 150f, fitted(d.name, w * 0.44f, 54f, WHITE, true))
+        if (d.type.isNotEmpty()) c.drawText(d.type, left, 196f, paint(28f, AMBER, false))
+        contacts(c, d, left, 320f, WHITE, AMBER, size = 26f, gap = 50f)
+    }
+
+    /**
+     * Chevron: a curved point of colour driven in from one edge, the details
+     * ruled off on the other.
+     */
+    private fun chevron(c: Canvas, d: CardData, w: Int, h: Int) {
+        c.drawColor(WHITE)
+
         c.drawPath(
             path {
-                moveTo(w * 0.32f, h.toFloat()); lineTo(w * 0.74f, h * 0.34f)
-                lineTo(w.toFloat(), h * 0.34f); lineTo(w.toFloat(), h.toFloat()); close()
+                moveTo(0f, 0f); lineTo(w * 0.26f, 0f)
+                cubicTo(w * 0.5f, h * 0.2f, w * 0.5f, h * 0.8f, w * 0.26f, h.toFloat())
+                lineTo(0f, h.toFloat()); close()
             },
-            fill(NAVY)
+            fill(Color.parseColor("#B01F35"))
+        )
+        c.drawPath(
+            path {
+                moveTo(0f, h * 0.1f); lineTo(w * 0.2f, h * 0.1f)
+                cubicTo(w * 0.42f, h * 0.28f, w * 0.42f, h * 0.72f, w * 0.2f, h * 0.9f)
+                lineTo(0f, h * 0.9f); close()
+            },
+            fill(Color.parseColor("#8E1626"))
         )
 
-        c.drawText(d.name, 70f, 150f, fitted(d.name, w - 140f, 64f, INK, true))
-        if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 200f, paint(30f, NAVY, false))
-        contacts(c, d, 70f, 285f, INK, NAVY, size = 28f, gap = 46f)
-        c.drawText(d.footer, w - 60f, h - 40f, paint(24f, WHITE, false, Paint.Align.RIGHT))
+        val left = w * 0.5f
+        val right = w - 60f
+        if (d.name.isNotEmpty()) {
+            c.drawRect(left, 96f, right, 150f, fill(Color.parseColor("#B01F35")))
+            c.drawText(
+                d.name, (left + right) / 2f, 136f,
+                fitted(d.name, right - left - 30f, 38f, WHITE, true, Paint.Align.CENTER)
+            )
+        }
+        if (d.type.isNotEmpty()) {
+            c.drawText(d.type, (left + right) / 2f, 194f, paint(28f, INK, false, Paint.Align.CENTER))
+        }
+        ruledContacts(c, d, left, right, 290f, INK, Color.parseColor("#B01F35"))
+        c.drawText(d.footer, left, h - 44f, paint(22f, Color.parseColor("#B01F35"), false))
+    }
+
+    /**
+     * Bands: two curved sweeps meeting across the foot, one deep, one bright,
+     * with the details set on the darker of them.
+     */
+    private fun bands(c: Canvas, d: CardData, w: Int, h: Int) {
+        c.drawColor(WHITE)
+
+        c.drawPath(
+            path {
+                moveTo(0f, h * 0.2f); lineTo(w * 0.46f, h * 0.2f)
+                cubicTo(w * 0.4f, h * 0.34f, w * 0.24f, h * 0.34f, 0f, h * 0.34f)
+                close()
+            },
+            fill(AMBER)
+        )
+
+        c.drawPath(
+            path {
+                moveTo(w.toFloat(), h * 0.46f); lineTo(w.toFloat(), h * 0.86f)
+                lineTo(w * 0.34f, h * 0.86f)
+                cubicTo(w * 0.5f, h * 0.86f, w * 0.5f, h * 0.46f, w * 0.66f, h * 0.46f)
+                close()
+            },
+            fill(NAVY_DEEP)
+        )
+        c.drawPath(
+            path {
+                moveTo(0f, h * 0.9f); lineTo(w * 0.3f, h * 0.9f)
+                cubicTo(w * 0.5f, h * 0.9f, w * 0.6f, h.toFloat(), w.toFloat(), h.toFloat())
+                lineTo(0f, h.toFloat()); close()
+            },
+            fill(AMBER)
+        )
+
+        c.drawText(d.name, 70f, h * 0.3f, fitted(d.name, w * 0.4f, 46f, INK, true))
+        if (d.type.isNotEmpty()) c.drawText(d.type, 70f, h * 0.3f + 40f, paint(24f, INK, false))
+
+        var y = h * 0.56f
+        listOfNotNull(
+            d.owner.takeIf { it.isNotEmpty() },
+            d.phone.takeIf { it.isNotEmpty() },
+            d.address.takeIf { it.isNotEmpty() }
+        ).forEach { line ->
+            c.drawText(line, w - 110f, y, paint(26f, WHITE, false, Paint.Align.RIGHT))
+            c.drawRoundRect(RectF(w - 96f, y - 26f, w - 62f, y + 8f), 8f, 8f, fill(WHITE))
+            y += 46f
+        }
+        c.drawText(d.footer, 70f, h - 34f, paint(22f, INK, false))
     }
 
     /**
@@ -496,16 +600,16 @@ object CardTemplates {
     val all: List<Template> = listOf(
         Template(0, R.string.biz_tpl_classic, ::rule),
         Template(1, R.string.biz_tpl_gold, ::gild),
-        Template(2, R.string.biz_tpl_green, ::bar),
+        Template(2, R.string.biz_tpl_green, ::stripes),
         Template(3, R.string.biz_tpl_corner, ::sweep),
         Template(4, R.string.biz_tpl_spine, ::twin),
         Template(5, R.string.biz_tpl_split, ::sash),
         Template(6, R.string.biz_tpl_monogram, ::arc),
         Template(7, R.string.biz_tpl_ledger, ::fold),
-        Template(8, R.string.biz_tpl_arch, ::ribbon),
+        Template(8, R.string.biz_tpl_arch, ::bands),
         Template(9, R.string.biz_tpl_slate, ::dusk),
-        Template(10, R.string.biz_tpl_olive, ::wedge),
-        Template(11, R.string.biz_tpl_stamp, ::peak)
+        Template(10, R.string.biz_tpl_olive, ::flap),
+        Template(11, R.string.biz_tpl_stamp, ::chevron)
     )
 
     /** The design with this id, or the first if the id is unknown. */
