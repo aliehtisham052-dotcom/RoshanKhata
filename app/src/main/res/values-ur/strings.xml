@@ -696,4 +696,13 @@
     <string name="photo_on_statement_help">پہلے سے بند ہے۔ آن کرنے پر گاہک کی تصویر اس کے کھاتے پر چھپے گی، جس سے انکار مشکل ہو جاتا ہے — لیکن کھاتہ آگے بھی بھیجا جا سکتا ہے، اور تصویر اس کے ساتھ جائے گی۔</string>
     <string name="made_with_app">روشن کھاتہ</string>
     <string name="more_details">نوٹ، مال یا وصولی شامل کریں</string>
+    <string name="voice_entry">بول کر اندراج کریں</string>
+    <string name="voice_prompt">ایسے کہیں: بلال کو پانچ ہزار دیے</string>
+    <string name="voice_unavailable">اس فون میں آواز پہچاننے کا نظام نہیں ہے۔</string>
+    <string name="voice_not_understood">سمجھ نہیں آیا۔ دوبارہ کہیں یا لکھ دیں۔</string>
+    <string name="voice_heard">سنا: %1$s</string>
+    <string name="voice_confirm_title">کیا یہ درست ہے؟</string>
+    <string name="voice_no_party">اس نام کا کوئی گاہک نہیں۔ نام ویسے کہیں جیسے محفوظ ہے۔</string>
+    <string name="voice_no_amount">اس میں رقم نہیں تھی۔ عدد بھی کہیں۔</string>
+    <string name="voice_open_entry">اندراج کھولیں</string>
 </resources>

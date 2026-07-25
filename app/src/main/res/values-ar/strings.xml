@@ -704,4 +704,13 @@
     <string name="photo_on_statement_help">معطّل افتراضيًا. تفعيله يطبع صورة العميل على كشف حسابه فيصعب إنكاره — لكن الكشف قد يُعاد إرساله، وتنتقل صورته معه.</string>
     <string name="made_with_app">روشن كهاتا</string>
     <string name="more_details">أضف ملاحظة أو بضاعة أو حالة التحصيل</string>
+    <string name="voice_entry">أدخل بالصوت</string>
+    <string name="voice_prompt">قل مثلاً: أعطيت بلال خمسة آلاف</string>
+    <string name="voice_unavailable">لا يوجد في هذا الهاتف محرك للتعرف على الصوت.</string>
+    <string name="voice_not_understood">لم نفهم ذلك. حاول ثانية أو اكتبه.</string>
+    <string name="voice_heard">سُمع: %1$s</string>
+    <string name="voice_confirm_title">هل هذا صحيح؟</string>
+    <string name="voice_no_party">لا يوجد عميل بهذا الاسم. قل الاسم كما هو محفوظ.</string>
+    <string name="voice_no_amount">لا يوجد مبلغ في ذلك. قل الرقم أيضاً.</string>
+    <string name="voice_open_entry">افتح القيد</string>
 </resources>

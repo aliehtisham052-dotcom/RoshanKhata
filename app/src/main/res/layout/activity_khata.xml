@@ -194,6 +194,32 @@
                 android:textSize="14sp" />
 
             <!--
+              Speak an entry instead of typing it. Beside the search box
+              because both are ways of saying who you mean, and because a
+              shopkeeper with a sack in one hand has neither hand for a
+              keypad.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVoiceEntry"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/voice_entry"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_mic"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="22dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
+
+            <!--
               Which stretch of days to show. Beside the sort: both narrow the
               same list, and "who did I deal with today" is a question asked
               at every closing.

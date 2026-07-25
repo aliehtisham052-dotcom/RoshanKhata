@@ -724,4 +724,13 @@
     <string name="photo_on_statement_help">ڊفالٽ طور بند. کوليندؤ ته گراهڪ جي تصوير سندس اسٽيٽمينٽ تي ڇپبي، جنهن سان انڪار ڏکيو ٿيندو — پر اسٽيٽمينٽ اڳتي به موڪلي سگهجي ٿي، ۽ تصوير ان سان گڏ ويندي.</string>
     <string name="made_with_app">روشن کاتو</string>
     <string name="more_details">نوٽ، سامان يا وصولي شامل ڪريو</string>
+    <string name="voice_entry">آواز سان اندراج</string>
+    <string name="voice_prompt">ائين چئو: بلال کي پنج هزار ڏنا</string>
+    <string name="voice_unavailable">هن فون ۾ آواز سڃاڻڻ وارو نظام ناهي.</string>
+    <string name="voice_not_understood">سمجهه ۾ نه آيو. ٻيهر ڪوشش ڪريو يا لکو.</string>
+    <string name="voice_heard">ٻڌو ويو: %1$s</string>
+    <string name="voice_confirm_title">ڇا اهو صحيح آهي؟</string>
+    <string name="voice_no_party">ان نالي جو ڪو گراهڪ ناهي. نالو ائين چئو جيئن محفوظ آهي.</string>
+    <string name="voice_no_amount">ان ۾ ڪا رقم ناهي. انگ به چئو.</string>
+    <string name="voice_open_entry">اندراج کوليو</string>
 </resources>

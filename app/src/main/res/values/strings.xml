@@ -728,4 +728,13 @@
     <string name="photo_on_statement_help">Off by default. Turning it on prints the customer\u2019s photo on their statement, which makes it harder to dispute — but a statement can be forwarded, and their photo travels with it.</string>
     <string name="made_with_app">Roshan Khata</string>
     <string name="more_details">Add note, goods or recovery</string>
+    <string name="voice_entry">Speak an entry</string>
+    <string name="voice_prompt">Say it like: Bilal ko paanch hazaar diye</string>
+    <string name="voice_unavailable">This phone has no speech recogniser.</string>
+    <string name="voice_not_understood">Could not make that out. Try again, or type it.</string>
+    <string name="voice_heard">Heard: %1$s</string>
+    <string name="voice_confirm_title">Is this right?</string>
+    <string name="voice_no_party">No customer of that name. Say the name as it is saved.</string>
+    <string name="voice_no_amount">No amount in that. Say the figure too.</string>
+    <string name="voice_open_entry">Open entry</string>
 </resources>
