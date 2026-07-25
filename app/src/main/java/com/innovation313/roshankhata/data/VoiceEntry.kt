@@ -217,16 +217,19 @@ object VoiceEntry {
      * spoken scores by how much of it was heard, and needs three consonants
      * before it counts at all.
      *
-     * Two consonants is not enough on its own. "Maine" and "Moon" both reduce
-     * to m-n, and so do Mona, Mani, Amna and Naeem — a whole family of short
-     * names that any sentence can stumble into. Worse, a full match on two
-     * letters scored above a partial match on the right name, so a customer
-     * called "Ahmad Ali" lost to a customer called "Moon" in a sentence about
-     * Ahmad. So a two-consonant name has to agree on its vowels as well.
+     * A short skeleton is not the problem, and a guard against one does real
+     * damage. Two consonants was briefly treated as too thin to trust unless
+     * the vowels agreed too — which broke the very thing the skeleton is for.
+     * A shop saves "Abu G" in Latin and says it in Urdu, where the short
+     * vowels are not written at all; asking the vowels to agree across two
+     * scripts asks for something neither script can give. The tests caught it.
      *
-     * That costs something: for these short names the app stops forgiving
-     * Mona said as Muna, and asks instead. Worth it. Guessing wrong here does
-     * not show a wrong spelling, it writes someone's money against a stranger.
+     * The name that went wrong was never a short name. It was a grammar word
+     * being read as one: "Maine" reduces to m-n and so does Moon, and with
+     * the pronoun still in play a whole match on it outscored a partial match
+     * on the customer actually named. Take the pronoun out and there is
+     * nothing left for Moon to match — "Ahmad Ali" wins on its own merit.
+     * Grammar belongs in the stopword list. Nothing here needed changing.
      */
     private fun scoreName(
         name: String,
@@ -235,11 +238,7 @@ object VoiceEntry {
     ): Int {
         val sk = skeleton(name)
         if (sk.length >= 2) {
-            if (runsSkeleton.any { it == sk } &&
-                (sk.length > 2 || runsSounds.any { it == sounds(name) })
-            ) {
-                return 1000 + sk.length
-            }
+            if (runsSkeleton.any { it == sk }) return 1000 + sk.length
             // Part of a long stored name was spoken: "Abdul Rahman" standing
             // in for "Abdul Rahman Chacha Lamber Lappay Wali".
             val partial = runsSkeleton
