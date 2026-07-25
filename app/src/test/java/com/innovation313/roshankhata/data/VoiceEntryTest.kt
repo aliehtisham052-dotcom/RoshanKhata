@@ -286,14 +286,20 @@ class VoiceEntryTest {
     }
 
     /**
-     * Two-consonant names are still reachable — they just have to be said.
-     * Vowels tell them apart now, so Moon and Mun are no longer the same
-     * customer, and a real tie is still handed back to the owner.
+     * Short names stay reachable, but two of them sharing consonants is a tie,
+     * and a tie is handed back rather than guessed. Moon and Mun are both
+     * m-n; with both on the books the owner is asked, exactly as with Moon and
+     * Amin further up.
+     *
+     * This was briefly asserted the other way, when two-consonant names were
+     * made to agree on their vowels as well. That looked like caution and was
+     * not: it broke a name saved in Latin and spoken in Urdu, where the short
+     * vowels are never written. The tie-break was already the right answer.
      */
     @Test
-    fun `short names are matched by sound, not guessed`() {
-        assertEquals(moon, VoiceEntry.parse("Moon ko 500 diye", listOf(moon, "Mun")).partyName)
-        assertEquals("Mun", VoiceEntry.parse("Mun ko 500 diye", listOf(moon, "Mun")).partyName)
-        assertNull(VoiceEntry.parse("Mona ko 500 diye", listOf("Mona", "Monaa")).partyName)
+    fun `short names tie rather than guess`() {
+        assertNull(VoiceEntry.parse("Moon ko 500 diye", listOf(moon, "Mun")).partyName)
+        assertEquals(moon, VoiceEntry.parse("Moon ko 500 diye", listOf(moon, "Bilal")).partyName)
+        assertEquals("Mun", VoiceEntry.parse("Mun ko 500 diye", listOf("Mun", "Bilal")).partyName)
     }
 }
