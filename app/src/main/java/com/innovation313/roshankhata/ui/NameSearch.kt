@@ -76,36 +76,59 @@ object NameSearch {
      * it is.
      */
     fun <T> rankSpoken(items: List<T>, words: List<String>, nameOf: (T) -> String): List<T> {
-        if (words.isEmpty()) return items
-        val folded = words.map { fold(it) }.filter { it.isNotEmpty() }
-        if (folded.isEmpty()) return items
+        if (items.isEmpty()) return items
+        val spoken = words.map { fold(it) }.filter { it.isNotEmpty() }.distinct()
+        if (spoken.isEmpty()) return items
 
-        return items
-            .map { it to spokenScore(nameOf(it), folded) }
-            .sortedWith(
-                compareByDescending<Pair<T, Int>> { it.second }
-                    .thenBy { nameOf(it.first).lowercase() }
-            )
-            .map { it.first }
-    }
-
-    /** How well [name] answers [folded] spoken words. Higher is better. */
-    fun spokenScore(name: String, folded: List<String>): Int {
-        val parts = name.split(*SEPARATORS).map { fold(it) }.filter { it.isNotEmpty() }
-        if (parts.isEmpty()) return 0
-
-        var best = 0
-        var alsoHit = 0
-        for (spoken in folded) {
-            var hereBest = 0
-            for (part in parts) hereBest = maxOf(hereBest, wordScore(part, spoken))
-            if (hereBest > 0) alsoHit++
-            best = maxOf(best, hereBest)
+        // How well each name answers each spoken word, worked out once.
+        val parts = items.map { partsOf(nameOf(it)) }
+        val hits = Array(items.size) { i ->
+            IntArray(spoken.size) { w ->
+                var best = 0
+                for (p in parts[i]) best = maxOf(best, wordScore(p, spoken[w]))
+                best
+            }
         }
-        // A second word of the sentence also landing is real corroboration:
-        // "Abbas Loader" said in full should sit above every other Abbas.
-        return if (best == 0) 0 else best + (alsoHit - 1) * 8
+
+        // What each spoken word is worth, decided by the book itself.
+        //
+        // A shop's names are full of words that say nothing about which
+        // customer is meant — spray, wala, muhammad, khan. Counted equally
+        // they drown the one word that identifies anybody: "Asghar Spray
+        // Wala" spoken against a book of eighty spray walas put every spray
+        // wala level with both Asghars, and one of the Asghars finished
+        // below a man named Abdul Latif.
+        //
+        // So a word is worth what it narrows. Matching half the book earns
+        // almost nothing; matching four names out of a thousand earns a lot.
+        // Nothing is listed anywhere — the book is asked each time, and a
+        // word that is common in one shop and rare in the next is weighed
+        // correctly in both.
+        val n = items.size.toDouble()
+        val weight = DoubleArray(spoken.size) { w ->
+            var found = 0
+            for (i in items.indices) if (hits[i][w] > 0) found++
+            if (found == 0) 0.0 else kotlin.math.ln(1.0 + n / found)
+        }
+
+        return items.indices
+            .map { i ->
+                var score = 0.0
+                for (w in spoken.indices) {
+                    if (hits[i][w] > 0) score += hits[i][w] / 100.0 * weight[w]
+                }
+                i to score
+            }
+            .sortedWith(
+                compareByDescending<Pair<Int, Double>> { it.second }
+                    .thenBy { nameOf(items[it.first]).lowercase() }
+            )
+            .map { items[it.first] }
     }
+
+    /** A stored name cut into folded words, ready to compare against. */
+    private fun partsOf(name: String): List<String> =
+        name.split(*SEPARATORS).map { fold(it) }.filter { it.isNotEmpty() }
 
     /** One stored word against one spoken word, both already folded. */
     private fun wordScore(part: String, spoken: String): Int = when {
