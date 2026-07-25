@@ -40,7 +40,7 @@ class BusinessCardActivity : AppCompatActivity() {
     private lateinit var etAddress: EditText
     private lateinit var tplButtons: List<Button>
 
-    private var template = TPL_CLASSIC
+    private var template = TPL_DEFAULT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +63,7 @@ class BusinessCardActivity : AppCompatActivity() {
         etOwner.setText(prefs.getString(KEY_OWNER, ""))
         etPhone.setText(prefs.getString(KEY_PHONE, ""))
         etAddress.setText(prefs.getString(KEY_ADDRESS, ""))
-        template = prefs.getInt(KEY_TEMPLATE, TPL_CLASSIC)
+        template = prefs.getInt(KEY_TEMPLATE, TPL_DEFAULT)
 
         val watcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -188,8 +188,14 @@ class BusinessCardActivity : AppCompatActivity() {
 
     companion object {
 
-        /** The design a card starts on, if none was ever chosen. */
-        private const val TPL_CLASSIC = 0
+        /**
+         * The design a card starts on, if none was ever chosen.
+         *
+         * The first one in the picker, not the plainest. A shop opening this
+         * screen for the first time should find the strongest design already
+         * selected, not have to hunt for it past eleven others.
+         */
+        private const val TPL_DEFAULT = 3
 
         private const val PREFS = "biz_card"
         private const val KEY_TYPE = "type"
