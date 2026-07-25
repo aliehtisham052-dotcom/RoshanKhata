@@ -699,6 +699,9 @@ class KhataActivity : AppCompatActivity() {
      * a busy shop is not a witness to trust with someone's money.
      */
     private fun handleSpoken(heard: String) {
+        // A new sentence replaces the last one's answer, whatever it was.
+        hideVoiceStrip()
+
         val parsed = VoiceEntry.parse(heard, allParties.map { it.name })
 
         val party = parsed.partyName?.let { name ->
@@ -727,15 +730,10 @@ class KhataActivity : AppCompatActivity() {
             null -> "—"
         }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.voice_confirm_title)
-            .setMessage(
-                "${party.name}\n" +
-                    "${Format.money(parsed.amount)}  ·  $direction\n\n" +
-                    getString(R.string.voice_heard, heard)
-            )
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.voice_open_entry) { _, _ ->
+        showVoiceStrip(
+            heard = heard,
+            summary = "${party.name}  ·  ${Format.money(parsed.amount)}  ·  $direction",
+            onOpen = {
                 startActivity(
                     Intent(this, PartyDetailActivity::class.java)
                         .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
@@ -746,7 +744,34 @@ class KhataActivity : AppCompatActivity() {
                         )
                 )
             }
-            .show()
+        )
+    }
+
+    /**
+     * Show what was understood as one strip under the search box.
+     *
+     * It was a full dialog before — a title, three lines and two spread
+     * buttons, laid over the very list it described. A shopkeeper confirming
+     * a figure they just spoke needs to read one line, not dismiss a window.
+     */
+    private fun showVoiceStrip(heard: String, summary: String, onOpen: () -> Unit) {
+        val strip = findViewById<View>(R.id.voiceStrip)
+        findViewById<TextView>(R.id.tvVoiceSummary).text = summary
+        findViewById<TextView>(R.id.tvVoiceHeard).text = getString(R.string.voice_heard, heard)
+
+        findViewById<MaterialButton>(R.id.btnVoiceOpen).setOnClickListener {
+            strip.visibility = View.GONE
+            onOpen()
+        }
+        findViewById<MaterialButton>(R.id.btnVoiceDismiss).setOnClickListener {
+            strip.visibility = View.GONE
+        }
+        strip.visibility = View.VISIBLE
+    }
+
+    /** Take the strip down — a new sentence replaces the last one's answer. */
+    private fun hideVoiceStrip() {
+        findViewById<View>(R.id.voiceStrip).visibility = View.GONE
     }
 
     /**
