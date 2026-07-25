@@ -75,10 +75,25 @@ object NameSearch {
      * costs a glance. Deciding on someone's money is strict, and stays where
      * it is.
      */
-    fun <T> rankSpoken(items: List<T>, words: List<String>, nameOf: (T) -> String): List<T> {
-        if (items.isEmpty()) return items
+    fun <T> rankSpoken(items: List<T>, words: List<String>, nameOf: (T) -> String): List<T> =
+        scoreSpoken(items, words, nameOf).map { it.item }
+
+    /**
+     * Every name with what it scored, best first.
+     *
+     * [Scored.strongHits] counts the spoken words a name properly recognised
+     * — matched outright, or began with — as against merely came near. The
+     * ordering does not need that distinction. Deciding unasked does, which
+     * is why it is carried out of here rather than worked out twice.
+     */
+    fun <T> scoreSpoken(
+        items: List<T>,
+        words: List<String>,
+        nameOf: (T) -> String
+    ): List<Scored<T>> {
+        if (items.isEmpty()) return emptyList()
         val spoken = words.map { fold(it) }.filter { it.isNotEmpty() }.distinct()
-        if (spoken.isEmpty()) return items
+        if (spoken.isEmpty()) return items.map { Scored(it, 0.0, 0) }
 
         // How well each name answers each spoken word, worked out once.
         val parts = items.map { partsOf(nameOf(it)) }
@@ -114,17 +129,21 @@ object NameSearch {
         return items.indices
             .map { i ->
                 var score = 0.0
+                var strong = 0
                 for (w in spoken.indices) {
                     if (hits[i][w] > 0) score += hits[i][w] / 100.0 * weight[w]
+                    if (hits[i][w] >= STRONG) strong++
                 }
-                i to score
+                Scored(items[i], score, strong)
             }
             .sortedWith(
-                compareByDescending<Pair<Int, Double>> { it.second }
-                    .thenBy { nameOf(items[it.first]).lowercase() }
+                compareByDescending<Scored<T>> { it.score }
+                    .thenBy { nameOf(it.item).lowercase() }
             )
-            .map { items[it.first] }
     }
+
+    /** At or above this, a name recognised the word rather than neared it. */
+    private const val STRONG = 80
 
     /** A stored name cut into folded words, ready to compare against. */
     private fun partsOf(name: String): List<String> =
@@ -188,8 +207,39 @@ object NameSearch {
      * else. Folding is for looking things up only; the stored name is never
      * changed and is always what the owner sees.
      */
+    /**
+     * Urdu and Arabic letters as their nearest Latin spelling.
+     *
+     * A shop saves "Abu G" in Latin and says it in Urdu, or the other way
+     * about, and both have to reach the same customer. The script is carried
+     * here rather than in a matcher of its own: one measure that reads both
+     * is one measure to get right.
+     */
+    private val SCRIPT = mapOf(
+        'ا' to "a", 'آ' to "a", 'ب' to "b", 'پ' to "p", 'ت' to "t", 'ٹ' to "t",
+        'ث' to "s", 'ج' to "j", 'چ' to "ch", 'ح' to "h", 'خ' to "kh", 'د' to "d",
+        'ڈ' to "d", 'ذ' to "z", 'ر' to "r", 'ڑ' to "r", 'ز' to "z", 'ژ' to "zh",
+        'س' to "s", 'ش' to "sh", 'ص' to "s", 'ض' to "z", 'ط' to "t", 'ظ' to "z",
+        'ع' to "a", 'غ' to "gh", 'ف' to "f", 'ق' to "q", 'ک' to "k", 'ك' to "k",
+        'گ' to "g", 'ل' to "l", 'م' to "m", 'ن' to "n", 'ں' to "n", 'و' to "u",
+        'ہ' to "h", 'ھ' to "h", 'ة' to "h", 'ء' to "", 'ی' to "i", 'ي' to "i",
+        'ے' to "e", 'أ' to "a", 'إ' to "a", 'ؤ' to "u", 'ئ' to "i"
+    )
+
+    /** Sounds a Pakistani ear treats as the same when spelling a name. */
+    private val SAME_SOUND = mapOf('g' to 'j', 'q' to 'k', 'v' to 'b', 'c' to 'k')
+
     fun fold(word: String): String {
-        val letters = word.lowercase().filter { it.isLetterOrDigit() }
+        val latin = StringBuilder()
+        for (c in word.lowercase()) {
+            when {
+                SCRIPT.containsKey(c) -> latin.append(SCRIPT[c])
+                c.isLetterOrDigit() && c.code < 128 -> latin.append(c)
+                // Anything else — punctuation, emoji, a script not listed —
+                // carries no sound and is dropped rather than guessed at.
+            }
+        }
+        val letters = latin.toString()
         if (letters.isEmpty()) return ""
 
         // Long vowels first. They are written double, and collapsing doubles
@@ -204,12 +254,47 @@ object NameSearch {
         for ((i, c) in vowelled.withIndex()) {
             // A silent h riding on the consonant before it.
             if (c == 'h' && i > 0 && vowelled[i - 1] !in "aeiou") continue
+            val sound = SAME_SOUND[c] ?: c
             // The same letter twice says nothing the once did not.
-            if (sb.isNotEmpty() && sb.last() == c) continue
-            sb.append(c)
+            if (sb.isNotEmpty() && sb.last() == sound) continue
+            sb.append(sound)
         }
         return sb.toString()
     }
+
+    /**
+     * The one customer a spoken sentence names, or null when it is not clear
+     * enough to write against their money unasked.
+     *
+     * Two conditions, and both earned their place.
+     *
+     * A word has to have been *recognised*, not merely come closest. "Maine
+     * Ahsaan Munshi ko 5000 diya", against a book holding a Hassan and no
+     * Ahsaan, used to write five thousand rupees against Hassan — the old
+     * matcher kept consonants only, and h-s-n is h-s-n. Coming nearest in a
+     * field of one is not recognition.
+     *
+     * And the winner has to be clearly ahead of the next. Two customers named
+     * Asghar, or an Ahsaan beside a Hassan, are a question for the owner and
+     * not a coin to toss. The picker is one tap and it is already in order.
+     *
+     * Everything else falls through to that picker. Declining to answer costs
+     * a tap; answering wrongly writes a stranger's name against money.
+     */
+    fun <T> confidentMatch(items: List<T>, words: List<String>, nameOf: (T) -> String): T? {
+        val scored = scoreSpoken(items, words, nameOf)
+        val best = scored.firstOrNull() ?: return null
+        if (best.strongHits == 0) return null
+        val runnerUp = scored.getOrNull(1)?.score ?: 0.0
+        if (best.score < runnerUp * CLEARLY_AHEAD) return null
+        return best.item
+    }
+
+    /** How far in front the winner must be before it is answered unasked. */
+    private const val CLEARLY_AHEAD = 1.35
+
+    /** A name, what it scored against what was said, and how well it landed. */
+    data class Scored<T>(val item: T, val score: Double, val strongHits: Int)
 
     /**
      * Order results by how well they match, then alphabetically.

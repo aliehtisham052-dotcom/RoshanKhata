@@ -773,9 +773,21 @@ class KhataActivity : AppCompatActivity() {
 
         val parsed = VoiceEntry.parse(heard, allParties.map { it.name })
 
-        val party = parsed.partyName?.let { name ->
-            allParties.firstOrNull { it.name.equals(name, ignoreCase = true) }
-        }
+        // Who was named, decided by the same measure that orders the picker.
+        //
+        // This used to come from the reader's own matcher, which keeps a
+        // name's consonants and nothing else. To it "Ahsaan" and "Hassan" are
+        // one name — h-s-n either way — so "Maine Ahsaan Munshi ko 5000 diya"
+        // wrote five thousand rupees against Hassan without asking, in a book
+        // that had no Ahsaan in it at all. Two matchers meant two answers, and
+        // the weaker one was making the decision that mattered.
+        //
+        // Now there is one, and it only answers when a word was genuinely
+        // recognised and the winner is clearly ahead. Anything short of that
+        // falls through to the picker below, which is one tap.
+        val party = NameSearch.confidentMatch(
+            allParties, VoiceEntry.nameWords(heard)
+        ) { it.name }
 
         if (parsed.amount == null || parsed.amount <= 0.0) {
             showSpokenProblem(heard, getString(R.string.voice_no_amount))
