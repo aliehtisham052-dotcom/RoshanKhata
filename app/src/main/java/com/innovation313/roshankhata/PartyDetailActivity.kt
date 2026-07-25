@@ -57,6 +57,16 @@ class PartyDetailActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PARTY_ID = "party_id"
+
+        /**
+         * A spoken entry, handed over from the ledger for the owner to check.
+         *
+         * Pre-filled, never saved: it lands in the normal dialog so the credit
+         * limit warning and every other check still run, and so a mishearing
+         * is caught before it reaches the books rather than after.
+         */
+        const val EXTRA_VOICE_AMOUNT = "voice_amount"
+        const val EXTRA_VOICE_IS_GIVEN = "voice_is_given"
     }
 
     /**
@@ -129,6 +139,16 @@ class PartyDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_party_detail)
 
         partyId = intent.getLongExtra(EXTRA_PARTY_ID, 0)
+
+        // Arrived by voice: open the entry already filled in, once the screen
+        // has settled and the balance is known.
+        val spokenAmount = intent.getDoubleExtra(EXTRA_VOICE_AMOUNT, 0.0)
+        if (spokenAmount > 0.0) {
+            val spokenGiven = intent.getBooleanExtra(EXTRA_VOICE_IS_GIVEN, true)
+            findViewById<View>(android.R.id.content).post {
+                showAddEntryDialog(spokenGiven, prefillAmount = spokenAmount)
+            }
+        }
         if (partyId == 0L) {
             finish()
             return
@@ -272,9 +292,16 @@ class PartyDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAddEntryDialog(isGiven: Boolean) {
+    private fun showAddEntryDialog(isGiven: Boolean, prefillAmount: Double? = null) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
+
+        // What the microphone heard, sitting in the box for the owner to read
+        // back before it becomes an entry.
+        prefillAmount?.let {
+            etAmount.setText(Calc.trim(it))
+            etAmount.setSelection(etAmount.text.length)
+        }
 
         // Suppress the system keyboard — the on-screen pad is the only input.
         etAmount.showSoftInputOnFocus = false

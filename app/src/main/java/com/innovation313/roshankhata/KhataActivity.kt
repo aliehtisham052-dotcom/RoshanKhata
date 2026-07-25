@@ -29,6 +29,7 @@ import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.DateRangeFilter
+import com.innovation313.roshankhata.data.VoiceEntry
 import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.PartyAdapter
 import kotlinx.coroutines.flow.collectLatest
@@ -124,6 +125,8 @@ class KhataActivity : AppCompatActivity() {
                 render()
             }
         }
+
+        findViewById<MaterialButton>(R.id.btnVoiceEntry).setOnClickListener { startListening() }
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
 
@@ -642,5 +645,110 @@ class KhataActivity : AppCompatActivity() {
             Intent(this, PartyDetailActivity::class.java)
                 .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
         )
+    }
+
+    // ---------- speaking an entry ----------
+
+    /**
+     * Ask the system to listen, in Urdu.
+     *
+     * RecognizerIntent rather than SpeechRecognizer: the system's own app does
+     * the recording, so this app never needs the microphone permission and
+     * never holds the audio. Urdu is requested; the recogniser falls back on
+     * its own if the phone has no Urdu pack.
+     */
+    private val listen = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val heard = result.data
+            ?.getStringArrayListExtra(android.speech.RecognizerIntent.EXTRA_RESULTS)
+            ?.firstOrNull()
+            ?.trim()
+
+        if (heard.isNullOrEmpty()) {
+            Toast.makeText(this, R.string.voice_not_understood, Toast.LENGTH_SHORT).show()
+        } else {
+            handleSpoken(heard)
+        }
+    }
+
+    private fun startListening() {
+        val intent = Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(
+                android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, "ur-PK")
+            putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, getString(R.string.voice_prompt))
+        }
+        try {
+            listen.launch(intent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            // Some phones ship without a recogniser at all. Say so rather than
+            // leaving a button that does nothing.
+            Toast.makeText(this, R.string.voice_unavailable, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /**
+     * Show what was understood and let the owner decide.
+     *
+     * Nothing is written here. The entry opens pre-filled on the party's own
+     * screen, where every check the app already makes — the credit limit
+     * warning above all — still runs before anything is saved. A microphone in
+     * a busy shop is not a witness to trust with someone's money.
+     */
+    private fun handleSpoken(heard: String) {
+        val parsed = VoiceEntry.parse(heard, allParties.map { it.name })
+
+        val party = parsed.partyName?.let { name ->
+            allParties.firstOrNull { it.name.equals(name, ignoreCase = true) }
+        }
+
+        if (party == null) {
+            showSpokenProblem(heard, getString(R.string.voice_no_party))
+            return
+        }
+        if (parsed.amount == null || parsed.amount <= 0.0) {
+            showSpokenProblem(heard, getString(R.string.voice_no_amount))
+            return
+        }
+
+        val direction = when (parsed.isGiven) {
+            true -> getString(R.string.i_gave)
+            false -> getString(R.string.i_got)
+            // Unsaid. The entry opens on "I Gave" but the owner picks before
+            // saving; guessing here would put the money on the wrong side.
+            null -> "—"
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.voice_confirm_title)
+            .setMessage(
+                "${party.name}\n" +
+                    "${Format.money(parsed.amount)}  ·  $direction\n\n" +
+                    getString(R.string.voice_heard, heard)
+            )
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.voice_open_entry) { _, _ ->
+                startActivity(
+                    Intent(this, PartyDetailActivity::class.java)
+                        .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
+                        .putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, parsed.amount)
+                        .putExtra(
+                            PartyDetailActivity.EXTRA_VOICE_IS_GIVEN,
+                            parsed.isGiven ?: true
+                        )
+                )
+            }
+            .show()
+    }
+
+    private fun showSpokenProblem(heard: String, problem: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.voice_confirm_title)
+            .setMessage("$problem\n\n" + getString(R.string.voice_heard, heard))
+            .setPositiveButton(R.string.ok, null)
+            .show()
     }
 }

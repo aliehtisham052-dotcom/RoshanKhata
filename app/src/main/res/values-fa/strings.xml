@@ -724,4 +724,13 @@
     <string name="photo_on_statement_help">به‌طور پیش‌فرض خاموش. روشن کنید تا عکس مشتری روی صورت‌حسابش چاپ شود و انکارش سخت‌تر باشد — اما صورت‌حساب ممکن است فرستاده شود و عکس با آن برود.</string>
     <string name="made_with_app">روشن خاتا</string>
     <string name="more_details">افزودن یادداشت، کالا یا وضعیت وصول</string>
+    <string name="voice_entry">ثبت با صدا</string>
+    <string name="voice_prompt">مثلاً بگویید: به بلال پنج هزار دادم</string>
+    <string name="voice_unavailable">این گوشی تشخیص گفتار ندارد.</string>
+    <string name="voice_not_understood">متوجه نشدیم. دوباره بگویید یا تایپ کنید.</string>
+    <string name="voice_heard">شنیده شد: %1$s</string>
+    <string name="voice_confirm_title">درست است؟</string>
+    <string name="voice_no_party">مشتری با این نام نیست. نام را همان‌طور که ذخیره شده بگویید.</string>
+    <string name="voice_no_amount">مبلغی در آن نبود. عدد را هم بگویید.</string>
+    <string name="voice_open_entry">باز کردن ثبت</string>
 </resources>
