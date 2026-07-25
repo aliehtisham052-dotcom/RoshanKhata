@@ -41,7 +41,17 @@
             android:textColor="@color/ink_soft"
             android:textSize="15sp" />
 
-        <!-- Progress dots on the left, Skip well clear of them on the right. -->
+        <!--
+          Progress dots on the left, Skip well clear of them on the right.
+
+          The dots take the weight, not Skip. A weighted child is measured
+          with whatever is left after the unweighted ones, so Skip is given
+          its full width first and the dots fill the remainder. Before this
+          the dots were measured first at whatever width they wanted, and at
+          thirteen steps they wanted more than the card had — Skip was pushed
+          past the edge and clipped. However long the tour grows, the way out
+          of it now stays on screen.
+        -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,14 +61,11 @@
 
             <LinearLayout
                 android:id="@+id/coachDots"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" />
-
-            <View
                 android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" />
 
             <TextView
                 android:id="@+id/tvCoachSkip"

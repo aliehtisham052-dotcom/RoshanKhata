@@ -294,17 +294,28 @@ class CoachMarkController(
     }
 
     /**
-     * The progress dots. Rebuilt each step rather than animated: eight views
+     * The progress dots. Rebuilt each step rather than animated: a dozen views
      * is nothing, and a rebuild cannot drift out of sync with [index].
+     *
+     * Sizes come from [CoachDots] rather than being written here, because
+     * written here they were written once — for a tour of eight steps — and
+     * stayed that size while the tour grew to thirteen and pushed Skip off
+     * the card.
      */
     private fun renderDots(cardView: View) {
         val holder = cardView.findViewById<LinearLayout>(R.id.coachDots)
         holder.removeAllViews()
+
+        val screenDp =
+            activity.resources.displayMetrics.widthPixels /
+                activity.resources.displayMetrics.density
+        val s = CoachDots.sizesFor(steps.size, screenDp)
+
         for (i in steps.indices) {
             val dot = View(activity)
-            val size = if (i == index) dp(26f).toInt() else dp(10f).toInt()
-            val params = LinearLayout.LayoutParams(size, dp(10f).toInt()).apply {
-                marginEnd = dp(6f).toInt()
+            val width = if (i == index) dp(s.activeDp).toInt() else dp(s.dotDp).toInt()
+            val params = LinearLayout.LayoutParams(width, dp(s.dotDp).toInt()).apply {
+                marginEnd = dp(s.gapDp).toInt()
             }
             dot.layoutParams = params
             dot.setBackgroundResource(
