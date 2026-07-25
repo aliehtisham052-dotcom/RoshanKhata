@@ -185,12 +185,30 @@
     </style>
 
     <!--
-      The amount pad's keys. Same shape and colours as the Calculator screen's,
-      a size down: this pad sits inside a dialog that also has to hold the
-      amount, a note, item and quantity fields.
+      The amount pad's rows. Unlike CalcRow above, these take a share of a
+      height handed down to them rather than measuring their own — the pad is
+      stretched to fill the entry form, and the five rows divide what it gets.
+      Kept apart from CalcRow because the Calculator screen's rows sit in a
+      scrolling column, where a share of nothing would leave them invisible.
+    -->
+    <style name="CalcPadRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <!--
+      The amount pad's keys. Same shape and colours as the Calculator screen's.
+
+      The height is no longer a figure. It was 52dp, which fitted the form
+      when the form was a fixed block of keys with white space under it; now
+      the pad fills what the screen has spare and a key fills its row. On a
+      tall phone that means larger keys instead of a larger empty margin,
+      which is the right way round for a pad used at a counter.
     -->
     <style name="CalcPadKey" parent="CalcKey">
-        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_margin">3dp</item>
         <item name="android:textSize">18sp</item>
         <item name="cornerRadius">12dp</item>

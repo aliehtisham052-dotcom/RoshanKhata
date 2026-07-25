@@ -32,7 +32,8 @@
         <LinearLayout
             android:id="@+id/stepOne"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="vertical">
 
         <EditText
@@ -66,17 +67,15 @@
             android:visibility="gone" />
 
         <!--
-          The system keyboard is suppressed on the amount field; the calculator
-          pad below is the only input. That keeps entry to a single, familiar
-          number pad instead of a keyboard plus a separate strip.
-        -->
-        <include layout="@layout/view_calculator" />
+          The bill and the date, above the pad rather than below it.
 
-        <!--
-          The bill and the date, side by side. Both answer "which transaction
-          was this" rather than "how much", and neither needs a whole row. The
-          photo stays on this phone and out of statements, the same way a
-          customer's photo does; the date defaults to now.
+          They sit with the amount because they belong to it — both answer
+          "which transaction was this" rather than "how much" — and because
+          the pad now takes whatever height is left. Anything under the pad
+          would be pushed towards the bottom of the screen and, on a short
+          phone, off it. Neither needs a whole row. The photo stays on this
+          phone and out of statements, the same way a customer's photo does;
+          the date defaults to now.
         -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -122,6 +121,24 @@
                 app:iconSize="18dp"
                 app:iconTint="@color/brand_green" />
         </LinearLayout>
+
+        <!--
+          The system keyboard is suppressed on the amount field; this pad is
+          the only input. That keeps entry to a single, familiar number pad
+          instead of a keyboard plus a separate strip.
+
+          Weighted, so the pad takes the whole of what the amount field, the
+          bill row and the link below them leave behind. It used to be a fixed
+          block of keys with a field of white under it — on a tall phone,
+          nearly a third of the screen doing nothing while the keys stayed
+          small. The pad carries its own floor, so on a short phone it stops
+          shrinking and the screen scrolls instead.
+        -->
+        <include
+            layout="@layout/view_calculator"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <!--
           The way through to the rest. A row rather than a dialog button,
@@ -264,6 +281,25 @@
                 android:text="@string/recovery_doubtful"
                 android:textSize="13sp" />
         </RadioGroup>
+
+        <!--
+          Empty space that gives way.
+
+          This page is shorter than the screen, so it ended half way up with
+          white beneath it. A spacer takes that up and carries Save down to
+          the bottom where it belongs.
+
+          It is a spacer and not a stretched form on purpose. Stretching the
+          fields themselves would fit this page to this phone and clip it on a
+          smaller one, or at a larger font size — and a clipped field on an
+          entry form is a good deal worse than an empty margin. A weighted
+          spacer only ever takes what is spare: when the form is taller than
+          the screen it collapses to nothing and the page scrolls as before.
+        -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         </LinearLayout>
     </LinearLayout>
