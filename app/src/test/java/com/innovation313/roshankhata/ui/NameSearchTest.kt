@@ -89,6 +89,44 @@ class NameSearchTest {
         assertEquals(book.size, rank("asgar").size)
     }
 
+    /**
+     * A word that half the book shares cannot outweigh the one word that
+     * identifies anybody.
+     *
+     * This is the shop's real shape: dozens of customers are recorded as some
+     * variety of spray wala, and "Asghar Spray Wala" spoken against them put
+     * every spray wala level with both Asghars — one Asghar finished below a
+     * man named Abdul Latif. Counting a word for what it narrows fixes that
+     * without a list of words to ignore, which would need adding to for every
+     * shop and every trade.
+     */
+    @Test
+    fun `a word the whole book shares counts for little`() {
+        val shop = listOf(
+            "Asghar Kotlaay (Spray Wala)",
+            "Asghar Painter Mallay Wali",
+            "Abdul Latif Spray Wala",
+            "Ismail Spray Wala",
+            "Anwar Spray Wala Noor Wali Bangla"
+        ) + (1..80).map { "Customer $it Spray Wala" }
+
+        val ranked = NameSearch.rankSpoken(shop, listOf("asghar", "spray", "wala")) { it }
+
+        assertEquals("Asghar Kotlaay (Spray Wala)", ranked[0])
+        assertEquals("Asghar Painter Mallay Wali", ranked[1])
+        assertEquals("every customer is still listed", shop.size, ranked.size)
+    }
+
+    /** The same, with the spelling the recogniser actually produced. */
+    @Test
+    fun `rarity survives a misspelling of the rare word`() {
+        val shop = listOf("Asghar Painter Mallay Wali", "Abdul Latif Spray Wala") +
+            (1..40).map { "Customer $it Spray Wala" }
+
+        val ranked = NameSearch.rankSpoken(shop, listOf("asgar", "spray", "wala")) { it }
+        assertEquals("Asghar Painter Mallay Wali", ranked.first())
+    }
+
     /** Nothing to go on leaves the screen's own order alone. */
     @Test
     fun `no spoken words changes nothing`() {
