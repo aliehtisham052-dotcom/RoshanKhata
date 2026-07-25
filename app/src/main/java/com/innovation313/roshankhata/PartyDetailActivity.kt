@@ -3,6 +3,7 @@ package com.innovation313.roshankhata
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.DateTimeField
+import com.innovation313.roshankhata.ui.fillDialogHeight
 
 import android.content.Intent
 import android.net.Uri
@@ -577,6 +578,16 @@ class PartyDetailActivity : AppCompatActivity() {
                         android.view.ViewGroup.LayoutParams.MATCH_PARENT
                     )
                 }
+
+                // And pass that height down to the form.
+                //
+                // A full-screen window is not a full-screen form. The dialog
+                // stacks title, content and buttons in panels that each wrap
+                // what they hold, so this view was measured against what it
+                // asked for and never against the window — which is why the
+                // calculator's weight bought it nothing and a third of the
+                // screen stayed white below the buttons.
+                view.fillDialogHeight()
 
                 // The second half opens on request and is never in the way.
                 //
