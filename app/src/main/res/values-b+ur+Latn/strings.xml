@@ -149,7 +149,7 @@
 
     <string name="goods_section">Maal (ikhtiyari)</string>
     <string name="goods_help">Agar is entry ke saath maal bhi gaya — 5 bori urea, 2 litre zehar — to yahan likhein. Sada naqad entry ke liye khali chhor dein.</string>
-    <string name="item_name_hint">Cheez (maslan Urea, Zehar, Wanda)</string>
+    <string name="item_name_hint">Shai (Urea, Feed…)</string>
     <string name="quantity_hint">Miqdaar</string>
     <string name="unit_hint">Ikai (bori, litre, kg…)</string>
 
@@ -283,8 +283,8 @@
 
     <string name="credit_limit">Udhaar ki hadd</string>
     <string name="set_credit_limit">Udhaar ki hadd muqarrar karein</string>
-    <string name="credit_limit_help">Zyada se zyada jitna udhaar aap is party ko dena chahte hain. Hadd se barhne wali entry se pehle Roshan Khata aap ko khabardar karega.</string>
-    <string name="credit_limit_hint">Hadd (Rs) — baghair hadd ke liye khali chhorein</string>
+    <string name="credit_limit_help">Zyada se zyada jitna udhaar aap is party ko dena chahte hain. Hadd se barhne wali entry se pehle Roshan Khata aap ko khabardar karega. Hadd na ho to khali chhor dein.</string>
+    <string name="credit_limit_hint">Hadd (Rs)</string>
     <string name="credit_limit_advisory">Ye sirf intebah hai, rukawat nahi. Karobar aap ka hai — aap hamesha aage barh sakte hain.</string>
     <string name="credit_limit_current">Is waqt aap ke %1$s wajib hain</string>
     <string name="credit_limit_none">Koi hadd muqarrar nahi</string>
@@ -327,7 +327,7 @@
     <string name="cash_net">Khalis</string>
     <string name="cash_income">Aamdani</string>
     <string name="cash_expense">Kharch</string>
-    <string name="cash_category_hint">Madd (maslan Kiraya, Tankhwah, Naqad Farokht)</string>
+    <string name="cash_category_hint">Qism (kiraya, mazdoori…)</string>
     <string name="no_cash_entries">Cashbook mein abhi koi entry nahi.\n\nYe us raqam ke liye hai jo kisi gahak se judi nahi — kiraya, bijli, tankhwahein, tel, naqad farokht.</string>
     <string name="enter_category">Meherbani kar ke madd likhein</string>
     <string name="delete_cash_entry">Ye entry delete karein?</string>
@@ -359,7 +359,7 @@
     <string name="no_plans">Abhi koi adaigi mansooba nahi.\n\nYe us waqt kaam aate hain jab gahak raqam qiston mein ada karega — fasal ke baad, ya chand mahinon mein.</string>
     <string name="plan_dialog_help">Jo is party ke zimme pehle se hai usey ada karne ka bandobast banayen. Is se un ke balance mein izafa nahi hota — sirf ye darj hota hai ke unhon ne kitna aur kab dena mana hai.</string>
     <string name="plan_total_hint">Kul ada karni raqam (Rs)</string>
-    <string name="plan_installment_hint">Fi qist (Rs) — ikhtiyari</string>
+    <string name="plan_installment_hint">Har qist (Rs)</string>
     <string name="plan_pick_next_due">Agli adaigi ki tareekh (ikhtiyari)</string>
     <string name="plan_owes_now">Un ke zimme is waqt %1$s hain</string>
     <string name="plan_owes_nothing">Is party ke zimme abhi kuch nahi</string>
@@ -407,7 +407,7 @@
     <string name="add_bill">Bill Shamil Karein</string>
     <string name="no_bills">Abhi koi supplier bill nahi.\n\nJo khareedein usey darj karein — batch number aur expiry ke saath. Yehi inspector poochta hai, aur yehi maal ko shelf par kharab hone se bachata hai.</string>
 
-    <string name="bill_number_hint">Bill number (un ke kaghaz se)</string>
+    <string name="bill_number_hint">Bill number</string>
     <string name="bill_total_hint">Kul bill (Rs)</string>
     <string name="bill_supplier_hint">Supplier ka naam</string>
     <string name="bill_date">Bill ki tareekh</string>
@@ -493,7 +493,7 @@
 
     <string name="report_describe">Kya hua?</string>
     <string name="report_describe_help">Urdu ya English mein likhein \u2014 jo aasan ho. Jab kharabi hui aap kya kar rahe the?</string>
-    <string name="report_hint">maslan Main ne Rs 5,000 ka cheque shamil kiya aur clear karne se pehle hi balance badal gaya.</string>
+    <string name="report_hint">Kya masla hua?</string>
     <string name="report_send">Report Bhejein</string>
     <string name="report_email_note">Ye aap ki email app kholega. Agar email set nahi, to kisi bhi phone se innovation313.support@gmail.com par likhein.</string>
     <string name="report_no_email">Koi email app nahi mili. Meherbani kar ke innovation313.support@gmail.com par likhein</string>
@@ -614,7 +614,7 @@
     <string name="biz_card_name_hint">Karobar ka naam</string>
     <string name="biz_card_owner_hint">Malik ka naam</string>
     <string name="biz_card_phone_hint">Phone</string>
-    <string name="biz_card_type_hint">Aap kya bechte hain (maslan zarai adwiyat aur beej)</string>
+    <string name="biz_card_type_hint">Aap kya bechte hain</string>
     <string name="biz_card_address_hint">Pata / shehar (ikhtiyari)</string>
     <string name="biz_card_template">Design</string>
     <string name="biz_tpl_classic">Lakeer</string>

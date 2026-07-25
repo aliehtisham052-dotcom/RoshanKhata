@@ -149,7 +149,7 @@
 
     <string name="goods_section">مال (اختیاری)</string>
     <string name="goods_help">اگر اس اندراج کے ساتھ مال بھی گیا — 5 بوری یوریا، 2 لیٹر زہر — تو یہاں لکھیں۔ سادہ نقد اندراج کے لیے خالی چھوڑ دیں۔</string>
-    <string name="item_name_hint">چیز (مثلاً یوریا، زہر، ونڈا)</string>
+    <string name="item_name_hint">شے (یوریا، فیڈ…)</string>
     <string name="quantity_hint">مقدار</string>
     <string name="unit_hint">اکائی (بوری، لیٹر، کلو…)</string>
 
@@ -283,8 +283,8 @@
 
     <string name="credit_limit">ادھار کی حد</string>
     <string name="set_credit_limit">ادھار کی حد مقرر کریں</string>
-    <string name="credit_limit_help">زیادہ سے زیادہ جتنا ادھار آپ اس پارٹی کو دینا چاہتے ہیں۔ حد سے بڑھنے والے اندراج سے پہلے روشن کھاتہ آپ کو خبردار کرے گا۔</string>
-    <string name="credit_limit_hint">حد (روپے) — بغیر حد کے لیے خالی چھوڑیں</string>
+    <string name="credit_limit_help">زیادہ سے زیادہ جتنا ادھار آپ اس گاہک کو دینا چاہتے ہیں۔ حد سے بڑھنے والے اندراج سے پہلے روشن کھاتہ خبردار کرے گا۔ حد نہ ہو تو خالی چھوڑ دیں۔</string>
+    <string name="credit_limit_hint">حد (روپے)</string>
     <string name="credit_limit_advisory">یہ صرف انتباہ ہے، رکاوٹ نہیں۔ کاروبار آپ کا ہے — آپ ہمیشہ آگے بڑھ سکتے ہیں۔</string>
     <string name="credit_limit_current">اس وقت آپ کے %1$s واجب ہیں</string>
     <string name="credit_limit_none">کوئی حد مقرر نہیں</string>
@@ -327,7 +327,7 @@
     <string name="cash_net">خالص</string>
     <string name="cash_income">آمدنی</string>
     <string name="cash_expense">خرچ</string>
-    <string name="cash_category_hint">مد (مثلاً کرایہ، تنخواہ، نقد فروخت)</string>
+    <string name="cash_category_hint">قسم (کرایہ، مزدوری…)</string>
     <string name="no_cash_entries">کیش بک میں ابھی کوئی اندراج نہیں۔\n\nیہ اس رقم کے لیے ہے جو کسی گاہک سے جڑی نہیں — کرایہ، بجلی، تنخواہیں، تیل، نقد فروخت۔</string>
     <string name="enter_category">براہِ کرم مد لکھیں</string>
     <string name="delete_cash_entry">یہ اندراج حذف کریں؟</string>
@@ -359,7 +359,7 @@
     <string name="no_plans">ابھی کوئی ادائیگی منصوبہ نہیں۔\n\nیہ اس وقت کام آتے ہیں جب گاہک رقم قسطوں میں ادا کرے گا — فصل کے بعد، یا چند مہینوں میں۔</string>
     <string name="plan_dialog_help">جو اس پارٹی کے ذمے پہلے سے ہے اسے ادا کرنے کا بندوبست بنائیں۔ اس سے ان کے بیلنس میں اضافہ نہیں ہوتا — صرف یہ درج ہوتا ہے کہ انہوں نے کتنا اور کب دینا مانا ہے۔</string>
     <string name="plan_total_hint">کل ادا کرنی رقم (روپے)</string>
-    <string name="plan_installment_hint">فی قسط (روپے) — اختیاری</string>
+    <string name="plan_installment_hint">ہر قسط (روپے)</string>
     <string name="plan_pick_next_due">اگلی ادائیگی کی تاریخ (اختیاری)</string>
     <string name="plan_owes_now">ان کے ذمے اس وقت %1$s ہیں</string>
     <string name="plan_owes_nothing">اس پارٹی کے ذمے ابھی کچھ نہیں</string>
@@ -407,7 +407,7 @@
     <string name="add_bill">بل شامل کریں</string>
     <string name="no_bills">ابھی کوئی سپلائر بل نہیں۔\n\nجو خریدیں اسے درج کریں — بیچ نمبر اور ایکسپائری کے ساتھ۔ یہی انسپکٹر پوچھتا ہے، اور یہی مال کو شیلف پر خراب ہونے سے بچاتا ہے۔</string>
 
-    <string name="bill_number_hint">بل نمبر (ان کے کاغذ سے)</string>
+    <string name="bill_number_hint">بل نمبر</string>
     <string name="bill_total_hint">کل بل (روپے)</string>
     <string name="bill_supplier_hint">سپلائر کا نام</string>
     <string name="bill_date">بل کی تاریخ</string>
@@ -493,7 +493,7 @@
 
     <string name="report_describe">کیا ہوا؟</string>
     <string name="report_describe_help">اردو یا انگریزی میں لکھیں \u2014 جو آسان ہو۔ جب خرابی ہوئی آپ کیا کر رہے تھے؟</string>
-    <string name="report_hint">مثلاً میں نے 5,000 روپے کا چیک شامل کیا اور کلیئر کرنے سے پہلے ہی بیلنس بدل گیا۔</string>
+    <string name="report_hint">کیا مسئلہ ہوا؟</string>
     <string name="report_send">رپورٹ بھیجیں</string>
     <string name="report_email_note">یہ آپ کی ای میل ایپ کھولے گا۔ اگر ای میل سیٹ نہیں، تو کسی بھی فون سے innovation313.support@gmail.com پر لکھیں۔</string>
     <string name="report_no_email">کوئی ای میل ایپ نہیں ملی۔ براہِ کرم innovation313.support@gmail.com پر لکھیں</string>
@@ -614,7 +614,7 @@
     <string name="biz_card_name_hint">کاروبار کا نام</string>
     <string name="biz_card_owner_hint">مالک کا نام</string>
     <string name="biz_card_phone_hint">فون</string>
-    <string name="biz_card_type_hint">آپ کیا بیچتے ہیں (مثلاً زرعی ادویات اور بیج)</string>
+    <string name="biz_card_type_hint">آپ کیا بیچتے ہیں</string>
     <string name="biz_card_address_hint">پتہ / شہر (اختیاری)</string>
     <string name="biz_card_template">ڈیزائن</string>
     <string name="biz_tpl_classic">لکیر</string>
