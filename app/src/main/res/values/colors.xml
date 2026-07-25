@@ -48,6 +48,17 @@
     <color name="red_gave">#A32D2D</color>
     <color name="green_got">#0F6E56</color>
 
+    <!--
+      Bright variants for red_gave/green_got ON a dark-green header.
+
+      The report screen's totals bar sits on section_khata, and the plain
+      colours above were never meant for that — green_got measured 1.25:1
+      against it, red_gave 1.1:1, both far under the 4.5:1 a shopkeeper
+      needs in daylight. These two exist only for that bar.
+    -->
+    <color name="red_gave_on_dark">#FFB3AB</color>
+    <color name="green_got_on_dark">#7FE3C4</color>
+
     <!-- Ink: text on paper -->
     <color name="ink">#1A1A18</color>
     <color name="ink_soft">#5F5E5A</color>
