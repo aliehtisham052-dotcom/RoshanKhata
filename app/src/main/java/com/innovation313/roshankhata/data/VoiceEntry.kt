@@ -127,6 +127,15 @@ object VoiceEntry {
         "ہے", "ہیں", "ہوں", "ہوا", "ہوئے", "تھا", "تھی", "تھے",
         "اور", "بھی", "تو", "یہ", "وہ", "روپے", "روپیہ",
         "main", "mein", "ne", "ko", "ka", "ki", "ke", "se", "par", "keh",
+        // The same pronouns as one word, which is how they are actually
+        // transcribed. "Main ne" was covered; "Maine" was not, and that is
+        // what comes back when the sentence is spoken at normal speed. Its
+        // consonants are m-n — the same as Moon, Mona, Mani or Amna — so it
+        // was matching customers by name. The rest of the family is here for
+        // the same reason, before they are found the same way.
+        "maine", "mainay", "mainey", "mene", "menay", "meine",
+        "tumne", "tumnay", "usne", "usnay", "humne", "humnay",
+        "unhone", "unhonay", "isne", "isnay",
         "hai", "hain", "hun", "tha", "thi", "the", "aur", "bhi", "to",
         "rupay", "rupaye", "rupee", "rupees", "rs",
         // English grammar. Same reasoning as above: these are words a sentence
@@ -207,6 +216,17 @@ object VoiceEntry {
      * A whole run equalling the name outranks everything; a name only partly
      * spoken scores by how much of it was heard, and needs three consonants
      * before it counts at all.
+     *
+     * Two consonants is not enough on its own. "Maine" and "Moon" both reduce
+     * to m-n, and so do Mona, Mani, Amna and Naeem — a whole family of short
+     * names that any sentence can stumble into. Worse, a full match on two
+     * letters scored above a partial match on the right name, so a customer
+     * called "Ahmad Ali" lost to a customer called "Moon" in a sentence about
+     * Ahmad. So a two-consonant name has to agree on its vowels as well.
+     *
+     * That costs something: for these short names the app stops forgiving
+     * Mona said as Muna, and asks instead. Worth it. Guessing wrong here does
+     * not show a wrong spelling, it writes someone's money against a stranger.
      */
     private fun scoreName(
         name: String,
@@ -215,7 +235,11 @@ object VoiceEntry {
     ): Int {
         val sk = skeleton(name)
         if (sk.length >= 2) {
-            if (runsSkeleton.any { it == sk }) return 1000 + sk.length
+            if (runsSkeleton.any { it == sk } &&
+                (sk.length > 2 || runsSounds.any { it == sounds(name) })
+            ) {
+                return 1000 + sk.length
+            }
             // Part of a long stored name was spoken: "Abdul Rahman" standing
             // in for "Abdul Rahman Chacha Lamber Lappay Wali".
             val partial = runsSkeleton

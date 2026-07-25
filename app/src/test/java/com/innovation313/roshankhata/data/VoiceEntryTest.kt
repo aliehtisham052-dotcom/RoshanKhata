@@ -238,4 +238,62 @@ class VoiceEntryTest {
         val p = VoiceEntry.parse("I have the total amount", listOf("Ihsan", "Amina"))
         assertNull(p.partyName)
     }
+
+    // ---- Reported from a real shop, 1162 customers on the books ----
+    //
+    // "Maine Ahmad ko 50000 ki urea di" put a customer called Moon above the
+    // owner's money. "Main ne" was already treated as grammar, but the phone
+    // writes it as one word, and "Maine" reduces to the same two consonants
+    // as Moon. Worse than a stray match: a full match on two letters outscored
+    // a partial match on the right name, so Ahmad Ali lost to Moon in a
+    // sentence that said Ahmad.
+
+    /** The name from a shop's own book, emoji and all. */
+    private val moon = "Moon\uD83D\uDDA4\u2640\u2640\u2642\u2642"
+
+    private fun heard(names: List<String>) =
+        VoiceEntry.parse("Maine Ahmad ko 50000 ki urea di", names)
+
+    @Test
+    fun `the customer who was spoken about wins over a short name`() {
+        assertEquals("Ahmad Ali", heard(listOf(moon, "Ahmad Ali")).partyName)
+        assertEquals("Ahmad Bhai", heard(listOf(moon, "Ahmad Bhai")).partyName)
+        assertEquals("Ahmad", heard(listOf(moon, "Ahmad")).partyName)
+    }
+
+    @Test
+    fun `with no such customer it names no one rather than a stranger`() {
+        assertNull(heard(listOf(moon, "A Bilal", "Touseef")).partyName)
+    }
+
+    @Test
+    fun `the joined pronouns are grammar, not customers`() {
+        for (p in listOf("Maine", "Mene", "Tumne", "Usne", "Humne", "Unhone")) {
+            assertEquals(
+                "$p should not have matched a customer",
+                "Bilal",
+                VoiceEntry.parse("$p Bilal ko 500 diye", listOf(moon, "Bilal")).partyName
+            )
+        }
+    }
+
+    /** The amount and the direction were never wrong here. Keep them right. */
+    @Test
+    fun `the figure and the direction survive the fix`() {
+        val p = heard(listOf(moon, "Ahmad Ali"))
+        assertEquals(50000.0, p.amount!!, 0.0)
+        assertEquals(true, p.isGiven)
+    }
+
+    /**
+     * Two-consonant names are still reachable — they just have to be said.
+     * Vowels tell them apart now, so Moon and Mun are no longer the same
+     * customer, and a real tie is still handed back to the owner.
+     */
+    @Test
+    fun `short names are matched by sound, not guessed`() {
+        assertEquals(moon, VoiceEntry.parse("Moon ko 500 diye", listOf(moon, "Mun")).partyName)
+        assertEquals("Mun", VoiceEntry.parse("Mun ko 500 diye", listOf(moon, "Mun")).partyName)
+        assertNull(VoiceEntry.parse("Mona ko 500 diye", listOf("Mona", "Monaa")).partyName)
+    }
 }
