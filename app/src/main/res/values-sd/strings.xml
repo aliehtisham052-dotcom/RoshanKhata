@@ -155,7 +155,7 @@
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">مال (اختياري)</string>
     <string name="goods_help">جيڪڏهن هن داخلا سان مال ويو آهي — ۵ ٻوريون يوريا، ۲ لٽر دوا — ته هتي لکو. رڳو نقد داخلا لاءِ خالي ڇڏيو.</string>
-    <string name="item_name_hint">شيءِ (مثال: يوريا، دوا، چارو)</string>
+    <string name="item_name_hint">شيءِ (يوريا، فيڊ…)</string>
     <string name="quantity_hint">مقدار</string>
     <string name="unit_hint">ماپ (ٻوري، لٽر، ڪلوگرام…)</string>
 
@@ -297,8 +297,8 @@
     <!-- Credit limit -->
     <string name="credit_limit">اوڌر جي حد</string>
     <string name="set_credit_limit">اوڌر جي حد رکو</string>
-    <string name="credit_limit_help">وڌ ۾ وڌ رقم جيڪا توهان هن ڌر تي قرض ڇڏڻ لاءِ تيار آهيو. ڪا داخلا ان کان ٽپي ته روشن کاتو اڳواٽ خبردار ڪندو.</string>
-    <string name="credit_limit_hint">حد (Rs) — بنا حد لاءِ خالي ڇڏيو</string>
+    <string name="credit_limit_help">وڌ ۾ وڌ ايترو اوڌر جيترو توهان هن گراهڪ کي ڏيڻ چاهيو ٿا. حد کان مٿي ويندڙ اندراج کان اڳ روشن کاتو خبردار ڪندو. حد نه هجي ته خالي ڇڏيو.</string>
+    <string name="credit_limit_hint">حد (رپيا)</string>
     <string name="credit_limit_advisory">هي خبرداري آهي، رڪاوٽ ناهي. ڪاروبار توهان جو آهي — توهان هميشه اڳتي وڌي سگهو ٿا.</string>
     <string name="credit_limit_current">هن وقت توهان جو %1$s باقي اٿس</string>
     <string name="credit_limit_none">ڪا حد رکيل ناهي</string>
@@ -343,7 +343,7 @@
     <string name="cash_net">خالص</string>
     <string name="cash_income">پئسا اندر</string>
     <string name="cash_expense">پئسا ٻاهر</string>
-    <string name="cash_category_hint">قسم (مثال: مسواڙ، پگهار، نقد وڪرو)</string>
+    <string name="cash_category_hint">قسم (ڪرايو، مزوري…)</string>
     <string name="no_cash_entries">اڃا روڪڙ ڪتاب ۾ ڪا داخلا ناهي.\n\nهي انهن پئسن لاءِ آهي جيڪي ڪنهن گراهڪ سان ڳنڍيل ناهن — مسواڙ، بجلي، پگهار، تيل، اچي وٺي ويندڙ وڪرو.</string>
     <string name="enter_category">مهرباني ڪري قسم لکو</string>
     <string name="delete_cash_entry">هيءَ داخلا هٽايو؟</string>
@@ -377,7 +377,7 @@
     <string name="no_plans">اڃا ڪا ادائيگي رٿا ناهي.\n\nجڏهن گراهڪ ڪا رقم قسطن ۾ لاهيندو — فصل کان پوءِ، يا ڪجهه مهينن ۾ — تڏهن اهي استعمال ڪريو.</string>
     <string name="plan_dialog_help">هن ڌر تي اڳ ۾ باقي رقم لاهڻ جو ٺاهه رکو. اهو سندس بيلنس ۾ اضافو نٿو ڪري — رڳو اهو لکي ٿو ته ڇا ۽ ڪڏهن ڏيڻ تي راضي ٿيا آهن.</string>
     <string name="plan_total_hint">ڪل لاهڻي رقم (Rs)</string>
-    <string name="plan_installment_hint">هر قسط (Rs) — اختياري</string>
+    <string name="plan_installment_hint">هر قسط (رپيا)</string>
     <string name="plan_pick_next_due">ايندڙ ادائيگي (اختياري)</string>
     <string name="plan_owes_now">هن وقت %1$s باقي اٿس</string>
     <string name="plan_owes_nothing">هن ڌر تي هن وقت ڪجهه به باقي ناهي</string>
@@ -428,7 +428,7 @@
     <string name="add_bill">بل شامل ڪريو</string>
     <string name="no_bills">اڃا ڪو سپلائر بل ناهي.\n\nجيڪو خريد ڪريو سو لکو — بيچ نمبرن ۽ ختم ٿيڻ جي تاريخن سان. اهو ئي انسپيڪٽر پڇندو آهي، ۽ اهو ئي مال کي شيلف تي خراب ٿيڻ کان بچائي ٿو.</string>
 
-    <string name="bill_number_hint">بل نمبر (سندن پني تان)</string>
+    <string name="bill_number_hint">بل نمبر</string>
     <string name="bill_total_hint">بل جو ڪل (Rs)</string>
     <string name="bill_supplier_hint">سپلائر جو نالو</string>
     <string name="bill_date">بل جي تاريخ</string>
@@ -519,7 +519,7 @@
 
     <string name="report_describe">ڇا ٿيو؟</string>
     <string name="report_describe_help">سنڌي، اردو يا انگريزيءَ ۾ لکو \u2014 جيڪا سولي هجي. جڏهن خرابي ٿي تڏهن ڇا ڪري رهيا هئا؟</string>
-    <string name="report_hint">مثال: مون ۵,۰۰۰ رپين جو چيڪ شامل ڪيو ۽ ڪليئر ڪرڻ کان اڳ ئي بيلنس بدلجي ويو.</string>
+    <string name="report_hint">ڇا غلط ٿيو؟</string>
     <string name="report_send">رپورٽ موڪليو</string>
     <string name="report_email_note">هي توهان جي اي ميل ايپ کوليندو. جيڪڏهن اي ميل رکيل ناهي ته ڪنهن به فون تان innovation313.support@gmail.com تي لکو.</string>
     <string name="report_no_email">ڪا اي ميل ايپ نه ملي. مهرباني ڪري innovation313.support@gmail.com تي لکو</string>
@@ -642,7 +642,7 @@
     <string name="biz_card_name_hint">ڪاروبار جو نالو</string>
     <string name="biz_card_owner_hint">مالڪ جو نالو</string>
     <string name="biz_card_phone_hint">فون</string>
-    <string name="biz_card_type_hint">ڇا وڪڻو ٿا (مثال: زرعي دوائون ۽ ٻج)</string>
+    <string name="biz_card_type_hint">توهان ڇا وڪڻو ٿا</string>
     <string name="biz_card_address_hint">پتو / شهر (اختياري)</string>
     <string name="biz_card_template">ڊيزائن</string>
     <string name="biz_tpl_classic">ليڪ</string>

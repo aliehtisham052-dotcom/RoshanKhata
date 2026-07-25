@@ -155,7 +155,7 @@
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">کالا (اختیاری)</string>
     <string name="goods_help">اگر همراه این ثبت کالایی جابه‌جا شده — ۵ کیسه اوره، ۲ لیتر سم — اینجا ثبت کنید. برای ثبت نقدی ساده خالی بگذارید.</string>
-    <string name="item_name_hint">کالا (مثلاً اوره، سم، خوراک دام)</string>
+    <string name="item_name_hint">کالا (اوره، خوراک…)</string>
     <string name="quantity_hint">مقدار</string>
     <string name="unit_hint">واحد (کیسه، لیتر، کیلوگرم…)</string>
 
@@ -297,8 +297,8 @@
     <!-- Credit limit -->
     <string name="credit_limit">سقف نسیه</string>
     <string name="set_credit_limit">تعیین سقف نسیه</string>
-    <string name="credit_limit_help">بیشترین مبلغی که حاضرید این طرف‌حساب به شما بدهکار باشد. روشن خاتا پیش از ثبتی که از آن بگذرد هشدار می‌دهد.</string>
-    <string name="credit_limit_hint">سقف (Rs) — برای بدون سقف خالی بگذارید</string>
+    <string name="credit_limit_help">بیشترین مبلغی که حاضرید این مشتری بدهکارتان باشد. روشن خاتا پیش از عبور از آن هشدار می‌دهد. برای بی‌سقف، خالی بگذارید.</string>
+    <string name="credit_limit_hint">سقف (روپیه)</string>
     <string name="credit_limit_advisory">این یک هشدار است، نه مانع. کسب‌وکار خودتان است — همیشه می‌توانید ادامه دهید.</string>
     <string name="credit_limit_current">اکنون %1$s به شما بدهکار است</string>
     <string name="credit_limit_none">سقفی تعیین نشده</string>
@@ -343,7 +343,7 @@
     <string name="cash_net">خالص</string>
     <string name="cash_income">پول ورودی</string>
     <string name="cash_expense">پول خروجی</string>
-    <string name="cash_category_hint">دسته (مثلاً اجاره، دستمزد، فروش نقدی)</string>
+    <string name="cash_category_hint">دسته (اجاره، دستمزد…)</string>
     <string name="no_cash_entries">هنوز ثبتی در دفتر صندوق نیست.\n\nاینجا برای پولی است که به مشتری وابسته نیست — اجاره، برق، دستمزد، سوخت، فروش گذری.</string>
     <string name="enter_category">لطفاً دسته‌ای وارد کنید</string>
     <string name="delete_cash_entry">این ثبت حذف شود؟</string>
@@ -377,7 +377,7 @@
     <string name="no_plans">هنوز برنامه پرداختی نیست.\n\nوقتی مشتری قرار است مبلغی را قسطی تسویه کند — بعد از برداشت محصول یا طی چند ماه — از این‌ها استفاده کنید.</string>
     <string name="plan_dialog_help">برای تسویه بدهی فعلی این طرف‌حساب توافقی تنظیم کنید. این چیزی به مانده‌اش اضافه نمی‌کند — فقط ثبت می‌کند چه مبلغی و چه زمانی قرار است بپردازد.</string>
     <string name="plan_total_hint">کل مبلغ تسویه (Rs)</string>
-    <string name="plan_installment_hint">هر قسط (Rs) — اختیاری</string>
+    <string name="plan_installment_hint">هر قسط (روپیه)</string>
     <string name="plan_pick_next_due">پرداخت بعدی (اختیاری)</string>
     <string name="plan_owes_now">اکنون %1$s بدهکار است</string>
     <string name="plan_owes_nothing">این طرف‌حساب اکنون بدهی ندارد</string>
@@ -428,7 +428,7 @@
     <string name="add_bill">افزودن فاکتور</string>
     <string name="no_bills">هنوز فاکتوری ثبت نشده است.\n\nخریدهای خود را ثبت کنید — با شماره بچ و تاریخ انقضا. همین‌هاست که بازرس می‌پرسد و همین است که جلوی فاسد شدن کالا روی قفسه را می‌گیرد.</string>
 
-    <string name="bill_number_hint">شماره فاکتور (از برگه خودشان)</string>
+    <string name="bill_number_hint">شماره فاکتور</string>
     <string name="bill_total_hint">جمع فاکتور (Rs)</string>
     <string name="bill_supplier_hint">نام تأمین‌کننده</string>
     <string name="bill_date">تاریخ فاکتور</string>
@@ -519,7 +519,7 @@
 
     <string name="report_describe">چه اتفاقی افتاد؟</string>
     <string name="report_describe_help">به فارسی یا انگلیسی بنویسید \u2014 هرکدام آسان‌تر است. وقتی مشکل پیش آمد مشغول چه کاری بودید؟</string>
-    <string name="report_hint">مثلاً چکی به مبلغ ۵٬۰۰۰ روپیه اضافه کردم و مانده همان لحظه تغییر کرد، پیش از آنکه وصولش کنم.</string>
+    <string name="report_hint">چه پیش آمد؟</string>
     <string name="report_send">ارسال گزارش</string>
     <string name="report_email_note">این کار برنامه ایمیل شما را باز می‌کند. اگر ایمیلی تنظیم نیست، از هر گوشی به innovation313.support@gmail.com بنویسید.</string>
     <string name="report_no_email">برنامه ایمیلی یافت نشد. لطفاً به innovation313.support@gmail.com بنویسید</string>
@@ -642,7 +642,7 @@
     <string name="biz_card_name_hint">نام کسب‌وکار</string>
     <string name="biz_card_owner_hint">نام مالک</string>
     <string name="biz_card_phone_hint">تلفن</string>
-    <string name="biz_card_type_hint">چه می‌فروشید (مثلاً سم و بذر)</string>
+    <string name="biz_card_type_hint">چه می‌فروشید</string>
     <string name="biz_card_address_hint">نشانی / شهر (اختیاری)</string>
     <string name="biz_card_template">طرح</string>
     <string name="biz_tpl_classic">خط</string>

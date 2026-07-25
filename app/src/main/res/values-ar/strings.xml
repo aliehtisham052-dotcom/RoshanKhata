@@ -149,7 +149,7 @@
 
     <string name="goods_section">البضاعة (اختياري)</string>
     <string name="goods_help">إن تحركت بضاعة مع هذا القيد — 5 أكياس يوريا، لتران مبيد — فسجلها هنا. اتركه فارغًا لقيد نقدي بسيط.</string>
-    <string name="item_name_hint">الصنف (مثل يوريا، مبيد، علف)</string>
+    <string name="item_name_hint">الصنف (يوريا، علف…)</string>
     <string name="quantity_hint">الكمية</string>
     <string name="unit_hint">الوحدة (كيس، لتر، كغ…)</string>
 
@@ -283,8 +283,8 @@
 
     <string name="credit_limit">حد الائتمان</string>
     <string name="set_credit_limit">تعيين حد الائتمان</string>
-    <string name="credit_limit_help">أقصى ما تسمح به على هذا الطرف. سيحذرك روشن كهاتا قبل قيدٍ يتجاوزه.</string>
-    <string name="credit_limit_hint">الحد (Rs) — اتركه فارغًا بلا حد</string>
+    <string name="credit_limit_help">أقصى ما تسمح لهذا العميل بأن يدين لك به. سينبهك روشن كهاتا قبل أن يتجاوزه قيد. اتركه فارغاً لبلا حد.</string>
+    <string name="credit_limit_hint">الحد (روبية)</string>
     <string name="credit_limit_advisory">هذا تحذير لا منع. النشاط نشاطك — يمكنك المتابعة دائمًا.</string>
     <string name="credit_limit_current">عليه لك حاليًا %1$s</string>
     <string name="credit_limit_none">لا حد معين</string>
@@ -327,7 +327,7 @@
     <string name="cash_net">الصافي</string>
     <string name="cash_income">مال داخل</string>
     <string name="cash_expense">مال خارج</string>
-    <string name="cash_category_hint">البند (مثل إيجار، أجور، بيع نقدي)</string>
+    <string name="cash_category_hint">الفئة (إيجار، أجور…)</string>
     <string name="no_cash_entries">لا قيود في دفتر النقد بعد.\n\nهذا للمال غير المرتبط بعميل — إيجار، كهرباء، أجور، وقود، بيع نقدي.</string>
     <string name="enter_category">يرجى إدخال البند</string>
     <string name="delete_cash_entry">حذف هذا القيد؟</string>
@@ -359,7 +359,7 @@
     <string name="no_plans">لا خطط سداد بعد.\n\nاستخدمها حين يسدد العميل مبلغًا على أقساط — بعد الحصاد أو عبر بضعة أشهر.</string>
     <string name="plan_dialog_help">رتّب سداد ما على هذا الطرف أصلًا. لا يزيد هذا رصيده — يسجل فقط ما اتفق على دفعه ومتى.</string>
     <string name="plan_total_hint">إجمالي المطلوب سداده (Rs)</string>
-    <string name="plan_installment_hint">قيمة القسط (Rs) — اختياري</string>
+    <string name="plan_installment_hint">كل قسط (روبية)</string>
     <string name="plan_pick_next_due">موعد الدفعة القادمة (اختياري)</string>
     <string name="plan_owes_now">عليه حاليًا %1$s</string>
     <string name="plan_owes_nothing">لا شيء على هذا الطرف الآن</string>
@@ -407,7 +407,7 @@
     <string name="add_bill">إضافة فاتورة</string>
     <string name="no_bills">لا فواتير مورّدين بعد.\n\nسجّل ما تشتريه — بأرقام الدُفعات وتواريخ الانتهاء. هذا ما يسأل عنه المفتش، وما ينقذك من فساد البضاعة على الرف.</string>
 
-    <string name="bill_number_hint">رقم الفاتورة (من ورقتهم)</string>
+    <string name="bill_number_hint">رقم الفاتورة</string>
     <string name="bill_total_hint">إجمالي الفاتورة (Rs)</string>
     <string name="bill_supplier_hint">اسم المورّد</string>
     <string name="bill_date">تاريخ الفاتورة</string>
@@ -493,7 +493,7 @@
 
     <string name="report_describe">ماذا حدث؟</string>
     <string name="report_describe_help">اكتب بالعربية أو الإنجليزية \u2014 أيهما أسهل. ماذا كنت تفعل حين حدث الخلل؟</string>
-    <string name="report_hint">مثال: أضفت شيكًا بـ5,000 وتغير الرصيد فورًا قبل صرفه.</string>
+    <string name="report_hint">ما الذي حدث؟</string>
     <string name="report_send">إرسال البلاغ</string>
     <string name="report_email_note">سيفتح هذا تطبيق بريدك. إن لم يكن لديك بريد، فاكتب إلى innovation313.support@gmail.com من أي هاتف.</string>
     <string name="report_no_email">لا تطبيق بريد. يرجى الكتابة إلى innovation313.support@gmail.com</string>
@@ -622,7 +622,7 @@
     <string name="biz_card_name_hint">اسم النشاط التجاري</string>
     <string name="biz_card_owner_hint">اسم المالك</string>
     <string name="biz_card_phone_hint">الهاتف</string>
-    <string name="biz_card_type_hint">ماذا تبيع (مثلاً مبيدات وبذور)</string>
+    <string name="biz_card_type_hint">ماذا تبيع</string>
     <string name="biz_card_address_hint">العنوان / المدينة (اختياري)</string>
     <string name="biz_card_template">التصميم</string>
     <string name="biz_tpl_classic">خط</string>
