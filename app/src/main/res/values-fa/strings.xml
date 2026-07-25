@@ -733,4 +733,5 @@
     <string name="voice_no_party">مشتری با این نام نیست. نام را همان‌طور که ذخیره شده بگویید.</string>
     <string name="voice_no_amount">مبلغی در آن نبود. عدد را هم بگویید.</string>
     <string name="voice_open_entry">باز کردن ثبت</string>
+    <string name="voice_which_party">%1$s — کدام مشتری؟</string>
 </resources>

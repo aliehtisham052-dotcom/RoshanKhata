@@ -713,4 +713,5 @@
     <string name="voice_no_party">لا يوجد عميل بهذا الاسم. قل الاسم كما هو محفوظ.</string>
     <string name="voice_no_amount">لا يوجد مبلغ في ذلك. قل الرقم أيضاً.</string>
     <string name="voice_open_entry">افتح القيد</string>
+    <string name="voice_which_party">%1$s — أي عميل؟</string>
 </resources>

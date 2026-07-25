@@ -705,4 +705,5 @@
     <string name="voice_no_party">Is naam ka koi gahak nahi. Naam waise kahein jaise mehfooz hai.</string>
     <string name="voice_no_amount">Is mein raqam nahi thi. Adad bhi kahein.</string>
     <string name="voice_open_entry">Indraj kholein</string>
+    <string name="voice_which_party">%1$s — kaun sa gahak?</string>
 </resources>
