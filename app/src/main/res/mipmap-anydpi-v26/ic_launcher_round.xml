@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The launcher icon on Android 8 and up.
+
+  The system masks these two layers to whatever shape the phone uses — a
+  circle on one, a squircle on another — so the logo is inset well inside the
+  guaranteed area and the background carries the rest. Without this file the
+  launcher masks the flat PNG instead, and a round logo in a round mask loses
+  its gold rim to the crop.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/icon_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

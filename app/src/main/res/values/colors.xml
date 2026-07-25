@@ -181,4 +181,7 @@
     -->
     <color name="summary_get_bg">#FBEAE6</color>
     <color name="summary_give_bg">#D3EADD</color>
+
+    <!-- Behind the launcher icon, matching the cream inside the logo's rim. -->
+    <color name="icon_background">#F7F3EA</color>
 </resources>

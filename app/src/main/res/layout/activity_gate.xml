@@ -7,9 +7,9 @@
     android:background="@color/white">
 
     <!--
-      The same visual beat as the lock screen — logo and gold tagline, packed
-      centre — so the app opens identically whether App Lock is on or off.
-      Gate shows this for a moment, then steps aside.
+      The mark, centred and alone. The tagline used to sit beneath it in
+      text; it is printed inside the logo now, and the same words twice on
+      one screen read as a mistake.
     -->
     <ImageView
         android:id="@+id/ivSplashLogo"
@@ -19,24 +19,10 @@
         android:contentDescription="@string/app_name"
         android:scaleType="fitCenter"
         android:src="@drawable/logo_full"
-        app:layout_constraintBottom_toTopOf="@id/tvSplashTagline"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
-
-    <TextView
-        android:id="@+id/tvSplashTagline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/lock_tagline"
-        android:textColor="@color/gold_accent"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivSplashLogo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
