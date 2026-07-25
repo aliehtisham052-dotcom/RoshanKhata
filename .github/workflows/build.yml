@@ -44,6 +44,37 @@ jobs:
           echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/roshankhata-release.jks"
           echo "RELEASE_STORE_FILE=$RUNNER_TEMP/roshankhata-release.jks" >> $GITHUB_ENV
 
+      # Correctness before packaging. The build step below only proves the
+      # code compiles; these prove VoiceEntry still decides whose page an
+      # amount lands on. A green APK containing a matcher that hands the
+      # owner a stranger's ledger is not a green build.
+      - name: Unit tests
+        run: |
+          set +e
+          gradle testDebugUnitTest --no-daemon --stacktrace 2>&1 | tee /tmp/test_output.txt
+          EXIT=${PIPESTATUS[0]}
+          exit $EXIT
+
+      - name: Publish test failures
+        if: failure()
+        run: |
+          if [ -f /tmp/test_output.txt ]; then
+            echo "## Unit Test Failures" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            grep -iE "FAILED|expected:|actual:|AssertionError|^e: " /tmp/test_output.txt \
+              | head -40 >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+
+            # Annotations reach us through the REST API even when log blobs do
+            # not, which is the only channel that actually gets back here.
+            grep -iE "FAILED|AssertionError|^e: " /tmp/test_output.txt \
+              | head -25 \
+              | while IFS= read -r line; do
+                  clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                  echo "::error::$clean"
+                done
+          fi
+
       - name: Build Debug APK
         env:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
@@ -58,6 +89,9 @@ jobs:
       - name: Publish error (on failure)
         if: failure()
         run: |
+          # The tests run before this; if they were what failed, there is no
+          # build log to print and their own step has already reported.
+          if [ ! -f /tmp/build_output.txt ]; then exit 0; fi
           echo "## Build Failure Output" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           tail -120 /tmp/build_output.txt >> $GITHUB_STEP_SUMMARY
