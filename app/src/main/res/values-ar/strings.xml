@@ -248,8 +248,8 @@
     <string name="pick_date_first">يرجى اختيار التاريخ المكتوب على الشيك.</string>
     <string name="cheque_note_prefix">شيك %1$s</string>
 
-    <string name="search_parties">ابحث بالاسم أو الرقم</string>
-    <string name="search_entries">ابحث في الملاحظات أو البضاعة أو المرجع</string>
+    <string name="search_parties">الاسم أو الرقم</string>
+    <string name="search_entries">ملاحظات أو بضاعة</string>
     <string name="sort">ترتيب</string>
     <string name="sort_by">ترتيب حسب</string>
 

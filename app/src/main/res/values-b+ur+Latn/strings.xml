@@ -248,8 +248,8 @@
     <string name="pick_date_first">Meherbani kar ke cheque par likhi tareekh chunein.</string>
     <string name="cheque_note_prefix">Cheque %1$s</string>
 
-    <string name="search_parties">Naam ya number se talash karein</string>
-    <string name="search_entries">Note, maal ya hawala talash karein</string>
+    <string name="search_parties">Naam ya number</string>
+    <string name="search_entries">Note ya maal</string>
     <string name="sort">Tarteeb</string>
     <string name="sort_by">Tarteeb Dein</string>
 

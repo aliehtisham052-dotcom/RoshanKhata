@@ -248,8 +248,8 @@
     <string name="pick_date_first">براہِ کرم چیک پر لکھی تاریخ چنیں۔</string>
     <string name="cheque_note_prefix">چیک %1$s</string>
 
-    <string name="search_parties">نام یا نمبر سے تلاش کریں</string>
-    <string name="search_entries">نوٹ، مال یا حوالہ تلاش کریں</string>
+    <string name="search_parties">نام یا نمبر</string>
+    <string name="search_entries">نوٹ یا مال</string>
     <string name="sort">ترتیب</string>
     <string name="sort_by">ترتیب دیں</string>
 
