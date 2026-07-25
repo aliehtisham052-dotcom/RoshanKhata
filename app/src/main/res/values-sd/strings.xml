@@ -286,6 +286,9 @@
     <string name="set_photo">تصوير رکو</string>
     <string name="change_photo">تصوير بدلايو</string>
     <string name="remove_photo">تصوير هٽايو</string>
+    <string name="photo_from_camera">ڪئميرا سان تصوير وٺو</string>
+    <string name="photo_from_gallery">فون مان تصوير چونڊيو</string>
+    <string name="camera_unavailable">هن فون ۾ ڪئميرا ايپ ناهي.</string>
     <string name="photo_saved">تصوير محفوظ ٿي</string>
     <string name="photo_removed">تصوير هٽي وئي</string>
     <string name="photo_save_failed">اها تصوير محفوظ نه ٿي سگهي. مهرباني ڪري ٻي چونڊيو.</string>

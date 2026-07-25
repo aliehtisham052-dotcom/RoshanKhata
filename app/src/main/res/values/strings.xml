@@ -290,6 +290,9 @@
     <string name="set_photo">Set photo</string>
     <string name="change_photo">Change photo</string>
     <string name="remove_photo">Remove photo</string>
+    <string name="photo_from_camera">Take a photo</string>
+    <string name="photo_from_gallery">Choose from phone</string>
+    <string name="camera_unavailable">This phone has no camera app.</string>
     <string name="photo_saved">Photo saved</string>
     <string name="photo_removed">Photo removed</string>
     <string name="photo_save_failed">That image could not be saved. Please pick another.</string>

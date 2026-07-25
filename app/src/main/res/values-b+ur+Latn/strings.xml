@@ -273,6 +273,9 @@
     <string name="set_photo">Tasveer lagayen</string>
     <string name="change_photo">Tasveer badlein</string>
     <string name="remove_photo">Tasveer hatayen</string>
+    <string name="photo_from_camera">Camera se tasveer lein</string>
+    <string name="photo_from_gallery">Phone se tasveer chunein</string>
+    <string name="camera_unavailable">Is phone mein camera app nahi hai.</string>
     <string name="photo_saved">Tasveer mehfooz ho gayi</string>
     <string name="photo_removed">Tasveer hata di gayi</string>
     <string name="photo_save_failed">Ye tasveer mehfooz nahi ho saki. Doosri chunein.</string>

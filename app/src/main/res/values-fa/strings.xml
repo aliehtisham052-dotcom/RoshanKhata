@@ -286,6 +286,9 @@
     <string name="set_photo">تنظیم عکس</string>
     <string name="change_photo">تغییر عکس</string>
     <string name="remove_photo">حذف عکس</string>
+    <string name="photo_from_camera">گرفتن عکس</string>
+    <string name="photo_from_gallery">انتخاب از گوشی</string>
+    <string name="camera_unavailable">این گوشی برنامهٔ دوربین ندارد.</string>
     <string name="photo_saved">عکس ذخیره شد</string>
     <string name="photo_removed">عکس حذف شد</string>
     <string name="photo_save_failed">آن تصویر ذخیره نشد. لطفاً تصویر دیگری انتخاب کنید.</string>
