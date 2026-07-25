@@ -112,7 +112,7 @@ object CardTemplates {
     ): Paint {
         var size = start
         var p = paint(size, colour, bold, align)
-        while (p.measureText(text) > max && size > 26f) {
+        while (p.measureText(text) > max && size > 16f) {
             size -= 2f
             p = paint(size, colour, bold, align)
         }
@@ -185,11 +185,22 @@ object CardTemplates {
         textColour: Int,
         iconColour: Int,
         size: Float = 34f,
-        gap: Float = 58f
+        gap: Float = 58f,
+        /**
+         * How far these lines may run before they reach the colour beside
+         * them.
+         *
+         * Required, not optional. Without it a long address — "lappay wali
+         * tehsil pasrur district Sialkot" — ran straight under the shape next
+         * to it and vanished: dark type on a dark field, invisible on the
+         * card the shopkeeper was about to send someone.
+         */
+        maxWidth: Float
     ): Float {
         var y = top
         val r = size * 0.62f
         val textLeft = left + r * 2.6f
+        val room = maxWidth - (textLeft - left)
 
         if (d.owner.isNotEmpty()) {
             c.drawCircle(left + r, y - size * 0.32f, r, fill(iconColour))
@@ -198,17 +209,20 @@ object CardTemplates {
                 left + r, y - size * 0.32f + size * 0.34f,
                 paint(size * 0.8f, WHITE, true, Paint.Align.CENTER)
             )
-            c.drawText(d.owner, textLeft, y, paint(size, textColour, true))
+            c.drawText(d.owner, textLeft, y, fitted(d.owner, room, size, textColour, true))
             y += gap
         }
         if (d.phone.isNotEmpty()) {
             phoneIcon(c, left + r, y - size * 0.32f, r, iconColour)
-            c.drawText(d.phone, textLeft, y, paint(size, textColour, false))
+            c.drawText(d.phone, textLeft, y, fitted(d.phone, room, size, textColour, false))
             y += gap
         }
         if (d.address.isNotEmpty()) {
             pinIcon(c, left + r, y - size * 0.32f, r, iconColour)
-            c.drawText(d.address, textLeft, y, paint(size * 0.92f, textColour, false))
+            c.drawText(
+                d.address, textLeft, y,
+                fitted(d.address, room, size * 0.92f, textColour, false)
+            )
             y += gap
         }
         return y
@@ -255,22 +269,23 @@ object CardTemplates {
         c.drawColor(PAPER)
         c.drawPath(
             path {
-                moveTo(w * 0.52f, 0f); lineTo(w.toFloat(), 0f)
-                lineTo(w.toFloat(), h.toFloat()); lineTo(w * 0.26f, h.toFloat()); close()
+                moveTo(w * 0.64f, 0f); lineTo(w.toFloat(), 0f)
+                lineTo(w.toFloat(), h.toFloat()); lineTo(w * 0.44f, h.toFloat()); close()
             },
             fill(NAVY)
         )
         c.drawPath(
             path {
-                moveTo(w * 0.48f, 0f); lineTo(w * 0.545f, 0f)
-                lineTo(w * 0.285f, h.toFloat()); lineTo(w * 0.22f, h.toFloat()); close()
+                moveTo(w * 0.6f, 0f); lineTo(w * 0.665f, 0f)
+                lineTo(w * 0.465f, h.toFloat()); lineTo(w * 0.4f, h.toFloat()); close()
             },
             fill(AMBER)
         )
 
-        c.drawText(d.name, 70f, 200f, fitted(d.name, w * 0.42f, 66f, INK, true))
+        c.drawText(d.name, 70f, 200f, fitted(d.name, w * 0.44f, 66f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 252f, paint(32f, NAVY, false))
-        contacts(c, d, 70f, 360f, INK, NAVY)
+        // Clear of the band, which is furthest left at the foot of the card.
+        contacts(c, d, 70f, 360f, INK, NAVY, maxWidth = w * 0.36f)
         c.drawText(d.footer, 70f, h - 46f, paint(24f, NAVY, false))
     }
 
@@ -298,7 +313,7 @@ object CardTemplates {
 
         c.drawText(d.name, 70f, 170f, fitted(d.name, w - 140f, 70f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 222f, paint(32f, CRIMSON, false))
-        contacts(c, d, 70f, 320f, INK, CRIMSON, gap = 54f)
+        contacts(c, d, 70f, 320f, INK, CRIMSON, gap = 54f, maxWidth = w - 140f)
         c.drawText(d.footer, w - 70f, h - 40f, paint(24f, WHITE, false, Paint.Align.RIGHT))
     }
 
@@ -319,7 +334,7 @@ object CardTemplates {
 
         c.drawText(d.name, 70f, 190f, fitted(d.name, w * 0.46f, 60f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 240f, paint(30f, ORANGE, false))
-        contacts(c, d, 70f, 350f, INK, NAVY_DEEP, size = 30f, gap = 52f)
+        contacts(c, d, 70f, 350f, INK, NAVY_DEEP, size = 30f, gap = 52f, maxWidth = w * 0.32f)
 
         val right = w - 60f
         c.drawText(d.footer, right, h - 44f, paint(24f, GOLD_PALE, false, Paint.Align.RIGHT))
@@ -335,7 +350,7 @@ object CardTemplates {
         val left = w * 0.42f
         c.drawText(d.name, left, 190f, fitted(d.name, w - left - 60f, 62f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, left, 240f, paint(30f, MAROON, false))
-        contacts(c, d, left, 340f, INK, MAROON, size = 30f, gap = 52f)
+        contacts(c, d, left, 340f, INK, MAROON, size = 30f, gap = 52f, maxWidth = w - left - 60f)
         c.drawText(d.footer, left, h - 44f, paint(24f, MAROON, false))
     }
 
@@ -407,7 +422,7 @@ object CardTemplates {
 
         c.drawText(d.name, 70f, 190f, fitted(d.name, w * 0.72f, 66f, WHITE, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 242f, paint(30f, GOLD_PALE, false))
-        contacts(c, d, 70f, 350f, WHITE, SKY, size = 30f, gap = 52f)
+        contacts(c, d, 70f, 350f, WHITE, SKY, size = 30f, gap = 52f, maxWidth = w * 0.62f)
         c.drawText(d.footer, 70f, h - 46f, paint(24f, Color.parseColor("#9FB6C9"), false))
     }
 
@@ -419,7 +434,7 @@ object CardTemplates {
 
         c.drawText(d.name, 70f, 200f, fitted(d.name, w - 140f, 72f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 306f, paint(32f, GREEN, false))
-        contacts(c, d, 70f, 400f, INK, GREEN, gap = 56f)
+        contacts(c, d, 70f, 400f, INK, GREEN, gap = 56f, maxWidth = w - 140f)
         c.drawText(d.footer, w - 70f, h - 44f, paint(24f, GREEN, false, Paint.Align.RIGHT))
     }
 
@@ -464,7 +479,7 @@ object CardTemplates {
             c.drawText(d.type, 70f, 218f, paint(28f, INK, true))
             c.drawLine(70f, 234f, 330f, 234f, fill(CRIMSON).apply { strokeWidth = 3f })
         }
-        contacts(c, d, 70f, 320f, INK, CRIMSON, size = 28f, gap = 52f)
+        contacts(c, d, 70f, 320f, INK, CRIMSON, size = 28f, gap = 52f, maxWidth = w * 0.52f)
     }
 
     /**
@@ -498,7 +513,7 @@ object CardTemplates {
         val left = w * 0.18f
         c.drawText(d.name, left, 150f, fitted(d.name, w * 0.44f, 54f, WHITE, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, left, 196f, paint(28f, AMBER, false))
-        contacts(c, d, left, 320f, WHITE, AMBER, size = 26f, gap = 50f)
+        contacts(c, d, left, 320f, WHITE, AMBER, size = 26f, gap = 50f, maxWidth = w * 0.4f)
     }
 
     /**
@@ -592,24 +607,29 @@ object CardTemplates {
     }
 
     /**
-     * Every design, in picker order.
+     * Every design, in the order the picker shows them.
      *
-     * The id is what gets stored, so these must not be renumbered: a shop that
-     * picked number seven should still have number seven after an update.
+     * Strongest first — the diagonal, the ribbons, the blade — because the
+     * first two or three are all most owners will scroll past, and the plain
+     * ruled card at the end is the one to reach for deliberately rather than
+     * to meet first.
+     *
+     * The ids are unchanged and stay bound to their own design: a shop that
+     * picked number seven still has number seven. Only the running order moves.
      */
     val all: List<Template> = listOf(
-        Template(0, R.string.biz_tpl_classic, ::rule),
-        Template(1, R.string.biz_tpl_gold, ::gild),
-        Template(2, R.string.biz_tpl_green, ::stripes),
         Template(3, R.string.biz_tpl_corner, ::sweep),
-        Template(4, R.string.biz_tpl_spine, ::twin),
+        Template(2, R.string.biz_tpl_green, ::stripes),
+        Template(11, R.string.biz_tpl_stamp, ::chevron),
+        Template(10, R.string.biz_tpl_olive, ::flap),
+        Template(8, R.string.biz_tpl_arch, ::bands),
+        Template(1, R.string.biz_tpl_gold, ::gild),
+        Template(9, R.string.biz_tpl_slate, ::dusk),
         Template(5, R.string.biz_tpl_split, ::sash),
+        Template(4, R.string.biz_tpl_spine, ::twin),
         Template(6, R.string.biz_tpl_monogram, ::arc),
         Template(7, R.string.biz_tpl_ledger, ::fold),
-        Template(8, R.string.biz_tpl_arch, ::bands),
-        Template(9, R.string.biz_tpl_slate, ::dusk),
-        Template(10, R.string.biz_tpl_olive, ::flap),
-        Template(11, R.string.biz_tpl_stamp, ::chevron)
+        Template(0, R.string.biz_tpl_classic, ::rule)
     )
 
     /** The design with this id, or the first if the id is unknown. */
