@@ -256,6 +256,92 @@
         </LinearLayout>
 
         <!--
+          What the microphone understood, answered in place.
+
+          This was a full dialog: a title, three lines of message and two
+          spread buttons, covering the list it was talking about. It is one
+          strip now, directly under the mic that produced it — the owner reads
+          a line, and either opens the entry or dismisses it. Nothing is saved
+          from here either way; Open Entry still lands on the party's screen
+          where the credit-limit warning and every other check run.
+        -->
+        <LinearLayout
+            android:id="@+id/voiceStrip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_voice_strip"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="6dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvVoiceSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/ink"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    tools:text="Bilal  ·  Rs 5,000  ·  I Gave" />
+
+                <TextView
+                    android:id="@+id/tvVoiceHeard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp"
+                    tools:text="Heard: bilal ko paanch hazaar diye" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVoiceOpen"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/voice_open_entry"
+                android:textColor="@color/brand_green"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVoiceDismiss"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:contentDescription="@string/cancel"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:icon="@drawable/ic_close"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="18dp"
+                app:iconTint="@color/text_muted" />
+        </LinearLayout>
+
+        <!--
           A one-line summary under the search: how many customers, and how many
           have a balance that has gone quiet for a while (nothing for 30 days).
           The overdue count is what the competitor surfaces as "reminders" — the
