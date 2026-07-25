@@ -7,45 +7,56 @@
   same size — so the pad a shopkeeper uses ten times a day and the one they
   open from Home are not two different calculators to learn. The styles are
   shared for the same reason: change a key there and it changes here.
+
+  The rows do not share the Calculator screen's CalcRow style, though. This
+  pad is given a height by whoever includes it and its five rows divide that
+  height between them; the Calculator screen's rows sit in a scrolling column
+  and have to measure themselves. A row that asks for a share of nothing is a
+  row of no height, so the two need different rules — hence CalcPadRow.
+
+  minHeight is the floor. The pad grows to fill a tall screen, but on a short
+  one it stops here, at the size it has always been, and the screen scrolls
+  rather than handing back keys too small to hit.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="298dp"
     android:orientation="vertical"
     android:paddingStart="4dp"
     android:paddingTop="4dp"
     android:paddingEnd="4dp"
     android:paddingBottom="4dp">
 
-    <LinearLayout style="@style/CalcRow">
+    <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calcClear" style="@style/CalcPadKeyMuted" android:text="@string/calc_clear" />
         <Button android:id="@+id/calcBack" style="@style/CalcPadKeyMuted" android:text="@string/calc_backspace" />
         <Button android:id="@+id/calcPercent" style="@style/CalcPadKeyMuted" android:text="@string/calc_percent" />
         <Button android:id="@+id/calcDivide" style="@style/CalcPadKeyOp" android:text="@string/calc_divide" />
     </LinearLayout>
 
-    <LinearLayout style="@style/CalcRow">
+    <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calc7" style="@style/CalcPadKey" android:text="7" />
         <Button android:id="@+id/calc8" style="@style/CalcPadKey" android:text="8" />
         <Button android:id="@+id/calc9" style="@style/CalcPadKey" android:text="9" />
         <Button android:id="@+id/calcTimes" style="@style/CalcPadKeyOp" android:text="@string/calc_multiply" />
     </LinearLayout>
 
-    <LinearLayout style="@style/CalcRow">
+    <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calc4" style="@style/CalcPadKey" android:text="4" />
         <Button android:id="@+id/calc5" style="@style/CalcPadKey" android:text="5" />
         <Button android:id="@+id/calc6" style="@style/CalcPadKey" android:text="6" />
         <Button android:id="@+id/calcMinus" style="@style/CalcPadKeyOp" android:text="@string/calc_minus" />
     </LinearLayout>
 
-    <LinearLayout style="@style/CalcRow">
+    <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calc1" style="@style/CalcPadKey" android:text="1" />
         <Button android:id="@+id/calc2" style="@style/CalcPadKey" android:text="2" />
         <Button android:id="@+id/calc3" style="@style/CalcPadKey" android:text="3" />
         <Button android:id="@+id/calcPlus" style="@style/CalcPadKeyOp" android:text="@string/calc_plus" />
     </LinearLayout>
 
-    <LinearLayout style="@style/CalcRow">
+    <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calc0" style="@style/CalcPadKey" android:text="0" />
         <Button android:id="@+id/calc00" style="@style/CalcPadKey" android:text="@string/calc_double_zero" />
         <Button android:id="@+id/calcDot" style="@style/CalcPadKey" android:text="@string/calc_dot" />
