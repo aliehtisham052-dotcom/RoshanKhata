@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.ui
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -125,6 +126,66 @@ class NameSearchTest {
 
         val ranked = NameSearch.rankSpoken(shop, listOf("asgar", "spray", "wala")) { it }
         assertEquals("Asghar Manager Lappay Wali", ranked.first())
+    }
+
+    /**
+     * The one that wrote five thousand rupees against the wrong man.
+     *
+     * "Maine Ahsaan Munshi ko 5000 diya" against a book with a Hassan in it
+     * and no Ahsaan. The old matcher kept a name's consonants and nothing
+     * else, so Ahsaan and Hassan were one name to it, and it answered without
+     * asking. Coming nearest in a field of one is not recognition.
+     */
+    @Test
+    fun `a near miss on the only candidate is not an answer`() {
+        val said = listOf("ahsaan", "munshi")
+        val shop = listOf("Hassan", "Bilal", "Aaa")
+        assertNull(NameSearch.confidentMatch(shop, said) { it })
+    }
+
+    /** With the customer actually present, it should answer — and correctly. */
+    @Test
+    fun `the right customer is answered however it is spelled`() {
+        val said = listOf("ahsaan", "munshi")
+        assertEquals(
+            "Ahsan Munshi Pasrur",
+            NameSearch.confidentMatch(listOf("Hassan", "Ahsan Munshi Pasrur"), said) { it }
+        )
+        assertEquals(
+            "Ehsaan Munshi",
+            NameSearch.confidentMatch(listOf("Hassan", "Ehsaan Munshi"), said) { it }
+        )
+    }
+
+    /**
+     * Two customers who both answer to what was said are a question for the
+     * owner, not a coin to toss. The picker is one tap and already in order.
+     */
+    @Test
+    fun `a close second means asking`() {
+        assertNull(
+            NameSearch.confidentMatch(
+                listOf("Asghar Ali", "Asghar Manager", "Bilal"), listOf("asghar")
+            ) { it }
+        )
+        assertEquals(
+            "Asghar Manager",
+            NameSearch.confidentMatch(listOf("Asghar Manager", "Bilal"), listOf("asgar")) { it }
+        )
+    }
+
+    /**
+     * A name kept in Latin and spoken in Urdu is the same customer. This is
+     * why a separate matcher existed; the measure carries it now.
+     */
+    @Test
+    fun `a name saved in Latin is answered when spoken in Urdu`() {
+        assertEquals(
+            "Abu G",
+            NameSearch.confidentMatch(
+                listOf("Abu G", "Bilal", "Aaa"), listOf("ابو", "جی")
+            ) { it }
+        )
     }
 
     /** Nothing to go on leaves the screen's own order alone. */
