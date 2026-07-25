@@ -470,29 +470,56 @@ class PartyDetailActivity : AppCompatActivity() {
             }
             .show()
             .also { dialog ->
+                // Full width and height, not a card floating in the middle.
+                //
+                // Writing an entry is the one thing this app is for; it
+                // deserves the screen rather than a box with the ledger
+                // greyed out around it. Set after show() because that is when
+                // the window exists.
+                dialog.window?.apply {
+                    setBackgroundDrawable(
+                        android.graphics.drawable.ColorDrawable(
+                            androidx.core.content.ContextCompat.getColor(
+                                this@PartyDetailActivity, R.color.white
+                            )
+                        )
+                    )
+                    setLayout(
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                }
+
                 // The second half opens on request and is never in the way.
                 //
-                // Save is live from the first screen: most entries are a
-                // figure and a date, and making someone page past goods and
-                // recovery to reach it would tax every entry for the sake of
-                // the few that need them.
+                // Save is live from the first page: most entries are a figure
+                // and a date, and making someone page past goods and recovery
+                // to reach it would tax every entry for the sake of the few
+                // that need them.
                 val stepOne = view.findViewById<View>(R.id.stepOne)
                 val stepTwo = view.findViewById<View>(R.id.stepTwo)
                 val cancel = dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
 
+                fun show(next: View, gone: View, anim: Int, cancelLabel: Int) {
+                    gone.visibility = View.GONE
+                    next.visibility = View.VISIBLE
+                    next.startAnimation(
+                        android.view.animation.AnimationUtils.loadAnimation(
+                            this@PartyDetailActivity, anim
+                        )
+                    )
+                    cancel.setText(cancelLabel)
+                }
+
                 view.findViewById<MaterialButton>(R.id.btnMoreDetails).setOnClickListener {
-                    stepOne.visibility = View.GONE
-                    stepTwo.visibility = View.VISIBLE
                     // Cancel becomes Back: from here, leaving should mean
                     // returning to the amount, not discarding it.
-                    cancel.setText(R.string.back)
+                    show(stepTwo, stepOne, R.anim.slide_in_right, R.string.back)
                 }
 
                 cancel.setOnClickListener {
                     if (stepTwo.visibility == View.VISIBLE) {
-                        stepTwo.visibility = View.GONE
-                        stepOne.visibility = View.VISIBLE
-                        cancel.setText(R.string.cancel)
+                        show(stepOne, stepTwo, R.anim.slide_in_left, R.string.cancel)
                     } else {
                         dialog.dismiss()
                     }
