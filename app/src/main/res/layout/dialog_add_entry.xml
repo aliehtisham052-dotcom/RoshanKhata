@@ -13,6 +13,18 @@
         android:paddingEnd="24dp"
         android:paddingBottom="8dp">
 
+        <!--
+          Step one: the amount, and the two things that qualify it. Everything
+          else waits behind "more details" — an entry is usually just a figure,
+          and a shopkeeper at the counter should not scroll past goods and
+          recovery to reach Save.
+        -->
+        <LinearLayout
+            android:id="@+id/stepOne"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
         <EditText
             android:id="@+id/etAmount"
             android:layout_width="match_parent"
@@ -51,44 +63,88 @@
         <include layout="@layout/view_calculator" />
 
         <!--
-          The bill this entry came from, if there is one. Sits beside the date
-          because both answer "which transaction was this" rather than "how
-          much" — and the photo stays on this phone, out of statements, the
-          same way a customer's photo does.
+          The bill and the date, side by side. Both answer "which transaction
+          was this" rather than "how much", and neither needs a whole row. The
+          photo stays on this phone and out of statements, the same way a
+          customer's photo does; the date defaults to now.
         -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAddBill"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start|center_vertical"
-            android:text="@string/add_bill_photo"
-            android:textAllCaps="false"
-            android:textColor="@color/brand_green"
-            android:textSize="14sp"
-            app:icon="@drawable/ic_camera"
-            app:iconGravity="textStart"
-            app:iconTint="@color/brand_green" />
-
-        <!--
-          When it happened, not when it was typed. An entry is often written up
-          in the evening for something that changed hands at noon, and a ledger
-          that insists otherwise is a ledger the owner has to argue with.
-          Defaults to now, which is right most of the time.
-        -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEntryDate"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddBill"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center_vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="2dp"
+                android:text="@string/add_bill_photo"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_green"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_camera"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="18dp"
+                app:iconTint="@color/brand_green" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEntryDate"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center_vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="2dp"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_green"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_calendar"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="18dp"
+                app:iconTint="@color/brand_green" />
+        </LinearLayout>
+
+        <!--
+          The way through to the rest. A row rather than a dialog button,
+          because it is an offer and not a step: Save sits beside it and works
+          without ever coming here.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMoreDetails"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:gravity="start|center_vertical"
+            android:text="@string/more_details"
             android:textAllCaps="false"
-            android:textColor="@color/brand_green"
-            android:textSize="14sp"
-            app:icon="@drawable/ic_calendar"
-            app:iconGravity="textStart"
-            app:iconTint="@color/brand_green" />
+            android:textColor="@color/ink_soft"
+            android:textSize="13sp"
+            app:icon="@drawable/ic_chevron_right"
+            app:iconGravity="end"
+            app:iconSize="18dp"
+            app:iconTint="@color/ink_soft" />
+
+        </LinearLayout>
+
+        <!--
+          Step two: everything an entry may carry and usually does not.
+        -->
+        <LinearLayout
+            android:id="@+id/stepTwo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
 
         <EditText
             android:id="@+id/etNote"
@@ -199,5 +255,6 @@
                 android:textSize="13sp" />
         </RadioGroup>
 
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

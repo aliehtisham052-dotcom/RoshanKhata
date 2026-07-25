@@ -723,4 +723,5 @@
     <string name="photo_on_statement">درج عکس مشتری روی صورت‌حساب</string>
     <string name="photo_on_statement_help">به‌طور پیش‌فرض خاموش. روشن کنید تا عکس مشتری روی صورت‌حسابش چاپ شود و انکارش سخت‌تر باشد — اما صورت‌حساب ممکن است فرستاده شود و عکس با آن برود.</string>
     <string name="made_with_app">روشن خاتا</string>
+    <string name="more_details">افزودن یادداشت، کالا یا وضعیت وصول</string>
 </resources>

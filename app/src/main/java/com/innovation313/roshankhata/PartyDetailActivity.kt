@@ -442,6 +442,35 @@ class PartyDetailActivity : AppCompatActivity() {
                 }
             }
             .show()
+            .also { dialog ->
+                // The second half opens on request and is never in the way.
+                //
+                // Save is live from the first screen: most entries are a
+                // figure and a date, and making someone page past goods and
+                // recovery to reach it would tax every entry for the sake of
+                // the few that need them.
+                val stepOne = view.findViewById<View>(R.id.stepOne)
+                val stepTwo = view.findViewById<View>(R.id.stepTwo)
+                val cancel = dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
+
+                view.findViewById<MaterialButton>(R.id.btnMoreDetails).setOnClickListener {
+                    stepOne.visibility = View.GONE
+                    stepTwo.visibility = View.VISIBLE
+                    // Cancel becomes Back: from here, leaving should mean
+                    // returning to the amount, not discarding it.
+                    cancel.setText(R.string.back)
+                }
+
+                cancel.setOnClickListener {
+                    if (stepTwo.visibility == View.VISIBLE) {
+                        stepTwo.visibility = View.GONE
+                        stepOne.visibility = View.VISIBLE
+                        cancel.setText(R.string.cancel)
+                    } else {
+                        dialog.dismiss()
+                    }
+                }
+            }
     }
 
     /** Deleting an entry is reversible — it moves to the Recycle Bin. */

@@ -703,4 +703,5 @@
     <string name="photo_on_statement">تضمين صورة العميل في كشف الحساب</string>
     <string name="photo_on_statement_help">معطّل افتراضيًا. تفعيله يطبع صورة العميل على كشف حسابه فيصعب إنكاره — لكن الكشف قد يُعاد إرساله، وتنتقل صورته معه.</string>
     <string name="made_with_app">روشن كهاتا</string>
+    <string name="more_details">أضف ملاحظة أو بضاعة أو حالة التحصيل</string>
 </resources>
