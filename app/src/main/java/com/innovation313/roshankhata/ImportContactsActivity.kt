@@ -21,6 +21,7 @@ import com.innovation313.roshankhata.data.Contacts
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PhoneContact
+import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.ContactAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -137,22 +138,17 @@ class ImportContactsActivity : AppCompatActivity() {
     private fun applyFilter() {
         val query = etSearch.text.toString().trim().lowercase()
 
-        val queryDigits = query.filter { ch -> ch.isDigit() }
-
-        val filtered = if (query.isEmpty()) {
-            allContacts
-        } else {
-            allContacts.filter { c ->
-                // Name match always applies. Phone match ONLY when the query
-                // actually contains digits — otherwise an all-letters query
-                // like "ty" produces an empty digit string, which every phone
-                // number "contains", dragging the whole list back in. That was
-                // the bug: typing a name still showed everyone.
-                c.name.lowercase().contains(query) ||
-                    (queryDigits.isNotEmpty() &&
-                        c.phone.filter { ch -> ch.isDigit() }.contains(queryDigits))
-            }
-        }
+        // Same rule as the ledger's search, from the same place: a name that
+        // begins with what was typed first, then a name with a word that
+        // does, then a match buried mid-word.
+        //
+        // That last rank is why "ali" used to return three men called Wali
+        // and nothing else — every one of them was a real match, and every
+        // one was the wrong answer.
+        val filtered = NameSearch.sort(
+            allContacts.filter { NameSearch.matches(it.name, it.phone, query) },
+            query
+        ) { it.name }
 
         visible = filtered
         adapter.submit(filtered, selected)

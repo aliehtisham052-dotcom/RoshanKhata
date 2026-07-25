@@ -29,6 +29,7 @@ import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.DateRangeFilter
+import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.PartyAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -408,12 +409,7 @@ class KhataActivity : AppCompatActivity() {
         val filtered = if (query.isEmpty()) {
             allParties
         } else {
-            val queryDigits = query.filter { it.isDigit() }
-            allParties.filter { p ->
-                p.name.lowercase().contains(query) ||
-                    (queryDigits.isNotEmpty() &&
-                        p.phone?.filter { it.isDigit() }?.contains(queryDigits) == true)
-            }
+            allParties.filter { NameSearch.matches(it.name, it.phone, query) }
         }
 
         // Days first. A customer belongs in the window if their last dealing
@@ -434,17 +430,9 @@ class KhataActivity : AppCompatActivity() {
         }
 
         val sorted = if (query.isNotEmpty()) {
-            // While searching, the chosen sort steps aside for relevance.
-            //
-            // Typing "tou" and getting Touqeer below a Chapra Touri Wala is
-            // the list answering a question nobody asked: recency is a fine
-            // default for browsing and useless once a name has been typed.
-            // A name that starts with what was typed comes first, then a word
-            // inside it that does, then anything else that contains it.
-            bySide.sortedWith(
-                compareBy<PartyWithBalance> { matchRank(it, query) }
-                    .thenBy { it.name.lowercase() }
-            )
+            // While searching, the chosen sort steps aside for relevance —
+            // by the same rule the contacts screen uses.
+            NameSearch.sort(bySide, query) { it.name }
         } else when (sortMode) {
             SortMode.NAME_AZ -> bySide.sortedBy { it.name.lowercase() }
             SortMode.NAME_ZA -> bySide.sortedByDescending { it.name.lowercase() }
@@ -481,25 +469,6 @@ class KhataActivity : AppCompatActivity() {
             SideFilter.ALL -> { get.alpha = 1f; give.alpha = 1f }
             SideFilter.TO_GET -> { get.alpha = 1f; give.alpha = 0.45f }
             SideFilter.TO_GIVE -> { get.alpha = 0.45f; give.alpha = 1f }
-        }
-    }
-
-    /**
-     * How well a customer matches what was typed. Lower is better.
-     *
-     * 0 — the name begins with it: "tou" finds "Touseef".
-     * 1 — a word inside the name begins with it: "tou" finds "Chapra Touri",
-     *     which is how a shopkeeper thinks of the second word of a name.
-     * 2 — it appears somewhere in the name, mid-word.
-     * 3 — the name does not match at all; the phone number did.
-     */
-    private fun matchRank(party: PartyWithBalance, query: String): Int {
-        val name = party.name.lowercase()
-        return when {
-            name.startsWith(query) -> 0
-            name.split(' ', '(', ')', '-', '.').any { it.startsWith(query) } -> 1
-            name.contains(query) -> 2
-            else -> 3
         }
     }
 

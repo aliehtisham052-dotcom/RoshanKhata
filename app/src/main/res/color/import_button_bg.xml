@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The import button's fill.
+
+  Disabled it turns grey rather than staying near-black. Material fades a
+  disabled button's own colours, and a faded label on a near-black fill is
+  invisible — the button read as a solid black bar with nothing written on
+  it, which is what a shopkeeper saw before selecting anyone.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/page_line" android:state_enabled="false" />
+    <item android:color="@color/ink" />
+</selector>
