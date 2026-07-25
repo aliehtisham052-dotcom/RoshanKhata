@@ -737,4 +737,5 @@
     <string name="voice_no_party">No customer of that name. Say the name as it is saved.</string>
     <string name="voice_no_amount">No amount in that. Say the figure too.</string>
     <string name="voice_open_entry">Open entry</string>
+    <string name="voice_which_party">%1$s — which customer?</string>
 </resources>

@@ -86,14 +86,67 @@ object VoiceEntry {
     /**
      * The longest customer name that appears in the sentence.
      *
-     * Longest wins so "Bilal Bhai" is preferred over "Bilal" when both are on
-     * the books and both are in the sentence — the fuller name is the more
-     * deliberate one.
+     * Matched on consonants rather than letters, because the two are almost
+     * never written the same way. A shop saves "Abu G" in Latin and says
+     * "ابو جی"; a plain comparison finds nothing, which is exactly what it
+     * did — the entry was refused for a customer sitting in the list.
+     *
+     * Urdu does not write short vowels and marks a doubled consonant instead
+     * of repeating it, so both sides are reduced to their consonant skeleton:
+     * "Abu G" and "ابو جی" both become "bj", "Sajjad" and "سجاد" both "sjd".
+     *
+     * Longest wins, so "Bilal Bhai" beats "Bilal" when both are on the books.
      */
-    private fun findParty(text: String, knownNames: List<String>): String? =
-        knownNames
-            .filter { it.isNotBlank() && text.contains(it.lowercase()) }
-            .maxByOrNull { it.length }
+    private fun findParty(text: String, knownNames: List<String>): String? {
+        val spoken = skeleton(text)
+        return knownNames
+            .filter { name ->
+                val s = skeleton(name)
+                s.length >= 2 && spoken.contains(s)
+            }
+            .maxByOrNull { skeleton(it).length }
+    }
+
+    /** Urdu letters to the sound a Latin spelling would use. */
+    private val LETTERS = mapOf(
+        'ا' to "a", 'آ' to "a", 'ب' to "b", 'پ' to "p", 'ت' to "t", 'ٹ' to "t",
+        'ث' to "s", 'ج' to "j", 'چ' to "ch", 'ح' to "h", 'خ' to "kh", 'د' to "d",
+        'ڈ' to "d", 'ذ' to "z", 'ر' to "r", 'ڑ' to "r", 'ز' to "z", 'ژ' to "zh",
+        'س' to "s", 'ش' to "sh", 'ص' to "s", 'ض' to "z", 'ط' to "t", 'ظ' to "z",
+        'ع' to "a", 'غ' to "gh", 'ف' to "f", 'ق' to "q", 'ک' to "k", 'ك' to "k",
+        'گ' to "g", 'ل' to "l", 'م' to "m", 'ن' to "n", 'ں' to "n", 'و' to "u",
+        'ہ' to "h", 'ھ' to "h", 'ة' to "h", 'ء' to "", 'ی' to "i", 'ي' to "i",
+        'ے' to "e", 'أ' to "a", 'إ' to "a", 'ؤ' to "u", 'ئ' to "i"
+    )
+
+    /** Sounds a Pakistani ear treats as the same when spelling a name. */
+    private val SAME_SOUND = mapOf('g' to 'j', 'q' to 'k', 'v' to 'b', 'c' to 'k')
+
+    private const val VOWELS = "aeiou"
+
+    /**
+     * The consonants of a name, in whichever script it was written.
+     *
+     * Vowels go because Urdu does not write the short ones; doubles collapse
+     * because Urdu marks them rather than repeating the letter; and g/j, q/k,
+     * v/b, c/k fold together because a name spelled one way is routinely
+     * spoken the other.
+     */
+    private fun skeleton(s: String): String {
+        val sb = StringBuilder()
+        for (ch in s.lowercase()) {
+            val mapped = LETTERS[ch] ?: if (ch.isLetter()) ch.toString() else ""
+            sb.append(mapped)
+        }
+        val folded = StringBuilder()
+        for (ch in sb) {
+            if (!ch.isLetter()) continue
+            val f = SAME_SOUND[ch] ?: ch
+            if (f in VOWELS) continue
+            if (folded.isEmpty() || folded.last() != f) folded.append(f)
+        }
+        return folded.toString()
+    }
 
     /**
      * The amount, whether spoken as digits or as words.

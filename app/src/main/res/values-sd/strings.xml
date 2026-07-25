@@ -733,4 +733,5 @@
     <string name="voice_no_party">ان نالي جو ڪو گراهڪ ناهي. نالو ائين چئو جيئن محفوظ آهي.</string>
     <string name="voice_no_amount">ان ۾ ڪا رقم ناهي. انگ به چئو.</string>
     <string name="voice_open_entry">اندراج کوليو</string>
+    <string name="voice_which_party">%1$s — ڪهڙو گراهڪ؟</string>
 </resources>

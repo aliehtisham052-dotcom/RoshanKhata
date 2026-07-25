@@ -705,12 +705,17 @@ class KhataActivity : AppCompatActivity() {
             allParties.firstOrNull { it.name.equals(name, ignoreCase = true) }
         }
 
-        if (party == null) {
-            showSpokenProblem(heard, getString(R.string.voice_no_party))
-            return
-        }
         if (parsed.amount == null || parsed.amount <= 0.0) {
             showSpokenProblem(heard, getString(R.string.voice_no_amount))
+            return
+        }
+
+        if (party == null) {
+            // The figure was heard but the name was not. Offer the list rather
+            // than the door: a shop with a hundred customers has said the hard
+            // part already, and a dead end here would send them back to typing
+            // the whole entry.
+            pickPartyForSpoken(heard, parsed.amount, parsed.isGiven ?: true)
             return
         }
 
@@ -741,6 +746,35 @@ class KhataActivity : AppCompatActivity() {
                         )
                 )
             }
+            .show()
+    }
+
+    /**
+     * Which customer did they mean?
+     *
+     * Shown only when the amount was understood and the name was not. Sorted
+     * the way the list already is, so the one dealt with most recently is at
+     * the top — which is usually the one being spoken about.
+     */
+    private fun pickPartyForSpoken(heard: String, amount: Double, isGiven: Boolean) {
+        val choices = allParties.sortedByDescending { it.lastActivity }
+        if (choices.isEmpty()) {
+            showSpokenProblem(heard, getString(R.string.voice_no_party))
+            return
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.voice_which_party, Format.money(amount)))
+            .setItems(choices.map { it.name }.toTypedArray()) { _, which ->
+                val chosen = choices[which]
+                startActivity(
+                    Intent(this, PartyDetailActivity::class.java)
+                        .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, chosen.id)
+                        .putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, amount)
+                        .putExtra(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, isGiven)
+                )
+            }
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
