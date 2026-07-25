@@ -13,4 +13,13 @@
     <cache-path
         name="receipts"
         path="receipts/" />
+    <!--
+      Where the camera writes. The camera app cannot hand a photo back through
+      an app's private storage, so it is given a content:// URI pointing here
+      and writes the picture itself. What lands is a working file: it is copied
+      into the app's own storage and deleted straight afterwards.
+    -->
+    <cache-path
+        name="camera"
+        path="camera/" />
 </paths>

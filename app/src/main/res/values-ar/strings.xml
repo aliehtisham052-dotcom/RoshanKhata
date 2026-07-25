@@ -273,6 +273,9 @@
     <string name="set_photo">تعيين صورة</string>
     <string name="change_photo">تغيير الصورة</string>
     <string name="remove_photo">إزالة الصورة</string>
+    <string name="photo_from_camera">التقاط صورة</string>
+    <string name="photo_from_gallery">اختيار من الهاتف</string>
+    <string name="camera_unavailable">لا يوجد تطبيق كاميرا على هذا الهاتف.</string>
     <string name="photo_saved">حُفظت الصورة</string>
     <string name="photo_removed">أُزيلت الصورة</string>
     <string name="photo_save_failed">تعذر حفظ هذه الصورة. اختر أخرى.</string>

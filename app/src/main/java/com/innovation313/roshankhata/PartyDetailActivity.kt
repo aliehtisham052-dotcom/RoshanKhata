@@ -58,6 +58,10 @@ class PartyDetailActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_PARTY_ID = "party_id"
 
+        /** A camera capture waiting to come back, kept across a rebuild. */
+        private const val STATE_CAMERA_PATH = "camera_path"
+        private const val STATE_CAMERA_TARGET = "camera_target"
+
         /**
          * A spoken entry, handed over from the ledger for the owner to check.
          *
@@ -82,11 +86,22 @@ class PartyDetailActivity : AppCompatActivity() {
     private val pickBillPhoto = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia()
     ) { uri: android.net.Uri? ->
-        if (uri == null) return@registerForActivityResult
+        if (uri != null) saveBillPhoto(uri, null)
+    }
+
+    /**
+     * Keep a bill, wherever it came from.
+     *
+     * [temp] is the camera's working file when the photo was just taken, and
+     * null when it was picked from the phone — in that case the picture
+     * belongs to the owner's gallery and is not ours to delete.
+     */
+    private fun saveBillPhoto(uri: android.net.Uri, temp: java.io.File?) {
         lifecycleScope.launch {
             val path = withContext(Dispatchers.IO) {
                 BillPhoto.save(this@PartyDetailActivity, uri)
             }
+            temp?.delete()
             if (path == null) {
                 Toast.makeText(
                     this@PartyDetailActivity,
@@ -118,6 +133,59 @@ class PartyDetailActivity : AppCompatActivity() {
         if (uri != null) savePhoto(uri)
     }
 
+    /**
+     * Which photo the camera is being opened for.
+     *
+     * One launcher serves both the customer's photo and a bill, because the
+     * camera does not care which, and two launchers would be two places to
+     * get the clean-up wrong.
+     */
+    private enum class PhotoTarget { PARTY, BILL }
+
+    /**
+     * The capture in flight, if any.
+     *
+     * Held as a path rather than a Uri because both are needed afterwards: the
+     * Uri to read the picture back, the File to delete it. And kept across
+     * [onSaveInstanceState] because the camera is another app — Android is
+     * free to destroy this screen while it is in front, and a photo that came
+     * back to a screen that had forgotten it asked would be a photo lost after
+     * the owner had already taken it.
+     */
+    private var cameraPath: String? = null
+    private var cameraTarget: PhotoTarget? = null
+
+    private val takePhoto = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { written: Boolean ->
+        val file = cameraPath?.let { java.io.File(it) }
+        val target = cameraTarget
+        cameraPath = null
+        cameraTarget = null
+
+        // Cancelled, or the camera came back with nothing. Either way there is
+        // no photo, and any empty file it left behind is rubbish.
+        if (!written || file == null || target == null) {
+            file?.delete()
+            return@registerForActivityResult
+        }
+
+        val uri = try {
+            androidx.core.content.FileProvider.getUriForFile(
+                this, "$packageName.fileprovider", file
+            )
+        } catch (e: Exception) {
+            file.delete()
+            Toast.makeText(this, R.string.photo_save_failed, Toast.LENGTH_LONG).show()
+            return@registerForActivityResult
+        }
+
+        when (target) {
+            PhotoTarget.PARTY -> savePhoto(uri, file)
+            PhotoTarget.BILL -> saveBillPhoto(uri, file)
+        }
+    }
+
     /** Every row, with running balances already computed. Views derive from this. */
     private var allRows: List<EntryRow> = emptyList()
     private var entrySortMode = EntrySort.NEWEST
@@ -136,6 +204,15 @@ class PartyDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // A capture that was in flight when this screen was destroyed. The
+        // camera is another app and can be in front for minutes; Android may
+        // reclaim what is behind it. Without this the photo would come back to
+        // a screen that had forgotten it asked, and be thrown away after the
+        // owner had already taken it.
+        cameraPath = savedInstanceState?.getString(STATE_CAMERA_PATH)
+        cameraTarget = savedInstanceState?.getString(STATE_CAMERA_TARGET)
+            ?.let { runCatching { PhotoTarget.valueOf(it) }.getOrNull() }
         setContentView(R.layout.activity_party_detail)
 
         partyId = intent.getLongExtra(EXTRA_PARTY_ID, 0)
@@ -320,11 +397,22 @@ class PartyDetailActivity : AppCompatActivity() {
         billButton = view.findViewById(R.id.btnAddBill)
         billButton?.setText(R.string.add_bill_photo)
         billButton?.setOnClickListener {
-            pickBillPhoto.launch(
-                androidx.activity.result.PickVisualMediaRequest(
-                    androidx.activity.result.contract.ActivityResultContracts
-                        .PickVisualMedia.ImageOnly
-                )
+            // A bill is more often photographed at the counter than found in
+            // the gallery afterwards, so the camera is offered first here too.
+            // No privacy note: a bill is a receipt, not somebody's face.
+            showPhotoChooser(
+                titleRes = R.string.bill_photo_label,
+                noteRes = null,
+                target = PhotoTarget.BILL,
+                onPick = {
+                    pickBillPhoto.launch(
+                        androidx.activity.result.PickVisualMediaRequest(
+                            androidx.activity.result.contract.ActivityResultContracts
+                                .PickVisualMedia.ImageOnly
+                        )
+                    )
+                },
+                onRemove = null
             )
         }
 
@@ -771,36 +859,128 @@ class PartyDetailActivity : AppCompatActivity() {
      */
     private fun showPhotoOptions() {
         val hasPhoto = PartyPhoto.exists(this, partyId)
-
-        val options = if (hasPhoto) {
-            arrayOf(getString(R.string.change_photo), getString(R.string.remove_photo))
-        } else {
-            arrayOf(getString(R.string.set_photo))
-        }
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.party_photo)
-            .setMessage(R.string.photo_privacy_note)
-            .setItems(options) { _, which ->
-                when {
-                    !hasPhoto || which == 0 -> pickPhoto.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                    else -> {
-                        PartyPhoto.remove(this, partyId)
-                        refreshAvatar()
-                        Toast.makeText(this, R.string.photo_removed, Toast.LENGTH_SHORT).show()
-                    }
+        showPhotoChooser(
+            titleRes = R.string.party_photo,
+            noteRes = R.string.photo_privacy_note,
+            target = PhotoTarget.PARTY,
+            onPick = {
+                pickPhoto.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onRemove = if (!hasPhoto) null else {
+                {
+                    PartyPhoto.remove(this, partyId)
+                    refreshAvatar()
+                    Toast.makeText(this, R.string.photo_removed, Toast.LENGTH_SHORT).show()
                 }
             }
-            .show()
+        )
     }
 
-    private fun savePhoto(uri: Uri) {
+    /**
+     * Where a photo comes from — the camera, or one already on the phone.
+     *
+     * Built from a layout rather than setItems(), because this dialog also
+     * carries the privacy note and an AlertDialog will not show both: give it
+     * a message and a list and it keeps the message and quietly drops the
+     * list. That is what used to happen here. The note appeared, the choices
+     * did not, and a photo could not be added at all.
+     */
+    private fun showPhotoChooser(
+        titleRes: Int,
+        noteRes: Int?,
+        target: PhotoTarget,
+        onPick: () -> Unit,
+        onRemove: (() -> Unit)?
+    ) {
+        val view = layoutInflater.inflate(R.layout.dialog_photo_options, null)
+        val note = view.findViewById<TextView>(R.id.tvPhotoNote)
+        if (noteRes == null) note.visibility = View.GONE else note.setText(noteRes)
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(titleRes)
+            .setView(view)
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+
+        view.findViewById<View>(R.id.optCamera).setOnClickListener {
+            dialog.dismiss()
+            launchCamera(target)
+        }
+        view.findViewById<View>(R.id.optGallery).setOnClickListener {
+            dialog.dismiss()
+            onPick()
+        }
+        view.findViewById<View>(R.id.optRemove).apply {
+            if (onRemove == null) {
+                visibility = View.GONE
+            } else {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    dialog.dismiss()
+                    onRemove()
+                }
+            }
+        }
+    }
+
+    /**
+     * Open the camera for [target].
+     *
+     * The camera app writes straight into a file of ours through the
+     * FileProvider; it cannot reach into private storage on its own. Nothing
+     * is remembered beyond the path and what it was for, and both are given up
+     * as soon as the picture comes back.
+     */
+    private fun launchCamera(target: PhotoTarget) {
+        val file = try {
+            val dir = java.io.File(cacheDir, "camera").apply { mkdirs() }
+            java.io.File(dir, "capture_${System.currentTimeMillis()}.jpg")
+        } catch (e: Exception) {
+            null
+        }
+
+        val uri = file?.let {
+            try {
+                androidx.core.content.FileProvider.getUriForFile(
+                    this, "$packageName.fileprovider", it
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (uri == null) {
+            Toast.makeText(this, R.string.photo_save_failed, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        cameraPath = file.absolutePath
+        cameraTarget = target
+        try {
+            takePhoto.launch(uri)
+        } catch (e: android.content.ActivityNotFoundException) {
+            // No camera app on the phone. Say so, rather than leaving a row
+            // that does nothing when tapped.
+            cameraPath = null
+            cameraTarget = null
+            file.delete()
+            Toast.makeText(this, R.string.camera_unavailable, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /**
+     * Keep a customer's photo. [temp] is the camera's working file when the
+     * photo was just taken, and null when it came from the phone's gallery,
+     * which is the owner's and not ours to delete.
+     */
+    private fun savePhoto(uri: Uri, temp: java.io.File? = null) {
         lifecycleScope.launch {
             val path = withContext(Dispatchers.IO) {
                 PartyPhoto.save(this@PartyDetailActivity, partyId, uri)
             }
+            temp?.delete()
 
             if (path == null) {
                 Toast.makeText(
@@ -890,6 +1070,12 @@ class PartyDetailActivity : AppCompatActivity() {
                 }
             }
             .show()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        cameraPath?.let { outState.putString(STATE_CAMERA_PATH, it) }
+        cameraTarget?.let { outState.putString(STATE_CAMERA_TARGET, it.name) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

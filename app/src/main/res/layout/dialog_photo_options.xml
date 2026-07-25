@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Where a photo comes from: the camera, or one already on the phone.
+
+  This is a layout and not setItems(), because the dialog needs to carry the
+  privacy note as well and an AlertDialog will not show both. Given a message
+  and a list it keeps the message and drops the list — which is exactly what
+  went wrong here: the note appeared, the choices did not, and there was no
+  way to add a photo at all.
+
+  A note the owner cannot read is no protection, and a list that never appears
+  is no feature. Both fit here.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="8dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:id="@+id/tvPhotoNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:textColor="@color/text_muted"
+        android:textSize="12sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/optCamera"
+        style="@style/PhotoOptionRow"
+        android:text="@string/photo_from_camera"
+        app:icon="@drawable/ic_camera" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/optGallery"
+        style="@style/PhotoOptionRow"
+        android:text="@string/photo_from_gallery"
+        app:icon="@drawable/ic_image" />
+
+    <!-- Only shown when there is something to remove. -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/optRemove"
+        style="@style/PhotoOptionRow"
+        android:text="@string/remove_photo"
+        android:textColor="@color/red_gave"
+        android:visibility="gone"
+        app:icon="@drawable/ic_delete"
+        app:iconTint="@color/red_gave" />
+</LinearLayout>

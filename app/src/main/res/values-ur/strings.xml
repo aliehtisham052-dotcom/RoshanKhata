@@ -273,6 +273,9 @@
     <string name="set_photo">تصویر لگائیں</string>
     <string name="change_photo">تصویر بدلیں</string>
     <string name="remove_photo">تصویر ہٹائیں</string>
+    <string name="photo_from_camera">کیمرے سے تصویر لیں</string>
+    <string name="photo_from_gallery">فون سے تصویر چنیں</string>
+    <string name="camera_unavailable">اس فون میں کیمرہ ایپ نہیں ہے۔</string>
     <string name="photo_saved">تصویر محفوظ ہو گئی</string>
     <string name="photo_removed">تصویر ہٹا دی گئی</string>
     <string name="photo_save_failed">یہ تصویر محفوظ نہیں ہو سکی۔ دوسری چنیں۔</string>
