@@ -177,4 +177,65 @@ class VoiceEntryTest {
         assertNull(p.partyName)
         assertTrue(p.amount!! > 0)
     }
+
+    /**
+     * English did not work at all. The number words and the verbs were Urdu
+     * and Roman Urdu only, so an owner running the app in English — the
+     * default — had the customer's name found and nothing else. The entry
+     * opened blank and they typed it in by hand, which is what the microphone
+     * was meant to save them.
+     */
+    @Test
+    fun `english sentences are read`() {
+        val p = VoiceEntry.parse("I gave Ahmed five thousand", listOf("Ahmed"))
+        assertEquals("Ahmed", p.partyName)
+        assertEquals(5000.0, p.amount!!, 0.0)
+        assertEquals(true, p.isGiven)
+    }
+
+    @Test
+    fun `english money coming in`() {
+        val p = VoiceEntry.parse("Received twenty five thousand from Bilal", listOf("Bilal"))
+        assertEquals("Bilal", p.partyName)
+        assertEquals(25000.0, p.amount!!, 0.0)
+        assertEquals(false, p.isGiven)
+    }
+
+    /**
+     * English builds a hundred thousand out of two words. Read the old way —
+     * a hundred, then a thousand, added — this came out as 1,100 for a figure
+     * the owner meant as 100,000.
+     */
+    @Test
+    fun `english hundreds multiply rather than add`() {
+        val p = VoiceEntry.parse("Gave Ali one hundred thousand", listOf("Ali"))
+        assertEquals(100000.0, p.amount!!, 0.0)
+        assertEquals(750.0, VoiceEntry.parse("seven hundred fifty", listOf("Ali")).amount!!, 0.0)
+    }
+
+    /**
+     * "Gave back" says money moved but not who moved it. Both directions
+     * match, so the sentence is reported unclear and the owner is asked —
+     * better than putting the amount on the wrong side of the ledger.
+     */
+    @Test
+    fun `gave back is left for the owner to settle`() {
+        val p = VoiceEntry.parse("Ahmed gave back five thousand", listOf("Ahmed"))
+        assertEquals(5000.0, p.amount!!, 0.0)
+        assertNull(p.isGiven)
+    }
+
+    /** Crore was missing from both languages. */
+    @Test
+    fun `crore is understood`() {
+        assertEquals(10000000.0, VoiceEntry.parse("ek crore", listOf("Ali")).amount!!, 0.0)
+        assertEquals(10000000.0, VoiceEntry.parse("ایک کروڑ", listOf("Ali")).amount!!, 0.0)
+    }
+
+    /** English grammar must not be mistaken for a customer. */
+    @Test
+    fun `english grammar words are not names`() {
+        val p = VoiceEntry.parse("I have the total amount", listOf("Ihsan", "Amina"))
+        assertNull(p.partyName)
+    }
 }
