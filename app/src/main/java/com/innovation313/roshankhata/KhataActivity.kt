@@ -846,16 +846,28 @@ class KhataActivity : AppCompatActivity() {
     /**
      * Which customer did they mean?
      *
-     * Shown only when the amount was understood and the name was not. Sorted
-     * the way the list already is, so the one dealt with most recently is at
-     * the top — which is usually the one being spoken about.
+     * Shown when the amount was understood and the name could not be pinned
+     * down with enough confidence to write against someone's money.
+     *
+     * The whole book is here, every time. What changes is the order: the
+     * names that answer what was spoken come first, judged by the same rule
+     * the search box uses, and everything else follows. Ordering rather than
+     * filtering is deliberate — a spoken name arrives spelled however the
+     * recogniser chose, and a filter that guesses wrong does not show a worse
+     * list, it shows a list without the customer in it and tells the owner
+     * something untrue about their own book.
      */
     private fun pickPartyForSpoken(heard: String, amount: Double, isGiven: Boolean) {
-        val choices = allParties.sortedByDescending { it.lastActivity }
-        if (choices.isEmpty()) {
+        if (allParties.isEmpty()) {
             showSpokenProblem(heard, getString(R.string.voice_no_party))
             return
         }
+
+        val spoken = VoiceEntry.nameWords(heard)
+        val choices = NameSearch.rankSpoken(
+            allParties.sortedByDescending { it.lastActivity },
+            spoken
+        ) { it.name }
 
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.voice_which_party, Format.money(amount)))

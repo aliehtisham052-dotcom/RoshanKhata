@@ -152,6 +152,19 @@ object VoiceEntry {
         text.split(Regex("[^\\p{L}\\p{Nd}]+")).filter { it.isNotBlank() }
 
     /** Grammar, figures and verbs — everything a name is not. */
+    /**
+     * The words of [spoken] that could be part of a name.
+     *
+     * Grammar, figures and the giving and taking verbs are already known here
+     * and thrown away, so what comes back is what the owner would have typed
+     * into the search box if they had typed instead of spoken. Exposed so the
+     * picker can search with it: when this reader cannot name the customer
+     * with confidence, the next best thing is to search for them the way any
+     * other screen would, not to hand back the whole book.
+     */
+    fun nameWords(spoken: String): List<String> =
+        tokenise(normalise(spoken)).filterNot { isNoise(it) }
+
     private fun isNoise(word: String): Boolean =
         word in STOPWORDS ||
             UNITS.containsKey(word) ||
