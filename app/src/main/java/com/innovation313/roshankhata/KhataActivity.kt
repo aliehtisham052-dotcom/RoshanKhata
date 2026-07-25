@@ -13,6 +13,7 @@ import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -30,6 +31,7 @@ import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.data.VoiceEntry
+import com.innovation313.roshankhata.data.VoiceLanguage
 import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.PartyAdapter
 import kotlinx.coroutines.flow.collectLatest
@@ -85,6 +87,10 @@ class KhataActivity : AppCompatActivity() {
         setContentView(R.layout.activity_khata)
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        // Asked now rather than on the first tap, so the microphone opens at
+        // once and in the right language.
+        askPhoneWhatItSpeaks()
 
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvTotalGet = findViewById(R.id.tvTotalGet)
@@ -672,15 +678,78 @@ class KhataActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * What this phone's recogniser can actually listen in, or null until it
+     * has answered. Asked once per process — the answer does not change while
+     * the app is open, and a shopkeeper tapping the microphone should not wait
+     * on a broadcast.
+     */
+    private var speechLanguages: List<String>? = null
+
+    /** The app's own language, as a BCP-47 tag: "ur", "ur-Latn", "en", … */
+    private fun appLanguageTag(): String {
+        val chosen = AppCompatDelegate.getApplicationLocales()
+        if (!chosen.isEmpty) chosen[0]?.let { return it.toLanguageTag() }
+        return resources.configuration.locales[0].toLanguageTag()
+    }
+
+    /**
+     * Ask the phone which languages it can hear.
+     *
+     * Sent early and answered in the background, so the answer is usually
+     * waiting by the time the microphone is tapped. If it is not, the intent
+     * still goes out with the preferred tag — the same guess as before, but
+     * now only a guess until the phone says otherwise.
+     */
+    private fun askPhoneWhatItSpeaks() {
+        if (speechLanguages != null) return
+        try {
+            sendOrderedBroadcast(
+                Intent(android.speech.RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS),
+                null,
+                object : android.content.BroadcastReceiver() {
+                    override fun onReceive(context: android.content.Context?, intent: Intent?) {
+                        speechLanguages = getResultExtras(true)?.getStringArrayList(
+                            android.speech.RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES
+                        )
+                    }
+                },
+                null, RESULT_OK, null, null
+            )
+        } catch (e: Exception) {
+            // A phone with no recogniser at all cannot answer. startListening
+            // already handles that case where the owner can see it.
+        }
+    }
+
     private fun startListening() {
+        val choice = VoiceLanguage.choose(appLanguageTag(), speechLanguages)
+
         val intent = Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
                 android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
             )
-            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, "ur-PK")
+            // Left off entirely when nothing suitable was found, so the phone
+            // falls back to its own setting rather than to a language of this
+            // app's choosing.
+            choice.tag?.let {
+                putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, it)
+            }
             putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, getString(R.string.voice_prompt))
         }
+
+        // Listening in a language the owner did not pick is not something to
+        // do quietly. Without this the app would appear to be broken, when in
+        // fact the phone simply does not carry their language.
+        if (!choice.exact) {
+            Toast.makeText(
+                this,
+                getString(R.string.voice_language_missing, choice.tag ?: ""),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
         try {
             listen.launch(intent)
         } catch (e: android.content.ActivityNotFoundException) {

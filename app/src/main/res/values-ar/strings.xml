@@ -707,6 +707,7 @@
     <string name="voice_entry">أدخل بالصوت</string>
     <string name="voice_prompt">قل مثلاً: أعطيت بلال خمسة آلاف</string>
     <string name="voice_unavailable">لا يوجد في هذا الهاتف محرك للتعرف على الصوت.</string>
+    <string name="voice_language_missing">هذا الهاتف لا يحتوي على تلك اللغة. الاستماع بـ %1$s.</string>
     <string name="voice_not_understood">لم نفهم ذلك. حاول ثانية أو اكتبه.</string>
     <string name="voice_heard">سُمع: %1$s</string>
     <string name="voice_confirm_title">هل هذا صحيح؟</string>

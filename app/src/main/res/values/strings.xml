@@ -729,8 +729,9 @@
     <string name="made_with_app">Roshan Khata</string>
     <string name="more_details">Add note, goods or recovery</string>
     <string name="voice_entry">Speak an entry</string>
-    <string name="voice_prompt">Say it like: Bilal ko paanch hazaar diye</string>
+    <string name="voice_prompt">Say it like: Gave Bilal five thousand</string>
     <string name="voice_unavailable">This phone has no speech recogniser.</string>
+    <string name="voice_language_missing">Your phone does not have that language. Listening in %1$s.</string>
     <string name="voice_not_understood">Could not make that out. Try again, or type it.</string>
     <string name="voice_heard">Heard: %1$s</string>
     <string name="voice_confirm_title">Is this right?</string>

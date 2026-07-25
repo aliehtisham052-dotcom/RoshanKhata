@@ -25,12 +25,19 @@ object VoiceEntry {
     // Both scripts, because the recogniser returns whichever the speaker used.
     private val GAVE = listOf(
         "diye", "diya", "di", "dee", "dena", "dene", "de diye", "de dia",
-        "دیے", "دیا", "دی", "دیں", "دینا", "دیئے"
+        "دیے", "دیا", "دی", "دیں", "دینا", "دیئے",
+        "gave", "give", "given", "paid", "pay", "lent"
     )
     private val GOT = listOf(
         "liye", "liya", "li", "mile", "mila", "mili", "wapis", "wasool",
         "aaye", "aya",
-        "لیے", "لیا", "لی", "لیں", "ملے", "ملا", "ملی", "واپس", "وصول", "آئے"
+        "لیے", "لیا", "لی", "لیں", "ملے", "ملا", "ملی", "واپس", "وصول", "آئے",
+        "got", "received", "took", "taken", "collected", "returned", "repaid",
+        // Deliberately here as well as in GAVE. "Gave back" and "paid back"
+        // read as both directions at once, so the sentence is reported as
+        // unclear and the owner is asked — which is the honest answer, since
+        // neither phrase says who handed what to whom.
+        "gave back", "paid back"
     )
 
     /** Urdu and Arabic-Indic digits, so ٥٠٠٠ and ۵۰۰۰ read as 5000. */
@@ -54,13 +61,30 @@ object VoiceEntry {
         "nau" to 9.0, "no" to 9.0, "نو" to 9.0,
         "das" to 10.0, "dus" to 10.0, "دس" to 10.0,
         "bees" to 20.0, "بیس" to 20.0,
-        "pachas" to 50.0, "pachaas" to 50.0, "پچاس" to 50.0
+        "pachas" to 50.0, "pachaas" to 50.0, "پچاس" to 50.0,
+
+        // English, for an owner who has set the app to English. Written out to
+        // nineteen and then by tens, because English says "twenty five" where
+        // Urdu says "pachees" — the tens and the units arrive as two words and
+        // are added together by the reader below.
+        "one" to 1.0, "two" to 2.0, "three" to 3.0, "four" to 4.0,
+        "five" to 5.0, "six" to 6.0, "seven" to 7.0, "eight" to 8.0,
+        "nine" to 9.0, "ten" to 10.0,
+        "eleven" to 11.0, "twelve" to 12.0, "thirteen" to 13.0,
+        "fourteen" to 14.0, "fifteen" to 15.0, "sixteen" to 16.0,
+        "seventeen" to 17.0, "eighteen" to 18.0, "nineteen" to 19.0,
+        "twenty" to 20.0, "thirty" to 30.0, "forty" to 40.0, "fifty" to 50.0,
+        "sixty" to 60.0, "seventy" to 70.0, "eighty" to 80.0, "ninety" to 90.0
     )
 
     private val MULTIPLIERS = mapOf(
         "sau" to 100.0, "سو" to 100.0,
         "hazar" to 1000.0, "hazaar" to 1000.0, "hazār" to 1000.0, "ہزار" to 1000.0,
-        "lakh" to 100_000.0, "lac" to 100_000.0, "لاکھ" to 100_000.0
+        "lakh" to 100_000.0, "lac" to 100_000.0, "لاکھ" to 100_000.0,
+        // Crore was missing on both sides. A shop that deals in lakhs
+        // eventually says the next word up.
+        "crore" to 10_000_000.0, "karor" to 10_000_000.0, "کروڑ" to 10_000_000.0,
+        "hundred" to 100.0, "thousand" to 1000.0, "million" to 1_000_000.0
     )
 
     /**
@@ -104,7 +128,14 @@ object VoiceEntry {
         "اور", "بھی", "تو", "یہ", "وہ", "روپے", "روپیہ",
         "main", "mein", "ne", "ko", "ka", "ki", "ke", "se", "par", "keh",
         "hai", "hain", "hun", "tha", "thi", "the", "aur", "bhi", "to",
-        "rupay", "rupaye", "rupee", "rupees", "rs"
+        "rupay", "rupaye", "rupee", "rupees", "rs",
+        // English grammar. Same reasoning as above: these are words a sentence
+        // is built from, never a customer. Words that could be part of a name
+        // are left out.
+        "i", "you", "he", "she", "we", "they", "him", "her", "them",
+        "a", "an", "of", "for", "from", "and", "is", "are", "was", "were",
+        "has", "have", "had", "it", "this", "that", "on", "in", "at",
+        "total", "amount", "money", "cash"
     )
 
     /** Split on anything that is not a letter or a digit, in either script. */
@@ -285,26 +316,39 @@ object VoiceEntry {
     /**
      * Spoken numbers: "paanch hazaar" is 5000, "do lakh" is 200000, and a
      * bare "hazaar" on its own is 1000.
+     *
+     * A multiplier of a thousand or more closes off what came before it and
+     * banks the result; a smaller one — a hundred — folds into what is being
+     * built. This is what lets English say a figure the way English says it.
+     * "One hundred thousand" is a hundred thousands, not a hundred and then a
+     * thousand: reading it as the latter, which the earlier version did, gave
+     * 1,100 for a figure a shopkeeper meant as 100,000.
      */
     private fun fromWords(text: String): Double? {
-        val words = text.split(" ", "،", ",")
-        var total: Double? = null
-        var pending: Double? = null
+        var total = 0.0
+        var current = 0.0
+        var seen = false
 
-        for (w in words) {
+        for (w in text.split(" ", "،", ",")) {
             val unit = UNITS[w]
             if (unit != null) {
-                pending = (pending ?: 0.0) + unit
+                current += unit
+                seen = true
                 continue
             }
-            val mult = MULTIPLIERS[w]
-            if (mult != null) {
-                total = (total ?: 0.0) + (pending ?: 1.0) * mult
-                pending = null
+            val mult = MULTIPLIERS[w] ?: continue
+            seen = true
+            // A multiplier with nothing before it counts once: "hazaar" is one
+            // thousand, not none.
+            val take = if (current == 0.0) 1.0 else current
+            if (mult >= 1000.0) {
+                total += take * mult
+                current = 0.0
+            } else {
+                current = take * mult
             }
         }
-        if (pending != null) total = (total ?: 0.0) + pending
-        return total
+        return if (seen) total + current else null
     }
 
     /**
