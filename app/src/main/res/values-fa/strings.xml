@@ -260,8 +260,8 @@
     <string name="cheque_note_prefix">چک %1$s</string>
 
     <!-- Search & sort -->
-    <string name="search_parties">جستجو با نام یا شماره</string>
-    <string name="search_entries">جستجو در یادداشت، کالا یا شماره</string>
+    <string name="search_parties">نام یا شماره</string>
+    <string name="search_entries">یادداشت یا کالا</string>
     <string name="sort">مرتب‌سازی</string>
     <string name="sort_by">مرتب‌سازی بر اساس</string>
 

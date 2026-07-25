@@ -260,8 +260,8 @@
     <string name="cheque_note_prefix">چيڪ %1$s</string>
 
     <!-- Search & sort -->
-    <string name="search_parties">نالي يا نمبر سان ڳوليو</string>
-    <string name="search_entries">نوٽ، مال يا حوالو ڳوليو</string>
+    <string name="search_parties">نالو يا نمبر</string>
+    <string name="search_entries">نوٽ يا سامان</string>
     <string name="sort">ترتيب</string>
     <string name="sort_by">ترتيب جو بنياد</string>
 

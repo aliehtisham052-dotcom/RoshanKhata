@@ -264,8 +264,8 @@
     <string name="cheque_note_prefix">Cheque %1$s</string>
 
     <!-- Search & sort -->
-    <string name="search_parties">Search by name or number</string>
-    <string name="search_entries">Search notes, goods, or reference</string>
+    <string name="search_parties">Name or number</string>
+    <string name="search_entries">Notes or goods</string>
     <string name="sort">Sort</string>
     <string name="sort_by">Sort by</string>
 
