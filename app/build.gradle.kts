@@ -13,11 +13,21 @@ ksp {
 
 android {
     namespace = "com.innovation313.roshankhata"
-    compileSdk = 34
+    // Compiled against Android 16, still behaving like Android 14.
+    //
+    // compileSdk is which APIs the code may call; targetSdk is which runtime
+    // behaviour the app opts in to. Moving them together would mix two kinds
+    // of breakage in one build — a compile error and a screen that has quietly
+    // rearranged itself — so this build moves only the first. Warnings about
+    // anything deprecated since 34 surface here, where they are cheap.
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.innovation313.roshankhata"
         minSdk = 24
+        // Deliberately still 34. Step three moves it to 36, once the window
+        // insets are handled — from 35 Android draws apps behind the status
+        // and navigation bars whether they are ready or not.
         targetSdk = 34
         versionCode = 1
         versionName = "0.1.0"
