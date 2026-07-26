@@ -39,7 +39,10 @@
         <EditText
             android:id="@+id/etAmount"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:minHeight="64dp"
             android:hint="@string/amount"
             android:importantForAutofill="no"
             android:focusable="true"
@@ -127,18 +130,19 @@
           the only input. That keeps entry to a single, familiar number pad
           instead of a keyboard plus a separate strip.
 
-          Weighted, so the pad takes the whole of what the amount field, the
-          bill row and the link below them leave behind. It used to be a fixed
-          block of keys with a field of white under it — on a tall phone,
-          nearly a third of the screen doing nothing while the keys stayed
-          small. The pad carries its own floor, so on a short phone it stops
+          Weighted at three shares against the amount field's one, so the pad
+          takes most of what is spare and the box above it takes the rest. It
+          used to take all of it: the pad grew until the field a shopkeeper
+          actually types into was a thin line squeezed under the title, which
+          is the wrong way round on a screen whose whole purpose is that
+          figure. The pad carries its own floor, so on a short phone it stops
           shrinking and the screen scrolls instead.
         -->
         <include
             layout="@layout/view_calculator"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="3" />
 
         <!--
           The way through to the rest. A row rather than a dialog button,
