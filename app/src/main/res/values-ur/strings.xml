@@ -713,4 +713,6 @@
     <string name="delete_parties_title">%1$d گاہک حذف کریں؟</string>
     <string name="delete_parties_confirm">%1$d گاہک اور اُن کی تمام انٹریاں ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
     <string name="delete_parties_owing">اِن میں سے %1$d کا حساب باقی ہے — %2$s لینے ہیں، %3$s دینے ہیں۔ ہٹانے سے یہ آپ کے کل میزان سے نکل جائے گا، حساب ختم نہیں ہوگا۔</string>
+    <string name="customer_qr">گاہک کا کیو آر</string>
+    <string name="customer_qr_hint">روشن کھاتہ میں اسکین کریں تو یہ کھاتہ کھل جائے گا۔ کوڈ میں نہ نام ہے، نہ نمبر، نہ حساب۔</string>
 </resources>

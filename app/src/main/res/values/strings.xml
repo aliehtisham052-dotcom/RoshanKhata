@@ -745,4 +745,6 @@
     <string name="delete_parties_title">Delete %1$d customers?</string>
     <string name="delete_parties_confirm">%1$d customers and all their entries will move to the Recycle Bin. You can restore them within 30 days.</string>
     <string name="delete_parties_owing">%1$d of them still have a balance — %2$s to collect, %3$s to pay. Removing them takes that off your totals; it does not settle it.</string>
+    <string name="customer_qr">Customer QR</string>
+    <string name="customer_qr_hint">Scan this in Roshan Khata to open this ledger. The code carries no name, number or balance.</string>
 </resources>

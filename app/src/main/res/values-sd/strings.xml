@@ -741,4 +741,6 @@
     <string name="delete_parties_title">%1$d گراهڪ ڊاهيو؟</string>
     <string name="delete_parties_confirm">%1$d گراهڪ ۽ سندن سڀ داخلائون ري سائيڪل بن ۾ ويندا. توهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</string>
     <string name="delete_parties_owing">انهن مان %1$d جو حساب باقي آهي — %2$s وٺڻا، %3$s ڏيڻا. هٽائڻ سان اهو توهان جي ڪل مان نڪري ويندو، حساب ختم نه ٿيندو.</string>
+    <string name="customer_qr">گراهڪ جو QR</string>
+    <string name="customer_qr_hint">روشن کھاتا ۾ اسڪين ڪريو ته هي کاتو کلي ويندو. ڪوڊ ۾ نه نالو آهي، نه نمبر، نه حساب.</string>
 </resources>

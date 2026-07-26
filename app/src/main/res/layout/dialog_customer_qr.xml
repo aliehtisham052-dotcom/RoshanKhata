@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A customer's QR card: their name, their code, and the way to send it.
+
+  The name is on the screen for the owner's benefit — so the right card goes
+  to the right person — and only on the screen. The QR itself carries nothing
+  but the token: the shared PNG is the code alone, safe to lose, safe to
+  forward, meaningless anywhere but inside this app on this phone.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:id="@+id/tvQrPartyName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/ink"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/ivQr"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/white"
+        android:contentDescription="@string/customer_qr"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="@string/customer_qr_hint"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp" />
+</LinearLayout>

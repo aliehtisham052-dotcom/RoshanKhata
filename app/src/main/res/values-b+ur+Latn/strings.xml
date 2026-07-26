@@ -713,4 +713,6 @@
     <string name="delete_parties_title">%1$d gaahak delete karein?</string>
     <string name="delete_parties_confirm">%1$d gaahak aur unki tamam entries Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</string>
     <string name="delete_parties_owing">In mein se %1$d ka hisaab baqi hai — %2$s lene hain, %3$s dene hain. Hataane se ye aap ke total se nikal jayega, hisaab khatm nahi hoga.</string>
+    <string name="customer_qr">Gaahak ka QR</string>
+    <string name="customer_qr_hint">Roshan Khata mein scan karein to yeh khata khul jayega. Code mein na naam hai, na number, na hisaab.</string>
 </resources>

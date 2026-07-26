@@ -741,4 +741,6 @@
     <string name="delete_parties_title">حذف %1$d مشتری؟</string>
     <string name="delete_parties_confirm">%1$d مشتری و همهٔ ثبت‌هایشان به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</string>
     <string name="delete_parties_owing">%1$d نفر از آنها هنوز مانده‌حساب دارند — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</string>
+    <string name="customer_qr">کد QR مشتری</string>
+    <string name="customer_qr_hint">در روشن کھاتہ اسکن کنید تا این دفتر باز شود. کد نه نام دارد، نه شماره، نه مانده‌حساب.</string>
 </resources>
