@@ -148,14 +148,55 @@
             </LinearLayout>
             <!-- end of the cloud-backup section (hidden until verified) -->
 
-            <TextView
+            <!--
+              File backup, folded away rather than removed.
+
+              With Drive running, the owner called two backups clutter and asked
+              to delete this one. Folding is the answer to the clutter without
+              paying the price of the deletion: the file path is the one backup
+              that needs no internet, no Google account and no Play services —
+              the last door that is nobody's tenant. The screen's own words
+              promise "data you cannot get back without our help is not really
+              yours", and a Drive-only screen would quietly break that promise.
+
+              A tap on the header opens it; the chevron says which way it is.
+            -->
+            <LinearLayout
+                android:id="@+id/fileSectionHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/file_section"
-                android:textColor="@color/ink"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/file_section"
+                    android:textColor="@color/ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/ivFileSectionChevron"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@string/file_section"
+                    android:src="@drawable/ic_chevron_right"
+                    android:rotation="90"
+                    app:tint="@color/text_muted" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fileSectionBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"
@@ -186,6 +227,8 @@
                 android:textSize="15sp"
                 app:cornerRadius="10dp"
                 app:strokeColor="@color/brand_green" />
+
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
