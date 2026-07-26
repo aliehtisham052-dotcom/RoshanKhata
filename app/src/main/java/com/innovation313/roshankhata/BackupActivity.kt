@@ -3,6 +3,7 @@ package com.innovation313.roshankhata
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -43,6 +44,19 @@ class BackupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_backup)
+
+        // The file-backup fold. Closed by default now that Drive is the main
+        // path; one tap opens it. The chevron points right when closed and
+        // down when open, so the state is readable without tapping.
+        val fileHeader = findViewById<View>(R.id.fileSectionHeader)
+        val fileBody = findViewById<View>(R.id.fileSectionBody)
+        val fileChevron = findViewById<android.widget.ImageView>(R.id.ivFileSectionChevron)
+        fileChevron.rotation = 0f
+        fileHeader.setOnClickListener {
+            val open = fileBody.visibility == View.VISIBLE
+            fileBody.visibility = if (open) View.GONE else View.VISIBLE
+            fileChevron.rotation = if (open) 0f else 90f
+        }
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
