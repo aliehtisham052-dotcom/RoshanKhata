@@ -22,6 +22,17 @@ interface KhataDao {
     suspend fun getParty(id: Long): Party?
 
     /**
+     * The customer a scanned card belongs to.
+     *
+     * Deleted customers are excluded on purpose: their card may still be in a
+     * pocket, and a scan of it should say "not found" rather than open a
+     * ledger the owner chose to remove. Restore the customer from the bin and
+     * the same card works again — the token survives deletion.
+     */
+    @Query("SELECT * FROM parties WHERE qrToken = :token AND isDeleted = 0 LIMIT 1")
+    suspend fun partyByQrToken(token: String): Party?
+
+    /**
      * An existing customer of this name, if there is one.
      *
      * Case- and space-insensitive, because "Bilal", "bilal" and " Bilal " are

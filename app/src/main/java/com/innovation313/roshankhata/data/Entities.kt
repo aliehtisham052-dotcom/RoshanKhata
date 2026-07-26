@@ -6,7 +6,10 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /** A customer or supplier. */
-@Entity(tableName = "parties")
+@Entity(
+    tableName = "parties",
+    indices = [Index(value = ["qrToken"], unique = true)]
+)
 data class Party(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
@@ -23,6 +26,20 @@ data class Party(
      * warning them against their own business decisions.
      */
     val creditLimit: Double? = null,
+
+    /**
+     * The customer's QR identity — what their card carries.
+     *
+     * A random token and not the row id, because a printed card outlives the
+     * database that issued it: a restore or an import that renumbered the ids
+     * would kill every card already in a customer's pocket. The token never
+     * changes for as long as the customer exists.
+     *
+     * It is also all the card carries. No name, no phone, no balance — a lost
+     * card tells its finder nothing, because the token only means something
+     * inside this app on the owner's phone.
+     */
+    val qrToken: String? = QrTag.newToken(),
 
     val createdAt: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false,
