@@ -216,6 +216,9 @@ class PartyDetailActivity : AppCompatActivity() {
             ?.let { runCatching { PhotoTarget.valueOf(it) }.getOrNull() }
         setContentView(R.layout.activity_party_detail)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         partyId = intent.getLongExtra(EXTRA_PARTY_ID, 0)
 
         // Arrived by voice: open the entry already filled in, once the screen

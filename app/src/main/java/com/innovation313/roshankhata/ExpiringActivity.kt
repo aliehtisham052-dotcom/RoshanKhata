@@ -35,6 +35,9 @@ class ExpiringActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_expiring)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         tvEmpty = findViewById(R.id.tvNoExpiring)
 
         adapter = ExpiringAdapter()

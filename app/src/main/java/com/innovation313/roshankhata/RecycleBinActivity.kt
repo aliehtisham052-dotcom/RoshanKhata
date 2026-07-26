@@ -38,6 +38,9 @@ class RecycleBinActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recycle_bin)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         tvEmpty = findViewById(R.id.tvBinEmpty)
 
         adapter = BinAdapter { item -> confirmRestore(item) }

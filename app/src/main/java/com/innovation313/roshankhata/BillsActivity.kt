@@ -62,6 +62,9 @@ class BillsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bills)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         tvEmpty = findViewById(R.id.tvNoBills)
         btnExpiring = findViewById(R.id.btnExpiring)
 

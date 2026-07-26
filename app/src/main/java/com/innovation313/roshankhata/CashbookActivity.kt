@@ -46,6 +46,9 @@ class CashbookActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cashbook)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         tvIn = findViewById(R.id.tvCashIn)
         tvOut = findViewById(R.id.tvCashOut)
         tvNet = findViewById(R.id.tvCashNet)

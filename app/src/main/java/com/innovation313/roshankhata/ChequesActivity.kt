@@ -55,6 +55,9 @@ class ChequesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cheques)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         tvNoCheques = findViewById(R.id.tvNoCheques)
         tvDueSummary = findViewById(R.id.tvDueSummary)
 

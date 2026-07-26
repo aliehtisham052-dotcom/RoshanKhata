@@ -29,6 +29,9 @@ class ReportProblemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_problem)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         findViewById<MaterialButton>(R.id.btnSendReport).setOnClickListener { send() }
     }
 

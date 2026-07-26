@@ -44,6 +44,9 @@ class BackupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_backup)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         findViewById<MaterialButton>(R.id.btnBackup).setOnClickListener { createBackup() }
 
         findViewById<MaterialButton>(R.id.btnRestore).setOnClickListener {

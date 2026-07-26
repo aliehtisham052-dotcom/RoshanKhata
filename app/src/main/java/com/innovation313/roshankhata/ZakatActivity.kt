@@ -51,6 +51,9 @@ class ZakatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_zakat)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         etSilverPrice = findViewById(R.id.etSilverPrice)
         toggleNisab = findViewById(R.id.toggleNisab)
         tvNisabStandardNote = findViewById(R.id.tvNisabStandardNote)

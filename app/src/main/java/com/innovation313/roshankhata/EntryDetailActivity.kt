@@ -50,6 +50,9 @@ class EntryDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_entry_detail)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         entryId = intent.getLongExtra(EXTRA_ENTRY_ID, 0)
         partyName = intent.getStringExtra(EXTRA_PARTY_NAME).orEmpty()
 

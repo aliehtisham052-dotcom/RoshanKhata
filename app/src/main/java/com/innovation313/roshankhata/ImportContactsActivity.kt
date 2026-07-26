@@ -66,6 +66,9 @@ class ImportContactsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_import_contacts)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         tvStatus = findViewById(R.id.tvStatus)
         tvSelectedCount = findViewById(R.id.tvSelectedCount)
         btnImport = findViewById(R.id.btnImport)

@@ -45,6 +45,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvTotalGet = findViewById(R.id.tvTotalGet)
         tvTotalGive = findViewById(R.id.tvTotalGive)

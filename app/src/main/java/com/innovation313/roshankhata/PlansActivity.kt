@@ -52,6 +52,9 @@ class PlansActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_plans)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         tvEmpty = findViewById(R.id.tvNoPlans)
 
         adapter = PlanAdapter { plan -> showPlanActions(plan) }

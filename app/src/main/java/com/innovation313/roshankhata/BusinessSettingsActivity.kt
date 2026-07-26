@@ -57,6 +57,9 @@ class BusinessSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_business_settings)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         etBusinessName = findViewById(R.id.etBusinessName)
         ivQrPreview = findViewById(R.id.ivQrPreview)
         tvNoQr = findViewById(R.id.tvNoQr)
