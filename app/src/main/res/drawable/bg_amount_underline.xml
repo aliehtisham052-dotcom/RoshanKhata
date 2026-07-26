@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One rule along the bottom, nothing else.
+
+  The amount field drew its own underline, which put the running total below
+  the line and left the sum sitting above it — two halves of one figure on
+  opposite sides of a divider. This is worn by the box that holds both, so the
+  line falls under the pair and reads as one field.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+    <item
+        android:gravity="bottom"
+        android:height="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/hairline" />
+        </shape>
+    </item>
+</layer-list>
