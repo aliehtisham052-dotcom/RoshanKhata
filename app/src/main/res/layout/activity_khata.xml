@@ -220,6 +220,30 @@
                 app:strokeColor="@color/gold_on_dark" />
 
             <!--
+              Scan a customer's card. Beside the mic because it is the third
+              way of saying who you mean — typed, spoken, or shown — and the
+              only one of the three that cannot land on the wrong Bilal.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnScanQr"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="6dp"
+                android:contentDescription="@string/scan_customer_qr"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_qr_scan"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
+
+            <!--
               Which stretch of days to show. Beside the sort: both narrow the
               same list, and "who did I deal with today" is a question asked
               at every closing.

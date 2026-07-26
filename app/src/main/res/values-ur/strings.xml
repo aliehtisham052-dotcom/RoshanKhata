@@ -715,4 +715,8 @@
     <string name="delete_parties_owing">اِن میں سے %1$d کا حساب باقی ہے — %2$s لینے ہیں، %3$s دینے ہیں۔ ہٹانے سے یہ آپ کے کل میزان سے نکل جائے گا، حساب ختم نہیں ہوگا۔</string>
     <string name="customer_qr">گاہک کا کیو آر</string>
     <string name="customer_qr_hint">روشن کھاتہ میں اسکین کریں تو یہ کھاتہ کھل جائے گا۔ کوڈ میں نہ نام ہے، نہ نمبر، نہ حساب۔</string>
+    <string name="scan_customer_qr">گاہک کا کارڈ اسکین کریں</string>
+    <string name="qr_not_ours">یہ کوڈ روشن کھاتہ کے گاہک کا کارڈ نہیں۔</string>
+    <string name="qr_no_customer">اس کارڈ کا کوئی گاہک اس کھاتے میں نہیں ملا۔</string>
+    <string name="qr_scan_failed">اسکینر نہیں کھل سکا۔ اس کے لیے Google Play services درکار ہے۔</string>
 </resources>

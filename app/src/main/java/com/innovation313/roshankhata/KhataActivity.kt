@@ -24,6 +24,10 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppLock
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Party
@@ -152,6 +156,8 @@ class KhataActivity : AppCompatActivity() {
         findViewById<View>(R.id.btnDeleteSelected).setOnClickListener {
             confirmDeleteSelected()
         }
+
+        findViewById<View>(R.id.btnScanQr).setOnClickListener { scanCustomerCard() }
 
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddParty).setOnClickListener {
             showAddPartyChoice()
@@ -385,6 +391,58 @@ class KhataActivity : AppCompatActivity() {
         balance = 0.0,
         lastActivity = 0L
     )
+
+    /**
+     * Scan a customer's card and open their ledger.
+     *
+     * The scanner is Google Play services' own — its UI, its camera session,
+     * its models — which is why this app still declares no camera permission.
+     * The trade is stated in the failure message: a phone without Play
+     * services cannot scan, and is told so instead of shown nothing.
+     *
+     * Three outcomes, each with its own words:
+     * - a card of ours whose customer is on the books → their ledger opens.
+     * - a QR that is not ours (a payment code, a link, another shop's card)
+     *   → "not a customer card". QrTag decides this, and its tests hold the
+     *   line: a near-miss on an identity is a miss.
+     * - a card of ours with no living customer — deleted, or another phone's
+     *   book → "no customer answers to it". Distinct from the second case,
+     *   because the owner holding a card they themselves issued deserves to
+     *   know the card is fine and the customer is what's missing.
+     *
+     * Cancelling the scanner is not an outcome and says nothing.
+     */
+    private fun scanCustomerCard() {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+
+        GmsBarcodeScanning.getClient(this, options).startScan()
+            .addOnSuccessListener { barcode ->
+                val token = QrTag.parse(barcode.rawValue)
+                if (token == null) {
+                    Toast.makeText(this, R.string.qr_not_ours, Toast.LENGTH_LONG).show()
+                    return@addOnSuccessListener
+                }
+                lifecycleScope.launch {
+                    val party = withContext(Dispatchers.IO) { dao.partyByQrToken(token) }
+                    if (party == null) {
+                        Toast.makeText(
+                            this@KhataActivity, R.string.qr_no_customer, Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        startActivity(
+                            Intent(this@KhataActivity, PartyDetailActivity::class.java)
+                                .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
+                        )
+                    }
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_LONG).show()
+            }
+    }
 
     /** Add or drop one customer from the selection. */
     private fun toggleSelected(party: PartyWithBalance) {

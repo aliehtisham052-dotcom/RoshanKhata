@@ -743,4 +743,8 @@
     <string name="delete_parties_owing">%1$d نفر از آنها هنوز مانده‌حساب دارند — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</string>
     <string name="customer_qr">کد QR مشتری</string>
     <string name="customer_qr_hint">در روشن کھاتہ اسکن کنید تا این دفتر باز شود. کد نه نام دارد، نه شماره، نه مانده‌حساب.</string>
+    <string name="scan_customer_qr">اسکن کارت مشتری</string>
+    <string name="qr_not_ours">این کد کارتِ مشتریِ روشن کھاتہ نیست.</string>
+    <string name="qr_no_customer">هیچ مشتری‌ای در این دفتر با این کارت یافت نشد.</string>
+    <string name="qr_scan_failed">اسکنر باز نشد. به Google Play services نیاز دارد.</string>
 </resources>
