@@ -249,6 +249,26 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
     }
 }
 
+/**
+ * Every customer gets a QR identity.
+ *
+ * Backfilled with random bytes rather than derived from anything — sixteen of
+ * them, hexed, which is the same thirty-two-character shape QrTag.newToken()
+ * writes for customers created from now on. randomblob() is evaluated per
+ * row, so no two customers share a token, and the unique index would refuse
+ * the astronomically unlikely collision rather than let two cards open one
+ * ledger.
+ */
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE parties ADD COLUMN qrToken TEXT")
+        db.execSQL("UPDATE parties SET qrToken = lower(hex(randomblob(16)))")
+        db.execSQL(
+            "CREATE UNIQUE INDEX IF NOT EXISTS index_parties_qrToken ON parties(qrToken)"
+        )
+    }
+}
+
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
     MIGRATION_1_2,
@@ -258,5 +278,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_5_6,
     MIGRATION_6_7,
     MIGRATION_7_8,
-    MIGRATION_8_9
+    MIGRATION_8_9,
+    MIGRATION_9_10
 )
