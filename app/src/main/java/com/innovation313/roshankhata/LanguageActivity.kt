@@ -39,6 +39,9 @@ class LanguageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_language)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         // Language tag per button. English clears to the default (base values/).
         val choices = mapOf(
             R.id.langEnglish to "en",

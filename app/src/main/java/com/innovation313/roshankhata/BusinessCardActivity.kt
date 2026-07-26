@@ -46,6 +46,9 @@ class BusinessCardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_business_card)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         preview = findViewById(R.id.ivCardPreview)
         etBizName = findViewById(R.id.etBizName)
         etType = findViewById(R.id.etType)

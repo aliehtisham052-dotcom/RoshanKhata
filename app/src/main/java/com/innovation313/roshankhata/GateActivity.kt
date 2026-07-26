@@ -39,6 +39,9 @@ class GateActivity : AppCompatActivity() {
         // met the language list before they had seen the app's own name.
         setContentView(R.layout.activity_gate)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         // Long enough to read on the first launch, brief on the rest. Someone
         // opening the app for the tenth time today wants their ledger, not the
         // logo they already know.

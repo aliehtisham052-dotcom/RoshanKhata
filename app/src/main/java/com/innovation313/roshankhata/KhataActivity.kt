@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -103,55 +102,12 @@ class KhataActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Edge-to-edge, on this screen and nowhere else yet.
-        //
-        // From Android 15 the system turns this on for us and from 16 there is
-        // no turning it off, so the app has to look right with it. Switching it
-        // on early is the only way to see that before the targetSdk bump —
-        // otherwise the change that ships it is the change that tests it.
-        //
-        // Once before, this was switched on for every screen at once with the
-        // padding worked out by hand, and every screen was cut top and bottom.
-        // So: one screen, and no arithmetic. The header carries
-        // fitsSystemWindows, which hands the job to the framework — it pads the
-        // header by exactly the status bar's height, and the gradient fills the
-        // padding, so the colour runs up behind the clock as it always did.
-        // The bottom bar is left alone; a BottomNavigationView already insets
-        // itself, and helping it would only double the gap.
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
         setContentView(R.layout.activity_khata)
 
-        // Keep the header clear of the status bar — by adding to its designed
-        // padding, never by replacing it.
-        //
-        // fitsSystemWindows was tried first and looked right until the sides
-        // were checked: it writes ALL of a view's padding, so the header's
-        // 20dp start and end went to zero and the title sat on the screen's
-        // edge. The base padding is read once here, before any insets arrive,
-        // and the listener only ever adds the bar's height on top of it — run
-        // twice, it computes the same answer, and the sides are never touched
-        // beyond the cutout's own demand.
-        run {
-            val header = findViewById<View>(R.id.header)
-            val base = intArrayOf(
-                header.paddingLeft, header.paddingTop,
-                header.paddingRight, header.paddingBottom
-            )
-            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(header) { v, insets ->
-                val bars = insets.getInsets(
-                    androidx.core.view.WindowInsetsCompat.Type.systemBars() or
-                        androidx.core.view.WindowInsetsCompat.Type.displayCutout()
-                )
-                v.setPadding(
-                    base[0] + bars.left,
-                    base[1] + bars.top,
-                    base[2] + bars.right,
-                    base[3]
-                )
-                insets
-            }
-        }
+        // Edge-to-edge, the mechanism proven on this very screen — now shared
+        // by every screen from ScreenInsets so there is one implementation to
+        // keep right instead of a copy per Activity.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
 

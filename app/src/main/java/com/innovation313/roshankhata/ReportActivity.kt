@@ -69,6 +69,9 @@ class ReportActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report)
 
+        // Edge-to-edge, the mechanism proven on the Home screen.
+        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+
         partyId = intent.getLongExtra(EXTRA_PARTY_ID, 0)
         if (partyId == 0L) {
             finish()
