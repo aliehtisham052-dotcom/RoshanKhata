@@ -34,6 +34,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.QrTag
+import com.innovation313.roshankhata.ui.QrImage
 import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
@@ -1092,6 +1094,68 @@ class PartyDetailActivity : AppCompatActivity() {
         cameraTarget?.let { outState.putString(STATE_CAMERA_TARGET, it.name) }
     }
 
+    /**
+     * The customer's QR card: shown big for a counter scan, shareable as a
+     * PNG for their phone.
+     *
+     * Every customer should already have a token — migration 9→10 backfilled
+     * the book and new customers are born with one — but a customer restored
+     * from an old external backup could arrive without. That case is repaired
+     * here, once, and saved: a card issued twice must carry the same code, so
+     * the token is never generated without being written back.
+     */
+    private fun showCustomerQr() {
+        lifecycleScope.launch {
+            val party = withContext(Dispatchers.IO) { dao.getParty(partyId) } ?: return@launch
+
+            val token = party.qrToken ?: run {
+                val fresh = QrTag.newToken()
+                withContext(Dispatchers.IO) { dao.updateParty(party.copy(qrToken = fresh)) }
+                fresh
+            }
+
+            val qr = withContext(Dispatchers.IO) { QrImage.of(QrTag.payload(token)) }
+
+            val view = layoutInflater.inflate(R.layout.dialog_customer_qr, null)
+            view.findViewById<TextView>(R.id.tvQrPartyName).text = party.name
+            view.findViewById<android.widget.ImageView>(R.id.ivQr).setImageBitmap(qr)
+
+            MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                .setTitle(R.string.customer_qr)
+                .setView(view)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.share) { _, _ -> shareCustomerQr(qr) }
+                .show()
+        }
+    }
+
+    /**
+     * The PNG that goes to the customer is the code alone — no name on it.
+     * The name identifies them to anyone the image is forwarded to; the bare
+     * code identifies them to nobody, because it only resolves inside this
+     * app on this phone.
+     */
+    private fun shareCustomerQr(qr: android.graphics.Bitmap) {
+        try {
+            val dir = java.io.File(cacheDir, "receipts").apply { mkdirs() }
+            val file = java.io.File(dir, "customer_qr_${partyId}.png")
+            java.io.FileOutputStream(file).use {
+                qr.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+            }
+            val uri = androidx.core.content.FileProvider.getUriForFile(
+                this, "$packageName.fileprovider", file
+            )
+            val share = Intent(Intent.ACTION_SEND).apply {
+                type = "image/png"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(share, getString(R.string.share)))
+        } catch (ex: Exception) {
+            Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_party_detail, menu)
         return true
@@ -1099,6 +1163,10 @@ class PartyDetailActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_customer_qr -> {
+                showCustomerQr()
+                true
+            }
             R.id.action_report -> {
                 startActivity(
                     Intent(this, ReportActivity::class.java)
