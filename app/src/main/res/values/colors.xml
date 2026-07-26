@@ -201,4 +201,6 @@
       which rows are chosen, not make them harder to check before deleting.
     -->
     <color name="row_selected">#33C8A05A</color>
+    <!-- The thin rule under a field. Visible, never competing with the text. -->
+    <color name="hairline">#33000000</color>
 </resources>

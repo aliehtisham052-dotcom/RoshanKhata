@@ -36,38 +36,58 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/etAmount"
+        <!--
+          The sum and its answer, above one line.
+
+          The field drew its own underline and the running total sat below it,
+          which split one figure across a divider: what was typed on top, what
+          it came to underneath, as though they were separate things. They are
+          not — the total is what the typing means. So the box wears the line
+          and holds both, the sum in black on the left as it is entered and the
+          answer in bold green on the right.
+        -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center_vertical"
+            android:background="@drawable/bg_amount_underline"
             android:minHeight="64dp"
-            android:hint="@string/amount"
-            android:importantForAutofill="no"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:cursorVisible="true"
-            android:inputType="phone"
-            android:digits="0123456789.+−×÷*/-%" />
+            android:orientation="vertical">
 
-        <!--
-          The running total, the moment there is a sum to total. The pad had an
-          equals key and nothing else, so "3500-32%" sat there looking like
-          text until it was pressed — while the Calculator screen answered as
-          you typed. Same behaviour in both places now.
-        -->
-        <TextView
-            android:id="@+id/tvAmountResult"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="end"
-            android:maxLines="1"
-            android:textColor="@color/brand_green"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
+            <EditText
+                android:id="@+id/etAmount"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="@string/amount"
+                android:importantForAutofill="no"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:cursorVisible="true"
+                android:inputType="phone"
+                android:textColor="@color/ink"
+                android:digits="0123456789.+−×÷*/-%" />
+
+            <!--
+              The running total, the moment there is a sum to total. Green and
+              bold against the black of what was typed, so a glance tells the
+              two apart without reading either.
+            -->
+            <TextView
+                android:id="@+id/tvAmountResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:gravity="end"
+                android:maxLines="1"
+                android:textColor="@color/brand_green"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
+
 
         <!--
           The bill and the date, above the pad rather than below it.
