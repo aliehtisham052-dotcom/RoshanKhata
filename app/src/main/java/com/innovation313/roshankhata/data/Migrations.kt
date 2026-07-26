@@ -269,6 +269,17 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
     }
 }
 
+/**
+ * The one place the schema version lives.
+ *
+ * The @Database annotation reads it and MigrationChainTest reads it, which is
+ * the whole point: a version bump and its migration cannot drift apart when a
+ * test fails the build the moment the chain stops short of this number. An
+ * update that reaches a phone without its migration crashes that phone on
+ * open; this makes such an update impossible to build green.
+ */
+const val KHATA_DB_VERSION = 10
+
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
     MIGRATION_1_2,
