@@ -25,10 +25,12 @@ android {
     defaultConfig {
         applicationId = "com.innovation313.roshankhata"
         minSdk = 24
-        // Deliberately still 34. Step three moves it to 36, once the window
-        // insets are handled — from 35 Android draws apps behind the status
-        // and navigation bars whether they are ready or not.
-        targetSdk = 34
+        // 36 is Google Play's floor for new apps from 31 Aug 2026. Raised
+        // last, after the window-inset handling in ScreenInsets had been
+        // checked screen by screen on a real phone — from 35 Android draws
+        // apps behind the status and navigation bars whether they are ready
+        // or not, and this app is now ready.
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
     }
