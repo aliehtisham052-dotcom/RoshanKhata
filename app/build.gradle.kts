@@ -132,6 +132,20 @@ dependencies {
         exclude(group = "org.apache.httpcomponents")
         exclude(group = "com.google.guava")
     }
+    // Guava, put back deliberately after it crashed the backup screen.
+    //
+    // The excludes above drop Guava to save weight, and the build stayed green
+    // the whole time it was missing: the classes that need it live inside the
+    // Google client library, already compiled, so nothing here referenced them
+    // and nothing failed to compile. It only broke when the code finally RAN —
+    // Drive.Builder and NetHttpTransport reach for com.google.common at the
+    // moment a Drive client is constructed, which is the first thing the backup
+    // screen does. Hidden behind a disabled flag, that day never came until now.
+    //
+    // The -android variant rather than the default -jre one: same classes, far
+    // less of what a phone cannot use. The excludes stay so only this version
+    // arrives, instead of the heavier one being pulled in transitively.
+    implementation("com.google.guava:guava:33.4.0-android")
 
     // Room — offline-first local database
     implementation("androidx.work:work-runtime-ktx:2.9.0")
