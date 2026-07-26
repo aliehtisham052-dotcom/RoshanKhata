@@ -186,13 +186,18 @@
             android:visibility="gone">
 
         <!--
-          The note, and the field that takes whatever this page has spare.
+          The note, taking one share of whatever this page has spare.
 
-          Everything under it is a fixed control — an item name, a quantity, a
-          checkbox, two radio buttons — and stretching any of those would only
-          spread the form thin. A note is free text, so height in it is height
-          a shopkeeper can use: more of a long note in view at once, and room
-          to write without the field scrolling under the cursor.
+          It took all of it at first, which made a note field half a screen
+          tall standing over four cramped controls. The spare height is split
+          four ways instead: a share to the note, and a share of breathing
+          room after each of goods, the loan mark and recovery.
+
+          The note is the one that grows rather than the others because it is
+          free text — height in it is height a shopkeeper can use. An item
+          name, a quantity, a checkbox and two radio buttons hold one line
+          each however tall you make them, so their share sits as space around
+          them instead.
 
           It carries a floor, so on a small screen or at a large font size it
           stops shrinking at about a line and the page scrolls, rather than
@@ -263,6 +268,12 @@
                 android:inputType="text" />
         </LinearLayout>
 
+        <!-- An equal share of whatever the page has spare. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/cbQarzeHasna"
             android:layout_width="match_parent"
@@ -277,6 +288,13 @@
             android:text="@string/qarze_hasna_help"
             android:textColor="@color/text_muted"
             android:textSize="11sp" />
+
+        <!-- An equal share of whatever the page has spare. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
 
         <TextView
             android:id="@+id/tvRecoveryLabel"
@@ -310,6 +328,12 @@
                 android:text="@string/recovery_doubtful"
                 android:textSize="13sp" />
         </RadioGroup>
+
+        <!-- An equal share of whatever the page has spare. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         </LinearLayout>
     </LinearLayout>
