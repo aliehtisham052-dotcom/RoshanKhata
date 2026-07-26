@@ -751,4 +751,5 @@
     <string name="qr_not_ours">That code is not a Roshan Khata customer card.</string>
     <string name="qr_no_customer">No customer here answers to that card.</string>
     <string name="qr_scan_failed">Could not open the scanner. It needs Google Play services.</string>
+    <string name="report_crash_included">— Technical crash record (saved automatically on your phone, included to help find the fault):</string>
 </resources>

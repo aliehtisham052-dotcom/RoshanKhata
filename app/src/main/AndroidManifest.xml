@@ -27,6 +27,7 @@
     </queries>
 
     <application
+        android:name=".RoshanKhataApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"

@@ -747,4 +747,5 @@
     <string name="qr_not_ours">هي ڪوڊ روشن کھاتا جي گراهڪ جو ڪارڊ ناهي.</string>
     <string name="qr_no_customer">هن ڪارڊ جو ڪو گراهڪ هن کاتي ۾ نه مليو.</string>
     <string name="qr_scan_failed">اسڪينر نه کلي سگهيو. ان لاءِ Google Play services گهرجي.</string>
+    <string name="report_crash_included">— ٽيڪنيڪل ڪريش رڪارڊ (پاڻمرادو توهان جي فون تي محفوظ، خرابي ڳولڻ ۾ مدد لاءِ شامل):</string>
 </resources>

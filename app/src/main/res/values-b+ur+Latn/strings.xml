@@ -719,4 +719,5 @@
     <string name="qr_not_ours">Yeh code Roshan Khata ke gaahak ka card nahi.</string>
     <string name="qr_no_customer">Is card ka koi gaahak is khatay mein nahi mila.</string>
     <string name="qr_scan_failed">Scanner nahi khul saka. Is ke liye Google Play services chahiye.</string>
+    <string name="report_crash_included">— Technical crash record (khud-ba-khud aap ke phone par mehfooz, kharabi dhoondhne mein madad ke liye shamil):</string>
 </resources>
