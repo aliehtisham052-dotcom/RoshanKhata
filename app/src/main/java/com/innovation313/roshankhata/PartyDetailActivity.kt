@@ -588,10 +588,6 @@ class PartyDetailActivity : AppCompatActivity() {
                 // calculator's weight bought it nothing and a third of the
                 // screen stayed white below the buttons.
                 view.fillDialogHeight()
-                // The dialog has a window of its own, so the screen's own
-                // handling does not reach it. This one fills the display, and
-                // without this its Save button sits under the gesture line.
-                com.innovation313.roshankhata.ui.EdgeToEdge.applyToDialogView(view)
 
                 // The second half opens on request and is never in the way.
                 //
