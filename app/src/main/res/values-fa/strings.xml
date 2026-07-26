@@ -747,4 +747,5 @@
     <string name="qr_not_ours">این کد کارتِ مشتریِ روشن کھاتہ نیست.</string>
     <string name="qr_no_customer">هیچ مشتری‌ای در این دفتر با این کارت یافت نشد.</string>
     <string name="qr_scan_failed">اسکنر باز نشد. به Google Play services نیاز دارد.</string>
+    <string name="report_crash_included">— سابقهٔ فنی خرابی (به‌طور خودکار روی گوشی شما ذخیره شده، برای یافتن اشکال ضمیمه شد):</string>
 </resources>

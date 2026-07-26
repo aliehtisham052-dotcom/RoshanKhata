@@ -719,4 +719,5 @@
     <string name="qr_not_ours">یہ کوڈ روشن کھاتہ کے گاہک کا کارڈ نہیں۔</string>
     <string name="qr_no_customer">اس کارڈ کا کوئی گاہک اس کھاتے میں نہیں ملا۔</string>
     <string name="qr_scan_failed">اسکینر نہیں کھل سکا۔ اس کے لیے Google Play services درکار ہے۔</string>
+    <string name="report_crash_included">— تکنیکی کریش ریکارڈ (خودکار طور پر آپ کے فون پر محفوظ، خرابی ڈھونڈنے میں مدد کے لیے شامل):</string>
 </resources>

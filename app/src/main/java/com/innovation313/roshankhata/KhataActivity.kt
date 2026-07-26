@@ -110,6 +110,14 @@ class KhataActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_khata)
 
+        // The day's ledger snapshot, off the main thread, at most once a day.
+        // Here rather than in the Application class so it runs when the ledger
+        // is actually opened, and so the trigger is visible on the screen that
+        // owns the data it protects.
+        lifecycleScope.launch(Dispatchers.IO) {
+            com.innovation313.roshankhata.data.Snapshots.maybeToday(applicationContext)
+        }
+
         // Edge-to-edge, the mechanism proven on this very screen — now shared
         // by every screen from ScreenInsets so there is one implementation to
         // keep right instead of a copy per Activity.

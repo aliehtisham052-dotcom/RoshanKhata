@@ -727,4 +727,5 @@
     <string name="qr_not_ours">هذا الرمز ليس بطاقة عميل في روشن كهاتا.</string>
     <string name="qr_no_customer">لا يوجد عميل في هذا الدفتر لهذه البطاقة.</string>
     <string name="qr_scan_failed">تعذر فتح الماسح. يتطلب خدمات Google Play.</string>
+    <string name="report_crash_included">— سجل العطل التقني (محفوظ تلقائيًا على هاتفك، مُرفق للمساعدة في إيجاد الخلل):</string>
 </resources>

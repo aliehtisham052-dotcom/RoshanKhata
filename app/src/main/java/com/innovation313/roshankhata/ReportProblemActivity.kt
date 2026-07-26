@@ -59,6 +59,16 @@ class ReportProblemActivity : AppCompatActivity() {
             appendLine(description)
             appendLine()
             appendLine(ProblemReport.deviceContext())
+
+            // If the app crashed this week, the technical record rides along —
+            // in the body, where the owner reads every line of it before
+            // choosing to send. Same rule as everything on this screen: no
+            // second, silent channel.
+            com.innovation313.roshankhata.data.CrashLog.latestText(this@ReportProblemActivity)?.let {
+                appendLine()
+                appendLine(getString(R.string.report_crash_included))
+                appendLine(it)
+            }
         }
 
         val intent = ProblemReport.compose(
