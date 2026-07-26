@@ -191,48 +191,39 @@
           Step two: everything an entry may carry and usually does not.
         -->
         <!--
-          The second page. Weighted so it receives whatever the screen has
-          spare, which the note inside it then takes.
+          The second page. Its own height, and no claim on the window's.
 
-          wrap_content and not 0dp on purpose: this way the page's own height
-          is the floor and the surplus is added on top of it. On a small screen
-          or at a large font size there is no surplus, the page keeps its
-          natural height and scrolls. A fixed share would have pinned it to the
-          window and clipped the recovery buttons off the bottom, and a clipped
-          control on an entry form is worse than any amount of white space.
+          Two attempts went the other way: first the note took every spare
+          pixel, then the spare was split between the note and a gap after each
+          section. Both were chasing a full page and both looked worse than the
+          problem — the second left holes between the fields with nothing in
+          them, which reads as a form nobody laid out.
+
+          A form is not a page to fill. What makes one look considered is the
+          same gap in the same place every time, so the spacing below is a
+          single rhythm: 20dp opens a section, 8dp separates fields within one,
+          2dp holds a line of help against the label it explains. Nothing takes
+          a weighted share, which means the rhythm is identical on a tall phone
+          and a short one, and whatever is left over stays at the bottom where
+          empty space belongs.
         -->
         <LinearLayout
             android:id="@+id/stepTwo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical"
             android:visibility="gone">
 
         <!--
-          The note, taking one share of whatever this page has spare.
-
-          It took all of it at first, which made a note field half a screen
-          tall standing over four cramped controls. The spare height is split
-          four ways instead: a share to the note, and a share of breathing
-          room after each of goods, the loan mark and recovery.
-
-          The note is the one that grows rather than the others because it is
-          free text — height in it is height a shopkeeper can use. An item
-          name, a quantity, a checkbox and two radio buttons hold one line
-          each however tall you make them, so their share sits as space around
-          them instead.
-
-          It carries a floor, so on a small screen or at a large font size it
-          stops shrinking at about a line and the page scrolls, rather than
-          the field collapsing to nothing.
+          The note: a settled three lines. Free text deserves more than one
+          line to write in, and a fixed height gives it that without making the
+          field's size depend on how tall the phone happens to be.
         -->
         <EditText
             android:id="@+id/etNote"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="96dp"
             android:layout_marginTop="8dp"
-            android:layout_weight="1"
             android:gravity="top|start"
             android:hint="@string/note_optional"
             android:importantForAutofill="no"
@@ -244,13 +235,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="20dp"
             android:text="@string/goods_section"
             android:textColor="@color/navy_primary"
             android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
+            android:layout_marginTop="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/goods_help"
@@ -261,12 +253,13 @@
             android:id="@+id/etItemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:hint="@string/item_name_hint"
             android:importantForAutofill="no"
             android:inputType="text" />
 
         <LinearLayout
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -293,20 +286,17 @@
         </LinearLayout>
 
         <!-- An equal share of whatever the page has spare. -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/cbQarzeHasna"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="20dp"
             android:text="@string/qarze_hasna"
             android:textSize="14sp" />
 
         <TextView
+            android:layout_marginTop="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/qarze_hasna_help"
@@ -314,23 +304,20 @@
             android:textSize="11sp" />
 
         <!-- An equal share of whatever the page has spare. -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
 
         <TextView
             android:id="@+id/tvRecoveryLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="20dp"
             android:text="@string/recovery_label"
             android:textColor="@color/navy_primary"
             android:textSize="13sp"
             android:textStyle="bold" />
 
         <RadioGroup
+            android:layout_marginTop="8dp"
             android:id="@+id/rgRecovery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -354,10 +341,6 @@
         </RadioGroup>
 
         <!-- An equal share of whatever the page has spare. -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
         </LinearLayout>
     </LinearLayout>
