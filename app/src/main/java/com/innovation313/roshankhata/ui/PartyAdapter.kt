@@ -15,7 +15,15 @@ import com.innovation313.roshankhata.data.PartyWithBalance
 
 class PartyAdapter(
     private val onClick: (PartyWithBalance) -> Unit,
-    private val onLongClick: (PartyWithBalance) -> Unit
+    private val onLongClick: (PartyWithBalance) -> Unit,
+    /**
+     * Which rows are picked, asked fresh on every bind.
+     *
+     * A function rather than a copy of the set, so the adapter never holds a
+     * second version of what is selected. One list, one answer — a row cannot
+     * show itself ticked while the bar above counts it as untouched.
+     */
+    private val isSelected: (Long) -> Boolean = { false }
 ) : ListAdapter<PartyWithBalance, PartyAdapter.VH>(DIFF) {
 
     companion object {
@@ -44,6 +52,15 @@ class PartyAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = getItem(position)
         val ctx = holder.itemView.context
+
+        // Picked rows are tinted rather than given a tick box. A tick box would
+        // have to sit somewhere on a row that already carries a photo, a name,
+        // a number, a date and a balance, and would be there in the ninety-nine
+        // per cent of the time when nothing is being selected at all.
+        holder.itemView.setBackgroundColor(
+            if (isSelected(item.id)) ContextCompat.getColor(ctx, R.color.row_selected)
+            else android.graphics.Color.TRANSPARENT
+        )
 
         holder.tvName.text = item.name
 

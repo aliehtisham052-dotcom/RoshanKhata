@@ -738,4 +738,7 @@
     <string name="voice_no_amount">ان ۾ ڪا رقم ناهي. انگ به چئو.</string>
     <string name="voice_open_entry">اندراج کوليو</string>
     <string name="voice_which_party">%1$s — ڪهڙو گراهڪ؟</string>
+    <string name="delete_parties_title">%1$d گراهڪ ڊاهيو؟</string>
+    <string name="delete_parties_confirm">%1$d گراهڪ ۽ سندن سڀ داخلائون ري سائيڪل بن ۾ ويندا. توهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</string>
+    <string name="delete_parties_owing">انهن مان %1$d جو حساب باقي آهي — %2$s وٺڻا، %3$s ڏيڻا. هٽائڻ سان اهو توهان جي ڪل مان نڪري ويندو، حساب ختم نه ٿيندو.</string>
 </resources>

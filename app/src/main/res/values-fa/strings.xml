@@ -738,4 +738,7 @@
     <string name="voice_no_amount">مبلغی در آن نبود. عدد را هم بگویید.</string>
     <string name="voice_open_entry">باز کردن ثبت</string>
     <string name="voice_which_party">%1$s — کدام مشتری؟</string>
+    <string name="delete_parties_title">حذف %1$d مشتری؟</string>
+    <string name="delete_parties_confirm">%1$d مشتری و همهٔ ثبت‌هایشان به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</string>
+    <string name="delete_parties_owing">%1$d نفر از آنها هنوز مانده‌حساب دارند — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</string>
 </resources>

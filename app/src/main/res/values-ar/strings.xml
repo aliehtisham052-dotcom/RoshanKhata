@@ -718,4 +718,7 @@
     <string name="voice_no_amount">لا يوجد مبلغ في ذلك. قل الرقم أيضاً.</string>
     <string name="voice_open_entry">افتح القيد</string>
     <string name="voice_which_party">%1$s — أي عميل؟</string>
+    <string name="delete_parties_title">حذف %1$d من العملاء؟</string>
+    <string name="delete_parties_confirm">سيُنقل %1$d من العملاء وجميع قيودهم إلى سلة المحذوفات. يمكنك استعادتهم خلال 30 يومًا.</string>
+    <string name="delete_parties_owing">%1$d منهم لديهم رصيد — %2$s للتحصيل، %3$s للدفع. حذفهم يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</string>
 </resources>

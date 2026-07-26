@@ -742,4 +742,7 @@
     <string name="voice_no_amount">No amount in that. Say the figure too.</string>
     <string name="voice_open_entry">Open entry</string>
     <string name="voice_which_party">%1$s — which customer?</string>
+    <string name="delete_parties_title">Delete %1$d customers?</string>
+    <string name="delete_parties_confirm">%1$d customers and all their entries will move to the Recycle Bin. You can restore them within 30 days.</string>
+    <string name="delete_parties_owing">%1$d of them still have a balance — %2$s to collect, %3$s to pay. Removing them takes that off your totals; it does not settle it.</string>
 </resources>
