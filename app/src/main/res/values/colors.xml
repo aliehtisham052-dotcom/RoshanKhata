@@ -195,4 +195,10 @@
 
     <!-- Behind the launcher icon, matching the cream inside the logo's rim. -->
     <color name="icon_background">#F7F3EA</color>
+    <!--
+      A picked row in a list. Pale enough that the name and the balance on top
+      of it stay as readable as on any other row — a selection should show
+      which rows are chosen, not make them harder to check before deleting.
+    -->
+    <color name="row_selected">#33C8A05A</color>
 </resources>

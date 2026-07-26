@@ -710,4 +710,7 @@
     <string name="voice_no_amount">اس میں رقم نہیں تھی۔ عدد بھی کہیں۔</string>
     <string name="voice_open_entry">اندراج کھولیں</string>
     <string name="voice_which_party">%1$s — کون سا گاہک؟</string>
+    <string name="delete_parties_title">%1$d گاہک حذف کریں؟</string>
+    <string name="delete_parties_confirm">%1$d گاہک اور اُن کی تمام انٹریاں ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
+    <string name="delete_parties_owing">اِن میں سے %1$d کا حساب باقی ہے — %2$s لینے ہیں، %3$s دینے ہیں۔ ہٹانے سے یہ آپ کے کل میزان سے نکل جائے گا، حساب ختم نہیں ہوگا۔</string>
 </resources>

@@ -48,6 +48,23 @@ class KhataActivity : AppCompatActivity() {
 
     /** Everything from the DB. The list on screen is a view onto this. */
     private var allParties: List<PartyWithBalance> = emptyList()
+
+    /**
+     * What is actually on screen after searching, filtering and sorting.
+     *
+     * Kept because "Select all" has to mean the rows the owner can see. A shop
+     * with a thousand customers who has searched down to four expects all to
+     * be four.
+     */
+    private var shownParties: List<PartyWithBalance> = emptyList()
+
+    /** Customers picked for deleting. Empty means nothing is being picked. */
+    private val selectedIds = mutableSetOf<Long>()
+
+    private lateinit var selectionBar: View
+    private lateinit var tvSelectedCount: TextView
+    private lateinit var btnSelectAll: com.google.android.material.button.MaterialButton
+
     // Newest dealing first. Sorting A-Z buried the customer just served
     // somewhere in the middle of the alphabet.
     private var sortMode = SortMode.RECENT
@@ -100,11 +117,35 @@ class KhataActivity : AppCompatActivity() {
 
         val rv: RecyclerView = findViewById(R.id.rvParties)
         adapter = PartyAdapter(
-            onClick = { party -> openParty(party) },
-            onLongClick = { party -> confirmDeleteParty(party) }
+            onClick = { party ->
+                // While picking, a tap adds or removes. Otherwise it opens the
+                // customer as it always did.
+                if (selectedIds.isEmpty()) openParty(party) else toggleSelected(party)
+            },
+            onLongClick = { party -> toggleSelected(party) },
+            isSelected = { id -> id in selectedIds }
         )
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
+
+        selectionBar = findViewById(R.id.selectionBar)
+        tvSelectedCount = findViewById(R.id.tvSelectedCount)
+        btnSelectAll = findViewById(R.id.btnSelectAll)
+
+        btnSelectAll.setOnClickListener {
+            // What is on screen, not what is in the book. If the owner has
+            // searched or filtered down to a handful, "all" means that handful
+            // — selecting a thousand customers they cannot see would be a
+            // trap, not a convenience.
+            val visible = shownParties.map { it.id }
+            if (selectedIds.containsAll(visible)) selectedIds.clear()
+            else selectedIds.addAll(visible)
+            renderSelection()
+        }
+
+        findViewById<View>(R.id.btnDeleteSelected).setOnClickListener {
+            confirmDeleteSelected()
+        }
 
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddParty).setOnClickListener {
             showAddPartyChoice()
@@ -339,19 +380,91 @@ class KhataActivity : AppCompatActivity() {
         lastActivity = 0L
     )
 
-    /** Deleting a party is never destructive — it goes to the Recycle Bin, entries and all. */
-    private fun confirmDeleteParty(party: PartyWithBalance) {
+    /** Add or drop one customer from the selection. */
+    private fun toggleSelected(party: PartyWithBalance) {
+        if (!selectedIds.remove(party.id)) selectedIds.add(party.id)
+        renderSelection()
+    }
+
+    /** The bar, the count, and the rows, kept saying the same thing. */
+    private fun renderSelection() {
+        val picking = selectedIds.isNotEmpty()
+        selectionBar.visibility = if (picking) View.VISIBLE else View.GONE
+        if (picking) {
+            tvSelectedCount.text = getString(R.string.selected_count, selectedIds.size)
+            val visible = shownParties.map { it.id }
+            btnSelectAll.setText(
+                if (visible.isNotEmpty() && selectedIds.containsAll(visible)) R.string.clear_all
+                else R.string.select_all
+            )
+        }
+        adapter.notifyDataSetChanged()
+    }
+
+    /** Leave selection without deleting anything. */
+    private fun clearSelection() {
+        if (selectedIds.isEmpty()) return
+        selectedIds.clear()
+        renderSelection()
+    }
+
+    override fun onBackPressed() {
+        // Back gets out of a selection before it leaves the screen. Someone who
+        // has picked forty customers and wants out should not have to tap forty
+        // times or risk the Delete button to escape.
+        if (selectedIds.isNotEmpty()) clearSelection() else @Suppress("DEPRECATION") super.onBackPressed()
+    }
+
+    /**
+     * Deleting is never destructive — everything goes to the Recycle Bin,
+     * entries and all, and can be restored for thirty days.
+     *
+     * The confirmation says how many, and says what they are worth. A ledger's
+     * worst loss is not a deleted row, it is quietly losing sight of money
+     * owed: remove a customer who owes eighty thousand and the shop's totals
+     * simply drop by eighty thousand, with nothing on screen to say why. Both
+     * directions are named separately, because money owed *to* someone is the
+     * more serious of the two to forget — that one is somebody else's.
+     */
+    private fun confirmDeleteSelected() {
+        val picked = allParties.filter { it.id in selectedIds }
+        if (picked.isEmpty()) return
+
+        val toCollect = picked.filter { it.balance > 0 }.sumOf { it.balance }
+        val toPay = picked.filter { it.balance < 0 }.sumOf { -it.balance }
+        val owing = picked.count { it.balance != 0.0 }
+
+        val message = buildString {
+            append(getString(R.string.delete_parties_confirm, picked.size))
+            if (owing > 0) {
+                append("\n\n")
+                append(
+                    getString(
+                        R.string.delete_parties_owing,
+                        owing,
+                        Format.money(toCollect),
+                        Format.money(toPay)
+                    )
+                )
+            }
+        }
+
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.delete_party_title)
-            .setMessage(getString(R.string.delete_party_confirm, party.name))
+            .setTitle(getString(R.string.delete_parties_title, picked.size))
+            .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
+                    // One timestamp for the whole batch, so a restore brings
+                    // back exactly what one delete took away.
                     val now = System.currentTimeMillis()
-                    // Same timestamp for both, so a restore can reunite them exactly.
-                    dao.softDeleteEntriesOfParty(party.id, now)
-                    dao.softDeleteParty(party.id, now)
-                    Toast.makeText(this@KhataActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT).show()
+                    picked.forEach { party ->
+                        dao.softDeleteEntriesOfParty(party.id, now)
+                        dao.softDeleteParty(party.id, now)
+                    }
+                    clearSelection()
+                    Toast.makeText(this@KhataActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             .show()
@@ -452,6 +565,7 @@ class KhataActivity : AppCompatActivity() {
             SortMode.RECENT -> bySide.sortedByDescending { it.lastActivity }
         }
 
+        shownParties = sorted
         adapter.submitList(sorted)
         renderFilterState()
 
