@@ -122,6 +122,37 @@ class KhataActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_khata)
 
+        // Keep the header clear of the status bar — by adding to its designed
+        // padding, never by replacing it.
+        //
+        // fitsSystemWindows was tried first and looked right until the sides
+        // were checked: it writes ALL of a view's padding, so the header's
+        // 20dp start and end went to zero and the title sat on the screen's
+        // edge. The base padding is read once here, before any insets arrive,
+        // and the listener only ever adds the bar's height on top of it — run
+        // twice, it computes the same answer, and the sides are never touched
+        // beyond the cutout's own demand.
+        run {
+            val header = findViewById<View>(R.id.header)
+            val base = intArrayOf(
+                header.paddingLeft, header.paddingTop,
+                header.paddingRight, header.paddingBottom
+            )
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(header) { v, insets ->
+                val bars = insets.getInsets(
+                    androidx.core.view.WindowInsetsCompat.Type.systemBars() or
+                        androidx.core.view.WindowInsetsCompat.Type.displayCutout()
+                )
+                v.setPadding(
+                    base[0] + bars.left,
+                    base[1] + bars.top,
+                    base[2] + bars.right,
+                    base[3]
+                )
+                insets
+            }
+        }
+
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         // Asked now rather than on the first tap, so the microphone opens at
