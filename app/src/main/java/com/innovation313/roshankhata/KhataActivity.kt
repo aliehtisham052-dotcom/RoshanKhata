@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -101,6 +102,24 @@ class KhataActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Edge-to-edge, on this screen and nowhere else yet.
+        //
+        // From Android 15 the system turns this on for us and from 16 there is
+        // no turning it off, so the app has to look right with it. Switching it
+        // on early is the only way to see that before the targetSdk bump —
+        // otherwise the change that ships it is the change that tests it.
+        //
+        // Once before, this was switched on for every screen at once with the
+        // padding worked out by hand, and every screen was cut top and bottom.
+        // So: one screen, and no arithmetic. The header carries
+        // fitsSystemWindows, which hands the job to the framework — it pads the
+        // header by exactly the status bar's height, and the gradient fills the
+        // padding, so the colour runs up behind the clock as it always did.
+        // The bottom bar is left alone; a BottomNavigationView already insets
+        // itself, and helping it would only double the gap.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContentView(R.layout.activity_khata)
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
