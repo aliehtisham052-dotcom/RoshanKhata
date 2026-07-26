@@ -166,21 +166,50 @@
         <!--
           Step two: everything an entry may carry and usually does not.
         -->
+        <!--
+          The second page. Weighted so it receives whatever the screen has
+          spare, which the note inside it then takes.
+
+          wrap_content and not 0dp on purpose: this way the page's own height
+          is the floor and the surplus is added on top of it. On a small screen
+          or at a large font size there is no surplus, the page keeps its
+          natural height and scrolls. A fixed share would have pinned it to the
+          window and clipped the recovery buttons off the bottom, and a clipped
+          control on an entry form is worse than any amount of white space.
+        -->
         <LinearLayout
             android:id="@+id/stepTwo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:visibility="gone">
 
+        <!--
+          The note, and the field that takes whatever this page has spare.
+
+          Everything under it is a fixed control — an item name, a quantity, a
+          checkbox, two radio buttons — and stretching any of those would only
+          spread the form thin. A note is free text, so height in it is height
+          a shopkeeper can use: more of a long note in view at once, and room
+          to write without the field scrolling under the cursor.
+
+          It carries a floor, so on a small screen or at a large font size it
+          stops shrinking at about a line and the page scrolls, rather than
+          the field collapsing to nothing.
+        -->
         <EditText
             android:id="@+id/etNote"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:gravity="top|start"
             android:hint="@string/note_optional"
             android:importantForAutofill="no"
-            android:inputType="text" />
+            android:inputType="textMultiLine|textCapSentences"
+            android:minHeight="56dp"
+            android:scrollbars="vertical" />
 
         <!-- Goods, if any moved. Optional — a cash-only entry skips this. -->
         <TextView
@@ -281,25 +310,6 @@
                 android:text="@string/recovery_doubtful"
                 android:textSize="13sp" />
         </RadioGroup>
-
-        <!--
-          Empty space that gives way.
-
-          This page is shorter than the screen, so it ended half way up with
-          white beneath it. A spacer takes that up and carries Save down to
-          the bottom where it belongs.
-
-          It is a spacer and not a stretched form on purpose. Stretching the
-          fields themselves would fit this page to this phone and clip it on a
-          smaller one, or at a larger font size — and a clipped field on an
-          entry form is a good deal worse than an empty margin. A weighted
-          spacer only ever takes what is spare: when the form is taller than
-          the screen it collapses to nothing and the page scrolls as before.
-        -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
         </LinearLayout>
     </LinearLayout>
