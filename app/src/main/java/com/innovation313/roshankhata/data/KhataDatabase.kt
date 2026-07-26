@@ -16,7 +16,7 @@ import androidx.room.RoomDatabase
         SupplierBill::class,
         BillItem::class
     ],
-    version = 10,
+    version = KHATA_DB_VERSION,
     exportSchema = true
 )
 abstract class KhataDatabase : RoomDatabase() {

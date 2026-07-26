@@ -111,12 +111,22 @@ interface KhataDao {
     suspend fun softDeleteEntriesOfParty(partyId: Long, now: Long = System.currentTimeMillis())
 
     /**
-     * Move every customer to the bin at once, with their entries.
+     * Move a picked set of customers to the bin, with their entries.
      *
-     * Both statements take the same timestamp, so a restore can tell exactly
-     * which deletion a row belonged to and put the whole set back together
-     * rather than a scattering of parts.
+     * @Transaction, so a crash or a failure partway leaves the ledger exactly
+     * as it was — never some customers gone and their entries still counting,
+     * or the other way round. All of them go under one timestamp, so a restore
+     * can tell exactly which deletion a row belonged to and put the whole set
+     * back together rather than a scattering of parts.
      */
+    @Transaction
+    suspend fun softDeleteParties(ids: List<Long>, now: Long = System.currentTimeMillis()) {
+        for (id in ids) {
+            softDeleteEntriesOfParty(id, now)
+            softDeleteParty(id, now)
+        }
+    }
+
     /** How many customers are still in the ledger — the number the confirmation shows. */
     @Query("SELECT COUNT(*) FROM parties WHERE isDeleted = 0")
     suspend fun countActiveParties(): Int

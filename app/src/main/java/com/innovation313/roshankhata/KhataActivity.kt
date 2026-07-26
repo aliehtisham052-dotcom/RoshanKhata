@@ -521,13 +521,10 @@ class KhataActivity : AppCompatActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    // One timestamp for the whole batch, so a restore brings
-                    // back exactly what one delete took away.
-                    val now = System.currentTimeMillis()
-                    picked.forEach { party ->
-                        dao.softDeleteEntriesOfParty(party.id, now)
-                        dao.softDeleteParty(party.id, now)
-                    }
+                    // All-or-nothing inside one transaction, under one
+                    // timestamp: a crash partway leaves the ledger untouched,
+                    // and a restore brings back exactly what one delete took.
+                    dao.softDeleteParties(picked.map { it.id })
                     clearSelection()
                     Toast.makeText(this@KhataActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT)
                         .show()
