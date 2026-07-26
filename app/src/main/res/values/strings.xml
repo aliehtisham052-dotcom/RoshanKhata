@@ -747,4 +747,8 @@
     <string name="delete_parties_owing">%1$d of them still have a balance — %2$s to collect, %3$s to pay. Removing them takes that off your totals; it does not settle it.</string>
     <string name="customer_qr">Customer QR</string>
     <string name="customer_qr_hint">Scan this in Roshan Khata to open this ledger. The code carries no name, number or balance.</string>
+    <string name="scan_customer_qr">Scan customer card</string>
+    <string name="qr_not_ours">That code is not a Roshan Khata customer card.</string>
+    <string name="qr_no_customer">No customer here answers to that card.</string>
+    <string name="qr_scan_failed">Could not open the scanner. It needs Google Play services.</string>
 </resources>

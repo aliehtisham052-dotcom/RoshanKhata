@@ -723,4 +723,8 @@
     <string name="delete_parties_owing">%1$d منهم لديهم رصيد — %2$s للتحصيل، %3$s للدفع. حذفهم يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</string>
     <string name="customer_qr">رمز QR للعميل</string>
     <string name="customer_qr_hint">امسحه في روشن كهاتا ليُفتح هذا الحساب. الرمز لا يحمل اسمًا ولا رقمًا ولا رصيدًا.</string>
+    <string name="scan_customer_qr">مسح بطاقة العميل</string>
+    <string name="qr_not_ours">هذا الرمز ليس بطاقة عميل في روشن كهاتا.</string>
+    <string name="qr_no_customer">لا يوجد عميل في هذا الدفتر لهذه البطاقة.</string>
+    <string name="qr_scan_failed">تعذر فتح الماسح. يتطلب خدمات Google Play.</string>
 </resources>

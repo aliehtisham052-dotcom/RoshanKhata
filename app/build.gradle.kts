@@ -100,6 +100,9 @@ dependencies {
     // QR generation only — pure Java, no camera, ~0.5 MB. Scanning is a
     // later step and uses Play Services so no camera permission is needed.
     implementation("com.google.zxing:core:3.5.3")
+    // Scanning, through Google Play Services: the scanner UI and models live
+    // there, so the app needs no CAMERA permission and gains no model weight.
+    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
