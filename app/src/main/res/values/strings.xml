@@ -736,6 +736,7 @@
     <string name="voice_unavailable">This phone has no speech recogniser.</string>
     <string name="voice_language_missing">Your phone does not have that language. Listening in %1$s.</string>
     <string name="voice_not_understood">Could not make that out. Try again, or type it.</string>
+    <string name="voice_book_loading">The customer list is still opening. Try again in a moment.</string>
     <string name="voice_heard">Heard: %1$s</string>
     <string name="voice_confirm_title">Is this right?</string>
     <string name="voice_no_party">No customer of that name. Say the name as it is saved.</string>

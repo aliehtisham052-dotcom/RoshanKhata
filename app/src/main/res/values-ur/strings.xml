@@ -704,6 +704,7 @@
     <string name="voice_unavailable">اس فون میں آواز پہچاننے کا نظام نہیں ہے۔</string>
     <string name="voice_language_missing">آپ کے فون میں یہ زبان موجود نہیں۔ %1$s میں سن رہا ہے۔</string>
     <string name="voice_not_understood">سمجھ نہیں آیا۔ دوبارہ کہیں یا لکھ دیں۔</string>
+    <string name="voice_book_loading">گاہکوں کی فہرست ابھی کھل رہی ہے۔ ایک لمحے بعد دوبارہ کہیں۔</string>
     <string name="voice_heard">سنا: %1$s</string>
     <string name="voice_confirm_title">کیا یہ درست ہے؟</string>
     <string name="voice_no_party">اس نام کا کوئی گاہک نہیں۔ نام ویسے کہیں جیسے محفوظ ہے۔</string>

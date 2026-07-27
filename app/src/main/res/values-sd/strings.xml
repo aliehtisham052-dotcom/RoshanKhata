@@ -732,6 +732,7 @@
     <string name="voice_unavailable">هن فون ۾ آواز سڃاڻڻ وارو نظام ناهي.</string>
     <string name="voice_language_missing">هن فون ۾ اها ٻولي ناهي. %1$s ۾ ٻڌي رهيو آهي.</string>
     <string name="voice_not_understood">سمجهه ۾ نه آيو. ٻيهر ڪوشش ڪريو يا لکو.</string>
+    <string name="voice_book_loading">گراهڪن جي فهرست اڃا کلي رهي آهي. هڪ لمحي کان پوءِ ٻيهر چئو.</string>
     <string name="voice_heard">ٻڌو ويو: %1$s</string>
     <string name="voice_confirm_title">ڇا اهو صحيح آهي؟</string>
     <string name="voice_no_party">ان نالي جو ڪو گراهڪ ناهي. نالو ائين چئو جيئن محفوظ آهي.</string>

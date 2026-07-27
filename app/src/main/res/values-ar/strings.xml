@@ -712,6 +712,7 @@
     <string name="voice_unavailable">لا يوجد في هذا الهاتف محرك للتعرف على الصوت.</string>
     <string name="voice_language_missing">هذا الهاتف لا يحتوي على تلك اللغة. الاستماع بـ %1$s.</string>
     <string name="voice_not_understood">لم نفهم ذلك. حاول ثانية أو اكتبه.</string>
+    <string name="voice_book_loading">قائمة العملاء ما زالت تُفتح. حاول ثانية بعد لحظة.</string>
     <string name="voice_heard">سُمع: %1$s</string>
     <string name="voice_confirm_title">هل هذا صحيح؟</string>
     <string name="voice_no_party">لا يوجد عميل بهذا الاسم. قل الاسم كما هو محفوظ.</string>
