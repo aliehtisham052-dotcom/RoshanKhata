@@ -553,6 +553,15 @@
     <string name="gold_price_hint">Sone ki qeemat fi gram (Rs)</string>
     <string name="nisab_silver_note">Chandi ka nisab: 612.36 gram (52.5 tola) chandi. Ye kam hadd hai, is liye zyada logon par Zakat aati hai \u2014 ye mauqif aam tor par ghareebon ke haq mein zyada mohtat samjha jata hai.</string>
     <string name="nisab_gold_note">Sone ka nisab: 87.48 gram (7.5 tola) sona. Ye oonchi hadd hai, is liye kam logon par Zakat aati hai. Kaun sa miyaar aap par lagoo hai, aalim se tasdeeq karein.</string>
+    <string name="per_tola">Fi tola</string>
+    <string name="per_gram">Fi gram</string>
+    <string name="price_help">Aaj ka bhaav apne maqami sarafa bazaar, akhbar ya jeweller se lein.</string>
+    <string name="price_looks_off">Ye is unit ke hisaab se ajeeb lag raha hai. Dekh lein ke bhaav fi tola hai ya fi gram.</string>
+    <string name="nisab_working">%2$s ka %1$s x %3$s = %4$s</string>
+    <string name="unit_tola">tola</string>
+    <string name="unit_gram">gram</string>
+    <string name="metal_silver">chandi</string>
+    <string name="metal_gold">sona</string>
     <string name="last_transacted">Aakhri len den %1$s</string>
     <string name="summary_with_overdue">%1$s \u00b7 %2$d ko yaad dehani chahiye</string>
     <plurals name="customer_count">

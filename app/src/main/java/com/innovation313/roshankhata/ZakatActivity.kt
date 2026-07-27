@@ -39,7 +39,17 @@ class ZakatActivity : AppCompatActivity() {
     private lateinit var tvNisabStatus: TextView
     private lateinit var toggleNisab: com.google.android.material.button.MaterialButtonToggleGroup
     private lateinit var tvNisabStandardNote: TextView
+    private lateinit var toggleUnit: com.google.android.material.button.MaterialButtonToggleGroup
+    private lateinit var tvPriceWarning: TextView
     private var useGold = false
+
+    /**
+     * Tola by default. It is the only unit a sarafa bazaar quotes, so it is
+     * the only unit the owner will have a number for without doing arithmetic
+     * first — and doing that arithmetic in his head is how 66 was entered for
+     * silver.
+     */
+    private var perTola = true
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
@@ -72,6 +82,16 @@ class ZakatActivity : AppCompatActivity() {
             )
             recalculate()
         }
+
+        toggleUnit = findViewById(R.id.toggleUnit)
+        tvPriceWarning = findViewById(R.id.tvPriceWarning)
+        toggleUnit.check(R.id.btnPerTola)
+        toggleUnit.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            perTola = checkedId == R.id.btnPerTola
+            recalculate()
+        }
+
         etCashStock = findViewById(R.id.etCashStock)
         cbIncludeDoubtful = findViewById(R.id.cbIncludeDoubtful)
 
@@ -123,20 +143,37 @@ class ZakatActivity : AppCompatActivity() {
         // totals a sum typed into it — "2500+1200" or "300*40" — and this one
         // silently read the whole thing as zero, so a shopkeeper adding up
         // their stock in the box got no answer and no reason why.
-        val pricePerGram = Calc.evalPad(etSilverPrice.text.toString()) ?: 0.0
+        val price = Calc.evalPad(etSilverPrice.text.toString()) ?: 0.0
         val cashStock = Calc.evalPad(etCashStock.text.toString()) ?: 0.0
 
-        val nisab = if (useGold) {
-            Zakat.nisabFromGoldPrice(pricePerGram)
-        } else {
-            Zakat.nisabFromSilverPrice(pricePerGram)
-        }
+        val nisab = Zakat.nisab(price, gold = useGold, perTola = perTola)
 
+        // The working, not just the answer. The owner asked to be able to
+        // trust this figure himself, and a number he has to take on faith is
+        // not one he can check. Spelled out, "52.5 tola of silver x your rate"
+        // also shows him which unit he is being asked for.
         tvNisabValue.text = if (nisab > 0) {
-            getString(R.string.nisab_value, Format.money(nisab))
+            getString(
+                R.string.nisab_working,
+                Calc.trim(Zakat.nisabWeight(useGold, perTola)) + " " +
+                    getString(if (perTola) R.string.unit_tola else R.string.unit_gram),
+                getString(if (useGold) R.string.metal_gold else R.string.metal_silver),
+                Format.money(price),
+                Format.money(nisab)
+            )
         } else {
             getString(R.string.nisab_enter_price)
         }
+
+        // A rate out by an order of magnitude is almost always the other unit.
+        // Said once, quietly, and never in the way of the answer.
+        tvPriceWarning.visibility =
+            if (Zakat.priceLooksOff(price, gold = useGold, perTola = perTola)) {
+                tvPriceWarning.text = getString(R.string.price_looks_off)
+                android.view.View.VISIBLE
+            } else {
+                android.view.View.GONE
+            }
 
         val wealth = Zakat.zakatableWealth(
             inputs = inputs,
