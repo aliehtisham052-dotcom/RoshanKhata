@@ -43,8 +43,10 @@ object PartyPhoto {
     /** @return the saved path, or null if it could not be written. */
     fun save(context: Context, partyId: Long, source: Uri): String? {
         return try {
-            val input = context.contentResolver.openInputStream(source) ?: return null
-            val original = input.use { BitmapFactory.decodeStream(it) } ?: return null
+            // Sampled on the way in. The square crop below keeps the short
+            // side, so that is the side that has to survive the sampling.
+            val original = PhotoDecode.read(context, source, EDGE, keepShortEdge = true)
+                ?: return null
 
             val square = cropToSquare(original)
             val scaled = if (square.width > EDGE) {
