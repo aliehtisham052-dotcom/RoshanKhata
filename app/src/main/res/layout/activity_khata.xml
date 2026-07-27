@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="@string/app_name"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <!--
@@ -36,32 +36,22 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
+            android:layout_marginTop="0dp"
             android:text="@string/app_tagline"
             android:textColor="@color/header_on_dark"
             android:textSize="12sp" />
 
         <!--
-          The net balance is the one number the owner opens the app to see.
-          It gets the room to say so, and nothing sits between it and the eye.
-        -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/net_balance"
-            android:textColor="@color/header_on_dark"
-            android:textSize="12sp" />
-
-        <!--
-          Tappable. The eye tells the owner this can be hidden without anyone
-          having to explain it to them.
+          The net balance: its label and its figure share one line now. Two
+          stacked lines read grander, but the grandeur was costing the list a
+          row of customers — and the one number the owner opens the app for is
+          still the largest thing on the band. Tappable; the eye says it hides.
         -->
         <LinearLayout
             android:id="@+id/balanceRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
+            android:layout_marginTop="10dp"
             android:background="?attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -70,12 +60,20 @@
             android:paddingBottom="2dp">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/net_balance"
+                android:textColor="@color/header_on_dark"
+                android:textSize="12sp" />
+
+            <TextView
                 android:id="@+id/tvNetBalance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rs 0"
                 android:textColor="@color/white"
-                android:textSize="32sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <ImageView
@@ -111,14 +109,17 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp">
 
                 <TextView
                     android:id="@+id/tvTotalGet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/bal_owed_to_me"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="Rs 7,520" />
 
@@ -141,14 +142,17 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp">
 
                 <TextView
                     android:id="@+id/tvTotalGive"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/bal_i_owe"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="Rs 167,665" />
 
