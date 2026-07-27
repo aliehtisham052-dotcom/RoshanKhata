@@ -172,6 +172,76 @@ object VoiceEntry {
     fun nameWords(spoken: String): List<String> =
         tokenise(normalise(spoken)).filterNot { isNoise(it) }
 
+    /**
+     * Which of the recogniser's answers to act on, by index.
+     *
+     * It offers up to five and this app took the first, on the assumption that
+     * first means best. Three logs of real entries say otherwise. The list is
+     * not even ordered by the recogniser's own confidence — one attempt acted
+     * on a candidate scored 0.70 while the third in the list stood at 0.75 —
+     * and the first is often the one that lost the end of the sentence:
+     * "Maine Memorial School" was acted on and refused for having no amount,
+     * while every other candidate carried the 5000. Another attempt heard
+     * "Kripa", which answers nobody in the book, when three of its five
+     * candidates said "khurpa", which fifty customers carry.
+     *
+     * So each candidate is asked what it would actually produce. An amount is
+     * what makes an entry possible at all, so it outweighs everything else; a
+     * direction is worth a little; and beyond that the candidate whose words
+     * answer somebody in this book beats the one whose words answer nobody.
+     *
+     * Confidence is deliberately not consulted. The recogniser gives the
+     * truncated variant the HIGHER score — 0.89 for "Maine Memorial School"
+     * against 0.83 for the sentence with the figure in it — so trusting it
+     * would sharpen exactly the wrong edge.
+     *
+     * Ties keep the recogniser's own order, so nothing changes for the many
+     * sentences whose candidates differ only in how the verb was spelled.
+     *
+     * @param nameScore how well a set of spoken words answers the book. Passed
+     *   in rather than reached for, so this rule can be checked without one.
+     */
+    fun bestCandidate(
+        candidates: List<String>,
+        knownNames: List<String>,
+        nameScore: (List<String>) -> Double
+    ): Int {
+        if (candidates.size < 2) return 0
+
+        // Most candidates differ only in the verb — "diye" against "di hai" —
+        // and leave the name alone. Asking the book once per distinct set of
+        // name words rather than once per candidate keeps this to a single
+        // pass in the ordinary case, against a book of eleven hundred.
+        val asked = HashMap<List<String>, Double>()
+
+        var bestAt = 0
+        var best = Double.NEGATIVE_INFINITY
+
+        for ((i, candidate) in candidates.withIndex()) {
+            val parsed = parse(candidate, knownNames)
+            val amount = parsed.amount
+
+            var score = 0.0
+            if (amount != null && amount > 0.0) score += AMOUNT_IS_EVERYTHING
+            if (parsed.isGiven != null) score += DIRECTION_HELPS
+
+            val words = nameWords(candidate)
+            if (words.isNotEmpty()) score += asked.getOrPut(words) { nameScore(words) }
+
+            if (score > best) {
+                best = score
+                bestAt = i
+            }
+        }
+        return bestAt
+    }
+
+    /** Without a figure there is no entry to make, whatever else was heard. */
+    private const val AMOUNT_IS_EVERYTHING = 100.0
+
+    /** Worth having, but the owner confirms it before anything is saved. */
+    private const val DIRECTION_HELPS = 10.0
+
     private fun isNoise(word: String): Boolean =
         word in STOPWORDS ||
             UNITS.containsKey(word) ||

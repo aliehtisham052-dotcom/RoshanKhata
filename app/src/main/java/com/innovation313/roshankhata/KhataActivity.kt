@@ -873,13 +873,11 @@ class KhataActivity : AppCompatActivity() {
             ?.getFloatArrayExtra(android.speech.RecognizerIntent.EXTRA_CONFIDENCE_SCORES)
             ?.toList()
 
-        val heard = candidates.firstOrNull()
-
-        if (heard.isNullOrEmpty()) {
+        if (candidates.isEmpty()) {
             VoiceLog.nothingHeard(this, lastVoiceLanguage)
             Toast.makeText(this, R.string.voice_not_understood, Toast.LENGTH_SHORT).show()
         } else {
-            handleSpoken(heard, candidates, confidences)
+            handleSpoken(candidates, confidences)
         }
     }
 
@@ -987,12 +985,14 @@ class KhataActivity : AppCompatActivity() {
      * a busy shop is not a witness to trust with someone's money.
      */
     private fun handleSpoken(
-        heard: String,
         candidates: List<String>,
         confidences: List<Float>?
     ) {
         // A new sentence replaces the last one's answer, whatever it was.
         hideVoiceStrip()
+
+        val usedIndex = chooseSpoken(candidates)
+        val heard = candidates[usedIndex]
 
         val parsed = VoiceEntry.parse(heard, allParties.map { it.name })
 
@@ -1019,6 +1019,7 @@ class KhataActivity : AppCompatActivity() {
             languageTag = lastVoiceLanguage,
             candidates = candidates,
             confidences = confidences,
+            usedIndex = usedIndex,
             amount = parsed.amount,
             isGiven = parsed.isGiven,
             nameWords = spokenWords,
@@ -1076,6 +1077,42 @@ class KhataActivity : AppCompatActivity() {
                 )
             }
         )
+    }
+
+    /**
+     * Which of the recogniser's answers to act on.
+     *
+     * It offers up to five and this app used to take the first, on the
+     * assumption that first meant best. Three logs of real entries say
+     * otherwise. The list is not even ordered by the recogniser's own
+     * confidence — one attempt used a candidate scored 0.70 while the third in
+     * the list stood at 0.75 — and the first is often the one that lost the
+     * end of the sentence: "Maine Memorial School" was acted on and refused
+     * for having no amount, while every other candidate carried the 5000.
+     * Another attempt heard "Kripa", which answers nobody in the book, when
+     * three of its five candidates said "khurpa", which fifty customers carry.
+     *
+     * So each candidate is asked what it would actually produce, and the one
+     * that produces a whole entry wins. An amount is what makes an entry
+     * possible at all, so it outweighs everything; a direction is worth a
+     * little; and beyond that the candidate whose words answer somebody in
+     * this book beats the one whose words answer nobody.
+     *
+     * Confidence is deliberately not consulted. The recogniser gives the
+     * truncated variant the HIGHER score — 0.89 for "Maine Memorial School"
+     * against 0.83 for the sentence that had the figure in it — so trusting it
+     * would sharpen exactly the wrong edge.
+     *
+     * Ties keep the recogniser's own order, so nothing changes for the many
+     * sentences whose candidates differ only in how the verb was spelled.
+     */
+    private fun chooseSpoken(candidates: List<String>): Int {
+        if (candidates.size < 2) return 0
+        val names = allParties.map { it.name }
+        return VoiceEntry.bestCandidate(candidates, names) { words ->
+            NameSearch.scoreSpoken(allParties, words) { it.name }
+                .firstOrNull()?.score ?: 0.0
+        }
     }
 
     /**
