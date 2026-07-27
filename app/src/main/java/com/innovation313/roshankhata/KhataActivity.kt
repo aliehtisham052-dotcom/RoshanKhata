@@ -58,6 +58,19 @@ class KhataActivity : AppCompatActivity() {
     private var allParties: List<PartyWithBalance> = emptyList()
 
     /**
+     * Whether the book has arrived from the database yet.
+     *
+     * [allParties] is empty for two entirely different reasons — a shop with
+     * no customers in it, and a shop whose customers are still on their way —
+     * and everything that reads the list treats both the same. For the
+     * microphone that is not harmless: four of the owner's twenty test
+     * entries were spoken in the second after opening the screen, matched
+     * against nothing, and came back "no customer of that name" about
+     * customers who were sitting in the book all along.
+     */
+    private var bookLoaded = false
+
+    /**
      * What is actually on screen after searching, filtering and sorting.
      *
      * Kept because "Select all" has to mean the rows the owner can see. A shop
@@ -242,6 +255,12 @@ class KhataActivity : AppCompatActivity() {
         lifecycleScope.launch {
             dao.observePartiesWithBalance().collectLatest { list ->
                 allParties = list
+
+                // The book has arrived at least once. Until it has, this list
+                // is empty for the same reason a page is blank before it is
+                // printed, and the microphone must not read anything into
+                // that — see startListening().
+                bookLoaded = true
 
                 // The two box totals: everything owed TO the shop (positive
                 // balances, money to collect) and everything the shop owes OUT
@@ -934,6 +953,20 @@ class KhataActivity : AppCompatActivity() {
     }
 
     private fun startListening() {
+        // Say so rather than answer out of an empty book. This costs the owner
+        // a second at worst; the alternative cost them a whole spoken sentence
+        // and then told them a customer they trade with every week does not
+        // exist. It also decided the listening language off a book of nobody,
+        // since forBook below reads the very list that has not arrived.
+        //
+        // Deliberately not a disabled button: if the book never arrives the
+        // microphone still answers and still says why, rather than sitting
+        // dead with nothing to explain it.
+        if (!bookLoaded) {
+            Toast.makeText(this, R.string.voice_book_loading, Toast.LENGTH_SHORT).show()
+            return
+        }
+
         // Which language the customers are written in decides this, not which
         // language the menus are in. See VoiceLanguage.forBook.
         val chosenTag = VoiceLanguage.forBook(appLanguageTag(), allParties.map { it.name })

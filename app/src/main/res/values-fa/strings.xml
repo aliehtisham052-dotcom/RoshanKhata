@@ -732,6 +732,7 @@
     <string name="voice_unavailable">این گوشی تشخیص گفتار ندارد.</string>
     <string name="voice_language_missing">این گوشی آن زبان را ندارد. به %1$s گوش می‌دهد.</string>
     <string name="voice_not_understood">متوجه نشدیم. دوباره بگویید یا تایپ کنید.</string>
+    <string name="voice_book_loading">فهرست مشتریان هنوز باز می‌شود. لحظه‌ای بعد دوباره بگویید.</string>
     <string name="voice_heard">شنیده شد: %1$s</string>
     <string name="voice_confirm_title">درست است؟</string>
     <string name="voice_no_party">مشتری با این نام نیست. نام را همان‌طور که ذخیره شده بگویید.</string>

@@ -704,6 +704,7 @@
     <string name="voice_unavailable">Is phone mein awaaz pehchanne ka nizam nahi hai.</string>
     <string name="voice_language_missing">Aap ke phone mein ye zaban maujood nahi. %1$s mein sun raha hai.</string>
     <string name="voice_not_understood">Samajh nahi aaya. Dobara kahein ya likh dein.</string>
+    <string name="voice_book_loading">Gahakon ki fehrist abhi khul rahi hai. Ek lamhe baad dobara kahein.</string>
     <string name="voice_heard">Suna: %1$s</string>
     <string name="voice_confirm_title">Kya ye durust hai?</string>
     <string name="voice_no_party">Is naam ka koi gahak nahi. Naam waise kahein jaise mehfooz hai.</string>
