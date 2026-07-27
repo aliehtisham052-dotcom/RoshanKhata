@@ -39,13 +39,24 @@ object PhotoDecode {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
 
         try {
-            context.contentResolver.openInputStream(source)?.use {
-                BitmapFactory.decodeStream(it, null, bounds)
-            } ?: return null
+            // Only the stream's absence is a failure here. decodeStream ALWAYS
+            // returns null under inJustDecodeBounds — that is the whole point
+            // of the flag, it fills in the options and allocates nothing — so
+            // the elvis has to sit on openInputStream and nowhere else.
+            //
+            // It sat on the whole expression once, which meant every photograph
+            // in the app failed to save with "that image could not be saved".
+            // The build was green and the tests passed: they cover the
+            // arithmetic below, and nothing in a JUnit run touches
+            // BitmapFactory at all.
+            val stream = context.contentResolver.openInputStream(source) ?: return null
+            stream.use { BitmapFactory.decodeStream(it, null, bounds) }
         } catch (e: Exception) {
             return null
         }
 
+        // Whether the first pass worked is read from the options, never from
+        // its return value.
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
 
         val options = BitmapFactory.Options().apply {
