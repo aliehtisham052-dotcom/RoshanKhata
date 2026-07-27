@@ -91,6 +91,7 @@ object VoiceLog {
         languageTag: String?,
         candidates: List<String>,
         confidences: List<Float>?,
+        usedIndex: Int,
         amount: Double?,
         isGiven: Boolean?,
         nameWords: List<String>,
@@ -106,7 +107,7 @@ object VoiceLog {
                 val score = confidences?.getOrNull(i)
                     ?.let { " [%.2f]".format(it) }
                     ?: ""
-                appendLine("  ${if (i == 0) "USED >" else "      "} ${i + 1}. \"$c\"$score")
+                appendLine("  ${if (i == usedIndex) "USED >" else "      "} ${i + 1}. \"$c\"$score")
             }
             appendLine("Parsed: amount=${amount ?: "—"}, direction=" + when (isGiven) {
                 true -> "I GAVE"

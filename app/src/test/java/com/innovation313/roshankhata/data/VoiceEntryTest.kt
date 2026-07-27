@@ -302,4 +302,66 @@ class VoiceEntryTest {
         assertEquals(moon, VoiceEntry.parse("Moon ko 500 diye", listOf(moon, "Bilal")).partyName)
         assertEquals("Mun", VoiceEntry.parse("Mun ko 500 diye", listOf("Mun", "Bilal")).partyName)
     }
+
+    // ------------------------------------------------ choosing between answers
+
+    /** Stands in for the book: a word it knows is worth something. */
+    private fun bookOf(vararg known: String): (List<String>) -> Double =
+        { words -> words.count { it in known }.toDouble() * 3.0 }
+
+    /**
+     * The recogniser lost the end of the sentence and this app acted on it.
+     *
+     * Every other candidate carried the figure; the first did not, so the
+     * entry was refused for having no amount. Worse, the recogniser had scored
+     * the truncated one HIGHEST — 0.89 against 0.83 — which is why its
+     * confidence is not what decides this.
+     */
+    @Test
+    fun `a candidate with the figure beats one that lost it`() {
+        val heard = listOf(
+            "Maine Memorial School",
+            "Maine Memorial School 5000 Di Hai",
+            "Maine Memorial School 5000 Diye",
+            "Maine Memorial School 5000"
+        )
+        val at = VoiceEntry.bestCandidate(heard, emptyList(), bookOf("memorial", "school"))
+        assertTrue("chose ${heard[at]}", at != 0)
+        assertEquals(5000.0, VoiceEntry.parse(heard[at], emptyList()).amount!!, 0.0)
+    }
+
+    /**
+     * "Kripa" answers nobody. Three of the five candidates said "khurpa",
+     * which fifty customers carry, and the owner had to say it all again.
+     */
+    @Test
+    fun `a candidate the book recognises beats one it does not`() {
+        val heard = listOf(
+            "Maine Kripa ko 10000 Diya",
+            "Maine khurpa udaasar Diya",
+            "Maine khurpa 10000 Diya"
+        )
+        val at = VoiceEntry.bestCandidate(heard, emptyList(), bookOf("khurpa"))
+        assertEquals("Maine khurpa 10000 Diya", heard[at])
+    }
+
+    /**
+     * Most candidates differ only in how the verb was spelled. Nothing should
+     * move for those — the recogniser's own order stands.
+     */
+    @Test
+    fun `equally good candidates keep the order they came in`() {
+        val heard = listOf(
+            "Maine Ahmad ko 5000 Diye",
+            "Maine Ahmed ko 5000 Diye",
+            "Maine Ahmad ko 5000 Di Hai"
+        )
+        assertEquals(0, VoiceEntry.bestCandidate(heard, emptyList(), bookOf("ahmad", "ahmed")))
+    }
+
+    /** One answer, or none, is not a choice. */
+    @Test
+    fun `a single candidate is taken as it is`() {
+        assertEquals(0, VoiceEntry.bestCandidate(listOf("Maine Bilal"), emptyList()) { 0.0 })
+    }
 }
