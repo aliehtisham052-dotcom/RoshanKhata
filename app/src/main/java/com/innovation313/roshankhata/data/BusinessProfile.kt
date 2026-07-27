@@ -71,9 +71,14 @@ object BusinessProfile {
      */
     fun saveQr(context: Context, source: Uri): Boolean {
         return try {
-            val input = context.contentResolver.openInputStream(source) ?: return false
-
-            val original = input.use { BitmapFactory.decodeStream(it) } ?: return false
+            // Sampled on the way in — the same guard the photo paths carry.
+            // This is NOT a quality filter on the code: sampling never drops
+            // below MAX_EDGE, downscale() then lands exactly where it always
+            // did, and the file is still written PNG at full quality. What it
+            // removes is the fifty-megapixel decode a phone-camera shot of a
+            // QR used to force, which is a crash on a mid-range phone.
+            val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
+                ?: return false
 
             val scaled = downscale(original)
 
@@ -129,8 +134,11 @@ object BusinessProfile {
      */
     fun saveSignature(context: Context, source: Uri): Boolean {
         return try {
-            val input = context.contentResolver.openInputStream(source) ?: return false
-            val original = input.use { BitmapFactory.decodeStream(it) } ?: return false
+            // Sampled read, same as the QR above and for the same reason.
+            // Output unchanged: never sampled below MAX_EDGE, then downscale()
+            // as before, still PNG at full quality.
+            val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
+                ?: return false
             val scaled = downscale(original)
 
             FileOutputStream(signatureFile(context)).use { out ->
