@@ -707,7 +707,7 @@
     <string name="voice_book_loading">گاہکوں کی فہرست ابھی کھل رہی ہے۔ ایک لمحے بعد دوبارہ کہیں۔</string>
     <string name="voice_heard">سنا: %1$s</string>
     <string name="voice_confirm_title">کیا یہ درست ہے؟</string>
-    <string name="voice_no_party">اس نام کا کوئی گاہک نہیں۔ نام ویسے کہیں جیسے محفوظ ہے۔</string>
+    <string name="voice_no_party">آپ کے کھاتے میں ابھی کوئی گاہک نہیں۔ پہلے ایک گاہک شامل کریں۔</string>
     <string name="voice_no_amount">اس میں رقم نہیں تھی۔ عدد بھی کہیں۔</string>
     <string name="voice_open_entry">اندراج کھولیں</string>
     <string name="voice_which_party">%1$s — کون سا گاہک؟</string>

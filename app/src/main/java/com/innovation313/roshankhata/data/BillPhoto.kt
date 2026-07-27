@@ -29,9 +29,11 @@ object BillPhoto {
      * within a season. A bill only has to be legible.
      */
     fun save(context: Context, uri: Uri): String? = try {
-        val source = context.contentResolver.openInputStream(uri)?.use { input ->
-            BitmapFactory.decodeStream(input)
-        }
+        // Sampled on the way in — a bill photographed at fifty megapixels
+        // used to be decoded whole before being shrunk, which is where the
+        // memory went. scaleToFit below fits the long side, so that is the
+        // side the sampling must not go under.
+        val source = PhotoDecode.read(context, uri, MAX_EDGE, keepShortEdge = false)
 
         if (source == null) {
             null
@@ -88,8 +90,22 @@ object BillPhoto {
         )
     }
 
-    /** Long edge in pixels. Enough to read a handwritten bill, far short of a full frame. */
-    private const val MAX_EDGE = 1600
+    /**
+     * Long edge in pixels. Enough to read a handwritten bill, far short of a
+     * full frame.
+     *
+     * Down from 1600. Bills are the one photo that never stops arriving —
+     * a customer's face is saved once, but a bill is saved per entry, so this
+     * is where a season's storage actually goes. At 1280 a bill's figures and
+     * signature are still plainly readable on the screen it is read on, and
+     * the file is roughly half what it was.
+     */
+    private const val MAX_EDGE = 1280
 
-    private const val QUALITY = 80
+    /**
+     * Down from 80. On a photograph of paper — flat, high contrast, no skin
+     * tones or gradients for the artefacts to show up in — the difference is
+     * not visible, and it takes another slice off every bill kept.
+     */
+    private const val QUALITY = 75
 }
