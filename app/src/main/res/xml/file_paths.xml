@@ -22,4 +22,12 @@
     <cache-path
         name="camera"
         path="camera/" />
+    <!--
+      Temporary, alongside the voice-entry diagnostic. The record itself lives
+      in private storage; a copy is placed here only when the owner chooses to
+      send it, and this entry comes out when that diagnostic does.
+    -->
+    <cache-path
+        name="voicelogs"
+        path="voicelogs/" />
 </paths>
