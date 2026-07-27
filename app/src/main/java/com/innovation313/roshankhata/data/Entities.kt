@@ -146,6 +146,25 @@ data class ZakatInputs(
     val payables: Double
 )
 
+/**
+ * One customer's ledger, split the three ways Zakat cares about.
+ *
+ * Kept per customer rather than summed across the book, because a total
+ * cannot tell the difference between money owed to you and money you owe.
+ * Five hundred from one customer and three hundred owed to another is not
+ * two hundred receivable and nothing payable — it is both, and Zakat treats
+ * them as two different things.
+ *
+ * Each figure is positive when the customer owes the shop and negative when
+ * the shop owes the customer, the same sign convention as everywhere else.
+ */
+data class PartyZakatBalance(
+    val partyId: Long,
+    val certain: Double,
+    val doubtful: Double,
+    val qarz: Double
+)
+
 /** One row of the "top products" insight. */
 data class ProductStat(
     val name: String,
