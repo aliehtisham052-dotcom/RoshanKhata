@@ -21,20 +21,52 @@ object PartyPhoto {
     /** Square, and small. This is a recognition thumbnail, not a portrait. */
     private const val EDGE = 400
 
+    /**
+     * Decoded thumbnails, kept warm.
+     *
+     * The customer list binds a row every time it scrolls past, and every
+     * bind was a disk stat plus a JPEG decode on the main thread — per row,
+     * per pass, over a book of eleven hundred. The photos never change
+     * between binds; only save() and remove() can change them, and both are
+     * right here. So each thumbnail is decoded once and served from memory
+     * after that, and a customer known to have no photo is answered without
+     * touching the disk at all.
+     *
+     * Twelve megabytes holds roughly twenty thumbnails at this size — more
+     * than a screen shows — and LruCache quietly lets the oldest go.
+     */
+    private val cache = object : android.util.LruCache<Long, Bitmap>(12 * 1024 * 1024) {
+        override fun sizeOf(key: Long, value: Bitmap) = value.byteCount
+    }
+
+    /** What the disk holds, learned once per customer instead of per bind. */
+    private val onDisk = java.util.concurrent.ConcurrentHashMap<Long, Boolean>()
+
     private fun dir(context: Context): File =
         File(context.filesDir, "party_photos").apply { mkdirs() }
 
     fun file(context: Context, partyId: Long): File =
         File(dir(context), "party_$partyId.jpg")
 
-    fun exists(context: Context, partyId: Long): Boolean =
-        file(context, partyId).exists()
+    fun exists(context: Context, partyId: Long): Boolean {
+        onDisk[partyId]?.let { return it }
+        return file(context, partyId).exists().also { onDisk[partyId] = it }
+    }
 
     fun load(context: Context, partyId: Long): Bitmap? {
+        cache.get(partyId)?.let { return it }
+        if (onDisk[partyId] == false) return null
+
         val f = file(context, partyId)
-        if (!f.exists()) return null
+        if (!f.exists()) {
+            onDisk[partyId] = false
+            return null
+        }
         return try {
-            BitmapFactory.decodeFile(f.absolutePath)
+            BitmapFactory.decodeFile(f.absolutePath)?.also {
+                cache.put(partyId, it)
+                onDisk[partyId] = true
+            }
         } catch (e: Exception) {
             null
         }
@@ -63,6 +95,11 @@ object PartyPhoto {
             if (scaled !== square) square.recycle()
             if (square !== original) original.recycle()
 
+            // The saved bitmap is exactly what load() would decode back, so
+            // the cache takes it now and the next bind costs nothing.
+            cache.put(partyId, scaled)
+            onDisk[partyId] = true
+
             target.absolutePath
         } catch (e: Exception) {
             null
@@ -71,6 +108,8 @@ object PartyPhoto {
 
     fun remove(context: Context, partyId: Long) {
         file(context, partyId).delete()
+        cache.remove(partyId)
+        onDisk[partyId] = false
     }
 
     /** Centre-crop, so a portrait photo does not end up squashed in a round avatar. */
