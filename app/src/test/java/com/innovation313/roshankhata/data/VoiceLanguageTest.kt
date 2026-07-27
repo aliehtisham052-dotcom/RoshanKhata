@@ -97,4 +97,50 @@ class VoiceLanguageTest {
             assertTrue("$tag has no speech tag", VoiceLanguage.preferred(tag).isNotEmpty())
         }
     }
+
+    // --------------------------------------------- the book decides, not the menu
+
+    private val latinBook = (1..40).map { "Customer $it Khurpa" }
+    private val urduBook = (1..40).map { "عمیر باجوہ $it" }
+
+    /**
+     * The reason this exists: asked in Urdu, the recogniser answers in Urdu
+     * script, and a name kept in Latin is barely reached by it — one real
+     * attempt put its customer at position 652 of 1163 with nothing misheard.
+     */
+    @Test
+    fun `a Latin book is listened to in English whatever the menus say`() {
+        assertEquals("en", VoiceLanguage.forBook("ur", latinBook))
+        assertEquals("en", VoiceLanguage.forBook("ur-Latn", latinBook))
+        assertEquals("en", VoiceLanguage.forBook("ar", latinBook))
+        assertEquals("en", VoiceLanguage.forBook("sd", latinBook))
+    }
+
+    /** And the same rule the other way, which is the half that proves it. */
+    @Test
+    fun `an Urdu book is listened to in Urdu even from an English app`() {
+        assertEquals("ur", VoiceLanguage.forBook("en", urduBook))
+    }
+
+    /** A book with no clear leaning leaves the owner's own choice alone. */
+    @Test
+    fun `a mixed book does not overrule the owner`() {
+        val mixed = (1..20).map { "Customer $it" } + (1..20).map { "عمیر باجوہ $it" }
+        assertEquals("ur", VoiceLanguage.forBook("ur", mixed))
+        assertEquals("en", VoiceLanguage.forBook("en", mixed))
+    }
+
+    /** A book too small to have said anything is not read for an opinion. */
+    @Test
+    fun `a nearly empty book decides nothing`() {
+        assertEquals("ur", VoiceLanguage.forBook("ur", listOf("Bilal", "Ahmad")))
+        assertEquals("ur", VoiceLanguage.forBook("ur", emptyList()))
+    }
+
+    /** Names with no letters at all — a phone number saved as a name — abstain. */
+    @Test
+    fun `names without letters are not counted either way`() {
+        val digits = (1..40).map { "+92348723946$it" }
+        assertEquals("ur", VoiceLanguage.forBook("ur", digits))
+    }
 }

@@ -57,6 +57,71 @@ object VoiceLanguage {
 
     private fun key(tag: String) = tag.lowercase().replace('_', '-')
 
+    /** App languages whose recogniser answers in Arabic script. */
+    private val ARABIC_SCRIPT = setOf("ur", "ur-latn", "ar", "fa", "sd")
+
+    /** Below this many customers a book has not said anything about itself. */
+    private const val ENOUGH_NAMES = 20
+
+    private const val MOSTLY = 0.70
+    private const val HARDLY = 0.30
+
+    /** Arabic, Urdu, Persian and Sindhi letters all live in this block. */
+    private fun isArabicScript(c: Char) = c in '\u0600'..'\u06FF'
+
+    /**
+     * The share of names written in Arabic script, of those written in any
+     * script at all — or null when not one name carries a letter, which is a
+     * book with no opinion rather than a Latin one. A customer saved as a bare
+     * phone number says nothing about either script.
+     */
+    private fun arabicShare(names: List<String>): Double? {
+        var arabic = 0
+        var counted = 0
+        for (name in names) {
+            val hasArabic = name.any { isArabicScript(it) }
+            val hasLatin = name.any { it in 'a'..'z' || it in 'A'..'Z' }
+            if (!hasArabic && !hasLatin) continue
+            counted++
+            if (hasArabic) arabic++
+        }
+        return if (counted == 0) null else arabic.toDouble() / counted
+    }
+
+    /**
+     * The language to listen in, judged by the book rather than by the menu.
+     *
+     * Three rounds of real entries settled this. Asked in Urdu, the recogniser
+     * answers in Urdu script — correctly, and the figures parse perfectly. But
+     * this shop's customers are written down in Latin letters, and a name in
+     * one script barely reaches a name in the other: "منگی" put Manga Matyky
+     * at position 652 of 1163, "تیرو رکشے والے" put its customer at 1044, and
+     * the sentence that found Ihsan Munchi at position one in English found it
+     * at fourteen in Urdu. Nothing was misheard in any of them.
+     *
+     * The one Urdu attempt that landed first proves the rule rather than
+     * breaking it: that customer is stored in Urdu script.
+     *
+     * So the script the names are KEPT in decides, not the language of the
+     * menus. A shopkeeper who reads the app in Urdu but writes his customers
+     * in Latin is served by an English recogniser, and one who writes them in
+     * Urdu is served by an Urdu one, without either of them being asked a
+     * question they have no way to answer.
+     *
+     * The owner's own choice stands unless the book is clearly one script or
+     * the other, and a book too small to have an opinion is left alone.
+     */
+    fun forBook(appTag: String, names: List<String>): String {
+        if (names.size < ENOUGH_NAMES) return appTag
+        val share = arabicShare(names) ?: return appTag
+        val k = key(appTag)
+        return when {
+            k == "en" && share >= MOSTLY -> "ur"
+            k in ARABIC_SCRIPT && share <= HARDLY -> "en"
+            else -> appTag
+        }
+    }
+
     /** The speech tags worth trying for [appTag], best first. */
     fun preferred(appTag: String): List<String> =
         PREFERRED[key(appTag)] ?: listOf(appTag)
