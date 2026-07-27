@@ -149,9 +149,33 @@ object NameSearch {
     private fun partsOf(name: String): List<String> =
         name.split(*SEPARATORS).map { fold(it) }.filter { it.isNotEmpty() }
 
+    /**
+     * Below this, only an exact match counts. Anything less is a coincidence
+     * of spelling, not a recognition.
+     */
+    private const val MIN_OVERLAP = 3
+
     /** One stored word against one spoken word, both already folded. */
     private fun wordScore(part: String, spoken: String): Int = when {
         part == spoken -> 100
+
+        // A near match has to rest on enough letters to mean something.
+        //
+        // Without this floor a customer stored as "B" scored 70 — a near
+        // recognition — against every spoken word beginning with b, because
+        // "bobi".startsWith("b") is true. So did "U", "Bh", "Aaa", and every
+        // name carrying a lone initial: "Chacho Zahid U.S" cuts into
+        // chacho / zahid / u / s, and that stray "u" answered any word
+        // starting with u. Meanwhile the customer actually meant, whose name
+        // differed by a single letter, earned 50 through edit distance and
+        // finished below them.
+        //
+        // Three logs showed the same handful of one-letter names sitting at
+        // the top of nearly every result: "A Bilal" and "Aaa" above every
+        // real Afzal, "Chacho Zahid U.S" above "Shahzad Steno", "B" and "Bh"
+        // above "Naeem Bobi Jajupur". A single letter is not evidence.
+        minOf(part.length, spoken.length) < MIN_OVERLAP -> 0
+
         part.startsWith(spoken) -> 80
         spoken.startsWith(part) -> 70
         part.contains(spoken) -> 60
