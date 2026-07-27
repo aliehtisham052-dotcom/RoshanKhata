@@ -246,4 +246,32 @@ class NameSearchTest {
         val order = NameSearch.rankSpoken(messy, listOf("bh")) { it }
         assertEquals("Bh", order.first())
     }
+
+    // ------------------------------------------ the spaces are not where we put them
+
+    /**
+     * Both from the logs. A recogniser writes a name the way it hears it, not
+     * the way the book spells it, and it puts the gaps wherever it likes.
+     */
+    @Test
+    fun `a stored name said as one word is still found`() {
+        assertNear("lapewali", "Abdul Rahman Chacha Lamber Lappay Wali")
+        assertNear("lapewali", "(Shari)Touseef Adnan Lappay Wali")
+    }
+
+    /** And the other way: one stored word arriving as two. */
+    @Test
+    fun `a stored name said as two words is still found`() {
+        val shop = listOf("Rana Matyky", "Rana Akhtar Darkali", "Rana Sajjad Boota") +
+            (1..200).map { "Filler Customer $it" }
+        val order = NameSearch.rankSpoken(shop, listOf("rana", "mate", "ki")) { it }
+        assertEquals("Rana Matyky", order.first())
+    }
+
+    /** A join that answers nothing must not disturb what already worked. */
+    @Test
+    fun `joining words does not unsettle an ordinary match`() {
+        assertEquals("Abbas Loader", rank("abbas", "loader").first())
+        assertNear("asgar", "Asghar")
+    }
 }

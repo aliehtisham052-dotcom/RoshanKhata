@@ -92,8 +92,19 @@ object NameSearch {
         nameOf: (T) -> String
     ): List<Scored<T>> {
         if (items.isEmpty()) return emptyList()
-        val spoken = words.map { fold(it) }.filter { it.isNotEmpty() }.distinct()
-        if (spoken.isEmpty()) return items.map { Scored(it, 0.0, 0) }
+        val heard = words.map { fold(it) }.filter { it.isNotEmpty() }
+        if (heard.isEmpty()) return items.map { Scored(it, 0.0, 0) }
+
+        // The split runs the other way too. "Matyky" is one word on the
+        // customer's row and came back as two, "mate ki"; neither half
+        // reaches it, so only the first name matched and Rana Matyky finished
+        // thirteenth. Adjacent spoken words joined are offered alongside the
+        // words themselves, and a join that answers nothing simply scores
+        // nothing — the weighting below already pays a word by what it
+        // narrows, so a join that lands on one name in a thousand is worth a
+        // great deal and one that lands on half the book is worth almost
+        // nothing.
+        val spoken = (heard + heard.zipWithNext { a, b -> a + b }).distinct()
 
         // How well each name answers each spoken word, worked out once.
         val parts = items.map { partsOf(nameOf(it)) }
@@ -145,9 +156,24 @@ object NameSearch {
     /** At or above this, a name recognised the word rather than neared it. */
     private const val STRONG = 80
 
-    /** A stored name cut into folded words, ready to compare against. */
-    private fun partsOf(name: String): List<String> =
-        name.split(*SEPARATORS).map { fold(it) }.filter { it.isNotEmpty() }
+    /**
+     * A stored name cut into folded words — and those words joined in pairs.
+     *
+     * The joins are here because a recogniser does not put the spaces where
+     * the book does. "Lappay Wali" is two words on the customer's row and came
+     * back as one, "lapewali", and word-against-word matching had nothing to
+     * compare it to: neither stored half is that word, and neither is near
+     * enough to it to count. The customer sat at position five in a list of
+     * eleven hundred while the sentence naming them was heard perfectly.
+     *
+     * Folding the two halves and running them together gives exactly
+     * "lapewali", so the name answers what was said.
+     */
+    private fun partsOf(name: String): List<String> {
+        val words = name.split(*SEPARATORS).map { fold(it) }.filter { it.isNotEmpty() }
+        if (words.size < 2) return words
+        return words + words.zipWithNext { a, b -> a + b }
+    }
 
     /**
      * Below this, only an exact match counts. Anything less is a coincidence
