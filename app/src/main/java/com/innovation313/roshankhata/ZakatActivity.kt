@@ -13,7 +13,6 @@ import com.innovation313.roshankhata.data.Zakat
 import com.innovation313.roshankhata.data.ZakatInputs
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -99,35 +98,20 @@ class ZakatActivity : AppCompatActivity() {
 
     private fun observeLedger() {
         lifecycleScope.launch {
-            combine(
-                dao.observeCertainReceivables(),
-                dao.observeDoubtfulReceivables(),
-                dao.observeQarzeHasnaGiven()
-            ) { certain, doubtful, qarz ->
-                Triple(certain, doubtful, qarz)
-            }.collectLatest { (certain, doubtful, qarz) ->
+            dao.observeZakatBalancesByParty().collectLatest { rows ->
 
-                // A negative "receivable" means I actually owe that party.
-                // Those flip over into payables and are deducted, not added.
-                val certainPos = certain.coerceAtLeast(0.0)
-                val doubtfulPos = doubtful.coerceAtLeast(0.0)
-                val qarzPos = qarz.coerceAtLeast(0.0)
+                // Per customer, so money owed to the shop and money the shop
+                // owes stay two different things all the way to the screen.
+                inputs = Zakat.fromParties(rows)
 
-                val payables = listOf(certain, doubtful, qarz)
-                    .filter { it < 0 }
-                    .sumOf { -it }
-
-                inputs = ZakatInputs(
-                    certainReceivables = certainPos,
-                    doubtfulReceivables = doubtfulPos,
-                    qarzeHasnaGiven = qarzPos,
-                    payables = payables
-                )
-
-                tvCertain.text = getString(R.string.certain_receivables, Format.money(certainPos))
-                tvQarzeHasna.text = getString(R.string.qarze_hasna_given, Format.money(qarzPos))
-                tvDoubtful.text = getString(R.string.doubtful_receivables, Format.money(doubtfulPos))
-                tvPayables.text = getString(R.string.you_owe_others, Format.money(payables))
+                tvCertain.text =
+                    getString(R.string.certain_receivables, Format.money(inputs.certainReceivables))
+                tvQarzeHasna.text =
+                    getString(R.string.qarze_hasna_given, Format.money(inputs.qarzeHasnaGiven))
+                tvDoubtful.text =
+                    getString(R.string.doubtful_receivables, Format.money(inputs.doubtfulReceivables))
+                tvPayables.text =
+                    getString(R.string.you_owe_others, Format.money(inputs.payables))
 
                 recalculate()
             }

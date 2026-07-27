@@ -208,45 +208,35 @@ interface KhataDao {
     // ---------- Zakat inputs ----------
 
     /**
-     * What customers owe me, where I am confident of collecting it,
-     * excluding Qarz-e-Hasna (counted separately) and doubtful debts.
+     * Every customer's ledger, split the three ways Zakat cares about.
+     *
+     * Per customer, deliberately. Summed across the whole book first, a total
+     * cannot tell money owed TO the shop from money the shop OWES: five
+     * hundred from one customer against three hundred owed to another came
+     * back as two hundred receivable and nothing payable, which is not what
+     * the book says and not how Zakat treats them. The splitting is arithmetic
+     * and belongs where it can be tested, so this hands back the rows and
+     * Zakat.fromParties does the rest.
      */
     @Query(
         """
-        SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0)
+        SELECT t.partyId AS partyId,
+               COALESCE(SUM(CASE WHEN t.isQarzeHasna = 0 AND t.recovery = 0
+                    THEN (CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END)
+                    ELSE 0 END), 0) AS certain,
+               COALESCE(SUM(CASE WHEN t.isQarzeHasna = 0 AND t.recovery = 1
+                    THEN (CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END)
+                    ELSE 0 END), 0) AS doubtful,
+               COALESCE(SUM(CASE WHEN t.isQarzeHasna = 1
+                    THEN (CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END)
+                    ELSE 0 END), 0) AS qarz
         FROM transactions t
         JOIN parties p ON p.id = t.partyId
         WHERE t.isDeleted = 0 AND p.isDeleted = 0
-          AND t.isQarzeHasna = 0
-          AND t.recovery = 0
+        GROUP BY t.partyId
         """
     )
-    fun observeCertainReceivables(): Flow<Double>
-
-    /** Debts the owner has marked as doubtful. */
-    @Query(
-        """
-        SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0)
-        FROM transactions t
-        JOIN parties p ON p.id = t.partyId
-        WHERE t.isDeleted = 0 AND p.isDeleted = 0
-          AND t.isQarzeHasna = 0
-          AND t.recovery = 1
-        """
-    )
-    fun observeDoubtfulReceivables(): Flow<Double>
-
-    /** Interest-free loans the owner has given out — still their wealth. */
-    @Query(
-        """
-        SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0)
-        FROM transactions t
-        JOIN parties p ON p.id = t.partyId
-        WHERE t.isDeleted = 0 AND p.isDeleted = 0
-          AND t.isQarzeHasna = 1
-        """
-    )
-    fun observeQarzeHasnaGiven(): Flow<Double>
+    fun observeZakatBalancesByParty(): Flow<List<PartyZakatBalance>>
 
     // ---------- Qarz-e-Hasna listing ----------
 
