@@ -934,7 +934,10 @@ class KhataActivity : AppCompatActivity() {
     }
 
     private fun startListening() {
-        val choice = VoiceLanguage.choose(appLanguageTag(), speechLanguages)
+        // Which language the customers are written in decides this, not which
+        // language the menus are in. See VoiceLanguage.forBook.
+        val chosenTag = VoiceLanguage.forBook(appLanguageTag(), allParties.map { it.name })
+        val choice = VoiceLanguage.choose(chosenTag, speechLanguages)
 
         val intent = Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
