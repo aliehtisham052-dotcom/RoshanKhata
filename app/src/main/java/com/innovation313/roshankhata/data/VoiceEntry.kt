@@ -136,6 +136,13 @@ object VoiceEntry {
         "maine", "mainay", "mainey", "mene", "menay", "meine",
         "tumne", "tumnay", "usne", "usnay", "humne", "humnay",
         "unhone", "unhonay", "isne", "isnay",
+        // Words that stand in for a name instead of being one. The logs
+        // caught all of these being taken as customers: "Maine kisi ko 50000
+        // diya" searched the book for a man called Kisi, and "Mere original
+        // company" for one called Mere.
+        "kisi", "kis", "kuch", "kuchh", "koi", "kissi",
+        "mera", "meri", "mere", "apna", "apni", "apne",
+        "کسی", "کچھ", "کوئی", "میرا", "میری", "میرے", "اپنا", "اپنی", "اپنے",
         "hai", "hain", "hun", "tha", "thi", "the", "aur", "bhi", "to",
         "rupay", "rupaye", "rupee", "rupees", "rs",
         // English grammar. Same reasoning as above: these are words a sentence

@@ -214,4 +214,36 @@ class NameSearchTest {
         assertEquals(2, NameSearch.rank("Wali Khan", "ali"))
         assertEquals(3, NameSearch.rank("Bilal", "ali"))
     }
+
+    // ------------------------------------------------- one letter is not a name
+
+    /**
+     * Found by counting three logs of real entries. Every result was topped by
+     * the same handful of names — "B", "Bh", "Aaa", "A Bilal", "Chacho Zahid
+     * U.S" — whatever had been spoken, because a one-letter part answered any
+     * word beginning with that letter and outscored the customer who was
+     * actually meant.
+     */
+    @Test
+    fun `a one letter name does not outrank the customer meant`() {
+        val messy = listOf("A", "Aaa", "A Bilal", "Afzal Dhodi Bhattia Wala")
+        val order = NameSearch.rankSpoken(messy, listOf("afzal")) { it }
+        assertEquals("Afzal Dhodi Bhattia Wala", order.first())
+    }
+
+    /** The same letter hiding inside a longer name: "Chacho Zahid U.S". */
+    @Test
+    fun `a stray initial inside a name answers nothing`() {
+        val messy = listOf("Chacho Zahid U.S", "Shahzad Steno")
+        val order = NameSearch.rankSpoken(messy, listOf("shahzad", "stanon")) { it }
+        assertEquals("Shahzad Steno", order.first())
+    }
+
+    /** A short name is still findable — it just has to be said, not guessed. */
+    @Test
+    fun `a genuinely short name still matches itself`() {
+        val messy = listOf("Bh", "Bilal Khan")
+        val order = NameSearch.rankSpoken(messy, listOf("bh")) { it }
+        assertEquals("Bh", order.first())
+    }
 }
