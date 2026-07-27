@@ -43,6 +43,26 @@ object NameSearch {
         if (query.isEmpty()) return true
         if (name.lowercase().contains(query)) return true
 
+        // A name typed the way it is said, rather than the way it was saved.
+        //
+        // Until now this test was the substring above and nothing else, so the
+        // search box only ever answered an exact fragment of the stored
+        // spelling. The owner reported the consequence himself: the village
+        // names half his book is known by would not come up at all. "Khurpa"
+        // typed as "Kurpa" is nothing; "Lappay Wali" typed as "lapewali" is
+        // nothing, because the space is in the query and not in the name.
+        //
+        // [fold] already evens out both — the silent h, the doubled letter,
+        // the spaces, the sounds a Pakistani ear treats as one — and the
+        // spoken side of this file has been leaning on it for months. The
+        // typed side simply never asked. It asks now, and only once the plain
+        // substring has failed, so exact typing behaves exactly as it did.
+        //
+        // The same floor as everywhere else: below three letters a fold is a
+        // coincidence, not a name, and would hand back half the book.
+        val typed = fold(query)
+        if (typed.length >= MIN_OVERLAP && fold(name).contains(typed)) return true
+
         val digits = query.filter { it.isDigit() }
         if (digits.isEmpty()) return false
         return phone?.filter { it.isDigit() }?.contains(digits) == true

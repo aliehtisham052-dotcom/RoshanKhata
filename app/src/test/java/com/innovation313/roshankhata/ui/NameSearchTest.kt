@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.ui
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -273,5 +274,45 @@ class NameSearchTest {
     fun `joining words does not unsettle an ordinary match`() {
         assertEquals("Abbas Loader", rank("abbas", "loader").first())
         assertNear("asgar", "Asghar")
+    }
+
+    // ------------------------------------------------------------ the search box
+
+    /**
+     * Reported by the owner: the village names half his book is known by would
+     * not come up when typed. The search box only ever tested an exact
+     * fragment of the stored spelling, so a name typed the way it is said —
+     * and that is how these names are said — found nothing at all.
+     */
+    @Test
+    fun `typing a name the way it is said still finds it`() {
+        assertTrue(NameSearch.matches("Abdul Aziz Khurpa", null, "kurpa"))
+        assertTrue(NameSearch.matches("Abdullah Bhatti Lappay Wali", null, "lapewali"))
+        assertTrue(NameSearch.matches("Asghar Ali", null, "asgar"))
+        assertTrue(NameSearch.matches("Yaseen Bhai", null, "yasin"))
+    }
+
+    /** Exact typing is untouched — it is still tried first and still wins. */
+    @Test
+    fun `typing an exact fragment behaves as it always did`() {
+        assertTrue(NameSearch.matches("Bilal Khan", null, "bilal"))
+        assertTrue(NameSearch.matches("Bilal Khan", null, "khan"))
+        assertTrue(NameSearch.matches("Bilal Khan", null, ""))
+    }
+
+    /** Generous is not the same as useless. A wrong name is still no match. */
+    @Test
+    fun `typing does not hand back the whole book`() {
+        assertFalse(NameSearch.matches("Bilal Khan", null, "asgar"))
+        assertFalse(NameSearch.matches("Bilal Khan", null, "khurpa"))
+        // Below the floor a fold is a coincidence, not a name.
+        assertFalse(NameSearch.matches("Bilal Khan", null, "ka"))
+    }
+
+    /** The phone number still answers when digits are what was typed. */
+    @Test
+    fun `a number still finds its customer`() {
+        assertTrue(NameSearch.matches("Bilal Khan", "0300-1234567", "1234"))
+        assertFalse(NameSearch.matches("Bilal Khan", "0300-1234567", "9999"))
     }
 }
