@@ -328,7 +328,7 @@ object PdfExport {
         // store the day the app is there — statements already sent will carry
         // readers to the right place without being reissued.
         run {
-            val bandH = 54f
+            val bandH = 42f
             if (y + bandH > PAGE_H - MARGIN) {
                 doc.finishPage(page)
                 pageNo++
@@ -354,16 +354,13 @@ object PdfExport {
             }
             val textLeft = MARGIN + logoSize + 8f
 
+            // The mark and the name, no address. The owner chose to carry no
+            // link until the app is cleared and on Play Store — the day it is,
+            // one line returns here pointing straight at the store listing.
             muted.textSize = 10f
             muted.isFakeBoldText = true
-            c.drawText("Roshan Khata — Har Hisaab Roshan", textLeft, y, muted)
+            c.drawText("Roshan Khata — Har Hisaab Roshan", textLeft, y + 6f, muted)
             muted.isFakeBoldText = false
-            y += 12f
-            muted.textSize = 9f
-            c.drawText(
-                "App muft hasil karein: aliehtisham052-dotcom.github.io/RoshanKhata",
-                textLeft, y, muted
-            )
         }
 
         doc.finishPage(page)
