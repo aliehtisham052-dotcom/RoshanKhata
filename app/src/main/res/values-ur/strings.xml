@@ -553,6 +553,15 @@
     <string name="gold_price_hint">سونے کی قیمت فی گرام (روپے)</string>
     <string name="nisab_silver_note">چاندی کا نصاب: 612.36 گرام (52.5 تولہ) چاندی۔ یہ کم حد ہے، اس لیے زیادہ لوگوں پر زکوٰۃ آتی ہے \u2014 یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔</string>
     <string name="nisab_gold_note">سونے کا نصاب: 87.48 گرام (7.5 تولہ) سونا۔ یہ اونچی حد ہے، اس لیے کم لوگوں پر زکوٰۃ آتی ہے۔ کون سا معیار آپ پر لاگو ہے، عالم سے تصدیق کریں۔</string>
+    <string name="per_tola">فی تولہ</string>
+    <string name="per_gram">فی گرام</string>
+    <string name="price_help">آج کا بھاؤ اپنے مقامی صرافہ بازار، اخبار یا جیولر سے لیں۔</string>
+    <string name="price_looks_off">یہ اس اکائی کے حساب سے عجیب لگ رہا ہے۔ دیکھ لیں کہ بھاؤ فی تولہ ہے یا فی گرام۔</string>
+    <string name="nisab_working">%2$s کا %1$s x %3$s = %4$s</string>
+    <string name="unit_tola">تولہ</string>
+    <string name="unit_gram">گرام</string>
+    <string name="metal_silver">چاندی</string>
+    <string name="metal_gold">سونا</string>
     <string name="last_transacted">آخری لین دین %1$s</string>
     <string name="summary_with_overdue">%1$s \u00b7 %2$d کو یاد دہانی چاہیے</string>
     <plurals name="customer_count">

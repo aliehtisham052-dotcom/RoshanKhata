@@ -553,6 +553,15 @@
     <string name="gold_price_hint">سعر غرام الذهب (Rs)</string>
     <string name="nisab_silver_note">نصاب الفضة: 612.36 غرامًا (52.5 تولة). هذا الحد الأدنى، فتجب الزكاة على أكثر الناس \u2014 وهو الرأي الأحوط لحق الفقراء غالبًا.</string>
     <string name="nisab_gold_note">نصاب الذهب: 87.48 غرامًا (7.5 تولة). هذا الحد الأعلى، فتجب الزكاة على أقل الناس. تأكد أي معيار يلزمك عند عالم.</string>
+    <string name="per_tola">للتولة</string>
+    <string name="per_gram">للغرام</string>
+    <string name="price_help">استخدم سعر اليوم من سوق الصاغة المحلي أو الصحيفة أو الصائغ.</string>
+    <string name="price_looks_off">يبدو هذا غير معتاد لهذه الوحدة. تحقق مما إذا كان السعر للتولة أم للغرام.</string>
+    <string name="nisab_working">%1$s من %2$s x %3$s = %4$s</string>
+    <string name="unit_tola">تولة</string>
+    <string name="unit_gram">غرام</string>
+    <string name="metal_silver">فضة</string>
+    <string name="metal_gold">ذهب</string>
     <string name="last_transacted">آخر معاملة %1$s</string>
     <string name="summary_with_overdue">%1$s \u00b7 %2$d يحتاجون تذكيرًا</string>
     <plurals name="customer_count">

@@ -581,6 +581,15 @@
     <string name="gold_price_hint">قیمت هر گرم طلا (Rs)</string>
     <string name="nisab_silver_note">نصاب نقره: ۶۱۲٫۳۶ گرم (۵۲٫۵ توله) نقره. این آستانه پایین‌تر است، پس زکات بر افراد بیشتری واجب می‌شود \u2014 دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود.</string>
     <string name="nisab_gold_note">نصاب طلا: ۸۷٫۴۸ گرم (۷٫۵ توله) طلا. این آستانه بالاتر است، پس زکات بر افراد کمتری واجب می‌شود. اینکه کدام معیار بر شما صدق می‌کند را از عالم بپرسید.</string>
+    <string name="per_tola">هر تولہ</string>
+    <string name="per_gram">هر گرم</string>
+    <string name="price_help">نرخ امروز را از بازار صرافی محلی، روزنامه یا زرگر خود بگیرید.</string>
+    <string name="price_looks_off">این برای این واحد غیرعادی به نظر می‌رسد. بررسی کنید نرخ هر تولہ است یا هر گرم.</string>
+    <string name="nisab_working">%1$s %2$s x %3$s = %4$s</string>
+    <string name="unit_tola">تولہ</string>
+    <string name="unit_gram">گرم</string>
+    <string name="metal_silver">نقره</string>
+    <string name="metal_gold">طلا</string>
     <string name="last_transacted">آخرین معامله %1$s</string>
     <string name="summary_with_overdue">%1$s \u00b7 %2$d نیازمند یادآوری</string>
     <plurals name="customer_count">

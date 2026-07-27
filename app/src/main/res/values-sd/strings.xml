@@ -581,6 +581,15 @@
     <string name="gold_price_hint">سون جي في گرام قيمت (Rs)</string>
     <string name="nisab_silver_note">چانديءَ جو نصاب: ۶۱۲.۳۶ گرام (۵۲.۵ تولا) چاندي. هي هيٺين حد آهي، تنهنڪري وڌيڪ ماڻهن تي زڪوات واجب ٿئي ٿي \u2014 اهو موقف جيڪو عام طور غريبن جي حق ۾ وڌيڪ محتاط سمجهيو وڃي ٿو.</string>
     <string name="nisab_gold_note">سون جو نصاب: ۸۷.۴۸ گرام (۷.۵ تولا) سون. هي مٿين حد آهي، تنهنڪري گهٽ ماڻهن تي زڪوات واجب ٿئي ٿي. ڪهڙو معيار توهان تي لاڳو آهي، اهو ڪنهن عالم کان پڪو ڪريو.</string>
+    <string name="per_tola">في تولہ</string>
+    <string name="per_gram">في گرام</string>
+    <string name="price_help">اڄ جو اگهه پنهنجي مقامي صرافه بازار، اخبار يا زيورن واري کان وٺو.</string>
+    <string name="price_looks_off">هي هن ايڪي جي حساب سان عجيب لڳي ٿو. ڏسو ته اگهه في تولہ آهي يا في گرام.</string>
+    <string name="nisab_working">%2$s جو %1$s x %3$s = %4$s</string>
+    <string name="unit_tola">تولہ</string>
+    <string name="unit_gram">گرام</string>
+    <string name="metal_silver">چاندي</string>
+    <string name="metal_gold">سون</string>
     <string name="last_transacted">آخري وهنوار %1$s</string>
     <string name="summary_with_overdue">%1$s \u00b7 %2$d کي ياد ڏيارڻ گهرجي</string>
     <plurals name="customer_count">

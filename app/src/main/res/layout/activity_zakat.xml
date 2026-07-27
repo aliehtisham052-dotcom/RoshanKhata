@@ -118,6 +118,41 @@
                 android:textColor="@color/text_muted"
                 android:textSize="12sp" />
 
+            <!--
+              Tola or gram. Tola first and by default, because that is the only
+              unit a sarafa bazaar, a newspaper or a jeweller ever quotes. The
+              per-gram figure has to be worked out before it can be typed, and
+              asking for it is how a price of 66 got entered for silver.
+            -->
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleUnit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPerTola"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/per_tola"
+                    android:textColor="@color/ink"
+                    app:strokeColor="@color/section_tools" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPerGram"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/per_gram"
+                    android:textColor="@color/ink"
+                    app:strokeColor="@color/section_tools" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
             <EditText
                 android:id="@+id/etSilverPrice"
                 android:layout_width="match_parent"
@@ -127,6 +162,27 @@
                 android:importantForAutofill="no"
                 android:inputType="phone"
                 android:digits="0123456789.+-*/%" />
+
+            <!-- Where to get the figure, in one line. -->
+            <TextView
+                android:id="@+id/tvPriceHelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/price_help"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <!-- Shown only when the figure looks like the other unit. -->
+            <TextView
+                android:id="@+id/tvPriceWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/red_gave"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tvNisabValue"

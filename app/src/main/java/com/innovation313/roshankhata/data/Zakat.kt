@@ -27,6 +27,58 @@ object Zakat {
     const val NISAB_SILVER_GRAMS = 612.36
     const val NISAB_GOLD_GRAMS = 87.48
 
+    /**
+     * The unit a Pakistani sarafa bazaar actually quotes in.
+     *
+     * Nobody says "thirty-seven thousand a gram"; they say "four lakh
+     * thirty-two a tola", and that is the figure in the newspaper, on the
+     * television and on the jeweller's board. Asking for a per-gram price was
+     * asking the owner to do a conversion in his head before he could begin,
+     * and the first person to get it wrong was the man who commissioned the
+     * screen — he entered 66 for silver, which is neither a gram price nor a
+     * tola price, and the app answered him with a confident nisab anyway.
+     */
+    const val GRAMS_PER_TOLA = 11.6638
+
+    // Stated, not derived. 612.36 / 11.6638 comes out at 52.50034…, and a
+    // screen that offers to show its working should not show the owner a
+    // rounding artefact where a round number belongs.
+    const val NISAB_SILVER_TOLA = 52.5
+    const val NISAB_GOLD_TOLA = 7.5
+
+    /** How much metal the nisab is, in whichever unit is being quoted. */
+    fun nisabWeight(gold: Boolean, perTola: Boolean): Double = when {
+        gold && perTola -> NISAB_GOLD_TOLA
+        gold -> NISAB_GOLD_GRAMS
+        perTola -> NISAB_SILVER_TOLA
+        else -> NISAB_SILVER_GRAMS
+    }
+
+    /** Nisab value in currency: the weight above, at the price quoted. */
+    fun nisab(price: Double, gold: Boolean, perTola: Boolean): Double =
+        if (price <= 0.0) 0.0 else nisabWeight(gold, perTola) * price
+
+    /**
+     * Does this price look like it was quoted in the other unit?
+     *
+     * A smell test for the mistake that actually happens — a tola figure typed
+     * into a gram box, or the reverse — and deliberately NOT a check on
+     * whether the price is today's. A tola is nearly twelve grams, so the two
+     * readings of the same figure sit an order of magnitude apart, and the
+     * bands are set to fall between them: today's silver at Rs 6,300 a tola
+     * passes as a tola price and is caught as a gram one. They leave room for
+     * roughly a ninefold move in either metal before an honest price would be
+     * questioned. It warns and nothing more — an owner who knows his own
+     * market is not going to be argued with by a calculator.
+     */
+    fun priceLooksOff(price: Double, gold: Boolean, perTola: Boolean): Boolean {
+        if (price <= 0.0) return false
+
+        val perGram = if (perTola) price / GRAMS_PER_TOLA else price
+        return if (gold) perGram < 4_000.0 || perGram > 300_000.0
+        else perGram < 80.0 || perGram > 5_000.0
+    }
+
     /** Nisab value in currency, given today's silver price per gram. */
     fun nisabFromSilverPrice(pricePerGram: Double): Double =
         NISAB_SILVER_GRAMS * pricePerGram

@@ -585,6 +585,15 @@
     <string name="gold_price_hint">Gold price per gram (Rs)</string>
     <string name="nisab_silver_note">Silver nisab: 612.36 g (52.5 tola) of silver. This is the lower threshold, so more people owe Zakat \u2014 the position generally taken as more careful toward the rights of the poor.</string>
     <string name="nisab_gold_note">Gold nisab: 87.48 g (7.5 tola) of gold. This is the higher threshold, so fewer people owe Zakat. Confirm which standard applies to you with a scholar.</string>
+    <string name="per_tola">Per tola</string>
+    <string name="per_gram">Per gram</string>
+    <string name="price_help">Use today\'s rate from your local sarafa bazaar, the newspaper or your jeweller.</string>
+    <string name="price_looks_off">That looks unusual for this unit. Check whether the rate is per tola or per gram.</string>
+    <string name="nisab_working">%1$s of %2$s x %3$s = %4$s</string>
+    <string name="unit_tola">tola</string>
+    <string name="unit_gram">g</string>
+    <string name="metal_silver">silver</string>
+    <string name="metal_gold">gold</string>
     <string name="last_transacted">Last transacted %1$s</string>
     <string name="summary_with_overdue">%1$s \u00b7 %2$d need a reminder</string>
     <plurals name="customer_count">
