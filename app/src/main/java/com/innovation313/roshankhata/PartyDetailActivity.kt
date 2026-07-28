@@ -1167,6 +1167,60 @@ class PartyDetailActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Change whether this party is a customer or a supplier.
+     *
+     * Until now this could only be chosen when the party was first created,
+     * and never corrected — a contact imported as a customer stayed one
+     * forever, however the shop actually deals with them. That is no longer
+     * a cosmetic label: the promotion and batch-recall lists include only
+     * customers, and a supplier bill warns when its party is not a supplier.
+     * A wrong flag therefore decides, silently, who gets messaged and which
+     * bills look suspicious.
+     *
+     * Nothing about the money changes here. The ledger, its entries, the
+     * balance and every bill stay exactly as they are — this only corrects
+     * what kind of relationship the shop has with this person. That is worth
+     * saying on the dialog, because "supplier" next to a balance could easily
+     * be read as an offer to move the debt somewhere.
+     */
+    private fun showPartyTypeDialog() {
+        lifecycleScope.launch {
+            val party = dao.getParty(partyId) ?: return@launch
+
+            val view = layoutInflater.inflate(R.layout.dialog_party_type, null)
+            val rbCustomer: RadioButton = view.findViewById(R.id.rbTypeCustomer)
+            val rbSupplier: RadioButton = view.findViewById(R.id.rbTypeSupplier)
+            if (party.isCustomer) rbCustomer.isChecked = true else rbSupplier.isChecked = true
+
+            MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                .setTitle(R.string.change_party_type)
+                .setView(view)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.save) { _, _ ->
+                    val nowCustomer = rbCustomer.isChecked
+                    if (nowCustomer == party.isCustomer) return@setPositiveButton
+
+                    // AppScope: a deliberate correction the owner made, not a
+                    // repeatable command — see AppScope's own comment.
+                    AppScope.launch {
+                        dao.updateParty(party.copy(isCustomer = nowCustomer))
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) {
+                                Toast.makeText(
+                                    this@PartyDetailActivity,
+                                    if (nowCustomer) R.string.now_a_customer
+                                    else R.string.now_a_supplier,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                }
+                .show()
+        }
+    }
+
     private fun showCreditLimitDialog() {
         val view = layoutInflater.inflate(R.layout.dialog_credit_limit, null)
         val etLimit: EditText = view.findViewById(R.id.etCreditLimit)
@@ -1306,6 +1360,10 @@ class PartyDetailActivity : AppCompatActivity() {
                     Intent(this, ReportActivity::class.java)
                         .putExtra(ReportActivity.EXTRA_PARTY_ID, partyId)
                 )
+                true
+            }
+            R.id.action_party_type -> {
+                showPartyTypeDialog()
                 true
             }
             R.id.action_credit_limit -> {
