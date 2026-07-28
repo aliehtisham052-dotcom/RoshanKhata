@@ -11,12 +11,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Stock
 import com.innovation313.roshankhata.ui.ProductAdapter
 import com.innovation313.roshankhata.ui.ScreenInsets
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * What the shop deals in, and what is left of it.
@@ -110,29 +113,54 @@ class ProductsActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Runs on [AppScope] — see AppScope's own comment.
+     *
+     * This one is a sweep across the entire book rather than a single row,
+     * and the owner is told a count when it finishes. Tied to this screen it
+     * could be cut off halfway by leaving, and because it is one @Transaction
+     * the result would be that NOTHING was tied while the owner had every
+     * reason to believe it had run — the worst of both, since they would not
+     * think to try again.
+     *
+     * All three UI outcomes hop back to the main thread and check the screen
+     * is still there. The tying happens regardless; only the telling depends
+     * on someone being present to be told.
+     */
     private fun runLink() {
         btnLink.isEnabled = false
-        lifecycleScope.launch {
+        AppScope.launch {
             val linked = try {
                 dao.linkGoodsToProducts()
             } catch (e: Exception) {
                 // Nothing partial can have happened — the whole thing is one
                 // transaction. Say it plainly rather than leaving the owner
                 // wondering what state their book is in.
-                btnLink.isEnabled = true
-                Toast.makeText(this@ProductsActivity, R.string.link_goods_failed, Toast.LENGTH_LONG)
-                    .show()
+                withContext(Dispatchers.Main) {
+                    if (!isFinishing && !isDestroyed) {
+                        btnLink.isEnabled = true
+                        Toast.makeText(
+                            this@ProductsActivity,
+                            R.string.link_goods_failed,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
                 return@launch
             }
 
-            btnLink.isEnabled = true
-            Toast.makeText(
-                this@ProductsActivity,
-                if (linked == 0) getString(R.string.link_goods_none)
-                else getString(R.string.link_goods_done, linked),
-                Toast.LENGTH_LONG
-            ).show()
-            refresh()
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    btnLink.isEnabled = true
+                    Toast.makeText(
+                        this@ProductsActivity,
+                        if (linked == 0) getString(R.string.link_goods_none)
+                        else getString(R.string.link_goods_done, linked),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    refresh()
+                }
+            }
         }
     }
 }
