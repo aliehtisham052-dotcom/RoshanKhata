@@ -771,4 +771,6 @@
     <string name="pick_batch_clear">Kisi khaas batch se nahi</string>
     <string name="batch_chosen">Batch: %1$s</string>
     <string name="batch_remaining">%1$s baqi</string>
+    <string name="import_as_title">Kis tor par save karein</string>
+    <string name="import_as_message">%1$d contacts is tor par save honge:</string>
 </resources>

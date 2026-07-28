@@ -803,4 +803,6 @@
     <string name="pick_batch_clear">Not from a specific batch</string>
     <string name="batch_chosen">Batch: %1$s</string>
     <string name="batch_remaining">%1$s left</string>
+    <string name="import_as_title">Save as</string>
+    <string name="import_as_message">%1$d contacts will be saved as:</string>
 </resources>

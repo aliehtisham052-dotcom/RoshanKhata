@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Contacts
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PhoneContact
@@ -199,27 +201,57 @@ class ImportContactsActivity : AppCompatActivity() {
         btnImport.isEnabled = selected.isNotEmpty()
     }
 
+    /**
+     * Asks once, for the whole batch, rather than importing silently as a
+     * customer. That used to be the only outcome this screen could produce —
+     * every contact, whatever the shop actually buys from or sells to them,
+     * became a customer with no way to say otherwise here. A supplier
+     * imported this way was wrong from the moment it was saved, and stayed
+     * wrong until someone opened that party and corrected it by hand.
+     *
+     * One choice for the batch, not a toggle per row: mixing customers and
+     * suppliers in a single import is the rare case, and a shop that does
+     * import a mixed batch can still fix the odd one out afterwards from the
+     * party's own screen, the same as before this existed.
+     */
     private fun importSelected() {
         val toImport = allContacts.filter { it.phone in selected }
         if (toImport.isEmpty()) return
 
-        lifecycleScope.launch {
-            dao.insertParties(
-                toImport.map { c ->
-                    Party(
-                        name = c.name,
-                        phone = c.phone,
-                        isCustomer = true
+        val view = layoutInflater.inflate(R.layout.dialog_import_contact_type, null)
+        view.findViewById<TextView>(R.id.tvImportTypeMessage).text =
+            getString(R.string.import_as_message, toImport.size)
+        val rbCustomer: RadioButton = view.findViewById(R.id.rbImportCustomer)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.import_as_title)
+            .setView(view)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.import_selected) { _, _ ->
+                val isCustomer = rbCustomer.isChecked
+                // AppScope, not lifecycleScope — a quick Back press right
+                // after Save must not be able to cancel this import partway
+                // through, the same fix as everywhere else creation writes
+                // happen in this app. See AppScope's own comment.
+                AppScope.launch {
+                    dao.insertParties(
+                        toImport.map { c ->
+                            Party(name = c.name, phone = c.phone, isCustomer = isCustomer)
+                        }
                     )
+                    withContext(Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) {
+                            Toast.makeText(
+                                this@ImportContactsActivity,
+                                getString(R.string.imported_count, toImport.size),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            finish()
+                        }
+                    }
                 }
-            )
-            Toast.makeText(
-                this@ImportContactsActivity,
-                getString(R.string.imported_count, toImport.size),
-                Toast.LENGTH_SHORT
-            ).show()
-            finish()
-        }
+            }
+            .show()
     }
 
     private fun showStatus(text: String) {

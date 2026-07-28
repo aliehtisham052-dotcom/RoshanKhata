@@ -771,4 +771,6 @@
     <string name="pick_batch_clear">کسی خاص بیچ سے نہیں</string>
     <string name="batch_chosen">بیچ: %1$s</string>
     <string name="batch_remaining">%1$s باقی</string>
+    <string name="import_as_title">کس طور پر محفوظ کریں</string>
+    <string name="import_as_message">%1$d رابطے اس طرح محفوظ ہوں گے:</string>
 </resources>
