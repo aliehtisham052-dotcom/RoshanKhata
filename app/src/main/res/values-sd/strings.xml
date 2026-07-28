@@ -799,4 +799,6 @@
     <string name="pick_batch_clear">ڪنهن خاص بيچ مان نه</string>
     <string name="batch_chosen">بيچ: %1$s</string>
     <string name="batch_remaining">%1$s بچيل</string>
+    <string name="import_as_title">ڪهڙي طرح سيڀ ڪريو</string>
+    <string name="import_as_message">%1$d رابطا هن طرح سيڀ ٿيندا:</string>
 </resources>

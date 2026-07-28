@@ -779,4 +779,6 @@
     <string name="pick_batch_clear">ليست من دفعة محددة</string>
     <string name="batch_chosen">الدفعة: %1$s</string>
     <string name="batch_remaining">المتبقي %1$s</string>
+    <string name="import_as_title">حفظ كـ</string>
+    <string name="import_as_message">سيتم حفظ %1$d جهة اتصال كالتالي:</string>
 </resources>

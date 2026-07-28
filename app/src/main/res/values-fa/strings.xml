@@ -799,4 +799,6 @@
     <string name="pick_batch_clear">از بچ مشخصی نیست</string>
     <string name="batch_chosen">بچ: %1$s</string>
     <string name="batch_remaining">%1$s باقی‌مانده</string>
+    <string name="import_as_title">ذخیره به‌عنوان</string>
+    <string name="import_as_message">%1$d مخاطب این‌گونه ذخیره خواهند شد:</string>
 </resources>
