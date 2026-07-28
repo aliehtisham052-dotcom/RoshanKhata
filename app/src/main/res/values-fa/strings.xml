@@ -776,6 +776,23 @@
     <string name="link_goods_done">%1$d ثبت وصل شد.</string>
     <string name="link_goods_none">چیزی برای وصل کردن نمانده.</string>
     <string name="link_goods_failed">ثبت‌ها وصل نشد. دفتر شما بدون تغییر است.</string>
+
+    <string name="duplicate_customers">مشتریان تکراری</string>
+    <string name="duplicate_customers_subtitle">رکوردهایی که شاید یک شخص را دو بار نشان می‌دهند</string>
+    <string name="duplicate_note">این فقط رکوردهای مشابه را گروه‌بندی می‌کند — تا زمانی که یکی را انتخاب و تأیید نکنید، چیزی ادغام نمی‌شود. نام و شماره را هر دو بررسی کنید؛ ممکن است دو نفر متفاوت به‌طور اتفاقی یکی از این دو را مشترک داشته باشند.</string>
+    <string name="no_duplicates">هیچ مورد تکراری یافت نشد. لیست مشتریان شما تمیز است.</string>
+    <string name="duplicate_reason_name">نام مشابه</string>
+    <string name="duplicate_reason_phone">شماره تلفن یکسان</string>
+    <string name="duplicate_reason_both">نام مشابه و شماره تلفن یکسان</string>
+    <string name="duplicate_review_merge">بررسی و ادغام</string>
+    <string name="duplicate_pick_primary_title">کدام‌یک باقی بماند؟</string>
+    <string name="duplicate_pick_primary_message">بقیه به این یکی منتقل می‌شوند — تمام دفتر حساب، فاکتورها، چک‌ها و طرح‌های اقساطی آن‌ها هم همراه می‌روند. هیچ پولی اضافه یا کم نمی‌شود.</string>
+    <string name="duplicate_next">بعدی</string>
+    <string name="duplicate_merge_confirm_title">ادغام در %1$s؟</string>
+    <string name="duplicate_merge_confirm_message">هر ثبت، فاکتور، چک و طرح اقساطی از رکورد دیگر به این یکی منتقل می‌شود. موجودی خودش به‌روزرسانی می‌شود — چیزی اضافه یا کم نمی‌شود، و پولی جابه‌جا نمی‌شود.\n\nرکورد ادغام‌شده خالی به سطل بازیافت می‌رود: دفتر حساب آن قبلاً منتقل شده، پس بازگرداندن آن بعداً فقط نام را برمی‌گرداند، نه یک نسخهٔ دوم از موجودی.</string>
+    <string name="duplicate_merge_go">ادغام</string>
+    <string name="duplicate_merge_done">در %1$s ادغام شد.</string>
+    <string name="duplicate_merge_failed">ادغام نشد. دفتر شما بدون تغییر است.</string>
     <string name="stock_no_movement">هنوز داد و ستدی نشده</string>
     <string name="stock_units_differ">واحدها فرق دارند</string>
     <string name="stock_in_out">ورودی %1$s  •  خروجی %2$s</string>

@@ -756,6 +756,23 @@
     <string name="link_goods_done">تم ربط %1$d قيداً.</string>
     <string name="link_goods_none">لم يبق شيء لربطه.</string>
     <string name="link_goods_failed">تعذّر ربط القيود. دفترك كما كان.</string>
+
+    <string name="duplicate_customers">عملاء مكرّرون</string>
+    <string name="duplicate_customers_subtitle">سجلات قد تكون لنفس الشخص مرتين</string>
+    <string name="duplicate_note">هذا يجمّع فقط السجلات المتشابهة — لا يتم الدمج حتى تختار أيها يبقى وتؤكد. تحقق من الاسم والرقم معًا؛ قد يشترك شخصان مختلفان في أحدهما مصادفةً.</string>
+    <string name="no_duplicates">لم يُعثر على تكرارات محتملة. قائمة عملائك تبدو نظيفة.</string>
+    <string name="duplicate_reason_name">اسم متشابه</string>
+    <string name="duplicate_reason_phone">نفس رقم الهاتف</string>
+    <string name="duplicate_reason_both">اسم متشابه ونفس رقم الهاتف</string>
+    <string name="duplicate_review_merge">مراجعة ودمج</string>
+    <string name="duplicate_pick_primary_title">أيهما يبقى؟</string>
+    <string name="duplicate_pick_primary_message">تنتقل البقية إلى هذا السجل — سجلّه الكامل والفواتير والشيكات وخطط التقسيط تنتقل معه. لا تُضاف أو تُحذف أي أموال.</string>
+    <string name="duplicate_next">التالي</string>
+    <string name="duplicate_merge_confirm_title">الدمج في %1$s؟</string>
+    <string name="duplicate_merge_confirm_message">كل قيد وفاتورة وشيك وخطة تقسيط من السجل الآخر تنتقل إلى هذا السجل. يُحدَّث الرصيد تلقائيًا — لا تُضاف أو تُحذف أي أموال، ولا ينتقل أي مبلغ.\n\nالسجل المدموج يذهب إلى سلة المحذوفات فارغًا: سجلّه قد انتقل بالفعل، لذا استعادته لاحقًا تُعيد الاسم فقط، وليس نسخة ثانية من الرصيد.</string>
+    <string name="duplicate_merge_go">دمج</string>
+    <string name="duplicate_merge_done">تم الدمج في %1$s.</string>
+    <string name="duplicate_merge_failed">تعذّر الدمج. دفترك كما هو دون تغيير.</string>
     <string name="stock_no_movement">لا حركة بعد</string>
     <string name="stock_units_differ">الوحدات مختلفة</string>
     <string name="stock_in_out">وارد %1$s  •  صادر %2$s</string>

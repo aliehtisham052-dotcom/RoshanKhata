@@ -780,6 +780,23 @@
     <string name="link_goods_done">Tied %1$d entries.</string>
     <string name="link_goods_none">Nothing left to tie.</string>
     <string name="link_goods_failed">Could not tie the entries. Your book is unchanged.</string>
+
+    <string name="duplicate_customers">Duplicate customers</string>
+    <string name="duplicate_customers_subtitle">Records that may be the same person twice</string>
+    <string name="duplicate_note">This only groups records that look alike — nothing merges until you pick which one to keep and confirm. Check the name and number both; two different people can share one of the two by chance.</string>
+    <string name="no_duplicates">No likely duplicates found. Your customer list looks clean.</string>
+    <string name="duplicate_reason_name">Similar name</string>
+    <string name="duplicate_reason_phone">Same phone number</string>
+    <string name="duplicate_reason_both">Similar name and same phone number</string>
+    <string name="duplicate_review_merge">Review &amp; merge</string>
+    <string name="duplicate_pick_primary_title">Which one should stay?</string>
+    <string name="duplicate_pick_primary_message">The others move onto this one — their whole ledger, bills, cheques and payment plans go with them. No money is added or removed.</string>
+    <string name="duplicate_next">Next</string>
+    <string name="duplicate_merge_confirm_title">Merge into %1$s?</string>
+    <string name="duplicate_merge_confirm_message">Every entry, bill, cheque and payment plan from the other record moves onto this one. The balance updates itself — nothing is added or removed, and no money moves.\n\nThe merged-away record goes to the recycle bin, but empty: its ledger has already moved, so restoring it later brings back the name only, not a second copy of the balance.</string>
+    <string name="duplicate_merge_go">Merge</string>
+    <string name="duplicate_merge_done">Merged into %1$s.</string>
+    <string name="duplicate_merge_failed">Could not merge. Your book is unchanged.</string>
     <string name="stock_no_movement">not traded yet</string>
     <string name="stock_units_differ">units differ</string>
     <string name="stock_in_out">in %1$s  •  out %2$s</string>

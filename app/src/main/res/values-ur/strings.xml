@@ -748,6 +748,23 @@
     <string name="link_goods_done">%1$d اندراجات جڑ گئے۔</string>
     <string name="link_goods_none">جوڑنے کو کچھ باقی نہیں۔</string>
     <string name="link_goods_failed">اندراجات نہیں جڑ سکے۔ آپ کی کتاب جیسی تھی ویسی ہے۔</string>
+
+    <string name="duplicate_customers">دوہرے گاہک</string>
+    <string name="duplicate_customers_subtitle">ریکارڈز جو شاید ایک ہی شخص کے دو بار درج ہوں</string>
+    <string name="duplicate_note">یہ صرف ملتے جلتے ریکارڈز کو گروپ کرتا ہے — جب تک آپ چن کر تصدیق نہ کریں، کچھ ضم نہیں ہوتا۔ نام اور نمبر دونوں چیک کر لیں؛ دو مختلف لوگوں کا ان میں سے ایک چیز اتفاقاً ملتا ہو سکتا ہے۔</string>
+    <string name="no_duplicates">کوئی دوہرا ریکارڈ نظر نہیں آیا۔ آپ کی گاہک لسٹ صاف ہے۔</string>
+    <string name="duplicate_reason_name">نام ملتا جلتا ہے</string>
+    <string name="duplicate_reason_phone">نمبر وہی ہے</string>
+    <string name="duplicate_reason_both">نام بھی ملتا جلتا ہے اور نمبر بھی وہی ہے</string>
+    <string name="duplicate_review_merge">دیکھ کر ضم کریں</string>
+    <string name="duplicate_pick_primary_title">کون سا ریکارڈ رہے گا؟</string>
+    <string name="duplicate_pick_primary_message">باقی سب اس پر منتقل ہو جائیں گے — ان کا پورا کھاتہ، بل، چیک اور ادائیگی منصوبے بھی اس کے ساتھ چلے جائیں گے۔ کوئی رقم نہ جمع ہوتی ہے نہ نکلتی۔</string>
+    <string name="duplicate_next">آگے</string>
+    <string name="duplicate_merge_confirm_title">%1$s میں ضم کریں؟</string>
+    <string name="duplicate_merge_confirm_message">دوسرے ریکارڈ کا ہر اندراج، بل، چیک اور ادائیگی منصوبہ اس پر منتقل ہو جائے گا۔ بیلنس خود درست ہو جاتا ہے — کوئی رقم نہ جمع ہوتی ہے نہ نکلتی، کوئی پیسہ اِدھر اُدھر نہیں ہوتا۔\n\nجو ریکارڈ ضم ہو گیا وہ ری سائیکل بن میں خالی چلا جاتا ہے: اس کا کھاتہ پہلے ہی منتقل ہو چکا ہوتا ہے، اس لیے بعد میں واپس لانے سے صرف نام واپس آتا ہے، بیلنس کی دوسری کاپی نہیں۔</string>
+    <string name="duplicate_merge_go">ضم کریں</string>
+    <string name="duplicate_merge_done">%1$s میں ضم ہو گیا۔</string>
+    <string name="duplicate_merge_failed">ضم نہیں ہو سکا۔ آپ کا کھاتہ جیسا تھا ویسا ہی ہے۔</string>
     <string name="stock_no_movement">ابھی لین دین نہیں</string>
     <string name="stock_units_differ">یونٹ الگ ہیں</string>
     <string name="stock_in_out">آیا %1$s  •  گیا %2$s</string>

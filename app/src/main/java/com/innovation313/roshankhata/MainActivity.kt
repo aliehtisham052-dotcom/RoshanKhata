@@ -218,6 +218,7 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.app_lock),
             getString(R.string.screen_privacy),
             getString(R.string.products_stock),
+            getString(R.string.duplicate_customers),
             getString(R.string.language),
             getString(R.string.help_support),
             getString(R.string.about_us)
@@ -230,11 +231,12 @@ class MainActivity : AppCompatActivity() {
                     0 -> showAppLockSettings()
                     1 -> ScreenPrivacyDialog.show(this)
                     2 -> startActivity(Intent(this, ProductsActivity::class.java))
-                    3 -> startActivity(Intent(this, LanguageActivity::class.java))
+                    3 -> startActivity(Intent(this, DuplicateCustomersActivity::class.java))
+                    4 -> startActivity(Intent(this, LanguageActivity::class.java))
                     // Reporting a problem lives inside Help now, so there is
                     // one door marked "something is wrong" rather than two.
-                    4 -> startActivity(Intent(this, HelpActivity::class.java))
-                    5 -> startActivity(Intent(this, AboutActivity::class.java))
+                    5 -> startActivity(Intent(this, HelpActivity::class.java))
+                    6 -> startActivity(Intent(this, AboutActivity::class.java))
                 }
             }
             .show()

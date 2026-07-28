@@ -776,6 +776,23 @@
     <string name="link_goods_done">%1$d داخلائون ڳنڍجي ويون.</string>
     <string name="link_goods_none">ڳنڍڻ لاءِ ڪجهه باقي ناهي.</string>
     <string name="link_goods_failed">داخلائون نه ڳنڍجي سگهيون. توهان جو کاتو جيئن هو تيئن آهي.</string>
+
+    <string name="duplicate_customers">ٻٽا گراهڪ</string>
+    <string name="duplicate_customers_subtitle">اهڙا رڪارڊ جيڪي شايد هڪ ئي شخص جا ٻه دفعا داخل ٿيل هجن</string>
+    <string name="duplicate_note">هي رڳو ملندڙ جلندڙ رڪارڊ گڏ ڪري ٿو — جيسين توهان چونڊي تصديق نه ڪريو، ڪجهه به ضم نه ٿيندو. نالو ۽ نمبر ٻئي چيڪ ڪريو؛ ٻن مختلف ماڻهن مان انهن مان هڪ شيءِ اتفاقي ملندڙ ٿي سگهي ٿي.</string>
+    <string name="no_duplicates">ڪو به ٻٽو رڪارڊ نظر نه آيو. توهان جي گراهڪ لسٽ صاف آهي.</string>
+    <string name="duplicate_reason_name">نالو ملندڙ جلندڙ آهي</string>
+    <string name="duplicate_reason_phone">نمبر ساڳيو آهي</string>
+    <string name="duplicate_reason_both">نالو به ملندڙ جلندڙ آهي ۽ نمبر به ساڳيو آهي</string>
+    <string name="duplicate_review_merge">ڏسي ضم ڪريو</string>
+    <string name="duplicate_pick_primary_title">ڪهڙو رڪارڊ رهندو؟</string>
+    <string name="duplicate_pick_primary_message">باقي سڀ هن تي منتقل ٿي ويندا — سندن سڄو کاتو، بل، چيڪ ۽ ادائيگي پلان به گڏ هلي ويندا. نه ڪا رقم شامل ٿيندي، نه گھٽجندي.</string>
+    <string name="duplicate_next">اڳتي</string>
+    <string name="duplicate_merge_confirm_title">%1$s ۾ ضم ڪريو؟</string>
+    <string name="duplicate_merge_confirm_message">ٻئي رڪارڊ جي هر داخلا، بل، چيڪ ۽ ادائيگي پلان هن تي منتقل ٿي ويندي. بيلنس پاڻمرادو درست ٿي ويندو — نه ڪا رقم شامل ٿيندي، نه گھٽجندي، ڪو پئسو ايڏانهن اوڏانهن نه ٿيندو.\n\nجيڪو رڪارڊ ضم ٿي ويو سو ردي جي ٽوڪري ۾ خالي هليو ويندو: سندس کاتو اڳ ۾ ئي منتقل ٿي چڪو هوندو، تنهنڪري بعد ۾ واپس آڻڻ سان رڳو نالو واپس ايندو، بيلنس جي ٻي ڪاپي نه.</string>
+    <string name="duplicate_merge_go">ضم ڪريو</string>
+    <string name="duplicate_merge_done">%1$s ۾ ضم ٿي ويو.</string>
+    <string name="duplicate_merge_failed">ضم نه ٿي سگهيو. توهان جو کاتو جيئن هو تيئن ئي آهي.</string>
     <string name="stock_no_movement">اڃا ڏي وٺ ناهي</string>
     <string name="stock_units_differ">يونٽ الڳ آهن</string>
     <string name="stock_in_out">آيو %1$s  •  ويو %2$s</string>
