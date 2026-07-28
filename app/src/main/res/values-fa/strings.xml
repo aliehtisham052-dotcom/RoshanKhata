@@ -743,7 +743,7 @@
     <string name="voice_not_understood">متوجه نشدیم. دوباره بگویید یا تایپ کنید.</string>
     <string name="voice_book_loading">فهرست مشتریان هنوز باز می‌شود. لحظه‌ای بعد دوباره بگویید.</string>
     <string name="voice_heard">شنیده شد: %1$s</string>
-    <string name="voice_confirm_title">درست است؟</string>
+    <string name="voice_problem_title">ثبت انجام نشد</string>
     <string name="voice_no_party">هنوز مشتری‌ای در دفتر شما نیست. اول یک مشتری اضافه کنید.</string>
     <string name="voice_no_amount">مبلغی در آن نبود. عدد را هم بگویید.</string>
     <string name="voice_open_entry">باز کردن ثبت</string>

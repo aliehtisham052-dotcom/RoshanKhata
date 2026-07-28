@@ -747,7 +747,7 @@
     <string name="voice_not_understood">Could not make that out. Try again, or type it.</string>
     <string name="voice_book_loading">The customer list is still opening. Try again in a moment.</string>
     <string name="voice_heard">Heard: %1$s</string>
-    <string name="voice_confirm_title">Is this right?</string>
+    <string name="voice_problem_title">Could not make the entry</string>
     <string name="voice_no_party">Your ledger has no customers yet. Add a customer first.</string>
     <string name="voice_no_amount">No amount in that. Say the figure too.</string>
     <string name="voice_open_entry">Open entry</string>

@@ -1285,7 +1285,7 @@ class KhataActivity : AppCompatActivity() {
 
     private fun showSpokenProblem(heard: String, problem: String) {
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.voice_confirm_title)
+            .setTitle(R.string.voice_problem_title)
             .setMessage("$problem\n\n" + getString(R.string.voice_heard, heard))
             .setPositiveButton(R.string.ok, null)
             .show()

@@ -723,7 +723,7 @@
     <string name="voice_not_understood">لم نفهم ذلك. حاول ثانية أو اكتبه.</string>
     <string name="voice_book_loading">قائمة العملاء ما زالت تُفتح. حاول ثانية بعد لحظة.</string>
     <string name="voice_heard">سُمع: %1$s</string>
-    <string name="voice_confirm_title">هل هذا صحيح؟</string>
+    <string name="voice_problem_title">تعذر إنشاء القيد</string>
     <string name="voice_no_party">لا يوجد عملاء في دفترك بعد. أضف عميلاً أولاً.</string>
     <string name="voice_no_amount">لا يوجد مبلغ في ذلك. قل الرقم أيضاً.</string>
     <string name="voice_open_entry">افتح القيد</string>

@@ -715,7 +715,7 @@
     <string name="voice_not_understood">سمجھ نہیں آیا۔ دوبارہ کہیں یا لکھ دیں۔</string>
     <string name="voice_book_loading">گاہکوں کی فہرست ابھی کھل رہی ہے۔ ایک لمحے بعد دوبارہ کہیں۔</string>
     <string name="voice_heard">سنا: %1$s</string>
-    <string name="voice_confirm_title">کیا یہ درست ہے؟</string>
+    <string name="voice_problem_title">اندراج نہیں بن سکا</string>
     <string name="voice_no_party">آپ کے کھاتے میں ابھی کوئی گاہک نہیں۔ پہلے ایک گاہک شامل کریں۔</string>
     <string name="voice_no_amount">اس میں رقم نہیں تھی۔ عدد بھی کہیں۔</string>
     <string name="voice_open_entry">اندراج کھولیں</string>
