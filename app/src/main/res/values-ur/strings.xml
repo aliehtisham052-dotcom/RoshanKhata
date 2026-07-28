@@ -767,4 +767,8 @@
     <string name="delete_item">آئٹم مٹائیں</string>
     <string name="delete_item_confirm">%1$s اس بل سے مٹا دیں؟ اس کا بیچ اور میعاد کا ریکارڈ بھی ساتھ چلا جائے گا۔ بل کا کل ٹوٹل اور لیجر اندراج اس سے نہیں بدلتے۔</string>
     <string name="bill_updated">بل اپ ڈیٹ ہو گیا</string>
+    <string name="pick_batch">کونسا بیچ؟ (اختیاری)</string>
+    <string name="pick_batch_clear">کسی خاص بیچ سے نہیں</string>
+    <string name="batch_chosen">بیچ: %1$s</string>
+    <string name="batch_remaining">%1$s باقی</string>
 </resources>

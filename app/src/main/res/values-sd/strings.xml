@@ -795,4 +795,8 @@
     <string name="delete_item">آئٽم مٽايو</string>
     <string name="delete_item_confirm">%1$s هن بل مان مٽائي ڇڏيو؟ ان جو بيچ ۽ ميعاد جو رڪارڊ به گڏ هليو ويندو. بل جو ڪل ٽوٽل ۽ ليجر اندراج ان سان نه بدلبا.</string>
     <string name="bill_updated">بل اپڊيٽ ٿي ويو</string>
+    <string name="pick_batch">ڪهڙو بيچ؟ (اختياري)</string>
+    <string name="pick_batch_clear">ڪنهن خاص بيچ مان نه</string>
+    <string name="batch_chosen">بيچ: %1$s</string>
+    <string name="batch_remaining">%1$s بچيل</string>
 </resources>

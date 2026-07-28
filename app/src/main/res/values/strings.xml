@@ -799,4 +799,8 @@
     <string name="delete_item">Delete item</string>
     <string name="delete_item_confirm">Delete %1$s from this bill? Its batch and expiry record go with it. This bill total and its ledger entry are not changed by this.</string>
     <string name="bill_updated">Bill updated</string>
+    <string name="pick_batch">Which batch? (optional)</string>
+    <string name="pick_batch_clear">Not from a specific batch</string>
+    <string name="batch_chosen">Batch: %1$s</string>
+    <string name="batch_remaining">%1$s left</string>
 </resources>

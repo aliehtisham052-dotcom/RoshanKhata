@@ -795,4 +795,8 @@
     <string name="delete_item">حذف قلم</string>
     <string name="delete_item_confirm">%1$s از این فاکتور حذف شود؟ سابقهٔ بچ و تاریخ انقضایش هم حذف می‌شود. جمع کل فاکتور و ثبت آن در دفتر با این کار تغییر نمی‌کند.</string>
     <string name="bill_updated">فاکتور به‌روزرسانی شد</string>
+    <string name="pick_batch">کدام بچ؟ (اختیاری)</string>
+    <string name="pick_batch_clear">از بچ مشخصی نیست</string>
+    <string name="batch_chosen">بچ: %1$s</string>
+    <string name="batch_remaining">%1$s باقی‌مانده</string>
 </resources>

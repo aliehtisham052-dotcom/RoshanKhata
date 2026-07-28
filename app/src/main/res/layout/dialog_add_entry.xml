@@ -285,6 +285,21 @@
                 android:inputType="text" />
         </LinearLayout>
 
+        <!--
+          Shown only for a sale, and only once a product with a recorded batch
+          is recognised. A cash sale or an unrecognised item name never shows
+          this — asking for a batch that cannot exist is worse than not asking.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBatch"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/pick_batch"
+            android:visibility="gone"
+            app:cornerRadius="8dp" />
+
         <!-- An equal share of whatever the page has spare. -->
 
         <com.google.android.material.checkbox.MaterialCheckBox

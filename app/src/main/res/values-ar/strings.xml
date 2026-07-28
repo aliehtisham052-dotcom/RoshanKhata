@@ -775,4 +775,8 @@
     <string name="delete_item">حذف الصنف</string>
     <string name="delete_item_confirm">حذف %1$s من هذه الفاتورة؟ سيُحذف معه سجل الدفعة وتاريخ الانتهاء. إجمالي الفاتورة وقيدها في دفتر الحسابات لا يتغيران بهذا.</string>
     <string name="bill_updated">تم تحديث الفاتورة</string>
+    <string name="pick_batch">أي دفعة؟ (اختياري)</string>
+    <string name="pick_batch_clear">ليست من دفعة محددة</string>
+    <string name="batch_chosen">الدفعة: %1$s</string>
+    <string name="batch_remaining">المتبقي %1$s</string>
 </resources>
