@@ -740,13 +740,19 @@ interface KhataDao {
      * Only answers for sales the owner actually tagged with the bill line.
      * For the rest there is [customersWhoBought], which asks the weaker but
      * still useful question: who took this product while that batch was here.
+     *
+     * p.isCustomer = 1 on purpose: isGiven only means goods left the shop
+     * TOWARDS this party, which is exactly as true of a supplier as of a
+     * customer if their account is ever used for anything unusual. A batch
+     * recall is for the people who might use the product, not for whoever a
+     * ledger entry happened to be filed against.
      */
     @Query(
         "SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath, " +
         "0.0 AS balance, MAX(t.timestamp) AS lastActivity, p.creditLimit " +
         "FROM transactions t JOIN parties p ON p.id = t.partyId " +
         "WHERE t.billItemId = :billItemId AND t.isGiven = 1 " +
-        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "AND p.isCustomer = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 " +
         "GROUP BY p.id ORDER BY p.name COLLATE NOCASE"
     )
     suspend fun customersWhoGotBatch(billItemId: Long): List<PartyWithBalance>
@@ -759,13 +765,20 @@ interface KhataDao {
      * last October" is the same question as "who should be told the urea is
      * in", and asking the book directly means no configuration to fill in, get
      * wrong, or forget to update next year.
+     *
+     * p.isCustomer = 1 on purpose — found from the user's own test data,
+     * where a party carrying a supplier bill also picked up a manually
+     * entered sale and showed up in their own promotion list. Promoting to a
+     * supplier is not merely unwanted; it can read as odd or even
+     * embarrassing to the person receiving it, so this is filtered at the
+     * query, not left to the picker to work around.
      */
     @Query(
         "SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath, " +
         "0.0 AS balance, MAX(t.timestamp) AS lastActivity, p.creditLimit " +
         "FROM transactions t JOIN parties p ON p.id = t.partyId " +
         "WHERE t.productId = :productId AND t.isGiven = 1 " +
-        "AND t.timestamp >= :from AND t.timestamp < :to " +
+        "AND p.isCustomer = 1 AND t.timestamp >= :from AND t.timestamp < :to " +
         "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
         "GROUP BY p.id ORDER BY MAX(t.timestamp) DESC"
     )
