@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TableRow
@@ -16,9 +18,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.innovation313.roshankhata.data.AppScope
+import com.innovation313.roshankhata.data.BatchOption
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.BillPhoto
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.DateTimeField
 import com.innovation313.roshankhata.ui.Format
@@ -137,13 +142,120 @@ class EntryDetailActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvBalance).text = Format.money(e.amount)
     }
 
+    /**
+     * The one thing changed here from the version this replaced: goods,
+     * quantity, unit and — for a sale — which batch can now be corrected
+     * too, not only the amount, note and date. Direction (I gave / I got) is
+     * NOT offered, the same reasoning as a supplier bill's own edit screen:
+     * that is not a typo an owner makes, and flipping it is a different and
+     * far riskier operation than fixing what this entry actually says.
+     */
     private fun showEditDialog() {
         val e = entry ?: return
         val view = layoutInflater.inflate(R.layout.dialog_edit_entry, null)
         val etAmount = view.findViewById<EditText>(R.id.etEditAmount)
         val etNote = view.findViewById<EditText>(R.id.etEditNote)
+        val etItemName = view.findViewById<EditText>(R.id.etEditItemName)
+        val etQuantity = view.findViewById<EditText>(R.id.etEditQuantity)
+        val etUnit = view.findViewById<AutoCompleteTextView>(R.id.etEditUnit)
+        val btnBatch = view.findViewById<MaterialButton>(R.id.btnEditBatch)
+
         etAmount.setText(Format.plain(e.amount))
         etNote.setText(e.note.orEmpty())
+        etItemName.setText(e.itemName.orEmpty())
+        etQuantity.setText(e.quantity?.let { Format.plain(it) } ?: "")
+        etUnit.setAdapter(
+            ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, resources.getStringArray(R.array.units))
+        )
+        etUnit.setText(e.unit.orEmpty(), false)
+
+        val dao = KhataDatabase.get(this).khataDao()
+
+        // What this entry ends up tagged with. Both start at whatever it
+        // already carries, so opening Edit and changing only the amount
+        // leaves the product/batch link exactly as it was.
+        var selectedBatch: BatchOption? = null
+        var matchedProductId: Long? = e.productId
+        var batchOptions: List<BatchOption> = emptyList()
+
+        fun labelFor(batch: BatchOption?) = if (batch == null) {
+            getString(R.string.pick_batch)
+        } else {
+            getString(R.string.batch_chosen, batch.batchNumber ?: getString(R.string.batch_none))
+        }
+
+        fun wireBatchClick() {
+            btnBatch.setOnClickListener {
+                showBatchPickerDialog(batchOptions) { chosen ->
+                    selectedBatch = chosen
+                    btnBatch.text = labelFor(chosen)
+                }
+            }
+        }
+
+        /**
+         * Only for a sale. Runs on this screen's own lifecycleScope — a read
+         * for the UI, not a write that must survive the screen closing, so it
+         * is correct for it to be cancelled if the owner navigates away
+         * mid-lookup, same as the add-entry screen's own version of this.
+         */
+        fun refreshBatchButton(typed: String) {
+            if (!e.isGiven || typed.isEmpty()) {
+                btnBatch.visibility = View.GONE
+                selectedBatch = null
+                matchedProductId = null
+                return
+            }
+            lifecycleScope.launch {
+                val product = dao.productByKey(ProductName.key(typed))
+                if (etItemName.text.toString().trim() != typed) return@launch
+
+                matchedProductId = product?.id
+                batchOptions = product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+
+                if (batchOptions.isEmpty()) {
+                    btnBatch.visibility = View.GONE
+                    selectedBatch = null
+                } else {
+                    btnBatch.visibility = View.VISIBLE
+                    // A batch already chosen survives a lookup that still
+                    // offers it; the item name did not really change.
+                    selectedBatch = selectedBatch?.takeIf { sel -> batchOptions.any { it.id == sel.id } }
+                    btnBatch.text = labelFor(selectedBatch)
+                    wireBatchClick()
+                }
+            }
+        }
+
+        // Prime the button with what this entry already has, before the
+        // owner touches anything, so opening Edit never looks like a choice
+        // was forgotten.
+        val entryProductId = e.productId
+        if (e.isGiven && entryProductId != null) {
+            lifecycleScope.launch {
+                val options = dao.batchOptionsForProduct(entryProductId)
+                batchOptions = options
+                if (options.isNotEmpty()) {
+                    btnBatch.visibility = View.VISIBLE
+                    selectedBatch = e.billItemId?.let { id -> options.find { it.id == id } }
+                    btnBatch.text = labelFor(selectedBatch)
+                    wireBatchClick()
+                } else {
+                    btnBatch.visibility = View.GONE
+                }
+            }
+        } else if (e.isGiven && !e.itemName.isNullOrBlank()) {
+            // Not yet tagged to a product — an older entry, or one the
+            // backfill has not reached — so fall back to the same
+            // name lookup the add-entry screen uses.
+            refreshBatchButton(e.itemName)
+        } else {
+            btnBatch.visibility = View.GONE
+        }
+
+        etItemName.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) refreshBatchButton(etItemName.text.toString().trim())
+        }
 
         // Starts at whatever the entry already carries, so leaving it alone
         // leaves it alone.
@@ -166,16 +278,61 @@ class EntryDetailActivity : AppCompatActivity() {
                 val updated = e.copy(
                     amount = amount,
                     note = etNote.text.toString().trim().ifBlank { null },
-                    timestamp = chosenTime
+                    timestamp = chosenTime,
+                    itemName = etItemName.text.toString().trim().ifEmpty { null },
+                    quantity = etQuantity.text.toString().trim().toDoubleOrNull(),
+                    unit = etUnit.text.toString().trim().ifEmpty { null },
+                    productId = matchedProductId,
+                    billItemId = selectedBatch?.id
                 )
-                lifecycleScope.launch {
-                    KhataDatabase.get(this@EntryDetailActivity).khataDao().updateEntry(updated)
-                    entry = updated
-                    render(updated)
-                    Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT).show()
+                // AppScope, not lifecycleScope — see AppScope's own comment.
+                // This dialog closes the instant Save is tapped, while the
+                // write is still in flight; a quick Back press right after
+                // must not be able to cancel a correction any more than it
+                // could a new entry.
+                AppScope.launch {
+                    dao.updateEntry(updated)
+                    withContext(Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) {
+                            entry = updated
+                            render(updated)
+                            Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
                 }
             }
             .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    /**
+     * Which batch this sale came out of, or none. The same picker the
+     * add-entry screen uses, kept here as its own copy rather than shared,
+     * since the two screens are different classes and a shared helper would
+     * need to live somewhere neither naturally owns.
+     */
+    private fun showBatchPickerDialog(options: List<BatchOption>, onPicked: (BatchOption?) -> Unit) {
+        val labels = arrayOf(getString(R.string.pick_batch_clear)) + options.map { o ->
+            buildString {
+                append(
+                    o.batchNumber?.let { getString(R.string.batch_label, it) }
+                        ?: getString(R.string.batch_none)
+                )
+                append(" — ")
+                append(getString(R.string.batch_remaining, Format.qty(o.remaining, o.unit)))
+                o.expiryDate?.let {
+                    append(" · ")
+                    append(Format.dateOnly(it))
+                }
+            }
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.pick_batch)
+            .setItems(labels) { _, which ->
+                onPicked(if (which == 0) null else options[which - 1])
+            }
             .show()
     }
 
