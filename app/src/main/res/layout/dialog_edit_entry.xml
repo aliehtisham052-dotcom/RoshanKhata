@@ -1,45 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/etEditAmount"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/amount"
-        android:importantForAutofill="no"
-        android:inputType="numberDecimal" />
+        android:orientation="vertical"
+        android:padding="20dp">
 
-    <EditText
-        android:id="@+id/etEditNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="@string/note_optional"
-        android:importantForAutofill="no"
-        android:inputType="text" />
+        <EditText
+            android:id="@+id/etEditAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/amount"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal" />
 
-    <!--
-      Correcting when it happened, not only what it was. An entry recorded on
-      the wrong day is as wrong as one recorded for the wrong amount, and until
-      now only the amount could be put right.
-    -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnEditDate"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:gravity="start|center_vertical"
-        android:textAllCaps="false"
-        android:textColor="@color/brand_green"
-        android:textSize="14sp"
-        app:icon="@drawable/ic_calendar"
-        app:iconGravity="textStart"
-        app:iconTint="@color/brand_green" />
+        <EditText
+            android:id="@+id/etEditNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="@string/note_optional"
+            android:importantForAutofill="no"
+            android:inputType="text" />
 
-</LinearLayout>
+        <!--
+          Correcting when it happened, not only what it was. An entry recorded on
+          the wrong day is as wrong as one recorded for the wrong amount, and until
+          now only the amount could be put right.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditDate"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="start|center_vertical"
+            android:textAllCaps="false"
+            android:textColor="@color/brand_green"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_calendar"
+            app:iconGravity="textStart"
+            app:iconTint="@color/brand_green" />
+
+        <EditText
+            android:id="@+id/etEditItemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="@string/item_name_hint"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
+        <LinearLayout
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etEditQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/quantity_hint"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal" />
+
+            <AutoCompleteTextView
+                android:id="@+id/etEditUnit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:completionThreshold="1"
+                android:hint="@string/unit_hint"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+        </LinearLayout>
+
+        <!--
+          Shown only for a sale, and only once a product with a recorded batch
+          is recognised — the same rule the add-entry screen follows.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditBatch"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/pick_batch"
+            android:visibility="gone"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+</ScrollView>
