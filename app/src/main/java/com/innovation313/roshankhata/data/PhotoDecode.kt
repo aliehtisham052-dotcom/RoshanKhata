@@ -3,7 +3,9 @@ package com.innovation313.roshankhata.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
+import androidx.exifinterface.media.ExifInterface
 
 /**
  * Reading a photograph without opening it at full size first.
@@ -63,13 +65,50 @@ object PhotoDecode {
             inSampleSize = sampleSize(bounds.outWidth, bounds.outHeight, edge, keepShortEdge)
         }
 
-        return try {
+        val decoded = try {
             context.contentResolver.openInputStream(source)?.use {
                 BitmapFactory.decodeStream(it, null, options)
             }
         } catch (e: Exception) {
             null
-        }
+        } ?: return null
+
+        return upright(decoded, rotationOf(context, source))
+    }
+
+    /**
+     * The camera's word for which way is up.
+     *
+     * A phone held upright does not rotate the sensor; it stores the pixels
+     * sideways and writes a flag saying so. Every gallery honours the flag,
+     * so the photo LOOKS right everywhere — until it is decoded, saved, and
+     * shown from the saved copy, at which point the flag is gone and a
+     * customer's face lies on its side. Read after the sampled decode and
+     * applied to the small bitmap, where a rotation costs a few megabytes
+     * instead of two hundred.
+     */
+    private fun rotationOf(context: Context, source: Uri): Int = try {
+        context.contentResolver.openInputStream(source)?.use {
+            when (ExifInterface(it).getAttributeInt(
+                ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL
+            )) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                else -> 0
+            }
+        } ?: 0
+    } catch (e: Exception) {
+        // No orientation is not an error; it is a photo that is already up.
+        0
+    }
+
+    private fun upright(bitmap: Bitmap, degrees: Int): Bitmap {
+        if (degrees == 0) return bitmap
+        val matrix = Matrix().apply { postRotate(degrees.toFloat()) }
+        val rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+        if (rotated !== bitmap) bitmap.recycle()
+        return rotated
     }
 
     /**

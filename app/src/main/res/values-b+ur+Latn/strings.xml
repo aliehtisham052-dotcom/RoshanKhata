@@ -715,7 +715,7 @@
     <string name="voice_not_understood">Samajh nahi aaya. Dobara kahein ya likh dein.</string>
     <string name="voice_book_loading">Gahakon ki fehrist abhi khul rahi hai. Ek lamhe baad dobara kahein.</string>
     <string name="voice_heard">Suna: %1$s</string>
-    <string name="voice_confirm_title">Kya ye durust hai?</string>
+    <string name="voice_problem_title">Entry nahi ban saki</string>
     <string name="voice_no_party">Aap ke khate mein abhi koi gahak nahi. Pehle ek gahak shamil karein.</string>
     <string name="voice_no_amount">Is mein raqam nahi thi. Adad bhi kahein.</string>
     <string name="voice_open_entry">Indraj kholein</string>

@@ -743,7 +743,7 @@
     <string name="voice_not_understood">سمجهه ۾ نه آيو. ٻيهر ڪوشش ڪريو يا لکو.</string>
     <string name="voice_book_loading">گراهڪن جي فهرست اڃا کلي رهي آهي. هڪ لمحي کان پوءِ ٻيهر چئو.</string>
     <string name="voice_heard">ٻڌو ويو: %1$s</string>
-    <string name="voice_confirm_title">ڇا اهو صحيح آهي؟</string>
+    <string name="voice_problem_title">داخلا نه ٿي سگهي</string>
     <string name="voice_no_party">اوهان جي کاتي ۾ اڃا ڪو گراهڪ ناهي. پهرين هڪ گراهڪ شامل ڪريو.</string>
     <string name="voice_no_amount">ان ۾ ڪا رقم ناهي. انگ به چئو.</string>
     <string name="voice_open_entry">اندراج کوليو</string>
