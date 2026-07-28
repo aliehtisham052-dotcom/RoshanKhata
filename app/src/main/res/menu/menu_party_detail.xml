@@ -10,6 +10,10 @@
         android:title="@string/report"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_party_type"
+        android:title="@string/change_party_type"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_credit_limit"
         android:title="@string/set_credit_limit"
         app:showAsAction="never" />

@@ -803,4 +803,8 @@
     <string name="import_as_message">%1$d مخاطب این‌گونه ذخیره خواهند شد:</string>
     <string name="bill_to_customer_title">این طرف مشتری است</string>
     <string name="bill_to_customer_warn">%1$s به‌عنوان مشتری ذخیره شده، نه تأمین‌کننده. فاکتور تأمین‌کننده آنچه را شما بدهکارید در حساب او می‌نویسد. اگر همین شخص واقعاً به شما جنس می‌دهد ادامه دهید — وگرنه نام را بررسی کنید.</string>
+    <string name="change_party_type">مشتری یا تأمین‌کننده</string>
+    <string name="change_party_type_help">این فقط نوع طرف را اصلاح می‌کند. دفتر، مانده و هر فاکتور دقیقاً همان‌طور می‌ماند — هیچ پولی جابه‌جا نمی‌شود. اما تعیین می‌کند چه کسی در فهرست‌های تبلیغ محصول بیاید، چون آن فهرست فقط مشتریان را دارد.</string>
+    <string name="now_a_customer">به‌عنوان مشتری ذخیره شد</string>
+    <string name="now_a_supplier">به‌عنوان تأمین‌کننده ذخیره شد</string>
 </resources>

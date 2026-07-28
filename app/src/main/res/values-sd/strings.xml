@@ -803,4 +803,8 @@
     <string name="import_as_message">%1$d رابطا هن طرح سيڀ ٿيندا:</string>
     <string name="bill_to_customer_title">هي ڌر گراهڪ آهي</string>
     <string name="bill_to_customer_warn">%1$s گراهڪ طور سيڀ ٿيل آهي، سپلائر نه. سپلائر بل سندس کاتي ۾ اها رقم لکي ٿي جيڪا توهان ڏيڻي آهي. جيڪڏهن اهو ئي ماڻهو واقعي توهان کي مال ڏئي ٿو ته اڳتي وڌو — نه ته نالو چڪاس ڪريو.</string>
+    <string name="change_party_type">گراهڪ يا سپلائر</string>
+    <string name="change_party_type_help">هي رڳو اهو درست ڪري ٿو ته ڌر ڪهڙي قسم جي آهي. کاتو، بيلنس ۽ هر بل جيئن آهن تيئن رهندا — ڪا رقم هيڏانهن هوڏانهن نه ٿي ٿئي. ها، هي طئي ڪري ٿو ته پراڊڪٽ پروموشن لسٽ ۾ ڪير ايندو، ڇو ته ان ۾ رڳو گراهڪ ايندا آهن.</string>
+    <string name="now_a_customer">گراهڪ طور سيڀ ٿيو</string>
+    <string name="now_a_supplier">سپلائر طور سيڀ ٿيو</string>
 </resources>

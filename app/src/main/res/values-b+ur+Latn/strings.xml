@@ -775,4 +775,8 @@
     <string name="import_as_message">%1$d contacts is tor par save honge:</string>
     <string name="bill_to_customer_title">Ye party customer hai</string>
     <string name="bill_to_customer_warn">%1$s customer ke tor par save hai, supplier nahi. Supplier bill un ke khate mein wo raqam likhti hai jo AAP ne dena hai. Agar wahi shakhs waqai aap ko maal deta hai to aage barhein — warna naam check kar lein.</string>
+    <string name="change_party_type">Customer ya supplier</string>
+    <string name="change_party_type_help">Ye sirf ye durust karta hai ke party kis qism ki hai. Khata, balance aur har bill jaise hain waise hi rahenge — koi raqam idhar udhar nahi hoti. Haan, ye tay karta hai ke product promotion list mein kaun aayega, kyunki us mein sirf customers aate hain.</string>
+    <string name="now_a_customer">Customer ke tor par mehfooz</string>
+    <string name="now_a_supplier">Supplier ke tor par mehfooz</string>
 </resources>

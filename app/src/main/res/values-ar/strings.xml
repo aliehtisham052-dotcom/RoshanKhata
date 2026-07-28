@@ -783,4 +783,8 @@
     <string name="import_as_message">سيتم حفظ %1$d جهة اتصال كالتالي:</string>
     <string name="bill_to_customer_title">هذا الطرف عميل</string>
     <string name="bill_to_customer_warn">%1$s محفوظ كعميل، لا كمورد. فاتورة المورد تضع ما تدين به أنت في حسابه. إن كان الشخص نفسه يورد لك فعلاً فتابع — وإلا فراجع الاسم.</string>
+    <string name="change_party_type">عميل أم مورد</string>
+    <string name="change_party_type_help">هذا يصحح نوع الطرف فقط. دفتر الحساب والرصيد وكل فاتورة تبقى كما هي — لا تنتقل أي أموال. لكنه يحدد من يظهر في قوائم ترويج المنتجات، وهي تضم العملاء فقط.</string>
+    <string name="now_a_customer">حُفظ كعميل</string>
+    <string name="now_a_supplier">حُفظ كمورد</string>
 </resources>

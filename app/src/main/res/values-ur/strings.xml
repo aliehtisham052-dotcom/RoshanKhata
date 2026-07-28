@@ -775,4 +775,8 @@
     <string name="import_as_message">%1$d رابطے اس طرح محفوظ ہوں گے:</string>
     <string name="bill_to_customer_title">یہ پارٹی گاہک ہے</string>
     <string name="bill_to_customer_warn">%1$s گاہک کے طور پر محفوظ ہے، سپلائر نہیں۔ سپلائر بل ان کے کھاتے میں وہ رقم لکھتی ہے جو آپ نے دینی ہے۔ اگر وہی شخص واقعی آپ کو مال دیتا ہے تو آگے بڑھیں — ورنہ نام چیک کر لیں۔</string>
+    <string name="change_party_type">گاہک یا سپلائر</string>
+    <string name="change_party_type_help">یہ صرف یہ درست کرتا ہے کہ پارٹی کس قسم کی ہے۔ کھاتہ، بیلنس اور ہر بل جیسے ہیں ویسے ہی رہیں گے — کوئی رقم اِدھر اُدھر نہیں ہوتی۔ ہاں، یہ طے کرتا ہے کہ پروڈکٹ پروموشن لسٹ میں کون آئے گا، کیونکہ اس میں صرف گاہک آتے ہیں۔</string>
+    <string name="now_a_customer">گاہک کے طور پر محفوظ</string>
+    <string name="now_a_supplier">سپلائر کے طور پر محفوظ</string>
 </resources>
