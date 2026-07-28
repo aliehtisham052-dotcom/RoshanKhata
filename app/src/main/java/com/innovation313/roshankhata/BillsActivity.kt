@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BillItem
 import com.innovation313.roshankhata.data.BillSummary
 import com.innovation313.roshankhata.data.EntryNumber
@@ -27,8 +28,10 @@ import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.SupplierBill
 import com.innovation313.roshankhata.ui.BillAdapter
 import com.innovation313.roshankhata.ui.Format
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 /**
@@ -322,7 +325,20 @@ class BillsActivity : AppCompatActivity() {
             return
         }
 
-        lifecycleScope.launch {
+        // The three writes below run on AppScope, not lifecycleScope — a
+        // bill is money (the ledger entry), paperwork (the bill row), and
+        // batch records (the items), and a quick Back press right after
+        // tapping Save must not be able to cancel any of them partway
+        // through. See AppScope's own comment.
+        //
+        // pendingItems is read and cleared here, on the caller's own
+        // lifecycleScope-backed thread, BEFORE the AppScope block below is
+        // even built — so a second bill started immediately after this one
+        // can never see items meant for this one still sitting in the list.
+        val itemsForThisBill = pendingItems.toList()
+        pendingItems.clear()
+
+        AppScope.launch {
             // ONE ledger entry, and only when the stock was taken on credit.
             //
             // isGiven = false means money owed BY me TO them — the supplier's
@@ -360,16 +376,23 @@ class BillsActivity : AppCompatActivity() {
                 )
             )
 
-            pendingItems.forEach { item ->
+            itemsForThisBill.forEach { item ->
                 dao.insertBillItem(item.copy(billId = billId))
             }
-            pendingItems.clear()
 
-            Toast.makeText(
-                this@BillsActivity,
-                if (paidCash) R.string.bill_saved else R.string.bill_saved_credit,
-                Toast.LENGTH_LONG
-            ).show()
+            // The toast touches a screen the owner may already have left, so
+            // it hops back to the main thread and is shown only if this
+            // Activity is still the one on screen. The bill is saved either
+            // way; the toast is a courtesy, not a condition of saving.
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(
+                        this@BillsActivity,
+                        if (paidCash) R.string.bill_saved else R.string.bill_saved_credit,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 

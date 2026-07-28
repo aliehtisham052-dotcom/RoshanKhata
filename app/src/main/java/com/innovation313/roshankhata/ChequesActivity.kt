@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Cheque
 import com.innovation313.roshankhata.data.ChequeStatus
 import com.innovation313.roshankhata.data.ChequeWithParty
@@ -27,9 +28,11 @@ import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.ChequeAdapter
 import com.innovation313.roshankhata.ui.Format
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 /**
@@ -180,7 +183,11 @@ class ChequesActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
-                lifecycleScope.launch {
+                // AppScope, not lifecycleScope — see AppScope's own comment.
+                // This dialog is already gone by the time the write finishes;
+                // a quick Back press right after Save must not be able to
+                // cancel a cheque that looked saved.
+                AppScope.launch {
                     dao.insertCheque(
                         Cheque(
                             partyId = party.id,
@@ -242,8 +249,17 @@ class ChequesActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Runs on [AppScope] — this is the one cheque action that creates NEW
+     * money (a ledger entry), unlike mark-bounced or mark-cancelled below,
+     * which only change the cheque's own status and lose nothing if
+     * interrupted. A quick Back press right after "Mark cleared" must not be
+     * able to cancel the entry partway through. See AppScope's own comment.
+     * The toast hops back to the main thread and is shown only if this
+     * Activity is still the one on screen.
+     */
     private fun postCleared(cheque: ChequeWithParty) {
-        lifecycleScope.launch {
+        AppScope.launch {
             val count = dao.totalEntryCount()
 
             // A cheque received from a customer is money coming IN — it reduces
@@ -277,11 +293,15 @@ class ChequesActivity : AppCompatActivity() {
                 )
             }
 
-            Toast.makeText(
-                this@ChequesActivity,
-                R.string.cheque_cleared_posted,
-                Toast.LENGTH_SHORT
-            ).show()
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(
+                        this@ChequesActivity,
+                        R.string.cheque_cleared_posted,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 

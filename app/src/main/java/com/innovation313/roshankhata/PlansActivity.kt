@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.Installment
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -26,8 +27,10 @@ import com.innovation313.roshankhata.data.PaymentPlan
 import com.innovation313.roshankhata.data.PlanProgress
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.PlanAdapter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 /**
@@ -159,7 +162,10 @@ class PlansActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
-                lifecycleScope.launch {
+                // AppScope, not lifecycleScope — a quick Back press right
+                // after Save must not be able to cancel this plan before it
+                // reaches the disk. See AppScope's own comment.
+                AppScope.launch {
                     // Note what is NOT happening here: no ledger entry. The
                     // debt is already recorded. This only writes the promise.
                     dao.insertPlan(
@@ -263,8 +269,17 @@ class PlansActivity : AppCompatActivity() {
      * once as a payment, once as a ledger entry of its own — would halve the
      * customer's balance for money they paid once.
      */
+    /**
+     * The writes run on [AppScope] so a quick Back press right after Save
+     * cannot cancel the payment before it reaches the disk — see AppScope's
+     * own comment. The toast is different: it touches a screen the owner may
+     * already have left, so it hops back to the main thread and is shown only
+     * if this Activity is still the one on screen. The payment is recorded
+     * either way; the toast is a courtesy, not a condition of saving.
+     */
     private fun recordPayment(plan: PlanProgress, amount: Double, note: String) {
-        lifecycleScope.launch {
+        val noteText = note.ifEmpty { getString(R.string.plan_note_prefix) }
+        AppScope.launch {
             val count = dao.totalEntryCount()
 
             val entryId = dao.insertEntry(
@@ -273,7 +288,7 @@ class PlansActivity : AppCompatActivity() {
                     amount = amount,
                     // Money coming IN from the customer: it reduces what they owe.
                     isGiven = false,
-                    note = note.ifEmpty { getString(R.string.plan_note_prefix) },
+                    note = noteText,
                     entryNumber = EntryNumber.next(count)
                 )
             )
@@ -301,11 +316,15 @@ class PlansActivity : AppCompatActivity() {
                 }
             }
 
-            Toast.makeText(
-                this@PlansActivity,
-                R.string.payment_recorded,
-                Toast.LENGTH_SHORT
-            ).show()
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(
+                        this@PlansActivity,
+                        R.string.payment_recorded,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
