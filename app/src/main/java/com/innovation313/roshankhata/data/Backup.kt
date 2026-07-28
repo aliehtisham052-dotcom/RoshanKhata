@@ -329,7 +329,9 @@ object Backup {
             // number that leads nowhere is a hole, and holes are refused here
             // rather than discovered months later by a stock count.
             val productIds = products.map { it.id }.toSet()
+            val billItemIds = billItems.map { it.id }.toSet()
             val orphans = entries.count { it.productId != null && it.productId !in productIds } +
+                entries.count { it.billItemId != null && it.billItemId !in billItemIds } +
                 billItems.count { it.productId != null && it.productId !in productIds } +
                 entries.count { it.partyId !in partyIds } +
                 cheques.count { it.partyId !in partyIds } +
@@ -429,6 +431,7 @@ object Backup {
         put("quantity", e.quantity ?: JSONObject.NULL)
         put("unit", e.unit ?: JSONObject.NULL)
         put("productId", e.productId ?: JSONObject.NULL)
+        put("billItemId", e.billItemId ?: JSONObject.NULL)
         put("isDeleted", e.isDeleted)
         put("deletedAt", e.deletedAt ?: JSONObject.NULL)
     }
@@ -447,6 +450,7 @@ object Backup {
         quantity = o.optNullableDouble("quantity"),
         unit = o.optNullableString("unit"),
         productId = o.optNullableLong("productId"),
+        billItemId = o.optNullableLong("billItemId"),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")
     )

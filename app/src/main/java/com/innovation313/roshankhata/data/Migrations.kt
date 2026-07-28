@@ -324,6 +324,34 @@ val MIGRATION_10_11 = object : Migration(10, 11) {
 }
 
 /**
+ * Which batch a sale came out of.
+ *
+ * This is the half of batch tracing that was missing. A batch number is
+ * recorded when stock arrives, on the supplier's bill line — and then the trail
+ * stopped at the counter, so a batch that turns out to be bad could not be
+ * traced to the farmers who bought it. For a licensed dealer that is not a
+ * convenience; a recall that cannot reach anyone is not a recall.
+ *
+ * Nullable, and null on every entry already written. One sale points at one
+ * bill line, which is how a small dealer sells — out of the carton that is
+ * open. A sale genuinely split across two batches cannot be represented yet,
+ * and the honest fallback for anything untagged is the window query: who bought
+ * this product while that batch was the stock on hand.
+ *
+ * ADD COLUMN only, the same shape as MIGRATION_8_9. No table is rebuilt and no
+ * existing value is read or rewritten.
+ */
+val MIGRATION_11_12 = object : Migration(11, 12) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE transactions ADD COLUMN billItemId INTEGER")
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS index_transactions_billItemId " +
+                "ON transactions(billItemId)"
+        )
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -332,7 +360,7 @@ val MIGRATION_10_11 = object : Migration(10, 11) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 11
+const val KHATA_DB_VERSION = 12
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -345,5 +373,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_7_8,
     MIGRATION_8_9,
     MIGRATION_9_10,
-    MIGRATION_10_11
+    MIGRATION_10_11,
+    MIGRATION_11_12
 )

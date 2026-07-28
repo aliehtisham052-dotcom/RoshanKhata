@@ -654,6 +654,153 @@ interface KhataDao {
     @Insert
     suspend fun restoreProducts(items: List<Product>)
 
+    // ---------- Stock, batches, and season targeting ----------
+    //
+    // The two sides are summed in SEPARATE queries and married in Stock.combine.
+    // One query joining purchases and sales to the same product would multiply
+    // the rows — three bills and four sales give twelve rows, and every total
+    // counted several times over. That mistake produces a believable number,
+    // which is the worst kind.
+
+    /** Stock that arrived, per product. Deleted bills and lines excluded. */
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, MIN(i.unit) AS unit " +
+        "FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND b.isDeleted = 0 " +
+        "GROUP BY i.productId"
+    )
+    suspend fun boughtPerProduct(): List<Stock.ProductQty>
+
+    /**
+     * Stock that left, per product.
+     *
+     * isGiven = 1 is the shop handing goods over. A quantity is required: a
+     * bare cash entry against a product name moved money, not stock.
+     */
+    @Query(
+        "SELECT t.productId AS productId, SUM(t.quantity) AS qty, MIN(t.unit) AS unit " +
+        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
+        "WHERE t.productId IS NOT NULL AND t.quantity IS NOT NULL AND t.isGiven = 1 " +
+        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "GROUP BY t.productId"
+    )
+    suspend fun soldPerProduct(): List<Stock.ProductQty>
+
+    /** Goods that came back in. Same shape, other direction. */
+    @Query(
+        "SELECT t.productId AS productId, SUM(t.quantity) AS qty, MIN(t.unit) AS unit " +
+        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
+        "WHERE t.productId IS NOT NULL AND t.quantity IS NOT NULL AND t.isGiven = 0 " +
+        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "GROUP BY t.productId"
+    )
+    suspend fun returnedPerProduct(): List<Stock.ProductQty>
+
+    /**
+     * Everyone who was sold a specific batch, exactly.
+     *
+     * Only answers for sales the owner actually tagged with the bill line.
+     * For the rest there is [customersWhoBought], which asks the weaker but
+     * still useful question: who took this product while that batch was here.
+     */
+    @Query(
+        "SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath, " +
+        "0.0 AS balance, MAX(t.timestamp) AS lastActivity, p.creditLimit " +
+        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
+        "WHERE t.billItemId = :billItemId AND t.isGiven = 1 " +
+        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "GROUP BY p.id ORDER BY p.name COLLATE NOCASE"
+    )
+    suspend fun customersWhoGotBatch(billItemId: Long): List<PartyWithBalance>
+
+    /**
+     * Everyone who bought a product inside a window of time.
+     *
+     * This is both the fallback for an untagged batch and the whole of season
+     * targeting. A season does not need a table of its own: "who bought urea
+     * last October" is the same question as "who should be told the urea is
+     * in", and asking the book directly means no configuration to fill in, get
+     * wrong, or forget to update next year.
+     */
+    @Query(
+        "SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath, " +
+        "0.0 AS balance, MAX(t.timestamp) AS lastActivity, p.creditLimit " +
+        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
+        "WHERE t.productId = :productId AND t.isGiven = 1 " +
+        "AND t.timestamp >= :from AND t.timestamp < :to " +
+        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "GROUP BY p.id ORDER BY MAX(t.timestamp) DESC"
+    )
+    suspend fun customersWhoBought(productId: Long, from: Long, to: Long): List<PartyWithBalance>
+
+    // ---------- Tying existing free text to products ----------
+    //
+    // Every row written before products existed carries a name and no link.
+    // These three do the tying, and they are written so that the worst thing
+    // they can do is nothing.
+
+    @Query(
+        "SELECT DISTINCT itemName FROM transactions " +
+        "WHERE productId IS NULL AND itemName IS NOT NULL AND TRIM(itemName) != ''"
+    )
+    suspend fun unlinkedEntryNames(): List<String>
+
+    @Query(
+        "SELECT DISTINCT productName FROM bill_items " +
+        "WHERE productId IS NULL AND TRIM(productName) != ''"
+    )
+    suspend fun unlinkedBillItemNames(): List<String>
+
+    /** Fills the blank only. An entry already tied to a product is never re-tied. */
+    @Query(
+        "UPDATE transactions SET productId = :productId " +
+        "WHERE productId IS NULL AND itemName = :name"
+    )
+    suspend fun linkEntriesNamed(name: String, productId: Long): Int
+
+    @Query(
+        "UPDATE bill_items SET productId = :productId " +
+        "WHERE productId IS NULL AND productName = :name"
+    )
+    suspend fun linkBillItemsNamed(name: String, productId: Long): Int
+
+    /**
+     * Tie every unlinked name in the book to a product, creating the products
+     * the names imply.
+     *
+     * WHAT THIS CANNOT DO, BY CONSTRUCTION:
+     *
+     *  - It cannot lose a name. itemName and productName are never written to,
+     *    only read. Whatever the owner typed stays exactly as they typed it,
+     *    and remains what they are shown.
+     *  - It cannot overwrite a link. Both updates carry `productId IS NULL`,
+     *    so a product the owner has already chosen by hand is never replaced
+     *    by one guessed from text.
+     *  - It cannot half-finish. One @Transaction: either every name is tied or
+     *    the book is exactly as it was.
+     *  - It cannot do damage twice. Run it again and there are no unlinked
+     *    names left, so it links nothing and returns zero.
+     *
+     * Names are tied by exact text, not by the folded key. Folding is for
+     * suggesting; a backfill that quietly merged two names the owner keeps
+     * apart would be deciding something about their stock without asking.
+     * findOrCreateProduct still collapses case and stray spacing, because
+     * "Urea" and "urea " are not two decisions.
+     */
+    @Transaction
+    suspend fun linkGoodsToProducts(): Int {
+        var linked = 0
+        for (name in unlinkedEntryNames()) {
+            val product = findOrCreateProduct(name)
+            linked += linkEntriesNamed(name, product.id)
+        }
+        for (name in unlinkedBillItemNames()) {
+            val product = findOrCreateProduct(name)
+            linked += linkBillItemsNamed(name, product.id)
+        }
+        return linked
+    }
+
     // ---------- One-shot reads, for the printed report ----------
     //
     // A report is a snapshot, not a live view, so these return a value rather
