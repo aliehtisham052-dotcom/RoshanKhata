@@ -40,6 +40,7 @@ import com.innovation313.roshankhata.data.VoiceLog
 import androidx.core.content.FileProvider
 import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.PartyAdapter
+import com.innovation313.roshankhata.ui.ScreenPrivacyDialog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -753,6 +754,7 @@ class KhataActivity : AppCompatActivity() {
     private fun showMoreSheet() {
         val options = arrayOf(
             getString(R.string.app_lock),
+            getString(R.string.screen_privacy),
             getString(R.string.language),
             getString(R.string.help_support),
             getString(R.string.about_us)
@@ -763,11 +765,12 @@ class KhataActivity : AppCompatActivity() {
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> showAppLockSettings()
-                    1 -> startActivity(Intent(this, LanguageActivity::class.java))
+                    1 -> ScreenPrivacyDialog.show(this)
+                    2 -> startActivity(Intent(this, LanguageActivity::class.java))
                     // Reporting a problem lives inside Help now, so there is
                     // one door marked "something is wrong" rather than two.
-                    2 -> startActivity(Intent(this, HelpActivity::class.java))
-                    3 -> startActivity(Intent(this, AboutActivity::class.java))
+                    3 -> startActivity(Intent(this, HelpActivity::class.java))
+                    4 -> startActivity(Intent(this, AboutActivity::class.java))
                 }
             }
             .show()

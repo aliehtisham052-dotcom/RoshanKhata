@@ -16,6 +16,7 @@ import com.innovation313.roshankhata.data.AppLock
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.ui.CoachMarkController
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.ui.ScreenPrivacyDialog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -215,6 +216,7 @@ class MainActivity : AppCompatActivity() {
     private fun showMoreSheet() {
         val options = arrayOf(
             getString(R.string.app_lock),
+            getString(R.string.screen_privacy),
             getString(R.string.language),
             getString(R.string.help_support),
             getString(R.string.about_us)
@@ -225,11 +227,12 @@ class MainActivity : AppCompatActivity() {
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> showAppLockSettings()
-                    1 -> startActivity(Intent(this, LanguageActivity::class.java))
+                    1 -> ScreenPrivacyDialog.show(this)
+                    2 -> startActivity(Intent(this, LanguageActivity::class.java))
                     // Reporting a problem lives inside Help now, so there is
                     // one door marked "something is wrong" rather than two.
-                    2 -> startActivity(Intent(this, HelpActivity::class.java))
-                    3 -> startActivity(Intent(this, AboutActivity::class.java))
+                    3 -> startActivity(Intent(this, HelpActivity::class.java))
+                    4 -> startActivity(Intent(this, AboutActivity::class.java))
                 }
             }
             .show()
