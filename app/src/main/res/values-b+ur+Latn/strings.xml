@@ -773,4 +773,6 @@
     <string name="batch_remaining">%1$s baqi</string>
     <string name="import_as_title">Kis tor par save karein</string>
     <string name="import_as_message">%1$d contacts is tor par save honge:</string>
+    <string name="bill_to_customer_title">Ye party customer hai</string>
+    <string name="bill_to_customer_warn">%1$s customer ke tor par save hai, supplier nahi. Supplier bill un ke khate mein wo raqam likhti hai jo AAP ne dena hai. Agar wahi shakhs waqai aap ko maal deta hai to aage barhein — warna naam check kar lein.</string>
 </resources>

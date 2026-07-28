@@ -20,7 +20,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BillItem
 import com.innovation313.roshankhata.data.BillSummary
-import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.ExpiryWindow
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
@@ -340,6 +339,38 @@ class BillsActivity : AppCompatActivity() {
             return
         }
 
+        // The name matched a party saved as a CUSTOMER. That may be exactly
+        // right — one man can be both the shop's customer and its supplier —
+        // or it may be a same-name slip about to put a supplier's debt on a
+        // customer's account. Only the owner knows which, so it asks, the
+        // same way the duplicate-name check asks when adding a party. The
+        // promotion list filters strictly by this flag, so a bill quietly
+        // attached to the wrong kind of party would also quietly change who
+        // gets promotional messages.
+        if (supplier.isCustomer) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.bill_to_customer_title)
+                .setMessage(getString(R.string.bill_to_customer_warn, supplier.name))
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.proceed_anyway) { _, _ ->
+                    dispatchSaveBill(supplier, billNumber, total, billDate, dueDate, paidCash, note)
+                }
+                .show()
+            return
+        }
+
+        dispatchSaveBill(supplier, billNumber, total, billDate, dueDate, paidCash, note)
+    }
+
+    private fun dispatchSaveBill(
+        supplier: PartyWithBalance,
+        billNumber: String?,
+        total: Double,
+        billDate: Long,
+        dueDate: Long?,
+        paidCash: Boolean,
+        note: String?
+    ) {
         // The three writes below run on AppScope, not lifecycleScope — a
         // bill is money (the ledger entry), paperwork (the bill row), and
         // batch records (the items), and a quick Back press right after
@@ -366,14 +397,13 @@ class BillsActivity : AppCompatActivity() {
             val ledgerId: Long? = if (paidCash) {
                 null
             } else {
-                val count = dao.totalEntryCount()
-                dao.insertEntry(
+                dao.insertEntryNumbered(
                     LedgerEntry(
                         partyId = supplier.id,
                         amount = total,
                         isGiven = false,
                         note = billNumber?.let { "Bill $it" } ?: note,
-                        entryNumber = EntryNumber.next(count)
+                        entryNumber = ""
                     )
                 )
             }
@@ -392,7 +422,18 @@ class BillsActivity : AppCompatActivity() {
             )
 
             itemsForThisBill.forEach { item ->
-                dao.insertBillItem(item.copy(billId = billId))
+                // The product is born HERE, the moment its name first appears
+                // on a bill — which is what the Products screen's empty state
+                // has promised all along. findOrCreateProduct is idempotent
+                // and restores a deleted product of the same name rather than
+                // inserting a twin, so typing "Urea" twice can never make two.
+                // Tagging productId now also means a sale of this product can
+                // offer its batches immediately, with no backfill run needed.
+                val product = dao.findOrCreateProduct(
+                    name = item.productName,
+                    defaultUnit = item.unit
+                )
+                dao.insertBillItem(item.copy(billId = billId, productId = product.id))
             }
 
             // The toast touches a screen the owner may already have left, so
@@ -600,7 +641,15 @@ class BillsActivity : AppCompatActivity() {
                 if (which == items.size) {
                     showAddItemDialog { newItem ->
                         AppScope.launch {
-                            dao.insertBillItem(newItem.copy(billId = billId))
+                            // Same birth rule as saveBill: naming a product on
+                            // a bill line creates it if it does not exist yet.
+                            val product = dao.findOrCreateProduct(
+                                name = newItem.productName,
+                                defaultUnit = newItem.unit
+                            )
+                            dao.insertBillItem(
+                                newItem.copy(billId = billId, productId = product.id)
+                            )
                             withContext(Dispatchers.Main) {
                                 if (!isFinishing && !isDestroyed) manageItems(billId)
                             }
@@ -622,7 +671,20 @@ class BillsActivity : AppCompatActivity() {
                 when (which) {
                     0 -> showAddItemDialog(existing = item) { updated ->
                         AppScope.launch {
-                            dao.updateBillItem(updated.copy(id = item.id, billId = billId))
+                            // The name on the line decides which product the
+                            // line is of. Renaming "urea" to "DAP" and leaving
+                            // productId pointing at urea would silently count
+                            // this stock against the wrong product, so the
+                            // link is re-derived from the final name — created
+                            // if that product does not exist yet, same as a
+                            // new line.
+                            val product = dao.findOrCreateProduct(
+                                name = updated.productName,
+                                defaultUnit = updated.unit
+                            )
+                            dao.updateBillItem(
+                                updated.copy(id = item.id, billId = billId, productId = product.id)
+                            )
                             withContext(Dispatchers.Main) {
                                 if (!isFinishing && !isDestroyed) manageItems(billId)
                             }

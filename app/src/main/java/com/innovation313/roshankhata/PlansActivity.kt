@@ -18,7 +18,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppScope
-import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.Installment
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
@@ -280,16 +279,14 @@ class PlansActivity : AppCompatActivity() {
     private fun recordPayment(plan: PlanProgress, amount: Double, note: String) {
         val noteText = note.ifEmpty { getString(R.string.plan_note_prefix) }
         AppScope.launch {
-            val count = dao.totalEntryCount()
-
-            val entryId = dao.insertEntry(
+            val entryId = dao.insertEntryNumbered(
                 LedgerEntry(
                     partyId = plan.partyId,
                     amount = amount,
                     // Money coming IN from the customer: it reduces what they owe.
                     isGiven = false,
                     note = noteText,
-                    entryNumber = EntryNumber.next(count)
+                    entryNumber = ""
                 )
             )
 

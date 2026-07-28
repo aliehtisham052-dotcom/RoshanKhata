@@ -801,4 +801,6 @@
     <string name="batch_remaining">%1$s باقی‌مانده</string>
     <string name="import_as_title">ذخیره به‌عنوان</string>
     <string name="import_as_message">%1$d مخاطب این‌گونه ذخیره خواهند شد:</string>
+    <string name="bill_to_customer_title">این طرف مشتری است</string>
+    <string name="bill_to_customer_warn">%1$s به‌عنوان مشتری ذخیره شده، نه تأمین‌کننده. فاکتور تأمین‌کننده آنچه را شما بدهکارید در حساب او می‌نویسد. اگر همین شخص واقعاً به شما جنس می‌دهد ادامه دهید — وگرنه نام را بررسی کنید.</string>
 </resources>

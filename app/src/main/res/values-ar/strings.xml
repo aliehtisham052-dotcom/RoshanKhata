@@ -781,4 +781,6 @@
     <string name="batch_remaining">المتبقي %1$s</string>
     <string name="import_as_title">حفظ كـ</string>
     <string name="import_as_message">سيتم حفظ %1$d جهة اتصال كالتالي:</string>
+    <string name="bill_to_customer_title">هذا الطرف عميل</string>
+    <string name="bill_to_customer_warn">%1$s محفوظ كعميل، لا كمورد. فاتورة المورد تضع ما تدين به أنت في حسابه. إن كان الشخص نفسه يورد لك فعلاً فتابع — وإلا فراجع الاسم.</string>
 </resources>

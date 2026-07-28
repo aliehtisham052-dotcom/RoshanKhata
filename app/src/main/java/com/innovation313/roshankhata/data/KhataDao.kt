@@ -522,6 +522,7 @@ interface KhataDao {
                COALESCE((
                    SELECT SUM(t.quantity) FROM transactions t
                    WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
                ), 0) AS soldFromBatch
         FROM bill_items i
         JOIN supplier_bills b ON b.id = i.billId
@@ -532,11 +533,22 @@ interface KhataDao {
     suspend fun batchOptionsForProduct(productId: Long): List<BatchOption>
 
     /**
-     * Batches at or near expiry.
+     * Batches at or near expiry — showing what is LEFT of each, not what
+     * arrived.
      *
      * Soonest first, expired ones at the very top — those are the ones already
      * costing money, and burying them under merely-approaching stock would get
      * the order exactly backwards.
+     *
+     * The quantity is the bill line minus every sale TAGGED to this exact
+     * batch, under the same unit rule as Stock.combine: a sale in a different
+     * unit does not subtract, because inventing a conversion would be
+     * inventing stock. A batch with nothing left is dropped entirely — a
+     * warning about stock that is no longer on the shelf trains the owner to
+     * ignore the screen, and then it is ignored on the day it matters. The
+     * honest caveat runs the other way too: an UNTAGGED sale subtracts
+     * nothing, so the figure shown is "at most this much", never less than
+     * the truth.
      *
      * Only stock that actually has an expiry date recorded can appear here.
      * That is a real limit and the screen says so: the app can only warn about
@@ -545,13 +557,23 @@ interface KhataDao {
     @Query(
         """
         SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
-               i.quantity, i.unit, p.name AS partyName, b.billNumber
+               (i.quantity - COALESCE((
+                   SELECT SUM(t.quantity) FROM transactions t
+                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+               ), 0)) AS quantity,
+               i.unit, p.name AS partyName, b.billNumber
         FROM bill_items i
         JOIN supplier_bills b ON b.id = i.billId
         JOIN parties p ON p.id = b.partyId
         WHERE i.isDeleted = 0 AND b.isDeleted = 0
           AND i.expiryDate IS NOT NULL
           AND i.expiryDate <= :cutoff
+          AND i.quantity > COALESCE((
+                   SELECT SUM(t.quantity) FROM transactions t
+                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+               ), 0)
         ORDER BY i.expiryDate ASC
         """
     )
@@ -566,11 +588,24 @@ interface KhataDao {
         WHERE i.isDeleted = 0 AND b.isDeleted = 0
           AND i.expiryDate IS NOT NULL
           AND i.expiryDate <= :cutoff
+          AND i.quantity > COALESCE((
+                   SELECT SUM(t.quantity) FROM transactions t
+                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+               ), 0)
         """
     )
     fun observeExpiringCount(cutoff: Long): Flow<Int>
 
-    /** Trace a batch back to where it came from — for an inspector, or a bad sample. */
+    /**
+     * Trace a batch back to where it came from — for an inspector, or a bad
+     * sample.
+     *
+     * DELIBERATELY shows the ORIGINAL bought quantity, not what remains —
+     * the one screen in the app that does. An inspector's question is "which
+     * supplier, which bill, how much came in", and a trace that silently
+     * shrank as stock sold would misstate the very record it exists to prove.
+     */
     @Query(
         """
         SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
@@ -1033,6 +1068,23 @@ interface KhataDao {
 
     @Query("SELECT * FROM transactions WHERE id = :id LIMIT 1")
     suspend fun getEntry(id: Long): LedgerEntry?
+
+    /**
+     * The ONLY way a numbered ledger entry should be created.
+     *
+     * The receipt number is count+1, and for that to be trustworthy the
+     * count must be read and the row written as one indivisible step. Read
+     * outside the transaction — as every call site used to do — two saves
+     * landing close together could both read the same count and both become
+     * RK-000123, and a duplicate receipt number on a business record is the
+     * kind of flaw an auditor reads as intent. SQLite runs one write
+     * transaction at a time, so inside @Transaction the pair is safe.
+     */
+    @Transaction
+    suspend fun insertEntryNumbered(entry: LedgerEntry): Long {
+        val count = totalEntryCount()
+        return insertEntry(entry.copy(entryNumber = EntryNumber.next(count)))
+    }
 
     @Update
     suspend fun updateEntry(entry: LedgerEntry)
