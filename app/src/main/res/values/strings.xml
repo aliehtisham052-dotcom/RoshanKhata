@@ -792,4 +792,11 @@
     <string name="window_same_season">Same season last year</string>
     <string name="window_last_year">Last 12 months</string>
     <string name="window_ever">Ever</string>
+    <string name="edit_bill">Edit Bill</string>
+    <string name="edit_bill_cash_locked">This can't be changed here. Editing a bill is for fixing a mistake, not for settling what you owe — record a payment in the ledger for that instead.</string>
+    <string name="manage_items">Manage items</string>
+    <string name="edit_item">Edit item</string>
+    <string name="delete_item">Delete item</string>
+    <string name="delete_item_confirm">Delete %1$s from this bill? Its batch and expiry record go with it. The bill's own total and ledger entry are not changed by this.</string>
+    <string name="bill_updated">Bill updated</string>
 </resources>

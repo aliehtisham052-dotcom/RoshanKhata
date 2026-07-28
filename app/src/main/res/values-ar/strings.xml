@@ -768,4 +768,11 @@
     <string name="window_same_season">الموسم نفسه العام الماضي</string>
     <string name="window_last_year">آخر 12 شهراً</string>
     <string name="window_ever">في أي وقت</string>
+    <string name="edit_bill">تعديل الفاتورة</string>
+    <string name="edit_bill_cash_locked">لا يمكن تغيير هذا من هنا. تعديل الفاتورة لتصحيح خطأ، لا لتسوية الدين — لذلك سجّل دفعة في دفتر الحسابات بدلاً من ذلك.</string>
+    <string name="manage_items">إدارة الأصناف</string>
+    <string name="edit_item">تعديل الصنف</string>
+    <string name="delete_item">حذف الصنف</string>
+    <string name="delete_item_confirm">حذف %1$s من هذه الفاتورة؟ سيُحذف معه سجل الدفعة وتاريخ الانتهاء. إجمالي الفاتورة وقيدها في دفتر الحسابات لا يتغيران بهذا.</string>
+    <string name="bill_updated">تم تحديث الفاتورة</string>
 </resources>

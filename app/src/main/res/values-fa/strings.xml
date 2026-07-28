@@ -788,4 +788,11 @@
     <string name="window_same_season">همین فصل سال گذشته</string>
     <string name="window_last_year">۱۲ ماه گذشته</string>
     <string name="window_ever">هر زمان</string>
+    <string name="edit_bill">ویرایش فاکتور</string>
+    <string name="edit_bill_cash_locked">این را نمی‌توان از اینجا تغییر داد. ویرایش فاکتور برای اصلاح اشتباه است، نه برای تسویهٔ بدهی — برای آن، پرداختی را در دفتر ثبت کنید.</string>
+    <string name="manage_items">مدیریت اقلام</string>
+    <string name="edit_item">ویرایش قلم</string>
+    <string name="delete_item">حذف قلم</string>
+    <string name="delete_item_confirm">%1$s از این فاکتور حذف شود؟ سابقهٔ بچ و تاریخ انقضایش هم حذف می‌شود. جمع کل فاکتور و ثبت آن در دفتر با این کار تغییر نمی‌کند.</string>
+    <string name="bill_updated">فاکتور به‌روزرسانی شد</string>
 </resources>

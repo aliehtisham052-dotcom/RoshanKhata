@@ -241,7 +241,13 @@ class BillsActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAddItemDialog(onDone: (BillItem) -> Unit) {
+    /**
+     * The one form for both adding a new item and editing an existing one.
+     * [existing] pre-fills every field and its id/note/productId ride through
+     * unchanged on [BillItem.copy] — only what this form actually shows can
+     * be changed by using it.
+     */
+    private fun showAddItemDialog(existing: BillItem? = null, onDone: (BillItem) -> Unit) {
         val view = layoutInflater.inflate(R.layout.dialog_add_bill_item, null)
         val etProduct: EditText = view.findViewById(R.id.etProductName)
         val etBatch: EditText = view.findViewById(R.id.etBatchNumber)
@@ -258,7 +264,16 @@ class BillsActivity : AppCompatActivity() {
             )
         )
 
-        var expiry: Long? = null
+        var expiry: Long? = existing?.expiryDate
+
+        if (existing != null) {
+            etProduct.setText(existing.productName)
+            etBatch.setText(existing.batchNumber ?: "")
+            etQty.setText(Format.plain(existing.quantity))
+            etUnit.setText(existing.unit ?: "", false)
+            etRate.setText(existing.rate?.let { Format.plain(it) } ?: "")
+            expiry?.let { btnExpiry.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
+        }
 
         btnExpiry.setOnClickListener {
             // Opens on TODAY, not a year ahead.
@@ -271,14 +286,14 @@ class BillsActivity : AppCompatActivity() {
             // and made the easy stock easy while making the urgent stock hard.
             //
             // Today is also simply where a person's thumb expects to land.
-            pickDate(System.currentTimeMillis()) { picked ->
+            pickDate(expiry ?: System.currentTimeMillis()) { picked ->
                 expiry = picked
                 btnExpiry.text = getString(R.string.due_date_set, Format.dateOnly(picked))
             }
         }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.add_item)
+            .setTitle(if (existing == null) R.string.add_item else R.string.edit_item)
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
@@ -290,9 +305,9 @@ class BillsActivity : AppCompatActivity() {
 
                 val qty = etQty.text.toString().trim().toDoubleOrNull() ?: 1.0
 
+                val base = existing ?: BillItem(billId = 0, productName = product, quantity = qty)
                 onDone(
-                    BillItem(
-                        billId = 0,  // filled in when the bill is saved
+                    base.copy(
                         productName = product,
                         batchNumber = etBatch.text.toString().trim().ifEmpty { null },
                         expiryDate = expiry,
@@ -400,7 +415,8 @@ class BillsActivity : AppCompatActivity() {
 
     private fun showBillActions(bill: BillSummary) {
         val options = arrayOf(
-            getString(R.string.view_items),
+            getString(R.string.edit_bill),
+            getString(R.string.manage_items),
             getString(R.string.delete_bill)
         )
 
@@ -408,53 +424,237 @@ class BillsActivity : AppCompatActivity() {
             .setTitle(R.string.bill_actions)
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> showItems(bill)
-                    1 -> confirmDeleteBill(bill)
+                    0 -> startEditBill(bill)
+                    1 -> manageItems(bill.id)
+                    2 -> confirmDeleteBill(bill)
                 }
             }
             .show()
     }
 
-    private fun showItems(bill: BillSummary) {
-        lifecycleScope.launch {
-            val items = dao.billItems(bill.id)
+    // ---------- Editing an existing bill ----------
 
-            val text = if (items.isEmpty()) {
-                getString(R.string.no_items_yet)
-            } else {
-                items.joinToString("\n\n") { i ->
-                    buildString {
-                        append(i.productName)
-                        append("\n")
-                        append(Format.qty(i.quantity, i.unit))
-                        i.rate?.let {
-                            append(" @ ")
-                            append(Format.money(it))
-                        }
-                        append("\n")
-                        append(
-                            if (i.batchNumber.isNullOrBlank()) {
-                                getString(R.string.batch_none)
-                            } else {
-                                getString(R.string.batch_label, i.batchNumber)
-                            }
+    /**
+     * The supplier and the paid-cash status cannot be changed from here — see
+     * the strings shown for why. Everything else about a bill can be a typo:
+     * a wrong number, a wrong total, a wrong date. Correcting those is what
+     * this is for.
+     */
+    private fun startEditBill(billSummary: BillSummary) {
+        lifecycleScope.launch {
+            val existing = dao.getBill(billSummary.id) ?: return@launch
+            showEditBillDialog(existing, billSummary.partyName)
+        }
+    }
+
+    private fun showEditBillDialog(existing: SupplierBill, supplierName: String) {
+        val view = layoutInflater.inflate(R.layout.dialog_add_bill, null)
+        val etSupplier: AutoCompleteTextView = view.findViewById(R.id.etBillSupplier)
+        val etNumber: EditText = view.findViewById(R.id.etBillNumber)
+        val etTotal: EditText = view.findViewById(R.id.etBillTotal)
+        val btnDate: MaterialButton = view.findViewById(R.id.btnBillDate)
+        val btnDue: MaterialButton = view.findViewById(R.id.btnBillDue)
+        val cbPaidCash: CheckBox = view.findViewById(R.id.cbPaidCash)
+        val tvPaidCashHelp: TextView = view.findViewById(R.id.tvPaidCashHelp)
+        val tvEffect: TextView = view.findViewById(R.id.tvBillLedgerEffect)
+        val etNote: EditText = view.findViewById(R.id.etBillNote)
+
+        // Reassigning a bill to a different supplier would mean moving a real
+        // debt from one party's account to another's — a different and much
+        // riskier operation than correcting this bill's own details, so it is
+        // not offered here.
+        etSupplier.setText(supplierName)
+        etSupplier.isEnabled = false
+
+        etNumber.setText(existing.billNumber ?: "")
+        etTotal.setText(Format.plain(existing.totalAmount))
+        etNote.setText(existing.note ?: "")
+
+        var billDate = existing.billDate
+        var dueDate = existing.dueDate
+
+        btnDate.text = getString(R.string.due_date_set, Format.dateOnly(billDate))
+        dueDate?.let { btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
+
+        btnDate.setOnClickListener {
+            pickDate(billDate) { picked ->
+                billDate = picked
+                btnDate.text = getString(R.string.due_date_set, Format.dateOnly(picked))
+            }
+        }
+        btnDue.setOnClickListener {
+            pickDate(dueDate ?: System.currentTimeMillis()) { picked ->
+                dueDate = picked
+                btnDue.text = getString(R.string.due_date_set, Format.dateOnly(picked))
+            }
+        }
+
+        // Whether this bill was paid in cash or on credit cannot be changed
+        // here either. Toggling it would mean either inventing a debt that
+        // was never owed, or erasing one that really was — and the ledger
+        // entry, if there is one, is not touched by this screen at all
+        // except to keep its amount in step. Settling a debt happens by
+        // recording a payment in the ledger, not by editing this checkbox.
+        cbPaidCash.isChecked = existing.isPaidInFull
+        cbPaidCash.isEnabled = false
+        tvPaidCashHelp.text = getString(R.string.edit_bill_cash_locked)
+        tvEffect.visibility = View.GONE
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.edit_bill)
+            .setView(view)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.save) { _, _ ->
+                val total = etTotal.text.toString().trim().toDoubleOrNull()
+                if (total == null || total <= 0.0) {
+                    Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                saveEditedBill(
+                    existing = existing,
+                    billNumber = etNumber.text.toString().trim().ifEmpty { null },
+                    total = total,
+                    billDate = billDate,
+                    dueDate = dueDate,
+                    note = etNote.text.toString().trim().ifEmpty { null }
+                )
+            }
+            .show()
+    }
+
+    /**
+     * Runs on AppScope — a quick Back press right after Save must not be able
+     * to cancel this partway through. See AppScope's own comment.
+     */
+    private fun saveEditedBill(
+        existing: SupplierBill,
+        billNumber: String?,
+        total: Double,
+        billDate: Long,
+        dueDate: Long?,
+        note: String?
+    ) {
+        AppScope.launch {
+            dao.updateBill(
+                existing.copy(
+                    billNumber = billNumber,
+                    totalAmount = total,
+                    billDate = billDate,
+                    dueDate = dueDate,
+                    note = note
+                )
+            )
+
+            // Keep the ledger entry in step — see this file's own THE LEDGER
+            // IS THE MONEY rule. A bill on credit points at one entry; if the
+            // amount here changes and that entry does not follow, there are
+            // two different answers to "what do I owe them?" and no way to
+            // tell which is true. The note is recomputed the same way it was
+            // built when the bill was first saved, so a corrected bill number
+            // is not left showing the old one in the ledger.
+            existing.ledgerEntryId?.let { entryId ->
+                dao.getEntry(entryId)?.let { entry ->
+                    dao.updateEntry(
+                        entry.copy(
+                            amount = total,
+                            note = billNumber?.let { "Bill $it" } ?: note
                         )
-                        i.expiryDate?.let {
-                            append("\n")
-                            append(getString(R.string.expiry_date))
-                            append(": ")
-                            append(Format.dateOnly(it))
-                        }
-                    }
+                    )
                 }
             }
 
-            MaterialAlertDialogBuilder(this@BillsActivity)
-                .setTitle(bill.billNumber ?: bill.partyName)
-                .setMessage(text)
-                .setPositiveButton(R.string.ok, null)
-                .show()
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(this@BillsActivity, R.string.bill_updated, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
         }
+    }
+
+    // ---------- Managing an existing bill's items ----------
+
+    private fun manageItems(billId: Long) {
+        lifecycleScope.launch {
+            val items = dao.billItems(billId)
+            showItemsList(billId, items)
+        }
+    }
+
+    private fun showItemsList(billId: Long, items: List<BillItem>) {
+        val labels = items.map { i ->
+            buildString {
+                append(i.productName)
+                append(" — ")
+                append(Format.qty(i.quantity, i.unit))
+                if (!i.batchNumber.isNullOrBlank()) {
+                    append(" · ")
+                    append(getString(R.string.batch_label, i.batchNumber))
+                }
+            }
+        }.toTypedArray() + getString(R.string.add_item)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.manage_items)
+            .setItems(labels) { _, which ->
+                if (which == items.size) {
+                    showAddItemDialog { newItem ->
+                        AppScope.launch {
+                            dao.insertBillItem(newItem.copy(billId = billId))
+                            withContext(Dispatchers.Main) {
+                                if (!isFinishing && !isDestroyed) manageItems(billId)
+                            }
+                        }
+                    }
+                } else {
+                    showItemActions(billId, items[which])
+                }
+            }
+            .setNegativeButton(R.string.ok, null)
+            .show()
+    }
+
+    private fun showItemActions(billId: Long, item: BillItem) {
+        val options = arrayOf(getString(R.string.edit_item), getString(R.string.delete_item))
+        MaterialAlertDialogBuilder(this)
+            .setTitle(item.productName)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showAddItemDialog(existing = item) { updated ->
+                        AppScope.launch {
+                            dao.updateBillItem(updated.copy(id = item.id, billId = billId))
+                            withContext(Dispatchers.Main) {
+                                if (!isFinishing && !isDestroyed) manageItems(billId)
+                            }
+                        }
+                    }
+                    1 -> confirmDeleteItem(billId, item)
+                }
+            }
+            .show()
+    }
+
+    /**
+     * Soft delete, like everywhere else — the batch record is kept, not
+     * erased, because it may still be the answer to "which batch did this
+     * customer's sale come from" long after the line itself was judged a
+     * mistake. This never touches the bill's own ledger entry or its total;
+     * if the total should change too, that is done from Edit Bill, not here.
+     */
+    private fun confirmDeleteItem(billId: Long, item: BillItem) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_item)
+            .setMessage(getString(R.string.delete_item_confirm, item.productName))
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                AppScope.launch {
+                    dao.softDeleteBillItem(item.id)
+                    withContext(Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) manageItems(billId)
+                    }
+                }
+            }
+            .show()
     }
 
     /**
