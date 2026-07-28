@@ -69,7 +69,7 @@ object Recovery {
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("partyId"), Index("productId")]
+    indices = [Index("partyId"), Index("productId"), Index("billItemId")]
 )
 data class LedgerEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -127,6 +127,16 @@ data class LedgerEntry(
      * the note on [Product].
      */
     val productId: Long? = null,
+
+    /**
+     * The supplier bill line this sale came out of, where the owner knows it.
+     *
+     * Carries the batch number with it, so a bad batch can be traced to the
+     * customers who received it. Nullable: most sales will not be tagged, and
+     * for those the fallback is which customers bought the product while that
+     * batch was in stock.
+     */
+    val billItemId: Long? = null,
 
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null
