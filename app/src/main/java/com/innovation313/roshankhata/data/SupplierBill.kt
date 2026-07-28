@@ -95,7 +95,7 @@ data class SupplierBill(
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("billId")]
+    indices = [Index("billId"), Index("productId")]
 )
 data class BillItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -126,6 +126,16 @@ data class BillItem(
     val rate: Double? = null,
 
     val note: String? = null,
+
+    /**
+     * The product this line is of, once it is known.
+     *
+     * Nullable; [productName] above stays exactly as the dealer typed it off
+     * the supplier's paper. Tying the line to a product is what lets stock
+     * bought in be set against stock sold out, and what carries this line's
+     * [batchNumber] forward to whoever ends up buying it.
+     */
+    val productId: Long? = null,
 
     val isDeleted: Boolean = false
 )

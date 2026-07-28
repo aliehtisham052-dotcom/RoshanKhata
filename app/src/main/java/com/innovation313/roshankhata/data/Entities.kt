@@ -69,7 +69,7 @@ object Recovery {
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("partyId")]
+    indices = [Index("partyId"), Index("productId")]
 )
 data class LedgerEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -116,6 +116,17 @@ data class LedgerEntry(
      * rate the owner would rather not forward with it.
      */
     val billPhotoPath: String? = null,
+
+    /**
+     * The product this sale was of, once it is known.
+     *
+     * Nullable, and null on every entry written before products existed. The
+     * free-text [itemName] above is untouched and remains what the owner
+     * typed; this is the anchor that lets the same goods be counted, traced to
+     * a batch, and found again next season. No foreign key on purpose — see
+     * the note on [Product].
+     */
+    val productId: Long? = null,
 
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null
