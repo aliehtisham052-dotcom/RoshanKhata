@@ -766,4 +766,26 @@
     <string name="qr_no_customer">هن ڪارڊ جو ڪو گراهڪ هن کاتي ۾ نه مليو.</string>
     <string name="qr_scan_failed">اسڪينر نه کلي سگهيو. ان لاءِ Google Play services گهرجي.</string>
     <string name="report_crash_included">— ٽيڪنيڪل ڪريش رڪارڊ (پاڻمرادو توهان جي فون تي محفوظ، خرابي ڳولڻ ۾ مدد لاءِ شامل):</string>
+    <string name="products_stock">پراڊڪٽس ۽ اسٽاڪ</string>
+    <string name="products_subtitle">دڪان ڇا وڪڻي ٿي، ۽ ڪيترو بچيو آهي</string>
+    <string name="products_note">هي ڳڻپ رڳو انهن داخلائن جي آهي جيڪي ڪنهن پراڊڪٽ سان ڳنڍيل آهن. جيڪي اڳ لکجي چڪيون آهن، انهن کي هيٺين بٽڻ سان ڳنڍيو.</string>
+    <string name="no_products">اڃا ڪو پراڊڪٽ ناهي. هيٺان پراڻيون داخلائون ڳنڍيو، يا جڏهن ڪنهن بل تي نالو لکندؤ ته پراڊڪٽ پاڻ ٺهي ويندو.</string>
+    <string name="link_goods">پراڻيون داخلائون پراڊڪٽس سان ڳنڍيو</string>
+    <string name="link_goods_explain">هي توهان جي بلن ۽ کاتن تي اڳ ۾ لکيل پراڊڪٽ جا نالا پڙهي ٿو، ۽ هر نالي جو هڪ پراڊڪٽ ٺاهي ٿو.\n\nجيڪو هي نه ڪندو: توهان جو لکيل نالو ڪڏهن نه بدلائيندو، ۽ جيڪو پراڊڪٽ توهان پاڻ چونڊيو هجي ان کي ڪڏهن نه بدلائيندو. هي هڪ ئي قدم ۾ ٿئي ٿو — يا پورو ٿيندو يا بلڪل نه — ۽ ٻيهر هلائڻ سان ڪجهه نٿو ٿئي.</string>
+    <string name="link_goods_go">ڳنڍيو</string>
+    <string name="link_goods_done">%1$d داخلائون ڳنڍجي ويون.</string>
+    <string name="link_goods_none">ڳنڍڻ لاءِ ڪجهه باقي ناهي.</string>
+    <string name="link_goods_failed">داخلائون نه ڳنڍجي سگهيون. توهان جو کاتو جيئن هو تيئن آهي.</string>
+    <string name="stock_no_movement">اڃا ڏي وٺ ناهي</string>
+    <string name="stock_units_differ">يونٽ الڳ آهن</string>
+    <string name="stock_in_out">آيو %1$s  •  ويو %2$s</string>
+    <string name="promo_subtitle">جن گراهڪن هي خريد ڪيو</string>
+    <string name="promo_window">ڪهڙي عرصي جو</string>
+    <string name="promo_last_bought">آخري ڀيرو %1$s</string>
+    <string name="promo_send">پيغام</string>
+    <string name="promo_message">السلام عليڪم %1$s. %2$s ٻيهر دڪان تي موجود آهي. ضرورت هجي ته ٻڌائجو.</string>
+    <string name="no_promo_customers">ان عرصي ۾ ڪنهن هي نه خريد ڪيو.</string>
+    <string name="window_same_season">پويون سال اهو ئي موسم</string>
+    <string name="window_last_year">پويان 12 مهينا</string>
+    <string name="window_ever">اڃا تائين ڪڏهن به</string>
 </resources>

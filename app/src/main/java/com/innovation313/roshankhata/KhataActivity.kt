@@ -755,6 +755,7 @@ class KhataActivity : AppCompatActivity() {
         val options = arrayOf(
             getString(R.string.app_lock),
             getString(R.string.screen_privacy),
+            getString(R.string.products_stock),
             getString(R.string.language),
             getString(R.string.help_support),
             getString(R.string.about_us)
@@ -766,11 +767,12 @@ class KhataActivity : AppCompatActivity() {
                 when (which) {
                     0 -> showAppLockSettings()
                     1 -> ScreenPrivacyDialog.show(this)
-                    2 -> startActivity(Intent(this, LanguageActivity::class.java))
+                    2 -> startActivity(Intent(this, ProductsActivity::class.java))
+                    3 -> startActivity(Intent(this, LanguageActivity::class.java))
                     // Reporting a problem lives inside Help now, so there is
                     // one door marked "something is wrong" rather than two.
-                    3 -> startActivity(Intent(this, HelpActivity::class.java))
-                    4 -> startActivity(Intent(this, AboutActivity::class.java))
+                    4 -> startActivity(Intent(this, HelpActivity::class.java))
+                    5 -> startActivity(Intent(this, AboutActivity::class.java))
                 }
             }
             .show()

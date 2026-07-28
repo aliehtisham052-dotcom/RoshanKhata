@@ -738,4 +738,26 @@
     <string name="qr_no_customer">اس کارڈ کا کوئی گاہک اس کھاتے میں نہیں ملا۔</string>
     <string name="qr_scan_failed">اسکینر نہیں کھل سکا۔ اس کے لیے Google Play services درکار ہے۔</string>
     <string name="report_crash_included">— تکنیکی کریش ریکارڈ (خودکار طور پر آپ کے فون پر محفوظ، خرابی ڈھونڈنے میں مدد کے لیے شامل):</string>
+    <string name="products_stock">پروڈکٹس اور اسٹاک</string>
+    <string name="products_subtitle">دکان کیا بیچتی ہے، اور کتنا بچا ہے</string>
+    <string name="products_note">یہ حساب صرف ان اندراجات کا ہے جو کسی پروڈکٹ سے جڑے ہیں۔ جو پہلے لکھے جا چکے ہیں، انہیں نیچے والے بٹن سے جوڑیں۔</string>
+    <string name="no_products">ابھی کوئی پروڈکٹ نہیں۔ نیچے سے پرانے اندراجات جوڑیں، یا جب کسی بل پر نام لکھیں گے تو پروڈکٹ خود بن جائے گا۔</string>
+    <string name="link_goods">پرانے اندراجات کو پروڈکٹس سے جوڑیں</string>
+    <string name="link_goods_explain">یہ آپ کے بلوں اور کھاتوں پر پہلے سے لکھے ہوئے پروڈکٹ کے نام پڑھتا ہے، اور ہر نام کا ایک پروڈکٹ بنا دیتا ہے۔\n\nجو یہ نہیں کرے گا: آپ کا لکھا ہوا نام کبھی نہیں بدلے گا، اور جو پروڈکٹ آپ نے خود چنا ہو اسے کبھی تبدیل نہیں کرے گا۔ یہ ایک ہی قدم میں ہوتا ہے — یا پورا ہوگا یا بالکل نہیں — اور دوبارہ چلانے سے کچھ نہیں ہوتا۔</string>
+    <string name="link_goods_go">جوڑ دیں</string>
+    <string name="link_goods_done">%1$d اندراجات جڑ گئے۔</string>
+    <string name="link_goods_none">جوڑنے کو کچھ باقی نہیں۔</string>
+    <string name="link_goods_failed">اندراجات نہیں جڑ سکے۔ آپ کی کتاب جیسی تھی ویسی ہے۔</string>
+    <string name="stock_no_movement">ابھی لین دین نہیں</string>
+    <string name="stock_units_differ">یونٹ الگ ہیں</string>
+    <string name="stock_in_out">آیا %1$s  •  گیا %2$s</string>
+    <string name="promo_subtitle">جن گاہکوں نے یہ خریدا</string>
+    <string name="promo_window">کس عرصے کا</string>
+    <string name="promo_last_bought">آخری بار %1$s</string>
+    <string name="promo_send">پیغام</string>
+    <string name="promo_message">السلام علیکم %1$s۔ %2$s دوبارہ دکان پر موجود ہے۔ ضرورت ہو تو بتا دیجیے گا۔</string>
+    <string name="no_promo_customers">اس عرصے میں کسی نے یہ نہیں خریدا۔</string>
+    <string name="window_same_season">پچھلے سال اسی موسم</string>
+    <string name="window_last_year">پچھلے 12 مہینے</string>
+    <string name="window_ever">اب تک کبھی بھی</string>
 </resources>

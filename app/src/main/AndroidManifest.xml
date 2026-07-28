@@ -168,6 +168,16 @@
             android:exported="false"
             android:parentActivityName=".BillsActivity" />
 
+        <activity
+            android:name=".ProductsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".ProductCustomersActivity"
+            android:exported="false"
+            android:parentActivityName=".ProductsActivity" />
+
         <!--
           Lets a statement PDF be handed to WhatsApp, Gmail, or the printer
           without exposing the rest of the app's storage. Grants are temporary

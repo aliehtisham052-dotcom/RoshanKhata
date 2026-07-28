@@ -766,4 +766,26 @@
     <string name="qr_no_customer">هیچ مشتری‌ای در این دفتر با این کارت یافت نشد.</string>
     <string name="qr_scan_failed">اسکنر باز نشد. به Google Play services نیاز دارد.</string>
     <string name="report_crash_included">— سابقهٔ فنی خرابی (به‌طور خودکار روی گوشی شما ذخیره شده، برای یافتن اشکال ضمیمه شد):</string>
+    <string name="products_stock">محصولات و موجودی</string>
+    <string name="products_subtitle">مغازه چه می‌فروشد و چه مانده است</string>
+    <string name="products_note">این ارقام فقط ثبت‌هایی را می‌شمارد که به یک محصول وصل‌اند. آنچه پیش‌تر نوشته شده را با دکمهٔ زیر وصل کنید.</string>
+    <string name="no_products">هنوز محصولی نیست. ثبت‌های قبلی را از پایین وصل کنید، یا محصول اولین بار که نامش را در فاکتوری بنویسید ساخته می‌شود.</string>
+    <string name="link_goods">ثبت‌های قبلی را به محصولات وصل کنید</string>
+    <string name="link_goods_explain">این کار نام محصولاتی را که از قبل روی فاکتورها و دفترتان نوشته شده می‌خواند و برای هر نام یک محصول می‌سازد.\n\nآنچه انجام نمی‌دهد: نامی را که نوشته‌اید هرگز تغییر نمی‌دهد، و محصولی را که خودتان انتخاب کرده‌اید جایگزین نمی‌کند. در یک مرحله انجام می‌شود — یا همه یا هیچ — و اجرای دوباره کاری نمی‌کند.</string>
+    <string name="link_goods_go">وصل کن</string>
+    <string name="link_goods_done">%1$d ثبت وصل شد.</string>
+    <string name="link_goods_none">چیزی برای وصل کردن نمانده.</string>
+    <string name="link_goods_failed">ثبت‌ها وصل نشد. دفتر شما بدون تغییر است.</string>
+    <string name="stock_no_movement">هنوز داد و ستدی نشده</string>
+    <string name="stock_units_differ">واحدها فرق دارند</string>
+    <string name="stock_in_out">ورودی %1$s  •  خروجی %2$s</string>
+    <string name="promo_subtitle">مشتریانی که این را خریدند</string>
+    <string name="promo_window">بازهٔ زمانی</string>
+    <string name="promo_last_bought">آخرین خرید %1$s</string>
+    <string name="promo_send">پیام</string>
+    <string name="promo_message">السلام علیکم %1$s. %2$s دوباره در مغازه موجود است. اگر لازم داشتید خبر بدهید.</string>
+    <string name="no_promo_customers">در آن بازه کسی این را نخرید.</string>
+    <string name="window_same_season">همین فصل سال گذشته</string>
+    <string name="window_last_year">۱۲ ماه گذشته</string>
+    <string name="window_ever">هر زمان</string>
 </resources>
