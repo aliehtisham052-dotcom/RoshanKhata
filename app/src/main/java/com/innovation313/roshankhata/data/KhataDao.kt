@@ -1088,4 +1088,61 @@ interface KhataDao {
 
     @Update
     suspend fun updateEntry(entry: LedgerEntry)
+
+    // ---------- Duplicate-customer merge ----------
+
+    @Query("UPDATE transactions SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignEntriesToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE supplier_bills SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignBillsToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE cheques SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignChequesToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE payment_plans SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignPlansToParty(loserId: Long, survivorId: Long)
+
+    /**
+     * A customer entered twice, folded into one.
+     *
+     * Every entry, bill, cheque, and payment plan that pointed at [loserId]
+     * now points at [survivorId] instead. The balance needs no arithmetic of
+     * its own to stay right — it is only ever a sum over these rows, and the
+     * sum does not change because of which party id they carry.
+     *
+     * [loserId] then goes to the recycle bin exactly like any other deleted
+     * customer, but WITHOUT taking its entries with it — they already belong
+     * to [survivorId] by the time this line runs. Using [softDeleteParty]
+     * here rather than [softDeleteParties] is deliberate: the latter also
+     * bins a party's own entries, which would be wrong the moment after this
+     * function has just moved them out from under it.
+     *
+     * One @Transaction, so a crash partway can never leave some of a
+     * customer's book moved to the survivor and the rest still scattered
+     * under the old id.
+     */
+    @Transaction
+    suspend fun mergeParty(loserId: Long, survivorId: Long, now: Long = System.currentTimeMillis()) {
+        reassignEntriesToParty(loserId, survivorId)
+        reassignBillsToParty(loserId, survivorId)
+        reassignChequesToParty(loserId, survivorId)
+        reassignPlansToParty(loserId, survivorId)
+        softDeleteParty(loserId, now)
+    }
+
+    /**
+     * A whole suspected-duplicate group folded into one survivor at once.
+     *
+     * One @Transaction across every loser in the group, for the same reason
+     * [softDeleteParties] batches its parties under one: a group of three or
+     * four found together should merge together, not leave the owner with
+     * two folded in and a third stuck half-done by a crash between them.
+     */
+    @Transaction
+    suspend fun mergeParties(loserIds: List<Long>, survivorId: Long, now: Long = System.currentTimeMillis()) {
+        for (loserId in loserIds) {
+            mergeParty(loserId, survivorId, now)
+        }
+    }
 }

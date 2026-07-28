@@ -748,6 +748,23 @@
     <string name="link_goods_done">%1$d entries jur gayin.</string>
     <string name="link_goods_none">Jorne ko kuch baqi nahi.</string>
     <string name="link_goods_failed">Entries nahi jur sakin. Aap ki kitab jaisi thi waisi hai.</string>
+
+    <string name="duplicate_customers">Duplicate Customers</string>
+    <string name="duplicate_customers_subtitle">Records jo shayad ek hi shakhs ke do dafa hon</string>
+    <string name="duplicate_note">Ye sirf milte-julte records group karta hai — jab tak aap chun kar confirm na karein, kuch merge nahi hota. Naam aur number dono check kar lein; do alag logon ka in mein se ek cheez itfaqiya milta ho sakta hai.</string>
+    <string name="no_duplicates">Koi duplicate nazar nahi aaya. Aap ki customer list saaf hai.</string>
+    <string name="duplicate_reason_name">Naam milta julta hai</string>
+    <string name="duplicate_reason_phone">Number wahi hai</string>
+    <string name="duplicate_reason_both">Naam bhi milta julta hai aur number bhi wahi hai</string>
+    <string name="duplicate_review_merge">Dekh kar merge karein</string>
+    <string name="duplicate_pick_primary_title">Konsa record rahega?</string>
+    <string name="duplicate_pick_primary_message">Baaqi sab is par move ho jayenge — un ka poora khata, bills, cheques aur payment mansoobay bhi is ke saath chale jayenge. Koi raqam na jama hoti hai na nikalti.</string>
+    <string name="duplicate_next">Aagay</string>
+    <string name="duplicate_merge_confirm_title">%1$s mein merge karein?</string>
+    <string name="duplicate_merge_confirm_message">Doosray record ki har entry, bill, cheque aur payment mansooba is par move ho jayega. Balance khud theek ho jata hai — koi raqam na jama hoti hai na nikalti, koi paisa idhar udhar nahi hota.\n\nJo record merge ho gaya wo Recycle Bin mein khali chala jata hai: us ka khata pehle hi move ho chuka hota hai, isliye baad mein wapas laane se sirf naam wapas aata hai, balance ki doosri copy nahi.</string>
+    <string name="duplicate_merge_go">Merge Karein</string>
+    <string name="duplicate_merge_done">%1$s mein merge ho gaya.</string>
+    <string name="duplicate_merge_failed">Merge nahi ho saka. Aap ka khata jaisa tha waisa hi hai.</string>
     <string name="stock_no_movement">abhi len den nahi</string>
     <string name="stock_units_differ">unit alag hain</string>
     <string name="stock_in_out">aaya %1$s  •  gaya %2$s</string>

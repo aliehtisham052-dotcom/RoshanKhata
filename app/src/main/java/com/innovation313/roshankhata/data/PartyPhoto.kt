@@ -112,6 +112,27 @@ object PartyPhoto {
         onDisk[partyId] = false
     }
 
+    /**
+     * Called once, right after a duplicate-customer merge has moved
+     * everything else. If [survivorId] already has a photo, [loserId]'s is
+     * simply left on disk rather than overwritten — the owner never chose
+     * which face to keep, so this never chooses for them. A future recycle-
+     * bin purge of the merged-away party is free to clean it up; nothing
+     * reads it again once the party it belonged to is gone.
+     */
+    fun transferOnMerge(context: Context, loserId: Long, survivorId: Long) {
+        if (exists(context, survivorId)) return
+        val from = file(context, loserId)
+        if (!from.exists()) return
+        val to = file(context, survivorId)
+        if (from.renameTo(to)) {
+            cache.remove(loserId)
+            onDisk[loserId] = false
+            cache.remove(survivorId)
+            onDisk[survivorId] = true
+        }
+    }
+
     /** Centre-crop, so a portrait photo does not end up squashed in a round avatar. */
     private fun cropToSquare(src: Bitmap): Bitmap {
         val edge = minOf(src.width, src.height)
