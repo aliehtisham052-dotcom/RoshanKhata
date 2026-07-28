@@ -738,4 +738,26 @@
     <string name="qr_no_customer">Is card ka koi gaahak is khatay mein nahi mila.</string>
     <string name="qr_scan_failed">Scanner nahi khul saka. Is ke liye Google Play services chahiye.</string>
     <string name="report_crash_included">— Technical crash record (khud-ba-khud aap ke phone par mehfooz, kharabi dhoondhne mein madad ke liye shamil):</string>
+    <string name="products_stock">Products aur stock</string>
+    <string name="products_subtitle">Dukan kya bechti hai, aur kitna bacha hai</string>
+    <string name="products_note">Ye hisaab sirf un entries ka hai jo kisi product se juri hain. Jo pehle likhi ja chuki hain, unhein neeche wale button se jorein.</string>
+    <string name="no_products">Abhi koi product nahi. Neeche se purani entries jorein, ya jab kisi bill par naam likhenge to product khud ban jayega.</string>
+    <string name="link_goods">Purani entries ko products se jorein</string>
+    <string name="link_goods_explain">Ye aap ke bills aur khaton par pehle se likhe hue product ke naam parhta hai, aur har naam ka ek product bana deta hai.\n\nJo ye NAHI karega: aap ka likha hua naam kabhi nahi badlega, aur jo product aap ne khud chuna ho use kabhi tabdeel nahi karega. Ye ek hi qadam mein hota hai — ya poora hoga ya bilkul nahi — aur dobara chalane se kuch nahi hota.</string>
+    <string name="link_goods_go">Jor dein</string>
+    <string name="link_goods_done">%1$d entries jur gayin.</string>
+    <string name="link_goods_none">Jorne ko kuch baqi nahi.</string>
+    <string name="link_goods_failed">Entries nahi jur sakin. Aap ki kitab jaisi thi waisi hai.</string>
+    <string name="stock_no_movement">abhi len den nahi</string>
+    <string name="stock_units_differ">unit alag hain</string>
+    <string name="stock_in_out">aaya %1$s  •  gaya %2$s</string>
+    <string name="promo_subtitle">Jin gahakon ne ye khareeda</string>
+    <string name="promo_window">Kis arse ka</string>
+    <string name="promo_last_bought">aakhri baar %1$s</string>
+    <string name="promo_send">Paigham</string>
+    <string name="promo_message">Assalam o Alaikum %1$s. %2$s dobara dukan par maujood hai. Zaroorat ho to bata dijiyega.</string>
+    <string name="no_promo_customers">Us arse mein kisi ne ye nahi khareeda.</string>
+    <string name="window_same_season">Pichle saal isi mausam</string>
+    <string name="window_last_year">Pichle 12 mahine</string>
+    <string name="window_ever">Ab tak kabhi bhi</string>
 </resources>

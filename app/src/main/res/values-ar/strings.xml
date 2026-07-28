@@ -746,4 +746,26 @@
     <string name="qr_no_customer">لا يوجد عميل في هذا الدفتر لهذه البطاقة.</string>
     <string name="qr_scan_failed">تعذر فتح الماسح. يتطلب خدمات Google Play.</string>
     <string name="report_crash_included">— سجل العطل التقني (محفوظ تلقائيًا على هاتفك، مُرفق للمساعدة في إيجاد الخلل):</string>
+    <string name="products_stock">المنتجات والمخزون</string>
+    <string name="products_subtitle">ما تبيعه الدكان، وما تبقى منه</string>
+    <string name="products_note">هذه الأرقام تحسب فقط القيود المرتبطة بمنتج. اربط ما كُتب سابقاً بالزر أدناه.</string>
+    <string name="no_products">لا توجد منتجات بعد. اربط قيودك السابقة أدناه، أو سيظهر منتج أول مرة تسمّيه في فاتورة.</string>
+    <string name="link_goods">اربط القيود السابقة بالمنتجات</string>
+    <string name="link_goods_explain">يقرأ هذا أسماء المنتجات المكتوبة أصلاً في فواتيرك وقيودك، ويُنشئ منتجاً لكل اسم.\n\nما لن يفعله: لن يغيّر اسماً كتبته أبداً، ولن يستبدل منتجاً اخترته بنفسك. يجري في خطوة واحدة — إما كله أو لا شيء — وتشغيله مرة أخرى لا يفعل شيئاً.</string>
+    <string name="link_goods_go">اربطها</string>
+    <string name="link_goods_done">تم ربط %1$d قيداً.</string>
+    <string name="link_goods_none">لم يبق شيء لربطه.</string>
+    <string name="link_goods_failed">تعذّر ربط القيود. دفترك كما كان.</string>
+    <string name="stock_no_movement">لا حركة بعد</string>
+    <string name="stock_units_differ">الوحدات مختلفة</string>
+    <string name="stock_in_out">وارد %1$s  •  صادر %2$s</string>
+    <string name="promo_subtitle">العملاء الذين اشتروا هذا</string>
+    <string name="promo_window">الفترة</string>
+    <string name="promo_last_bought">آخر شراء %1$s</string>
+    <string name="promo_send">رسالة</string>
+    <string name="promo_message">السلام عليكم %1$s. %2$s متوفر لدينا من جديد. أخبرنا إن احتجت شيئاً.</string>
+    <string name="no_promo_customers">لم يشتره أحد في تلك الفترة.</string>
+    <string name="window_same_season">الموسم نفسه العام الماضي</string>
+    <string name="window_last_year">آخر 12 شهراً</string>
+    <string name="window_ever">في أي وقت</string>
 </resources>

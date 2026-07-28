@@ -770,4 +770,26 @@
     <string name="qr_no_customer">No customer here answers to that card.</string>
     <string name="qr_scan_failed">Could not open the scanner. It needs Google Play services.</string>
     <string name="report_crash_included">— Technical crash record (saved automatically on your phone, included to help find the fault):</string>
+    <string name="products_stock">Products &amp; stock</string>
+    <string name="products_subtitle">What the shop deals in, and what is left</string>
+    <string name="products_note">These figures only count entries that are tied to a product. Use the button below to tie the ones written before.</string>
+    <string name="no_products">No products yet. Tie your existing entries below, or a product appears the first time you name one on a bill.</string>
+    <string name="link_goods">Tie existing entries to products</string>
+    <string name="link_goods_explain">This reads the product names already written on your bills and ledger entries, and creates a product for each one.\n\nWhat it will NOT do: it never changes a name you typed, and it never replaces a product you chose yourself. It runs as one step — either all of it happens or none of it does — and running it again does nothing.</string>
+    <string name="link_goods_go">Tie them</string>
+    <string name="link_goods_done">Tied %1$d entries.</string>
+    <string name="link_goods_none">Nothing left to tie.</string>
+    <string name="link_goods_failed">Could not tie the entries. Your book is unchanged.</string>
+    <string name="stock_no_movement">not traded yet</string>
+    <string name="stock_units_differ">units differ</string>
+    <string name="stock_in_out">in %1$s  •  out %2$s</string>
+    <string name="promo_subtitle">Customers who bought this</string>
+    <string name="promo_window">Look at</string>
+    <string name="promo_last_bought">last bought %1$s</string>
+    <string name="promo_send">Message</string>
+    <string name="promo_message">Assalam o Alaikum %1$s. %2$s is available again at our shop. Let us know if you need any.</string>
+    <string name="no_promo_customers">Nobody bought this in that period.</string>
+    <string name="window_same_season">Same season last year</string>
+    <string name="window_last_year">Last 12 months</string>
+    <string name="window_ever">Ever</string>
 </resources>
