@@ -760,4 +760,11 @@
     <string name="window_same_season">Pichle saal isi mausam</string>
     <string name="window_last_year">Pichle 12 mahine</string>
     <string name="window_ever">Ab tak kabhi bhi</string>
+    <string name="edit_bill">Bill edit karein</string>
+    <string name="edit_bill_cash_locked">Ye yahan se nahi badal sakta. Bill edit karna ghalti theek karne ke liye hai, qarz chukane ke liye nahi — uske liye khate mein payment darj karein.</string>
+    <string name="manage_items">Items manage karein</string>
+    <string name="edit_item">Item edit karein</string>
+    <string name="delete_item">Item mitayein</string>
+    <string name="delete_item_confirm">%1$s is bill se mita dein? Iska batch aur expiry record bhi saath chala jayega. Bill ka kul total aur ledger entry is se nahi badalte.</string>
+    <string name="bill_updated">Bill update ho gaya</string>
 </resources>

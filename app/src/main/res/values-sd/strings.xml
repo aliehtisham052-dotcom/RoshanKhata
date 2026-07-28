@@ -788,4 +788,11 @@
     <string name="window_same_season">پويون سال اهو ئي موسم</string>
     <string name="window_last_year">پويان 12 مهينا</string>
     <string name="window_ever">اڃا تائين ڪڏهن به</string>
+    <string name="edit_bill">بل ايڊٽ ڪريو</string>
+    <string name="edit_bill_cash_locked">هي هتان کان نٿو بدلجي سگهي. بل ايڊٽ ڪرڻ غلطي درست ڪرڻ لاءِ آهي، قرض لاهڻ لاءِ نه — ان لاءِ کاتي ۾ ادائيگي داخل ڪريو.</string>
+    <string name="manage_items">آئٽم منظم ڪريو</string>
+    <string name="edit_item">آئٽم ايڊٽ ڪريو</string>
+    <string name="delete_item">آئٽم مٽايو</string>
+    <string name="delete_item_confirm">%1$s هن بل مان مٽائي ڇڏيو؟ ان جو بيچ ۽ ميعاد جو رڪارڊ به گڏ هليو ويندو. بل جو ڪل ٽوٽل ۽ ليجر اندراج ان سان نه بدلبا.</string>
+    <string name="bill_updated">بل اپڊيٽ ٿي ويو</string>
 </resources>

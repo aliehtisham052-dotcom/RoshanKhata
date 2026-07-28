@@ -493,6 +493,21 @@ interface KhataDao {
     @Query("SELECT * FROM bill_items WHERE billId = :billId AND isDeleted = 0 ORDER BY id ASC")
     suspend fun billItems(billId: Long): List<BillItem>
 
+    @Update
+    suspend fun updateBillItem(item: BillItem)
+
+    /**
+     * Soft delete, matching every other row in this app. The batch record is
+     * kept, not erased — a deleted line may still be the answer to "which
+     * batch did this customer's sale come from", asked long after the owner
+     * decided the line itself was a mistake.
+     */
+    @Query("UPDATE bill_items SET isDeleted = 1 WHERE id = :id")
+    suspend fun softDeleteBillItem(id: Long)
+
+    @Query("SELECT * FROM bill_items WHERE id = :id")
+    suspend fun getBillItem(id: Long): BillItem?
+
     /**
      * Batches at or near expiry.
      *

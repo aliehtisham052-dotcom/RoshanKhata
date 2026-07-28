@@ -760,4 +760,11 @@
     <string name="window_same_season">پچھلے سال اسی موسم</string>
     <string name="window_last_year">پچھلے 12 مہینے</string>
     <string name="window_ever">اب تک کبھی بھی</string>
+    <string name="edit_bill">بل ایڈٹ کریں</string>
+    <string name="edit_bill_cash_locked">یہ یہاں سے نہیں بدل سکتا۔ بل ایڈٹ کرنا غلطی درست کرنے کے لیے ہے، قرض چکانے کے لیے نہیں — اس کے لیے کھاتے میں ادائیگی درج کریں۔</string>
+    <string name="manage_items">آئٹمز منظم کریں</string>
+    <string name="edit_item">آئٹم ایڈٹ کریں</string>
+    <string name="delete_item">آئٹم مٹائیں</string>
+    <string name="delete_item_confirm">%1$s اس بل سے مٹا دیں؟ اس کا بیچ اور میعاد کا ریکارڈ بھی ساتھ چلا جائے گا۔ بل کا کل ٹوٹل اور لیجر اندراج اس سے نہیں بدلتے۔</string>
+    <string name="bill_updated">بل اپ ڈیٹ ہو گیا</string>
 </resources>
