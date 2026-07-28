@@ -801,4 +801,6 @@
     <string name="batch_remaining">%1$s بچيل</string>
     <string name="import_as_title">ڪهڙي طرح سيڀ ڪريو</string>
     <string name="import_as_message">%1$d رابطا هن طرح سيڀ ٿيندا:</string>
+    <string name="bill_to_customer_title">هي ڌر گراهڪ آهي</string>
+    <string name="bill_to_customer_warn">%1$s گراهڪ طور سيڀ ٿيل آهي، سپلائر نه. سپلائر بل سندس کاتي ۾ اها رقم لکي ٿي جيڪا توهان ڏيڻي آهي. جيڪڏهن اهو ئي ماڻهو واقعي توهان کي مال ڏئي ٿو ته اڳتي وڌو — نه ته نالو چڪاس ڪريو.</string>
 </resources>

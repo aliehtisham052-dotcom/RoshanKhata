@@ -22,7 +22,6 @@ import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Cheque
 import com.innovation313.roshankhata.data.ChequeStatus
 import com.innovation313.roshankhata.data.ChequeWithParty
-import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PartyWithBalance
@@ -260,12 +259,10 @@ class ChequesActivity : AppCompatActivity() {
      */
     private fun postCleared(cheque: ChequeWithParty) {
         AppScope.launch {
-            val count = dao.totalEntryCount()
-
             // A cheque received from a customer is money coming IN — it reduces
             // what they owe, so it is an "I Got". A cheque we issued is money
             // going OUT. Getting this backwards would invert the balance.
-            val entryId = dao.insertEntry(
+            val entryId = dao.insertEntryNumbered(
                 LedgerEntry(
                     partyId = cheque.partyId,
                     amount = cheque.amount,
@@ -279,7 +276,7 @@ class ChequesActivity : AppCompatActivity() {
                         )
                         cheque.bankName?.takeIf { it.isNotBlank() }?.let { append(" · $it") }
                     },
-                    entryNumber = EntryNumber.next(count)
+                    entryNumber = ""
                 )
             )
 

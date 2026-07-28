@@ -39,7 +39,6 @@ import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.ui.QrImage
-import com.innovation313.roshankhata.data.EntryNumber
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PartyPhoto
@@ -1139,8 +1138,9 @@ class PartyDetailActivity : AppCompatActivity() {
      */
     private fun saveEntry(entry: LedgerEntry) {
         AppScope.launch {
-            val count = dao.totalEntryCount()
-            dao.insertEntry(entry.copy(entryNumber = EntryNumber.next(count)))
+            // Numbering happens inside the DAO's own transaction — see
+            // insertEntryNumbered for why the count must not be read out here.
+            dao.insertEntryNumbered(entry)
         }
     }
 

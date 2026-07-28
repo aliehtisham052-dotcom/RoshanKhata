@@ -805,4 +805,6 @@
     <string name="batch_remaining">%1$s left</string>
     <string name="import_as_title">Save as</string>
     <string name="import_as_message">%1$d contacts will be saved as:</string>
+    <string name="bill_to_customer_title">This party is a customer</string>
+    <string name="bill_to_customer_warn">%1$s is saved as a customer, not a supplier. A supplier bill puts what YOU owe on their account. If the same person really does supply you, go ahead — otherwise check the name.</string>
 </resources>

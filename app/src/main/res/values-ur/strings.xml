@@ -773,4 +773,6 @@
     <string name="batch_remaining">%1$s باقی</string>
     <string name="import_as_title">کس طور پر محفوظ کریں</string>
     <string name="import_as_message">%1$d رابطے اس طرح محفوظ ہوں گے:</string>
+    <string name="bill_to_customer_title">یہ پارٹی گاہک ہے</string>
+    <string name="bill_to_customer_warn">%1$s گاہک کے طور پر محفوظ ہے، سپلائر نہیں۔ سپلائر بل ان کے کھاتے میں وہ رقم لکھتی ہے جو آپ نے دینی ہے۔ اگر وہی شخص واقعی آپ کو مال دیتا ہے تو آگے بڑھیں — ورنہ نام چیک کر لیں۔</string>
 </resources>
