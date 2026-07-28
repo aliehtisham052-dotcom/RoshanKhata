@@ -767,4 +767,8 @@
     <string name="delete_item">Item mitayein</string>
     <string name="delete_item_confirm">%1$s is bill se mita dein? Iska batch aur expiry record bhi saath chala jayega. Bill ka kul total aur ledger entry is se nahi badalte.</string>
     <string name="bill_updated">Bill update ho gaya</string>
+    <string name="pick_batch">Kaunsa batch? (ikhtiyari)</string>
+    <string name="pick_batch_clear">Kisi khaas batch se nahi</string>
+    <string name="batch_chosen">Batch: %1$s</string>
+    <string name="batch_remaining">%1$s baqi</string>
 </resources>

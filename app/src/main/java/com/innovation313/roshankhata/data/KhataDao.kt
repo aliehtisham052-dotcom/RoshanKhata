@@ -509,6 +509,29 @@ interface KhataDao {
     suspend fun getBillItem(id: Long): BillItem?
 
     /**
+     * Every batch of this product a sale could be tagged to, soonest-expiring
+     * first — the same ordering ExpiringActivity uses, because selling the
+     * batch that runs out soonest first is the point of tracking batches at
+     * all. [BatchOption.soldFromBatch] is summed from transactions already
+     * tagged to that exact bill_items row.
+     */
+    @Query(
+        """
+        SELECT i.id AS id, i.batchNumber AS batchNumber, i.expiryDate AS expiryDate,
+               i.quantity AS quantity, i.unit AS unit,
+               COALESCE((
+                   SELECT SUM(t.quantity) FROM transactions t
+                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+               ), 0) AS soldFromBatch
+        FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0
+        ORDER BY i.expiryDate ASC
+        """
+    )
+    suspend fun batchOptionsForProduct(productId: Long): List<BatchOption>
+
+    /**
      * Batches at or near expiry.
      *
      * Soonest first, expired ones at the very top — those are the ones already

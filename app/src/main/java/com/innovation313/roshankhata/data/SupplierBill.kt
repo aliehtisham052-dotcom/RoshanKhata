@@ -167,6 +167,26 @@ data class BillSummary(
 )
 
 /**
+ * One batch of a product that a sale can be tagged to.
+ *
+ * [soldFromBatch] is computed from every past sale already tagged to this
+ * exact batch — the same honesty rule as the rest of stock: [remaining] is
+ * shown as a real number, never assumed, and a batch with nothing left is
+ * still offered rather than hidden, since the owner may know something the
+ * count does not (a few units held back, a recount not yet entered).
+ */
+data class BatchOption(
+    val id: Long,
+    val batchNumber: String?,
+    val expiryDate: Long?,
+    val quantity: Double,
+    val unit: String?,
+    val soldFromBatch: Double
+) {
+    val remaining: Double get() = quantity - soldFromBatch
+}
+
+/**
  * A batch nearing or past its expiry.
  *
  * Deliberately carries the supplier's name and the bill it came on, because

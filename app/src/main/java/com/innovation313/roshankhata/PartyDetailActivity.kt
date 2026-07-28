@@ -34,6 +34,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
+import com.innovation313.roshankhata.data.BatchOption
+import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.ui.QrImage
@@ -503,6 +505,70 @@ class PartyDetailActivity : AppCompatActivity() {
                 resources.getStringArray(R.array.units)
             )
         )
+        val btnBatch: MaterialButton = view.findViewById(R.id.btnBatch)
+
+        // Which batch this sale is drawn from, once the owner picks one. Both
+        // are null until then, and stay null for anything that never matches
+        // a known, batched product — a cash sale of something never bought in
+        // through a bill has nothing to offer here, and is not asked.
+        var selectedBatch: BatchOption? = null
+        var matchedProductId: Long? = null
+
+        /**
+         * Look up whether the typed name is a product with recorded batches,
+         * and show or hide the batch button accordingly.
+         *
+         * Only for a sale (isGiven) — a batch is something stock LEAVES from,
+         * and "I Got" is money or goods coming back, not going out. Runs on
+         * this screen's own lifecycleScope: it is a read for the UI, not a
+         * write that must survive the screen closing, so it should be
+         * cancelled along with everything else if the owner navigates away
+         * mid-lookup.
+         */
+        fun refreshBatchButton() {
+            if (!isGiven) return
+            val typed = etItemName.text.toString().trim()
+            if (typed.isEmpty()) {
+                selectedBatch = null
+                matchedProductId = null
+                btnBatch.visibility = View.GONE
+                return
+            }
+            lifecycleScope.launch {
+                val product = dao.productByKey(ProductName.key(typed))
+                val options = product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+
+                // The item name changed since this lookup started (the owner
+                // kept typing) — do not act on a stale answer.
+                if (etItemName.text.toString().trim() != typed) return@launch
+
+                matchedProductId = product?.id
+                if (options.isEmpty()) {
+                    selectedBatch = null
+                    btnBatch.visibility = View.GONE
+                } else {
+                    btnBatch.visibility = View.VISIBLE
+                    btnBatch.text = getString(R.string.pick_batch)
+                    selectedBatch = null
+                    btnBatch.setOnClickListener {
+                        showBatchPicker(options) { chosen ->
+                            selectedBatch = chosen
+                            btnBatch.text = if (chosen == null) {
+                                getString(R.string.pick_batch)
+                            } else {
+                                getString(
+                                    R.string.batch_chosen,
+                                    chosen.batchNumber ?: getString(R.string.batch_none)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        etItemName.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) refreshBatchButton() }
+
         val rgRecovery: RadioGroup = view.findViewById(R.id.rgRecovery)
         val rbDoubtful: RadioButton = view.findViewById(R.id.rbDoubtful)
         val tvRecoveryLabel: TextView = view.findViewById(R.id.tvRecoveryLabel)
@@ -549,7 +615,13 @@ class PartyDetailActivity : AppCompatActivity() {
                     quantity = quantity,
                     unit = unit,
                     timestamp = chosenTime,
-                    billPhotoPath = pendingBillPhoto
+                    billPhotoPath = pendingBillPhoto,
+                    // Both null unless a batch was actually picked above.
+                    // Tagging the product here, at the moment the owner
+                    // confirms it, means this entry never needs the separate
+                    // "tie existing entries" backfill to count towards stock.
+                    productId = matchedProductId,
+                    billItemId = selectedBatch?.id
                 )
 
                 // Warn BEFORE writing, not after — a warning that arrives once
@@ -1017,6 +1089,36 @@ class PartyDetailActivity : AppCompatActivity() {
             refreshAvatar()
             Toast.makeText(this@PartyDetailActivity, R.string.photo_saved, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    /**
+     * Which batch this sale came out of, or none — offered as a real option
+     * every time, not forced. Most sales in a small shop are sold out of
+     * whichever carton happens to be open, and the exact batch is simply not
+     * always known; asking is right, requiring an answer is not.
+     */
+    private fun showBatchPicker(options: List<BatchOption>, onPicked: (BatchOption?) -> Unit) {
+        val labels = arrayOf(getString(R.string.pick_batch_clear)) + options.map { o ->
+            buildString {
+                append(
+                    o.batchNumber?.let { getString(R.string.batch_label, it) }
+                        ?: getString(R.string.batch_none)
+                )
+                append(" — ")
+                append(getString(R.string.batch_remaining, Format.qty(o.remaining, o.unit)))
+                o.expiryDate?.let {
+                    append(" · ")
+                    append(Format.dateOnly(it))
+                }
+            }
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.pick_batch)
+            .setItems(labels) { _, which ->
+                onPicked(if (which == 0) null else options[which - 1])
+            }
+            .show()
     }
 
     /**
