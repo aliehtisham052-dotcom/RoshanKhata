@@ -182,6 +182,14 @@
     <string name="app_lock_turn_on">App Lock On Karein</string>
     <string name="app_lock_turn_off">App Lock Off Karein</string>
     <string name="app_lock_explain">Aap ke fingerprint, chehre, ya phone ke maujooda screen lock se kaam leta hai. Roshan Khata apna koi PIN mehfooz nahi karta — Android isey hum se zyada mehfooz rakhta hai.</string>
+    <string name="screen_privacy">Screen ki privacy</string>
+    <string name="screen_privacy_on">On — screenshot band hai</string>
+    <string name="screen_privacy_off">Off — screenshot aam tareeqe se chalta hai</string>
+    <string name="screen_privacy_turn_on">Screenshot band karein</string>
+    <string name="screen_privacy_turn_off">Screenshot ki ijazat dein</string>
+    <string name="screen_privacy_explain">Ye on karne se Roshan Khata mein har jagah screenshot aur screen recording band ho jati hai.\n\nQeemat ye hai ke AAP ka apna screenshot bhi band ho jata hai. Agar aap gahak ka khata tasveer le kar aage bhejte hain, wo on rehne tak nahi ho sakega. Share aur Statement ke button phir bhi kaam karte hain, aur screenshot se saaf naqal bhejte hain.\n\nRozmarra kaam ke liye ise off rakhein. On tab karein jab phone aksar doosron ke haath mein rehta ho.</string>
+    <string name="screen_privacy_recents_hidden">Aap ka Android pehle hi Roshan Khata ko recent-apps switcher se chhupa deta hai, is liye wahan koi aap ka khata nahi dekh sakta.</string>
+    <string name="screen_privacy_recents_visible">Is Android ka version 13 se purana hai, is liye recent-apps switcher abhi bhi aap ki aakhri screen dikha sakta hai. Sirf yehi switch usay chhupa sakta hai.</string>
     <string name="app_lock_no_screen_lock">Is phone par koi screen lock nahi. Pehle phone ki settings mein fingerprint, PIN ya pattern lagayen, phir App Lock aap ke khate ki hifazat kar sakega.</string>
     <string name="app_lock_unavailable">Is phone par App Lock dastyab nahi.</string>
     <string name="ok">Theek Hai</string>
@@ -340,7 +348,7 @@
     <string name="backup_subtitle">Aap ka khata, aap ke haath mein</string>
     <string name="backup_now">Abhi Backup Lein</string>
     <string name="restore_from_file">Backup file se wapas layen</string>
-    <string name="backup_explain">Sab kuch — gahak, khata, cheque, cashbook, aur Recycle Bin — ek file mein likha jata hai jise aap Drive mein mehfooz kar sakte hain, khud ko WhatsApp kar sakte hain, ya memory card par rakh sakte hain.\n\nFile sada, parhne ke qabil text hai. Barson baad bhi, is app ke baghair bhi, aap ka record bazyab ho sakega. Jo data hamari madad ke baghair wapas na mil sake wo haqeeqat mein aap ka nahi.</string>
+    <string name="backup_explain">Sab kuch — gahak, khata, cheque, cashbook, aur Recycle Bin — ek file mein likha jata hai jise aap Drive mein mehfooz kar sakte hain, khud ko WhatsApp kar sakte hain, ya memory card par rakh sakte hain.\n\nFile sada, parhne ke qabil text hai. Barson baad bhi, is app ke baghair bhi, aap ka record bazyab ho sakega. Jo data hamari madad ke baghair wapas na mil sake wo haqeeqat mein aap ka nahi.\n\nSirf tasveerein istisna hain. Gahak ki tasveer aur bill ki tasveer isi phone par rehti hain, file ke andar nahi jatin — naye phone par backup bahal karne se har record wapas aa jata hai, magar tasveerein nahi. Jo bill ki tasveer ahem ho, us ki naqal alag rakh lein.</string>
     <string name="backup_warning">Roshan Khata sab kuch sirf isi phone par rakhta hai. Phone gum ho, toot jaye, ya app uninstall ho to record bhi saath jata hai. Meherbani kar ke baqaidgi se backup lein aur kahin aur mehfooz rakhein.</string>
     <string name="backup_created">Backup tayyar — mehfooz karne ki jagah chunein</string>
     <string name="backup_failed">Backup nahi ban saka.</string>

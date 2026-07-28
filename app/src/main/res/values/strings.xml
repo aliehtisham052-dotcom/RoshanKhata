@@ -195,6 +195,14 @@
     <string name="app_lock_turn_on">Turn on App Lock</string>
     <string name="app_lock_turn_off">Turn off App Lock</string>
     <string name="app_lock_explain">Uses your fingerprint, face, or the screen lock you already have on this phone. Roshan Khata does not store a PIN of its own — Android keeps that safer than we could.</string>
+    <string name="screen_privacy">Screen privacy</string>
+    <string name="screen_privacy_on">On — screenshots are blocked</string>
+    <string name="screen_privacy_off">Off — screenshots work normally</string>
+    <string name="screen_privacy_turn_on">Block screenshots</string>
+    <string name="screen_privacy_turn_off">Allow screenshots</string>
+    <string name="screen_privacy_explain">Turning this on blocks screenshots and screen recording everywhere in Roshan Khata.\n\nThe cost is that it blocks YOURS too. If you photograph a customer\u2019s ledger to send it on, that will stop working while this is on. The Share and Statement buttons still work, and send a cleaner copy than a screenshot does.\n\nLeave it off for everyday use. Turn it on if the phone is often in other hands.</string>
+    <string name="screen_privacy_recents_hidden">Your Android already keeps Roshan Khata out of the recent-apps switcher, so nobody sees your ledger there.</string>
+    <string name="screen_privacy_recents_visible">This Android version is older than 13, so the recent-apps switcher can still show your last screen. Only this switch can hide it.</string>
     <string name="app_lock_no_screen_lock">This phone has no screen lock set. Set a fingerprint, PIN, or pattern in your phone\'s settings first, then App Lock can protect your ledger.</string>
     <string name="app_lock_unavailable">App Lock is not available on this phone.</string>
     <string name="ok">OK</string>
@@ -361,7 +369,7 @@
     <string name="backup_subtitle">Your books, in your hands</string>
     <string name="backup_now">Back up now</string>
     <string name="restore_from_file">Restore from a backup</string>
-    <string name="backup_explain">Everything — customers, ledger, cheques, cashbook, and the Recycle Bin — is written to a single file you can save to Drive, WhatsApp to yourself, or keep on a memory card.\n\nThe file is plain, readable text. Even years from now, even without this app, your records will still be recoverable. Data you cannot get back without our help is not really yours.</string>
+    <string name="backup_explain">Everything — customers, ledger, cheques, cashbook, and the Recycle Bin — is written to a single file you can save to Drive, WhatsApp to yourself, or keep on a memory card.\n\nThe file is plain, readable text. Even years from now, even without this app, your records will still be recoverable. Data you cannot get back without our help is not really yours.\n\nPhotographs are the one exception. Customer photos and bill photos stay on this phone and are not inside the file — a backup restored on a new phone brings back every record, but not the pictures. Keep copies of any bill photo that matters.</string>
     <string name="backup_warning">Roshan Khata keeps everything on this phone alone. If the phone is lost, broken, or the app is uninstalled, the records go with it. Please take a backup regularly and keep it somewhere else.</string>
     <string name="backup_created">Backup ready — choose where to save it</string>
     <string name="backup_failed">The backup could not be created.</string>
