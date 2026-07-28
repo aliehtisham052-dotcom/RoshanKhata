@@ -10,12 +10,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.BinAdapter
 import com.innovation313.roshankhata.ui.BinItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Recycle Bin — nothing is destroyed on delete. Items sit here until the
@@ -95,20 +98,46 @@ class RecycleBinActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * AppScope, because this is TWO writes that have to travel together.
+     *
+     * A single delete cancelled halfway is merely a command that did not run,
+     * and the owner sees the row still there and taps again. This is not that:
+     * cancelled between the two calls, every entry is in the bin while its
+     * party is not, and the shared timestamp that reunites them on restore
+     * never gets written to the parties at all. The book would be left in a
+     * state no screen in this app knows how to describe.
+     */
     private fun deleteAllParties() {
-        lifecycleScope.launch {
+        AppScope.launch {
             val now = System.currentTimeMillis()
             // Entries first, then the parties, both stamped the same — a
             // restore reunites them by that timestamp.
             dao.softDeleteAllEntries(now)
             dao.softDeleteAllParties(now)
-            Toast.makeText(this@RecycleBinActivity, R.string.moved_to_bin, Toast.LENGTH_LONG).show()
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(
+                        this@RecycleBinActivity,
+                        R.string.moved_to_bin,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 
-    /** Anything past the retention window is genuinely gone — no silent hoarding. */
+    /**
+     * Anything past the retention window is genuinely gone — no silent
+     * hoarding.
+     *
+     * On AppScope for the same two-step reason as the others, though this one
+     * is the mildest of them: it runs itself on every visit, so an
+     * interrupted pass would be finished by the next one. It is here for
+     * consistency rather than because leaving it would be dangerous.
+     */
     private fun purgeExpired() {
-        lifecycleScope.launch {
+        AppScope.launch {
             val cutoff = System.currentTimeMillis() - (RETENTION_DAYS * DAY_MS)
             dao.purgeOldEntries(cutoff)
             dao.purgeOldParties(cutoff)
@@ -164,8 +193,14 @@ class RecycleBinActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * AppScope: restoring a party is two writes, and the halfway state is the
+     * one that would frighten a shopkeeper most — the customer back on the
+     * list with an empty ledger, every entry still in the bin, looking
+     * exactly like their history had been lost.
+     */
     private fun restore(item: BinItem) {
-        lifecycleScope.launch {
+        AppScope.launch {
             when (item) {
                 is BinItem.DeletedParty -> {
                     // Bring the party back together with the entries that
@@ -179,7 +214,15 @@ class RecycleBinActivity : AppCompatActivity() {
                     dao.restoreEntry(item.id)
                 }
             }
-            Toast.makeText(this@RecycleBinActivity, R.string.restored, Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(
+                        this@RecycleBinActivity,
+                        R.string.restored,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
@@ -189,10 +232,21 @@ class RecycleBinActivity : AppCompatActivity() {
             .setMessage(R.string.empty_bin_confirm)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete_forever) { _, _ ->
-                lifecycleScope.launch {
+                // AppScope: two permanent deletions. Stopping between them
+                // leaves parties whose every entry is already gone forever —
+                // rows that look restorable and would come back empty.
+                AppScope.launch {
                     dao.purgeAllEntries()
                     dao.purgeAllParties()
-                    Toast.makeText(this@RecycleBinActivity, R.string.bin_emptied, Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) {
+                            Toast.makeText(
+                                this@RecycleBinActivity,
+                                R.string.bin_emptied,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             }
             .show()

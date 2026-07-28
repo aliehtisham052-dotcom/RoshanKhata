@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.CashEntry
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.CashAdapter
@@ -150,7 +151,12 @@ class CashbookActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
-                lifecycleScope.launch {
+                // AppScope, not lifecycleScope — see AppScope's own comment.
+                // This dialog closes the instant Save is tapped and shows no
+                // progress, so a quick Back press right after could cancel the
+                // write before it landed, taking the typed amount, category,
+                // note and date with it.
+                AppScope.launch {
                     dao.insertCashEntry(
                         CashEntry(
                             amount = amount,

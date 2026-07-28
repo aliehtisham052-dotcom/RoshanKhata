@@ -1082,8 +1082,17 @@ class PartyDetailActivity : AppCompatActivity() {
 
             // Keep the DB in step with what is actually on disk, so a future
             // export or backup knows the photo exists.
-            dao.getParty(partyId)?.let { p ->
-                dao.updateParty(p.copy(photoPath = path))
+            //
+            // AppScope: the photo file is ALREADY written by this point. If
+            // this pointer never lands, the file sits on disk with nothing
+            // referring to it and the owner's photo simply does not appear —
+            // the one case here where cancelling loses something that cannot
+            // be recovered by repeating the action, since the camera moment
+            // has passed.
+            AppScope.launch {
+                dao.getParty(partyId)?.let { p ->
+                    dao.updateParty(p.copy(photoPath = path))
+                }
             }
 
             refreshAvatar()
@@ -1181,19 +1190,25 @@ class PartyDetailActivity : AppCompatActivity() {
                 val newLimit = etLimit.text.toString().trim().toDoubleOrNull()
                     ?.takeIf { it > 0 }
 
-                lifecycleScope.launch {
+                // The read-then-write runs on AppScope — see AppScope's own
+                // comment. The limit is a figure the owner typed; losing it to
+                // a quick Back press would look exactly like it saved, since
+                // this dialog closes immediately either way.
+                AppScope.launch {
                     dao.getParty(partyId)?.let { p ->
                         dao.updateParty(p.copy(creditLimit = newLimit))
                     }
-                    creditLimit = newLimit
-
-                    Toast.makeText(
-                        this@PartyDetailActivity,
-                        if (newLimit == null) R.string.credit_limit_removed
-                        else R.string.credit_limit_saved,
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
+                creditLimit = newLimit
+
+                // Already on the main thread, inside the dialog's own click
+                // callback, so the toast needs no hop and no guard.
+                Toast.makeText(
+                    this@PartyDetailActivity,
+                    if (newLimit == null) R.string.credit_limit_removed
+                    else R.string.credit_limit_saved,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             .show()
     }
@@ -1220,7 +1235,16 @@ class PartyDetailActivity : AppCompatActivity() {
 
             val token = party.qrToken ?: run {
                 val fresh = QrTag.newToken()
-                withContext(Dispatchers.IO) { dao.updateParty(party.copy(qrToken = fresh)) }
+                // AppScope, and awaited: this token is about to be drawn onto
+                // a card the owner may print and hand to a customer. If the
+                // write were cancelled the card would exist in the world
+                // carrying a token no database has ever heard of, and
+                // scanning it would find nobody. Awaited rather than fired
+                // and forgotten, so the QR is only ever built from a token
+                // that is genuinely saved.
+                AppScope.launch {
+                    dao.updateParty(party.copy(qrToken = fresh))
+                }.join()
                 fresh
             }
 
