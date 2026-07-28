@@ -270,6 +270,60 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
 }
 
 /**
+ * Products, and the two columns that tie goods to them.
+ *
+ * The table is new and empty; the two columns are nullable and arrive empty on
+ * every row already written, so nothing that exists changes meaning. An owner
+ * who never touches a product screen sees exactly the app they had.
+ *
+ * NO FOREIGN KEY ON EITHER COLUMN, deliberately. SQLite cannot add a
+ * constraint to a table that already exists — it has to be rebuilt — and the
+ * table in question is `transactions`, which holds this shop's entire book of
+ * debts. Rebuilding it during an update, on a phone, is the single most
+ * dangerous thing this migration could do, and it would buy a guarantee that
+ * is not needed: products are soft-deleted and never removed, so a productId
+ * cannot come to point at a row that has gone.
+ */
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                name TEXT NOT NULL,
+                nameKey TEXT NOT NULL,
+                normalisedName TEXT NOT NULL,
+                category TEXT,
+                defaultUnit TEXT,
+                note TEXT,
+                createdAt INTEGER NOT NULL,
+                isDeleted INTEGER NOT NULL,
+                deletedAt INTEGER
+            )
+            """.trimIndent()
+        )
+        db.execSQL(
+            "CREATE UNIQUE INDEX IF NOT EXISTS index_products_nameKey ON products(nameKey)"
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS index_products_normalisedName " +
+                "ON products(normalisedName)"
+        )
+
+        db.execSQL("ALTER TABLE transactions ADD COLUMN productId INTEGER")
+        db.execSQL("ALTER TABLE bill_items ADD COLUMN productId INTEGER")
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS index_transactions_productId " +
+                "ON transactions(productId)"
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS index_bill_items_productId " +
+                "ON bill_items(productId)"
+        )
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -278,7 +332,7 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 10
+const val KHATA_DB_VERSION = 11
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -290,5 +344,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_6_7,
     MIGRATION_7_8,
     MIGRATION_8_9,
-    MIGRATION_9_10
+    MIGRATION_9_10,
+    MIGRATION_10_11
 )

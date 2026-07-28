@@ -568,6 +568,92 @@ interface KhataDao {
     @Insert
     suspend fun restoreBillItems(items: List<BillItem>)
 
+    // ---------- Products ----------
+    //
+    // The master list goods are tied to. Everything here is soft-delete aware
+    // in the same way the rest of the app is: a product is never removed, so
+    // an entry pointing at it can never be left pointing at nothing.
+
+    @Query("SELECT * FROM products WHERE isDeleted = 0 ORDER BY name COLLATE NOCASE")
+    fun observeProducts(): Flow<List<Product>>
+
+    @Query("SELECT * FROM products WHERE id = :id")
+    suspend fun productById(id: Long): Product?
+
+    /** Exact identity. Deleted rows included on purpose — see [findOrCreateProduct]. */
+    @Query("SELECT * FROM products WHERE nameKey = :key LIMIT 1")
+    suspend fun productByKey(key: String): Product?
+
+    /**
+     * Products that merely LOOK like this one, for suggesting rather than
+     * deciding. Never used to refuse a name.
+     */
+    @Query("SELECT * FROM products WHERE normalisedName = :normalised AND isDeleted = 0")
+    suspend fun productsLike(normalised: String): List<Product>
+
+    @Insert
+    suspend fun insertProduct(product: Product): Long
+
+    @Update
+    suspend fun updateProduct(product: Product)
+
+    @Query("UPDATE products SET isDeleted = 1, deletedAt = :now WHERE id = :id")
+    suspend fun softDeleteProduct(id: Long, now: Long = System.currentTimeMillis())
+
+    @Query("UPDATE products SET isDeleted = 0, deletedAt = NULL WHERE id = :id")
+    suspend fun restoreProduct(id: Long)
+
+    /**
+     * The one way a product should ever be created from a typed name.
+     *
+     * Written as a transaction rather than left to each caller, because the
+     * unique index on nameKey turns a race into a crash: two screens saving
+     * "Urea" at the same moment would have one of them throw. Here the lookup
+     * and the insert cannot be separated.
+     *
+     * A name that matches a DELETED product brings that product back rather
+     * than inserting a second one. Inserting would fail on the unique index,
+     * and even if it did not, the owner asking for "Urea" after having removed
+     * "Urea" means the one they had, with its history still attached.
+     */
+    @Transaction
+    suspend fun findOrCreateProduct(
+        name: String,
+        category: String? = null,
+        defaultUnit: String? = null
+    ): Product {
+        val key = ProductName.key(name)
+        val existing = productByKey(key)
+        if (existing != null) {
+            if (existing.isDeleted) {
+                restoreProduct(existing.id)
+                return existing.copy(isDeleted = false, deletedAt = null)
+            }
+            return existing
+        }
+        val fresh = Product(
+            name = name.trim(),
+            nameKey = key,
+            normalisedName = ProductName.normalised(name),
+            category = category,
+            defaultUnit = defaultUnit
+        )
+        return fresh.copy(id = insertProduct(fresh))
+    }
+
+    // Backup coverage for products. A restore that dropped this table would
+    // leave every productId on every entry pointing at nothing — the ledger
+    // would survive and the goods would quietly stop being goods.
+
+    @Query("SELECT * FROM products")
+    suspend fun allProductsForBackup(): List<Product>
+
+    @Query("DELETE FROM products")
+    suspend fun wipeProducts()
+
+    @Insert
+    suspend fun restoreProducts(items: List<Product>)
+
     // ---------- One-shot reads, for the printed report ----------
     //
     // A report is a snapshot, not a live view, so these return a value rather
@@ -664,7 +750,8 @@ interface KhataDao {
         plans: List<PaymentPlan>,
         installments: List<Installment>,
         bills: List<SupplierBill>,
-        billItems: List<BillItem>
+        billItems: List<BillItem>,
+        products: List<Product> = emptyList()
     ) {
         wipeBillItems()
         wipeBills()
@@ -674,7 +761,9 @@ interface KhataDao {
         wipeCheques()
         wipeCash()
         wipeParties()
+        wipeProducts()
 
+        restoreProducts(products)
         restoreParties(parties)
         restoreEntries(entries)
         restoreCheques(cheques)

@@ -27,7 +27,16 @@ import java.util.Locale
  */
 object Backup {
 
-    const val FORMAT_VERSION = 3
+    /**
+     * Raised to 4 when products arrived.
+     *
+     * The bump matters in one direction only: a file written today, opened by
+     * an older release, is refused with "update the app first" rather than
+     * imported without its products. Silently dropping a table the old code
+     * cannot hold would look like a successful restore and lose data.
+     * Reading OLD files is unaffected — every array is read optionally.
+     */
+    const val FORMAT_VERSION = 4
 
     private val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
@@ -80,6 +89,9 @@ object Backup {
         })
         root.put("billItems", JSONArray().apply {
             dao.allBillItemsForBackup().forEach { put(billItemToJson(it)) }
+        })
+        root.put("products", JSONArray().apply {
+            dao.allProductsForBackup().forEach { put(productToJson(it)) }
         })
 
         return root.toString(2)
@@ -302,13 +314,24 @@ object Backup {
                 (0 until arr.length()).map { jsonToBillItem(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            val products = root.optJSONArray("products")?.let { arr ->
+                (0 until arr.length()).map { jsonToProduct(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
             // An entry pointing at a party that is not in the file would be
             // orphaned on insert — better to refuse than to import a ledger
             // with holes in it.
             val partyIds = parties.map { it.id }.toSet()
             val planIds = plans.map { it.id }.toSet()
             val billIds = bills.map { it.id }.toSet()
-            val orphans = entries.count { it.partyId !in partyIds } +
+            // A productId pointing outside the file is checked the same way as
+            // a partyId. Null is fine — most entries have no product — but a
+            // number that leads nowhere is a hole, and holes are refused here
+            // rather than discovered months later by a stock count.
+            val productIds = products.map { it.id }.toSet()
+            val orphans = entries.count { it.productId != null && it.productId !in productIds } +
+                billItems.count { it.productId != null && it.productId !in productIds } +
+                entries.count { it.partyId !in partyIds } +
                 cheques.count { it.partyId !in partyIds } +
                 plans.count { it.partyId !in partyIds } +
                 installments.count { it.planId !in planIds } +
@@ -329,7 +352,7 @@ object Backup {
                 cash = cash.size,
                 plans = plans.size,
                 bills = bills.size
-            ) to ParsedBackup(parties, entries, cheques, cash, plans, installments, bills, billItems)
+            ) to ParsedBackup(parties, entries, cheques, cash, plans, installments, bills, billItems, products)
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
         }
@@ -343,7 +366,8 @@ object Backup {
         val plans: List<PaymentPlan> = emptyList(),
         val installments: List<Installment> = emptyList(),
         val bills: List<SupplierBill> = emptyList(),
-        val billItems: List<BillItem> = emptyList()
+        val billItems: List<BillItem> = emptyList(),
+        val products: List<Product> = emptyList()
     )
 
     /** Replaces everything. Only called after the user has confirmed. */
@@ -360,7 +384,8 @@ object Backup {
             plans = data.plans,
             installments = data.installments,
             bills = data.bills,
-            billItems = data.billItems
+            billItems = data.billItems,
+            products = data.products
         )
     }
 
@@ -403,6 +428,7 @@ object Backup {
         put("itemName", e.itemName ?: JSONObject.NULL)
         put("quantity", e.quantity ?: JSONObject.NULL)
         put("unit", e.unit ?: JSONObject.NULL)
+        put("productId", e.productId ?: JSONObject.NULL)
         put("isDeleted", e.isDeleted)
         put("deletedAt", e.deletedAt ?: JSONObject.NULL)
     }
@@ -420,6 +446,7 @@ object Backup {
         itemName = o.optNullableString("itemName"),
         quantity = o.optNullableDouble("quantity"),
         unit = o.optNullableString("unit"),
+        productId = o.optNullableLong("productId"),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")
     )
@@ -570,6 +597,7 @@ object Backup {
         put("unit", i.unit ?: JSONObject.NULL)
         put("rate", i.rate ?: JSONObject.NULL)
         put("note", i.note ?: JSONObject.NULL)
+        put("productId", i.productId ?: JSONObject.NULL)
         put("isDeleted", i.isDeleted)
     }
 
@@ -583,11 +611,50 @@ object Backup {
         unit = o.optNullableString("unit"),
         rate = o.optNullableDouble("rate"),
         note = o.optNullableString("note"),
+        productId = o.optNullableLong("productId"),
         isDeleted = o.optBoolean("isDeleted", false)
     )
 
     // JSONObject.optString returns "" for null, which would turn an absent
     // phone number into an empty string rather than leaving it absent.
+    private fun productToJson(p: Product) = JSONObject().apply {
+        put("id", p.id)
+        put("name", p.name)
+        put("nameKey", p.nameKey)
+        put("normalisedName", p.normalisedName)
+        put("category", p.category ?: JSONObject.NULL)
+        put("defaultUnit", p.defaultUnit ?: JSONObject.NULL)
+        put("note", p.note ?: JSONObject.NULL)
+        put("createdAt", p.createdAt)
+        put("isDeleted", p.isDeleted)
+        put("deletedAt", p.deletedAt ?: JSONObject.NULL)
+    }
+
+    /**
+     * The two keys are RECOMPUTED rather than trusted from the file.
+     *
+     * They are derived from the name, and a file that has been edited by hand
+     * — or written by an older release whose folding differed — could carry a
+     * key that no longer matches its own name. Recomputing costs nothing and
+     * means the unique index can never be handed two rows it will reject
+     * halfway through a restore.
+     */
+    private fun jsonToProduct(o: JSONObject): Product {
+        val name = o.optString("name", "")
+        return Product(
+            id = o.getLong("id"),
+            name = name,
+            nameKey = ProductName.key(name),
+            normalisedName = ProductName.normalised(name),
+            category = o.optNullableString("category"),
+            defaultUnit = o.optNullableString("defaultUnit"),
+            note = o.optNullableString("note"),
+            createdAt = o.optLong("createdAt", System.currentTimeMillis()),
+            isDeleted = o.optBoolean("isDeleted", false),
+            deletedAt = o.optNullableLong("deletedAt")
+        )
+    }
+
     private fun JSONObject.optNullableString(key: String): String? =
         if (isNull(key)) null else optString(key).takeIf { it.isNotEmpty() }
 
