@@ -23,6 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.AppLock
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
@@ -348,6 +349,11 @@ class KhataActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
                 val phone = etPhone.text.toString().trim().ifEmpty { null }
+                // Read here, on the main thread, not inside the coroutine
+                // below — a View's own field is not something to reach across
+                // to from a background dispatcher.
+                val isCustomer = rbCustomer.isChecked
+
                 lifecycleScope.launch {
                     // A match on the number or the name is worth raising, but
                     // it is not the app's decision.
@@ -367,27 +373,27 @@ class KhataActivity : AppCompatActivity() {
                         ?: dao.findPartyByName(name)
 
                     if (existing == null) {
-                        dao.insertParty(
-                            Party(
-                                name = name,
-                                phone = phone,
-                                isCustomer = rbCustomer.isChecked
+                        // AppScope, not lifecycleScope, for the write itself —
+                        // see AppScope's own comment. The lookup just above
+                        // can stay here: if it gets cancelled nothing has been
+                        // written yet, so there is nothing to lose. The insert
+                        // is the one line that must not be cancellable by a
+                        // quick Back press right after Save.
+                        AppScope.launch {
+                            dao.insertParty(
+                                Party(name = name, phone = phone, isCustomer = isCustomer)
                             )
-                        )
+                        }
                         return@launch
                     }
 
                     confirmDuplicate(existing) { openExisting ->
-                        lifecycleScope.launch {
-                            if (openExisting) {
-                                openParty(existing.toRow())
-                            } else {
+                        if (openExisting) {
+                            lifecycleScope.launch { openParty(existing.toRow()) }
+                        } else {
+                            AppScope.launch {
                                 dao.insertParty(
-                                    Party(
-                                        name = name,
-                                        phone = phone,
-                                        isCustomer = rbCustomer.isChecked
-                                    )
+                                    Party(name = name, phone = phone, isCustomer = isCustomer)
                                 )
                             }
                         }

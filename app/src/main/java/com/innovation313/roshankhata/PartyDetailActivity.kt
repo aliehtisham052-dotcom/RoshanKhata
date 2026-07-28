@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.ui.QrImage
@@ -1018,8 +1019,15 @@ class PartyDetailActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Runs on [AppScope], not this screen's lifecycleScope — see AppScope's
+     * own comment. This dialog closes the instant Save is tapped, while the
+     * write is still in flight; tying it to the screen meant a quick Back
+     * press right after saving could cancel it before it reached the disk,
+     * with nothing on screen ever saying so.
+     */
     private fun saveEntry(entry: LedgerEntry) {
-        lifecycleScope.launch {
+        AppScope.launch {
             val count = dao.totalEntryCount()
             dao.insertEntry(entry.copy(entryNumber = EntryNumber.next(count)))
         }
