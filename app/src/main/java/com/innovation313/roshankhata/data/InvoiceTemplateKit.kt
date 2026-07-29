@@ -354,10 +354,10 @@ object InvoiceTemplateKit {
     }
 
     /** The tinted "AMOUNT IN WORDS" strip. Returns the y position work should continue from. */
-    fun drawAmountInWords(c: Canvas, palette: Palette, fonts: Fonts, left: Float, right: Float, y: Float, grandTotal: Double): Float {
+    fun drawAmountInWords(c: Canvas, context: Context, palette: Palette, fonts: Fonts, left: Float, right: Float, y: Float, grandTotal: Double): Float {
         c.drawRoundRect(RectF(left, y, right, y + 34f), 7f, 7f, solid(palette.boxFill))
         c.drawText("AMOUNT IN WORDS", left + 12f, y + 13f, paint(fonts, 7.5f, palette.primary, bold = true))
-        c.drawText(NumberWords.rupeesInWords(grandTotal), left + 12f, y + 27f, paint(fonts, 10f, palette.ink, italic = true))
+        c.drawText(NumberWords.rupeesInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10f, palette.ink, italic = true))
         return y + 50f
     }
 
