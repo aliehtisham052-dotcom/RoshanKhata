@@ -148,41 +148,34 @@ object InvoicePdfExport {
      * Palette is the mockup's own (see the invoice-templates spec): #0F2A2A
      * ink, #0C6B6B primary into #12908C, #F1F8F7 box fill, #E4EDEC rules.
      */
+    /**
+     * The full-featured design, built on [InvoiceTemplateKit] rather than
+     * drawing its own header/table/totals/signature — this IS the base the
+     * other eight templates are built on, so its own code is now the
+     * shared pieces plus this template's own palette and fonts, not a
+     * standalone 300-line function any more.
+     *
+     * Fonts and palette straight from the finalised mockup spec: Sora for
+     * headings, IBM Plex Mono for numbers and money; #0F2A2A ink, #0C6B6B
+     * into #12908C for the band, #F1F8F7 box fill, #E4EDEC rules.
+     */
     private fun buildTealCorporate(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF0F2A2A.toInt(),
+            primary = 0xFF0C6B6B.toInt(),
+            primaryEnd = 0xFF12908C.toInt(),
+            muted = 0xFF6A7A79.toInt(),
+            ruleColor = 0xFFE4EDEC.toInt(),
+            boxFill = 0xFFF1F8F7.toInt(),
+            zebra = 0xFFF9FCFC.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.sora(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
         val doc = PdfDocument()
-
-        val ink = 0xFF0F2A2A.toInt()
-        val teal = 0xFF0C6B6B.toInt()
-        val tealEnd = 0xFF12908C.toInt()
-        val muted = 0xFF6A7A79.toInt()
-        val ruleCol = 0xFFE4EDEC.toInt()
-        val boxFill = 0xFFF1F8F7.toInt()
-        val zebra = 0xFFF9FCFC.toInt()
-
-        fun text(
-            size: Float,
-            colour: Int,
-            bold: Boolean = false,
-            align: Paint.Align = Paint.Align.LEFT,
-            mono: Boolean = false,
-            italic: Boolean = false
-        ) = Paint().apply {
-            isAntiAlias = true
-            textSize = size
-            color = colour
-            textAlign = align
-            typeface = Typeface.create(
-                if (mono) Typeface.MONOSPACE else Typeface.DEFAULT,
-                when {
-                    bold -> Typeface.BOLD
-                    italic -> Typeface.ITALIC
-                    else -> Typeface.NORMAL
-                }
-            )
-        }
-
-        fun solid(colour: Int) = Paint().apply { isAntiAlias = true; color = colour }
-
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
 
@@ -190,292 +183,40 @@ object InvoicePdfExport {
         var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
 
-        fun drawBand(): Float {
-            val band = Paint().apply {
-                isAntiAlias = true
-                shader = LinearGradient(
-                    0f, 0f, PAGE_W_A4.toFloat(), 0f, teal, tealEnd, Shader.TileMode.CLAMP
-                )
-            }
-            c.drawRect(0f, 0f, PAGE_W_A4.toFloat(), 96f, band)
-
-            val shopName = BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() }
-                ?: "Roshan Khata"
-
-            // The monogram tile the mockup opens with — initials of the shop
-            // name, so a shop with no logo image still gets a mark.
-            val tile = RectF(left, 26f, left + 40f, 66f)
-            c.drawRoundRect(tile, 9f, 9f, solid(0x33FFFFFF))
-            val initials = shopName.trim().split(Regex("\\s+"))
-                .filter { it.isNotEmpty() }
-                .take(2)
-                .joinToString("") { it.take(1).uppercase() }
-            c.drawText(
-                initials.ifEmpty { "R" }, tile.centerX(), tile.centerY() + 5f,
-                text(14f, Color.WHITE, bold = true, align = Paint.Align.CENTER)
-            )
-
-            c.drawText(shopName, left + 52f, 44f, text(16f, Color.WHITE, bold = true))
-            BusinessProfile.businessAddress(context)?.let {
-                c.drawText(it, left + 52f, 58f, text(9f, 0xFFD9EFEE.toInt()))
-            }
-            // Only for a shop registered for sales tax — blank prints nothing,
-            // deliberately, since FBR's own guidance is that an invoice with
-            // no STRN should not be charging sales tax in the first place.
-            BusinessProfile.strn(context)?.let {
-                c.drawText("STRN: $it", left + 52f, 70f, text(8f, 0xFFBEE3E1.toInt()))
-            }
-
-            c.drawText("INVOICE", right, 44f, text(22f, Color.WHITE, bold = true, align = Paint.Align.RIGHT))
-            c.drawText("RASID", right, 58f, text(8f, 0xFFBEE3E1.toInt(), align = Paint.Align.RIGHT))
-
-            return 124f
-        }
-
-        var y = drawBand()
-
-        // ---- Bill To (left) and Invoice Details (right), two columns ----
-        c.drawText("BILL TO", left, y, text(8f, teal, bold = true))
-        c.drawText(invoice.customerName, left, y + 17f, text(13f, ink, bold = true))
-        invoice.customerPhone?.takeIf { it.isNotBlank() }?.let {
-            c.drawText(it, left, y + 31f, text(10f, muted))
-        }
-
-        c.drawText("INVOICE DETAILS", right, y, text(8f, teal, bold = true, align = Paint.Align.RIGHT))
-        val metaLabel = text(9.5f, muted, align = Paint.Align.RIGHT)
-        val metaValue = text(9.5f, ink, bold = true, mono = true, align = Paint.Align.RIGHT)
-        var my = y + 17f
-        fun metaRow(label: String, value: String) {
-            c.drawText(label, right - 104f, my, metaLabel)
-            c.drawText(value, right, my, metaValue)
-            my += 14f
-        }
-        metaRow("Invoice No", invoice.invoiceNumber)
-        metaRow("Tareekh", Format.dateOnly(invoice.invoiceDate))
-        invoice.dueDate?.let { metaRow("Due Date", Format.dateOnly(it)) }
-
-        y = maxOf(y + 46f, my + 8f)
-
-        // ---- Items table ----
-        val rowH = 22f
-        val xNo = left + 8f
-        val xItem = left + 30f
-        val xQty = 372f
-        val xRate = 452f
-        val xAmt = right - 8f
-        val rulePaint = Paint().apply { color = ruleCol; strokeWidth = 0.7f }
-
-        fun tableHeader(atY: Float): Float {
-            c.drawRect(left, atY, right, atY + 20f, solid(ink))
-            val th = text(8f, Color.WHITE, bold = true)
-            val thR = text(8f, Color.WHITE, bold = true, align = Paint.Align.RIGHT)
-            c.drawText("#", xNo, atY + 13.5f, th)
-            c.drawText("TAFSEEL", xItem, atY + 13.5f, th)
-            c.drawText("QTY", xQty, atY + 13.5f, thR)
-            c.drawText("RATE", xRate, atY + 13.5f, thR)
-            c.drawText("AMOUNT", xAmt, atY + 13.5f, thR)
-            return atY + 20f
-        }
-
-        fun newPage() {
+        fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
             page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
         }
 
-        y = tableHeader(y)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
 
-        val body = text(10f, ink)
-        val bodyR = text(10f, ink, align = Paint.Align.RIGHT, mono = true)
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
 
-        items.forEachIndexed { index, item ->
-            if (y + rowH > PAGE_H_A4 - 250f) {
-                newPage()
-                y = tableHeader(drawBand())
-            }
-            if (index % 2 == 1) c.drawRect(left, y, right, y + rowH, solid(zebra))
-            val baseline = y + 14.5f
-            c.drawText((index + 1).toString(), xNo, baseline, body)
-            c.drawText(item.itemName, xItem, baseline, body)
-            c.drawText(Format.qty(item.quantity, item.unit), xQty, baseline, bodyR)
-            c.drawText(numberOnly(item.rate), xRate, baseline, bodyR)
-            c.drawText(numberOnly(item.lineTotal), xAmt, baseline, bodyR)
-            y += rowH
-            c.drawLine(left, y, right, y, rulePaint)
-        }
-
-        y += 18f
-
-        // ---- Payment info box (left) beside the totals stack (right) ----
         val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
-        val bankRows = listOfNotNull(
-            BusinessProfile.bankName(context)?.let { "Bank" to it },
-            BusinessProfile.bankAccountTitle(context)?.let { "Title" to it },
-            BusinessProfile.bankIban(context)?.let { "IBAN" to it },
-            BusinessProfile.bankJazzCash(context)?.let { "JazzCash" to it }
-        )
 
         if (y > PAGE_H_A4 - 240f) {
-            newPage()
-            y = drawBand()
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
         }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, palette, fonts, left, right, y, totals.grandTotal)
 
-        val blockTop = y
-        val totalsW = 220f
-        val totalsX = right - totalsW
-
-        var ty = blockTop
-        val tLabel = text(10f, muted)
-        val tValue = text(10f, ink, align = Paint.Align.RIGHT, mono = true)
-        fun totalRow(label: String, value: String) {
-            c.drawText(label, totalsX + 10f, ty + 12f, tLabel)
-            c.drawText(value, right - 10f, ty + 12f, tValue)
-            ty += 17f
-        }
-        totalRow("Sub Total", Format.money(totals.subtotal))
-        if (totals.discountAmount > 0) {
-            totalRow(
-                "Discount (${Format.plain(invoice.discountPercent ?: 0.0)}%)",
-                "-" + Format.money(totals.discountAmount)
-            )
-        }
-        if (totals.taxAmount > 0) {
-            totalRow(
-                "Tax (${Format.plain(invoice.taxPercent ?: 0.0)}%)",
-                Format.money(totals.taxAmount)
-            )
-        }
-        if (totals.additionalCharge > 0) {
-            totalRow(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: "Additional Charges", Format.money(totals.additionalCharge))
-        }
-
-        ty += 5f
-        val totalBar = RectF(totalsX, ty, right, ty + 30f)
-        c.drawRoundRect(totalBar, 7f, 7f, solid(teal))
-        c.drawText("TOTAL", totalsX + 12f, ty + 20f, text(12f, Color.WHITE, bold = true))
-        c.drawText(
-            Format.money(totals.grandTotal), right - 12f, ty + 20f,
-            text(13f, Color.WHITE, bold = true, align = Paint.Align.RIGHT)
-        )
-        ty += 40f
-
-        // Received / Balance Due — only when the owner actually recorded a
-        // received amount. An invoice with nothing recorded should not
-        // print "Balance Due: Rs 0" and read as settled when it is simply
-        // unrecorded.
-        if (invoice.receivedAmount != null) {
-            totalRow("Received", Format.money(totals.received))
-            c.drawText("BALANCE DUE", totalsX + 10f, ty + 10f, Paint(tLabel).apply { typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) })
-            c.drawText(Format.money(totals.balanceDue), right - 10f, ty + 10f, Paint(tValue).apply { typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD) })
-            ty += 17f
-        }
-
-        var by = blockTop
-        val qr = BusinessProfile.loadQr(context)
-        val boxRight = totalsX - 16f
-        // A JazzCash/EasyPaisa QR with no formal bank account is the common
-        // case for a small shop — the box earns its place from either half
-        // being present, not only from bank fields.
-        if (bankRows.isNotEmpty() || qr != null) {
-            val qrSize = 56f
-            val textRight = if (qr != null) boxRight - qrSize - 14f else boxRight - 12f
-            val textBoxH = 26f + bankRows.size * 14f
-            val qrBoxH = if (qr != null) qrSize + 34f else 0f
-            val boxH = maxOf(textBoxH, qrBoxH)
-
-            c.drawRoundRect(RectF(left, blockTop, boxRight, blockTop + boxH), 8f, 8f, solid(boxFill))
-            c.drawText("PAYMENT INFO", left + 12f, blockTop + 16f, text(8f, teal, bold = true))
-            var ry = blockTop + 32f
-            bankRows.forEach { (label, value) ->
-                c.drawText(label, left + 12f, ry, text(9.5f, muted))
-                c.drawText(
-                    value, textRight, ry,
-                    text(9.5f, ink, bold = true, mono = true, align = Paint.Align.RIGHT)
-                )
-                ry += 14f
-            }
-            qr?.let {
-                val qrLeft = boxRight - qrSize - 10f
-                val qrTop = blockTop + 22f
-                c.drawBitmap(it, null, RectF(qrLeft, qrTop, qrLeft + qrSize, qrTop + qrSize), null)
-                c.drawText(
-                    "Scan to Pay", qrLeft + qrSize / 2f, qrTop + qrSize + 10f,
-                    text(6.5f, muted, align = Paint.Align.CENTER)
-                )
-            }
-            by = blockTop + boxH
-        }
-
-        y = maxOf(by, ty) + 14f
-
-        // ---- Amount in words, its own strip ----
-        c.drawRoundRect(RectF(left, y, right, y + 34f), 7f, 7f, solid(boxFill))
-        c.drawText("AMOUNT IN WORDS", left + 12f, y + 13f, text(7.5f, teal, bold = true))
-        c.drawText(
-            NumberWords.rupeesInWords(totals.grandTotal), left + 12f, y + 27f,
-            text(10f, ink, italic = true)
-        )
-        y += 50f
-
-        // ---- Terms (left) and the signature box (right) ----
         if (y > PAGE_H_A4 - 140f) {
-            newPage()
-            y = drawBand()
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
         }
-
-        val sigW = 168f
-        val sigH = 80f
-        val sigBox = RectF(right - sigW, y, right, y + sigH)
-        c.drawRoundRect(sigBox, 7f, 7f, Paint().apply {
-            isAntiAlias = true
-            color = teal
-            style = Paint.Style.STROKE
-            strokeWidth = 0.8f
-        })
-
-        // Signature and stamp side by side, each kept to its own aspect
-        // ratio rather than squashed into a square — a signature is
-        // naturally wide and short, a stamp closer to square, and forcing
-        // either into the wrong shape is what made the earlier stamp-only
-        // version look cramped.
-        val imageBand = RectF(sigBox.left + 6f, y + 6f, sigBox.right - 6f, y + 48f)
-        val signature = BusinessProfile.loadSignature(context)
-        val stamp = BusinessProfile.loadStamp(context)
-        when {
-            signature != null && stamp != null -> {
-                val gap = 4f
-                val half = (imageBand.width() - gap) / 2f
-                drawBitmapFit(c, signature, RectF(imageBand.left, imageBand.top, imageBand.left + half, imageBand.bottom))
-                drawBitmapFit(c, stamp, RectF(imageBand.left + half + gap, imageBand.top, imageBand.right, imageBand.bottom))
-            }
-            signature != null -> drawBitmapFit(c, signature, imageBand)
-            stamp != null -> drawBitmapFit(c, stamp, imageBand)
-        }
-
-        c.drawLine(
-            sigBox.left + 20f, y + sigH - 24f, sigBox.right - 20f, y + sigH - 24f,
-            Paint().apply { color = ink; strokeWidth = 0.7f }
-        )
-        c.drawText(
-            "Authorized Signatory", sigBox.centerX(), y + sigH - 10f,
-            text(8.5f, muted, align = Paint.Align.CENTER)
-        )
-
-        val footerLines = listOfNotNull(
-            invoice.note?.takeIf { it.isNotBlank() },
-            BusinessProfile.termsAndConditions(context)
-        )
-        if (footerLines.isNotEmpty()) {
-            c.drawText("TERMS", left, y + 12f, text(7.5f, teal, bold = true))
-            var fy = y + 27f
-            footerLines.forEach {
-                c.drawText(it, left, fy, text(8.5f, muted))
-                fy += 12f
-            }
-        }
-
-        y += sigH + 16f
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
         val finalState = drawMakerStrip(context, doc, page, c, y)
         page = finalState.first
@@ -535,18 +276,18 @@ object InvoicePdfExport {
             textAlign = Paint.Align.CENTER; color = Color.BLACK
         }
         val shopName = Paint(center).apply {
-            textSize = 12f; typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textSize = 12f; typeface = Typeface.create(InvoiceFonts.sora(context), Typeface.BOLD)
         }
         val shopSub = Paint(center).apply { textSize = 8f; color = 0xFF777777.toInt() }
         val mono = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            typeface = Typeface.MONOSPACE; textSize = 9f; color = Color.BLACK
+            typeface = InvoiceFonts.ibmPlexMono(context); textSize = 9f; color = Color.BLACK
         }
         val monoR = Paint(mono).apply { textAlign = Paint.Align.RIGHT }
         val monoGrey = Paint(mono).apply { color = 0xFF555555.toInt() }
         val monoGreyR = Paint(monoGrey).apply { textAlign = Paint.Align.RIGHT }
-        val monoBold = Paint(mono).apply { typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD) }
+        val monoBold = Paint(mono).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) }
         val grandPaint = Paint(mono).apply {
-            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD); textSize = 11f
+            typeface = InvoiceFonts.ibmPlexMonoBold(context); textSize = 11f
         }
         val grandPaintR = Paint(grandPaint).apply { textAlign = Paint.Align.RIGHT }
         val dash = Paint().apply {
@@ -632,7 +373,7 @@ object InvoicePdfExport {
             c.drawText(numberOnly(totals.received), pageW - pad, y, monoR)
             y += 13f
             c.drawText("Balance Due", pad, y, monoBold)
-            c.drawText(numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD) })
+            c.drawText(numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) })
             y += 12f
         }
         c.drawLine(pad, y, pageW - pad, y, dash)
@@ -642,7 +383,7 @@ object InvoicePdfExport {
         // Wrapped by hand, not left to overflow the receipt's own width —
         // the words for a large total are routinely longer than 226pt fits
         // on one line, unlike every other value on this narrow page.
-        y = wrapMonoText(c, NumberWords.rupeesInWords(totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
+        y = wrapMonoText(context, c, NumberWords.rupeesInWords(totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
 
         val bank = listOfNotNull(
             BusinessProfile.bankName(context)?.let { "Bank" to it },
@@ -681,7 +422,7 @@ object InvoicePdfExport {
             c.drawText("Terms", pad, y, Paint(mono).apply { textSize = 8f; isFakeBoldText = true })
             y += 12f
             footerLines.forEach {
-                y = wrapMonoText(c, it, pad, y, pageW - 2 * pad, 8f)
+                y = wrapMonoText(context, c, it, pad, y, pageW - 2 * pad, 8f)
                 y += 3f
             }
         }
@@ -718,9 +459,9 @@ object InvoicePdfExport {
      * unlike every fixed short label/value pair elsewhere on the receipt.
      * Returns the y position after the last line drawn.
      */
-    private fun wrapMonoText(c: Canvas, text: String, x: Float, startY: Float, maxWidth: Float, size: Float): Float {
+    private fun wrapMonoText(context: Context, c: Canvas, text: String, x: Float, startY: Float, maxWidth: Float, size: Float): Float {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            typeface = Typeface.MONOSPACE; textSize = size; color = 0xFF333333.toInt()
+            typeface = InvoiceFonts.ibmPlexMono(context); textSize = size; color = 0xFF333333.toInt()
         }
         var y = startY
         val words = text.split(" ")
