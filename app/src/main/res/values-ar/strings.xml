@@ -498,6 +498,10 @@
     <string name="invoice_template_gradient">تدرّج عصري — زاهٍ، لصالونات التجميل</string>
     <string name="invoice_template_green_retail">أخضر للتجزئة — مضغوط، للبقالات</string>
     <string name="invoice_template_minimal_slate">سليت بسيط — سادة، أقل استهلاك للحبر</string>
+    <string name="invoice_template_indigo_tech">نيلي تقني — لمحلات الجوال والكمبيوتر</string>
+    <string name="invoice_template_warm_orange">برتقالي دافئ — للمخابز والمطاعم</string>
+    <string name="invoice_template_classic_cream">كريمي كلاسيكي — رسمي، للمكاتب</string>
+    <string name="invoice_template_crimson_bold">قرمزي جريء — للملابس والرياضة</string>
     <string name="invoice_template_thermal">إيصال حراري — ضيق، بيع نقدي</string>
     <string name="invoice_pdf_failed">تعذّر إنشاء ملف PDF. لم تتم مشاركة أي شيء.</string>
     <string name="invoice_preview_label">معاينة — تتحدث أثناء التعبئة</string>

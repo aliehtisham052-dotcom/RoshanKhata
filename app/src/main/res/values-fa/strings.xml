@@ -519,6 +519,10 @@
     <string name="invoice_template_gradient">گرادیان مدرن — روشن، برای سالن‌ها</string>
     <string name="invoice_template_green_retail">سبز خرده‌فروشی — فشرده، برای فروشگاه عمومی</string>
     <string name="invoice_template_minimal_slate">اسلیت مینیمال — ساده، کمترین جوهر</string>
+    <string name="invoice_template_indigo_tech">ایندیگو تک — برای موبایل و کامپیوتر</string>
+    <string name="invoice_template_warm_orange">نارنجی گرم — برای نانوایی و رستوران</string>
+    <string name="invoice_template_classic_cream">کرم کلاسیک — رسمی، برای دفاتر</string>
+    <string name="invoice_template_crimson_bold">قرمز پررنگ — برای پوشاک و ورزشی</string>
     <string name="invoice_template_thermal">رسید حرارتی — باریک، فروش نقدی</string>
     <string name="invoice_pdf_failed">PDF ساخته نشد. چیزی ارسال نشد.</string>
     <string name="invoice_preview_label">پیش‌نمایش — با پر کردن فرم به‌روز می‌شود</string>
