@@ -503,11 +503,28 @@ object InvoicePdfExport {
         var estimatedH = 210f
         estimatedH += items.size * 26f
         if (BusinessProfile.strn(context) != null) estimatedH += 11f
+        if (invoice.dueDate != null) estimatedH += 13f
         if (totals.discountAmount > 0) estimatedH += 12f
         if (totals.taxAmount > 0) estimatedH += 12f
         if (totals.additionalCharge > 0) estimatedH += 12f
         if (invoice.receivedAmount != null) estimatedH += 24f
         if (BusinessProfile.loadSignature(context) != null) estimatedH += 36f
+        // Amount-in-words wraps across roughly two lines for a typical
+        // total; a generous fixed budget here is safer than measuring the
+        // exact wrap in advance, given the page height has to be decided
+        // before any drawing happens.
+        estimatedH += 45f
+        val bankCount = listOfNotNull(
+            BusinessProfile.bankName(context), BusinessProfile.bankAccountTitle(context),
+            BusinessProfile.bankIban(context), BusinessProfile.bankJazzCash(context)
+        ).size
+        if (bankCount > 0 || BusinessProfile.hasQr(context)) {
+            estimatedH += 35f + bankCount * 12f
+            if (BusinessProfile.hasQr(context)) estimatedH += 70f
+        }
+        val footerLineCount = listOfNotNull(invoice.note, BusinessProfile.termsAndConditions(context)).size
+        if (footerLineCount > 0) estimatedH += 32f + footerLineCount * 24f
+        estimatedH += 20f // the added maker's-mark line at the very end
         val pageH = estimatedH.toInt().coerceAtLeast(400)
 
         val doc = PdfDocument()
@@ -559,6 +576,11 @@ object InvoicePdfExport {
         y += 13f
         c.drawText("Tareekh:", pad, y, mono)
         c.drawText(Format.dateOnly(invoice.invoiceDate), pageW - pad, y, monoR)
+        invoice.dueDate?.let {
+            y += 13f
+            c.drawText("Due Date:", pad, y, mono)
+            c.drawText(Format.dateOnly(it), pageW - pad, y, monoR)
+        }
         y += 13f
         c.drawText("Waqt:", pad, y, mono)
         c.drawText(timeFmt.format(Date(invoice.createdAt)), pageW - pad, y, monoR)
@@ -614,8 +636,57 @@ object InvoicePdfExport {
             y += 12f
         }
         c.drawLine(pad, y, pageW - pad, y, dash)
-        y += 22f
+        y += 16f
+        c.drawText("Rupay Alfaaz Mein:", pad, y, Paint(mono).apply { textSize = 8f; color = 0xFF555555.toInt() })
+        y += 11f
+        // Wrapped by hand, not left to overflow the receipt's own width —
+        // the words for a large total are routinely longer than 226pt fits
+        // on one line, unlike every other value on this narrow page.
+        y = wrapMonoText(c, NumberWords.rupeesInWords(totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
 
+        val bank = listOfNotNull(
+            BusinessProfile.bankName(context)?.let { "Bank" to it },
+            BusinessProfile.bankAccountTitle(context)?.let { "Title" to it },
+            BusinessProfile.bankIban(context)?.let { "IBAN" to it },
+            BusinessProfile.bankJazzCash(context)?.let { "JazzCash" to it }
+        )
+        val qr = BusinessProfile.loadQr(context)
+        if (bank.isNotEmpty() || qr != null) {
+            y += 6f
+            c.drawLine(pad, y, pageW - pad, y, dash)
+            y += 16f
+            c.drawText("Payment Info", cx, y, Paint(shopSub).apply { color = Color.BLACK; isFakeBoldText = true })
+            y += 13f
+            bank.forEach { (label, value) ->
+                c.drawText(label, pad, y, monoGrey)
+                c.drawText(value, pageW - pad, y, monoGreyR)
+                y += 12f
+            }
+            qr?.let {
+                y += 4f
+                val qrSize = 64f
+                drawBitmapFit(c, it, RectF(cx - qrSize / 2f, y, cx + qrSize / 2f, y + qrSize))
+                y += qrSize + 6f
+            }
+        }
+
+        val footerLines = listOfNotNull(
+            invoice.note?.takeIf { it.isNotBlank() },
+            BusinessProfile.termsAndConditions(context)
+        )
+        if (footerLines.isNotEmpty()) {
+            y += 6f
+            c.drawLine(pad, y, pageW - pad, y, dash)
+            y += 14f
+            c.drawText("Terms", pad, y, Paint(mono).apply { textSize = 8f; isFakeBoldText = true })
+            y += 12f
+            footerLines.forEach {
+                y = wrapMonoText(c, it, pad, y, pageW - 2 * pad, 8f)
+                y += 3f
+            }
+        }
+
+        y += 6f
         val availableW = pageW - 2 * pad
         BusinessProfile.loadSignature(context)?.let { signature ->
             val h = 30f
@@ -633,9 +704,42 @@ object InvoicePdfExport {
         c.drawText("Shukriya!", cx, y, shopSub)
         y += 11f
         c.drawText("Dobara tashreef layein", cx, y, shopSub)
+        y += 16f
+        c.drawText("Roshan Khata — Har Hisaab Roshan", cx, y, Paint(shopSub).apply { textSize = 6.5f })
 
         doc.finishPage(page)
         return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    /**
+     * Word-wraps [text] across lines no wider than [maxWidth], left-aligned
+     * from [x] — for the thermal receipt's own narrow page, the one place
+     * on this template where a value routinely needs more than one line,
+     * unlike every fixed short label/value pair elsewhere on the receipt.
+     * Returns the y position after the last line drawn.
+     */
+    private fun wrapMonoText(c: Canvas, text: String, x: Float, startY: Float, maxWidth: Float, size: Float): Float {
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            typeface = Typeface.MONOSPACE; textSize = size; color = 0xFF333333.toInt()
+        }
+        var y = startY
+        val words = text.split(" ")
+        var line = StringBuilder()
+        for (word in words) {
+            val candidate = if (line.isEmpty()) word else "$line $word"
+            if (paint.measureText(candidate) > maxWidth && line.isNotEmpty()) {
+                c.drawText(line.toString(), x, y, paint)
+                y += size + 3f
+                line = StringBuilder(word)
+            } else {
+                line = StringBuilder(candidate)
+            }
+        }
+        if (line.isNotEmpty()) {
+            c.drawText(line.toString(), x, y, paint)
+            y += size + 3f
+        }
+        return y
     }
 
     // ==================== Shared ====================
