@@ -511,6 +511,11 @@
     <string name="invoice_strn">Sales Tax Registration (STRN)</string>
     <string name="invoice_strn_help">Sirf agar ye dukan sales tax mein registered hai. Warna khaali chhod dein — bharne par har invoice par chhapega, na bharne par bilkul nahi.</string>
     <string name="invoice_strn_hint">maslan 1234567-8 (ikhtiyari)</string>
+    <string name="adjust_crop_title">Crop theek karein</string>
+    <string name="adjust_crop_hint">Konon ko ghaseet kar box ko sirf us hisse par rakhein jo rakhna hai.</string>
+    <string name="adjust_crop_use">Yehi rakhein</string>
+    <string name="crop_load_failed">Wo tasveer nahi khul saki.</string>
+    <string name="crop_save_failed">Crop mehfooz nahi ho saki. Dobara koshish karein.</string>
     <string name="invoice_edit_shop_details">Dukan ka naam, muhar, QR aur sharait edit karein</string>
     <string name="invoice_more_options">Mazeed options (ikhtiyari)</string>
     <string name="invoice_settings_title">Invoice Settings</string>

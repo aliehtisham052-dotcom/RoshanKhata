@@ -179,6 +179,10 @@
             android:parentActivityName=".InvoicesActivity" />
 
         <activity
+            android:name=".ImageCropActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ExpiringActivity"
             android:exported="false"
             android:parentActivityName=".BillsActivity" />

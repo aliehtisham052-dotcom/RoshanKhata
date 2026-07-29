@@ -532,6 +532,11 @@
     <string name="invoice_strn">شماره ثبت مالیات بر فروش (STRN)</string>
     <string name="invoice_strn_help">فقط اگر این مغازه برای مالیات بر فروش ثبت‌نام شده باشد. در غیر این صورت خالی بگذارید — در صورت پر شدن روی هر فاکتور چاپ می‌شود، وگرنه اصلاً چاپ نمی‌شود.</string>
     <string name="invoice_strn_hint">مثلاً 1234567-8 (اختیاری)</string>
+    <string name="adjust_crop_title">تنظیم برش</string>
+    <string name="adjust_crop_hint">گوشه‌ها را بکشید تا کادر فقط روی همان قسمتی باشد که می‌خواهید نگه دارید.</string>
+    <string name="adjust_crop_use">همین را نگه دار</string>
+    <string name="crop_load_failed">این عکس باز نشد.</string>
+    <string name="crop_save_failed">برش ذخیره نشد. دوباره تلاش کنید.</string>
     <string name="invoice_edit_shop_details">نام مغازه، مهر، QR و شرایط را ویرایش کنید</string>
     <string name="invoice_more_options">گزینه‌های بیشتر (اختیاری)</string>
     <string name="invoice_settings_title">تنظیمات فاکتور</string>

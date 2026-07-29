@@ -511,6 +511,11 @@
     <string name="invoice_strn">سیلز ٹیکس رجسٹریشن (STRN)</string>
     <string name="invoice_strn_help">صرف اگر یہ دکان سیلز ٹیکس میں رجسٹرڈ ہے۔ ورنہ خالی چھوڑ دیں — بھرنے پر ہر انوائس پر چھپے گا، نہ بھرنے پر بالکل نہیں۔</string>
     <string name="invoice_strn_hint">مثلاً 1234567-8 (اختیاری)</string>
+    <string name="adjust_crop_title">کراپ درست کریں</string>
+    <string name="adjust_crop_hint">کونوں کو گھسیٹ کر باکس کو صرف اس حصے پر رکھیں جو رکھنا ہے۔</string>
+    <string name="adjust_crop_use">یہی رکھیں</string>
+    <string name="crop_load_failed">وہ تصویر نہیں کھل سکی۔</string>
+    <string name="crop_save_failed">کراپ محفوظ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</string>
     <string name="invoice_edit_shop_details">دکان کا نام، مہر، QR اور شرائط ترمیم کریں</string>
     <string name="invoice_more_options">مزید اختیارات (اختیاری)</string>
     <string name="invoice_settings_title">انوائس کی سیٹنگز</string>

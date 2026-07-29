@@ -170,13 +170,14 @@ object BusinessProfile {
             val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
                 ?: return false
 
-            // Cropped to the code itself before scaling — see ImageAutoCrop's
-            // own doc for why this is the compression the owner asked for,
-            // not a step separate from it. A photo that is already a clean
-            // QR with no surrounding chrome is unaffected: cropToQr only
-            // shrinks the padded box around what it actually detects.
-            val cropped = ImageAutoCrop.cropToQr(original)
-            val scaled = downscale(cropped)
+            // No auto-crop here any more: ImageCropActivity now does the
+            // cropping, with the person confirming or dragging the
+            // suggested rectangle before this function is ever called — see
+            // that class's doc for why an automatic guess was not reliable
+            // enough to trust on its own. What arrives here is already the
+            // final crop; only the size/format work below still belongs to
+            // this function.
+            val scaled = downscale(original)
 
             FileOutputStream(qrFile(context)).use { out ->
                 // PNG, not JPEG: JPEG artefacts around the sharp black/white
@@ -187,8 +188,7 @@ object BusinessProfile {
             // Up to three distinct bitmaps here (crop and scale can each be a
             // no-op) — recycle whichever ones actually got allocated, each
             // exactly once.
-            if (cropped !== original) original.recycle()
-            if (scaled !== cropped && scaled !== original) cropped.recycle()
+            if (scaled !== original) original.recycle()
 
             prefs(context).edit().putBoolean(KEY_QR_SAVED, true).apply()
             true
@@ -240,20 +240,15 @@ object BusinessProfile {
             val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
                 ?: return false
 
-            // Cropped to the ink itself, not the sheet it was photographed
-            // on — see ImageAutoCrop's own doc. This is the compression the
-            // owner asked for without losing anything of the signature
-            // itself: fewer pixels of blank paper, the same pixels of ink.
-            val cropped = ImageAutoCrop.cropToInk(original)
-            val scaled = downscale(cropped)
+            // No auto-crop here any more — see the QR save above for why.
+            val scaled = downscale(original)
 
             FileOutputStream(signatureFile(context)).use { out ->
                 // PNG so a signature photographed on white paper keeps its
                 // edges, and so a transparent one stays transparent.
                 scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
             }
-            if (cropped !== original) original.recycle()
-            if (scaled !== cropped && scaled !== original) cropped.recycle()
+            if (scaled !== original) original.recycle()
 
             prefs(context).edit().putBoolean(KEY_SIGNATURE_SAVED, true).apply()
             true
@@ -304,18 +299,15 @@ object BusinessProfile {
             val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
                 ?: return false
 
-            // Same crop-to-ink as the signature above, and for the same
-            // reason: the muhar itself, not the sheet it was stamped on.
-            val cropped = ImageAutoCrop.cropToInk(original)
-            val scaled = downscale(cropped)
+            // No auto-crop here any more — see the QR save above for why.
+            val scaled = downscale(original)
 
             FileOutputStream(stampFile(context)).use { out ->
                 // PNG, so a stamp scanned or photographed on white paper
                 // keeps sharp edges, and one already cut out stays transparent.
                 scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
             }
-            if (cropped !== original) original.recycle()
-            if (scaled !== cropped && scaled !== original) cropped.recycle()
+            if (scaled !== original) original.recycle()
 
             prefs(context).edit().putBoolean(KEY_STAMP_SAVED, true).apply()
             true

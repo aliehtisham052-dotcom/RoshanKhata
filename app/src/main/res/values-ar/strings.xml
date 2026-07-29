@@ -511,6 +511,11 @@
     <string name="invoice_strn">رقم تسجيل ضريبة المبيعات (STRN)</string>
     <string name="invoice_strn_help">فقط إذا كان هذا المحل مسجلاً لضريبة المبيعات. اتركه فارغًا خلاف ذلك — يُطبع على كل فاتورة عند تعبئته، ولا يُطبع إطلاقًا إن لم يُملأ.</string>
     <string name="invoice_strn_hint">مثل 1234567-8 (اختياري)</string>
+    <string name="adjust_crop_title">ضبط الاقتصاص</string>
+    <string name="adjust_crop_hint">اسحب الزوايا حتى يغطي الإطار الجزء المطلوب فقط.</string>
+    <string name="adjust_crop_use">استخدم هذا</string>
+    <string name="crop_load_failed">تعذّر فتح هذه الصورة.</string>
+    <string name="crop_save_failed">تعذّر حفظ الاقتصاص. حاول مرة أخرى.</string>
     <string name="invoice_edit_shop_details">تعديل اسم المحل والختم ورمز QR والشروط</string>
     <string name="invoice_more_options">خيارات إضافية (اختياري)</string>
     <string name="invoice_settings_title">إعدادات الفاتورة</string>

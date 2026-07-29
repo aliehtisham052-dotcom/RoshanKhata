@@ -39,6 +39,15 @@ object ImageAutoCrop {
         return cropWithPadding(bitmap, bounds, paddingFraction = 0.35f)
     }
 
+    /**
+     * The same detection [cropToQr] uses, but returned as a suggested
+     * rectangle rather than already cropped — for the interactive cropper,
+     * which shows this as a starting point the person can confirm or drag
+     * to fix, rather than a guess that gets trusted outright.
+     */
+    fun suggestQrRect(bitmap: Bitmap): Rect? =
+        detectQrBounds(bitmap)?.let { padded(it, bitmap.width, bitmap.height, 0.35f) }
+
     private fun detectQrBounds(bitmap: Bitmap): Rect? {
         val width = bitmap.width
         val height = bitmap.height
@@ -84,6 +93,10 @@ object ImageAutoCrop {
         val bounds = detectInkBounds(bitmap) ?: return bitmap
         return cropWithPadding(bitmap, bounds, paddingFraction = 0.08f)
     }
+
+    /** Same reasoning as [suggestQrRect] — a starting rectangle for the person to confirm, not a final answer. */
+    fun suggestInkRect(bitmap: Bitmap): Rect? =
+        detectInkBounds(bitmap)?.let { padded(it, bitmap.width, bitmap.height, 0.08f) }
 
     private fun detectInkBounds(bitmap: Bitmap): Rect? {
         val width = bitmap.width
@@ -207,16 +220,22 @@ object ImageAutoCrop {
         return threshold
     }
 
-    private fun cropWithPadding(bitmap: Bitmap, box: Rect, paddingFraction: Float): Bitmap {
+    private fun padded(box: Rect, bitmapWidth: Int, bitmapHeight: Int, paddingFraction: Float): Rect {
         val padX = (box.width() * paddingFraction).toInt().coerceAtLeast(4)
         val padY = (box.height() * paddingFraction).toInt().coerceAtLeast(4)
-        val left = (box.left - padX).coerceAtLeast(0)
-        val top = (box.top - padY).coerceAtLeast(0)
-        val right = (box.right + padX).coerceAtMost(bitmap.width)
-        val bottom = (box.bottom + padY).coerceAtMost(bitmap.height)
-        val w = right - left
-        val h = bottom - top
+        return Rect(
+            (box.left - padX).coerceAtLeast(0),
+            (box.top - padY).coerceAtLeast(0),
+            (box.right + padX).coerceAtMost(bitmapWidth),
+            (box.bottom + padY).coerceAtMost(bitmapHeight)
+        )
+    }
+
+    private fun cropWithPadding(bitmap: Bitmap, box: Rect, paddingFraction: Float): Bitmap {
+        val p = padded(box, bitmap.width, bitmap.height, paddingFraction)
+        val w = p.width()
+        val h = p.height()
         if (w <= 0 || h <= 0) return bitmap
-        return Bitmap.createBitmap(bitmap, left, top, w, h)
+        return Bitmap.createBitmap(bitmap, p.left, p.top, w, h)
     }
 }
