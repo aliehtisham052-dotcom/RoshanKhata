@@ -513,6 +513,7 @@
     <string name="invoice_share_pdf">اشتراک به‌صورت PDF</string>
     <string name="invoice_choose_template">طرح چاپ را انتخاب کنید</string>
     <string name="invoice_template_teal">تیل کورپریت — فاکتور کامل تجاری</string>
+    <string name="invoice_swipe_designs">برای دیدن طرح‌های بیشتر بکشید — %1$d از %2$d</string>
     <string name="invoice_template_black_gold">مشکی و طلایی — ممتاز، برای جواهرفروشی</string>
     <string name="invoice_template_thermal">رسید حرارتی — باریک، فروش نقدی</string>
     <string name="invoice_pdf_failed">PDF ساخته نشد. چیزی ارسال نشد.</string>

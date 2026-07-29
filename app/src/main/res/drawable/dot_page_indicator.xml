@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One dot in the template carousel's page indicator. Tinted in code — the
+  active dot in the brand green, the rest muted — so a single drawable
+  serves both states rather than needing two nearly identical files.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#FFFFFF" />
+    <size
+        android:width="8dp"
+        android:height="8dp" />
+</shape>

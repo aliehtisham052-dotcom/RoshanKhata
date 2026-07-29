@@ -191,6 +191,28 @@
                 </FrameLayout>
 
                 <!--
+                  Without these there is nothing on screen saying more
+                  designs exist — the owner had no way to know the carousel
+                  could be swiped at all.
+                -->
+                <LinearLayout
+                    android:id="@+id/templateDots"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal" />
+
+                <TextView
+                    android:id="@+id/tvSwipeHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp" />
+
+                <!--
                   Shop name, address, stamp, payment QR, bank details, and
                   the standing Terms & Conditions all print on the invoice
                   from here — the owner asked where to set them, since

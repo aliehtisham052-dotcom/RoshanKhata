@@ -92,6 +92,8 @@ class InvoiceEditorActivity : AppCompatActivity() {
     private var receivedAmount: Double? = null
     private lateinit var vpTemplates: ViewPager2
     private lateinit var tvTemplateCaption: TextView
+    private lateinit var templateDots: LinearLayout
+    private lateinit var tvSwipeHint: TextView
     private lateinit var pbLoading: ProgressBar
     private val templatePagerAdapter = TemplatePagerAdapter()
 
@@ -147,14 +149,17 @@ class InvoiceEditorActivity : AppCompatActivity() {
         itemRows = findViewById(R.id.itemRowsContainer)
         vpTemplates = findViewById(R.id.vpTemplates)
         tvTemplateCaption = findViewById(R.id.tvTemplateCaption)
+        templateDots = findViewById(R.id.templateDots)
+        tvSwipeHint = findViewById(R.id.tvSwipeHint)
         pbLoading = findViewById(R.id.pbPreviewLoading)
         vpTemplates.adapter = templatePagerAdapter
         vpTemplates.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                tvTemplateCaption.setText(templateNameRes.getOrElse(position) { R.string.invoice_template_teal })
+                showTemplatePosition(position)
             }
         })
-        tvTemplateCaption.setText(templateNameRes[0])
+        buildTemplateDots()
+        showTemplatePosition(0)
 
         btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
         btnDate.setOnClickListener {
@@ -444,6 +449,37 @@ class InvoiceEditorActivity : AppCompatActivity() {
             templateId = templateId(),
             note = note
         )
+    }
+
+    /**
+     * One dot per template, built once — the carousel gave no sign at all
+     * that more than one design existed, so nothing on screen invited a
+     * swipe. Dots plus a counted hint make both the count and the gesture
+     * obvious without needing to discover them.
+     */
+    private fun buildTemplateDots() {
+        templateDots.removeAllViews()
+        val size = (8 * resources.displayMetrics.density).toInt()
+        val gap = (5 * resources.displayMetrics.density).toInt()
+        repeat(templateIds.size) { index ->
+            val dot = View(this)
+            val lp = LinearLayout.LayoutParams(size, size)
+            if (index > 0) lp.marginStart = gap
+            dot.layoutParams = lp
+            dot.setBackgroundResource(R.drawable.dot_page_indicator)
+            templateDots.addView(dot)
+        }
+    }
+
+    private fun showTemplatePosition(position: Int) {
+        tvTemplateCaption.setText(templateNameRes.getOrElse(position) { templateNameRes.first() })
+        tvSwipeHint.text = getString(R.string.invoice_swipe_designs, position + 1, templateIds.size)
+        val active = androidx.core.content.ContextCompat.getColor(this, R.color.brand_green)
+        val inactive = androidx.core.content.ContextCompat.getColor(this, R.color.text_muted)
+        for (i in 0 until templateDots.childCount) {
+            templateDots.getChildAt(i).backgroundTintList =
+                android.content.res.ColorStateList.valueOf(if (i == position) active else inactive)
+        }
     }
 
     /**

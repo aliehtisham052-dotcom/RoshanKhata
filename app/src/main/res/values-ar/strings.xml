@@ -492,6 +492,7 @@
     <string name="invoice_share_pdf">مشاركة كملف PDF</string>
     <string name="invoice_choose_template">اختر تصميم الطباعة</string>
     <string name="invoice_template_teal">تيل كوربوريت — فاتورة عمل كاملة</string>
+    <string name="invoice_swipe_designs">اسحب لعرض تصاميم أخرى — %1$d من %2$d</string>
     <string name="invoice_template_black_gold">أسود وذهبي — فاخر، لمحلات المجوهرات</string>
     <string name="invoice_template_thermal">إيصال حراري — ضيق، بيع نقدي</string>
     <string name="invoice_pdf_failed">تعذّر إنشاء ملف PDF. لم تتم مشاركة أي شيء.</string>
