@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.data
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
@@ -49,6 +50,32 @@ object InvoicePdfExport {
      * second one that could drift from it.
      */
     private fun numberOnly(value: Double): String = Format.money(value).removePrefix("Rs ")
+
+    /**
+     * Draws [bmp] centred inside [box], scaled to fit without stretching —
+     * a signature is naturally wide and short, a stamp closer to square,
+     * and forcing either into a shape it isn't is what made an earlier
+     * version of this look cramped and distorted.
+     */
+    private fun drawBitmapFit(c: Canvas, bmp: Bitmap, box: RectF) {
+        if (box.width() <= 0f || box.height() <= 0f) return
+        val bmpAspect = bmp.width.toFloat() / bmp.height.toFloat()
+        val boxAspect = box.width() / box.height()
+        val w: Float
+        val h: Float
+        if (bmpAspect > boxAspect) {
+            w = box.width(); h = w / bmpAspect
+        } else {
+            h = box.height(); w = h * bmpAspect
+        }
+        val left = box.centerX() - w / 2f
+        val top = box.centerY() - h / 2f
+        c.drawBitmap(
+            bmp, null,
+            Rect(left.toInt(), top.toInt(), (left + w).toInt(), (top + h).toInt()),
+            null
+        )
+    }
 
     fun build(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
         return when (invoice.templateId) {
@@ -406,15 +433,26 @@ object InvoicePdfExport {
             style = Paint.Style.STROKE
             strokeWidth = 0.8f
         })
-        BusinessProfile.loadStamp(context)?.let { stamp ->
-            val s = 42
-            val cx = sigBox.centerX()
-            c.drawBitmap(
-                stamp, null,
-                Rect((cx - s / 2).toInt(), (y + 8f).toInt(), (cx + s / 2).toInt(), (y + 8f).toInt() + s),
-                null
-            )
+
+        // Signature and stamp side by side, each kept to its own aspect
+        // ratio rather than squashed into a square — a signature is
+        // naturally wide and short, a stamp closer to square, and forcing
+        // either into the wrong shape is what made the earlier stamp-only
+        // version look cramped.
+        val imageBand = RectF(sigBox.left + 6f, y + 6f, sigBox.right - 6f, y + 48f)
+        val signature = BusinessProfile.loadSignature(context)
+        val stamp = BusinessProfile.loadStamp(context)
+        when {
+            signature != null && stamp != null -> {
+                val gap = 4f
+                val half = (imageBand.width() - gap) / 2f
+                drawBitmapFit(c, signature, RectF(imageBand.left, imageBand.top, imageBand.left + half, imageBand.bottom))
+                drawBitmapFit(c, stamp, RectF(imageBand.left + half + gap, imageBand.top, imageBand.right, imageBand.bottom))
+            }
+            signature != null -> drawBitmapFit(c, signature, imageBand)
+            stamp != null -> drawBitmapFit(c, stamp, imageBand)
         }
+
         c.drawLine(
             sigBox.left + 20f, y + sigH - 24f, sigBox.right - 20f, y + sigH - 24f,
             Paint().apply { color = ink; strokeWidth = 0.7f }
@@ -469,6 +507,7 @@ object InvoicePdfExport {
         if (totals.taxAmount > 0) estimatedH += 12f
         if (totals.additionalCharge > 0) estimatedH += 12f
         if (invoice.receivedAmount != null) estimatedH += 24f
+        if (BusinessProfile.loadSignature(context) != null) estimatedH += 36f
         val pageH = estimatedH.toInt().coerceAtLeast(400)
 
         val doc = PdfDocument()
@@ -577,11 +616,16 @@ object InvoicePdfExport {
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 22f
 
+        val availableW = pageW - 2 * pad
+        BusinessProfile.loadSignature(context)?.let { signature ->
+            val h = 30f
+            drawBitmapFit(c, signature, RectF(pad, y, pageW - pad, y + h))
+            y += h + 6f
+        }
         BusinessProfile.loadStamp(context)?.let { stamp ->
-            val size = 46
-            val left = (cx - size / 2)
-            c.drawBitmap(stamp, null, Rect(left.toInt(), y.toInt(), (left + size).toInt(), y.toInt() + size), null)
-            y += size + 10f
+            val h = 40f
+            drawBitmapFit(c, stamp, RectF(cx - availableW / 4f, y, cx + availableW / 4f, y + h))
+            y += h + 10f
         }
 
         c.drawLine(pad, y, pageW - pad, y, dash)
