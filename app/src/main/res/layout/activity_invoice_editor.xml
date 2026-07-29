@@ -131,81 +131,20 @@
                     android:text="@string/add_item"
                     app:cornerRadius="8dp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/etInvoiceDiscount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="@string/invoice_discount_hint"
-                        android:importantForAutofill="no"
-                        android:inputType="numberDecimal" />
-
-                    <EditText
-                        android:id="@+id/etInvoiceTax"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:hint="@string/invoice_tax_hint"
-                        android:importantForAutofill="no"
-                        android:inputType="numberDecimal" />
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/etInvoiceNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:hint="@string/note_optional"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
                 <!--
-                  A single extra line — freight, labour, loading. Both left
-                  blank means no line prints at all; a label typed with no
-                  amount (or the reverse) is treated the same way at save.
+                  Discount, tax, extra charge, received and note all moved
+                  into one dialog behind this button — the owner asked for
+                  the optional things to live in their own box so this step
+                  stays just the items.
                 -->
-                <LinearLayout
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMoreOptions"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="46dp"
                     android:layout_marginTop="18dp"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/etChargeLabel"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:hint="@string/invoice_charge_label_hint"
-                        android:importantForAutofill="no"
-                        android:inputType="text" />
-
-                    <EditText
-                        android:id="@+id/etChargeAmount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:hint="@string/invoice_charge_amount_hint"
-                        android:importantForAutofill="no"
-                        android:inputType="numberDecimal" />
-                </LinearLayout>
-
-                <!-- Blank means nothing recorded yet — a template then leaves the Balance Due line off entirely rather than printing zero. -->
-                <EditText
-                    android:id="@+id/etReceived"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:hint="@string/invoice_received_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="numberDecimal" />
+                    android:text="@string/invoice_more_options"
+                    app:cornerRadius="8dp" />
             </LinearLayout>
 
             <!-- Step 3: design, with the preview under it -->
