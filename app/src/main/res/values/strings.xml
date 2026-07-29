@@ -224,7 +224,7 @@
     <string name="invoice_bank_jazzcash_hint">JazzCash / EasyPaisa number</string>
 
     <string name="payment_qr">Payment QR code</string>
-    <string name="payment_qr_help">A screenshot or photo of your EasyPaisa or JazzCash QR code. It will be attached to statements so a customer can scan and pay you.</string>
+    <string name="payment_qr_help">A screenshot or photo of your EasyPaisa or JazzCash QR code — the app crops to just the code automatically. It will be attached to statements so a customer can scan and pay you.</string>
     <string name="payment_qr_caveat">Check the code carefully before saving. Roshan Khata cannot verify whose account a QR belongs to — if the wrong image is saved, a customer\'s payment will go to the wrong account.\n\nAlso note: a personal EasyPaisa/JazzCash QR does not carry the amount. Your customer will still type it in themselves, so the amount is written clearly alongside.</string>
     <string name="no_qr_yet">No payment QR saved yet.</string>
     <string name="choose_qr_image">Choose Image</string>
@@ -812,14 +812,14 @@
     <string name="biz_tpl_olive">Envelope</string>
     <string name="biz_tpl_stamp">Blade</string>
     <string name="signature">Signature</string>
-    <string name="signature_help">Photograph your signature on plain paper. It is printed at the foot of statements you send, and stays on this phone.</string>
+    <string name="signature_help">Photograph your signature on plain paper — the app crops to just the ink automatically. It is printed at the foot of statements you send, and stays on this phone.</string>
     <string name="no_signature_yet">No signature added yet.</string>
     <string name="choose_signature">Choose signature</string>
     <string name="remove_signature">Remove</string>
     <string name="signature_saved">Signature saved.</string>
     <string name="signature_save_failed">That image could not be saved.</string>
     <string name="stamp">Stamp</string>
-    <string name="stamp_help">Photograph the muhar for your shop on plain paper. Shown on an invoice automatically if you add one — otherwise just your name and address print instead.</string>
+    <string name="stamp_help">Photograph the muhar for your shop on plain paper — the app crops to just the stamp automatically. Shown on an invoice automatically if you add one — otherwise just your name and address print instead.</string>
     <string name="no_stamp_yet">No stamp added yet.</string>
     <string name="choose_stamp">Choose stamp</string>
     <string name="remove_stamp">Remove</string>

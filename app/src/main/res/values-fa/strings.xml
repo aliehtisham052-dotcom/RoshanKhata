@@ -220,7 +220,7 @@
     <string name="invoice_bank_jazzcash_hint">شماره جاز کش / ایزی پیسا</string>
 
     <string name="payment_qr">کد QR پرداخت</string>
-    <string name="payment_qr_help">عکس یا اسکرین‌شات کد QR ایزی‌پیسه یا جاز کش شما. به صورت‌حساب‌ها پیوست می‌شود تا مشتری اسکن کند و به شما بپردازد.</string>
+    <string name="payment_qr_help">اسکرین‌شات یا عکس کد QR ایزی‌پیسه یا جاز‌کش شما — برنامه به‌طور خودکار فقط کد را برش می‌زند. این به صورت‌حساب‌ها پیوست می‌شود تا مشتری بتواند اسکن کرده و پرداخت کند.</string>
     <string name="payment_qr_caveat">پیش از ذخیره، کد را با دقت بررسی کنید. روشن خاتا نمی‌تواند تشخیص دهد QR متعلق به چه حسابی است — اگر تصویر اشتباه ذخیره شود، پرداخت مشتری به حساب دیگری می‌رود.\n\nهمچنین: QR شخصی ایزی‌پیسه/جاز کش مبلغ را در خود ندارد. مشتری مبلغ را خودش وارد می‌کند، پس مبلغ به‌روشنی کنارش نوشته می‌شود.</string>
     <string name="no_qr_yet">هنوز QR پرداختی ذخیره نشده است.</string>
     <string name="choose_qr_image">انتخاب تصویر</string>
@@ -808,14 +808,14 @@
     <string name="biz_tpl_olive">پاکت</string>
     <string name="biz_tpl_stamp">تیغه</string>
     <string name="signature">امضا</string>
-    <string name="signature_help">امضایتان را روی کاغذ سفید عکس بگیرید. پای صورت‌حساب‌هایی که می‌فرستید چاپ می‌شود و روی همین گوشی می‌ماند.</string>
+    <string name="signature_help">امضای خود را روی کاغذ ساده عکس بگیرید — برنامه به‌طور خودکار فقط جوهر را برش می‌زند. در پایین صورت‌حساب‌های ارسالی چاپ می‌شود و روی همین گوشی می‌ماند.</string>
     <string name="no_signature_yet">هنوز امضایی افزوده نشده.</string>
     <string name="choose_signature">انتخاب امضا</string>
     <string name="remove_signature">حذف</string>
     <string name="signature_saved">امضا ذخیره شد.</string>
     <string name="signature_save_failed">آن تصویر ذخیره نشد.</string>
     <string name="stamp">مهر</string>
-    <string name="stamp_help">مهر مغازه‌تان را روی کاغذ سفید عکس بگیرید. در صورت افزودن، خودکار روی فاکتور نمایش داده می‌شود — در غیر این صورت فقط نام و آدرس شما چاپ می‌شود.</string>
+    <string name="stamp_help">مهر مغازه خود را روی کاغذ ساده عکس بگیرید — برنامه به‌طور خودکار فقط مهر را برش می‌زند. در صورت افزودن، به‌طور خودکار روی فاکتور نشان داده می‌شود — در غیر این صورت فقط نام و آدرس شما چاپ می‌شود.</string>
     <string name="no_stamp_yet">هنوز مهری افزوده نشده.</string>
     <string name="choose_stamp">انتخاب مهر</string>
     <string name="remove_stamp">حذف</string>

@@ -210,7 +210,7 @@
     <string name="invoice_bank_jazzcash_hint">JazzCash / EasyPaisa number</string>
 
     <string name="payment_qr">Payment QR code</string>
-    <string name="payment_qr_help">Aap ke EasyPaisa ya JazzCash QR code ka screenshot ya tasveer. Ye statement ke saath lagega taake gahak scan kar ke aap ko adaigi kar sake.</string>
+    <string name="payment_qr_help">Apne EasyPaisa ya JazzCash QR code ka screenshot ya photo — app khud-kaar taur par sirf code tak kaat deti hai. Ye statements ke saath mansalik hoga taake customer scan kar ke adaigi kar sake.</string>
     <string name="payment_qr_caveat">Mehfooz karne se pehle code ghor se dekh lein. Roshan Khata ye tasdeeq nahi kar sakta ke QR kis ke account ka hai — agar ghalat tasveer mehfooz hui to gahak ki adaigi ghalat account mein jayegi.\n\nYe bhi jaan lein: zaati EasyPaisa/JazzCash QR mein raqam shamil nahi hoti. Gahak raqam khud likhega, is liye raqam saath saaf likhi jati hai.</string>
     <string name="no_qr_yet">Abhi koi payment QR mehfooz nahi.</string>
     <string name="choose_qr_image">Tasveer Chunein</string>
@@ -780,14 +780,14 @@
     <string name="biz_tpl_olive">Lifafa</string>
     <string name="biz_tpl_stamp">Dhaar</string>
     <string name="signature">Dastkhat</string>
-    <string name="signature_help">Apne dastkhat sadah kaghaz par bana kar tasveer lein. Ye un khaaton ke neeche chhapenge jo aap bhejenge, aur isi phone par rahenge.</string>
+    <string name="signature_help">Apne dastakhat saada kaghaz par photo karein — app khud-kaar taur par sirf siyahi tak kaat deti hai. Ye aap ke bheje gaye statements ke aakhir mein chhapta hai, aur is phone par hi rehta hai.</string>
     <string name="no_signature_yet">Abhi koi dastkhat shamil nahi kiye gaye.</string>
     <string name="choose_signature">Dastkhat muntakhib karein</string>
     <string name="remove_signature">Hatayein</string>
     <string name="signature_saved">Dastkhat mehfooz ho gaye.</string>
     <string name="signature_save_failed">Wo tasveer mehfooz nahi ho saki.</string>
     <string name="stamp">Muhar</string>
-    <string name="stamp_help">Apni dukan ki muhar sadah kaghaz par bana kar tasveer lein. Agar shamil karein to invoice par khud-kaar tor par dikhayi degi — warna sirf aap ka naam aur pata chhapega.</string>
+    <string name="stamp_help">Apni dukan ki muhar saada kaghaz par photo karein — app khud-kaar taur par sirf muhar tak kaat deti hai. Agar aap ek shamil karein to invoice par khud-kaar dikhti hai — warna sirf aap ka naam aur pata chhapta hai.</string>
     <string name="no_stamp_yet">Abhi koi muhar shamil nahi ki gayi.</string>
     <string name="choose_stamp">Muhar muntakhib karein</string>
     <string name="remove_stamp">Hatayein</string>
