@@ -19,6 +19,7 @@ import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoiceMath
+import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.InvoiceSummary
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.lineTotal
@@ -263,16 +264,68 @@ class InvoicesActivity : AppCompatActivity() {
     // ---------- Viewing / deleting a saved invoice ----------
 
     private fun showInvoiceActions(invoice: InvoiceSummary) {
-        val options = arrayOf(getString(R.string.view), getString(R.string.delete))
+        val options = arrayOf(getString(R.string.view), getString(R.string.invoice_share_pdf), getString(R.string.delete))
         MaterialAlertDialogBuilder(this)
             .setTitle(invoice.customerName)
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> viewInvoice(invoice)
-                    1 -> confirmDeleteInvoice(invoice)
+                    1 -> chooseTemplateAndShare(invoice)
+                    2 -> confirmDeleteInvoice(invoice)
                 }
             }
             .show()
+    }
+
+    /**
+     * Only two of the ten finalised templates exist so far — see the class
+     * doc — so this is a real choice for now, not a formality. Picking one
+     * updates the invoice's own templateId, so re-sharing later remembers
+     * what was chosen rather than asking again from scratch.
+     */
+    private fun chooseTemplateAndShare(invoice: InvoiceSummary) {
+        val templates = arrayOf(
+            getString(R.string.invoice_template_teal),
+            getString(R.string.invoice_template_thermal)
+        )
+        val templateIds = intArrayOf(1, 10)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.invoice_choose_template)
+            .setItems(templates) { _, which ->
+                sharePdf(invoice, templateIds[which])
+            }
+            .show()
+    }
+
+    private fun sharePdf(invoice: InvoiceSummary, templateId: Int) {
+        lifecycleScope.launch {
+            val full = dao.getInvoice(invoice.id) ?: return@launch
+            val items = dao.invoiceItems(invoice.id)
+
+            if (full.templateId != templateId) {
+                dao.updateInvoice(full.copy(templateId = templateId))
+            }
+
+            val file = withContext(Dispatchers.IO) {
+                InvoicePdfExport.build(this@InvoicesActivity, full.copy(templateId = templateId), items)
+            }
+
+            if (file == null) {
+                Toast.makeText(this@InvoicesActivity, R.string.invoice_pdf_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+
+            val uri = androidx.core.content.FileProvider.getUriForFile(
+                this@InvoicesActivity, "$packageName.fileprovider", file
+            )
+            val share = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                putExtra(android.content.Intent.EXTRA_SUBJECT, invoice.invoiceNumber)
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(android.content.Intent.createChooser(share, getString(R.string.invoice_share_pdf)))
+        }
     }
 
     /**
