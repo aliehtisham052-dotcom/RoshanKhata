@@ -275,7 +275,7 @@ object InvoicePdfExport {
         y += 18f
 
         // ---- Payment info box (left) beside the totals stack (right) ----
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent)
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
         val bankRows = listOfNotNull(
             BusinessProfile.bankName(context)?.let { "Bank" to it },
             BusinessProfile.bankAccountTitle(context)?.let { "Title" to it },
@@ -313,6 +313,9 @@ object InvoicePdfExport {
                 Format.money(totals.taxAmount)
             )
         }
+        if (totals.additionalCharge > 0) {
+            totalRow(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: "Additional Charges", Format.money(totals.additionalCharge))
+        }
 
         ty += 5f
         val totalBar = RectF(totalsX, ty, right, ty + 30f)
@@ -323,6 +326,17 @@ object InvoicePdfExport {
             text(13f, Color.WHITE, bold = true, align = Paint.Align.RIGHT)
         )
         ty += 40f
+
+        // Received / Balance Due — only when the owner actually recorded a
+        // received amount. An invoice with nothing recorded should not
+        // print "Balance Due: Rs 0" and read as settled when it is simply
+        // unrecorded.
+        if (invoice.receivedAmount != null) {
+            totalRow("Received", Format.money(totals.received))
+            c.drawText("BALANCE DUE", totalsX + 10f, ty + 10f, Paint(tLabel).apply { typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) })
+            c.drawText(Format.money(totals.balanceDue), right - 10f, ty + 10f, Paint(tValue).apply { typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD) })
+            ty += 17f
+        }
 
         var by = blockTop
         if (bankRows.isNotEmpty()) {
@@ -385,9 +399,17 @@ object InvoicePdfExport {
             text(8.5f, muted, align = Paint.Align.CENTER)
         )
 
-        invoice.note?.takeIf { it.isNotBlank() }?.let {
+        val footerLines = listOfNotNull(
+            invoice.note?.takeIf { it.isNotBlank() },
+            BusinessProfile.termsAndConditions(context)
+        )
+        if (footerLines.isNotEmpty()) {
             c.drawText("TERMS", left, y + 12f, text(7.5f, teal, bold = true))
-            c.drawText(it, left, y + 27f, text(8.5f, muted))
+            var fy = y + 27f
+            footerLines.forEach {
+                c.drawText(it, left, fy, text(8.5f, muted))
+                fy += 12f
+            }
         }
 
         y += sigH + 16f
@@ -410,7 +432,7 @@ object InvoicePdfExport {
         val pageW = 226 // ~80mm at 72dpi
         val pad = 16f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent)
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
 
         // Height is computed, not guessed — a thermal roll has no fixed page,
         // and the alternative (a fixed too-short page) would silently cut the
@@ -419,6 +441,8 @@ object InvoicePdfExport {
         estimatedH += items.size * 26f
         if (totals.discountAmount > 0) estimatedH += 12f
         if (totals.taxAmount > 0) estimatedH += 12f
+        if (totals.additionalCharge > 0) estimatedH += 12f
+        if (invoice.receivedAmount != null) estimatedH += 24f
         val pageH = estimatedH.toInt().coerceAtLeast(400)
 
         val doc = PdfDocument()
@@ -501,12 +525,25 @@ object InvoicePdfExport {
             c.drawText(numberOnly(totals.taxAmount), pageW - pad, y, monoR)
             y += 13f
         }
+        if (totals.additionalCharge > 0) {
+            c.drawText(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: "Extra", pad, y, mono)
+            c.drawText(numberOnly(totals.additionalCharge), pageW - pad, y, monoR)
+            y += 13f
+        }
         y += 4f
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 15f
         c.drawText("TOTAL", pad, y, grandPaint)
         c.drawText(Format.money(totals.grandTotal), pageW - pad, y, grandPaintR)
         y += 12f
+        if (invoice.receivedAmount != null) {
+            c.drawText("Received", pad, y, mono)
+            c.drawText(numberOnly(totals.received), pageW - pad, y, monoR)
+            y += 13f
+            c.drawText("Balance Due", pad, y, monoBold)
+            c.drawText(numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD) })
+            y += 12f
+        }
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 22f
 

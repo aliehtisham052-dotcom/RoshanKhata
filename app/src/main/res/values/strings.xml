@@ -506,6 +506,8 @@
     <string name="invoice_needs_item">Add at least one item first.</string>
     <string name="invoice_saved">Invoice saved.</string>
     <string name="invoice_total">Total: %1$s</string>
+    <string name="invoice_received_line">Received: %1$s</string>
+    <string name="invoice_balance_due_line">Balance Due: %1$s</string>
     <string name="invoice_subtotal">Subtotal: %1$s</string>
     <string name="invoice_discount_line">Discount (%1$s%%): −%2$s</string>
     <string name="invoice_tax_line">Tax (%1$s%%): %2$s</string>
@@ -524,6 +526,13 @@
     <string name="invoice_next">Next</string>
     <string name="invoice_back">Back</string>
     <string name="invoice_items_label">Items</string>
+    <string name="invoice_number_hint">Invoice number (optional — auto if left blank)</string>
+    <string name="invoice_charge_label_hint">Extra charge — e.g. Freight (optional)</string>
+    <string name="invoice_charge_amount_hint">Amount</string>
+    <string name="invoice_received_hint">Amount received (optional)</string>
+    <string name="invoice_terms">Terms &amp; Conditions</string>
+    <string name="invoice_terms_help">Printed on every invoice automatically. Leave blank to print none.</string>
+    <string name="invoice_terms_hint">e.g. Payment due within 14 days.</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">Expiring Stock</string>

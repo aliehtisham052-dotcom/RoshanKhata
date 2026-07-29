@@ -58,10 +58,14 @@ class InvoiceEditorActivity : AppCompatActivity() {
     private lateinit var etPhone: EditText
     private lateinit var btnDate: MaterialButton
     private lateinit var btnDue: MaterialButton
+    private lateinit var etInvoiceNumber: EditText
     private lateinit var itemRows: LinearLayout
     private lateinit var etDiscount: EditText
     private lateinit var etTax: EditText
     private lateinit var etNote: EditText
+    private lateinit var etChargeLabel: EditText
+    private lateinit var etChargeAmount: EditText
+    private lateinit var etReceived: EditText
     private lateinit var rgTemplate: RadioGroup
     private lateinit var ivPreview: ImageView
     private lateinit var pbLoading: ProgressBar
@@ -101,10 +105,14 @@ class InvoiceEditorActivity : AppCompatActivity() {
         etPhone = findViewById(R.id.etInvoicePhone)
         btnDate = findViewById(R.id.btnInvoiceDate)
         btnDue = findViewById(R.id.btnInvoiceDueDate)
+        etInvoiceNumber = findViewById(R.id.etInvoiceNumber)
         itemRows = findViewById(R.id.itemRowsContainer)
         etDiscount = findViewById(R.id.etInvoiceDiscount)
         etTax = findViewById(R.id.etInvoiceTax)
         etNote = findViewById(R.id.etInvoiceNote)
+        etChargeLabel = findViewById(R.id.etChargeLabel)
+        etChargeAmount = findViewById(R.id.etChargeAmount)
+        etReceived = findViewById(R.id.etReceived)
         rgTemplate = findViewById(R.id.rgInvoiceTemplate)
         ivPreview = findViewById(R.id.ivInvoicePreview)
         pbLoading = findViewById(R.id.pbPreviewLoading)
@@ -237,16 +245,28 @@ class InvoiceEditorActivity : AppCompatActivity() {
     private fun templateId(): Int =
         if (rgTemplate.checkedRadioButtonId == R.id.rbTemplateThermal) 10 else 1
 
-    private fun draft() = Invoice(
-        customerName = etCustomer.text.toString().trim(),
-        customerPhone = etPhone.text.toString().trim().ifEmpty { null },
-        invoiceDate = invoiceDate,
-        dueDate = dueDate,
-        discountPercent = etDiscount.text.toString().trim().toDoubleOrNull(),
-        taxPercent = etTax.text.toString().trim().toDoubleOrNull(),
-        templateId = templateId(),
-        note = etNote.text.toString().trim().ifEmpty { null }
-    )
+    private fun draft(): Invoice {
+        // A label with no amount, or an amount with no label, is not a
+        // usable extra charge — treated the same as neither being set.
+        val chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
+        val chargeAmount = etChargeAmount.text.toString().trim().toDoubleOrNull()
+        val hasCharge = chargeLabel != null && chargeAmount != null
+
+        return Invoice(
+            invoiceNumber = etInvoiceNumber.text.toString().trim(),
+            customerName = etCustomer.text.toString().trim(),
+            customerPhone = etPhone.text.toString().trim().ifEmpty { null },
+            invoiceDate = invoiceDate,
+            dueDate = dueDate,
+            discountPercent = etDiscount.text.toString().trim().toDoubleOrNull(),
+            taxPercent = etTax.text.toString().trim().toDoubleOrNull(),
+            additionalChargeLabel = if (hasCharge) chargeLabel else null,
+            additionalChargeAmount = if (hasCharge) chargeAmount else null,
+            receivedAmount = etReceived.text.toString().trim().toDoubleOrNull(),
+            templateId = templateId(),
+            note = etNote.text.toString().trim().ifEmpty { null }
+        )
+    }
 
     private fun renderPreview() {
         renderJob?.cancel()

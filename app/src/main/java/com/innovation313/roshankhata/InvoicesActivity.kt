@@ -148,7 +148,7 @@ class InvoicesActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val full = dao.getInvoice(invoice.id) ?: return@launch
             val items = dao.invoiceItems(invoice.id)
-            val totals = InvoiceMath.totals(items, full.discountPercent, full.taxPercent)
+            val totals = InvoiceMath.totals(items, full.discountPercent, full.taxPercent, full.additionalChargeAmount, full.receivedAmount)
 
             val body = buildString {
                 append(invoice.invoiceNumber)
@@ -179,8 +179,20 @@ class InvoicesActivity : AppCompatActivity() {
                     append("\n")
                     append(getString(R.string.invoice_tax_line, Format.plain(full.taxPercent ?: 0.0), Format.money(totals.taxAmount)))
                 }
+                if (totals.additionalCharge > 0) {
+                    append("\n")
+                    append(full.additionalChargeLabel.orEmpty())
+                    append(": ")
+                    append(Format.money(totals.additionalCharge))
+                }
                 append("\n")
                 append(getString(R.string.invoice_total, Format.money(totals.grandTotal)))
+                if (full.receivedAmount != null) {
+                    append("\n")
+                    append(getString(R.string.invoice_received_line, Format.money(totals.received)))
+                    append("\n")
+                    append(getString(R.string.invoice_balance_due_line, Format.money(totals.balanceDue)))
+                }
                 append("\n")
                 append(NumberWords.rupeesInWords(totals.grandTotal))
             }

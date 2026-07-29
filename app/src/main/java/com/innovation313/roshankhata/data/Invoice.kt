@@ -50,6 +50,24 @@ data class Invoice(
     /** Same shape as [taxPercent], applied before it. Null omits the line. */
     val discountPercent: Double? = null,
 
+    /**
+     * A single extra line — freight, labour, loading — added after tax, not
+     * a percentage of anything. Both null or both set; there is no meaning
+     * to an amount with no label or a label with no amount, so the UI keeps
+     * them together.
+     */
+    val additionalChargeLabel: String? = null,
+    val additionalChargeAmount: Double? = null,
+
+    /**
+     * What has actually been handed over against this invoice, if the
+     * owner records it here — separate from the khata ledger, which is
+     * still the only place a real payment is tracked for a customer who
+     * has an account. Null means nothing was recorded, not that nothing was
+     * paid; a template shows a Balance Due line only when this is set.
+     */
+    val receivedAmount: Double? = null,
+
     val note: String? = null,
 
     /** Which print design this invoice uses. Templates are numbered from 1. */
@@ -99,25 +117,47 @@ val InvoiceItem.lineTotal: Double
     get() = quantity * rate
 
 /**
- * Subtotal, discount, tax, and the final figure — one place, so the PDF, the
- * list screen's SQL, and the plain-text view all agree on what "the total"
- * means. Discount applies to the item subtotal; tax applies after discount,
- * the ordinary invoicing convention.
+ * Subtotal, discount, tax, additional charge, and the final figure — one
+ * place, so the PDF, the list screen's SQL, and the plain-text view all
+ * agree on what "the total" means. Discount applies to the item subtotal;
+ * tax applies after discount; the additional charge (freight, labour) is
+ * added last, after tax, the ordinary invoicing convention for a charge
+ * that is not itself part of what was sold.
+ *
+ * [received] and [balanceDue] are about payment, not pricing — kept in the
+ * same place anyway because a template showing one total figure needs both
+ * halves computed the same consistent way, not derived separately by
+ * whichever screen happens to need it.
  */
 data class InvoiceTotals(
     val subtotal: Double,
     val discountAmount: Double,
     val taxAmount: Double,
-    val grandTotal: Double
+    val additionalCharge: Double,
+    val grandTotal: Double,
+    val received: Double,
+    val balanceDue: Double
 )
 
 object InvoiceMath {
-    fun totals(items: List<InvoiceItem>, discountPercent: Double?, taxPercent: Double?): InvoiceTotals {
+    fun totals(
+        items: List<InvoiceItem>,
+        discountPercent: Double?,
+        taxPercent: Double?,
+        additionalChargeAmount: Double? = null,
+        receivedAmount: Double? = null
+    ): InvoiceTotals {
         val subtotal = items.sumOf { it.lineTotal }
         val discountAmount = discountPercent?.takeIf { it != 0.0 }?.let { subtotal * it / 100.0 } ?: 0.0
         val afterDiscount = subtotal - discountAmount
         val taxAmount = taxPercent?.takeIf { it != 0.0 }?.let { afterDiscount * it / 100.0 } ?: 0.0
-        return InvoiceTotals(subtotal, discountAmount, taxAmount, afterDiscount + taxAmount)
+        val charge = additionalChargeAmount ?: 0.0
+        val grandTotal = afterDiscount + taxAmount + charge
+        val received = receivedAmount ?: 0.0
+        return InvoiceTotals(
+            subtotal, discountAmount, taxAmount, charge, grandTotal,
+            received, grandTotal - received
+        )
     }
 }
 
