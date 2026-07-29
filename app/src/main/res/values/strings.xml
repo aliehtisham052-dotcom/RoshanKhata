@@ -537,6 +537,11 @@
     <string name="invoice_strn">Sales Tax Registration (STRN)</string>
     <string name="invoice_strn_help">Only if this shop is registered for sales tax. Leave blank otherwise — printed on every invoice when set, left off entirely when not.</string>
     <string name="invoice_strn_hint">e.g. 1234567-8 (optional)</string>
+    <string name="adjust_crop_title">Adjust crop</string>
+    <string name="adjust_crop_hint">Drag the corners so the box covers just what you want to keep.</string>
+    <string name="adjust_crop_use">Use this</string>
+    <string name="crop_load_failed">Could not open that photo.</string>
+    <string name="crop_save_failed">Could not save the crop. Try again.</string>
     <string name="invoice_edit_shop_details">Edit shop name, stamp, QR &amp; terms</string>
     <string name="invoice_more_options">More options (optional)</string>
     <string name="invoice_settings_title">Invoice Settings</string>

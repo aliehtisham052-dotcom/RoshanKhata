@@ -532,6 +532,11 @@
     <string name="invoice_strn">سيلز ٽيڪس رجسٽريشن (STRN)</string>
     <string name="invoice_strn_help">صرف جيڪڏهن هي دڪان سيلز ٽيڪس ۾ رجسٽرڊ آهي. نه ته خالي ڇڏيو — ڀرڻ تي هر انوائس تي ڇپبو، نه ڀرڻ تي بلڪل نه.</string>
     <string name="invoice_strn_hint">مثال 1234567-8 (اختياري)</string>
+    <string name="adjust_crop_title">ڪراپ درست ڪريو</string>
+    <string name="adjust_crop_hint">ڪنڊن کي گهليو ته باڪس صرف انهي حصي تي هجي جيڪو رکڻو آهي.</string>
+    <string name="adjust_crop_use">هي رکو</string>
+    <string name="crop_load_failed">اها تصوير کلي نه سگهي.</string>
+    <string name="crop_save_failed">ڪراپ سيڪار نه ٿي سگهي. ٻيهر ڪوشش ڪريو.</string>
     <string name="invoice_edit_shop_details">دڪان جو نالو، مهر، QR ۽ شرطون تبديل ڪريو</string>
     <string name="invoice_more_options">وڌيڪ اختيارون (اختياري)</string>
     <string name="invoice_settings_title">انوائس سيٽنگون</string>

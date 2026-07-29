@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -51,7 +52,7 @@ class BusinessSettingsActivity : AppCompatActivity() {
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        if (uri != null) saveQr(uri)
+        if (uri != null) launchCrop(uri, "qr", cropQrResult)
     }
 
     /**
@@ -62,13 +63,51 @@ class BusinessSettingsActivity : AppCompatActivity() {
     private val pickSignature = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        if (uri != null) saveSignature(uri)
+        if (uri != null) launchCrop(uri, "ink", cropSignatureResult)
     }
 
     private val pickStamp = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        if (uri != null) saveStamp(uri)
+        if (uri != null) launchCrop(uri, "ink", cropStampResult)
+    }
+
+    // Each picker above hands its picked photo to ImageCropActivity first —
+    // an auto-detected rectangle to confirm or drag into place, rather than
+    // an automatic crop trusted outright. One result launcher per field, for
+    // the same reason as the three pickers above: saving the wrong crop into
+    // the wrong field is not a risk worth a shared callback.
+    private val cropQrResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result -> handleCropResult(result) { uri -> saveQr(uri) } }
+
+    private val cropSignatureResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result -> handleCropResult(result) { uri -> saveSignature(uri) } }
+
+    private val cropStampResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result -> handleCropResult(result) { uri -> saveStamp(uri) } }
+
+    private fun launchCrop(
+        sourceUri: Uri,
+        mode: String,
+        launcher: androidx.activity.result.ActivityResultLauncher<Intent>
+    ) {
+        launcher.launch(
+            Intent(this, ImageCropActivity::class.java)
+                .putExtra(ImageCropActivity.EXTRA_SOURCE_URI, sourceUri.toString())
+                .putExtra(ImageCropActivity.EXTRA_MODE, mode)
+        )
+    }
+
+    private fun handleCropResult(
+        result: androidx.activity.result.ActivityResult,
+        onCropped: (Uri) -> Unit
+    ) {
+        if (result.resultCode != RESULT_OK) return
+        val path = result.data?.getStringExtra(ImageCropActivity.EXTRA_RESULT_PATH) ?: return
+        onCropped(Uri.fromFile(java.io.File(path)))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
