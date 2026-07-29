@@ -507,6 +507,11 @@
     <string name="invoice_deleted">انوائس هٽائي وئي.</string>
     <string name="delete_invoice_confirm">هي انوائس هٽايو؟ اها ايپ اندران بحال نه ٿي سگهندي.</string>
     <string name="view">ڏسو</string>
+    <string name="invoice_share_pdf">PDF طور تي موڪليو</string>
+    <string name="invoice_choose_template">پرنٽ ڊيزائن چونڊيو</string>
+    <string name="invoice_template_teal">ٽيل ڪارپوريٽ — مڪمل بزنس انوائس</string>
+    <string name="invoice_template_thermal">ٿرمل رسيد — تنگ، ڪائونٽر سيل</string>
+    <string name="invoice_pdf_failed">PDF نه ٺهي سگهي. ڪجهه به نه موڪليو ويو.</string>
     <string name="nav_invoice">انوائس</string>
 
     <!-- Expiry alerts -->

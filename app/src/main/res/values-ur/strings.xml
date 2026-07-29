@@ -486,6 +486,11 @@
     <string name="invoice_deleted">انوائس حذف ہو گئی۔</string>
     <string name="delete_invoice_confirm">یہ انوائس حذف کریں؟ یہ ایپ کے اندر سے بحال نہیں ہو سکے گی۔</string>
     <string name="view">دیکھیں</string>
+    <string name="invoice_share_pdf">PDF کے طور پر بھیجیں</string>
+    <string name="invoice_choose_template">پرنٹ ڈیزائن چنیں</string>
+    <string name="invoice_template_teal">ٹیل کارپوریٹ — مکمل بزنس انوائس</string>
+    <string name="invoice_template_thermal">تھرمل رسید — تنگ، کاؤنٹر سیل</string>
+    <string name="invoice_pdf_failed">PDF نہیں بن سکی۔ کچھ بھی نہیں بھیجا گیا۔</string>
     <string name="nav_invoice">انوائس</string>
 
     <string name="expiring_stock">ایکسپائر ہوتا مال</string>

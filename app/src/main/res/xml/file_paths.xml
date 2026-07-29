@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <!--
-      Only these two cache folders are exposed, and only for sharing out.
+      Only these cache folders are exposed, and only for sharing out.
       Nothing else in the app's storage is reachable through this provider.
     -->
     <cache-path
         name="statements"
         path="statements/" />
+    <cache-path
+        name="invoices"
+        path="invoices/" />
     <cache-path
         name="backups"
         path="backups/" />

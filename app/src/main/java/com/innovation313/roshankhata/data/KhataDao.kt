@@ -541,6 +541,9 @@ interface KhataDao {
     @Query("SELECT * FROM invoices WHERE id = :id")
     suspend fun getInvoice(id: Long): Invoice?
 
+    @Update
+    suspend fun updateInvoice(invoice: Invoice)
+
     @Query("SELECT * FROM invoice_items WHERE invoiceId = :invoiceId AND isDeleted = 0 ORDER BY id ASC")
     suspend fun invoiceItems(invoiceId: Long): List<InvoiceItem>
 

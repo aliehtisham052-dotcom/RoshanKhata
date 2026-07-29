@@ -486,6 +486,11 @@
     <string name="invoice_deleted">تم حذف الفاتورة.</string>
     <string name="delete_invoice_confirm">حذف هذه الفاتورة؟ لن يمكن استعادتها من داخل التطبيق.</string>
     <string name="view">عرض</string>
+    <string name="invoice_share_pdf">مشاركة كملف PDF</string>
+    <string name="invoice_choose_template">اختر تصميم الطباعة</string>
+    <string name="invoice_template_teal">تيل كوربوريت — فاتورة عمل كاملة</string>
+    <string name="invoice_template_thermal">إيصال حراري — ضيق، بيع نقدي</string>
+    <string name="invoice_pdf_failed">تعذّر إنشاء ملف PDF. لم تتم مشاركة أي شيء.</string>
     <string name="nav_invoice">فاتورة</string>
 
     <string name="expiring_stock">بضاعة قاربت الانتهاء</string>

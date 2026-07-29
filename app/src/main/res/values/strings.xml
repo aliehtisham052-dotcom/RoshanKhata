@@ -512,6 +512,11 @@
     <string name="invoice_deleted">Invoice deleted.</string>
     <string name="delete_invoice_confirm">Delete this invoice? It cannot be restored from within the app.</string>
     <string name="view">View</string>
+    <string name="invoice_share_pdf">Share as PDF</string>
+    <string name="invoice_choose_template">Choose a print design</string>
+    <string name="invoice_template_teal">Teal Corporate — full business invoice</string>
+    <string name="invoice_template_thermal">Thermal Receipt — narrow, counter sale</string>
+    <string name="invoice_pdf_failed">Could not create the PDF. Nothing was shared.</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">Expiring Stock</string>
