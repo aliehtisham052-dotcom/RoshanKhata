@@ -60,6 +60,9 @@ class InvoicesActivity : AppCompatActivity() {
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddInvoice).setOnClickListener {
             startActivity(Intent(this, InvoiceEditorActivity::class.java))
         }
+        findViewById<android.widget.ImageButton>(R.id.btnInvoiceSettings).setOnClickListener {
+            startActivity(Intent(this, InvoiceSettingsActivity::class.java))
+        }
 
         observe()
     }

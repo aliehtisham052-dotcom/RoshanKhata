@@ -536,6 +536,20 @@
     <string name="invoice_terms_hint">e.g. Payment due within 14 days.</string>
     <string name="invoice_edit_shop_details">Edit shop name, stamp, QR &amp; terms</string>
     <string name="invoice_more_options">More options (optional)</string>
+    <string name="invoice_settings_title">Invoice Settings</string>
+    <string name="invoice_settings_subtitle">Turn off anything this shop never uses — it stays off for every new invoice.</string>
+    <string name="invoice_feature_discount">Discount</string>
+    <string name="invoice_feature_discount_desc">A percentage off the invoice total.</string>
+    <string name="invoice_feature_tax">Tax</string>
+    <string name="invoice_feature_tax_desc">A percentage added after discount.</string>
+    <string name="invoice_feature_extra_charge">Extra charge</string>
+    <string name="invoice_feature_extra_charge_desc">Freight, labour, or another added line.</string>
+    <string name="invoice_feature_received">Received amount</string>
+    <string name="invoice_feature_received_desc">Shows Balance Due when set.</string>
+    <string name="invoice_feature_note">Note</string>
+    <string name="invoice_feature_note_desc">A short line specific to one invoice.</string>
+    <string name="invoice_feature_due_date">Due date</string>
+    <string name="invoice_feature_due_date_desc">When payment is expected.</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">Expiring Stock</string>
