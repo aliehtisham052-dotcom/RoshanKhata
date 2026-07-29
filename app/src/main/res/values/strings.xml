@@ -216,6 +216,12 @@
     <string name="business_address">Shop address</string>
     <string name="business_address_help">Printed under your business name on every invoice.</string>
     <string name="business_address_hint">e.g. Main Bazaar, Pasrur</string>
+    <string name="invoice_bank_details">Bank details</string>
+    <string name="invoice_bank_details_help">For the payment box on invoice templates that show one. Leave any of these blank to leave that row off.</string>
+    <string name="invoice_bank_name_hint">Bank name</string>
+    <string name="invoice_bank_title_hint">Account title</string>
+    <string name="invoice_bank_iban_hint">IBAN / account number</string>
+    <string name="invoice_bank_jazzcash_hint">JazzCash / EasyPaisa number</string>
 
     <string name="payment_qr">Payment QR code</string>
     <string name="payment_qr_help">A screenshot or photo of your EasyPaisa or JazzCash QR code. It will be attached to statements so a customer can scan and pay you.</string>
@@ -489,6 +495,9 @@
     <string name="invoice_phone_hint">Phone (optional)</string>
     <string name="pick_invoice_date">Pick invoice date</string>
     <string name="invoice_date_set">Date: %1$s</string>
+    <string name="invoice_due_date_hint">Due date (optional)</string>
+    <string name="invoice_discount_hint">Discount % (optional)</string>
+    <string name="invoice_tax_hint">Tax % (optional)</string>
     <string name="nav_invoice">Invoice</string>
     <string name="invoice_item_name_hint">Item name</string>
     <string name="invoice_item_rate_hint">Rate per unit (Rs)</string>
@@ -497,6 +506,9 @@
     <string name="invoice_needs_item">Add at least one item first.</string>
     <string name="invoice_saved">Invoice saved.</string>
     <string name="invoice_total">Total: %1$s</string>
+    <string name="invoice_subtotal">Subtotal: %1$s</string>
+    <string name="invoice_discount_line">Discount (%1$s%%): −%2$s</string>
+    <string name="invoice_tax_line">Tax (%1$s%%): %2$s</string>
     <string name="invoice_deleted">Invoice deleted.</string>
     <string name="delete_invoice_confirm">Delete this invoice? It cannot be restored from within the app.</string>
     <string name="view">View</string>

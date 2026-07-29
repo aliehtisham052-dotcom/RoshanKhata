@@ -41,6 +41,11 @@ class BusinessSettingsActivity : AppCompatActivity() {
     private lateinit var tvNoStamp: TextView
     private lateinit var btnRemoveStamp: MaterialButton
 
+    private lateinit var etBankName: EditText
+    private lateinit var etBankTitle: EditText
+    private lateinit var etBankIban: EditText
+    private lateinit var etBankJazzCash: EditText
+
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -82,9 +87,17 @@ class BusinessSettingsActivity : AppCompatActivity() {
         ivStampPreview = findViewById(R.id.ivStampPreview)
         tvNoStamp = findViewById(R.id.tvNoStamp)
         btnRemoveStamp = findViewById(R.id.btnRemoveStamp)
+        etBankName = findViewById(R.id.etBankName)
+        etBankTitle = findViewById(R.id.etBankTitle)
+        etBankIban = findViewById(R.id.etBankIban)
+        etBankJazzCash = findViewById(R.id.etBankJazzCash)
 
         etBusinessName.setText(BusinessProfile.businessName(this).orEmpty())
         etBusinessAddress.setText(BusinessProfile.businessAddress(this).orEmpty())
+        etBankName.setText(BusinessProfile.bankName(this).orEmpty())
+        etBankTitle.setText(BusinessProfile.bankAccountTitle(this).orEmpty())
+        etBankIban.setText(BusinessProfile.bankIban(this).orEmpty())
+        etBankJazzCash.setText(BusinessProfile.bankJazzCash(this).orEmpty())
 
         findViewById<MaterialButton>(R.id.btnPickQr).setOnClickListener {
             pickImage.launch(
@@ -123,6 +136,10 @@ class BusinessSettingsActivity : AppCompatActivity() {
                 this,
                 etBusinessAddress.text.toString().trim().ifEmpty { null }
             )
+            BusinessProfile.setBankName(this, etBankName.text.toString().trim().ifEmpty { null })
+            BusinessProfile.setBankAccountTitle(this, etBankTitle.text.toString().trim().ifEmpty { null })
+            BusinessProfile.setBankIban(this, etBankIban.text.toString().trim().ifEmpty { null })
+            BusinessProfile.setBankJazzCash(this, etBankJazzCash.text.toString().trim().ifEmpty { null })
             Toast.makeText(this, R.string.profile_saved, Toast.LENGTH_SHORT).show()
             finish()
         }

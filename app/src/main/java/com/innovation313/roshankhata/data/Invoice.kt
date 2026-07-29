@@ -36,6 +36,20 @@ data class Invoice(
     /** Date on the document. May not be the moment it was entered. */
     val invoiceDate: Long = System.currentTimeMillis(),
 
+    /** When payment is expected. Null when nothing was agreed — most cash sales. */
+    val dueDate: Long? = null,
+
+    /**
+     * Percent, not an amount — 5.0 means 5%. Applied to the item subtotal.
+     * Null means the template that shows a tax line simply omits it, rather
+     * than printing a 0% row on every invoice a shop that never charges tax
+     * creates.
+     */
+    val taxPercent: Double? = null,
+
+    /** Same shape as [taxPercent], applied before it. Null omits the line. */
+    val discountPercent: Double? = null,
+
     val note: String? = null,
 
     /** Which print design this invoice uses. Templates are numbered from 1. */
@@ -83,6 +97,29 @@ data class InvoiceItem(
  */
 val InvoiceItem.lineTotal: Double
     get() = quantity * rate
+
+/**
+ * Subtotal, discount, tax, and the final figure — one place, so the PDF, the
+ * list screen's SQL, and the plain-text view all agree on what "the total"
+ * means. Discount applies to the item subtotal; tax applies after discount,
+ * the ordinary invoicing convention.
+ */
+data class InvoiceTotals(
+    val subtotal: Double,
+    val discountAmount: Double,
+    val taxAmount: Double,
+    val grandTotal: Double
+)
+
+object InvoiceMath {
+    fun totals(items: List<InvoiceItem>, discountPercent: Double?, taxPercent: Double?): InvoiceTotals {
+        val subtotal = items.sumOf { it.lineTotal }
+        val discountAmount = discountPercent?.takeIf { it != 0.0 }?.let { subtotal * it / 100.0 } ?: 0.0
+        val afterDiscount = subtotal - discountAmount
+        val taxAmount = taxPercent?.takeIf { it != 0.0 }?.let { afterDiscount * it / 100.0 } ?: 0.0
+        return InvoiceTotals(subtotal, discountAmount, taxAmount, afterDiscount + taxAmount)
+    }
+}
 
 /** An invoice with enough of its items rolled up to show in a list without loading them all. */
 data class InvoiceSummary(

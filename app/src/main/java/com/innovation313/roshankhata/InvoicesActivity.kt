@@ -18,11 +18,13 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
+import com.innovation313.roshankhata.data.InvoiceMath
 import com.innovation313.roshankhata.data.InvoiceSummary
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.InvoiceAdapter
+import com.innovation313.roshankhata.ui.NumberWords
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -93,6 +95,9 @@ class InvoicesActivity : AppCompatActivity() {
         val etCustomer: AutoCompleteTextView = view.findViewById(R.id.etInvoiceCustomer)
         val etPhone: EditText = view.findViewById(R.id.etInvoicePhone)
         val btnDate: MaterialButton = view.findViewById(R.id.btnInvoiceDate)
+        val btnDue: MaterialButton = view.findViewById(R.id.btnInvoiceDueDate)
+        val etDiscount: EditText = view.findViewById(R.id.etInvoiceDiscount)
+        val etTax: EditText = view.findViewById(R.id.etInvoiceTax)
         val etNote: EditText = view.findViewById(R.id.etInvoiceNote)
 
         etCustomer.setAdapter(
@@ -100,11 +105,20 @@ class InvoicesActivity : AppCompatActivity() {
         )
 
         var invoiceDate = System.currentTimeMillis()
+        var dueDate: Long? = null
+
         btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
         btnDate.setOnClickListener {
             pickDate(invoiceDate) { picked ->
                 invoiceDate = picked
                 btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(picked))
+            }
+        }
+
+        btnDue.setOnClickListener {
+            pickDate(dueDate ?: invoiceDate) { picked ->
+                dueDate = picked
+                btnDue.text = getString(R.string.due_date_set, Format.dateOnly(picked))
             }
         }
 
@@ -117,6 +131,9 @@ class InvoicesActivity : AppCompatActivity() {
                     customerName = etCustomer.text.toString().trim(),
                     customerPhone = etPhone.text.toString().trim().ifEmpty { null },
                     invoiceDate = invoiceDate,
+                    dueDate = dueDate,
+                    discountPercent = etDiscount.text.toString().trim().toDoubleOrNull(),
+                    taxPercent = etTax.text.toString().trim().toDoubleOrNull(),
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
@@ -125,6 +142,9 @@ class InvoicesActivity : AppCompatActivity() {
                     customerName = etCustomer.text.toString().trim(),
                     customerPhone = etPhone.text.toString().trim().ifEmpty { null },
                     invoiceDate = invoiceDate,
+                    dueDate = dueDate,
+                    discountPercent = etDiscount.text.toString().trim().toDoubleOrNull(),
+                    taxPercent = etTax.text.toString().trim().toDoubleOrNull(),
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
@@ -136,6 +156,9 @@ class InvoicesActivity : AppCompatActivity() {
         customerName: String,
         customerPhone: String?,
         invoiceDate: Long,
+        dueDate: Long?,
+        discountPercent: Double?,
+        taxPercent: Double?,
         note: String?
     ) {
         showAddItemDialog { item ->
@@ -145,10 +168,10 @@ class InvoicesActivity : AppCompatActivity() {
                 .setTitle(R.string.item_added)
                 .setMessage(getString(R.string.items_count, pendingItems.size))
                 .setNeutralButton(R.string.add_item) { _, _ ->
-                    collectItems(customerName, customerPhone, invoiceDate, note)
+                    collectItems(customerName, customerPhone, invoiceDate, dueDate, discountPercent, taxPercent, note)
                 }
                 .setPositiveButton(R.string.save) { _, _ ->
-                    saveInvoice(customerName, customerPhone, invoiceDate, note)
+                    saveInvoice(customerName, customerPhone, invoiceDate, dueDate, discountPercent, taxPercent, note)
                 }
                 .show()
         }
@@ -202,6 +225,9 @@ class InvoicesActivity : AppCompatActivity() {
         customerName: String,
         customerPhone: String?,
         invoiceDate: Long,
+        dueDate: Long?,
+        discountPercent: Double?,
+        taxPercent: Double?,
         note: String?
     ) {
         if (customerName.isEmpty()) {
@@ -217,6 +243,9 @@ class InvoicesActivity : AppCompatActivity() {
             customerName = customerName,
             customerPhone = customerPhone,
             invoiceDate = invoiceDate,
+            dueDate = dueDate,
+            discountPercent = discountPercent,
+            taxPercent = taxPercent,
             note = note
         )
         val items = pendingItems.toList()
@@ -253,11 +282,18 @@ class InvoicesActivity : AppCompatActivity() {
      */
     private fun viewInvoice(invoice: InvoiceSummary) {
         lifecycleScope.launch {
+            val full = dao.getInvoice(invoice.id) ?: return@launch
             val items = dao.invoiceItems(invoice.id)
+            val totals = InvoiceMath.totals(items, full.discountPercent, full.taxPercent)
+
             val body = buildString {
                 append(invoice.invoiceNumber)
                 append(" · ")
                 append(Format.dateOnly(invoice.invoiceDate))
+                full.dueDate?.let {
+                    append("\n")
+                    append(getString(R.string.due_date_set, Format.dateOnly(it)))
+                }
                 append("\n\n")
                 items.forEach { item ->
                     append(item.itemName)
@@ -270,7 +306,19 @@ class InvoicesActivity : AppCompatActivity() {
                     append("\n")
                 }
                 append("\n")
-                append(getString(R.string.invoice_total, Format.money(invoice.grandTotal)))
+                append(getString(R.string.invoice_subtotal, Format.money(totals.subtotal)))
+                if (totals.discountAmount > 0) {
+                    append("\n")
+                    append(getString(R.string.invoice_discount_line, Format.plain(full.discountPercent ?: 0.0), Format.money(totals.discountAmount)))
+                }
+                if (totals.taxAmount > 0) {
+                    append("\n")
+                    append(getString(R.string.invoice_tax_line, Format.plain(full.taxPercent ?: 0.0), Format.money(totals.taxAmount)))
+                }
+                append("\n")
+                append(getString(R.string.invoice_total, Format.money(totals.grandTotal)))
+                append("\n")
+                append(NumberWords.rupeesInWords(totals.grandTotal))
             }
 
             MaterialAlertDialogBuilder(this@InvoicesActivity)

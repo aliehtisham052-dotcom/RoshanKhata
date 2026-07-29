@@ -23,6 +23,10 @@ object BusinessProfile {
     private const val PREFS = "roshan_khata_prefs"
     private const val KEY_BUSINESS_NAME = "business_name"
     private const val KEY_BUSINESS_ADDRESS = "business_address"
+    private const val KEY_BANK_NAME = "bank_name"
+    private const val KEY_BANK_TITLE = "bank_account_title"
+    private const val KEY_BANK_IBAN = "bank_iban"
+    private const val KEY_BANK_JAZZCASH = "bank_jazzcash"
     private const val KEY_QR_SAVED = "payment_qr_saved"
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
     private const val KEY_STAMP_SAVED = "stamp_saved"
@@ -61,6 +65,42 @@ object BusinessProfile {
         prefs(context).edit()
             .putString(KEY_BUSINESS_ADDRESS, address?.trim().orEmpty())
             .apply()
+    }
+
+    // ---------- Bank / JazzCash details for an invoice's payment-info box ----------
+
+    /**
+     * Four free fields, all optional, all independent — an invoice template
+     * that shows a payment box prints whichever of these are actually set
+     * and simply omits a row for anything blank, rather than requiring all
+     * four before showing any.
+     */
+    fun bankName(context: Context): String? =
+        prefs(context).getString(KEY_BANK_NAME, null)?.takeIf { it.isNotBlank() }
+
+    fun setBankName(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_BANK_NAME, value?.trim().orEmpty()).apply()
+    }
+
+    fun bankAccountTitle(context: Context): String? =
+        prefs(context).getString(KEY_BANK_TITLE, null)?.takeIf { it.isNotBlank() }
+
+    fun setBankAccountTitle(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_BANK_TITLE, value?.trim().orEmpty()).apply()
+    }
+
+    fun bankIban(context: Context): String? =
+        prefs(context).getString(KEY_BANK_IBAN, null)?.takeIf { it.isNotBlank() }
+
+    fun setBankIban(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_BANK_IBAN, value?.trim().orEmpty()).apply()
+    }
+
+    fun bankJazzCash(context: Context): String? =
+        prefs(context).getString(KEY_BANK_JAZZCASH, null)?.takeIf { it.isNotBlank() }
+
+    fun setBankJazzCash(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_BANK_JAZZCASH, value?.trim().orEmpty()).apply()
     }
 
     // ---------- Payment QR ----------
