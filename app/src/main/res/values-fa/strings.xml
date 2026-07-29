@@ -512,6 +512,8 @@
     <string name="invoice_template_teal">تیل کورپریت — فاکتور کامل تجاری</string>
     <string name="invoice_template_thermal">رسید حرارتی — باریک، فروش نقدی</string>
     <string name="invoice_pdf_failed">PDF ساخته نشد. چیزی ارسال نشد.</string>
+    <string name="invoice_preview_label">پیش‌نمایش — با پر کردن فرم به‌روز می‌شود</string>
+    <string name="invoice_items_label">اقلام</string>
     <string name="nav_invoice">فاکتور</string>
 
     <!-- Expiry alerts -->

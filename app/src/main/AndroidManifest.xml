@@ -169,6 +169,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".InvoiceEditorActivity"
+            android:exported="false"
+            android:parentActivityName=".InvoicesActivity" />
+
+        <activity
             android:name=".ExpiringActivity"
             android:exported="false"
             android:parentActivityName=".BillsActivity" />

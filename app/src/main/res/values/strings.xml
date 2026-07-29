@@ -517,6 +517,8 @@
     <string name="invoice_template_teal">Teal Corporate — full business invoice</string>
     <string name="invoice_template_thermal">Thermal Receipt — narrow, counter sale</string>
     <string name="invoice_pdf_failed">Could not create the PDF. Nothing was shared.</string>
+    <string name="invoice_preview_label">Preview — updates as you fill this in</string>
+    <string name="invoice_items_label">Items</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">Expiring Stock</string>
