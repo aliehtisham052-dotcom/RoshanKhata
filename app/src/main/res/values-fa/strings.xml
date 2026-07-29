@@ -714,6 +714,7 @@
     <string name="goods_label">کالا</string>
     <string name="balance_label">مانده پس از آن</string>
     <string name="edit">ویرایش</string>
+    <string name="edit_invoice">ویرایش فاکتور</string>
     <string name="share">اشتراک</string>
     <string name="back">بازگشت</string>
     <string name="entry_not_found">ثبت یافت نشد</string>
