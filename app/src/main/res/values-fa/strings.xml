@@ -529,6 +529,9 @@
     <string name="invoice_terms">شرایط و ضوابط</string>
     <string name="invoice_terms_help">به‌طور خودکار روی هر فاکتور چاپ می‌شود. خالی بگذارید تا چیزی چاپ نشود.</string>
     <string name="invoice_terms_hint">مثلاً پرداخت ظرف ۱۴ روز.</string>
+    <string name="invoice_strn">شماره ثبت مالیات بر فروش (STRN)</string>
+    <string name="invoice_strn_help">فقط اگر این مغازه برای مالیات بر فروش ثبت‌نام شده باشد. در غیر این صورت خالی بگذارید — در صورت پر شدن روی هر فاکتور چاپ می‌شود، وگرنه اصلاً چاپ نمی‌شود.</string>
+    <string name="invoice_strn_hint">مثلاً 1234567-8 (اختیاری)</string>
     <string name="invoice_edit_shop_details">نام مغازه، مهر، QR و شرایط را ویرایش کنید</string>
     <string name="invoice_more_options">گزینه‌های بیشتر (اختیاری)</string>
     <string name="invoice_settings_title">تنظیمات فاکتور</string>
