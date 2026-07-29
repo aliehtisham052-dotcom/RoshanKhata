@@ -103,37 +103,69 @@ object ImageAutoCrop {
 
         val threshold = otsuThreshold(histogram, pixels.size)
 
-        // A row or column only counts as part of the signature if enough of
-        // it is dark — a handful of stray dark pixels (dust, paper texture,
-        // compression noise near an edge) must not drag the crop out toward
-        // a side that has no real ink on it.
-        val minDarkPerRow = (width * 0.01).toInt().coerceAtLeast(2)
-        val minDarkPerCol = (height * 0.01).toInt().coerceAtLeast(2)
+        // A grid of blocks, not raw rows/columns. The first version of this
+        // required a whole row or column to carry a meaningful share of dark
+        // pixels — which a real but THIN cursive signature stroke never
+        // does; it only crosses a couple of pixels of any one row, and the
+        // whole photo was returned uncropped every time as a result. A block
+        // catches the stroke because it fills several pixels of at least one
+        // block it passes through, however thin the line — and noise
+        // rejection moves from "enough pixels in this line" to "does this
+        // block sit next to another filled block", which is what actually
+        // tells real handwriting (a cluster of nearby marks) apart from a
+        // stray dark speck (dust, a paper crease, compression noise) sitting
+        // alone with nothing filled around it.
+        val blockSize = maxOf(8, minOf(width, height) / 80)
+        val cols = (width + blockSize - 1) / blockSize
+        val rows = (height + blockSize - 1) / blockSize
+        val darkCount = Array(rows) { IntArray(cols) }
+
+        for (y in 0 until height) {
+            val by = y / blockSize
+            val base = y * width
+            for (x in 0 until width) {
+                // <= , not < : Otsu's threshold can land EXACTLY on the ink's
+                // own luminance value when a photo is sharply two-toned
+                // (plain paper + a fairly uniform ink colour, which a
+                // signature or stamp usually is) — a strict less-than then
+                // excludes the ink itself from ever counting as dark, and
+                // nothing is ever detected. Caught by testing this against a
+                // synthetic thin stroke before trusting it on a real photo.
+                if (luminance[base + x] <= threshold) darkCount[by][x / blockSize]++
+            }
+        }
+
+        val minDarkPixelsInBlock = 3
+        val filled = Array(rows) { by -> BooleanArray(cols) { bx -> darkCount[by][bx] >= minDarkPixelsInBlock } }
+
+        fun hasFilledNeighbour(by: Int, bx: Int): Boolean {
+            for (dy in -1..1) for (dx in -1..1) {
+                if (dy == 0 && dx == 0) continue
+                val ny = by + dy
+                val nx = bx + dx
+                if (ny in 0 until rows && nx in 0 until cols && filled[ny][nx]) return true
+            }
+            return false
+        }
 
         var top = -1
         var bottom = -1
-        for (y in 0 until height) {
-            var dark = 0
-            val base = y * width
-            for (x in 0 until width) if (luminance[base + x] < threshold) dark++
-            if (dark >= minDarkPerRow) {
-                if (top == -1) top = y
-                bottom = y
+        var left = -1
+        var right = -1
+        for (by in 0 until rows) {
+            for (bx in 0 until cols) {
+                if (!filled[by][bx] || !hasFilledNeighbour(by, bx)) continue
+                val y0 = by * blockSize
+                val y1 = minOf(height, y0 + blockSize) - 1
+                val x0 = bx * blockSize
+                val x1 = minOf(width, x0 + blockSize) - 1
+                if (top == -1 || y0 < top) top = y0
+                if (bottom == -1 || y1 > bottom) bottom = y1
+                if (left == -1 || x0 < left) left = x0
+                if (right == -1 || x1 > right) right = x1
             }
         }
         if (top == -1) return null
-
-        var left = -1
-        var right = -1
-        for (x in 0 until width) {
-            var dark = 0
-            for (y in 0 until height) if (luminance[y * width + x] < threshold) dark++
-            if (dark >= minDarkPerCol) {
-                if (left == -1) left = x
-                right = x
-            }
-        }
-        if (left == -1) return null
 
         return Rect(left, top, right, bottom)
     }
