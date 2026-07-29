@@ -513,6 +513,11 @@
     <string name="invoice_template_thermal">ٿرمل رسيد — تنگ، ڪائونٽر سيل</string>
     <string name="invoice_pdf_failed">PDF نه ٺهي سگهي. ڪجهه به نه موڪليو ويو.</string>
     <string name="invoice_preview_label">اڳوڻو نظارو — جيئن توهان ڀريو ٿا تيئن اپڊيٽ ٿيندو</string>
+    <string name="invoice_step_customer">قدم 1 مان 3 — هي بل ڪنهن لاءِ آهي؟</string>
+    <string name="invoice_step_items">قدم 2 مان 3 — ڪهڙي شيءِ جو بل آهي؟</string>
+    <string name="invoice_step_design">قدم 3 مان 3 — ڊيزائن چونڊيو</string>
+    <string name="invoice_next">اڳتي</string>
+    <string name="invoice_back">پوئتي</string>
     <string name="invoice_items_label">شيون</string>
     <string name="nav_invoice">انوائس</string>
 

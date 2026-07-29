@@ -513,6 +513,11 @@
     <string name="invoice_template_thermal">رسید حرارتی — باریک، فروش نقدی</string>
     <string name="invoice_pdf_failed">PDF ساخته نشد. چیزی ارسال نشد.</string>
     <string name="invoice_preview_label">پیش‌نمایش — با پر کردن فرم به‌روز می‌شود</string>
+    <string name="invoice_step_customer">گام ۱ از ۳ — این فاکتور برای کیست؟</string>
+    <string name="invoice_step_items">گام ۲ از ۳ — بابت چه چیزی؟</string>
+    <string name="invoice_step_design">گام ۳ از ۳ — طرح را انتخاب کنید</string>
+    <string name="invoice_next">بعدی</string>
+    <string name="invoice_back">قبلی</string>
     <string name="invoice_items_label">اقلام</string>
     <string name="nav_invoice">فاکتور</string>
 
