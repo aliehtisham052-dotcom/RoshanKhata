@@ -498,6 +498,10 @@
     <string name="invoice_template_gradient">Modern Gradient — roshan, salon ke liye</string>
     <string name="invoice_template_green_retail">Green Retail — mukhtasar, general store ke liye</string>
     <string name="invoice_template_minimal_slate">Minimal Slate — saada, sab se kam siyahi</string>
+    <string name="invoice_template_indigo_tech">Indigo Tech — mobile aur computer shop ke liye</string>
+    <string name="invoice_template_warm_orange">Warm Orange — bakery aur restaurant ke liye</string>
+    <string name="invoice_template_classic_cream">Classic Cream — rasmi, daftar ke liye</string>
+    <string name="invoice_template_crimson_bold">Crimson Bold — garments aur sports ke liye</string>
     <string name="invoice_template_thermal">Thermal Receipt — tang, counter sale</string>
     <string name="invoice_pdf_failed">PDF nahi ban saki. Kuch bhi nahi bheja gaya.</string>
     <string name="invoice_preview_label">Preview — jaise aap bharte hain waise update hota hai</string>

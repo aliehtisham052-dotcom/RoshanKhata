@@ -64,6 +64,14 @@ object InvoiceTemplateKit {
          */
         val bandFilled: Boolean = true,
         /**
+         * True stacks the letterhead centred down the middle — shop name,
+         * address, then INVOICE — instead of the usual shop-left /
+         * INVOICE-right split. This is what makes a formal document read as
+         * formal, so it belongs to the template rather than being faked
+         * with spacing.
+         */
+        val centeredHeader: Boolean = false,
+        /**
          * An optional middle stop, for a band that runs through three
          * colours rather than two — T3's violet into magenta into pink.
          * Null keeps the plain two-stop primary-to-primaryEnd sweep every
@@ -166,39 +174,49 @@ object InvoiceTemplateKit {
         }
 
         val shopName = BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata"
-
-        val tile = RectF(left, 26f, left + 40f, 66f)
-        if (palette.bandFilled) {
-            c.drawRoundRect(tile, 9f, 9f, solid(0x33FFFFFF))
-        } else {
-            // Outlined rather than filled, same reason as the band itself.
-            c.drawRoundRect(tile, 9f, 9f, Paint().apply {
-                isAntiAlias = true; color = palette.primary
-                style = Paint.Style.STROKE; strokeWidth = 1f
-            })
-        }
-        val initials = shopName.trim().split(Regex("\\s+"))
-            .filter { it.isNotEmpty() }
-            .take(2)
-            .joinToString("") { it.take(1).uppercase() }
-        c.drawText(
-            initials.ifEmpty { "R" }, tile.centerX(), tile.centerY() + 5f,
-            paint(fonts, 14f, palette.onPrimary, bold = true, align = Paint.Align.CENTER)
-        )
-
-        c.drawText(shopName, left + 52f, 44f, paint(fonts, 16f, palette.onPrimary, bold = true))
-        BusinessProfile.businessAddress(context)?.let {
-            c.drawText(it, left + 52f, 58f, paint(fonts, 9f, palette.onPrimaryMuted))
-        }
+        val address = BusinessProfile.businessAddress(context)
         // Only for a shop registered for sales tax — blank prints nothing,
         // deliberately, since FBR's own guidance is that an invoice with no
         // STRN should not be charging sales tax in the first place.
-        BusinessProfile.strn(context)?.let {
-            c.drawText("STRN: $it", left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted))
-        }
+        val strn = BusinessProfile.strn(context)
 
-        c.drawText(heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
-        c.drawText(subtitle, right, 58f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.RIGHT))
+        if (palette.centeredHeader) {
+            val mid = pageW / 2f
+            c.drawText(shopName, mid, 36f, paint(fonts, 18f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
+            address?.let { c.drawText(it, mid, 51f, paint(fonts, 9f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
+            strn?.let { c.drawText("STRN: $it", mid, 63f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
+            c.drawText(heading, mid, 84f, paint(fonts, 16f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
+        } else {
+            val tile = RectF(left, 26f, left + 40f, 66f)
+            if (palette.bandFilled) {
+                c.drawRoundRect(tile, 9f, 9f, solid(0x33FFFFFF))
+            } else {
+                // Outlined rather than filled, same reason as the band itself.
+                c.drawRoundRect(tile, 9f, 9f, Paint().apply {
+                    isAntiAlias = true; color = palette.primary
+                    style = Paint.Style.STROKE; strokeWidth = 1f
+                })
+            }
+            val initials = shopName.trim().split(Regex("\\s+"))
+                .filter { it.isNotEmpty() }
+                .take(2)
+                .joinToString("") { it.take(1).uppercase() }
+            c.drawText(
+                initials.ifEmpty { "R" }, tile.centerX(), tile.centerY() + 5f,
+                paint(fonts, 14f, palette.onPrimary, bold = true, align = Paint.Align.CENTER)
+            )
+
+            c.drawText(shopName, left + 52f, 44f, paint(fonts, 16f, palette.onPrimary, bold = true))
+            address?.let {
+                c.drawText(it, left + 52f, 58f, paint(fonts, 9f, palette.onPrimaryMuted))
+            }
+            strn?.let {
+                c.drawText("STRN: $it", left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted))
+            }
+
+            c.drawText(heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
+            c.drawText(subtitle, right, 58f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.RIGHT))
+        }
 
         return 124f
     }

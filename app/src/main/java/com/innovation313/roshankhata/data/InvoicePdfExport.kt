@@ -83,6 +83,10 @@ object InvoicePdfExport {
             3 -> buildModernGradient(context, invoice, items)
             4 -> buildGreenRetail(context, invoice, items)
             5 -> buildMinimalSlate(context, invoice, items)
+            6 -> buildIndigoTech(context, invoice, items)
+            7 -> buildWarmOrange(context, invoice, items)
+            8 -> buildClassicCream(context, invoice, items)
+            9 -> buildCrimsonBold(context, invoice, items)
             10 -> buildThermalReceipt(context, invoice, items)
             else -> buildTealCorporate(context, invoice, items)
         }
@@ -568,6 +572,351 @@ object InvoicePdfExport {
             pageNo++
             page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T6 — Indigo Tech ====================
+
+    /**
+     * For a mobile or computer shop — indigo through to a lighter indigo,
+     * Sora's technical shapes for headings.
+     *
+     * The spec gives this template a Serial/IMEI column and a warranty box.
+     * NEITHER is drawn, for the same reason T2's Wazan column was not:
+     * there is no serial-number field and no warranty field on an invoice
+     * item to fill them, so both would print permanently empty, which looks
+     * broken rather than professional. A serial number is perfectly
+     * writable today in the item name ("Redmi 13C — IMEI 3517..."), and a
+     * warranty line belongs in Terms, which prints on every template
+     * already. Both become real columns the day the data model carries
+     * them, and the kit's ExtraColumn hook is waiting for exactly that.
+     */
+    private fun buildIndigoTech(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF1A1E3A.toInt(),
+            primary = 0xFF3730A3.toInt(),
+            primaryEnd = 0xFF6366F1.toInt(),
+            primaryMid = 0xFF4F46E5.toInt(),
+            muted = 0xFF6E739B.toInt(),
+            ruleColor = 0xFFE3E5F7.toInt(),
+            boxFill = 0xFFEEF0FE.toInt(),
+            zebra = 0xFFF8F9FF.toInt(),
+            tableHeaderFill = 0xFF3730A3.toInt(),
+            onPrimaryMuted = 0xFFCFD2FA.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.sora(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T7 — Warm Orange ====================
+
+    /**
+     * For a bakery or restaurant — a warm orange sweep, Manrope's rounded
+     * shapes, which suit food service better than anything sharper.
+     *
+     * The spec asks for a service charge and a table/order number. Neither
+     * needs new machinery: a service charge IS the additional-charge field
+     * (label it "Service Charge" and it prints in the totals exactly where
+     * it should), and a table or order number goes in the invoice number or
+     * the note. Adding parallel fields for those would duplicate what the
+     * invoice already carries.
+     */
+    private fun buildWarmOrange(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF3A2410.toInt(),
+            primary = 0xFFEA580C.toInt(),
+            primaryEnd = 0xFFFB923C.toInt(),
+            primaryMid = 0xFFF97316.toInt(),
+            muted = 0xFF8A6F55.toInt(),
+            ruleColor = 0xFFF6E3D3.toInt(),
+            boxFill = 0xFFFFF1E6.toInt(),
+            zebra = 0xFFFFFAF5.toInt(),
+            tableHeaderFill = 0xFFEA580C.toInt(),
+            onPrimaryMuted = 0xFFFFE2CC.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.manrope(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T8 — Classic Cream ====================
+
+    /**
+     * For a consultant or a law office — a cream sheet, bronze rules, and
+     * Playfair Display's serif throughout.
+     *
+     * This is the only template with a centred letterhead: shop name,
+     * address, then INVOICE stacked down the middle rather than the usual
+     * name-left / INVOICE-right split. That arrangement is what makes a
+     * formal document read as formal, which is this design's entire
+     * purpose, so it is a real option on the shared header rather than
+     * something faked with spacing.
+     */
+    private fun buildClassicCream(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF2B2721.toInt(),
+            primary = 0xFF8A6D3B.toInt(),
+            primaryEnd = 0xFF8A6D3B.toInt(),
+            muted = 0xFFA8926A.toInt(),
+            ruleColor = 0xFFE8DFCC.toInt(),
+            boxFill = 0xFFF5EFE1.toInt(),
+            zebra = 0xFFFAF6EC.toInt(),
+            gradient = false,
+            bandFilled = false,
+            centeredHeader = true,
+            pageBackground = 0xFFFBF8F1.toInt(),
+            // No filled band on this one, so the letterhead uses the page's
+            // own ink and bronze rather than light-on-colour.
+            onPrimary = 0xFF2B2721.toInt(),
+            onPrimaryMuted = 0xFFA8926A.toInt(),
+            tableHeaderFill = 0xFFF0E8D6.toInt(),
+            onTableHeader = 0xFF2B2721.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.playfairDisplay(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T9 — Crimson Bold ====================
+
+    /**
+     * For a sports or garments shop — a flat crimson band over near-black
+     * ink, deliberately louder than the other nine.
+     *
+     * The spec gives this one a size/colour tag column. Not drawn, for the
+     * same reason as T6's IMEI column and T2's Wazan column: no such field
+     * exists on an invoice item, so it would print permanently empty. Size
+     * and colour are written in the item name today ("Shirt — L, Blue"),
+     * which is what a garments shop writes on paper anyway.
+     */
+    private fun buildCrimsonBold(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF2B1015.toInt(),
+            primary = 0xFFDC2626.toInt(),
+            primaryEnd = 0xFFDC2626.toInt(),
+            muted = 0xFF8A6A6E.toInt(),
+            ruleColor = 0xFFF2E2E4.toInt(),
+            boxFill = 0xFFFEE2E2.toInt(),
+            zebra = 0xFFFEF7F7.toInt(),
+            gradient = false,
+            tableHeaderFill = 0xFF2B1015.toInt(),
+            onPrimaryMuted = 0xFFFFD9D9.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.sora(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
             return c to bandY
         }
