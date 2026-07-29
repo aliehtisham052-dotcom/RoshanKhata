@@ -64,6 +64,7 @@
                   uses.
                 -->
                 <ImageView
+                    android:id="@+id/ivAvatarCameraBadge"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_gravity="bottom|end"
@@ -83,6 +84,15 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvPartyPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/gold_on_dark"
+            android:textSize="13sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvPartyBalance"

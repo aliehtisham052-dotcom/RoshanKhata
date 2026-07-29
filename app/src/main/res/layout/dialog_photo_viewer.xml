@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Full-screen view of a customer's photo. Separate from the "Take a
+  photo / Choose / Remove" menu on purpose — tapping the picture itself is
+  now "show me this", and only the small camera badge on the avatar means
+  "change it". Looking should never risk an accidental removal.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <ImageView
+        android:id="@+id/ivFullPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/party_photo"
+        android:scaleType="fitCenter" />
+
+    <ImageView
+        android:id="@+id/btnClosePhotoViewer"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="14dp"
+        android:background="@drawable/bg_avatar_camera"
+        android:contentDescription="@string/cancel"
+        android:padding="8dp"
+        android:src="@drawable/ic_close"
+        android:tint="@color/white" />
+
+</FrameLayout>
