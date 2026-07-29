@@ -492,6 +492,10 @@
     <string name="invoice_template_thermal">إيصال حراري — ضيق، بيع نقدي</string>
     <string name="invoice_pdf_failed">تعذّر إنشاء ملف PDF. لم تتم مشاركة أي شيء.</string>
     <string name="invoice_preview_label">معاينة — تتحدث أثناء التعبئة</string>
+    <string name="invoice_tap_to_edit_hint">انقر أي قيمة في الفاتورة لكتابتها هناك.</string>
+    <string name="invoice_btn_design">التصميم</string>
+    <string name="invoice_btn_more">التواريخ والضريبة</string>
+    <string name="invoice_remove_last_item">حذف آخر صنف</string>
     <string name="invoice_items_label">الأصناف</string>
     <string name="nav_invoice">فاتورة</string>
 

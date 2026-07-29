@@ -1,22 +1,23 @@
 package com.innovation313.roshankhata
 
 import android.app.DatePickerDialog
+import android.graphics.RectF
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.view.MotionEvent
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
@@ -31,52 +32,55 @@ import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 /**
- * Filling in an invoice with the actual printed design visible the whole
- * time, updating as the owner types — the same idea as [BusinessCardActivity]'s
- * live card preview, at the owner's own request after finding the design
- * only appeared once an invoice was already saved.
+ * Writing an invoice ON the invoice.
  *
- * Replaces the earlier dialog-chain way of adding an invoice. See the class
- * doc on [Invoice]: still nothing here reads or writes a balance.
+ * The owner asked for exactly one thing on screen — the printed design —
+ * and to type onto it directly, after an earlier version showed a preview
+ * above and a form below saying the same thing twice. So the page fills the
+ * screen, tapping a value on it opens an editor sitting over that value,
+ * and the page redraws with the new text in place.
+ *
+ * How that is possible without a second drawing routine: [InvoicePdfExport]
+ * records where it drew each editable value while producing the real PDF,
+ * measured from the very Paint that drew it. The editor hit-tests those
+ * boxes. Nothing here re-implements a template, so nothing here can disagree
+ * with the file that ends up being shared.
+ *
+ * What stays as ordinary buttons is only what has nowhere to live on the
+ * page: the design choice, the values not printed until they have one
+ * (dates, discount, tax), adding a line, and saving.
+ *
+ * See the class doc on [Invoice]: still nothing here reads or writes a
+ * balance.
  */
 class InvoiceEditorActivity : AppCompatActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
-    private var partyNames: List<String> = emptyList()
 
     private lateinit var ivPreview: ImageView
+    private lateinit var previewFrame: FrameLayout
+    private lateinit var etInline: EditText
     private lateinit var pbLoading: ProgressBar
-    private lateinit var rgTemplate: RadioGroup
-    private lateinit var etCustomer: AutoCompleteTextView
-    private lateinit var etPhone: EditText
-    private lateinit var btnDate: MaterialButton
-    private lateinit var btnDue: MaterialButton
-    private lateinit var etDiscount: EditText
-    private lateinit var etTax: EditText
-    private lateinit var etNote: EditText
-    private lateinit var itemRowsContainer: LinearLayout
 
+    // ---- The draft being written ----
+    private var customerName = ""
+    private var customerPhone: String? = null
+    private var note: String? = null
     private var invoiceDate = System.currentTimeMillis()
     private var dueDate: Long? = null
+    private var discountPercent: Double? = null
+    private var taxPercent: Double? = null
+    private var templateId = 1
+    private val items = mutableListOf(InvoiceItem(invoiceId = 0, itemName = "", quantity = 1.0, rate = 0.0))
 
-    /** One inflated row and the fields inside it, tracked so it can be read back and removed. */
-    private class ItemRow(
-        val view: View,
-        val etName: EditText,
-        val etQty: EditText,
-        val etUnit: EditText,
-        val etRate: EditText
-    )
-
-    private val rows = mutableListOf<ItemRow>()
-
-    /**
-     * The preview re-renders on every keystroke's worth of change, but
-     * actually rendering means writing a PDF and rasterising it — too much
-     * to do on every single character. This is cancelled and restarted on
-     * each change, so only the render after typing genuinely pauses runs.
-     */
+    /** Where each editable value landed on the page last time it was drawn. */
+    private var boxes: List<InvoicePdfExport.FieldBox> = emptyList()
+    private var pageWidth = 1
     private var renderJob: Job? = null
+
+    /** Which value the inline editor is currently sitting on, if any. */
+    private var editingField: InvoicePdfExport.Field? = null
+    private var editingIndex = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,46 +91,44 @@ class InvoiceEditorActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         ivPreview = findViewById(R.id.ivInvoicePreview)
+        previewFrame = findViewById(R.id.previewFrame)
+        etInline = findViewById(R.id.etInline)
         pbLoading = findViewById(R.id.pbPreviewLoading)
-        rgTemplate = findViewById(R.id.rgInvoiceTemplate)
-        etCustomer = findViewById(R.id.etInvoiceCustomer)
-        etPhone = findViewById(R.id.etInvoicePhone)
-        btnDate = findViewById(R.id.btnInvoiceDate)
-        btnDue = findViewById(R.id.btnInvoiceDueDate)
-        etDiscount = findViewById(R.id.etInvoiceDiscount)
-        etTax = findViewById(R.id.etInvoiceTax)
-        etNote = findViewById(R.id.etInvoiceNote)
-        itemRowsContainer = findViewById(R.id.itemRowsContainer)
 
-        btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
-        btnDate.setOnClickListener {
-            pickDate(invoiceDate) { picked ->
-                invoiceDate = picked
-                btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(picked))
-                scheduleRender()
+        // A GestureDetector, not a raw ACTION_UP: consuming every touch would
+        // have stopped the page scrolling at all, and a long invoice has to
+        // scroll. Only a genuine single tap is taken; drags fall through to
+        // the ScrollView.
+        val taps = android.view.GestureDetector(this, object : android.view.GestureDetector.SimpleOnGestureListener() {
+            override fun onDown(e: MotionEvent): Boolean = true
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                handleTap(e.x, e.y)
+                return true
             }
-        }
-        btnDue.setOnClickListener {
-            pickDate(dueDate ?: invoiceDate) { picked ->
-                dueDate = picked
-                btnDue.text = getString(R.string.due_date_set, Format.dateOnly(picked))
-                scheduleRender()
-            }
+        })
+        ivPreview.setOnTouchListener { v, event ->
+            val handled = taps.onTouchEvent(event)
+            if (handled && event.action == MotionEvent.ACTION_UP) v.performClick()
+            handled
         }
 
-        val watcher = renderOnChange()
-        listOf(etCustomer, etPhone, etDiscount, etTax, etNote).forEach { it.addTextChangedListener(watcher) }
-        rgTemplate.setOnCheckedChangeListener { _, _ -> scheduleRender() }
+        etInline.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                commitInline()
+                true
+            } else {
+                false
+            }
+        }
 
-        findViewById<MaterialButton>(R.id.btnAddRow).setOnClickListener { addItemRow() }
+        findViewById<MaterialButton>(R.id.btnDesign).setOnClickListener { chooseDesign() }
+        findViewById<MaterialButton>(R.id.btnMore).setOnClickListener { showMore() }
+        findViewById<MaterialButton>(R.id.btnAddRow).setOnClickListener {
+            items.add(InvoiceItem(invoiceId = 0, itemName = "", quantity = 1.0, rate = 0.0))
+            scheduleRender()
+        }
         findViewById<MaterialButton>(R.id.btnSaveInvoice).setOnClickListener { save() }
 
-        lifecycleScope.launch {
-            partyNames = dao.allPartyNamesForInvoice()
-            etCustomer.setAdapter(ArrayAdapter(this@InvoiceEditorActivity, android.R.layout.simple_dropdown_item_1line, partyNames))
-        }
-
-        addItemRow()
         scheduleRender()
     }
 
@@ -135,88 +137,228 @@ class InvoiceEditorActivity : AppCompatActivity() {
         return true
     }
 
-    private fun renderOnChange(): TextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
-        override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
-        override fun afterTextChanged(s: Editable?) = scheduleRender()
+    // ---------- Tapping a value on the page ----------
+
+    /**
+     * The page is drawn at whatever width the screen gives it, so a tap has
+     * to be converted back into the PDF's own point coordinates before it
+     * can be matched against the recorded boxes.
+     */
+    private fun scale(): Float =
+        if (pageWidth <= 0) 1f else ivPreview.width.toFloat() / pageWidth
+
+    private fun handleTap(x: Float, y: Float) {
+        if (editingField != null) commitInline()
+
+        val s = scale()
+        if (s <= 0f) return
+        val px = x / s
+        val py = y / s
+
+        // Reach, in PDF points. A 10pt line is a small target on a phone, so
+        // a tap near one still counts — but only near: too generous and a tap
+        // meant for one line would open the one above it.
+        val reachY = 14f
+        val reachX = 40f
+
+        val hit = boxes
+            .map { box ->
+                val dy = kotlin.math.abs(py - box.rect.centerY())
+                val dx = when {
+                    px < box.rect.left -> box.rect.left - px
+                    px > box.rect.right -> px - box.rect.right
+                    else -> 0f
+                }
+                box to (dx to dy)
+            }
+            .filter { (_, d) -> d.second <= reachY && d.first <= reachX }
+            // Vertical agreement first: on a page of stacked lines, being on
+            // the right line matters more than being near the text sideways.
+            .minByOrNull { (_, d) -> d.second * 4f + d.first }
+            ?.first
+            ?: return
+
+        openInline(hit)
     }
 
-    // ---------- Item rows ----------
+    private fun openInline(box: InvoicePdfExport.FieldBox) {
+        editingField = box.field
+        editingIndex = box.itemIndex
 
-    private fun addItemRow() {
-        val rowView = layoutInflater.inflate(R.layout.item_invoice_editor_row, itemRowsContainer, false)
-        val etName: EditText = rowView.findViewById(R.id.etRowName)
-        val etQty: EditText = rowView.findViewById(R.id.etRowQty)
-        val etUnit: EditText = rowView.findViewById(R.id.etRowUnit)
-        val etRate: EditText = rowView.findViewById(R.id.etRowRate)
+        val s = scale()
+        val r = RectF(box.rect.left * s, box.rect.top * s, box.rect.right * s, box.rect.bottom * s)
 
-        val watcher = renderOnChange()
-        listOf(etName, etQty, etUnit, etRate).forEach { it.addTextChangedListener(watcher) }
+        val minW = (110 * resources.displayMetrics.density).toInt()
+        val lp = etInline.layoutParams as FrameLayout.LayoutParams
+        lp.width = maxOf(r.width().toInt(), minW)
+        lp.height = FrameLayout.LayoutParams.WRAP_CONTENT
+        lp.leftMargin = r.left.toInt().coerceAtLeast(0)
+        lp.topMargin = (r.top - 6 * resources.displayMetrics.density).toInt().coerceAtLeast(0)
+        etInline.layoutParams = lp
 
-        val row = ItemRow(rowView, etName, etQty, etUnit, etRate)
-        rowView.findViewById<ImageView>(R.id.btnRemoveRow).setOnClickListener {
-            itemRowsContainer.removeView(rowView)
-            rows.remove(row)
-            scheduleRender()
+        val numeric = box.field == InvoicePdfExport.Field.ITEM_QTY ||
+            box.field == InvoicePdfExport.Field.ITEM_RATE ||
+            box.field == InvoicePdfExport.Field.PHONE
+        etInline.inputType =
+            if (box.field == InvoicePdfExport.Field.PHONE) android.text.InputType.TYPE_CLASS_PHONE
+            else if (numeric) android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            else android.text.InputType.TYPE_CLASS_TEXT
+
+        etInline.setText(currentValueOf(box))
+        etInline.setSelection(etInline.text.length)
+        etInline.visibility = View.VISIBLE
+        etInline.requestFocus()
+        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+            .showSoftInput(etInline, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun currentValueOf(box: InvoicePdfExport.FieldBox): String = when (box.field) {
+        InvoicePdfExport.Field.CUSTOMER -> customerName
+        InvoicePdfExport.Field.PHONE -> customerPhone.orEmpty()
+        InvoicePdfExport.Field.NOTE -> note.orEmpty()
+        InvoicePdfExport.Field.ITEM_NAME -> items.getOrNull(box.itemIndex)?.itemName.orEmpty()
+        InvoicePdfExport.Field.ITEM_QTY ->
+            items.getOrNull(box.itemIndex)?.quantity?.let { Format.plain(it) }.orEmpty()
+        InvoicePdfExport.Field.ITEM_RATE ->
+            items.getOrNull(box.itemIndex)?.rate?.let { Format.plain(it) }.orEmpty()
+    }
+
+    private fun commitInline() {
+        val field = editingField ?: return
+        val text = etInline.text.toString().trim()
+        val index = editingIndex
+
+        when (field) {
+            InvoicePdfExport.Field.CUSTOMER -> customerName = text
+            InvoicePdfExport.Field.PHONE -> customerPhone = text.ifEmpty { null }
+            InvoicePdfExport.Field.NOTE -> note = text.ifEmpty { null }
+            InvoicePdfExport.Field.ITEM_NAME ->
+                items.getOrNull(index)?.let { items[index] = it.copy(itemName = text) }
+            InvoicePdfExport.Field.ITEM_QTY ->
+                items.getOrNull(index)?.let {
+                    items[index] = it.copy(quantity = text.toDoubleOrNull() ?: it.quantity)
+                }
+            InvoicePdfExport.Field.ITEM_RATE ->
+                items.getOrNull(index)?.let {
+                    items[index] = it.copy(rate = text.toDoubleOrNull() ?: it.rate)
+                }
         }
 
-        rows.add(row)
-        itemRowsContainer.addView(rowView)
+        editingField = null
+        editingIndex = -1
+        etInline.visibility = View.GONE
+        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(etInline.windowToken, 0)
+        scheduleRender()
     }
 
-    // ---------- Reading the form ----------
+    // ---------- Everything with nowhere to live on the page ----------
 
-    private fun currentTemplateId(): Int =
-        if (rgTemplate.checkedRadioButtonId == R.id.rbTemplateThermal) 10 else 1
+    private fun chooseDesign() {
+        val names = arrayOf(
+            getString(R.string.invoice_template_teal),
+            getString(R.string.invoice_template_thermal)
+        )
+        val ids = intArrayOf(1, 10)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.invoice_choose_template)
+            .setItems(names) { _, which ->
+                templateId = ids[which]
+                scheduleRender()
+            }
+            .show()
+    }
 
-    private fun currentInvoiceDraft(): Invoice = Invoice(
-        customerName = etCustomer.text.toString().trim(),
-        customerPhone = etPhone.text.toString().trim().ifEmpty { null },
+    private fun showMore() {
+        val options = arrayOf(
+            getString(R.string.pick_invoice_date),
+            getString(R.string.invoice_due_date_hint),
+            getString(R.string.invoice_discount_hint),
+            getString(R.string.invoice_tax_hint),
+            getString(R.string.invoice_remove_last_item)
+        )
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.invoice_btn_more)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> pickDate(invoiceDate) { invoiceDate = it; scheduleRender() }
+                    1 -> pickDate(dueDate ?: invoiceDate) { dueDate = it; scheduleRender() }
+                    2 -> askNumber(R.string.invoice_discount_hint, discountPercent) {
+                        discountPercent = it; scheduleRender()
+                    }
+                    3 -> askNumber(R.string.invoice_tax_hint, taxPercent) {
+                        taxPercent = it; scheduleRender()
+                    }
+                    4 -> {
+                        if (items.size > 1) {
+                            items.removeAt(items.size - 1)
+                            scheduleRender()
+                        }
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun askNumber(titleRes: Int, current: Double?, onDone: (Double?) -> Unit) {
+        val input = EditText(this).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setText(current?.let { Format.plain(it) } ?: "")
+        }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val wrap = LinearLayout(this).apply {
+            setPadding(pad, pad / 2, pad, 0)
+            addView(input)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(titleRes)
+            .setView(wrap)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.save) { _, _ ->
+                onDone(input.text.toString().trim().toDoubleOrNull())
+            }
+            .show()
+    }
+
+    // ---------- Redrawing the page ----------
+
+    private fun draft(): Invoice = Invoice(
+        customerName = customerName.ifEmpty { getString(R.string.invoice_customer_hint) },
+        customerPhone = customerPhone,
         invoiceDate = invoiceDate,
         dueDate = dueDate,
-        discountPercent = etDiscount.text.toString().trim().toDoubleOrNull(),
-        taxPercent = etTax.text.toString().trim().toDoubleOrNull(),
-        templateId = currentTemplateId(),
-        note = etNote.text.toString().trim().ifEmpty { null }
+        discountPercent = discountPercent,
+        taxPercent = taxPercent,
+        templateId = templateId,
+        note = note
     )
 
-    /** Only rows with a name, a quantity, and a rate count — a half-filled row previews as if it were not there yet. */
-    private fun currentValidItems(): List<InvoiceItem> = rows.mapNotNull { row ->
-        val name = row.etName.text.toString().trim()
-        val qty = row.etQty.text.toString().trim().toDoubleOrNull()
-        val rate = row.etRate.text.toString().trim().toDoubleOrNull()
-        if (name.isEmpty() || qty == null || qty <= 0 || rate == null || rate < 0) return@mapNotNull null
-        InvoiceItem(
-            invoiceId = 0,
-            itemName = name,
-            quantity = qty,
-            unit = row.etUnit.text.toString().trim().ifEmpty { null },
-            rate = rate
-        )
+    /**
+     * Every row is drawn, even a blank one just added — an empty line still
+     * needs to appear on the page for there to be anywhere to tap and start
+     * typing it. Only [save] insists on real values.
+     */
+    private fun drawableItems(): List<InvoiceItem> = items.map {
+        if (it.itemName.isBlank()) it.copy(itemName = getString(R.string.invoice_item_name_hint)) else it
     }
-
-    // ---------- Live preview ----------
 
     private fun scheduleRender() {
         renderJob?.cancel()
         renderJob = lifecycleScope.launch {
-            delay(400)
-            val invoice = currentInvoiceDraft()
-            val items = currentValidItems()
-
-            if (invoice.customerName.isEmpty() || items.isEmpty()) {
-                ivPreview.setImageDrawable(null)
-                pbLoading.visibility = View.GONE
-                return@launch
-            }
-
+            delay(250)
             pbLoading.visibility = View.VISIBLE
-            val bmp = withContext(Dispatchers.IO) {
-                InvoicePdfExport.renderPreviewBitmap(this@InvoiceEditorActivity, invoice, items)
+            val invoice = draft()
+            val list = drawableItems()
+            val preview = withContext(Dispatchers.IO) {
+                InvoicePdfExport.renderPreview(this@InvoiceEditorActivity, invoice, list)
             }
-            if (!isFinishing && !isDestroyed) {
-                pbLoading.visibility = View.GONE
-                if (bmp != null) ivPreview.setImageBitmap(bmp)
+            if (isFinishing || isDestroyed) return@launch
+            pbLoading.visibility = View.GONE
+            if (preview != null) {
+                ivPreview.setImageBitmap(preview.bitmap)
+                boxes = preview.boxes
+                pageWidth = preview.pageWidth
             }
         }
     }
@@ -224,20 +366,34 @@ class InvoiceEditorActivity : AppCompatActivity() {
     // ---------- Save ----------
 
     private fun save() {
-        val invoice = currentInvoiceDraft()
-        val items = currentValidItems()
+        if (editingField != null) commitInline()
 
-        if (invoice.customerName.isEmpty()) {
+        val real = items.filter {
+            it.itemName.isNotBlank() && it.quantity > 0 && it.rate >= 0
+        }
+
+        if (customerName.isBlank()) {
             Toast.makeText(this, R.string.invoice_customer_required, Toast.LENGTH_SHORT).show()
             return
         }
-        if (items.isEmpty()) {
+        if (real.isEmpty()) {
             Toast.makeText(this, R.string.invoice_needs_item, Toast.LENGTH_SHORT).show()
             return
         }
 
+        val invoice = Invoice(
+            customerName = customerName,
+            customerPhone = customerPhone,
+            invoiceDate = invoiceDate,
+            dueDate = dueDate,
+            discountPercent = discountPercent,
+            taxPercent = taxPercent,
+            templateId = templateId,
+            note = note
+        )
+
         AppScope.launch {
-            dao.saveInvoiceWithItems(invoice, items)
+            dao.saveInvoiceWithItems(invoice, real)
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {
                     Toast.makeText(this@InvoiceEditorActivity, R.string.invoice_saved, Toast.LENGTH_SHORT).show()
