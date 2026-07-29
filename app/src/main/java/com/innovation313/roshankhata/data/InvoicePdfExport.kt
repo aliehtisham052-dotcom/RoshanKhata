@@ -80,6 +80,7 @@ object InvoicePdfExport {
     fun build(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
         return when (invoice.templateId) {
             2 -> buildBlackGold(context, invoice, items)
+            3 -> buildModernGradient(context, invoice, items)
             10 -> buildThermalReceipt(context, invoice, items)
             else -> buildTealCorporate(context, invoice, items)
         }
@@ -292,6 +293,94 @@ object InvoicePdfExport {
             // Before anything else — a continuation page left white would
             // be a jarring break in the middle of a dark document.
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T3 — Modern Gradient ====================
+
+    /**
+     * The bright, modern design from the spec — violet through magenta into
+     * pink across the header band, Manrope's rounded shapes for headings.
+     * Aimed at a salon or a newer shop rather than a wholesale trader.
+     *
+     * The spec describes this one as "no bank clutter, discount only, no
+     * tax". Neither is enforced by hiding data, for the same reason stated
+     * on T2: a shop that does not use tax or bank details simply has them
+     * unset, and every one of those blocks already prints only when it has
+     * a value. So an owner who wants the clean look gets it automatically,
+     * while an owner who deliberately entered a payment QR still sees it —
+     * rather than the template silently dropping something they set on
+     * purpose. Invoice Settings is where a feature gets turned off.
+     */
+    private fun buildModernGradient(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF1E1630.toInt(),
+            primary = 0xFF6D28D9.toInt(),      // violet
+            primaryEnd = 0xFFEC4899.toInt(),   // pink
+            primaryMid = 0xFFA21CAF.toInt(),   // magenta, the middle stop
+            muted = 0xFF6B6480.toInt(),
+            ruleColor = 0xFFEDE4F5.toInt(),
+            boxFill = 0xFFF7F0FB.toInt(),
+            zebra = 0xFFFBF7FD.toInt(),
+            // The table header takes the violet end of the sweep rather than
+            // the page's near-black ink, keeping the whole sheet in one
+            // family instead of a dark bar cutting across a bright design.
+            tableHeaderFill = 0xFF6D28D9.toInt(),
+            onPrimaryMuted = 0xFFF0D9FB.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.manrope(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
             return c to bandY
         }

@@ -495,6 +495,7 @@
     <string name="number_words_language" translatable="false">en</string>
     <string name="invoice_swipe_designs">اسحب لعرض تصاميم أخرى — %1$d من %2$d</string>
     <string name="invoice_template_black_gold">أسود وذهبي — فاخر، لمحلات المجوهرات</string>
+    <string name="invoice_template_gradient">تدرّج عصري — زاهٍ، لصالونات التجميل</string>
     <string name="invoice_template_thermal">إيصال حراري — ضيق، بيع نقدي</string>
     <string name="invoice_pdf_failed">تعذّر إنشاء ملف PDF. لم تتم مشاركة أي شيء.</string>
     <string name="invoice_preview_label">معاينة — تتحدث أثناء التعبئة</string>
