@@ -159,6 +159,16 @@ data class PartyWithBalance(
     val creditLimit: Double? = null
 )
 
+/**
+ * Name and phone only, for the invoice customer field's suggestion list.
+ * See [KhataDao.allPartiesForInvoice] — deliberately not carrying an id;
+ * this has never been a link to a party row, just a convenience lookup.
+ */
+data class PartyNameAndPhone(
+    val name: String,
+    val phone: String?
+)
+
 /** Receivables split by recovery confidence, for the Zakat screen. */
 data class ZakatInputs(
     val certainReceivables: Double,
