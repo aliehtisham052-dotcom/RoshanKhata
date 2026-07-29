@@ -495,6 +495,7 @@
     <string name="number_words_language" translatable="false">ur-Latn</string>
     <string name="invoice_swipe_designs">Mazeed design dekhne ke liye swipe karein — %2$d mein se %1$d</string>
     <string name="invoice_template_black_gold">Black &amp; Gold — premium, jewellers ke liye</string>
+    <string name="invoice_template_gradient">Modern Gradient — roshan, salon ke liye</string>
     <string name="invoice_template_thermal">Thermal Receipt — tang, counter sale</string>
     <string name="invoice_pdf_failed">PDF nahi ban saki. Kuch bhi nahi bheja gaya.</string>
     <string name="invoice_preview_label">Preview — jaise aap bharte hain waise update hota hai</string>

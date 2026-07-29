@@ -516,6 +516,7 @@
     <string name="number_words_language" translatable="false">en</string>
     <string name="invoice_swipe_designs">وڌيڪ ڊيزائن ڏسڻ لاءِ سوائپ ڪريو — %2$d مان %1$d</string>
     <string name="invoice_template_black_gold">ڪارو ۽ سونهري — پريميم، زيورن وارن لاءِ</string>
+    <string name="invoice_template_gradient">ماڊرن گريڊيئنٽ — روشن، سيلون لاءِ</string>
     <string name="invoice_template_thermal">ٿرمل رسيد — تنگ، ڪائونٽر سيل</string>
     <string name="invoice_pdf_failed">PDF نه ٺهي سگهي. ڪجهه به نه موڪليو ويو.</string>
     <string name="invoice_preview_label">اڳوڻو نظارو — جيئن توهان ڀريو ٿا تيئن اپڊيٽ ٿيندو</string>

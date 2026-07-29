@@ -516,6 +516,7 @@
     <string name="number_words_language" translatable="false">en</string>
     <string name="invoice_swipe_designs">برای دیدن طرح‌های بیشتر بکشید — %1$d از %2$d</string>
     <string name="invoice_template_black_gold">مشکی و طلایی — ممتاز، برای جواهرفروشی</string>
+    <string name="invoice_template_gradient">گرادیان مدرن — روشن، برای سالن‌ها</string>
     <string name="invoice_template_thermal">رسید حرارتی — باریک، فروش نقدی</string>
     <string name="invoice_pdf_failed">PDF ساخته نشد. چیزی ارسال نشد.</string>
     <string name="invoice_preview_label">پیش‌نمایش — با پر کردن فرم به‌روز می‌شود</string>

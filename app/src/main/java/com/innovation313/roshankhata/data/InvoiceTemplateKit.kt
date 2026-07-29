@@ -54,6 +54,13 @@ object InvoiceTemplateKit {
         val boxFill: Int,
         val zebra: Int,
         val gradient: Boolean = true,
+        /**
+         * An optional middle stop, for a band that runs through three
+         * colours rather than two — T3's violet into magenta into pink.
+         * Null keeps the plain two-stop primary-to-primaryEnd sweep every
+         * other template uses.
+         */
+        val primaryMid: Int? = null,
         val pageBackground: Int? = null,
         val onPrimary: Int = Color.WHITE,
         val onPrimaryMuted: Int = 0xFFBEE3E1.toInt(),
@@ -124,7 +131,17 @@ object InvoiceTemplateKit {
         val band = Paint().apply {
             isAntiAlias = true
             shader = if (palette.gradient) {
-                LinearGradient(0f, 0f, pageW.toFloat(), 0f, palette.primary, palette.primaryEnd, Shader.TileMode.CLAMP)
+                val mid = palette.primaryMid
+                if (mid != null) {
+                    LinearGradient(
+                        0f, 0f, pageW.toFloat(), 0f,
+                        intArrayOf(palette.primary, mid, palette.primaryEnd),
+                        floatArrayOf(0f, 0.5f, 1f),
+                        Shader.TileMode.CLAMP
+                    )
+                } else {
+                    LinearGradient(0f, 0f, pageW.toFloat(), 0f, palette.primary, palette.primaryEnd, Shader.TileMode.CLAMP)
+                }
             } else null
             if (!palette.gradient) color = palette.primary
         }
