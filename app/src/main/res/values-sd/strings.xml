@@ -89,6 +89,9 @@
     <string name="restore_entry_confirm">هيءَ داخلا بحال ڪريو؟ ٻيهر ڌر جي کاتي ۾ ايندي ۽ بيلنس تي اثر ڪندي.</string>
     <string name="empty_bin">ٽوڪري خالي ڪريو</string>
     <string name="empty_bin_confirm">ٽوڪريءَ ۾ سڀ ڪجهه هميشه لاءِ ختم ٿي ويندو. اهو واپس نٿو ٿي سگهي.</string>
+    <string name="delete_party_forever_confirm">%1$s کي هميشه لاءِ ختم ڪجي؟ ان سان رکيل هر داخلا به ختم ٿي ويندي. اهو واپس نه ٿو ٿي سگهي.</string>
+    <string name="delete_entry_forever_confirm">%1$s کي هميشه لاءِ ختم ڪجي؟ اهو واپس نه ٿو ٿي سگهي.</string>
+    <string name="deleted_forever_done">هميشه لاءِ ختم ٿي ويو.</string>
     <string name="delete_forever">هميشه لاءِ ختم ڪريو</string>
     <string name="bin_emptied">ٽوڪري خالي ٿي وئي</string>
 

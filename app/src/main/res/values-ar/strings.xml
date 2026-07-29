@@ -88,6 +88,9 @@
     <string name="restore_entry_confirm">استعادة هذا القيد؟ سيظهر مجددًا في دفتر الطرف ويؤثر على الرصيد.</string>
     <string name="empty_bin">إفراغ السلة</string>
     <string name="empty_bin_confirm">سيُحذف كل ما في السلة نهائيًا. لا يمكن التراجع.</string>
+    <string name="delete_party_forever_confirm">حذف %1$s نهائيًا؟ سيُحذف أيضًا كل قيد محفوظ معه. لا يمكن التراجع.</string>
+    <string name="delete_entry_forever_confirm">حذف %1$s نهائيًا؟ لا يمكن التراجع.</string>
+    <string name="deleted_forever_done">تم الحذف نهائيًا.</string>
     <string name="delete_forever">حذف نهائي</string>
     <string name="bin_emptied">أُفرغت السلة</string>
 

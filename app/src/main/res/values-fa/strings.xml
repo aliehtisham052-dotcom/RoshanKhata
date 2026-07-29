@@ -89,6 +89,9 @@
     <string name="restore_entry_confirm">این ثبت بازگردانی شود؟ دوباره در دفتر طرف‌حساب ظاهر می‌شود و روی مانده اثر می‌گذارد.</string>
     <string name="empty_bin">خالی کردن سطل</string>
     <string name="empty_bin_confirm">همه محتویات سطل برای همیشه حذف می‌شود. این کار قابل بازگشت نیست.</string>
+    <string name="delete_party_forever_confirm">%1$s برای همیشه حذف شود؟ همه ثبت‌های نگهداری‌شده با او نیز حذف می‌شود. قابل بازگشت نیست.</string>
+    <string name="delete_entry_forever_confirm">%1$s برای همیشه حذف شود؟ قابل بازگشت نیست.</string>
+    <string name="deleted_forever_done">برای همیشه حذف شد.</string>
     <string name="delete_forever">حذف همیشگی</string>
     <string name="bin_emptied">سطل خالی شد</string>
 

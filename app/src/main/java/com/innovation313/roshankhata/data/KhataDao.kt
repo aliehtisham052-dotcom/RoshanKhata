@@ -194,6 +194,23 @@ interface KhataDao {
     @Query("DELETE FROM parties WHERE isDeleted = 1")
     suspend fun purgeAllParties()
 
+    /**
+     * Permanently remove ONE binned row, for the per-item Delete in the
+     * Recycle Bin.
+     *
+     * Both are guarded with `isDeleted = 1` deliberately: this is a
+     * hard delete with no undo, and the guard means a live row can never be
+     * destroyed by it even if a stale id somehow reached here. A party
+     * takes its transactions with it automatically — the transactions table
+     * declares onDelete = CASCADE on partyId — so no orphaned entries are
+     * left behind, and no second call is needed.
+     */
+    @Query("DELETE FROM parties WHERE id = :id AND isDeleted = 1")
+    suspend fun purgeParty(id: Long)
+
+    @Query("DELETE FROM transactions WHERE id = :id AND isDeleted = 1")
+    suspend fun purgeEntry(id: Long)
+
     // ---------- Totals ----------
 
     @Query(

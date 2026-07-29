@@ -88,6 +88,9 @@
     <string name="restore_entry_confirm">یہ اندراج واپس لائیں؟ یہ پارٹی کے کھاتے میں دوبارہ آئے گا اور بیلنس پر اثر ڈالے گا۔</string>
     <string name="empty_bin">بن خالی کریں</string>
     <string name="empty_bin_confirm">بن کی ہر چیز ہمیشہ کے لیے حذف ہو جائے گی۔ یہ واپس نہیں ہو سکتا۔</string>
+    <string name="delete_party_forever_confirm">%1$s کو ہمیشہ کے لیے حذف کریں؟ ان کے ساتھ رکھی ہر اندراج بھی ختم ہو جائے گی۔ یہ واپس نہیں ہو سکتا۔</string>
+    <string name="delete_entry_forever_confirm">%1$s کو ہمیشہ کے لیے حذف کریں؟ یہ واپس نہیں ہو سکتا۔</string>
+    <string name="deleted_forever_done">مستقل طور پر حذف ہو گیا۔</string>
     <string name="delete_forever">ہمیشہ کے لیے حذف کریں</string>
     <string name="bin_emptied">بن خالی کر دیا گیا</string>
 
