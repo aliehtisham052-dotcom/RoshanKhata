@@ -132,6 +132,9 @@ class InvoiceEditorActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnAddRow).setOnClickListener { addRow() }
+        findViewById<MaterialButton>(R.id.btnShopDetails).setOnClickListener {
+            startActivity(android.content.Intent(this, BusinessSettingsActivity::class.java))
+        }
         rgTemplate.setOnCheckedChangeListener { _, _ -> renderPreview() }
 
         btnBack.setOnClickListener { goBack() }
@@ -165,6 +168,12 @@ class InvoiceEditorActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
+    }
+
+    /** Picks up any shop-detail change (stamp, QR, name, terms) made while away on step 3. */
+    override fun onResume() {
+        super.onResume()
+        if (step == 3) renderPreview()
     }
 
     override fun onBackPressed() {

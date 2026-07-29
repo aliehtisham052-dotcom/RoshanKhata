@@ -339,18 +339,37 @@ object InvoicePdfExport {
         }
 
         var by = blockTop
-        if (bankRows.isNotEmpty()) {
-            val boxH = 26f + bankRows.size * 14f
-            c.drawRoundRect(RectF(left, blockTop, totalsX - 16f, blockTop + boxH), 8f, 8f, solid(boxFill))
+        val qr = BusinessProfile.loadQr(context)
+        val boxRight = totalsX - 16f
+        // A JazzCash/EasyPaisa QR with no formal bank account is the common
+        // case for a small shop — the box earns its place from either half
+        // being present, not only from bank fields.
+        if (bankRows.isNotEmpty() || qr != null) {
+            val qrSize = 56f
+            val textRight = if (qr != null) boxRight - qrSize - 14f else boxRight - 12f
+            val textBoxH = 26f + bankRows.size * 14f
+            val qrBoxH = if (qr != null) qrSize + 34f else 0f
+            val boxH = maxOf(textBoxH, qrBoxH)
+
+            c.drawRoundRect(RectF(left, blockTop, boxRight, blockTop + boxH), 8f, 8f, solid(boxFill))
             c.drawText("PAYMENT INFO", left + 12f, blockTop + 16f, text(8f, teal, bold = true))
             var ry = blockTop + 32f
             bankRows.forEach { (label, value) ->
                 c.drawText(label, left + 12f, ry, text(9.5f, muted))
                 c.drawText(
-                    value, totalsX - 28f, ry,
+                    value, textRight, ry,
                     text(9.5f, ink, bold = true, mono = true, align = Paint.Align.RIGHT)
                 )
                 ry += 14f
+            }
+            qr?.let {
+                val qrLeft = boxRight - qrSize - 10f
+                val qrTop = blockTop + 22f
+                c.drawBitmap(it, null, RectF(qrLeft, qrTop, qrLeft + qrSize, qrTop + qrSize), null)
+                c.drawText(
+                    "Scan to Pay", qrLeft + qrSize / 2f, qrTop + qrSize + 10f,
+                    text(6.5f, muted, align = Paint.Align.CENTER)
+                )
             }
             by = blockTop + boxH
         }

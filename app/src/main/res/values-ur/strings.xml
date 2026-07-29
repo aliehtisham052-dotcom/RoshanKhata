@@ -507,6 +507,7 @@
     <string name="invoice_terms">شرائط و ضوابط</string>
     <string name="invoice_terms_help">ہر انوائس پر خودکار طور پر چھپتی ہیں۔ خالی چھوڑیں تو کچھ نہیں چھپے گا۔</string>
     <string name="invoice_terms_hint">مثلاً ادائیگی 14 دن کے اندر۔</string>
+    <string name="invoice_edit_shop_details">دکان کا نام، مہر، QR اور شرائط ترمیم کریں</string>
     <string name="nav_invoice">انوائس</string>
 
     <string name="expiring_stock">ایکسپائر ہوتا مال</string>

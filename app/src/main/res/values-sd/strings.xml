@@ -528,6 +528,7 @@
     <string name="invoice_terms">شرطون ۽ ضابطا</string>
     <string name="invoice_terms_help">هر انوائس تي پاڻمرادو ڇپبيون. خالي ڇڏيو ته ڪجهه نه ڇپبو.</string>
     <string name="invoice_terms_hint">مثال: ادائيگي 14 ڏينهن اندر.</string>
+    <string name="invoice_edit_shop_details">دڪان جو نالو، مهر، QR ۽ شرطون تبديل ڪريو</string>
     <string name="nav_invoice">انوائس</string>
 
     <!-- Expiry alerts -->
