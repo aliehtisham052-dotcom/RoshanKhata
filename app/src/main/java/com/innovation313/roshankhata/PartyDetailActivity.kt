@@ -5,6 +5,7 @@ import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.DateTimeField
 import com.innovation313.roshankhata.ui.fillDialogHeight
 
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -201,6 +202,7 @@ class PartyDetailActivity : AppCompatActivity() {
     private enum class EntrySort { NEWEST, OLDEST, AMOUNT_HIGH, AMOUNT_LOW }
     private lateinit var adapter: EntryAdapter
     private lateinit var tvPartyName: TextView
+    private lateinit var tvPartyPhone: TextView
     private lateinit var tvPartyBalance: TextView
     private lateinit var tvBalanceHint: TextView
     private lateinit var tvNoEntries: TextView
@@ -244,6 +246,7 @@ class PartyDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         tvPartyName = findViewById(R.id.tvPartyName)
+        tvPartyPhone = findViewById(R.id.tvPartyPhone)
         tvPartyBalance = findViewById(R.id.tvPartyBalance)
         tvPartyBalance.setOnClickListener { copyBalance() }
         tvBalanceHint = findViewById(R.id.tvBalanceHint)
@@ -292,7 +295,10 @@ class PartyDetailActivity : AppCompatActivity() {
 
         ivAvatar = findViewById(R.id.ivDetailAvatar)
         tvInitials = findViewById(R.id.tvDetailInitials)
-        findViewById<View>(R.id.flAvatar).setOnClickListener { showPhotoOptions() }
+        findViewById<View>(R.id.flAvatar).setOnClickListener {
+            if (PartyPhoto.exists(this, partyId)) viewPhotoFullSize() else showPhotoOptions()
+        }
+        findViewById<View>(R.id.ivAvatarCameraBadge).setOnClickListener { showPhotoOptions() }
 
         etSearchEntries = findViewById(R.id.etSearchEntries)
         etSearchEntries.addTextChangedListener(object : TextWatcher {
@@ -325,6 +331,8 @@ class PartyDetailActivity : AppCompatActivity() {
                 partyPhone = p.phone
                 creditLimit = p.creditLimit
                 tvPartyName.text = p.name
+                tvPartyPhone.text = p.phone.orEmpty()
+                tvPartyPhone.visibility = if (p.phone.isNullOrBlank()) View.GONE else View.VISIBLE
                 refreshAvatar()
             }
         }
@@ -915,6 +923,23 @@ class PartyDetailActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    /**
+     * The avatar tap means "show me this" now, not "change it" — that moved
+     * to the small camera badge so a look at the photo can never turn into
+     * an accidental removal. A 56dp circle only proves a photo exists; it is
+     * not big enough to actually recognise anyone by.
+     */
+    private fun viewPhotoFullSize() {
+        val photo = PartyPhoto.load(this, partyId) ?: return
+        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        dialog.setContentView(R.layout.dialog_photo_viewer)
+        dialog.findViewById<ImageView>(R.id.ivFullPhoto).setImageBitmap(photo)
+        val close = View.OnClickListener { dialog.dismiss() }
+        dialog.findViewById<View>(R.id.ivFullPhoto).setOnClickListener(close)
+        dialog.findViewById<View>(R.id.btnClosePhotoViewer).setOnClickListener(close)
+        dialog.show()
     }
 
     private fun refreshAvatar() {
