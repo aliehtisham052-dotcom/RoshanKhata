@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -94,6 +95,7 @@ class InvoicesActivity : AppCompatActivity() {
 
         val view = layoutInflater.inflate(R.layout.dialog_add_invoice, null)
         val etCustomer: AutoCompleteTextView = view.findViewById(R.id.etInvoiceCustomer)
+        val rgTemplate: RadioGroup = view.findViewById(R.id.rgInvoiceTemplate)
         val etPhone: EditText = view.findViewById(R.id.etInvoicePhone)
         val btnDate: MaterialButton = view.findViewById(R.id.btnInvoiceDate)
         val btnDue: MaterialButton = view.findViewById(R.id.btnInvoiceDueDate)
@@ -104,6 +106,9 @@ class InvoicesActivity : AppCompatActivity() {
         etCustomer.setAdapter(
             ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, partyNames)
         )
+
+        fun selectedTemplateId(): Int =
+            if (rgTemplate.checkedRadioButtonId == R.id.rbTemplateThermal) 10 else 1
 
         var invoiceDate = System.currentTimeMillis()
         var dueDate: Long? = null
@@ -135,6 +140,7 @@ class InvoicesActivity : AppCompatActivity() {
                     dueDate = dueDate,
                     discountPercent = etDiscount.text.toString().trim().toDoubleOrNull(),
                     taxPercent = etTax.text.toString().trim().toDoubleOrNull(),
+                    templateId = selectedTemplateId(),
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
@@ -146,6 +152,7 @@ class InvoicesActivity : AppCompatActivity() {
                     dueDate = dueDate,
                     discountPercent = etDiscount.text.toString().trim().toDoubleOrNull(),
                     taxPercent = etTax.text.toString().trim().toDoubleOrNull(),
+                    templateId = selectedTemplateId(),
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
@@ -160,6 +167,7 @@ class InvoicesActivity : AppCompatActivity() {
         dueDate: Long?,
         discountPercent: Double?,
         taxPercent: Double?,
+        templateId: Int,
         note: String?
     ) {
         showAddItemDialog { item ->
@@ -169,10 +177,10 @@ class InvoicesActivity : AppCompatActivity() {
                 .setTitle(R.string.item_added)
                 .setMessage(getString(R.string.items_count, pendingItems.size))
                 .setNeutralButton(R.string.add_item) { _, _ ->
-                    collectItems(customerName, customerPhone, invoiceDate, dueDate, discountPercent, taxPercent, note)
+                    collectItems(customerName, customerPhone, invoiceDate, dueDate, discountPercent, taxPercent, templateId, note)
                 }
                 .setPositiveButton(R.string.save) { _, _ ->
-                    saveInvoice(customerName, customerPhone, invoiceDate, dueDate, discountPercent, taxPercent, note)
+                    saveInvoice(customerName, customerPhone, invoiceDate, dueDate, discountPercent, taxPercent, templateId, note)
                 }
                 .show()
         }
@@ -229,6 +237,7 @@ class InvoicesActivity : AppCompatActivity() {
         dueDate: Long?,
         discountPercent: Double?,
         taxPercent: Double?,
+        templateId: Int,
         note: String?
     ) {
         if (customerName.isEmpty()) {
@@ -247,6 +256,7 @@ class InvoicesActivity : AppCompatActivity() {
             dueDate = dueDate,
             discountPercent = discountPercent,
             taxPercent = taxPercent,
+            templateId = templateId,
             note = note
         )
         val items = pendingItems.toList()
