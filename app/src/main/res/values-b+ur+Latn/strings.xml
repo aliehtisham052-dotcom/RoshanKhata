@@ -492,6 +492,11 @@
     <string name="invoice_template_thermal">Thermal Receipt — tang, counter sale</string>
     <string name="invoice_pdf_failed">PDF nahi ban saki. Kuch bhi nahi bheja gaya.</string>
     <string name="invoice_preview_label">Preview — jaise aap bharte hain waise update hota hai</string>
+    <string name="invoice_step_customer">Qadam 1 az 3 — Ye bill kis ke liye hai?</string>
+    <string name="invoice_step_items">Qadam 2 az 3 — Kis cheez ka bill hai?</string>
+    <string name="invoice_step_design">Qadam 3 az 3 — Design chunein</string>
+    <string name="invoice_next">Aagay</string>
+    <string name="invoice_back">Peechay</string>
     <string name="invoice_items_label">Cheezein</string>
     <string name="nav_invoice">Invoice</string>
 

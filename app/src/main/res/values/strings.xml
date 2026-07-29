@@ -518,6 +518,11 @@
     <string name="invoice_template_thermal">Thermal Receipt — narrow, counter sale</string>
     <string name="invoice_pdf_failed">Could not create the PDF. Nothing was shared.</string>
     <string name="invoice_preview_label">Preview — updates as you fill this in</string>
+    <string name="invoice_step_customer">Step 1 of 3 — Who is this bill for?</string>
+    <string name="invoice_step_items">Step 2 of 3 — What are you billing?</string>
+    <string name="invoice_step_design">Step 3 of 3 — Pick the design</string>
+    <string name="invoice_next">Next</string>
+    <string name="invoice_back">Back</string>
     <string name="invoice_items_label">Items</string>
 
     <!-- Expiry alerts -->

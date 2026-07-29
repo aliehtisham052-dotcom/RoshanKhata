@@ -17,202 +17,227 @@
         app:title="@string/add_invoice"
         app:titleTextColor="@color/white" />
 
+    <!--
+      One step at a time, in the owner's own order: customer, then items,
+      then the design. Asked for repeatedly, and modelled on the walkthrough
+      the app already uses for onboarding rather than a single long form.
+    -->
+    <TextView
+        android:id="@+id/tvStep"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/section_tools_soft"
+        android:padding="10dp"
+        android:textColor="@color/ink"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editorToolbar" />
+
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editorToolbar">
+        app:layout_constraintTop_toBottomOf="@id/tvStep">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:padding="16dp">
 
-            <!--
-              Live preview, redrawn (debounced) on every change — the same
-              PDF this invoice would actually produce, rasterised. See the
-              doc on InvoicePdfExport.renderPreviewBitmap for why this is not
-              a second drawing routine.
-            -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/invoice_preview_label"
-                android:textColor="@color/ink"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <FrameLayout
+            <!-- Step 1: customer -->
+            <LinearLayout
+                android:id="@+id/stepCustomer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:background="@color/white"
-                android:minHeight="180dp">
-
-                <ImageView
-                    android:id="@+id/ivInvoicePreview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="@string/invoice_preview_label" />
-
-                <ProgressBar
-                    android:id="@+id/pbPreviewLoading"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:visibility="gone" />
-            </FrameLayout>
-
-            <!-- Only two of the ten finalised designs exist so far. -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/invoice_choose_template"
-                android:textColor="@color/navy_primary"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <RadioGroup
-                android:id="@+id/rgInvoiceTemplate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:orientation="vertical">
 
-                <RadioButton
-                    android:id="@+id/rbTemplateTeal"
+                <AutoCompleteTextView
+                    android:id="@+id/etInvoiceCustomer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/invoice_template_teal"
-                    android:textSize="13sp" />
+                    android:completionThreshold="1"
+                    android:hint="@string/invoice_customer_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:textSize="17sp" />
 
-                <RadioButton
-                    android:id="@+id/rbTemplateThermal"
+                <EditText
+                    android:id="@+id/etInvoicePhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/invoice_template_thermal"
-                    android:textSize="13sp" />
-            </RadioGroup>
-
-            <!--
-              Deliberately NOT a party picker — see the class doc on
-              Invoice. Typing or choosing here only fills this text field.
-            -->
-            <AutoCompleteTextView
-                android:id="@+id/etInvoiceCustomer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:completionThreshold="1"
-                android:hint="@string/invoice_customer_hint"
-                android:importantForAutofill="no"
-                android:inputType="text" />
-
-            <EditText
-                android:id="@+id/etInvoicePhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="@string/invoice_phone_hint"
-                android:importantForAutofill="no"
-                android:inputType="phone" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnInvoiceDate"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/pick_invoice_date"
-                app:cornerRadius="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnInvoiceDueDate"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/invoice_due_date_hint"
-                app:cornerRadius="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/etInvoiceDiscount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/invoice_discount_hint"
+                    android:layout_marginTop="14dp"
+                    android:hint="@string/invoice_phone_hint"
                     android:importantForAutofill="no"
-                    android:inputType="numberDecimal" />
+                    android:inputType="phone"
+                    android:textSize="17sp" />
 
-                <EditText
-                    android:id="@+id/etInvoiceTax"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:hint="@string/invoice_tax_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="numberDecimal" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnInvoiceDate"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="18dp"
+                    android:text="@string/pick_invoice_date"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnInvoiceDueDate"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/invoice_due_date_hint"
+                    app:cornerRadius="8dp" />
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/etInvoiceNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="@string/note_optional"
-                android:importantForAutofill="no"
-                android:inputType="text" />
-
-            <!-- Items, added and edited right here — no separate dialogs. -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/invoice_items_label"
-                android:textColor="@color/navy_primary"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
+            <!-- Step 2: items -->
             <LinearLayout
-                android:id="@+id/itemRowsContainer"
+                android:id="@+id/stepItems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAddRow"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <LinearLayout
+                    android:id="@+id/itemRowsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddRow"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/add_item"
+                    app:cornerRadius="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/etInvoiceDiscount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@string/invoice_discount_hint"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal" />
+
+                    <EditText
+                        android:id="@+id/etInvoiceTax"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:hint="@string/invoice_tax_hint"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/etInvoiceNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/note_optional"
+                    android:importantForAutofill="no"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <!-- Step 3: design, with the preview under it -->
+            <LinearLayout
+                android:id="@+id/stepDesign"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/add_item"
-                app:cornerRadius="8dp" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSaveInvoice"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="24dp"
-                android:text="@string/save"
-                app:backgroundTint="@color/brand_green"
-                app:cornerRadius="10dp" />
+                <RadioGroup
+                    android:id="@+id/rgInvoiceTemplate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-        </LinearLayout>
+                    <RadioButton
+                        android:id="@+id/rbTemplateTeal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/invoice_template_teal"
+                        android:textSize="14sp" />
+
+                    <RadioButton
+                        android:id="@+id/rbTemplateThermal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/invoice_template_thermal"
+                        android:textSize="14sp" />
+                </RadioGroup>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@color/white"
+                    android:minHeight="200dp">
+
+                    <ImageView
+                        android:id="@+id/ivInvoicePreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/invoice_preview_label" />
+
+                    <ProgressBar
+                        android:id="@+id/pbPreviewLoading"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:visibility="gone" />
+                </FrameLayout>
+            </LinearLayout>
+        </FrameLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:text="@string/invoice_back"
+            android:visibility="invisible"
+            app:cornerRadius="10dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNext"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="2"
+            android:text="@string/invoice_next"
+            app:backgroundTint="@color/brand_green"
+            app:cornerRadius="10dp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
