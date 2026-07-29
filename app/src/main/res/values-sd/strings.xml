@@ -495,7 +495,8 @@
     <string name="invoice_discount_hint">ڈسڪائونٽ % (اختياري)</string>
     <string name="invoice_tax_hint">ٽيڪس % (اختياري)</string>
     <string name="invoice_item_name_hint">شيءِ جو نالو</string>
-    <string name="invoice_item_rate_hint">في يونٽ اگهه (Rs)</string>
+    <string name="invoice_item_rate_hint">اگهه (Rs)</string>
+    <string name="invoice_row_unit_hint">يونٽ</string>
     <string name="invoice_item_invalid">صحيح شيءِ جو نالو، مقدار ۽ اگهه داخل ڪريو.</string>
     <string name="invoice_customer_required">پهرين گراهڪ جو نالو داخل ڪريو.</string>
     <string name="invoice_needs_item">پهرين گهٽ ۾ گهٽ هڪ شيءِ شامل ڪريو.</string>
@@ -521,8 +522,8 @@
     <string name="invoice_next">اڳتي</string>
     <string name="invoice_back">پوئتي</string>
     <string name="invoice_items_label">شيون</string>
-    <string name="invoice_number_hint">انوائس نمبر (اختياري — خالي ڇڏيو ته پاڻمرادو)</string>
-    <string name="invoice_charge_label_hint">اضافي خرچ — مثال ڪرايو (اختياري)</string>
+    <string name="invoice_number_hint">انوائس # (اختياري)</string>
+    <string name="invoice_charge_label_hint">اضافي خرچ (اختياري)</string>
     <string name="invoice_charge_amount_hint">رقم</string>
     <string name="invoice_received_hint">مليل رقم (اختياري)</string>
     <string name="invoice_terms">شرطون ۽ ضابطا</string>

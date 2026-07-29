@@ -474,7 +474,8 @@
     <string name="invoice_discount_hint">الخصم % (اختياري)</string>
     <string name="invoice_tax_hint">الضريبة % (اختياري)</string>
     <string name="invoice_item_name_hint">اسم الصنف</string>
-    <string name="invoice_item_rate_hint">سعر الوحدة (Rs)</string>
+    <string name="invoice_item_rate_hint">السعر (Rs)</string>
+    <string name="invoice_row_unit_hint">الوحدة</string>
     <string name="invoice_item_invalid">أدخل اسم صنف ومقدارًا وسعرًا صحيحين.</string>
     <string name="invoice_customer_required">أدخل اسم العميل أولاً.</string>
     <string name="invoice_needs_item">أضف صنفًا واحدًا على الأقل أولاً.</string>
@@ -500,8 +501,8 @@
     <string name="invoice_next">التالي</string>
     <string name="invoice_back">السابق</string>
     <string name="invoice_items_label">الأصناف</string>
-    <string name="invoice_number_hint">رقم الفاتورة (اختياري — اتركه فارغًا للترقيم التلقائي)</string>
-    <string name="invoice_charge_label_hint">رسوم إضافية — مثل الشحن (اختياري)</string>
+    <string name="invoice_number_hint">رقم الفاتورة (اختياري)</string>
+    <string name="invoice_charge_label_hint">رسوم إضافية (اختياري)</string>
     <string name="invoice_charge_amount_hint">المبلغ</string>
     <string name="invoice_received_hint">المبلغ المستلم (اختياري)</string>
     <string name="invoice_terms">الشروط والأحكام</string>
