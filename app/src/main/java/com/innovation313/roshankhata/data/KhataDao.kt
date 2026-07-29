@@ -128,6 +128,21 @@ interface KhataDao {
         }
     }
 
+    /**
+     * NO CALLER RIGHT NOW, and deliberately kept.
+     *
+     * These three were the machinery behind a "Delete all customers"
+     * button that used to sit on the Recycle Bin screen. It was removed
+     * from there because it destroys the LIVE ledger from a screen people
+     * open to RECOVER things — see RecycleBinActivity for the full
+     * reasoning. The capability itself was not judged wrong, only its
+     * placement, so the queries stay ready for wherever it lands next
+     * rather than being deleted and rewritten.
+     *
+     * If that decision is ever made the other way — that clearing the
+     * whole ledger in one tap should not exist at all — these three go
+     * with it.
+     */
     /** How many customers are still in the ledger — the number the confirmation shows. */
     @Query("SELECT COUNT(*) FROM parties WHERE isDeleted = 0")
     suspend fun countActiveParties(): Int

@@ -55,90 +55,10 @@ class RecycleBinActivity : AppCompatActivity() {
         rv.adapter = adapter
 
         findViewById<MaterialButton>(R.id.btnEmptyBin).setOnClickListener { confirmEmptyBin() }
-        findViewById<MaterialButton>(R.id.btnDeleteAllParties).setOnClickListener {
-            confirmDeleteAllParties()
-        }
-
         purgeExpired()
         observeBin()
     }
 
-    /**
-     * Clear the whole customer list into the bin.
-     *
-     * Asked twice, and the second question carries the count — "delete 1162
-     * customers" is a different sentence from "delete all", and the number is
-     * what makes someone stop. Nothing is destroyed: this is the same soft
-     * delete a single customer gets, so it all lands here and can be restored.
-     */
-    private fun confirmDeleteAllParties() {
-        lifecycleScope.launch {
-            val count = dao.countActiveParties()
-            if (count == 0) {
-                Toast.makeText(
-                    this@RecycleBinActivity,
-                    R.string.no_parties_to_delete,
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@launch
-            }
-
-            MaterialAlertDialogBuilder(this@RecycleBinActivity)
-                .setTitle(R.string.delete_all_parties)
-                .setMessage(getString(R.string.delete_all_parties_confirm, count))
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.continue_label) { _, _ ->
-                    // Second ask. The first is a question; this one is the
-                    // decision, and it says plainly what will be gone.
-                    MaterialAlertDialogBuilder(this@RecycleBinActivity)
-                        .setTitle(R.string.delete_all_parties_final_title)
-                        .setMessage(getString(R.string.delete_all_parties_final, count))
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.delete) { _, _ -> deleteAllParties() }
-                        .show()
-                }
-                .show()
-        }
-    }
-
-    /**
-     * AppScope, because this is TWO writes that have to travel together.
-     *
-     * A single delete cancelled halfway is merely a command that did not run,
-     * and the owner sees the row still there and taps again. This is not that:
-     * cancelled between the two calls, every entry is in the bin while its
-     * party is not, and the shared timestamp that reunites them on restore
-     * never gets written to the parties at all. The book would be left in a
-     * state no screen in this app knows how to describe.
-     */
-    private fun deleteAllParties() {
-        AppScope.launch {
-            val now = System.currentTimeMillis()
-            // Entries first, then the parties, both stamped the same — a
-            // restore reunites them by that timestamp.
-            dao.softDeleteAllEntries(now)
-            dao.softDeleteAllParties(now)
-            withContext(Dispatchers.Main) {
-                if (!isFinishing && !isDestroyed) {
-                    Toast.makeText(
-                        this@RecycleBinActivity,
-                        R.string.moved_to_bin,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
-    }
-
-    /**
-     * Anything past the retention window is genuinely gone — no silent
-     * hoarding.
-     *
-     * On AppScope for the same two-step reason as the others, though this one
-     * is the mildest of them: it runs itself on every visit, so an
-     * interrupted pass would be finished by the next one. It is here for
-     * consistency rather than because leaving it would be dangerous.
-     */
     private fun purgeExpired() {
         AppScope.launch {
             val cutoff = System.currentTimeMillis() - (RETENTION_DAYS * DAY_MS)
