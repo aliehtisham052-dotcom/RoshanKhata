@@ -202,6 +202,12 @@
     <string name="business_address">Dukan ka pata</string>
     <string name="business_address_help">Har invoice par aap ke karobar ke naam ke neeche chhapta hai.</string>
     <string name="business_address_hint">maslan Main Bazaar, Pasrur</string>
+    <string name="invoice_bank_details">Bank details</string>
+    <string name="invoice_bank_details_help">Un invoice templates ke payment box ke liye jo ye dikhate hain. Koi bhi khaali chhod dein to wo line nahi chhapegi.</string>
+    <string name="invoice_bank_name_hint">Bank ka naam</string>
+    <string name="invoice_bank_title_hint">Account title</string>
+    <string name="invoice_bank_iban_hint">IBAN / account number</string>
+    <string name="invoice_bank_jazzcash_hint">JazzCash / EasyPaisa number</string>
 
     <string name="payment_qr">Payment QR code</string>
     <string name="payment_qr_help">Aap ke EasyPaisa ya JazzCash QR code ka screenshot ya tasveer. Ye statement ke saath lagega taake gahak scan kar ke aap ko adaigi kar sake.</string>
@@ -464,6 +470,9 @@
     <string name="invoice_phone_hint">Phone (ikhtiyari)</string>
     <string name="pick_invoice_date">Invoice ki tareekh chunein</string>
     <string name="invoice_date_set">Tareekh: %1$s</string>
+    <string name="invoice_due_date_hint">Payment due date (ikhtiyari)</string>
+    <string name="invoice_discount_hint">Discount % (ikhtiyari)</string>
+    <string name="invoice_tax_hint">Tax % (ikhtiyari)</string>
     <string name="invoice_item_name_hint">Cheez ka naam</string>
     <string name="invoice_item_rate_hint">Fi ikai rate (Rs)</string>
     <string name="invoice_item_invalid">Durust cheez ka naam, miqdaar aur rate darj karein.</string>
@@ -471,6 +480,9 @@
     <string name="invoice_needs_item">Pehle kam az kam ek cheez shamil karein.</string>
     <string name="invoice_saved">Invoice mehfooz ho gayi.</string>
     <string name="invoice_total">Kul: %1$s</string>
+    <string name="invoice_subtotal">Zaili majmua: %1$s</string>
+    <string name="invoice_discount_line">Discount (%1$s%%): −%2$s</string>
+    <string name="invoice_tax_line">Tax (%1$s%%): %2$s</string>
     <string name="invoice_deleted">Invoice delete ho gayi.</string>
     <string name="delete_invoice_confirm">Ye invoice delete karein? Ye app ke andar se bahaal nahi ho sakegi.</string>
     <string name="view">Dekhein</string>

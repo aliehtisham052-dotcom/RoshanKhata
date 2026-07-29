@@ -202,6 +202,12 @@
     <string name="business_address">دکان کا پتہ</string>
     <string name="business_address_help">ہر انوائس پر آپ کے کاروبار کے نام کے نیچے چھپتا ہے۔</string>
     <string name="business_address_hint">مثلاً مین بازار، پسرور</string>
+    <string name="invoice_bank_details">بینک تفصیلات</string>
+    <string name="invoice_bank_details_help">ان انوائس ٹیمپلیٹس کے پیمنٹ بکس کے لیے جو یہ دکھاتے ہیں۔ کوئی بھی خالی چھوڑ دیں تو وہ لائن نہیں چھپے گی۔</string>
+    <string name="invoice_bank_name_hint">بینک کا نام</string>
+    <string name="invoice_bank_title_hint">اکاؤنٹ ٹائٹل</string>
+    <string name="invoice_bank_iban_hint">IBAN / اکاؤنٹ نمبر</string>
+    <string name="invoice_bank_jazzcash_hint">جاز کیش / ایزی پیسہ نمبر</string>
 
     <string name="payment_qr">پیمنٹ QR کوڈ</string>
     <string name="payment_qr_help">آپ کے ایزی پیسہ یا جاز کیش QR کوڈ کا اسکرین شاٹ یا تصویر۔ یہ اسٹیٹمنٹ کے ساتھ لگے گا تاکہ گاہک اسکین کر کے آپ کو ادائیگی کر سکے۔</string>
@@ -464,6 +470,9 @@
     <string name="invoice_phone_hint">فون (اختیاری)</string>
     <string name="pick_invoice_date">انوائس کی تاریخ چنیں</string>
     <string name="invoice_date_set">تاریخ: %1$s</string>
+    <string name="invoice_due_date_hint">ادائیگی کی تاریخ (اختیاری)</string>
+    <string name="invoice_discount_hint">ڈسکاؤنٹ % (اختیاری)</string>
+    <string name="invoice_tax_hint">ٹیکس % (اختیاری)</string>
     <string name="invoice_item_name_hint">چیز کا نام</string>
     <string name="invoice_item_rate_hint">فی اکائی ریٹ (روپے)</string>
     <string name="invoice_item_invalid">درست چیز کا نام، مقدار اور ریٹ درج کریں۔</string>
@@ -471,6 +480,9 @@
     <string name="invoice_needs_item">پہلے کم از کم ایک چیز شامل کریں۔</string>
     <string name="invoice_saved">انوائس محفوظ ہو گئی۔</string>
     <string name="invoice_total">کل: %1$s</string>
+    <string name="invoice_subtotal">ذیلی مجموعہ: %1$s</string>
+    <string name="invoice_discount_line">ڈسکاؤنٹ (%1$s%%): −%2$s</string>
+    <string name="invoice_tax_line">ٹیکس (%1$s%%): %2$s</string>
     <string name="invoice_deleted">انوائس حذف ہو گئی۔</string>
     <string name="delete_invoice_confirm">یہ انوائس حذف کریں؟ یہ ایپ کے اندر سے بحال نہیں ہو سکے گی۔</string>
     <string name="view">دیکھیں</string>

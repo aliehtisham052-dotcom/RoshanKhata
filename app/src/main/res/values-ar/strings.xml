@@ -202,6 +202,12 @@
     <string name="business_address">عنوان المحل</string>
     <string name="business_address_help">يُطبع تحت اسم نشاطك التجاري في كل فاتورة.</string>
     <string name="business_address_hint">مثل السوق الرئيسي، باسرور</string>
+    <string name="invoice_bank_details">تفاصيل الحساب البنكي</string>
+    <string name="invoice_bank_details_help">لمربع الدفع في قوالب الفواتير التي تعرضه. اترك أيًا منها فارغًا ليُحذف ذلك السطر.</string>
+    <string name="invoice_bank_name_hint">اسم البنك</string>
+    <string name="invoice_bank_title_hint">اسم صاحب الحساب</string>
+    <string name="invoice_bank_iban_hint">رقم الآيبان / الحساب</string>
+    <string name="invoice_bank_jazzcash_hint">رقم جاز كاش / إيزي بيسا</string>
 
     <string name="payment_qr">رمز QR للدفع</string>
     <string name="payment_qr_help">لقطة شاشة أو صورة لرمز QR الخاص بحسابك في EasyPaisa أو JazzCash. سيُرفق بالكشوف ليتمكن العميل من المسح والدفع لك.</string>
@@ -464,6 +470,9 @@
     <string name="invoice_phone_hint">الهاتف (اختياري)</string>
     <string name="pick_invoice_date">اختر تاريخ الفاتورة</string>
     <string name="invoice_date_set">التاريخ: %1$s</string>
+    <string name="invoice_due_date_hint">تاريخ الاستحقاق (اختياري)</string>
+    <string name="invoice_discount_hint">الخصم % (اختياري)</string>
+    <string name="invoice_tax_hint">الضريبة % (اختياري)</string>
     <string name="invoice_item_name_hint">اسم الصنف</string>
     <string name="invoice_item_rate_hint">سعر الوحدة (Rs)</string>
     <string name="invoice_item_invalid">أدخل اسم صنف ومقدارًا وسعرًا صحيحين.</string>
@@ -471,6 +480,9 @@
     <string name="invoice_needs_item">أضف صنفًا واحدًا على الأقل أولاً.</string>
     <string name="invoice_saved">تم حفظ الفاتورة.</string>
     <string name="invoice_total">الإجمالي: %1$s</string>
+    <string name="invoice_subtotal">المجموع الفرعي: %1$s</string>
+    <string name="invoice_discount_line">الخصم (%1$s%%): −%2$s</string>
+    <string name="invoice_tax_line">الضريبة (%1$s%%): %2$s</string>
     <string name="invoice_deleted">تم حذف الفاتورة.</string>
     <string name="delete_invoice_confirm">حذف هذه الفاتورة؟ لن يمكن استعادتها من داخل التطبيق.</string>
     <string name="view">عرض</string>

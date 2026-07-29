@@ -348,6 +348,64 @@
                 android:textColor="@color/text_muted"
                 android:textSize="12sp" />
 
+            <!--
+              For an invoice's optional payment-info box. All four fields
+              independent — a template prints whichever are set and leaves
+              out a row for anything blank.
+            -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/invoice_bank_details"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/invoice_bank_details_help"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/etBankName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:hint="@string/invoice_bank_name_hint"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/etBankTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="@string/invoice_bank_title_hint"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/etBankIban"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="@string/invoice_bank_iban_hint"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/etBankJazzCash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="@string/invoice_bank_jazzcash_hint"
+                android:importantForAutofill="no"
+                android:inputType="phone" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveProfile"
                 android:layout_width="match_parent"

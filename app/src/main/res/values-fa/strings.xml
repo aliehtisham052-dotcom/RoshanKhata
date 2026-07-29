@@ -212,6 +212,12 @@
     <string name="business_address">آدرس مغازه</string>
     <string name="business_address_help">زیر نام کسب‌وکار شما روی هر فاکتور چاپ می‌شود.</string>
     <string name="business_address_hint">مثلاً بازار اصلی، پسرور</string>
+    <string name="invoice_bank_details">اطلاعات بانکی</string>
+    <string name="invoice_bank_details_help">برای کادر پرداخت در قالب‌های فاکتوری که آن را نشان می‌دهند. هر کدام را خالی بگذارید، آن سطر چاپ نمی‌شود.</string>
+    <string name="invoice_bank_name_hint">نام بانک</string>
+    <string name="invoice_bank_title_hint">عنوان حساب</string>
+    <string name="invoice_bank_iban_hint">شماره شبا / حساب</string>
+    <string name="invoice_bank_jazzcash_hint">شماره جاز کش / ایزی پیسا</string>
 
     <string name="payment_qr">کد QR پرداخت</string>
     <string name="payment_qr_help">عکس یا اسکرین‌شات کد QR ایزی‌پیسه یا جاز کش شما. به صورت‌حساب‌ها پیوست می‌شود تا مشتری اسکن کند و به شما بپردازد.</string>
@@ -485,6 +491,9 @@
     <string name="invoice_phone_hint">تلفن (اختیاری)</string>
     <string name="pick_invoice_date">انتخاب تاریخ فاکتور</string>
     <string name="invoice_date_set">تاریخ: %1$s</string>
+    <string name="invoice_due_date_hint">تاریخ سررسید (اختیاری)</string>
+    <string name="invoice_discount_hint">تخفیف % (اختیاری)</string>
+    <string name="invoice_tax_hint">مالیات % (اختیاری)</string>
     <string name="invoice_item_name_hint">نام قلم</string>
     <string name="invoice_item_rate_hint">قیمت هر واحد (Rs)</string>
     <string name="invoice_item_invalid">نام قلم، مقدار و قیمت معتبر وارد کنید.</string>
@@ -492,6 +501,9 @@
     <string name="invoice_needs_item">ابتدا حداقل یک قلم اضافه کنید.</string>
     <string name="invoice_saved">فاکتور ذخیره شد.</string>
     <string name="invoice_total">جمع: %1$s</string>
+    <string name="invoice_subtotal">جمع جزء: %1$s</string>
+    <string name="invoice_discount_line">تخفیف (%1$s%%): −%2$s</string>
+    <string name="invoice_tax_line">مالیات (%1$s%%): %2$s</string>
     <string name="invoice_deleted">فاکتور حذف شد.</string>
     <string name="delete_invoice_confirm">این فاکتور حذف شود؟ از داخل برنامه قابل بازیابی نخواهد بود.</string>
     <string name="view">مشاهده</string>

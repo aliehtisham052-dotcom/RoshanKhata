@@ -212,6 +212,12 @@
     <string name="business_address">دڪان جو پتو</string>
     <string name="business_address_help">هر انوائس تي توهان جي ڪاروبار جي نالي هيٺان ڇپبو.</string>
     <string name="business_address_hint">مثال: مين بازار، پسرور</string>
+    <string name="invoice_bank_details">بئنڪ تفصيلات</string>
+    <string name="invoice_bank_details_help">انهن انوائس ٽيمپليٽس جي پيمينٽ باڪس لاءِ جيڪي اهو ڏيکارين ٿا. ڪو به خالي ڇڏيو ته اها لائن نه ڇپبي.</string>
+    <string name="invoice_bank_name_hint">بئنڪ جو نالو</string>
+    <string name="invoice_bank_title_hint">اڪائونٽ ٽائيٽل</string>
+    <string name="invoice_bank_iban_hint">IBAN / اڪائونٽ نمبر</string>
+    <string name="invoice_bank_jazzcash_hint">جاز ڪيش / ايزي پيسا نمبر</string>
 
     <string name="payment_qr">ادائيگي جو QR ڪوڊ</string>
     <string name="payment_qr_help">توهان جي ايزي پئسا يا جاز ڪيش QR ڪوڊ جي تصوير يا اسڪرين شاٽ. اها اسٽيٽمينٽن سان ڳنڍي ويندي ته جيئن گراهڪ اسڪين ڪري توهان کي ادائيگي ڪري سگهي.</string>
@@ -485,6 +491,9 @@
     <string name="invoice_phone_hint">فون (اختياري)</string>
     <string name="pick_invoice_date">انوائس جي تاريخ چونڊيو</string>
     <string name="invoice_date_set">تاريخ: %1$s</string>
+    <string name="invoice_due_date_hint">ادائيگي جي تاريخ (اختياري)</string>
+    <string name="invoice_discount_hint">ڈسڪائونٽ % (اختياري)</string>
+    <string name="invoice_tax_hint">ٽيڪس % (اختياري)</string>
     <string name="invoice_item_name_hint">شيءِ جو نالو</string>
     <string name="invoice_item_rate_hint">في يونٽ اگهه (Rs)</string>
     <string name="invoice_item_invalid">صحيح شيءِ جو نالو، مقدار ۽ اگهه داخل ڪريو.</string>
@@ -492,6 +501,9 @@
     <string name="invoice_needs_item">پهرين گهٽ ۾ گهٽ هڪ شيءِ شامل ڪريو.</string>
     <string name="invoice_saved">انوائس محفوظ ٿي وئي.</string>
     <string name="invoice_total">ڪل: %1$s</string>
+    <string name="invoice_subtotal">ذيلي مجموعو: %1$s</string>
+    <string name="invoice_discount_line">ڊسڪائونٽ (%1$s%%): −%2$s</string>
+    <string name="invoice_tax_line">ٽيڪس (%1$s%%): %2$s</string>
     <string name="invoice_deleted">انوائس هٽائي وئي.</string>
     <string name="delete_invoice_confirm">هي انوائس هٽايو؟ اها ايپ اندران بحال نه ٿي سگهندي.</string>
     <string name="view">ڏسو</string>
