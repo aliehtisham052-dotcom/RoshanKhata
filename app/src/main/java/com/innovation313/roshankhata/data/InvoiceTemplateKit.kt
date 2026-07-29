@@ -55,6 +55,15 @@ object InvoiceTemplateKit {
         val zebra: Int,
         val gradient: Boolean = true,
         /**
+         * False draws the header as plain text with a hairline rule under
+         * it, instead of a filled colour band — for a design whose whole
+         * point is using as little ink as possible on a shop's own printer.
+         * A template that sets this also wants onPrimary/onPrimaryMuted set
+         * to its normal page text colours, since there is no coloured band
+         * for light text to sit on any more.
+         */
+        val bandFilled: Boolean = true,
+        /**
          * An optional middle stop, for a band that runs through three
          * colours rather than two — T3's violet into magenta into pink.
          * Null keeps the plain two-stop primary-to-primaryEnd sweep every
@@ -128,29 +137,46 @@ object InvoiceTemplateKit {
         subtitle: String = "RASID",
         heading: String = "INVOICE"
     ): Float {
-        val band = Paint().apply {
-            isAntiAlias = true
-            shader = if (palette.gradient) {
-                val mid = palette.primaryMid
-                if (mid != null) {
-                    LinearGradient(
-                        0f, 0f, pageW.toFloat(), 0f,
-                        intArrayOf(palette.primary, mid, palette.primaryEnd),
-                        floatArrayOf(0f, 0.5f, 1f),
-                        Shader.TileMode.CLAMP
-                    )
-                } else {
-                    LinearGradient(0f, 0f, pageW.toFloat(), 0f, palette.primary, palette.primaryEnd, Shader.TileMode.CLAMP)
-                }
-            } else null
-            if (!palette.gradient) color = palette.primary
+        if (palette.bandFilled) {
+            val band = Paint().apply {
+                isAntiAlias = true
+                shader = if (palette.gradient) {
+                    val mid = palette.primaryMid
+                    if (mid != null) {
+                        LinearGradient(
+                            0f, 0f, pageW.toFloat(), 0f,
+                            intArrayOf(palette.primary, mid, palette.primaryEnd),
+                            floatArrayOf(0f, 0.5f, 1f),
+                            Shader.TileMode.CLAMP
+                        )
+                    } else {
+                        LinearGradient(0f, 0f, pageW.toFloat(), 0f, palette.primary, palette.primaryEnd, Shader.TileMode.CLAMP)
+                    }
+                } else null
+                if (!palette.gradient) color = palette.primary
+            }
+            c.drawRect(0f, 0f, pageW.toFloat(), 96f, band)
+        } else {
+            // A single hairline where the band's lower edge would have been —
+            // enough to separate the letterhead from the body without
+            // covering a sixth of the page in ink.
+            c.drawLine(left, 96f, right, 96f, Paint().apply {
+                color = palette.ruleColor; strokeWidth = 1f; isAntiAlias = true
+            })
         }
-        c.drawRect(0f, 0f, pageW.toFloat(), 96f, band)
 
         val shopName = BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata"
 
         val tile = RectF(left, 26f, left + 40f, 66f)
-        c.drawRoundRect(tile, 9f, 9f, solid(0x33FFFFFF))
+        if (palette.bandFilled) {
+            c.drawRoundRect(tile, 9f, 9f, solid(0x33FFFFFF))
+        } else {
+            // Outlined rather than filled, same reason as the band itself.
+            c.drawRoundRect(tile, 9f, 9f, Paint().apply {
+                isAntiAlias = true; color = palette.primary
+                style = Paint.Style.STROKE; strokeWidth = 1f
+            })
+        }
         val initials = shopName.trim().split(Regex("\\s+"))
             .filter { it.isNotEmpty() }
             .take(2)

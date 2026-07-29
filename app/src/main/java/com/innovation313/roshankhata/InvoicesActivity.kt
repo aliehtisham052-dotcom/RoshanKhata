@@ -106,7 +106,7 @@ class InvoicesActivity : AppCompatActivity() {
     }
 
     /**
-     * Four of the ten finalised templates exist so far. Picking one
+     * Six of the ten finalised templates exist so far. Picking one
      * updates the invoice's own templateId, so re-sharing later remembers
      * what was chosen rather than asking again from scratch.
      *
@@ -120,9 +120,10 @@ class InvoicesActivity : AppCompatActivity() {
             getString(R.string.invoice_template_black_gold),
             getString(R.string.invoice_template_gradient),
             getString(R.string.invoice_template_green_retail),
+            getString(R.string.invoice_template_minimal_slate),
             getString(R.string.invoice_template_thermal)
         )
-        val templateIds = intArrayOf(1, 2, 3, 4, 10)
+        val templateIds = intArrayOf(1, 2, 3, 4, 5, 10)
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.invoice_choose_template)
             .setItems(templates) { _, which ->

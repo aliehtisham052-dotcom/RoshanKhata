@@ -497,6 +497,7 @@
     <string name="invoice_template_black_gold">أسود وذهبي — فاخر، لمحلات المجوهرات</string>
     <string name="invoice_template_gradient">تدرّج عصري — زاهٍ، لصالونات التجميل</string>
     <string name="invoice_template_green_retail">أخضر للتجزئة — مضغوط، للبقالات</string>
+    <string name="invoice_template_minimal_slate">سليت بسيط — سادة، أقل استهلاك للحبر</string>
     <string name="invoice_template_thermal">إيصال حراري — ضيق، بيع نقدي</string>
     <string name="invoice_pdf_failed">تعذّر إنشاء ملف PDF. لم تتم مشاركة أي شيء.</string>
     <string name="invoice_preview_label">معاينة — تتحدث أثناء التعبئة</string>

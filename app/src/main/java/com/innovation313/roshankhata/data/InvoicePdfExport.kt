@@ -82,6 +82,7 @@ object InvoicePdfExport {
             2 -> buildBlackGold(context, invoice, items)
             3 -> buildModernGradient(context, invoice, items)
             4 -> buildGreenRetail(context, invoice, items)
+            5 -> buildMinimalSlate(context, invoice, items)
             10 -> buildThermalReceipt(context, invoice, items)
             else -> buildTealCorporate(context, invoice, items)
         }
@@ -460,6 +461,96 @@ object InvoicePdfExport {
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.manrope(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T5 — Minimal Slate ====================
+
+    /**
+     * The lightest design of the ten — the spec's own framing is "saada &
+     * saaf", print-friendly, least ink. Aimed at a stationery or book shop
+     * printing a lot of bills on its own printer, where a full-colour band
+     * across every page is a real running cost, not just a look.
+     *
+     * That is why this is the one template with bandFilled = false: the
+     * letterhead is plain text over a hairline rather than a filled block.
+     * Zebra striping is switched off the same way, by setting it to the
+     * page colour — no code branch needed, the row fill simply becomes
+     * invisible. The table header keeps a light slate tint with dark text
+     * instead of a solid dark bar, and the TOTAL bar stays filled: it is
+     * small, and it is the one figure that should be impossible to miss.
+     */
+    private fun buildMinimalSlate(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF1E2530.toInt(),
+            primary = 0xFF334155.toInt(),
+            primaryEnd = 0xFF334155.toInt(),   // same value — no sweep on a flat design
+            muted = 0xFF94A0B0.toInt(),
+            ruleColor = 0xFFE8ECF1.toInt(),
+            boxFill = 0xFFF6F8FA.toInt(),
+            zebra = Color.WHITE,               // striping off, without a code branch
+            gradient = false,
+            bandFilled = false,
+            // No coloured band to sit on, so the letterhead text uses the
+            // page's own ink and muted colours.
+            onPrimary = 0xFF1E2530.toInt(),
+            onPrimaryMuted = 0xFF94A0B0.toInt(),
+            tableHeaderFill = 0xFFEDF1F5.toInt(),
+            onTableHeader = 0xFF1E2530.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.sora(context),
             mono = InvoiceFonts.ibmPlexMono(context),
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
