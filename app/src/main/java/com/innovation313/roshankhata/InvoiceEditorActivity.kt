@@ -9,12 +9,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
@@ -23,6 +23,7 @@ import com.innovation313.roshankhata.data.InvoiceFeatureSettings
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.ui.TemplatePagerAdapter
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -57,6 +58,16 @@ class InvoiceEditorActivity : AppCompatActivity() {
     /** Null while creating a new invoice; set once an existing one has been loaded for editing. */
     private var editingInvoiceId: Long? = null
 
+    /**
+     * Set only when editing a saved invoice, and only until the first
+     * render — the ViewPager2 has no slides at all until renderAllPreviews()
+     * populates the adapter, so setCurrentItem() called any earlier has
+     * nothing to select. Applied once real slides exist, then cleared, so
+     * a later re-render (returning from Business Settings) does not keep
+     * resetting a page the owner has since swiped away from.
+     */
+    private var pendingTemplateId: Int? = null
+
     private lateinit var tvStep: TextView
     private lateinit var stepCustomer: View
     private lateinit var stepItems: View
@@ -79,9 +90,19 @@ class InvoiceEditorActivity : AppCompatActivity() {
     private var chargeLabel: String? = null
     private var chargeAmount: Double? = null
     private var receivedAmount: Double? = null
-    private lateinit var rgTemplate: RadioGroup
-    private lateinit var ivPreview: ImageView
+    private lateinit var vpTemplates: ViewPager2
+    private lateinit var tvTemplateCaption: TextView
     private lateinit var pbLoading: ProgressBar
+    private val templatePagerAdapter = TemplatePagerAdapter()
+
+    /**
+     * Every template offered, in the order slides appear — the one list a
+     * new template gets added to. Names are the exact strings already used
+     * elsewhere for these two designs, so the caption under the carousel
+     * says the same thing the share-time picker always has.
+     */
+    private val templateIds = listOf(1, 10)
+    private val templateNameRes = listOf(R.string.invoice_template_teal, R.string.invoice_template_thermal)
 
     private var step = 1
     private var invoiceDate = System.currentTimeMillis()
@@ -120,9 +141,16 @@ class InvoiceEditorActivity : AppCompatActivity() {
         btnDue = findViewById(R.id.btnInvoiceDueDate)
         etInvoiceNumber = findViewById(R.id.etInvoiceNumber)
         itemRows = findViewById(R.id.itemRowsContainer)
-        rgTemplate = findViewById(R.id.rgInvoiceTemplate)
-        ivPreview = findViewById(R.id.ivInvoicePreview)
+        vpTemplates = findViewById(R.id.vpTemplates)
+        tvTemplateCaption = findViewById(R.id.tvTemplateCaption)
         pbLoading = findViewById(R.id.pbPreviewLoading)
+        vpTemplates.adapter = templatePagerAdapter
+        vpTemplates.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                tvTemplateCaption.setText(templateNameRes.getOrElse(position) { R.string.invoice_template_teal })
+            }
+        })
+        tvTemplateCaption.setText(templateNameRes[0])
 
         btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
         btnDate.setOnClickListener {
@@ -150,8 +178,6 @@ class InvoiceEditorActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnShopDetails).setOnClickListener {
             startActivity(android.content.Intent(this, BusinessSettingsActivity::class.java))
         }
-        rgTemplate.setOnCheckedChangeListener { _, _ -> renderPreview() }
-
         btnBack.setOnClickListener { goBack() }
         btnNext.setOnClickListener { goNext() }
 
@@ -215,7 +241,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
         chargeAmount = invoice.additionalChargeAmount
         receivedAmount = invoice.receivedAmount
         note = invoice.note
-        rgTemplate.check(if (invoice.templateId == 10) R.id.rbTemplateThermal else R.id.rbTemplateTeal)
+        pendingTemplateId = invoice.templateId
 
         if (items.isEmpty()) addRow() else items.forEach { addRow(it) }
 
@@ -230,7 +256,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
     /** Picks up any shop-detail change (stamp, QR, name, terms) made while away on step 3. */
     override fun onResume() {
         super.onResume()
-        if (step == 3) renderPreview()
+        if (step == 3) renderAllPreviews()
     }
 
     override fun onBackPressed() {
@@ -259,7 +285,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
         btnBack.visibility = if (which == 1) View.GONE else View.VISIBLE
         btnNext.setText(if (which == 3) R.string.save else R.string.invoice_next)
 
-        if (which == 3) renderPreview()
+        if (which == 3) renderAllPreviews()
     }
 
     private fun goBack() {
@@ -332,7 +358,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
     // ---------- The draft, and its preview on step 3 ----------
 
     private fun templateId(): Int =
-        if (rgTemplate.checkedRadioButtonId == R.id.rbTemplateThermal) 10 else 1
+        templateIds.getOrElse(vpTemplates.currentItem) { templateIds.first() }
 
     /**
      * Every optional field in one dialog, pre-filled from whatever was set
@@ -416,18 +442,34 @@ class InvoiceEditorActivity : AppCompatActivity() {
         )
     }
 
-    private fun renderPreview() {
+    /**
+     * Renders every template's own slide, not just the one currently
+     * shown — the whole point of a swipeable carousel is that flicking to
+     * the next design is instant, not another PDF-and-rasterise wait per
+     * swipe. Cheap enough at today's two templates; if that stops being
+     * true once more of the ten exist, this is the one place to revisit.
+     */
+    private fun renderAllPreviews() {
         renderJob?.cancel()
         renderJob = lifecycleScope.launch {
             pbLoading.visibility = View.VISIBLE
-            val invoice = draft()
+            val baseInvoice = draft()
             val items = validItems()
-            val bmp = withContext(Dispatchers.IO) {
-                InvoicePdfExport.renderPreviewBitmap(this@InvoiceEditorActivity, invoice, items)
+            val bitmaps = withContext(Dispatchers.IO) {
+                templateIds.map { id ->
+                    InvoicePdfExport.renderPreviewBitmap(
+                        this@InvoiceEditorActivity, baseInvoice.copy(templateId = id), items
+                    )
+                }
             }
             if (isFinishing || isDestroyed) return@launch
             pbLoading.visibility = View.GONE
-            if (bmp != null) ivPreview.setImageBitmap(bmp)
+            templatePagerAdapter.submit(bitmaps)
+
+            pendingTemplateId?.let { id ->
+                vpTemplates.setCurrentItem(templateIds.indexOf(id).coerceAtLeast(0), false)
+                pendingTemplateId = null
+            }
         }
     }
 

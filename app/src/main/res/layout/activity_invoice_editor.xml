@@ -156,28 +156,39 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <RadioGroup
-                    android:id="@+id/rgInvoiceTemplate"
+                <!--
+                  One template per slide, swiped through — not a vertical
+                  list of names with a single preview below it. The owner
+                  asked for this specifically ahead of the other eight
+                  templates being built, so the pattern is right before it
+                  is repeated ten times over.
+                -->
+                <TextView
+                    android:id="@+id/tvTemplateCaption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:gravity="center"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-                    <RadioButton
-                        android:id="@+id/rbTemplateTeal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="@string/invoice_template_teal"
-                        android:textSize="14sp" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="460dp"
+                    android:layout_marginTop="8dp">
 
-                    <RadioButton
-                        android:id="@+id/rbTemplateThermal"
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/vpTemplates"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="@string/invoice_template_thermal"
-                        android:textSize="14sp" />
-                </RadioGroup>
+                        android:layout_height="match_parent" />
+
+                    <ProgressBar
+                        android:id="@+id/pbPreviewLoading"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:visibility="gone" />
+                </FrameLayout>
 
                 <!--
                   Shop name, address, stamp, payment QR, bank details, and
@@ -193,28 +204,6 @@
                     android:layout_marginTop="14dp"
                     android:text="@string/invoice_edit_shop_details"
                     app:cornerRadius="8dp" />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:background="@color/white"
-                    android:minHeight="200dp">
-
-                    <ImageView
-                        android:id="@+id/ivInvoicePreview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="@string/invoice_preview_label" />
-
-                    <ProgressBar
-                        android:id="@+id/pbPreviewLoading"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:visibility="gone" />
-                </FrameLayout>
             </LinearLayout>
         </FrameLayout>
     </ScrollView>
