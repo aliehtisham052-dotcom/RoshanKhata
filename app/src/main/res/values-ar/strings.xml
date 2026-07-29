@@ -99,6 +99,8 @@
     <string name="delete_party_confirm">سينتقل \"%1$s\" وقيوده إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</string>
     <string name="delete_entry_title">حذف القيد؟</string>
     <string name="delete_entry_confirm">سينتقل هذا القيد إلى سلة المحذوفات. يمكنك استعادته خلال 30 يومًا.</string>
+    <string name="select_entries_to_delete">اختيار قيود للحذف</string>
+    <string name="delete_selected_entries_confirm">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</string>
     <string name="moved_to_bin">نُقل إلى سلة المحذوفات</string>
     <string name="long_press_to_delete">اضغط مطولًا على الطرف لحذفه</string>
 
@@ -793,12 +795,6 @@
     <string name="range_yesterday">أمس</string>
     <string name="range_this_week">هذا الأسبوع</string>
     <string name="range_this_month">هذا الشهر</string>
-    <string name="delete_all_parties">حذف كل العملاء</string>
-    <string name="delete_all_parties_confirm">سيؤدي هذا إلى نقل جميع العملاء البالغ عددهم %1$d وكل قيودهم إلى سلة المحذوفات.</string>
-    <string name="delete_all_parties_final_title">حذف كل العملاء؟</string>
-    <string name="delete_all_parties_final">سينتقل %1$d عميلاً وسجلّهم بالكامل إلى سلة المحذوفات. يمكنك استعادتهم من هناك.</string>
-    <string name="no_parties_to_delete">لا يوجد عملاء لحذفهم.</string>
-    <string name="continue_label">متابعة</string>
     <string name="biz_tpl_corner">قطري</string>
     <string name="biz_tpl_spine">منقسم</string>
     <string name="biz_tpl_split">منحنى</string>

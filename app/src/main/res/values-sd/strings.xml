@@ -101,6 +101,8 @@
     <string name="delete_party_confirm">«%1$s» ۽ ان جون داخلائون ردي جي ٽوڪري ۾ هليون وينديون. ۳۰ ڏينهن اندر واپس آڻي سگهو ٿا.</string>
     <string name="delete_entry_title">داخلا هٽايو؟</string>
     <string name="delete_entry_confirm">هيءَ داخلا ردي جي ٽوڪري ۾ هلي ويندي. ۳۰ ڏينهن اندر واپس آڻي سگهو ٿا.</string>
+    <string name="select_entries_to_delete">ختم ڪرڻ لاءِ داخلائون چونڊيو</string>
+    <string name="delete_selected_entries_confirm">%1$d چونڊيل داخلائون ختم ڪجن؟ اهي ري سائيڪل بن ۾ هليون وينديون. اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</string>
     <string name="moved_to_bin">ردي جي ٽوڪري ۾ ويو</string>
     <string name="long_press_to_delete">ڌر هٽائڻ لاءِ ان تي دير تائين دٻايو</string>
 
@@ -813,12 +815,6 @@
     <string name="range_yesterday">ڪالهه</string>
     <string name="range_this_week">هن هفتي</string>
     <string name="range_this_month">هن مهيني</string>
-    <string name="delete_all_parties">سڀ گراهڪ ڊليٽ ڪريو</string>
-    <string name="delete_all_parties_confirm">هي سڀ %1$d گراهڪ ۽ انهن جا سمورا اندراج ري سائيڪل بن ۾ منتقل ڪندو.</string>
-    <string name="delete_all_parties_final_title">سڀ گراهڪ ڊليٽ ڪجن؟</string>
-    <string name="delete_all_parties_final">%1$d گراهڪ ۽ انهن جي پوري تاريخ ري سائيڪل بن ۾ ويندي. اتان واپس آڻي سگهو ٿا.</string>
-    <string name="no_parties_to_delete">ڊليٽ ڪرڻ لاءِ ڪو گراهڪ ناهي.</string>
-    <string name="continue_label">جاري رکو</string>
     <string name="biz_tpl_corner">ترڇو</string>
     <string name="biz_tpl_spine">ورهايل</string>
     <string name="biz_tpl_split">موڙ</string>

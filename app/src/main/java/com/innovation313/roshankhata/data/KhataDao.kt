@@ -128,33 +128,21 @@ interface KhataDao {
         }
     }
 
-    /**
-     * NO CALLER RIGHT NOW, and deliberately kept.
-     *
-     * These three were the machinery behind a "Delete all customers"
-     * button that used to sit on the Recycle Bin screen. It was removed
-     * from there because it destroys the LIVE ledger from a screen people
-     * open to RECOVER things — see RecycleBinActivity for the full
-     * reasoning. The capability itself was not judged wrong, only its
-     * placement, so the queries stay ready for wherever it lands next
-     * rather than being deleted and rewritten.
-     *
-     * If that decision is ever made the other way — that clearing the
-     * whole ledger in one tap should not exist at all — these three go
-     * with it.
-     */
-    /** How many customers are still in the ledger — the number the confirmation shows. */
-    @Query("SELECT COUNT(*) FROM parties WHERE isDeleted = 0")
-    suspend fun countActiveParties(): Int
-
-    @Query("UPDATE parties SET isDeleted = 1, deletedAt = :now WHERE isDeleted = 0")
-    suspend fun softDeleteAllParties(now: Long = System.currentTimeMillis())
-
-    @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE isDeleted = 0")
-    suspend fun softDeleteAllEntries(now: Long = System.currentTimeMillis())
-
     @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteEntry(id: Long, now: Long = System.currentTimeMillis())
+
+    /**
+     * Several entries at once, for the party ledger's own select-and-delete
+     * — scoped to whichever entries the owner actually picked from ONE
+     * party's history, never the whole ledger. This is the bounded
+     * replacement for the "Delete all customers" button removed from the
+     * Recycle Bin: the owner asked for the capability to stay, just moved
+     * to where deleting an entry is an ordinary, expected action, and
+     * kept to the one party being looked at rather than everything at
+     * once.
+     */
+    @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE id IN (:ids)")
+    suspend fun softDeleteEntries(ids: List<Long>, now: Long = System.currentTimeMillis())
 
     // ---------- Recycle Bin: restore ----------
 
