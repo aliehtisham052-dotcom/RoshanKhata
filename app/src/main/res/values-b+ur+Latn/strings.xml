@@ -497,6 +497,7 @@
     <string name="invoice_template_black_gold">Black &amp; Gold — premium, jewellers ke liye</string>
     <string name="invoice_template_gradient">Modern Gradient — roshan, salon ke liye</string>
     <string name="invoice_template_green_retail">Green Retail — mukhtasar, general store ke liye</string>
+    <string name="invoice_template_minimal_slate">Minimal Slate — saada, sab se kam siyahi</string>
     <string name="invoice_template_thermal">Thermal Receipt — tang, counter sale</string>
     <string name="invoice_pdf_failed">PDF nahi ban saki. Kuch bhi nahi bheja gaya.</string>
     <string name="invoice_preview_label">Preview — jaise aap bharte hain waise update hota hai</string>
