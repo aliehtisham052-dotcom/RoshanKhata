@@ -495,7 +495,8 @@
     <string name="invoice_discount_hint">تخفیف % (اختیاری)</string>
     <string name="invoice_tax_hint">مالیات % (اختیاری)</string>
     <string name="invoice_item_name_hint">نام قلم</string>
-    <string name="invoice_item_rate_hint">قیمت هر واحد (Rs)</string>
+    <string name="invoice_item_rate_hint">قیمت (Rs)</string>
+    <string name="invoice_row_unit_hint">واحد</string>
     <string name="invoice_item_invalid">نام قلم، مقدار و قیمت معتبر وارد کنید.</string>
     <string name="invoice_customer_required">ابتدا نام مشتری را وارد کنید.</string>
     <string name="invoice_needs_item">ابتدا حداقل یک قلم اضافه کنید.</string>
@@ -521,8 +522,8 @@
     <string name="invoice_next">بعدی</string>
     <string name="invoice_back">قبلی</string>
     <string name="invoice_items_label">اقلام</string>
-    <string name="invoice_number_hint">شماره فاکتور (اختیاری — خالی بگذارید خودکار شود)</string>
-    <string name="invoice_charge_label_hint">هزینه اضافی — مثلاً کرایه حمل (اختیاری)</string>
+    <string name="invoice_number_hint">شماره فاکتور (اختیاری)</string>
+    <string name="invoice_charge_label_hint">هزینه اضافی (اختیاری)</string>
     <string name="invoice_charge_amount_hint">مبلغ</string>
     <string name="invoice_received_hint">مبلغ دریافتی (اختیاری)</string>
     <string name="invoice_terms">شرایط و ضوابط</string>

@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_weight="1"
-            android:hint="@string/unit_hint"
+            android:hint="@string/invoice_row_unit_hint"
             android:importantForAutofill="no"
             android:inputType="text"
             android:textSize="13sp" />

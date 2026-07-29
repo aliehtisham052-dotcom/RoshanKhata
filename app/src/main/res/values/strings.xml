@@ -500,7 +500,8 @@
     <string name="invoice_tax_hint">Tax % (optional)</string>
     <string name="nav_invoice">Invoice</string>
     <string name="invoice_item_name_hint">Item name</string>
-    <string name="invoice_item_rate_hint">Rate per unit (Rs)</string>
+    <string name="invoice_item_rate_hint">Rate (Rs)</string>
+    <string name="invoice_row_unit_hint">Unit</string>
     <string name="invoice_item_invalid">Enter a valid item name, quantity and rate.</string>
     <string name="invoice_customer_required">Enter the customer name first.</string>
     <string name="invoice_needs_item">Add at least one item first.</string>
@@ -526,8 +527,8 @@
     <string name="invoice_next">Next</string>
     <string name="invoice_back">Back</string>
     <string name="invoice_items_label">Items</string>
-    <string name="invoice_number_hint">Invoice number (optional — auto if left blank)</string>
-    <string name="invoice_charge_label_hint">Extra charge — e.g. Freight (optional)</string>
+    <string name="invoice_number_hint">Invoice # (optional)</string>
+    <string name="invoice_charge_label_hint">Extra charge (optional)</string>
     <string name="invoice_charge_amount_hint">Amount</string>
     <string name="invoice_received_hint">Amount received (optional)</string>
     <string name="invoice_terms">Terms &amp; Conditions</string>

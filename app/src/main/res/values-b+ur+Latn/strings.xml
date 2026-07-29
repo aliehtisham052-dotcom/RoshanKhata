@@ -474,7 +474,8 @@
     <string name="invoice_discount_hint">Discount % (ikhtiyari)</string>
     <string name="invoice_tax_hint">Tax % (ikhtiyari)</string>
     <string name="invoice_item_name_hint">Cheez ka naam</string>
-    <string name="invoice_item_rate_hint">Fi ikai rate (Rs)</string>
+    <string name="invoice_item_rate_hint">Rate (Rs)</string>
+    <string name="invoice_row_unit_hint">Unit</string>
     <string name="invoice_item_invalid">Durust cheez ka naam, miqdaar aur rate darj karein.</string>
     <string name="invoice_customer_required">Pehle gahak ka naam darj karein.</string>
     <string name="invoice_needs_item">Pehle kam az kam ek cheez shamil karein.</string>
@@ -500,8 +501,8 @@
     <string name="invoice_next">Aagay</string>
     <string name="invoice_back">Peechay</string>
     <string name="invoice_items_label">Cheezein</string>
-    <string name="invoice_number_hint">Invoice number (ikhtiyari — khaali chhodein to khud-kaar)</string>
-    <string name="invoice_charge_label_hint">Extra kharcha — maslan Kiraya (ikhtiyari)</string>
+    <string name="invoice_number_hint">Invoice # (ikhtiyari)</string>
+    <string name="invoice_charge_label_hint">Extra kharcha (ikhtiyari)</string>
     <string name="invoice_charge_amount_hint">Raqam</string>
     <string name="invoice_received_hint">Mosool shuda raqam (ikhtiyari)</string>
     <string name="invoice_terms">Sharait o zawabit</string>

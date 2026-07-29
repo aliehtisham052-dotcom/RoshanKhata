@@ -474,7 +474,8 @@
     <string name="invoice_discount_hint">ڈسکاؤنٹ % (اختیاری)</string>
     <string name="invoice_tax_hint">ٹیکس % (اختیاری)</string>
     <string name="invoice_item_name_hint">چیز کا نام</string>
-    <string name="invoice_item_rate_hint">فی اکائی ریٹ (روپے)</string>
+    <string name="invoice_item_rate_hint">ریٹ (روپے)</string>
+    <string name="invoice_row_unit_hint">اکائی</string>
     <string name="invoice_item_invalid">درست چیز کا نام، مقدار اور ریٹ درج کریں۔</string>
     <string name="invoice_customer_required">پہلے گاہک کا نام درج کریں۔</string>
     <string name="invoice_needs_item">پہلے کم از کم ایک چیز شامل کریں۔</string>
@@ -500,8 +501,8 @@
     <string name="invoice_next">آگے</string>
     <string name="invoice_back">پیچھے</string>
     <string name="invoice_items_label">چیزیں</string>
-    <string name="invoice_number_hint">انوائس نمبر (اختیاری — خالی چھوڑیں تو خودکار)</string>
-    <string name="invoice_charge_label_hint">اضافی خرچہ — مثلاً کرایہ (اختیاری)</string>
+    <string name="invoice_number_hint">انوائس # (اختیاری)</string>
+    <string name="invoice_charge_label_hint">اضافی خرچہ (اختیاری)</string>
     <string name="invoice_charge_amount_hint">رقم</string>
     <string name="invoice_received_hint">موصول شدہ رقم (اختیاری)</string>
     <string name="invoice_terms">شرائط و ضوابط</string>
