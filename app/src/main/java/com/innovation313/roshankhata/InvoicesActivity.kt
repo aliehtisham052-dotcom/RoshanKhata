@@ -106,17 +106,21 @@ class InvoicesActivity : AppCompatActivity() {
     }
 
     /**
-     * Only two of the ten finalised templates exist so far — see the class
-     * doc — so this is a real choice for now, not a formality. Picking one
+     * Three of the ten finalised templates exist so far. Picking one
      * updates the invoice's own templateId, so re-sharing later remembers
      * what was chosen rather than asking again from scratch.
+     *
+     * Kept deliberately in step with InvoiceEditorActivity's own carousel
+     * list — a template offered in one place and not the other is the
+     * obvious way for these two to drift as the remaining seven land.
      */
     private fun chooseTemplateAndShare(invoice: InvoiceSummary) {
         val templates = arrayOf(
             getString(R.string.invoice_template_teal),
+            getString(R.string.invoice_template_black_gold),
             getString(R.string.invoice_template_thermal)
         )
-        val templateIds = intArrayOf(1, 10)
+        val templateIds = intArrayOf(1, 2, 10)
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.invoice_choose_template)
             .setItems(templates) { _, which ->

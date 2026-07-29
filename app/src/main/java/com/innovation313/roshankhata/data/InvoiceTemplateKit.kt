@@ -30,7 +30,21 @@ import com.innovation313.roshankhata.ui.NumberWords
  */
 object InvoiceTemplateKit {
 
-    /** A template's own colour scheme. [gradient] false gives a flat header band instead of teal-into-tealEnd. */
+    /**
+     * A template's own colour scheme.
+     *
+     * [gradient] false gives a flat header band instead of primary-into-primaryEnd.
+     *
+     * [pageBackground] null leaves the page white, which is every template
+     * so far; a dark design (T2's near-black, T8's cream) sets it and the
+     * whole sheet is filled before anything else is drawn.
+     *
+     * [onPrimary]/[onPrimaryMuted] are the text colours used ON the header
+     * band and the filled TOTAL bar — separate from [ink]/[muted], which
+     * are for text on the page itself. A gold band wants near-black text
+     * on it while its page text is cream; assuming white would be wrong
+     * for exactly those templates.
+     */
     data class Palette(
         val ink: Int,
         val primary: Int,
@@ -39,7 +53,12 @@ object InvoiceTemplateKit {
         val ruleColor: Int,
         val boxFill: Int,
         val zebra: Int,
-        val gradient: Boolean = true
+        val gradient: Boolean = true,
+        val pageBackground: Int? = null,
+        val onPrimary: Int = Color.WHITE,
+        val onPrimaryMuted: Int = 0xFFBEE3E1.toInt(),
+        val tableHeaderFill: Int? = null,
+        val onTableHeader: Int = Color.WHITE
     )
 
     /** A template's own fonts — headings/labels vs monospace for numbers and money, matching the spec's per-template font pairs. */
@@ -77,6 +96,16 @@ object InvoiceTemplateKit {
     fun solid(colour: Int): Paint = Paint().apply { isAntiAlias = true; color = colour }
 
     /**
+     * Fills the whole sheet, for a template whose page is not white — T2's
+     * near-black, T8's cream. Must be called before anything else on a
+     * fresh page, including after a page break, or that page keeps the
+     * PDF's own white default while the first one is dark.
+     */
+    fun fillPage(c: Canvas, palette: Palette, pageW: Int, pageH: Int) {
+        palette.pageBackground?.let { c.drawRect(0f, 0f, pageW.toFloat(), pageH.toFloat(), solid(it)) }
+    }
+
+    /**
      * The gradient (or flat) band across the top: monogram tile, shop
      * name/address/STRN, and "INVOICE"/[subtitle] on the right. Returns the
      * y position work should continue from.
@@ -111,22 +140,22 @@ object InvoiceTemplateKit {
             .joinToString("") { it.take(1).uppercase() }
         c.drawText(
             initials.ifEmpty { "R" }, tile.centerX(), tile.centerY() + 5f,
-            paint(fonts, 14f, Color.WHITE, bold = true, align = Paint.Align.CENTER)
+            paint(fonts, 14f, palette.onPrimary, bold = true, align = Paint.Align.CENTER)
         )
 
-        c.drawText(shopName, left + 52f, 44f, paint(fonts, 16f, Color.WHITE, bold = true))
+        c.drawText(shopName, left + 52f, 44f, paint(fonts, 16f, palette.onPrimary, bold = true))
         BusinessProfile.businessAddress(context)?.let {
-            c.drawText(it, left + 52f, 58f, paint(fonts, 9f, 0xFFD9EFEE.toInt()))
+            c.drawText(it, left + 52f, 58f, paint(fonts, 9f, palette.onPrimaryMuted))
         }
         // Only for a shop registered for sales tax — blank prints nothing,
         // deliberately, since FBR's own guidance is that an invoice with no
         // STRN should not be charging sales tax in the first place.
         BusinessProfile.strn(context)?.let {
-            c.drawText("STRN: $it", left + 52f, 70f, paint(fonts, 8f, 0xFFBEE3E1.toInt()))
+            c.drawText("STRN: $it", left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted))
         }
 
-        c.drawText(heading, right, 44f, paint(fonts, 22f, Color.WHITE, bold = true, align = Paint.Align.RIGHT))
-        c.drawText(subtitle, right, 58f, paint(fonts, 8f, 0xFFBEE3E1.toInt(), align = Paint.Align.RIGHT))
+        c.drawText(heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
+        c.drawText(subtitle, right, 58f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.RIGHT))
 
         return 124f
     }
@@ -196,9 +225,9 @@ object InvoiceTemplateKit {
         val rulePaint = Paint().apply { color = palette.ruleColor; strokeWidth = 0.7f }
 
         fun tableHeader(atY: Float): Float {
-            canvas.drawRect(left, atY, right, atY + 20f, solid(palette.ink))
-            val th = paint(fonts, 8f, Color.WHITE, bold = true)
-            val thR = paint(fonts, 8f, Color.WHITE, bold = true, align = Paint.Align.RIGHT)
+            canvas.drawRect(left, atY, right, atY + 20f, solid(palette.tableHeaderFill ?: palette.ink))
+            val th = paint(fonts, 8f, palette.onTableHeader, bold = true)
+            val thR = paint(fonts, 8f, palette.onTableHeader, bold = true, align = Paint.Align.RIGHT)
             canvas.drawText("#", xNo, atY + 13.5f, th)
             canvas.drawText("TAFSEEL", xItem, atY + 13.5f, th)
             extraColumn?.let { canvas.drawText(it.label.uppercase(), xExtra, atY + 13.5f, thR) }
@@ -283,8 +312,8 @@ object InvoiceTemplateKit {
         ty += 5f
         val totalBar = RectF(totalsX, ty, right, ty + 30f)
         c.drawRoundRect(totalBar, 7f, 7f, solid(palette.primary))
-        c.drawText("TOTAL", totalsX + 12f, ty + 20f, paint(fonts, 12f, Color.WHITE, bold = true))
-        c.drawText(Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 13f, Color.WHITE, bold = true, align = Paint.Align.RIGHT))
+        c.drawText("TOTAL", totalsX + 12f, ty + 20f, paint(fonts, 12f, palette.onPrimary, bold = true))
+        c.drawText(Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 13f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
         ty += 40f
 
         if (invoice.receivedAmount != null) {

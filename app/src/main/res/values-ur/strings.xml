@@ -492,6 +492,7 @@
     <string name="invoice_share_pdf">PDF کے طور پر بھیجیں</string>
     <string name="invoice_choose_template">پرنٹ ڈیزائن چنیں</string>
     <string name="invoice_template_teal">ٹیل کارپوریٹ — مکمل بزنس انوائس</string>
+    <string name="invoice_template_black_gold">بلیک اینڈ گولڈ — پریمیم، جیولرز کے لیے</string>
     <string name="invoice_template_thermal">تھرمل رسید — تنگ، کاؤنٹر سیل</string>
     <string name="invoice_pdf_failed">PDF نہیں بن سکی۔ کچھ بھی نہیں بھیجا گیا۔</string>
     <string name="invoice_preview_label">پیش منظر — جیسے آپ بھرتے ہیں ویسے اپڈیٹ ہوتا ہے</string>
