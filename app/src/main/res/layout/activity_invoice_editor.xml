@@ -17,202 +17,155 @@
         app:title="@string/add_invoice"
         app:titleTextColor="@color/white" />
 
-    <ScrollView
+    <TextView
+        android:id="@+id/tvTapHint"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF6E0"
+        android:padding="8dp"
+        android:text="@string/invoice_tap_to_edit_hint"
+        android:textColor="#5C4A16"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editorToolbar">
+        app:layout_constraintTop_toBottomOf="@id/editorToolbar" />
 
-        <LinearLayout
+    <!--
+      The invoice itself, and nothing beside it. Tapping a value on the page
+      puts the inline editor directly over that value — there is deliberately
+      no second copy of these fields as a form underneath, which is what the
+      owner asked for after finding a preview and a form saying the same
+      thing twice.
+    -->
+    <ScrollView
+        android:id="@+id/previewScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/bottomBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTapHint">
+
+        <FrameLayout
+            android:id="@+id/previewFrame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivInvoicePreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/invoice_preview_label" />
 
             <!--
-              Live preview, redrawn (debounced) on every change — the same
-              PDF this invoice would actually produce, rasterised. See the
-              doc on InvoicePdfExport.renderPreviewBitmap for why this is not
-              a second drawing routine.
+              One editor, moved to whichever value was tapped, rather than an
+              input permanently sitting on every field — a page full of boxes
+              would stop looking like the invoice it is meant to be.
             -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/invoice_preview_label"
-                android:textColor="@color/ink"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:background="@color/white"
-                android:minHeight="180dp">
-
-                <ImageView
-                    android:id="@+id/ivInvoicePreview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="@string/invoice_preview_label" />
-
-                <ProgressBar
-                    android:id="@+id/pbPreviewLoading"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:visibility="gone" />
-            </FrameLayout>
-
-            <!-- Only two of the ten finalised designs exist so far. -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/invoice_choose_template"
-                android:textColor="@color/navy_primary"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <RadioGroup
-                android:id="@+id/rgInvoiceTemplate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:orientation="vertical">
-
-                <RadioButton
-                    android:id="@+id/rbTemplateTeal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/invoice_template_teal"
-                    android:textSize="13sp" />
-
-                <RadioButton
-                    android:id="@+id/rbTemplateThermal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/invoice_template_thermal"
-                    android:textSize="13sp" />
-            </RadioGroup>
-
-            <!--
-              Deliberately NOT a party picker — see the class doc on
-              Invoice. Typing or choosing here only fills this text field.
-            -->
-            <AutoCompleteTextView
-                android:id="@+id/etInvoiceCustomer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:completionThreshold="1"
-                android:hint="@string/invoice_customer_hint"
-                android:importantForAutofill="no"
-                android:inputType="text" />
-
             <EditText
-                android:id="@+id/etInvoicePhone"
-                android:layout_width="match_parent"
+                android:id="@+id/etInline"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="@string/invoice_phone_hint"
+                android:background="#33FFC107"
                 android:importantForAutofill="no"
-                android:inputType="phone" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnInvoiceDate"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/pick_invoice_date"
-                app:cornerRadius="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnInvoiceDueDate"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/invoice_due_date_hint"
-                app:cornerRadius="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/etInvoiceDiscount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/invoice_discount_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="numberDecimal" />
-
-                <EditText
-                    android:id="@+id/etInvoiceTax"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:hint="@string/invoice_tax_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="numberDecimal" />
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/etInvoiceNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="@string/note_optional"
-                android:importantForAutofill="no"
-                android:inputType="text" />
-
-            <!-- Items, added and edited right here — no separate dialogs. -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/invoice_items_label"
-                android:textColor="@color/navy_primary"
+                android:inputType="text"
+                android:maxLines="1"
+                android:padding="2dp"
                 android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/itemRowsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:orientation="vertical" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAddRow"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="46dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/add_item"
-                app:cornerRadius="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSaveInvoice"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="24dp"
-                android:text="@string/save"
-                app:backgroundTint="@color/brand_green"
-                app:cornerRadius="10dp" />
-
-        </LinearLayout>
+                android:visibility="gone" />
+        </FrameLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/page_bg"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!--
+          Only what has nowhere to live on the invoice itself: the design
+          choice, the values that are not printed until they have a value,
+          adding a line, and saving.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDesign"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="@string/invoice_btn_design"
+            android:textSize="11sp"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMore"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="@string/invoice_btn_more"
+            android:textSize="11sp"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddRow"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="@string/add_item"
+            android:textSize="11sp"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveInvoice"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="@string/save"
+            android:textSize="11sp"
+            app:backgroundTint="@color/brand_green"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pbPreviewLoading"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/previewScroll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/previewScroll" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

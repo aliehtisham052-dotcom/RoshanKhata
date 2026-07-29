@@ -50,10 +50,72 @@ object InvoicePdfExport {
      */
     private fun numberOnly(value: Double): String = Format.money(value).removePrefix("Rs ")
 
-    fun build(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+    /**
+     * Which editable value a box on the rendered page corresponds to.
+     *
+     * This is what lets the editor put a real input control exactly over the
+     * text it edits, so the owner types on the invoice itself rather than on
+     * a form somewhere below it.
+     */
+    enum class Field { CUSTOMER, PHONE, NOTE, ITEM_NAME, ITEM_QTY, ITEM_RATE }
+
+    /**
+     * Where one editable value landed on the page, in the PDF's own point
+     * coordinates. [itemIndex] is the position in the items list for the
+     * ITEM_* fields and -1 for the rest.
+     */
+    data class FieldBox(val field: Field, val itemIndex: Int, val rect: RectF)
+
+    /** A rendered page plus the map of what on it can be typed into. */
+    data class Preview(
+        val bitmap: android.graphics.Bitmap,
+        val boxes: List<FieldBox>,
+        val pageWidth: Int,
+        val pageHeight: Int
+    )
+
+    /**
+     * Notes where a piece of text was drawn, measured from the same Paint
+     * that drew it — so a box always covers exactly the glyphs it belongs
+     * to, at whatever alignment that Paint uses, and cannot drift from the
+     * drawing as the templates change.
+     *
+     * Given a minimum width because an empty field still needs somewhere to
+     * tap: with nothing typed yet, the measured width would be zero and the
+     * box would be impossible to hit.
+     */
+    private fun record(
+        into: MutableList<FieldBox>?,
+        field: Field,
+        itemIndex: Int,
+        x: Float,
+        y: Float,
+        paint: Paint,
+        text: String
+    ) {
+        if (into == null) return
+        val w = paint.measureText(text).coerceAtLeast(40f)
+        val left = when (paint.textAlign) {
+            Paint.Align.RIGHT -> x - w
+            Paint.Align.CENTER -> x - w / 2f
+            else -> x
+        }
+        val fm = paint.fontMetrics
+        into.add(FieldBox(field, itemIndex, RectF(left, y + fm.ascent, left + w, y + fm.descent)))
+    }
+
+    fun build(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? =
+        build(context, invoice, items, null)
+
+    private fun build(
+        context: Context,
+        invoice: Invoice,
+        items: List<InvoiceItem>,
+        boxes: MutableList<FieldBox>?
+    ): File? {
         return when (invoice.templateId) {
-            10 -> buildThermalReceipt(context, invoice, items)
-            else -> buildTealCorporate(context, invoice, items)
+            10 -> buildThermalReceipt(context, invoice, items, boxes)
+            else -> buildTealCorporate(context, invoice, items, boxes)
         }
     }
 
@@ -73,8 +135,9 @@ object InvoicePdfExport {
      * @return null on any failure — a blank preview area is the correct
      *         result of nothing typed yet, not a crash.
      */
-    fun renderPreviewBitmap(context: Context, invoice: Invoice, items: List<InvoiceItem>): android.graphics.Bitmap? {
-        val file = build(context, invoice, items) ?: return null
+    fun renderPreview(context: Context, invoice: Invoice, items: List<InvoiceItem>): Preview? {
+        val boxes = mutableListOf<FieldBox>()
+        val file = build(context, invoice, items, boxes) ?: return null
         return try {
             android.os.ParcelFileDescriptor.open(
                 file, android.os.ParcelFileDescriptor.MODE_READ_ONLY
@@ -93,7 +156,14 @@ object InvoicePdfExport {
                             bmp, null, null,
                             android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
                         )
-                        bmp
+                        // Only page one is previewed, so a box drawn onto a
+                        // later page must not be offered as tappable here —
+                        // it would sit at coordinates belonging to a page the
+                        // owner cannot see.
+                        val onFirstPage = boxes.filter {
+                            it.rect.top >= 0f && it.rect.bottom <= page.height.toFloat()
+                        }
+                        Preview(bmp, onFirstPage, page.width, page.height)
                     }
                 }
             }
@@ -115,7 +185,12 @@ object InvoicePdfExport {
      * amount in words, terms, a stamp-and-signature block. The one to reach
      * for when an invoice needs to look like a complete, formal bill.
      */
-    private fun buildTealCorporate(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+    private fun buildTealCorporate(
+        context: Context,
+        invoice: Invoice,
+        items: List<InvoiceItem>,
+        boxes: MutableList<FieldBox>?
+    ): File? {
         val doc = PdfDocument()
 
         val tealDark = 0xFF0F2A2A.toInt()
@@ -216,9 +291,14 @@ object InvoicePdfExport {
         c.drawText("BILL TO", MARGIN, y, lbl)
         y += 13f
         c.drawText(invoice.customerName, MARGIN, y, billName)
-        invoice.customerPhone?.takeIf { it.isNotBlank() }?.let {
+        record(boxes, Field.CUSTOMER, -1, MARGIN, y, billName, invoice.customerName)
+        run {
+            val phone = invoice.customerPhone?.takeIf { it.isNotBlank() }
             y += 13f
-            c.drawText(it, MARGIN, y, metaLine)
+            if (phone != null) c.drawText(phone, MARGIN, y, metaLine)
+            // Recorded whether or not there is a phone yet: an empty field
+            // still needs somewhere to tap to start typing one.
+            record(boxes, Field.PHONE, -1, MARGIN, y, metaLine, phone.orEmpty())
         }
 
         var yr = 96f + 13f
@@ -257,8 +337,16 @@ object InvoicePdfExport {
             }
             c.drawText((index + 1).toString(), xNo, y, tdBody)
             c.drawText(item.itemName, xItem, y, tdBody)
-            c.drawText(Format.qty(item.quantity, item.unit), xQty, y, Paint(tdBody).apply { textAlign = Paint.Align.RIGHT })
-            c.drawText(numberOnly(item.rate), xRate, y, Paint(tdBody).apply { textAlign = Paint.Align.RIGHT })
+            record(boxes, Field.ITEM_NAME, index, xItem, y, tdBody, item.itemName)
+
+            val rightBody = Paint(tdBody).apply { textAlign = Paint.Align.RIGHT }
+            val qtyText = Format.qty(item.quantity, item.unit)
+            c.drawText(qtyText, xQty, y, rightBody)
+            record(boxes, Field.ITEM_QTY, index, xQty, y, rightBody, qtyText)
+
+            val rateText = numberOnly(item.rate)
+            c.drawText(rateText, xRate, y, rightBody)
+            record(boxes, Field.ITEM_RATE, index, xRate, y, rightBody, rateText)
             c.drawText(numberOnly(item.lineTotal), xAmt, y, Paint(tdBody).apply { textAlign = Paint.Align.RIGHT })
             y += 8f
             c.drawLine(MARGIN, y, PAGE_W_A4 - MARGIN, y, lineFill)
@@ -326,8 +414,10 @@ object InvoicePdfExport {
         c.drawLine(MARGIN, y, PAGE_W_A4 - MARGIN, y, dashFill)
         y += 20f
 
-        invoice.note?.takeIf { it.isNotBlank() }?.let {
-            c.drawText(it, MARGIN, y, terms)
+        run {
+            val note = invoice.note?.takeIf { it.isNotBlank() }
+            if (note != null) c.drawText(note, MARGIN, y, terms)
+            record(boxes, Field.NOTE, -1, MARGIN, y, terms, note.orEmpty())
         }
 
         // A long note or a full bank box can still push this far down —
@@ -366,7 +456,12 @@ object InvoicePdfExport {
      * No bank box (a thermal counter sale is cash-in-hand, not invoiced to
      * an account) — discount and tax lines still show when set.
      */
-    private fun buildThermalReceipt(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+    private fun buildThermalReceipt(
+        context: Context,
+        invoice: Invoice,
+        items: List<InvoiceItem>,
+        boxes: MutableList<FieldBox>?
+    ): File? {
         val pageW = 226 // ~80mm at 72dpi
         val pad = 16f
 
@@ -375,7 +470,7 @@ object InvoicePdfExport {
         // Height is computed, not guessed — a thermal roll has no fixed page,
         // and the alternative (a fixed too-short page) would silently cut the
         // receipt off mid-item.
-        var estimatedH = 210f
+        var estimatedH = 236f
         estimatedH += items.size * 26f
         if (totals.discountAmount > 0) estimatedH += 12f
         if (totals.taxAmount > 0) estimatedH += 12f
@@ -430,17 +525,43 @@ object InvoicePdfExport {
         c.drawText("Waqt:", pad, y, mono)
         c.drawText(timeFmt.format(Date(invoice.createdAt)), pageW - pad, y, monoR)
 
+        // This template had no customer line at all — a counter receipt
+        // often does not need one. It is drawn now because without it there
+        // is nowhere on the receipt to type a name, and the editor works by
+        // typing on the invoice itself.
+        y += 13f
+        c.drawText("Gahak:", pad, y, mono)
+        c.drawText(invoice.customerName, pageW - pad, y, monoR)
+        record(boxes, Field.CUSTOMER, -1, pageW - pad, y, monoR, invoice.customerName)
+
+        run {
+            val phone = invoice.customerPhone?.takeIf { it.isNotBlank() }
+            y += 13f
+            c.drawText("Phone:", pad, y, mono)
+            if (phone != null) c.drawText(phone, pageW - pad, y, monoR)
+            record(boxes, Field.PHONE, -1, pageW - pad, y, monoR, phone.orEmpty())
+        }
+
         y += 16f
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
 
-        items.forEach { item ->
+        items.forEachIndexed { index, item ->
             c.drawText(item.itemName, pad, y, monoBold)
+            record(boxes, Field.ITEM_NAME, index, pad, y, monoBold, item.itemName)
             y += 11f
-            c.drawText(
-                "${Format.qty(item.quantity, item.unit)} × ${numberOnly(item.rate)}",
-                pad, y, monoGrey
-            )
+
+            // One drawn line, two editable values. The split is measured from
+            // the same Paint that draws it, so each box covers its own half
+            // rather than both sharing one ambiguous target.
+            val qtyText = Format.qty(item.quantity, item.unit)
+            val rateText = numberOnly(item.rate)
+            val joiner = " × "
+            c.drawText(qtyText + joiner + rateText, pad, y, monoGrey)
+            record(boxes, Field.ITEM_QTY, index, pad, y, monoGrey, qtyText)
+            val rateX = pad + monoGrey.measureText(qtyText + joiner)
+            record(boxes, Field.ITEM_RATE, index, rateX, y, monoGrey, rateText)
+
             c.drawText(numberOnly(item.lineTotal), pageW - pad, y, monoGreyR)
             y += 15f
         }
