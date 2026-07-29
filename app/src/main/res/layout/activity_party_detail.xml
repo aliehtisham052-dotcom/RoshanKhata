@@ -363,7 +363,8 @@
                 android:layout_marginStart="4dp"
                 android:enabled="false"
                 android:text="@string/delete"
-                app:backgroundTint="@color/red_gave"
+                android:textColor="@color/delete_selected_button_fg"
+                app:backgroundTint="@color/delete_selected_button_bg"
                 app:cornerRadius="10dp" />
         </LinearLayout>
 
