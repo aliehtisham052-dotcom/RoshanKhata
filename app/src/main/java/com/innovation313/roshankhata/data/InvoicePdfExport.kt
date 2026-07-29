@@ -81,6 +81,7 @@ object InvoicePdfExport {
         return when (invoice.templateId) {
             2 -> buildBlackGold(context, invoice, items)
             3 -> buildModernGradient(context, invoice, items)
+            4 -> buildGreenRetail(context, invoice, items)
             10 -> buildThermalReceipt(context, invoice, items)
             else -> buildTealCorporate(context, invoice, items)
         }
@@ -361,6 +362,101 @@ object InvoicePdfExport {
             // family instead of a dark bar cutting across a bright design.
             tableHeaderFill = 0xFF6D28D9.toInt(),
             onPrimaryMuted = 0xFFF0D9FB.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.manrope(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T4 — Green Retail ====================
+
+    /**
+     * The everyday shop counter design from the spec — a flat green band
+     * rather than a gradient, generous tints, aimed at a general store
+     * handing a bill across the counter.
+     *
+     * Its spec line is "Scan-to-Pay QR + Tax + JazzCash/EasyPaisa,
+     * compact". Every one of those already works through the shared kit
+     * and Business Profile — the QR and JazzCash row print whenever those
+     * are set, tax whenever it has a value. So this template does not add
+     * mechanism for them; it is the palette and typography that make it
+     * the retail-counter design rather than the wholesale one.
+     *
+     * FONT SUBSTITUTION, stated rather than hidden: the spec asks for
+     * Inter, which is not bundled. Manrope is used instead — the closest
+     * neutral sans of the four fonts that ARE bundled, and much nearer
+     * Inter than Sora's more geometric shapes. Bundling Inter as a fifth
+     * family is a small change if the difference ever matters.
+     */
+    private fun buildGreenRetail(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF123524.toInt(),
+            primary = 0xFF15803D.toInt(),
+            // Flat band, not a sweep: the spec calls this one compact and
+            // plain next to T3's bright gradient, so primaryEnd matches
+            // primary and gradient stays off.
+            primaryEnd = 0xFF15803D.toInt(),
+            muted = 0xFF5F7568.toInt(),
+            ruleColor = 0xFFDCE8E0.toInt(),
+            boxFill = 0xFFEAF6EE.toInt(),
+            zebra = 0xFFF4FAF6.toInt(),
+            gradient = false,
+            onPrimaryMuted = 0xFFCDE9D8.toInt(),
+            // Header bar in the same green as the band rather than the
+            // page's dark ink — one colour family across the sheet, the
+            // same reasoning T3 used for its violet bar.
+            tableHeaderFill = 0xFF15803D.toInt()
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.manrope(context),
