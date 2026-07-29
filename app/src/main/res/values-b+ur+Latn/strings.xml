@@ -492,10 +492,6 @@
     <string name="invoice_template_thermal">Thermal Receipt — tang, counter sale</string>
     <string name="invoice_pdf_failed">PDF nahi ban saki. Kuch bhi nahi bheja gaya.</string>
     <string name="invoice_preview_label">Preview — jaise aap bharte hain waise update hota hai</string>
-    <string name="invoice_tap_to_edit_hint">Invoice par kisi bhi cheez ko chhoo kar wahin likhein.</string>
-    <string name="invoice_btn_design">Design</string>
-    <string name="invoice_btn_more">Tareekh aur tax</string>
-    <string name="invoice_remove_last_item">Aakhri cheez hatayein</string>
     <string name="invoice_items_label">Cheezein</string>
     <string name="nav_invoice">Invoice</string>
 
