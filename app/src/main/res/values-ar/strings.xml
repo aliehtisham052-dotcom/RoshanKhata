@@ -199,6 +199,9 @@
     <string name="business_name">اسم النشاط التجاري</string>
     <string name="business_name_help">يظهر أعلى كل كشف وفي نهاية كل تذكير ترسله.</string>
     <string name="business_name_hint">مثل بهاتي للتجارة</string>
+    <string name="business_address">عنوان المحل</string>
+    <string name="business_address_help">يُطبع تحت اسم نشاطك التجاري في كل فاتورة.</string>
+    <string name="business_address_hint">مثل السوق الرئيسي، باسرور</string>
 
     <string name="payment_qr">رمز QR للدفع</string>
     <string name="payment_qr_help">لقطة شاشة أو صورة لرمز QR الخاص بحسابك في EasyPaisa أو JazzCash. سيُرفق بالكشوف ليتمكن العميل من المسح والدفع لك.</string>
@@ -451,6 +454,27 @@
     <string name="delete_bill_confirm">ستُزال الفاتورة وسجلات دُفعاتها، لكن قيد الدفتر يبقى. البضاعة وصلت فعلًا والمال مستحق فعلًا — حذف الورق لا يلغي ذلك.</string>
     <string name="bill_actions">الفاتورة</string>
     <string name="view_items">عرض الأصناف والدُفعات</string>
+
+    <!-- Invoices -->
+    <string name="invoices">فواتير البيع</string>
+    <string name="invoices_subtitle">فاتورة قابلة للطباعة — منفصلة عن دفتر حسابك</string>
+    <string name="no_invoices">لا توجد فواتير بعد.\n\nأنشئ فاتورة قابلة للطباعة لعميل — بيع نقدي أو عرض سعر — دون أن تمس دفتر حسابك أو رصيد أي شخص.</string>
+    <string name="add_invoice">إضافة فاتورة</string>
+    <string name="invoice_customer_hint">اسم العميل</string>
+    <string name="invoice_phone_hint">الهاتف (اختياري)</string>
+    <string name="pick_invoice_date">اختر تاريخ الفاتورة</string>
+    <string name="invoice_date_set">التاريخ: %1$s</string>
+    <string name="invoice_item_name_hint">اسم الصنف</string>
+    <string name="invoice_item_rate_hint">سعر الوحدة (Rs)</string>
+    <string name="invoice_item_invalid">أدخل اسم صنف ومقدارًا وسعرًا صحيحين.</string>
+    <string name="invoice_customer_required">أدخل اسم العميل أولاً.</string>
+    <string name="invoice_needs_item">أضف صنفًا واحدًا على الأقل أولاً.</string>
+    <string name="invoice_saved">تم حفظ الفاتورة.</string>
+    <string name="invoice_total">الإجمالي: %1$s</string>
+    <string name="invoice_deleted">تم حذف الفاتورة.</string>
+    <string name="delete_invoice_confirm">حذف هذه الفاتورة؟ لن يمكن استعادتها من داخل التطبيق.</string>
+    <string name="view">عرض</string>
+    <string name="nav_invoice">فاتورة</string>
 
     <string name="expiring_stock">بضاعة قاربت الانتهاء</string>
     <string name="expiring_subtitle">بعها أو خفّضها أو أرجعها — ما دمت تستطيع</string>
@@ -720,6 +744,13 @@
     <string name="remove_signature">إزالة</string>
     <string name="signature_saved">تم حفظ التوقيع.</string>
     <string name="signature_save_failed">تعذّر حفظ تلك الصورة.</string>
+    <string name="stamp">الختم</string>
+    <string name="stamp_help">صوّر ختم محلك على ورقة بيضاء. يظهر تلقائيًا على الفاتورة إذا أضفته — وإلا يُطبع اسمك وعنوانك فقط.</string>
+    <string name="no_stamp_yet">لم يُضَف ختم بعد.</string>
+    <string name="choose_stamp">اختر الختم</string>
+    <string name="remove_stamp">إزالة</string>
+    <string name="stamp_saved">تم حفظ الختم.</string>
+    <string name="stamp_save_failed">تعذّر حفظ تلك الصورة.</string>
     <string name="photo_on_statement">تضمين صورة العميل في كشف الحساب</string>
     <string name="photo_on_statement_help">معطّل افتراضيًا. تفعيله يطبع صورة العميل على كشف حسابه فيصعب إنكاره — لكن الكشف قد يُعاد إرساله، وتنتقل صورته معه.</string>
     <string name="made_with_app">روشن كهاتا</string>

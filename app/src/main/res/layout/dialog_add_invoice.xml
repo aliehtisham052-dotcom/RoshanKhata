@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="8dp">
+
+        <!--
+          Deliberately NOT a party picker. Typing or choosing here only fills
+          this text field — nothing links back to the khata, and nothing on
+          this screen ever touches a balance. See the class doc on Invoice.
+        -->
+        <AutoCompleteTextView
+            android:id="@+id/etInvoiceCustomer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:hint="@string/invoice_customer_hint"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/etInvoicePhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="@string/invoice_phone_hint"
+            android:importantForAutofill="no"
+            android:inputType="phone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnInvoiceDate"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/pick_invoice_date"
+            app:cornerRadius="8dp" />
+
+        <EditText
+            android:id="@+id/etInvoiceNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="@string/note_optional"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
+    </LinearLayout>
+</ScrollView>

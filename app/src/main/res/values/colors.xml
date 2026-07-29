@@ -147,6 +147,7 @@
     <color name="tile_backup_bg">#E5EEF0</color>
     <color name="tile_settings_bg">#ECEDEA</color>
     <color name="tile_bin_bg">#F2E9E9</color>
+    <color name="tile_invoice_bg">#F6E6ED</color>
 
     <color name="tile_stock_fg">#8A4B2A</color>
     <color name="tile_calc_fg">#3A5068</color>
@@ -155,6 +156,7 @@
     <color name="tile_backup_fg">#1D5C66</color>
     <color name="tile_settings_fg">#4A4A45</color>
     <color name="tile_bin_fg">#8C3A3A</color>
+    <color name="tile_invoice_fg">#8C3F5E</color>
 
     <!--
       The screen behind the grid: page colour easing into the header's green

@@ -117,7 +117,9 @@ class MainActivity : AppCompatActivity() {
             Feature(R.drawable.ic_feature_settings, R.string.business_settings, BusinessSettingsActivity::class.java,
                 R.color.tile_settings_bg, R.color.tile_settings_fg),
             Feature(R.drawable.ic_feature_lock, R.string.recycle_bin, RecycleBinActivity::class.java,
-                R.color.tile_bin_bg, R.color.tile_bin_fg)
+                R.color.tile_bin_bg, R.color.tile_bin_fg),
+            Feature(R.drawable.ic_feature_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
+                R.color.tile_invoice_bg, R.color.tile_invoice_fg)
         )
 
         featureViews.clear()

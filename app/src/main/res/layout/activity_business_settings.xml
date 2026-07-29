@@ -66,6 +66,34 @@
                 android:importantForAutofill="no"
                 android:inputType="text" />
 
+            <!-- Shop address / letterhead line -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/business_address"
+                android:textColor="@color/navy_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/business_address_help"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/etBusinessAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:hint="@string/business_address_hint"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:maxLines="3" />
+
             <!-- Payment QR -->
             <TextView
                 android:layout_width="wrap_content"
@@ -215,6 +243,81 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:text="@string/remove_signature"
+                    android:textColor="@color/red_gave"
+                    android:visibility="gone"
+                    app:cornerRadius="10dp"
+                    app:strokeColor="@color/red_gave"
+                    xmlns:app="http://schemas.android.com/apk/res-auto" />
+            </LinearLayout>
+
+            <!--
+              The muhar (stamp) for an invoice's letterhead. Automatic
+              fallback, not a per-invoice choice: an invoice shows this if it
+              exists, otherwise just the business name/address text above —
+              the owner decides once, here, not on every invoice.
+            -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/stamp"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/stamp_help"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/ivStampPreview"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/white"
+                android:contentDescription="@string/stamp"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvNoStamp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:text="@string/no_stamp_yet"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPickStamp"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="@string/choose_stamp"
+                    app:backgroundTint="@color/ink"
+                    app:cornerRadius="10dp"
+                    xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRemoveStamp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/remove_stamp"
                     android:textColor="@color/red_gave"
                     android:visibility="gone"
                     app:cornerRadius="10dp"

@@ -209,6 +209,9 @@
     <string name="business_name">ڪاروبار جو نالو</string>
     <string name="business_name_help">هر اسٽيٽمينٽ جي مٿان ۽ توهان جي موڪليل هر ياد ڏياريندڙ پيغام جي آخر ۾ ايندو.</string>
     <string name="business_name_hint">مثال: ڀٽي ٽريڊرز</string>
+    <string name="business_address">دڪان جو پتو</string>
+    <string name="business_address_help">هر انوائس تي توهان جي ڪاروبار جي نالي هيٺان ڇپبو.</string>
+    <string name="business_address_hint">مثال: مين بازار، پسرور</string>
 
     <string name="payment_qr">ادائيگي جو QR ڪوڊ</string>
     <string name="payment_qr_help">توهان جي ايزي پئسا يا جاز ڪيش QR ڪوڊ جي تصوير يا اسڪرين شاٽ. اها اسٽيٽمينٽن سان ڳنڍي ويندي ته جيئن گراهڪ اسڪين ڪري توهان کي ادائيگي ڪري سگهي.</string>
@@ -472,6 +475,27 @@
     <string name="delete_bill_confirm">بل ۽ ان جا بيچ رڪارڊ هٽي ويندا، پر کاتي جي داخلا رهندي. مال واقعي آيو هو ۽ پئسا واقعي ڏيڻا آهن — ڪاغذ هٽائڻ سان اهو ختم نٿو ٿئي.</string>
     <string name="bill_actions">بل</string>
     <string name="view_items">شيون ۽ بيچ ڏسو</string>
+
+    <!-- Invoices -->
+    <string name="invoices">انوائس</string>
+    <string name="invoices_subtitle">پرنٽ لائق بل — توهان جي کاتي کان الڳ</string>
+    <string name="no_invoices">اڃا ڪا انوائس ناهي.\n\nگراهڪ لاءِ پرنٽ لائق بل ٺاهيو — نقد وڪري يا قيمت جو اندازو — بنا ان جي توهان جي کاتي يا ڪنهن جي بيلنس کي ڇهڻ جي.</string>
+    <string name="add_invoice">انوائس شامل ڪريو</string>
+    <string name="invoice_customer_hint">گراهڪ جو نالو</string>
+    <string name="invoice_phone_hint">فون (اختياري)</string>
+    <string name="pick_invoice_date">انوائس جي تاريخ چونڊيو</string>
+    <string name="invoice_date_set">تاريخ: %1$s</string>
+    <string name="invoice_item_name_hint">شيءِ جو نالو</string>
+    <string name="invoice_item_rate_hint">في يونٽ اگهه (Rs)</string>
+    <string name="invoice_item_invalid">صحيح شيءِ جو نالو، مقدار ۽ اگهه داخل ڪريو.</string>
+    <string name="invoice_customer_required">پهرين گراهڪ جو نالو داخل ڪريو.</string>
+    <string name="invoice_needs_item">پهرين گهٽ ۾ گهٽ هڪ شيءِ شامل ڪريو.</string>
+    <string name="invoice_saved">انوائس محفوظ ٿي وئي.</string>
+    <string name="invoice_total">ڪل: %1$s</string>
+    <string name="invoice_deleted">انوائس هٽائي وئي.</string>
+    <string name="delete_invoice_confirm">هي انوائس هٽايو؟ اها ايپ اندران بحال نه ٿي سگهندي.</string>
+    <string name="view">ڏسو</string>
+    <string name="nav_invoice">انوائس</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">ختم ٿيندڙ مال</string>
@@ -740,6 +764,13 @@
     <string name="remove_signature">هٽايو</string>
     <string name="signature_saved">صحيح محفوظ ٿي وئي.</string>
     <string name="signature_save_failed">اها تصوير محفوظ نه ٿي سگهي.</string>
+    <string name="stamp">مهر</string>
+    <string name="stamp_help">پنهنجي دڪان جي مهر سادي ڪاغذ تي فوٽو ڪريو. شامل ڪرڻ تي اها انوائس تي پاڻمرادو ڏيکاربي — نه ته صرف توهان جو نالو ۽ پتو ڇپبو.</string>
+    <string name="no_stamp_yet">اڃا ڪا مهر شامل نه ڪئي وئي.</string>
+    <string name="choose_stamp">مهر چونڊيو</string>
+    <string name="remove_stamp">هٽايو</string>
+    <string name="stamp_saved">مهر محفوظ ٿي وئي.</string>
+    <string name="stamp_save_failed">اها تصوير محفوظ نه ٿي سگهي.</string>
     <string name="photo_on_statement">اسٽيٽمينٽ تي گراهڪ جي تصوير شامل ڪريو</string>
     <string name="photo_on_statement_help">ڊفالٽ طور بند. کوليندؤ ته گراهڪ جي تصوير سندس اسٽيٽمينٽ تي ڇپبي، جنهن سان انڪار ڏکيو ٿيندو — پر اسٽيٽمينٽ اڳتي به موڪلي سگهجي ٿي، ۽ تصوير ان سان گڏ ويندي.</string>
     <string name="made_with_app">روشن کاتو</string>

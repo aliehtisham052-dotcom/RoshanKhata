@@ -22,11 +22,14 @@ object BusinessProfile {
 
     private const val PREFS = "roshan_khata_prefs"
     private const val KEY_BUSINESS_NAME = "business_name"
+    private const val KEY_BUSINESS_ADDRESS = "business_address"
     private const val KEY_QR_SAVED = "payment_qr_saved"
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
+    private const val KEY_STAMP_SAVED = "stamp_saved"
     private const val KEY_PHOTO_ON_STATEMENT = "photo_on_statement"
     private const val QR_FILE = "payment_qr.png"
     private const val SIGNATURE_FILE = "signature.png"
+    private const val STAMP_FILE = "stamp.png"
 
     /** Long edge of the stored QR. Big enough to scan, small enough to attach. */
     private const val MAX_EDGE = 1000
@@ -42,6 +45,21 @@ object BusinessProfile {
     fun setBusinessName(context: Context, name: String?) {
         prefs(context).edit()
             .putString(KEY_BUSINESS_NAME, name?.trim().orEmpty())
+            .apply()
+    }
+
+    /**
+     * The letterhead line under a shop's name — address, or address and
+     * phone, however the owner writes it. Free text, one field: an invoice
+     * asks for a header to print, not a structured address this app has any
+     * reason to parse or validate.
+     */
+    fun businessAddress(context: Context): String? =
+        prefs(context).getString(KEY_BUSINESS_ADDRESS, null)?.takeIf { it.isNotBlank() }
+
+    fun setBusinessAddress(context: Context, address: String?) {
+        prefs(context).edit()
+            .putString(KEY_BUSINESS_ADDRESS, address?.trim().orEmpty())
             .apply()
     }
 
@@ -158,6 +176,63 @@ object BusinessProfile {
     fun removeSignature(context: Context) {
         signatureFile(context).delete()
         prefs(context).edit().putBoolean(KEY_SIGNATURE_SAVED, false).apply()
+    }
+
+    // ---------- Stamp ----------
+
+    /**
+     * The shop's muhar (stamp), printed on an invoice.
+     *
+     * Held exactly like the signature — the owner's own file, own storage,
+     * never uploaded, same [PhotoDecode] read and PNG write. What differs is
+     * how it is USED: an invoice's letterhead falls back automatically
+     * between the stamp image and the plain text header ([businessName] +
+     * [businessAddress]) — stamp shown if one exists, text header otherwise —
+     * so the owner is never asked to decide this per invoice.
+     */
+    fun stampFile(context: Context): File =
+        File(context.filesDir, STAMP_FILE)
+
+    fun hasStamp(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_STAMP_SAVED, false) && stampFile(context).exists()
+
+    fun loadStamp(context: Context): Bitmap? {
+        if (!hasStamp(context)) return null
+        return try {
+            BitmapFactory.decodeFile(stampFile(context).absolutePath)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * @return true if it was saved. A stamp that failed to save must not be
+     *         marked present — an invoice would fall back to it believing a
+     *         real image was there.
+     */
+    fun saveStamp(context: Context, source: Uri): Boolean {
+        return try {
+            val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
+                ?: return false
+            val scaled = downscale(original)
+
+            FileOutputStream(stampFile(context)).use { out ->
+                // PNG, so a stamp scanned or photographed on white paper
+                // keeps sharp edges, and one already cut out stays transparent.
+                scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
+            }
+            if (scaled !== original) original.recycle()
+
+            prefs(context).edit().putBoolean(KEY_STAMP_SAVED, true).apply()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun removeStamp(context: Context) {
+        stampFile(context).delete()
+        prefs(context).edit().putBoolean(KEY_STAMP_SAVED, false).apply()
     }
 
     // ---------- Customer photo on statements ----------
