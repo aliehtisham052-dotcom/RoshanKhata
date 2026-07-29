@@ -101,6 +101,8 @@
     <string name="delete_party_confirm">«%1$s» و ثبت‌هایش به سطل بازیافت می‌رود. تا ۳۰ روز می‌توانید بازگردانید.</string>
     <string name="delete_entry_title">ثبت حذف شود؟</string>
     <string name="delete_entry_confirm">این ثبت به سطل بازیافت می‌رود. تا ۳۰ روز می‌توانید بازگردانید.</string>
+    <string name="select_entries_to_delete">انتخاب ورودی‌ها برای حذف</string>
+    <string name="delete_selected_entries_confirm">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شوند. می‌توانید تا ۳۰ روز آن‌ها را بازگردانید.</string>
     <string name="moved_to_bin">به سطل بازیافت منتقل شد</string>
     <string name="long_press_to_delete">برای حذف، روی طرف‌حساب لمس طولانی کنید</string>
 
@@ -813,12 +815,6 @@
     <string name="range_yesterday">دیروز</string>
     <string name="range_this_week">این هفته</string>
     <string name="range_this_month">این ماه</string>
-    <string name="delete_all_parties">حذف همه مشتریان</string>
-    <string name="delete_all_parties_confirm">این کار همه %1$d مشتری و تمام ثبت‌هایشان را به سطل بازیافت می‌برد.</string>
-    <string name="delete_all_parties_final_title">همه مشتریان حذف شوند؟</string>
-    <string name="delete_all_parties_final">%1$d مشتری و تمام سابقه‌شان به سطل بازیافت می‌رود. از آنجا می‌توانید بازشان گردانید.</string>
-    <string name="no_parties_to_delete">مشتری‌ای برای حذف نیست.</string>
-    <string name="continue_label">ادامه</string>
     <string name="biz_tpl_corner">مورب</string>
     <string name="biz_tpl_spine">دوبخشی</string>
     <string name="biz_tpl_split">منحنی</string>

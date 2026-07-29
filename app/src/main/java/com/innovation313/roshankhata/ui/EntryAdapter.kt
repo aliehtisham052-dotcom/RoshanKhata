@@ -3,6 +3,7 @@ package com.innovation313.roshankhata.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -17,13 +18,34 @@ data class EntryRow(
 
 class EntryAdapter(
     private val onClick: (LedgerEntry) -> Unit,
-    private val onLongClick: (LedgerEntry) -> Unit
+    private val onLongClick: (LedgerEntry) -> Unit,
+    /** Fires instead of [onClick] once selection mode is on — a tap toggles rather than opens. */
+    private val onToggleSelect: (LedgerEntry) -> Unit = {}
 ) : RecyclerView.Adapter<EntryAdapter.VH>() {
 
     private var rows: List<EntryRow> = emptyList()
 
+    /**
+     * Select-and-delete for this one party's history — the bounded
+     * replacement for the "Delete all customers" button removed from the
+     * Recycle Bin. [selectionMode] swaps every row's tap from "open it" to
+     * "toggle it", and shows the checkbox; [selectedIds] decides which
+     * checkboxes are ticked. Both are read fresh on every bind rather than
+     * tracked per-holder, since selecting one entry has to repaint only
+     * that row without a full rebind of the whole list.
+     */
+    var selectionMode: Boolean = false
+        private set
+    private var selectedIds: Set<Long> = emptySet()
+
     fun submit(newRows: List<EntryRow>) {
         rows = newRows
+        notifyDataSetChanged()
+    }
+
+    fun setSelectionState(active: Boolean, selected: Set<Long>) {
+        selectionMode = active
+        selectedIds = selected
         notifyDataSetChanged()
     }
 
@@ -34,6 +56,7 @@ class EntryAdapter(
         val tvEntryNumber: TextView = view.findViewById(R.id.tvEntryNumber)
         val tvAmount: TextView = view.findViewById(R.id.tvAmount)
         val tvRunningBalance: TextView = view.findViewById(R.id.tvRunningBalance)
+        val cbSelect: CheckBox = view.findViewById(R.id.cbSelect)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -70,11 +93,14 @@ class EntryAdapter(
 
         holder.tvRunningBalance.text = "Bal: ${Format.money(row.runningBalance)}"
 
+        holder.cbSelect.visibility = if (selectionMode) View.VISIBLE else View.GONE
+        holder.cbSelect.isChecked = e.id in selectedIds
+
         holder.itemView.setOnClickListener {
-            onClick(e)
+            if (selectionMode) onToggleSelect(e) else onClick(e)
         }
         holder.itemView.setOnLongClickListener {
-            onLongClick(e)
+            if (!selectionMode) onLongClick(e)
             true
         }
     }

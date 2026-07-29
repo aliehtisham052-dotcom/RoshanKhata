@@ -99,6 +99,8 @@
     <string name="delete_party_confirm">\"%1$s\" اور اس کے اندراجات ری سائیکل بن میں چلے جائیں گے۔ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
     <string name="delete_entry_title">اندراج حذف کریں؟</string>
     <string name="delete_entry_confirm">یہ اندراج ری سائیکل بن میں چلا جائے گا۔ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
+    <string name="select_entries_to_delete">حذف کرنے کے لیے اندراجات چنیں</string>
+    <string name="delete_selected_entries_confirm">%1$d چنی گئی اندراجات حذف کریں؟ یہ ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
     <string name="moved_to_bin">ری سائیکل بن میں منتقل ہو گیا</string>
     <string name="long_press_to_delete">پارٹی حذف کرنے کے لیے اسے دیر تک دبائیں</string>
 
@@ -785,12 +787,6 @@
     <string name="range_yesterday">کل</string>
     <string name="range_this_week">اس ہفتے</string>
     <string name="range_this_month">اس مہینے</string>
-    <string name="delete_all_parties">تمام گاہک ڈیلیٹ کریں</string>
-    <string name="delete_all_parties_confirm">یہ تمام %1$d گاہکوں اور ان کے سارے اندراج ری سائیکل بن میں بھیج دے گا۔</string>
-    <string name="delete_all_parties_final_title">تمام گاہک ڈیلیٹ کر دیں؟</string>
-    <string name="delete_all_parties_final">%1$d گاہک اور ان کی پوری تاریخ ری سائیکل بن میں چلی جائے گی۔ وہاں سے واپس لا سکتے ہیں۔</string>
-    <string name="no_parties_to_delete">ڈیلیٹ کرنے کے لیے کوئی گاہک نہیں۔</string>
-    <string name="continue_label">جاری رکھیں</string>
     <string name="biz_tpl_corner">ترچھا</string>
     <string name="biz_tpl_spine">دو حصے</string>
     <string name="biz_tpl_split">موڑ</string>

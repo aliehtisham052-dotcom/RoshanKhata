@@ -99,6 +99,8 @@
     <string name="delete_party_confirm">\"%1$s\" aur is ki entries Recycle Bin mein chali jayengi. 30 din ke andar wapas la sakte hain.</string>
     <string name="delete_entry_title">Entry delete karein?</string>
     <string name="delete_entry_confirm">Ye entry Recycle Bin mein chali jayegi. 30 din ke andar wapas la sakte hain.</string>
+    <string name="select_entries_to_delete">Delete karne ke liye entries chunein</string>
+    <string name="delete_selected_entries_confirm">%1$d chuni gayi entries delete karein? Ye Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</string>
     <string name="moved_to_bin">Recycle Bin mein muntaqil ho gaya</string>
     <string name="long_press_to_delete">Party delete karne ke liye usey der tak dabayen</string>
 
@@ -785,12 +787,6 @@
     <string name="range_yesterday">Kal</string>
     <string name="range_this_week">Is hafte</string>
     <string name="range_this_month">Is mahine</string>
-    <string name="delete_all_parties">Tamam gahak delete karein</string>
-    <string name="delete_all_parties_confirm">Ye tamam %1$d gahakon aur unke saare indraj Recycle Bin mein bhej dega.</string>
-    <string name="delete_all_parties_final_title">Tamam gahak delete kar dein?</string>
-    <string name="delete_all_parties_final">%1$d gahak aur unki poori tareekh Recycle Bin mein chali jayegi. Wahan se wapis la sakte hain.</string>
-    <string name="no_parties_to_delete">Delete karne ke liye koi gahak nahi.</string>
-    <string name="continue_label">Jari rakhein</string>
     <string name="biz_tpl_corner">Tirchha</string>
     <string name="biz_tpl_spine">Do Hisse</string>
     <string name="biz_tpl_split">Morr</string>

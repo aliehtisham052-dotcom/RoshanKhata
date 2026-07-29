@@ -264,7 +264,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@id/buttonBar"
+        app:layout_constraintBottom_toTopOf="@id/bottomBarContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header" />
@@ -282,37 +282,91 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/rvEntries" />
 
-    <LinearLayout
-        android:id="@+id/buttonBar"
+    <!--
+      Both bars share this one container so rvEntries has a single stable
+      anchor no matter which bar is showing — a FrameLayout sizes itself to
+      whichever child is actually VISIBLE, so swapping which bar shows
+      moves the boundary correctly instead of leaving a gap or an overlap.
+    -->
+    <FrameLayout
+        android:id="@+id/bottomBarContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnGave"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="6dp"
-            android:layout_weight="1"
-            android:text="@string/i_gave"
-            android:textSize="16sp"
-            app:backgroundTint="@color/red_gave"
-            app:cornerRadius="10dp" />
+        <LinearLayout
+            android:id="@+id/buttonBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnGot"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="6dp"
-            android:layout_weight="1"
-            android:text="@string/i_got"
-            android:textSize="16sp"
-            app:backgroundTint="@color/green_got"
-            app:cornerRadius="10dp" />
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGave"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:text="@string/i_gave"
+                android:textSize="16sp"
+                app:backgroundTint="@color/red_gave"
+                app:cornerRadius="10dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGot"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:text="@string/i_got"
+                android:textSize="16sp"
+                app:backgroundTint="@color/green_got"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+
+        <!--
+          Takes the Gave/Got bar's own spot rather than adding a third row —
+          this only ever appears once "Select entries to delete" is chosen
+          from the menu, and Gave/Got has no meaning while picking what to
+          remove.
+        -->
+        <LinearLayout
+            android:id="@+id/selectionBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/page_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <CheckBox
+                android:id="@+id/cbSelectAll"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/select_all" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelSelection"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeleteSelected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:enabled="false"
+                android:text="@string/delete"
+                app:backgroundTint="@color/red_gave"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

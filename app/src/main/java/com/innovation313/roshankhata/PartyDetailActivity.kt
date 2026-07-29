@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioButton
@@ -129,6 +130,22 @@ class PartyDetailActivity : AppCompatActivity() {
     private var currentBalance: Double = 0.0
     private var creditLimit: Double? = null
     private var currentRows: List<EntryRow> = emptyList()
+
+    /**
+     * Select-and-delete for this party's own history — the bounded
+     * replacement for the "Delete all customers" button removed from the
+     * Recycle Bin (see KhataDao.softDeleteEntries). Scoped to whichever
+     * entries are on screen for THIS party, never the whole ledger.
+     */
+    private var selectionMode = false
+    private val selectedEntryIds = mutableSetOf<Long>()
+    private var updatingSelectionUi = false
+    private lateinit var bottomBarContainer: View
+    private lateinit var buttonBar: View
+    private lateinit var selectionBar: View
+    private lateinit var cbSelectAll: CheckBox
+    private lateinit var btnDeleteSelected: MaterialButton
+
     private lateinit var etSearchEntries: EditText
     private lateinit var ivAvatar: ImageView
     private lateinit var tvInitials: TextView
@@ -260,11 +277,31 @@ class PartyDetailActivity : AppCompatActivity() {
                         .putExtra(EntryDetailActivity.EXTRA_PARTY_NAME, partyName)
                 )
             },
-            onLongClick = { entry -> confirmDeleteEntry(entry) }
+            onLongClick = { entry -> confirmDeleteEntry(entry) },
+            onToggleSelect = { entry -> toggleEntrySelection(entry.id) }
         )
         val rv: RecyclerView = findViewById(R.id.rvEntries)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
+
+        bottomBarContainer = findViewById(R.id.bottomBarContainer)
+        buttonBar = findViewById(R.id.buttonBar)
+        selectionBar = findViewById(R.id.selectionBar)
+        cbSelectAll = findViewById(R.id.cbSelectAll)
+        btnDeleteSelected = findViewById(R.id.btnDeleteSelected)
+        findViewById<MaterialButton>(R.id.btnCancelSelection).setOnClickListener { exitSelectionMode() }
+        btnDeleteSelected.setOnClickListener { confirmDeleteSelectedEntries() }
+        cbSelectAll.setOnCheckedChangeListener { _, checked ->
+            // Guarded rather than relying on the checkbox's own pressed
+            // state: refreshSelectionUi() sets isChecked programmatically
+            // to reflect "everything is already selected", and that must
+            // not be read back as a fresh tap that clears and re-adds
+            // every id right after.
+            if (updatingSelectionUi) return@setOnCheckedChangeListener
+            selectedEntryIds.clear()
+            if (checked) selectedEntryIds.addAll(currentRows.map { it.entry.id })
+            refreshSelectionUi()
+        }
 
         findViewById<MaterialButton>(R.id.btnGave).setOnClickListener { showAddEntryDialog(true) }
         findViewById<MaterialButton>(R.id.btnGot).setOnClickListener { showAddEntryDialog(false) }
@@ -725,6 +762,70 @@ class PartyDetailActivity : AppCompatActivity() {
                         R.string.moved_to_bin,
                         Toast.LENGTH_SHORT
                     ).show()
+                }
+            }
+            .show()
+    }
+
+    // ---------- Select-and-delete, several entries at once ----------
+
+    private fun enterSelectionMode() {
+        selectionMode = true
+        selectedEntryIds.clear()
+        buttonBar.visibility = View.GONE
+        selectionBar.visibility = View.VISIBLE
+        adapter.setSelectionState(true, selectedEntryIds)
+        refreshSelectionUi()
+    }
+
+    private fun exitSelectionMode() {
+        selectionMode = false
+        selectedEntryIds.clear()
+        buttonBar.visibility = View.VISIBLE
+        selectionBar.visibility = View.GONE
+        adapter.setSelectionState(false, emptySet())
+    }
+
+    private fun toggleEntrySelection(entryId: Long) {
+        if (!selectedEntryIds.remove(entryId)) selectedEntryIds.add(entryId)
+        adapter.setSelectionState(true, selectedEntryIds)
+        refreshSelectionUi()
+    }
+
+    /** Keeps Select All and the Delete button's count in step with what is actually picked. */
+    private fun refreshSelectionUi() {
+        updatingSelectionUi = true
+        cbSelectAll.isChecked = currentRows.isNotEmpty() && selectedEntryIds.size == currentRows.size
+        updatingSelectionUi = false
+
+        btnDeleteSelected.isEnabled = selectedEntryIds.isNotEmpty()
+        btnDeleteSelected.text = if (selectedEntryIds.isEmpty()) {
+            getString(R.string.delete)
+        } else {
+            getString(R.string.delete) + " (${selectedEntryIds.size})"
+        }
+    }
+
+    /**
+     * Named with the count, not asked generically — "Delete 4 selected
+     * entries?" is a different sentence from "delete these?", and the
+     * number is what lets someone catch a wrong selection before it is
+     * gone. Still reversible: the same soft delete a single entry gets, so
+     * every one of them lands in the Recycle Bin and can be restored.
+     */
+    private fun confirmDeleteSelectedEntries() {
+        val ids = selectedEntryIds.toList()
+        if (ids.isEmpty()) return
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_entry_title)
+            .setMessage(getString(R.string.delete_selected_entries_confirm, ids.size))
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                lifecycleScope.launch {
+                    dao.softDeleteEntries(ids)
+                    Toast.makeText(this@PartyDetailActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT).show()
+                    exitSelectionMode()
                 }
             }
             .show()
@@ -1395,11 +1496,19 @@ class PartyDetailActivity : AppCompatActivity() {
                 showCreditLimitDialog()
                 true
             }
+            R.id.action_select_entries -> {
+                enterSelectionMode()
+                true
+            }
             android.R.id.home -> {
-                finish()
+                if (selectionMode) exitSelectionMode() else finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onBackPressed() {
+        if (selectionMode) exitSelectionMode() else super.onBackPressed()
     }
 }

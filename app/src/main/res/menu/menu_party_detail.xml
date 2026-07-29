@@ -17,4 +17,8 @@
         android:id="@+id/action_credit_limit"
         android:title="@string/set_credit_limit"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_entries"
+        android:title="@string/select_entries_to_delete"
+        app:showAsAction="never" />
 </menu>
