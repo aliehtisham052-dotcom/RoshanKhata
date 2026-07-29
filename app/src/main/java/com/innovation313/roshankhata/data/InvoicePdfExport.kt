@@ -192,6 +192,12 @@ object InvoicePdfExport {
             BusinessProfile.businessAddress(context)?.let {
                 c.drawText(it, left + 52f, 58f, text(9f, 0xFFD9EFEE.toInt()))
             }
+            // Only for a shop registered for sales tax — blank prints nothing,
+            // deliberately, since FBR's own guidance is that an invoice with
+            // no STRN should not be charging sales tax in the first place.
+            BusinessProfile.strn(context)?.let {
+                c.drawText("STRN: $it", left + 52f, 70f, text(8f, 0xFFBEE3E1.toInt()))
+            }
 
             c.drawText("INVOICE", right, 44f, text(22f, Color.WHITE, bold = true, align = Paint.Align.RIGHT))
             c.drawText("RASID", right, 58f, text(8f, 0xFFBEE3E1.toInt(), align = Paint.Align.RIGHT))
@@ -458,6 +464,7 @@ object InvoicePdfExport {
         // receipt off mid-item.
         var estimatedH = 210f
         estimatedH += items.size * 26f
+        if (BusinessProfile.strn(context) != null) estimatedH += 11f
         if (totals.discountAmount > 0) estimatedH += 12f
         if (totals.taxAmount > 0) estimatedH += 12f
         if (totals.additionalCharge > 0) estimatedH += 12f
@@ -498,6 +505,10 @@ object InvoicePdfExport {
         BusinessProfile.businessAddress(context)?.let {
             y += 12f
             c.drawText(it, cx, y, shopSub)
+        }
+        BusinessProfile.strn(context)?.let {
+            y += 11f
+            c.drawText("STRN: $it", cx, y, shopSub)
         }
 
         y += 16f

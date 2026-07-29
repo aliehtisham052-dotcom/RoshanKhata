@@ -508,6 +508,9 @@
     <string name="invoice_terms">الشروط والأحكام</string>
     <string name="invoice_terms_help">تُطبع تلقائيًا على كل فاتورة. اتركها فارغة لعدم طباعة شيء.</string>
     <string name="invoice_terms_hint">مثل السداد خلال 14 يومًا.</string>
+    <string name="invoice_strn">رقم تسجيل ضريبة المبيعات (STRN)</string>
+    <string name="invoice_strn_help">فقط إذا كان هذا المحل مسجلاً لضريبة المبيعات. اتركه فارغًا خلاف ذلك — يُطبع على كل فاتورة عند تعبئته، ولا يُطبع إطلاقًا إن لم يُملأ.</string>
+    <string name="invoice_strn_hint">مثل 1234567-8 (اختياري)</string>
     <string name="invoice_edit_shop_details">تعديل اسم المحل والختم ورمز QR والشروط</string>
     <string name="invoice_more_options">خيارات إضافية (اختياري)</string>
     <string name="invoice_settings_title">إعدادات الفاتورة</string>

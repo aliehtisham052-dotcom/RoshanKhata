@@ -46,6 +46,7 @@ class BusinessSettingsActivity : AppCompatActivity() {
     private lateinit var etBankIban: EditText
     private lateinit var etBankJazzCash: EditText
     private lateinit var etInvoiceTerms: EditText
+    private lateinit var etStrn: EditText
 
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -93,6 +94,7 @@ class BusinessSettingsActivity : AppCompatActivity() {
         etBankIban = findViewById(R.id.etBankIban)
         etBankJazzCash = findViewById(R.id.etBankJazzCash)
         etInvoiceTerms = findViewById(R.id.etInvoiceTerms)
+        etStrn = findViewById(R.id.etStrn)
 
         etBusinessName.setText(BusinessProfile.businessName(this).orEmpty())
         etBusinessAddress.setText(BusinessProfile.businessAddress(this).orEmpty())
@@ -101,6 +103,7 @@ class BusinessSettingsActivity : AppCompatActivity() {
         etBankIban.setText(BusinessProfile.bankIban(this).orEmpty())
         etBankJazzCash.setText(BusinessProfile.bankJazzCash(this).orEmpty())
         etInvoiceTerms.setText(BusinessProfile.termsAndConditions(this).orEmpty())
+        etStrn.setText(BusinessProfile.strn(this).orEmpty())
 
         findViewById<MaterialButton>(R.id.btnPickQr).setOnClickListener {
             pickImage.launch(
@@ -144,6 +147,7 @@ class BusinessSettingsActivity : AppCompatActivity() {
             BusinessProfile.setBankIban(this, etBankIban.text.toString().trim().ifEmpty { null })
             BusinessProfile.setBankJazzCash(this, etBankJazzCash.text.toString().trim().ifEmpty { null })
             BusinessProfile.setTermsAndConditions(this, etInvoiceTerms.text.toString().trim().ifEmpty { null })
+            BusinessProfile.setStrn(this, etStrn.text.toString().trim().ifEmpty { null })
             Toast.makeText(this, R.string.profile_saved, Toast.LENGTH_SHORT).show()
             finish()
         }

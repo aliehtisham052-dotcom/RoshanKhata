@@ -529,6 +529,9 @@
     <string name="invoice_terms">شرطون ۽ ضابطا</string>
     <string name="invoice_terms_help">هر انوائس تي پاڻمرادو ڇپبيون. خالي ڇڏيو ته ڪجهه نه ڇپبو.</string>
     <string name="invoice_terms_hint">مثال: ادائيگي 14 ڏينهن اندر.</string>
+    <string name="invoice_strn">سيلز ٽيڪس رجسٽريشن (STRN)</string>
+    <string name="invoice_strn_help">صرف جيڪڏهن هي دڪان سيلز ٽيڪس ۾ رجسٽرڊ آهي. نه ته خالي ڇڏيو — ڀرڻ تي هر انوائس تي ڇپبو، نه ڀرڻ تي بلڪل نه.</string>
+    <string name="invoice_strn_hint">مثال 1234567-8 (اختياري)</string>
     <string name="invoice_edit_shop_details">دڪان جو نالو، مهر، QR ۽ شرطون تبديل ڪريو</string>
     <string name="invoice_more_options">وڌيڪ اختيارون (اختياري)</string>
     <string name="invoice_settings_title">انوائس سيٽنگون</string>

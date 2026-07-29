@@ -28,6 +28,7 @@ object BusinessProfile {
     private const val KEY_BANK_IBAN = "bank_iban"
     private const val KEY_BANK_JAZZCASH = "bank_jazzcash"
     private const val KEY_TERMS = "terms_and_conditions"
+    private const val KEY_STRN = "strn_ntn"
     private const val KEY_QR_SAVED = "payment_qr_saved"
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
     private const val KEY_STAMP_SAVED = "stamp_saved"
@@ -117,6 +118,21 @@ object BusinessProfile {
 
     fun setTermsAndConditions(context: Context, value: String?) {
         prefs(context).edit().putString(KEY_TERMS, value?.trim().orEmpty()).apply()
+    }
+
+    // ---------- Sales Tax Registration Number ----------
+
+    /**
+     * Left blank for a shop that isn't registered for sales tax — printing
+     * one without being registered is what FBR's own guidance specifically
+     * warns against, so this is optional and shows nothing on the invoice
+     * unless the owner actually has one to put here.
+     */
+    fun strn(context: Context): String? =
+        prefs(context).getString(KEY_STRN, null)?.takeIf { it.isNotBlank() }
+
+    fun setStrn(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_STRN, value?.trim().orEmpty()).apply()
     }
 
     // ---------- Payment QR ----------

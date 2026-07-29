@@ -508,6 +508,9 @@
     <string name="invoice_terms">Sharait o zawabit</string>
     <string name="invoice_terms_help">Har invoice par khud-kaar chhapti hain. Khaali chhodein to kuch nahi chhapega.</string>
     <string name="invoice_terms_hint">maslan Adaigi 14 din ke andar.</string>
+    <string name="invoice_strn">Sales Tax Registration (STRN)</string>
+    <string name="invoice_strn_help">Sirf agar ye dukan sales tax mein registered hai. Warna khaali chhod dein — bharne par har invoice par chhapega, na bharne par bilkul nahi.</string>
+    <string name="invoice_strn_hint">maslan 1234567-8 (ikhtiyari)</string>
     <string name="invoice_edit_shop_details">Dukan ka naam, muhar, QR aur sharait edit karein</string>
     <string name="invoice_more_options">Mazeed options (ikhtiyari)</string>
     <string name="invoice_settings_title">Invoice Settings</string>
