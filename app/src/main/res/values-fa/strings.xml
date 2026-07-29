@@ -528,6 +528,7 @@
     <string name="invoice_terms">شرایط و ضوابط</string>
     <string name="invoice_terms_help">به‌طور خودکار روی هر فاکتور چاپ می‌شود. خالی بگذارید تا چیزی چاپ نشود.</string>
     <string name="invoice_terms_hint">مثلاً پرداخت ظرف ۱۴ روز.</string>
+    <string name="invoice_edit_shop_details">نام مغازه، مهر، QR و شرایط را ویرایش کنید</string>
     <string name="nav_invoice">فاکتور</string>
 
     <!-- Expiry alerts -->

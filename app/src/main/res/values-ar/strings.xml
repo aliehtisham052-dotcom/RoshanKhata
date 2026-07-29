@@ -507,6 +507,7 @@
     <string name="invoice_terms">الشروط والأحكام</string>
     <string name="invoice_terms_help">تُطبع تلقائيًا على كل فاتورة. اتركها فارغة لعدم طباعة شيء.</string>
     <string name="invoice_terms_hint">مثل السداد خلال 14 يومًا.</string>
+    <string name="invoice_edit_shop_details">تعديل اسم المحل والختم ورمز QR والشروط</string>
     <string name="nav_invoice">فاتورة</string>
 
     <string name="expiring_stock">بضاعة قاربت الانتهاء</string>

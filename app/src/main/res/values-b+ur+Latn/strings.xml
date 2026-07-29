@@ -507,6 +507,7 @@
     <string name="invoice_terms">Sharait o zawabit</string>
     <string name="invoice_terms_help">Har invoice par khud-kaar chhapti hain. Khaali chhodein to kuch nahi chhapega.</string>
     <string name="invoice_terms_hint">maslan Adaigi 14 din ke andar.</string>
+    <string name="invoice_edit_shop_details">Dukan ka naam, muhar, QR aur sharait edit karein</string>
     <string name="nav_invoice">Invoice</string>
 
     <string name="expiring_stock">Expire Hota Maal</string>
