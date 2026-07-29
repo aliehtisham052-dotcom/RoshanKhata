@@ -210,7 +210,7 @@
     <string name="invoice_bank_jazzcash_hint">رقم جاز كاش / إيزي بيسا</string>
 
     <string name="payment_qr">رمز QR للدفع</string>
-    <string name="payment_qr_help">لقطة شاشة أو صورة لرمز QR الخاص بحسابك في EasyPaisa أو JazzCash. سيُرفق بالكشوف ليتمكن العميل من المسح والدفع لك.</string>
+    <string name="payment_qr_help">لقطة شاشة أو صورة لرمز QR الخاص بـ EasyPaisa أو JazzCash — يقتصّ التطبيق تلقائيًا على الرمز فقط. سيُرفق بكشوف الحساب حتى يتمكن العميل من المسح والدفع.</string>
     <string name="payment_qr_caveat">افحص الرمز جيدًا قبل الحفظ. لا يستطيع روشن كهاتا التحقق لمن يعود الرمز — إن حُفظت صورة خاطئة ذهب دفع العميل إلى حساب آخر.\n\nولاحظ: رمز QR الشخصي لا يحمل المبلغ. سيكتبه عميلك بنفسه، لذا يُكتب المبلغ بوضوح بجانبه.</string>
     <string name="no_qr_yet">لا رمز دفع محفوظ بعد.</string>
     <string name="choose_qr_image">اختيار صورة</string>
@@ -788,14 +788,14 @@
     <string name="biz_tpl_olive">ظرف</string>
     <string name="biz_tpl_stamp">نصل</string>
     <string name="signature">التوقيع</string>
-    <string name="signature_help">صوّر توقيعك على ورقة بيضاء. يُطبع أسفل كشوف الحساب التي ترسلها، ويبقى على هذا الهاتف.</string>
+    <string name="signature_help">صوّر توقيعك على ورق عادي — يقتصّ التطبيق تلقائيًا على الحبر فقط. يُطبع أسفل كشوف الحساب التي ترسلها، ويبقى على هذا الهاتف.</string>
     <string name="no_signature_yet">لم تتم إضافة توقيع بعد.</string>
     <string name="choose_signature">اختر التوقيع</string>
     <string name="remove_signature">إزالة</string>
     <string name="signature_saved">تم حفظ التوقيع.</string>
     <string name="signature_save_failed">تعذّر حفظ تلك الصورة.</string>
     <string name="stamp">الختم</string>
-    <string name="stamp_help">صوّر ختم محلك على ورقة بيضاء. يظهر تلقائيًا على الفاتورة إذا أضفته — وإلا يُطبع اسمك وعنوانك فقط.</string>
+    <string name="stamp_help">صوّر ختم محلك على ورق عادي — يقتصّ التطبيق تلقائيًا على الختم فقط. يظهر تلقائيًا على الفاتورة إذا أضفت واحدًا — وإلا يُطبع اسمك وعنوانك فقط.</string>
     <string name="no_stamp_yet">لم يُضَف ختم بعد.</string>
     <string name="choose_stamp">اختر الختم</string>
     <string name="remove_stamp">إزالة</string>

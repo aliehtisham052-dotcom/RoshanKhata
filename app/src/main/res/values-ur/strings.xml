@@ -210,7 +210,7 @@
     <string name="invoice_bank_jazzcash_hint">جاز کیش / ایزی پیسہ نمبر</string>
 
     <string name="payment_qr">پیمنٹ QR کوڈ</string>
-    <string name="payment_qr_help">آپ کے ایزی پیسہ یا جاز کیش QR کوڈ کا اسکرین شاٹ یا تصویر۔ یہ اسٹیٹمنٹ کے ساتھ لگے گا تاکہ گاہک اسکین کر کے آپ کو ادائیگی کر سکے۔</string>
+    <string name="payment_qr_help">اپنے ایزی پیسہ یا جاز کیش QR کوڈ کا اسکرین شاٹ یا تصویر — ایپ خودکار طور پر صرف کوڈ تک کاٹ دیتی ہے۔ یہ اسٹیٹمنٹس کے ساتھ منسلک ہو گا تاکہ کسٹمر اسکین کر کے ادائیگی کر سکے۔</string>
     <string name="payment_qr_caveat">محفوظ کرنے سے پہلے کوڈ غور سے دیکھ لیں۔ روشن کھاتہ یہ تصدیق نہیں کر سکتا کہ QR کس کے اکاؤنٹ کا ہے — اگر غلط تصویر محفوظ ہوئی تو گاہک کی ادائیگی غلط اکاؤنٹ میں جائے گی۔\n\nیہ بھی جان لیں: ذاتی ایزی پیسہ/جاز کیش QR میں رقم شامل نہیں ہوتی۔ گاہک رقم خود لکھے گا، اس لیے رقم ساتھ صاف لکھی جاتی ہے۔</string>
     <string name="no_qr_yet">ابھی کوئی پیمنٹ QR محفوظ نہیں۔</string>
     <string name="choose_qr_image">تصویر چنیں</string>
@@ -780,14 +780,14 @@
     <string name="biz_tpl_olive">لفافہ</string>
     <string name="biz_tpl_stamp">دھار</string>
     <string name="signature">دستخط</string>
-    <string name="signature_help">اپنے دستخط سادہ کاغذ پر بنا کر تصویر لیں۔ یہ ان کھاتوں کے نیچے چھپیں گے جو آپ بھیجیں گے، اور اسی فون پر رہیں گے۔</string>
+    <string name="signature_help">اپنے دستخط سادہ کاغذ پر فوٹو کریں — ایپ خودکار طور پر صرف سیاہی تک کاٹ دیتی ہے۔ یہ آپ کے بھیجے گئے اسٹیٹمنٹس کے آخر میں چھپتا ہے، اور اس فون پر ہی رہتا ہے۔</string>
     <string name="no_signature_yet">ابھی کوئی دستخط شامل نہیں کیے گئے۔</string>
     <string name="choose_signature">دستخط منتخب کریں</string>
     <string name="remove_signature">ہٹائیں</string>
     <string name="signature_saved">دستخط محفوظ ہو گئے۔</string>
     <string name="signature_save_failed">وہ تصویر محفوظ نہیں ہو سکی۔</string>
     <string name="stamp">مہر</string>
-    <string name="stamp_help">اپنی دکان کی مہر سادہ کاغذ پر بنا کر تصویر لیں۔ اگر شامل کریں تو انوائس پر خودکار طور پر دکھائی دے گی — ورنہ صرف آپ کا نام اور پتہ چھپے گا۔</string>
+    <string name="stamp_help">اپنی دکان کی مہر سادہ کاغذ پر فوٹو کریں — ایپ خودکار طور پر صرف مہر تک کاٹ دیتی ہے۔ اگر آپ ایک شامل کریں تو انوائس پر خودکار طور پر دکھتی ہے — ورنہ صرف آپ کا نام اور پتہ چھپتا ہے۔</string>
     <string name="no_stamp_yet">ابھی کوئی مہر شامل نہیں کی گئی۔</string>
     <string name="choose_stamp">مہر منتخب کریں</string>
     <string name="remove_stamp">ہٹائیں</string>

@@ -154,7 +154,13 @@ object BusinessProfile {
             val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
                 ?: return false
 
-            val scaled = downscale(original)
+            // Cropped to the code itself before scaling — see ImageAutoCrop's
+            // own doc for why this is the compression the owner asked for,
+            // not a step separate from it. A photo that is already a clean
+            // QR with no surrounding chrome is unaffected: cropToQr only
+            // shrinks the padded box around what it actually detects.
+            val cropped = ImageAutoCrop.cropToQr(original)
+            val scaled = downscale(cropped)
 
             FileOutputStream(qrFile(context)).use { out ->
                 // PNG, not JPEG: JPEG artefacts around the sharp black/white
@@ -162,7 +168,11 @@ object BusinessProfile {
                 scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
             }
 
-            if (scaled !== original) original.recycle()
+            // Up to three distinct bitmaps here (crop and scale can each be a
+            // no-op) — recycle whichever ones actually got allocated, each
+            // exactly once.
+            if (cropped !== original) original.recycle()
+            if (scaled !== cropped && scaled !== original) cropped.recycle()
 
             prefs(context).edit().putBoolean(KEY_QR_SAVED, true).apply()
             true
@@ -213,14 +223,21 @@ object BusinessProfile {
             // as before, still PNG at full quality.
             val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
                 ?: return false
-            val scaled = downscale(original)
+
+            // Cropped to the ink itself, not the sheet it was photographed
+            // on — see ImageAutoCrop's own doc. This is the compression the
+            // owner asked for without losing anything of the signature
+            // itself: fewer pixels of blank paper, the same pixels of ink.
+            val cropped = ImageAutoCrop.cropToInk(original)
+            val scaled = downscale(cropped)
 
             FileOutputStream(signatureFile(context)).use { out ->
                 // PNG so a signature photographed on white paper keeps its
                 // edges, and so a transparent one stays transparent.
                 scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
             }
-            if (scaled !== original) original.recycle()
+            if (cropped !== original) original.recycle()
+            if (scaled !== cropped && scaled !== original) cropped.recycle()
 
             prefs(context).edit().putBoolean(KEY_SIGNATURE_SAVED, true).apply()
             true
@@ -270,14 +287,19 @@ object BusinessProfile {
         return try {
             val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
                 ?: return false
-            val scaled = downscale(original)
+
+            // Same crop-to-ink as the signature above, and for the same
+            // reason: the muhar itself, not the sheet it was stamped on.
+            val cropped = ImageAutoCrop.cropToInk(original)
+            val scaled = downscale(cropped)
 
             FileOutputStream(stampFile(context)).use { out ->
                 // PNG, so a stamp scanned or photographed on white paper
                 // keeps sharp edges, and one already cut out stays transparent.
                 scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
             }
-            if (scaled !== original) original.recycle()
+            if (cropped !== original) original.recycle()
+            if (scaled !== cropped && scaled !== original) cropped.recycle()
 
             prefs(context).edit().putBoolean(KEY_STAMP_SAVED, true).apply()
             true
