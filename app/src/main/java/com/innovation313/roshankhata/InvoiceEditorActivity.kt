@@ -203,7 +203,10 @@ class InvoiceEditorActivity : AppCompatActivity() {
             }
         )
 
-        btnBack.visibility = if (which == 1) View.INVISIBLE else View.VISIBLE
+        // GONE, not just invisible — an invisible view still reserves its
+        // weighted share of the row, which is exactly why Next looked small
+        // and pushed to one side on Step 1 instead of filling the width.
+        btnBack.visibility = if (which == 1) View.GONE else View.VISIBLE
         btnNext.setText(if (which == 3) R.string.save else R.string.invoice_next)
 
         if (which == 3) renderPreview()
