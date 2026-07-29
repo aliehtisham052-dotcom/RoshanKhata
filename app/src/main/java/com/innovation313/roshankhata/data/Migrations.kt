@@ -352,6 +352,23 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
 }
 
 /**
+ * A new table only — dismissed_duplicates has no foreign key and touches no
+ * existing row. Remembers which suspected-duplicate group the owner has
+ * already looked at on the "Duplicate customers" screen and confirmed is not
+ * the same person twice, keyed by [com.innovation313.roshankhata.ui.DuplicateDetector.groupKey]
+ * so the screen stops re-suggesting a pair the owner already ruled out.
+ */
+val MIGRATION_12_13 = object : Migration(12, 13) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS dismissed_duplicates (" +
+                "partyIdsKey TEXT NOT NULL PRIMARY KEY, " +
+                "dismissedAt INTEGER NOT NULL)"
+        )
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -360,7 +377,7 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 12
+const val KHATA_DB_VERSION = 13
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -374,5 +391,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_8_9,
     MIGRATION_9_10,
     MIGRATION_10_11,
-    MIGRATION_11_12
+    MIGRATION_11_12,
+    MIGRATION_12_13
 )

@@ -765,6 +765,8 @@
     <string name="duplicate_merge_go">Merge Karein</string>
     <string name="duplicate_merge_done">%1$s mein merge ho gaya.</string>
     <string name="duplicate_merge_failed">Merge nahi ho saka. Aap ka khata jaisa tha waisa hi hai.</string>
+    <string name="duplicate_not_duplicate">Duplicate nahi hai</string>
+    <string name="duplicate_dismissed">Jab tak kuch badle, dobara nahi dikhega.</string>
     <string name="stock_no_movement">abhi len den nahi</string>
     <string name="stock_units_differ">unit alag hain</string>
     <string name="stock_in_out">aaya %1$s  •  gaya %2$s</string>

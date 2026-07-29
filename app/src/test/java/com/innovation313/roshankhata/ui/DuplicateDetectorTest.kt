@@ -116,4 +116,46 @@ class DuplicateDetectorTest {
         assertEquals(3, groups[0].members.size)
         assertEquals(2, groups[1].members.size)
     }
+
+    @Test
+    fun `groupKey is the same regardless of member order`() {
+        val a = listOf(c(5, "Bavisteen"), c(2, "Bavistin"))
+        val b = listOf(c(2, "Bavistin"), c(5, "Bavisteen"))
+        assertEquals(DuplicateDetector.groupKey(a), DuplicateDetector.groupKey(b))
+        assertEquals("2,5", DuplicateDetector.groupKey(a))
+    }
+
+    @Test
+    fun `a dismissed group is not suggested again`() {
+        val all = listOf(c(1, "Bavistin"), c(2, "Bavisteen"))
+        val key = DuplicateDetector.groupKey(all)
+        assertTrue(DuplicateDetector.find(all, dismissedKeys = setOf(key)).isEmpty())
+        // Undismissed, it is found as before — the filter only removes what
+        // is actually in the dismissed set.
+        assertEquals(1, DuplicateDetector.find(all, dismissedKeys = emptySet()).size)
+    }
+
+    @Test
+    fun `dismissing one group does not hide an unrelated one`() {
+        val all = listOf(
+            c(1, "Bavistin"), c(2, "Bavisteen"),
+            c(3, "Khurpa"), c(4, "Kurpa")
+        )
+        val dismissed = setOf(DuplicateDetector.groupKey(listOf(c(1, ""), c(2, ""))))
+        val groups = DuplicateDetector.find(all, dismissed)
+        assertEquals(1, groups.size)
+        assertEquals(setOf(3L, 4L), groups[0].members.map { it.partyId }.toSet())
+    }
+
+    @Test
+    fun `a third party joining a dismissed pair produces a different key and is shown again`() {
+        val pairKey = DuplicateDetector.groupKey(listOf(c(1, ""), c(2, "")))
+        // Party 3 spelled exactly like party 1 — already proven fold-equal to
+        // party 2 by the very first test in this file — so the three-way fold
+        // match itself is not something this test is guessing at.
+        val all = listOf(c(1, "Bavistin"), c(2, "Bavisteen"), c(3, "Bavistin"))
+        val groups = DuplicateDetector.find(all, dismissedKeys = setOf(pairKey))
+        assertEquals(1, groups.size)
+        assertEquals(setOf(1L, 2L, 3L), groups[0].members.map { it.partyId }.toSet())
+    }
 }

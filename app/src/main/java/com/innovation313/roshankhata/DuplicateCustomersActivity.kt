@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
+import com.innovation313.roshankhata.data.DismissedDuplicate
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.ui.DuplicateDetector
@@ -76,7 +77,8 @@ class DuplicateCustomersActivity : AppCompatActivity() {
                     balance = it.balance
                 )
             }
-            val groups = DuplicateDetector.find(candidates)
+            val dismissedKeys = dao.getDismissedDuplicateKeys().toSet()
+            val groups = DuplicateDetector.find(candidates, dismissedKeys)
             adapter.submitList(groups)
             tvEmpty.visibility = if (groups.isEmpty()) View.VISIBLE else View.GONE
         }
@@ -95,11 +97,35 @@ class DuplicateCustomersActivity : AppCompatActivity() {
             .setMessage(R.string.duplicate_pick_primary_message)
             .setSingleChoiceItems(options, chosen) { _, which -> chosen = which }
             .setNegativeButton(R.string.cancel, null)
+            .setNeutralButton(R.string.duplicate_not_duplicate) { dialog, _ ->
+                dialog.dismiss()
+                dismissGroup(group)
+            }
             .setPositiveButton(R.string.duplicate_next) { dialog, _ ->
                 dialog.dismiss()
                 confirmMerge(group, chosen)
             }
             .show()
+    }
+
+    /**
+     * The owner has looked and these are different people. Recorded by the
+     * group's current member-id set (see [DuplicateDetector.groupKey]) so it
+     * stops being suggested — but only until something about the group
+     * itself actually changes, which naturally produces a different key and
+     * surfaces it again on its own.
+     */
+    private fun dismissGroup(group: DuplicateDetector.Group) {
+        val key = DuplicateDetector.groupKey(group.members)
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                dao.dismissDuplicate(DismissedDuplicate(key, System.currentTimeMillis()))
+            }
+            if (!isFinishing && !isDestroyed) {
+                Toast.makeText(this@DuplicateCustomersActivity, R.string.duplicate_dismissed, Toast.LENGTH_SHORT).show()
+                refresh()
+            }
+        }
     }
 
     /** Step 2: a full account of what merging does, before it does it. */

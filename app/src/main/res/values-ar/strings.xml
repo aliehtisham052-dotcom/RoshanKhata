@@ -773,6 +773,8 @@
     <string name="duplicate_merge_go">دمج</string>
     <string name="duplicate_merge_done">تم الدمج في %1$s.</string>
     <string name="duplicate_merge_failed">تعذّر الدمج. دفترك كما هو دون تغيير.</string>
+    <string name="duplicate_not_duplicate">ليس مكررًا</string>
+    <string name="duplicate_dismissed">لن يُقترح مرة أخرى ما لم يتغيّر شيء.</string>
     <string name="stock_no_movement">لا حركة بعد</string>
     <string name="stock_units_differ">الوحدات مختلفة</string>
     <string name="stock_in_out">وارد %1$s  •  صادر %2$s</string>

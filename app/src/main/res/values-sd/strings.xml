@@ -793,6 +793,8 @@
     <string name="duplicate_merge_go">ضم ڪريو</string>
     <string name="duplicate_merge_done">%1$s ۾ ضم ٿي ويو.</string>
     <string name="duplicate_merge_failed">ضم نه ٿي سگهيو. توهان جو کاتو جيئن هو تيئن ئي آهي.</string>
+    <string name="duplicate_not_duplicate">ٻٽو ناهي</string>
+    <string name="duplicate_dismissed">جيسين ڪجهه نه بدلجي، وري نه ڏيکاريو ويندو.</string>
     <string name="stock_no_movement">اڃا ڏي وٺ ناهي</string>
     <string name="stock_units_differ">يونٽ الڳ آهن</string>
     <string name="stock_in_out">آيو %1$s  •  ويو %2$s</string>

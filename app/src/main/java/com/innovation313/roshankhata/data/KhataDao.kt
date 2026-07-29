@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.data
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -1145,4 +1146,22 @@ interface KhataDao {
             mergeParty(loserId, survivorId, now)
         }
     }
+
+    /**
+     * Records that the owner looked at a suspected-duplicate group and
+     * confirmed it is not one. REPLACE, not IGNORE: if the same key is ever
+     * dismissed twice — it should not normally reach the screen a second
+     * time once dismissed, but a crash or an old cached list could still
+     * show it — this keeps the newer timestamp rather than failing on the
+     * primary key.
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun dismissDuplicate(dismissed: DismissedDuplicate)
+
+    /**
+     * Every group key the owner has already ruled out, for
+     * [com.innovation313.roshankhata.ui.DuplicateDetector.find] to skip.
+     */
+    @Query("SELECT partyIdsKey FROM dismissed_duplicates")
+    suspend fun getDismissedDuplicateKeys(): List<String>
 }
