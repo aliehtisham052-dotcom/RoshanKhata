@@ -491,6 +491,8 @@
     <string name="invoice_template_teal">Teal Corporate — mukammal business invoice</string>
     <string name="invoice_template_thermal">Thermal Receipt — tang, counter sale</string>
     <string name="invoice_pdf_failed">PDF nahi ban saki. Kuch bhi nahi bheja gaya.</string>
+    <string name="invoice_preview_label">Preview — jaise aap bharte hain waise update hota hai</string>
+    <string name="invoice_items_label">Cheezein</string>
     <string name="nav_invoice">Invoice</string>
 
     <string name="expiring_stock">Expire Hota Maal</string>

@@ -57,6 +57,51 @@ object InvoicePdfExport {
         }
     }
 
+    /**
+     * A live preview while filling in the form — the owner asked for this
+     * after comparing it to the Dukan Card screen, where typing updates the
+     * design as you go.
+     *
+     * Deliberately not a second drawing routine: this renders the SAME PDF
+     * [build] would produce and rasterises its first page with
+     * [android.graphics.pdf.PdfRenderer]. Two drawing implementations for
+     * one template is exactly the kind of drift this app's own history
+     * warns about (the Zakat screen computing the same figure two ways and
+     * disagreeing) — here there is only ever one, so the preview cannot show
+     * something the actual PDF would not.
+     *
+     * @return null on any failure — a blank preview area is the correct
+     *         result of nothing typed yet, not a crash.
+     */
+    fun renderPreviewBitmap(context: Context, invoice: Invoice, items: List<InvoiceItem>): android.graphics.Bitmap? {
+        val file = build(context, invoice, items) ?: return null
+        return try {
+            android.os.ParcelFileDescriptor.open(
+                file, android.os.ParcelFileDescriptor.MODE_READ_ONLY
+            ).use { pfd ->
+                android.graphics.pdf.PdfRenderer(pfd).use { renderer ->
+                    if (renderer.pageCount == 0) return null
+                    renderer.openPage(0).use { page ->
+                        // 2x the PDF's own point size — sharp enough on a phone
+                        // screen without rendering something absurdly large for
+                        // what is, after all, just a preview.
+                        val bmp = android.graphics.Bitmap.createBitmap(
+                            page.width * 2, page.height * 2, android.graphics.Bitmap.Config.ARGB_8888
+                        )
+                        bmp.eraseColor(Color.WHITE)
+                        page.render(
+                            bmp, null, null,
+                            android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
+                        )
+                        bmp
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     private fun outputFile(context: Context, invoice: Invoice): File {
         val dir = File(context.cacheDir, "invoices").apply { mkdirs() }
         val safeName = invoice.customerName.replace(Regex("[^A-Za-z0-9 ]"), "").trim().replace(" ", "_")

@@ -512,6 +512,8 @@
     <string name="invoice_template_teal">ٽيل ڪارپوريٽ — مڪمل بزنس انوائس</string>
     <string name="invoice_template_thermal">ٿرمل رسيد — تنگ، ڪائونٽر سيل</string>
     <string name="invoice_pdf_failed">PDF نه ٺهي سگهي. ڪجهه به نه موڪليو ويو.</string>
+    <string name="invoice_preview_label">اڳوڻو نظارو — جيئن توهان ڀريو ٿا تيئن اپڊيٽ ٿيندو</string>
+    <string name="invoice_items_label">شيون</string>
     <string name="nav_invoice">انوائس</string>
 
     <!-- Expiry alerts -->

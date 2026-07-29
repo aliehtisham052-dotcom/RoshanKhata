@@ -491,6 +491,8 @@
     <string name="invoice_template_teal">تيل كوربوريت — فاتورة عمل كاملة</string>
     <string name="invoice_template_thermal">إيصال حراري — ضيق، بيع نقدي</string>
     <string name="invoice_pdf_failed">تعذّر إنشاء ملف PDF. لم تتم مشاركة أي شيء.</string>
+    <string name="invoice_preview_label">معاينة — تتحدث أثناء التعبئة</string>
+    <string name="invoice_items_label">الأصناف</string>
     <string name="nav_invoice">فاتورة</string>
 
     <string name="expiring_stock">بضاعة قاربت الانتهاء</string>
