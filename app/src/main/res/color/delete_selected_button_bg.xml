@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The select-and-delete button's fill.
+
+  Disabled it turns grey rather than staying red. Material fades a disabled
+  button's own colours, and a faded red on a red button is exactly the
+  "washed out, hard to read" look the owner flagged — the same failure
+  already fixed once for the import button (see import_button_bg.xml). No
+  entries selected means the button truly has nothing to do yet, so grey
+  reads correctly as "off" rather than as a red button gone illegible.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/page_line" android:state_enabled="false" />
+    <item android:color="@color/red_gave" />
+</selector>

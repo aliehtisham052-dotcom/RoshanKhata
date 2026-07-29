@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The select-and-delete button's label. Muted grey on the grey disabled
+  fill, white on the red enabled one — legible in both states rather than
+  only in one.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/text_muted" android:state_enabled="false" />
+    <item android:color="@color/white" />
+</selector>

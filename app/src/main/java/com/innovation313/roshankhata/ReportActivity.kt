@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -203,7 +204,25 @@ class ReportActivity : AppCompatActivity() {
 
         tvTotalGave.text = Format.money(gave)
         tvTotalGot.text = Format.money(got)
-        tvNetChange.text = Format.money(gave - got)
+
+        // Net change is a signed figure — gave minus got, the same formula
+        // the ledger's own running balance uses — so it takes the same
+        // colour convention as the party balance instead of one fixed
+        // colour that ignores which way the number leans: red for what is
+        // owed to the shop, green for what the shop owes back, neutral
+        // when the two sides cancel out.
+        val net = gave - got
+        tvNetChange.text = Format.money(net)
+        tvNetChange.setTextColor(
+            ContextCompat.getColor(
+                this,
+                when {
+                    net > 0 -> R.color.bal_owed_to_me_on_dark
+                    net < 0 -> R.color.bal_i_owe_on_dark
+                    else -> R.color.white
+                }
+            )
+        )
 
         tvRangeLabel.text = when {
             rangeStart == null -> getString(R.string.range_label_all)
