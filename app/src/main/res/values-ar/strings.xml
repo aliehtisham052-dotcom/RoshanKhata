@@ -480,6 +480,8 @@
     <string name="invoice_needs_item">أضف صنفًا واحدًا على الأقل أولاً.</string>
     <string name="invoice_saved">تم حفظ الفاتورة.</string>
     <string name="invoice_total">الإجمالي: %1$s</string>
+    <string name="invoice_received_line">المستلم: %1$s</string>
+    <string name="invoice_balance_due_line">الرصيد المتبقي: %1$s</string>
     <string name="invoice_subtotal">المجموع الفرعي: %1$s</string>
     <string name="invoice_discount_line">الخصم (%1$s%%): −%2$s</string>
     <string name="invoice_tax_line">الضريبة (%1$s%%): %2$s</string>
@@ -498,6 +500,13 @@
     <string name="invoice_next">التالي</string>
     <string name="invoice_back">السابق</string>
     <string name="invoice_items_label">الأصناف</string>
+    <string name="invoice_number_hint">رقم الفاتورة (اختياري — اتركه فارغًا للترقيم التلقائي)</string>
+    <string name="invoice_charge_label_hint">رسوم إضافية — مثل الشحن (اختياري)</string>
+    <string name="invoice_charge_amount_hint">المبلغ</string>
+    <string name="invoice_received_hint">المبلغ المستلم (اختياري)</string>
+    <string name="invoice_terms">الشروط والأحكام</string>
+    <string name="invoice_terms_help">تُطبع تلقائيًا على كل فاتورة. اتركها فارغة لعدم طباعة شيء.</string>
+    <string name="invoice_terms_hint">مثل السداد خلال 14 يومًا.</string>
     <string name="nav_invoice">فاتورة</string>
 
     <string name="expiring_stock">بضاعة قاربت الانتهاء</string>

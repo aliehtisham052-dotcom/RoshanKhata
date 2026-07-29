@@ -521,17 +521,27 @@ interface KhataDao {
     suspend fun insertInvoiceItem(item: InvoiceItem): Long
 
     /**
-     * The ONLY way an invoice should be created — same reason as
-     * [insertEntryNumbered]: the printed number is count+1, and reading the
-     * count outside this @Transaction could let two invoices saved close
-     * together both become INV-000123. Every item is written in the same
-     * transaction, so a crash or a cancelled screen can never leave an
-     * invoice on record with none of its lines, or half of them.
+     * The ONLY way an invoice should be created. If the invoice already
+     * carries a number (the owner typed their own, or is re-using their
+     * existing paper series), that number is kept exactly as given — no
+     * uniqueness is enforced here, the same way Vyapar does not stop an
+     * owner typing a duplicate by hand; the printed number is theirs to
+     * manage. Only a genuinely blank number is auto-assigned, and that read
+     * of the count happens inside this same @Transaction for the same
+     * reason as [insertEntryNumbered]: reading it outside could let two
+     * invoices saved close together both become INV-000123. Every item is
+     * written in the same transaction, so a crash or a cancelled screen can
+     * never leave an invoice on record with none of its lines, or half of
+     * them.
      */
     @Transaction
     suspend fun saveInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>): Long {
-        val count = totalInvoiceCount()
-        val invoiceId = insertInvoice(invoice.copy(invoiceNumber = InvoiceNumber.next(count)))
+        val numbered = if (invoice.invoiceNumber.isBlank()) {
+            invoice.copy(invoiceNumber = InvoiceNumber.next(totalInvoiceCount()))
+        } else {
+            invoice
+        }
+        val invoiceId = insertInvoice(numbered)
         for (item in items) {
             insertInvoiceItem(item.copy(id = 0, invoiceId = invoiceId))
         }
@@ -557,6 +567,7 @@ interface KhataDao {
                   WHERE li.invoiceId = i.id AND li.isDeleted = 0)
                  * (1 - COALESCE(i.discountPercent, 0) / 100.0)
                  * (1 + COALESCE(i.taxPercent, 0) / 100.0)
+                 + COALESCE(i.additionalChargeAmount, 0)
                ) AS grandTotal
         FROM invoices i
         WHERE i.isDeleted = 0

@@ -421,6 +421,20 @@ val MIGRATION_14_15 = object : Migration(14, 15) {
 }
 
 /**
+ * Three more nullable columns on invoices — additionalChargeLabel,
+ * additionalChargeAmount, receivedAmount. Same reasoning as the last two
+ * migrations on this table: null is a real, correct value here (no extra
+ * charge, nothing recorded as received), not a placeholder to backfill.
+ */
+val MIGRATION_15_16 = object : Migration(15, 16) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE invoices ADD COLUMN additionalChargeLabel TEXT")
+        db.execSQL("ALTER TABLE invoices ADD COLUMN additionalChargeAmount REAL")
+        db.execSQL("ALTER TABLE invoices ADD COLUMN receivedAmount REAL")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -429,7 +443,7 @@ val MIGRATION_14_15 = object : Migration(14, 15) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 15
+const val KHATA_DB_VERSION = 16
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -446,5 +460,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_11_12,
     MIGRATION_12_13,
     MIGRATION_13_14,
-    MIGRATION_14_15
+    MIGRATION_14_15,
+    MIGRATION_15_16
 )

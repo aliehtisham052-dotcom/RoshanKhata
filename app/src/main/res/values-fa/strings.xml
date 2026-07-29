@@ -501,6 +501,8 @@
     <string name="invoice_needs_item">ابتدا حداقل یک قلم اضافه کنید.</string>
     <string name="invoice_saved">فاکتور ذخیره شد.</string>
     <string name="invoice_total">جمع: %1$s</string>
+    <string name="invoice_received_line">دریافتی: %1$s</string>
+    <string name="invoice_balance_due_line">مانده: %1$s</string>
     <string name="invoice_subtotal">جمع جزء: %1$s</string>
     <string name="invoice_discount_line">تخفیف (%1$s%%): −%2$s</string>
     <string name="invoice_tax_line">مالیات (%1$s%%): %2$s</string>
@@ -519,6 +521,13 @@
     <string name="invoice_next">بعدی</string>
     <string name="invoice_back">قبلی</string>
     <string name="invoice_items_label">اقلام</string>
+    <string name="invoice_number_hint">شماره فاکتور (اختیاری — خالی بگذارید خودکار شود)</string>
+    <string name="invoice_charge_label_hint">هزینه اضافی — مثلاً کرایه حمل (اختیاری)</string>
+    <string name="invoice_charge_amount_hint">مبلغ</string>
+    <string name="invoice_received_hint">مبلغ دریافتی (اختیاری)</string>
+    <string name="invoice_terms">شرایط و ضوابط</string>
+    <string name="invoice_terms_help">به‌طور خودکار روی هر فاکتور چاپ می‌شود. خالی بگذارید تا چیزی چاپ نشود.</string>
+    <string name="invoice_terms_hint">مثلاً پرداخت ظرف ۱۴ روز.</string>
     <string name="nav_invoice">فاکتور</string>
 
     <!-- Expiry alerts -->

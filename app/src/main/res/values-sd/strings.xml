@@ -501,6 +501,8 @@
     <string name="invoice_needs_item">پهرين گهٽ ۾ گهٽ هڪ شيءِ شامل ڪريو.</string>
     <string name="invoice_saved">انوائس محفوظ ٿي وئي.</string>
     <string name="invoice_total">ڪل: %1$s</string>
+    <string name="invoice_received_line">مليل: %1$s</string>
+    <string name="invoice_balance_due_line">باقي رقم: %1$s</string>
     <string name="invoice_subtotal">ذيلي مجموعو: %1$s</string>
     <string name="invoice_discount_line">ڊسڪائونٽ (%1$s%%): −%2$s</string>
     <string name="invoice_tax_line">ٽيڪس (%1$s%%): %2$s</string>
@@ -519,6 +521,13 @@
     <string name="invoice_next">اڳتي</string>
     <string name="invoice_back">پوئتي</string>
     <string name="invoice_items_label">شيون</string>
+    <string name="invoice_number_hint">انوائس نمبر (اختياري — خالي ڇڏيو ته پاڻمرادو)</string>
+    <string name="invoice_charge_label_hint">اضافي خرچ — مثال ڪرايو (اختياري)</string>
+    <string name="invoice_charge_amount_hint">رقم</string>
+    <string name="invoice_received_hint">مليل رقم (اختياري)</string>
+    <string name="invoice_terms">شرطون ۽ ضابطا</string>
+    <string name="invoice_terms_help">هر انوائس تي پاڻمرادو ڇپبيون. خالي ڇڏيو ته ڪجهه نه ڇپبو.</string>
+    <string name="invoice_terms_hint">مثال: ادائيگي 14 ڏينهن اندر.</string>
     <string name="nav_invoice">انوائس</string>
 
     <!-- Expiry alerts -->

@@ -27,6 +27,7 @@ object BusinessProfile {
     private const val KEY_BANK_TITLE = "bank_account_title"
     private const val KEY_BANK_IBAN = "bank_iban"
     private const val KEY_BANK_JAZZCASH = "bank_jazzcash"
+    private const val KEY_TERMS = "terms_and_conditions"
     private const val KEY_QR_SAVED = "payment_qr_saved"
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
     private const val KEY_STAMP_SAVED = "stamp_saved"
@@ -101,6 +102,21 @@ object BusinessProfile {
 
     fun setBankJazzCash(context: Context, value: String?) {
         prefs(context).edit().putString(KEY_BANK_JAZZCASH, value?.trim().orEmpty()).apply()
+    }
+
+    // ---------- Terms & Conditions ----------
+
+    /**
+     * Set once here, printed on every invoice automatically — the same
+     * reasoning as the letterhead: the owner should not have to retype
+     * their own standing terms on each document. Separate from a per-invoice
+     * note, which stays specific to that one bill.
+     */
+    fun termsAndConditions(context: Context): String? =
+        prefs(context).getString(KEY_TERMS, null)?.takeIf { it.isNotBlank() }
+
+    fun setTermsAndConditions(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_TERMS, value?.trim().orEmpty()).apply()
     }
 
     // ---------- Payment QR ----------
