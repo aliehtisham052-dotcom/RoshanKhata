@@ -103,11 +103,12 @@ class InvoiceEditorActivity : AppCompatActivity() {
      * elsewhere for these two designs, so the caption under the carousel
      * says the same thing the share-time picker always has.
      */
-    private val templateIds = listOf(1, 2, 3, 10)
+    private val templateIds = listOf(1, 2, 3, 4, 10)
     private val templateNameRes = listOf(
         R.string.invoice_template_teal,
         R.string.invoice_template_black_gold,
         R.string.invoice_template_gradient,
+        R.string.invoice_template_green_retail,
         R.string.invoice_template_thermal
     )
 

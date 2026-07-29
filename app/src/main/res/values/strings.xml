@@ -522,6 +522,7 @@
     <string name="invoice_swipe_designs">Swipe to see more designs — %1$d of %2$d</string>
     <string name="invoice_template_black_gold">Black &amp; Gold — premium, for jewellers</string>
     <string name="invoice_template_gradient">Modern Gradient — bright, for salons</string>
+    <string name="invoice_template_green_retail">Green Retail — compact, for general stores</string>
     <string name="invoice_template_thermal">Thermal Receipt — narrow, counter sale</string>
     <string name="invoice_pdf_failed">Could not create the PDF. Nothing was shared.</string>
     <string name="invoice_preview_label">Preview — updates as you fill this in</string>

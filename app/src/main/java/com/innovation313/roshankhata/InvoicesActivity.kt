@@ -119,9 +119,10 @@ class InvoicesActivity : AppCompatActivity() {
             getString(R.string.invoice_template_teal),
             getString(R.string.invoice_template_black_gold),
             getString(R.string.invoice_template_gradient),
+            getString(R.string.invoice_template_green_retail),
             getString(R.string.invoice_template_thermal)
         )
-        val templateIds = intArrayOf(1, 2, 3, 10)
+        val templateIds = intArrayOf(1, 2, 3, 4, 10)
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.invoice_choose_template)
             .setItems(templates) { _, which ->
