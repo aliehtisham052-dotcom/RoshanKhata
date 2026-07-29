@@ -580,13 +580,17 @@ interface KhataDao {
     suspend fun softDeleteInvoice(id: Long, now: Long = System.currentTimeMillis())
 
     /**
-     * Every party name in the book, for the customer field's suggestion
-     * list. NOT filtered to customers only — a shopkeeper occasionally
+     * Every party in the book, for the customer field's suggestion list —
+     * name AND phone, so picking a suggestion fills both rather than just
+     * the name. NOT filtered to customers only — a shopkeeper occasionally
      * invoices a supplier too (a return, a one-off sale of something spare) —
      * and the field accepts any typed name besides, on or off this list.
+     * Where a name is entered under more than one party, [PartyNameAndPhone]
+     * is deliberately just a name/phone pair, not an id — this stays the
+     * same plain convenience lookup it always was, never a link to a row.
      */
-    @Query("SELECT DISTINCT name FROM parties WHERE isDeleted = 0 ORDER BY name ASC")
-    suspend fun allPartyNamesForInvoice(): List<String>
+    @Query("SELECT name, phone FROM parties WHERE isDeleted = 0 ORDER BY name ASC")
+    suspend fun allPartiesForInvoice(): List<PartyNameAndPhone>
 
     /**
      * Every batch of this product a sale could be tagged to, soonest-expiring

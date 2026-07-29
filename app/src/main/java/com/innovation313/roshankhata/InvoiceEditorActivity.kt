@@ -138,10 +138,24 @@ class InvoiceEditorActivity : AppCompatActivity() {
         btnNext.setOnClickListener { goNext() }
 
         lifecycleScope.launch {
-            val names = dao.allPartyNamesForInvoice()
+            val parties = dao.allPartiesForInvoice()
+            // Keyed by name for the click lookup below. Where the same name
+            // appears on more than one party, the first one wins — this was
+            // always a plain convenience lookup, never a link to a party
+            // row, so there is no "correct" one to prefer beyond that.
+            val phoneByName = parties.associateBy({ it.name }, { it.phone })
+
             etCustomer.setAdapter(
-                ArrayAdapter(this@InvoiceEditorActivity, android.R.layout.simple_dropdown_item_1line, names)
+                ArrayAdapter(
+                    this@InvoiceEditorActivity,
+                    android.R.layout.simple_dropdown_item_1line,
+                    parties.map { it.name }.distinct()
+                )
             )
+            etCustomer.setOnItemClickListener { _, _, position, _ ->
+                val picked = etCustomer.adapter.getItem(position) as? String ?: return@setOnItemClickListener
+                phoneByName[picked]?.takeIf { it.isNotBlank() }?.let { etPhone.setText(it) }
+            }
         }
 
         addRow()
