@@ -531,6 +531,20 @@
     <string name="invoice_terms_hint">مثلاً پرداخت ظرف ۱۴ روز.</string>
     <string name="invoice_edit_shop_details">نام مغازه، مهر، QR و شرایط را ویرایش کنید</string>
     <string name="invoice_more_options">گزینه‌های بیشتر (اختیاری)</string>
+    <string name="invoice_settings_title">تنظیمات فاکتور</string>
+    <string name="invoice_settings_subtitle">چیزی که این مغازه هرگز استفاده نمی‌کند را خاموش کنید — برای هر فاکتور جدید خاموش می‌ماند.</string>
+    <string name="invoice_feature_discount">تخفیف</string>
+    <string name="invoice_feature_discount_desc">درصدی از مجموع فاکتور.</string>
+    <string name="invoice_feature_tax">مالیات</string>
+    <string name="invoice_feature_tax_desc">درصدی که بعد از تخفیف اضافه می‌شود.</string>
+    <string name="invoice_feature_extra_charge">هزینه اضافی</string>
+    <string name="invoice_feature_extra_charge_desc">کرایه حمل، دستمزد، یا خط اضافه دیگر.</string>
+    <string name="invoice_feature_received">مبلغ دریافتی</string>
+    <string name="invoice_feature_received_desc">در صورت تنظیم، مانده حساب را نشان می‌دهد.</string>
+    <string name="invoice_feature_note">یادداشت</string>
+    <string name="invoice_feature_note_desc">یک خط کوتاه مخصوص همان فاکتور.</string>
+    <string name="invoice_feature_due_date">تاریخ سررسید</string>
+    <string name="invoice_feature_due_date_desc">چه زمانی پرداخت انتظار می‌رود.</string>
     <string name="nav_invoice">فاکتور</string>
 
     <!-- Expiry alerts -->

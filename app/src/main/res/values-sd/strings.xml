@@ -531,6 +531,20 @@
     <string name="invoice_terms_hint">مثال: ادائيگي 14 ڏينهن اندر.</string>
     <string name="invoice_edit_shop_details">دڪان جو نالو، مهر، QR ۽ شرطون تبديل ڪريو</string>
     <string name="invoice_more_options">وڌيڪ اختيارون (اختياري)</string>
+    <string name="invoice_settings_title">انوائس سيٽنگون</string>
+    <string name="invoice_settings_subtitle">جيڪا شيءِ هي دڪان ڪڏهن به استعمال نه ٿو ڪري، ان کي بند ڪريو — هر نئين انوائس لاءِ بند رهندي.</string>
+    <string name="invoice_feature_discount">ڊسڪائونٽ</string>
+    <string name="invoice_feature_discount_desc">انوائس جي ڪل مان سيڪڙو گهٽتائي.</string>
+    <string name="invoice_feature_tax">ٽيڪس</string>
+    <string name="invoice_feature_tax_desc">ڊسڪائونٽ کان پوءِ شامل ٿيندڙ سيڪڙو.</string>
+    <string name="invoice_feature_extra_charge">اضافي خرچ</string>
+    <string name="invoice_feature_extra_charge_desc">ڪرايو، مزدوري، يا ٻي اضافي لائن.</string>
+    <string name="invoice_feature_received">مليل رقم</string>
+    <string name="invoice_feature_received_desc">ڀرڻ تي باقي رقم ڏيکاري ٿي.</string>
+    <string name="invoice_feature_note">نوٽ</string>
+    <string name="invoice_feature_note_desc">هڪ انوائس لاءِ خاص مختصر لائن.</string>
+    <string name="invoice_feature_due_date">ادائيگي جي تاريخ</string>
+    <string name="invoice_feature_due_date_desc">ادائيگي ڪڏهن متوقع آهي.</string>
     <string name="nav_invoice">انوائس</string>
 
     <!-- Expiry alerts -->

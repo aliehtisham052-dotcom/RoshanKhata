@@ -13,6 +13,7 @@
         android:paddingBottom="8dp">
 
         <LinearLayout
+            android:id="@+id/rowDiscountTax"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -43,6 +44,7 @@
           reverse) is treated the same way at save.
         -->
         <LinearLayout
+            android:id="@+id/rowExtraChargeFields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"

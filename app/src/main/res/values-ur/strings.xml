@@ -510,6 +510,20 @@
     <string name="invoice_terms_hint">مثلاً ادائیگی 14 دن کے اندر۔</string>
     <string name="invoice_edit_shop_details">دکان کا نام، مہر، QR اور شرائط ترمیم کریں</string>
     <string name="invoice_more_options">مزید اختیارات (اختیاری)</string>
+    <string name="invoice_settings_title">انوائس کی سیٹنگز</string>
+    <string name="invoice_settings_subtitle">جو چیز یہ دکان کبھی استعمال نہیں کرتی اسے بند کر دیں — ہر نئی انوائس کے لیے بند رہے گی۔</string>
+    <string name="invoice_feature_discount">ڈسکاؤنٹ</string>
+    <string name="invoice_feature_discount_desc">انوائس کے کل میں سے فیصد کمی۔</string>
+    <string name="invoice_feature_tax">ٹیکس</string>
+    <string name="invoice_feature_tax_desc">ڈسکاؤنٹ کے بعد شامل ہونے والا فیصد۔</string>
+    <string name="invoice_feature_extra_charge">اضافی خرچہ</string>
+    <string name="invoice_feature_extra_charge_desc">کرایہ، مزدوری، یا کوئی اور اضافی لائن۔</string>
+    <string name="invoice_feature_received">موصول شدہ رقم</string>
+    <string name="invoice_feature_received_desc">بھرنے پر بقایا رقم دکھاتی ہے۔</string>
+    <string name="invoice_feature_note">نوٹ</string>
+    <string name="invoice_feature_note_desc">ایک انوائس کے لیے مخصوص مختصر لائن۔</string>
+    <string name="invoice_feature_due_date">ادائیگی کی تاریخ</string>
+    <string name="invoice_feature_due_date_desc">ادائیگی کب متوقع ہے۔</string>
     <string name="nav_invoice">انوائس</string>
 
     <string name="expiring_stock">ایکسپائر ہوتا مال</string>

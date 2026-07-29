@@ -510,6 +510,20 @@
     <string name="invoice_terms_hint">maslan Adaigi 14 din ke andar.</string>
     <string name="invoice_edit_shop_details">Dukan ka naam, muhar, QR aur sharait edit karein</string>
     <string name="invoice_more_options">Mazeed options (ikhtiyari)</string>
+    <string name="invoice_settings_title">Invoice Settings</string>
+    <string name="invoice_settings_subtitle">Jo cheez ye dukan kabhi istemal nahi karti usay band kar dein — har nayi invoice ke liye band rahegi.</string>
+    <string name="invoice_feature_discount">Discount</string>
+    <string name="invoice_feature_discount_desc">Invoice ke total mein se feesad kami.</string>
+    <string name="invoice_feature_tax">Tax</string>
+    <string name="invoice_feature_tax_desc">Discount ke baad shamil hone wala feesad.</string>
+    <string name="invoice_feature_extra_charge">Extra kharcha</string>
+    <string name="invoice_feature_extra_charge_desc">Kiraya, mazdoori, ya koi aur extra line.</string>
+    <string name="invoice_feature_received">Mosool shuda raqam</string>
+    <string name="invoice_feature_received_desc">Bharne par baqaya raqam dikhati hai.</string>
+    <string name="invoice_feature_note">Note</string>
+    <string name="invoice_feature_note_desc">Ek invoice ke liye khaas mukhtasar line.</string>
+    <string name="invoice_feature_due_date">Adaigi ki tareekh</string>
+    <string name="invoice_feature_due_date_desc">Adaigi kab mutawaqqe hai.</string>
     <string name="nav_invoice">Invoice</string>
 
     <string name="expiring_stock">Expire Hota Maal</string>

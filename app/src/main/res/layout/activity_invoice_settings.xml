@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/settingsToolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/section_tools"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/invoice_settings_title"
+        app:titleTextColor="@color/white" />
+
+    <TextView
+        android:id="@+id/tvSettingsSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/invoice_settings_subtitle"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settingsToolbar" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSettingsSubtitle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!--
+              Each row: label + description on the left, one switch on the
+              right — the same shape Vyapar's own Transaction settings use.
+            -->
+            <include android:id="@+id/rowDiscount" layout="@layout/row_invoice_feature_switch" />
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+            <include android:id="@+id/rowTax" layout="@layout/row_invoice_feature_switch" />
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+            <include android:id="@+id/rowExtraCharge" layout="@layout/row_invoice_feature_switch" />
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+            <include android:id="@+id/rowReceived" layout="@layout/row_invoice_feature_switch" />
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+            <include android:id="@+id/rowNote" layout="@layout/row_invoice_feature_switch" />
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+            <include android:id="@+id/rowDueDate" layout="@layout/row_invoice_feature_switch" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -510,6 +510,20 @@
     <string name="invoice_terms_hint">مثل السداد خلال 14 يومًا.</string>
     <string name="invoice_edit_shop_details">تعديل اسم المحل والختم ورمز QR والشروط</string>
     <string name="invoice_more_options">خيارات إضافية (اختياري)</string>
+    <string name="invoice_settings_title">إعدادات الفاتورة</string>
+    <string name="invoice_settings_subtitle">أوقف أي شيء لا يستخدمه هذا المحل أبدًا — يبقى متوقفًا في كل فاتورة جديدة.</string>
+    <string name="invoice_feature_discount">الخصم</string>
+    <string name="invoice_feature_discount_desc">نسبة مئوية تُخصم من إجمالي الفاتورة.</string>
+    <string name="invoice_feature_tax">الضريبة</string>
+    <string name="invoice_feature_tax_desc">نسبة تُضاف بعد الخصم.</string>
+    <string name="invoice_feature_extra_charge">رسوم إضافية</string>
+    <string name="invoice_feature_extra_charge_desc">الشحن أو الأجرة أو بند إضافي آخر.</string>
+    <string name="invoice_feature_received">المبلغ المستلم</string>
+    <string name="invoice_feature_received_desc">يُظهر الرصيد المتبقي عند تعيينه.</string>
+    <string name="invoice_feature_note">ملاحظة</string>
+    <string name="invoice_feature_note_desc">سطر قصير خاص بفاتورة واحدة.</string>
+    <string name="invoice_feature_due_date">تاريخ الاستحقاق</string>
+    <string name="invoice_feature_due_date_desc">متى يُتوقع السداد.</string>
     <string name="nav_invoice">فاتورة</string>
 
     <string name="expiring_stock">بضاعة قاربت الانتهاء</string>

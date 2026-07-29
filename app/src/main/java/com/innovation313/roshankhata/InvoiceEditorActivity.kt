@@ -19,6 +19,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Invoice
+import com.innovation313.roshankhata.data.InvoiceFeatureSettings
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -128,9 +129,16 @@ class InvoiceEditorActivity : AppCompatActivity() {
                 btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it))
             }
         }
+        // The owner can turn either off entirely in Invoice Settings —
+        // checked fresh every time this screen opens, since a switch
+        // flipped there while an invoice was being written should still
+        // take effect on the next one.
+        btnDue.visibility = if (InvoiceFeatureSettings.dueDateEnabled(this)) View.VISIBLE else View.GONE
 
         findViewById<MaterialButton>(R.id.btnAddRow).setOnClickListener { addRow() }
-        findViewById<MaterialButton>(R.id.btnMoreOptions).setOnClickListener { showMoreOptions() }
+        val btnMore = findViewById<MaterialButton>(R.id.btnMoreOptions)
+        btnMore.setOnClickListener { showMoreOptions() }
+        btnMore.visibility = if (InvoiceFeatureSettings.anyOptionalFieldEnabled(this)) View.VISIBLE else View.GONE
         findViewById<MaterialButton>(R.id.btnShopDetails).setOnClickListener {
             startActivity(android.content.Intent(this, BusinessSettingsActivity::class.java))
         }
@@ -282,6 +290,16 @@ class InvoiceEditorActivity : AppCompatActivity() {
         val etReceived: EditText = view.findViewById(R.id.etReceived)
         val etNote: EditText = view.findViewById(R.id.etInvoiceNote)
 
+        // Discount and tax share a row but toggle independently — hiding
+        // one still leaves the other its own line. Extra charge is a pair
+        // (a label with no amount means nothing), so it hides as one row.
+        etDiscount.visibility = if (InvoiceFeatureSettings.discountEnabled(this)) View.VISIBLE else View.GONE
+        etTax.visibility = if (InvoiceFeatureSettings.taxEnabled(this)) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.rowExtraChargeFields).visibility =
+            if (InvoiceFeatureSettings.extraChargeEnabled(this)) View.VISIBLE else View.GONE
+        etReceived.visibility = if (InvoiceFeatureSettings.receivedEnabled(this)) View.VISIBLE else View.GONE
+        etNote.visibility = if (InvoiceFeatureSettings.noteEnabled(this)) View.VISIBLE else View.GONE
+
         etDiscount.setText(discountPercent?.let { Format.plain(it) } ?: "")
         etTax.setText(taxPercent?.let { Format.plain(it) } ?: "")
         etChargeLabel.setText(chargeLabel.orEmpty())
@@ -294,12 +312,26 @@ class InvoiceEditorActivity : AppCompatActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                discountPercent = etDiscount.text.toString().trim().toDoubleOrNull()
-                taxPercent = etTax.text.toString().trim().toDoubleOrNull()
-                chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
-                chargeAmount = etChargeAmount.text.toString().trim().toDoubleOrNull()
-                receivedAmount = etReceived.text.toString().trim().toDoubleOrNull()
-                note = etNote.text.toString().trim().ifEmpty { null }
+                // A field hidden by a switch keeps whatever it already held
+                // rather than being read (and possibly cleared) from a view
+                // that was never shown — turning Tax off should not erase a
+                // tax figure already set earlier in the same invoice.
+                if (InvoiceFeatureSettings.discountEnabled(this)) {
+                    discountPercent = etDiscount.text.toString().trim().toDoubleOrNull()
+                }
+                if (InvoiceFeatureSettings.taxEnabled(this)) {
+                    taxPercent = etTax.text.toString().trim().toDoubleOrNull()
+                }
+                if (InvoiceFeatureSettings.extraChargeEnabled(this)) {
+                    chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
+                    chargeAmount = etChargeAmount.text.toString().trim().toDoubleOrNull()
+                }
+                if (InvoiceFeatureSettings.receivedEnabled(this)) {
+                    receivedAmount = etReceived.text.toString().trim().toDoubleOrNull()
+                }
+                if (InvoiceFeatureSettings.noteEnabled(this)) {
+                    note = etNote.text.toString().trim().ifEmpty { null }
+                }
             }
             .show()
     }
