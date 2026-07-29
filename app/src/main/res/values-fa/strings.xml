@@ -514,7 +514,6 @@
     <string name="delete_invoice_confirm">این فاکتور حذف شود؟ از داخل برنامه قابل بازیابی نخواهد بود.</string>
     <string name="view">مشاهده</string>
     <string name="invoice_share_pdf">اشتراک به‌صورت PDF</string>
-    <string name="invoice_choose_template">طرح چاپ را انتخاب کنید</string>
     <string name="invoice_template_teal">تیل کورپریت — فاکتور کامل تجاری</string>
     <string name="number_words_language" translatable="false">en</string>
     <string name="invoice_swipe_designs">برای دیدن طرح‌های بیشتر بکشید — %1$d از %2$d</string>

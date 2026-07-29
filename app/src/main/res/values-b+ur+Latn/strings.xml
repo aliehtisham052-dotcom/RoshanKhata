@@ -493,7 +493,6 @@
     <string name="delete_invoice_confirm">Ye invoice delete karein? Ye app ke andar se bahaal nahi ho sakegi.</string>
     <string name="view">Dekhein</string>
     <string name="invoice_share_pdf">PDF ke taur par bhejein</string>
-    <string name="invoice_choose_template">Print design chunein</string>
     <string name="invoice_template_teal">Teal Corporate — mukammal business invoice</string>
     <string name="number_words_language" translatable="false">ur-Latn</string>
     <string name="invoice_swipe_designs">Mazeed design dekhne ke liye swipe karein — %2$d mein se %1$d</string>

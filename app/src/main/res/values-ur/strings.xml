@@ -493,7 +493,6 @@
     <string name="delete_invoice_confirm">یہ انوائس حذف کریں؟ یہ ایپ کے اندر سے بحال نہیں ہو سکے گی۔</string>
     <string name="view">دیکھیں</string>
     <string name="invoice_share_pdf">PDF کے طور پر بھیجیں</string>
-    <string name="invoice_choose_template">پرنٹ ڈیزائن چنیں</string>
     <string name="invoice_template_teal">ٹیل کارپوریٹ — مکمل بزنس انوائس</string>
     <string name="number_words_language" translatable="false">ur</string>
     <string name="invoice_swipe_designs">مزید ڈیزائن دیکھنے کے لیے سوائپ کریں — %2$d میں سے %1$d</string>
