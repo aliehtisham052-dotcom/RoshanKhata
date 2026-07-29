@@ -210,7 +210,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, palette, fonts, left, right, y, totals.grandTotal)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -313,7 +313,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, palette, fonts, left, right, y, totals.grandTotal)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -487,7 +487,7 @@ object InvoicePdfExport {
         // Wrapped by hand, not left to overflow the receipt's own width —
         // the words for a large total are routinely longer than 226pt fits
         // on one line, unlike every other value on this narrow page.
-        y = wrapMonoText(context, c, NumberWords.rupeesInWords(totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
+        y = wrapMonoText(context, c, NumberWords.rupeesInWords(context, totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
 
         val bank = listOfNotNull(
             BusinessProfile.bankName(context)?.let { "Bank" to it },
