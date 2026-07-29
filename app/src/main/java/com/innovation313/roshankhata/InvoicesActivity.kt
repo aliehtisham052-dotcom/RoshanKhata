@@ -91,7 +91,7 @@ class InvoicesActivity : AppCompatActivity() {
                 when (which) {
                     0 -> viewInvoice(invoice)
                     1 -> editInvoice(invoice)
-                    2 -> chooseTemplateAndShare(invoice)
+                    2 -> sharePdf(invoice)
                     3 -> confirmDeleteInvoice(invoice)
                 }
             }
@@ -106,47 +106,23 @@ class InvoicesActivity : AppCompatActivity() {
     }
 
     /**
-     * All ten finalised templates now exist. Picking one
-     * updates the invoice's own templateId, so re-sharing later remembers
-     * what was chosen rather than asking again from scratch.
+     * Shares the invoice in the design it was already saved with.
      *
-     * Kept deliberately in step with InvoiceEditorActivity's own carousel
-     * list — a template offered in one place and not the other is the
-     * obvious way for these two to drift as the remaining seven land.
+     * This used to open a template picker first, which the owner rightly
+     * called pointless: the design is chosen on step 3 while the invoice is
+     * being written, so asking again at share time is asking a question
+     * already answered — and worse, it made picking a different one here
+     * quietly rewrite the saved invoice's design as a side effect of
+     * sharing it. Changing the design now belongs where it always belonged,
+     * in Edit, which reopens that same step 3 carousel.
      */
-    private fun chooseTemplateAndShare(invoice: InvoiceSummary) {
-        val templates = arrayOf(
-            getString(R.string.invoice_template_teal),
-            getString(R.string.invoice_template_black_gold),
-            getString(R.string.invoice_template_gradient),
-            getString(R.string.invoice_template_green_retail),
-            getString(R.string.invoice_template_minimal_slate),
-            getString(R.string.invoice_template_indigo_tech),
-            getString(R.string.invoice_template_warm_orange),
-            getString(R.string.invoice_template_classic_cream),
-            getString(R.string.invoice_template_crimson_bold),
-            getString(R.string.invoice_template_thermal)
-        )
-        val templateIds = intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.invoice_choose_template)
-            .setItems(templates) { _, which ->
-                sharePdf(invoice, templateIds[which])
-            }
-            .show()
-    }
-
-    private fun sharePdf(invoice: InvoiceSummary, templateId: Int) {
+    private fun sharePdf(invoice: InvoiceSummary) {
         lifecycleScope.launch {
             val full = dao.getInvoice(invoice.id) ?: return@launch
             val items = dao.invoiceItems(invoice.id)
 
-            if (full.templateId != templateId) {
-                dao.updateInvoice(full.copy(templateId = templateId))
-            }
-
             val file = withContext(Dispatchers.IO) {
-                InvoicePdfExport.build(this@InvoicesActivity, full.copy(templateId = templateId), items)
+                InvoicePdfExport.build(this@InvoicesActivity, full, items)
             }
 
             if (file == null) {
