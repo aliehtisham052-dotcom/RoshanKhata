@@ -79,6 +79,7 @@ object InvoicePdfExport {
 
     fun build(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
         return when (invoice.templateId) {
+            2 -> buildBlackGold(context, invoice, items)
             10 -> buildThermalReceipt(context, invoice, items)
             else -> buildTealCorporate(context, invoice, items)
         }
@@ -188,6 +189,109 @@ object InvoicePdfExport {
             pageNo++
             page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T2 — Black & Gold Executive ====================
+
+    /**
+     * The premium design from the spec — near-black sheet, gold rules and
+     * headings, Playfair Display for the serif headings a jeweller's
+     * letterhead wants, IBM Plex Mono for weights and money.
+     *
+     * Two spec details worth stating rather than silently following:
+     *
+     * The mockup lists a "Wazan" (weight) column. It is NOT drawn here,
+     * because there is no weight field on an invoice item to fill it —
+     * drawing an always-empty column would look broken. Weight is already
+     * expressible with what exists: quantity 12.5 with unit "gram" prints
+     * as "12.5 gram" in the Qty column, which is what a jeweller actually
+     * writes. A real weight field can be added later if the owner wants
+     * one separate from quantity.
+     *
+     * The mockup also says "no tax field". That is a description of the
+     * jeweller use-case, not a rule this template should enforce by
+     * hiding a number: a tax amount that is IN the grand total but not
+     * shown would make the arithmetic impossible to follow. A shop that
+     * never charges tax turns it off in Invoice Settings, which hides it
+     * everywhere including here — the correct place for that choice.
+     */
+    private fun buildBlackGold(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFFEDE3C8.toInt(),          // cream text ON the dark sheet
+            primary = 0xFFD4B15A.toInt(),      // gold
+            primaryEnd = 0xFFB08D3A.toInt(),   // deeper gold, for the band's gradient
+            muted = 0xFFA8926A.toInt(),
+            ruleColor = 0xFF37311F.toInt(),
+            boxFill = 0xFF1F1B14.toInt(),      // barely-lighter than the sheet, so the box reads without glowing
+            zebra = 0xFF1A1710.toInt(),
+            gradient = true,
+            pageBackground = 0xFF141310.toInt(),
+            // Gold band, near-black text on it — the one place white would
+            // be wrong on this template.
+            onPrimary = 0xFF141310.toInt(),
+            onPrimaryMuted = 0xFF3A2F16.toInt(),
+            // The table header is gold too, not the page's cream "ink".
+            tableHeaderFill = 0xFFD4B15A.toInt(),
+            onTableHeader = 0xFF141310.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.playfairDisplay(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            // Before anything else — a continuation page left white would
+            // be a jarring break in the middle of a dark document.
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
             return c to bandY
         }
