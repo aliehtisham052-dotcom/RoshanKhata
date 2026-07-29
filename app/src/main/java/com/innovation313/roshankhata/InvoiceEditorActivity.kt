@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
@@ -60,12 +61,15 @@ class InvoiceEditorActivity : AppCompatActivity() {
     private lateinit var btnDue: MaterialButton
     private lateinit var etInvoiceNumber: EditText
     private lateinit var itemRows: LinearLayout
-    private lateinit var etDiscount: EditText
-    private lateinit var etTax: EditText
-    private lateinit var etNote: EditText
-    private lateinit var etChargeLabel: EditText
-    private lateinit var etChargeAmount: EditText
-    private lateinit var etReceived: EditText
+    // Everything below lives in the "More options" dialog rather than a
+    // permanent view, so these are plain state — set when the dialog is
+    // saved, read back in to pre-fill it next time it opens.
+    private var discountPercent: Double? = null
+    private var taxPercent: Double? = null
+    private var note: String? = null
+    private var chargeLabel: String? = null
+    private var chargeAmount: Double? = null
+    private var receivedAmount: Double? = null
     private lateinit var rgTemplate: RadioGroup
     private lateinit var ivPreview: ImageView
     private lateinit var pbLoading: ProgressBar
@@ -107,12 +111,6 @@ class InvoiceEditorActivity : AppCompatActivity() {
         btnDue = findViewById(R.id.btnInvoiceDueDate)
         etInvoiceNumber = findViewById(R.id.etInvoiceNumber)
         itemRows = findViewById(R.id.itemRowsContainer)
-        etDiscount = findViewById(R.id.etInvoiceDiscount)
-        etTax = findViewById(R.id.etInvoiceTax)
-        etNote = findViewById(R.id.etInvoiceNote)
-        etChargeLabel = findViewById(R.id.etChargeLabel)
-        etChargeAmount = findViewById(R.id.etChargeAmount)
-        etReceived = findViewById(R.id.etReceived)
         rgTemplate = findViewById(R.id.rgInvoiceTemplate)
         ivPreview = findViewById(R.id.ivInvoicePreview)
         pbLoading = findViewById(R.id.pbPreviewLoading)
@@ -132,6 +130,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnAddRow).setOnClickListener { addRow() }
+        findViewById<MaterialButton>(R.id.btnMoreOptions).setOnClickListener { showMoreOptions() }
         findViewById<MaterialButton>(R.id.btnShopDetails).setOnClickListener {
             startActivity(android.content.Intent(this, BusinessSettingsActivity::class.java))
         }
@@ -268,11 +267,46 @@ class InvoiceEditorActivity : AppCompatActivity() {
     private fun templateId(): Int =
         if (rgTemplate.checkedRadioButtonId == R.id.rbTemplateThermal) 10 else 1
 
+    /**
+     * Every optional field in one dialog, pre-filled from whatever was set
+     * last time it was opened. Fields are plain text/number inputs, not
+     * bound to any live preview — nothing here needs to redraw the page
+     * until Save (step 3), so a simple read-on-save is enough.
+     */
+    private fun showMoreOptions() {
+        val view = layoutInflater.inflate(R.layout.dialog_invoice_more_options, null)
+        val etDiscount: EditText = view.findViewById(R.id.etInvoiceDiscount)
+        val etTax: EditText = view.findViewById(R.id.etInvoiceTax)
+        val etChargeLabel: EditText = view.findViewById(R.id.etChargeLabel)
+        val etChargeAmount: EditText = view.findViewById(R.id.etChargeAmount)
+        val etReceived: EditText = view.findViewById(R.id.etReceived)
+        val etNote: EditText = view.findViewById(R.id.etInvoiceNote)
+
+        etDiscount.setText(discountPercent?.let { Format.plain(it) } ?: "")
+        etTax.setText(taxPercent?.let { Format.plain(it) } ?: "")
+        etChargeLabel.setText(chargeLabel.orEmpty())
+        etChargeAmount.setText(chargeAmount?.let { Format.plain(it) } ?: "")
+        etReceived.setText(receivedAmount?.let { Format.plain(it) } ?: "")
+        etNote.setText(note.orEmpty())
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.invoice_more_options)
+            .setView(view)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.save) { _, _ ->
+                discountPercent = etDiscount.text.toString().trim().toDoubleOrNull()
+                taxPercent = etTax.text.toString().trim().toDoubleOrNull()
+                chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
+                chargeAmount = etChargeAmount.text.toString().trim().toDoubleOrNull()
+                receivedAmount = etReceived.text.toString().trim().toDoubleOrNull()
+                note = etNote.text.toString().trim().ifEmpty { null }
+            }
+            .show()
+    }
+
     private fun draft(): Invoice {
         // A label with no amount, or an amount with no label, is not a
         // usable extra charge — treated the same as neither being set.
-        val chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
-        val chargeAmount = etChargeAmount.text.toString().trim().toDoubleOrNull()
         val hasCharge = chargeLabel != null && chargeAmount != null
 
         return Invoice(
@@ -281,13 +315,13 @@ class InvoiceEditorActivity : AppCompatActivity() {
             customerPhone = etPhone.text.toString().trim().ifEmpty { null },
             invoiceDate = invoiceDate,
             dueDate = dueDate,
-            discountPercent = etDiscount.text.toString().trim().toDoubleOrNull(),
-            taxPercent = etTax.text.toString().trim().toDoubleOrNull(),
+            discountPercent = discountPercent,
+            taxPercent = taxPercent,
             additionalChargeLabel = if (hasCharge) chargeLabel else null,
             additionalChargeAmount = if (hasCharge) chargeAmount else null,
-            receivedAmount = etReceived.text.toString().trim().toDoubleOrNull(),
+            receivedAmount = receivedAmount,
             templateId = templateId(),
-            note = etNote.text.toString().trim().ifEmpty { null }
+            note = note
         )
     }
 
