@@ -88,6 +88,9 @@
     <string name="restore_entry_confirm">Ye entry wapas layen? Ye party ke khate mein dobara aayegi aur balance par asar dalegi.</string>
     <string name="empty_bin">Bin Khali Karein</string>
     <string name="empty_bin_confirm">Bin ki har cheez hamesha ke liye delete ho jayegi. Ye wapas nahi ho sakta.</string>
+    <string name="delete_party_forever_confirm">%1$s ko hamesha ke liye delete karein? Un ke saath rakhi har entry bhi khatam ho jayegi. Ye wapas nahi ho sakta.</string>
+    <string name="delete_entry_forever_confirm">%1$s ko hamesha ke liye delete karein? Ye wapas nahi ho sakta.</string>
+    <string name="deleted_forever_done">Mustaqil taur par delete ho gaya.</string>
     <string name="delete_forever">Hamesha Ke Liye Delete</string>
     <string name="bin_emptied">Bin khali kar diya gaya</string>
 

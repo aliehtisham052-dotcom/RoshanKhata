@@ -34,12 +34,17 @@
             android:textSize="12sp" />
     </LinearLayout>
 
+    <!--
+      Padding must clear BOTH bottom buttons, not one: 48 + 8 + 52 + 16 is
+      124dp of stacked controls. It was 80dp, so the last rows scrolled
+      underneath them and sat behind the buttons unreachable.
+    -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBin"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="80dp"
+        android:paddingBottom="136dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

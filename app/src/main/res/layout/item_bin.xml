@@ -39,13 +39,39 @@
             android:textSize="11sp" />
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnRestore"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+    <!--
+      Stacked, not side by side: a customer name here can run to two lines
+      ("Abbas Ghala Mandi Pasrur Dokandar"), and two buttons in a row would
+      squeeze the name column until it wrapped further still.
+    -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/restore"
-        android:textColor="@color/navy_primary"
-        app:strokeColor="@color/navy_primary" />
+        android:orientation="vertical">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRestore"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:minHeight="40dp"
+            android:text="@string/restore"
+            android:textColor="@color/navy_primary"
+            android:textSize="13sp"
+            app:strokeColor="@color/navy_primary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDeleteForever"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:minWidth="0dp"
+            android:minHeight="36dp"
+            android:text="@string/delete_forever"
+            android:textColor="@color/red_gave"
+            android:textSize="12sp" />
+    </LinearLayout>
 
 </LinearLayout>

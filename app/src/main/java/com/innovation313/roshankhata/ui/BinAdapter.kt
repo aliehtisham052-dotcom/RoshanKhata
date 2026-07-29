@@ -30,7 +30,8 @@ sealed class BinItem {
 }
 
 class BinAdapter(
-    private val onRestore: (BinItem) -> Unit
+    private val onRestore: (BinItem) -> Unit,
+    private val onDeleteForever: (BinItem) -> Unit
 ) : RecyclerView.Adapter<BinAdapter.VH>() {
 
     private var items: List<BinItem> = emptyList()
@@ -45,6 +46,7 @@ class BinAdapter(
         val tvSubtitle: TextView = view.findViewById(R.id.tvBinSubtitle)
         val tvDeletedAt: TextView = view.findViewById(R.id.tvBinDeletedAt)
         val btnRestore: MaterialButton = view.findViewById(R.id.btnRestore)
+        val btnDeleteForever: MaterialButton = view.findViewById(R.id.btnDeleteForever)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -76,5 +78,6 @@ class BinAdapter(
         )
 
         holder.btnRestore.setOnClickListener { onRestore(item) }
+        holder.btnDeleteForever.setOnClickListener { onDeleteForever(item) }
     }
 }

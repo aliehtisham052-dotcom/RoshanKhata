@@ -46,7 +46,10 @@ class RecycleBinActivity : AppCompatActivity() {
 
         tvEmpty = findViewById(R.id.tvBinEmpty)
 
-        adapter = BinAdapter { item -> confirmRestore(item) }
+        adapter = BinAdapter(
+            onRestore = { item -> confirmRestore(item) },
+            onDeleteForever = { item -> confirmDeleteForever(item) }
+        )
         val rv: RecyclerView = findViewById(R.id.rvBin)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
@@ -224,6 +227,53 @@ class RecycleBinActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * Permanently remove one binned row.
+     *
+     * Named in the question rather than asked generically — "Delete Abbas
+     * Kichia Arti forever?" is a different sentence from "delete this?",
+     * and the name is what lets someone catch a wrong tap before it is
+     * irreversible. A party warns about its entries too, because they go
+     * with it: the transactions table cascades on partyId, so this really
+     * is the whole customer's history, not just the name row.
+     */
+    private fun confirmDeleteForever(item: BinItem) {
+        val what = when (item) {
+            is BinItem.DeletedParty -> item.name
+            is BinItem.DeletedEntry -> "${item.entryNumber} · ${item.partyName}"
+        }
+        val message = when (item) {
+            is BinItem.DeletedParty -> getString(R.string.delete_party_forever_confirm, what)
+            is BinItem.DeletedEntry -> getString(R.string.delete_entry_forever_confirm, what)
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_forever)
+            .setMessage(message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.delete_forever) { _, _ ->
+                // AppScope, like the other permanent deletions here: a hard
+                // delete interrupted by the screen closing would leave the
+                // row half-gone from the user's point of view.
+                AppScope.launch {
+                    when (item) {
+                        is BinItem.DeletedParty -> dao.purgeParty(item.id)
+                        is BinItem.DeletedEntry -> dao.purgeEntry(item.id)
+                    }
+                    withContext(Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) {
+                            Toast.makeText(
+                                this@RecycleBinActivity,
+                                R.string.deleted_forever_done,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+            .show()
     }
 
     private fun confirmEmptyBin() {

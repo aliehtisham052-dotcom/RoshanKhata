@@ -93,6 +93,9 @@
     <string name="restore_entry_confirm">Restore this entry? It will reappear in the party\'s ledger and affect the balance.</string>
     <string name="empty_bin">Empty Bin</string>
     <string name="empty_bin_confirm">Everything in the bin will be permanently deleted. This cannot be undone.</string>
+    <string name="delete_party_forever_confirm">Delete %1$s forever? This also removes every entry kept with them. It cannot be undone.</string>
+    <string name="delete_entry_forever_confirm">Delete %1$s forever? It cannot be undone.</string>
+    <string name="deleted_forever_done">Deleted permanently.</string>
     <string name="delete_forever">Delete Forever</string>
     <string name="bin_emptied">Bin emptied</string>
 
