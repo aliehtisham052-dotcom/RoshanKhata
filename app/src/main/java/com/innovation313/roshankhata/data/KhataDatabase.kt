@@ -16,7 +16,9 @@ import androidx.room.RoomDatabase
         SupplierBill::class,
         BillItem::class,
         Product::class,
-        DismissedDuplicate::class
+        DismissedDuplicate::class,
+        Invoice::class,
+        InvoiceItem::class
     ],
     version = KHATA_DB_VERSION,
     exportSchema = true

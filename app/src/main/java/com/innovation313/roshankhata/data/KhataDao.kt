@@ -509,6 +509,67 @@ interface KhataDao {
     @Query("SELECT * FROM bill_items WHERE id = :id")
     suspend fun getBillItem(id: Long): BillItem?
 
+    // ---------- Invoices ----------
+
+    @Insert
+    suspend fun insertInvoice(invoice: Invoice): Long
+
+    @Query("SELECT COUNT(*) FROM invoices")
+    suspend fun totalInvoiceCount(): Int
+
+    @Insert
+    suspend fun insertInvoiceItem(item: InvoiceItem): Long
+
+    /**
+     * The ONLY way an invoice should be created — same reason as
+     * [insertEntryNumbered]: the printed number is count+1, and reading the
+     * count outside this @Transaction could let two invoices saved close
+     * together both become INV-000123. Every item is written in the same
+     * transaction, so a crash or a cancelled screen can never leave an
+     * invoice on record with none of its lines, or half of them.
+     */
+    @Transaction
+    suspend fun saveInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>): Long {
+        val count = totalInvoiceCount()
+        val invoiceId = insertInvoice(invoice.copy(invoiceNumber = InvoiceNumber.next(count)))
+        for (item in items) {
+            insertInvoiceItem(item.copy(id = 0, invoiceId = invoiceId))
+        }
+        return invoiceId
+    }
+
+    @Query("SELECT * FROM invoices WHERE id = :id")
+    suspend fun getInvoice(id: Long): Invoice?
+
+    @Query("SELECT * FROM invoice_items WHERE invoiceId = :invoiceId AND isDeleted = 0 ORDER BY id ASC")
+    suspend fun invoiceItems(invoiceId: Long): List<InvoiceItem>
+
+    @Query(
+        """
+        SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate,
+               (SELECT COUNT(*) FROM invoice_items li
+                WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
+               (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
+                WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS grandTotal
+        FROM invoices i
+        WHERE i.isDeleted = 0
+        ORDER BY i.invoiceDate DESC
+        """
+    )
+    fun observeInvoices(): Flow<List<InvoiceSummary>>
+
+    @Query("UPDATE invoices SET isDeleted = 1, deletedAt = :now WHERE id = :id")
+    suspend fun softDeleteInvoice(id: Long, now: Long = System.currentTimeMillis())
+
+    /**
+     * Every party name in the book, for the customer field's suggestion
+     * list. NOT filtered to customers only — a shopkeeper occasionally
+     * invoices a supplier too (a return, a one-off sale of something spare) —
+     * and the field accepts any typed name besides, on or off this list.
+     */
+    @Query("SELECT DISTINCT name FROM parties WHERE isDeleted = 0 ORDER BY name ASC")
+    suspend fun allPartyNamesForInvoice(): List<String>
+
     /**
      * Every batch of this product a sale could be tagged to, soonest-expiring
      * first — the same ordering ExpiringActivity uses, because selling the

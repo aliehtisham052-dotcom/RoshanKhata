@@ -28,6 +28,7 @@ import kotlinx.coroutines.withContext
 class BusinessSettingsActivity : AppCompatActivity() {
 
     private lateinit var etBusinessName: EditText
+    private lateinit var etBusinessAddress: EditText
     private lateinit var ivQrPreview: ImageView
     private lateinit var tvNoQr: TextView
     private lateinit var btnRemoveQr: MaterialButton
@@ -35,6 +36,10 @@ class BusinessSettingsActivity : AppCompatActivity() {
     private lateinit var ivSignaturePreview: ImageView
     private lateinit var tvNoSignature: TextView
     private lateinit var btnRemoveSignature: MaterialButton
+
+    private lateinit var ivStampPreview: ImageView
+    private lateinit var tvNoStamp: TextView
+    private lateinit var btnRemoveStamp: MaterialButton
 
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -53,6 +58,12 @@ class BusinessSettingsActivity : AppCompatActivity() {
         if (uri != null) saveSignature(uri)
     }
 
+    private val pickStamp = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) saveStamp(uri)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_business_settings)
@@ -61,14 +72,19 @@ class BusinessSettingsActivity : AppCompatActivity() {
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
         etBusinessName = findViewById(R.id.etBusinessName)
+        etBusinessAddress = findViewById(R.id.etBusinessAddress)
         ivQrPreview = findViewById(R.id.ivQrPreview)
         tvNoQr = findViewById(R.id.tvNoQr)
         btnRemoveQr = findViewById(R.id.btnRemoveQr)
         ivSignaturePreview = findViewById(R.id.ivSignaturePreview)
         tvNoSignature = findViewById(R.id.tvNoSignature)
         btnRemoveSignature = findViewById(R.id.btnRemoveSignature)
+        ivStampPreview = findViewById(R.id.ivStampPreview)
+        tvNoStamp = findViewById(R.id.tvNoStamp)
+        btnRemoveStamp = findViewById(R.id.btnRemoveStamp)
 
         etBusinessName.setText(BusinessProfile.businessName(this).orEmpty())
+        etBusinessAddress.setText(BusinessProfile.businessAddress(this).orEmpty())
 
         findViewById<MaterialButton>(R.id.btnPickQr).setOnClickListener {
             pickImage.launch(
@@ -88,10 +104,24 @@ class BusinessSettingsActivity : AppCompatActivity() {
             refreshSignature()
         }
 
+        findViewById<MaterialButton>(R.id.btnPickStamp).setOnClickListener {
+            pickStamp.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+        btnRemoveStamp.setOnClickListener {
+            BusinessProfile.removeStamp(this)
+            refreshStamp()
+        }
+
         findViewById<MaterialButton>(R.id.btnSaveProfile).setOnClickListener {
             BusinessProfile.setBusinessName(
                 this,
                 etBusinessName.text.toString().trim().ifEmpty { null }
+            )
+            BusinessProfile.setBusinessAddress(
+                this,
+                etBusinessAddress.text.toString().trim().ifEmpty { null }
             )
             Toast.makeText(this, R.string.profile_saved, Toast.LENGTH_SHORT).show()
             finish()
@@ -107,6 +137,7 @@ class BusinessSettingsActivity : AppCompatActivity() {
 
         refreshQr()
         refreshSignature()
+        refreshStamp()
     }
 
     private fun saveSignature(uri: Uri) {
@@ -134,6 +165,34 @@ class BusinessSettingsActivity : AppCompatActivity() {
             ivSignaturePreview.visibility = android.view.View.VISIBLE
             tvNoSignature.visibility = android.view.View.GONE
             btnRemoveSignature.visibility = android.view.View.VISIBLE
+        }
+    }
+
+    private fun saveStamp(uri: Uri) {
+        lifecycleScope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                BusinessProfile.saveStamp(this@BusinessSettingsActivity, uri)
+            }
+            Toast.makeText(
+                this@BusinessSettingsActivity,
+                if (ok) R.string.stamp_saved else R.string.stamp_save_failed,
+                Toast.LENGTH_SHORT
+            ).show()
+            refreshStamp()
+        }
+    }
+
+    private fun refreshStamp() {
+        val stamp = BusinessProfile.loadStamp(this)
+        if (stamp == null) {
+            ivStampPreview.visibility = View.GONE
+            tvNoStamp.visibility = View.VISIBLE
+            btnRemoveStamp.visibility = View.GONE
+        } else {
+            ivStampPreview.setImageBitmap(stamp)
+            ivStampPreview.visibility = View.VISIBLE
+            tvNoStamp.visibility = View.GONE
+            btnRemoveStamp.visibility = View.VISIBLE
         }
     }
 

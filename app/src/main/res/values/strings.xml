@@ -213,6 +213,9 @@
     <string name="business_name">Business name</string>
     <string name="business_name_help">Appears at the top of every statement and at the end of every reminder you send.</string>
     <string name="business_name_hint">e.g. Bhatti Traders</string>
+    <string name="business_address">Shop address</string>
+    <string name="business_address_help">Printed under your business name on every invoice.</string>
+    <string name="business_address_hint">e.g. Main Bazaar, Pasrur</string>
 
     <string name="payment_qr">Payment QR code</string>
     <string name="payment_qr_help">A screenshot or photo of your EasyPaisa or JazzCash QR code. It will be attached to statements so a customer can scan and pay you.</string>
@@ -476,6 +479,27 @@
     <string name="delete_bill_confirm">The bill and its batch records will be removed, but the ledger entry stays. The stock really did arrive and the money is really owed — deleting the paperwork does not undo that.</string>
     <string name="bill_actions">Bill</string>
     <string name="view_items">View items and batches</string>
+
+    <!-- Invoices — a printable bill, deliberately outside the khata ledger -->
+    <string name="invoices">Invoices</string>
+    <string name="invoices_subtitle">Printable bills — separate from your khata ledger</string>
+    <string name="no_invoices">No invoices yet.\n\nMake a printable bill for a customer — a cash sale or a price quote — without it touching your ledger or anyone\'s balance.</string>
+    <string name="add_invoice">Add invoice</string>
+    <string name="invoice_customer_hint">Customer name</string>
+    <string name="invoice_phone_hint">Phone (optional)</string>
+    <string name="pick_invoice_date">Pick invoice date</string>
+    <string name="invoice_date_set">Date: %1$s</string>
+    <string name="nav_invoice">Invoice</string>
+    <string name="invoice_item_name_hint">Item name</string>
+    <string name="invoice_item_rate_hint">Rate per unit (Rs)</string>
+    <string name="invoice_item_invalid">Enter a valid item name, quantity and rate.</string>
+    <string name="invoice_customer_required">Enter the customer name first.</string>
+    <string name="invoice_needs_item">Add at least one item first.</string>
+    <string name="invoice_saved">Invoice saved.</string>
+    <string name="invoice_total">Total: %1$s</string>
+    <string name="invoice_deleted">Invoice deleted.</string>
+    <string name="delete_invoice_confirm">Delete this invoice? It cannot be restored from within the app.</string>
+    <string name="view">View</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">Expiring Stock</string>
@@ -744,6 +768,13 @@
     <string name="remove_signature">Remove</string>
     <string name="signature_saved">Signature saved.</string>
     <string name="signature_save_failed">That image could not be saved.</string>
+    <string name="stamp">Stamp</string>
+    <string name="stamp_help">Photograph the muhar for your shop on plain paper. Shown on an invoice automatically if you add one — otherwise just your name and address print instead.</string>
+    <string name="no_stamp_yet">No stamp added yet.</string>
+    <string name="choose_stamp">Choose stamp</string>
+    <string name="remove_stamp">Remove</string>
+    <string name="stamp_saved">Stamp saved.</string>
+    <string name="stamp_save_failed">That image could not be saved.</string>
     <string name="photo_on_statement">Include customer photo on statements</string>
     <string name="photo_on_statement_help">Off by default. Turning it on prints the customer\u2019s photo on their statement, which makes it harder to dispute — but a statement can be forwarded, and their photo travels with it.</string>
     <string name="made_with_app">Roshan Khata</string>

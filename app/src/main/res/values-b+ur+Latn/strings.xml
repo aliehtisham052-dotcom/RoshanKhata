@@ -199,6 +199,9 @@
     <string name="business_name">Karobar ka naam</string>
     <string name="business_name_help">Har statement ke oopar aur har yaad dehani ke aakhir mein aata hai.</string>
     <string name="business_name_hint">maslan Bhatti Traders</string>
+    <string name="business_address">Dukan ka pata</string>
+    <string name="business_address_help">Har invoice par aap ke karobar ke naam ke neeche chhapta hai.</string>
+    <string name="business_address_hint">maslan Main Bazaar, Pasrur</string>
 
     <string name="payment_qr">Payment QR code</string>
     <string name="payment_qr_help">Aap ke EasyPaisa ya JazzCash QR code ka screenshot ya tasveer. Ye statement ke saath lagega taake gahak scan kar ke aap ko adaigi kar sake.</string>
@@ -451,6 +454,27 @@
     <string name="delete_bill_confirm">Bill aur is ke batch record hat jayenge, lekin khate ki entry rahegi. Maal waqai aaya tha aur raqam waqai wajib hai — kaghaz delete karne se ye wapas nahi hota.</string>
     <string name="bill_actions">Bill</string>
     <string name="view_items">Cheezein aur batch dekhein</string>
+
+    <!-- Invoices -->
+    <string name="invoices">Invoices</string>
+    <string name="invoices_subtitle">Printable bill — aap ke khate se alag</string>
+    <string name="no_invoices">Abhi koi invoice nahi.\n\nCustomer ke liye printable bill banayein — cash sale ya price ka andaza — bina is se aap ke khate ya kisi ke balance ko chhuye.</string>
+    <string name="add_invoice">Invoice shamil karein</string>
+    <string name="invoice_customer_hint">Gahak ka naam</string>
+    <string name="invoice_phone_hint">Phone (ikhtiyari)</string>
+    <string name="pick_invoice_date">Invoice ki tareekh chunein</string>
+    <string name="invoice_date_set">Tareekh: %1$s</string>
+    <string name="invoice_item_name_hint">Cheez ka naam</string>
+    <string name="invoice_item_rate_hint">Fi ikai rate (Rs)</string>
+    <string name="invoice_item_invalid">Durust cheez ka naam, miqdaar aur rate darj karein.</string>
+    <string name="invoice_customer_required">Pehle gahak ka naam darj karein.</string>
+    <string name="invoice_needs_item">Pehle kam az kam ek cheez shamil karein.</string>
+    <string name="invoice_saved">Invoice mehfooz ho gayi.</string>
+    <string name="invoice_total">Kul: %1$s</string>
+    <string name="invoice_deleted">Invoice delete ho gayi.</string>
+    <string name="delete_invoice_confirm">Ye invoice delete karein? Ye app ke andar se bahaal nahi ho sakegi.</string>
+    <string name="view">Dekhein</string>
+    <string name="nav_invoice">Invoice</string>
 
     <string name="expiring_stock">Expire Hota Maal</string>
     <string name="expiring_subtitle">Bechein, riayat dein, ya wapas karein — jab tak waqt hai</string>
@@ -712,6 +736,13 @@
     <string name="remove_signature">Hatayein</string>
     <string name="signature_saved">Dastkhat mehfooz ho gaye.</string>
     <string name="signature_save_failed">Wo tasveer mehfooz nahi ho saki.</string>
+    <string name="stamp">Muhar</string>
+    <string name="stamp_help">Apni dukan ki muhar sadah kaghaz par bana kar tasveer lein. Agar shamil karein to invoice par khud-kaar tor par dikhayi degi — warna sirf aap ka naam aur pata chhapega.</string>
+    <string name="no_stamp_yet">Abhi koi muhar shamil nahi ki gayi.</string>
+    <string name="choose_stamp">Muhar muntakhib karein</string>
+    <string name="remove_stamp">Hatayein</string>
+    <string name="stamp_saved">Muhar mehfooz ho gayi.</string>
+    <string name="stamp_save_failed">Wo tasveer mehfooz nahi ho saki.</string>
     <string name="photo_on_statement">Khaate par gahak ki tasveer shamil karein</string>
     <string name="photo_on_statement_help">Pehle se band hai. On karne par gahak ki tasveer uske khaate par chhapegi, jis se inkar mushkil ho jata hai — lekin khata aage bhi bheja ja sakta hai, aur tasveer uske sath jayegi.</string>
     <string name="made_with_app">Roshan Khata</string>

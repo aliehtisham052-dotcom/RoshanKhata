@@ -199,6 +199,9 @@
     <string name="business_name">کاروبار کا نام</string>
     <string name="business_name_help">ہر اسٹیٹمنٹ کے اوپر اور ہر یاد دہانی کے آخر میں آتا ہے۔</string>
     <string name="business_name_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_address">دکان کا پتہ</string>
+    <string name="business_address_help">ہر انوائس پر آپ کے کاروبار کے نام کے نیچے چھپتا ہے۔</string>
+    <string name="business_address_hint">مثلاً مین بازار، پسرور</string>
 
     <string name="payment_qr">پیمنٹ QR کوڈ</string>
     <string name="payment_qr_help">آپ کے ایزی پیسہ یا جاز کیش QR کوڈ کا اسکرین شاٹ یا تصویر۔ یہ اسٹیٹمنٹ کے ساتھ لگے گا تاکہ گاہک اسکین کر کے آپ کو ادائیگی کر سکے۔</string>
@@ -451,6 +454,27 @@
     <string name="delete_bill_confirm">بل اور اس کے بیچ ریکارڈ ہٹ جائیں گے، لیکن کھاتے کا اندراج رہے گا۔ مال واقعی آیا تھا اور رقم واقعی واجب ہے — کاغذ حذف کرنے سے یہ واپس نہیں ہوتا۔</string>
     <string name="bill_actions">بل</string>
     <string name="view_items">چیزیں اور بیچ دیکھیں</string>
+
+    <!-- Invoices -->
+    <string name="invoices">انوائس</string>
+    <string name="invoices_subtitle">پرنٹ ایبل بل — آپ کے کھاتے سے الگ</string>
+    <string name="no_invoices">ابھی کوئی انوائس نہیں۔\n\nکسٹمر کے لیے پرنٹ ایبل بل بنائیں — نقد سیل یا قیمت کا تخمینہ — بغیر اس کے آپ کے کھاتے یا کسی کے بیلنس کو چھوئے۔</string>
+    <string name="add_invoice">انوائس شامل کریں</string>
+    <string name="invoice_customer_hint">گاہک کا نام</string>
+    <string name="invoice_phone_hint">فون (اختیاری)</string>
+    <string name="pick_invoice_date">انوائس کی تاریخ چنیں</string>
+    <string name="invoice_date_set">تاریخ: %1$s</string>
+    <string name="invoice_item_name_hint">چیز کا نام</string>
+    <string name="invoice_item_rate_hint">فی اکائی ریٹ (روپے)</string>
+    <string name="invoice_item_invalid">درست چیز کا نام، مقدار اور ریٹ درج کریں۔</string>
+    <string name="invoice_customer_required">پہلے گاہک کا نام درج کریں۔</string>
+    <string name="invoice_needs_item">پہلے کم از کم ایک چیز شامل کریں۔</string>
+    <string name="invoice_saved">انوائس محفوظ ہو گئی۔</string>
+    <string name="invoice_total">کل: %1$s</string>
+    <string name="invoice_deleted">انوائس حذف ہو گئی۔</string>
+    <string name="delete_invoice_confirm">یہ انوائس حذف کریں؟ یہ ایپ کے اندر سے بحال نہیں ہو سکے گی۔</string>
+    <string name="view">دیکھیں</string>
+    <string name="nav_invoice">انوائس</string>
 
     <string name="expiring_stock">ایکسپائر ہوتا مال</string>
     <string name="expiring_subtitle">بیچیں، رعایت دیں، یا واپس کریں — جب تک وقت ہے</string>
@@ -712,6 +736,13 @@
     <string name="remove_signature">ہٹائیں</string>
     <string name="signature_saved">دستخط محفوظ ہو گئے۔</string>
     <string name="signature_save_failed">وہ تصویر محفوظ نہیں ہو سکی۔</string>
+    <string name="stamp">مہر</string>
+    <string name="stamp_help">اپنی دکان کی مہر سادہ کاغذ پر بنا کر تصویر لیں۔ اگر شامل کریں تو انوائس پر خودکار طور پر دکھائی دے گی — ورنہ صرف آپ کا نام اور پتہ چھپے گا۔</string>
+    <string name="no_stamp_yet">ابھی کوئی مہر شامل نہیں کی گئی۔</string>
+    <string name="choose_stamp">مہر منتخب کریں</string>
+    <string name="remove_stamp">ہٹائیں</string>
+    <string name="stamp_saved">مہر محفوظ ہو گئی۔</string>
+    <string name="stamp_save_failed">وہ تصویر محفوظ نہیں ہو سکی۔</string>
     <string name="photo_on_statement">کھاتے پر گاہک کی تصویر شامل کریں</string>
     <string name="photo_on_statement_help">پہلے سے بند ہے۔ آن کرنے پر گاہک کی تصویر اس کے کھاتے پر چھپے گی، جس سے انکار مشکل ہو جاتا ہے — لیکن کھاتہ آگے بھی بھیجا جا سکتا ہے، اور تصویر اس کے ساتھ جائے گی۔</string>
     <string name="made_with_app">روشن کھاتہ</string>

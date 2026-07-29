@@ -369,6 +369,43 @@ val MIGRATION_12_13 = object : Migration(12, 13) {
 }
 
 /**
+ * Two new tables, invoices and invoice_items — the printable-bill feature,
+ * deliberately outside the ledger (see the class doc on [Invoice]). Neither
+ * table is read by any existing query, and no existing table is touched.
+ */
+val MIGRATION_13_14 = object : Migration(13, 14) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS invoices (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "invoiceNumber TEXT NOT NULL, " +
+                "customerName TEXT NOT NULL, " +
+                "customerPhone TEXT, " +
+                "invoiceDate INTEGER NOT NULL, " +
+                "note TEXT, " +
+                "templateId INTEGER NOT NULL, " +
+                "createdAt INTEGER NOT NULL, " +
+                "isDeleted INTEGER NOT NULL, " +
+                "deletedAt INTEGER)"
+        )
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS invoice_items (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "invoiceId INTEGER NOT NULL, " +
+                "itemName TEXT NOT NULL, " +
+                "quantity REAL NOT NULL, " +
+                "unit TEXT, " +
+                "rate REAL NOT NULL, " +
+                "isDeleted INTEGER NOT NULL, " +
+                "FOREIGN KEY(invoiceId) REFERENCES invoices(id) ON DELETE CASCADE)"
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS index_invoice_items_invoiceId ON invoice_items(invoiceId)"
+        )
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -377,7 +414,7 @@ val MIGRATION_12_13 = object : Migration(12, 13) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 13
+const val KHATA_DB_VERSION = 14
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -392,5 +429,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_9_10,
     MIGRATION_10_11,
     MIGRATION_11_12,
-    MIGRATION_12_13
+    MIGRATION_12_13,
+    MIGRATION_13_14
 )

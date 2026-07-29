@@ -209,6 +209,9 @@
     <string name="business_name">نام کسب‌وکار</string>
     <string name="business_name_help">بالای هر صورت‌حساب و در پایان هر یادآوری ارسالی شما نمایش داده می‌شود.</string>
     <string name="business_name_hint">مثلاً بهاتی تریدرز</string>
+    <string name="business_address">آدرس مغازه</string>
+    <string name="business_address_help">زیر نام کسب‌وکار شما روی هر فاکتور چاپ می‌شود.</string>
+    <string name="business_address_hint">مثلاً بازار اصلی، پسرور</string>
 
     <string name="payment_qr">کد QR پرداخت</string>
     <string name="payment_qr_help">عکس یا اسکرین‌شات کد QR ایزی‌پیسه یا جاز کش شما. به صورت‌حساب‌ها پیوست می‌شود تا مشتری اسکن کند و به شما بپردازد.</string>
@@ -472,6 +475,27 @@
     <string name="delete_bill_confirm">فاکتور و سوابق بچ آن حذف می‌شود، اما ثبت دفتر می‌ماند. کالا واقعاً رسیده و پول واقعاً بدهکاری است — حذف کاغذها آن را برنمی‌گرداند.</string>
     <string name="bill_actions">فاکتور</string>
     <string name="view_items">دیدن اقلام و بچ‌ها</string>
+
+    <!-- Invoices -->
+    <string name="invoices">فاکتورهای فروش</string>
+    <string name="invoices_subtitle">فاکتور قابل چاپ — جدا از دفتر حساب شما</string>
+    <string name="no_invoices">هنوز فاکتوری نیست.\n\nبرای مشتری یک فاکتور قابل چاپ بسازید — فروش نقدی یا برآورد قیمت — بدون اینکه به دفتر حساب یا مانده کسی دست بزند.</string>
+    <string name="add_invoice">افزودن فاکتور</string>
+    <string name="invoice_customer_hint">نام مشتری</string>
+    <string name="invoice_phone_hint">تلفن (اختیاری)</string>
+    <string name="pick_invoice_date">انتخاب تاریخ فاکتور</string>
+    <string name="invoice_date_set">تاریخ: %1$s</string>
+    <string name="invoice_item_name_hint">نام قلم</string>
+    <string name="invoice_item_rate_hint">قیمت هر واحد (Rs)</string>
+    <string name="invoice_item_invalid">نام قلم، مقدار و قیمت معتبر وارد کنید.</string>
+    <string name="invoice_customer_required">ابتدا نام مشتری را وارد کنید.</string>
+    <string name="invoice_needs_item">ابتدا حداقل یک قلم اضافه کنید.</string>
+    <string name="invoice_saved">فاکتور ذخیره شد.</string>
+    <string name="invoice_total">جمع: %1$s</string>
+    <string name="invoice_deleted">فاکتور حذف شد.</string>
+    <string name="delete_invoice_confirm">این فاکتور حذف شود؟ از داخل برنامه قابل بازیابی نخواهد بود.</string>
+    <string name="view">مشاهده</string>
+    <string name="nav_invoice">فاکتور</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">کالای رو به انقضا</string>
@@ -740,6 +764,13 @@
     <string name="remove_signature">حذف</string>
     <string name="signature_saved">امضا ذخیره شد.</string>
     <string name="signature_save_failed">آن تصویر ذخیره نشد.</string>
+    <string name="stamp">مهر</string>
+    <string name="stamp_help">مهر مغازه‌تان را روی کاغذ سفید عکس بگیرید. در صورت افزودن، خودکار روی فاکتور نمایش داده می‌شود — در غیر این صورت فقط نام و آدرس شما چاپ می‌شود.</string>
+    <string name="no_stamp_yet">هنوز مهری افزوده نشده.</string>
+    <string name="choose_stamp">انتخاب مهر</string>
+    <string name="remove_stamp">حذف</string>
+    <string name="stamp_saved">مهر ذخیره شد.</string>
+    <string name="stamp_save_failed">آن تصویر ذخیره نشد.</string>
     <string name="photo_on_statement">درج عکس مشتری روی صورت‌حساب</string>
     <string name="photo_on_statement_help">به‌طور پیش‌فرض خاموش. روشن کنید تا عکس مشتری روی صورت‌حسابش چاپ شود و انکارش سخت‌تر باشد — اما صورت‌حساب ممکن است فرستاده شود و عکس با آن برود.</string>
     <string name="made_with_app">روشن خاتا</string>
