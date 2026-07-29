@@ -554,6 +554,28 @@ interface KhataDao {
     @Update
     suspend fun updateInvoice(invoice: Invoice)
 
+    /**
+     * Editing a saved invoice replaces its whole item list rather than
+     * trying to match old rows to new ones — far simpler and safer than a
+     * diff, and there is no ledger balance here for a stray extra row to
+     * throw off (see the class doc on [Invoice]). The old rows are soft-
+     * deleted, not hard-deleted, matching every other soft-delete in this
+     * app; a crash between the two loops leaves either the full old set or
+     * the full new set findable, never a partial mix, since both loops run
+     * inside this one @Transaction.
+     */
+    @Transaction
+    suspend fun updateInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>) {
+        updateInvoice(invoice)
+        softDeleteInvoiceItems(invoice.id)
+        for (item in items) {
+            insertInvoiceItem(item.copy(id = 0, invoiceId = invoice.id))
+        }
+    }
+
+    @Query("UPDATE invoice_items SET isDeleted = 1 WHERE invoiceId = :invoiceId")
+    suspend fun softDeleteInvoiceItems(invoiceId: Long)
+
     @Query("SELECT * FROM invoice_items WHERE invoiceId = :invoiceId AND isDeleted = 0 ORDER BY id ASC")
     suspend fun invoiceItems(invoiceId: Long): List<InvoiceItem>
 

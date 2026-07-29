@@ -686,6 +686,7 @@
     <string name="goods_label">Maal</string>
     <string name="balance_label">Baad ka balance</string>
     <string name="edit">Tarmeem</string>
+    <string name="edit_invoice">Invoice edit karein</string>
     <string name="share">Share</string>
     <string name="back">Wapas</string>
     <string name="entry_not_found">Entry nahi mili</string>

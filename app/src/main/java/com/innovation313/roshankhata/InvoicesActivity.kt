@@ -79,17 +79,30 @@ class InvoicesActivity : AppCompatActivity() {
     // ---------- Viewing / deleting a saved invoice ----------
 
     private fun showInvoiceActions(invoice: InvoiceSummary) {
-        val options = arrayOf(getString(R.string.view), getString(R.string.invoice_share_pdf), getString(R.string.delete))
+        val options = arrayOf(
+            getString(R.string.view),
+            getString(R.string.edit),
+            getString(R.string.invoice_share_pdf),
+            getString(R.string.delete)
+        )
         MaterialAlertDialogBuilder(this)
             .setTitle(invoice.customerName)
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> viewInvoice(invoice)
-                    1 -> chooseTemplateAndShare(invoice)
-                    2 -> confirmDeleteInvoice(invoice)
+                    1 -> editInvoice(invoice)
+                    2 -> chooseTemplateAndShare(invoice)
+                    3 -> confirmDeleteInvoice(invoice)
                 }
             }
             .show()
+    }
+
+    private fun editInvoice(invoice: InvoiceSummary) {
+        startActivity(
+            Intent(this, InvoiceEditorActivity::class.java)
+                .putExtra(InvoiceEditorActivity.EXTRA_INVOICE_ID, invoice.id)
+        )
     }
 
     /**

@@ -47,7 +47,15 @@ import java.util.Calendar
  */
 class InvoiceEditorActivity : AppCompatActivity() {
 
+    companion object {
+        /** Present only when editing a saved invoice; absent means creating a new one. */
+        const val EXTRA_INVOICE_ID = "invoice_id"
+    }
+
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
+
+    /** Null while creating a new invoice; set once an existing one has been loaded for editing. */
+    private var editingInvoiceId: Long? = null
 
     private lateinit var tvStep: TextView
     private lateinit var stepCustomer: View
@@ -168,7 +176,49 @@ class InvoiceEditorActivity : AppCompatActivity() {
             }
         }
 
-        addRow()
+        val editId = intent.getLongExtra(EXTRA_INVOICE_ID, -1L).takeIf { it > 0 }
+        if (editId != null) {
+            supportActionBar?.setTitle(R.string.edit_invoice)
+            lifecycleScope.launch { loadForEditing(editId) }
+        } else {
+            addRow()
+            showStep(1)
+        }
+    }
+
+    /**
+     * Fills every field from a saved invoice instead of starting blank —
+     * the same three steps, the same validation, just pre-filled. Nothing
+     * here is written until Save is pressed, same as creating a new one.
+     */
+    private suspend fun loadForEditing(id: Long) {
+        val invoice = dao.getInvoice(id)
+        if (invoice == null) {
+            finish()
+            return
+        }
+        val items = dao.invoiceItems(id)
+        editingInvoiceId = id
+
+        etCustomer.setText(invoice.customerName)
+        etPhone.setText(invoice.customerPhone.orEmpty())
+        etInvoiceNumber.setText(invoice.invoiceNumber)
+        invoiceDate = invoice.invoiceDate
+        btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
+        invoice.dueDate?.let {
+            dueDate = it
+            btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it))
+        }
+        discountPercent = invoice.discountPercent
+        taxPercent = invoice.taxPercent
+        chargeLabel = invoice.additionalChargeLabel
+        chargeAmount = invoice.additionalChargeAmount
+        receivedAmount = invoice.receivedAmount
+        note = invoice.note
+        rgTemplate.check(if (invoice.templateId == 10) R.id.rbTemplateThermal else R.id.rbTemplateTeal)
+
+        if (items.isEmpty()) addRow() else items.forEach { addRow(it) }
+
         showStep(1)
     }
 
@@ -239,7 +289,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
 
     // ---------- Items ----------
 
-    private fun addRow() {
+    private fun addRow(existing: InvoiceItem? = null) {
         val v = layoutInflater.inflate(R.layout.item_invoice_editor_row, itemRows, false)
         val row = Row(
             v,
@@ -248,6 +298,12 @@ class InvoiceEditorActivity : AppCompatActivity() {
             v.findViewById(R.id.etRowUnit),
             v.findViewById(R.id.etRowRate)
         )
+        if (existing != null) {
+            row.name.setText(existing.itemName)
+            row.qty.setText(Format.plain(existing.quantity))
+            row.unit.setText(existing.unit.orEmpty())
+            row.rate.setText(Format.plain(existing.rate))
+        }
         v.findViewById<ImageView>(R.id.btnRemoveRow).setOnClickListener {
             // The last row stays: with none at all there is nothing to type into.
             if (rows.size > 1) {
@@ -393,7 +449,12 @@ class InvoiceEditorActivity : AppCompatActivity() {
         }
 
         AppScope.launch {
-            dao.saveInvoiceWithItems(invoice, items)
+            val editId = editingInvoiceId
+            if (editId != null) {
+                dao.updateInvoiceWithItems(invoice.copy(id = editId), items)
+            } else {
+                dao.saveInvoiceWithItems(invoice, items)
+            }
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {
                     Toast.makeText(this@InvoiceEditorActivity, R.string.invoice_saved, Toast.LENGTH_SHORT).show()

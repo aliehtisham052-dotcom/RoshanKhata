@@ -686,6 +686,7 @@
     <string name="goods_label">مال</string>
     <string name="balance_label">بعد کا بیلنس</string>
     <string name="edit">ترمیم</string>
+    <string name="edit_invoice">انوائس میں ترمیم</string>
     <string name="share">شیئر</string>
     <string name="back">واپس</string>
     <string name="entry_not_found">اندراج نہیں ملا</string>

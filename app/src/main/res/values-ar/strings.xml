@@ -694,6 +694,7 @@
     <string name="goods_label">البضاعة</string>
     <string name="balance_label">الرصيد بعده</string>
     <string name="edit">تعديل</string>
+    <string name="edit_invoice">تعديل الفاتورة</string>
     <string name="share">مشاركة</string>
     <string name="back">رجوع</string>
     <string name="entry_not_found">القيد غير موجود</string>
