@@ -797,6 +797,8 @@
     <string name="duplicate_merge_go">Merge</string>
     <string name="duplicate_merge_done">Merged into %1$s.</string>
     <string name="duplicate_merge_failed">Could not merge. Your book is unchanged.</string>
+    <string name="duplicate_not_duplicate">Not a duplicate</string>
+    <string name="duplicate_dismissed">Won\'t be suggested again unless it changes.</string>
     <string name="stock_no_movement">not traded yet</string>
     <string name="stock_units_differ">units differ</string>
     <string name="stock_in_out">in %1$s  •  out %2$s</string>

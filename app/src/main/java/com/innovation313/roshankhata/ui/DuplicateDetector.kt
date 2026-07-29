@@ -54,7 +54,19 @@ object DuplicateDetector {
         return digits.takeLast(10)
     }
 
-    fun find(all: List<Candidate>): List<Group> {
+    /**
+     * Canonical, order-independent identity for a group's membership —
+     * sorted party ids joined by comma. Two groups made of the same people
+     * always produce the same key regardless of which order the members
+     * happen to be listed in; a group with a different membership always
+     * produces a different one. Used to remember a dismissal (see
+     * [com.innovation313.roshankhata.data.DismissedDuplicate]) against the
+     * group it was actually made against.
+     */
+    fun groupKey(members: List<Candidate>): String =
+        members.map { it.partyId }.sorted().joinToString(",")
+
+    fun find(all: List<Candidate>, dismissedKeys: Set<String> = emptySet()): List<Group> {
         val nameGroups = all.groupBy { ProductName.normalised(it.name) }
             .filterKeys { it.isNotBlank() }
             .values
@@ -78,6 +90,7 @@ object DuplicateDetector {
 
         return byIds.map { (ids, reason) ->
             Group(all.filter { it.partyId in ids }, reason)
-        }.sortedByDescending { it.members.size }
+        }.filter { groupKey(it.members) !in dismissedKeys }
+            .sortedByDescending { it.members.size }
     }
 }

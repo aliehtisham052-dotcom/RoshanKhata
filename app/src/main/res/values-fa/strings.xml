@@ -793,6 +793,8 @@
     <string name="duplicate_merge_go">ادغام</string>
     <string name="duplicate_merge_done">در %1$s ادغام شد.</string>
     <string name="duplicate_merge_failed">ادغام نشد. دفتر شما بدون تغییر است.</string>
+    <string name="duplicate_not_duplicate">تکراری نیست</string>
+    <string name="duplicate_dismissed">تا زمانی که چیزی تغییر نکند، دیگر پیشنهاد نمی‌شود.</string>
     <string name="stock_no_movement">هنوز داد و ستدی نشده</string>
     <string name="stock_units_differ">واحدها فرق دارند</string>
     <string name="stock_in_out">ورودی %1$s  •  خروجی %2$s</string>
