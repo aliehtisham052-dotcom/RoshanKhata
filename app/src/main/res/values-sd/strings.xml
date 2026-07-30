@@ -492,6 +492,9 @@
     <string name="items_count">%1$d شيون</string>
 
     <string name="bill_saved">بل محفوظ ٿيو</string>
+    <string name="bill_account_settled">ادا ٿيل</string>
+    <string name="bill_owe_amount">توهان کي ڏيڻا آهن %1$s</string>
+    <string name="bill_owe_overdue">توهان کي ڏيڻا آهن %1$s · وقت گذري ويو</string>
     <string name="bill_saved_credit">بل محفوظ ٿيو ۽ کاتي ۾ داخل ٿيو</string>
     <string name="enter_supplier">مهرباني ڪري سپلائر چونڊيو</string>
     <string name="enter_product">مهرباني ڪري پراڊڪٽ جو نالو لکو</string>

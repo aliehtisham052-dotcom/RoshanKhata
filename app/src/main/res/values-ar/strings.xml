@@ -471,6 +471,9 @@
     <string name="items_count">%1$d أصناف</string>
 
     <string name="bill_saved">حُفظت الفاتورة</string>
+    <string name="bill_account_settled">مُسوّى</string>
+    <string name="bill_owe_amount">عليك %1$s</string>
+    <string name="bill_owe_overdue">عليك %1$s · متأخر</string>
     <string name="bill_saved_credit">حُفظت الفاتورة وقُيدت في دفترك</string>
     <string name="enter_supplier">يرجى اختيار مورّد</string>
     <string name="enter_product">يرجى إدخال اسم المنتج</string>

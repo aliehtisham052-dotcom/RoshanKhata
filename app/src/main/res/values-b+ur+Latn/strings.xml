@@ -471,6 +471,9 @@
     <string name="items_count">%1$d cheezein</string>
 
     <string name="bill_saved">Bill mehfooz ho gaya</string>
+    <string name="bill_account_settled">Chukta</string>
+    <string name="bill_owe_amount">Aap ko dene hain %1$s</string>
+    <string name="bill_owe_overdue">Aap ko dene hain %1$s · waqt guzar gaya</string>
     <string name="bill_saved_credit">Bill mehfooz ho kar khate mein darj ho gaya</string>
     <string name="enter_supplier">Meherbani kar ke supplier chunein</string>
     <string name="enter_product">Meherbani kar ke product ka naam likhein</string>

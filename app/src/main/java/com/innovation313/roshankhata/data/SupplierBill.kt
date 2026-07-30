@@ -163,7 +163,17 @@ data class BillSummary(
     val dueDate: Long?,
     val isPaidInFull: Boolean,
     val itemCount: Int,
-    val note: String?
+    val note: String?,
+    /**
+     * The supplier's CURRENT ledger balance — negative means money is still
+     * owed to them, zero or positive means the account is clear. Read live from
+     * the ledger, not stored on the bill, so a payment entered in the khata is
+     * reflected here without touching the bill. Lets the list show a truthful
+     * "settled" / "you owe" state instead of a stale paid flag. It is the whole
+     * supplier's balance, not this one bill's, because payments in the ledger
+     * are not tied to a particular bill.
+     */
+    val supplierBalance: Double = 0.0
 )
 
 /**

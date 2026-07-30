@@ -492,6 +492,9 @@
     <string name="items_count">%1$d قلم</string>
 
     <string name="bill_saved">فاکتور ذخیره شد</string>
+    <string name="bill_account_settled">تسویه شده</string>
+    <string name="bill_owe_amount">شما بدهکارید %1$s</string>
+    <string name="bill_owe_overdue">شما بدهکارید %1$s · سررسید گذشته</string>
     <string name="bill_saved_credit">فاکتور ذخیره و در دفتر شما ثبت شد</string>
     <string name="enter_supplier">لطفاً تأمین‌کننده‌ای انتخاب کنید</string>
     <string name="enter_product">لطفاً نام محصولی وارد کنید</string>

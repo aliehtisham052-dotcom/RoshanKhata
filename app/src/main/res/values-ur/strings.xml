@@ -471,6 +471,9 @@
     <string name="items_count">%1$d چیزیں</string>
 
     <string name="bill_saved">بل محفوظ ہو گیا</string>
+    <string name="bill_account_settled">ادا شدہ</string>
+    <string name="bill_owe_amount">آپ کو دینے ہیں %1$s</string>
+    <string name="bill_owe_overdue">آپ کو دینے ہیں %1$s · وقت گزر گیا</string>
     <string name="bill_saved_credit">بل محفوظ ہو کر کھاتے میں درج ہو گیا</string>
     <string name="enter_supplier">براہِ کرم سپلائر چنیں</string>
     <string name="enter_product">براہِ کرم مصنوعات کا نام لکھیں</string>
