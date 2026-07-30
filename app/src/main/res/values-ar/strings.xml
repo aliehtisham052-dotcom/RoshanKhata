@@ -35,6 +35,8 @@
     <string name="coach_desc_zakat">أداة مرجعية لتقدير زكاتك — تأكّد من الحكم مع عالم مؤهل.</string>
     <string name="coach_title_bizcard">بطاقة العمل</string>
     <string name="coach_desc_bizcard">أنشئ بطاقة قابلة للمشاركة لمتجرك في ثوانٍ، بثلاثة أنماط.</string>
+    <string name="coach_title_invoice">فاتورة</string>
+    <string name="coach_desc_invoice">أنشئ فواتير احترافية لعملائك — اختر من تصاميم جاهزة مع اسمك وختمك ورمز QR.</string>
     <string name="coach_title_backup">النسخ الاحتياطي</string>
     <string name="coach_desc_backup">احفظ دفترك بأمان على درايف الخاص بك.</string>
         <string name="coach_title_settings">إعدادات العمل</string>
