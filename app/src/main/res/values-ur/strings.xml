@@ -633,6 +633,8 @@
     <string name="drive_connect">گوگل ڈرائیو جوڑیں</string>
     <string name="drive_backup_now">ابھی ڈرائیو میں بیک اپ لیں</string>
     <string name="drive_backup_images">تصاویر بھی شامل کریں (فوٹوز، بل کی فوٹوز، QR)</string>
+    <string name="drive_auto_backup">خودکار روزانہ بیک اپ</string>
+    <string name="drive_auto_backup_hint">دن میں ایک بار، جب انٹرنیٹ ہو اور کچھ تبدیل ہوا ہو، بیک اپ کرتا ہے۔ آپ کسی بھی وقت خود بھی بیک اپ کر سکتے ہیں۔</string>
     <string name="drive_restore">ڈرائیو سے بحال کریں</string>
     <string name="drive_sign_out">گوگل اکاؤنٹ الگ کریں</string>
     <string name="drive_backing_up">ڈرائیو میں بیک اپ ہو رہا ہے\u2026</string>
@@ -731,6 +733,8 @@
     <string name="notif_expiry_body">%1$d چیزیں 60 دن میں ایکسپائر ہوں گی۔ بیچیں، رعایت دیں یا واپس کریں۔</string>
     <string name="notif_backup_title">بیک اپ کی یاد دہانی</string>
     <string name="notif_backup_body">آخری بیک اپ کو ہفتے سے زیادہ ہو گیا۔ آپ کا ریکارڈ صرف اسی فون پر ہے۔</string>
+    <string name="notif_backup_failed_title">خودکار بیک اپ ناکام</string>
+    <string name="notif_backup_failed_body">روشن کھاتا ڈرائیو پر بیک اپ نہ کر سکا۔ انٹرنیٹ دیکھیں — یہ خود دوبارہ کوشش کرے گا۔</string>
 
     <!-- Business card -->
     <string name="biz_card">دکان کارڈ</string>

@@ -633,6 +633,8 @@
     <string name="drive_connect">Google Drive Jorein</string>
     <string name="drive_backup_now">Abhi Drive Mein Backup Lein</string>
     <string name="drive_backup_images">Images bhi shamil karein (photos, bill photos, QR)</string>
+    <string name="drive_auto_backup">Khudkar rozana backup</string>
+    <string name="drive_auto_backup_hint">Din mein ek bar, jab internet ho aur kuch badla ho, backup karta hai. Aap kisi bhi waqt khud bhi backup kar sakte hain.</string>
     <string name="drive_restore">Drive Se Bahal Karein</string>
     <string name="drive_sign_out">Google account alag karein</string>
     <string name="drive_backing_up">Drive mein backup ho raha hai\u2026</string>
@@ -731,6 +733,8 @@
     <string name="notif_expiry_body">%1$d cheezein 60 din mein expire hongi. Bechein, riayat dein ya wapas karein.</string>
     <string name="notif_backup_title">Backup ki yaad-dehani</string>
     <string name="notif_backup_body">Aakhri backup ko hafte se zyada ho gaya. Aap ka record sirf isi phone par hai.</string>
+    <string name="notif_backup_failed_title">Khudkar backup nakaam</string>
+    <string name="notif_backup_failed_body">Roshan Khata Drive par backup nahi kar saka. Internet dekhein — yeh khud dobara koshish karega.</string>
 
     <!-- Business card -->
     <string name="biz_card">Dukan Card</string>
