@@ -373,7 +373,7 @@
     <string name="save_backup">Backup Mehfooz Karein</string>
 
     <string name="restore_warning_title">Sab kuch badal dein?</string>
-    <string name="restore_warning_message">Bahali Roshan Khata mein maujood har cheez ko is file ke mawad se badal degi:\n\n%1$d gahak/supplier\n%2$d khata entries\n%3$d cheque\n%4$d cashbook entries\n%5$d adaigi mansoobay\n%6$d supplier bill\n\nJo kuch is phone par ab hai wo chala jayega. Agar yahan aisi entries hain jo backup mein nahi, to pehle IS ka backup lein.\n\nYe wapas nahi ho sakta.</string>
+    <string name="restore_warning_message">Bahali Roshan Khata mein maujood har cheez ko is file ke mawad se badal degi:\n\n%1$d gahak/supplier\n%2$d khata entries\n%3$d cheque\n%4$d cashbook entries\n%5$d adaigi mansoobay\n%6$d supplier bill\n%7$d invoice\n\nJo kuch is phone par ab hai wo chala jayega. Agar yahan aisi entries hain jo backup mein nahi, to pehle IS ka backup lein.\n\nYe wapas nahi ho sakta.</string>
     <string name="restore_replace">Sab Kuch Badal Dein</string>
     <string name="restore_done">Bahal ho gaya</string>
     <string name="restore_failed">Bahali nakaam: %1$s</string>

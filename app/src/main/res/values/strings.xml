@@ -394,7 +394,7 @@
     <string name="save_backup">Save backup</string>
 
     <string name="restore_warning_title">Replace everything?</string>
-    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n%6$d supplier bills\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
+    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n%6$d supplier bills\n%7$d invoices\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
     <string name="restore_replace">Replace everything</string>
     <string name="restore_done">Restored</string>
     <string name="restore_failed">Restore failed: %1$s</string>
