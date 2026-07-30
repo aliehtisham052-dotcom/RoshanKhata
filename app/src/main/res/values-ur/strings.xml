@@ -699,7 +699,6 @@
     <string name="no_dialer">کوئی ڈائلر نہیں ملا</string>
     <string name="backup_reminder_hint">بیک اپ کا وقت ہو گیا</string>
     <string name="select_all">سب چنیں</string>
-    <string name="show_already_added">پہلے سے شامل دکھائیں</string>
     <string name="clear_all">سب ہٹائیں</string>
     <string name="insights_today">آج</string>
     <string name="insights_today_received">وصول ہوئے</string>
