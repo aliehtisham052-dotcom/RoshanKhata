@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">روشن كهاتا</string>
+    <string name="welcome_title">دفاترك في أمان</string>
+    <string name="welcome_body">يحتفظ روشن كھاتا بسجلاتك على هذا الهاتف. اربط حساب Google الخاص بك ليتم نسخ دفاترك احتياطيًا إلى درايفك — بياناتك، في حسابك.</string>
+    <string name="welcome_note">الربط يجعل النسخ الاحتياطي ممكنًا فقط. تصبح دفاترك في أمان بعد إجراء نسخة احتياطية — فعّل النسخ التلقائي، أو انسخ في أي وقت.</string>
+    <string name="welcome_connect">ربط حساب Google</string>
+    <string name="welcome_skip">ربما لاحقًا</string>
 
     <string name="coach_walkthrough">جولة تعريفية</string>
     <string name="coach_home_screen">الشاشة الرئيسية</string>

@@ -92,17 +92,12 @@ class LanguageActivity : AppCompatActivity() {
             return
         }
 
-        // First run: straight to the ledger, not back through the gate. The
-        // gate shows the splash, and the owner has just watched it — sending
-        // them back would play the same logo a second time on the one launch
-        // where they are least in the mood for it.
-        //
-        // Skipping the gate skips its lock check too, which costs nothing on
-        // a first run: App Lock cannot have been turned on yet, since this
-        // screen is the first thing the app has shown.
+        // First run: the one-time welcome, which offers to connect a Google
+        // account for backup before the ledger opens. Not back through the
+        // gate — the owner has just watched the splash, and the welcome sends
+        // them on to the ledger itself once seen (or skipped).
         startActivity(
-            Intent(this, MainActivity::class.java)
-                .putExtra(MainActivity.EXTRA_UNLOCKED, true)
+            Intent(this, WelcomeActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         )
         finish()

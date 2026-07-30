@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
+    <string name="welcome_title">Your books, kept safe</string>
+    <string name="welcome_body">Roshan Khata keeps your records on this phone. Connect your own Google account so your books can be backed up to your Drive — your data, in your account.</string>
+    <string name="welcome_note">Connecting only makes backup possible. Your books are safe once a backup runs — turn on automatic backup, or back up any time.</string>
+    <string name="welcome_connect">Connect Google account</string>
+    <string name="welcome_skip">Maybe later</string>
 
     <!-- Onboarding: first-run coach marks on the Home screen — a bubble with
          an arrow points at each real control in turn, Skip / Next / Got it.

@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">روشن کاتو</string>
+    <string name="welcome_title">توهان جو کھاتو، محفوظ</string>
+    <string name="welcome_body">روشن کھاتا توهان جو رڪارڊ هن ئي فون تي رکي ٿو. پنهنجو گوگل اڪائونٽ ڳنڍيو ته جيئن توهان جو کھاتو توهان جي ڊرائيو تي محفوظ ٿي سگهي — توهان جو ڊيٽا، توهان جي اڪائونٽ ۾.</string>
+    <string name="welcome_note">ڳنڍڻ سان صرف بيڪ اپ ممڪن ٿئي ٿو. توهان جو کھاتو تڏهن محفوظ آهي جڏهن بيڪ اپ ٿئي — پاڻمرادو بيڪ اپ آن ڪريو، يا ڪنهن به وقت بيڪ اپ ڪريو.</string>
+    <string name="welcome_connect">گوگل اڪائونٽ ڳنڍيو</string>
+    <string name="welcome_skip">شايد پوءِ</string>
 
     <string name="coach_walkthrough">تعارفي دورو</string>
     <string name="coach_home_screen">مکيه اسڪرين</string>
