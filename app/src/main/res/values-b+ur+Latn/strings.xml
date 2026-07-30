@@ -282,6 +282,11 @@
     <string name="search_parties">Naam ya number</string>
     <string name="search_entries">Note ya maal</string>
     <string name="sort">Tarteeb</string>
+    <string name="filter_type">Qisam</string>
+    <string name="filter_type_title">Kaun si qisam dikhayein</string>
+    <string name="filter_type_all">Sab</string>
+    <string name="filter_type_customers">Gaahak</string>
+    <string name="filter_type_suppliers">Supplier</string>
     <string name="sort_by">Tarteeb Dein</string>
 
     <string name="sort_name_az">Naam (A\u2013Z)</string>

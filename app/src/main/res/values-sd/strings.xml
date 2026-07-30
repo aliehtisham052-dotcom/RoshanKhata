@@ -294,6 +294,11 @@
     <string name="search_parties">نالو يا نمبر</string>
     <string name="search_entries">نوٽ يا سامان</string>
     <string name="sort">ترتيب</string>
+    <string name="filter_type">قسم</string>
+    <string name="filter_type_title">ڪهڙي قسم ڏيکاريو</string>
+    <string name="filter_type_all">سڀ</string>
+    <string name="filter_type_customers">گراهڪ</string>
+    <string name="filter_type_suppliers">سپلائر</string>
     <string name="sort_by">ترتيب جو بنياد</string>
 
     <string name="sort_name_az">نالو (الف\u2013ي)</string>
