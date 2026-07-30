@@ -129,6 +129,14 @@ dependencies {
     // Drive — invisible in their file list, tied to this app, and counted
     // against their 15GB but effectively weightless (a backup is a few KB).
     implementation("com.google.android.gms:play-services-auth:21.6.0")
+    // Credential Manager for Sign in with Google -- used ONLY to learn which
+    // Google account the owner is connecting Drive to, so the backup screen can
+    // show that email. The Drive permission itself is a separate step
+    // (AuthorizationClient, above). credentials-play-services-auth backs the
+    // sign-in on Android 13 and below; googleid provides the Google option.
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("com.google.api-client:google-api-client-android:2.2.0") {
         exclude(group = "org.apache.httpcomponents")
         exclude(group = "com.google.guava")

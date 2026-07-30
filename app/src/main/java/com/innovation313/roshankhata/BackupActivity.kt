@@ -12,7 +12,6 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.innovation313.roshankhata.data.Backup
 import com.innovation313.roshankhata.data.BackupImages
 import com.innovation313.roshankhata.data.DriveAuth
@@ -450,6 +449,38 @@ class BackupActivity : AppCompatActivity() {
      * second is launched and lands in [driveAuthorize] below.
      */
     private fun connectDrive() {
+        // Two steps, in order: first a Sign in with Google to learn which
+        // account this is (so the screen can show the email), then the Drive
+        // authorization for that account. The sign-in gives the label; the
+        // authorize() gives the actual permission. The owner sees the account
+        // picker once, then the Drive consent.
+        lifecycleScope.launch {
+            val email = try {
+                DriveAuth.signIn(this@BackupActivity)
+            } catch (e: Exception) {
+                null
+            }
+
+            if (email == null) {
+                // Dismissed the account sheet, or nothing came back. Nothing is
+                // connected; say so plainly rather than proceeding half-way.
+                Toast.makeText(
+                    this@BackupActivity,
+                    R.string.drive_signin_failed,
+                    Toast.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            // Remember the email now, so even if the Drive step is declined the
+            // screen can still show which account was chosen.
+            DriveAuth.rememberAccount(this@BackupActivity, email)
+            authorizeDrive()
+        }
+    }
+
+    /** Second step: ask for the Drive permission on the signed-in account. */
+    private fun authorizeDrive() {
         DriveAuth.authorize(this)
             .addOnSuccessListener { result ->
                 if (result.hasResolution()) {
@@ -462,8 +493,8 @@ class BackupActivity : AppCompatActivity() {
                         Toast.makeText(this, R.string.drive_signin_failed, Toast.LENGTH_LONG).show()
                     }
                 } else {
-                    // Access was already granted -- remember the account and go.
-                    DriveAuth.rememberAccount(this, result)
+                    // Access was already granted -- the account is remembered,
+                    // so just refresh.
                     refreshDriveUi()
                 }
             }
@@ -475,23 +506,16 @@ class BackupActivity : AppCompatActivity() {
     private val driveAuthorize = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { activityResult ->
-        // The consent screen returns here. We read the real result rather than
-        // assuming success just because the screen closed -- a declined grant
-        // still closes it.
+        // The Drive consent screen returns here. The account email is already
+        // remembered from the sign-in step; here we only confirm the Drive
+        // grant went through by reading the result (a declined grant still
+        // closes the screen).
         try {
-            val result: AuthorizationResult =
-                DriveAuth.resultFromIntent(this, activityResult.data)
-            DriveAuth.rememberAccount(this, result)
-            if (DriveAuth.isConnected(this)) {
-                refreshDriveUi()
-            } else {
-                // Consent screen returned but no usable account came back --
-                // treat as declined rather than failing silently.
-                Toast.makeText(this, R.string.drive_permission_needed, Toast.LENGTH_LONG).show()
-                refreshDriveUi()
-            }
+            DriveAuth.resultFromIntent(this, activityResult.data)
+            refreshDriveUi()
         } catch (e: Exception) {
-            Toast.makeText(this, R.string.drive_signin_failed, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.drive_permission_needed, Toast.LENGTH_LONG).show()
+            refreshDriveUi()
         }
     }
 

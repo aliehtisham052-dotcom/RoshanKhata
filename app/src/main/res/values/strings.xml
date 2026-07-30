@@ -676,6 +676,8 @@
     <string name="drive_no_backup">No backup found in your Google Drive yet.</string>
     <string name="drive_restore_failed">Could not restore from Drive. Check your internet and try again.</string>
     <string name="drive_signin_failed">Google sign-in did not complete. Please try again.</string>
+    <!-- Web OAuth client ID for Credential Manager (Sign in with Google). Public, not a secret. -->
+    <string name="google_web_client_id" translatable="false">998510731642-rdk1rcdfcuah11qerh1env6tim54tg0n.apps.googleusercontent.com</string>
     <string name="drive_permission_needed">Roshan Khata needs permission to save to its own folder in your Drive. Please allow it when asked.</string>
     <string name="drive_restore_confirm">This will replace everything currently in the app with the backup from your Google Drive. Continue?</string>
     <string name="i_have_to_get">I have to get</string>
