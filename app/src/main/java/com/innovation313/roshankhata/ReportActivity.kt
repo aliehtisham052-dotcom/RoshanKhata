@@ -1,14 +1,12 @@
 package com.innovation313.roshankhata
 
 import android.app.DatePickerDialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -276,19 +274,7 @@ class ReportActivity : AppCompatActivity() {
                 return@launch
             }
 
-            val uri = FileProvider.getUriForFile(
-                this@ReportActivity,
-                "$packageName.fileprovider",
-                file
-            )
-
-            val share = Intent(Intent.ACTION_SEND).apply {
-                type = "application/pdf"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_statement))
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            startActivity(Intent.createChooser(share, getString(R.string.share_statement)))
+            com.innovation313.roshankhata.ui.PdfShare.present(this@ReportActivity, file)
         }
     }
 

@@ -716,6 +716,10 @@
     <string name="edit">ترمیم</string>
     <string name="edit_invoice">انوائس میں ترمیم</string>
     <string name="share">شیئر</string>
+    <string name="pdf_ready_title">رپورٹ تیار ہے</string>
+    <string name="pdf_ready_body">پہلے کھول کر دیکھیں، پھر چاہیں تو شیئر کریں۔</string>
+    <string name="pdf_open">کھولیں</string>
+    <string name="close">بند کریں</string>
     <string name="back">واپس</string>
     <string name="entry_not_found">اندراج نہیں ملا</string>
     <string name="delete_entry_message">یہ اندراج کھاتے سے ہٹا دیا جائے گا۔</string>

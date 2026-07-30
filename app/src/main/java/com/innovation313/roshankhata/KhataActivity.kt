@@ -730,9 +730,11 @@ class KhataActivity : AppCompatActivity() {
     }
 
     /**
-     * Builds the whole-ledger PDF for [range] and hands it straight to the
-     * share sheet — the owner's own request was that this needs no separate
-     * screen, just a date pick and a document.
+     * Builds the whole-ledger PDF for [range] and shows it to the owner
+     * preview-first — a viewer opens on the document, and sharing is a
+     * deliberate second step (see [com.innovation313.roshankhata.ui.PdfShare]),
+     * rather than the old behaviour of jumping straight to the share sheet on a
+     * page the owner had not seen.
      */
     private fun buildAndShareLedgerPdf(range: DateRangeFilter.Range) {
         val label = DateRangeFilter.label(this, range)
@@ -749,14 +751,7 @@ class KhataActivity : AppCompatActivity() {
                 return@launch
             }
 
-            val uri = FileProvider.getUriForFile(this@KhataActivity, "$packageName.fileprovider", file)
-            val share = Intent(Intent.ACTION_SEND).apply {
-                type = "application/pdf"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, file.name)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            startActivity(Intent.createChooser(share, getString(R.string.ledger_pdf_title)))
+            com.innovation313.roshankhata.ui.PdfShare.present(this@KhataActivity, file)
         }
     }
 
