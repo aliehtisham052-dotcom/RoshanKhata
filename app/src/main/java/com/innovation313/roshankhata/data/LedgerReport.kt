@@ -148,24 +148,45 @@ object LedgerReport {
             canvas.drawText("No entries in this period.", MARGIN, y, muted)
             y += 16f
         } else {
-            val xDate = MARGIN + 6f
-            val xParty = MARGIN + 100f
-            val xAmount = PAGE_W - MARGIN - 6f
-            val rowH = 20f
+            // Two money columns, the way a statement reads: what went out (I
+            // gave) and what came in (I got), each in its own place so the eye
+            // never has to work out which direction a number is. Column edges
+            // are the RIGHT of each money column; text is right-aligned to them.
+            val xDate = MARGIN + 4f
+            val xParty = MARGIN + 88f
+            val xGave = PAGE_W - MARGIN - 92f   // right edge of the "I gave" column
+            val xGot = PAGE_W - MARGIN - 4f      // right edge of the "I got" column
+            val partyMaxW = xGave - 96f - xParty // room for the name before the money starts
 
             fun tableHeader() {
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
                 canvas.drawText("DATE", xDate, y + 12.5f, tableHeaderFg)
                 canvas.drawText("PARTY", xParty, y + 12.5f, tableHeaderFg)
                 canvas.drawText(
-                    "AMOUNT", xAmount - tableHeaderFg.measureText("AMOUNT"), y + 12.5f, tableHeaderFg
+                    "I GAVE", xGave - tableHeaderFg.measureText("I GAVE"), y + 12.5f, tableHeaderFg
+                )
+                canvas.drawText(
+                    "I GOT", xGot - tableHeaderFg.measureText("I GOT"), y + 12.5f, tableHeaderFg
                 )
                 y += 18f
+            }
+
+            // Shorten a name that would collide with the money columns, so a
+            // long "Abbas Ghala Mandi Pasrur Dokandar" never overruns the amount.
+            fun clip(text: String, paint: Paint, maxW: Float): String {
+                if (paint.measureText(text) <= maxW) return text
+                var end = text.length
+                while (end > 1 && paint.measureText(text.substring(0, end) + "\u2026") > maxW) end--
+                return text.substring(0, end) + "\u2026"
             }
 
             tableHeader()
 
             entries.forEachIndexed { index, e ->
+                // A row is taller when it carries a note line beneath the name.
+                val hasNote = !e.note.isNullOrBlank()
+                val rowH = if (hasNote) 30f else 20f
+
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
                     canvas.drawText("Entries (continued)", MARGIN, y, section)
@@ -176,12 +197,22 @@ object LedgerReport {
 
                 val baseline = y + 14f
                 canvas.drawText(entryDateFmt.format(Date(e.timestamp)), xDate, baseline, muted)
-                canvas.drawText(e.partyName, xParty, baseline, body)
+                canvas.drawText(clip(e.partyName, body, partyMaxW), xParty, baseline, body)
 
-                val amountPaint = if (e.isGiven) red else green
-                val prefix = if (e.isGiven) "Gave " else "Got "
-                val text = prefix + Format.money(e.amount)
-                canvas.drawText(text, xAmount - amountPaint.measureText(text), baseline, amountPaint)
+                // The amount sits in exactly one of the two columns.
+                val money = Format.money(e.amount)
+                if (e.isGiven) {
+                    canvas.drawText(money, xGave - red.measureText(money), baseline, red)
+                } else {
+                    canvas.drawText(money, xGot - green.measureText(money), baseline, green)
+                }
+
+                // The note, if any, on its own quiet line under the name — this
+                // is the "what was it for" the owner asked to see in the report.
+                if (hasNote) {
+                    val note = clip(e.note!!.trim(), muted, xGave - xParty - 8f)
+                    canvas.drawText(note, xParty, baseline + 12f, muted)
+                }
 
                 y += rowH
             }
