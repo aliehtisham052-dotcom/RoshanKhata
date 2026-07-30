@@ -282,6 +282,11 @@
     <string name="search_parties">نام یا نمبر</string>
     <string name="search_entries">نوٹ یا مال</string>
     <string name="sort">ترتیب</string>
+    <string name="filter_type">قسم</string>
+    <string name="filter_type_title">کون سی قسم دکھائیں</string>
+    <string name="filter_type_all">سب</string>
+    <string name="filter_type_customers">گاہک</string>
+    <string name="filter_type_suppliers">سپلائر</string>
     <string name="sort_by">ترتیب دیں</string>
 
     <string name="sort_name_az">نام (الف\u2013ی)</string>

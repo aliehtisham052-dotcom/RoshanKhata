@@ -298,6 +298,11 @@
     <string name="search_parties">Name or number</string>
     <string name="search_entries">Notes or goods</string>
     <string name="sort">Sort</string>
+    <string name="filter_type">Type</string>
+    <string name="filter_type_title">Show which type</string>
+    <string name="filter_type_all">All</string>
+    <string name="filter_type_customers">Customers</string>
+    <string name="filter_type_suppliers">Suppliers</string>
     <string name="sort_by">Sort by</string>
 
     <string name="sort_name_az">Name (A\u2013Z)</string>

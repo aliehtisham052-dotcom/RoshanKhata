@@ -111,6 +111,12 @@ class KhataActivity : AppCompatActivity() {
     private enum class SideFilter { ALL, TO_GET, TO_GIVE, SETTLED }
     private var sideFilter = SideFilter.ALL
 
+    // Customer vs supplier. A separate axis from the side filter (get/give):
+    // the owner can ask "which suppliers do I owe" by combining the two. ALL
+    // keeps everyone, as before, so nothing changes until they choose.
+    private enum class TypeFilter { ALL, CUSTOMERS, SUPPLIERS }
+    private var typeFilter = TypeFilter.ALL
+
     /** Which stretch of days the list is showing. All of them, until asked. */
     private var dateRange = DateRangeFilter.Range.ALL
     /** Which stretch the ledger PDF was last built for — its own choice, independent of the list's own filter above. */
@@ -239,6 +245,7 @@ class KhataActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
+        findViewById<MaterialButton>(R.id.btnFilterType).setOnClickListener { showTypeDialog() }
 
         // The three summary boxes are the filter. Tapping one shows the
         // people behind that figure; tapping it again puts everyone back. A
@@ -682,18 +689,26 @@ class KhataActivity : AppCompatActivity() {
             SideFilter.SETTLED -> inRange.filter { it.balance == 0.0 }
         }
 
+        // Then customer vs supplier, if one is chosen. Independent of the side
+        // above, so "suppliers I owe" is side=TO_GIVE + type=SUPPLIERS.
+        val byType = when (typeFilter) {
+            TypeFilter.ALL -> bySide
+            TypeFilter.CUSTOMERS -> bySide.filter { it.isCustomer }
+            TypeFilter.SUPPLIERS -> bySide.filter { !it.isCustomer }
+        }
+
         val sorted = if (query.isNotEmpty()) {
             // While searching, the chosen sort steps aside for relevance —
             // by the same rule the contacts screen uses.
-            NameSearch.sort(bySide, query) { it.name }
+            NameSearch.sort(byType, query) { it.name }
         } else when (sortMode) {
-            SortMode.NAME_AZ -> bySide.sortedBy { it.name.lowercase() }
-            SortMode.NAME_ZA -> bySide.sortedByDescending { it.name.lowercase() }
+            SortMode.NAME_AZ -> byType.sortedBy { it.name.lowercase() }
+            SortMode.NAME_ZA -> byType.sortedByDescending { it.name.lowercase() }
             // "Owes me most" means the largest positive balance at the top.
-            SortMode.OWES_MOST -> bySide.sortedByDescending { it.balance }
+            SortMode.OWES_MOST -> byType.sortedByDescending { it.balance }
             // "I owe most" is the mirror: the most negative balance first.
-            SortMode.I_OWE_MOST -> bySide.sortedBy { it.balance }
-            SortMode.RECENT -> bySide.sortedByDescending { it.lastActivity }
+            SortMode.I_OWE_MOST -> byType.sortedBy { it.balance }
+            SortMode.RECENT -> byType.sortedByDescending { it.lastActivity }
         }
 
         shownParties = sorted
@@ -753,6 +768,39 @@ class KhataActivity : AppCompatActivity() {
 
             com.innovation313.roshankhata.ui.PdfShare.present(this@KhataActivity, file)
         }
+    }
+
+    /**
+     * Customer / supplier / all — the second filter axis, kept as its own
+     * simple chooser (the same single-choice pattern as sort) rather than a
+     * heavier sheet. The button's own label shows the current choice so the
+     * owner can see at a glance that a filter is on.
+     */
+    private fun showTypeDialog() {
+        val options = arrayOf(
+            getString(R.string.filter_type_all),
+            getString(R.string.filter_type_customers),
+            getString(R.string.filter_type_suppliers)
+        )
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.filter_type_title)
+            .setSingleChoiceItems(options, typeFilter.ordinal) { dialog, which ->
+                typeFilter = TypeFilter.values()[which]
+                updateTypeButtonLabel()
+                render()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun updateTypeButtonLabel() {
+        val labelRes = when (typeFilter) {
+            TypeFilter.ALL -> R.string.filter_type
+            TypeFilter.CUSTOMERS -> R.string.filter_type_customers
+            TypeFilter.SUPPLIERS -> R.string.filter_type_suppliers
+        }
+        findViewById<MaterialButton>(R.id.btnFilterType).setText(labelRes)
     }
 
     private fun showSortDialog() {

@@ -294,6 +294,11 @@
     <string name="search_parties">نام یا شماره</string>
     <string name="search_entries">یادداشت یا کالا</string>
     <string name="sort">مرتب‌سازی</string>
+    <string name="filter_type">نوع</string>
+    <string name="filter_type_title">کدام نوع نمایش داده شود</string>
+    <string name="filter_type_all">همه</string>
+    <string name="filter_type_customers">مشتریان</string>
+    <string name="filter_type_suppliers">تأمین‌کنندگان</string>
     <string name="sort_by">مرتب‌سازی بر اساس</string>
 
     <string name="sort_name_az">نام (الف\u2013ی)</string>

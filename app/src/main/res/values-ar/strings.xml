@@ -282,6 +282,11 @@
     <string name="search_parties">الاسم أو الرقم</string>
     <string name="search_entries">ملاحظات أو بضاعة</string>
     <string name="sort">ترتيب</string>
+    <string name="filter_type">النوع</string>
+    <string name="filter_type_title">أي نوع تعرض</string>
+    <string name="filter_type_all">الكل</string>
+    <string name="filter_type_customers">العملاء</string>
+    <string name="filter_type_suppliers">الموردون</string>
     <string name="sort_by">ترتيب حسب</string>
 
     <string name="sort_name_az">الاسم (أ\u2013ي)</string>
