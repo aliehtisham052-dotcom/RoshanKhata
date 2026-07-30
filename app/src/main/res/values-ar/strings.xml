@@ -588,13 +588,6 @@
     <string name="restore_from_storage">اختيار ملف من التخزين</string>
     <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
 
-    <string name="report_section_title">تقرير للطباعة</string>
-    <string name="report_not_backup">‏PDF لكامل نشاطك \u2014 الأرصدة والشيكات والخطط والبضاعة المنتهية. للقراءة أو الطباعة أو العرض.\n\nهذا ليس نسخة احتياطية. لا يستطيع روشن كهاتا استعادة سجلاتك من PDF.</string>
-    <string name="make_report">إنشاء تقرير PDF</string>
-    <string name="making_report">جارٍ إنشاء التقرير\u2026</string>
-    <string name="report_failed">تعذر إنشاء التقرير.</string>
-    <string name="share_report_pdf">مشاركة التقرير</string>
-
     <string name="report_problem">الإبلاغ عن مشكلة</string>
     <string name="report_problem_sub">أخبرنا بما حدث</string>
     <string name="report_privacy">أسماء عملائك وأرقامهم وأرصدتهم لا تُرسل أبدًا. يذهب مع البلاغ إصدار التطبيق وطراز هاتفك فقط \u2014 وهذا ما يعيننا على إيجاد الخلل.\n\nيفتح البريد في تطبيقك أنت، فترى ما يُرسل قبل أن يذهب.</string>

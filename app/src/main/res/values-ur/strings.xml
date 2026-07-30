@@ -588,13 +588,6 @@
     <string name="restore_from_storage">اسٹوریج سے فائل چنیں</string>
     <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
 
-    <string name="report_section_title">پرنٹ ہونے والی رپورٹ</string>
-    <string name="report_not_backup">آپ کے پورے کاروبار کی PDF \u2014 بیلنس، چیک، منصوبے، ایکسپائر ہوتا مال۔ پڑھنے، پرنٹ کرنے، یا کسی کو دکھانے کے لیے۔\n\nیہ بیک اپ نہیں ہے۔ روشن کھاتہ PDF سے ریکارڈ بحال نہیں کر سکتا۔</string>
-    <string name="make_report">PDF رپورٹ بنائیں</string>
-    <string name="making_report">رپورٹ بن رہی ہے\u2026</string>
-    <string name="report_failed">رپورٹ نہیں بن سکی۔</string>
-    <string name="share_report_pdf">رپورٹ شیئر کریں</string>
-
     <string name="report_problem">مسئلہ بتائیں</string>
     <string name="report_problem_sub">بتائیں کیا خراب ہوا</string>
     <string name="report_privacy">آپ کے گاہکوں کے نام، نمبر اور بیلنس کبھی نہیں بھیجے جاتے۔ رپورٹ کے ساتھ صرف ایپ ورژن اور فون ماڈل جاتا ہے \u2014 یہی خرابی ڈھونڈنے میں مدد دیتا ہے۔\n\nای میل آپ کی اپنی میل ایپ میں کھلتی ہے، اس لیے بھیجنے سے پہلے آپ دیکھ سکتے ہیں کہ کیا جا رہا ہے۔</string>

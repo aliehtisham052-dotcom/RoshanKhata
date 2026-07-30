@@ -588,13 +588,6 @@
     <string name="restore_from_storage">Storage se file chunein</string>
     <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
 
-    <string name="report_section_title">Print hone wali report</string>
-    <string name="report_not_backup">Aap ke poore karobar ki PDF \u2014 balance, cheque, mansoobay, expire hota maal. Parhne, print karne, ya kisi ko dikhane ke liye.\n\nYe backup NAHI hai. Roshan Khata PDF se record bahal nahi kar sakta.</string>
-    <string name="make_report">PDF Report Banayen</string>
-    <string name="making_report">Report ban rahi hai\u2026</string>
-    <string name="report_failed">Report nahi ban saki.</string>
-    <string name="share_report_pdf">Report share karein</string>
-
     <string name="report_problem">Masla Batayen</string>
     <string name="report_problem_sub">Batayen kya kharab hua</string>
     <string name="report_privacy">Aap ke gahakon ke naam, number aur balance kabhi nahi bheje jate. Report ke saath sirf app version aur phone model jata hai \u2014 yehi kharabi dhoondne mein madad deta hai.\n\nEmail aap ki apni mail app mein khulti hai, is liye bhejne se pehle aap dekh sakte hain ke kya ja raha hai.</string>
