@@ -75,6 +75,7 @@
     <string name="you_will_give">توهان کي ڏيڻو</string>
     <string name="settled">حساب برابر</string>
     <string name="settled_count">%1$d ادا ٿيل</string>
+    <string name="all_settled">سڀ ادا ٿيل</string>
 
     <string name="name">نالو</string>
     <string name="phone_optional">فون (اختياري)</string>
@@ -725,7 +726,6 @@
     </plurals>
     <string name="call">ڪال</string>
     <string name="no_dialer">ڪا ڊائلر ايپ نه ملي</string>
-    <string name="backup_reminder_hint">بيڪ اپ جو وقت ٿي ويو</string>
     <string name="select_all">سڀ چونڊيو</string>
     <string name="clear_all">سڀ هٽايو</string>
     <string name="insights_today">اڄ</string>
