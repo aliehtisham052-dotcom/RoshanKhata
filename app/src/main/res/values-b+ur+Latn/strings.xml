@@ -632,11 +632,14 @@
     <string name="drive_connected_never">%1$s ke tor par jura hai. Abhi koi cloud backup nahi \u2014 "Drive Mein Backup" dabayen.</string>
     <string name="drive_connect">Google Drive Jorein</string>
     <string name="drive_backup_now">Abhi Drive Mein Backup Lein</string>
+    <string name="drive_backup_images">Images bhi shamil karein (photos, bill photos, QR)</string>
     <string name="drive_restore">Drive Se Bahal Karein</string>
     <string name="drive_sign_out">Google account alag karein</string>
     <string name="drive_backing_up">Drive mein backup ho raha hai\u2026</string>
     <string name="drive_backup_done">Aap ki Google Drive mein backup ho gaya.</string>
     <string name="drive_backup_failed">Cloud backup nakaam. Pichla backup, agar tha, mehfooz hai. Internet dekh kar dobara koshish karein.</string>
+    <string name="drive_images_backup_failed">Text backup mehfooz ho gaya, magar images upload nahi ho sakin. Internet dekh kar dobara koshish karein.</string>
+    <string name="drive_images_restore_failed">Aap ka record bahal ho gaya, magar images download nahi ho sakin. Behtar internet par dobara bahal karein.</string>
     <string name="drive_restoring">Drive se bahal ho raha hai\u2026</string>
     <string name="drive_no_backup">Aap ki Google Drive mein abhi koi backup nahi mila.</string>
     <string name="drive_restore_failed">Drive se bahali nahi ho saki. Internet dekh kar dobara koshish karein.</string>

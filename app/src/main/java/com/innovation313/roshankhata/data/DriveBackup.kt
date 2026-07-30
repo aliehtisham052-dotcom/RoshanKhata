@@ -11,6 +11,7 @@ import com.google.api.services.drive.model.File as DriveFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 /**
  * Backup to the user's OWN Google Drive.
@@ -49,7 +50,28 @@ object DriveBackup {
     val SCOPE = DriveScopes.DRIVE_APPDATA
 
     private const val BACKUP_NAME = "RoshanKhata_Backup.txt"
+    // The images archive, kept as its own file beside the text backup so the
+    // routine text backup stays small and an owner who never turns images on
+    // never uploads one. Same single-file, replace-in-place discipline as the
+    // text backup — one archive, always the latest, no dated pile-up.
+    private const val IMAGES_NAME = "RoshanKhata_Images.zip"
     private const val APP_DATA_FOLDER = "appDataFolder"
+
+    // The owner's choice of whether a Drive backup also carries images. OFF by
+    // default and remembered between visits, because images are heavy and the
+    // decision to send customer photos to the cloud is the owner's to make once
+    // and keep — not something to re-ask on every backup.
+    private const val PREFS = "roshan_khata_prefs"
+    private const val KEY_BACKUP_IMAGES = "drive_backup_images"
+
+    fun includeImages(context: Context): Boolean =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getBoolean(KEY_BACKUP_IMAGES, false)
+
+    fun setIncludeImages(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_BACKUP_IMAGES, enabled).apply()
+    }
 
     private fun driveFor(context: Context, accountName: String): Drive {
         val credential = GoogleAccountCredential.usingOAuth2(
@@ -128,6 +150,64 @@ object DriveBackup {
             }
         }
 
+    /**
+     * Upload the image archive as the single images file, replacing any
+     * previous one — the same safe, one-file, replace-in-place discipline as
+     * the text backup: create on first run, update content in place after,
+     * and only ever touch this app's own images file.
+     *
+     * Passing a null or non-existent zip means "nothing to upload" (no images
+     * on the phone), which is reported as a success carrying false so the
+     * caller can tell the owner images were skipped rather than failed.
+     *
+     * @return true if an archive was uploaded, false if there was nothing to
+     *   upload; a failure is a Result.failure with the cause.
+     */
+    suspend fun backupImages(context: Context, accountName: String, zip: File?): Result<Boolean> =
+        withContext(Dispatchers.IO) {
+            if (zip == null || !zip.exists()) return@withContext Result.success(false)
+            try {
+                val drive = driveFor(context, accountName)
+                val existingId = findImagesId(drive)
+
+                val metadata = DriveFile().apply {
+                    name = IMAGES_NAME
+                    if (existingId == null) parents = listOf(APP_DATA_FOLDER)
+                }
+                val content = ByteArrayContent("application/zip", zip.readBytes())
+
+                if (existingId == null) {
+                    drive.files().create(metadata, content).setFields("id").execute()
+                } else {
+                    drive.files().update(existingId, DriveFile(), content).setFields("id").execute()
+                }
+                Result.success(true)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+    /**
+     * Download the image archive's bytes, or null if none exists yet (the owner
+     * never turned images on, or this is an older cloud backup with text only).
+     * A missing images file is not an error — the text restore still stands on
+     * its own.
+     */
+    suspend fun restoreImages(context: Context, accountName: String): Result<ByteArray?> =
+        withContext(Dispatchers.IO) {
+            try {
+                val drive = driveFor(context, accountName)
+                val id = findImagesId(drive)
+                    ?: return@withContext Result.success(null)
+
+                val out = ByteArrayOutputStream()
+                drive.files().get(id).executeMediaAndDownloadTo(out)
+                Result.success(out.toByteArray())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
     /** When was the last cloud backup made? Null if none. */
     suspend fun lastBackupTime(context: Context, accountName: String): Long? =
         withContext(Dispatchers.IO) {
@@ -148,6 +228,16 @@ object DriveBackup {
         val result = drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
             .setQ("name = '$BACKUP_NAME'")
+            .setFields("files(id, modifiedTime)")
+            .execute()
+
+        return result.files?.firstOrNull()?.id
+    }
+
+    private fun findImagesId(drive: Drive): String? {
+        val result = drive.files().list()
+            .setSpaces(APP_DATA_FOLDER)
+            .setQ("name = '$IMAGES_NAME'")
             .setFields("files(id, modifiedTime)")
             .execute()
 

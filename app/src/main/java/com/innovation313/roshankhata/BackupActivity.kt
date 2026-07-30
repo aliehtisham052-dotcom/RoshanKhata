@@ -13,6 +13,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.innovation313.roshankhata.data.Backup
+import com.innovation313.roshankhata.data.BackupImages
 import com.innovation313.roshankhata.data.DriveAuth
 import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.DriveFeature
@@ -83,6 +84,17 @@ class BackupActivity : AppCompatActivity() {
             findViewById<MaterialButton>(R.id.btnDriveBackupNow).setOnClickListener { driveBackup() }
             findViewById<MaterialButton>(R.id.btnDriveRestore).setOnClickListener { confirmDriveRestore() }
             findViewById<MaterialButton>(R.id.btnDriveSignOut).setOnClickListener { driveSignOut() }
+
+            // Include-images toggle: reflect the saved choice, and remember any
+            // change. Plain switch, no warning — the owner asked for exactly a
+            // toggle and nothing more.
+            val imagesSwitch = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(
+                R.id.switchBackupImages
+            )
+            imagesSwitch.isChecked = DriveBackup.includeImages(this)
+            imagesSwitch.setOnCheckedChangeListener { _, checked ->
+                DriveBackup.setIncludeImages(this, checked)
+            }
 
             refreshDriveUi()
         }
@@ -191,7 +203,8 @@ class BackupActivity : AppCompatActivity() {
      */
     private fun handleParseResult(
         result: Backup.ImportResult,
-        data: Backup.ParsedBackup?
+        data: Backup.ParsedBackup?,
+        driveAccount: String? = null
     ) {
         when (result) {
             is Backup.ImportResult.Failed -> {
@@ -204,7 +217,7 @@ class BackupActivity : AppCompatActivity() {
 
             is Backup.ImportResult.Ok -> {
                 if (data == null) return
-                confirmRestore(result, data)
+                confirmRestore(result, data, driveAccount)
             }
         }
     }
@@ -217,7 +230,8 @@ class BackupActivity : AppCompatActivity() {
      */
     private fun confirmRestore(
         counts: Backup.ImportResult.Ok,
-        data: Backup.ParsedBackup
+        data: Backup.ParsedBackup,
+        driveAccount: String? = null
     ) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.restore_warning_title)
@@ -234,16 +248,45 @@ class BackupActivity : AppCompatActivity() {
                 )
             )
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data) }
+            .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data, driveAccount) }
             .show()
     }
 
-    private fun doRestore(data: Backup.ParsedBackup) {
+    private fun doRestore(data: Backup.ParsedBackup, driveAccount: String? = null) {
         Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 Backup.restore(this@BackupActivity, dao, data)
+            }
+
+            // Images, only on the Drive route and only if an archive is there.
+            // This runs AFTER the text restore on purpose: the bill-photo path
+            // re-map reads and rewrites the very entries the text restore just
+            // put back. A file restore (driveAccount == null) never carries
+            // images, by the owner's design, so this is skipped entirely.
+            var imagesFailed = false
+            if (driveAccount != null) {
+                imagesFailed = withContext(Dispatchers.IO) {
+                    val result = DriveBackup.restoreImages(this@BackupActivity, driveAccount)
+                    val bytes = result.getOrNull()
+                    when {
+                        result.isFailure -> true
+                        bytes == null -> false // no image archive — text-only backup, fine
+                        else -> {
+                            BackupImages.restore(this@BackupActivity, dao, bytes)
+                            false
+                        }
+                    }
+                }
+            }
+
+            if (imagesFailed) {
+                Toast.makeText(
+                    this@BackupActivity,
+                    R.string.drive_images_restore_failed,
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
             // A backup preserves EXACTLY what was in the ledger when it was
@@ -432,6 +475,9 @@ class BackupActivity : AppCompatActivity() {
         val backupNow = findViewById<MaterialButton>(R.id.btnDriveBackupNow)
         val restore = findViewById<MaterialButton>(R.id.btnDriveRestore)
         val signOut = findViewById<MaterialButton>(R.id.btnDriveSignOut)
+        val imagesSwitch = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(
+            R.id.switchBackupImages
+        )
 
         if (!connected) {
             status.setText(R.string.drive_not_connected)
@@ -439,6 +485,7 @@ class BackupActivity : AppCompatActivity() {
             backupNow.visibility = android.view.View.GONE
             restore.visibility = android.view.View.GONE
             signOut.visibility = android.view.View.GONE
+            imagesSwitch.visibility = android.view.View.GONE
             return
         }
 
@@ -446,6 +493,7 @@ class BackupActivity : AppCompatActivity() {
         backupNow.visibility = android.view.View.VISIBLE
         restore.visibility = android.view.View.VISIBLE
         signOut.visibility = android.view.View.VISIBLE
+        imagesSwitch.visibility = android.view.View.VISIBLE
 
         // Fetch the last-backup time so the owner knows how current they are.
         lifecycleScope.launch {
@@ -468,12 +516,33 @@ class BackupActivity : AppCompatActivity() {
             val json = withContext(Dispatchers.IO) { Backup.export(this@BackupActivity, dao) }
             val result = DriveBackup.backup(this@BackupActivity, name, json)
 
-            if (result.isSuccess) {
-                Toast.makeText(this@BackupActivity, R.string.drive_backup_done, Toast.LENGTH_LONG).show()
-                refreshDriveUi()
-            } else {
+            if (result.isFailure) {
                 Toast.makeText(this@BackupActivity, R.string.drive_backup_failed, Toast.LENGTH_LONG).show()
+                return@launch
             }
+
+            // Images ride separately, and only when the owner asked for them.
+            // The text backup is already safe on Drive at this point; an image
+            // upload that fails does not undo it, so it is reported on its own
+            // rather than turning the whole backup red.
+            if (DriveBackup.includeImages(this@BackupActivity)) {
+                val imageResult = withContext(Dispatchers.IO) {
+                    val zip = BackupImages.pack(this@BackupActivity)
+                    DriveBackup.backupImages(this@BackupActivity, name, zip)
+                }
+                if (imageResult.isFailure) {
+                    Toast.makeText(
+                        this@BackupActivity,
+                        R.string.drive_images_backup_failed,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    refreshDriveUi()
+                    return@launch
+                }
+            }
+
+            Toast.makeText(this@BackupActivity, R.string.drive_backup_done, Toast.LENGTH_LONG).show()
+            refreshDriveUi()
         }
     }
 
@@ -510,7 +579,7 @@ class BackupActivity : AppCompatActivity() {
             val (result, data) = withContext(Dispatchers.IO) {
                 Backup.parseText(text)
             }
-            handleParseResult(result, data)
+            handleParseResult(result, data, driveAccount = name)
         }
     }
 

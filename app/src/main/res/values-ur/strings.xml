@@ -632,11 +632,14 @@
     <string name="drive_connected_never">%1$s کے طور پر جڑا ہے۔ ابھی کوئی کلاؤڈ بیک اپ نہیں \u2014 ”ڈرائیو میں بیک اپ“ دبائیں۔</string>
     <string name="drive_connect">گوگل ڈرائیو جوڑیں</string>
     <string name="drive_backup_now">ابھی ڈرائیو میں بیک اپ لیں</string>
+    <string name="drive_backup_images">تصاویر بھی شامل کریں (فوٹوز، بل کی فوٹوز، QR)</string>
     <string name="drive_restore">ڈرائیو سے بحال کریں</string>
     <string name="drive_sign_out">گوگل اکاؤنٹ الگ کریں</string>
     <string name="drive_backing_up">ڈرائیو میں بیک اپ ہو رہا ہے\u2026</string>
     <string name="drive_backup_done">آپ کی گوگل ڈرائیو میں بیک اپ ہو گیا۔</string>
     <string name="drive_backup_failed">کلاؤڈ بیک اپ ناکام۔ پچھلا بیک اپ، اگر تھا، محفوظ ہے۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔</string>
+    <string name="drive_images_backup_failed">ٹیکسٹ بیک اپ محفوظ ہو گیا، مگر تصاویر اپ لوڈ نہ ہو سکیں۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔</string>
+    <string name="drive_images_restore_failed">آپ کا ریکارڈ بحال ہو گیا، مگر تصاویر ڈاؤن لوڈ نہ ہو سکیں۔ بہتر انٹرنیٹ پر دوبارہ بحال کریں۔</string>
     <string name="drive_restoring">ڈرائیو سے بحال ہو رہا ہے\u2026</string>
     <string name="drive_no_backup">آپ کی گوگل ڈرائیو میں ابھی کوئی بیک اپ نہیں ملا۔</string>
     <string name="drive_restore_failed">ڈرائیو سے بحالی نہیں ہو سکی۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔</string>
