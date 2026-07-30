@@ -556,7 +556,6 @@
     <string name="adjust_crop_use">یہی رکھیں</string>
     <string name="crop_load_failed">وہ تصویر نہیں کھل سکی۔</string>
     <string name="crop_save_failed">کراپ محفوظ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</string>
-    <string name="invoice_edit_shop_details">دکان کا نام، مہر، QR اور شرائط ترمیم کریں</string>
     <string name="invoice_more_options">مزید اختیارات (اختیاری)</string>
     <string name="invoice_settings_title">انوائس کی سیٹنگز</string>
     <string name="invoice_settings_subtitle">جو چیز یہ دکان کبھی استعمال نہیں کرتی اسے بند کر دیں — ہر نئی انوائس کے لیے بند رہے گی۔</string>

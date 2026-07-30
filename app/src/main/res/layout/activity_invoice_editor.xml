@@ -212,20 +212,6 @@
                     android:textColor="@color/text_muted"
                     android:textSize="12sp" />
 
-                <!--
-                  Shop name, address, stamp, payment QR, bank details, and
-                  the standing Terms & Conditions all print on the invoice
-                  from here — the owner asked where to set them, since
-                  nothing on this screen itself pointed there.
-                -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnShopDetails"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="46dp"
-                    android:layout_marginTop="14dp"
-                    android:text="@string/invoice_edit_shop_details"
-                    app:cornerRadius="8dp" />
             </LinearLayout>
         </FrameLayout>
     </ScrollView>
