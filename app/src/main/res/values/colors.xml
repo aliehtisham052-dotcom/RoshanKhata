@@ -194,6 +194,8 @@
     -->
     <color name="summary_get_bg">#FBEAE6</color>
     <color name="summary_give_bg">#D3EADD</color>
+    <!-- Neutral card for the "settled" count — its own light background, same pattern as get/give, not the dark header's own text colour repurposed for a light card. -->
+    <color name="summary_settled_bg">#E6E3D9</color>
 
     <!-- Behind the launcher icon, matching the cream inside the logo's rim. -->
     <color name="icon_background">#F7F3EA</color>

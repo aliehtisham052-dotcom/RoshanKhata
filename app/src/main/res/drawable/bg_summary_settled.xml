@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Neutral card for the "settled" (zero-balance) count -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/summary_settled_bg" />
+    <corners android:radius="12dp" />
+</shape>

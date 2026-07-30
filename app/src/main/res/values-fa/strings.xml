@@ -55,6 +55,10 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">مانده خالص</string>
+    <string name="ledger_pdf_button">PDF</string>
+    <string name="ledger_pdf_title">گزارش دفتر کل PDF</string>
+    <string name="ledger_report_generating">گزارش دفتر کل در حال ساخت است…</string>
+    <string name="ledger_report_failed">گزارش ساخته نشد.</string>
     <string name="add_party">افزودن طرف‌حساب</string>
     <string name="no_parties_yet">هنوز مشتری‌ای ثبت نشده است.\n\nبرای افزودن نخستین مشتری و آغاز دفتر خود، روی «افزودن طرف‌حساب» در پایین بزنید.</string>
     <string name="no_entries_yet">هنوز ثبتی وجود ندارد.</string>

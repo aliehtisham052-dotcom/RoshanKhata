@@ -59,6 +59,10 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Net balance</string>
+    <string name="ledger_pdf_button">PDF</string>
+    <string name="ledger_pdf_title">Ledger report PDF</string>
+    <string name="ledger_report_generating">Building the ledger report…</string>
+    <string name="ledger_report_failed">Could not build the report.</string>
     <string name="add_party">Add Party</string>
     <string name="no_parties_yet">No customers yet.\n\nTap “Add Party” below to add your first customer and start your khata.</string>
     <string name="no_entries_yet">No entries yet.</string>

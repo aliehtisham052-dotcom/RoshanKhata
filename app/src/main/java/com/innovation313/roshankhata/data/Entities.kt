@@ -142,6 +142,22 @@ data class LedgerEntry(
     val deletedAt: Long? = null
 )
 
+/**
+ * One ledger entry with its customer's name attached — for the whole-ledger
+ * report, which crosses every party at once rather than living inside one
+ * party's own screen the way [LedgerEntry] normally does.
+ */
+data class EntryWithParty(
+    val id: Long,
+    val partyId: Long,
+    val partyName: String,
+    val amount: Double,
+    val isGiven: Boolean,
+    val note: String?,
+    val entryNumber: String,
+    val timestamp: Long
+)
+
 /** Party plus its computed outstanding balance, for list display. */
 data class PartyWithBalance(
     val id: Long,

@@ -55,6 +55,10 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">الرصيد الصافي</string>
+    <string name="ledger_pdf_button">PDF</string>
+    <string name="ledger_pdf_title">تقرير دفتر الأستاذ PDF</string>
+    <string name="ledger_report_generating">جارٍ إنشاء تقرير دفتر الأستاذ…</string>
+    <string name="ledger_report_failed">تعذّر إنشاء التقرير.</string>
     <string name="add_party">إضافة طرف</string>
     <string name="no_parties_yet">لا عملاء بعد.\n\nاضغط «إضافة طرف» بالأسفل لإضافة أول عميل وبدء دفترك.</string>
     <string name="no_entries_yet">لا قيود بعد.</string>

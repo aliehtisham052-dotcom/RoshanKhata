@@ -21,25 +21,62 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <!--
-          One tagline, not two. The brand line beneath it was carrying the same
-          words, so the phrase printed twice. It now says the brand.
-        -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:text="@string/app_tagline"
-            android:textColor="@color/header_on_dark"
-            android:textSize="12sp" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <!--
+                  One tagline, not two. The brand line beneath it was carrying the same
+                  words, so the phrase printed twice. It now says the brand.
+                -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/app_tagline"
+                    android:textColor="@color/header_on_dark"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!--
+              Above the ledger, not buried in a menu — the owner asked for this
+              placement specifically. Asks which stretch of days first (the
+              same DateRangeFilter the ALL button already uses below), then
+              builds and shares one PDF of every entry across every customer
+              in that window. Distinct from Backup's own "Business Report",
+              which is a today-only balance snapshot with no entries and no
+              date choice at all.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLedgerPdf"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/ledger_pdf_button"
+                android:textColor="@color/gold_on_dark"
+                android:textSize="12sp"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/gold_on_dark" />
+        </LinearLayout>
 
         <!--
           The net balance: its label and its figure share one line now. Two
@@ -87,31 +124,35 @@
         </LinearLayout>
 
         <!--
-          Two boxes below the net figure, the way a shopkeeper actually thinks:
-          one total for everything owed TO them (money to collect, red), one for
-          everything they owe OUT (green). The net line above is the single
-          summary; these two break it into the parts the owner chases and pays.
+          Three boxes below the net figure, the way a shopkeeper actually
+          thinks: one total for everything owed TO them (money to collect,
+          red), one for everything they owe OUT (green), and — the owner
+          asked for this third one specifically — a count of accounts sitting
+          at exactly zero, which the other two boxes have never been able to
+          show since a settled account is neither owed nor owing. The net
+          line above is the single summary; these three break it into the
+          groups the owner actually filters by.
         -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="horizontal"
-            android:weightSum="2">
+            android:weightSum="3">
 
             <LinearLayout
                 android:id="@+id/boxTotalGet"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="5dp"
                 android:background="@drawable/bg_summary_get"
                 android:clickable="true"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:paddingStart="12dp"
+                android:paddingStart="10dp"
                 android:paddingTop="8dp"
-                android:paddingEnd="12dp"
+                android:paddingEnd="10dp"
                 android:paddingBottom="8dp">
 
                 <TextView
@@ -119,7 +160,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/bal_owed_to_me"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     tools:text="Rs 7,520" />
 
@@ -129,7 +170,7 @@
                     android:layout_marginTop="2dp"
                     android:text="@string/i_have_to_get"
                     android:textColor="@color/bal_owed_to_me"
-                    android:textSize="12sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -137,14 +178,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
                 android:background="@drawable/bg_summary_give"
                 android:clickable="true"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:paddingStart="12dp"
+                android:paddingStart="10dp"
                 android:paddingTop="8dp"
-                android:paddingEnd="12dp"
+                android:paddingEnd="10dp"
                 android:paddingBottom="8dp">
 
                 <TextView
@@ -152,7 +194,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/bal_i_owe"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     tools:text="Rs 167,665" />
 
@@ -162,7 +204,40 @@
                     android:layout_marginTop="2dp"
                     android:text="@string/i_have_to_give"
                     android:textColor="@color/bal_i_owe"
-                    android:textSize="12sp" />
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/boxSettled"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/bg_summary_settled"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:paddingStart="10dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvTotalSettled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/ink"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="12" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/settled"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>
 
