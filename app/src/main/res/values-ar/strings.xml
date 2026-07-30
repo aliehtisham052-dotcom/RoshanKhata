@@ -373,7 +373,7 @@
     <string name="save_backup">حفظ النسخة</string>
 
     <string name="restore_warning_title">استبدال كل شيء؟</string>
-    <string name="restore_warning_message">الاستعادة ستستبدل كل ما في روشن كهاتا بما في هذا الملف:\n\n%1$d عملاء/مورّدون\n%2$d قيود دفتر\n%3$d شيكات\n%4$d قيود نقد\n%5$d خطط سداد\n%6$d فواتير مورّدين\n\nكل ما على هذا الهاتف الآن سيزول. إن كانت لديك قيود هنا ليست في النسخة، فخذ نسخة من هذا أولًا.\n\nلا يمكن التراجع.</string>
+    <string name="restore_warning_message">الاستعادة ستستبدل كل ما في روشن كهاتا بما في هذا الملف:\n\n%1$d عملاء/مورّدون\n%2$d قيود دفتر\n%3$d شيكات\n%4$d قيود نقد\n%5$d خطط سداد\n%6$d فواتير مورّدين\n%7$d فواتير بيع\n\nكل ما على هذا الهاتف الآن سيزول. إن كانت لديك قيود هنا ليست في النسخة، فخذ نسخة من هذا أولًا.\n\nلا يمكن التراجع.</string>
     <string name="restore_replace">استبدال كل شيء</string>
     <string name="restore_done">تمت الاستعادة</string>
     <string name="restore_failed">فشلت الاستعادة: %1$s</string>

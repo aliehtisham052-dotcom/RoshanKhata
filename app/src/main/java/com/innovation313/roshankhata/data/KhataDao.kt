@@ -551,6 +551,31 @@ interface KhataDao {
 
     // ---------- Invoices ----------
 
+    // Backup reads EVERY row, soft-deleted included — the same rule the rest of
+    // the app's backup follows: the Recycle Bin is the owner's data too, and a
+    // backup that quietly dropped it would throw away something recoverable.
+    @Query("SELECT * FROM invoices")
+    suspend fun allInvoicesForBackup(): List<Invoice>
+
+    @Query("SELECT * FROM invoice_items")
+    suspend fun allInvoiceItemsForBackup(): List<InvoiceItem>
+
+    // Restore wipes and rewrites. invoice_items has an onDelete=CASCADE foreign
+    // key on invoiceId, so the WIPE must take items first (or the cascade fires
+    // mid-wipe) and the RESTORE must take invoices first (or an item is inserted
+    // pointing at a parent that is not there yet). restoreAll() sequences both.
+    @Query("DELETE FROM invoice_items")
+    suspend fun wipeInvoiceItems()
+
+    @Query("DELETE FROM invoices")
+    suspend fun wipeInvoices()
+
+    @Insert
+    suspend fun restoreInvoices(items: List<Invoice>)
+
+    @Insert
+    suspend fun restoreInvoiceItems(items: List<InvoiceItem>)
+
     @Insert
     suspend fun insertInvoice(invoice: Invoice): Long
 
@@ -1130,8 +1155,18 @@ interface KhataDao {
         installments: List<Installment>,
         bills: List<SupplierBill>,
         billItems: List<BillItem>,
-        products: List<Product> = emptyList()
+        products: List<Product> = emptyList(),
+        // Default empty so any older caller/test that does not pass invoices
+        // still compiles and simply restores none — invoices are additive to
+        // this signature, not a new requirement on every call site.
+        invoices: List<Invoice> = emptyList(),
+        invoiceItems: List<InvoiceItem> = emptyList()
     ) {
+        // Children before parents on the way out. invoice_items cascades off
+        // invoices, so items are wiped first; wiping invoices first would fire
+        // the cascade and delete the items mid-step for no gain.
+        wipeInvoiceItems()
+        wipeInvoices()
         wipeBillItems()
         wipeBills()
         wipeInstallments()
@@ -1151,6 +1186,10 @@ interface KhataDao {
         restoreInstallments(installments)
         restoreBills(bills)
         restoreBillItems(billItems)
+        // Parents before children on the way back in — an invoice_item's FK
+        // needs its invoice to already exist.
+        restoreInvoices(invoices)
+        restoreInvoiceItems(invoiceItems)
     }
 
 

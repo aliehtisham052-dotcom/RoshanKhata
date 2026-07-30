@@ -28,15 +28,17 @@ import java.util.Locale
 object Backup {
 
     /**
-     * Raised to 4 when products arrived.
+     * Raised to 4 when products arrived, and to 5 when invoices and the
+     * Business Profile text joined the file.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
-     * imported without its products. Silently dropping a table the old code
+     * imported without its invoices. Silently dropping a table the old code
      * cannot hold would look like a successful restore and lose data.
-     * Reading OLD files is unaffected — every array is read optionally.
+     * Reading OLD files is unaffected — every array is read optionally, so a
+     * version-4 file (no invoices, no businessProfile) still restores cleanly.
      */
-    const val FORMAT_VERSION = 4
+    const val FORMAT_VERSION = 5
 
     private val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
@@ -57,7 +59,12 @@ object Backup {
 
     // ---------- Export ----------
 
-    suspend fun export(dao: KhataDao): String {
+    // Takes Context now, because the Business Profile (shop name, bank details,
+    // STRN, terms) lives in SharedPreferences, not in Room — so it cannot be
+    // read through the DAO like every other table. Its images (QR, signature,
+    // stamp) are deliberately NOT here: those are the separate opt-in image
+    // backup, kept out of the routine text file so it stays small.
+    suspend fun export(context: Context, dao: KhataDao): String {
         val root = JSONObject()
         root.put("format", "RoshanKhata")
         root.put("version", FORMAT_VERSION)
@@ -93,6 +100,20 @@ object Backup {
         root.put("products", JSONArray().apply {
             dao.allProductsForBackup().forEach { put(productToJson(it)) }
         })
+        root.put("invoices", JSONArray().apply {
+            dao.allInvoicesForBackup().forEach { put(invoiceToJson(it)) }
+        })
+        root.put("invoiceItems", JSONArray().apply {
+            dao.allInvoiceItemsForBackup().forEach { put(invoiceItemToJson(it)) }
+        })
+
+        // The Business Profile — TEXT ONLY. The three image flags
+        // (QR/signature/stamp saved) are deliberately excluded: restoring a
+        // "QR is saved = true" onto a phone whose image file does not exist
+        // (because the image backup is the separate opt-in that has not run)
+        // would make a statement claim a QR it cannot draw. Those flags come
+        // back with the images, in Part B, or they stay false and honest.
+        root.put("businessProfile", businessProfileToJson(context))
 
         return root.toString(2)
     }
@@ -228,7 +249,8 @@ object Backup {
             val cheques: Int,
             val cash: Int,
             val plans: Int = 0,
-            val bills: Int = 0
+            val bills: Int = 0,
+            val invoices: Int = 0
         ) : ImportResult()
 
         data class Failed(val reason: String) : ImportResult()
@@ -318,6 +340,23 @@ object Backup {
                 (0 until arr.length()).map { jsonToProduct(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Absent in a version-4-or-older backup. Not an error — an old file
+            // is still a valid file, and rejecting it would strand anyone who
+            // backed up before invoices joined the format.
+            val invoices = root.optJSONArray("invoices")?.let { arr ->
+                (0 until arr.length()).map { jsonToInvoice(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
+            val invoiceItems = root.optJSONArray("invoiceItems")?.let { arr ->
+                (0 until arr.length()).map { jsonToInvoiceItem(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
+            // Business Profile is a single optional object, not an array. Null
+            // in an older file, or in one written before the owner set any
+            // details — either way there is simply nothing to restore.
+            val businessProfile = root.optJSONObject("businessProfile")
+                ?.let { jsonToBusinessProfile(it) }
+
             // An entry pointing at a party that is not in the file would be
             // orphaned on insert — better to refuse than to import a ledger
             // with holes in it.
@@ -330,6 +369,12 @@ object Backup {
             // rather than discovered months later by a stock count.
             val productIds = products.map { it.id }.toSet()
             val billItemIds = billItems.map { it.id }.toSet()
+            // An invoice line whose invoice is missing would be orphaned on
+            // insert — and its FK is onDelete=CASCADE, so a stray line points at
+            // a parent that will never exist. Refused here, the same as a bill
+            // item with no bill. Invoices themselves have no parent (customerName
+            // is a copied string, never a party link), so they need no check.
+            val invoiceIds = invoices.map { it.id }.toSet()
             val orphans = entries.count { it.productId != null && it.productId !in productIds } +
                 entries.count { it.billItemId != null && it.billItemId !in billItemIds } +
                 billItems.count { it.productId != null && it.productId !in productIds } +
@@ -338,7 +383,8 @@ object Backup {
                 plans.count { it.partyId !in partyIds } +
                 installments.count { it.planId !in planIds } +
                 bills.count { it.partyId !in partyIds } +
-                billItems.count { it.billId !in billIds }
+                billItems.count { it.billId !in billIds } +
+                invoiceItems.count { it.invoiceId !in invoiceIds }
 
             if (orphans > 0) {
                 return ImportResult.Failed(
@@ -353,8 +399,12 @@ object Backup {
                 cheques = cheques.size,
                 cash = cash.size,
                 plans = plans.size,
-                bills = bills.size
-            ) to ParsedBackup(parties, entries, cheques, cash, plans, installments, bills, billItems, products)
+                bills = bills.size,
+                invoices = invoices.size
+            ) to ParsedBackup(
+                parties, entries, cheques, cash, plans, installments,
+                bills, billItems, products, invoices, invoiceItems, businessProfile
+            )
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
         }
@@ -369,11 +419,44 @@ object Backup {
         val installments: List<Installment> = emptyList(),
         val bills: List<SupplierBill> = emptyList(),
         val billItems: List<BillItem> = emptyList(),
-        val products: List<Product> = emptyList()
+        val products: List<Product> = emptyList(),
+        val invoices: List<Invoice> = emptyList(),
+        val invoiceItems: List<InvoiceItem> = emptyList(),
+        // Null when the file had no Business Profile at all (old file, or one
+        // taken before the owner filled anything in). A present-but-empty
+        // profile and an absent one are treated the same on restore: nothing
+        // to write.
+        val businessProfile: BusinessProfileData? = null
     )
 
-    /** Replaces everything. Only called after the user has confirmed. */
-    suspend fun restore(dao: KhataDao, data: ParsedBackup) {
+    /**
+     * The Business Profile's TEXT fields, carried through a backup. Deliberately
+     * no image flags and no image bytes — see the export note and Part B.
+     */
+    data class BusinessProfileData(
+        val businessName: String?,
+        val businessAddress: String?,
+        val bankName: String?,
+        val bankAccountTitle: String?,
+        val bankIban: String?,
+        val bankJazzCash: String?,
+        val termsAndConditions: String?,
+        val strn: String?,
+        val photoOnStatement: Boolean
+    )
+
+    /**
+     * Replaces everything. Only called after the user has confirmed.
+     *
+     * Takes Context now for the Business Profile, which lives in
+     * SharedPreferences and so cannot ride inside the Room transaction. The
+     * ledger is restored first, atomically; the profile is written after, and
+     * only when the file actually carried one. If a file has no profile (an
+     * old backup, or one taken before the owner set any details), the current
+     * profile is LEFT ALONE rather than blanked — restoring "nothing" over a
+     * shop's real name would be a silent loss, not a restore.
+     */
+    suspend fun restore(context: Context, dao: KhataDao, data: ParsedBackup) {
         // One transaction, all-or-nothing. If any step fails, the whole thing
         // rolls back and the existing ledger is left untouched — rather than the
         // old behaviour, where a failure partway through wiped data and restored
@@ -387,8 +470,12 @@ object Backup {
             installments = data.installments,
             bills = data.bills,
             billItems = data.billItems,
-            products = data.products
+            products = data.products,
+            invoices = data.invoices,
+            invoiceItems = data.invoiceItems
         )
+
+        data.businessProfile?.let { restoreBusinessProfile(context, it) }
     }
 
     // ---------- Mapping ----------
@@ -657,6 +744,107 @@ object Backup {
             isDeleted = o.optBoolean("isDeleted", false),
             deletedAt = o.optNullableLong("deletedAt")
         )
+    }
+
+    private fun invoiceToJson(i: Invoice) = JSONObject().apply {
+        put("id", i.id)
+        put("invoiceNumber", i.invoiceNumber)
+        put("customerName", i.customerName)
+        put("customerPhone", i.customerPhone ?: JSONObject.NULL)
+        put("invoiceDate", i.invoiceDate)
+        put("dueDate", i.dueDate ?: JSONObject.NULL)
+        put("taxPercent", i.taxPercent ?: JSONObject.NULL)
+        put("discountPercent", i.discountPercent ?: JSONObject.NULL)
+        put("additionalChargeLabel", i.additionalChargeLabel ?: JSONObject.NULL)
+        put("additionalChargeAmount", i.additionalChargeAmount ?: JSONObject.NULL)
+        put("receivedAmount", i.receivedAmount ?: JSONObject.NULL)
+        put("note", i.note ?: JSONObject.NULL)
+        put("templateId", i.templateId)
+        put("createdAt", i.createdAt)
+        put("isDeleted", i.isDeleted)
+        put("deletedAt", i.deletedAt ?: JSONObject.NULL)
+    }
+
+    private fun jsonToInvoice(o: JSONObject) = Invoice(
+        id = o.getLong("id"),
+        invoiceNumber = o.optString("invoiceNumber", ""),
+        customerName = o.optString("customerName", ""),
+        customerPhone = o.optNullableString("customerPhone"),
+        invoiceDate = o.optLong("invoiceDate", System.currentTimeMillis()),
+        dueDate = o.optNullableLong("dueDate"),
+        taxPercent = o.optNullableDouble("taxPercent"),
+        discountPercent = o.optNullableDouble("discountPercent"),
+        additionalChargeLabel = o.optNullableString("additionalChargeLabel"),
+        additionalChargeAmount = o.optNullableDouble("additionalChargeAmount"),
+        receivedAmount = o.optNullableDouble("receivedAmount"),
+        note = o.optNullableString("note"),
+        templateId = o.optInt("templateId", 1),
+        createdAt = o.optLong("createdAt", System.currentTimeMillis()),
+        isDeleted = o.optBoolean("isDeleted", false),
+        deletedAt = o.optNullableLong("deletedAt")
+    )
+
+    private fun invoiceItemToJson(i: InvoiceItem) = JSONObject().apply {
+        put("id", i.id)
+        put("invoiceId", i.invoiceId)
+        put("itemName", i.itemName)
+        put("quantity", i.quantity)
+        put("unit", i.unit ?: JSONObject.NULL)
+        put("rate", i.rate)
+        put("isDeleted", i.isDeleted)
+    }
+
+    private fun jsonToInvoiceItem(o: JSONObject) = InvoiceItem(
+        id = o.getLong("id"),
+        invoiceId = o.getLong("invoiceId"),
+        itemName = o.optString("itemName", ""),
+        quantity = o.optDouble("quantity", 0.0),
+        unit = o.optNullableString("unit"),
+        rate = o.optDouble("rate", 0.0),
+        isDeleted = o.optBoolean("isDeleted", false)
+    )
+
+    // ---------- Business Profile (SharedPreferences, not Room) ----------
+
+    private fun businessProfileToJson(context: Context) = JSONObject().apply {
+        put("businessName", BusinessProfile.businessName(context) ?: JSONObject.NULL)
+        put("businessAddress", BusinessProfile.businessAddress(context) ?: JSONObject.NULL)
+        put("bankName", BusinessProfile.bankName(context) ?: JSONObject.NULL)
+        put("bankAccountTitle", BusinessProfile.bankAccountTitle(context) ?: JSONObject.NULL)
+        put("bankIban", BusinessProfile.bankIban(context) ?: JSONObject.NULL)
+        put("bankJazzCash", BusinessProfile.bankJazzCash(context) ?: JSONObject.NULL)
+        put("termsAndConditions", BusinessProfile.termsAndConditions(context) ?: JSONObject.NULL)
+        put("strn", BusinessProfile.strn(context) ?: JSONObject.NULL)
+        put("photoOnStatement", BusinessProfile.photoOnStatement(context))
+    }
+
+    private fun jsonToBusinessProfile(o: JSONObject) = BusinessProfileData(
+        businessName = o.optNullableString("businessName"),
+        businessAddress = o.optNullableString("businessAddress"),
+        bankName = o.optNullableString("bankName"),
+        bankAccountTitle = o.optNullableString("bankAccountTitle"),
+        bankIban = o.optNullableString("bankIban"),
+        bankJazzCash = o.optNullableString("bankJazzCash"),
+        termsAndConditions = o.optNullableString("termsAndConditions"),
+        strn = o.optNullableString("strn"),
+        photoOnStatement = o.optBoolean("photoOnStatement", false)
+    )
+
+    // Written through the existing setters so trimming/normalisation stays in
+    // one place. Only the text fields — never the image flags. A null field is
+    // passed straight to its setter, which stores an empty string (its own
+    // "unset"); this is a full REPLACE of the text profile, matching how the
+    // ledger restore replaces rather than merges.
+    private fun restoreBusinessProfile(context: Context, p: BusinessProfileData) {
+        BusinessProfile.setBusinessName(context, p.businessName)
+        BusinessProfile.setBusinessAddress(context, p.businessAddress)
+        BusinessProfile.setBankName(context, p.bankName)
+        BusinessProfile.setBankAccountTitle(context, p.bankAccountTitle)
+        BusinessProfile.setBankIban(context, p.bankIban)
+        BusinessProfile.setBankJazzCash(context, p.bankJazzCash)
+        BusinessProfile.setTermsAndConditions(context, p.termsAndConditions)
+        BusinessProfile.setStrn(context, p.strn)
+        BusinessProfile.setPhotoOnStatement(context, p.photoOnStatement)
     }
 
     private fun JSONObject.optNullableString(key: String): String? =

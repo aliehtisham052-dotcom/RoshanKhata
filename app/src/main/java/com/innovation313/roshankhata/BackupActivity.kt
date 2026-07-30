@@ -111,7 +111,7 @@ class BackupActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
-                val json = Backup.export(dao)
+                val json = Backup.export(this@BackupActivity, dao)
 
                 val downloadPath = Backup.saveToDownloads(this@BackupActivity, json)
                 Backup.writeInternalCopy(this@BackupActivity, json)
@@ -229,7 +229,8 @@ class BackupActivity : AppCompatActivity() {
                     counts.cheques,
                     counts.cash,
                     counts.plans,
-                    counts.bills
+                    counts.bills,
+                    counts.invoices
                 )
             )
             .setNegativeButton(R.string.cancel, null)
@@ -242,7 +243,7 @@ class BackupActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                Backup.restore(dao, data)
+                Backup.restore(this@BackupActivity, dao, data)
             }
 
             // A backup preserves EXACTLY what was in the ledger when it was
@@ -464,7 +465,7 @@ class BackupActivity : AppCompatActivity() {
         Toast.makeText(this, R.string.drive_backing_up, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
-            val json = withContext(Dispatchers.IO) { Backup.export(dao) }
+            val json = withContext(Dispatchers.IO) { Backup.export(this@BackupActivity, dao) }
             val result = DriveBackup.backup(this@BackupActivity, name, json)
 
             if (result.isSuccess) {
