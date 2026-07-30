@@ -703,6 +703,7 @@
     <string name="no_dialer">لا تطبيق اتصال</string>
     <string name="backup_reminder_hint">حان وقت النسخ الاحتياطي</string>
     <string name="select_all">تحديد الكل</string>
+    <string name="show_already_added">إظهار المُضاف مسبقًا</string>
     <string name="clear_all">إلغاء الكل</string>
     <string name="insights_today">اليوم</string>
     <string name="insights_today_received">المقبوض</string>

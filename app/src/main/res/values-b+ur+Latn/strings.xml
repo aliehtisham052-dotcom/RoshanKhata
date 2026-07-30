@@ -699,6 +699,7 @@
     <string name="no_dialer">Koi dialer nahi mila</string>
     <string name="backup_reminder_hint">Backup ka waqt ho gaya</string>
     <string name="select_all">Sab Chunein</string>
+    <string name="show_already_added">Pehle se shamil dikhayein</string>
     <string name="clear_all">Sab Hatayen</string>
     <string name="insights_today">Aaj</string>
     <string name="insights_today_received">Wasool hue</string>
