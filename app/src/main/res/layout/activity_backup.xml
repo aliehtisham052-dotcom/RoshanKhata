@@ -103,6 +103,27 @@
                 app:cornerRadius="10dp" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchAutoBackup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/drive_auto_backup"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:visibility="gone"
+                android:checked="false" />
+
+            <TextView
+                android:id="@+id/tvAutoBackupHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/drive_auto_backup_hint"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchBackupImages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -102,6 +102,14 @@ interface KhataDao {
     @Query("SELECT COUNT(*) FROM transactions")
     suspend fun totalEntryCount(): Int
 
+    /**
+     * The timestamp of the most recent transaction, or 0 if there are none.
+     * Used only by automatic backup to tell whether anything has changed since
+     * the last upload — paired with the entry count as a cheap fingerprint.
+     */
+    @Query("SELECT COALESCE(MAX(timestamp), 0) FROM transactions")
+    suspend fun lastEntryActivity(): Long
+
     // ---------- Recycle Bin: soft delete ----------
 
     /** Party goes to the bin. Its entries go with it, so a restore brings back the whole ledger intact. */

@@ -63,6 +63,8 @@ object DriveBackup {
     // and keep — not something to re-ask on every backup.
     private const val PREFS = "roshan_khata_prefs"
     private const val KEY_BACKUP_IMAGES = "drive_backup_images"
+    private const val KEY_AUTO_BACKUP = "drive_auto_backup"
+    private const val KEY_LAST_SIG = "drive_last_backup_signature"
 
     fun includeImages(context: Context): Boolean =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -71,6 +73,43 @@ object DriveBackup {
     fun setIncludeImages(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .edit().putBoolean(KEY_BACKUP_IMAGES, enabled).apply()
+    }
+
+    /**
+     * Whether automatic daily backup is on. OFF by default — an automatic upload
+     * of the owner's books to the cloud is a decision they make deliberately,
+     * not one taken on their behalf. Once on, the daily worker backs up on its
+     * own when a backup is genuinely due.
+     */
+    fun autoBackup(context: Context): Boolean =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getBoolean(KEY_AUTO_BACKUP, false)
+
+    fun setAutoBackup(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_AUTO_BACKUP, enabled).apply()
+    }
+
+    /**
+     * A cheap fingerprint of the ledger's current state — how many entries
+     * exist and when the most recent one is dated. If this is unchanged since
+     * the last successful backup, nothing worth re-uploading has happened, so
+     * the automatic backup skips the trip. It is not a perfect change detector
+     * (two edits that cancel out could match), but it is honest about the
+     * common cases — a new entry, a deletion, a later transaction — and costs
+     * nothing. The manual "Back up now" button ignores this entirely and always
+     * uploads.
+     */
+    private fun currentSignature(count: Int, lastActivity: Long): String =
+        "$count:$lastActivity"
+
+    private fun lastSignature(context: Context): String? =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getString(KEY_LAST_SIG, null)
+
+    private fun rememberSignature(context: Context, signature: String) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit().putString(KEY_LAST_SIG, signature).apply()
     }
 
     private fun driveFor(context: Context, accountName: String): Drive {
@@ -133,6 +172,80 @@ object DriveBackup {
                 Result.failure(e)
             }
         }
+
+    /**
+     * The result of an automatic backup attempt, so the daily worker knows
+     * whether to stay silent, notify a failure, or retry later.
+     */
+    sealed class AutoResult {
+        /** Nothing to do — not enabled, not connected, not due, or unchanged. */
+        object Skipped : AutoResult()
+        /** A backup was uploaded just now. */
+        object BackedUp : AutoResult()
+        /** A backup was due but failed — the worker should notify and retry. */
+        data class Failed(val cause: Throwable?) : AutoResult()
+    }
+
+    /**
+     * The heart of automatic backup: decide whether a backup is due, and if so,
+     * take it — all on a background thread, called once a day by the worker.
+     *
+     * A backup is taken only when EVERY condition holds:
+     *   - automatic backup is switched on,
+     *   - Drive is connected (an account is remembered),
+     *   - there is data worth protecting,
+     *   - at least [minIntervalMs] has passed since the last backup, AND
+     *   - the ledger's fingerprint has changed since the last backup.
+     *
+     * The interval + fingerprint pair is what stops a flapping connection from
+     * causing repeat uploads: the worker runs at most daily, and even when it
+     * runs, an unchanged ledger or a too-recent last backup means no upload.
+     * The network itself is not the trigger — the schedule and the data are.
+     *
+     * On success the images ride along only if the owner turned images on, and
+     * the last-backup time + fingerprint are recorded so the next day's check
+     * can tell nothing changed. On failure nothing is recorded, so the next run
+     * tries again.
+     */
+    suspend fun autoBackupIfDue(
+        context: Context,
+        dao: KhataDao,
+        minIntervalMs: Long = 20L * 60 * 60 * 1000 // ~a day, with slack so a daily run isn't skipped by minutes
+    ): AutoResult = withContext(Dispatchers.IO) {
+        if (!autoBackup(context)) return@withContext AutoResult.Skipped
+
+        val account = DriveAuth.accountName(context) ?: return@withContext AutoResult.Skipped
+
+        val count = dao.totalEntryCount()
+        if (count == 0) return@withContext AutoResult.Skipped
+
+        // Due by time? Reuse the same last-backup timestamp the screen shows.
+        val last = BackupReminder.lastBackupAt(context)
+        val dueByTime = last == 0L || System.currentTimeMillis() - last >= minIntervalMs
+        if (!dueByTime) return@withContext AutoResult.Skipped
+
+        // Changed since last backup? If the fingerprint matches, skip.
+        val signature = currentSignature(count, dao.lastEntryActivity())
+        if (signature == lastSignature(context)) return@withContext AutoResult.Skipped
+
+        // All conditions met — take the backup.
+        val json = Backup.export(context, dao)
+        val result = backup(context, account, json)
+        if (result.isFailure) return@withContext AutoResult.Failed(result.exceptionOrNull())
+
+        // Images ride along only if the owner asked for them. An image failure
+        // does not fail the text backup that already succeeded.
+        if (includeImages(context)) {
+            val zip = BackupImages.pack(context)
+            backupImages(context, account, zip)
+        }
+
+        // Record success so the home screen's "last backup" updates and the
+        // next daily check can see nothing has changed.
+        BackupReminder.recordBackup(context)
+        rememberSignature(context, signature)
+        AutoResult.BackedUp
+    }
 
     /** Download the backup's text, or null if none exists yet. */
     suspend fun restore(context: Context, accountName: String): Result<String?> =

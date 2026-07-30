@@ -96,6 +96,17 @@ class BackupActivity : AppCompatActivity() {
                 DriveBackup.setIncludeImages(this, checked)
             }
 
+            // Automatic daily backup toggle: reflect the saved choice and
+            // remember any change. When on, the daily worker backs up on its
+            // own once a day if connected and something changed.
+            val autoSwitch = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(
+                R.id.switchAutoBackup
+            )
+            autoSwitch.isChecked = DriveBackup.autoBackup(this)
+            autoSwitch.setOnCheckedChangeListener { _, checked ->
+                DriveBackup.setAutoBackup(this, checked)
+            }
+
             refreshDriveUi()
         }
     }
@@ -532,6 +543,10 @@ class BackupActivity : AppCompatActivity() {
         val imagesSwitch = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(
             R.id.switchBackupImages
         )
+        val autoSwitch = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(
+            R.id.switchAutoBackup
+        )
+        val autoHint = findViewById<android.widget.TextView>(R.id.tvAutoBackupHint)
 
         if (!connected) {
             status.setText(R.string.drive_not_connected)
@@ -540,6 +555,8 @@ class BackupActivity : AppCompatActivity() {
             restore.visibility = android.view.View.GONE
             signOut.visibility = android.view.View.GONE
             imagesSwitch.visibility = android.view.View.GONE
+            autoSwitch.visibility = android.view.View.GONE
+            autoHint.visibility = android.view.View.GONE
             return
         }
 
@@ -548,6 +565,8 @@ class BackupActivity : AppCompatActivity() {
         restore.visibility = android.view.View.VISIBLE
         signOut.visibility = android.view.View.VISIBLE
         imagesSwitch.visibility = android.view.View.VISIBLE
+        autoSwitch.visibility = android.view.View.VISIBLE
+        autoHint.visibility = android.view.View.VISIBLE
 
         // Fetch the last-backup time so the owner knows how current they are.
         lifecycleScope.launch {

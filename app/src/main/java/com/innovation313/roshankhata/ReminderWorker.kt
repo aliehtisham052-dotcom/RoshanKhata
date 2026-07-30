@@ -8,13 +8,17 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.innovation313.roshankhata.data.BackupReminder
 import com.innovation313.roshankhata.data.ChequeStatus
+import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.KhataDatabase
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -40,6 +44,26 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         ensureChannel(ctx)
 
         val dao = KhataDatabase.get(ctx).khataDao()
+
+        // Automatic backup first: if it is enabled, connected, due, and the
+        // ledger has changed, this uploads silently. Success is deliberately
+        // quiet — the backup screen shows the new "last backup" time; there is
+        // no notification for a routine save. Only a genuine failure is worth
+        // interrupting the owner, and a due-but-failed backup also asks the
+        // system to retry with backoff.
+        var autoBackupFailed = false
+        when (DriveBackup.autoBackupIfDue(ctx, dao)) {
+            is DriveBackup.AutoResult.Failed -> {
+                autoBackupFailed = true
+                notify(
+                    ctx, ID_BACKUP, BackupActivity::class.java,
+                    ctx.getString(R.string.notif_backup_failed_title),
+                    ctx.getString(R.string.notif_backup_failed_body)
+                )
+            }
+            else -> Unit // Skipped or BackedUp — stay silent.
+        }
+
         val endOfToday = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59)
             set(Calendar.SECOND, 59); set(Calendar.MILLISECOND, 999)
@@ -81,9 +105,13 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         )
 
         // Backup: same rule the home screen uses — data exists, and a week of
-        // silence since the last backup (or never backed up at all).
+        // silence since the last backup (or never backed up at all). Skipped
+        // when auto-backup already notified a failure this run, so the owner is
+        // not told twice about the same thing; and auto-backup's own success
+        // moves the last-backup time, so this naturally goes quiet once the
+        // daily upload is doing its job.
         val hasData = dao.totalEntryCount() > 0
-        if (BackupReminder.isReminderDue(ctx, hasData)) notify(
+        if (!autoBackupFailed && BackupReminder.isReminderDue(ctx, hasData)) notify(
             ctx, ID_BACKUP, BackupActivity::class.java,
             ctx.getString(R.string.notif_backup_title),
             ctx.getString(R.string.notif_backup_body)
@@ -141,11 +169,26 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
 
         /** Idempotent: safe to call on every launch. */
         fun schedule(ctx: Context) {
+            // Needs a network: the daily sweep now also carries automatic
+            // backup, which uploads to Drive. A connection is required for that
+            // to mean anything; the reminder checks are cheap enough to ride
+            // the same wake-up. WorkManager holds the run until the device is
+            // online, and if backup still fails once running, the worker asks
+            // for a backoff retry rather than giving up.
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
             val request = PeriodicWorkRequestBuilder<ReminderWorker>(24, TimeUnit.HOURS)
+                .setConstraints(constraints)
                 .setInitialDelay(1, TimeUnit.HOURS)
+                .setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    1, TimeUnit.HOURS
+                )
                 .build()
             WorkManager.getInstance(ctx).enqueueUniquePeriodicWork(
-                WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request
+                WORK_NAME, ExistingPeriodicWorkPolicy.UPDATE, request
             )
         }
     }
