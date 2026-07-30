@@ -350,7 +350,8 @@ class MainActivity : AppCompatActivity() {
             tileStep(R.string.zakat_calculator, R.string.coach_title_zakat, R.string.coach_desc_zakat),
             tileStep(R.string.biz_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
             tileStep(R.string.business_settings, R.string.coach_title_settings, R.string.coach_desc_settings),
-            tileStep(R.string.recycle_bin, R.string.coach_title_applock, R.string.coach_desc_applock)
+            tileStep(R.string.recycle_bin, R.string.coach_title_applock, R.string.coach_desc_applock),
+            tileStep(R.string.nav_invoice, R.string.coach_title_invoice, R.string.coach_desc_invoice)
         )
 
         if (steps.isEmpty()) return

@@ -35,6 +35,8 @@
     <string name="coach_desc_zakat">زڪوات جو اندازو لڳائڻ لاءِ رهنما اوزار — حڪم لاءِ قابل عالم کان پڇو.</string>
     <string name="coach_title_bizcard">بزنس ڪارڊ</string>
     <string name="coach_desc_bizcard">پنهنجي دڪان لاءِ سيڪنڊن ۾ شيئر ڪرڻ جوڳو ڪارڊ ٺاهيو، ٽن انداز ۾.</string>
+    <string name="coach_title_invoice">انوائس</string>
+    <string name="coach_desc_invoice">پنهنجن گراهڪن لاءِ پروفيشنل انوائس ٺاهيو — تيار ڊيزائنن مان چونڊيو، پنهنجي نالي، مهر ۽ QR سان.</string>
     <string name="coach_title_backup">بيڪ اپ</string>
     <string name="coach_desc_backup">پنهنجو کاتو محفوظ طريقي سان پنهنجي گوگل ڊرائيو تي رکو.</string>
         <string name="coach_title_settings">ڪاروباري سيٽنگون</string>
