@@ -613,13 +613,6 @@
     <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
 
     <!-- Printable business report -->
-    <string name="report_section_title">ڇپائي جوڳي رپورٽ</string>
-    <string name="report_not_backup">توهان جي پوري ڪاروبار جي PDF \u2014 بيلنس، چيڪ، رٿائون، ختم ٿيندڙ مال. پڙهڻ، ڇپائڻ يا ڪنهن کي ڏيکارڻ لاءِ.\n\nهي بيڪ اپ ناهي. روشن کاتو PDF مان توهان جو رڪارڊ بحال نٿو ڪري سگهي.</string>
-    <string name="make_report">PDF رپورٽ ٺاهيو</string>
-    <string name="making_report">رپورٽ ٺهي رهي آهي\u2026</string>
-    <string name="report_failed">رپورٽ نه ٺهي سگهي.</string>
-    <string name="share_report_pdf">رپورٽ شيئر ڪريو</string>
-
     <!-- Report a problem -->
     <string name="report_problem">مسئلو ٻڌايو</string>
     <string name="report_problem_sub">ٻڌايو ڇا خراب ٿيو</string>

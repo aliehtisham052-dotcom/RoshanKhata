@@ -613,13 +613,6 @@
     <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
 
     <!-- Printable business report -->
-    <string name="report_section_title">گزارش چاپی</string>
-    <string name="report_not_backup">یک PDF از کل کسب‌وکار شما \u2014 مانده‌ها، چک‌ها، برنامه‌ها، کالای رو به انقضا. برای خواندن، چاپ یا نشان دادن به کسی.\n\nاین پشتیبان نیست. روشن خاتا نمی‌تواند سوابق شما را از PDF بازگرداند.</string>
-    <string name="make_report">ساخت گزارش PDF</string>
-    <string name="making_report">در حال ساخت گزارش\u2026</string>
-    <string name="report_failed">گزارش ساخته نشد.</string>
-    <string name="share_report_pdf">اشتراک گزارش</string>
-
     <!-- Report a problem -->
     <string name="report_problem">گزارش مشکل</string>
     <string name="report_problem_sub">بگویید چه اشتباهی رخ داد</string>

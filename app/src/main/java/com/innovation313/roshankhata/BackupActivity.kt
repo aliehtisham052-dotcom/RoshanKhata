@@ -17,7 +17,6 @@ import com.innovation313.roshankhata.data.BackupImages
 import com.innovation313.roshankhata.data.DriveAuth
 import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.DriveFeature
-import com.innovation313.roshankhata.data.BusinessReport
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
@@ -67,8 +66,6 @@ class BackupActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnRestore).setOnClickListener {
             showRestoreOptions()
         }
-
-        findViewById<MaterialButton>(R.id.btnReport).setOnClickListener { makeReport() }
 
         // The cloud-backup section stays hidden until the app is verified by
         // Google for the Drive scope. Until then, showing "Connect" would only
@@ -405,34 +402,6 @@ class BackupActivity : AppCompatActivity() {
                 Backup.parseFile(file)
             }
             handleParseResult(result, data)
-        }
-    }
-
-    /**
-     * A printable PDF of the whole business.
-     *
-     * Deliberately kept on the same screen as the backup, and deliberately
-     * labelled — on the button, on the screen, and on the document's own first
-     * page — as NOT being one. A PDF cannot be read back into the app. If an
-     * owner mistook this for their backup, deleted the real file, and then lost
-     * the phone, this document would serve only to show them exactly what they
-     * had lost.
-     */
-    private fun makeReport() {
-        Toast.makeText(this, R.string.making_report, Toast.LENGTH_SHORT).show()
-
-        lifecycleScope.launch {
-            val file = withContext(Dispatchers.IO) {
-                BusinessReport.build(this@BackupActivity, dao)
-            }
-
-            if (file == null) {
-                Toast.makeText(this@BackupActivity, R.string.report_failed, Toast.LENGTH_LONG)
-                    .show()
-                return@launch
-            }
-
-            com.innovation313.roshankhata.ui.PdfShare.present(this@BackupActivity, file)
         }
     }
 
