@@ -75,6 +75,7 @@
     <string name="you_will_give">آپ کو دینے ہیں</string>
     <string name="settled">حساب برابر</string>
     <string name="settled_count">%1$d ادا شدہ</string>
+    <string name="all_settled">سب ادا شدہ</string>
 
     <string name="name">نام</string>
     <string name="phone_optional">فون (اختیاری)</string>
@@ -697,7 +698,6 @@
     </plurals>
     <string name="call">کال</string>
     <string name="no_dialer">کوئی ڈائلر نہیں ملا</string>
-    <string name="backup_reminder_hint">بیک اپ کا وقت ہو گیا</string>
     <string name="select_all">سب چنیں</string>
     <string name="clear_all">سب ہٹائیں</string>
     <string name="insights_today">آج</string>

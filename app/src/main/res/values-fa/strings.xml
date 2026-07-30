@@ -75,6 +75,7 @@
     <string name="you_will_give">بدهی شما</string>
     <string name="settled">تسویه‌شده</string>
     <string name="settled_count">%1$d تسویه‌شده</string>
+    <string name="all_settled">همه تسویه‌شده</string>
 
     <string name="name">نام</string>
     <string name="phone_optional">تلفن (اختیاری)</string>
@@ -725,7 +726,6 @@
     </plurals>
     <string name="call">تماس</string>
     <string name="no_dialer">برنامه شماره‌گیری یافت نشد</string>
-    <string name="backup_reminder_hint">موعد پشتیبان‌گیری</string>
     <string name="select_all">انتخاب همه</string>
     <string name="clear_all">پاک کردن همه</string>
     <string name="insights_today">امروز</string>

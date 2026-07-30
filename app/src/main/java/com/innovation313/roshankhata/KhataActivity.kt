@@ -236,6 +236,12 @@ class KhataActivity : AppCompatActivity() {
         // help) stay on the "More" tab at the bottom, which is unchanged.
         findViewById<MaterialButton>(R.id.btnHeaderSettings).setOnClickListener { openBusinessSettings() }
 
+        // The backup icon opens the Backup screen (time of last backup, restore),
+        // the way the owner asked — a header icon rather than a "Backup due" line.
+        findViewById<MaterialButton>(R.id.btnHeaderBackup).setOnClickListener {
+            startActivity(Intent(this, BackupActivity::class.java))
+        }
+
         // One filter door. It opens a sheet with Account (all / clear / to-get
         // / to-give) and Type (all / customers / suppliers) together, replacing
         // the three separate header buttons that used to do these jobs.
@@ -978,23 +984,21 @@ class KhataActivity : AppCompatActivity() {
         }
 
         // The settled count used to have its own box up top; it lives on this
-        // line now. totalSettled is counted over the whole book (set when the
-        // list loads), so it is the shop-wide figure, not the filtered view.
-        val base = if (totalSettled > 0) {
-            withCount + "  ·  " + getString(R.string.settled_count, totalSettled)
-        } else {
-            withCount
+        // line now. totalSettled is counted over the whole book. When every
+        // customer is settled, showing "1165 customers · 1165 settled" repeats
+        // the same number and reads badly — so say "all settled" instead; show
+        // a figure only when some (but not all) are settled.
+        val base = when {
+            totalSettled == 0 -> withCount
+            count > 0 && totalSettled >= count ->
+                withCount + "  ·  " + getString(R.string.all_settled)
+            else ->
+                withCount + "  ·  " + getString(R.string.settled_count, totalSettled)
         }
 
-        // A quiet once-a-week nudge to back up, shown only when there's data to
-        // protect. It rides on the same summary line so it costs no extra space.
-        val backupDue = com.innovation313.roshankhata.data.BackupReminder
-            .isReminderDue(this, hasData = count > 0)
-        tvPartySummary.text = if (backupDue) {
-            base + "  ·  " + getString(R.string.backup_reminder_hint)
-        } else {
-            base
-        }
+        // Backup status is a header icon now (tap it for the time of the last
+        // backup), so it no longer rides on this summary line.
+        tvPartySummary.text = base
     }
 
     private fun renderTotals() {

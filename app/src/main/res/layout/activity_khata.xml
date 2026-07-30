@@ -74,6 +74,32 @@
                     android:textSize="10sp" />
             </LinearLayout>
 
+            <!--
+              Backup status, as an icon the owner asked for (like the
+              competitor's): tap it to open the Backup screen, which shows the
+              time of the last backup. The "Backup due" text used to sit on the
+              summary line below; it reads better as this quiet header icon.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHeaderBackup"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/backup_now"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/ic_feature_backup"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="22dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnHeaderSettings"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"

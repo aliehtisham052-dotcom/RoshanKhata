@@ -79,6 +79,7 @@
     <string name="you_will_give">You will give</string>
     <string name="settled">Settled</string>
     <string name="settled_count">%1$d settled</string>
+    <string name="all_settled">all settled</string>
 
     <string name="name">Name</string>
     <string name="phone_optional">Phone (optional)</string>
@@ -731,7 +732,6 @@
     </plurals>
     <string name="call">Call</string>
     <string name="no_dialer">No phone dialer found</string>
-    <string name="backup_reminder_hint">Backup due</string>
     <string name="select_all">Select all</string>
     <string name="clear_all">Clear all</string>
     <string name="insights_today">Today</string>
