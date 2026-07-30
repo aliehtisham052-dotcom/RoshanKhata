@@ -224,6 +224,7 @@
 
     <!-- Business settings / payment QR -->
     <string name="business_settings">Business Settings</string>
+    <string name="business_profile">Profile</string>
     <string name="business_settings_subtitle">Your name and payment code on statements</string>
     <string name="business_name">Business name</string>
     <string name="business_name_help">Appears at the top of every statement and at the end of every reminder you send.</string>

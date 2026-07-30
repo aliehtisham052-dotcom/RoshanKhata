@@ -220,6 +220,7 @@
 
     <!-- Business settings / payment QR -->
     <string name="business_settings">ڪاروبار جون سيٽنگون</string>
+    <string name="business_profile">پروفائل</string>
     <string name="business_settings_subtitle">اسٽيٽمينٽن تي توهان جو نالو ۽ ادائيگي ڪوڊ</string>
     <string name="business_name">ڪاروبار جو نالو</string>
     <string name="business_name_help">هر اسٽيٽمينٽ جي مٿان ۽ توهان جي موڪليل هر ياد ڏياريندڙ پيغام جي آخر ۾ ايندو.</string>
