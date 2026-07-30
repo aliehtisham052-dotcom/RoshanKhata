@@ -53,6 +53,7 @@ class ImportContactsActivity : AppCompatActivity() {
     private val selected = linkedSetOf<String>()
     private var visible = listOf<PhoneContact>()
     private lateinit var btnSelectAll: MaterialButton
+    private lateinit var cbShowAdded: android.widget.CheckBox
 
     private val requestPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -90,6 +91,9 @@ class ImportContactsActivity : AppCompatActivity() {
 
         btnImport.setOnClickListener { importSelected() }
         btnSelectAll.setOnClickListener { toggleSelectAll() }
+
+        cbShowAdded = findViewById(R.id.cbShowAdded)
+        cbShowAdded.setOnCheckedChangeListener { _, _ -> applyFilter() }
 
         updateSelectedCount()
         ensurePermission()
@@ -143,6 +147,15 @@ class ImportContactsActivity : AppCompatActivity() {
     private fun applyFilter() {
         val query = etSearch.text.toString().trim().lowercase()
 
+        // Already-imported contacts are hidden unless the owner asks to see
+        // them — this screen is for adding the NEW people, and a list where
+        // most rows say "Added" buries the few that can actually be imported.
+        val pool = if (cbShowAdded.isChecked) {
+            allContacts
+        } else {
+            allContacts.filter { !it.alreadyAdded }
+        }
+
         // Same rule as the ledger's search, from the same place: a name that
         // begins with what was typed first, then a name with a word that
         // does, then a match buried mid-word.
@@ -151,7 +164,7 @@ class ImportContactsActivity : AppCompatActivity() {
         // and nothing else — every one of them was a real match, and every
         // one was the wrong answer.
         val filtered = NameSearch.sort(
-            allContacts.filter { NameSearch.matches(it.name, it.phone, query) },
+            pool.filter { NameSearch.matches(it.name, it.phone, query) },
             query
         ) { it.name }
 
@@ -180,20 +193,24 @@ class ImportContactsActivity : AppCompatActivity() {
      * natural way to grab, say, every contact with "Mandi" in the name.
      */
     private fun toggleSelectAll() {
-        val allVisibleSelected = visible.isNotEmpty() && visible.all { it.phone in selected }
-        if (allVisibleSelected) {
-            visible.forEach { selected.remove(it.phone) }
+        // Only the importable rows — never the already-added ones, which are
+        // shown greyed and cannot be picked individually either.
+        val selectable = visible.filter { !it.alreadyAdded }
+        val allSelectableSelected = selectable.isNotEmpty() && selectable.all { it.phone in selected }
+        if (allSelectableSelected) {
+            selectable.forEach { selected.remove(it.phone) }
         } else {
-            visible.forEach { selected.add(it.phone) }
+            selectable.forEach { selected.add(it.phone) }
         }
         updateSelectedCount()
         applyFilter()
     }
 
     private fun refreshSelectAllLabel() {
-        val allVisibleSelected = visible.isNotEmpty() && visible.all { it.phone in selected }
-        btnSelectAll.setText(if (allVisibleSelected) R.string.clear_all else R.string.select_all)
-        btnSelectAll.isEnabled = visible.isNotEmpty()
+        val selectable = visible.filter { !it.alreadyAdded }
+        val allSelectableSelected = selectable.isNotEmpty() && selectable.all { it.phone in selected }
+        btnSelectAll.setText(if (allSelectableSelected) R.string.clear_all else R.string.select_all)
+        btnSelectAll.isEnabled = selectable.isNotEmpty()
     }
 
     private fun updateSelectedCount() {

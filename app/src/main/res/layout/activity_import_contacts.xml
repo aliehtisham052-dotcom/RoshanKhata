@@ -66,6 +66,22 @@
             android:inputType="text"
             android:padding="10dp"
             android:textSize="14sp" />
+
+        <!--
+          Already-imported contacts are hidden by default so this screen shows
+          the job it is for: the NEW people not yet in the book. The toggle lets
+          the owner reveal the ones already added (shown greyed, marked "Added",
+          and not selectable) if they want to confirm someone is in.
+        -->
+        <CheckBox
+            android:id="@+id/cbShowAdded"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:buttonTint="@color/gold_on_dark"
+            android:text="@string/show_already_added"
+            android:textColor="@color/header_on_dark"
+            android:textSize="13sp" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

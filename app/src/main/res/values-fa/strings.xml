@@ -727,6 +727,7 @@
     <string name="no_dialer">برنامه شماره‌گیری یافت نشد</string>
     <string name="backup_reminder_hint">موعد پشتیبان‌گیری</string>
     <string name="select_all">انتخاب همه</string>
+    <string name="show_already_added">نمایش موارد از قبل افزوده</string>
     <string name="clear_all">پاک کردن همه</string>
     <string name="insights_today">امروز</string>
     <string name="insights_today_received">دریافتی</string>

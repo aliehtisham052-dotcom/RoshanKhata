@@ -733,6 +733,7 @@
     <string name="no_dialer">No phone dialer found</string>
     <string name="backup_reminder_hint">Backup due</string>
     <string name="select_all">Select all</string>
+    <string name="show_already_added">Show already-added</string>
     <string name="clear_all">Clear all</string>
     <string name="insights_today">Today</string>
     <string name="insights_today_received">Received</string>
