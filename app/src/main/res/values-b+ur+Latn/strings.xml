@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Roshan Khata</string>
+    <string name="welcome_title">Aap ka khata, mehfooz</string>
+    <string name="welcome_body">Roshan Khata aap ka record isi phone par rakhta hai. Apna Google account munsalik karein taake aap ka khata aap ki Drive par mehfooz ho sake — aap ka data, aap ke account mein.</string>
+    <string name="welcome_note">Munsalik karne se sirf backup mumkin hota hai. Aap ka khata tab mehfooz hota hai jab backup ho jaye — khudkar backup on karein, ya kisi bhi waqt backup karein.</string>
+    <string name="welcome_connect">Google account munsalik karein</string>
+    <string name="welcome_skip">Shayad baad mein</string>
 
     <string name="coach_walkthrough">Taarufi Jaiza</string>
     <string name="coach_home_screen">Home Screen</string>

@@ -53,6 +53,11 @@
             android:theme="@style/Theme.RoshanKhata" />
 
         <activity
+            android:name=".WelcomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RoshanKhata" />
+
+        <activity
             android:name=".GateActivity"
             android:exported="true"
             android:noHistory="true"

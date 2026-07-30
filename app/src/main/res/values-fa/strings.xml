@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">روشن خاتا</string>
+    <string name="welcome_title">دفتر شما، در امان</string>
+    <string name="welcome_body">روشن کھاتا سوابق شما را روی همین گوشی نگه می‌دارد. حساب گوگل خود را متصل کنید تا دفترتان در درایو شما پشتیبان‌گیری شود — داده‌ی شما، در حساب شما.</string>
+    <string name="welcome_note">اتصال فقط پشتیبان‌گیری را ممکن می‌کند. دفتر شما وقتی در امان است که پشتیبان گرفته شود — پشتیبان‌گیری خودکار را روشن کنید یا هر زمان پشتیبان بگیرید.</string>
+    <string name="welcome_connect">اتصال حساب گوگل</string>
+    <string name="welcome_skip">شاید بعداً</string>
 
     <string name="coach_walkthrough">راهنمای سریع</string>
     <string name="coach_home_screen">صفحه اصلی</string>

@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">روشن کھاتہ</string>
+    <string name="welcome_title">آپ کا کھاتا، محفوظ</string>
+    <string name="welcome_body">روشن کھاتا آپ کا ریکارڈ اسی فون پر رکھتا ہے۔ اپنا گوگل اکاؤنٹ منسلک کریں تاکہ آپ کا کھاتا آپ کی ڈرائیو پر محفوظ ہو سکے — آپ کا ڈیٹا، آپ کے اکاؤنٹ میں۔</string>
+    <string name="welcome_note">منسلک کرنے سے صرف بیک اپ ممکن ہوتا ہے۔ آپ کا کھاتا تب محفوظ ہوتا ہے جب بیک اپ ہو جائے — خودکار بیک اپ آن کریں، یا کسی بھی وقت بیک اپ کریں۔</string>
+    <string name="welcome_connect">گوگل اکاؤنٹ منسلک کریں</string>
+    <string name="welcome_skip">شاید بعد میں</string>
 
     <string name="coach_walkthrough">تعارفی جائزہ</string>
     <string name="coach_home_screen">ہوم اسکرین</string>
