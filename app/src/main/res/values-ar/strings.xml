@@ -556,7 +556,6 @@
     <string name="adjust_crop_use">استخدم هذا</string>
     <string name="crop_load_failed">تعذّر فتح هذه الصورة.</string>
     <string name="crop_save_failed">تعذّر حفظ الاقتصاص. حاول مرة أخرى.</string>
-    <string name="invoice_edit_shop_details">تعديل اسم المحل والختم ورمز QR والشروط</string>
     <string name="invoice_more_options">خيارات إضافية (اختياري)</string>
     <string name="invoice_settings_title">إعدادات الفاتورة</string>
     <string name="invoice_settings_subtitle">أوقف أي شيء لا يستخدمه هذا المحل أبدًا — يبقى متوقفًا في كل فاتورة جديدة.</string>

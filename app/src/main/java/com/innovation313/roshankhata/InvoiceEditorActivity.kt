@@ -191,9 +191,6 @@ class InvoiceEditorActivity : AppCompatActivity() {
         val btnMore = findViewById<MaterialButton>(R.id.btnMoreOptions)
         btnMore.setOnClickListener { showMoreOptions() }
         btnMore.visibility = if (InvoiceFeatureSettings.anyOptionalFieldEnabled(this)) View.VISIBLE else View.GONE
-        findViewById<MaterialButton>(R.id.btnShopDetails).setOnClickListener {
-            startActivity(android.content.Intent(this, BusinessSettingsActivity::class.java))
-        }
         btnBack.setOnClickListener { goBack() }
         btnNext.setOnClickListener { goNext() }
 

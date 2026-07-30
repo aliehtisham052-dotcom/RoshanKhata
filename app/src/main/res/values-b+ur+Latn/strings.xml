@@ -556,7 +556,6 @@
     <string name="adjust_crop_use">Yehi rakhein</string>
     <string name="crop_load_failed">Wo tasveer nahi khul saki.</string>
     <string name="crop_save_failed">Crop mehfooz nahi ho saki. Dobara koshish karein.</string>
-    <string name="invoice_edit_shop_details">Dukan ka naam, muhar, QR aur sharait edit karein</string>
     <string name="invoice_more_options">Mazeed options (ikhtiyari)</string>
     <string name="invoice_settings_title">Invoice Settings</string>
     <string name="invoice_settings_subtitle">Jo cheez ye dukan kabhi istemal nahi karti usay band kar dein — har nayi invoice ke liye band rahegi.</string>

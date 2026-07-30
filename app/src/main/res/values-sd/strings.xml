@@ -577,7 +577,6 @@
     <string name="adjust_crop_use">هي رکو</string>
     <string name="crop_load_failed">اها تصوير کلي نه سگهي.</string>
     <string name="crop_save_failed">ڪراپ سيڪار نه ٿي سگهي. ٻيهر ڪوشش ڪريو.</string>
-    <string name="invoice_edit_shop_details">دڪان جو نالو، مهر، QR ۽ شرطون تبديل ڪريو</string>
     <string name="invoice_more_options">وڌيڪ اختيارون (اختياري)</string>
     <string name="invoice_settings_title">انوائس سيٽنگون</string>
     <string name="invoice_settings_subtitle">جيڪا شيءِ هي دڪان ڪڏهن به استعمال نه ٿو ڪري، ان کي بند ڪريو — هر نئين انوائس لاءِ بند رهندي.</string>

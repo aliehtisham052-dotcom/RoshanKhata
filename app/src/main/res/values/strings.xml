@@ -582,7 +582,6 @@
     <string name="adjust_crop_use">Use this</string>
     <string name="crop_load_failed">Could not open that photo.</string>
     <string name="crop_save_failed">Could not save the crop. Try again.</string>
-    <string name="invoice_edit_shop_details">Edit shop name, stamp, QR &amp; terms</string>
     <string name="invoice_more_options">More options (optional)</string>
     <string name="invoice_settings_title">Invoice Settings</string>
     <string name="invoice_settings_subtitle">Turn off anything this shop never uses — it stays off for every new invoice.</string>
