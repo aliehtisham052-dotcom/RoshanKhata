@@ -220,6 +220,7 @@
 
     <!-- Business settings / payment QR -->
     <string name="business_settings">تنظیمات کسب‌وکار</string>
+    <string name="business_profile">پروفایل</string>
     <string name="business_settings_subtitle">نام و کد پرداخت شما روی صورت‌حساب‌ها</string>
     <string name="business_name">نام کسب‌وکار</string>
     <string name="business_name_help">بالای هر صورت‌حساب و در پایان هر یادآوری ارسالی شما نمایش داده می‌شود.</string>

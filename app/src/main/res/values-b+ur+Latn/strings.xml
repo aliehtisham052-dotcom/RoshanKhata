@@ -210,6 +210,7 @@
     <string name="ok">Theek Hai</string>
 
     <string name="business_settings">Karobari Settings</string>
+    <string name="business_profile">Profile</string>
     <string name="business_settings_subtitle">Statement par aap ka naam aur payment code</string>
     <string name="business_name">Karobar ka naam</string>
     <string name="business_name_help">Har statement ke oopar aur har yaad dehani ke aakhir mein aata hai.</string>

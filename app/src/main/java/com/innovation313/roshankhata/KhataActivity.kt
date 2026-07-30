@@ -230,7 +230,11 @@ class KhataActivity : AppCompatActivity() {
         // these belong to the whole app, not to this one ledger, which is why
         // the owner asked for a settings gear here rather than a menu of this
         // screen's own actions.
-        findViewById<MaterialButton>(R.id.btnHeaderSettings).setOnClickListener { showMoreSheet() }
+        // The header button opens the business PROFILE — the shop's own basics
+        // (name, stamp, payment QR, bank line). The owner asked for this to be a
+        // profile, not an app-settings menu: app-wide settings (lock, language,
+        // help) stay on the "More" tab at the bottom, which is unchanged.
+        findViewById<MaterialButton>(R.id.btnHeaderSettings).setOnClickListener { openBusinessSettings() }
 
         // One filter door. It opens a sheet with Account (all / clear / to-get
         // / to-give) and Type (all / customers / suppliers) together, replacing
