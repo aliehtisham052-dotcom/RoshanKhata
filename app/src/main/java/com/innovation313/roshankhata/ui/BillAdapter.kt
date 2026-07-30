@@ -53,27 +53,32 @@ class BillAdapter(
             }
         }
 
+        // Status, truest first. A cash bill was settled on delivery. Otherwise
+        // the LEDGER decides: if the supplier's account is clear (balance >= 0),
+        // the account is settled — a payment entered in the khata shows here
+        // with nothing more to do. Only when money is still owed do we fall back
+        // to the due-date reminder.
         if (b.isPaidInFull) {
             holder.tvStatus.setText(R.string.plan_closed)
             holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got))
             holder.tvStatus.visibility = View.VISIBLE
+        } else if (b.supplierBalance >= 0) {
+            // Owe them nothing right now — the account is clear.
+            holder.tvStatus.setText(R.string.bill_account_settled)
+            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got))
+            holder.tvStatus.visibility = View.VISIBLE
         } else {
+            // Still owed. Show how much is outstanding to this supplier, and the
+            // due date if the bill carried one.
+            holder.tvStatus.visibility = View.VISIBLE
+            val owed = Format.money(-b.supplierBalance)
             val due = b.dueDate
-            if (due == null) {
-                holder.tvStatus.visibility = View.GONE
+            if (due != null && due < System.currentTimeMillis()) {
+                holder.tvStatus.text = ctx.getString(R.string.bill_owe_overdue, owed)
+                holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave))
             } else {
-                val overdue = due < System.currentTimeMillis()
-                holder.tvStatus.visibility = View.VISIBLE
-                holder.tvStatus.text = ctx.getString(
-                    if (overdue) R.string.plan_overdue else R.string.plan_next_due,
-                    Format.dateOnly(due)
-                )
-                holder.tvStatus.setTextColor(
-                    ContextCompat.getColor(
-                        ctx,
-                        if (overdue) R.color.red_gave else R.color.ink
-                    )
-                )
+                holder.tvStatus.text = ctx.getString(R.string.bill_owe_amount, owed)
+                holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.ink))
             }
         }
 

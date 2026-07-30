@@ -519,7 +519,10 @@ interface KhataDao {
                b.totalAmount, b.billDate, b.dueDate, b.isPaidInFull,
                (SELECT COUNT(*) FROM bill_items i
                 WHERE i.billId = b.id AND i.isDeleted = 0) AS itemCount,
-               b.note
+               b.note,
+               COALESCE((SELECT SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END)
+                         FROM transactions t
+                         WHERE t.partyId = b.partyId AND t.isDeleted = 0), 0) AS supplierBalance
         FROM supplier_bills b
         JOIN parties p ON p.id = b.partyId
         WHERE b.isDeleted = 0 AND p.isDeleted = 0

@@ -496,6 +496,9 @@
     <string name="items_count">%1$d items</string>
 
     <string name="bill_saved">Bill saved</string>
+    <string name="bill_account_settled">Settled</string>
+    <string name="bill_owe_amount">You owe %1$s</string>
+    <string name="bill_owe_overdue">You owe %1$s · overdue</string>
     <string name="bill_saved_credit">Bill saved and posted to your ledger</string>
     <string name="enter_supplier">Please choose a supplier</string>
     <string name="enter_product">Please enter a product name</string>
