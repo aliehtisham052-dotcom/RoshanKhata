@@ -733,6 +733,17 @@ class BillsActivity : AppCompatActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
+                    // Keep the ledger in step — the same "THE LEDGER IS THE
+                    // MONEY" rule the edit path follows. A credit bill points at
+                    // one ledger entry (its "I owe them" line); deleting the
+                    // bill without that entry would leave the debt standing in
+                    // the account with no bill behind it, which reads as a
+                    // phantom amount owed. So the linked entry goes with it.
+                    // A cash bill has no entry (ledgerEntryId is null) and this
+                    // simply does nothing.
+                    dao.getBill(bill.id)?.ledgerEntryId?.let { entryId ->
+                        dao.softDeleteEntry(entryId)
+                    }
                     dao.softDeleteBill(bill.id)
                     Toast.makeText(
                         this@BillsActivity,
