@@ -128,7 +128,7 @@ dependencies {
     // The backup file lives in the app's private "appDataFolder" on their
     // Drive — invisible in their file list, tied to this app, and counted
     // against their 15GB but effectively weightless (a backup is a few KB).
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.gms:play-services-auth:21.6.0")
     implementation("com.google.api-client:google-api-client-android:2.2.0") {
         exclude(group = "org.apache.httpcomponents")
         exclude(group = "com.google.guava")

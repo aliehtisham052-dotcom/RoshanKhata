@@ -5,13 +5,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.innovation313.roshankhata.data.Backup
 import com.innovation313.roshankhata.data.BackupImages
 import com.innovation313.roshankhata.data.DriveAuth
@@ -79,7 +80,7 @@ class BackupActivity : AppCompatActivity() {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
 
             findViewById<MaterialButton>(R.id.btnDriveConnect).setOnClickListener {
-                driveSignIn.launch(DriveAuth.signInIntent(this))
+                connectDrive()
             }
             findViewById<MaterialButton>(R.id.btnDriveBackupNow).setOnClickListener { driveBackup() }
             findViewById<MaterialButton>(R.id.btnDriveRestore).setOnClickListener { confirmDriveRestore() }
@@ -442,21 +443,50 @@ class BackupActivity : AppCompatActivity() {
 
     // ---------- Google Drive backup ----------
 
-    private val driveSignIn = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        // The sign-in sheet returns here. Success or not, GoogleSignIn tells us
-        // what actually happened — we do not assume the account is usable just
-        // because the sheet closed.
-        try {
-            GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                .getResult(com.google.android.gms.common.api.ApiException::class.java)
+    /**
+     * Ask for Drive authorization. AuthorizationClient either already has the
+     * grant (older sessions where the owner consented before) or hands back a
+     * PendingIntent for the consent screen. The first case finishes here; the
+     * second is launched and lands in [driveAuthorize] below.
+     */
+    private fun connectDrive() {
+        DriveAuth.authorize(this)
+            .addOnSuccessListener { result ->
+                if (result.hasResolution()) {
+                    val pendingIntent = result.pendingIntent
+                    if (pendingIntent != null) {
+                        driveAuthorize.launch(
+                            IntentSenderRequest.Builder(pendingIntent.intentSender).build()
+                        )
+                    } else {
+                        Toast.makeText(this, R.string.drive_signin_failed, Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    // Access was already granted -- remember the account and go.
+                    DriveAuth.rememberAccount(this, result)
+                    refreshDriveUi()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.drive_signin_failed, Toast.LENGTH_LONG).show()
+            }
+    }
 
-            if (DriveAuth.hasDrivePermission(this)) {
+    private val driveAuthorize = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { activityResult ->
+        // The consent screen returns here. We read the real result rather than
+        // assuming success just because the screen closed -- a declined grant
+        // still closes it.
+        try {
+            val result: AuthorizationResult =
+                DriveAuth.resultFromIntent(this, activityResult.data)
+            DriveAuth.rememberAccount(this, result)
+            if (DriveAuth.isConnected(this)) {
                 refreshDriveUi()
             } else {
-                // Signed in, but declined the Drive permission. Nothing works
-                // without it, so say what is needed rather than failing quietly.
+                // Consent screen returned but no usable account came back --
+                // treat as declined rather than failing silently.
                 Toast.makeText(this, R.string.drive_permission_needed, Toast.LENGTH_LONG).show()
                 refreshDriveUi()
             }
@@ -468,7 +498,7 @@ class BackupActivity : AppCompatActivity() {
     /** Show the right Drive controls for whether someone is signed in. */
     private fun refreshDriveUi() {
         val name = DriveAuth.accountName(this)
-        val connected = name != null && DriveAuth.hasDrivePermission(this)
+        val connected = name != null && DriveAuth.isConnected(this)
 
         val status = findViewById<android.widget.TextView>(R.id.tvDriveStatus)
         val connect = findViewById<MaterialButton>(R.id.btnDriveConnect)
@@ -584,6 +614,6 @@ class BackupActivity : AppCompatActivity() {
     }
 
     private fun driveSignOut() {
-        DriveAuth.signOut(this) { refreshDriveUi() }
+        DriveAuth.disconnect(this) { refreshDriveUi() }
     }
 }
