@@ -270,8 +270,8 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnVoiceEntry"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="48dp"
-                android:layout_height="44dp"
+                android:layout_width="50dp"
+                android:layout_height="46dp"
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/voice_entry"
                 android:insetTop="0dp"
@@ -283,7 +283,7 @@
                 app:icon="@drawable/ic_mic"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
-                app:iconSize="24dp"
+                app:iconSize="26dp"
                 app:iconTint="@color/gold_on_dark"
                 app:strokeColor="@color/gold_on_dark" />
 
@@ -296,8 +296,8 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnOpenFilter"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="48dp"
-                android:layout_height="44dp"
+                android:layout_width="50dp"
+                android:layout_height="46dp"
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/filter_title"
                 android:insetTop="0dp"
@@ -309,7 +309,7 @@
                 app:icon="@drawable/ic_filter_sliders"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
-                app:iconSize="24dp"
+                app:iconSize="26dp"
                 app:iconTint="@color/gold_on_dark"
                 app:strokeColor="@color/gold_on_dark" />
         </LinearLayout>
@@ -343,7 +343,7 @@
                 android:id="@+id/btnSortParties"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_height="46dp"
                 android:layout_marginStart="6dp"
                 android:minWidth="0dp"
                 android:paddingStart="12dp"
@@ -357,8 +357,8 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLedgerPdf"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="46dp"
-                android:layout_height="42dp"
+                android:layout_width="50dp"
+                android:layout_height="46dp"
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/ledger_pdf_button"
                 android:insetTop="0dp"
@@ -370,15 +370,15 @@
                 app:icon="@drawable/ic_pdf_doc"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
-                app:iconSize="22dp"
+                app:iconSize="26dp"
                 app:iconTint="@color/gold_on_dark"
                 app:strokeColor="@color/gold_on_dark" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnScanQr"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="46dp"
-                android:layout_height="42dp"
+                android:layout_width="50dp"
+                android:layout_height="46dp"
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/scan_customer_qr"
                 android:insetTop="0dp"
@@ -390,7 +390,7 @@
                 app:icon="@drawable/ic_qr_scan"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
-                app:iconSize="22dp"
+                app:iconSize="26dp"
                 app:iconTint="@color/gold_on_dark"
                 app:strokeColor="@color/gold_on_dark" />
         </LinearLayout>
