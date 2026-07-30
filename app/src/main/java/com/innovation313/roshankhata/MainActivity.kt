@@ -112,8 +112,6 @@ class MainActivity : AppCompatActivity() {
                 R.color.tile_zakat_bg, R.color.gold_accent),
             Feature(R.drawable.ic_feature_card, R.string.biz_card, BusinessCardActivity::class.java,
                 R.color.tile_card_bg, R.color.tile_card_fg),
-            Feature(R.drawable.ic_feature_backup, R.string.backup_restore, BackupActivity::class.java,
-                R.color.tile_backup_bg, R.color.tile_backup_fg),
             Feature(R.drawable.ic_feature_settings, R.string.business_settings, BusinessSettingsActivity::class.java,
                 R.color.tile_settings_bg, R.color.tile_settings_fg),
             Feature(R.drawable.ic_feature_lock, R.string.recycle_bin, RecycleBinActivity::class.java,
@@ -351,7 +349,6 @@ class MainActivity : AppCompatActivity() {
             tileStep(R.string.insights_title, R.string.coach_title_insights, R.string.coach_desc_insights),
             tileStep(R.string.zakat_calculator, R.string.coach_title_zakat, R.string.coach_desc_zakat),
             tileStep(R.string.biz_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
-            tileStep(R.string.backup_restore, R.string.coach_title_backup, R.string.coach_desc_backup),
             tileStep(R.string.business_settings, R.string.coach_title_settings, R.string.coach_desc_settings),
             tileStep(R.string.recycle_bin, R.string.coach_title_applock, R.string.coach_desc_applock)
         )
