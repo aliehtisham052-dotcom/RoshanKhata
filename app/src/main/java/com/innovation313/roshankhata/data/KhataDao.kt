@@ -310,6 +310,26 @@ interface KhataDao {
     )
     fun observeCheques(): Flow<List<ChequeWithParty>>
 
+    /**
+     * Every entry across every customer within one date window, oldest
+     * first — the source data for the whole-ledger PDF report. A cross-party
+     * counterpart to [entriesInRange]-shaped per-party queries elsewhere in
+     * this file, which none of them cover: every other entry query here is
+     * scoped to one partyId.
+     */
+    @Query(
+        """
+        SELECT t.id, t.partyId, p.name AS partyName, t.amount, t.isGiven,
+               t.note, t.entryNumber, t.timestamp
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0
+          AND t.timestamp BETWEEN :from AND :to
+        ORDER BY t.timestamp ASC
+        """
+    )
+    suspend fun entriesInRange(from: Long, to: Long): List<EntryWithParty>
+
     /** Pending cheques already at or past their date — these are the urgent ones. */
     @Query(
         """

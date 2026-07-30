@@ -107,17 +107,21 @@ class KhataActivity : AppCompatActivity() {
      * boxes above the list: a shopkeeper looking at "I have to get" wants the
      * people behind that figure, not a total.
      */
-    private enum class SideFilter { ALL, TO_GET, TO_GIVE }
+    private enum class SideFilter { ALL, TO_GET, TO_GIVE, SETTLED }
     private var sideFilter = SideFilter.ALL
 
     /** Which stretch of days the list is showing. All of them, until asked. */
     private var dateRange = DateRangeFilter.Range.ALL
+    /** Which stretch the ledger PDF was last built for — its own choice, independent of the list's own filter above. */
+    private var ledgerPdfRange = DateRangeFilter.Range.ALL
     private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
+    private lateinit var tvTotalSettled: TextView
     private lateinit var tvPartySummary: TextView
     private var totalGet = 0.0
     private var totalGive = 0.0
+    private var totalSettled = 0
     private lateinit var tvEmpty: TextView
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -149,6 +153,7 @@ class KhataActivity : AppCompatActivity() {
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvTotalGet = findViewById(R.id.tvTotalGet)
         tvTotalGive = findViewById(R.id.tvTotalGive)
+        tvTotalSettled = findViewById(R.id.tvTotalSettled)
         tvPartySummary = findViewById(R.id.tvPartySummary)
         tvEmpty = findViewById(R.id.tvEmpty)
 
@@ -212,6 +217,18 @@ class KhataActivity : AppCompatActivity() {
             }
         }
 
+        // Above the ledger, asked for at that exact placement — picks a
+        // stretch of days with the same DateRangeFilter dialog the box above
+        // uses, then builds and shares one PDF of every entry across every
+        // customer in that window. See LedgerReport for why this is a
+        // separate document from Backup's own "Business Report".
+        findViewById<MaterialButton>(R.id.btnLedgerPdf).setOnClickListener {
+            DateRangeFilter.choose(this, ledgerPdfRange) { picked ->
+                ledgerPdfRange = picked
+                buildAndShareLedgerPdf(picked)
+            }
+        }
+
         findViewById<MaterialButton>(R.id.btnVoiceEntry).apply {
             setOnClickListener { startListening() }
             // Diagnostic scaffolding, and deliberately unadvertised: a long
@@ -222,15 +239,19 @@ class KhataActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
 
-        // The two summary boxes are the filter. Tapping "I have to get" shows
-        // the people behind that figure; tapping it again puts everyone back.
-        // A shopkeeper reading a total is usually about to ask who is in it.
+        // The three summary boxes are the filter. Tapping one shows the
+        // people behind that figure; tapping it again puts everyone back. A
+        // shopkeeper reading a total is usually about to ask who is in it.
         findViewById<View>(R.id.boxTotalGet).setOnClickListener {
             sideFilter = if (sideFilter == SideFilter.TO_GET) SideFilter.ALL else SideFilter.TO_GET
             render()
         }
         findViewById<View>(R.id.boxTotalGive).setOnClickListener {
             sideFilter = if (sideFilter == SideFilter.TO_GIVE) SideFilter.ALL else SideFilter.TO_GIVE
+            render()
+        }
+        findViewById<View>(R.id.boxSettled).setOnClickListener {
+            sideFilter = if (sideFilter == SideFilter.SETTLED) SideFilter.ALL else SideFilter.SETTLED
             render()
         }
 
@@ -270,6 +291,7 @@ class KhataActivity : AppCompatActivity() {
                 // nets together.
                 totalGet = list.filter { it.balance > 0 }.sumOf { it.balance }
                 totalGive = list.filter { it.balance < 0 }.sumOf { -it.balance }
+                totalSettled = list.count { it.balance == 0.0 }
                 renderTotals()
                 renderPartySummary(list)
                 render()
@@ -648,12 +670,15 @@ class KhataActivity : AppCompatActivity() {
             filtered.filter { dateRange.contains(it.lastActivity) }
         }
 
-        // Then the side, if one is chosen. Settled accounts fall out of both:
-        // someone at zero is neither owed nor owing.
+        // Then the side, if one is chosen. Settled sits as its own choice
+        // now rather than only falling out of the other two by elimination —
+        // the owner asked to be able to see exactly who is at zero, not just
+        // infer it from who is missing from the other two lists.
         val bySide = when (sideFilter) {
             SideFilter.ALL -> inRange
             SideFilter.TO_GET -> inRange.filter { it.balance > 0 }
             SideFilter.TO_GIVE -> inRange.filter { it.balance < 0 }
+            SideFilter.SETTLED -> inRange.filter { it.balance == 0.0 }
         }
 
         val sorted = if (query.isNotEmpty()) {
@@ -686,17 +711,51 @@ class KhataActivity : AppCompatActivity() {
     }
 
     /**
-     * Dim whichever box is not filtering. Fading the other is quieter than
-     * outlining the active one, and it reads at a glance: one box bright, the
-     * list belongs to it.
+     * Dim whichever boxes are not filtering. Fading the others is quieter
+     * than outlining the active one, and it reads at a glance: one box
+     * bright, the list belongs to it.
      */
     private fun renderFilterState() {
         val get = findViewById<View>(R.id.boxTotalGet) ?: return
         val give = findViewById<View>(R.id.boxTotalGive) ?: return
+        val settled = findViewById<View>(R.id.boxSettled) ?: return
+        val dim = 0.45f
         when (sideFilter) {
-            SideFilter.ALL -> { get.alpha = 1f; give.alpha = 1f }
-            SideFilter.TO_GET -> { get.alpha = 1f; give.alpha = 0.45f }
-            SideFilter.TO_GIVE -> { get.alpha = 0.45f; give.alpha = 1f }
+            SideFilter.ALL -> { get.alpha = 1f; give.alpha = 1f; settled.alpha = 1f }
+            SideFilter.TO_GET -> { get.alpha = 1f; give.alpha = dim; settled.alpha = dim }
+            SideFilter.TO_GIVE -> { get.alpha = dim; give.alpha = 1f; settled.alpha = dim }
+            SideFilter.SETTLED -> { get.alpha = dim; give.alpha = dim; settled.alpha = 1f }
+        }
+    }
+
+    /**
+     * Builds the whole-ledger PDF for [range] and hands it straight to the
+     * share sheet — the owner's own request was that this needs no separate
+     * screen, just a date pick and a document.
+     */
+    private fun buildAndShareLedgerPdf(range: DateRangeFilter.Range) {
+        val label = DateRangeFilter.label(this, range)
+
+        Toast.makeText(this, R.string.ledger_report_generating, Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            val file = withContext(Dispatchers.IO) {
+                LedgerReport.build(this@KhataActivity, dao, range.from, range.to, label)
+            }
+
+            if (file == null) {
+                Toast.makeText(this@KhataActivity, R.string.ledger_report_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+
+            val uri = FileProvider.getUriForFile(this@KhataActivity, "$packageName.fileprovider", file)
+            val share = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                putExtra(Intent.EXTRA_SUBJECT, file.name)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(share, getString(R.string.ledger_pdf_title)))
         }
     }
 
@@ -842,6 +901,10 @@ class KhataActivity : AppCompatActivity() {
         val hidden = BalancePrivacy.isHidden(this)
         tvTotalGet.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGet)
         tvTotalGive.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGive)
+        // A headcount, not a rupee figure — left visible even when balances
+        // are hidden, the same way the customer count elsewhere on this
+        // screen is never masked.
+        tvTotalSettled.text = totalSettled.toString()
     }
 
     private fun renderNetBalance() {

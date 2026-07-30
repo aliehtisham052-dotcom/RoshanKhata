@@ -55,6 +55,10 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">خالص بيلنس</string>
+    <string name="ledger_pdf_button">PDF</string>
+    <string name="ledger_pdf_title">ليجر رپورٽ PDF</string>
+    <string name="ledger_report_generating">ليجر رپورٽ ٺهي رهي آهي…</string>
+    <string name="ledger_report_failed">رپورٽ ٺهي نه سگهي.</string>
     <string name="add_party">ڌر شامل ڪريو</string>
     <string name="no_parties_yet">اڃا ڪو گراهڪ ناهي.\n\nپنهنجو پهريون گراهڪ شامل ڪرڻ ۽ کاتو شروع ڪرڻ لاءِ هيٺ «ڌر شامل ڪريو» دٻايو.</string>
     <string name="no_entries_yet">اڃا ڪا داخلا ناهي.</string>

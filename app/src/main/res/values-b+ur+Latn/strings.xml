@@ -55,6 +55,10 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Kul balance</string>
+    <string name="ledger_pdf_button">PDF</string>
+    <string name="ledger_pdf_title">Ledger report PDF</string>
+    <string name="ledger_report_generating">Ledger report ban rahi hai…</string>
+    <string name="ledger_report_failed">Report nahi ban saki.</string>
     <string name="add_party">Party Shamil Karein</string>
     <string name="no_parties_yet">Abhi koi gahak nahi.\n\nPehla gahak shamil karne aur apna khata shuru karne ke liye neeche "Party Shamil Karein" dabayen.</string>
     <string name="no_entries_yet">Abhi koi entry nahi.</string>

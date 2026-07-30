@@ -55,6 +55,10 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">کل بیلنس</string>
+    <string name="ledger_pdf_button">PDF</string>
+    <string name="ledger_pdf_title">لیجر رپورٹ PDF</string>
+    <string name="ledger_report_generating">لیجر رپورٹ بن رہی ہے…</string>
+    <string name="ledger_report_failed">رپورٹ نہیں بن سکی۔</string>
     <string name="add_party">پارٹی شامل کریں</string>
     <string name="no_parties_yet">ابھی کوئی گاہک نہیں۔\n\nپہلا گاہک شامل کرنے اور اپنا کھاتہ شروع کرنے کے لیے نیچے ”پارٹی شامل کریں“ دبائیں۔</string>
     <string name="no_entries_yet">ابھی کوئی اندراج نہیں۔</string>
