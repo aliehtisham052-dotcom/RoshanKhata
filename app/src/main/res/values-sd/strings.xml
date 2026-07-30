@@ -660,11 +660,14 @@
     <string name="drive_connected_never">%1$s طور ڳنڍيل. اڃا ڪو ڪلائوڊ بيڪ اپ ناهي \u2014 «هاڻي Drive تي بيڪ اپ» دٻايو.</string>
     <string name="drive_connect">Google Drive ڳنڍيو</string>
     <string name="drive_backup_now">هاڻي Drive تي بيڪ اپ</string>
+    <string name="drive_backup_images">تصويرون پڻ شامل ڪريو (فوٽو، بل جون فوٽو، QR)</string>
     <string name="drive_restore">Drive مان بحال ڪريو</string>
     <string name="drive_sign_out">Google اڪائونٽ ڌار ڪريو</string>
     <string name="drive_backing_up">Drive تي بيڪ اپ ٿي رهيو آهي\u2026</string>
     <string name="drive_backup_done">توهان جي Google Drive تي بيڪ اپ ٿيو.</string>
     <string name="drive_backup_failed">ڪلائوڊ بيڪ اپ ناڪام. اڳيون بيڪ اپ، جي هو، ته جيئن جو تيئن آهي. انٽرنيٽ جانچي ٻيهر ڪوشش ڪريو.</string>
+    <string name="drive_images_backup_failed">ٽيڪسٽ بيڪ اپ محفوظ ٿي ويو، پر تصويرون اپلوڊ نه ٿي سگهيون. انٽرنيٽ جانچي ٻيهر ڪوشش ڪريو.</string>
+    <string name="drive_images_restore_failed">توهان جو رڪارڊ بحال ٿي ويو، پر تصويرون ڊائونلوڊ نه ٿي سگهيون. بهتر ڪنيڪشن تي ٻيهر بحال ڪريو.</string>
     <string name="drive_restoring">Drive مان بحال ٿي رهيو آهي\u2026</string>
     <string name="drive_no_backup">اڃا توهان جي Google Drive ۾ ڪو بيڪ اپ نه مليو.</string>
     <string name="drive_restore_failed">Drive مان بحال نه ٿي سگهيو. انٽرنيٽ جانچي ٻيهر ڪوشش ڪريو.</string>

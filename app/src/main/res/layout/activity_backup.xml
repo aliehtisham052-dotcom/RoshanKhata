@@ -102,6 +102,17 @@
                 app:backgroundTint="@color/brand_green"
                 app:cornerRadius="10dp" />
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchBackupImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/drive_backup_images"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:visibility="gone"
+                android:checked="false" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDriveBackupNow"
                 android:layout_width="match_parent"

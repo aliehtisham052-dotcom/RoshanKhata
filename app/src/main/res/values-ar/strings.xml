@@ -632,11 +632,14 @@
     <string name="drive_connected_never">متصل باسم %1$s. لا نسخة سحابية بعد \u2014 اضغط «نسخ إلى Drive».</string>
     <string name="drive_connect">ربط Google Drive</string>
     <string name="drive_backup_now">نسخ إلى Drive الآن</string>
+    <string name="drive_backup_images">تضمين الصور (الصور، صور الفواتير، QR)</string>
     <string name="drive_restore">استعادة من Drive</string>
     <string name="drive_sign_out">فصل حساب Google</string>
     <string name="drive_backing_up">جارٍ النسخ إلى Drive\u2026</string>
     <string name="drive_backup_done">نُسخ إلى Google Drive الخاص بك.</string>
     <string name="drive_backup_failed">فشل النسخ السحابي. نسختك السابقة، إن وُجدت، سليمة. تحقق من الإنترنت وحاول ثانية.</string>
+    <string name="drive_images_backup_failed">تم حفظ النسخة النصية، لكن تعذّر رفع الصور. تحقق من الإنترنت وحاول ثانية.</string>
+    <string name="drive_images_restore_failed">تمت استعادة سجلاتك، لكن تعذّر تنزيل الصور. أعد الاستعادة عند اتصال أفضل.</string>
     <string name="drive_restoring">جارٍ الاستعادة من Drive\u2026</string>
     <string name="drive_no_backup">لا نسخة في Google Drive بعد.</string>
     <string name="drive_restore_failed">تعذرت الاستعادة من Drive. تحقق من الإنترنت وحاول ثانية.</string>

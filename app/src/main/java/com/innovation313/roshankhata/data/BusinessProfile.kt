@@ -340,6 +340,27 @@ object BusinessProfile {
         prefs(context).edit().putBoolean(KEY_PHOTO_ON_STATEMENT, enabled).apply()
     }
 
+    /**
+     * Set the three image "saved" flags to match what is ACTUALLY on disk right
+     * now — used only by an image restore, once the QR/signature/stamp files
+     * have (or have not) been written back.
+     *
+     * The flag and the file are two facts that must never disagree: hasQr()
+     * already requires BOTH the flag true AND the file present, so setting a
+     * flag true with no file behind it would make the app believe in an image
+     * it cannot draw (a broken QR on a statement). This is why the text backup
+     * deliberately never carried these flags — they only become true again in
+     * the same step that puts the files back, and each is set from the file's
+     * own existence, not trusted from anywhere.
+     */
+    fun setImageFlagsFromDisk(context: Context) {
+        prefs(context).edit()
+            .putBoolean(KEY_QR_SAVED, qrFile(context).exists())
+            .putBoolean(KEY_SIGNATURE_SAVED, signatureFile(context).exists())
+            .putBoolean(KEY_STAMP_SAVED, stampFile(context).exists())
+            .apply()
+    }
+
     private fun downscale(src: Bitmap): Bitmap {
         val longEdge = maxOf(src.width, src.height)
         if (longEdge <= MAX_EDGE) return src

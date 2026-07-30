@@ -185,6 +185,15 @@ data class PartyNameAndPhone(
     val phone: String?
 )
 
+/**
+ * An entry's id and its bill-photo path — just enough for the image restore to
+ * re-point each path at where the file now lives, without loading whole rows.
+ */
+data class EntryBillPhoto(
+    val id: Long,
+    val billPhotoPath: String?
+)
+
 /** Receivables split by recovery confidence, for the Zakat screen. */
 data class ZakatInputs(
     val certainReceivables: Double,

@@ -1274,6 +1274,22 @@ interface KhataDao {
     @Update
     suspend fun updateEntry(entry: LedgerEntry)
 
+    // ---------- Bill-photo path re-map (image restore only) ----------
+    //
+    // billPhotoPath is an ABSOLUTE path, right for the phone that wrote it and
+    // wrong for any other — after restoring onto a new phone the directory
+    // prefix differs even though the file name is the same. These two let the
+    // image restore rewrite each path to point at the file where it now lives,
+    // by file NAME, without disturbing anything else on the row. Every entry
+    // that has a bill photo is read (deleted included — the Recycle Bin's
+    // photos matter too), and each path is set individually.
+
+    @Query("SELECT id, billPhotoPath FROM transactions WHERE billPhotoPath IS NOT NULL AND billPhotoPath != ''")
+    suspend fun entriesWithBillPhoto(): List<EntryBillPhoto>
+
+    @Query("UPDATE transactions SET billPhotoPath = :path WHERE id = :id")
+    suspend fun setBillPhotoPath(id: Long, path: String)
+
     // ---------- Duplicate-customer merge ----------
 
     @Query("UPDATE transactions SET partyId = :survivorId WHERE partyId = :loserId")

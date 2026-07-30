@@ -664,11 +664,14 @@
     <string name="drive_connected_never">Connected as %1$s. No cloud backup yet \u2014 tap \u201CBack up to Drive\u201D.</string>
     <string name="drive_connect">Connect Google Drive</string>
     <string name="drive_backup_now">Back up to Drive now</string>
+    <string name="drive_backup_images">Include images (photos, bill photos, QR)</string>
     <string name="drive_restore">Restore from Drive</string>
     <string name="drive_sign_out">Disconnect Google account</string>
     <string name="drive_backing_up">Backing up to Drive\u2026</string>
     <string name="drive_backup_done">Backed up to your Google Drive.</string>
     <string name="drive_backup_failed">Cloud backup failed. Your previous backup, if any, is untouched. Check your internet and try again.</string>
+    <string name="drive_images_backup_failed">Text backup saved, but the images could not be uploaded. Check your internet and try again.</string>
+    <string name="drive_images_restore_failed">Your records were restored, but the images could not be downloaded. Try restoring again on a better connection.</string>
     <string name="drive_restoring">Restoring from Drive\u2026</string>
     <string name="drive_no_backup">No backup found in your Google Drive yet.</string>
     <string name="drive_restore_failed">Could not restore from Drive. Check your internet and try again.</string>
