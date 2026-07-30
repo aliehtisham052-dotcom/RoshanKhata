@@ -716,6 +716,10 @@
     <string name="edit">Tarmeem</string>
     <string name="edit_invoice">Invoice edit karein</string>
     <string name="share">Share</string>
+    <string name="pdf_ready_title">Report tayyar hai</string>
+    <string name="pdf_ready_body">Pehle khol kar dekhein, phir chahein to share karein.</string>
+    <string name="pdf_open">Kholein</string>
+    <string name="close">Band karein</string>
     <string name="back">Wapas</string>
     <string name="entry_not_found">Entry nahi mili</string>
     <string name="delete_entry_message">Ye entry khate se hata di jayegi.</string>

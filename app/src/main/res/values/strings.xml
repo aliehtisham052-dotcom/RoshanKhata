@@ -750,6 +750,10 @@
     <string name="edit">Edit</string>
     <string name="edit_invoice">Edit invoice</string>
     <string name="share">Share</string>
+    <string name="pdf_ready_title">Report ready</string>
+    <string name="pdf_ready_body">Open it to read first, then share if you want.</string>
+    <string name="pdf_open">Open</string>
+    <string name="close">Close</string>
     <string name="back">Back</string>
     <string name="entry_not_found">Entry not found</string>
     <string name="delete_entry_message">This entry will be removed from the ledger.</string>
