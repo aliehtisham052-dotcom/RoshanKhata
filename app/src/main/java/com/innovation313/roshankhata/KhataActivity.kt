@@ -25,6 +25,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.AppLock
+import com.innovation313.roshankhata.data.BusinessProfile
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -124,7 +125,6 @@ class KhataActivity : AppCompatActivity() {
     private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
-    private lateinit var tvTotalSettled: TextView
     private lateinit var tvPartySummary: TextView
     private var totalGet = 0.0
     private var totalGive = 0.0
@@ -160,7 +160,6 @@ class KhataActivity : AppCompatActivity() {
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvTotalGet = findViewById(R.id.tvTotalGet)
         tvTotalGive = findViewById(R.id.tvTotalGive)
-        tvTotalSettled = findViewById(R.id.tvTotalSettled)
         tvPartySummary = findViewById(R.id.tvPartySummary)
         tvEmpty = findViewById(R.id.tvEmpty)
 
@@ -215,20 +214,32 @@ class KhataActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) = render()
         })
 
-        val btnDateFilter = findViewById<MaterialButton>(R.id.btnFilterPartyDate)
-        btnDateFilter.setOnClickListener {
-            DateRangeFilter.choose(this, dateRange) { picked ->
-                dateRange = picked
-                btnDateFilter.text = DateRangeFilter.label(this, picked)
-                render()
-            }
+        // The business's own name in the header, and a tap to change it. The
+        // name comes from the saved profile; if none is set yet the header
+        // keeps the app name (set in the layout) so it is never blank.
+        findViewById<TextView>(R.id.tvBusinessName).apply {
+            BusinessProfile.businessName(this@KhataActivity)?.let { text = it }
         }
+        val openBusinessSettings = {
+            startActivity(Intent(this, BusinessSettingsActivity::class.java))
+        }
+        findViewById<View>(R.id.businessNameTap).setOnClickListener { openBusinessSettings() }
+        findViewById<View>(R.id.ivBusinessLogo).setOnClickListener { openBusinessSettings() }
 
-        // Above the ledger, asked for at that exact placement — picks a
-        // stretch of days with the same DateRangeFilter dialog the box above
-        // uses, then builds and shares one PDF of every entry across every
-        // customer in that window. See LedgerReport for why this is a
-        // separate document from Backup's own "Business Report".
+        // The gear opens the app-wide menu (settings, language, help, lock) —
+        // these belong to the whole app, not to this one ledger, which is why
+        // the owner asked for a settings gear here rather than a menu of this
+        // screen's own actions.
+        findViewById<MaterialButton>(R.id.btnHeaderSettings).setOnClickListener { showMoreSheet() }
+
+        // One filter door. It opens a sheet with Account (all / clear / to-get
+        // / to-give) and Type (all / customers / suppliers) together, replacing
+        // the three separate header buttons that used to do these jobs.
+        findViewById<MaterialButton>(R.id.btnOpenFilter).setOnClickListener { showFilterSheet() }
+
+        // The ledger PDF, now an icon on the toolbar line. Picks a date range,
+        // then builds and shares one PDF of every entry across every customer
+        // in that window. Distinct from Backup's own "Business Report".
         findViewById<MaterialButton>(R.id.btnLedgerPdf).setOnClickListener {
             DateRangeFilter.choose(this, ledgerPdfRange) { picked ->
                 ledgerPdfRange = picked
@@ -245,21 +256,16 @@ class KhataActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
-        findViewById<MaterialButton>(R.id.btnFilterType).setOnClickListener { showTypeDialog() }
 
-        // The three summary boxes are the filter. Tapping one shows the
-        // people behind that figure; tapping it again puts everyone back. A
-        // shopkeeper reading a total is usually about to ask who is in it.
+        // The two summary boxes are still filters. Tapping one shows the people
+        // behind that figure; tapping it again puts everyone back. (The settled
+        // box is gone; its filter now lives in the filter sheet as "clear".)
         findViewById<View>(R.id.boxTotalGet).setOnClickListener {
             sideFilter = if (sideFilter == SideFilter.TO_GET) SideFilter.ALL else SideFilter.TO_GET
             render()
         }
         findViewById<View>(R.id.boxTotalGive).setOnClickListener {
             sideFilter = if (sideFilter == SideFilter.TO_GIVE) SideFilter.ALL else SideFilter.TO_GIVE
-            render()
-        }
-        findViewById<View>(R.id.boxSettled).setOnClickListener {
-            sideFilter = if (sideFilter == SideFilter.SETTLED) SideFilter.ALL else SideFilter.SETTLED
             render()
         }
 
@@ -734,13 +740,14 @@ class KhataActivity : AppCompatActivity() {
     private fun renderFilterState() {
         val get = findViewById<View>(R.id.boxTotalGet) ?: return
         val give = findViewById<View>(R.id.boxTotalGive) ?: return
-        val settled = findViewById<View>(R.id.boxSettled) ?: return
         val dim = 0.45f
         when (sideFilter) {
-            SideFilter.ALL -> { get.alpha = 1f; give.alpha = 1f; settled.alpha = 1f }
-            SideFilter.TO_GET -> { get.alpha = 1f; give.alpha = dim; settled.alpha = dim }
-            SideFilter.TO_GIVE -> { get.alpha = dim; give.alpha = 1f; settled.alpha = dim }
-            SideFilter.SETTLED -> { get.alpha = dim; give.alpha = dim; settled.alpha = 1f }
+            SideFilter.ALL -> { get.alpha = 1f; give.alpha = 1f }
+            SideFilter.TO_GET -> { get.alpha = 1f; give.alpha = dim }
+            SideFilter.TO_GIVE -> { get.alpha = dim; give.alpha = 1f }
+            // Settled is chosen from the filter sheet now, not a box; dim both
+            // so it is clear the list has been narrowed to zero-balance accounts.
+            SideFilter.SETTLED -> { get.alpha = dim; give.alpha = dim }
         }
     }
 
@@ -776,31 +783,67 @@ class KhataActivity : AppCompatActivity() {
      * heavier sheet. The button's own label shows the current choice so the
      * owner can see at a glance that a filter is on.
      */
-    private fun showTypeDialog() {
-        val options = arrayOf(
-            getString(R.string.filter_type_all),
-            getString(R.string.filter_type_customers),
-            getString(R.string.filter_type_suppliers)
+    /**
+     * The filter sheet. Account (which side of the ledger) and Type (customer
+     * or supplier) chosen together in one sheet — the arrangement the owner
+     * asked for, replacing the three loose header buttons. The chips start on
+     * the current selection, so opening the sheet shows what is already active;
+     * the choices are applied only when Apply is tapped, so half-made changes
+     * never disturb the list underneath.
+     */
+    private fun showFilterSheet() {
+        val sheet = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.sheet_filter, null)
+        sheet.setContentView(view)
+
+        val accountGroup = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipsAccount)
+        val typeGroup = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipsType)
+
+        // Account chips: All / Clear / I have to give / I have to get. "All" and
+        // "Clear" both mean no side filter; both are offered because the owner's
+        // own design listed them side by side.
+        data class Opt(val label: String, val side: SideFilter)
+        val accountOpts = listOf(
+            Opt(getString(R.string.filter_account_all), SideFilter.ALL),
+            Opt(getString(R.string.filter_clear), SideFilter.ALL),
+            Opt(getString(R.string.i_have_to_give), SideFilter.TO_GIVE),
+            Opt(getString(R.string.i_have_to_get), SideFilter.TO_GET)
         )
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.filter_type_title)
-            .setSingleChoiceItems(options, typeFilter.ordinal) { dialog, which ->
-                typeFilter = TypeFilter.values()[which]
-                updateTypeButtonLabel()
-                render()
-                dialog.dismiss()
+        var pickedSide = sideFilter
+        accountOpts.forEachIndexed { i, opt ->
+            val chip = com.google.android.material.chip.Chip(this).apply {
+                text = opt.label
+                isCheckable = true
+                isChecked = (opt.side == sideFilter && !(opt.side == SideFilter.ALL && i == 1))
+                setOnClickListener { pickedSide = opt.side }
             }
-            .show()
-    }
-
-    private fun updateTypeButtonLabel() {
-        val labelRes = when (typeFilter) {
-            TypeFilter.ALL -> R.string.filter_type
-            TypeFilter.CUSTOMERS -> R.string.filter_type_customers
-            TypeFilter.SUPPLIERS -> R.string.filter_type_suppliers
+            accountGroup.addView(chip)
         }
-        findViewById<MaterialButton>(R.id.btnFilterType).setText(labelRes)
+
+        val typeOpts = listOf(
+            getString(R.string.filter_type_all) to TypeFilter.ALL,
+            getString(R.string.filter_type_customers) to TypeFilter.CUSTOMERS,
+            getString(R.string.filter_type_suppliers) to TypeFilter.SUPPLIERS
+        )
+        var pickedType = typeFilter
+        typeOpts.forEach { (label, t) ->
+            val chip = com.google.android.material.chip.Chip(this).apply {
+                text = label
+                isCheckable = true
+                isChecked = (t == typeFilter)
+                setOnClickListener { pickedType = t }
+            }
+            typeGroup.addView(chip)
+        }
+
+        view.findViewById<MaterialButton>(R.id.btnApplyFilter).setOnClickListener {
+            sideFilter = pickedSide
+            typeFilter = pickedType
+            render()
+            sheet.dismiss()
+        }
+
+        sheet.show()
     }
 
     private fun showSortDialog() {
@@ -924,10 +967,19 @@ class KhataActivity : AppCompatActivity() {
         val overdue = list.count { it.balance > 0 && it.lastActivity in 1 until cutoff }
 
         val countText = resources.getQuantityString(R.plurals.customer_count, count, count)
-        val base = if (overdue > 0) {
+        val withCount = if (overdue > 0) {
             getString(R.string.summary_with_overdue, countText, overdue)
         } else {
             countText
+        }
+
+        // The settled count used to have its own box up top; it lives on this
+        // line now. totalSettled is counted over the whole book (set when the
+        // list loads), so it is the shop-wide figure, not the filtered view.
+        val base = if (totalSettled > 0) {
+            withCount + "  ·  " + getString(R.string.settled_count, totalSettled)
+        } else {
+            withCount
         }
 
         // A quiet once-a-week nudge to back up, shown only when there's data to
@@ -945,10 +997,6 @@ class KhataActivity : AppCompatActivity() {
         val hidden = BalancePrivacy.isHidden(this)
         tvTotalGet.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGet)
         tvTotalGive.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGive)
-        // A headcount, not a rupee figure — left visible even when balances
-        // are hidden, the same way the customer count elsewhere on this
-        // screen is never masked.
-        tvTotalSettled.text = totalSettled.toString()
     }
 
     private fun renderNetBalance() {

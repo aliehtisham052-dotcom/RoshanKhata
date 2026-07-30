@@ -21,60 +21,76 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!--
+          The business's own name and picture, tappable to change it — a shop
+          with several businesses switches between them here. The name comes
+          from the saved Business Profile; until one is set it falls back to
+          the app name so the header is never blank. The gear opens the app's
+          settings (the same "More" menu), because notifications and settings
+          belong to the whole app, not to this one ledger.
+        -->
         <LinearLayout
+            android:id="@+id/businessHeaderRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <ImageView
+                android:id="@+id/ivBusinessLogo"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginEnd="11dp"
+                android:background="@drawable/bg_business_logo"
+                android:contentDescription="@string/business_name"
+                android:padding="9dp"
+                android:src="@drawable/ic_storefront"
+                app:tint="@color/gold_on_dark" />
+
             <LinearLayout
+                android:id="@+id/businessNameTap"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tvBusinessName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:text="@string/app_name"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <!--
-                  One tagline, not two. The brand line beneath it was carrying the same
-                  words, so the phrase printed twice. It now says the brand.
-                -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:text="@string/app_tagline"
+                    android:text="@string/tap_to_change_business"
                     android:textColor="@color/header_on_dark"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
             </LinearLayout>
 
-            <!--
-              Above the ledger, not buried in a menu — the owner asked for this
-              placement specifically. Asks which stretch of days first (the
-              same DateRangeFilter the ALL button already uses below), then
-              builds and shares one PDF of every entry across every customer
-              in that window. Distinct from Backup's own "Business Report",
-              which is a today-only balance snapshot with no entries and no
-              date choice at all.
-            -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLedgerPdf"
+                android:id="@+id/btnHeaderSettings"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@string/more_title"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:minWidth="0dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="@string/ledger_pdf_button"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="12sp"
-                app:cornerRadius="8dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/ic_feature_settings"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="22dp"
+                app:iconTint="@color/gold_on_dark"
                 app:strokeColor="@color/gold_on_dark" />
         </LinearLayout>
 
@@ -133,12 +149,19 @@
           line above is the single summary; these three break it into the
           groups the owner actually filters by.
         -->
+        <!--
+          Two boxes now, not three. Everything owed TO the owner (collect, red)
+          and everything owed OUT (green). The settled count used to sit here as
+          a third box, but the owner moved it down to the summary line beside
+          the backup status, where a plain count belongs — the two boxes up here
+          are the ones actually tapped to filter.
+        -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="horizontal"
-            android:weightSum="3">
+            android:weightSum="2">
 
             <LinearLayout
                 android:id="@+id/boxTotalGet"
@@ -150,10 +173,10 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:paddingStart="10dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="8dp">
+                android:paddingStart="12dp"
+                android:paddingTop="9dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="9dp">
 
                 <TextView
                     android:id="@+id/tvTotalGet"
@@ -179,15 +202,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
                 android:background="@drawable/bg_summary_give"
                 android:clickable="true"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:paddingStart="10dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="8dp">
+                android:paddingStart="12dp"
+                android:paddingTop="9dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="9dp">
 
                 <TextView
                     android:id="@+id/tvTotalGive"
@@ -204,39 +226,6 @@
                     android:layout_marginTop="2dp"
                     android:text="@string/i_have_to_give"
                     android:textColor="@color/bal_i_owe"
-                    android:textSize="11sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/boxSettled"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/bg_summary_settled"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:paddingStart="10dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/tvTotalSettled"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/ink"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="12" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/settled"
-                    android:textColor="@color/text_muted"
                     android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>
@@ -299,15 +288,97 @@
                 app:strokeColor="@color/gold_on_dark" />
 
             <!--
-              Scan a customer's card. Beside the mic because it is the third
-              way of saying who you mean — typed, spoken, or shown — and the
-              only one of the three that cannot land on the wrong Bilal.
+              Open the filter sheet: Account (all / clear / to-get / to-give)
+              and Type (all / customers / suppliers) together in one place,
+              the way the owner asked, instead of three loose buttons across
+              the header. Beside the mic because it acts on the same list.
             -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOpenFilter"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="40dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@string/filter_title"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_filter_sliders"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="22dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
+        </LinearLayout>
+
+        <!--
+          The line under the search row: on the left, how many accounts there
+          are, how many are settled, and whether a backup is due; on the right,
+          the everyday actions the owner reaches for on the whole list — sort
+          the order, share a PDF, scan a customer's QR card. These were loose
+          buttons in the header before; grouped here they read as one toolbar
+          and free the search row to be just search.
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPartySummary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/header_on_dark"
+                android:textSize="11sp"
+                tools:text="1163 customers · 12 settled · Backup due" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSortParties"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="4dp"
+                android:minWidth="0dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/sort"
+                android:textColor="@color/header_on_dark"
+                android:textSize="12sp"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/header_on_dark" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLedgerPdf"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@string/ledger_pdf_button"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_pdf_doc"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="20dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnScanQr"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
-                android:layout_height="44dp"
+                android:layout_height="38dp"
                 android:layout_marginStart="4dp"
                 android:contentDescription="@string/scan_customer_qr"
                 android:insetTop="0dp"
@@ -319,58 +390,9 @@
                 app:icon="@drawable/ic_qr_scan"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
+                app:iconSize="20dp"
                 app:iconTint="@color/gold_on_dark"
                 app:strokeColor="@color/gold_on_dark" />
-
-            <!--
-              Which stretch of days to show. Beside the sort: both narrow the
-              same list, and "who did I deal with today" is a question asked
-              at every closing.
-            -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnFilterPartyDate"
-                android:minWidth="0dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_marginStart="4dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:text="@string/range_all"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="12sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/gold_on_dark" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSortParties"
-                android:minWidth="0dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_marginStart="4dp"
-                android:text="@string/sort"
-                android:textColor="@color/header_on_dark"
-                android:textSize="12sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/header_on_dark" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnFilterType"
-                android:minWidth="0dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_marginStart="4dp"
-                android:text="@string/filter_type"
-                android:textColor="@color/header_on_dark"
-                android:textSize="12sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/header_on_dark" />
         </LinearLayout>
 
         <!--
@@ -459,21 +481,6 @@
                 app:iconTint="@color/text_muted" />
         </LinearLayout>
 
-        <!--
-          A one-line summary under the search: how many customers, and how many
-          have a balance that has gone quiet for a while (nothing for 30 days).
-          The overdue count is what the competitor surfaces as "reminders" — the
-          owner's cue for who to follow up with. Both sit on the green header, so
-          they use the soft on-header tint.
-        -->
-        <TextView
-            android:id="@+id/tvPartySummary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
-            android:textColor="@color/header_on_dark"
-            android:textSize="12sp" />
     </LinearLayout>
 
     <!--

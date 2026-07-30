@@ -74,6 +74,7 @@
     <string name="you_will_get">Aap ko milenge</string>
     <string name="you_will_give">Aap ko dene hain</string>
     <string name="settled">Hisaab barabar</string>
+    <string name="settled_count">%1$d settled</string>
 
     <string name="name">Naam</string>
     <string name="phone_optional">Phone (ikhtiyari)</string>
@@ -434,6 +435,13 @@
     <string name="nav_more">Mazeed</string>
 
     <string name="more_title">Mazeed</string>
+    <string name="tap_to_change_business">Business badalne ke liye yahan tap karein</string>
+    <string name="filter_title">Filter</string>
+    <string name="filter_account_label">Khata</string>
+    <string name="filter_type_label">Qisam</string>
+    <string name="filter_apply">Filter lagayein</string>
+    <string name="filter_clear">Clear</string>
+    <string name="filter_account_all">Sab</string>
     <string name="more_reports">Reports aur Zakat</string>
     <string name="more_settings">Settings</string>
     <string name="more_data">Aap ka data</string>
