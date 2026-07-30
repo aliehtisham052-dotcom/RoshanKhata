@@ -3,36 +3,47 @@ package com.innovation313.roshankhata.data
 import android.accounts.Account
 import android.content.Context
 import android.content.Intent
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Task
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.api.services.drive.DriveScopes
+import com.innovation313.roshankhata.R
 
 /**
- * Who has authorized Drive access, and how to ask for it.
+ * Who has connected Drive, and how to connect them.
  *
- * This used to wrap the legacy Google Sign-In API, which handled both "who is
- * signed in" and "what may the app touch" in one call. Google deprecated that
- * API and split the two apart: sign-in via Credential Manager, and
- * AUTHORIZATION (the app's own Drive appdata folder) via AuthorizationClient.
- * Roshan Khata never needed a sign-in identity for its own sake -- it only ever
- * needed permission to reach the backup folder -- so it now uses ONLY the
- * authorization half. There is no app-wide Google login; connecting Drive is
- * the one and only place a Google account is involved, exactly as before.
+ * The legacy Google Sign-In API did authentication and authorization in one
+ * call; Google deprecated it and split the two. Roshan Khata now uses BOTH
+ * halves, in order, for one purpose -- connecting the backup folder while
+ * showing the owner which account it is:
  *
- * The ONLY scope requested is the app-data Drive folder (drive.appdata) -- a
- * private space this app can see and nothing else in the owner's Drive. The
- * narrowest door that opens the room, and non-sensitive, so it needs no special
- * Google verification. The consent screen says precisely that.
+ *   1. Sign in with Google (Credential Manager) -- ONLY to learn the account
+ *      email, so the backup screen can show "connected as name@gmail.com". It
+ *      grants no data access by itself.
+ *   2. AuthorizationClient -- the actual permission to the app's own Drive
+ *      appdata folder. This returns a token, not an identity, which is why
+ *      step 1 exists at all.
  *
- * "Connected" is remembered locally: AuthorizationClient does not keep a
- * getLastSignedInAccount()-style handle the way the old API did, so once the
- * owner authorizes, their account email is stored here and the backup screen
- * reads it to know it may show the backup controls. The email is only an
- * account label -- the actual reach into Drive always goes back through
- * authorize(), which re-checks the grant is still in place.
+ * There is no app-wide login: the app runs fine with nobody signed in, and this
+ * whole two-step only ever runs when the owner taps "connect Drive". Connecting
+ * Drive stays the single place a Google account is involved.
+ *
+ * The ONLY Drive scope requested is the app-data folder (drive.appdata) -- a
+ * private space this app can see, nothing else in the owner's Drive. Narrow and
+ * non-sensitive, so it needs no special Google verification. The sign-in asks
+ * only for basic identity (the email to show). The consent screens say exactly
+ * this.
+ *
+ * The connected email is remembered locally so the screen can show it between
+ * visits; it is only a label. The real reach into Drive always goes back
+ * through authorize(), which re-checks the grant is still in place.
  */
 object DriveAuth {
 
@@ -73,17 +84,51 @@ object DriveAuth {
         Identity.getAuthorizationClient(context).getAuthorizationResultFromIntent(data)
 
     /**
-     * Remember which account authorized, so the screen can show it next time.
+     * Sign in with Google via Credential Manager, only to learn WHICH account
+     * the owner is connecting -- so the backup screen can show that email.
      *
-     * The email is read via toGoogleSignInAccount() -- the one accessor the
-     * AuthorizationResult reliably exposes for the account behind the grant.
-     * (GoogleSignInAccount is itself a deprecated type, but it is still what
-     * this result hands back, and only its email field is read -- no sign-in
-     * behaviour depends on it.)
+     * This is the piece that brings the email back. The Drive authorization
+     * step (authorize(), below) returns only a token, deliberately not the
+     * account identity; Google split those apart so an app asking merely for
+     * storage cannot also read who you are. But the owner has a real need to
+     * SEE which Gmail their books back up to -- a backup to the wrong account
+     * must be visible -- so a Sign in with Google step is added purely for that
+     * label. It grants no data access on its own; the Drive permission is still
+     * the separate authorize() call.
+     *
+     * Returns the account email, or null if the owner dismissed the sheet or no
+     * account came back. Must be called from a coroutine (getCredential
+     * suspends). The serverClientId is the Web OAuth client id -- Credential
+     * Manager verifies the returned ID token against it.
      */
-    fun rememberAccount(context: Context, result: AuthorizationResult) {
-        val email = result.toGoogleSignInAccount()?.email
-        if (!email.isNullOrBlank()) {
+    suspend fun signIn(context: Context): String? {
+        val option = GetSignInWithGoogleOption.Builder(
+            context.getString(R.string.google_web_client_id)
+        ).build()
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(option)
+            .build()
+
+        val response = CredentialManager.create(context).getCredential(context, request)
+        val credential = response.credential
+
+        if (credential is CustomCredential &&
+            credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+        ) {
+            val google = GoogleIdTokenCredential.createFrom(credential.data)
+            return google.id.takeIf { it.isNotBlank() }
+        }
+        return null
+    }
+
+    /**
+     * Remember the connected account's email so the screen can show it. The
+     * email comes from the Credential Manager sign-in above -- the one place it
+     * is reliably available under the new APIs.
+     */
+    fun rememberAccount(context: Context, email: String) {
+        if (email.isNotBlank()) {
             prefs(context).edit().putString(KEY_ACCOUNT, email).apply()
         }
     }
