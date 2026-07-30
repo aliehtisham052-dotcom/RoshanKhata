@@ -28,17 +28,17 @@ import java.util.Locale
 object Backup {
 
     /**
-     * Raised to 4 when products arrived, and to 5 when invoices and the
-     * Business Profile text joined the file.
+     * Raised to 4 when products arrived, to 5 when invoices and the Business
+     * Profile text joined, and to 6 when the "not a duplicate" decisions did.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
-     * imported without its invoices. Silently dropping a table the old code
+     * imported without its newest data. Silently dropping a table the old code
      * cannot hold would look like a successful restore and lose data.
      * Reading OLD files is unaffected — every array is read optionally, so a
-     * version-4 file (no invoices, no businessProfile) still restores cleanly.
+     * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 5
+    const val FORMAT_VERSION = 6
 
     private val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
@@ -105,6 +105,9 @@ object Backup {
         })
         root.put("invoiceItems", JSONArray().apply {
             dao.allInvoiceItemsForBackup().forEach { put(invoiceItemToJson(it)) }
+        })
+        root.put("dismissedDuplicates", JSONArray().apply {
+            dao.allDismissedDuplicatesForBackup().forEach { put(dismissedDuplicateToJson(it)) }
         })
 
         // The Business Profile — TEXT ONLY. The three image flags
@@ -351,6 +354,12 @@ object Backup {
                 (0 until arr.length()).map { jsonToInvoiceItem(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Absent in a version-5-or-older backup — read optionally, like the
+            // rest. No foreign key, so nothing to orphan-check.
+            val dismissedDuplicates = root.optJSONArray("dismissedDuplicates")?.let { arr ->
+                (0 until arr.length()).map { jsonToDismissedDuplicate(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
             // Business Profile is a single optional object, not an array. Null
             // in an older file, or in one written before the owner set any
             // details — either way there is simply nothing to restore.
@@ -403,7 +412,8 @@ object Backup {
                 invoices = invoices.size
             ) to ParsedBackup(
                 parties, entries, cheques, cash, plans, installments,
-                bills, billItems, products, invoices, invoiceItems, businessProfile
+                bills, billItems, products, invoices, invoiceItems, businessProfile,
+                dismissedDuplicates
             )
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
@@ -426,7 +436,8 @@ object Backup {
         // taken before the owner filled anything in). A present-but-empty
         // profile and an absent one are treated the same on restore: nothing
         // to write.
-        val businessProfile: BusinessProfileData? = null
+        val businessProfile: BusinessProfileData? = null,
+        val dismissedDuplicates: List<DismissedDuplicate> = emptyList()
     )
 
     /**
@@ -472,7 +483,8 @@ object Backup {
             billItems = data.billItems,
             products = data.products,
             invoices = data.invoices,
-            invoiceItems = data.invoiceItems
+            invoiceItems = data.invoiceItems,
+            dismissedDuplicates = data.dismissedDuplicates
         )
 
         data.businessProfile?.let { restoreBusinessProfile(context, it) }
@@ -802,6 +814,16 @@ object Backup {
         unit = o.optNullableString("unit"),
         rate = o.optDouble("rate", 0.0),
         isDeleted = o.optBoolean("isDeleted", false)
+    )
+
+    private fun dismissedDuplicateToJson(d: DismissedDuplicate) = JSONObject().apply {
+        put("partyIdsKey", d.partyIdsKey)
+        put("dismissedAt", d.dismissedAt)
+    }
+
+    private fun jsonToDismissedDuplicate(o: JSONObject) = DismissedDuplicate(
+        partyIdsKey = o.optString("partyIdsKey", ""),
+        dismissedAt = o.optLong("dismissedAt", System.currentTimeMillis())
     )
 
     // ---------- Business Profile (SharedPreferences, not Room) ----------

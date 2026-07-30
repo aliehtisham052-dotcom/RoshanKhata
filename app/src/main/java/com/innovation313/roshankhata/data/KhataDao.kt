@@ -1160,7 +1160,9 @@ interface KhataDao {
         // still compiles and simply restores none — invoices are additive to
         // this signature, not a new requirement on every call site.
         invoices: List<Invoice> = emptyList(),
-        invoiceItems: List<InvoiceItem> = emptyList()
+        invoiceItems: List<InvoiceItem> = emptyList(),
+        // Also additive: the owner's "not a duplicate" decisions.
+        dismissedDuplicates: List<DismissedDuplicate> = emptyList()
     ) {
         // Children before parents on the way out. invoice_items cascades off
         // invoices, so items are wiped first; wiping invoices first would fire
@@ -1176,6 +1178,7 @@ interface KhataDao {
         wipeCash()
         wipeParties()
         wipeProducts()
+        wipeDismissedDuplicates()
 
         restoreProducts(products)
         restoreParties(parties)
@@ -1190,6 +1193,8 @@ interface KhataDao {
         // needs its invoice to already exist.
         restoreInvoices(invoices)
         restoreInvoiceItems(invoiceItems)
+        // No foreign key — order does not matter for these.
+        restoreDismissedDuplicates(dismissedDuplicates)
     }
 
 
@@ -1364,4 +1369,16 @@ interface KhataDao {
      */
     @Query("SELECT partyIdsKey FROM dismissed_duplicates")
     suspend fun getDismissedDuplicateKeys(): List<String>
+
+    // Backup: the owner's "not a duplicate" decisions are their work too — a
+    // phone move that lost them would resurface every dismissed suggestion. No
+    // foreign key, no parent, so this is a plain wipe-and-restore.
+    @Query("SELECT * FROM dismissed_duplicates")
+    suspend fun allDismissedDuplicatesForBackup(): List<DismissedDuplicate>
+
+    @Query("DELETE FROM dismissed_duplicates")
+    suspend fun wipeDismissedDuplicates()
+
+    @Insert
+    suspend fun restoreDismissedDuplicates(items: List<DismissedDuplicate>)
 }
