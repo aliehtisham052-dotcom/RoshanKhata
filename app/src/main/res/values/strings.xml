@@ -228,6 +228,11 @@
     <!-- Business settings / payment QR -->
     <string name="business_settings">Business Settings</string>
     <string name="business_profile">Profile</string>
+    <string name="profile_preview_caption">This is how your profile prints on invoices &amp; statements.</string>
+    <string name="profile_section_business">Business</string>
+    <string name="profile_section_seals">Seals &amp; signatures</string>
+    <string name="profile_section_statement">Statement options</string>
+    <string name="profile_section_payment_tax">Payment &amp; tax</string>
     <string name="business_settings_subtitle">Your name and payment code on statements</string>
     <string name="business_name">Business name</string>
     <string name="business_name_help">Appears at the top of every statement and at the end of every reminder you send.</string>

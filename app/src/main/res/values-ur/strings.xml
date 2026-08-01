@@ -214,6 +214,11 @@
 
     <string name="business_settings">کاروباری ترتیبات</string>
     <string name="business_profile">پروفائل</string>
+    <string name="profile_preview_caption">آپ کا پروفائل انوائسز اور اسٹیٹمنٹس پر اس طرح چھپے گا۔</string>
+    <string name="profile_section_business">کاروبار</string>
+    <string name="profile_section_seals">مہر اور دستخط</string>
+    <string name="profile_section_statement">اسٹیٹمنٹ کے آپشنز</string>
+    <string name="profile_section_payment_tax">ادائیگی اور ٹیکس</string>
     <string name="business_settings_subtitle">اسٹیٹمنٹ پر آپ کا نام اور پیمنٹ کوڈ</string>
     <string name="business_name">کاروبار کا نام</string>
     <string name="business_name_help">ہر اسٹیٹمنٹ کے اوپر اور ہر یاد دہانی کے آخر میں آتا ہے۔</string>

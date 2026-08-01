@@ -42,6 +42,15 @@ class BusinessSettingsActivity : AppCompatActivity() {
     private lateinit var tvNoStamp: TextView
     private lateinit var btnRemoveStamp: MaterialButton
 
+    // The small "how this prints" card at the top of the screen. It mirrors
+    // the same three things a statement actually shows — name, stamp, QR —
+    // so a mistake is caught here, not on a document a customer already has.
+    private lateinit var tvPreviewBusinessName: TextView
+    private lateinit var ivPreviewStampThumb: ImageView
+    private lateinit var tvPreviewStampPlaceholder: View
+    private lateinit var ivPreviewQrThumb: ImageView
+    private lateinit var tvPreviewQrPlaceholder: View
+
     private lateinit var etBankName: EditText
     private lateinit var etBankTitle: EditText
     private lateinit var etBankIban: EditText
@@ -135,6 +144,12 @@ class BusinessSettingsActivity : AppCompatActivity() {
         etInvoiceTerms = findViewById(R.id.etInvoiceTerms)
         etStrn = findViewById(R.id.etStrn)
 
+        tvPreviewBusinessName = findViewById(R.id.tvPreviewBusinessName)
+        ivPreviewStampThumb = findViewById(R.id.ivPreviewStampThumb)
+        tvPreviewStampPlaceholder = findViewById(R.id.tvPreviewStampPlaceholder)
+        ivPreviewQrThumb = findViewById(R.id.ivPreviewQrThumb)
+        tvPreviewQrPlaceholder = findViewById(R.id.tvPreviewQrPlaceholder)
+
         etBusinessName.setText(BusinessProfile.businessName(this).orEmpty())
         etBusinessAddress.setText(BusinessProfile.businessAddress(this).orEmpty())
         etBankName.setText(BusinessProfile.bankName(this).orEmpty())
@@ -199,6 +214,21 @@ class BusinessSettingsActivity : AppCompatActivity() {
             BusinessProfile.setPhotoOnStatement(this, on)
         }
 
+        // Preview name starts from whatever is already saved (falling back to
+        // the app name in XML, same as the khata header does), then tracks
+        // every keystroke so the preview always matches the field above it.
+        BusinessProfile.businessName(this)?.takeIf { it.isNotBlank() }?.let {
+            tvPreviewBusinessName.text = it
+        }
+        etBusinessName.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                val typed = s?.toString()?.trim().orEmpty()
+                tvPreviewBusinessName.text = typed.ifEmpty { getString(R.string.app_name) }
+            }
+        })
+
         refreshQr()
         refreshSignature()
         refreshStamp()
@@ -252,11 +282,16 @@ class BusinessSettingsActivity : AppCompatActivity() {
             ivStampPreview.visibility = View.GONE
             tvNoStamp.visibility = View.VISIBLE
             btnRemoveStamp.visibility = View.GONE
+            ivPreviewStampThumb.visibility = View.GONE
+            tvPreviewStampPlaceholder.visibility = View.VISIBLE
         } else {
             ivStampPreview.setImageBitmap(stamp)
             ivStampPreview.visibility = View.VISIBLE
             tvNoStamp.visibility = View.GONE
             btnRemoveStamp.visibility = View.VISIBLE
+            ivPreviewStampThumb.setImageBitmap(stamp)
+            ivPreviewStampThumb.visibility = View.VISIBLE
+            tvPreviewStampPlaceholder.visibility = View.GONE
         }
     }
 
@@ -325,10 +360,15 @@ class BusinessSettingsActivity : AppCompatActivity() {
             ivQrPreview.visibility = View.VISIBLE
             tvNoQr.visibility = View.GONE
             btnRemoveQr.visibility = View.VISIBLE
+            ivPreviewQrThumb.setImageBitmap(bitmap)
+            ivPreviewQrThumb.visibility = View.VISIBLE
+            tvPreviewQrPlaceholder.visibility = View.GONE
         } else {
             ivQrPreview.visibility = View.GONE
             tvNoQr.visibility = View.VISIBLE
             btnRemoveQr.visibility = View.GONE
+            ivPreviewQrThumb.visibility = View.GONE
+            tvPreviewQrPlaceholder.visibility = View.VISIBLE
         }
     }
 }

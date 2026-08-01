@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dashed placeholder for the small stamp/QR thumbnails inside the live
+     preview card, before either has been added yet. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/page_bg" />
+    <corners android:radius="8dp" />
+    <stroke
+        android:width="1.5dp"
+        android:color="@color/hairline"
+        android:dashWidth="4dp"
+        android:dashGap="3dp" />
+</shape>
