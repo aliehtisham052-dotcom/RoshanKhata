@@ -352,6 +352,7 @@
                     android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:text="@string/no_stamp_yet"
+                    android:visibility="gone"
                     android:textColor="@color/text_muted"
                     android:textSize="13sp" />
 
@@ -444,6 +445,7 @@
                     android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:text="@string/no_signature_yet"
+                    android:visibility="gone"
                     android:textColor="@color/text_muted"
                     android:textSize="13sp" />
 
@@ -548,6 +550,7 @@
                     android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:text="@string/no_qr_yet"
+                    android:visibility="gone"
                     android:textColor="@color/text_muted"
                     android:textSize="13sp" />
 

@@ -249,16 +249,20 @@ class BusinessSettingsActivity : AppCompatActivity() {
     }
 
     private fun refreshSignature() {
-        val signature = BusinessProfile.loadSignature(this)
-        if (signature == null) {
-            ivSignaturePreview.visibility = android.view.View.GONE
-            tvNoSignature.visibility = android.view.View.VISIBLE
-            btnRemoveSignature.visibility = android.view.View.GONE
-        } else {
-            ivSignaturePreview.setImageBitmap(signature)
-            ivSignaturePreview.visibility = android.view.View.VISIBLE
-            tvNoSignature.visibility = android.view.View.GONE
-            btnRemoveSignature.visibility = android.view.View.VISIBLE
+        lifecycleScope.launch {
+            val signature = withContext(Dispatchers.IO) {
+                BusinessProfile.loadSignature(this@BusinessSettingsActivity)
+            }
+            if (signature == null) {
+                ivSignaturePreview.visibility = android.view.View.GONE
+                tvNoSignature.visibility = android.view.View.VISIBLE
+                btnRemoveSignature.visibility = android.view.View.GONE
+            } else {
+                ivSignaturePreview.setImageBitmap(signature)
+                ivSignaturePreview.visibility = android.view.View.VISIBLE
+                tvNoSignature.visibility = android.view.View.GONE
+                btnRemoveSignature.visibility = android.view.View.VISIBLE
+            }
         }
     }
 
@@ -276,22 +280,35 @@ class BusinessSettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Decoding happens on IO, not here.
+     *
+     * These three images are full-resolution — they have to be, since the
+     * same files get drawn into invoices and statements at print quality.
+     * Decoding all three on the main thread is what made this screen take a
+     * visible moment to open; the work moves off, and the views are set when
+     * it lands.
+     */
     private fun refreshStamp() {
-        val stamp = BusinessProfile.loadStamp(this)
-        if (stamp == null) {
-            ivStampPreview.visibility = View.GONE
-            tvNoStamp.visibility = View.VISIBLE
-            btnRemoveStamp.visibility = View.GONE
-            ivPreviewStampThumb.visibility = View.GONE
-            tvPreviewStampPlaceholder.visibility = View.VISIBLE
-        } else {
-            ivStampPreview.setImageBitmap(stamp)
-            ivStampPreview.visibility = View.VISIBLE
-            tvNoStamp.visibility = View.GONE
-            btnRemoveStamp.visibility = View.VISIBLE
-            ivPreviewStampThumb.setImageBitmap(stamp)
-            ivPreviewStampThumb.visibility = View.VISIBLE
-            tvPreviewStampPlaceholder.visibility = View.GONE
+        lifecycleScope.launch {
+            val stamp = withContext(Dispatchers.IO) {
+                BusinessProfile.loadStamp(this@BusinessSettingsActivity)
+            }
+            if (stamp == null) {
+                ivStampPreview.visibility = View.GONE
+                tvNoStamp.visibility = View.VISIBLE
+                btnRemoveStamp.visibility = View.GONE
+                ivPreviewStampThumb.visibility = View.GONE
+                tvPreviewStampPlaceholder.visibility = View.VISIBLE
+            } else {
+                ivStampPreview.setImageBitmap(stamp)
+                ivStampPreview.visibility = View.VISIBLE
+                tvNoStamp.visibility = View.GONE
+                btnRemoveStamp.visibility = View.VISIBLE
+                ivPreviewStampThumb.setImageBitmap(stamp)
+                ivPreviewStampThumb.visibility = View.VISIBLE
+                tvPreviewStampPlaceholder.visibility = View.GONE
+            }
         }
     }
 
@@ -353,22 +370,26 @@ class BusinessSettingsActivity : AppCompatActivity() {
     }
 
     private fun refreshQr() {
-        val bitmap = BusinessProfile.loadQr(this)
+        lifecycleScope.launch {
+            val bitmap = withContext(Dispatchers.IO) {
+                BusinessProfile.loadQr(this@BusinessSettingsActivity)
+            }
 
-        if (bitmap != null) {
-            ivQrPreview.setImageBitmap(bitmap)
-            ivQrPreview.visibility = View.VISIBLE
-            tvNoQr.visibility = View.GONE
-            btnRemoveQr.visibility = View.VISIBLE
-            ivPreviewQrThumb.setImageBitmap(bitmap)
-            ivPreviewQrThumb.visibility = View.VISIBLE
-            tvPreviewQrPlaceholder.visibility = View.GONE
-        } else {
-            ivQrPreview.visibility = View.GONE
-            tvNoQr.visibility = View.VISIBLE
-            btnRemoveQr.visibility = View.GONE
-            ivPreviewQrThumb.visibility = View.GONE
-            tvPreviewQrPlaceholder.visibility = View.VISIBLE
+            if (bitmap != null) {
+                ivQrPreview.setImageBitmap(bitmap)
+                ivQrPreview.visibility = View.VISIBLE
+                tvNoQr.visibility = View.GONE
+                btnRemoveQr.visibility = View.VISIBLE
+                ivPreviewQrThumb.setImageBitmap(bitmap)
+                ivPreviewQrThumb.visibility = View.VISIBLE
+                tvPreviewQrPlaceholder.visibility = View.GONE
+            } else {
+                ivQrPreview.visibility = View.GONE
+                tvNoQr.visibility = View.VISIBLE
+                btnRemoveQr.visibility = View.GONE
+                ivPreviewQrThumb.visibility = View.GONE
+                tvPreviewQrPlaceholder.visibility = View.VISIBLE
+            }
         }
     }
 }
