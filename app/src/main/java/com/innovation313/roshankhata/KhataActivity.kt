@@ -217,11 +217,8 @@ class KhataActivity : AppCompatActivity() {
         })
 
         // The business's own name in the header, and a tap to change it. The
-        // name comes from the saved profile; if none is set yet the header
-        // keeps the app name (set in the layout) so it is never blank.
-        findViewById<TextView>(R.id.tvBusinessName).apply {
-            BusinessProfile.businessName(this@KhataActivity)?.let { text = it }
-        }
+        // name itself is set in onResume (it can change in Profile and come
+        // back), so only the taps are wired here.
         val openBusinessSettings = {
             startActivity(Intent(this, BusinessSettingsActivity::class.java))
         }
@@ -1018,6 +1015,16 @@ class KhataActivity : AppCompatActivity() {
         // Nothing to re-select here: Khata has no item in the bar, and
         // assigning selectedItemId would fire the listener and finish this
         // screen the moment it came back to the front.
+
+        // The business name is re-read here, not just in onCreate. Editing it
+        // happens one tap away in Profile, and coming back from Profile
+        // resumes this screen rather than recreating it — so a name set there
+        // stayed invisible here until the app was restarted, which read as
+        // "the app ignored what I saved".
+        findViewById<TextView>(R.id.tvBusinessName).apply {
+            val saved = BusinessProfile.businessName(this@KhataActivity)
+            text = if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
+        }
     }
 
     /**
