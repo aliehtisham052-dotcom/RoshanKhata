@@ -37,6 +37,14 @@
     <string name="coach_desc_bizcard">اپنی دکان کے لیے سیکنڈوں میں شیئر ہونے والا کارڈ بنائیں، تین انداز میں۔</string>
     <string name="coach_title_invoice">انوائس</string>
     <string name="coach_desc_invoice">اپنے گاہکوں کے لیے پروفیشنل انوائس بنائیں — تیار ڈیزائنوں میں سے چنیں، آپ کے نام، مہر اور کیو آر کے ساتھ۔</string>
+    <string name="followup_title">وصولی</string>
+    <string name="followup_subtitle">کس سے وصول کرنا ہے — سب سے پرانا پہلے، رقم ساتھ</string>
+    <string name="followup_summary">%1$d گاہکوں کے ذمے آپ کا · کل %2$s</string>
+    <string name="followup_last_ago">آخری لین دین %1$d دن پہلے</string>
+    <string name="followup_today">آج لین دین ہوا</string>
+    <string name="followup_empty">اس وقت کسی کے ذمے کچھ نہیں — سب ادا شدہ۔</string>
+    <string name="coach_title_followup">وصولی</string>
+    <string name="coach_desc_followup">جن کے ذمے آپ کا ہے، پرانا قرض پہلے — ہر ایک پر ایک ٹیپ واٹس ایپ یاد دہانی۔</string>
     <string name="coach_title_backup">بیک اپ</string>
     <string name="coach_desc_backup">اپنا کھاتہ محفوظ طریقے سے اپنے گوگل ڈرائیو پر رکھیں۔</string>
         <string name="coach_title_settings">کاروباری سیٹنگز</string>

@@ -37,6 +37,14 @@
     <string name="coach_desc_bizcard">پنهنجي دڪان لاءِ سيڪنڊن ۾ شيئر ڪرڻ جوڳو ڪارڊ ٺاهيو، ٽن انداز ۾.</string>
     <string name="coach_title_invoice">انوائس</string>
     <string name="coach_desc_invoice">پنهنجن گراهڪن لاءِ پروفيشنل انوائس ٺاهيو — تيار ڊيزائنن مان چونڊيو، پنهنجي نالي، مهر ۽ QR سان.</string>
+    <string name="followup_title">وصولي</string>
+    <string name="followup_subtitle">ڪنهن کان وصول ڪرڻو آهي — سڀ کان پراڻو پهرين، رقم گڏ</string>
+    <string name="followup_summary">%1$d گراهڪن جي ذمي توهان جو · ڪل %2$s</string>
+    <string name="followup_last_ago">آخري ڏيتي ليتي %1$d ڏينهن اڳ</string>
+    <string name="followup_today">اڄ ڏيتي ليتي ٿي</string>
+    <string name="followup_empty">هن وقت ڪنهن جي ذمي ڪجهه ناهي — سڀ ادا ٿيل.</string>
+    <string name="coach_title_followup">وصولي</string>
+    <string name="coach_desc_followup">جن جي ذمي توهان جو آهي، پراڻو قرض پهرين — هر هڪ تي هڪ ٽيپ واٽس ايپ ياد ڏياريندڙ.</string>
     <string name="coach_title_backup">بيڪ اپ</string>
     <string name="coach_desc_backup">پنهنجو کاتو محفوظ طريقي سان پنهنجي گوگل ڊرائيو تي رکو.</string>
         <string name="coach_title_settings">ڪاروباري سيٽنگون</string>

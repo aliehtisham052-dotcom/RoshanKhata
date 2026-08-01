@@ -37,6 +37,14 @@
     <string name="coach_desc_bizcard">در چند ثانیه کارتی قابل اشتراک برای مغازه‌تان بسازید، در سه سبک.</string>
     <string name="coach_title_invoice">فاکتور</string>
     <string name="coach_desc_invoice">برای مشتریان خود فاکتورهای حرفه‌ای بسازید — از طرح‌های آماده با نام، مهر و QR خود انتخاب کنید.</string>
+    <string name="followup_title">پیگیری وصول</string>
+    <string name="followup_subtitle">از چه کسی وصول کنید — قدیمی‌ترین اول، مبلغ در کنار</string>
+    <string name="followup_summary">%1$d مشتری به شما بدهکارند · جمعاً %2$s</string>
+    <string name="followup_last_ago">آخرین تراکنش %1$d روز پیش</string>
+    <string name="followup_today">امروز تراکنش شد</string>
+    <string name="followup_empty">اکنون کسی به شما بدهکار نیست — همه تسویه.</string>
+    <string name="coach_title_followup">پیگیری وصول</string>
+    <string name="coach_desc_followup">همه بدهکاران، قدیمی‌ترین بدهی اول — با یادآوری واتساپ تک‌ضربه‌ای روی هر کدام.</string>
     <string name="coach_title_backup">پشتیبان‌گیری</string>
     <string name="coach_desc_backup">دفتر خود را با خیال راحت در گوگل درایو خودتان ذخیره کنید.</string>
         <string name="coach_title_settings">تنظیمات کسب‌وکار</string>
