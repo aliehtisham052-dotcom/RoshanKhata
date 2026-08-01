@@ -474,7 +474,7 @@
 
     <!-- More sheet -->
     <string name="more_title">وڌيڪ</string>
-    <string name="tap_to_change_business">ڪاروبار مٽائڻ لاءِ هتي دٻايو</string>
+    <string name="tap_to_change_business">ڪاروبار جي تفصيل بدلائڻ لاءِ دٻايو</string>
     <string name="filter_title">فلٽر</string>
     <string name="filter_account_label">کھاتو</string>
     <string name="filter_type_label">قسم</string>

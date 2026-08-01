@@ -478,7 +478,7 @@
 
     <!-- More sheet -->
     <string name="more_title">More</string>
-    <string name="tap_to_change_business">Tap here to change business</string>
+    <string name="tap_to_change_business">Tap to edit business details</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Account</string>
     <string name="filter_type_label">Type</string>
