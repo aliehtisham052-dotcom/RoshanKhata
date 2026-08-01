@@ -474,7 +474,7 @@
 
     <!-- More sheet -->
     <string name="more_title">بیشتر</string>
-    <string name="tap_to_change_business">برای تغییر کسب‌وکار اینجا بزنید</string>
+    <string name="tap_to_change_business">برای ویرایش مشخصات کسب‌وکار بزنید</string>
     <string name="filter_title">فیلتر</string>
     <string name="filter_account_label">حساب</string>
     <string name="filter_type_label">نوع</string>
