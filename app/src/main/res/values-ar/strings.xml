@@ -37,6 +37,14 @@
     <string name="coach_desc_bizcard">أنشئ بطاقة قابلة للمشاركة لمتجرك في ثوانٍ، بثلاثة أنماط.</string>
     <string name="coach_title_invoice">فاتورة</string>
     <string name="coach_desc_invoice">أنشئ فواتير احترافية لعملائك — اختر من تصاميم جاهزة مع اسمك وختمك ورمز QR.</string>
+    <string name="followup_title">المتابعة</string>
+    <string name="followup_subtitle">ممن تُحصّل — الأقدم أولاً، والمبلغ بجانبه</string>
+    <string name="followup_summary">%1$d عميلاً مدينون لك · الإجمالي %2$s</string>
+    <string name="followup_last_ago">آخر معاملة قبل %1$d يومًا</string>
+    <string name="followup_today">تمت معاملة اليوم</string>
+    <string name="followup_empty">لا أحد مدين لك الآن — الكل مُسوّى.</string>
+    <string name="coach_title_followup">المتابعة</string>
+    <string name="coach_desc_followup">كل المدينين، الأقدم أولاً — مع تذكير واتساب بنقرة واحدة لكل منهم.</string>
     <string name="coach_title_backup">النسخ الاحتياطي</string>
     <string name="coach_desc_backup">احفظ دفترك بأمان على درايف الخاص بك.</string>
         <string name="coach_title_settings">إعدادات العمل</string>

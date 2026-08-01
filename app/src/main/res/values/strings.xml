@@ -41,6 +41,14 @@
     <string name="coach_desc_bizcard">Make a shareable card for your shop in seconds, in three styles.</string>
     <string name="coach_title_invoice">Invoice</string>
     <string name="coach_desc_invoice">Make professional invoices for your customers — pick from ready designs with your name, stamp and QR.</string>
+    <string name="followup_title">Follow-up</string>
+    <string name="followup_subtitle">Who to collect from — oldest first, amount alongside</string>
+    <string name="followup_summary">%1$d customers owe you · %2$s in all</string>
+    <string name="followup_last_ago">Last transaction %1$d days ago</string>
+    <string name="followup_today">Transacted today</string>
+    <string name="followup_empty">No one owes you anything right now — all settled.</string>
+    <string name="coach_title_followup">Follow-up</string>
+    <string name="coach_desc_followup">Everyone who owes you, oldest debts first — with a one-tap WhatsApp reminder on each.</string>
     <string name="coach_title_backup">Backup</string>
     <string name="coach_desc_backup">Save your ledger safely to your own Google Drive.</string>
         <string name="coach_title_settings">Business Settings</string>

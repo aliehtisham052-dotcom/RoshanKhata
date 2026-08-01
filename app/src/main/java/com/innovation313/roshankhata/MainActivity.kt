@@ -108,6 +108,8 @@ class MainActivity : AppCompatActivity() {
         val business = listOf(
             Feature(R.drawable.ic_feature_insights, R.string.insights_title, InsightsActivity::class.java,
                 R.color.tile_insights_bg, R.color.tile_insights_fg),
+            Feature(R.drawable.ic_feature_followup, R.string.followup_title, FollowUpActivity::class.java,
+                R.color.tile_followup_bg, R.color.tile_followup_fg),
             Feature(R.drawable.ic_feature_zakat, R.string.zakat_calculator, ZakatActivity::class.java,
                 R.color.tile_zakat_bg, R.color.gold_accent),
             Feature(R.drawable.ic_feature_card, R.string.biz_card, BusinessCardActivity::class.java,
@@ -347,6 +349,7 @@ class MainActivity : AppCompatActivity() {
             tileStep(R.string.expiring_stock, R.string.coach_title_stock, R.string.coach_desc_stock),
             tileStep(R.string.calculator, R.string.coach_title_calc, R.string.coach_desc_calc),
             tileStep(R.string.insights_title, R.string.coach_title_insights, R.string.coach_desc_insights),
+            tileStep(R.string.followup_title, R.string.coach_title_followup, R.string.coach_desc_followup),
             tileStep(R.string.zakat_calculator, R.string.coach_title_zakat, R.string.coach_desc_zakat),
             tileStep(R.string.biz_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
             tileStep(R.string.business_settings, R.string.coach_title_settings, R.string.coach_desc_settings),
