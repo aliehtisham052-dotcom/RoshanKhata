@@ -771,6 +771,7 @@
     <string name="edit_invoice">ویرایش فاکتور</string>
     <string name="share">اشتراک</string>
     <string name="pdf_ready_title">گزارش آماده است</string>
+    <string name="statement_ready_title">صورت‌حساب آماده است</string>
     <string name="pdf_ready_body">اول باز کنید و بخوانید، سپس در صورت تمایل به اشتراک بگذارید.</string>
     <string name="pdf_open">باز کردن</string>
     <string name="close">بستن</string>

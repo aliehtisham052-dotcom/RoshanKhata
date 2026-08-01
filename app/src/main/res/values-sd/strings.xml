@@ -771,6 +771,7 @@
     <string name="edit_invoice">انوائس ايڊٽ ڪريو</string>
     <string name="share">شيئر</string>
     <string name="pdf_ready_title">رپورٽ تيار آهي</string>
+    <string name="statement_ready_title">اسٽيٽمينٽ تيار آهي</string>
     <string name="pdf_ready_body">پهرين کولي ڏسو، پوءِ جي چاهيو ته شيئر ڪريو.</string>
     <string name="pdf_open">کوليو</string>
     <string name="close">بند ڪريو</string>

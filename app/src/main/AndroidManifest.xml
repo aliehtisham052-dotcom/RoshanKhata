@@ -24,6 +24,16 @@
         <intent>
             <action android:name="android.speech.RecognitionService" />
         </intent>
+        <!--
+          Android 11+ hides other apps from us unless we declare what we need
+          to see. Without this, resolveActivity() for a PDF returns null even
+          on a phone that has three PDF viewers installed — so "Open" silently
+          fell through to the share sheet and looked identical to "Share".
+        -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="application/pdf" />
+        </intent>
     </queries>
 
     <application

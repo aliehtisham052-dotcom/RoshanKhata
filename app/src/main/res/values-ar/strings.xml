@@ -751,6 +751,7 @@
     <string name="edit_invoice">تعديل الفاتورة</string>
     <string name="share">مشاركة</string>
     <string name="pdf_ready_title">التقرير جاهز</string>
+    <string name="statement_ready_title">الكشف جاهز</string>
     <string name="pdf_ready_body">افتحه للقراءة أولًا، ثم شاركه إن أردت.</string>
     <string name="pdf_open">فتح</string>
     <string name="close">إغلاق</string>
