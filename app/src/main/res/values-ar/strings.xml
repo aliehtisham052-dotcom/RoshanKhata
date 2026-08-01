@@ -214,6 +214,11 @@
 
     <string name="business_settings">إعدادات النشاط التجاري</string>
     <string name="business_profile">الملف الشخصي</string>
+    <string name="profile_preview_caption">هكذا سيظهر ملفك الشخصي على الفواتير والكشوف.</string>
+    <string name="profile_section_business">العمل</string>
+    <string name="profile_section_seals">الأختام والتوقيعات</string>
+    <string name="profile_section_statement">خيارات الكشف</string>
+    <string name="profile_section_payment_tax">الدفع والضرائب</string>
     <string name="business_settings_subtitle">اسمك ورمز الدفع على الكشوف</string>
     <string name="business_name">اسم النشاط التجاري</string>
     <string name="business_name_help">يظهر أعلى كل كشف وفي نهاية كل تذكير ترسله.</string>

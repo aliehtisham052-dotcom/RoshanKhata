@@ -224,6 +224,11 @@
     <!-- Business settings / payment QR -->
     <string name="business_settings">ڪاروبار جون سيٽنگون</string>
     <string name="business_profile">پروفائل</string>
+    <string name="profile_preview_caption">توهان جو پروفائل انوائسز و اسٽيٽمينٽس تي اهڙي طرح ڇپبو.</string>
+    <string name="profile_section_business">ڪاروبار</string>
+    <string name="profile_section_seals">مهر و صحيح</string>
+    <string name="profile_section_statement">اسٽيٽمينٽ آپشنز</string>
+    <string name="profile_section_payment_tax">ادائيگي و ٽيڪس</string>
     <string name="business_settings_subtitle">اسٽيٽمينٽن تي توهان جو نالو ۽ ادائيگي ڪوڊ</string>
     <string name="business_name">ڪاروبار جو نالو</string>
     <string name="business_name_help">هر اسٽيٽمينٽ جي مٿان ۽ توهان جي موڪليل هر ياد ڏياريندڙ پيغام جي آخر ۾ ايندو.</string>
