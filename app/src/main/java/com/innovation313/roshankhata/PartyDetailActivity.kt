@@ -943,7 +943,11 @@ class PartyDetailActivity : AppCompatActivity() {
             // a viewer first, sharing one deliberate tap later. This used to
             // jump straight to the share sheet, so the owner was choosing
             // where to send a document they had never seen open.
-            com.innovation313.roshankhata.ui.PdfShare.present(this@PartyDetailActivity, file)
+            com.innovation313.roshankhata.ui.PdfShare.present(
+                this@PartyDetailActivity,
+                file,
+                R.string.statement_ready_title
+            )
         }
     }
 

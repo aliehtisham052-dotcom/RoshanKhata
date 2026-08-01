@@ -45,13 +45,23 @@ object PdfShare {
                 val view = Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, "application/pdf")
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-                // A phone with no PDF viewer is rare but possible; fall back to
-                // the share sheet rather than crashing on an unhandled intent.
-                val chooser = Intent.createChooser(view, context.getString(R.string.pdf_open))
-                if (view.resolveActivity(context.packageManager) != null) {
-                    context.startActivity(chooser)
-                } else {
+                // Started directly, not wrapped in createChooser: a chooser
+                // over ACTION_VIEW renders as the same sheet the Share button
+                // opens, so the two buttons looked and behaved identically.
+                // Android still shows its own picker if several viewers are
+                // installed, and none if there is a default — which is the
+                // behaviour "Open" should have.
+                //
+                // The fallback is on the actual failure (no viewer on the
+                // phone), not on resolveActivity(): that returns null under
+                // Android 11 package-visibility unless the manifest declares
+                // the query, and a wrong null there is what made Open behave
+                // as Share.
+                try {
+                    context.startActivity(view)
+                } catch (e: android.content.ActivityNotFoundException) {
                     share(context, uri, file.name)
                 }
             }

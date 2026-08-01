@@ -743,6 +743,7 @@
     <string name="edit_invoice">Invoice edit karein</string>
     <string name="share">Share</string>
     <string name="pdf_ready_title">Report tayyar hai</string>
+    <string name="statement_ready_title">Statement tayyar hai</string>
     <string name="pdf_ready_body">Pehle khol kar dekhein, phir chahein to share karein.</string>
     <string name="pdf_open">Kholein</string>
     <string name="close">Band karein</string>
