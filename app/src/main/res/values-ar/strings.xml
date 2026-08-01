@@ -67,6 +67,8 @@
     <string name="ledger_report_generating">جارٍ إنشاء تقرير دفتر الأستاذ…</string>
     <string name="ledger_report_failed">تعذّر إنشاء التقرير.</string>
     <string name="add_party">إضافة طرف</string>
+    <string name="add_party_duplicate_with_phone">يوجد عميل مشابه بالفعل: %1$s — %2$s</string>
+    <string name="add_party_duplicate_name_only">يوجد عميل مشابه بالفعل: %1$s</string>
     <string name="no_parties_yet">لا عملاء بعد.\n\nاضغط «إضافة طرف» بالأسفل لإضافة أول عميل وبدء دفترك.</string>
     <string name="no_entries_yet">لا قيود بعد.</string>
 

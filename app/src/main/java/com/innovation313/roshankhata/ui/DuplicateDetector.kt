@@ -47,8 +47,12 @@ object DuplicateDetector {
      * Shorter than that is not a phone number worth grouping on — an owner
      * who left three digits typed by mistake should not see every other
      * short entry lumped in with it.
+     *
+     * Internal rather than private: the live check while typing in Add Party
+     * reuses this exact definition rather than a second, slightly different
+     * one — the same reasoning as leaning on [ProductName.normalised] above.
      */
-    private fun normalisedPhone(phone: String?): String? {
+    internal fun normalisedPhone(phone: String?): String? {
         val digits = phone?.filter { it.isDigit() } ?: return null
         if (digits.length < 7) return null
         return digits.takeLast(10)
@@ -92,5 +96,26 @@ object DuplicateDetector {
             Group(all.filter { it.partyId in ids }, reason)
         }.filter { groupKey(it.members) !in dismissedKeys }
             .sortedByDescending { it.members.size }
+    }
+
+    /**
+     * A single typed name/phone against the book, for the live warning while
+     * still typing in Add Party — the same two signals as [find] above, just
+     * checked against one candidate instead of grouping the whole book.
+     *
+     * Phone wins when both would match (a name coincidence next to a real
+     * repeated number is the number's business, not the name's), otherwise
+     * whichever signal actually matched. Returns null on a blank name, same
+     * as leaving nothing worth warning about.
+     */
+    fun matchExisting(name: String, phone: String?, existing: List<Candidate>): Candidate? {
+        val normalisedName = ProductName.normalised(name)
+        if (normalisedName.isBlank()) return null
+
+        val phoneKey = normalisedPhone(phone)
+        if (phoneKey != null) {
+            existing.firstOrNull { normalisedPhone(it.phone) == phoneKey }?.let { return it }
+        }
+        return existing.firstOrNull { ProductName.normalised(it.name) == normalisedName }
     }
 }

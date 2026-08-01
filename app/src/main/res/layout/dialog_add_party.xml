@@ -25,6 +25,25 @@
         android:importantForAutofill="no"
         android:inputType="phone" />
 
+    <!--
+      Live heads-up while still typing — the same check that runs again,
+      harder, at Save (see confirmDuplicate in KhataActivity). This one is
+      quiet and non-blocking: it just gives the owner a chance to notice
+      before reaching for Save at all.
+    -->
+    <TextView
+        android:id="@+id/tvAddPartyDuplicateWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="#FFF6E0"
+        android:padding="10dp"
+        android:textColor="#5C4A16"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="Milta-julta customer pehle se maujood: Ali — 0300 1234567"
+        xmlns:tools="http://schemas.android.com/tools" />
+
     <RadioGroup
         android:id="@+id/rgType"
         android:layout_width="wrap_content"
