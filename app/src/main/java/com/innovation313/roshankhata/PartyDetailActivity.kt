@@ -939,20 +939,11 @@ class PartyDetailActivity : AppCompatActivity() {
                 return@launch
             }
 
-            val uri = FileProvider.getUriForFile(
-                this@PartyDetailActivity,
-                "$packageName.fileprovider",
-                file
-            )
-
-            val share = Intent(Intent.ACTION_SEND).apply {
-                type = "application/pdf"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_statement))
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            startActivity(Intent.createChooser(share, getString(R.string.share_statement)))
+            // The same open-first hand-over every other PDF in the app uses:
+            // a viewer first, sharing one deliberate tap later. This used to
+            // jump straight to the share sheet, so the owner was choosing
+            // where to send a document they had never seen open.
+            com.innovation313.roshankhata.ui.PdfShare.present(this@PartyDetailActivity, file)
         }
     }
 

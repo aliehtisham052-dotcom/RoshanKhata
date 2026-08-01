@@ -109,7 +109,55 @@ object PdfExport {
 
         val brandLogo = PdfBranding.logo(context)
 
-        fun drawHeader(): Float {
+        // The three figures a customer looks for first, computed once: what
+        // was given in all, what came back in all, and where that leaves
+        // things. The competitor statements this app is measured against put
+        // these at the top, and they are right to — a statement that opens
+        // with its own conclusion is easier to trust than one that makes the
+        // reader add it up.
+        val totalGave = rows.filter { it.entry.isGiven }.sumOf { it.entry.amount }
+        val totalGot = rows.filter { !it.entry.isGiven }.sumOf { it.entry.amount }
+
+        val periodPaint = Paint().apply {
+            color = GREY
+            textSize = 9f
+            isAntiAlias = true
+        }
+        val boxLabel = Paint().apply {
+            color = GREY
+            textSize = 8f
+            isAntiAlias = true
+        }
+        val boxValue = Paint().apply {
+            textSize = 13f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            isAntiAlias = true
+        }
+        val boxStroke = Paint().apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 0.8f
+            isAntiAlias = true
+        }
+
+        /**
+         * @param first On the first page the header carries the period line
+         * and the three summary boxes; later pages repeat only the band and
+         * the column headings, so the table continues without ceremony.
+         */
+        fun drawHeader(first: Boolean): Float {
+            // Later sections (closing box, QR, signature) retune these shared
+            // paints for their own text. A page break after that point comes
+            // back through here — so the header resets what it depends on,
+            // rather than trusting whoever drew last. Without this, a
+            // continuation page after the QR section drew the business name
+            // navy-on-navy: an invisible title.
+            title.textSize = 20f
+            title.color = Color.WHITE
+            subtitle.color = GOLD
+            header.textSize = 10f
+            body.textSize = 10f
+            muted.textSize = 8f
+
             c.drawRect(0f, 0f, PAGE_W.toFloat(), 78f, navyFill)
             c.drawText(businessName?.takeIf { it.isNotBlank() } ?: "Roshan Khata", MARGIN, 32f, title)
             c.drawText("Account Statement — $partyName", MARGIN, 52f, subtitle)
@@ -135,17 +183,63 @@ object PdfExport {
             // becomes the app's best advertisement; the mark should ride with it.
             PdfBranding.drawInHeader(c, brandLogo, PAGE_W, MARGIN, 78f)
 
-            var yy = 100f
+            var yy = 94f
+
+            if (first) {
+                // Which stretch of the ledger this covers, and how many
+                // entries — so a page that gets forwarded still says what it
+                // is a statement OF.
+                val period = if (rows.isNotEmpty()) {
+                    "Period: ${Format.dateOnly(rows.first().entry.timestamp)} — " +
+                        Format.dateOnly(rows.last().entry.timestamp) +
+                        "  ·  ${rows.size} entries"
+                } else {
+                    "No entries"
+                }
+                c.drawText(period, MARGIN, yy, periodPaint)
+                yy += 10f
+
+                // Three boxes: gave, got, and the balance they leave. Tinted
+                // to match the table's own colours so red means the same
+                // thing everywhere on the page.
+                val gap = 10f
+                val boxW = (PAGE_W - 2 * MARGIN - 2 * gap) / 3f
+                val boxH = 42f
+
+                fun summaryBox(index: Int, label: String, value: String, tint: Int, valueColor: Int) {
+                    val left = MARGIN + index * (boxW + gap)
+                    val r = RectF(left, yy, left + boxW, yy + boxH)
+                    val fill = Paint().apply { color = tint }
+                    c.drawRoundRect(r, 5f, 5f, fill)
+                    boxStroke.color = valueColor
+                    c.drawRoundRect(r, 5f, 5f, boxStroke)
+                    c.drawText(label, left + 10f, yy + 15f, boxLabel)
+                    boxValue.color = valueColor
+                    c.drawText(value, left + 10f, yy + 33f, boxValue)
+                }
+
+                summaryBox(0, "Total You Gave (-)", Format.money(totalGave), 0xFFFDECEA.toInt(), RED)
+                summaryBox(1, "Total You Got (+)", Format.money(totalGot), 0xFFEAF7EF.toInt(), GREEN)
+                val netLabel = when {
+                    closingBalance > 0 -> "Net — You will pay"
+                    closingBalance < 0 -> "Net — You will receive"
+                    else -> "Net — Settled"
+                }
+                summaryBox(2, netLabel, Format.money(closingBalance), 0xFFEDF2EF.toInt(), NAVY)
+
+                yy += boxH + 18f
+            }
+
             c.drawText("Date", xDate, yy, header)
-            c.drawText("You Gave", xGave, yy, header)
-            c.drawText("You Got", xGot, yy, header)
+            c.drawText("You Gave (-)", xGave, yy, header)
+            c.drawText("You Got (+)", xGot, yy, header)
             c.drawText("Balance", xBal, yy, header)
             yy += 6f
             c.drawLine(MARGIN, yy, PAGE_W - MARGIN, yy, lineFill)
             return yy + 16f
         }
 
-        y = drawHeader()
+        y = drawHeader(first = true)
 
         for (row in rows) {
             // Two lines per entry (details + reference), so break before we run off.
@@ -156,7 +250,7 @@ object PdfExport {
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
-                y = drawHeader()
+                y = drawHeader(first = false)
             }
 
             val e = row.entry
@@ -172,7 +266,9 @@ object PdfExport {
             }
             body.color = Color.BLACK
 
-            c.drawText(Format.money(row.runningBalance), xBal, y, body)
+            // The running balance is the column a reader actually follows
+            // down the page, so it gets the weight — bold, like the summary.
+            c.drawText(Format.money(row.runningBalance), xBal, y, header)
 
             // Second line: reference number, note, and any goods that moved.
             y += 12f
@@ -196,7 +292,7 @@ object PdfExport {
             pageNo++
             page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
             c = page.canvas
-            y = drawHeader()
+            y = drawHeader(first = false)
         }
 
         y += 8f
@@ -228,7 +324,7 @@ object PdfExport {
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
-                y = drawHeader()
+                y = drawHeader(first = false)
             }
 
             header.textSize = 11f
@@ -286,7 +382,7 @@ object PdfExport {
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
-                y = drawHeader()
+                y = drawHeader(first = false)
             }
 
             y += 20f
