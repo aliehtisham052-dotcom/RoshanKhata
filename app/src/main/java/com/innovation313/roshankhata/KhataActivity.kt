@@ -37,6 +37,7 @@ import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.DateRangeFilter
+import com.innovation313.roshankhata.ui.DuplicateDetector
 import com.innovation313.roshankhata.data.VoiceEntry
 import com.innovation313.roshankhata.data.VoiceLanguage
 import com.innovation313.roshankhata.data.VoiceLog
@@ -45,6 +46,7 @@ import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.PartyAdapter
 import com.innovation313.roshankhata.ui.ScreenPrivacyDialog
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -383,6 +385,46 @@ class KhataActivity : AppCompatActivity() {
         val etName: EditText = view.findViewById(R.id.etName)
         val etPhone: EditText = view.findViewById(R.id.etPhone)
         val rbCustomer: RadioButton = view.findViewById(R.id.rbCustomer)
+        val tvWarning: TextView = view.findViewById(R.id.tvAddPartyDuplicateWarning)
+
+        // The book, loaded once when the dialog opens rather than re-queried
+        // on every keystroke — nothing in it changes while this dialog is up,
+        // so one snapshot is both correct and cheap to check against.
+        var bookSnapshot: List<DuplicateDetector.Candidate> = emptyList()
+        lifecycleScope.launch {
+            bookSnapshot = dao.observePartiesWithBalance().first().map {
+                DuplicateDetector.Candidate(
+                    partyId = it.id,
+                    name = it.name,
+                    phone = it.phone,
+                    isCustomer = it.isCustomer,
+                    balance = it.balance
+                )
+            }
+            // A first check right after the book loads, in case the owner
+            // had already typed something while it was still on its way.
+            checkAddPartyDuplicateLive(etName, etPhone, tvWarning, bookSnapshot)
+        }
+
+        // Debounced rather than checked on every single character — a quiet
+        // 350ms pause after the last keystroke is enough to feel instant
+        // without re-checking mid-word on every letter typed.
+        val debounceHandler = android.os.Handler(android.os.Looper.getMainLooper())
+        var pendingCheck: Runnable? = null
+        val liveWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                pendingCheck?.let { debounceHandler.removeCallbacks(it) }
+                val check = Runnable {
+                    checkAddPartyDuplicateLive(etName, etPhone, tvWarning, bookSnapshot)
+                }
+                pendingCheck = check
+                debounceHandler.postDelayed(check, 350)
+            }
+        }
+        etName.addTextChangedListener(liveWatcher)
+        etPhone.addTextChangedListener(liveWatcher)
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.add_party)
@@ -447,6 +489,34 @@ class KhataActivity : AppCompatActivity() {
                 }
             }
             .show()
+    }
+
+    /**
+     * The quiet, non-blocking heads-up while still typing. Save time runs
+     * its own, stricter check (exact name/phone match) with a dialog that
+     * actually stops the save — this one only ever informs; it never
+     * disables Save or interrupts typing, because the near-match here can
+     * be a false alarm the strict check at Save would not raise at all.
+     */
+    private fun checkAddPartyDuplicateLive(
+        etName: EditText,
+        etPhone: EditText,
+        tvWarning: TextView,
+        book: List<DuplicateDetector.Candidate>
+    ) {
+        val name = etName.text.toString().trim()
+        val phone = etPhone.text.toString().trim().ifEmpty { null }
+        val match = DuplicateDetector.matchExisting(name, phone, book)
+
+        if (match == null) {
+            tvWarning.visibility = View.GONE
+            return
+        }
+
+        tvWarning.text = match.phone?.let {
+            getString(R.string.add_party_duplicate_with_phone, match.name, it)
+        } ?: getString(R.string.add_party_duplicate_name_only, match.name)
+        tvWarning.visibility = View.VISIBLE
     }
 
     /**
