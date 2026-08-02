@@ -53,6 +53,22 @@ object PartyPhoto {
         return file(context, partyId).exists().also { onDisk[partyId] = it }
     }
 
+    /**
+     * The thumbnail if it is already decoded and in memory, else null.
+     *
+     * Never touches the disk, so it is safe to call on the main thread while
+     * a screen is being built. A caller that gets null here can fall back to
+     * [load] on a background thread; a caller that gets a bitmap can show it
+     * on this very frame, with no flicker from initials to photo.
+     */
+    fun cached(partyId: Long): Bitmap? = cache.get(partyId)
+
+    /**
+     * True when this customer is already known to have no photo — learned
+     * from an earlier look, so answering costs nothing and needs no thread.
+     */
+    fun knownAbsent(partyId: Long): Boolean = onDisk[partyId] == false
+
     fun load(context: Context, partyId: Long): Bitmap? {
         cache.get(partyId)?.let { return it }
         if (onDisk[partyId] == false) return null

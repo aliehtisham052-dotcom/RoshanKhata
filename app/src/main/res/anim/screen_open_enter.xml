@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Opening a screen: it fades up in place, it does not slide in.
+
+  A slide has to travel the width of the phone, and while it travels the new
+  window is showing nothing but its background colour — a blank pale sheet
+  pushing the ledger back, which is exactly what the owner reported. Fading in
+  place removes the travel, so there is nothing to watch and the screen simply
+  arrives. The touch of scale keeps it from feeling flat.
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="false">
+    <alpha
+        android:duration="180"
+        android:fromAlpha="0.0"
+        android:interpolator="@android:interpolator/decelerate_quad"
+        android:toAlpha="1.0" />
+    <scale
+        android:duration="180"
+        android:fromXScale="0.97"
+        android:fromYScale="0.97"
+        android:interpolator="@android:interpolator/decelerate_quad"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1.0"
+        android:toYScale="1.0" />
+</set>

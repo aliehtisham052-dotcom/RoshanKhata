@@ -1038,8 +1038,35 @@ class PartyDetailActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    /**
+     * Put the avatar on screen without making the screen wait for it.
+     *
+     * The decode used to happen right here, on the main thread, while the
+     * ledger was still being built — a file read and a JPEG decode standing
+     * between the tap and the first frame. (The same mistake was found and
+     * fixed on the Profile screen in f18dc78; this call site was missed.)
+     *
+     * Warm cache or a customer already known to have no photo is answered on
+     * this frame, so nothing flickers in the common case. Only a genuinely
+     * cold photo costs a read, and that read now happens on the IO thread
+     * with the initials showing meanwhile.
+     */
     private fun refreshAvatar() {
-        val photo = PartyPhoto.load(this, partyId)
+        PartyPhoto.cached(partyId)?.let { showAvatar(it); return }
+        if (PartyPhoto.knownAbsent(partyId)) { showAvatar(null); return }
+
+        showAvatar(null)
+        lifecycleScope.launch {
+            val photo = withContext(Dispatchers.IO) {
+                PartyPhoto.load(this@PartyDetailActivity, partyId)
+            }
+            // The owner can remove the photo while this is in flight; only
+            // paint what is still true.
+            if (photo != null && PartyPhoto.cached(partyId) != null) showAvatar(photo)
+        }
+    }
+
+    private fun showAvatar(photo: android.graphics.Bitmap?) {
         if (photo != null) {
             ivAvatar.setImageBitmap(photo)
             ivAvatar.clipToOutline = true
