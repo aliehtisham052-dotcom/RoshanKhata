@@ -764,7 +764,7 @@
     <string name="entry_not_found">اندراج نہیں ملا</string>
     <string name="delete_entry_message">یہ اندراج کھاتے سے ہٹا دیا جائے گا۔</string>
     <string name="entry_deleted">اندراج حذف ہو گیا</string>
-    <string name="share_failed">رسید کی تصویر نہیں بن سکی</string>
+    <string name="share_failed">شیئر کرنے کے لیے تصویر نہیں بن سکی</string>
     <string name="invalid_amount">درست رقم لکھیں</string>
     <string name="saved">محفوظ ہو گیا</string>
     <string name="select_language">اپنی زبان چنیں</string>

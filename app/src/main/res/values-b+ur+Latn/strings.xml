@@ -764,7 +764,7 @@
     <string name="entry_not_found">Entry nahi mili</string>
     <string name="delete_entry_message">Ye entry khate se hata di jayegi.</string>
     <string name="entry_deleted">Entry delete ho gayi</string>
-    <string name="share_failed">Raseed ki tasveer nahi ban saki</string>
+    <string name="share_failed">Share karne ke liye tasveer nahi ban saki</string>
     <string name="invalid_amount">Durust raqam likhein</string>
     <string name="saved">Mehfooz ho gaya</string>
     <string name="select_language">Apni zaban chunein</string>

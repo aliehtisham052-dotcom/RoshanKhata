@@ -772,7 +772,7 @@
     <string name="entry_not_found">القيد غير موجود</string>
     <string name="delete_entry_message">سيُزال هذا القيد من الدفتر.</string>
     <string name="entry_deleted">حُذف القيد</string>
-    <string name="share_failed">تعذر إنشاء صورة الإيصال</string>
+    <string name="share_failed">تعذر إنشاء الصورة للمشاركة</string>
     <string name="invalid_amount">أدخل مبلغًا صحيحًا</string>
     <string name="saved">تم الحفظ</string>
     <string name="select_language">اختر لغتك</string>

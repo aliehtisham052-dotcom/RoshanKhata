@@ -792,7 +792,7 @@
     <string name="entry_not_found">داخلا نه ملي</string>
     <string name="delete_entry_message">هيءَ داخلا کاتي مان هٽي ويندي.</string>
     <string name="entry_deleted">داخلا هٽي وئي</string>
-    <string name="share_failed">رسيد جي تصوير نه ٺهي سگهي</string>
+    <string name="share_failed">شيئر ڪرڻ لاءِ تصوير نه ٺهي سگهي</string>
     <string name="invalid_amount">صحيح رقم لکو</string>
     <string name="saved">محفوظ ٿيو</string>
     <string name="select_language">پنهنجي ٻولي چونڊيو</string>

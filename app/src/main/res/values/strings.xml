@@ -798,7 +798,7 @@
     <string name="entry_not_found">Entry not found</string>
     <string name="delete_entry_message">This entry will be removed from the ledger.</string>
     <string name="entry_deleted">Entry deleted</string>
-    <string name="share_failed">Could not create the receipt image</string>
+    <string name="share_failed">Could not create the image to share</string>
     <string name="invalid_amount">Enter a valid amount</string>
     <string name="saved">Saved</string>
     <string name="select_language">Select your language</string>
