@@ -876,22 +876,29 @@ class KhataActivity : AppCompatActivity() {
         val accountGroup = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipsAccount)
         val typeGroup = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipsType)
 
-        // Account chips: All / Clear / I have to give / I have to get. "All" and
-        // "Clear" both mean no side filter; both are offered because the owner's
-        // own design listed them side by side.
+        // Account chips: All / Clear / I have to give / I have to get.
+        // "Clear" means a clear account — the parties standing at zero. The
+        // filter for it was already built and correct (SETTLED, below), but
+        // this chip was wired to ALL, which means no filter at all: the
+        // switch existed, connected to nothing, so choosing it changed
+        // nothing on the list. The owner found it.
         data class Opt(val label: String, val side: SideFilter)
         val accountOpts = listOf(
             Opt(getString(R.string.filter_account_all), SideFilter.ALL),
-            Opt(getString(R.string.filter_clear), SideFilter.ALL),
+            Opt(getString(R.string.filter_clear), SideFilter.SETTLED),
             Opt(getString(R.string.i_have_to_give), SideFilter.TO_GIVE),
             Opt(getString(R.string.i_have_to_get), SideFilter.TO_GET)
         )
         var pickedSide = sideFilter
-        accountOpts.forEachIndexed { i, opt ->
+        accountOpts.forEach { opt ->
             val chip = com.google.android.material.chip.Chip(this).apply {
                 text = opt.label
                 isCheckable = true
-                isChecked = (opt.side == sideFilter && !(opt.side == SideFilter.ALL && i == 1))
+                // Each chip now stands for a different filter, so the tick
+                // simply follows the active one. The position-based
+                // exception this line used to carry existed only to break
+                // the tie between two chips that both meant ALL.
+                isChecked = (opt.side == sideFilter)
                 setOnClickListener { pickedSide = opt.side }
             }
             accountGroup.addView(chip)
