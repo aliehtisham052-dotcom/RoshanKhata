@@ -300,6 +300,9 @@
     <string name="due_summary_all_settled">All settled</string>
 
     <string name="cheque_actions">What happened to this cheque?</string>
+    <string name="edit_cheque">Edit cheque</string>
+    <string name="cheque_reopen">Move back to Pending</string>
+    <string name="cheque_reopened">Cheque is pending again</string>
     <string name="mark_cleared">Mark as Cleared</string>
     <string name="mark_bounced">Mark as Bounced</string>
     <string name="mark_cancelled">Mark as Cancelled</string>
