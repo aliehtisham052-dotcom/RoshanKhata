@@ -461,6 +461,7 @@
     <string name="business_open_now">کھلا ہے</string>
     <string name="business_rename">کاروبار کا نام بدلیں</string>
     <string name="business_rename_hint">کھولنے کے لیے دبائیں · نام بدلنے کے لیے دیر تک دبائیں</string>
+    <string name="restore_business_mismatch">یہ بیک اپ %1$s کا ہے، لیکن ابھی %2$s کھلا ہے۔ بحال کرنے سے کھلے ہوئے کاروبار کا ڈیٹا اُس بیک اپ سے بدل جائے گا۔</string>
     <string name="filter_title">فلٹر</string>
     <string name="filter_account_label">کھاتہ</string>
     <string name="filter_type_label">قسم</string>

@@ -461,6 +461,7 @@
     <string name="business_open_now">Khula hai</string>
     <string name="business_rename">Business ka naam badlein</string>
     <string name="business_rename_hint">Kholne ke liye tap · naam badalne ke liye der tak dabayen</string>
+    <string name="restore_business_mismatch">Ye backup %1$s ka hai, lekin abhi %2$s khula hai. Bahal karne se khule hue business ka data us backup se badal jayega.</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Khata</string>
     <string name="filter_type_label">Qisam</string>

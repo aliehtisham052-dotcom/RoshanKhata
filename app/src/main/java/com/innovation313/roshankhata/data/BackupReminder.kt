@@ -14,15 +14,22 @@ object BackupReminder {
     private const val KEY_LAST = "last_backup_at"
     private const val WEEK_MS = 7L * 24 * 60 * 60 * 1000
 
+    /**
+     * Per business, with Business 1 on the legacy key it has always used.
+     * Backing up one shop must not silence the reminder for another — each
+     * book earns its own "last protected" time.
+     */
+    private fun key(context: Context) = KEY_LAST + Businesses.suffix(context)
+
     /** Record that a backup just succeeded. */
     fun recordBackup(context: Context) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putLong(KEY_LAST, System.currentTimeMillis()).apply()
+            .edit().putLong(key(context), System.currentTimeMillis()).apply()
     }
 
     /** The last backup time, or 0 if the owner has never backed up. */
     fun lastBackupAt(context: Context): Long =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getLong(KEY_LAST, 0)
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getLong(key(context), 0)
 
     /**
      * True when a reminder is worth showing: either the owner has never backed

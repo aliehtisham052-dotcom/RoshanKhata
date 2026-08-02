@@ -485,6 +485,7 @@
     <string name="business_open_now">Open</string>
     <string name="business_rename">Rename business</string>
     <string name="business_rename_hint">Tap to open · long-press to rename</string>
+    <string name="restore_business_mismatch">This backup belongs to %1$s, but the business open right now is %2$s. Restoring will replace the open business with that backup.</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Account</string>
     <string name="filter_type_label">Type</string>

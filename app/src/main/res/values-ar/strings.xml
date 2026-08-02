@@ -461,6 +461,7 @@
     <string name="business_open_now">مفتوح</string>
     <string name="business_rename">إعادة تسمية النشاط التجاري</string>
     <string name="business_rename_hint">اضغط للفتح · اضغط مطولاً لإعادة التسمية</string>
+    <string name="restore_business_mismatch">هذه النسخة الاحتياطية تخص %1$s، لكن النشاط المفتوح الآن هو %2$s. الاستعادة ستستبدل بيانات النشاط المفتوح بتلك النسخة.</string>
     <string name="filter_title">تصفية</string>
     <string name="filter_account_label">الحساب</string>
     <string name="filter_type_label">النوع</string>

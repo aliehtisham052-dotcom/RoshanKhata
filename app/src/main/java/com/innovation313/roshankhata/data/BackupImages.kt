@@ -34,7 +34,9 @@ object BackupImages {
 
     private const val PARTY_DIR = "party_photos"
     private const val BILLS_DIR = "bills"
-    private val ROOT_FILES = listOf("payment_qr.png", "signature.png", "stamp.png")
+    private const val ROOT_QR = "payment_qr.png"
+    private const val ROOT_SIGNATURE = "signature.png"
+    private const val ROOT_STAMP = "stamp.png"
 
     /**
      * Pack every image into a zip in the cache directory, or return null if
@@ -45,8 +47,8 @@ object BackupImages {
      * Cache, not files: this is a transient artefact that exists only to be
      * uploaded, and the system is free to reclaim it afterwards.
      */
-    fun pack(context: Context): File? {
-        val sources = collectFiles(context)
+    suspend fun pack(context: Context, dao: KhataDao): File? {
+        val sources = collectFiles(context, dao)
         if (sources.isEmpty()) return null
 
         val dir = File(context.cacheDir, "image_backup").apply { mkdirs() }
@@ -68,20 +70,45 @@ object BackupImages {
         }
     }
 
-    /** Every image on disk, paired with the relative path it takes in the zip. */
-    private fun collectFiles(context: Context): List<Pair<String, File>> {
+    /**
+     * Every image that belongs to the ACTIVE business, paired with the
+     * relative path it takes in the zip.
+     *
+     * The zip's entry names stay canonical — party_photos/, bills/, and the
+     * three root names — whichever business the archive was made from. The
+     * archive describes WHAT each image is; WHOSE it is, is decided at
+     * restore time by whichever business is open. That is what lets a
+     * backup made from any shop restore into any shop, including a fresh
+     * phone's Business 1.
+     *
+     * Sources, by contrast, are all business-scoped:
+     * - the party folder and the three profile images resolve through the
+     *   same per-business paths the app itself reads;
+     * - bill photos live in one shared folder (their absolute paths are
+     *   rows in each business's own database), so the active book's own
+     *   entries are the allow-list — without it, one shop's backup would
+     *   carry every OTHER shop's photographed bills too.
+     */
+    private suspend fun collectFiles(context: Context, dao: KhataDao): List<Pair<String, File>> {
         val out = mutableListOf<Pair<String, File>>()
 
-        File(context.filesDir, PARTY_DIR).listFiles()
+        PartyPhoto.folder(context).listFiles()
             ?.filter { it.isFile }
             ?.forEach { out += "$PARTY_DIR/${it.name}" to it }
 
+        val ownBills = dao.entriesWithBillPhoto()
+            .mapNotNull { it.billPhotoPath?.substringAfterLast('/') }
+            .toSet()
         File(context.filesDir, BILLS_DIR).listFiles()
-            ?.filter { it.isFile }
+            ?.filter { it.isFile && it.name in ownBills }
             ?.forEach { out += "$BILLS_DIR/${it.name}" to it }
 
-        for (name in ROOT_FILES) {
-            val f = File(context.filesDir, name)
+        val roots = listOf(
+            ROOT_QR to BusinessProfile.qrFile(context),
+            ROOT_SIGNATURE to BusinessProfile.signatureFile(context),
+            ROOT_STAMP to BusinessProfile.stampFile(context)
+        )
+        for ((name, f) in roots) {
             if (f.exists()) out += name to f
         }
 
@@ -121,10 +148,15 @@ object BackupImages {
                 // or an absolute path — a backup we made cannot contain these,
                 // but unpacking archive entries blindly is a classic trap.
                 if (!entry.isDirectory && isSafeEntryName(name)) {
-                    val target = File(context.filesDir, name)
-                    target.parentFile?.mkdirs()
-                    FileOutputStream(target).buffered().use { zin.copyTo(it) }
-                    written++
+                    // Canonical entry name -> the ACTIVE business's own
+                    // places. An archive from any shop, restored into any
+                    // shop, lands in the folders that shop actually reads.
+                    val target = targetFor(context, name)
+                    if (target != null) {
+                        target.parentFile?.mkdirs()
+                        FileOutputStream(target).buffered().use { zin.copyTo(it) }
+                        written++
+                    }
                 }
                 zin.closeEntry()
                 entry = zin.nextEntry
@@ -150,6 +182,22 @@ object BackupImages {
             val newPath = File(billsDir, fileName).absolutePath
             if (newPath != oldPath) dao.setBillPhotoPath(row.id, newPath)
         }
+    }
+
+    /**
+     * Where a canonical zip entry lands for the business that is open now.
+     * An entry this method does not recognise is skipped, not written — an
+     * archive is data, and unknown data does not get to choose a path.
+     */
+    private fun targetFor(context: Context, name: String): File? = when {
+        name.startsWith("$PARTY_DIR/") ->
+            File(PartyPhoto.folder(context), name.removePrefix("$PARTY_DIR/"))
+        name.startsWith("$BILLS_DIR/") ->
+            File(File(context.filesDir, BILLS_DIR), name.removePrefix("$BILLS_DIR/"))
+        name == ROOT_QR -> BusinessProfile.qrFile(context)
+        name == ROOT_SIGNATURE -> BusinessProfile.signatureFile(context)
+        name == ROOT_STAMP -> BusinessProfile.stampFile(context)
+        else -> null
     }
 
     private fun isSafeEntryName(name: String): Boolean =

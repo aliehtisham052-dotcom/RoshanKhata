@@ -481,6 +481,7 @@
     <string name="business_open_now">کليل آهي</string>
     <string name="business_rename">ڪاروبار جو نالو بدلايو</string>
     <string name="business_rename_hint">کولڻ لاءِ دٻايو · نالو بدلائڻ لاءِ دير تائين دٻايو</string>
+    <string name="restore_business_mismatch">هي بيڪ اپ %1$s جو آهي، پر هن وقت %2$s کليل آهي. بحال ڪرڻ سان کليل ڪاروبار جو ڊيٽا اُن بيڪ اپ سان بدلجي ويندو.</string>
     <string name="filter_title">فلٽر</string>
     <string name="filter_account_label">کھاتو</string>
     <string name="filter_type_label">قسم</string>

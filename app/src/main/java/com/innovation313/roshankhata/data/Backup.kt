@@ -69,6 +69,12 @@ object Backup {
         root.put("format", "RoshanKhata")
         root.put("version", FORMAT_VERSION)
         root.put("exportedAt", System.currentTimeMillis())
+        // Whose book this is. Additive — an older app ignores unknown keys,
+        // and a backup without it (every backup made before multi-business)
+        // simply has no name to check. Restore uses it for one thing only:
+        // warning the owner before this book lands in a differently-named
+        // shop. It never blocks — moving a book on purpose stays possible.
+        BusinessProfile.businessName(context)?.let { root.put("businessName", it) }
 
         // Everything, soft-deleted rows included — the Recycle Bin is the
         // owner's data too, and a backup that quietly dropped it would be
@@ -413,7 +419,8 @@ object Backup {
             ) to ParsedBackup(
                 parties, entries, cheques, cash, plans, installments,
                 bills, billItems, products, invoices, invoiceItems, businessProfile,
-                dismissedDuplicates
+                dismissedDuplicates,
+                businessName = root.optString("businessName").takeIf { it.isNotBlank() }
             )
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
@@ -437,7 +444,9 @@ object Backup {
         // profile and an absent one are treated the same on restore: nothing
         // to write.
         val businessProfile: BusinessProfileData? = null,
-        val dismissedDuplicates: List<DismissedDuplicate> = emptyList()
+        val dismissedDuplicates: List<DismissedDuplicate> = emptyList(),
+        /** Which shop's book this file says it is. Null on any pre-multi-business backup. */
+        val businessName: String? = null
     )
 
     /**
