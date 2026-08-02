@@ -40,8 +40,28 @@ object BusinessProfile {
     /** Long edge of the stored QR. Big enough to scan, small enough to attach. */
     private const val MAX_EDGE = 1000
 
-    private fun prefs(context: Context) =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    private fun prefs(context: Context): android.content.SharedPreferences {
+        // Business 1 keeps reading the keys it has always written, in the
+        // file it has always written them to — an update to this version
+        // changes nothing for an existing shop. Only a second business gets
+        // a file of its own. (The legacy file is shared with app-wide
+        // things — App Lock, Drive — which is exactly why other businesses
+        // must NOT write their identity into it.)
+        val id = Businesses.active(context).id
+        return if (id == 1L) context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        else context.getSharedPreferences("business_profile_b$id", Context.MODE_PRIVATE)
+    }
+
+    /**
+     * Where this business's identity images live. Business 1: the legacy
+     * flat files. Any other: its own biz_b<id>/ folder, so two shops'
+     * stamps, QRs, and signatures can never overwrite each other.
+     */
+    private fun imageFile(context: Context, name: String): File {
+        val id = Businesses.active(context).id
+        return if (id == 1L) File(context.filesDir, name)
+        else File(File(context.filesDir, "biz_b$id").apply { mkdirs() }, name)
+    }
 
     // ---------- Business name ----------
 
@@ -138,7 +158,7 @@ object BusinessProfile {
     // ---------- Payment QR ----------
 
     fun qrFile(context: Context): File =
-        File(context.filesDir, QR_FILE)
+        imageFile(context, QR_FILE)
 
     fun hasQr(context: Context): Boolean =
         prefs(context).getBoolean(KEY_QR_SAVED, false) && qrFile(context).exists()
@@ -213,7 +233,7 @@ object BusinessProfile {
      * never uploaded.
      */
     fun signatureFile(context: Context): File =
-        File(context.filesDir, SIGNATURE_FILE)
+        imageFile(context, SIGNATURE_FILE)
 
     fun hasSignature(context: Context): Boolean =
         prefs(context).getBoolean(KEY_SIGNATURE_SAVED, false) && signatureFile(context).exists()
@@ -275,7 +295,7 @@ object BusinessProfile {
      * so the owner is never asked to decide this per invoice.
      */
     fun stampFile(context: Context): File =
-        File(context.filesDir, STAMP_FILE)
+        imageFile(context, STAMP_FILE)
 
     fun hasStamp(context: Context): Boolean =
         prefs(context).getBoolean(KEY_STAMP_SAVED, false) && stampFile(context).exists()

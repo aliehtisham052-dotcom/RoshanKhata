@@ -42,8 +42,29 @@ object PartyPhoto {
     /** What the disk holds, learned once per customer instead of per bind. */
     private val onDisk = java.util.concurrent.ConcurrentHashMap<Long, Boolean>()
 
-    private fun dir(context: Context): File =
-        File(context.filesDir, "party_photos").apply { mkdirs() }
+    /**
+     * Cleared on every business switch, by [Businesses.switchTo].
+     *
+     * Both caches are keyed by partyId alone, and party ids are NOT unique
+     * across businesses — each database file numbers its own parties from 1.
+     * A warm cache carried across a switch would show Shop A's customer's
+     * face on Shop B's same-numbered customer. Dropping the caches is what
+     * makes the id collision harmless: after a switch, every answer comes
+     * fresh from the right shop's own folder.
+     */
+    fun dropCaches() {
+        cache.evictAll()
+        onDisk.clear()
+    }
+
+    private fun dir(context: Context): File {
+        // Business 1 keeps the folder its photos are already in. Any other
+        // business gets its own, for the same id-collision reason as above:
+        // party_5.jpg exists once per shop, so it must live once per shop.
+        val id = Businesses.active(context).id
+        val name = if (id == 1L) "party_photos" else "party_photos_b$id"
+        return File(context.filesDir, name).apply { mkdirs() }
+    }
 
     fun file(context: Context, partyId: Long): File =
         File(dir(context), "party_$partyId.jpg")
