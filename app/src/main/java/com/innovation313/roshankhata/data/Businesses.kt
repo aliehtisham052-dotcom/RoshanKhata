@@ -116,6 +116,15 @@ object Businesses {
         BusinessProfile.nameOf(context, b.id) ?: b.name
 
     /**
+     * The naming pattern every per-business key and file follows: nothing
+     * for Business 1 — its keys and files predate this feature and must
+     * keep their names — and "_b<id>" for everyone else. One definition,
+     * so no two features can disagree about what belongs to whom.
+     */
+    fun suffix(context: Context): String =
+        active(context).id.let { if (it == 1L) "" else "_b$it" }
+
+    /**
      * Open a different business.
      *
      * The database singleton is closed here, inside the same lock that

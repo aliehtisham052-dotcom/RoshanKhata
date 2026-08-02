@@ -57,6 +57,9 @@ object PartyPhoto {
         onDisk.clear()
     }
 
+    /** The active business's photo folder — for the image backup to read and restore into. */
+    fun folder(context: Context): File = dir(context)
+
     private fun dir(context: Context): File {
         // Business 1 keeps the folder its photos are already in. Any other
         // business gets its own, for the same id-collision reason as above:

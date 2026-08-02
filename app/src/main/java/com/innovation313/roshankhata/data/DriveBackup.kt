@@ -66,13 +66,31 @@ object DriveBackup {
     private const val KEY_AUTO_BACKUP = "drive_auto_backup"
     private const val KEY_LAST_SIG = "drive_last_backup_signature"
 
+    /**
+     * Per-business Drive file names and preference keys.
+     *
+     * One Drive account can hold several shops' backups now, so each shop's
+     * files and bookkeeping carry its suffix — except Business 1, whose
+     * names predate this feature: its file on Drive and its recorded state
+     * must keep matching what earlier versions of the app already wrote.
+     * Without this, a second shop's backup would silently OVERWRITE the
+     * first's on Drive, which is the quiet way to lose a book.
+     */
+    private fun backupName(context: Context) =
+        "RoshanKhata_Backup${Businesses.suffix(context)}.txt"
+
+    private fun imagesName(context: Context) =
+        "RoshanKhata_Images${Businesses.suffix(context)}.zip"
+
+    private fun key(context: Context, base: String) = base + Businesses.suffix(context)
+
     fun includeImages(context: Context): Boolean =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getBoolean(KEY_BACKUP_IMAGES, false)
+            .getBoolean(key(context, KEY_BACKUP_IMAGES), false)
 
     fun setIncludeImages(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putBoolean(KEY_BACKUP_IMAGES, enabled).apply()
+            .edit().putBoolean(key(context, KEY_BACKUP_IMAGES), enabled).apply()
     }
 
     /**
@@ -83,11 +101,11 @@ object DriveBackup {
      */
     fun autoBackup(context: Context): Boolean =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getBoolean(KEY_AUTO_BACKUP, false)
+            .getBoolean(key(context, KEY_AUTO_BACKUP), false)
 
     fun setAutoBackup(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putBoolean(KEY_AUTO_BACKUP, enabled).apply()
+            .edit().putBoolean(key(context, KEY_AUTO_BACKUP), enabled).apply()
     }
 
     /**
@@ -105,11 +123,11 @@ object DriveBackup {
 
     private fun lastSignature(context: Context): String? =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getString(KEY_LAST_SIG, null)
+            .getString(key(context, KEY_LAST_SIG), null)
 
     private fun rememberSignature(context: Context, signature: String) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putString(KEY_LAST_SIG, signature).apply()
+            .edit().putString(key(context, KEY_LAST_SIG), signature).apply()
     }
 
     private fun driveFor(context: Context, accountName: String): Drive {
@@ -138,10 +156,10 @@ object DriveBackup {
             try {
                 val drive = driveFor(context, accountName)
 
-                val existingId = findBackupId(drive)
+                val existingId = findBackupId(context, drive)
 
                 val metadata = DriveFile().apply {
-                    name = BACKUP_NAME
+                    name = backupName(context)
                     // Only set parents when CREATING; Drive rejects a parent
                     // change on update.
                     if (existingId == null) parents = listOf(APP_DATA_FOLDER)
@@ -236,7 +254,7 @@ object DriveBackup {
         // Images ride along only if the owner asked for them. An image failure
         // does not fail the text backup that already succeeded.
         if (includeImages(context)) {
-            val zip = BackupImages.pack(context)
+            val zip = BackupImages.pack(context, dao)
             backupImages(context, account, zip)
         }
 
@@ -252,7 +270,7 @@ object DriveBackup {
         withContext(Dispatchers.IO) {
             try {
                 val drive = driveFor(context, accountName)
-                val id = findBackupId(drive)
+                val id = findBackupId(context, drive)
                     ?: return@withContext Result.success(null)
 
                 val out = ByteArrayOutputStream()
@@ -281,10 +299,10 @@ object DriveBackup {
             if (zip == null || !zip.exists()) return@withContext Result.success(false)
             try {
                 val drive = driveFor(context, accountName)
-                val existingId = findImagesId(drive)
+                val existingId = findImagesId(context, drive)
 
                 val metadata = DriveFile().apply {
-                    name = IMAGES_NAME
+                    name = imagesName(context)
                     if (existingId == null) parents = listOf(APP_DATA_FOLDER)
                 }
                 val content = ByteArrayContent("application/zip", zip.readBytes())
@@ -310,7 +328,7 @@ object DriveBackup {
         withContext(Dispatchers.IO) {
             try {
                 val drive = driveFor(context, accountName)
-                val id = findImagesId(drive)
+                val id = findImagesId(context, drive)
                     ?: return@withContext Result.success(null)
 
                 val out = ByteArrayOutputStream()
@@ -326,7 +344,7 @@ object DriveBackup {
         withContext(Dispatchers.IO) {
             try {
                 val drive = driveFor(context, accountName)
-                val id = findBackupId(drive) ?: return@withContext null
+                val id = findBackupId(context, drive) ?: return@withContext null
                 drive.files().get(id)
                     .setFields("modifiedTime")
                     .execute()
@@ -337,20 +355,20 @@ object DriveBackup {
             }
         }
 
-    private fun findBackupId(drive: Drive): String? {
+    private fun findBackupId(context: Context, drive: Drive): String? {
         val result = drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
-            .setQ("name = '$BACKUP_NAME'")
+            .setQ("name = '${backupName(context)}'")
             .setFields("files(id, modifiedTime)")
             .execute()
 
         return result.files?.firstOrNull()?.id
     }
 
-    private fun findImagesId(drive: Drive): String? {
+    private fun findImagesId(context: Context, drive: Drive): String? {
         val result = drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
-            .setQ("name = '$IMAGES_NAME'")
+            .setQ("name = '${imagesName(context)}'")
             .setFields("files(id, modifiedTime)")
             .execute()
 

@@ -14,6 +14,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Backup
 import com.innovation313.roshankhata.data.BackupImages
+import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.DriveAuth
 import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.DriveFeature
@@ -241,20 +242,34 @@ class BackupActivity : AppCompatActivity() {
         data: Backup.ParsedBackup,
         driveAccount: String? = null
     ) {
+        val body = getString(
+            R.string.restore_warning_message,
+            counts.parties,
+            counts.entries,
+            counts.cheques,
+            counts.cash,
+            counts.plans,
+            counts.bills,
+            counts.invoices
+        )
+
+        // The wrong-shop guard. A backup now says whose book it is; if that
+        // name and the open shop's name both exist and differ, the owner is
+        // told in the same breath as the counts — before anything happens,
+        // not after. Told, never blocked: restoring another shop's book into
+        // this one is how a book is deliberately moved, so the act stays
+        // possible and only the accident is caught.
+        val openShop = BusinessProfile.businessName(this)
+        val mismatch = data.businessName != null && openShop != null &&
+            !data.businessName.equals(openShop, ignoreCase = true)
+        val message =
+            if (mismatch) getString(R.string.restore_business_mismatch, data.businessName, openShop) +
+                "\n\n" + body
+            else body
+
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.restore_warning_title)
-            .setMessage(
-                getString(
-                    R.string.restore_warning_message,
-                    counts.parties,
-                    counts.entries,
-                    counts.cheques,
-                    counts.cash,
-                    counts.plans,
-                    counts.bills,
-                    counts.invoices
-                )
-            )
+            .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data, driveAccount) }
             .show()
@@ -554,7 +569,7 @@ class BackupActivity : AppCompatActivity() {
             // rather than turning the whole backup red.
             if (DriveBackup.includeImages(this@BackupActivity)) {
                 val imageResult = withContext(Dispatchers.IO) {
-                    val zip = BackupImages.pack(this@BackupActivity)
+                    val zip = BackupImages.pack(this@BackupActivity, dao)
                     DriveBackup.backupImages(this@BackupActivity, name, zip)
                 }
                 if (imageResult.isFailure) {

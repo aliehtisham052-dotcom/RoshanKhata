@@ -481,6 +481,7 @@
     <string name="business_open_now">باز است</string>
     <string name="business_rename">تغییر نام کسب‌وکار</string>
     <string name="business_rename_hint">برای باز کردن بزنید · برای تغییر نام نگه دارید</string>
+    <string name="restore_business_mismatch">این پشتیبان متعلق به %1$s است، اما اکنون %2$s باز است. بازیابی، داده‌های کسب‌وکار باز را با آن پشتیبان جایگزین می‌کند.</string>
     <string name="filter_title">فیلتر</string>
     <string name="filter_account_label">حساب</string>
     <string name="filter_type_label">نوع</string>
