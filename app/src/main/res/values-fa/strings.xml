@@ -482,6 +482,9 @@
     <string name="business_rename">تغییر نام کسب‌وکار</string>
     <string name="business_rename_hint">برای باز کردن بزنید · برای تغییر نام نگه دارید</string>
     <string name="restore_business_mismatch">این پشتیبان متعلق به %1$s است، اما اکنون %2$s باز است. بازیابی، داده‌های کسب‌وکار باز را با آن پشتیبان جایگزین می‌کند.</string>
+    <string name="contact_in_recycle_bin">در سطل بازیافت</string>
+    <string name="restore_no_images">سوابق شما بازگشت، اما این پشتیبان تصویری همراه نداشت، بنابراین عکس‌ها، عکس صورتحساب‌ها و کیوآر بازیابی نشدند. برای نگه‌داشتن تصاویر در پشتیبان‌های بعدی، پیش از پشتیبان‌گیری Include images را روشن کنید.</string>
+    <string name="restore_file_no_images">سوابق شما بازگشت. پشتیبان فایلی تنها سوابق را می‌برد و هرگز تصاویر را شامل نمی‌شود. برای حفظ عکس‌ها نیز، Include images را روشن کنید و در گوگل درایو پشتیبان بگیرید.</string>
     <string name="filter_title">فیلتر</string>
     <string name="filter_account_label">حساب</string>
     <string name="filter_type_label">نوع</string>

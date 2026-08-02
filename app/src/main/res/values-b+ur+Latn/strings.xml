@@ -462,6 +462,9 @@
     <string name="business_rename">Business ka naam badlein</string>
     <string name="business_rename_hint">Kholne ke liye tap · naam badalne ke liye der tak dabayen</string>
     <string name="restore_business_mismatch">Ye backup %1$s ka hai, lekin abhi %2$s khula hai. Bahal karne se khule hue business ka data us backup se badal jayega.</string>
+    <string name="contact_in_recycle_bin">Recycle Bin mein</string>
+    <string name="restore_no_images">Aap ka record wapas aa gaya, lekin is backup ke sath images nahi thin, is liye photos, bill photos aur QR bahal nahi hue. Aainda backup mein images rakhne ke liye backup se pehle Include images on karein.</string>
+    <string name="restore_file_no_images">Aap ka record wapas aa gaya. File backup sirf record le kar jata hai — usme images kabhi shamil nahi hotin. Photos bhi mehfooz rakhne ke liye Include images on kar ke Google Drive par backup karein.</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Khata</string>
     <string name="filter_type_label">Qisam</string>

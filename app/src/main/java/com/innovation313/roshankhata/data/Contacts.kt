@@ -8,7 +8,16 @@ data class PhoneContact(
     val name: String,
     val phone: String,
     /** Already on the books — shown as "Added", not offered again. */
-    val alreadyAdded: Boolean = false
+    val alreadyAdded: Boolean = false,
+    /**
+     * On the books, but sitting in the Recycle Bin.
+     *
+     * Neither "Added" nor importable. Importing would build a second, empty
+     * party beside the binned one, and restoring the bin afterwards would
+     * leave the owner with the same person twice — once with their history,
+     * once without. Saying where they actually are is the honest answer.
+     */
+    val inRecycleBin: Boolean = false
 )
 
 /**
@@ -28,8 +37,13 @@ object Contacts {
         return if (digits.length > 10) digits.takeLast(10) else digits
     }
 
-    fun load(context: Context, existingPhones: List<String>): List<PhoneContact> {
+    fun load(
+        context: Context,
+        existingPhones: List<String>,
+        binnedPhones: List<String> = emptyList()
+    ): List<PhoneContact> {
         val existing = existingPhones.map { normalise(it) }.toSet()
+        val binned = binnedPhones.map { normalise(it) }.toSet()
 
         val projection = arrayOf(
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
@@ -65,7 +79,8 @@ object Contacts {
                 result += PhoneContact(
                     name = name,
                     phone = number,
-                    alreadyAdded = key in existing
+                    alreadyAdded = key in existing,
+                    inRecycleBin = key in binned
                 )
             }
         }

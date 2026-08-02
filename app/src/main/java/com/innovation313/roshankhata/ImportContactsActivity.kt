@@ -122,11 +122,12 @@ class ImportContactsActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             val existing = dao.existingPhones()
+            val binned = dao.binnedPhones()
 
             // Reading the whole contact list can be slow on a phone with
             // thousands of entries — keep it off the main thread.
             val loaded = withContext(Dispatchers.IO) {
-                Contacts.load(this@ImportContactsActivity, existing)
+                Contacts.load(this@ImportContactsActivity, existing, binned)
             }
 
             allContacts = loaded
@@ -182,7 +183,7 @@ class ImportContactsActivity : AppCompatActivity() {
     private fun toggleSelectAll() {
         // Only the importable rows — never the already-added ones, which are
         // shown greyed and cannot be picked individually either.
-        val selectable = visible.filter { !it.alreadyAdded }
+        val selectable = visible.filter { !it.alreadyAdded && !it.inRecycleBin }
         val allSelectableSelected = selectable.isNotEmpty() && selectable.all { it.phone in selected }
         if (allSelectableSelected) {
             selectable.forEach { selected.remove(it.phone) }
@@ -194,7 +195,7 @@ class ImportContactsActivity : AppCompatActivity() {
     }
 
     private fun refreshSelectAllLabel() {
-        val selectable = visible.filter { !it.alreadyAdded }
+        val selectable = visible.filter { !it.alreadyAdded && !it.inRecycleBin }
         val allSelectableSelected = selectable.isNotEmpty() && selectable.all { it.phone in selected }
         btnSelectAll.setText(if (allSelectableSelected) R.string.clear_all else R.string.select_all)
         btnSelectAll.isEnabled = selectable.isNotEmpty()
