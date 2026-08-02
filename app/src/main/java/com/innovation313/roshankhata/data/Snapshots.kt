@@ -35,14 +35,25 @@ object Snapshots {
     private const val PREFS = "snapshots"
     private const val KEY_DAY = "last_day"
 
-    /** Once per calendar day, from a background thread. Cheap every other call. */
+    /** Once per calendar day per business, from a background thread. Cheap every other call. */
     fun maybeToday(context: Context) {
+        // Resolve the business ONCE and use it for the day-marker, the file,
+        // and the rotation below — the three must always agree on whose
+        // ledger this is.
+        val business = Businesses.active(context)
+        // Business 1 keeps the pre-multi-business key and file names, so an
+        // update to this version neither re-snapshots a day it already
+        // covered nor orphans the snapshots it already made.
+        val dayKey = if (business.id == 1L) KEY_DAY else "${KEY_DAY}_b${business.id}"
+        val prefix = if (business.id == 1L) "khata-" else "khata-b${business.id}-"
+
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val today = android.text.format.DateFormat.format("yyyyMMdd", java.util.Date()).toString()
-        if (prefs.getString(KEY_DAY, null) == today) return
+        if (prefs.getString(dayKey, null) == today) return
 
         try {
-            val db = KhataDatabase.get(context).openHelper.writableDatabase
+            val database = KhataDatabase.get(context)
+            val db = database.openHelper.writableDatabase
 
             // Fold the write-ahead log into the main file, so the file on disk
             // is the whole ledger.
@@ -54,12 +65,17 @@ object Snapshots {
             }
             if (!healthy) return
 
-            val source = context.getDatabasePath("roshan_khata.db")
+            // Copy the file the checked database is actually open on — asked
+            // of the connection itself, not re-derived, so the integrity
+            // check and the copy can never disagree about which file they
+            // mean.
+            val sourceName = database.openHelper.databaseName ?: business.file
+            val source = context.getDatabasePath(sourceName)
             if (!source.exists()) return
 
             val dir = File(context.filesDir, "snapshots").apply { mkdirs() }
-            val target = File(dir, "khata-$today.db")
-            val tmp = File(dir, "khata-$today.db.tmp")
+            val target = File(dir, "$prefix$today.db")
+            val tmp = File(dir, "$prefix$today.db.tmp")
             source.inputStream().use { input ->
                 tmp.outputStream().use { output -> input.copyTo(output) }
             }
@@ -69,14 +85,21 @@ object Snapshots {
                 tmp.delete(); return
             }
 
-            // Seven stay, the rest go. Name order is date order.
+            // Seven stay, the rest go — per business. Each business's
+            // snapshots rotate among themselves only: Business 1's filter
+            // must not match "khata-b2-…", and business N's prefix matches
+            // nothing else, so no shop's insurance can delete another's.
+            val own = Regex(
+                if (business.id == 1L) "^khata-\\d{8}\\.db$"
+                else "^khata-b${business.id}-\\d{8}\\.db$"
+            )
             dir.listFiles { f -> f.name.endsWith(".tmp") }?.forEach { it.delete() }
-            dir.listFiles { f -> f.name.startsWith("khata-") && f.name.endsWith(".db") }
+            dir.listFiles { f -> own.matches(f.name) }
                 ?.sortedByDescending { it.name }
                 ?.drop(KEEP)
                 ?.forEach { it.delete() }
 
-            prefs.edit().putString(KEY_DAY, today).apply()
+            prefs.edit().putString(dayKey, today).apply()
         } catch (_: Exception) {
             // Insurance must never become the accident: whatever went wrong,
             // the app carries on and tries again tomorrow.
