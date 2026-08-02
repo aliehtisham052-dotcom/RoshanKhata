@@ -22,6 +22,31 @@ object Format {
     }
 
     /**
+     * A plain in-minus-out total, carrying its arithmetic sign.
+     *
+     * Deliberately NOT [customerBalance], which inverts the sign because a
+     * khata balance is read from the shopkeeper's side. A cashbook net is not
+     * a balance owed by anyone — it is money in less money out, and it means
+     * exactly what the arithmetic says. Inverting it here would turn a
+     * shortfall into a surplus on screen.
+     *
+     * The minus is U+2212, matching the sign the cashbook rows already use,
+     * rather than a hyphen that reads as a dash at a glance.
+     */
+    fun signedTotal(value: Double): String = when {
+        value > 0 -> "+ ${money(value)}"
+        value < 0 -> "− ${money(value)}"
+        else -> money(value)
+    }
+
+    /** The colour for [signedTotal] on a dark header. Green up, red down, plain at zero. */
+    fun signedTotalColourOnDark(value: Double): Int = when {
+        value > 0 -> R.color.bal_i_owe_on_dark
+        value < 0 -> R.color.bal_owed_to_me_on_dark
+        else -> R.color.white
+    }
+
+    /**
      * A customer balance with its sign, the shopkeeper's way round.
      *
      * A positive balance means the customer owes the shop — money the owner has

@@ -56,7 +56,7 @@
                     android:id="@+id/tvCashIn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#69F0AE"
+                    android:textColor="@color/bal_i_owe_on_dark"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -78,7 +78,7 @@
                     android:id="@+id/tvCashOut"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#FF8A80"
+                    android:textColor="@color/bal_owed_to_me_on_dark"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -100,7 +100,7 @@
                     android:id="@+id/tvCashNet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gold_accent"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
