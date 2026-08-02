@@ -482,7 +482,6 @@
     <string name="businesses_title">Businesses</string>
     <string name="businesses_subtitle">Each business keeps its own separate khata</string>
     <string name="business_add">Add business</string>
-    <string name="business_name_hint">Business name</string>
     <string name="business_open_now">Open</string>
     <string name="business_rename">Rename business</string>
     <string name="business_rename_hint">Tap to open · long-press to rename</string>
