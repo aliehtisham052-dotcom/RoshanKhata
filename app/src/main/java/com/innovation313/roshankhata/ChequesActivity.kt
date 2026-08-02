@@ -69,7 +69,7 @@ class ChequesActivity : AppCompatActivity() {
         rv.adapter = adapter
 
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddCheque).setOnClickListener {
-            showAddChequeDialog()
+            showChequeDialog()
         }
 
         observe()
@@ -111,7 +111,15 @@ class ChequesActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAddChequeDialog() {
+    /**
+     * One dialog for writing a cheque down and for correcting it.
+     *
+     * There was no way to correct one before: a wrong digit in the amount, a
+     * mistyped cheque number, the wrong due date, and the only way out was to
+     * delete the cheque and write it again. The fields are identical either
+     * way, so the same dialog does both — [existing] null means a new cheque.
+     */
+    private fun showChequeDialog(existing: ChequeWithParty? = null) {
         if (parties.isEmpty()) {
             Toast.makeText(this, R.string.select_party_first, Toast.LENGTH_LONG).show()
             return
@@ -120,6 +128,7 @@ class ChequesActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_add_cheque, null)
         val etParty: AutoCompleteTextView = view.findViewById(R.id.etChequeParty)
         val rbReceived: RadioButton = view.findViewById(R.id.rbReceived)
+        val rbIssued: RadioButton = view.findViewById(R.id.rbIssued)
         val etAmount: EditText = view.findViewById(R.id.etChequeAmount)
         val btnDate: MaterialButton = view.findViewById(R.id.btnPickDueDate)
         val etNumber: EditText = view.findViewById(R.id.etChequeNumber)
@@ -134,10 +143,26 @@ class ChequesActivity : AppCompatActivity() {
             )
         )
 
-        var dueDate: Long? = null
+        var dueDate: Long? = existing?.dueDate
+
+        if (existing != null) {
+            // setText(_, false) — filtering the dropdown to the name already
+            // in the box would leave the owner one silent tap from an empty
+            // list.
+            etParty.setText(existing.partyName, false)
+            etAmount.setText(Format.plain(existing.amount))
+            if (existing.isReceived) rbReceived.isChecked = true else rbIssued.isChecked = true
+            etNumber.setText(existing.chequeNumber.orEmpty())
+            etBank.setText(existing.bankName.orEmpty())
+            etNote.setText(existing.note.orEmpty())
+            btnDate.text = getString(R.string.due_date_set, Format.dateOnly(existing.dueDate))
+        }
 
         btnDate.setOnClickListener {
-            val cal = Calendar.getInstance()
+            // Open the picker on the date the cheque already carries, not on
+            // today — correcting a date should start from the one being
+            // corrected.
+            val cal = Calendar.getInstance().apply { dueDate?.let { timeInMillis = it } }
             DatePickerDialog(
                 this,
                 { _, year, month, day ->
@@ -158,7 +183,7 @@ class ChequesActivity : AppCompatActivity() {
         }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.add_cheque)
+            .setTitle(if (existing == null) R.string.add_cheque else R.string.edit_cheque)
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
@@ -182,40 +207,83 @@ class ChequesActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
+                val number = etNumber.text.toString().trim().ifEmpty { null }
+                val bank = etBank.text.toString().trim().ifEmpty { null }
+                val note = etNote.text.toString().trim().ifEmpty { null }
+
                 // AppScope, not lifecycleScope — see AppScope's own comment.
                 // This dialog is already gone by the time the write finishes;
                 // a quick Back press right after Save must not be able to
                 // cancel a cheque that looked saved.
                 AppScope.launch {
-                    dao.insertCheque(
-                        Cheque(
-                            partyId = party.id,
-                            amount = amount,
-                            isReceived = rbReceived.isChecked,
-                            chequeNumber = etNumber.text.toString().trim().ifEmpty { null },
-                            bankName = etBank.text.toString().trim().ifEmpty { null },
-                            dueDate = due,
-                            note = etNote.text.toString().trim().ifEmpty { null }
+                    if (existing == null) {
+                        dao.insertCheque(
+                            Cheque(
+                                partyId = party.id,
+                                amount = amount,
+                                isReceived = rbReceived.isChecked,
+                                chequeNumber = number,
+                                bankName = bank,
+                                dueDate = due,
+                                note = note
+                            )
                         )
-                    )
+                    } else {
+                        // copy() off the stored row, so status, settledAt,
+                        // ledgerEntryId and createdAt survive untouched. Only
+                        // what the dialog shows is what the dialog may change.
+                        dao.getCheque(existing.id)?.let { stored ->
+                            dao.updateCheque(
+                                stored.copy(
+                                    partyId = party.id,
+                                    amount = amount,
+                                    isReceived = rbReceived.isChecked,
+                                    chequeNumber = number,
+                                    bankName = bank,
+                                    dueDate = due,
+                                    note = note
+                                )
+                            )
+                        }
+                    }
                 }
             }
             .show()
     }
 
     private fun showChequeActions(cheque: ChequeWithParty) {
-        // Already settled — nothing left to decide, only to remove.
         if (cheque.status != ChequeStatus.PENDING) {
+            // Bounced and cancelled never created a ledger entry — the cheque
+            // simply stopped being expected — so putting one back to pending
+            // moves no money and undoes a mis-tap cleanly. Cleared is a
+            // different animal: it posted an entry, and taking that back is
+            // its own job, not a line in this menu.
+            val canReopen =
+                cheque.status == ChequeStatus.BOUNCED || cheque.status == ChequeStatus.CANCELLED
+            val settledOptions = if (canReopen) {
+                arrayOf(getString(R.string.cheque_reopen), getString(R.string.delete_cheque))
+            } else {
+                arrayOf(getString(R.string.delete_cheque))
+            }
             MaterialAlertDialogBuilder(this)
                 .setTitle(cheque.partyName)
-                .setItems(arrayOf(getString(R.string.delete_cheque))) { _, _ ->
-                    lifecycleScope.launch { dao.softDeleteCheque(cheque.id) }
+                .setItems(settledOptions) { _, which ->
+                    when {
+                        canReopen && which == 0 -> reopen(cheque)
+                        else -> lifecycleScope.launch { dao.softDeleteCheque(cheque.id) }
+                    }
                 }
                 .show()
             return
         }
 
+        // Edit sits first, and only here. A pending cheque has posted nothing
+        // to the ledger, so its details are still only a record of what was
+        // written on paper and can be corrected freely. Once cleared, the
+        // amount is also an entry in the books, and letting the two drift
+        // apart would leave the cheque saying one thing and the khata another.
         val options = arrayOf(
+            getString(R.string.edit_cheque),
             getString(R.string.mark_cleared),
             getString(R.string.mark_bounced),
             getString(R.string.mark_cancelled),
@@ -226,13 +294,24 @@ class ChequesActivity : AppCompatActivity() {
             .setTitle(R.string.cheque_actions)
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> confirmCleared(cheque)
-                    1 -> confirmBounced(cheque)
-                    2 -> settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled)
-                    3 -> lifecycleScope.launch { dao.softDeleteCheque(cheque.id) }
+                    0 -> showChequeDialog(cheque)
+                    1 -> confirmCleared(cheque)
+                    2 -> confirmBounced(cheque)
+                    3 -> settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled)
+                    4 -> lifecycleScope.launch { dao.softDeleteCheque(cheque.id) }
                 }
             }
             .show()
+    }
+
+    /** Back to waiting. settledAt clears with the status — a pending cheque was never settled. */
+    private fun reopen(cheque: ChequeWithParty) {
+        lifecycleScope.launch {
+            dao.getCheque(cheque.id)?.let { stored ->
+                dao.updateCheque(stored.copy(status = ChequeStatus.PENDING, settledAt = null))
+            }
+            Toast.makeText(this@ChequesActivity, R.string.cheque_reopened, Toast.LENGTH_SHORT).show()
+        }
     }
 
     /**

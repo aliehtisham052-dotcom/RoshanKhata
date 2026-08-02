@@ -296,6 +296,9 @@
     <string name="due_summary_all_settled">همه تسویه شد</string>
 
     <string name="cheque_actions">این چک چه شد؟</string>
+    <string name="edit_cheque">ویرایش چک</string>
+    <string name="cheque_reopen">بازگرداندن به در انتظار</string>
+    <string name="cheque_reopened">چک دوباره در انتظار است</string>
     <string name="mark_cleared">علامت «وصول‌شده»</string>
     <string name="mark_bounced">علامت «برگشتی»</string>
     <string name="mark_cancelled">علامت «باطل‌شده»</string>

@@ -296,6 +296,9 @@
     <string name="due_summary_all_settled">سڀ برابر</string>
 
     <string name="cheque_actions">هن چيڪ سان ڇا ٿيو؟</string>
+    <string name="edit_cheque">چيڪ ۾ ترميم ڪريو</string>
+    <string name="cheque_reopen">واپس زير التوا ڪريو</string>
+    <string name="cheque_reopened">چيڪ ٻيهر زير التوا آهي</string>
     <string name="mark_cleared">ڪليئر نشان لڳايو</string>
     <string name="mark_bounced">بائونس نشان لڳايو</string>
     <string name="mark_cancelled">منسوخ نشان لڳايو</string>

@@ -285,6 +285,9 @@
     <string name="due_summary_all_settled">سب برابر</string>
 
     <string name="cheque_actions">اس چیک کا کیا ہوا؟</string>
+    <string name="edit_cheque">چیک میں ترمیم کریں</string>
+    <string name="cheque_reopen">واپس زیرِ التوا کریں</string>
+    <string name="cheque_reopened">چیک دوبارہ زیرِ التوا ہے</string>
     <string name="mark_cleared">کلیئر نشان زد کریں</string>
     <string name="mark_bounced">باؤنس نشان زد کریں</string>
     <string name="mark_cancelled">منسوخ نشان زد کریں</string>

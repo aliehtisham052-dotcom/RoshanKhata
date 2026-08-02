@@ -285,6 +285,9 @@
     <string name="due_summary_all_settled">الكل مسدد</string>
 
     <string name="cheque_actions">ماذا حدث لهذا الشيك؟</string>
+    <string name="edit_cheque">تعديل الشيك</string>
+    <string name="cheque_reopen">إعادته إلى قيد الانتظار</string>
+    <string name="cheque_reopened">الشيك قيد الانتظار مرة أخرى</string>
     <string name="mark_cleared">تعليم كمصروف</string>
     <string name="mark_bounced">تعليم كمرتجع</string>
     <string name="mark_cancelled">تعليم كملغى</string>

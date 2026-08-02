@@ -285,6 +285,9 @@
     <string name="due_summary_all_settled">Sab barabar</string>
 
     <string name="cheque_actions">Is cheque ka kya hua?</string>
+    <string name="edit_cheque">Cheque edit karein</string>
+    <string name="cheque_reopen">Wapas Pending karein</string>
+    <string name="cheque_reopened">Cheque dobara pending hai</string>
     <string name="mark_cleared">Clear Nishan Zad Karein</string>
     <string name="mark_bounced">Bounce Nishan Zad Karein</string>
     <string name="mark_cancelled">Mansookh Nishan Zad Karein</string>
