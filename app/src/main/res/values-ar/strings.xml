@@ -462,6 +462,9 @@
     <string name="business_rename">إعادة تسمية النشاط التجاري</string>
     <string name="business_rename_hint">اضغط للفتح · اضغط مطولاً لإعادة التسمية</string>
     <string name="restore_business_mismatch">هذه النسخة الاحتياطية تخص %1$s، لكن النشاط المفتوح الآن هو %2$s. الاستعادة ستستبدل بيانات النشاط المفتوح بتلك النسخة.</string>
+    <string name="contact_in_recycle_bin">في سلة المحذوفات</string>
+    <string name="restore_no_images">عادت سجلاتك، لكن هذه النسخة الاحتياطية لم تكن معها صور، لذلك لم تُستعد الصور وصور الفواتير ورمز الاستجابة. للاحتفاظ بالصور في النسخ القادمة، فعّل Include images قبل النسخ الاحتياطي.</string>
+    <string name="restore_file_no_images">عادت سجلاتك. النسخة الاحتياطية بملف تحمل السجلات فقط ولا تتضمن الصور أبدًا. للاحتفاظ بالصور أيضًا، فعّل Include images وانسخ احتياطيًا إلى جوجل درايف.</string>
     <string name="filter_title">تصفية</string>
     <string name="filter_account_label">الحساب</string>
     <string name="filter_type_label">النوع</string>

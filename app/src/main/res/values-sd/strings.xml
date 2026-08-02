@@ -482,6 +482,9 @@
     <string name="business_rename">ڪاروبار جو نالو بدلايو</string>
     <string name="business_rename_hint">کولڻ لاءِ دٻايو · نالو بدلائڻ لاءِ دير تائين دٻايو</string>
     <string name="restore_business_mismatch">هي بيڪ اپ %1$s جو آهي، پر هن وقت %2$s کليل آهي. بحال ڪرڻ سان کليل ڪاروبار جو ڊيٽا اُن بيڪ اپ سان بدلجي ويندو.</string>
+    <string name="contact_in_recycle_bin">ري سائيڪل بن ۾</string>
+    <string name="restore_no_images">توهان جو رڪارڊ واپس اچي ويو، پر هن بيڪ اپ سان تصويرون نه هيون، ان ڪري فوٽو، بل جون تصويرون ۽ ڪيو آر بحال نه ٿيا. ايندڙ بيڪ اپ ۾ تصويرون رکڻ لاءِ بيڪ اپ کان اڳ Include images آن ڪريو.</string>
+    <string name="restore_file_no_images">توهان جو رڪارڊ واپس اچي ويو. فائل بيڪ اپ رڳو رڪارڊ کڻي ٿو — ان ۾ تصويرون ڪڏهن به شامل نه ٿينديون آهن. تصويرون به محفوظ رکڻ لاءِ Include images آن ڪري گوگل ڊرائيو تي بيڪ اپ ڪريو.</string>
     <string name="filter_title">فلٽر</string>
     <string name="filter_account_label">کھاتو</string>
     <string name="filter_type_label">قسم</string>

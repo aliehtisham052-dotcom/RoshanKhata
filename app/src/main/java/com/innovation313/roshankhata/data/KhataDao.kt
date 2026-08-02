@@ -285,6 +285,18 @@ interface KhataDao {
     @Query("SELECT phone FROM parties WHERE isDeleted = 0 AND phone IS NOT NULL")
     suspend fun existingPhones(): List<String>
 
+    /**
+     * Phone numbers of parties sitting in the Recycle Bin.
+     *
+     * Kept apart from [existingPhones] rather than folded into it: these are
+     * neither absent nor present. Importing one would create a second, empty
+     * party beside the binned original, and restoring the bin later would
+     * leave the same person on the books twice. The import screen shows them
+     * as binned instead, so the owner restores rather than duplicates.
+     */
+    @Query("SELECT phone FROM parties WHERE isDeleted = 1 AND phone IS NOT NULL")
+    suspend fun binnedPhones(): List<String>
+
     @Insert
     suspend fun insertParties(parties: List<Party>): List<Long>
 

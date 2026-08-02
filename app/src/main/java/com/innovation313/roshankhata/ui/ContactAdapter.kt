@@ -42,10 +42,16 @@ class ContactAdapter(
         holder.tvName.text = c.name
         holder.tvPhone.text = c.phone
 
-        if (c.alreadyAdded) {
-            // Already on the books — shown, but not offered again.
+        if (c.alreadyAdded || c.inRecycleBin) {
+            // Already on the books one way or the other — shown, but not
+            // offered again. A binned contact says so, so the owner knows to
+            // restore them (with their history) instead of wondering why the
+            // name is greyed out.
             holder.cb.visibility = View.INVISIBLE
             holder.tvAdded.visibility = View.VISIBLE
+            holder.tvAdded.setText(
+                if (c.inRecycleBin) R.string.contact_in_recycle_bin else R.string.already_added
+            )
             holder.itemView.isEnabled = false
             holder.itemView.alpha = 0.55f
             holder.itemView.setOnClickListener(null)

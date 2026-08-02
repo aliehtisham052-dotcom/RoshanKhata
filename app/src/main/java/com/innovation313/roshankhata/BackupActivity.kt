@@ -287,21 +287,27 @@ class BackupActivity : AppCompatActivity() {
             // This runs AFTER the text restore on purpose: the bill-photo path
             // re-map reads and rewrites the very entries the text restore just
             // put back. A file restore (driveAccount == null) never carries
-            // images, by the owner's design, so this is skipped entirely.
+            // images, by the owner's design.
             var imagesFailed = false
+            // Silence used to be the answer when no archive came back, and
+            // silence reads as "everything came back". It does not: photos
+            // simply were not in this backup. Say which of the two happened.
+            var noImages = false
             if (driveAccount != null) {
                 imagesFailed = withContext(Dispatchers.IO) {
                     val result = DriveBackup.restoreImages(this@BackupActivity, driveAccount)
                     val bytes = result.getOrNull()
                     when {
                         result.isFailure -> true
-                        bytes == null -> false // no image archive — text-only backup, fine
+                        bytes == null -> { noImages = true; false }
                         else -> {
                             BackupImages.restore(this@BackupActivity, dao, bytes)
                             false
                         }
                     }
                 }
+            } else {
+                noImages = true
             }
 
             if (imagesFailed) {
@@ -320,12 +326,24 @@ class BackupActivity : AppCompatActivity() {
             // this backup, say so plainly, and point to where they are.
             val deletedParties = data.parties.count { it.isDeleted }
 
-            if (deletedParties > 0) {
+            // A file backup carries records only — that is its design, not a
+            // fault, so the wording differs from a Drive backup that simply
+            // had no archive beside it.
+            val imagesNote = when {
+                !noImages -> null
+                driveAccount == null -> getString(R.string.restore_file_no_images)
+                else -> getString(R.string.restore_no_images)
+            }
+
+            if (deletedParties > 0 || imagesNote != null) {
+                val body = listOfNotNull(
+                    if (deletedParties > 0)
+                        getString(R.string.restore_done_with_bin, deletedParties) else null,
+                    imagesNote
+                ).joinToString("\n\n")
                 MaterialAlertDialogBuilder(this@BackupActivity)
                     .setTitle(R.string.restore_done)
-                    .setMessage(
-                        getString(R.string.restore_done_with_bin, deletedParties)
-                    )
+                    .setMessage(body)
                     .setPositiveButton(R.string.ok) { _, _ -> goHome() }
                     .setCancelable(false)
                     .show()

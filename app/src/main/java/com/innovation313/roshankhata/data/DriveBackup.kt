@@ -82,11 +82,32 @@ object DriveBackup {
     private fun imagesName(context: Context) =
         "RoshanKhata_Images${Businesses.suffix(context)}.zip"
 
+    private fun prefs(context: Context) =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
     private fun key(context: Context, base: String) = base + Businesses.suffix(context)
 
+    /**
+     * A per-business switch, falling back to what the owner already chose.
+     *
+     * A new business starts with no answer of its own stored. Reading that as
+     * "off" is what silently dropped images from a second shop's backups: the
+     * owner had turned images on, saw no reason to think otherwise, and the
+     * archive was never made. An unanswered question is not a "no" — so until
+     * this business is given its own answer, it uses Business 1's, which is
+     * the answer the owner actually gave.
+     */
+    private fun switchFor(context: Context, base: String, default: Boolean): Boolean {
+        val p = prefs(context)
+        val own = key(context, base)
+        // contains(), not getBoolean(..., default): the difference between
+        // "chosen false" and "never chosen" is the whole point here.
+        if (p.contains(own)) return p.getBoolean(own, default)
+        return p.getBoolean(base, default)
+    }
+
     fun includeImages(context: Context): Boolean =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getBoolean(key(context, KEY_BACKUP_IMAGES), false)
+        switchFor(context, KEY_BACKUP_IMAGES, false)
 
     fun setIncludeImages(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -100,8 +121,7 @@ object DriveBackup {
      * own when a backup is genuinely due.
      */
     fun autoBackup(context: Context): Boolean =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getBoolean(key(context, KEY_AUTO_BACKUP), false)
+        switchFor(context, KEY_AUTO_BACKUP, false)
 
     fun setAutoBackup(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
