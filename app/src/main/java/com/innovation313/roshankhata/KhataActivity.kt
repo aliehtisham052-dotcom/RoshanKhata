@@ -216,14 +216,14 @@ class KhataActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) = render()
         })
 
-        // The business's own name in the header, and a tap to change it. The
-        // name itself is set in onResume (it can change in Profile and come
-        // back), so only the taps are wired here.
+        // The business's own name in the header. Display only — it is set in
+        // onResume (it can change in Profile and come back), and it is no
+        // longer a tap target: the profile icon on the right is the single way
+        // into the shop's own details. The logo beside it is branding, not a
+        // button, for the same reason.
         val openBusinessSettings = {
             startActivity(Intent(this, BusinessSettingsActivity::class.java))
         }
-        findViewById<View>(R.id.businessNameTap).setOnClickListener { openBusinessSettings() }
-        findViewById<View>(R.id.ivBusinessLogo).setOnClickListener { openBusinessSettings() }
 
         // The gear opens the app-wide menu (settings, language, help, lock) —
         // these belong to the whole app, not to this one ledger, which is why
