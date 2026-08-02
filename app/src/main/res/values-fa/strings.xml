@@ -792,7 +792,7 @@
     <string name="entry_not_found">ثبت یافت نشد</string>
     <string name="delete_entry_message">این ثبت از دفتر حذف می‌شود.</string>
     <string name="entry_deleted">ثبت حذف شد</string>
-    <string name="share_failed">تصویر رسید ساخته نشد</string>
+    <string name="share_failed">تصویر برای هم‌رسانی ساخته نشد</string>
     <string name="invalid_amount">مبلغ معتبری وارد کنید</string>
     <string name="saved">ذخیره شد</string>
     <string name="select_language">زبان خود را انتخاب کنید</string>

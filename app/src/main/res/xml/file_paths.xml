@@ -17,6 +17,16 @@
         name="receipts"
         path="receipts/" />
     <!--
+      The shop's own visiting card. Missing here until now, which is why
+      sharing one never worked: the card was drawn and written correctly, and
+      then the provider refused to make a link for a folder nobody had told it
+      about. A folder the app shares FROM has to be listed here; writing the
+      file is only half the job.
+    -->
+    <cache-path
+        name="cards"
+        path="cards/" />
+    <!--
       Where the camera writes. The camera app cannot hand a photo back through
       an app's private storage, so it is given a content:// URI pointing here
       and writes the picture itself. What lands is a working file: it is copied
