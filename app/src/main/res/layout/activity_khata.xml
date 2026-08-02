@@ -48,32 +48,40 @@
                 app:tint="@color/gold_on_dark" />
 
             <!--
-              The name is who you are, not a button.
-
-              It used to be tappable, and so did the logo, and so is the profile
-              icon two thumbs to the right — three targets, one destination. The
-              subtitle below it existed only to advertise a shortcut that
-              duplicated that icon, and it was spending a whole line of the
-              header to do it. The profile icon is where every app keeps the
-              profile and where an owner will look for it, so it keeps the job
-              alone and this line gets the space back.
-
-              (The tap returns when multi-business lands and it has a job of its
-              own — switching shops, which is not the same thing as editing
-              them. @string/tap_to_change_business is deliberately kept in all
-              six languages for that day.)
+              The name is tappable again — and this time the tap has a job of
+              its own. When it last was, it merely duplicated the profile icon
+              two thumbs to its right, and it was retired for that (de0e13d).
+              Multi-business is the day it was retired FOR: the tap now opens
+              the switcher — choosing which shop is open — which is not the
+              same act as editing a shop, and belongs on the shop's own name
+              the way editing belongs on the profile icon.
             -->
-            <TextView
-                android:id="@+id/tvBusinessName"
+            <LinearLayout
+                android:id="@+id/businessNameTap"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:maxLines="2"
-                android:ellipsize="end"
-                android:text="@string/app_name"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvBusinessName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:text="@string/app_name"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tap_to_change_business"
+                    android:textColor="@color/header_on_dark"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
             <!--
               Backup status, as an icon the owner asked for (like the

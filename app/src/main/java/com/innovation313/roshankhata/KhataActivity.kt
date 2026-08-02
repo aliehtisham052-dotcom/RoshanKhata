@@ -216,13 +216,13 @@ class KhataActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) = render()
         })
 
-        // The business's own name in the header. Display only — it is set in
-        // onResume (it can change in Profile and come back), and it is no
-        // longer a tap target: the profile icon on the right is the single way
-        // into the shop's own details. The logo beside it is branding, not a
-        // button, for the same reason.
+        // Two different acts, two different targets: the profile icon EDITS
+        // the open shop; the shop's own name CHOOSES which shop is open.
         val openBusinessSettings = {
             startActivity(Intent(this, BusinessSettingsActivity::class.java))
+        }
+        findViewById<View>(R.id.businessNameTap).setOnClickListener {
+            startActivity(Intent(this, BusinessSwitchActivity::class.java))
         }
 
         // The gear opens the app-wide menu (settings, language, help, lock) —
