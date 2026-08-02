@@ -458,7 +458,6 @@
     <string name="businesses_title">آپ کے کاروبار</string>
     <string name="businesses_subtitle">ہر کاروبار کا اپنا الگ کھاتہ رہتا ہے</string>
     <string name="business_add">نیا کاروبار شامل کریں</string>
-    <string name="business_name_hint">کاروبار کا نام</string>
     <string name="business_open_now">کھلا ہے</string>
     <string name="business_rename">کاروبار کا نام بدلیں</string>
     <string name="business_rename_hint">کھولنے کے لیے دبائیں · نام بدلنے کے لیے دیر تک دبائیں</string>

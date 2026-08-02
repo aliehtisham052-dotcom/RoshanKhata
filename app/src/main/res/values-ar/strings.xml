@@ -458,7 +458,6 @@
     <string name="businesses_title">أنشطتك التجارية</string>
     <string name="businesses_subtitle">لكل نشاط تجاري دفتر حسابات منفصل خاص به</string>
     <string name="business_add">إضافة نشاط تجاري</string>
-    <string name="business_name_hint">اسم النشاط التجاري</string>
     <string name="business_open_now">مفتوح</string>
     <string name="business_rename">إعادة تسمية النشاط التجاري</string>
     <string name="business_rename_hint">اضغط للفتح · اضغط مطولاً لإعادة التسمية</string>
