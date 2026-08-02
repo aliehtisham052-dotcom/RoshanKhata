@@ -10,6 +10,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -83,7 +84,18 @@ class CashbookActivity : AppCompatActivity() {
                 .collectLatest { (income, expense) ->
                     tvIn.text = Format.money(income)
                     tvOut.text = Format.money(expense)
-                    tvNet.text = Format.money(income - expense)
+
+                    // Net carried no sign at all: Format.money() takes abs()
+                    // on purpose, because everywhere else the direction is
+                    // already said by a label or a + / − beside it. Here it
+                    // was the whole meaning, so Rs 50,000 short read as
+                    // Rs 50,000 in hand. Sign and colour both now say which
+                    // way the month went.
+                    val net = income - expense
+                    tvNet.text = Format.signedTotal(net)
+                    tvNet.setTextColor(
+                        ContextCompat.getColor(this@CashbookActivity, Format.signedTotalColourOnDark(net))
+                    )
                 }
         }
     }
