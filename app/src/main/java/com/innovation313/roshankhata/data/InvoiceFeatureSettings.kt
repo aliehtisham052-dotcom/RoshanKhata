@@ -25,7 +25,11 @@ object InvoiceFeatureSettings {
     private const val KEY_DUE_DATE = "due_date_enabled"
 
     private fun prefs(context: Context) =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        // Per business, Business 1 on the legacy file: which fields an
+        // invoice offers is the shop's own habit, not the phone's — a
+        // pesticide shop that charges no tax and a cloth shop that does can
+        // now live on one phone without sharing one setting.
+        context.getSharedPreferences(PREFS + Businesses.suffix(context), Context.MODE_PRIVATE)
 
     fun discountEnabled(context: Context): Boolean = prefs(context).getBoolean(KEY_DISCOUNT, true)
     fun setDiscountEnabled(context: Context, value: Boolean) {
