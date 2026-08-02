@@ -31,13 +31,33 @@ abstract class KhataDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: KhataDatabase? = null
 
-        fun get(context: Context): KhataDatabase =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
-                    context.applicationContext,
-                    KhataDatabase::class.java,
-                    "roshan_khata.db"
-                )
+        /** Which file [INSTANCE] was opened for. Guarded by the same lock. */
+        @Volatile
+        private var INSTANCE_FILE: String? = null
+
+        fun get(context: Context): KhataDatabase {
+            // The check-and-balance for multi-business lives on this line and
+            // nowhere else: every caller in the app reaches the database
+            // through get(), and get() will not return an instance unless it
+            // was opened for the file the ACTIVE business owns. A stale
+            // instance — one still pointing at another shop's ledger after a
+            // switch — cannot leave this method.
+            val file = Businesses.activeDbFile(context)
+            INSTANCE?.let { if (INSTANCE_FILE == file) return it }
+            return synchronized(this) {
+                val current = INSTANCE
+                if (current != null && INSTANCE_FILE == file) current
+                else {
+                    // A different business is active than the one this
+                    // instance was opened for (or nothing is open yet).
+                    // Close before opening: two live handles would let a
+                    // write race a switch.
+                    current?.close()
+                    Room.databaseBuilder(
+                        context.applicationContext,
+                        KhataDatabase::class.java,
+                        file
+                    )
                     // Real migrations, not a destructive rebuild.
                     //
                     // This database holds a shopkeeper's entire book of debts.
@@ -54,8 +74,25 @@ abstract class KhataDatabase : RoomDatabase() {
                     // why. Loud failure is the kinder failure.
                     .addMigrations(*ALL_MIGRATIONS)
                     .build()
-                    .also { INSTANCE = it }
+                    .also {
+                        INSTANCE = it
+                        INSTANCE_FILE = file
+                    }
+                }
             }
+        }
+
+        /**
+         * Called by [Businesses.switchTo] after the active business changes.
+         * The next [get] opens the newly active business's own file.
+         */
+        fun closeActive() {
+            synchronized(this) {
+                INSTANCE?.close()
+                INSTANCE = null
+                INSTANCE_FILE = null
+            }
+        }
     }
 }
 
