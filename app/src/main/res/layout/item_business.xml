@@ -50,11 +50,11 @@
         android:id="@+id/tvBizOpen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_business_logo"
+        android:background="@drawable/bg_business_open_chip"
         android:paddingHorizontal="10dp"
         android:paddingVertical="4dp"
         android:text="@string/business_open_now"
-        android:textColor="@color/gold_on_dark"
+        android:textColor="@color/white"
         android:textSize="11sp"
         android:textStyle="bold"
         android:visibility="gone" />
