@@ -454,7 +454,14 @@
     <string name="nav_more">Mazeed</string>
 
     <string name="more_title">Mazeed</string>
-    <string name="tap_to_change_business">Business ki tafseel badalne ke liye tap karein</string>
+    <string name="tap_to_change_business">Business badalne ke liye tap karein</string>
+    <string name="businesses_title">Aap ke business</string>
+    <string name="businesses_subtitle">Har business ka apna alag khata rehta hai</string>
+    <string name="business_add">Naya business shamil karein</string>
+    <string name="business_name_hint">Business ka naam</string>
+    <string name="business_open_now">Khula hai</string>
+    <string name="business_rename">Business ka naam badlein</string>
+    <string name="business_rename_hint">Kholne ke liye tap · naam badalne ke liye der tak dabayen</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Khata</string>
     <string name="filter_type_label">Qisam</string>

@@ -40,16 +40,34 @@ object BusinessProfile {
     /** Long edge of the stored QR. Big enough to scan, small enough to attach. */
     private const val MAX_EDGE = 1000
 
-    private fun prefs(context: Context): android.content.SharedPreferences {
+    private fun prefsOf(context: Context, businessId: Long): android.content.SharedPreferences =
         // Business 1 keeps reading the keys it has always written, in the
         // file it has always written them to — an update to this version
         // changes nothing for an existing shop. Only a second business gets
         // a file of its own. (The legacy file is shared with app-wide
         // things — App Lock, Drive — which is exactly why other businesses
         // must NOT write their identity into it.)
-        val id = Businesses.active(context).id
-        return if (id == 1L) context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        else context.getSharedPreferences("business_profile_b$id", Context.MODE_PRIVATE)
+        if (businessId == 1L) context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        else context.getSharedPreferences("business_profile_b$businessId", Context.MODE_PRIVATE)
+
+    private fun prefs(context: Context) =
+        prefsOf(context, Businesses.active(context).id)
+
+    /**
+     * A named business's name, whether or not it is the open one.
+     *
+     * This exists so the switcher list and a registry rename can address a
+     * business by id, instead of going through the active-business
+     * resolution above — writing "rename shop B" through active-resolved
+     * prefs while shop A is open would rename shop A. Explicit id, no trap.
+     */
+    fun nameOf(context: Context, businessId: Long): String? =
+        prefsOf(context, businessId).getString(KEY_BUSINESS_NAME, null)?.takeIf { it.isNotBlank() }
+
+    fun setNameOf(context: Context, businessId: Long, name: String) {
+        prefsOf(context, businessId).edit()
+            .putString(KEY_BUSINESS_NAME, name.trim())
+            .apply()
     }
 
     /**

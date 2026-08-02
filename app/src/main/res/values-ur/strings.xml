@@ -454,7 +454,14 @@
     <string name="nav_more">مزید</string>
 
     <string name="more_title">مزید</string>
-    <string name="tap_to_change_business">کاروبار کی تفصیل بدلنے کے لیے دبائیں</string>
+    <string name="tap_to_change_business">کاروبار بدلنے کے لیے دبائیں</string>
+    <string name="businesses_title">آپ کے کاروبار</string>
+    <string name="businesses_subtitle">ہر کاروبار کا اپنا الگ کھاتہ رہتا ہے</string>
+    <string name="business_add">نیا کاروبار شامل کریں</string>
+    <string name="business_name_hint">کاروبار کا نام</string>
+    <string name="business_open_now">کھلا ہے</string>
+    <string name="business_rename">کاروبار کا نام بدلیں</string>
+    <string name="business_rename_hint">کھولنے کے لیے دبائیں · نام بدلنے کے لیے دیر تک دبائیں</string>
     <string name="filter_title">فلٹر</string>
     <string name="filter_account_label">کھاتہ</string>
     <string name="filter_type_label">قسم</string>

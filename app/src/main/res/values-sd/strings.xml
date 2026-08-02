@@ -474,7 +474,14 @@
 
     <!-- More sheet -->
     <string name="more_title">وڌيڪ</string>
-    <string name="tap_to_change_business">ڪاروبار جي تفصيل بدلائڻ لاءِ دٻايو</string>
+    <string name="tap_to_change_business">ڪاروبار بدلائڻ لاءِ دٻايو</string>
+    <string name="businesses_title">توهان جا ڪاروبار</string>
+    <string name="businesses_subtitle">هر ڪاروبار جو پنهنجو الڳ کاتو رهي ٿو</string>
+    <string name="business_add">نئون ڪاروبار شامل ڪريو</string>
+    <string name="business_name_hint">ڪاروبار جو نالو</string>
+    <string name="business_open_now">کليل آهي</string>
+    <string name="business_rename">ڪاروبار جو نالو بدلايو</string>
+    <string name="business_rename_hint">کولڻ لاءِ دٻايو · نالو بدلائڻ لاءِ دير تائين دٻايو</string>
     <string name="filter_title">فلٽر</string>
     <string name="filter_account_label">کھاتو</string>
     <string name="filter_type_label">قسم</string>

@@ -474,7 +474,14 @@
 
     <!-- More sheet -->
     <string name="more_title">بیشتر</string>
-    <string name="tap_to_change_business">برای ویرایش مشخصات کسب‌وکار بزنید</string>
+    <string name="tap_to_change_business">برای تغییر کسب‌وکار بزنید</string>
+    <string name="businesses_title">کسب‌وکارهای شما</string>
+    <string name="businesses_subtitle">هر کسب‌وکار دفتر جداگانهٔ خود را دارد</string>
+    <string name="business_add">افزودن کسب‌وکار</string>
+    <string name="business_name_hint">نام کسب‌وکار</string>
+    <string name="business_open_now">باز است</string>
+    <string name="business_rename">تغییر نام کسب‌وکار</string>
+    <string name="business_rename_hint">برای باز کردن بزنید · برای تغییر نام نگه دارید</string>
     <string name="filter_title">فیلتر</string>
     <string name="filter_account_label">حساب</string>
     <string name="filter_type_label">نوع</string>

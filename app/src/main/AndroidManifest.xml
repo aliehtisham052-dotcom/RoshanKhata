@@ -134,6 +134,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".BusinessSwitchActivity"
+            android:exported="false"
+            android:parentActivityName=".KhataActivity" />
+
+        <activity
             android:name=".BusinessCardActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

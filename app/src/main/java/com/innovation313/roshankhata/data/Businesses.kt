@@ -91,19 +91,29 @@ object Businesses {
      * Add a business. Its file name embeds its id and an id is never reused,
      * so two businesses can never point at one file — the separation the
      * whole feature exists for is decided here, once, and nowhere else.
+     *
+     * The name is written straight into the new business's own profile too,
+     * so the moment it is opened its header and its invoices already carry
+     * it — the registry copy is only the fallback.
      */
     fun create(context: Context, name: String): Business {
         val all = list(context)
         val id = (all.maxOf { it.id }) + 1
         val fresh = Business(id, name.trim(), "roshan_khata_b$id.db")
         save(context, all + fresh)
+        BusinessProfile.setNameOf(context, id, name)
         return fresh
     }
 
-    /** Rename in the registry. Business 1's display name stays in BusinessProfile. */
+    /** Rename everywhere a name lives: the business's own profile and the registry. */
     fun rename(context: Context, id: Long, name: String) {
+        BusinessProfile.setNameOf(context, id, name)
         save(context, list(context).map { if (it.id == id) it.copy(name = name.trim()) else it })
     }
+
+    /** What the switcher shows: the shop's own profile name first, registry as fallback. */
+    fun displayName(context: Context, b: Business): String? =
+        BusinessProfile.nameOf(context, b.id) ?: b.name
 
     /**
      * Open a different business.
