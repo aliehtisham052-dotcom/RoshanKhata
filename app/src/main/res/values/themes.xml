@@ -32,6 +32,29 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
 
         <item name="android:windowBackground">@color/page_bg</item>
+
+        <!--
+          Screens fade into each other instead of sliding.
+
+          Left unset, every phone applies its own default, and on the skins
+          this app is actually used on that default is a slow slide. A slide
+          shows the incoming window's bare background for the whole journey —
+          pale paper, while the ledger header underneath it is dark green — so
+          what the owner saw was a blank sheet shoving the ledger backwards
+          before any content appeared. Fading in place has no journey to watch.
+        -->
+        <item name="android:windowAnimationStyle">@style/ScreenChange</item>
+    </style>
+
+    <!--
+      Named for the event rather than the effect: if these ever stop being a
+      fade, the name should still be true.
+    -->
+    <style name="ScreenChange" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/screen_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/screen_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/screen_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/screen_close_exit</item>
     </style>
 
     <!--
