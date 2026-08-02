@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.ui.CardTemplates
 import java.io.File
@@ -60,7 +61,7 @@ class BusinessCardActivity : AppCompatActivity() {
 
         // Prefill from what the app already knows, then whatever was last typed
         // here. The business name is shared with statements via BusinessProfile.
-        val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
+        val prefs = getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE)
         etBizName.setText(BusinessProfile.businessName(this) ?: "")
         etType.setText(prefs.getString(KEY_TYPE, ""))
         etOwner.setText(prefs.getString(KEY_OWNER, ""))
@@ -175,7 +176,7 @@ class BusinessCardActivity : AppCompatActivity() {
 
     private fun save() {
         BusinessProfile.setBusinessName(this, etBizName.text.toString())
-        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+        getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE).edit()
             .putString(KEY_TYPE, etType.text.toString().trim())
             .putString(KEY_OWNER, etOwner.text.toString().trim())
             .putString(KEY_PHONE, etPhone.text.toString().trim())
