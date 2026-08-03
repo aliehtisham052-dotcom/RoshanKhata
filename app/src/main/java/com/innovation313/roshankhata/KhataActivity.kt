@@ -41,8 +41,6 @@ import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.DuplicateDetector
 import com.innovation313.roshankhata.data.VoiceEntry
 import com.innovation313.roshankhata.data.VoiceLanguage
-import com.innovation313.roshankhata.data.VoiceLog
-import androidx.core.content.FileProvider
 import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.PartyAdapter
 import com.innovation313.roshankhata.ui.ScreenPrivacyDialog
@@ -147,6 +145,14 @@ class KhataActivity : AppCompatActivity() {
         // owns the data it protects.
         lifecycleScope.launch(Dispatchers.IO) {
             com.innovation313.roshankhata.data.Snapshots.maybeToday(applicationContext)
+
+            // The voice diagnostic log is gone, but the files it already wrote
+            // are still on the phones it wrote them on — spoken customer names
+            // and amounts, sitting in app storage. Deleting the code does not
+            // delete those, so they are cleared here, once, on the next open.
+            // Cheap to leave in: after the first run there is nothing to find.
+            java.io.File(applicationContext.filesDir, "voicelog").deleteRecursively()
+            java.io.File(applicationContext.cacheDir, "voicelogs").deleteRecursively()
         }
 
         // Edge-to-edge, the mechanism proven on this very screen — now shared
@@ -257,13 +263,7 @@ class KhataActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<MaterialButton>(R.id.btnVoiceEntry).apply {
-            setOnClickListener { startListening() }
-            // Diagnostic scaffolding, and deliberately unadvertised: a long
-            // press hands over the voice record. It comes out with the rest of
-            // VoiceLog once voice entry's fate is settled.
-            setOnLongClickListener { shareVoiceLog(); true }
-        }
+        findViewById<MaterialButton>(R.id.btnVoiceEntry).setOnClickListener { startListening() }
 
         findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
 
@@ -1162,7 +1162,6 @@ class KhataActivity : AppCompatActivity() {
             ?.toList()
 
         if (candidates.isEmpty()) {
-            VoiceLog.nothingHeard(this, lastVoiceLanguage)
             Toast.makeText(this, R.string.voice_not_understood, Toast.LENGTH_SHORT).show()
         } else {
             handleSpoken(candidates, confidences)
@@ -1316,30 +1315,7 @@ class KhataActivity : AppCompatActivity() {
         val spokenWords = VoiceEntry.nameWords(heard)
         val party = NameSearch.confidentMatch(allParties, spokenWords) { it.name }
 
-        // Written down before the owner answers, so the record holds what the
-        // app concluded rather than what it was corrected into. Nothing above
-        // or below this call depends on it.
-        VoiceLog.spoken(
-            context = this,
-            languageTag = lastVoiceLanguage,
-            candidates = candidates,
-            confidences = confidences,
-            usedIndex = usedIndex,
-            amount = parsed.amount,
-            isGiven = parsed.isGiven,
-            nameWords = spokenWords,
-            topNames = NameSearch.scoreSpoken(allParties, spokenWords) { it.name }
-                .take(5)
-                .map { Triple(it.item.name, it.score, it.strongHits) },
-            decision = when {
-                parsed.amount == null || parsed.amount <= 0.0 -> "NO AMOUNT — refused"
-                party != null -> "CONFIDENT — \"${party.name}\""
-                else -> "NOT SURE — offered the picker"
-            }
-        )
-
         if (parsed.amount == null || parsed.amount <= 0.0) {
-            VoiceLog.outcome(this, "shown the \"no amount\" message")
             showSpokenProblem(heard, getString(R.string.voice_no_amount))
             return
         }
@@ -1368,9 +1344,7 @@ class KhataActivity : AppCompatActivity() {
             // confident match was the wrong customer: there is no way to
             // change the party once the entry has opened on their page, so an
             // owner who was handed a stranger has nothing else to do here.
-            onDismiss = { VoiceLog.outcome(this, "DISMISSED the strip") },
             onOpen = {
-                VoiceLog.outcome(this, "OPENED the entry for \"${party.name}\"")
                 startActivity(
                     Intent(this, PartyDetailActivity::class.java)
                         .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
@@ -1483,14 +1457,6 @@ class KhataActivity : AppCompatActivity() {
             .setTitle(getString(R.string.voice_which_party, Format.money(amount)))
             .setItems(choices.map { it.name }.toTypedArray()) { _, which ->
                 val chosen = choices[which]
-                // The rank is the measure of our own ordering. Position one
-                // means the ranking was right and only the confidence rule
-                // held back; position ninety means it was not close.
-                VoiceLog.outcome(
-                    this,
-                    "PICKED \"${chosen.name}\" from the list — " +
-                        "position ${which + 1} of ${choices.size}"
-                )
                 startActivity(
                     Intent(this, PartyDetailActivity::class.java)
                         .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, chosen.id)
@@ -1498,57 +1464,7 @@ class KhataActivity : AppCompatActivity() {
                         .putExtra(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, isGiven)
                 )
             }
-            .setNegativeButton(R.string.cancel) { _, _ ->
-                VoiceLog.outcome(this, "CANCELLED the picker")
-            }
-            .setOnCancelListener {
-                VoiceLog.outcome(this, "CANCELLED the picker")
-            }
-            .show()
-    }
-
-    /**
-     * Hand the voice record over, or start it again.
-     *
-     * DIAGNOSTIC SCAFFOLDING — goes out with [VoiceLog]. Its wording is left
-     * in English on purpose: translating a temporary screen into six locales
-     * would cost more than the screen is worth, and only this phone's owner
-     * will ever reach it.
-     */
-    private fun shareVoiceLog() {
-        val kept = VoiceLog.count(this)
-        if (kept == 0) {
-            Toast.makeText(this, "Voice log is empty.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Voice log")
-            .setMessage(
-                "$kept voice attempt${if (kept == 1) "" else "s"} recorded.\n\n" +
-                    "This file holds what was heard and which customer was " +
-                    "matched, including their names. It has never left this " +
-                    "phone. Sending it is your choice."
-            )
-            .setPositiveButton("Share") { _, _ ->
-                val file = VoiceLog.export(this)
-                if (file == null) {
-                    Toast.makeText(this, "Could not prepare the file.", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
-                val share = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                startActivity(Intent.createChooser(share, "Send voice log"))
-            }
-            .setNegativeButton("Clear") { _, _ ->
-                VoiceLog.clear(this)
-                Toast.makeText(this, "Voice log cleared.", Toast.LENGTH_SHORT).show()
-            }
-            .setNeutralButton(R.string.cancel, null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
