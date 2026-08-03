@@ -54,6 +54,11 @@ class HelpActivity : AppCompatActivity() {
         val faqs = listOf(
             Faq(R.string.faq_q_backup, R.string.faq_a_backup),
             Faq(R.string.faq_q_restore, R.string.faq_a_restore),
+            // The two questions the app newly answers: several shops on one
+            // phone, and going back a day. Placed high because both are about
+            // not losing anything, which is what the rest of this list is for.
+            Faq(R.string.faq_q_business, R.string.faq_a_business),
+            Faq(R.string.faq_q_snapshot, R.string.faq_a_snapshot),
             Faq(R.string.faq_q_lock, R.string.faq_a_lock),
             Faq(R.string.faq_q_hide, R.string.faq_a_hide),
             Faq(R.string.faq_q_percent, R.string.faq_a_percent),
