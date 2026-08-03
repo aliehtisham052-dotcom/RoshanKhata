@@ -336,10 +336,24 @@ class NameSearchTest {
         assertFalse(NameSearch.matches("Abbas Kichia", null, "abdul"))
     }
 
-    /** Short queries stay strict — at four letters one edit reaches too far. */
+    /**
+     * Short queries stay strict. "khax" folds to three letters — the silent h
+     * goes — and below four a fold is already a coincidence rather than a
+     * name, so it never reaches the typo rule at all.
+     */
     @Test
     fun `a typo is only forgiven once the query is long enough`() {
         assertFalse(NameSearch.matches("Bilal Khan", null, "khax"))
+    }
+
+    /**
+     * Four is the floor, and it earns its place: a dropped vowel is the most
+     * common typo there is, and it lands exactly here.
+     */
+    @Test
+    fun `a dropped vowel is forgiven at four letters`() {
+        assertTrue(NameSearch.matches("Aslam Traders", null, "aslm"))
+        assertTrue(NameSearch.matches("Tariq Seeds", null, "tarq"))
     }
 
     @Test

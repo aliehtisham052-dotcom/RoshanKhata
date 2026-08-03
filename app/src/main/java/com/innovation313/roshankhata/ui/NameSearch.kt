@@ -74,9 +74,16 @@ object NameSearch {
         //
         // So: after everything else has failed, allow a single edit. Only
         // whole words are compared, never the whole line, or "abc" would come
-        // within one edit of half a dozen unrelated names. Five letters
-        // minimum, higher than the fold's floor on purpose — at four, one
-        // edit already reaches too much of the book to be an answer.
+        // within one edit of half a dozen unrelated names.
+        //
+        // The floor is four folded letters, and that number was measured
+        // rather than guessed — the guess was five, and the unit test caught
+        // it, because "aslm" for Aslam is four and is precisely the typo a
+        // dropped vowel produces. Against a book of real names, four returns
+        // at most two candidates even in the worst case built to break it:
+        // "alim" finds Ali and Salim, "amin" finds Amin and Amir. Both are
+        // names worth showing. Below four the fold itself is already a
+        // coincidence, so the shorter queries never reach here anyway.
         if (typed.length >= MIN_TYPO_LEN && foldedWords(name).any { withinOneEdit(typed, it) }) {
             return true
         }
@@ -86,8 +93,8 @@ object NameSearch {
         return phone?.filter { it.isDigit() }?.contains(digits) == true
     }
 
-    /** Shortest query worth forgiving a typo in. */
-    private const val MIN_TYPO_LEN = 5
+    /** Shortest query worth forgiving a typo in. Measured, not guessed — see matches(). */
+    private const val MIN_TYPO_LEN = 4
 
     /** Each word of a name, folded, so a typo is matched against one word at a time. */
     private fun foldedWords(name: String): List<String> =
