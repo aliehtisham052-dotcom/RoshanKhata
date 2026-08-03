@@ -109,6 +109,12 @@
     <string name="bin_retention_note">Deleted items are kept for 30 days, then removed permanently.</string>
     <string name="bin_empty">The bin is empty.</string>
     <string name="bin_party_note">Party (its entries are kept with it)</string>
+    <string name="bin_party_owed_to_me">owes %1$s</string>
+    <string name="bin_party_i_owe">you owe %1$s</string>
+    <plurals name="bin_party_entries">
+        <item quantity="one">%d entry</item>
+        <item quantity="other">%d entries</item>
+    </plurals>
     <string name="restore">Restore</string>
     <string name="restored">Restored</string>
     <string name="deleted_on">Deleted on %1$s</string>

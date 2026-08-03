@@ -105,6 +105,12 @@
     <string name="bin_retention_note">هٽايل شيون ۳۰ ڏينهن رکيون وينديون آهن، پوءِ هميشه لاءِ ختم ٿي وينديون.</string>
     <string name="bin_empty">ٽوڪري خالي آهي.</string>
     <string name="bin_party_note">ڌر (ان جون داخلائون ان سان گڏ رهن ٿيون)</string>
+    <string name="bin_party_owed_to_me">%1$s وٺڻا آهن</string>
+    <string name="bin_party_i_owe">%1$s ڏيڻا آهن</string>
+    <plurals name="bin_party_entries">
+        <item quantity="one">%d داخلا</item>
+        <item quantity="other">%d داخلائون</item>
+    </plurals>
     <string name="restore">بحال ڪريو</string>
     <string name="restored">بحال ٿيو</string>
     <string name="deleted_on">%1$s تي هٽايو ويو</string>

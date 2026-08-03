@@ -104,6 +104,12 @@
     <string name="bin_retention_note">Delete ki hui cheezein 30 din rakhi jati hain, phir hamesha ke liye mit jati hain.</string>
     <string name="bin_empty">Bin khali hai.</string>
     <string name="bin_party_note">Party (is ki entries isi ke saath mehfooz hain)</string>
+    <string name="bin_party_owed_to_me">%1$s lena hai</string>
+    <string name="bin_party_i_owe">%1$s dena hai</string>
+    <plurals name="bin_party_entries">
+        <item quantity="one">%d entry</item>
+        <item quantity="other">%d entries</item>
+    </plurals>
     <string name="restore">Wapas Layen</string>
     <string name="restored">Wapas aa gaya</string>
     <string name="deleted_on">Delete hua: %1$s</string>

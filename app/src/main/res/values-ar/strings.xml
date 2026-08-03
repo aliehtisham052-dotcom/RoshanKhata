@@ -104,6 +104,12 @@
     <string name="bin_retention_note">تُحفظ العناصر المحذوفة 30 يومًا ثم تُزال نهائيًا.</string>
     <string name="bin_empty">السلة فارغة.</string>
     <string name="bin_party_note">طرف (قيوده محفوظة معه)</string>
+    <string name="bin_party_owed_to_me">لك %1$s</string>
+    <string name="bin_party_i_owe">عليك %1$s</string>
+    <plurals name="bin_party_entries">
+        <item quantity="one">%d قيد</item>
+        <item quantity="other">%d قيود</item>
+    </plurals>
     <string name="restore">استعادة</string>
     <string name="restored">تمت الاستعادة</string>
     <string name="deleted_on">حُذف في: %1$s</string>

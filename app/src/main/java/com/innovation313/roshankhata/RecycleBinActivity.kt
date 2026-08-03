@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
+import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.BinAdapter
+import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.BinItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
@@ -80,6 +82,8 @@ class RecycleBinActivity : AppCompatActivity() {
                             id = p.id,
                             name = p.name,
                             phone = p.phone,
+                            balance = dao.binnedPartyBalance(p.id),
+                            entryCount = dao.binnedPartyEntryCount(p.id),
                             deletedAt = p.deletedAt ?: 0L
                         )
                     }
@@ -165,7 +169,22 @@ class RecycleBinActivity : AppCompatActivity() {
             is BinItem.DeletedEntry -> "${item.entryNumber} · ${item.partyName}"
         }
         val message = when (item) {
-            is BinItem.DeletedParty -> getString(R.string.delete_party_forever_confirm, what)
+            is BinItem.DeletedParty -> buildString {
+                append(getString(R.string.delete_party_forever_confirm, what))
+                // The one moment the figure matters most. Restoring is
+                // reversible; this is not, and destroying a book that still
+                // has money in it should require seeing the money first.
+                if (Money.isNotZero(item.balance)) {
+                    append("\n\n")
+                    append(
+                        getString(
+                            if (Money.isPositive(item.balance)) R.string.bin_party_owed_to_me
+                            else R.string.bin_party_i_owe,
+                            Format.money(item.balance)
+                        )
+                    )
+                }
+            }
             is BinItem.DeletedEntry -> getString(R.string.delete_entry_forever_confirm, what)
         }
 
