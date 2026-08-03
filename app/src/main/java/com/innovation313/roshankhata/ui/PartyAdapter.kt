@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PartyWithBalance
 
@@ -100,8 +101,8 @@ class PartyAdapter(
         )
         holder.tvBalanceLabel.setText(
             when {
-                item.balance > 0 -> R.string.you_will_get
-                item.balance < 0 -> R.string.you_will_give
+                Money.isPositive(item.balance) -> R.string.you_will_get
+                Money.isNegative(item.balance) -> R.string.you_will_give
                 else -> R.string.settled
             }
         )
@@ -110,7 +111,7 @@ class PartyAdapter(
         // is at or beyond it. Below the line it stays quiet — a warning that
         // fires all the time stops being a warning.
         val limit = item.creditLimit
-        if (limit != null && limit > 0 && item.balance > 0) {
+        if (limit != null && limit > 0 && Money.isPositive(item.balance)) {
             when {
                 item.balance >= limit -> {
                     holder.tvLimitWarning.visibility = View.VISIBLE

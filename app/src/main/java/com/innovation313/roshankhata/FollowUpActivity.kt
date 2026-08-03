@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.FollowUpAdapter
 import com.innovation313.roshankhata.ui.Format
@@ -69,7 +70,7 @@ class FollowUpActivity : AppCompatActivity() {
                 // screen is for. lastActivity ascending puts the account
                 // that has been quiet longest at the top; the bigger balance
                 // wins between two equally quiet ones.
-                val debtors = all.filter { it.balance > 0 }
+                val debtors = all.filter { Money.isPositive(it.balance) }
                     .sortedWith(
                         compareBy<PartyWithBalance> { it.lastActivity }
                             .thenByDescending { it.balance }

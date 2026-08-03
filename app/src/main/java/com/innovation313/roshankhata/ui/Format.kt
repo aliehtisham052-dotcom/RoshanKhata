@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.ui
 
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.Money
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -58,8 +59,12 @@ object Format {
     fun customerBalance(value: Double): String {
         val amount = money(value)
         return when {
-            value > 0 -> "- $amount"
-            value < 0 -> "+ $amount"
+            // Money.isPositive / isNegative rather than > 0 and < 0. A settled
+            // ledger can sit a millionth of a paisa off zero, and the plain
+            // comparison put a minus sign in front of a customer who owed
+            // nothing — on a figure that printed as Rs 0.
+            Money.isPositive(value) -> "- $amount"
+            Money.isNegative(value) -> "+ $amount"
             else -> amount
         }
     }
@@ -69,8 +74,8 @@ object Format {
      * green for money owed out, neutral when settled. Returns a colour RES id.
      */
     fun customerBalanceColour(value: Double): Int = when {
-        value > 0 -> R.color.bal_owed_to_me
-        value < 0 -> R.color.bal_i_owe
+        Money.isPositive(value) -> R.color.bal_owed_to_me
+        Money.isNegative(value) -> R.color.bal_i_owe
         else -> R.color.text_muted
     }
 

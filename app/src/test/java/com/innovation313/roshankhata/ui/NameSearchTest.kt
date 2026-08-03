@@ -315,4 +315,40 @@ class NameSearchTest {
         assertTrue(NameSearch.matches("Bilal Khan", "0300-1234567", "1234"))
         assertFalse(NameSearch.matches("Bilal Khan", "0300-1234567", "9999"))
     }
+
+    /**
+     * One slip of the finger. Folding forgives how a name is SAID; this
+     * forgives a letter that is simply wrong, which folding cannot, because a
+     * wrong letter is a different sound rather than the same one misspelled.
+     */
+    @Test
+    fun `one wrong letter still finds the customer`() {
+        assertTrue(NameSearch.matches("Nazeer Ahmad", null, "nazer"))
+        assertTrue(NameSearch.matches("Aslam Traders", null, "aslm"))
+        assertTrue(NameSearch.matches("Matyky Wala", null, "matyki"))
+    }
+
+    /** Two slips is not a typo any more, it is a different name. */
+    @Test
+    fun `a second wrong letter is not forgiven`() {
+        assertFalse(NameSearch.matches("Aslam Traders", null, "akram"))
+        assertFalse(NameSearch.matches("Nazeer Ahmad", null, "bashir"))
+        assertFalse(NameSearch.matches("Abbas Kichia", null, "abdul"))
+    }
+
+    /** Short queries stay strict — at four letters one edit reaches too far. */
+    @Test
+    fun `a typo is only forgiven once the query is long enough`() {
+        assertFalse(NameSearch.matches("Bilal Khan", null, "khax"))
+    }
+
+    @Test
+    fun `withinOneEdit counts a change, a gap and an extra letter as one`() {
+        assertTrue(NameSearch.withinOneEdit("nazer", "nazir"))   // changed
+        assertTrue(NameSearch.withinOneEdit("aslm", "aslam"))    // missing
+        assertTrue(NameSearch.withinOneEdit("kichia", "kichi"))  // extra
+        assertTrue(NameSearch.withinOneEdit("same", "same"))
+        assertFalse(NameSearch.withinOneEdit("aslam", "aslamxy"))
+        assertFalse(NameSearch.withinOneEdit("hello", "world"))
+    }
 }

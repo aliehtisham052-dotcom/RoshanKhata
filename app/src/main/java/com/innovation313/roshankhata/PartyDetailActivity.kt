@@ -43,6 +43,7 @@ import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.ui.QrImage
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
 import com.innovation313.roshankhata.data.BillPhoto
@@ -407,11 +408,11 @@ class PartyDetailActivity : AppCompatActivity() {
         currentBalance = balance
         tvPartyBalance.text = Format.customerBalance(balance)
         when {
-            balance > 0 -> {
+            Money.isPositive(balance) -> {
                 tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me_on_dark))
                 tvBalanceHint.setText(R.string.you_will_get)
             }
-            balance < 0 -> {
+            Money.isNegative(balance) -> {
                 tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe_on_dark))
                 tvBalanceHint.setText(R.string.you_will_give)
             }
@@ -853,7 +854,10 @@ class PartyDetailActivity : AppCompatActivity() {
     }
 
     private fun showReminderPreview(viaWhatsApp: Boolean) {
-        if (currentBalance == 0.0) {
+        // Nothing outstanding means nothing a person could hand over. A
+        // fraction of a paisa left by the arithmetic is not a debt to remind
+        // anyone about.
+        if (Money.isZero(currentBalance)) {
             Toast.makeText(this, R.string.nothing_outstanding, Toast.LENGTH_SHORT).show()
             return
         }
