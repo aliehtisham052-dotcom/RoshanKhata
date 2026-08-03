@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.Money
 
 /**
  * Payment reminders.
@@ -49,7 +50,7 @@ object Reminder {
         val amount = Format.money(balance)
         val from = if (businessName.isNullOrBlank()) "" else "\n\n— $businessName"
 
-        return if (balance > 0) {
+        return if (Money.isPositive(balance)) {
             // They owe me.
             context.getString(R.string.reminder_they_owe, partyName, amount) + from
         } else {

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.ui.Calc
 
 import android.app.DatePickerDialog
@@ -112,7 +113,7 @@ class PlansActivity : AppCompatActivity() {
             val party = parties.firstOrNull {
                 it.name.equals(etParty.text.toString().trim(), ignoreCase = true)
             }
-            if (party != null && party.balance > 0) {
+            if (party != null && Money.isPositive(party.balance)) {
                 tvOwes.text = getString(R.string.plan_owes_now, Format.money(party.balance))
                 if (etTotal.text.isNullOrBlank()) {
                     etTotal.setText(Format.plain(party.balance))

@@ -63,9 +63,69 @@ object NameSearch {
         val typed = fold(query)
         if (typed.length >= MIN_OVERLAP && fold(name).contains(typed)) return true
 
+        // One slip of the finger, tried last.
+        //
+        // Folding evens out how a name is SAID, and it does that well: bhati
+        // finds Bhatti, abas finds Abbas, touseef finds Tousif. What it cannot
+        // do is forgive a letter that is simply wrong — nazer for Nazeer, aslm
+        // for Aslam, matyki for Matyky — because those fold to different
+        // sounds, not the same one badly spelled. In a book of a thousand
+        // names, on a phone keyboard, that happens all day.
+        //
+        // So: after everything else has failed, allow a single edit. Only
+        // whole words are compared, never the whole line, or "abc" would come
+        // within one edit of half a dozen unrelated names. Five letters
+        // minimum, higher than the fold's floor on purpose — at four, one
+        // edit already reaches too much of the book to be an answer.
+        if (typed.length >= MIN_TYPO_LEN && foldedWords(name).any { withinOneEdit(typed, it) }) {
+            return true
+        }
+
         val digits = query.filter { it.isDigit() }
         if (digits.isEmpty()) return false
         return phone?.filter { it.isDigit() }?.contains(digits) == true
+    }
+
+    /** Shortest query worth forgiving a typo in. */
+    private const val MIN_TYPO_LEN = 5
+
+    /** Each word of a name, folded, so a typo is matched against one word at a time. */
+    private fun foldedWords(name: String): List<String> =
+        name.split(*SEPARATORS)
+            .mapNotNull { fold(it).takeIf { f -> f.isNotEmpty() } }
+
+    /**
+     * True when [a] and [b] are the same but for one letter — changed, missing
+     * or extra. Not a general edit distance: it stops the moment a second
+     * difference appears, which is both faster over a thousand names and
+     * exactly the question being asked.
+     */
+    internal fun withinOneEdit(a: String, b: String): Boolean {
+        if (a == b) return true
+        val (short, long) = if (a.length <= b.length) a to b else b to a
+        if (long.length - short.length > 1) return false
+
+        var i = 0
+        var j = 0
+        var slipped = false
+        while (i < short.length && j < long.length) {
+            if (short[i] == long[j]) {
+                i++; j++
+                continue
+            }
+            if (slipped) return false
+            slipped = true
+            if (short.length == long.length) {
+                // A wrong letter: step over it on both sides.
+                i++; j++
+            } else {
+                // A missing or extra letter: step over it on the longer side.
+                j++
+            }
+        }
+        // Whatever is left over is the one trailing edit, if it has not been
+        // spent already.
+        return (short.length - i) + (long.length - j) == 0 || !slipped
     }
 
     /**

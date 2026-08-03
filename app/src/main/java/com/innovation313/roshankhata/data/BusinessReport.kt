@@ -199,8 +199,8 @@ object BusinessReport {
         y += 24f
 
         // ---- Summary ----
-        val owedToMe = d.parties.filter { it.balance > 0 }.sumOf { it.balance }
-        val owedByMe = d.parties.filter { it.balance < 0 }.sumOf { -it.balance }
+        val owedToMe = d.parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
+        val owedByMe = d.parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
 
         canvas.drawText("Summary", MARGIN, y, section)
         y += 20f
@@ -244,8 +244,8 @@ object BusinessReport {
                 }
 
                 val (text, paint) = when {
-                    p.balance > 0 -> Format.money(p.balance) to green
-                    p.balance < 0 -> Format.money(-p.balance) to red
+                    Money.isPositive(p.balance) -> Format.money(p.balance) to green
+                    Money.isNegative(p.balance) -> Format.money(-p.balance) to red
                     else -> "Settled" to muted
                 }
                 val w = paint.measureText(text)

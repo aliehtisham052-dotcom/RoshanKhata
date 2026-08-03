@@ -31,6 +31,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.data.BalancePrivacy
+import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerReport
 import com.innovation313.roshankhata.data.Party
@@ -312,9 +313,14 @@ class KhataActivity : AppCompatActivity() {
                 // balances, money to collect) and everything the shop owes OUT
                 // (negative balances). These are the parts the net figure above
                 // nets together.
-                totalGet = list.filter { it.balance > 0 }.sumOf { it.balance }
-                totalGive = list.filter { it.balance < 0 }.sumOf { -it.balance }
-                totalSettled = list.count { it.balance == 0.0 }
+                // Money.isPositive / isNegative / isZero rather than > 0,
+                // < 0 and == 0.0: a settled ledger can land a millionth of a
+                // paisa off zero, and the three plain comparisons would put
+                // that customer in a total AND leave them out of the settled
+                // count, while the screen printed Rs 0 either way.
+                totalGet = list.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
+                totalGive = list.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+                totalSettled = list.count { Money.isZero(it.balance) }
                 renderTotals()
                 renderPartySummary(list)
                 render()
@@ -651,9 +657,9 @@ class KhataActivity : AppCompatActivity() {
         val picked = allParties.filter { it.id in selectedIds }
         if (picked.isEmpty()) return
 
-        val toCollect = picked.filter { it.balance > 0 }.sumOf { it.balance }
-        val toPay = picked.filter { it.balance < 0 }.sumOf { -it.balance }
-        val owing = picked.count { it.balance != 0.0 }
+        val toCollect = picked.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
+        val toPay = picked.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+        val owing = picked.count { Money.isNotZero(it.balance) }
 
         val message = buildString {
             append(getString(R.string.delete_parties_confirm, picked.size))
@@ -767,9 +773,12 @@ class KhataActivity : AppCompatActivity() {
         // infer it from who is missing from the other two lists.
         val bySide = when (sideFilter) {
             SideFilter.ALL -> inRange
-            SideFilter.TO_GET -> inRange.filter { it.balance > 0 }
-            SideFilter.TO_GIVE -> inRange.filter { it.balance < 0 }
-            SideFilter.SETTLED -> inRange.filter { it.balance == 0.0 }
+            SideFilter.TO_GET -> inRange.filter { Money.isPositive(it.balance) }
+            SideFilter.TO_GIVE -> inRange.filter { Money.isNegative(it.balance) }
+            // The one the owner would notice first: a customer who has
+            // squared up belongs here, and a residue too small to pay was
+            // keeping them out.
+            SideFilter.SETTLED -> inRange.filter { Money.isZero(it.balance) }
         }
 
         // Then customer vs supplier, if one is chosen. Independent of the side
@@ -1058,7 +1067,7 @@ class KhataActivity : AppCompatActivity() {
     private fun renderPartySummary(list: List<com.innovation313.roshankhata.data.PartyWithBalance>) {
         val count = list.size
         val cutoff = System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000
-        val overdue = list.count { it.balance > 0 && it.lastActivity in 1 until cutoff }
+        val overdue = list.count { Money.isPositive(it.balance) && it.lastActivity in 1 until cutoff }
 
         val countText = resources.getQuantityString(R.plurals.customer_count, count, count)
         val withCount = if (overdue > 0) {
