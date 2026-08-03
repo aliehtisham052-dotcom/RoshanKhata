@@ -510,6 +510,20 @@
 %1$s</string>
     <string name="business_numbered">Business %1$d</string>
     <string name="backup_for_business">Backing up: %1$s</string>
+    <string name="snapshots_title">Daily copies</string>
+    <string name="snapshots_subtitle">The app keeps a copy of this business\'s ledger every day, for the last seven days. If something goes wrong, you can go back to any of them.</string>
+    <string name="snapshots_empty">No copies yet. The first one is made the next time you open the ledger.</string>
+    <string name="snapshot_size_kb">%1$d KB</string>
+    <string name="snapshot_restore_title">Go back to this day?</string>
+    <string name="snapshot_restore_action">Restore</string>
+    <string name="snapshot_restore_warning">Your ledger will be put back to how it was on %1$s. Anything entered after that day will be gone.\n\nToday\'s ledger is copied and kept first, so this can be undone.</string>
+    <string name="snapshot_restoring">Restoring…</string>
+    <string name="snapshot_restored_title">Ledger restored</string>
+    <string name="snapshot_restored_body">The app will now reopen with the restored ledger.</string>
+    <string name="snapshot_unhealthy_title">That copy is damaged</string>
+    <string name="snapshot_unhealthy_body">This copy did not pass its check, so it was not used. Your current ledger has not been touched. Try an earlier day.</string>
+    <string name="snapshot_restore_failed">Could not restore that copy. Your current ledger has not been changed.</string>
+    <string name="daily_copies">Daily copies</string>
     <string name="business_last_backup">Last backup %1$s</string>
     <string name="business_never_backed_up">Never backed up</string>
     <string name="notif_backup_body_named">%1$s has not been backed up in over a week. Its records live only on this phone.</string>

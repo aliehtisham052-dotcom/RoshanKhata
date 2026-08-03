@@ -278,6 +278,22 @@
                 app:cornerRadius="10dp"
                 app:strokeColor="@color/brand_green" />
 
+            <!--
+              The way to the daily copies. It belongs here rather than buried
+              in More: this is the screen an owner opens when they are worried
+              about their data, and until now the seven copies the app had been
+              quietly keeping had no door at all.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDailyCopies"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/daily_copies"
+                android:textColor="@color/brand_green"
+                android:textSize="14sp" />
+
             </LinearLayout>
 
         </LinearLayout>

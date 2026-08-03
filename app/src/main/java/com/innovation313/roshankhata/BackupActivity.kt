@@ -88,6 +88,10 @@ class BackupActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<MaterialButton>(R.id.btnDailyCopies).setOnClickListener {
+            startActivity(Intent(this, SnapshotsActivity::class.java))
+        }
+
         if (DriveFeature.ENABLED) {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
 

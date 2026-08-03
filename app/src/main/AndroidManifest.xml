@@ -139,6 +139,11 @@
             android:parentActivityName=".KhataActivity" />
 
         <activity
+            android:name=".SnapshotsActivity"
+            android:exported="false"
+            android:parentActivityName=".BackupActivity" />
+
+        <activity
             android:name=".BusinessCardActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
