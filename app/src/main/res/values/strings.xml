@@ -880,7 +880,11 @@
     <string name="faq_q_backup">How do I keep my khata safe if I lose my phone?</string>
     <string name="faq_a_backup">Open Backup &amp; Restore from the home screen and sign in with your own Google account. Your ledger is saved to your Drive, where only you can reach it. Do this once a week and a lost phone costs you a phone, not your accounts.</string>
     <string name="faq_q_restore">I changed my phone. How do I get my khata back?</string>
-    <string name="faq_a_restore">Install Roshan Khata on the new phone, open Backup &amp; Restore, and sign in with the same Google account. Your last backup comes back. Anything entered after that backup was made is not in it.</string>
+    <string name="faq_a_restore">Install Roshan Khata on the new phone, open Backup &amp; Restore, tap Restore, and sign in with the same Google account. The app asks Drive which shops it is holding and lists them by name, so you can bring back one or all of them. Anything entered after the last backup was made is not in it.</string>
+    <string name="faq_q_business">I have two shops. Can I keep both in the app?</string>
+    <string name="faq_a_business">Yes. Tap your shop name at the top of the home screen, then Add business. Each shop keeps a completely separate khata — separate customers, entries and photos — and each is backed up separately. Tap a name to switch. Long-press to rename.</string>
+    <string name="faq_q_snapshot">Something went wrong today. Can I go back to yesterday?</string>
+    <string name="faq_a_snapshot">Yes. The app quietly keeps a copy of each shop\'s khata every day, for the last seven days. Open Backup &amp; Restore → Daily copies and choose a day. Today\'s khata is kept first, so this can be undone too.</string>
     <string name="faq_q_lock">How do I stop others seeing my khata?</string>
     <string name="faq_a_lock">More → App Lock. It uses the same fingerprint or PIN your phone already uses, so there is no extra password to remember. Your phone must have a screen lock set for this to work.</string>
     <string name="faq_q_hide">Can I hide the balance when someone is standing beside me?</string>
@@ -898,7 +902,7 @@
     <string name="pick_time">Choose time</string>
     <string name="about_us">About</string>
     <string name="about_version">Version %1$s</string>
-    <string name="about_what">A ledger for the shop counter. Customer accounts, daily cash, cheques, supplier bills and instalments — kept the way they are kept on paper, in the language the shop is run in.</string>
+    <string name="about_what">A ledger for the shop counter. Customer accounts, daily cash, cheques, supplier bills and instalments — kept the way they are kept on paper, in the language the shop is run in. One shop, or several, each with its own book.</string>
     <string name="about_privacy_title">Your accounts stay yours</string>
     <string name="about_privacy_body">Everything is stored on this phone. We never see your customers, their numbers, or what anyone owes. A backup goes to your own Google Drive — not to us.</string>
     <string name="about_privacy_policy">Privacy policy</string>
