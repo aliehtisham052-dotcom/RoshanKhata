@@ -554,6 +554,9 @@ object Backup {
         put("unit", e.unit ?: JSONObject.NULL)
         put("productId", e.productId ?: JSONObject.NULL)
         put("billItemId", e.billItemId ?: JSONObject.NULL)
+        // Carried from the day the column exists, so a backup taken before
+        // staff logins arrive is still a complete record of its own rows.
+        put("createdBy", e.createdBy ?: JSONObject.NULL)
         put("isDeleted", e.isDeleted)
         put("deletedAt", e.deletedAt ?: JSONObject.NULL)
     }
@@ -573,6 +576,7 @@ object Backup {
         unit = o.optNullableString("unit"),
         productId = o.optNullableLong("productId"),
         billItemId = o.optNullableLong("billItemId"),
+        createdBy = o.optString("createdBy").takeIf { it.isNotBlank() },
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")
     )

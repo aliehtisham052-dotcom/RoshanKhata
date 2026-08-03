@@ -138,6 +138,18 @@ data class LedgerEntry(
      */
     val billItemId: Long? = null,
 
+    /**
+     * Who wrote this entry, once a shop has more than one pair of hands.
+     *
+     * Null on every entry so far, and nothing sets it yet — deliberately. A
+     * column costs a migration whenever it arrives; arriving now means the
+     * entries written between today and the day staff logins exist already
+     * have somewhere for the answer to go, instead of a stretch of ledger
+     * that can never be attributed. Free text rather than a foreign key: a
+     * name written on an entry should outlive the person leaving the shop.
+     */
+    val createdBy: String? = null,
+
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null
 )

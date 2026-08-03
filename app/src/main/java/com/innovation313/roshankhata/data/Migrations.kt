@@ -435,6 +435,21 @@ val MIGRATION_15_16 = object : Migration(15, 16) {
 }
 
 /**
+ * Who wrote the entry.
+ *
+ * Nothing fills this in yet, and that is the point of adding it now: the day
+ * a shop has more than one pair of hands, every entry written between now and
+ * then already has a place for the answer, instead of a whole ledger with a
+ * hole where the name should be. Nullable, so every existing row is valid
+ * unchanged and the app behaves exactly as it does today.
+ */
+val MIGRATION_16_17 = object : Migration(16, 17) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE transactions ADD COLUMN createdBy TEXT")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -443,7 +458,7 @@ val MIGRATION_15_16 = object : Migration(15, 16) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 16
+const val KHATA_DB_VERSION = 17
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -461,5 +476,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_12_13,
     MIGRATION_13_14,
     MIGRATION_14_15,
-    MIGRATION_15_16
+    MIGRATION_15_16,
+    MIGRATION_16_17
 )
