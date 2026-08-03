@@ -506,6 +506,20 @@
 %1$s</string>
     <string name="business_numbered">کسب‌وکار %1$d</string>
     <string name="backup_for_business">در حال پشتیبان‌گیری: %1$s</string>
+    <string name="snapshots_title">نسخه‌های روزانه</string>
+    <string name="snapshots_subtitle">برنامه هر روز از دفتر این کسب‌وکار یک نسخه نگه می‌دارد، برای هفت روز گذشته. اگر مشکلی پیش آمد، می‌توانید به هر یک از آن‌ها بازگردید.</string>
+    <string name="snapshots_empty">هنوز نسخه‌ای نیست. اولین نسخه دفعه بعد که دفتر را باز کنید ساخته می‌شود.</string>
+    <string name="snapshot_size_kb">%1$d KB</string>
+    <string name="snapshot_restore_title">به این روز بازگردیم؟</string>
+    <string name="snapshot_restore_action">بازیابی</string>
+    <string name="snapshot_restore_warning">دفتر شما به وضعیت %1$s بازمی‌گردد. هر چه پس از آن روز ثبت شده از بین می‌رود.\n\nدفتر امروز ابتدا نسخه‌برداری و نگه داشته می‌شود، پس این کار برگشت‌پذیر است.</string>
+    <string name="snapshot_restoring">در حال بازیابی…</string>
+    <string name="snapshot_restored_title">دفتر بازیابی شد</string>
+    <string name="snapshot_restored_body">برنامه اکنون با دفتر بازیابی‌شده دوباره باز می‌شود.</string>
+    <string name="snapshot_unhealthy_title">این نسخه آسیب دیده است</string>
+    <string name="snapshot_unhealthy_body">این نسخه در بررسی خود قبول نشد و استفاده نشد. دفتر فعلی شما دست نخورده است. نسخه روز پیش‌تر را امتحان کنید.</string>
+    <string name="snapshot_restore_failed">این نسخه بازیابی نشد. دفتر فعلی شما تغییر نکرد.</string>
+    <string name="daily_copies">نسخه‌های روزانه</string>
     <string name="business_last_backup">آخرین پشتیبان %1$s</string>
     <string name="business_never_backed_up">هرگز پشتیبان گرفته نشده</string>
     <string name="notif_backup_body_named">بیش از یک هفته است از %1$s پشتیبان گرفته نشده. سوابق آن فقط روی همین گوشی است.</string>

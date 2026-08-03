@@ -486,6 +486,20 @@
 %1$s</string>
     <string name="business_numbered">نشاط %1$d</string>
     <string name="backup_for_business">جارٍ النسخ الاحتياطي: %1$s</string>
+    <string name="snapshots_title">النسخ اليومية</string>
+    <string name="snapshots_subtitle">يحتفظ التطبيق بنسخة من دفتر هذا النشاط كل يوم، لآخر سبعة أيام. إذا حدث خطأ ما، يمكنك العودة إلى أي منها.</string>
+    <string name="snapshots_empty">لا توجد نسخ بعد. تُنشأ أول نسخة في المرة القادمة التي تفتح فيها الدفتر.</string>
+    <string name="snapshot_size_kb">%1$d KB</string>
+    <string name="snapshot_restore_title">العودة إلى هذا اليوم؟</string>
+    <string name="snapshot_restore_action">استعادة</string>
+    <string name="snapshot_restore_warning">سيعود دفترك إلى حالته في %1$s. كل ما أُدخل بعد ذلك اليوم سيختفي.\n\nتُنسخ حالة اليوم وتُحفظ أولاً، لذا يمكن التراجع عن هذا.</string>
+    <string name="snapshot_restoring">جارٍ الاستعادة…</string>
+    <string name="snapshot_restored_title">تمت استعادة الدفتر</string>
+    <string name="snapshot_restored_body">سيُعاد فتح التطبيق الآن بالدفتر المستعاد.</string>
+    <string name="snapshot_unhealthy_title">هذه النسخة تالفة</string>
+    <string name="snapshot_unhealthy_body">لم تجتز هذه النسخة فحصها، لذلك لم تُستخدم. دفترك الحالي لم يُمس. جرّب نسخة يوم أسبق.</string>
+    <string name="snapshot_restore_failed">تعذرت استعادة هذه النسخة. لم يتغير دفترك الحالي.</string>
+    <string name="daily_copies">النسخ اليومية</string>
     <string name="business_last_backup">آخر نسخة احتياطية %1$s</string>
     <string name="business_never_backed_up">لم يتم النسخ الاحتياطي قط</string>
     <string name="notif_backup_body_named">لم تُنسخ %1$s احتياطيًا منذ أكثر من أسبوع. سجلاتها موجودة على هذا الهاتف فقط.</string>

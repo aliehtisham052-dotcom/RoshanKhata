@@ -486,6 +486,20 @@
 %1$s</string>
     <string name="business_numbered">کاروبار %1$d</string>
     <string name="backup_for_business">بیک اپ ہو رہا ہے: %1$s</string>
+    <string name="snapshots_title">روزانہ کاپیاں</string>
+    <string name="snapshots_subtitle">ایپ اس کاروبار کے کھاتے کی کاپی روزانہ بناتی ہے، پچھلے سات دن کی۔ کچھ خراب ہو جائے تو آپ کسی بھی دن پر واپس جا سکتے ہیں۔</string>
+    <string name="snapshots_empty">ابھی کوئی کاپی نہیں۔ پہلی کاپی اگلی بار کھاتہ کھولنے پر بنے گی۔</string>
+    <string name="snapshot_size_kb">%1$d KB</string>
+    <string name="snapshot_restore_title">اس دن پر واپس جائیں؟</string>
+    <string name="snapshot_restore_action">بحال کریں</string>
+    <string name="snapshot_restore_warning">آپ کا کھاتہ %1$s والی حالت پر چلا جائے گا۔ اُس دن کے بعد کا سب کچھ ختم ہو جائے گا۔\n\nآج کا کھاتہ پہلے کاپی کر کے رکھ لیا جاتا ہے، اس لیے یہ واپس بھی ہو سکتا ہے۔</string>
+    <string name="snapshot_restoring">بحال ہو رہا ہے…</string>
+    <string name="snapshot_restored_title">کھاتہ بحال ہو گیا</string>
+    <string name="snapshot_restored_body">ایپ اب بحال کیے گئے کھاتے کے ساتھ دوبارہ کھلے گی۔</string>
+    <string name="snapshot_unhealthy_title">یہ کاپی خراب ہے</string>
+    <string name="snapshot_unhealthy_body">یہ کاپی اپنی جانچ میں پاس نہیں ہوئی، اس لیے استعمال نہیں کی گئی۔ آپ کا موجودہ کھاتہ بالکل نہیں چھیڑا گیا۔ کسی پہلے دن کی کاپی آزمائیں۔</string>
+    <string name="snapshot_restore_failed">یہ کاپی بحال نہیں ہو سکی۔ آپ کا موجودہ کھاتہ نہیں بدلا۔</string>
+    <string name="daily_copies">روزانہ کاپیاں</string>
     <string name="business_last_backup">آخری بیک اپ %1$s</string>
     <string name="business_never_backed_up">کبھی بیک اپ نہیں ہوا</string>
     <string name="notif_backup_body_named">%1$s کا بیک اپ ایک ہفتے سے زیادہ عرصے سے نہیں ہوا۔ اس کا ریکارڈ صرف اسی فون پر ہے۔</string>

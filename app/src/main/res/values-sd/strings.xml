@@ -506,6 +506,20 @@
 %1$s</string>
     <string name="business_numbered">ڪاروبار %1$d</string>
     <string name="backup_for_business">بيڪ اپ ٿي رهيو آهي: %1$s</string>
+    <string name="snapshots_title">روزاني ڪاپيون</string>
+    <string name="snapshots_subtitle">ايپ هن ڪاروبار جي کاتي جي ڪاپي روزانو ٺاهي ٿي، گذريل ست ڏينهن جي. ڪجهه خراب ٿي وڃي ته توهان ڪنهن به ڏينهن تي واپس وڃي سگهو ٿا.</string>
+    <string name="snapshots_empty">اڃا ڪا ڪاپي ناهي. پهرين ڪاپي ايندڙ ڀيري کاتو کولڻ تي ٺهندي.</string>
+    <string name="snapshot_size_kb">%1$d KB</string>
+    <string name="snapshot_restore_title">هن ڏينهن تي واپس وڃو؟</string>
+    <string name="snapshot_restore_action">بحال ڪريو</string>
+    <string name="snapshot_restore_warning">توهان جو کاتو %1$s واري حالت تي هليو ويندو. اُن ڏينهن کان پوءِ جو سڀ ڪجهه ختم ٿي ويندو.\n\nاڄ جو کاتو پهريان ڪاپي ڪري رکيو وڃي ٿو، ان ڪري هي واپس به ٿي سگهي ٿو.</string>
+    <string name="snapshot_restoring">بحال ٿي رهيو آهي…</string>
+    <string name="snapshot_restored_title">کاتو بحال ٿي ويو</string>
+    <string name="snapshot_restored_body">ايپ هاڻ بحال ڪيل کاتي سان ٻيهر کلندي.</string>
+    <string name="snapshot_unhealthy_title">هي ڪاپي خراب آهي</string>
+    <string name="snapshot_unhealthy_body">هي ڪاپي پنهنجي جانچ ۾ پاس نه ٿي، ان ڪري استعمال نه ڪئي وئي. توهان جو موجوده کاتو بلڪل نه ڇيڙيو ويو. ڪنهن اڳئين ڏينهن جي ڪاپي آزمايو.</string>
+    <string name="snapshot_restore_failed">هي ڪاپي بحال نه ٿي سگهي. توهان جو موجوده کاتو نه بدليو.</string>
+    <string name="daily_copies">روزاني ڪاپيون</string>
     <string name="business_last_backup">آخري بيڪ اپ %1$s</string>
     <string name="business_never_backed_up">ڪڏهن بيڪ اپ نه ٿيو</string>
     <string name="notif_backup_body_named">%1$s جو بيڪ اپ هڪ هفتي کان وڌيڪ عرصي کان نه ٿيو آهي. ان جو رڪارڊ رڳو هن فون تي آهي.</string>
