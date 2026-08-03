@@ -88,6 +88,27 @@ object Businesses {
     fun activeDbFile(context: Context): String = active(context).file
 
     /**
+     * Make sure a business with this exact id exists, and return it.
+     *
+     * [create] hands out the next free id, which is right when the owner adds
+     * a shop and wrong when a shop is being recovered: a shop discovered on
+     * Drive already HAS an id, written into the name of its backup file, and
+     * putting it back under a different one would point it at the wrong file
+     * forever. Recovery therefore names its own id, and creation does not.
+     *
+     * Existing businesses are left exactly as they are — a recovery must never
+     * quietly rename a shop that is already on this phone.
+     */
+    fun ensure(context: Context, id: Long, name: String?): Business {
+        list(context).firstOrNull { it.id == id }?.let { return it }
+        val file = if (id == 1L) LEGACY_FILE else "roshan_khata_b$id.db"
+        val fresh = Business(id, name?.trim(), file)
+        save(context, list(context) + fresh)
+        if (!name.isNullOrBlank()) BusinessProfile.setNameOf(context, id, name)
+        return fresh
+    }
+
+    /**
      * Add a business. Its file name embeds its id and an id is never reused,
      * so two businesses can never point at one file — the separation the
      * whole feature exists for is decided here, once, and nowhere else.

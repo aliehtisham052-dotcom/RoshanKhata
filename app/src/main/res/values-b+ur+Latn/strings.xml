@@ -468,6 +468,17 @@
     <string name="contact_in_recycle_bin">Recycle Bin mein</string>
     <string name="restore_no_images">Aap ka record wapas aa gaya, lekin is backup ke sath images nahi thin, is liye photos, bill photos aur QR bahal nahi hue. Aainda backup mein images rakhne ke liye backup se pehle Include images on karein.</string>
     <string name="restore_file_no_images">Aap ka record wapas aa gaya. File backup sirf record le kar jata hai — usme images kabhi shamil nahi hotin. Photos bhi mehfooz rakhne ke liye Include images on kar ke Google Drive par backup karein.</string>
+    <string name="drive_looking">Drive par dekh rahe hain…</string>
+    <string name="drive_found_businesses">Drive par %1$d business mile</string>
+    <string name="drive_restore_all">Sab bahal karein</string>
+    <string name="drive_restore_all_warning">Ye business Drive se bahal honge, aur har ek ka mojooda data is phone par un se badal jayega:
+
+%1$s</string>
+    <string name="drive_restored_these">Bahal ho gaye:
+%1$s</string>
+    <string name="drive_restore_missed">Bahal nahi ho sake:
+%1$s</string>
+    <string name="business_numbered">Business %1$d</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Khata</string>
     <string name="filter_type_label">Qisam</string>

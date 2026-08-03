@@ -488,6 +488,17 @@
     <string name="contact_in_recycle_bin">در سطل بازیافت</string>
     <string name="restore_no_images">سوابق شما بازگشت، اما این پشتیبان تصویری همراه نداشت، بنابراین عکس‌ها، عکس صورتحساب‌ها و کیوآر بازیابی نشدند. برای نگه‌داشتن تصاویر در پشتیبان‌های بعدی، پیش از پشتیبان‌گیری Include images را روشن کنید.</string>
     <string name="restore_file_no_images">سوابق شما بازگشت. پشتیبان فایلی تنها سوابق را می‌برد و هرگز تصاویر را شامل نمی‌شود. برای حفظ عکس‌ها نیز، Include images را روشن کنید و در گوگل درایو پشتیبان بگیرید.</string>
+    <string name="drive_looking">در حال جست‌وجو در درایو…</string>
+    <string name="drive_found_businesses">%1$d کسب‌وکار در درایو پیدا شد</string>
+    <string name="drive_restore_all">بازیابی همه</string>
+    <string name="drive_restore_all_warning">این کسب‌وکارها از درایو بازیابی می‌شوند و داده‌های فعلی هرکدام روی این گوشی جایگزین می‌شود:
+
+%1$s</string>
+    <string name="drive_restored_these">بازیابی شد:
+%1$s</string>
+    <string name="drive_restore_missed">بازیابی نشد:
+%1$s</string>
+    <string name="business_numbered">کسب‌وکار %1$d</string>
     <string name="filter_title">فیلتر</string>
     <string name="filter_account_label">حساب</string>
     <string name="filter_type_label">نوع</string>

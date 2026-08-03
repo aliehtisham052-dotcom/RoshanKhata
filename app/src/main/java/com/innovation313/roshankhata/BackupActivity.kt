@@ -14,6 +14,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Backup
 import com.innovation313.roshankhata.data.BackupImages
+import com.innovation313.roshankhata.data.BackupReminder
+import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.DriveAuth
 import com.innovation313.roshankhata.data.DriveBackup
@@ -606,40 +608,129 @@ class BackupActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Restore always starts by asking Drive what is there.
+     *
+     * It used to go straight to "restore this account's backup", which quietly
+     * meant the OPEN shop's backup — correct with one shop, and the reason a
+     * two-shop owner restored one book and had no way of knowing the other was
+     * still waiting. Naming the shops first makes the choice visible, and makes
+     * bringing all of them back a single tap.
+     */
     private fun confirmDriveRestore() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.drive_restore)
-            .setMessage(R.string.drive_restore_confirm)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.restore_replace) { _, _ -> driveRestore() }
-            .show()
+        driveDiscover()
     }
 
-    private fun driveRestore() {
-        val name = DriveAuth.accountName(this) ?: return
-        Toast.makeText(this, R.string.drive_restoring, Toast.LENGTH_SHORT).show()
+    /**
+     * Ask Drive what shops it is holding, and offer to bring them all back.
+     *
+     * This is the answer to a wiped or lost phone. The list of businesses
+     * lives in this phone's preferences, so a fresh install knows about one
+     * shop and would restore one shop, leaving a second shop's backup sitting
+     * on Drive with nothing pointing at it. Drive is asked directly instead.
+     */
+    private fun driveDiscover() {
+        val account = DriveAuth.accountName(this) ?: return
+        Toast.makeText(this, R.string.drive_looking, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
-            val download = DriveBackup.restore(this@BackupActivity, name)
-
-            if (download.isFailure) {
-                Toast.makeText(this@BackupActivity, R.string.drive_restore_failed, Toast.LENGTH_LONG).show()
-                return@launch
-            }
-
-            val text = download.getOrNull()
-            if (text == null) {
+            val found = DriveBackup.discoverBusinesses(this@BackupActivity, account).getOrNull()
+            if (found.isNullOrEmpty()) {
                 Toast.makeText(this@BackupActivity, R.string.drive_no_backup, Toast.LENGTH_LONG).show()
                 return@launch
             }
 
-            // Reuse the exact same parse+validate path as a file restore, so a
-            // cloud backup gets identical checks — a bad download cannot slip in
-            // where a bad file would be caught.
-            val (result, data) = withContext(Dispatchers.IO) {
-                Backup.parseText(text)
+            val labels = found.map { biz ->
+                val shop = biz.name ?: getString(R.string.business_numbered, biz.id)
+                "$shop — ${Format.dateOnly(biz.modifiedAt)}"
+            }.toTypedArray()
+
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(getString(R.string.drive_found_businesses, found.size))
+                .setItems(labels) { _, which -> confirmRestoreAll(account, listOf(found[which])) }
+                .setNeutralButton(R.string.cancel, null)
+                .setPositiveButton(R.string.drive_restore_all) { _, _ ->
+                    confirmRestoreAll(account, found)
+                }
+                .show()
+        }
+    }
+
+    private fun confirmRestoreAll(account: String, businesses: List<DriveBackup.DriveBusiness>) {
+        val names = businesses.joinToString("\n") { biz ->
+            "• " + (biz.name ?: getString(R.string.business_numbered, biz.id))
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.restore_warning_title)
+            .setMessage(getString(R.string.drive_restore_all_warning, names))
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.restore_replace) { _, _ -> restoreAll(account, businesses) }
+            .show()
+    }
+
+    /**
+     * Restore each discovered shop into its own book, one after another.
+     *
+     * Two things here are deliberate and load-bearing. Each shop's registry
+     * entry is recreated at the id its Drive file already carries, so it lands
+     * back on its own database file rather than a newly numbered one. And the
+     * DAO is fetched fresh inside every round, never the screen's cached one:
+     * switching business closes and reopens the database, so a handle taken
+     * before the switch would write this shop's ledger into the last shop's
+     * file. That is the single worst thing this feature could do, so it is
+     * done explicitly rather than left to habit.
+     */
+    private fun restoreAll(account: String, businesses: List<DriveBackup.DriveBusiness>) {
+        Toast.makeText(this, R.string.drive_restoring, Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            val done = mutableListOf<String>()
+            val failed = mutableListOf<String>()
+
+            for (biz in businesses) {
+                val label = biz.name ?: getString(R.string.business_numbered, biz.id)
+
+                Businesses.ensure(this@BackupActivity, biz.id, biz.name)
+                Businesses.switchTo(this@BackupActivity, biz.id)
+
+                val text = DriveBackup.restoreById(this@BackupActivity, account, biz.backupFileId)
+                    .getOrNull()
+                if (text == null) { failed += label; continue }
+
+                val (result, data) = withContext(Dispatchers.IO) { Backup.parseText(text) }
+                if (result !is Backup.ImportResult.Ok || data == null) { failed += label; continue }
+
+                val liveDao = KhataDatabase.get(this@BackupActivity).khataDao()
+                withContext(Dispatchers.IO) { Backup.restore(this@BackupActivity, liveDao, data) }
+
+                // Images for this shop, from this shop's own archive. A shop
+                // without one is restored without photos, not failed.
+                DriveBackup.restoreImages(this@BackupActivity, account).getOrNull()?.let { bytes ->
+                    withContext(Dispatchers.IO) {
+                        BackupImages.restore(this@BackupActivity, liveDao, bytes)
+                    }
+                }
+
+                BackupReminder.recordBackup(this@BackupActivity)
+                done += label
             }
-            handleParseResult(result, data, driveAccount = name)
+
+            val body = buildString {
+                if (done.isNotEmpty()) {
+                    append(getString(R.string.drive_restored_these, done.joinToString("\n") { "• $it" }))
+                }
+                if (failed.isNotEmpty()) {
+                    if (isNotEmpty()) append("\n\n")
+                    append(getString(R.string.drive_restore_missed, failed.joinToString("\n") { "• $it" }))
+                }
+            }
+
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.restore_done)
+                .setMessage(body)
+                .setCancelable(false)
+                .setPositiveButton(R.string.ok) { _, _ -> goHome() }
+                .show()
         }
     }
 

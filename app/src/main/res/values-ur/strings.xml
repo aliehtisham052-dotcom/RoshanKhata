@@ -468,6 +468,17 @@
     <string name="contact_in_recycle_bin">ری سائیکل بن میں</string>
     <string name="restore_no_images">آپ کا ریکارڈ واپس آ گیا، لیکن اس بیک اپ کے ساتھ تصاویر نہیں تھیں، اس لیے فوٹو، بل کی تصاویر اور کیو آر بحال نہیں ہوئے۔ آئندہ بیک اپ میں تصاویر رکھنے کے لیے بیک اپ سے پہلے Include images آن کریں۔</string>
     <string name="restore_file_no_images">آپ کا ریکارڈ واپس آ گیا۔ فائل بیک اپ صرف ریکارڈ لے کر جاتا ہے — اس میں تصاویر کبھی شامل نہیں ہوتیں۔ تصاویر بھی محفوظ رکھنے کے لیے Include images آن کر کے گوگل ڈرائیو پر بیک اپ کریں۔</string>
+    <string name="drive_looking">ڈرائیو پر دیکھ رہے ہیں…</string>
+    <string name="drive_found_businesses">ڈرائیو پر %1$d کاروبار ملے</string>
+    <string name="drive_restore_all">سب بحال کریں</string>
+    <string name="drive_restore_all_warning">یہ کاروبار ڈرائیو سے بحال ہوں گے، اور ہر ایک کا موجودہ ڈیٹا اس فون پر اُن سے بدل جائے گا:
+
+%1$s</string>
+    <string name="drive_restored_these">بحال ہو گئے:
+%1$s</string>
+    <string name="drive_restore_missed">بحال نہیں ہو سکے:
+%1$s</string>
+    <string name="business_numbered">کاروبار %1$d</string>
     <string name="filter_title">فلٹر</string>
     <string name="filter_account_label">کھاتہ</string>
     <string name="filter_type_label">قسم</string>

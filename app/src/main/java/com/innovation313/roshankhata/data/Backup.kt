@@ -289,6 +289,20 @@ object Backup {
      * from storage and one restored from the app's own copy get identical
      * checks, so neither can slip past on a technicality the other would catch.
      */
+    /**
+     * The shop's name out of a backup, without parsing the ledger inside it.
+     *
+     * Used when listing what a Drive account is holding: the owner should see
+     * the shop names they chose, and reading a whole book to learn one line
+     * would make that list slow for no reason. Null on a backup written before
+     * names were recorded, or on anything that is not one of ours.
+     */
+    fun businessNameOf(json: String): String? = try {
+        JSONObject(json).optString("businessName").takeIf { it.isNotBlank() }
+    } catch (e: Exception) {
+        null
+    }
+
     fun parseText(text: String): Pair<ImportResult, ParsedBackup?> {
         return try {
             val root = JSONObject(text)
