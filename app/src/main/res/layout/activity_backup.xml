@@ -33,6 +33,24 @@
                 android:text="@string/backup_subtitle"
                 android:textColor="@color/section_tools_soft"
                 android:textSize="12sp" />
+
+            <!--
+              Which shop this screen is acting on.
+              Backup and restore only ever touch the open business, and the
+              screen never said which one that was. With two shops that is how
+              an owner backs up one book twice and believes both are safe.
+              Shown only when there IS more than one shop, so a single-shop
+              owner is not told something they cannot act on. Set in code.
+            -->
+            <TextView
+                android:id="@+id/tvBackupBusiness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- The plain truth about where the data lives, stated first -->

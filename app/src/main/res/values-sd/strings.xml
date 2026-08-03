@@ -499,6 +499,10 @@
     <string name="drive_restore_missed">بحال نه ٿي سگهيا:
 %1$s</string>
     <string name="business_numbered">ڪاروبار %1$d</string>
+    <string name="backup_for_business">بيڪ اپ ٿي رهيو آهي: %1$s</string>
+    <string name="business_last_backup">آخري بيڪ اپ %1$s</string>
+    <string name="business_never_backed_up">ڪڏهن بيڪ اپ نه ٿيو</string>
+    <string name="notif_backup_body_named">%1$s جو بيڪ اپ هڪ هفتي کان وڌيڪ عرصي کان نه ٿيو آهي. ان جو رڪارڊ رڳو هن فون تي آهي.</string>
     <string name="filter_title">فلٽر</string>
     <string name="filter_account_label">کھاتو</string>
     <string name="filter_type_label">قسم</string>

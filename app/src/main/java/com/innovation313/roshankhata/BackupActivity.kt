@@ -75,6 +75,19 @@ class BackupActivity : AppCompatActivity() {
         // lead a real user into Google's "unverified app" warning. The whole
         // section is gated on one flag; when it is off, we neither show it nor
         // wire any of its buttons.
+        // Say whose book this screen is about, before anything is backed up or
+        // replaced. Only worth saying when there is more than one shop.
+        val businesses = Businesses.list(this)
+        if (businesses.size > 1) {
+            val open = Businesses.active(this)
+            val shop = Businesses.displayName(this, open)
+                ?: getString(R.string.business_numbered, open.id)
+            findViewById<android.widget.TextView>(R.id.tvBackupBusiness).apply {
+                text = getString(R.string.backup_for_business, shop)
+                visibility = android.view.View.VISIBLE
+            }
+        }
+
         if (DriveFeature.ENABLED) {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
 
@@ -602,6 +615,13 @@ class BackupActivity : AppCompatActivity() {
                     return@launch
                 }
             }
+
+            // Record it. This line was missing, and its absence is why the
+            // weekly nudge kept firing for an owner who backs up by hand every
+            // day: only the file backup and the automatic daily upload ever
+            // marked the book as protected, so pressing this button did the
+            // work and got no credit for it.
+            BackupReminder.recordBackup(this@BackupActivity)
 
             Toast.makeText(this@BackupActivity, R.string.drive_backup_done, Toast.LENGTH_LONG).show()
             refreshDriveUi()

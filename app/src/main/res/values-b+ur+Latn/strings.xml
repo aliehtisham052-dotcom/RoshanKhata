@@ -479,6 +479,10 @@
     <string name="drive_restore_missed">Bahal nahi ho sake:
 %1$s</string>
     <string name="business_numbered">Business %1$d</string>
+    <string name="backup_for_business">Backup ho raha hai: %1$s</string>
+    <string name="business_last_backup">Aakhri backup %1$s</string>
+    <string name="business_never_backed_up">Kabhi backup nahi hua</string>
+    <string name="notif_backup_body_named">%1$s ka backup hafte se zyada arse se nahi hua. Is ka record sirf isi phone par hai.</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Khata</string>
     <string name="filter_type_label">Qisam</string>

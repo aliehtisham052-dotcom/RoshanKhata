@@ -17,6 +17,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.innovation313.roshankhata.data.BackupReminder
+import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.ChequeStatus
 import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -111,13 +112,58 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // moves the last-backup time, so this naturally goes quiet once the
         // daily upload is doing its job.
         val hasData = dao.totalEntryCount() > 0
-        if (!autoBackupFailed && BackupReminder.isReminderDue(ctx, hasData)) notify(
-            ctx, ID_BACKUP, BackupActivity::class.java,
-            ctx.getString(R.string.notif_backup_title),
-            ctx.getString(R.string.notif_backup_body)
-        )
+        if (!autoBackupFailed) {
+            val businesses = Businesses.list(ctx)
+            val openId = Businesses.active(ctx).id
+
+            // The open shop keeps the fuller rule, because its book can
+            // actually be counted here.
+            if (BackupReminder.isReminderDue(ctx, hasData)) notify(
+                ctx, ID_BACKUP, BackupActivity::class.java,
+                ctx.getString(R.string.notif_backup_title),
+                backupBody(ctx, businesses, openId)
+            )
+
+            // Every other shop is asked only for its timestamp — opening each
+            // database from a background worker to count entries is not worth
+            // the risk. Without this a closed shop could sit unprotected for
+            // months and never be mentioned, which is the whole reason the
+            // owner asked. Each gets its own notification id so one shop's
+            // nudge cannot replace another's.
+            for (biz in businesses) {
+                if (biz.id == openId) continue
+                if (!BackupReminder.isLapsedBackup(ctx, biz.id)) continue
+                val shop = Businesses.displayName(ctx, biz)
+                    ?: ctx.getString(R.string.business_numbered, biz.id)
+                notify(
+                    ctx, ID_BACKUP_BUSINESS + biz.id.toInt(), BackupActivity::class.java,
+                    ctx.getString(R.string.notif_backup_title),
+                    ctx.getString(R.string.notif_backup_body_named, shop)
+                )
+            }
+        }
 
         return Result.success()
+    }
+
+    /**
+     * The nudge's wording for the open shop.
+     *
+     * With one shop the plain sentence is right and naming it would be noise.
+     * With several it is the only useful part: "your last backup" leaves the
+     * owner unable to tell which book is unprotected, which is exactly the
+     * confusion reported.
+     */
+    private fun backupBody(
+        ctx: Context,
+        businesses: List<Businesses.Business>,
+        openId: Long
+    ): String {
+        if (businesses.size <= 1) return ctx.getString(R.string.notif_backup_body)
+        val shop = businesses.firstOrNull { it.id == openId }
+            ?.let { Businesses.displayName(ctx, it) }
+            ?: ctx.getString(R.string.business_numbered, openId)
+        return ctx.getString(R.string.notif_backup_body_named, shop)
     }
 
     private fun notify(
@@ -151,6 +197,13 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         private const val ID_PLANS = 1002
         private const val ID_EXPIRY = 1003
         private const val ID_BACKUP = 1004
+
+        /**
+         * Base for the per-business backup nudges. Well clear of the fixed ids
+         * above so that adding a shop can never overwrite the cheque or expiry
+         * notification — the id is the base plus the business's own number.
+         */
+        private const val ID_BACKUP_BUSINESS = 1100
 
         fun ensureChannel(ctx: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

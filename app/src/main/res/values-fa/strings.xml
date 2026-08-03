@@ -499,6 +499,10 @@
     <string name="drive_restore_missed">بازیابی نشد:
 %1$s</string>
     <string name="business_numbered">کسب‌وکار %1$d</string>
+    <string name="backup_for_business">در حال پشتیبان‌گیری: %1$s</string>
+    <string name="business_last_backup">آخرین پشتیبان %1$s</string>
+    <string name="business_never_backed_up">هرگز پشتیبان گرفته نشده</string>
+    <string name="notif_backup_body_named">بیش از یک هفته است از %1$s پشتیبان گرفته نشده. سوابق آن فقط روی همین گوشی است.</string>
     <string name="filter_title">فیلتر</string>
     <string name="filter_account_label">حساب</string>
     <string name="filter_type_label">نوع</string>

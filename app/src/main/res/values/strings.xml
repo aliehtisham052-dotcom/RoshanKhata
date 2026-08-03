@@ -503,6 +503,10 @@
     <string name="drive_restore_missed">Could not restore:
 %1$s</string>
     <string name="business_numbered">Business %1$d</string>
+    <string name="backup_for_business">Backing up: %1$s</string>
+    <string name="business_last_backup">Last backup %1$s</string>
+    <string name="business_never_backed_up">Never backed up</string>
+    <string name="notif_backup_body_named">%1$s has not been backed up in over a week. Its records live only on this phone.</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Account</string>
     <string name="filter_type_label">Type</string>
