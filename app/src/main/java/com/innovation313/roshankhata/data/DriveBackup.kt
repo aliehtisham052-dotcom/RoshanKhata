@@ -339,6 +339,108 @@ object DriveBackup {
         }
 
     /**
+     * Every business that has a backup sitting on this Drive account.
+     *
+     * The registry of businesses lives in the phone's own preferences, which
+     * means a wiped phone — or a lost one — knows about exactly one shop, and
+     * a second shop's backup can sit safely on Drive with nothing left to say
+     * it exists. That is the hole this closes: Drive itself is asked what it
+     * is holding, rather than the phone being asked what to look for.
+     *
+     * The business id is read back out of the file name, which is why those
+     * names embed it and why an id is never reused. The shop's NAME comes from
+     * inside each backup, so the owner picks by the name they gave the shop
+     * rather than by a number.
+     */
+    data class DriveBusiness(
+        val id: Long,
+        val name: String?,
+        val backupFileId: String,
+        val modifiedAt: Long
+    )
+
+    suspend fun discoverBusinesses(
+        context: Context,
+        accountName: String
+    ): Result<List<DriveBusiness>> = withContext(Dispatchers.IO) {
+        try {
+            val drive = driveFor(context, accountName)
+            val found = mutableListOf<DriveBusiness>()
+            var pageToken: String? = null
+
+            do {
+                val page = drive.files().list()
+                    .setSpaces(APP_DATA_FOLDER)
+                    // Every text backup, whichever shop wrote it. Names are
+                    // matched afterwards rather than in the query, so a file
+                    // that does not fit the pattern is simply ignored instead
+                    // of confusing the search.
+                    .setQ("name contains 'RoshanKhata_Backup'")
+                    .setFields("nextPageToken, files(id, name, modifiedTime)")
+                    .setPageToken(pageToken)
+                    .execute()
+
+                for (f in page.files.orEmpty()) {
+                    val id = businessIdFromBackupName(f.name ?: continue) ?: continue
+                    found += DriveBusiness(
+                        id = id,
+                        name = null,
+                        backupFileId = f.id,
+                        modifiedAt = f.modifiedTime?.value ?: 0L
+                    )
+                }
+                pageToken = page.nextPageToken
+            } while (pageToken != null)
+
+            // Read each shop's own name out of its backup. A backup written
+            // before names were recorded simply has none, and is shown by its
+            // number instead — worth listing without a name, never worth
+            // hiding.
+            val named = found.map { biz ->
+                val name = try {
+                    val out = ByteArrayOutputStream()
+                    drive.files().get(biz.backupFileId).executeMediaAndDownloadTo(out)
+                    Backup.businessNameOf(out.toString("UTF-8"))
+                } catch (e: Exception) {
+                    null
+                }
+                biz.copy(name = name)
+            }
+
+            Result.success(named.sortedBy { it.id })
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * "RoshanKhata_Backup.txt" is Business 1 — the name it had before there
+     * was more than one shop. "RoshanKhata_Backup_b7.txt" is business 7.
+     * Anything else is not ours to interpret.
+     */
+    internal fun businessIdFromBackupName(name: String): Long? = when {
+        name == "RoshanKhata_Backup.txt" -> 1L
+        else -> Regex("^RoshanKhata_Backup_b(\\d+)\\.txt$").find(name)
+            ?.groupValues?.get(1)?.toLongOrNull()
+    }
+
+    /** Download one discovered business's backup text by its Drive file id. */
+    suspend fun restoreById(
+        context: Context,
+        accountName: String,
+        fileId: String
+    ): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val drive = driveFor(context, accountName)
+            val out = ByteArrayOutputStream()
+            drive.files().get(fileId).executeMediaAndDownloadTo(out)
+            Result.success(out.toString("UTF-8"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
      * Download the image archive's bytes, or null if none exists yet (the owner
      * never turned images on, or this is an older cloud backup with text only).
      * A missing images file is not an error — the text restore still stands on

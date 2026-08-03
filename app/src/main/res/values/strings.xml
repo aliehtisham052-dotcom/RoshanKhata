@@ -492,6 +492,17 @@
     <string name="contact_in_recycle_bin">In Recycle Bin</string>
     <string name="restore_no_images">Your records are back, but this backup had no images with it, so photos, bill photos and the QR were not restored. To keep images in future backups, turn on Include images before backing up.</string>
     <string name="restore_file_no_images">Your records are back. A file backup carries records only — it never includes images. Back up to Google Drive with Include images turned on to keep photos as well.</string>
+    <string name="drive_looking">Looking on Drive…</string>
+    <string name="drive_found_businesses">%1$d business(es) on Drive</string>
+    <string name="drive_restore_all">Restore all</string>
+    <string name="drive_restore_all_warning">These businesses will be restored from Drive, replacing whatever is on this phone for each of them:
+
+%1$s</string>
+    <string name="drive_restored_these">Restored:
+%1$s</string>
+    <string name="drive_restore_missed">Could not restore:
+%1$s</string>
+    <string name="business_numbered">Business %1$d</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Account</string>
     <string name="filter_type_label">Type</string>
