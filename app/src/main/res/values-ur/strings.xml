@@ -104,6 +104,12 @@
     <string name="bin_retention_note">حذف شدہ چیزیں 30 دن رکھی جاتی ہیں، پھر ہمیشہ کے لیے مٹا دی جاتی ہیں۔</string>
     <string name="bin_empty">بن خالی ہے۔</string>
     <string name="bin_party_note">پارٹی (اس کے اندراجات اسی کے ساتھ محفوظ ہیں)</string>
+    <string name="bin_party_owed_to_me">%1$s لینا ہے</string>
+    <string name="bin_party_i_owe">%1$s دینا ہے</string>
+    <plurals name="bin_party_entries">
+        <item quantity="one">%d اندراج</item>
+        <item quantity="other">%d اندراجات</item>
+    </plurals>
     <string name="restore">واپس لائیں</string>
     <string name="restored">واپس آ گیا</string>
     <string name="deleted_on">حذف ہوا: %1$s</string>

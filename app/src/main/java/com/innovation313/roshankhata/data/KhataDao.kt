@@ -191,6 +191,29 @@ interface KhataDao {
     @Query("SELECT name FROM parties WHERE id = :id")
     suspend fun getPartyName(id: Long): String?
 
+    /**
+     * What a binned party is worth, and how much of it there is.
+     *
+     * The bin lists a deleted customer by name alone, so the owner is asked to
+     * restore or destroy a book without being told whether it holds nothing or
+     * twenty thousand rupees. This answers that before the choice is made.
+     *
+     * isDeleted is NOT filtered on the entries here, and that is deliberate:
+     * deleting a party sweeps its entries down with it, so filtering them out
+     * would report every binned customer as worth zero — the one answer that
+     * is never useful.
+     */
+    @Query(
+        """
+        SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0)
+        FROM transactions t WHERE t.partyId = :partyId
+        """
+    )
+    suspend fun binnedPartyBalance(partyId: Long): Double
+
+    @Query("SELECT COUNT(*) FROM transactions WHERE partyId = :partyId")
+    suspend fun binnedPartyEntryCount(partyId: Long): Int
+
     // ---------- Recycle Bin: permanent purge ----------
 
     @Query("DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff")

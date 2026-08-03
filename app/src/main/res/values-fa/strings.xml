@@ -105,6 +105,12 @@
     <string name="bin_retention_note">موارد حذف‌شده ۳۰ روز نگه داشته می‌شوند و سپس برای همیشه پاک می‌شوند.</string>
     <string name="bin_empty">سطل خالی است.</string>
     <string name="bin_party_note">طرف‌حساب (ثبت‌هایش همراه خودش نگه داشته می‌شود)</string>
+    <string name="bin_party_owed_to_me">%1$s طلب دارید</string>
+    <string name="bin_party_i_owe">%1$s بدهکارید</string>
+    <plurals name="bin_party_entries">
+        <item quantity="one">%d ثبت</item>
+        <item quantity="other">%d ثبت</item>
+    </plurals>
     <string name="restore">بازگردانی</string>
     <string name="restored">بازگردانی شد</string>
     <string name="deleted_on">حذف‌شده در %1$s</string>
