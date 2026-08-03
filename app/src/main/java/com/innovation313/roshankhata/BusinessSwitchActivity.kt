@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.BackupReminder
 import com.innovation313.roshankhata.data.Businesses
+import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenInsets
 
 /**
@@ -127,16 +129,30 @@ class BusinessSwitchActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: VH, position: Int) {
             val b = items[position]
-            val display = Businesses.displayName(holder.itemView.context, b)
-                ?: holder.itemView.context.getString(R.string.app_name)
+            val ctx = holder.itemView.context
+            val display = Businesses.displayName(ctx, b)
+                ?: ctx.getString(R.string.app_name)
             holder.name.text = display
+
+            // When each shop was last protected, on the one screen that shows
+            // every shop at once. Backup only ever covers the open business,
+            // so without this the owner has to open each shop in turn to learn
+            // whether the others are safe — and the honest answer to "are both
+            // my books backed up" should take one glance, not a tour.
+            val last = BackupReminder.lastBackupAtOf(ctx, b.id)
+            holder.hint.text = if (last == 0L) {
+                ctx.getString(R.string.business_never_backed_up)
+            } else {
+                ctx.getString(R.string.business_last_backup, Format.dateOnly(last))
+            }
+
             holder.open.visibility = if (b.id == activeId) View.VISIBLE else View.GONE
             holder.itemView.setOnClickListener {
                 // Tapping the open shop is not a switch; nothing to do.
                 if (b.id != activeId) switchAndRestart(b.id)
             }
             holder.itemView.setOnLongClickListener {
-                promptRename(b.id, Businesses.displayName(holder.itemView.context, b))
+                promptRename(b.id, Businesses.displayName(ctx, b))
                 true
             }
         }

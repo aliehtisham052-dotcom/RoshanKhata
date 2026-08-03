@@ -479,6 +479,10 @@
     <string name="drive_restore_missed">تعذرت الاستعادة:
 %1$s</string>
     <string name="business_numbered">نشاط %1$d</string>
+    <string name="backup_for_business">جارٍ النسخ الاحتياطي: %1$s</string>
+    <string name="business_last_backup">آخر نسخة احتياطية %1$s</string>
+    <string name="business_never_backed_up">لم يتم النسخ الاحتياطي قط</string>
+    <string name="notif_backup_body_named">لم تُنسخ %1$s احتياطيًا منذ أكثر من أسبوع. سجلاتها موجودة على هذا الهاتف فقط.</string>
     <string name="filter_title">تصفية</string>
     <string name="filter_account_label">الحساب</string>
     <string name="filter_type_label">النوع</string>
