@@ -214,7 +214,16 @@ object CardTemplates {
      * without them looks like a list of text, which is exactly what the plain
      * templates looked like.
      */
-    private fun phoneIcon(c: Canvas, cx: Float, cy: Float, r: Float, colour: Int) {
+    /**
+     * The badge is filled with [colour] and the mark drawn in [glyph].
+     *
+     * [glyph] used to be hard-coded white, which is right on every dark
+     * badge and invisible on a pale one — a white circle with a white
+     * mark on it, which is exactly what the Wave card showed.
+     */
+    private fun phoneIcon(
+        c: Canvas, cx: Float, cy: Float, r: Float, colour: Int, glyph: Int = WHITE
+    ) {
         c.drawCircle(cx, cy, r, fill(colour))
         val s = r * 0.5f
         val handset = path {
@@ -228,15 +237,24 @@ object CardTemplates {
             lineTo(cx + s * 0.2f, cy + s * 0.95f)
             close()
         }
-        c.drawPath(handset, fill(WHITE))
+        c.drawPath(handset, fill(glyph))
     }
 
-    private fun mailIcon(c: Canvas, cx: Float, cy: Float, r: Float, colour: Int) {
+    /**
+     * The badge is filled with [colour] and the mark drawn in [glyph].
+     *
+     * [glyph] used to be hard-coded white, which is right on every dark
+     * badge and invisible on a pale one — a white circle with a white
+     * mark on it, which is exactly what the Wave card showed.
+     */
+    private fun mailIcon(
+        c: Canvas, cx: Float, cy: Float, r: Float, colour: Int, glyph: Int = WHITE
+    ) {
         c.drawCircle(cx, cy, r, fill(colour))
         val w = r * 1.05f
         val h = r * 0.72f
         val box = RectF(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2)
-        c.drawRect(box, fill(WHITE))
+        c.drawRect(box, fill(glyph))
         c.drawPath(
             path {
                 moveTo(box.left, box.top)
@@ -247,7 +265,16 @@ object CardTemplates {
         )
     }
 
-    private fun pinIcon(c: Canvas, cx: Float, cy: Float, r: Float, colour: Int) {
+    /**
+     * The badge is filled with [colour] and the mark drawn in [glyph].
+     *
+     * [glyph] used to be hard-coded white, which is right on every dark
+     * badge and invisible on a pale one — a white circle with a white
+     * mark on it, which is exactly what the Wave card showed.
+     */
+    private fun pinIcon(
+        c: Canvas, cx: Float, cy: Float, r: Float, colour: Int, glyph: Int = WHITE
+    ) {
         c.drawCircle(cx, cy, r, fill(colour))
         val drop = path {
             moveTo(cx, cy + r * 0.62f)
@@ -255,7 +282,7 @@ object CardTemplates {
             cubicTo(cx + r * 0.34f, cy - r * 0.62f, cx + r * 0.62f, cy - r * 0.1f, cx, cy + r * 0.62f)
             close()
         }
-        c.drawPath(drop, fill(WHITE))
+        c.drawPath(drop, fill(glyph))
         c.drawCircle(cx, cy - r * 0.16f, r * 0.2f, fill(colour))
     }
 
@@ -741,9 +768,32 @@ object CardTemplates {
         var y = h * 0.56f
         val badge = w - 86f
         val textRight = badge - 34f
-        val room = textRight - w * 0.36f
+
+        // The navy panel's left edge is a CURVE, so the room available differs
+        // on every line — and assuming a straight edge at w*0.36 let the text
+        // begin 220px OUTSIDE the panel, which is why the address was cut off
+        // mid-word against white. Solved from the same cubic the shape is
+        // drawn with, per line, plus a margin.
+        fun panelLeftAt(yy: Float): Float {
+            var best = 0f
+            var bestGap = Float.MAX_VALUE
+            for (i in 0..200) {
+                val t = i / 200f
+                val u = 1 - t
+                val py = u * u * u * (h * 0.86f) + 3 * u * u * t * (h * 0.86f) +
+                    3 * u * t * t * (h * 0.46f) + t * t * t * (h * 0.46f)
+                val gap = kotlin.math.abs(py - yy)
+                if (gap < bestGap) {
+                    bestGap = gap
+                    best = u * u * u * (w * 0.34f) + 3 * u * u * t * (w * 0.5f) +
+                        3 * u * t * t * (w * 0.5f) + t * t * t * (w * 0.66f)
+                }
+            }
+            return best + 24f
+        }
 
         if (d.owner.isNotEmpty()) {
+            val room = textRight - panelLeftAt(y)
             c.drawText(d.owner, textRight, y, fitted(d.owner, room, 26f, WHITE, true, Paint.Align.RIGHT))
             c.drawCircle(badge, y - 9f, 15f, fill(WHITE))
             c.drawText(
@@ -753,16 +803,20 @@ object CardTemplates {
             y += 46f
         }
         if (d.phone.isNotEmpty()) {
+            val room = textRight - panelLeftAt(y)
             c.drawText(d.phone, textRight, y, fitted(d.phone, room, 26f, WHITE, false, Paint.Align.RIGHT))
-            phoneIcon(c, badge, y - 9f, 15f, WHITE)
+            // Pale badge, dark mark — white on white was invisible.
+            phoneIcon(c, badge, y - 9f, 15f, WHITE, NAVY_DEEP)
             y += 46f
         }
         if (d.address.isNotEmpty()) {
+            val room = textRight - panelLeftAt(y)
             val p = fitted(d.address, room, 26f, WHITE, false, Paint.Align.RIGHT)
-            pinIcon(c, badge, y - 9f, 15f, WHITE)
-            wrap(d.address, p, room).forEach { part ->
-                c.drawText(part, textRight, y, p); y += 36f
-            }
+            pinIcon(c, badge, y - 9f, 15f, WHITE, NAVY_DEEP)
+            // One line only. A second would sit lower, where the panel is
+            // wider but the amber wave is already climbing towards it.
+            c.drawText(ellipsise(d.address, p, room), textRight, y, p)
+            y += 46f
         }
         c.drawText(d.footer, 70f, h - 34f, paint(22f, INK, false))
     }
