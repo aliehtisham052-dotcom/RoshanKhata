@@ -103,6 +103,9 @@
     <string name="supplier">سپلائر</string>
     <string name="enter_name">مهرباني ڪري نالو لکو</string>
     <string name="enter_valid_amount">مهرباني ڪري صحيح رقم لکو</string>
+    <string name="twin_entry_title">اڄ اڳ ۾ ئي لکيل آهي؟</string>
+    <string name="twin_entry_body">%1$s (%2$s) هن گراهڪ جي کاتي ۾ اڄ اڳ ۾ ئي موجود آهي، %3$s تي.\n\nجيڪڏهن اها ساڳي رقم هئي ته ٻيهر لکڻ جي ضرورت ناهي.</string>
+    <string name="twin_entry_add">تنهن هوندي به شامل ڪريو</string>
 
     <!-- Recycle Bin -->
     <string name="recycle_bin">ردي جي ٽوڪري</string>

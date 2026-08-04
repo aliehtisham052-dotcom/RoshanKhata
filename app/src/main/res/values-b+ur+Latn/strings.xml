@@ -103,6 +103,9 @@
     <string name="supplier">Supplier</string>
     <string name="enter_name">Meherbani kar ke naam likhein</string>
     <string name="enter_valid_amount">Meherbani kar ke durust raqam likhein</string>
+    <string name="twin_entry_title">Aaj pehle se likha hua hai?</string>
+    <string name="twin_entry_body">%1$s (%2$s) is customer ke khate mein aaj pehle se maujood hai, %3$s par.\n\nAgar wo yehi raqam thi to dobara likhne ki zaroorat nahi.</string>
+    <string name="twin_entry_add">Phir bhi shamil karein</string>
 
     <string name="recycle_bin">Recycle Bin</string>
     <string name="bin_retention_note">Delete ki hui cheezein 30 din rakhi jati hain, phir hamesha ke liye mit jati hain.</string>
