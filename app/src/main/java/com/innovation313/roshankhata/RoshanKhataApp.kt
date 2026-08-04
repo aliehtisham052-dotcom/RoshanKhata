@@ -3,6 +3,7 @@ package com.innovation313.roshankhata
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import com.innovation313.roshankhata.data.AutoBackup
 import com.innovation313.roshankhata.data.CrashLog
 import com.innovation313.roshankhata.data.ScreenSecurity
 
@@ -38,6 +39,49 @@ class RoshanKhataApp : Application() {
         super.onCreate()
         CrashLog.install(this)
         registerActivityLifecycleCallbacks(ScreenSecurityCallbacks())
+        registerActivityLifecycleCallbacks(BackgroundWatcher(this))
+    }
+
+    /**
+     * Notice when the app leaves the screen, so the ledger can be backed up.
+     *
+     * The rule at the top of this file says app-wide behaviour does not belong
+     * here, and this is the second deliberate exception, for the same shape of
+     * reason as the first: there is no screen that owns "the app was closed".
+     * Wiring it into one activity would miss every other way out, and wiring it
+     * into all of them would be the exact fragility the rule guards against.
+     *
+     * Counting started activities rather than using ProcessLifecycleOwner keeps
+     * a dependency out for a behaviour this small. A rotation stops one
+     * activity and starts the next, so the count dips and rises without ever
+     * reaching zero — which is right: rotating is not leaving.
+     *
+     * It only ENQUEUES work. Nothing is uploaded on this thread, nothing
+     * blocks the app closing, and every condition worth checking is checked
+     * later, in the worker.
+     */
+    private class BackgroundWatcher(private val app: Application) :
+        Application.ActivityLifecycleCallbacks {
+
+        private var started = 0
+
+        override fun onActivityStarted(activity: Activity) {
+            started++
+        }
+
+        override fun onActivityStopped(activity: Activity) {
+            started--
+            if (started <= 0) {
+                started = 0
+                runCatching { AutoBackup.onAppBackgrounded(app) }
+            }
+        }
+
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+        override fun onActivityResumed(activity: Activity) {}
+        override fun onActivityPaused(activity: Activity) {}
+        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+        override fun onActivityDestroyed(activity: Activity) {}
     }
 
     private class ScreenSecurityCallbacks : Application.ActivityLifecycleCallbacks {
