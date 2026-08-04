@@ -103,6 +103,9 @@
     <string name="supplier">تأمین‌کننده</string>
     <string name="enter_name">لطفاً نامی وارد کنید</string>
     <string name="enter_valid_amount">لطفاً مبلغ معتبری وارد کنید</string>
+    <string name="twin_entry_title">امروز قبلاً ثبت شده؟</string>
+    <string name="twin_entry_body">%1$s (%2$s) امروز در دفتر این مشتری ثبت شده است، ساعت %3$s.\n\nاگر همان مبلغ بوده، نیازی به ثبت دوباره نیست.</string>
+    <string name="twin_entry_add">با این حال ثبت کن</string>
 
     <!-- Recycle Bin -->
     <string name="recycle_bin">سطل بازیافت</string>

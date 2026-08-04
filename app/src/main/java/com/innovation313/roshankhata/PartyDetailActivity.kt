@@ -671,14 +671,7 @@ class PartyDetailActivity : AppCompatActivity() {
 
                 // Warn BEFORE writing, not after — a warning that arrives once
                 // the entry is already in the ledger is just an accusation.
-                val limit = creditLimit
-                val projected = currentBalance + (if (isGiven) amount else -amount)
-
-                if (isGiven && limit != null && limit > 0 && projected > limit && currentBalance <= limit) {
-                    warnOverLimit(entry, limit, projected)
-                } else {
-                    saveEntry(entry)
-                }
+                checkTwinThenSave(entry)
             }
             .show()
             .also { dialog ->
@@ -1288,6 +1281,75 @@ class PartyDetailActivity : AppCompatActivity() {
      * press right after saving could cancel it before it reached the disk,
      * with nothing on screen ever saying so.
      */
+    /**
+     * Ask about a repeat before writing it, then run the credit-limit check.
+     *
+     * The owner found two identical entries a minute apart — the same customer,
+     * the same Rs 200, the same direction. That is what a double-tap looks
+     * like, or a "did that save?" written twice, and in a ledger it is
+     * indistinguishable afterwards from two real sales. Only the person holding
+     * the phone can tell, and only in the moment.
+     *
+     * So it asks rather than blocks, and it shows the TIME of the earlier one,
+     * because that is the fact that settles it: a minute ago is a mis-tap, this
+     * morning is a second sale. A guard that decided this on its own would
+     * eventually delete a real entry.
+     *
+     * Same DAY, as the owner asked, not the same hour. A shop can sell the same
+     * customer the same amount twice in a day; the question is cheap to ask
+     * once and the answer is his.
+     */
+    private fun checkTwinThenSave(entry: LedgerEntry) {
+        lifecycleScope.launch {
+            val day = java.util.Calendar.getInstance().apply {
+                timeInMillis = entry.timestamp
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+            val start = day.timeInMillis
+            val end = start + 24L * 60 * 60 * 1000 - 1
+
+            val twin = withContext(Dispatchers.IO) {
+                dao.sameDayTwin(entry.partyId, entry.amount, entry.isGiven, start, end)
+            }
+
+            if (twin == null) {
+                afterTwinCheck(entry)
+                return@launch
+            }
+
+            MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                .setTitle(R.string.twin_entry_title)
+                .setMessage(
+                    getString(
+                        R.string.twin_entry_body,
+                        Format.money(twin.amount),
+                        getString(if (entry.isGiven) R.string.i_gave else R.string.i_got),
+                        Format.dateTime(twin.timestamp)
+                    )
+                )
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.twin_entry_add) { _, _ -> afterTwinCheck(entry) }
+                .show()
+        }
+    }
+
+    /** The credit-limit gate, which used to sit inline in the save button. */
+    private fun afterTwinCheck(entry: LedgerEntry) {
+        val limit = creditLimit
+        val projected = currentBalance + (if (entry.isGiven) entry.amount else -entry.amount)
+
+        if (entry.isGiven && limit != null && limit > 0 &&
+            projected > limit && currentBalance <= limit
+        ) {
+            warnOverLimit(entry, limit, projected)
+        } else {
+            saveEntry(entry)
+        }
+    }
+
     private fun saveEntry(entry: LedgerEntry) {
         AppScope.launch {
             // Numbering happens inside the DAO's own transaction — see

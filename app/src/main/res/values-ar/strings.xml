@@ -103,6 +103,9 @@
     <string name="supplier">مورّد</string>
     <string name="enter_name">يرجى إدخال الاسم</string>
     <string name="enter_valid_amount">يرجى إدخال مبلغ صحيح</string>
+    <string name="twin_entry_title">مُسجَّل اليوم بالفعل؟</string>
+    <string name="twin_entry_body">%1$s (%2$s) مُسجَّل بالفعل في دفتر هذا العميل اليوم، في %3$s.\n\nإذا كان المبلغ نفسه فلا داعي لتسجيله مرة أخرى.</string>
+    <string name="twin_entry_add">أضِف على أي حال</string>
 
     <string name="recycle_bin">سلة المحذوفات</string>
     <string name="bin_retention_note">تُحفظ العناصر المحذوفة 30 يومًا ثم تُزال نهائيًا.</string>

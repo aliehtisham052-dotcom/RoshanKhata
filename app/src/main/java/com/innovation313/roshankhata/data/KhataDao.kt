@@ -304,6 +304,32 @@ interface KhataDao {
 
     // ---------- Contact import ----------
 
+    /**
+     * An entry already written today for the same customer, the same amount and
+     * the same direction — the shape of a double-tap.
+     *
+     * ABS(...) < 0.005 rather than `=`, for the same reason every other zero
+     * test in the app uses half a paisa: two Doubles that came from the same
+     * typed figure are equal, but two that came from a calculation may not be,
+     * and a guard that misses is worse than none.
+     *
+     * Newest first: if the owner is about to write a third, the one worth
+     * showing him is the one he wrote minutes ago, not this morning's.
+     */
+    @Query(
+        "SELECT * FROM transactions WHERE partyId = :partyId AND isDeleted = 0 " +
+            "AND isGiven = :isGiven AND ABS(amount - :amount) < 0.005 " +
+            "AND timestamp BETWEEN :dayStart AND :dayEnd " +
+            "ORDER BY timestamp DESC LIMIT 1"
+    )
+    suspend fun sameDayTwin(
+        partyId: Long,
+        amount: Double,
+        isGiven: Boolean,
+        dayStart: Long,
+        dayEnd: Long
+    ): LedgerEntry?
+
     /** Phone numbers already on the books, so a contact is never added twice. */
     @Query("SELECT phone FROM parties WHERE isDeleted = 0 AND phone IS NOT NULL")
     suspend fun existingPhones(): List<String>

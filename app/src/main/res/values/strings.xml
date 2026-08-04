@@ -107,6 +107,9 @@
     <string name="supplier">Supplier</string>
     <string name="enter_name">Please enter a name</string>
     <string name="enter_valid_amount">Please enter a valid amount</string>
+    <string name="twin_entry_title">Already written today?</string>
+    <string name="twin_entry_body">%1$s (%2$s) is already in this customer\'s ledger today, at %3$s.\n\nIf that was this same amount, you do not need to write it again.</string>
+    <string name="twin_entry_add">Add anyway</string>
 
     <!-- Recycle Bin -->
     <string name="recycle_bin">Recycle Bin</string>

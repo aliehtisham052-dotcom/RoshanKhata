@@ -103,6 +103,9 @@
     <string name="supplier">سپلائر</string>
     <string name="enter_name">براہِ کرم نام لکھیں</string>
     <string name="enter_valid_amount">براہِ کرم درست رقم لکھیں</string>
+    <string name="twin_entry_title">آج پہلے سے لکھا ہوا ہے؟</string>
+    <string name="twin_entry_body">%1$s (%2$s) اس گاہک کے کھاتے میں آج پہلے سے موجود ہے، %3$s پر۔\n\nاگر وہ یہی رقم تھی تو دوبارہ لکھنے کی ضرورت نہیں۔</string>
+    <string name="twin_entry_add">پھر بھی شامل کریں</string>
 
     <string name="recycle_bin">ری سائیکل بن</string>
     <string name="bin_retention_note">حذف شدہ چیزیں 30 دن رکھی جاتی ہیں، پھر ہمیشہ کے لیے مٹا دی جاتی ہیں۔</string>
