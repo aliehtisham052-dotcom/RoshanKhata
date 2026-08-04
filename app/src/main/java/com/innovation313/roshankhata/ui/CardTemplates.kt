@@ -281,7 +281,20 @@ object CardTemplates {
          * to it and vanished: dark type on a dark field, invisible on the
          * card the shopkeeper was about to send someone.
          */
-        maxWidth: Float
+        maxWidth: Float,
+        /**
+         * How far down this card the text may go.
+         *
+         * Wrapping the address onto a second line fixed it running off the
+         * side, and introduced the opposite risk: on the cards whose shapes
+         * climb from the bottom — the diagonal wedge, the maroon circle, the
+         * ribbon's stripes — a second line can now reach the decoration
+         * instead. So the choice is made per card rather than assumed. When
+         * two lines would cross this floor, the address stays on one and is
+         * trimmed. A trimmed address is still readable; an address printed
+         * over a red stripe is not.
+         */
+        maxBottom: Float = Float.MAX_VALUE
     ): Float {
         var y = top
         val r = size * 0.62f
@@ -310,7 +323,11 @@ object CardTemplates {
             // height of the phone number above it and barely legible.
             pinIcon(c, left + r, y - size * 0.32f, r, iconColour)
             val p = fitted(d.address, room, size, textColour, false)
-            wrap(d.address, p, room).forEach { part ->
+            val secondLineAt = y + gap * 0.68f
+            val lines =
+                if (secondLineAt <= maxBottom) wrap(d.address, p, room)
+                else listOf(ellipsise(d.address, p, room))
+            lines.forEach { part ->
                 c.drawText(part, textLeft, y, p)
                 y += gap * 0.68f
             }
@@ -385,27 +402,38 @@ object CardTemplates {
         c.drawText(d.name, 70f, 200f, fitted(d.name, w * 0.44f, 66f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 252f, paint(32f, NAVY, false))
         // Clear of the band, which is furthest left at the foot of the card.
-        contacts(c, d, 70f, 360f, INK, NAVY, maxWidth = w * 0.36f)
+        // The navy wedge closes in from the right as it descends.
+        contacts(c, d, 70f, 360f, INK, NAVY, maxWidth = w * 0.36f, maxBottom = h * 0.62f)
         c.drawText(d.footer, 70f, h - 46f, paint(24f, NAVY, false))
     }
 
     /** 2. Sash: a curved ribbon of colour sweeping under the name. */
     private fun sash(c: Canvas, d: CardData, w: Int, h: Int) {
         c.drawColor(WHITE)
+        // The wave sits below the writing, and where it sits was measured.
+        //
+        // It used to crest at h*0.517 — y=362 on a 700px card — while the
+        // phone line sat at 374 and the address at 428. The text was in the
+        // right place; the wave had climbed into it, so the address printed
+        // half on white and half on grey. Wrapping the address onto a second
+        // line, which this card now does, only pushed it deeper.
+        //
+        // These control points crest at h*0.684, y=479, clear of the lowest
+        // ink the block can reach even with a two-line address (452).
         c.drawPath(
             path {
-                moveTo(0f, h * 0.62f)
-                cubicTo(w * 0.3f, h * 0.44f, w * 0.62f, h * 0.9f, w.toFloat(), h * 0.66f)
+                moveTo(0f, h * 0.78f)
+                cubicTo(w * 0.3f, h * 0.62f, w * 0.62f, h * 1.06f, w.toFloat(), h * 0.82f)
                 lineTo(w.toFloat(), h.toFloat()); lineTo(0f, h.toFloat()); close()
             },
             fill(CRIMSON)
         )
         c.drawPath(
             path {
-                moveTo(0f, h * 0.56f)
-                cubicTo(w * 0.3f, h * 0.38f, w * 0.62f, h * 0.84f, w.toFloat(), h * 0.6f)
-                lineTo(w.toFloat(), h * 0.66f)
-                cubicTo(w * 0.62f, h * 0.9f, w * 0.3f, h * 0.44f, 0f, h * 0.62f)
+                moveTo(0f, h * 0.72f)
+                cubicTo(w * 0.3f, h * 0.56f, w * 0.62f, h * 1.0f, w.toFloat(), h * 0.76f)
+                lineTo(w.toFloat(), h * 0.82f)
+                cubicTo(w * 0.62f, h * 1.06f, w * 0.3f, h * 0.62f, 0f, h * 0.78f)
                 close()
             },
             fill(Color.parseColor("#E4E2DC"))
@@ -413,7 +441,7 @@ object CardTemplates {
 
         c.drawText(d.name, 70f, 170f, fitted(d.name, w - 140f, 70f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 222f, paint(32f, CRIMSON, false))
-        contacts(c, d, 70f, 320f, INK, CRIMSON, gap = 54f, maxWidth = w - 140f)
+        contacts(c, d, 70f, 300f, INK, CRIMSON, gap = 50f, maxWidth = w - 140f)
         c.drawText(d.footer, w - 70f, h - 40f, paint(24f, WHITE, false, Paint.Align.RIGHT))
     }
 
@@ -450,7 +478,11 @@ object CardTemplates {
         val left = w * 0.42f
         c.drawText(d.name, left, 190f, fitted(d.name, w - left - 60f, 62f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, left, 240f, paint(30f, MAROON, false))
-        contacts(c, d, left, 340f, INK, MAROON, size = 30f, gap = 52f, maxWidth = w - left - 60f)
+        // The maroon circle is at its widest across the middle of the card.
+        contacts(
+            c, d, left, 340f, INK, MAROON, size = 30f, gap = 52f,
+            maxWidth = w - left - 60f, maxBottom = h * 0.64f
+        )
         c.drawText(d.footer, left, h - 44f, paint(24f, MAROON, false))
     }
 
@@ -583,7 +615,11 @@ object CardTemplates {
             c.drawText(d.type, 70f, 218f, paint(28f, INK, true))
             c.drawLine(70f, 234f, 330f, 234f, fill(CRIMSON).apply { strokeWidth = 3f })
         }
-        contacts(c, d, 70f, 320f, INK, CRIMSON, size = 28f, gap = 52f, maxWidth = w * 0.52f)
+        // The lower run of stripes starts climbing at about h*0.66.
+        contacts(
+            c, d, 70f, 320f, INK, CRIMSON, size = 28f, gap = 52f,
+            maxWidth = w * 0.52f, maxBottom = h * 0.60f
+        )
     }
 
     /**
