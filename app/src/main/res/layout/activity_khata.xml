@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bg_header_gradient"
         android:orientation="vertical"
-        android:paddingStart="20dp"
-        android:paddingTop="20dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="12dp"
+        android:paddingStart="14dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -38,9 +38,9 @@
 
             <ImageView
                 android:id="@+id/ivBusinessLogo"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_marginEnd="11dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="10dp"
                 android:background="@drawable/bg_business_logo"
                 android:contentDescription="@string/business_name"
                 android:padding="9dp"
@@ -92,8 +92,8 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnHeaderBackup"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_marginEnd="8dp"
                 android:contentDescription="@string/backup_now"
                 android:insetTop="0dp"
@@ -112,8 +112,8 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnHeaderSettings"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:contentDescription="@string/business_profile"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -139,7 +139,7 @@
             android:id="@+id/balanceRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:background="?attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -194,7 +194,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:orientation="horizontal"
             android:weightSum="2">
 
@@ -209,9 +209,9 @@
                 android:focusable="true"
                 android:orientation="vertical"
                 android:paddingStart="12dp"
-                android:paddingTop="9dp"
+                android:paddingTop="7dp"
                 android:paddingEnd="12dp"
-                android:paddingBottom="9dp">
+                android:paddingBottom="7dp">
 
                 <TextView
                     android:id="@+id/tvTotalGet"
@@ -242,9 +242,9 @@
                 android:focusable="true"
                 android:orientation="vertical"
                 android:paddingStart="12dp"
-                android:paddingTop="9dp"
+                android:paddingTop="7dp"
                 android:paddingEnd="12dp"
-                android:paddingBottom="9dp">
+                android:paddingBottom="7dp">
 
                 <TextView
                     android:id="@+id/tvTotalGive"
@@ -268,7 +268,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -306,7 +306,7 @@
                 android:id="@+id/btnVoiceEntry"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="50dp"
-                android:layout_height="46dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/voice_entry"
                 android:insetTop="0dp"
@@ -332,7 +332,7 @@
                 android:id="@+id/btnOpenFilter"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="50dp"
-                android:layout_height="46dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/filter_title"
                 android:insetTop="0dp"
@@ -360,7 +360,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -378,7 +378,7 @@
                 android:id="@+id/btnSortParties"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="46dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="6dp"
                 android:minWidth="0dp"
                 android:paddingStart="12dp"
@@ -393,7 +393,7 @@
                 android:id="@+id/btnLedgerPdf"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="50dp"
-                android:layout_height="46dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/ledger_pdf_button"
                 android:insetTop="0dp"
@@ -413,7 +413,7 @@
                 android:id="@+id/btnScanQr"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="50dp"
-                android:layout_height="46dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/scan_customer_qr"
                 android:insetTop="0dp"
