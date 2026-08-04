@@ -88,6 +88,10 @@
     <string name="settled">Hisaab barabar</string>
     <string name="settled_count">%1$d settled</string>
     <string name="all_settled">sab settled</string>
+    <string name="summary_backup_never">Backup kabhi nahi hua</string>
+    <string name="summary_backup_today">Backup aaj hua</string>
+    <string name="summary_backup_yesterday">Backup kal hua</string>
+    <string name="summary_backup_days">Backup %1$d din pehle</string>
 
     <string name="name">Naam</string>
     <string name="phone_optional">Phone (ikhtiyari)</string>

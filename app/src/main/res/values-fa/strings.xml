@@ -88,6 +88,10 @@
     <string name="settled">تسویه‌شده</string>
     <string name="settled_count">%1$d تسویه‌شده</string>
     <string name="all_settled">همه تسویه‌شده</string>
+    <string name="summary_backup_never">هرگز پشتیبان گرفته نشده</string>
+    <string name="summary_backup_today">پشتیبان امروز</string>
+    <string name="summary_backup_yesterday">پشتیبان دیروز</string>
+    <string name="summary_backup_days">پشتیبان %1$d روز پیش</string>
 
     <string name="name">نام</string>
     <string name="phone_optional">تلفن (اختیاری)</string>

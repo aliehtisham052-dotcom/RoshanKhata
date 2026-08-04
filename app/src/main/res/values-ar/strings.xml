@@ -88,6 +88,10 @@
     <string name="settled">الحساب مسدد</string>
     <string name="settled_count">%1$d مُسوّى</string>
     <string name="all_settled">الكل مُسوّى</string>
+    <string name="summary_backup_never">لم يتم النسخ الاحتياطي قط</string>
+    <string name="summary_backup_today">نُسخ احتياطيًا اليوم</string>
+    <string name="summary_backup_yesterday">نُسخ احتياطيًا أمس</string>
+    <string name="summary_backup_days">نُسخ احتياطيًا قبل %1$d يوم</string>
 
     <string name="name">الاسم</string>
     <string name="phone_optional">الهاتف (اختياري)</string>
