@@ -112,11 +112,97 @@ object CardTemplates {
     ): Paint {
         var size = start
         var p = paint(size, colour, bold, align)
-        while (p.measureText(text) > max && size > 16f) {
-            size -= 2f
+        // Floor raised from 16f. Sixteen points on a card this size is not
+        // small type, it is unreadable type — and a card nobody can read is
+        // not a card. Below this the answer is to wrap or trim, not to shrink
+        // further, which is what the callers now do.
+        while (p.measureText(text) > max && size > MIN_READABLE) {
+            size -= 1f
             p = paint(size, colour, bold, align)
         }
         return p
+    }
+
+    /** The smallest type this card will set. Below it, wrap or trim instead. */
+    private const val MIN_READABLE = 22f
+
+    /**
+     * Break a line so it fits, on a word boundary, into at most [maxLines].
+     *
+     * A shop address is the line that breaks these cards — "Lappay wali tehsil
+     * pasrur district Sialkot Pakistan" is simply longer than a business card
+     * is wide, and shrinking it until it fits produces type the recipient
+     * cannot read. It belongs on two lines, which is where it would go on a
+     * card from a printer. Anything that still will not fit is trimmed with an
+     * ellipsis rather than allowed to run past the edge.
+     */
+    private fun wrap(text: String, p: Paint, max: Float, maxLines: Int = 2): List<String> {
+        if (p.measureText(text) <= max) return listOf(text)
+
+        val words = text.split(' ').filter { it.isNotEmpty() }
+        val lines = mutableListOf<String>()
+        var line = StringBuilder()
+
+        for (word in words) {
+            val candidate = if (line.isEmpty()) word else "$line $word"
+            if (p.measureText(candidate) <= max) {
+                line = StringBuilder(candidate)
+            } else {
+                if (line.isNotEmpty()) lines += line.toString()
+                line = StringBuilder(word)
+                if (lines.size == maxLines) break
+            }
+        }
+        if (lines.size < maxLines && line.isNotEmpty()) lines += line.toString()
+
+        // Trim ANY line that still overflows, not merely the last. Two long
+        // unbreakable words put an over-wide line in FIRST position, and a
+        // rule that only guarded the last line let it through — the second
+        // thing the simulation caught here. Every line is checked because
+        // every line is on the card.
+        return lines.take(maxLines)
+            .map { if (p.measureText(it) > max) ellipsise(it, p, max) else it }
+            .ifEmpty { listOf(ellipsise(text, p, max)) }
+    }
+
+    private fun ellipsise(text: String, p: Paint, max: Float): String {
+        if (p.measureText(text) <= max) return text
+        var end = text.length
+        while (end > 1 && p.measureText(text.take(end) + "…") > max) end--
+        return text.take(end).trimEnd() + "…"
+    }
+
+    /**
+     * A run of contact lines set against an edge, fitted and wrapped.
+     *
+     * Three templates each grew their own copy of this loop with a hard-coded
+     * type size and no fitting at all, and all three are the cards the owner
+     * photographed: the address ran off the panel, across the shape beside it,
+     * or clean off the card. One implementation, so a long address behaves the
+     * same wherever it appears.
+     *
+     * Returns the y it finished at, so a caller can place what follows.
+     */
+    private fun stackedContacts(
+        c: Canvas,
+        lines: List<String>,
+        x: Float,
+        top: Float,
+        max: Float,
+        colour: Int,
+        size: Float,
+        gap: Float,
+        align: Paint.Align
+    ): Float {
+        var y = top
+        lines.forEach { line ->
+            val p = fitted(line, max, size, colour, false, align)
+            wrap(line, p, max).forEach { part ->
+                c.drawText(part, x, y, p)
+                y += gap
+            }
+        }
+        return y
     }
 
     private fun path(block: Path.() -> Unit) = Path().apply(block)
@@ -218,12 +304,17 @@ object CardTemplates {
             y += gap
         }
         if (d.address.isNotEmpty()) {
+            // The address is the line that breaks a card. Set at the same
+            // weight as the rest and wrapped onto a second line if it needs
+            // one — it used to be shrunk on its own until it was half the
+            // height of the phone number above it and barely legible.
             pinIcon(c, left + r, y - size * 0.32f, r, iconColour)
-            c.drawText(
-                d.address, textLeft, y,
-                fitted(d.address, room, size * 0.92f, textColour, false)
-            )
-            y += gap
+            val p = fitted(d.address, room, size, textColour, false)
+            wrap(d.address, p, room).forEach { part ->
+                c.drawText(part, textLeft, y, p)
+                y += gap * 0.68f
+            }
+            y += gap * 0.32f
         }
         return y
     }
@@ -250,12 +341,21 @@ object CardTemplates {
         accent: Int
     ) {
         var y = top
+        val room = (right - 54f) - left
         listOfNotNull(
             d.address.takeIf { it.isNotEmpty() },
             d.phone.takeIf { it.isNotEmpty() },
             d.owner.takeIf { it.isNotEmpty() }
         ).forEach { line ->
-            c.drawText(line, right - 54f, y, paint(28f, textColour, false, Paint.Align.RIGHT))
+            // Fitted to the space between the rule's start and its dot. At a
+            // fixed size a long address ran back past `left` and printed
+            // itself across the circle of colour beside it.
+            val p = fitted(line, room, 28f, textColour, false, Paint.Align.RIGHT)
+            wrap(line, p, room).forEach { part ->
+                c.drawText(part, right - 54f, y, p)
+                y += 34f
+            }
+            y -= 34f
             c.drawCircle(right - 22f, y - 10f, 13f, fill(accent))
             c.drawLine(left, y + 16f, right, y + 16f, fill(accent).apply { strokeWidth = 1.6f })
             y += 62f
@@ -365,13 +465,17 @@ object CardTemplates {
         if (d.type.isNotEmpty()) {
             c.drawText(d.type, right, 218f, paint(28f, AMBER, false, Paint.Align.RIGHT))
         }
-        var y = h - 190f
-        listOfNotNull(
-            d.phone.takeIf { it.isNotEmpty() },
-            d.address.takeIf { it.isNotEmpty() }
-        ).forEach { line ->
-            c.drawText(line, right, y, paint(28f, WHITE, false, Paint.Align.RIGHT)); y += 46f
-        }
+        // Fitted and wrapped to the dark panel only. At a fixed size the
+        // address reached past the amber spine and off the card entirely.
+        stackedContacts(
+            c,
+            listOfNotNull(
+                d.phone.takeIf { it.isNotEmpty() },
+                d.address.takeIf { it.isNotEmpty() }
+            ),
+            x = right, top = h - 190f, max = w * 0.5f,
+            colour = WHITE, size = 28f, gap = 42f, align = Paint.Align.RIGHT
+        )
 
         if (d.owner.isNotEmpty()) {
             c.drawText(d.owner, 70f, h * 0.5f, fitted(d.owner, w * 0.38f, 52f, INK, true))
@@ -489,11 +593,12 @@ object CardTemplates {
     private fun flap(c: Canvas, d: CardData, w: Int, h: Int) {
         c.drawColor(Color.parseColor("#123A38"))
 
-        // The rail, and the run of dots beside it.
+        // The rail. The run of dots that used to sit beside it has gone: at
+        // h*0.44 to h*0.68 it landed exactly level with the contact rows, so
+        // it read as a bullet list — with a fourth bullet against nothing,
+        // because there are only ever three contact lines. Decoration that
+        // lines up with content stops being decoration.
         c.drawRect(w * 0.045f, 0f, w * 0.105f, h * 0.72f, fill(AMBER))
-        listOf(0.44f, 0.52f, 0.6f, 0.68f).forEach { t ->
-            c.drawCircle(w * 0.135f, h * t, 7f, fill(INK))
-        }
 
         c.drawPath(
             path {
@@ -513,7 +618,7 @@ object CardTemplates {
         val left = w * 0.18f
         c.drawText(d.name, left, 150f, fitted(d.name, w * 0.44f, 54f, WHITE, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, left, 196f, paint(28f, AMBER, false))
-        contacts(c, d, left, 320f, WHITE, AMBER, size = 26f, gap = 50f, maxWidth = w * 0.4f)
+        contacts(c, d, left, 320f, WHITE, AMBER, size = 26f, gap = 50f, maxWidth = w * 0.46f)
     }
 
     /**
@@ -593,15 +698,35 @@ object CardTemplates {
         c.drawText(d.name, 70f, h * 0.3f, fitted(d.name, w * 0.4f, 46f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, h * 0.3f + 40f, paint(24f, INK, false))
 
+        // The badges here used to be plain white rounded rectangles with
+        // nothing inside them — blank tiles beside every line, which is what
+        // they looked like on the card. Real marks, and the text now fits the
+        // navy panel instead of running off its left edge.
         var y = h * 0.56f
-        listOfNotNull(
-            d.owner.takeIf { it.isNotEmpty() },
-            d.phone.takeIf { it.isNotEmpty() },
-            d.address.takeIf { it.isNotEmpty() }
-        ).forEach { line ->
-            c.drawText(line, w - 110f, y, paint(26f, WHITE, false, Paint.Align.RIGHT))
-            c.drawRoundRect(RectF(w - 96f, y - 26f, w - 62f, y + 8f), 8f, 8f, fill(WHITE))
+        val badge = w - 86f
+        val textRight = badge - 34f
+        val room = textRight - w * 0.36f
+
+        if (d.owner.isNotEmpty()) {
+            c.drawText(d.owner, textRight, y, fitted(d.owner, room, 26f, WHITE, true, Paint.Align.RIGHT))
+            c.drawCircle(badge, y - 9f, 15f, fill(WHITE))
+            c.drawText(
+                d.owner.take(1).uppercase(), badge, y - 9f + 9f,
+                paint(20f, NAVY_DEEP, true, Paint.Align.CENTER)
+            )
             y += 46f
+        }
+        if (d.phone.isNotEmpty()) {
+            c.drawText(d.phone, textRight, y, fitted(d.phone, room, 26f, WHITE, false, Paint.Align.RIGHT))
+            phoneIcon(c, badge, y - 9f, 15f, WHITE)
+            y += 46f
+        }
+        if (d.address.isNotEmpty()) {
+            val p = fitted(d.address, room, 26f, WHITE, false, Paint.Align.RIGHT)
+            pinIcon(c, badge, y - 9f, 15f, WHITE)
+            wrap(d.address, p, room).forEach { part ->
+                c.drawText(part, textRight, y, p); y += 36f
+            }
         }
         c.drawText(d.footer, 70f, h - 34f, paint(22f, INK, false))
     }
