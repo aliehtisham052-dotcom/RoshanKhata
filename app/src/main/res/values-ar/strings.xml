@@ -89,7 +89,7 @@
     <string name="settled_count">%1$d مُسوّى</string>
     <string name="all_settled">الكل مُسوّى</string>
     <string name="summary_backup_never">لم يتم النسخ الاحتياطي قط</string>
-    <string name="summary_backup_time">نُسخ %1$s</string>
+    <string name="summary_backup_time">آخر نسخة %1$s</string>
     <string name="summary_backup_yesterday">نُسخ احتياطيًا أمس</string>
     <string name="summary_backup_days">نُسخ احتياطيًا قبل %1$d يوم</string>
 

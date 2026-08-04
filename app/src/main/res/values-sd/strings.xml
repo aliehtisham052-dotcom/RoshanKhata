@@ -89,7 +89,7 @@
     <string name="settled_count">%1$d ادا ٿيل</string>
     <string name="all_settled">سڀ ادا ٿيل</string>
     <string name="summary_backup_never">بيڪ اپ ڪڏهن نه ٿيو</string>
-    <string name="summary_backup_time">بيڪ اپ %1$s</string>
+    <string name="summary_backup_time">بيڪ اپ ٿيو %1$s</string>
     <string name="summary_backup_yesterday">بيڪ اپ ڪالهه ٿيو</string>
     <string name="summary_backup_days">بيڪ اپ %1$d ڏينهن اڳ</string>
 
