@@ -868,6 +868,7 @@
     <string name="biz_tpl_green">Ribbon</string>
     <string name="biz_card_share">Share card</string>
     <string name="biz_card_note">The card is drawn on your phone and shared as an image. Nothing is uploaded.</string>
+    <string name="biz_card_show_mark">Show “Roshan Khata” on the card</string>
     <string name="biz_card_enter_name">Please enter a business name</string>
     <string name="help_support">Help &amp; Support</string>
     <string name="help_questions">COMMON QUESTIONS</string>

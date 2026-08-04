@@ -39,6 +39,7 @@ class BusinessCardActivity : AppCompatActivity() {
     private lateinit var etOwner: EditText
     private lateinit var etPhone: EditText
     private lateinit var etAddress: EditText
+    private lateinit var markSwitch: com.google.android.material.switchmaterial.SwitchMaterial
     private lateinit var tplButtons: List<Button>
 
     private var template = TPL_DEFAULT
@@ -57,6 +58,8 @@ class BusinessCardActivity : AppCompatActivity() {
         etPhone = findViewById(R.id.etPhone)
         etAddress = findViewById(R.id.etAddress)
 
+        markSwitch = findViewById(R.id.switchCardWatermark)
+
         buildTemplateRow()
 
         // Prefill from what the app already knows, then whatever was last typed
@@ -68,6 +71,13 @@ class BusinessCardActivity : AppCompatActivity() {
         etPhone.setText(prefs.getString(KEY_PHONE, ""))
         etAddress.setText(prefs.getString(KEY_ADDRESS, ""))
         template = prefs.getInt(KEY_TEMPLATE, TPL_DEFAULT)
+        // On unless the owner has said otherwise.
+        markSwitch.isChecked = prefs.getBoolean(KEY_MARK, true)
+        markSwitch.setOnCheckedChangeListener { _, on ->
+            getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE)
+                .edit().putBoolean(KEY_MARK, on).apply()
+            render()
+        }
 
         val watcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -139,7 +149,10 @@ class BusinessCardActivity : AppCompatActivity() {
             owner = etOwner.text.toString().trim(),
             phone = etPhone.text.toString().trim(),
             address = etAddress.text.toString().trim(),
-            footer = getString(R.string.made_with_app)
+            // Empty when the owner has switched the mark off — CardTemplates
+            // draws nothing for an empty footer, so no template needs to know
+            // about the setting.
+            footer = if (markSwitch.isChecked) getString(R.string.made_with_app) else ""
         )
         CardTemplates.byId(template).draw(
             Canvas(bmp), data, CardTemplates.W, CardTemplates.H
@@ -207,6 +220,7 @@ class BusinessCardActivity : AppCompatActivity() {
         private const val KEY_PHONE = "phone"
         private const val KEY_ADDRESS = "address"
         private const val KEY_TEMPLATE = "template"
+        private const val KEY_MARK = "show_mark"
 
         private val INK = Color.parseColor("#1A1A18")
         private val BRAND_GREEN = Color.parseColor("#1B5E3A")

@@ -834,6 +834,7 @@
     <string name="biz_tpl_green">Ribbon</string>
     <string name="biz_card_share">Card share karein</string>
     <string name="biz_card_note">Card aap ke phone par banta hai aur tasveer ke tor par share hota hai. Kuch bhi upload nahi hota.</string>
+    <string name="biz_card_show_mark">Card par “Roshan Khata” dikhayein</string>
     <string name="biz_card_enter_name">Barah-e-karam karobar ka naam likhein</string>
     <string name="help_support">Madad aur Support</string>
     <string name="help_questions">AAM SAWALAT</string>

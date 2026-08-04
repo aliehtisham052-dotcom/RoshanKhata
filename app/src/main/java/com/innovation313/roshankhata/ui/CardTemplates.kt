@@ -205,6 +205,37 @@ object CardTemplates {
         return y
     }
 
+    /**
+     * The maker's mark, and nothing more.
+     *
+     * This card belongs to the shopkeeper. A printer does not put their own
+     * name on someone else's visiting card, and the whole point of the card is
+     * that the shop looks established — a vendor credit set in the card's own
+     * accent colour, at the same weight as the shop's details, worked against
+     * exactly that. It read as a line of the shop's identity rather than a
+     * signature.
+     *
+     * So it is set small, at a third of its former presence, and in the plain
+     * ink or white of the surface it sits on rather than the card's accent.
+     * Visible if you look for it; invisible if you are reading the card.
+     *
+     * An empty footer draws nothing at all — that is how the owner's switch
+     * turns it off.
+     */
+    private fun watermark(
+        c: Canvas,
+        d: CardData,
+        x: Float,
+        y: Float,
+        onDark: Boolean,
+        align: Paint.Align = Paint.Align.LEFT
+    ) {
+        if (d.footer.isEmpty()) return
+        val base = if (onDark) WHITE else INK
+        val faded = Color.argb(96, Color.red(base), Color.green(base), Color.blue(base))
+        c.drawText(d.footer, x, y, paint(17f, faded, false, align))
+    }
+
     private fun path(block: Path.() -> Unit) = Path().apply(block)
 
     /**
@@ -431,7 +462,7 @@ object CardTemplates {
         // Clear of the band, which is furthest left at the foot of the card.
         // The navy wedge closes in from the right as it descends.
         contacts(c, d, 70f, 360f, INK, NAVY, maxWidth = w * 0.36f, maxBottom = h * 0.62f)
-        c.drawText(d.footer, 70f, h - 46f, paint(24f, NAVY, false))
+        watermark(c, d, 70f, h - 46f, onDark = false)
     }
 
     /** 2. Sash: a curved ribbon of colour sweeping under the name. */
@@ -469,7 +500,7 @@ object CardTemplates {
         c.drawText(d.name, 70f, 170f, fitted(d.name, w - 140f, 70f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 222f, paint(32f, CRIMSON, false))
         contacts(c, d, 70f, 300f, INK, CRIMSON, gap = 50f, maxWidth = w - 140f)
-        c.drawText(d.footer, w - 70f, h - 40f, paint(24f, WHITE, false, Paint.Align.RIGHT))
+        watermark(c, d, w - 70f, h - 40f, onDark = true, align = Paint.Align.RIGHT)
     }
 
     /** 3. Fold: a corner turned back, as if the card were paper. */
@@ -492,7 +523,7 @@ object CardTemplates {
         contacts(c, d, 70f, 350f, INK, NAVY_DEEP, size = 30f, gap = 52f, maxWidth = w * 0.32f)
 
         val right = w - 60f
-        c.drawText(d.footer, right, h - 44f, paint(24f, GOLD_PALE, false, Paint.Align.RIGHT))
+        watermark(c, d, right, h - 44f, onDark = true, align = Paint.Align.RIGHT)
     }
 
     /** 6. Arc: a quarter circle anchoring the corner. */
@@ -510,7 +541,7 @@ object CardTemplates {
             c, d, left, 340f, INK, MAROON, size = 30f, gap = 52f,
             maxWidth = w - left - 60f, maxBottom = h * 0.64f
         )
-        c.drawText(d.footer, left, h - 44f, paint(24f, MAROON, false))
+        watermark(c, d, left, h - 44f, onDark = false)
     }
 
     /** 7. Twin: the card halved, name on the dark side. */
@@ -539,7 +570,7 @@ object CardTemplates {
         if (d.owner.isNotEmpty()) {
             c.drawText(d.owner, 70f, h * 0.5f, fitted(d.owner, w * 0.38f, 52f, INK, true))
         }
-        c.drawText(d.footer, 70f, h - 46f, paint(24f, CHARCOAL, false))
+        watermark(c, d, 70f, h - 46f, onDark = false)
     }
 
     /** 9. Gild: a dark field with a fine gold frame and rule. */
@@ -566,7 +597,7 @@ object CardTemplates {
         ).forEach { line ->
             c.drawText(line, cx, y, paint(32f, WHITE, false, Paint.Align.CENTER)); y += 50f
         }
-        c.drawText(d.footer, cx, h - 70f, paint(24f, GOLD, false, Paint.Align.CENTER))
+        watermark(c, d, cx, h - 70f, onDark = true, align = Paint.Align.CENTER)
     }
 
     /** 10. Dusk: a gradient field, text ranged left over the dark end. */
@@ -586,7 +617,7 @@ object CardTemplates {
         c.drawText(d.name, 70f, 190f, fitted(d.name, w * 0.72f, 66f, WHITE, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 242f, paint(30f, GOLD_PALE, false))
         contacts(c, d, 70f, 350f, WHITE, SKY, size = 30f, gap = 52f, maxWidth = w * 0.62f)
-        c.drawText(d.footer, 70f, h - 46f, paint(24f, Color.parseColor("#9FB6C9"), false))
+        watermark(c, d, 70f, h - 46f, onDark = true)
     }
 
     /** 11. Rule: quiet paper, one strong line, everything aligned to it. */
@@ -598,7 +629,7 @@ object CardTemplates {
         c.drawText(d.name, 70f, 200f, fitted(d.name, w - 140f, 72f, INK, true))
         if (d.type.isNotEmpty()) c.drawText(d.type, 70f, 306f, paint(32f, GREEN, false))
         contacts(c, d, 70f, 400f, INK, GREEN, gap = 56f, maxWidth = w - 140f)
-        c.drawText(d.footer, w - 70f, h - 44f, paint(24f, GREEN, false, Paint.Align.RIGHT))
+        watermark(c, d, w - 70f, h - 44f, onDark = false, align = Paint.Align.RIGHT)
     }
 
     /**
@@ -721,7 +752,7 @@ object CardTemplates {
             c.drawText(d.type, (left + right) / 2f, 194f, paint(28f, INK, false, Paint.Align.CENTER))
         }
         ruledContacts(c, d, left, right, 290f, INK, Color.parseColor("#B01F35"))
-        c.drawText(d.footer, left, h - 44f, paint(22f, Color.parseColor("#B01F35"), false))
+        watermark(c, d, left, h - 44f, onDark = false)
     }
 
     /**
@@ -818,7 +849,7 @@ object CardTemplates {
             c.drawText(ellipsise(d.address, p, room), textRight, y, p)
             y += 46f
         }
-        c.drawText(d.footer, 70f, h - 34f, paint(22f, INK, false))
+        watermark(c, d, 70f, h - 34f, onDark = false)
     }
 
     /**
