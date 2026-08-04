@@ -89,7 +89,7 @@
     <string name="settled_count">%1$d ادا شدہ</string>
     <string name="all_settled">سب ادا شدہ</string>
     <string name="summary_backup_never">بیک اپ کبھی نہیں ہوا</string>
-    <string name="summary_backup_today">بیک اپ آج ہوا</string>
+    <string name="summary_backup_time">بیک اپ %1$s</string>
     <string name="summary_backup_yesterday">بیک اپ کل ہوا</string>
     <string name="summary_backup_days">بیک اپ %1$d دن پہلے</string>
 

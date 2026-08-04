@@ -137,7 +137,7 @@
         -->
         <LinearLayout
             android:id="@+id/balanceRow"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:background="?attr/selectableItemBackground"
@@ -172,6 +172,28 @@
                 android:contentDescription="@string/hide_balance"
                 android:src="@drawable/ic_eye_open"
                 app:tint="@color/header_on_dark" />
+
+            <!--
+              The backup age lives here, beside the money it protects.
+
+              It went on the customer-count line first and wrapped to a second
+              row on a real phone, which put back height the header had just
+              given up. Measured afterwards, which was the wrong order: that
+              line has about 142dp beside the sort and export buttons — some
+              25 characters at 11sp — and nothing useful fits. This row ends
+              after the balance and has the space free.
+            -->
+            <TextView
+                android:id="@+id/tvBackupAge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:textColor="@color/header_on_dark"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <!--

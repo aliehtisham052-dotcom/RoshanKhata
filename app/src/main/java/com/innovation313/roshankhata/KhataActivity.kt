@@ -128,6 +128,7 @@ class KhataActivity : AppCompatActivity() {
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
     private lateinit var tvPartySummary: TextView
+    private lateinit var tvBackupAge: TextView
     private var totalGet = 0.0
     private var totalGive = 0.0
     private var totalSettled = 0
@@ -171,6 +172,11 @@ class KhataActivity : AppCompatActivity() {
         tvTotalGet = findViewById(R.id.tvTotalGet)
         tvTotalGive = findViewById(R.id.tvTotalGive)
         tvPartySummary = findViewById(R.id.tvPartySummary)
+        tvBackupAge = findViewById(R.id.tvBackupAge)
+        // The figure is a question; the answer is one tap away.
+        tvBackupAge.setOnClickListener {
+            startActivity(Intent(this, BackupActivity::class.java))
+        }
         tvEmpty = findViewById(R.id.tvEmpty)
 
         val rv: RecyclerView = findViewById(R.id.rvParties)
@@ -1104,66 +1110,56 @@ class KhataActivity : AppCompatActivity() {
         // run. And the ledger lives only on this phone, so a backup is not a
         // feature here, it is the whole safety net.
         //
-        // It costs no new line: it joins the customer count. And it is quiet
-        // while it is fresh, because a warning that always looks the same
-        // stops being read — only a stale backup takes the loud colour.
-        summaryBase = base
-        paintSummary()
+        tvPartySummary.text = base
     }
 
-    /** The count line, kept so the backup age can be repainted without it. */
-    private var summaryBase: String = ""
-
     /**
-     * Paint the summary line, backup age included.
+     * Paint the backup age, beside the balance.
      *
-     * Separate from building it because the two change at different moments.
-     * The counts change when the book changes; the backup age changes when the
-     * owner backs up — which happens on ANOTHER screen, and returning from it
-     * does not touch the ledger, so the flow that builds this line never fires.
-     * That is why the figure was missing after a backup as well as before one.
-     * onResume calls this, and only this.
+     * Separate from building the summary because the two change at different
+     * moments. The counts change when the book changes; the backup age changes
+     * when the owner backs up — which happens on ANOTHER screen, and returning
+     * from it does not touch the ledger, so the flow that builds the summary
+     * never fires. That is why the figure was missing after a backup as well
+     * as before one. onResume calls this, and only this.
+     *
+     * TODAY SHOWS THE CLOCK TIME, not the word "today". Between a morning
+     * backup and an evening one, "today" is the one answer that does not
+     * settle the question actually being asked — is what I wrote an hour ago
+     * safe? A time answers that; a day does not. Older than today the reverse
+     * holds, and nobody needs the minute a backup was taken last week.
+     *
+     * Quiet while it is fresh, gold and bold at a week or never: a warning
+     * that always looks the same stops being read.
      */
     private fun paintSummary() {
-        val base = summaryBase
-        if (base.isEmpty()) return
-
         val last = BackupReminder.lastBackupAt(this)
         val ageDays = if (last == 0L) -1L
         else (System.currentTimeMillis() - last) / (24L * 60 * 60 * 1000)
 
-        val backupText = when {
+        val text = when {
             ageDays < 0 -> getString(R.string.summary_backup_never)
-            ageDays == 0L -> getString(R.string.summary_backup_today)
+            ageDays == 0L -> getString(
+                R.string.summary_backup_time,
+                android.text.format.DateFormat.getTimeFormat(this)
+                    .format(java.util.Date(last))
+            )
             ageDays == 1L -> getString(R.string.summary_backup_yesterday)
             else -> getString(R.string.summary_backup_days, ageDays)
         }
         val stale = ageDays < 0 || ageDays >= 7
 
-        val full = "$base  ·  $backupText"
-        val span = android.text.SpannableString(full)
-        span.setSpan(
-            android.text.style.ForegroundColorSpan(
-                ContextCompat.getColor(
-                    this,
-                    if (stale) R.color.gold_on_dark else R.color.header_on_dark
-                )
-            ),
-            full.length - backupText.length, full.length,
-            android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        if (stale) {
-            span.setSpan(
-                android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                full.length - backupText.length, full.length,
-                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        tvBackupAge.text = text
+        tvBackupAge.setTextColor(
+            ContextCompat.getColor(
+                this,
+                if (stale) R.color.gold_on_dark else R.color.header_on_dark
             )
-        }
-        tvPartySummary.text = span
-        // The figure is a question; the answer is one tap away.
-        tvPartySummary.setOnClickListener {
-            startActivity(Intent(this, BackupActivity::class.java))
-        }
+        )
+        tvBackupAge.setTypeface(
+            null,
+            if (stale) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL
+        )
     }
 
     private fun renderTotals() {
