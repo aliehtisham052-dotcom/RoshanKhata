@@ -88,6 +88,10 @@
     <string name="settled">حساب برابر</string>
     <string name="settled_count">%1$d ادا ٿيل</string>
     <string name="all_settled">سڀ ادا ٿيل</string>
+    <string name="summary_backup_never">بيڪ اپ ڪڏهن نه ٿيو</string>
+    <string name="summary_backup_today">بيڪ اپ اڄ ٿيو</string>
+    <string name="summary_backup_yesterday">بيڪ اپ ڪالهه ٿيو</string>
+    <string name="summary_backup_days">بيڪ اپ %1$d ڏينهن اڳ</string>
 
     <string name="name">نالو</string>
     <string name="phone_optional">فون (اختياري)</string>

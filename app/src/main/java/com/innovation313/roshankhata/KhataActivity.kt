@@ -25,6 +25,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.AppLock
+import com.innovation313.roshankhata.data.BackupReminder
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
@@ -1041,6 +1042,11 @@ class KhataActivity : AppCompatActivity() {
             val saved = BusinessProfile.businessName(this@KhataActivity)
             text = if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
         }
+
+        // Returning from the Backup screen changes the backup age but not the
+        // ledger, so the flow that builds the summary line never fires. Repaint
+        // it here or the figure stays stale exactly when it just became true.
+        paintSummary()
     }
 
     /**
@@ -1089,9 +1095,75 @@ class KhataActivity : AppCompatActivity() {
                 withCount + "  ·  " + getString(R.string.settled_count, totalSettled)
         }
 
-        // Backup status is a header icon now (tap it for the time of the last
-        // backup), so it no longer rides on this summary line.
-        tvPartySummary.text = base
+        // Backup rides here again, and the reversal is deliberate. It was
+        // moved off this line to a header icon at the owner's own request —
+        // but three things have changed since. There are two shops now, so
+        // "is it backed up" became "WHICH shop is backed up", which an icon
+        // cannot answer. The weekly nudge turned out to be unreliable for
+        // months, because the manual Drive button never recorded that it had
+        // run. And the ledger lives only on this phone, so a backup is not a
+        // feature here, it is the whole safety net.
+        //
+        // It costs no new line: it joins the customer count. And it is quiet
+        // while it is fresh, because a warning that always looks the same
+        // stops being read — only a stale backup takes the loud colour.
+        summaryBase = base
+        paintSummary()
+    }
+
+    /** The count line, kept so the backup age can be repainted without it. */
+    private var summaryBase: String = ""
+
+    /**
+     * Paint the summary line, backup age included.
+     *
+     * Separate from building it because the two change at different moments.
+     * The counts change when the book changes; the backup age changes when the
+     * owner backs up — which happens on ANOTHER screen, and returning from it
+     * does not touch the ledger, so the flow that builds this line never fires.
+     * That is why the figure was missing after a backup as well as before one.
+     * onResume calls this, and only this.
+     */
+    private fun paintSummary() {
+        val base = summaryBase
+        if (base.isEmpty()) return
+
+        val last = BackupReminder.lastBackupAt(this)
+        val ageDays = if (last == 0L) -1L
+        else (System.currentTimeMillis() - last) / (24L * 60 * 60 * 1000)
+
+        val backupText = when {
+            ageDays < 0 -> getString(R.string.summary_backup_never)
+            ageDays == 0L -> getString(R.string.summary_backup_today)
+            ageDays == 1L -> getString(R.string.summary_backup_yesterday)
+            else -> getString(R.string.summary_backup_days, ageDays)
+        }
+        val stale = ageDays < 0 || ageDays >= 7
+
+        val full = "$base  ·  $backupText"
+        val span = android.text.SpannableString(full)
+        span.setSpan(
+            android.text.style.ForegroundColorSpan(
+                ContextCompat.getColor(
+                    this,
+                    if (stale) R.color.gold_on_dark else R.color.header_on_dark
+                )
+            ),
+            full.length - backupText.length, full.length,
+            android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        if (stale) {
+            span.setSpan(
+                android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                full.length - backupText.length, full.length,
+                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        tvPartySummary.text = span
+        // The figure is a question; the answer is one tap away.
+        tvPartySummary.setOnClickListener {
+            startActivity(Intent(this, BackupActivity::class.java))
+        }
     }
 
     private fun renderTotals() {

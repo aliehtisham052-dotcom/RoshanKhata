@@ -92,6 +92,10 @@
     <string name="settled">Settled</string>
     <string name="settled_count">%1$d settled</string>
     <string name="all_settled">all settled</string>
+    <string name="summary_backup_never">Never backed up</string>
+    <string name="summary_backup_today">Backed up today</string>
+    <string name="summary_backup_yesterday">Backed up yesterday</string>
+    <string name="summary_backup_days">Backed up %1$d days ago</string>
 
     <string name="name">Name</string>
     <string name="phone_optional">Phone (optional)</string>
