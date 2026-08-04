@@ -842,6 +842,7 @@
     <string name="biz_tpl_green">شريط</string>
     <string name="biz_card_share">مشاركة البطاقة</string>
     <string name="biz_card_note">تُرسم البطاقة على هاتفك وتُشارَك كصورة. لا يُرفع أي شيء.</string>
+    <string name="biz_card_show_mark">إظهار “روشن كھاتہ” على البطاقة</string>
     <string name="biz_card_enter_name">يرجى إدخال اسم النشاط التجاري</string>
     <string name="help_support">المساعدة والدعم</string>
     <string name="help_questions">أسئلة شائعة</string>

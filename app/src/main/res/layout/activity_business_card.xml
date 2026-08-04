@@ -113,6 +113,23 @@
             android:minHeight="48dp"
             android:textSize="15sp" />
 
+        <!--
+          The owner's card, the owner's call.
+          Left on by default, because most shops will not think about it and
+          the mark is small enough not to intrude. But a card sent as an
+          inauguration announcement is the shop's own statement, and an owner
+          who wants nothing else on it should not have to crop the image or
+          look for another app to get that.
+        -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchCardWatermark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:minHeight="48dp"
+            android:text="@string/biz_card_show_mark"
+            android:textSize="14sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
