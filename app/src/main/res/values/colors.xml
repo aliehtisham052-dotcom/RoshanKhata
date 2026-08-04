@@ -170,15 +170,24 @@
     <color name="page_grad_bottom">#F7F6F2</color>
 
     <!--
-      The home header: maroon easing into plum.
+      The header behind the balance, on Home and on a customer's ledger.
 
       Deep enough that white figures stay readable in daylight, and warm
       rather than green — the ledger's own reds and greens then read as
-      information rather than as more of the background.
+      information rather than as more of the background. That is measured,
+      not felt: the two summary boxes stand at about 10:1 against this
+      header and only 6:1 against the brand green, so a green header would
+      start absorbing the box that means "I have to give".
+      
+      What was wrong was the far end, not the idea. It used to finish on
+      #3A2340 — blue past red, a plum, and the only cool hue anywhere in the
+      app. That single step is what made the front screen look borrowed from
+      a different product. It now darkens while staying red, so the header
+      reads as this app's warm end rather than a colour of its own.
     -->
     <color name="header_grad_start">#6E1F2A</color>
-    <color name="header_grad_mid">#552334</color>
-    <color name="header_grad_end">#3A2340</color>
+    <color name="header_grad_mid">#5A1F26</color>
+    <color name="header_grad_end">#43151C</color>
 
     <!--
       The quiet type on that header — the tagline, the "Net balance" label.
