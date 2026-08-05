@@ -114,7 +114,12 @@ object DateRangeFilter {
         }.show()
     }
 
-    private fun today(): Range {
+    /**
+     * The named windows, public so the ledger-report screen's chips produce
+     * exactly the same stretches of days as the chooser dialog above — two
+     * definitions of "this week" would eventually disagree at a boundary.
+     */
+    fun today(): Range {
         val c = Calendar.getInstance()
         return Range(
             dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
@@ -123,7 +128,7 @@ object DateRangeFilter {
         )
     }
 
-    private fun yesterday(): Range {
+    fun yesterday(): Range {
         val c = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -1) }
         return Range(
             dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
@@ -133,7 +138,7 @@ object DateRangeFilter {
     }
 
     /** From the first day of this week to now, per the phone's own calendar. */
-    private fun thisWeek(): Range {
+    fun thisWeek(): Range {
         val c = Calendar.getInstance().apply {
             set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
         }
@@ -144,7 +149,7 @@ object DateRangeFilter {
         )
     }
 
-    private fun thisMonth(): Range {
+    fun thisMonth(): Range {
         val c = Calendar.getInstance()
         return Range(
             dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1),

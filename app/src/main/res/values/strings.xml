@@ -78,6 +78,10 @@
     <string name="ledger_pdf_title">Ledger report PDF</string>
     <string name="ledger_report_generating">Building the ledger report…</string>
     <string name="ledger_report_failed">Could not build the report.</string>
+    <string name="ledger_report_title">Khata Report</string>
+    <string name="ledger_report_col_name">Name</string>
+    <string name="ledger_report_empty">No entries in this period.</string>
+    <string name="ledger_report_download">Download PDF</string>
     <string name="add_party">Add Party</string>
     <string name="add_party_duplicate_with_phone">A similar customer already exists: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">A similar customer already exists: %1$s</string>

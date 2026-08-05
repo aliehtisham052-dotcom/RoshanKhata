@@ -74,6 +74,10 @@
     <string name="ledger_pdf_title">Ledger report PDF</string>
     <string name="ledger_report_generating">Ledger report ban rahi hai…</string>
     <string name="ledger_report_failed">Report nahi ban saki.</string>
+    <string name="ledger_report_title">Khata Report</string>
+    <string name="ledger_report_col_name">Naam</string>
+    <string name="ledger_report_empty">Is muddat mein koi entry nahi.</string>
+    <string name="ledger_report_download">PDF Download Karein</string>
     <string name="add_party">Party Shamil Karein</string>
     <string name="add_party_duplicate_with_phone">Milta-julta customer pehle se maujood hai: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">Milta-julta customer pehle se maujood hai: %1$s</string>
