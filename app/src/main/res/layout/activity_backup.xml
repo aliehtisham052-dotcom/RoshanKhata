@@ -296,6 +296,21 @@
 
             </LinearLayout>
 
+            <!--
+              The way out, at the very end of the data screen: the complete
+              erase Play's Data Safety form asks about, guarded the same way
+              a business delete is — typed confirmation, never a bare Yes.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEraseAll"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/erase_all_button"
+                android:textColor="@color/red_gave"
+                android:textSize="14sp" />
+
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

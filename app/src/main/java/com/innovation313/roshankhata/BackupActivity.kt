@@ -20,6 +20,7 @@ import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.DriveAuth
 import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.DriveFeature
+import com.innovation313.roshankhata.data.EraseAll
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
@@ -91,6 +92,8 @@ class BackupActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnDailyCopies).setOnClickListener {
             startActivity(Intent(this, SnapshotsActivity::class.java))
         }
+
+        findViewById<MaterialButton>(R.id.btnEraseAll).setOnClickListener { confirmEraseAll() }
 
         if (DriveFeature.ENABLED) {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
@@ -375,6 +378,53 @@ class BackupActivity : AppCompatActivity() {
                 goHome()
             }
         }
+    }
+
+    /**
+     * The complete erase, guarded the same way a business delete is: the
+     * dialog says exactly what goes and what stays (Drive backups stay —
+     * they are the owner's own account and may be their only copy), and the
+     * button stays disabled until the keyword is typed. See [EraseAll] for
+     * what actually happens.
+     */
+    private fun confirmEraseAll() {
+        val keyword = getString(R.string.erase_all_keyword)
+        val view = android.view.LayoutInflater.from(this)
+            .inflate(R.layout.dialog_business_delete, null)
+        val tvSummary: android.widget.TextView = view.findViewById(R.id.tvDeleteSummary)
+        val etConfirm: android.widget.EditText = view.findViewById(R.id.etDeleteConfirmName)
+        tvSummary.text = getString(R.string.erase_all_body)
+        etConfirm.hint = getString(R.string.business_delete_type_hint, keyword)
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.erase_all_title)
+            .setView(view)
+            .setPositiveButton(R.string.delete_forever, null)
+            .setNegativeButton(R.string.cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            val positive = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+            positive.isEnabled = false
+            positive.setOnClickListener {
+                positive.isEnabled = false
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) { EraseAll.wipe(this@BackupActivity) }
+                    Toast.makeText(this@BackupActivity, R.string.erase_all_done, Toast.LENGTH_LONG).show()
+                    dialog.dismiss()
+                    goHome()
+                }
+            }
+            etConfirm.addTextChangedListener(object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: android.text.Editable?) {
+                    positive.isEnabled = s?.toString()?.trim() == keyword
+                }
+            })
+        }
+        dialog.show()
+        etConfirm.requestFocus()
     }
 
     private fun goHome() {
