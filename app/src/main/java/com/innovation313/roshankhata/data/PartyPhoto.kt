@@ -93,9 +93,6 @@ object PartyPhoto {
      */
     fun knownAbsent(partyId: Long): Boolean = onDisk[partyId] == false
 
-    /** The photo if it is already in memory — never touches the disk. */
-    fun cached(partyId: Long): Bitmap? = cache.get(partyId)
-
     fun load(context: Context, partyId: Long): Bitmap? {
         cache.get(partyId)?.let { return it }
         if (onDisk[partyId] == false) return null
