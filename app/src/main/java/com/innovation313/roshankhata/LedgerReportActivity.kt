@@ -12,17 +12,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.CsvExport
 import com.innovation313.roshankhata.data.EntryWithParty
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerReport
-import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.PdfShare
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -32,40 +33,45 @@ import java.util.Locale
  * The whole ledger on one screen — every entry across every customer in a
  * chosen window, read BEFORE any PDF exists.
  *
- * Until now the whole-ledger report only existed as a PDF: pick a range,
- * wait, open a document. What the owner actually wanted (seen working in a
- * competitor and asked for by name) is the report as a living screen —
- * totals in sight, rows scrolling under them, and the PDF demoted to what
- * it really is: the takeaway copy of a page already read. Download opens
- * that PDF preview-first, as every sight-unseen document does; Share goes
- * straight to the share sheet, because here — uniquely — the owner is
- * already looking at exactly what the document will hold.
+ * The window is set by two date buttons and an "All" reset — the owner's own
+ * correction after using the first version: the chip rail read as clutter,
+ * and the competitor's start/end pair as clarity. Each button wears the date
+ * it holds, so the current window is read off the controls themselves; one
+ * bound alone is a valid window ("everything since March", "everything till
+ * June").
  *
- * Everything under the surface is reused, not rebuilt: the same
- * [DateRangeFilter] windows as the chooser dialog, the same
- * `entriesInRange` query, the same [LedgerReport] renderer. One definition
- * of the report, two doors to it.
+ * Download offers the same rows as PDF (preview-first, as every sight-unseen
+ * document) or as an Excel-openable CSV for an accountant. Share goes
+ * straight to the sheet, because here — uniquely — the owner is already
+ * looking at exactly what the document will hold.
  */
 class LedgerReportActivity : AppCompatActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
     private lateinit var adapter: Adapter
-    private lateinit var tvRangeLabel: TextView
+    private lateinit var btnStartDate: MaterialButton
+    private lateinit var btnEndDate: MaterialButton
     private lateinit var tvTotalGave: TextView
     private lateinit var tvTotalGot: TextView
     private lateinit var tvNetChange: TextView
     private lateinit var tvEmpty: TextView
 
-    private var range: DateRangeFilter.Range = DateRangeFilter.Range.ALL
+    /** Null means unbounded on that side; both null is the whole book. */
+    private var startMs: Long? = null
+    private var endMs: Long? = null
+
     private var entries: List<EntryWithParty> = emptyList()
+
+    private val buttonDateFmt = SimpleDateFormat("d MMM yyyy", Locale.ENGLISH)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ledger_report)
         ScreenInsets.on(this)
 
-        tvRangeLabel = findViewById(R.id.tvLrRangeLabel)
+        btnStartDate = findViewById(R.id.btnLrStartDate)
+        btnEndDate = findViewById(R.id.btnLrEndDate)
         tvTotalGave = findViewById(R.id.tvLrTotalGave)
         tvTotalGot = findViewById(R.id.tvLrTotalGot)
         tvNetChange = findViewById(R.id.tvLrNetChange)
@@ -76,25 +82,20 @@ class LedgerReportActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
 
-        findViewById<ChipGroup>(R.id.chipLedgerRange).setOnCheckedStateChangeListener { _, ids ->
-            when (ids.firstOrNull()) {
-                R.id.chipLrAll -> setRange(DateRangeFilter.Range.ALL)
-                R.id.chipLrToday -> setRange(DateRangeFilter.today())
-                R.id.chipLrYesterday -> setRange(DateRangeFilter.yesterday())
-                R.id.chipLrWeek -> setRange(DateRangeFilter.thisWeek())
-                R.id.chipLrMonth -> setRange(DateRangeFilter.thisMonth())
-                R.id.chipLrCustom -> pickCustomRange()
-            }
+        btnStartDate.setOnClickListener { pickDate(isStart = true) }
+        btnEndDate.setOnClickListener { pickDate(isStart = false) }
+        findViewById<MaterialButton>(R.id.btnLrRangeAll).setOnClickListener {
+            startMs = null
+            endMs = null
+            applyRange()
         }
 
-        findViewById<MaterialButton>(R.id.btnLrDownload).setOnClickListener {
-            buildPdf { file -> PdfShare.present(this, file) }
-        }
+        findViewById<MaterialButton>(R.id.btnLrDownload).setOnClickListener { chooseDownload() }
         findViewById<MaterialButton>(R.id.btnLrShare).setOnClickListener {
             buildPdf { file -> PdfShare.shareDirect(this, file) }
         }
 
-        setRange(DateRangeFilter.Range.ALL)
+        applyRange()
     }
 
     /** Re-read on every return: an entry added meanwhile belongs on the page. */
@@ -103,53 +104,77 @@ class LedgerReportActivity : AppCompatActivity() {
         load()
     }
 
-    private fun setRange(picked: DateRangeFilter.Range) {
-        range = picked
-        tvRangeLabel.text = DateRangeFilter.label(this, picked)
+    /**
+     * One picker per button, seeded at the date it already holds. The chosen
+     * day is widened to its own start or end — a start bound begins at
+     * midnight and an end bound runs to 23:59:59, so a same-day pair still
+     * holds that whole day's entries.
+     */
+    private fun pickDate(isStart: Boolean) {
+        val seed = Calendar.getInstance().apply {
+            (if (isStart) startMs else endMs)?.let { timeInMillis = it }
+        }
+        DatePickerDialog(
+            this,
+            { _, y, m, d ->
+                if (isStart) {
+                    val v = Calendar.getInstance().apply {
+                        set(y, m, d, 0, 0, 0); set(Calendar.MILLISECOND, 0)
+                    }.timeInMillis
+                    val e = endMs
+                    if (e != null && e < v) {
+                        Toast.makeText(this, R.string.invalid_range, Toast.LENGTH_LONG).show()
+                        return@DatePickerDialog
+                    }
+                    startMs = v
+                } else {
+                    val v = Calendar.getInstance().apply {
+                        set(y, m, d, 23, 59, 59); set(Calendar.MILLISECOND, 999)
+                    }.timeInMillis
+                    val s = startMs
+                    if (s != null && v < s) {
+                        Toast.makeText(this, R.string.invalid_range, Toast.LENGTH_LONG).show()
+                        return@DatePickerDialog
+                    }
+                    endMs = v
+                }
+                applyRange()
+            },
+            seed.get(Calendar.YEAR),
+            seed.get(Calendar.MONTH),
+            seed.get(Calendar.DAY_OF_MONTH)
+        ).apply {
+            setTitle(getString(if (isStart) R.string.pick_start_date else R.string.pick_end_date))
+        }.show()
+    }
+
+    /** The buttons wear their own state; then the list follows. */
+    private fun applyRange() {
+        btnStartDate.text = startMs?.let { buttonDateFmt.format(Date(it)) }
+            ?: getString(R.string.report_start_date)
+        btnEndDate.text = endMs?.let { buttonDateFmt.format(Date(it)) }
+            ?: getString(R.string.report_end_date)
         load()
     }
 
-    /**
-     * The same two-picker gesture as the per-party report: start seeded at
-     * today, end seeded after the start, end-of-day on the closing date so a
-     * same-day pair still holds that day's entries.
-     */
-    private fun pickCustomRange() {
-        val cal = Calendar.getInstance()
-        DatePickerDialog(
-            this,
-            { _, y1, m1, d1 ->
-                val start = Calendar.getInstance().apply {
-                    set(y1, m1, d1, 0, 0, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.timeInMillis
-                DatePickerDialog(
-                    this,
-                    { _, y2, m2, d2 ->
-                        val end = Calendar.getInstance().apply {
-                            set(y2, m2, d2, 23, 59, 59)
-                            set(Calendar.MILLISECOND, 999)
-                        }.timeInMillis
-                        if (end < start) {
-                            Toast.makeText(this, R.string.invalid_range, Toast.LENGTH_LONG).show()
-                            return@DatePickerDialog
-                        }
-                        setRange(DateRangeFilter.Range(start, end, R.string.range_custom))
-                    },
-                    y1, m1, d1
-                ).apply { setTitle(getString(R.string.pick_end_date)) }.show()
-            },
-            cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH),
-            cal.get(Calendar.DAY_OF_MONTH)
-        ).apply { setTitle(getString(R.string.pick_start_date)) }.show()
+    /** What the PDF/CSV header calls this window. */
+    private fun rangeLabel(): String {
+        val s = startMs
+        val e = endMs
+        return when {
+            s == null && e == null -> getString(R.string.range_all)
+            s != null && e != null ->
+                "${buttonDateFmt.format(Date(s))} \u2013 ${buttonDateFmt.format(Date(e))}"
+            s != null -> getString(R.string.ledger_report_from, buttonDateFmt.format(Date(s)))
+            else -> getString(R.string.ledger_report_till, buttonDateFmt.format(Date(e!!)))
+        }
     }
 
     private fun load() {
+        val from = startMs ?: 0L
+        val to = endMs ?: Long.MAX_VALUE
         lifecycleScope.launch {
-            val rows = withContext(Dispatchers.IO) {
-                dao.entriesInRange(range.from, range.to)
-            }
+            val rows = withContext(Dispatchers.IO) { dao.entriesInRange(from, to) }
             // Newest first on screen — the owner opens this to see what just
             // happened. The PDF stays oldest-first, as a printed statement
             // reads.
@@ -170,21 +195,56 @@ class LedgerReportActivity : AppCompatActivity() {
     }
 
     /**
-     * One builder behind both buttons. The PDF is built fresh on each tap so
-     * it always matches the rows on screen, never a range picked earlier.
+     * Download offers two shapes of the same rows: the PDF for reading and
+     * printing, and a CSV that Excel opens directly — the accountant's copy
+     * the owner asked for.
      */
-    private fun buildPdf(then: (java.io.File) -> Unit) {
+    private fun chooseDownload() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.ledger_report_download_as)
+            .setItems(arrayOf("PDF", getString(R.string.export_excel))) { _, which ->
+                if (which == 0) {
+                    buildPdf { file -> PdfShare.present(this, file) }
+                } else {
+                    buildCsv()
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    /**
+     * One builder behind PDF paths. Built fresh on each tap so it always
+     * matches the rows on screen, never a range picked earlier.
+     */
+    private fun buildPdf(then: (File) -> Unit) {
         Toast.makeText(this, R.string.ledger_report_generating, Toast.LENGTH_SHORT).show()
-        val label = DateRangeFilter.label(this, range)
+        val from = startMs ?: 0L
+        val to = endMs ?: Long.MAX_VALUE
+        val label = rangeLabel()
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
-                LedgerReport.build(this@LedgerReportActivity, dao, range.from, range.to, label)
+                LedgerReport.build(this@LedgerReportActivity, dao, from, to, label)
             }
             if (file == null) {
                 Toast.makeText(this@LedgerReportActivity, R.string.ledger_report_failed, Toast.LENGTH_LONG).show()
                 return@launch
             }
             then(file)
+        }
+    }
+
+    private fun buildCsv() {
+        Toast.makeText(this, R.string.ledger_report_generating, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val file = withContext(Dispatchers.IO) {
+                CsvExport.ledger(this@LedgerReportActivity, entries)
+            }
+            if (file == null) {
+                Toast.makeText(this@LedgerReportActivity, R.string.ledger_report_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            CsvExport.share(this@LedgerReportActivity, file)
         }
     }
 

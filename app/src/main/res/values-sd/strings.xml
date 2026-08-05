@@ -77,7 +77,13 @@
     <string name="ledger_report_title">کاتي رپورٽ</string>
     <string name="ledger_report_col_name">نالو</string>
     <string name="ledger_report_empty">هن عرصي ۾ ڪا داخلا ناهي.</string>
-    <string name="ledger_report_download">PDF ڊائونلوڊ ڪريو</string>
+    <string name="ledger_report_download">ڊائونلوڊ</string>
+    <string name="ledger_report_download_as">ڪهڙي شڪل ۾ ڊائونلوڊ ڪجي</string>
+    <string name="export_excel">Excel (CSV)</string>
+    <string name="report_start_date">شروعاتي تاريخ</string>
+    <string name="report_end_date">پڇاڙي واري تاريخ</string>
+    <string name="ledger_report_from">%1$s کان</string>
+    <string name="ledger_report_till">%1$s تائين</string>
     <string name="add_party">ڌر شامل ڪريو</string>
     <string name="add_party_duplicate_with_phone">ملندڙ ڪسٽمر اڳ ۾ ئي موجود آهي: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">ملندڙ ڪسٽمر اڳ ۾ ئي موجود آهي: %1$s</string>
@@ -505,6 +511,11 @@
     <string name="business_delete_confirm_body">%1$d گراهڪ، بيلنس %2$s. هن ڪاروبار جي هر داخلا، تصوير ۽ رسيد هن فون مان هميشه لاءِ ختم ڪري ڇڏبي. جيڪڏهن ڊرائيو بيڪ اپ موجود آهي ته ان کي هٿ نه لڳايو ويندو. اهو واپس نه ٿو ٿي سگهي.</string>
     <string name="business_delete_type_hint">تصديق لاءِ «%1$s» لکو</string>
     <string name="business_delete_done">%1$s ختم ٿي ويو</string>
+    <string name="erase_all_button">سمورو ڊيٽا ميساريو</string>
+    <string name="erase_all_title">سڀ ڪجهه ميساري ڇڏجي؟</string>
+    <string name="erase_all_body">هن فون تي هر ڪاروبار — سمورا گراهڪ، داخلائون، چيڪ، روڪڙ ڪتاب، رسيدون، تصويرون ۽ سيٽنگون — هميشه لاءِ ميسارجي وينديون. ايپ بلڪل نئين انسٽال جهڙي خالي ٿي ويندي.\n\nتوهان جي پنهنجي گوگل ڊرائيو تي موجود بيڪ اپن کي هٿ نه لڳايو ويندو — اهي پوءِ به بحال ٿي سگهن ٿا.\n\nجيڪڏهن پڪ ناهي ته پهرين بيڪ اپ وٺو. اهو واپس نه ٿو ٿي سگهي.</string>
+    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_done">سمورو ڊيٽا ميسارجي ويو.</string>
     <string name="business_rename_hint">کولڻ لاءِ دٻايو · نالو بدلائڻ لاءِ دير تائين دٻايو</string>
     <string name="restore_business_mismatch">هي بيڪ اپ %1$s جو آهي، پر هن وقت %2$s کليل آهي. بحال ڪرڻ سان کليل ڪاروبار جو ڊيٽا اُن بيڪ اپ سان بدلجي ويندو.</string>
     <string name="contact_in_recycle_bin">ري سائيڪل بن ۾</string>

@@ -26,73 +26,50 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- Presets first, custom last — same order and same windows as the
-             date chooser everywhere else (DateRangeFilter). -->
-        <HorizontalScrollView
+        <!-- The window, chosen the way the owner asked for after using it:
+             two date buttons and a reset, not a chip rail. Each button shows
+             the date it holds, so the range is read off the controls
+             themselves. -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:scrollbars="none">
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipLedgerRange"
-                android:layout_width="wrap_content"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLrStartDate"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:singleSelection="true"
-                app:selectionRequired="true">
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:text="@string/report_start_date"
+                android:textColor="@color/white"
+                app:icon="@android:drawable/ic_menu_my_calendar"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/section_khata_soft" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipLrAll"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/range_all" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLrEndDate"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:text="@string/report_end_date"
+                android:textColor="@color/white"
+                app:icon="@android:drawable/ic_menu_my_calendar"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/section_khata_soft" />
+        </LinearLayout>
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipLrToday"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/range_today" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipLrYesterday"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/range_yesterday" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipLrWeek"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/range_this_week" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipLrMonth"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/range_this_month" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipLrCustom"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/range_custom" />
-            </com.google.android.material.chip.ChipGroup>
-        </HorizontalScrollView>
-
-        <TextView
-            android:id="@+id/tvLrRangeLabel"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLrRangeAll"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:textColor="@color/section_khata_soft"
-            android:textSize="12sp" />
+            android:text="@string/range_all"
+            android:textColor="@color/gold_on_dark" />
     </LinearLayout>
 
     <!-- Totals for the chosen window — always in sight above the list, the
@@ -268,6 +245,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="6dp"
             android:layout_weight="1"
+            android:maxLines="1"
             android:text="@string/ledger_report_download"
             app:backgroundTint="@color/black"
             app:icon="@android:drawable/stat_sys_download_done"
@@ -279,6 +257,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_weight="1"
+            android:maxLines="1"
             android:text="@string/share"
             app:backgroundTint="@color/section_cashbook"
             app:icon="@android:drawable/ic_menu_share"

@@ -81,7 +81,13 @@
     <string name="ledger_report_title">Khata Report</string>
     <string name="ledger_report_col_name">Name</string>
     <string name="ledger_report_empty">No entries in this period.</string>
-    <string name="ledger_report_download">Download PDF</string>
+    <string name="ledger_report_download">Download</string>
+    <string name="ledger_report_download_as">Download as</string>
+    <string name="export_excel">Excel (CSV)</string>
+    <string name="report_start_date">Start date</string>
+    <string name="report_end_date">End date</string>
+    <string name="ledger_report_from">From %1$s</string>
+    <string name="ledger_report_till">Till %1$s</string>
     <string name="add_party">Add Party</string>
     <string name="add_party_duplicate_with_phone">A similar customer already exists: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">A similar customer already exists: %1$s</string>
@@ -509,6 +515,11 @@
     <string name="business_delete_confirm_body">%1$d customers, balance %2$s. Every entry, photo and invoice in this business will be permanently removed from this phone. Drive backup, if any, is left untouched. This cannot be undone.</string>
     <string name="business_delete_type_hint">Type “%1$s” to confirm</string>
     <string name="business_delete_done">%1$s deleted</string>
+    <string name="erase_all_button">Erase all data</string>
+    <string name="erase_all_title">Erase everything?</string>
+    <string name="erase_all_body">Every business on this phone — all customers, entries, cheques, cashbook, invoices, photos and settings — will be permanently erased. The app will be as empty as a fresh install.\n\nBackups on your own Google Drive are NOT touched and can still be restored later.\n\nIf you are not sure, take a backup first. This cannot be undone.</string>
+    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_done">All data erased.</string>
     <string name="business_rename_hint">Tap to open · long-press to rename</string>
     <string name="restore_business_mismatch">This backup belongs to %1$s, but the business open right now is %2$s. Restoring will replace the open business with that backup.</string>
     <string name="contact_in_recycle_bin">In Recycle Bin</string>
