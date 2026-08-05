@@ -158,6 +158,10 @@ object PdfExport {
             body.textSize = 10f
             muted.textSize = 8f
 
+            // Background first — the statement's own bands, rules and
+            // figures all draw over the watermark, never under it.
+            PdfBranding.drawWatermark(context, c, PAGE_W, PAGE_H, NAVY)
+
             c.drawRect(0f, 0f, PAGE_W.toFloat(), 78f, navyFill)
             c.drawText(businessName?.takeIf { it.isNotBlank() } ?: "Roshan Khata", MARGIN, 32f, title)
             c.drawText("Account Statement — $partyName", MARGIN, 52f, subtitle)

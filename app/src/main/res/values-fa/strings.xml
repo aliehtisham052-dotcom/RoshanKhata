@@ -84,6 +84,8 @@
     <string name="report_end_date">تاریخ پایان</string>
     <string name="ledger_report_from">از %1$s</string>
     <string name="ledger_report_till">تا %1$s</string>
+    <string name="ledger_report_showing_all">در حال نمایش: همه زمان‌ها</string>
+    <string name="ledger_report_show_all">نمایش همه زمان‌ها</string>
     <string name="add_party">افزودن طرف‌حساب</string>
     <string name="add_party_duplicate_with_phone">مشتری مشابه از قبل موجود است: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">مشتری مشابه از قبل موجود است: %1$s</string>

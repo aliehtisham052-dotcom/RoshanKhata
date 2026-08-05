@@ -88,6 +88,8 @@
     <string name="report_end_date">End date</string>
     <string name="ledger_report_from">From %1$s</string>
     <string name="ledger_report_till">Till %1$s</string>
+    <string name="ledger_report_showing_all">Showing: all time</string>
+    <string name="ledger_report_show_all">Show all time</string>
     <string name="add_party">Add Party</string>
     <string name="add_party_duplicate_with_phone">A similar customer already exists: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">A similar customer already exists: %1$s</string>
