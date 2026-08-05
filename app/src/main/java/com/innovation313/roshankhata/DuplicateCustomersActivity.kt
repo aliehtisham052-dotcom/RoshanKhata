@@ -118,9 +118,9 @@ class DuplicateCustomersActivity : AppCompatActivity() {
     private fun dismissGroup(group: DuplicateDetector.Group) {
         val key = DuplicateDetector.groupKey(group.members)
         lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
+            AppScope.launch {
                 dao.dismissDuplicate(DismissedDuplicate(key, System.currentTimeMillis()))
-            }
+            }.join()
             if (!isFinishing && !isDestroyed) {
                 Toast.makeText(this@DuplicateCustomersActivity, R.string.duplicate_dismissed, Toast.LENGTH_SHORT).show()
                 refresh()

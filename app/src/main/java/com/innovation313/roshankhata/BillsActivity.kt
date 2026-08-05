@@ -741,10 +741,15 @@ class BillsActivity : AppCompatActivity() {
                     // phantom amount owed. So the linked entry goes with it.
                     // A cash bill has no entry (ledgerEntryId is null) and this
                     // simply does nothing.
-                    dao.getBill(bill.id)?.ledgerEntryId?.let { entryId ->
-                        dao.softDeleteEntry(entryId)
-                    }
-                    dao.softDeleteBill(bill.id)
+                    // AppScope + join: the delete must finish even if this
+                    // screen closes mid-flight; join keeps the toast honest
+                    // by showing it only after the write is truly done.
+                    AppScope.launch {
+                        dao.getBill(bill.id)?.ledgerEntryId?.let { entryId ->
+                            dao.softDeleteEntry(entryId)
+                        }
+                        dao.softDeleteBill(bill.id)
+                    }.join()
                     Toast.makeText(
                         this@BillsActivity,
                         R.string.bill_deleted,

@@ -103,6 +103,7 @@ object Businesses {
      * Existing businesses are left exactly as they are — a recovery must never
      * quietly rename a shop that is already on this phone.
      */
+    @Synchronized
     fun ensure(context: Context, id: Long, name: String?): Business {
         list(context).firstOrNull { it.id == id }?.let { return it }
         val file = if (id == 1L) LEGACY_FILE else "roshan_khata_b$id.db"
@@ -121,6 +122,7 @@ object Businesses {
      * so the moment it is opened its header and its invoices already carry
      * it — the registry copy is only the fallback.
      */
+    @Synchronized
     fun create(context: Context, name: String): Business {
         val all = list(context)
         val id = (all.maxOf { it.id }) + 1
@@ -131,6 +133,7 @@ object Businesses {
     }
 
     /** Rename everywhere a name lives: the business's own profile and the registry. */
+    @Synchronized
     fun rename(context: Context, id: Long, name: String) {
         BusinessProfile.setNameOf(context, id, name)
         save(context, list(context).map { if (it.id == id) it.copy(name = name.trim()) else it })
@@ -234,6 +237,7 @@ object Businesses {
      * and the owner may still want that copy, or may want to remove it
      * themselves. See [DriveBackup.clearLocalState].
      */
+    @Synchronized
     fun delete(context: Context, id: Long) {
         require(canDelete(context, id)) {
             "business $id cannot be deleted (either Business 1, or the business currently open)"

@@ -772,8 +772,8 @@
     <string name="drive_connect">اتصال Google Drive</string>
     <string name="drive_backup_now">اکنون در Drive پشتیبان بگیر</string>
     <string name="drive_backup_images">تصاویر را هم شامل کن (عکس‌ها، عکس فاکتور، QR)</string>
-    <string name="drive_auto_backup">پشتیبان‌گیری خودکار روزانه</string>
-    <string name="drive_auto_backup_hint">روزی یک‌بار، هنگام اتصال به اینترنت و تغییر داده‌ها، پشتیبان می‌گیرد. هر زمان هم می‌توانید دستی پشتیبان بگیرید.</string>
+    <string name="drive_auto_backup">پشتیبان‌گیری خودکار</string>
+    <string name="drive_auto_backup_hint">هرگاه دفتر تغییر کند خودش پشتیبان می‌گیرد — روی وای‌فای حداکثر هر ۳۰ دقیقه و روی داده همراه هر ۶ ساعت. هر زمان هم می‌توانید خودتان پشتیبان بگیرید.</string>
     <string name="drive_restore">بازگردانی از Drive</string>
     <string name="drive_sign_out">قطع اتصال حساب Google</string>
     <string name="drive_backing_up">در حال پشتیبان‌گیری در Drive\u2026</string>

@@ -190,7 +190,7 @@ class CashbookActivity : AppCompatActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    dao.softDeleteCashEntry(entry.id)
+                    AppScope.launch { dao.softDeleteCashEntry(entry.id) }.join()
                     Toast.makeText(
                         this@CashbookActivity,
                         R.string.moved_to_bin,
