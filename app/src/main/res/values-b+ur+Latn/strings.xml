@@ -496,6 +496,8 @@
     <string name="erase_all_body">Is phone par har business — tamam customers, entries, cheque, cashbook, invoices, photos aur settings — hamesha ke liye mit jayenge. App bilkul nayi install jaisi khali ho jayegi.\n\nAap ki apni Google Drive par mojood backups ko HATH NAHI lagaya jayega — wo baad mein bhi bahal ho sakte hain.\n\nAgar yaqeen nahi, pehle backup lein. Ye wapas nahi ho sakta.</string>
     <string name="erase_all_keyword">ERASE</string>
     <string name="erase_all_done">Sara data mit gaya.</string>
+    <string name="db_broken_title">Khata khul nahi raha</string>
+    <string name="db_broken_body">Is phone par khatay ki file kharab ho gayi hai. Aap ki daily copies mehfooz hain — app pichle saat dinon ki ek ek copy rakhti hai, aur kisi copy par wapas jane se aaj ki file ko us waqt tak haath nahi lagta jab tak sehatmand copy tasdeeq na ho jaye.</string>
     <string name="business_rename_hint">Kholne ke liye tap · naam badalne ke liye der tak dabayen</string>
     <string name="restore_business_mismatch">Ye backup %1$s ka hai, lekin abhi %2$s khula hai. Bahal karne se khule hue business ka data us backup se badal jayega.</string>
     <string name="contact_in_recycle_bin">Recycle Bin mein</string>
