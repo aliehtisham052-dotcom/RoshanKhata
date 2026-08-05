@@ -82,7 +82,16 @@ object InvoiceTemplateKit {
         val onPrimary: Int = Color.WHITE,
         val onPrimaryMuted: Int = 0xFFBEE3E1.toInt(),
         val tableHeaderFill: Int? = null,
-        val onTableHeader: Int = Color.WHITE
+        val onTableHeader: Int = Color.WHITE,
+        /**
+         * Text colour ON the filled TOTAL bar, when it must differ from
+         * [onPrimary]. A no-band design (bandFilled = false) points
+         * onPrimary at its normal page ink — right for the header, and
+         * unreadable on the TOTAL bar, which is still filled with
+         * [primary]. Found by measuring, not by eye: dark-on-dark there
+         * was 1.5:1. Null keeps onPrimary, which every banded design wants.
+         */
+        val onTotalBar: Int? = null
     )
 
     /** A template's own fonts — headings/labels vs monospace for numbers and money, matching the spec's per-template font pairs. */
@@ -373,8 +382,8 @@ object InvoiceTemplateKit {
         ty += 5f
         val totalBar = RectF(totalsX, ty, right, ty + 30f)
         c.drawRoundRect(totalBar, 7f, 7f, solid(palette.primary))
-        c.drawText("TOTAL", totalsX + 12f, ty + 20f, paint(fonts, 12f, palette.onPrimary, bold = true))
-        c.drawText(Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 13f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
+        c.drawText("TOTAL", totalsX + 12f, ty + 20f, paint(fonts, 12f, palette.onTotalBar ?: palette.onPrimary, bold = true))
+        c.drawText(Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 13f, palette.onTotalBar ?: palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
         ty += 40f
 
         if (invoice.receivedAmount != null) {
