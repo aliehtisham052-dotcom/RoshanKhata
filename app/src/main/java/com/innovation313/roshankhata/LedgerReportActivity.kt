@@ -53,6 +53,8 @@ class LedgerReportActivity : AppCompatActivity() {
     private lateinit var btnStartDate: MaterialButton
     private lateinit var btnEndDate: MaterialButton
     private lateinit var btnRangeAll: MaterialButton
+    private lateinit var btnDownload: MaterialButton
+    private lateinit var btnShare: MaterialButton
     private lateinit var tvTotalGave: TextView
     private lateinit var tvTotalGot: TextView
     private lateinit var tvNetChange: TextView
@@ -92,8 +94,10 @@ class LedgerReportActivity : AppCompatActivity() {
             applyRange()
         }
 
-        findViewById<MaterialButton>(R.id.btnLrDownload).setOnClickListener { chooseDownload() }
-        findViewById<MaterialButton>(R.id.btnLrShare).setOnClickListener {
+        btnDownload = findViewById(R.id.btnLrDownload)
+        btnShare = findViewById(R.id.btnLrShare)
+        btnDownload.setOnClickListener { chooseDownload() }
+        btnShare.setOnClickListener {
             buildPdf { file -> PdfShare.shareDirect(this, file) }
         }
 
@@ -207,6 +211,15 @@ class LedgerReportActivity : AppCompatActivity() {
     private fun render() {
         adapter.submit(entries)
         tvEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+
+        // Nothing in the window means nothing to hand anyone — a PDF or CSV
+        // of an empty table is a confusing artefact, not a document. The
+        // buttons grey out with the list instead of producing one.
+        val has = entries.isNotEmpty()
+        btnDownload.isEnabled = has
+        btnShare.isEnabled = has
+        btnDownload.alpha = if (has) 1f else 0.5f
+        btnShare.alpha = if (has) 1f else 0.5f
 
         val gave = entries.filter { it.isGiven }.sumOf { it.amount }
         val got = entries.filter { !it.isGiven }.sumOf { it.amount }

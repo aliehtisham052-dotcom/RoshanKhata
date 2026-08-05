@@ -11,7 +11,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Money
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.innovation313.roshankhata.data.PartyPhoto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.innovation313.roshankhata.data.PartyWithBalance
 
 class PartyAdapter(
@@ -67,17 +72,35 @@ class PartyAdapter(
 
         // Photo if we have one, initials if not. A list of blank grey circles
         // helps nobody; initials at least tell the eye who is who.
-        val photo = PartyPhoto.load(ctx, item.id)
-        if (photo != null) {
-            holder.ivAvatar.setImageBitmap(photo)
+        //
+        // The decode order matters more than it looks: a photo already in
+        // memory is shown at once, but a photo still on disk is decoded OFF
+        // the main thread — decoding during bind was costing the home list a
+        // visible stutter on the first scroll past every photo row. Until
+        // the decode lands, the row shows initials, exactly as a photo-less
+        // customer does. The tag guard is what makes the async safe on a
+        // recycling list: by the time a decode finishes, this holder may be
+        // showing a different customer, and a late bitmap must be dropped,
+        // not painted onto whoever lives here now.
+        fun showPhoto(bmp: android.graphics.Bitmap) {
+            holder.ivAvatar.setImageBitmap(bmp)
             holder.ivAvatar.clipToOutline = true
             holder.ivAvatar.background = ContextCompat.getDrawable(ctx, R.drawable.bg_avatar_circle)
             holder.ivAvatar.visibility = View.VISIBLE
             holder.tvInitials.visibility = View.GONE
-        } else {
-            holder.ivAvatar.visibility = View.GONE
-            holder.tvInitials.visibility = View.VISIBLE
-            holder.tvInitials.text = initialsOf(item.name)
+        }
+        holder.ivAvatar.tag = item.id
+        holder.ivAvatar.visibility = View.GONE
+        holder.tvInitials.visibility = View.VISIBLE
+        holder.tvInitials.text = initialsOf(item.name)
+        val inMemory = PartyPhoto.cached(item.id)
+        if (inMemory != null) {
+            showPhoto(inMemory)
+        } else if (!PartyPhoto.knownAbsent(item.id)) {
+            (ctx as? LifecycleOwner)?.lifecycleScope?.launch {
+                val bmp = withContext(Dispatchers.IO) { PartyPhoto.load(ctx, item.id) }
+                if (bmp != null && holder.ivAvatar.tag == item.id) showPhoto(bmp)
+            } ?: PartyPhoto.load(ctx, item.id)?.let { showPhoto(it) }
         }
 
         holder.tvPhone.text = item.phone.orEmpty()
