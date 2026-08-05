@@ -171,8 +171,8 @@ object InvoicePdfExport {
         val palette = InvoiceTemplateKit.Palette(
             ink = 0xFF0F2A2A.toInt(),
             primary = 0xFF0C6B6B.toInt(),
-            primaryEnd = 0xFF12908C.toInt(),
-            muted = 0xFF6A7A79.toInt(),
+            primaryEnd = 0xFF0E7672.toInt(),
+            muted = 0xFF5E706F.toInt(),
             ruleColor = 0xFFE4EDEC.toInt(),
             boxFill = 0xFFF1F8F7.toInt(),
             zebra = 0xFFF9FCFC.toInt()
@@ -356,7 +356,7 @@ object InvoicePdfExport {
         val palette = InvoiceTemplateKit.Palette(
             ink = 0xFF1E1630.toInt(),
             primary = 0xFF6D28D9.toInt(),      // violet
-            primaryEnd = 0xFFEC4899.toInt(),   // pink
+            primaryEnd = 0xFFDB2777.toInt(),   // pink
             primaryMid = 0xFFA21CAF.toInt(),   // magenta, the middle stop
             muted = 0xFF6B6480.toInt(),
             ruleColor = 0xFFEDE4F5.toInt(),
@@ -457,7 +457,7 @@ object InvoicePdfExport {
             boxFill = 0xFFEAF6EE.toInt(),
             zebra = 0xFFF4FAF6.toInt(),
             gradient = false,
-            onPrimaryMuted = 0xFFCDE9D8.toInt(),
+            onPrimaryMuted = 0xFFF1FAF5.toInt(),
             // Header bar in the same green as the band rather than the
             // page's dark ink — one colour family across the sheet, the
             // same reasoning T3 used for its violet bar.
@@ -540,7 +540,7 @@ object InvoicePdfExport {
             ink = 0xFF1E2530.toInt(),
             primary = 0xFF334155.toInt(),
             primaryEnd = 0xFF334155.toInt(),   // same value — no sweep on a flat design
-            muted = 0xFF94A0B0.toInt(),
+            muted = 0xFF5D6B80.toInt(),
             ruleColor = 0xFFE8ECF1.toInt(),
             boxFill = 0xFFF6F8FA.toInt(),
             zebra = Color.WHITE,               // striping off, without a code branch
@@ -551,7 +551,8 @@ object InvoicePdfExport {
             onPrimary = 0xFF1E2530.toInt(),
             onPrimaryMuted = 0xFF94A0B0.toInt(),
             tableHeaderFill = 0xFFEDF1F5.toInt(),
-            onTableHeader = 0xFF1E2530.toInt()
+            onTableHeader = 0xFF1E2530.toInt(),
+            onTotalBar = Color.WHITE
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.sora(context),
@@ -629,14 +630,14 @@ object InvoicePdfExport {
         val palette = InvoiceTemplateKit.Palette(
             ink = 0xFF1A1E3A.toInt(),
             primary = 0xFF3730A3.toInt(),
-            primaryEnd = 0xFF6366F1.toInt(),
+            primaryEnd = 0xFF5458E8.toInt(),
             primaryMid = 0xFF4F46E5.toInt(),
             muted = 0xFF6E739B.toInt(),
             ruleColor = 0xFFE3E5F7.toInt(),
             boxFill = 0xFFEEF0FE.toInt(),
             zebra = 0xFFF8F9FF.toInt(),
             tableHeaderFill = 0xFF3730A3.toInt(),
-            onPrimaryMuted = 0xFFCFD2FA.toInt()
+            onPrimaryMuted = 0xFFE4E6FD.toInt()
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.sora(context),
@@ -712,15 +713,15 @@ object InvoicePdfExport {
     private fun buildWarmOrange(context: Context, invoice: Invoice, items: List<InvoiceItem>): File? {
         val palette = InvoiceTemplateKit.Palette(
             ink = 0xFF3A2410.toInt(),
-            primary = 0xFFEA580C.toInt(),
-            primaryEnd = 0xFFFB923C.toInt(),
-            primaryMid = 0xFFF97316.toInt(),
+            primary = 0xFFC2410C.toInt(),
+            primaryEnd = 0xFFC94D0D.toInt(),
+            primaryMid = 0xFFC2410C.toInt(),
             muted = 0xFF8A6F55.toInt(),
             ruleColor = 0xFFF6E3D3.toInt(),
             boxFill = 0xFFFFF1E6.toInt(),
             zebra = 0xFFFFFAF5.toInt(),
-            tableHeaderFill = 0xFFEA580C.toInt(),
-            onPrimaryMuted = 0xFFFFE2CC.toInt()
+            tableHeaderFill = 0xFFC2410C.toInt(),
+            onPrimaryMuted = 0xFFFFF1E8.toInt()
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.manrope(context),
@@ -798,7 +799,7 @@ object InvoicePdfExport {
             ink = 0xFF2B2721.toInt(),
             primary = 0xFF8A6D3B.toInt(),
             primaryEnd = 0xFF8A6D3B.toInt(),
-            muted = 0xFFA8926A.toInt(),
+            muted = 0xFF77633A.toInt(),
             ruleColor = 0xFFE8DFCC.toInt(),
             boxFill = 0xFFF5EFE1.toInt(),
             zebra = 0xFFFAF6EC.toInt(),
@@ -811,7 +812,8 @@ object InvoicePdfExport {
             onPrimary = 0xFF2B2721.toInt(),
             onPrimaryMuted = 0xFFA8926A.toInt(),
             tableHeaderFill = 0xFFF0E8D6.toInt(),
-            onTableHeader = 0xFF2B2721.toInt()
+            onTableHeader = 0xFF2B2721.toInt(),
+            onTotalBar = Color.WHITE
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.playfairDisplay(context),
@@ -894,7 +896,7 @@ object InvoicePdfExport {
             zebra = 0xFFFEF7F7.toInt(),
             gradient = false,
             tableHeaderFill = 0xFF2B1015.toInt(),
-            onPrimaryMuted = 0xFFFFD9D9.toInt()
+            onPrimaryMuted = 0xFFFFF5F5.toInt()
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.sora(context),
