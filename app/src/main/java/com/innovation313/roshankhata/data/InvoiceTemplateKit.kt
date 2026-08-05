@@ -240,15 +240,15 @@ object InvoiceTemplateKit {
         y: Float,
         invoice: Invoice
     ): Float {
-        c.drawText("BILL TO", left, y, paint(fonts, 8f, palette.primary, bold = true))
+        c.drawText("BILL TO", left, y, paint(fonts, 9f, palette.primary, bold = true))
         c.drawText(invoice.customerName, left, y + 17f, paint(fonts, 13f, palette.ink, bold = true))
         invoice.customerPhone?.takeIf { it.isNotBlank() }?.let {
             c.drawText(it, left, y + 31f, paint(fonts, 10f, palette.muted))
         }
 
-        c.drawText("INVOICE DETAILS", right, y, paint(fonts, 8f, palette.primary, bold = true, align = Paint.Align.RIGHT))
-        val metaLabel = paint(fonts, 9.5f, palette.muted, align = Paint.Align.RIGHT)
-        val metaValue = paint(fonts, 9.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT)
+        c.drawText("INVOICE DETAILS", right, y, paint(fonts, 9f, palette.primary, bold = true, align = Paint.Align.RIGHT))
+        val metaLabel = paint(fonts, 10.5f, palette.muted, align = Paint.Align.RIGHT)
+        val metaValue = paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT)
         var my = y + 17f
         fun metaRow(label: String, value: String) {
             c.drawText(label, right - 104f, my, metaLabel)
@@ -285,7 +285,7 @@ object InvoiceTemplateKit {
     ): Pair<Canvas, Float> {
         var canvas = c
         var y = startY
-        val rowH = 22f
+        val rowH = 24f
         val xNo = left + 8f
         val xItem = left + 30f
         val xExtra = 300f
@@ -295,22 +295,22 @@ object InvoiceTemplateKit {
         val rulePaint = Paint().apply { color = palette.ruleColor; strokeWidth = 0.7f }
 
         fun tableHeader(atY: Float): Float {
-            canvas.drawRect(left, atY, right, atY + 20f, solid(palette.tableHeaderFill ?: palette.ink))
-            val th = paint(fonts, 8f, palette.onTableHeader, bold = true)
-            val thR = paint(fonts, 8f, palette.onTableHeader, bold = true, align = Paint.Align.RIGHT)
-            canvas.drawText("#", xNo, atY + 13.5f, th)
-            canvas.drawText("TAFSEEL", xItem, atY + 13.5f, th)
-            extraColumn?.let { canvas.drawText(it.label.uppercase(), xExtra, atY + 13.5f, thR) }
-            canvas.drawText("QTY", xQty, atY + 13.5f, thR)
-            canvas.drawText("RATE", xRate, atY + 13.5f, thR)
-            canvas.drawText("AMOUNT", xAmt, atY + 13.5f, thR)
-            return atY + 20f
+            canvas.drawRect(left, atY, right, atY + 24f, solid(palette.tableHeaderFill ?: palette.ink))
+            val th = paint(fonts, 10f, palette.onTableHeader, bold = true)
+            val thR = paint(fonts, 10f, palette.onTableHeader, bold = true, align = Paint.Align.RIGHT)
+            canvas.drawText("#", xNo, atY + 16f, th)
+            canvas.drawText("TAFSEEL", xItem, atY + 16f, th)
+            extraColumn?.let { canvas.drawText(it.label.uppercase(), xExtra, atY + 16f, thR) }
+            canvas.drawText("QTY", xQty, atY + 16f, thR)
+            canvas.drawText("RATE", xRate, atY + 16f, thR)
+            canvas.drawText("AMOUNT", xAmt, atY + 16f, thR)
+            return atY + 24f
         }
 
         y = tableHeader(y)
 
-        val body = paint(fonts, 10f, palette.ink)
-        val bodyR = paint(fonts, 10f, palette.ink, align = Paint.Align.RIGHT, mono = true)
+        val body = paint(fonts, 11f, palette.ink)
+        val bodyR = paint(fonts, 11f, palette.ink, align = Paint.Align.RIGHT, mono = true)
 
         items.forEachIndexed { index, item ->
             if (y + rowH > pageBreakAt) {
@@ -319,7 +319,7 @@ object InvoiceTemplateKit {
                 y = tableHeader(fresh.second)
             }
             if (index % 2 == 1) canvas.drawRect(left, y, right, y + rowH, solid(palette.zebra))
-            val baseline = y + 14.5f
+            val baseline = y + 16f
             canvas.drawText((index + 1).toString(), xNo, baseline, body)
             canvas.drawText(item.itemName, xItem, baseline, body)
             extraColumn?.let { canvas.drawText(it.valueOf(item), xExtra, baseline, bodyR) }
@@ -361,8 +361,8 @@ object InvoiceTemplateKit {
         val totalsX = right - totalsW
 
         var ty = blockTop
-        val tLabel = paint(fonts, 10f, palette.muted)
-        val tValue = paint(fonts, 10f, palette.ink, align = Paint.Align.RIGHT, mono = true)
+        val tLabel = paint(fonts, 11f, palette.muted)
+        val tValue = paint(fonts, 11f, palette.ink, align = Paint.Align.RIGHT, mono = true)
         fun totalRow(label: String, value: String) {
             c.drawText(label, totalsX + 10f, ty + 12f, tLabel)
             c.drawText(value, right - 10f, ty + 12f, tValue)
@@ -382,8 +382,8 @@ object InvoiceTemplateKit {
         ty += 5f
         val totalBar = RectF(totalsX, ty, right, ty + 30f)
         c.drawRoundRect(totalBar, 7f, 7f, solid(palette.primary))
-        c.drawText("TOTAL", totalsX + 12f, ty + 20f, paint(fonts, 12f, palette.onTotalBar ?: palette.onPrimary, bold = true))
-        c.drawText(Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 13f, palette.onTotalBar ?: palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
+        c.drawText("TOTAL", totalsX + 12f, ty + 20f, paint(fonts, 13f, palette.onTotalBar ?: palette.onPrimary, bold = true))
+        c.drawText(Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 14f, palette.onTotalBar ?: palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
         ty += 40f
 
         if (invoice.receivedAmount != null) {
@@ -404,11 +404,11 @@ object InvoiceTemplateKit {
             val boxH = maxOf(textBoxH, qrBoxH)
 
             c.drawRoundRect(RectF(left, blockTop, boxRight, blockTop + boxH), 8f, 8f, solid(palette.boxFill))
-            c.drawText("PAYMENT INFO", left + 12f, blockTop + 16f, paint(fonts, 8f, palette.primary, bold = true))
+            c.drawText("PAYMENT INFO", left + 12f, blockTop + 16f, paint(fonts, 9f, palette.primary, bold = true))
             var ry = blockTop + 32f
             bankRows.forEach { (label, value) ->
-                c.drawText(label, left + 12f, ry, paint(fonts, 9.5f, palette.muted))
-                c.drawText(value, textRight, ry, paint(fonts, 9.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
+                c.drawText(label, left + 12f, ry, paint(fonts, 10.5f, palette.muted))
+                c.drawText(value, textRight, ry, paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
                 ry += 14f
             }
             qr?.let {
@@ -426,8 +426,8 @@ object InvoiceTemplateKit {
     /** The tinted "AMOUNT IN WORDS" strip. Returns the y position work should continue from. */
     fun drawAmountInWords(c: Canvas, context: Context, palette: Palette, fonts: Fonts, left: Float, right: Float, y: Float, grandTotal: Double): Float {
         c.drawRoundRect(RectF(left, y, right, y + 34f), 7f, 7f, solid(palette.boxFill))
-        c.drawText("AMOUNT IN WORDS", left + 12f, y + 13f, paint(fonts, 7.5f, palette.primary, bold = true))
-        c.drawText(NumberWords.rupeesInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10f, palette.ink, italic = true))
+        c.drawText("AMOUNT IN WORDS", left + 12f, y + 13f, paint(fonts, 8.5f, palette.primary, bold = true))
+        c.drawText(NumberWords.rupeesInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10.5f, palette.ink, italic = true))
         return y + 50f
     }
 
@@ -469,14 +469,14 @@ object InvoiceTemplateKit {
         }
 
         c.drawLine(sigBox.left + 20f, y + sigH - 24f, sigBox.right - 20f, y + sigH - 24f, Paint().apply { color = palette.ink; strokeWidth = 0.7f })
-        c.drawText("Authorized Signatory", sigBox.centerX(), y + sigH - 10f, paint(fonts, 8.5f, palette.muted, align = Paint.Align.CENTER))
+        c.drawText("Authorized Signatory", sigBox.centerX(), y + sigH - 10f, paint(fonts, 9f, palette.muted, align = Paint.Align.CENTER))
 
         val footerLines = listOfNotNull(invoice.note?.takeIf { it.isNotBlank() }, BusinessProfile.termsAndConditions(context))
         if (footerLines.isNotEmpty()) {
-            c.drawText("TERMS", left, y + 12f, paint(fonts, 7.5f, palette.primary, bold = true))
+            c.drawText("TERMS", left, y + 12f, paint(fonts, 8.5f, palette.primary, bold = true))
             var fy = y + 27f
             footerLines.forEach {
-                c.drawText(it, left, fy, paint(fonts, 8.5f, palette.muted))
+                c.drawText(it, left, fy, paint(fonts, 9f, palette.muted))
                 fy += 12f
             }
         }
