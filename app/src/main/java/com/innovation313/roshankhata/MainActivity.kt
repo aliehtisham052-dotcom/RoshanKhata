@@ -297,17 +297,47 @@ class MainActivity : AppCompatActivity() {
     /**
      * The same figures the ledger screen shows, read straight from the
      * database so the two can never drift apart.
+     *
+     * This is also the app's FIRST touch of the database after launch — so
+     * it is where a ledger that will not open (corruption, a failed
+     * migration) surfaces. Until now that surfaced as a crash, and a crash
+     * on launch made the daily copies unreachable in the exact case they
+     * were built for. Caught here instead: the owner is told plainly and
+     * offered the copies screen, which deliberately never needs the live
+     * database to run (see SnapshotsActivity — it works on the files).
      */
     private fun observeTotals() {
-        val dao = KhataDatabase.get(this).khataDao()
         lifecycleScope.launch {
-            dao.observePartiesWithBalance().collectLatest { parties ->
-                totalGet = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-                totalGive = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
-                netBalance = totalGet - totalGive
-                renderBalance()
+            try {
+                val dao = KhataDatabase.get(this@MainActivity).khataDao()
+                dao.observePartiesWithBalance().collectLatest { parties ->
+                    totalGet = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
+                    totalGive = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+                    netBalance = totalGet - totalGive
+                    renderBalance()
+                }
+            } catch (e: Exception) {
+                offerRecovery()
             }
         }
+    }
+
+    /**
+     * The door that must exist precisely when nothing else works. Restoring
+     * a daily copy closes and replaces the database FILE — no Room open is
+     * needed on the broken ledger, and today's ledger is kept first, so
+     * trying a copy costs nothing even if the copy turns out damaged.
+     */
+    private fun offerRecovery() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.db_broken_title)
+            .setMessage(R.string.db_broken_body)
+            .setCancelable(false)
+            .setPositiveButton(R.string.daily_copies) { _, _ ->
+                startActivity(Intent(this, SnapshotsActivity::class.java))
+            }
+            .setNegativeButton(R.string.close, null)
+            .show()
     }
 
     private fun renderBalance() {

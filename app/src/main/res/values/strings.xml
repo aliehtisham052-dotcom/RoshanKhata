@@ -520,6 +520,8 @@
     <string name="erase_all_body">Every business on this phone — all customers, entries, cheques, cashbook, invoices, photos and settings — will be permanently erased. The app will be as empty as a fresh install.\n\nBackups on your own Google Drive are NOT touched and can still be restored later.\n\nIf you are not sure, take a backup first. This cannot be undone.</string>
     <string name="erase_all_keyword">ERASE</string>
     <string name="erase_all_done">All data erased.</string>
+    <string name="db_broken_title">The ledger will not open</string>
+    <string name="db_broken_body">Something has damaged the ledger file on this phone. Your daily copies are safe — the app keeps one for each of the last seven days, and going back to one does not touch today\'s file until a healthy copy is confirmed.</string>
     <string name="business_rename_hint">Tap to open · long-press to rename</string>
     <string name="restore_business_mismatch">This backup belongs to %1$s, but the business open right now is %2$s. Restoring will replace the open business with that backup.</string>
     <string name="contact_in_recycle_bin">In Recycle Bin</string>
