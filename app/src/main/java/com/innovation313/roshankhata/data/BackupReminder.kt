@@ -38,6 +38,16 @@ object BackupReminder {
             .edit().putLong(key(context), System.currentTimeMillis()).apply()
     }
 
+    /**
+     * Forgets this business's last-backup time. Called only when the
+     * business itself is being deleted — a shop that no longer exists has
+     * nothing left to remind anyone about.
+     */
+    fun clear(context: Context, businessId: Long) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit().remove(keyOf(businessId)).apply()
+    }
+
     /** The last backup time, or 0 if the owner has never backed up. */
     fun lastBackupAt(context: Context): Long =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getLong(key(context), 0)

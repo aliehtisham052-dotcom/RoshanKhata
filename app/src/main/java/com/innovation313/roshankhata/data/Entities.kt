@@ -188,6 +188,17 @@ data class PartyWithBalance(
 )
 
 /**
+ * A business's headline numbers — for the delete-confirmation dialog, which
+ * must show what is about to be lost before asking the owner to type the
+ * shop's name. Read once, from a scratch connection to that business's own
+ * file; see [Businesses.summaryOf].
+ */
+data class BusinessDeleteSummary(
+    val partyCount: Int,
+    val netBalance: Double
+)
+
+/**
  * Name and phone only, for the invoice customer field's suggestion list.
  * See [KhataDao.allPartiesForInvoice] — deliberately not carrying an id;
  * this has never been a link to a party row, just a convenience lookup.

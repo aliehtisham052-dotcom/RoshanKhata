@@ -476,6 +476,11 @@
     <string name="business_add">Naya business shamil karein</string>
     <string name="business_open_now">Khula hai</string>
     <string name="business_rename">Business ka naam badlein</string>
+    <string name="business_delete">Business delete karein</string>
+    <string name="business_delete_confirm_title">%1$s delete karein?</string>
+    <string name="business_delete_confirm_body">%1$d customers, balance %2$s. Is business ki har entry, photo aur invoice is phone se hamesha ke liye hata di jayegi. Agar Drive backup mojood hai to use chheda nahi jayega. Ye wapas nahi ho sakta.</string>
+    <string name="business_delete_type_hint">Confirm karne ke liye \"%1$s\" likhein</string>
+    <string name="business_delete_done">%1$s delete ho gaya</string>
     <string name="business_rename_hint">Kholne ke liye tap · naam badalne ke liye der tak dabayen</string>
     <string name="restore_business_mismatch">Ye backup %1$s ka hai, lekin abhi %2$s khula hai. Bahal karne se khule hue business ka data us backup se badal jayega.</string>
     <string name="contact_in_recycle_bin">Recycle Bin mein</string>
@@ -856,7 +861,7 @@
     <string name="faq_q_restore">Phone badal liya hai. Khata wapis kaise laun?</string>
     <string name="faq_a_restore">Naye phone par Roshan Khata install karein, Backup &amp; Restore kholein, Restore dabayein, aur wahi Google account se sign in karein. App Drive se poochhti hai ke us par kaun si dukaanein hain aur unhe naam ke sath dikhati hai — aap ek ya sab bahal kar sakte hain. Aakhri backup ke baad ka darj kiya hua us mein nahi hota.</string>
     <string name="faq_q_business">Meri do dukaanein hain. Kya dono app mein rakh sakta hoon?</string>
-    <string name="faq_a_business">Ji haan. Home screen par upar apni dukaan ke naam par tap karein, phir Naya business shamil karein. Har dukaan ka bilkul alag khata rehta hai — alag customers, entries aur photos — aur har ek ka backup bhi alag. Naam par tap karke dukaan badlein. Naam badalne ke liye der tak dabayein.</string>
+    <string name="faq_a_business">Ji haan. Home screen par upar apni dukaan ke naam par tap karein, phir Naya business shamil karein. Har dukaan ka bilkul alag khata rehta hai — alag customers, entries aur photos — aur har ek ka backup bhi alag. Naam par tap karke dukaan badlein. Zyada options ke liye der tak dabayein — naam badlein ya delete karein.</string>
     <string name="faq_q_snapshot">Aaj kuch kharab ho gaya. Kya kal wali halat par wapas ja sakta hoon?</string>
     <string name="faq_a_snapshot">Ji haan. App har dukaan ke khate ki copy rozana rakhti hai, pichhle saat din ki. Backup &amp; Restore → Rozana copies kholein aur din chunein. Aaj ka khata pehle mehfooz kar liya jata hai, is liye ye bhi wapas ho sakta hai.</string>
     <string name="faq_q_lock">Khata doosron se kaise chupaun?</string>

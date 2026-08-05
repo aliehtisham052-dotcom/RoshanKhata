@@ -106,6 +106,25 @@ object DriveBackup {
         return p.getBoolean(base, default)
     }
 
+    /**
+     * Forgets this business's own include-images / auto-backup choices and
+     * its last-upload signature. Called only when the business itself is
+     * being deleted.
+     *
+     * Deliberately does NOT touch anything on Drive — a shop's backup file
+     * there is left exactly where it was. "Delete" removes the shop from
+     * this phone; the owner's Drive is theirs to manage separately, and an
+     * old backup sitting unused there costs them nothing worth chasing.
+     */
+    fun clearLocalState(context: Context, businessId: Long) {
+        val suffix = Businesses.suffixFor(businessId)
+        prefs(context).edit()
+            .remove(KEY_BACKUP_IMAGES + suffix)
+            .remove(KEY_AUTO_BACKUP + suffix)
+            .remove(KEY_LAST_SIG + suffix)
+            .apply()
+    }
+
     fun includeImages(context: Context): Boolean =
         switchFor(context, KEY_BACKUP_IMAGES, false)
 
