@@ -1,8 +1,12 @@
 package com.innovation313.roshankhata.data
 
 import android.content.Context
+import androidx.room.Room
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 
 /**
  * The register of businesses, and which one is open.
@@ -141,9 +145,14 @@ object Businesses {
      * for Business 1 — its keys and files predate this feature and must
      * keep their names — and "_b<id>" for everyone else. One definition,
      * so no two features can disagree about what belongs to whom.
+     *
+     * Split into a pure by-id form and the active-business convenience that
+     * everywhere else already calls, so [delete] can name a business's own
+     * keys without needing that business to be the open one.
      */
-    fun suffix(context: Context): String =
-        active(context).id.let { if (it == 1L) "" else "_b$it" }
+    fun suffixFor(id: Long): String = if (id == 1L) "" else "_b$id"
+
+    fun suffix(context: Context): String = suffixFor(active(context).id)
 
     /**
      * Open a different business.
@@ -161,6 +170,106 @@ object Businesses {
         // businesses — a warm cache would put one shop's faces on another's
         // customers. See PartyPhoto.dropCaches.
         PartyPhoto.dropCaches()
+    }
+
+    /**
+     * Whether [id] is even offered for delete.
+     *
+     * Business 1 can never be deleted — it is the ledger every install
+     * already had before this feature existed, not a "shop created" in the
+     * sense this feature means, and its file/keys are shared with things
+     * that are not per-business at all (App Lock, Drive sign-in). Nor can
+     * the OPEN business be deleted: its database file has a live Room
+     * instance on it, and removing a file out from under an open connection
+     * is not a risk worth taking. Switch away first, then delete.
+     *
+     * A useful side effect of the first rule: since the registry always
+     * keeps Business 1, refusing to delete it also means "there must always
+     * be one book left" is true by construction — no separate count check
+     * is needed here.
+     */
+    fun canDelete(context: Context, id: Long): Boolean =
+        id != 1L && id != active(context).id
+
+    /**
+     * A business's own numbers, read without switching to it — for the
+     * delete confirmation, which must show what is about to be lost before
+     * asking the owner to type the shop's name.
+     *
+     * Opens a Room instance of its own, straight onto the business's file,
+     * and closes it again once the one query is answered. This is
+     * deliberately NOT [KhataDatabase.get] — that call is reserved for the
+     * ACTIVE business only, and a preview read of some other shop's numbers
+     * must never be able to touch (or be confused with) the instance a
+     * live screen is holding.
+     */
+    suspend fun summaryOf(context: Context, business: Business): BusinessDeleteSummary =
+        withContext(Dispatchers.IO) {
+            val db = Room.databaseBuilder(
+                context.applicationContext,
+                KhataDatabase::class.java,
+                business.file
+            ).addMigrations(*ALL_MIGRATIONS).build()
+            try {
+                db.khataDao().deleteSummary()
+            } finally {
+                db.close()
+            }
+        }
+
+    /**
+     * Permanently removes a business from THIS PHONE: its ledger file, its
+     * identity (profile text + its own stamp/QR/signature folder), its
+     * customers' photos, its per-shop invoice/business-card settings, and
+     * its backup bookkeeping — then its row in this registry, last, so
+     * everything above can still be found by id while it is being removed.
+     *
+     * Requires [canDelete] to hold and fails loudly if it does not, rather
+     * than silently doing nothing — a caller reaching this function is
+     * expected to have already checked, and a delete that quietly no-ops
+     * would be worse than one that crashes and gets noticed.
+     *
+     * Deliberately does NOT touch Drive. A shop's backup there, if any, is
+     * left exactly where it was — "delete" is a promise about this phone,
+     * and the owner may still want that copy, or may want to remove it
+     * themselves. See [DriveBackup.clearLocalState].
+     */
+    fun delete(context: Context, id: Long) {
+        require(canDelete(context, id)) {
+            "business $id cannot be deleted (either Business 1, or the business currently open)"
+        }
+        val target = list(context).firstOrNull { it.id == id } ?: return
+
+        // The ledger itself. deleteDatabase() also removes SQLite's
+        // -wal/-shm/-journal companions — the framework's own way of
+        // removing a database, not a hand-rolled guess at which suffixes
+        // WAL mode happens to leave behind.
+        context.deleteDatabase(target.file)
+
+        // Identity: profile text, and its own biz_b<id>/ folder holding
+        // whichever of stamp/QR/signature this shop had saved.
+        context.deleteSharedPreferences("business_profile_b$id")
+        File(context.filesDir, "biz_b$id").deleteRecursively()
+
+        // Customer photos. Party ids repeat across files — file numbers
+        // its own parties from 1 — so this shop's faces live in their own
+        // folder and were never anywhere near Business 1's.
+        File(context.filesDir, "party_photos_b$id").deleteRecursively()
+
+        // Per-shop feature toggles that live in prefs files of their own.
+        context.deleteSharedPreferences("biz_card_b$id")
+        context.deleteSharedPreferences("invoice_feature_settings_b$id")
+
+        // Bookkeeping that lives as SUFFIXED KEYS inside shared prefs files
+        // rather than files of its own (those files are also Business 1's
+        // and App Lock's home, so they cannot simply be deleted whole).
+        // Each owner clears its own keys, so this never has to duplicate
+        // constants that only DriveBackup/BackupReminder truly own.
+        DriveBackup.clearLocalState(context, id)
+        BackupReminder.clear(context, id)
+
+        // The registry row itself, last.
+        save(context, list(context).filterNot { it.id == id })
     }
 
     private fun save(context: Context, all: List<Business>) {

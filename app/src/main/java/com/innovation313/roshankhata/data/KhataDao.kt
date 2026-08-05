@@ -257,6 +257,27 @@ interface KhataDao {
     )
     fun observeNetBalance(): Flow<Double>
 
+    /**
+     * One-shot version of the totals above, for the business-delete
+     * confirmation dialog: it opens a scratch connection to a business
+     * that is NOT the active one (see [Businesses.summaryOf]), asks this
+     * single question, and closes again — a Flow that stays open has no
+     * one left to collect it once that connection closes.
+     */
+    @Query(
+        """
+        SELECT
+            (SELECT COUNT(*) FROM parties WHERE isDeleted = 0) AS partyCount,
+            COALESCE((
+                SELECT SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END)
+                FROM transactions t
+                JOIN parties p ON p.id = t.partyId
+                WHERE t.isDeleted = 0 AND p.isDeleted = 0
+            ), 0) AS netBalance
+        """
+    )
+    suspend fun deleteSummary(): BusinessDeleteSummary
+
     // ---------- Zakat inputs ----------
 
     /**
