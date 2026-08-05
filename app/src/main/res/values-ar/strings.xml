@@ -77,7 +77,13 @@
     <string name="ledger_report_title">تقرير الدفتر</string>
     <string name="ledger_report_col_name">الاسم</string>
     <string name="ledger_report_empty">لا قيود في هذه الفترة.</string>
-    <string name="ledger_report_download">تنزيل PDF</string>
+    <string name="ledger_report_download">تنزيل</string>
+    <string name="ledger_report_download_as">تنزيل بأي صيغة</string>
+    <string name="export_excel">Excel (CSV)</string>
+    <string name="report_start_date">تاريخ البداية</string>
+    <string name="report_end_date">تاريخ النهاية</string>
+    <string name="ledger_report_from">من %1$s</string>
+    <string name="ledger_report_till">حتى %1$s</string>
     <string name="add_party">إضافة طرف</string>
     <string name="add_party_duplicate_with_phone">يوجد عميل مشابه بالفعل: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">يوجد عميل مشابه بالفعل: %1$s</string>
@@ -485,6 +491,11 @@
     <string name="business_delete_confirm_body">%1$d عملاء، الرصيد %2$s. سيُحذف نهائيًا من هذا الهاتف كل قيد وصورة وفاتورة في هذا النشاط. النسخة الاحتياطية على درايف، إن وُجدت، تبقى كما هي. لا يمكن التراجع.</string>
     <string name="business_delete_type_hint">اكتب «%1$s» للتأكيد</string>
     <string name="business_delete_done">تم حذف %1$s</string>
+    <string name="erase_all_button">مسح كل البيانات</string>
+    <string name="erase_all_title">مسح كل شيء؟</string>
+    <string name="erase_all_body">كل الأنشطة التجارية على هذا الهاتف — جميع العملاء والقيود والشيكات ودفتر النقد والفواتير والصور والإعدادات — ستُمسح نهائيًا. سيصبح التطبيق فارغًا كتثبيت جديد.\n\nالنسخ الاحتياطية على درايف الخاص بك لن تُمَس ويمكن استعادتها لاحقًا.\n\nإن لم تكن متأكدًا فخذ نسخة احتياطية أولًا. لا يمكن التراجع.</string>
+    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_done">تم مسح كل البيانات.</string>
     <string name="business_rename_hint">اضغط للفتح · اضغط مطولاً لإعادة التسمية</string>
     <string name="restore_business_mismatch">هذه النسخة الاحتياطية تخص %1$s، لكن النشاط المفتوح الآن هو %2$s. الاستعادة ستستبدل بيانات النشاط المفتوح بتلك النسخة.</string>
     <string name="contact_in_recycle_bin">في سلة المحذوفات</string>

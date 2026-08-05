@@ -77,7 +77,13 @@
     <string name="ledger_report_title">Khata Report</string>
     <string name="ledger_report_col_name">Naam</string>
     <string name="ledger_report_empty">Is muddat mein koi entry nahi.</string>
-    <string name="ledger_report_download">PDF Download Karein</string>
+    <string name="ledger_report_download">Download</string>
+    <string name="ledger_report_download_as">Kis shakal mein download karein</string>
+    <string name="export_excel">Excel (CSV)</string>
+    <string name="report_start_date">Start date</string>
+    <string name="report_end_date">End date</string>
+    <string name="ledger_report_from">%1$s se</string>
+    <string name="ledger_report_till">%1$s tak</string>
     <string name="add_party">Party Shamil Karein</string>
     <string name="add_party_duplicate_with_phone">Milta-julta customer pehle se maujood hai: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">Milta-julta customer pehle se maujood hai: %1$s</string>
@@ -485,6 +491,11 @@
     <string name="business_delete_confirm_body">%1$d customers, balance %2$s. Is business ki har entry, photo aur invoice is phone se hamesha ke liye hata di jayegi. Agar Drive backup mojood hai to use chheda nahi jayega. Ye wapas nahi ho sakta.</string>
     <string name="business_delete_type_hint">Confirm karne ke liye \"%1$s\" likhein</string>
     <string name="business_delete_done">%1$s delete ho gaya</string>
+    <string name="erase_all_button">Sara data mitayein</string>
+    <string name="erase_all_title">Sab kuch mita dein?</string>
+    <string name="erase_all_body">Is phone par har business — tamam customers, entries, cheque, cashbook, invoices, photos aur settings — hamesha ke liye mit jayenge. App bilkul nayi install jaisi khali ho jayegi.\n\nAap ki apni Google Drive par mojood backups ko HATH NAHI lagaya jayega — wo baad mein bhi bahal ho sakte hain.\n\nAgar yaqeen nahi, pehle backup lein. Ye wapas nahi ho sakta.</string>
+    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_done">Sara data mit gaya.</string>
     <string name="business_rename_hint">Kholne ke liye tap · naam badalne ke liye der tak dabayen</string>
     <string name="restore_business_mismatch">Ye backup %1$s ka hai, lekin abhi %2$s khula hai. Bahal karne se khule hue business ka data us backup se badal jayega.</string>
     <string name="contact_in_recycle_bin">Recycle Bin mein</string>

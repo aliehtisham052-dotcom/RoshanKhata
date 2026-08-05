@@ -77,7 +77,13 @@
     <string name="ledger_report_title">کھاتہ رپورٹ</string>
     <string name="ledger_report_col_name">نام</string>
     <string name="ledger_report_empty">اس مدت میں کوئی اندراج نہیں۔</string>
-    <string name="ledger_report_download">پی ڈی ایف ڈاؤن لوڈ کریں</string>
+    <string name="ledger_report_download">ڈاؤن لوڈ</string>
+    <string name="ledger_report_download_as">کس شکل میں ڈاؤن لوڈ کریں</string>
+    <string name="export_excel">Excel (CSV)</string>
+    <string name="report_start_date">آغاز کی تاریخ</string>
+    <string name="report_end_date">اختتام کی تاریخ</string>
+    <string name="ledger_report_from">%1$s سے</string>
+    <string name="ledger_report_till">%1$s تک</string>
     <string name="add_party">پارٹی شامل کریں</string>
     <string name="add_party_duplicate_with_phone">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s</string>
@@ -485,6 +491,11 @@
     <string name="business_delete_confirm_body">%1$d گاہک، بیلنس %2$s۔ اس کاروبار کی ہر اندراج، تصویر اور رسید اس فون سے ہمیشہ کے لیے حذف کر دی جائے گی۔ اگر ڈرائیو بیک اپ موجود ہے تو اسے چھیڑا نہیں جائے گا۔ یہ واپس نہیں ہو سکتا۔</string>
     <string name="business_delete_type_hint">تصدیق کے لیے ”%1$s“ لکھیں</string>
     <string name="business_delete_done">%1$s حذف ہو گیا</string>
+    <string name="erase_all_button">سارا ڈیٹا مٹائیں</string>
+    <string name="erase_all_title">سب کچھ مٹا دیں؟</string>
+    <string name="erase_all_body">اس فون پر ہر کاروبار — تمام گاہک، اندراجات، چیک، کیش بک، رسیدیں، تصاویر اور ترتیبات — ہمیشہ کے لیے مٹ جائیں گے۔ ایپ بالکل نئی انسٹال جیسی خالی ہو جائے گی۔\n\nآپ کی اپنی گوگل ڈرائیو پر موجود بیک اپ کو ہاتھ نہیں لگایا جائے گا — وہ بعد میں بھی بحال ہو سکتے ہیں۔\n\nاگر یقین نہیں تو پہلے بیک اپ لیں۔ یہ واپس نہیں ہو سکتا۔</string>
+    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_done">سارا ڈیٹا مٹ گیا۔</string>
     <string name="business_rename_hint">کھولنے کے لیے دبائیں · نام بدلنے کے لیے دیر تک دبائیں</string>
     <string name="restore_business_mismatch">یہ بیک اپ %1$s کا ہے، لیکن ابھی %2$s کھلا ہے۔ بحال کرنے سے کھلے ہوئے کاروبار کا ڈیٹا اُس بیک اپ سے بدل جائے گا۔</string>
     <string name="contact_in_recycle_bin">ری سائیکل بن میں</string>

@@ -77,7 +77,13 @@
     <string name="ledger_report_title">گزارش دفتر</string>
     <string name="ledger_report_col_name">نام</string>
     <string name="ledger_report_empty">در این بازه ثبتی وجود ندارد.</string>
-    <string name="ledger_report_download">دانلود PDF</string>
+    <string name="ledger_report_download">دانلود</string>
+    <string name="ledger_report_download_as">دانلود در چه قالبی</string>
+    <string name="export_excel">Excel (CSV)</string>
+    <string name="report_start_date">تاریخ شروع</string>
+    <string name="report_end_date">تاریخ پایان</string>
+    <string name="ledger_report_from">از %1$s</string>
+    <string name="ledger_report_till">تا %1$s</string>
     <string name="add_party">افزودن طرف‌حساب</string>
     <string name="add_party_duplicate_with_phone">مشتری مشابه از قبل موجود است: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">مشتری مشابه از قبل موجود است: %1$s</string>
@@ -505,6 +511,11 @@
     <string name="business_delete_confirm_body">%1$d مشتری، مانده %2$s. همه ثبت‌ها، عکس‌ها و فاکتورهای این کسب‌وکار برای همیشه از این گوشی حذف می‌شود. پشتیبان درایو، اگر وجود داشته باشد، دست‌نخورده می‌ماند. این کار قابل بازگشت نیست.</string>
     <string name="business_delete_type_hint">برای تأیید «%1$s» را بنویسید</string>
     <string name="business_delete_done">%1$s حذف شد</string>
+    <string name="erase_all_button">پاک‌کردن همه داده‌ها</string>
+    <string name="erase_all_title">همه‌چیز پاک شود؟</string>
+    <string name="erase_all_body">همه کسب‌وکارهای این گوشی — تمام مشتریان، ثبت‌ها، چک‌ها، دفتر صندوق، فاکتورها، عکس‌ها و تنظیمات — برای همیشه پاک می‌شود. برنامه مانند نصب تازه خالی خواهد شد.\n\nپشتیبان‌های موجود در گوگل‌درایو شما دست‌نخورده می‌ماند و بعداً هم قابل بازیابی است.\n\nاگر مطمئن نیستید، اول پشتیبان بگیرید. این کار قابل بازگشت نیست.</string>
+    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_done">همه داده‌ها پاک شد.</string>
     <string name="business_rename_hint">برای باز کردن بزنید · برای تغییر نام نگه دارید</string>
     <string name="restore_business_mismatch">این پشتیبان متعلق به %1$s است، اما اکنون %2$s باز است. بازیابی، داده‌های کسب‌وکار باز را با آن پشتیبان جایگزین می‌کند.</string>
     <string name="contact_in_recycle_bin">در سطل بازیافت</string>
