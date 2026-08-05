@@ -14,6 +14,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.innovation313.roshankhata.data.InvoiceMath
 import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.InvoiceSummary
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.ui.Format
@@ -215,7 +216,7 @@ class InvoicesActivity : AppCompatActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    dao.softDeleteInvoice(invoice.id)
+                    AppScope.launch { dao.softDeleteInvoice(invoice.id) }.join()
                     Toast.makeText(this@InvoicesActivity, R.string.invoice_deleted, Toast.LENGTH_LONG).show()
                 }
             }

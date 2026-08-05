@@ -270,7 +270,7 @@ class ChequesActivity : AppCompatActivity() {
                 .setItems(settledOptions) { _, which ->
                     when {
                         canReopen && which == 0 -> reopen(cheque)
-                        else -> lifecycleScope.launch { dao.softDeleteCheque(cheque.id) }
+                        else -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
                     }
                 }
                 .show()
@@ -298,7 +298,7 @@ class ChequesActivity : AppCompatActivity() {
                     1 -> confirmCleared(cheque)
                     2 -> confirmBounced(cheque)
                     3 -> settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled)
-                    4 -> lifecycleScope.launch { dao.softDeleteCheque(cheque.id) }
+                    4 -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
                 }
             }
             .show()
@@ -307,9 +307,11 @@ class ChequesActivity : AppCompatActivity() {
     /** Back to waiting. settledAt clears with the status — a pending cheque was never settled. */
     private fun reopen(cheque: ChequeWithParty) {
         lifecycleScope.launch {
-            dao.getCheque(cheque.id)?.let { stored ->
-                dao.updateCheque(stored.copy(status = ChequeStatus.PENDING, settledAt = null))
-            }
+            AppScope.launch {
+                dao.getCheque(cheque.id)?.let { stored ->
+                    dao.updateCheque(stored.copy(status = ChequeStatus.PENDING, settledAt = null))
+                }
+            }.join()
             Toast.makeText(this@ChequesActivity, R.string.cheque_reopened, Toast.LENGTH_SHORT).show()
         }
     }
@@ -398,14 +400,16 @@ class ChequesActivity : AppCompatActivity() {
 
     private fun settle(cheque: ChequeWithParty, status: Int, messageRes: Int) {
         lifecycleScope.launch {
-            dao.getCheque(cheque.id)?.let { existing ->
-                dao.updateCheque(
-                    existing.copy(
-                        status = status,
-                        settledAt = System.currentTimeMillis()
+            AppScope.launch {
+                dao.getCheque(cheque.id)?.let { existing ->
+                    dao.updateCheque(
+                        existing.copy(
+                            status = status,
+                            settledAt = System.currentTimeMillis()
+                        )
                     )
-                )
-            }
+                }
+            }.join()
             Toast.makeText(this@ChequesActivity, messageRes, Toast.LENGTH_SHORT).show()
         }
     }

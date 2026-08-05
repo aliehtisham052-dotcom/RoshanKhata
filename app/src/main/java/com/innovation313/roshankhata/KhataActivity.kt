@@ -687,7 +687,7 @@ class KhataActivity : AppCompatActivity() {
                     // All-or-nothing inside one transaction, under one
                     // timestamp: a crash partway leaves the ledger untouched,
                     // and a restore brings back exactly what one delete took.
-                    dao.softDeleteParties(picked.map { it.id })
+                    AppScope.launch { dao.softDeleteParties(picked.map { it.id }) }.join()
                     clearSelection()
                     Toast.makeText(this@KhataActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT)
                         .show()

@@ -328,11 +328,13 @@ class PlansActivity : AppCompatActivity() {
 
     private fun closePlan(plan: PlanProgress) {
         lifecycleScope.launch {
-            dao.getPlan(plan.id)?.let { existing ->
-                dao.updatePlan(
-                    existing.copy(isClosed = true, closedAt = System.currentTimeMillis())
-                )
-            }
+            AppScope.launch {
+                dao.getPlan(plan.id)?.let { existing ->
+                    dao.updatePlan(
+                        existing.copy(isClosed = true, closedAt = System.currentTimeMillis())
+                    )
+                }
+            }.join()
             Toast.makeText(this@PlansActivity, R.string.plan_closed_msg, Toast.LENGTH_SHORT).show()
         }
     }
@@ -349,7 +351,7 @@ class PlansActivity : AppCompatActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    dao.softDeletePlan(plan.id)
+                    AppScope.launch { dao.softDeletePlan(plan.id) }.join()
                     Toast.makeText(
                         this@PlansActivity,
                         R.string.plan_deleted,

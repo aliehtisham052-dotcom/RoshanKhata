@@ -750,7 +750,7 @@ class PartyDetailActivity : AppCompatActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    dao.softDeleteEntry(entry.id)
+                    AppScope.launch { dao.softDeleteEntry(entry.id) }.join()
                     Toast.makeText(
                         this@PartyDetailActivity,
                         R.string.moved_to_bin,
@@ -817,7 +817,7 @@ class PartyDetailActivity : AppCompatActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    dao.softDeleteEntries(ids)
+                    AppScope.launch { dao.softDeleteEntries(ids) }.join()
                     Toast.makeText(this@PartyDetailActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT).show()
                     exitSelectionMode()
                 }

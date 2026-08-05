@@ -772,8 +772,8 @@
     <string name="drive_connect">Google Drive ڳنڍيو</string>
     <string name="drive_backup_now">هاڻي Drive تي بيڪ اپ</string>
     <string name="drive_backup_images">تصويرون پڻ شامل ڪريو (فوٽو، بل جون فوٽو، QR)</string>
-    <string name="drive_auto_backup">پاڻمرادو روزاني بيڪ اپ</string>
-    <string name="drive_auto_backup_hint">ڏينهن ۾ هڪ ڀيرو، جڏهن انٽرنيٽ هجي ۽ ڪجهه بدليو هجي، بيڪ اپ ڪري ٿو. توهان ڪنهن به وقت پاڻ به بيڪ اپ ڪري سگهو ٿا.</string>
+    <string name="drive_auto_backup">پاڻمرادو بيڪ اپ</string>
+    <string name="drive_auto_backup_hint">جڏهن به کاتي ۾ تبديلي ٿئي، پاڻمرادو بيڪ اپ ٿي ويندو آهي — واءِ فاءِ تي وڌ ۾ وڌ هر 30 منٽن ۾، موبائيل ڊيٽا تي هر 6 ڪلاڪن ۾. توهان ڪڏهن به پاڻ به بيڪ اپ وٺي سگهو ٿا.</string>
     <string name="drive_restore">Drive مان بحال ڪريو</string>
     <string name="drive_sign_out">Google اڪائونٽ ڌار ڪريو</string>
     <string name="drive_backing_up">Drive تي بيڪ اپ ٿي رهيو آهي\u2026</string>
