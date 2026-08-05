@@ -74,6 +74,10 @@
     <string name="ledger_pdf_title">لیجر رپورٹ PDF</string>
     <string name="ledger_report_generating">لیجر رپورٹ بن رہی ہے…</string>
     <string name="ledger_report_failed">رپورٹ نہیں بن سکی۔</string>
+    <string name="ledger_report_title">کھاتہ رپورٹ</string>
+    <string name="ledger_report_col_name">نام</string>
+    <string name="ledger_report_empty">اس مدت میں کوئی اندراج نہیں۔</string>
+    <string name="ledger_report_download">پی ڈی ایف ڈاؤن لوڈ کریں</string>
     <string name="add_party">پارٹی شامل کریں</string>
     <string name="add_party_duplicate_with_phone">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s</string>

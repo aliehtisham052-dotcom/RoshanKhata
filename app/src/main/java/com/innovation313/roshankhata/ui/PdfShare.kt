@@ -71,6 +71,22 @@ object PdfShare {
             .show()
     }
 
+    /**
+     * Straight to the share sheet, no preview dialog.
+     *
+     * For the one place where preview-first is already satisfied: the ledger
+     * report SCREEN, where the owner is looking at the exact rows the PDF
+     * will hold before they tap Share. Putting the present() dialog after
+     * that would be asking them to confirm what is already on their screen.
+     * Everything built sight-unseen keeps going through [present].
+     */
+    fun shareDirect(context: Context, file: File) {
+        val uri = FileProvider.getUriForFile(
+            context, "${context.packageName}.fileprovider", file
+        )
+        share(context, uri, file.name)
+    }
+
     private fun share(context: Context, uri: android.net.Uri, name: String) {
         val send = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"

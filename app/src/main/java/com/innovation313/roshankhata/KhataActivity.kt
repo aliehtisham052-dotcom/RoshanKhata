@@ -34,7 +34,6 @@ import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.KhataDatabase
-import com.innovation313.roshankhata.data.LedgerReport
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.Format
@@ -122,8 +121,6 @@ class KhataActivity : AppCompatActivity() {
 
     /** Which stretch of days the list is showing. All of them, until asked. */
     private var dateRange = DateRangeFilter.Range.ALL
-    /** Which stretch the ledger PDF was last built for — its own choice, independent of the list's own filter above. */
-    private var ledgerPdfRange = DateRangeFilter.Range.ALL
     private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
@@ -260,14 +257,12 @@ class KhataActivity : AppCompatActivity() {
         // the three separate header buttons that used to do these jobs.
         findViewById<MaterialButton>(R.id.btnOpenFilter).setOnClickListener { showFilterSheet() }
 
-        // The ledger PDF, now an icon on the toolbar line. Picks a date range,
-        // then builds and shares one PDF of every entry across every customer
-        // in that window. Distinct from Backup's own "Business Report".
+        // The whole-ledger report, now a SCREEN first (LedgerReportActivity):
+        // totals and rows visible live, with the PDF built from there. This
+        // button used to jump straight to a date dialog and a sight-unseen
+        // PDF; the document is now the takeaway of a page already read.
         findViewById<MaterialButton>(R.id.btnLedgerPdf).setOnClickListener {
-            DateRangeFilter.choose(this, ledgerPdfRange) { picked ->
-                ledgerPdfRange = picked
-                buildAndShareLedgerPdf(picked)
-            }
+            startActivity(Intent(this, LedgerReportActivity::class.java))
         }
 
         findViewById<MaterialButton>(R.id.btnVoiceEntry).setOnClickListener { startListening() }
@@ -841,32 +836,6 @@ class KhataActivity : AppCompatActivity() {
             // Settled is chosen from the filter sheet now, not a box; dim both
             // so it is clear the list has been narrowed to zero-balance accounts.
             SideFilter.SETTLED -> { get.alpha = dim; give.alpha = dim }
-        }
-    }
-
-    /**
-     * Builds the whole-ledger PDF for [range] and shows it to the owner
-     * preview-first — a viewer opens on the document, and sharing is a
-     * deliberate second step (see [com.innovation313.roshankhata.ui.PdfShare]),
-     * rather than the old behaviour of jumping straight to the share sheet on a
-     * page the owner had not seen.
-     */
-    private fun buildAndShareLedgerPdf(range: DateRangeFilter.Range) {
-        val label = DateRangeFilter.label(this, range)
-
-        Toast.makeText(this, R.string.ledger_report_generating, Toast.LENGTH_SHORT).show()
-
-        lifecycleScope.launch {
-            val file = withContext(Dispatchers.IO) {
-                LedgerReport.build(this@KhataActivity, dao, range.from, range.to, label)
-            }
-
-            if (file == null) {
-                Toast.makeText(this@KhataActivity, R.string.ledger_report_failed, Toast.LENGTH_LONG).show()
-                return@launch
-            }
-
-            com.innovation313.roshankhata.ui.PdfShare.present(this@KhataActivity, file)
         }
     }
 
