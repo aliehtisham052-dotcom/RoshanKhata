@@ -124,6 +124,16 @@ object InvoiceTemplateKit {
             italic -> Typeface.create(fonts.heading, Typeface.ITALIC)
             else -> fonts.heading
         }
+        // Belt as well as braces on the heading faces. Sora, Manrope and
+        // Playfair are VARIABLE-weight files with no bold sibling, and a
+        // style request on such a face is honoured inconsistently — where
+        // it is ignored, a "bold" label renders at the file's default
+        // weight and a small caption on a coloured band comes out thin,
+        // which is exactly what the owner kept reporting. Asking for the
+        // fake bold explicitly emboldens regardless of what the style
+        // request did. Not applied to mono, which has a real bold file
+        // ([Fonts.monoBold]) — doubling up there would smear the digits.
+        if (bold && !mono) isFakeBoldText = true
     }
 
     fun solid(colour: Int): Paint = Paint().apply { isAntiAlias = true; color = colour }
