@@ -52,6 +52,7 @@ class LedgerReportActivity : AppCompatActivity() {
     private lateinit var adapter: Adapter
     private lateinit var btnStartDate: MaterialButton
     private lateinit var btnEndDate: MaterialButton
+    private lateinit var btnRangeAll: MaterialButton
     private lateinit var tvTotalGave: TextView
     private lateinit var tvTotalGot: TextView
     private lateinit var tvNetChange: TextView
@@ -84,7 +85,8 @@ class LedgerReportActivity : AppCompatActivity() {
 
         btnStartDate.setOnClickListener { pickDate(isStart = true) }
         btnEndDate.setOnClickListener { pickDate(isStart = false) }
-        findViewById<MaterialButton>(R.id.btnLrRangeAll).setOnClickListener {
+        btnRangeAll = findViewById(R.id.btnLrRangeAll)
+        btnRangeAll.setOnClickListener {
             startMs = null
             endMs = null
             applyRange()
@@ -154,6 +156,25 @@ class LedgerReportActivity : AppCompatActivity() {
             ?: getString(R.string.report_start_date)
         btnEndDate.text = endMs?.let { buttonDateFmt.format(Date(it)) }
             ?: getString(R.string.report_end_date)
+
+        // All is the CURRENT state when neither bound is set, and an action
+        // to return to otherwise — and it now looks like whichever it is.
+        // A control that never changes appearance cannot tell the owner
+        // which window they are actually looking at, which is the whole job
+        // of this row.
+        val whole = startMs == null && endMs == null
+        btnRangeAll.isEnabled = !whole
+        btnRangeAll.alpha = if (whole) 1f else 0.75f
+        btnRangeAll.setTextColor(
+            androidx.core.content.ContextCompat.getColor(
+                this,
+                if (whole) R.color.gold_on_dark else R.color.white
+            )
+        )
+        btnRangeAll.text = getString(
+            if (whole) R.string.ledger_report_showing_all else R.string.ledger_report_show_all
+        )
+
         load()
     }
 

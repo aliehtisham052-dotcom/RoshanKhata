@@ -86,6 +86,10 @@ object LedgerReport {
         val businessName = BusinessProfile.businessName(context) ?: "Roshan Khata"
 
         fun header(): Float {
+            // Before anything else on the page: the watermark is a
+            // background, so every rule, figure and band that follows sits
+            // on top of it rather than under it.
+            PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 74f, navyFill)
             canvas.drawText(businessName, MARGIN, 30f, title)
             canvas.drawText("Ledger Report \u00B7 $rangeLabel", MARGIN, 48f, tagline)
