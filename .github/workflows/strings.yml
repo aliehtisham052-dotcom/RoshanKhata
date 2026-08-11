@@ -1,0 +1,26 @@
+# The two string failures the Android build never catches:
+# a key missing from a locale (silent English fallback) and a
+# placeholder mismatch (runtime crash, only in that language).
+# scripts/check_strings.py explains both; this just runs it on
+# every push and pull request. Seconds, no dependencies.
+name: Strings
+
+on:
+  push:
+    paths:
+      - 'app/src/main/res/values*/strings.xml'
+      - 'scripts/check_strings.py'
+      - '.github/workflows/strings.yml'
+  pull_request:
+    paths:
+      - 'app/src/main/res/values*/strings.xml'
+      - 'scripts/check_strings.py'
+      - '.github/workflows/strings.yml'
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: String parity across 6 locales
+        run: python3 scripts/check_strings.py
