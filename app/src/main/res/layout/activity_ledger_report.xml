@@ -52,6 +52,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnLrStartDate"
+                        android:maxLines="1"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="0dp"
                         android:layout_height="52dp"
@@ -74,6 +75,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnLrEndDate"
+                        android:maxLines="1"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="0dp"
                         android:layout_height="52dp"
@@ -96,6 +98,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnLrRangeAll"
+                    android:maxLines="1"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
