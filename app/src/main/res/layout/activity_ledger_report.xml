@@ -26,50 +26,90 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- The window, chosen the way the owner asked for after using it:
-             two date buttons and a reset, not a chip rail. Each button shows
-             the date it holds, so the range is read off the controls
-             themselves. -->
-        <LinearLayout
+        <!-- The window controls, as one quiet card — the owner put ours next
+             to the competitor's and called ours rough, and he was right:
+             three loud outlined buttons against a clean grouped card. Same
+             controls, reorganized: dates side by side over a hairline, All
+             beneath, grey icons, sentence case. The card is the design;
+             the buttons inside stay flat. -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:orientation="horizontal">
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLrStartDate"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:text="@string/report_start_date"
-                android:textColor="@color/white"
-                app:icon="@android:drawable/ic_menu_my_calendar"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/section_khata_soft" />
+                android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLrEndDate"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:text="@string/report_end_date"
-                android:textColor="@color/white"
-                app:icon="@android:drawable/ic_menu_my_calendar"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/section_khata_soft" />
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLrRangeAll"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/range_all"
-            android:textColor="@color/gold_on_dark" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLrStartDate"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="16dp"
+                        android:text="@string/report_start_date"
+                        android:textAllCaps="false"
+                        android:textColor="@color/text_muted"
+                        android:textSize="14sp"
+                        app:icon="@android:drawable/ic_menu_my_calendar"
+                        app:iconPadding="10dp"
+                        app:iconTint="@color/text_muted" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="10dp"
+                        android:background="@color/page_line" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLrEndDate"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="16dp"
+                        android:text="@string/report_end_date"
+                        android:textAllCaps="false"
+                        android:textColor="@color/text_muted"
+                        android:textSize="14sp"
+                        app:icon="@android:drawable/ic_menu_my_calendar"
+                        app:iconPadding="10dp"
+                        app:iconTint="@color/text_muted" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/page_line" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLrRangeAll"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="16dp"
+                    android:text="@string/range_all"
+                    android:textAllCaps="false"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:icon="@android:drawable/ic_menu_agenda"
+                    app:iconPadding="10dp"
+                    app:iconTint="@color/text_muted" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
     <!-- Totals for the chosen window — always in sight above the list, the
