@@ -79,6 +79,7 @@
     <string name="ledger_report_empty">لا قيود في هذه الفترة.</string>
     <string name="ledger_report_download">تنزيل</string>
     <string name="ledger_report_download_as">تنزيل بأي صيغة</string>
+    <string name="report_saved_to">تم الحفظ: %1$s</string>
     <string name="export_excel">Excel (CSV)</string>
     <string name="report_start_date">تاريخ البداية</string>
     <string name="report_end_date">تاريخ النهاية</string>

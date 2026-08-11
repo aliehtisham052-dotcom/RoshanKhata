@@ -79,6 +79,7 @@
     <string name="ledger_report_empty">در این بازه ثبتی وجود ندارد.</string>
     <string name="ledger_report_download">دانلود</string>
     <string name="ledger_report_download_as">دانلود در چه قالبی</string>
+    <string name="report_saved_to">ذخیره شد: %1$s</string>
     <string name="export_excel">Excel (CSV)</string>
     <string name="report_start_date">تاریخ شروع</string>
     <string name="report_end_date">تاریخ پایان</string>

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.CsvExport
+import com.innovation313.roshankhata.data.Downloads
 import com.innovation313.roshankhata.data.EntryWithParty
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerReport
@@ -250,22 +251,41 @@ class LedgerReportActivity : AppCompatActivity() {
     }
 
     /**
-     * Download offers two shapes of the same rows: the PDF for reading and
-     * printing, and a CSV that Excel opens directly — the accountant's copy
-     * the owner asked for.
+     * Download offers two shapes of the same rows — PDF or Excel CSV — and
+     * then DOWNLOADS: the file lands in the phone's public Downloads
+     * folder and a toast says where. It used to open a read-first dialog
+     * with its own Share button instead, which the owner called out
+     * exactly: a Download that saves nothing is a broken promise, and a
+     * second Share inside it duplicated the real Share button below.
+     * Reading stays available the honest way — the rows ARE on screen, and
+     * the saved file opens from Downloads like any other.
      */
     private fun chooseDownload() {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.ledger_report_download_as)
             .setItems(arrayOf("PDF", getString(R.string.export_excel))) { _, which ->
                 if (which == 0) {
-                    buildPdf { file -> PdfShare.present(this, file) }
+                    buildPdf { file -> saveToDownloads(file, "application/pdf") }
                 } else {
-                    buildCsv()
+                    buildCsv { file -> saveToDownloads(file, "text/csv") }
                 }
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    private fun saveToDownloads(file: File, mime: String) {
+        lifecycleScope.launch {
+            val where = withContext(Dispatchers.IO) {
+                Downloads.save(this@LedgerReportActivity, file, mime)
+            }
+            Toast.makeText(
+                this@LedgerReportActivity,
+                if (where != null) getString(R.string.report_saved_to, where)
+                else getString(R.string.ledger_report_failed),
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     /**
@@ -289,7 +309,7 @@ class LedgerReportActivity : AppCompatActivity() {
         }
     }
 
-    private fun buildCsv() {
+    private fun buildCsv(then: (File) -> Unit) {
         Toast.makeText(this, R.string.ledger_report_generating, Toast.LENGTH_SHORT).show()
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
@@ -299,7 +319,7 @@ class LedgerReportActivity : AppCompatActivity() {
                 Toast.makeText(this@LedgerReportActivity, R.string.ledger_report_failed, Toast.LENGTH_LONG).show()
                 return@launch
             }
-            CsvExport.share(this@LedgerReportActivity, file)
+            then(file)
         }
     }
 
