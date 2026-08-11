@@ -179,12 +179,18 @@ class LedgerReportActivity : AppCompatActivity() {
         // to return to otherwise — and it looks like whichever it is.
         val whole = startMs == null && endMs == null
         btnRangeAll.isEnabled = !whole
-        btnRangeAll.setTextColor(
-            androidx.core.content.ContextCompat.getColor(
-                this,
-                if (whole) R.color.brand_green else R.color.ink
-            )
-        )
+        // The owner's catch: all three rows wore the same face, so the
+        // status could not be told from the buttons. The status row now
+        // dresses differently — a soft green strip with a green icon —
+        // while as an ACTION it goes back to a plain white row like its
+        // neighbours. Same control, two clearly different clothes.
+        val ctx = this
+        fun colour(id: Int) = androidx.core.content.ContextCompat.getColor(ctx, id)
+        btnRangeAll.backgroundTintList =
+            android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.brand_green_soft else R.color.white))
+        btnRangeAll.iconTint =
+            android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.brand_green else R.color.text_muted))
+        btnRangeAll.setTextColor(colour(if (whole) R.color.brand_green else R.color.ink))
         btnRangeAll.text = getString(
             if (whole) R.string.ledger_report_showing_all else R.string.ledger_report_show_all
         )

@@ -102,6 +102,7 @@
       headers.
     -->
     <color name="brand_green">#1B5E3A</color>
+    <color name="brand_green_soft">#E7F2EA</color>  <!-- status strip fill on white cards -->
     <color name="brand_green_dark">#134228</color>
     <color name="brand_gold">#D4A02A</color>
     <color name="gold_on_dark">#FFDA6B</color>  <!-- bright gold for text/borders ON the dark green header -->
