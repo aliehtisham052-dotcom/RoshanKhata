@@ -95,10 +95,14 @@ object PdfBranding {
         // header strip land. Moving the group down puts it where reports
         // are empty; the translucent zebra lets it read through the rows
         // that do reach it; and the rotated top corner is MEASURED to stay
-        // below the table-header strip (>= 385) with every corner at least
-        // 24pt inside the page.
+        // below the opaque table-header strip. First placement used a
+        // GUESSED floor of 385 and sank the mark too low — the owner
+        // caught it. Traced through the report's own drawing code the
+        // strip ends by ~294 on page one, so the compact group's rotated
+        // top at ~326 clears it with margin, ninety points higher, every
+        // corner still 24pt inside the sheet.
         val cx = pageWidth / 2f
-        val cy = pageHeight * 0.72f
+        val cy = pageHeight * 0.62f
 
         canvas.save()
         canvas.rotate(-30f, cx, cy)
@@ -111,10 +115,10 @@ object PdfBranding {
         // the edges. Sizes and offsets here are the ones the geometry
         // check passed, not the ones that merely looked right.
         logo(context)?.let { mark ->
-            val size = pageWidth * 0.30f
+            val size = pageWidth * 0.28f
             val dst = RectF(
-                cx - size / 2f, cy - 110f - size / 2f,
-                cx + size / 2f, cy - 110f + size / 2f
+                cx - size / 2f, cy - 95f - size / 2f,
+                cx + size / 2f, cy - 95f + size / 2f
             )
             canvas.drawBitmap(mark, Rect(0, 0, mark.width, mark.height), dst, Paint().apply {
                 isAntiAlias = true
@@ -129,7 +133,7 @@ object PdfBranding {
         canvas.drawText(
             "ROSHAN KHATA",
             cx,
-            cy + 55f,
+            cy + 45f,
             Paint().apply {
                 isAntiAlias = true
                 color = tint
