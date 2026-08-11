@@ -75,7 +75,11 @@ object LedgerReport {
         val warnFill = Paint().apply { color = WARN_BG }
         val tableHeaderFill = Paint().apply { color = GREY }
         val rule = Paint().apply { color = 0xFFDDDDDD.toInt(); strokeWidth = 0.6f }
-        val zebra = Paint().apply { color = 0xFFF7F7F5.toInt() }
+        // A translucent wash rather than opaque light-gray: on white it prints
+        // the same stripe, but it no longer BLANKS the watermark underneath —
+        // an opaque zebra chopped the mark into slices wherever the table
+        // crossed it, which the owner rightly called unprofessional.
+        val zebra = Paint().apply { color = 0x08000000 }
 
         var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create())
         var canvas: Canvas = page.canvas
