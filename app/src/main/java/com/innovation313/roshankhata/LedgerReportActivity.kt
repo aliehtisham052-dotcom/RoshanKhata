@@ -186,11 +186,16 @@ class LedgerReportActivity : AppCompatActivity() {
         // neighbours. Same control, two clearly different clothes.
         val ctx = this
         fun colour(id: Int) = androidx.core.content.ContextCompat.getColor(ctx, id)
+        // The soft tint was still too quiet for the owner — he asked for a
+        // difference you cannot miss. As the LIVE STATE the row now fills
+        // solid brand green with white text and icon, the header's own
+        // family, unmistakably not a button; as an ACTION it returns to a
+        // plain white row like its two neighbours above.
         btnRangeAll.backgroundTintList =
-            android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.brand_green_soft else R.color.white))
+            android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.brand_green else R.color.white))
         btnRangeAll.iconTint =
-            android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.brand_green else R.color.text_muted))
-        btnRangeAll.setTextColor(colour(if (whole) R.color.brand_green else R.color.ink))
+            android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.white else R.color.text_muted))
+        btnRangeAll.setTextColor(colour(if (whole) R.color.white else R.color.ink))
         btnRangeAll.text = getString(
             if (whole) R.string.ledger_report_showing_all else R.string.ledger_report_show_all
         )
