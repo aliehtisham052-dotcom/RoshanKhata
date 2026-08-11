@@ -87,8 +87,18 @@ object PdfBranding {
         pageHeight: Int,
         tint: Int
     ) {
+        // The whole mark lives in the LOWER part of the sheet, rotated
+        // around its own centre — not the page's. The owner's diagnosis of
+        // the earlier version was exact: anything painted with an opaque
+        // colour on top of the watermark ERASES it, and with the mark hung
+        // on the page centre it sat right where the table and its solid
+        // header strip land. Moving the group down puts it where reports
+        // are empty; the translucent zebra lets it read through the rows
+        // that do reach it; and the rotated top corner is MEASURED to stay
+        // below the table-header strip (>= 385) with every corner at least
+        // 24pt inside the page.
         val cx = pageWidth / 2f
-        val cy = pageHeight / 2f
+        val cy = pageHeight * 0.72f
 
         canvas.save()
         canvas.rotate(-30f, cx, cy)
@@ -103,8 +113,8 @@ object PdfBranding {
         logo(context)?.let { mark ->
             val size = pageWidth * 0.30f
             val dst = RectF(
-                cx - size / 2f, cy - 55f - size / 2f,
-                cx + size / 2f, cy - 55f + size / 2f
+                cx - size / 2f, cy - 110f - size / 2f,
+                cx + size / 2f, cy - 110f + size / 2f
             )
             canvas.drawBitmap(mark, Rect(0, 0, mark.width, mark.height), dst, Paint().apply {
                 isAntiAlias = true
@@ -113,18 +123,21 @@ object PdfBranding {
             })
         }
 
+        // The wordmark back at FULL size — the owner asked for it big, and
+        // in the lower half there is room to give it: the shrink was
+        // compensating for a bad position, not a real constraint.
         canvas.drawText(
             "ROSHAN KHATA",
             cx,
-            cy + 128f,
+            cy + 55f,
             Paint().apply {
                 isAntiAlias = true
                 color = tint
                 alpha = 20
-                textSize = pageWidth * 0.062f
+                textSize = pageWidth * 0.085f
                 textAlign = Paint.Align.CENTER
                 isFakeBoldText = true
-                letterSpacing = 0.12f
+                letterSpacing = 0.18f
             }
         )
 
