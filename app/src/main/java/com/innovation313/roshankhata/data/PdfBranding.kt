@@ -93,31 +93,38 @@ object PdfBranding {
         canvas.save()
         canvas.rotate(-30f, cx, cy)
 
+        // One composed unit — logo above, wordmark just below, both hung on
+        // the page centre — with every corner MEASURED to stay at least
+        // 24pt inside the sheet after the rotation. The first version
+        // placed the wordmark far below centre at a larger size; rotated,
+        // its ends left the page and the printed mark arrived cut off at
+        // the edges. Sizes and offsets here are the ones the geometry
+        // check passed, not the ones that merely looked right.
         logo(context)?.let { mark ->
-            val size = pageWidth * 0.42f
+            val size = pageWidth * 0.30f
             val dst = RectF(
-                cx - size / 2f, cy - size / 2f - 30f,
-                cx + size / 2f, cy + size / 2f - 30f
+                cx - size / 2f, cy - 55f - size / 2f,
+                cx + size / 2f, cy - 55f + size / 2f
             )
             canvas.drawBitmap(mark, Rect(0, 0, mark.width, mark.height), dst, Paint().apply {
                 isAntiAlias = true
                 isFilterBitmap = true
-                alpha = 22
+                alpha = 18
             })
         }
 
         canvas.drawText(
             "ROSHAN KHATA",
             cx,
-            cy + pageWidth * 0.26f,
+            cy + 128f,
             Paint().apply {
                 isAntiAlias = true
                 color = tint
                 alpha = 20
-                textSize = pageWidth * 0.085f
+                textSize = pageWidth * 0.062f
                 textAlign = Paint.Align.CENTER
                 isFakeBoldText = true
-                letterSpacing = 0.18f
+                letterSpacing = 0.12f
             }
         )
 
