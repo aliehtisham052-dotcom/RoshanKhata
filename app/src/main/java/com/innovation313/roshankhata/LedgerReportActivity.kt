@@ -161,18 +161,28 @@ class LedgerReportActivity : AppCompatActivity() {
         btnEndDate.text = endMs?.let { buttonDateFmt.format(Date(it)) }
             ?: getString(R.string.report_end_date)
 
+        // On the white card, state is carried by ink weight, not by gold:
+        // a chosen date sits dark like content, an empty slot sits grey
+        // like a hint — the same visual grammar the competitor's card uses,
+        // which is what the owner asked to match.
+        fun tint(view: com.google.android.material.button.MaterialButton, set: Boolean) {
+            view.setTextColor(
+                androidx.core.content.ContextCompat.getColor(
+                    this, if (set) R.color.ink else R.color.text_muted
+                )
+            )
+        }
+        tint(btnStartDate, startMs != null)
+        tint(btnEndDate, endMs != null)
+
         // All is the CURRENT state when neither bound is set, and an action
-        // to return to otherwise — and it now looks like whichever it is.
-        // A control that never changes appearance cannot tell the owner
-        // which window they are actually looking at, which is the whole job
-        // of this row.
+        // to return to otherwise — and it looks like whichever it is.
         val whole = startMs == null && endMs == null
         btnRangeAll.isEnabled = !whole
-        btnRangeAll.alpha = if (whole) 1f else 0.75f
         btnRangeAll.setTextColor(
             androidx.core.content.ContextCompat.getColor(
                 this,
-                if (whole) R.color.gold_on_dark else R.color.white
+                if (whole) R.color.brand_green else R.color.ink
             )
         )
         btnRangeAll.text = getString(
