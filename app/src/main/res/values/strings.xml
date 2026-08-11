@@ -83,6 +83,7 @@
     <string name="ledger_report_empty">No entries in this period.</string>
     <string name="ledger_report_download">Download</string>
     <string name="ledger_report_download_as">Download as</string>
+    <string name="report_saved_to">Saved: %1$s</string>
     <string name="export_excel">Excel (CSV)</string>
     <string name="report_start_date">Start date</string>
     <string name="report_end_date">End date</string>

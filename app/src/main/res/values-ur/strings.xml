@@ -79,6 +79,7 @@
     <string name="ledger_report_empty">اس مدت میں کوئی اندراج نہیں۔</string>
     <string name="ledger_report_download">ڈاؤن لوڈ</string>
     <string name="ledger_report_download_as">کس شکل میں ڈاؤن لوڈ کریں</string>
+    <string name="report_saved_to">محفوظ ہو گئی: %1$s</string>
     <string name="export_excel">Excel (CSV)</string>
     <string name="report_start_date">آغاز کی تاریخ</string>
     <string name="report_end_date">اختتام کی تاریخ</string>
