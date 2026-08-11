@@ -96,18 +96,29 @@
                     android:layout_height="1dp"
                     android:background="@color/page_line" />
 
+                <!-- The status strip lives INSIDE the card as its own pill:
+                     8dp of white card frames it on every side, so its brand
+                     green can never dissolve into the page's own green
+                     around the card — the owner's third catch on this one
+                     control, and the right one: a status colour must differ
+                     from the page as well as from its neighbours. -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnLrRangeAll"
                     android:maxLines="1"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="8dp"
                     android:gravity="start|center_vertical"
-                    android:paddingStart="16dp"
+                    android:paddingStart="12dp"
                     android:text="@string/range_all"
                     android:textAllCaps="false"
                     android:textColor="@color/ink"
                     android:textSize="14sp"
+                    app:cornerRadius="10dp"
                     app:icon="@android:drawable/ic_menu_agenda"
                     app:iconPadding="10dp"
                     app:iconTint="@color/text_muted" />
