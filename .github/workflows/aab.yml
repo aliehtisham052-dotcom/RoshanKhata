@@ -47,7 +47,31 @@ jobs:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: gradle bundleRelease --no-daemon --stacktrace
+        run: |
+          set +e
+          gradle bundleRelease --no-daemon --stacktrace 2>&1 | tee /tmp/aab_output.txt
+          EXIT=${PIPESTATUS[0]}
+          exit $EXIT
+
+      # Without this the failure reaches us as a bare "exit code 1": the log
+      # blob API returns nothing for this runner, and annotations are the only
+      # channel that actually gets back. build.yml learned this months ago;
+      # this workflow had to learn it once too.
+      - name: Publish build failure
+        if: failure()
+        run: |
+          if [ ! -f /tmp/aab_output.txt ]; then exit 0; fi
+          echo "## AAB build failure" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -iE "FAILURE:|What went wrong|Execution failed|Caused by|^e: |error:" /tmp/aab_output.txt \
+            | head -40 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -iE "FAILURE:|What went wrong|Execution failed|Caused by|^e: |error:" /tmp/aab_output.txt \
+            | head -25 \
+            | while IFS= read -r line; do
+                clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                echo "::error::$clean"
+              done
 
       # Proof rather than hope: an unsigned bundle looks exactly like a signed
       # one until Play rejects it, so the signature is checked here, where the
