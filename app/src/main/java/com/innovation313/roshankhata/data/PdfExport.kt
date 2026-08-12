@@ -169,6 +169,21 @@ object PdfExport {
                 c.drawText(it, MARGIN, 66f, subtitle)
             }
 
+            // The stretch of days this statement covers, read off the rows
+            // themselves — first entry to last. Seen working in a
+            // competitor's statement and adopted for the reason it works
+            // there: a customer holding the sheet should not have to scan
+            // the date column to learn what period they are looking at.
+            // Right-aligned in the band, stopping short of the corner logo.
+            if (rows.isNotEmpty()) {
+                val fmt = java.text.SimpleDateFormat("d MMM yyyy", java.util.Locale.ENGLISH)
+                val from = fmt.format(java.util.Date(rows.minOf { it.entry.timestamp }))
+                val till = fmt.format(java.util.Date(rows.maxOf { it.entry.timestamp }))
+                val period = if (from == till) from else "$from \u2013 $till"
+                val periodPaint = Paint(subtitle).apply { textAlign = Paint.Align.RIGHT }
+                c.drawText(period, PAGE_W - MARGIN - 50f, 66f, periodPaint)
+            }
+
             // The customer's photo, beside their name — the same face the
             // owner sees in the ledger, so the statement is plainly about this
             // person and not another of the same name.
