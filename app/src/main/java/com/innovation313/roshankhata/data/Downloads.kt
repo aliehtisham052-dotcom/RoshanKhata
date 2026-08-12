@@ -41,12 +41,25 @@ object Downloads {
 
     private const val CHANNEL_ID = "downloads"
 
+    /**
+     * Everything the app downloads lands in its own room: a RoshanKhata
+     * folder inside Downloads — the owner's ask, and the right one: a
+     * shopkeeper's reports should not be loose grains scattered through
+     * every other download on the phone. On Android 10+ the system creates
+     * the folder itself from RELATIVE_PATH; before that, mkdirs does.
+     */
+    private const val FOLDER = "RoshanKhata"
+
     fun save(context: Context, file: File, mime: String): String? {
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val values = ContentValues().apply {
                     put(MediaStore.Downloads.DISPLAY_NAME, file.name)
                     put(MediaStore.Downloads.MIME_TYPE, mime)
+                    put(
+                        MediaStore.Downloads.RELATIVE_PATH,
+                        Environment.DIRECTORY_DOWNLOADS + "/" + FOLDER
+                    )
                     put(MediaStore.Downloads.IS_PENDING, 1)
                 }
                 val resolver = context.contentResolver
@@ -61,11 +74,14 @@ object Downloads {
                 resolver.update(uri, values, null, null)
 
                 notifyDone(context, file.name, uri, mime)
-                "Downloads/${file.name}"
+                "Downloads/$FOLDER/${file.name}"
             } else {
                 @Suppress("DEPRECATION")
-                val dir = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS
+                val dir = File(
+                    Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS
+                    ),
+                    FOLDER
                 )
                 dir.mkdirs()
                 val out = File(dir, file.name)
