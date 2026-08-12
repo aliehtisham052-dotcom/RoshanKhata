@@ -98,7 +98,6 @@ object LedgerReport {
             canvas.drawText(businessName, MARGIN, 30f, title)
             canvas.drawText("Ledger Report \u00B7 $rangeLabel", MARGIN, 48f, tagline)
             canvas.drawText("Generated ${dateFmt.format(Date())}", MARGIN, 64f, tagline)
-            PdfBranding.drawInHeader(canvas, brandLogo, PAGE_W, MARGIN, 74f)
             return 100f
         }
 
@@ -227,9 +226,24 @@ object LedgerReport {
         }
 
         // ---- Footer ----
+        // The official logo moved down here from the header band, at the
+        // owner's direction: the head of the page belongs to HIS shop's
+        // name, and the app signs at the foot, small, beside its own line —
+        // the way a printer marks the bottom of a form, not the letterhead.
         if (y > PAGE_H - 60f) newPage()
         y = PAGE_H - 34f
-        canvas.drawText("Roshan Khata \u00B7 Page $pageNo", MARGIN, y, muted)
+        var footerX = MARGIN
+        brandLogo?.let { mark ->
+            val size = 18f
+            canvas.drawBitmap(
+                mark,
+                android.graphics.Rect(0, 0, mark.width, mark.height),
+                android.graphics.RectF(footerX, y - 13f, footerX + size, y + 5f),
+                android.graphics.Paint().apply { isAntiAlias = true; isFilterBitmap = true }
+            )
+            footerX += size + 6f
+        }
+        canvas.drawText("Roshan Khata \u00B7 Page $pageNo", footerX, y, muted)
 
         doc.finishPage(page)
 
