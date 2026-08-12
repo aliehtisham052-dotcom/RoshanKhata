@@ -1,0 +1,71 @@
+# The Play Store upload file, on demand.
+#
+# Play accepts an AAB, not an APK, and only one signed with the release key.
+# The four RELEASE_* secrets this uses have existed since last month — the
+# normal build already signs with them — so nothing new had to be trusted
+# with the keystore; only the bundle step was missing.
+#
+# Deliberately NOT on every push: an AAB is for a release moment, and every
+# upload to Play must carry a fresh versionCode. Run it from the Actions tab
+# when there is something to publish.
+name: Release AAB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
+          gradle-version: 8.14.3
+
+      # The keystore exists as a file only for the length of this run, in the
+      # runner's own temp directory, and is never written into the workspace.
+      - name: Decode keystore
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$RELEASE_KEYSTORE_BASE64" ]; then
+            echo "::error::RELEASE_KEYSTORE_BASE64 is not set — the AAB would be unsigned and Play would reject it."
+            exit 1
+          fi
+          echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/roshankhata-release.jks"
+          echo "RELEASE_STORE_FILE=$RUNNER_TEMP/roshankhata-release.jks" >> $GITHUB_ENV
+
+      - name: Build signed AAB
+        env:
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: gradle bundleRelease --no-daemon --stacktrace
+
+      # Proof rather than hope: an unsigned bundle looks exactly like a signed
+      # one until Play rejects it, so the signature is checked here, where the
+      # failure is cheap.
+      - name: Verify it is actually signed
+        run: |
+          AAB=$(find app/build/outputs/bundle/release -name '*.aab' | head -1)
+          if [ -z "$AAB" ]; then echo "::error::No .aab produced"; exit 1; fi
+          if ! unzip -l "$AAB" | grep -qi "META-INF/.*\.RSA\|META-INF/.*\.EC"; then
+            echo "::error::The bundle carries no signature block"
+            exit 1
+          fi
+          echo "signed AAB: $AAB"
+          echo "## Signed AAB ready" >> $GITHUB_STEP_SUMMARY
+          echo "Download it from the Artifacts section of this run." >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RoshanKhata-release-aab
+          path: app/build/outputs/bundle/release/*.aab
+          retention-days: 14
