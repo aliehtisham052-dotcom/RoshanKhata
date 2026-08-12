@@ -80,6 +80,8 @@
     <string name="ledger_report_download">Download</string>
     <string name="ledger_report_download_as">Kis shakal mein download karein</string>
     <string name="report_saved_to">Save ho gayi: %1$s</string>
+    <string name="notif_downloads_channel">Downloads</string>
+    <string name="report_download_tap_open">Downloads mein mehfooz — kholne ke liye tap karein</string>
     <string name="export_excel">Excel (CSV)</string>
     <string name="report_start_date">Start date</string>
     <string name="report_end_date">End date</string>

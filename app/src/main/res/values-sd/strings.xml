@@ -80,6 +80,8 @@
     <string name="ledger_report_download">ڊائونلوڊ</string>
     <string name="ledger_report_download_as">ڪهڙي شڪل ۾ ڊائونلوڊ ڪجي</string>
     <string name="report_saved_to">محفوظ ٿي وئي: %1$s</string>
+    <string name="notif_downloads_channel">ڊائونلوڊس</string>
+    <string name="report_download_tap_open">ڊائونلوڊس ۾ محفوظ — کولڻ لاءِ دٻايو</string>
     <string name="export_excel">Excel (CSV)</string>
     <string name="report_start_date">شروعاتي تاريخ</string>
     <string name="report_end_date">پڇاڙي واري تاريخ</string>
