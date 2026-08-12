@@ -87,22 +87,17 @@ object PdfBranding {
         pageHeight: Int,
         tint: Int
     ) {
-        // The whole mark lives in the LOWER part of the sheet, rotated
-        // around its own centre — not the page's. The owner's diagnosis of
-        // the earlier version was exact: anything painted with an opaque
-        // colour on top of the watermark ERASES it, and with the mark hung
-        // on the page centre it sat right where the table and its solid
-        // header strip land. Moving the group down puts it where reports
-        // are empty; the translucent zebra lets it read through the rows
-        // that do reach it; and the rotated top corner is MEASURED to stay
-        // below the opaque table-header strip. First placement used a
-        // GUESSED floor of 385 and sank the mark too low — the owner
-        // caught it. Traced through the report's own drawing code the
-        // strip ends by ~294 on page one, so the compact group's rotated
-        // top at ~326 clears it with margin, ninety points higher, every
-        // corner still 24pt inside the sheet.
+        // Wordmark ON TOP, logo BELOW it — the owner's ordering, and the
+        // right one: the group's highest point is now the wordmark's thin
+        // strokes, which read gently through the translucent rows a long
+        // table lays over them, while the DENSE logo sits deep below the
+        // table zone (its own rotated top measured at ~550 on A4, against
+        // a typical first-page table ending near 470). Group hung at 0.66
+        // of the sheet, rotated about its own centre; every rotated corner
+        // measured at least 24pt inside the page before these numbers went
+        // into code.
         val cx = pageWidth / 2f
-        val cy = pageHeight * 0.62f
+        val cy = pageHeight * 0.66f
 
         canvas.save()
         canvas.rotate(-30f, cx, cy)
@@ -115,10 +110,10 @@ object PdfBranding {
         // the edges. Sizes and offsets here are the ones the geometry
         // check passed, not the ones that merely looked right.
         logo(context)?.let { mark ->
-            val size = pageWidth * 0.28f
+            val size = pageWidth * 0.26f
             val dst = RectF(
-                cx - size / 2f, cy - 95f - size / 2f,
-                cx + size / 2f, cy - 95f + size / 2f
+                cx - size / 2f, cy + 115f - size / 2f,
+                cx + size / 2f, cy + 115f + size / 2f
             )
             canvas.drawBitmap(mark, Rect(0, 0, mark.width, mark.height), dst, Paint().apply {
                 isAntiAlias = true
@@ -133,7 +128,7 @@ object PdfBranding {
         canvas.drawText(
             "ROSHAN KHATA",
             cx,
-            cy + 45f,
+            cy - 10f,
             Paint().apply {
                 isAntiAlias = true
                 color = tint
