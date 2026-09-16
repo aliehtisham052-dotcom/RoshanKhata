@@ -525,6 +525,16 @@ class BackupActivity : AppCompatActivity() {
             val email = try {
                 DriveAuth.signIn(this@BackupActivity)
             } catch (e: Exception) {
+                // DIAGNOSTIC: the real reason a sign-in fails must never be
+                // swallowed. Log it always; surface it on-screen while we
+                // hunt the production failure. (Remove the Toast once the
+                // root cause is confirmed; keep the Log.)
+                android.util.Log.e("DriveSignIn", "signIn failed (Backup)", e)
+                Toast.makeText(
+                    this@BackupActivity,
+                    "Sign-in error: ${e.javaClass.simpleName}: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
                 null
             }
 
