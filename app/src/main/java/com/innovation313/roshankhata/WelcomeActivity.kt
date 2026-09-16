@@ -61,16 +61,10 @@ class WelcomeActivity : AppCompatActivity() {
             val email = try {
                 DriveAuth.signIn(this@WelcomeActivity)
             } catch (e: Exception) {
-                // DIAGNOSTIC: never swallow the real sign-in failure. Log it
-                // always; surface it on-screen while we hunt the production
-                // failure. (Remove the Toast once root cause is confirmed;
-                // keep the Log.)
+                // Never swallow the real reason a sign-in fails -- kept in
+                // Logcat so a future failure is diagnosable, not a mystery
+                // toast again.
                 android.util.Log.e("DriveSignIn", "signIn failed (Welcome)", e)
-                Toast.makeText(
-                    this@WelcomeActivity,
-                    "Sign-in error: ${e.javaClass.simpleName}: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
                 null
             }
 
