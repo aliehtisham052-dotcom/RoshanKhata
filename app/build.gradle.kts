@@ -35,6 +35,13 @@ android {
         versionName = "0.1.0"
     }
 
+    // A private dev/debug APK can carry a higher versionCode than the fixed
+    // one above, passed in as -PversionCodeOverride=<n> (build.yml uses a
+    // timestamp). This never touches what Play receives -- aab.yml builds
+    // the release bundle without this property, so the real release always
+    // ships the source versionCode above.
+    val versionCodeOverride = (project.findProperty("versionCodeOverride") as String?)?.toIntOrNull()
+
     signingConfigs {
         create("release") {
             // The keystore is supplied by CI as a decoded file + secrets, never
@@ -77,6 +84,20 @@ android {
             // update.
             if (System.getenv("RELEASE_STORE_FILE") != null) {
                 signingConfig = signingConfigs.getByName("release")
+            }
+        }
+    }
+
+    // Debug-only: stamp the timestamp-based versionCode (if one was passed
+    // in) onto the actual APK output. Left alone, versionCode stays the
+    // fixed one above -- this only ever runs for the sideloaded dev build.
+    if (versionCodeOverride != null) {
+        applicationVariants.all {
+            if (buildType.name == "debug") {
+                outputs.all {
+                    val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+                    output.versionCodeOverride = versionCodeOverride
+                }
             }
         }
     }
