@@ -95,7 +95,10 @@ class WelcomeActivity : AppCompatActivity() {
                         markSeenAndProceed()
                     }
                 } else {
-                    // Already granted — connected. Move on.
+                    // Already granted — connected. Say so before moving on;
+                    // the welcome screen hands off to the ledger too fast
+                    // for the owner to otherwise notice the connection took.
+                    showConnectedToast()
                     markSeenAndProceed()
                 }
             }
@@ -107,11 +110,22 @@ class WelcomeActivity : AppCompatActivity() {
             }
     }
 
+    /** A brief confirmation the owner can actually see before the screen changes. */
+    private fun showConnectedToast() {
+        val email = DriveAuth.accountName(this) ?: return
+        Toast.makeText(
+            this,
+            getString(R.string.drive_connected_never, email),
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
     private val driveAuthorize = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { activityResult ->
         try {
             DriveAuth.resultFromIntent(this, activityResult.data)
+            showConnectedToast()
         } catch (_: Exception) {
             // Declined the Drive consent. Fine — account is remembered, they
             // can finish later. Proceed regardless.
