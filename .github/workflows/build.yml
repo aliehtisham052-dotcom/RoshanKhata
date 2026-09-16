@@ -82,7 +82,17 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           set +e
-          gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee /tmp/build_output.txt
+          # This APK is a private dev build the owner installs alongside (or
+          # over) whatever is on Play, on his own phone. Android refuses to
+          # install a package over one with an equal or higher versionCode --
+          # the source versionCode is fixed for the real Play release, so a
+          # sideloaded dev build with that same number can silently fail to
+          # install once Play's own versionCode has moved past it. A
+          # timestamp is always higher than any manually-incremented Play
+          # number, so this build always wins that comparison.
+          DEV_VERSION_CODE=$(date +%s)
+          echo "Dev build versionCode override: $DEV_VERSION_CODE"
+          gradle assembleDebug -PversionCodeOverride=$DEV_VERSION_CODE --no-daemon --stacktrace 2>&1 | tee /tmp/build_output.txt
           EXIT=${PIPESTATUS[0]}
           exit $EXIT
 
