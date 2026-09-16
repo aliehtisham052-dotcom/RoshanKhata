@@ -628,7 +628,12 @@ class BackupActivity : AppCompatActivity() {
         autoSwitch.visibility = android.view.View.VISIBLE
         autoHint.visibility = android.view.View.VISIBLE
 
-        // Fetch the last-backup time so the owner knows how current they are.
+        // Show the connection itself the instant it happens -- don't make
+        // the owner wait on a network call just to see the email confirmed.
+        status.text = getString(R.string.drive_connected_never, name!!)
+
+        // Then fetch the last-backup time in the background and refine the
+        // same line once it's known.
         lifecycleScope.launch {
             val last = withContext(Dispatchers.IO) {
                 DriveBackup.lastBackupTime(this@BackupActivity, name!!)
