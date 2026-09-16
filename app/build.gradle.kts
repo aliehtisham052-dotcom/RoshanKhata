@@ -11,6 +11,13 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+// A private dev/debug APK can carry a higher versionCode than the fixed one
+// in defaultConfig, passed in as -PversionCodeOverride=<n> (build.yml uses a
+// timestamp). This never touches what Play receives -- aab.yml builds the
+// release bundle without this property, so the real release always ships
+// the source versionCode.
+val versionCodeOverride = (project.findProperty("versionCodeOverride") as String?)?.toIntOrNull()
+
 android {
     namespace = "com.innovation313.roshankhata"
     // Compiled against Android 16, still behaving like Android 14.
@@ -34,13 +41,6 @@ android {
         versionCode = 1
         versionName = "0.1.0"
     }
-
-    // A private dev/debug APK can carry a higher versionCode than the fixed
-    // one above, passed in as -PversionCodeOverride=<n> (build.yml uses a
-    // timestamp). This never touches what Play receives -- aab.yml builds
-    // the release bundle without this property, so the real release always
-    // ships the source versionCode above.
-    val versionCodeOverride = (project.findProperty("versionCodeOverride") as String?)?.toIntOrNull()
 
     signingConfigs {
         create("release") {
@@ -88,20 +88,6 @@ android {
         }
     }
 
-    // Debug-only: stamp the timestamp-based versionCode (if one was passed
-    // in) onto the actual APK output. Left alone, versionCode stays the
-    // fixed one above -- this only ever runs for the sideloaded dev build.
-    if (versionCodeOverride != null) {
-        applicationVariants.all {
-            if (buildType.name == "debug") {
-                outputs.all {
-                    val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-                    output.versionCodeOverride = versionCodeOverride
-                }
-            }
-        }
-    }
-
     buildFeatures {
         buildConfig = true
         viewBinding = true
@@ -114,6 +100,22 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+}
+
+// Debug-only: stamp the timestamp-based versionCode (if one was passed in
+// via -PversionCodeOverride) onto the debug variant's output. This is the
+// public, documented AGP 8.x variant API -- not an internal class -- so it
+// does not depend on AGP internals that can move between versions. Left
+// alone, versionCode stays the fixed one in defaultConfig; aab.yml's release
+// bundle never passes this property, so the real Play release is untouched.
+if (versionCodeOverride != null) {
+    androidComponents {
+        onVariants(selector().withBuildType("debug")) { variant ->
+            variant.outputs.forEach { output ->
+                output.versionCode.set(versionCodeOverride)
+            }
+        }
     }
 }
 
