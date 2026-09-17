@@ -193,7 +193,8 @@
     <string name="remind_whatsapp">واتساب</string>
     <string name="remind_sms">رسالة نصية</string>
     <string name="reminder_preview_help">اقرأها قبل الإرسال. يمكنك تعديل أي شيء هنا — سيسلّمها روشن كهاتا إلى واتساب أو تطبيق الرسائل، وأنت تضغط إرسال بنفسك.</string>
-    <string name="reminder_they_owe">السلام عليكم %1$s،\n\nبحسب سجلاتنا، عليكم مبلغ %2$s. نرجو التكرم بسداده عند الإمكان. إن كنتم قد سددتم فتجاهلوا هذه الرسالة وأخبرونا.\n\nجزاكم الله خيرًا.\n\n\u2014\nأُرسلت عبر روشن كهاتا</string>
+    <string name="reminder_they_owe">السلام عليكم %1$s،\n\nبحسب سجلاتنا، عليكم مبلغ %2$s. نرجو ترتيب السداد في أقرب وقت.\n\nشكراً لكم.\n\n\u2014\nأُرسلت عبر Roshan Khata</string>
+    <string name="reminder_they_owe_by_date">السلام عليكم %1$s،\n\nبحسب سجلاتنا، عليكم مبلغ %2$s. نرجو السداد بحلول %3$s حسب الاتفاق.\n\nشكراً لكم.\n\n\u2014\nأُرسلت عبر Roshan Khata</string>
     <string name="reminder_i_owe">السلام عليكم %1$s،\n\nبحسب سجلاتنا، لكم علينا مبلغ %2$s. سنسدده قريبًا إن شاء الله. إن اختلف حسابكم عن حسابنا فأخبرونا.\n\nجزاكم الله خيرًا.\n\n\u2014\nأُرسلت عبر روشن كهاتا</string>
     <string name="send_reminder">إرسال تذكير</string>
     <string name="open_whatsapp">فتح واتساب</string>

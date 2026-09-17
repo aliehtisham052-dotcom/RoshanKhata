@@ -193,7 +193,8 @@
     <string name="remind_whatsapp">WhatsApp</string>
     <string name="remind_sms">SMS</string>
     <string name="reminder_preview_help">Bhejne se pehle parh lein. Yahan kuch bhi badal sakte hain — Roshan Khata isey WhatsApp ya SMS app ko dega, aur bhejne ka button aap khud dabayenge.</string>
-    <string name="reminder_they_owe">Assalam-o-Alaikum %1$s,\n\nAap ke zimme %2$s baqi hai. Meherbani farma kar jab mumkin ho ada kar dein. Agar aap ada kar chuke hain to is paighaam ko nazar-andaz karein aur humein bata dein.\n\nJazakAllah.\n\n\u2014\nRoshan Khata ke zariye bheja gaya</string>
+    <string name="reminder_they_owe">Assalam-o-Alaikum %1$s,\n\nAap ke zimme %2$s baqi hai. Baraye meherbani jald az jald adaigi ka bandobast farmayen.\n\nShukriya.\n\n\u2014\nRoshan Khata ke zariye bheja gaya</string>
+    <string name="reminder_they_owe_by_date">Assalam-o-Alaikum %1$s,\n\nAap ke zimme %2$s baqi hai. Baraye meherbani tay shuda tareekh %3$s tak ada farma dein.\n\nShukriya.\n\n\u2014\nRoshan Khata ke zariye bheja gaya</string>
     <string name="reminder_i_owe">Assalam-o-Alaikum %1$s,\n\nHamare zimme aap ka %2$s baqi hai. InshaAllah jald ada kar denge. Agar aap ka hisaab hum se mukhtalif ho to bata dein.\n\nJazakAllah.\n\n\u2014\nRoshan Khata ke zariye bheja gaya</string>
     <string name="send_reminder">Yaad Dehani Bhejein</string>
     <string name="open_whatsapp">WhatsApp Kholein</string>

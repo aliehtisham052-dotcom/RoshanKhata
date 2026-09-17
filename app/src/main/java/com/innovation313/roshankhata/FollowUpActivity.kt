@@ -93,12 +93,18 @@ class FollowUpActivity : AppCompatActivity() {
      * WhatsApp itself is where the owner reads it and presses send.
      */
     private fun sendReminder(party: PartyWithBalance) {
-        val message = Reminder.buildMessage(
-            this,
-            partyName = party.name,
-            balance = party.balance,
-            businessName = BusinessProfile.businessName(this)
-        )
-        Reminder.sendViaWhatsApp(this, party.phone, message)
+        // Room's suspend queries run off the main thread themselves, so this
+        // reads the agreed date without blocking the tap.
+        lifecycleScope.launch {
+            val promisedDate = runCatching { dao.promisedDateForParty(party.id) }.getOrNull()
+            val message = Reminder.buildMessage(
+                this@FollowUpActivity,
+                partyName = party.name,
+                balance = party.balance,
+                businessName = BusinessProfile.businessName(this@FollowUpActivity),
+                promisedDate = promisedDate
+            )
+            Reminder.sendViaWhatsApp(this@FollowUpActivity, party.phone, message)
+        }
     }
 }

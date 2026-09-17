@@ -860,6 +860,18 @@ class PartyDetailActivity : AppCompatActivity() {
             return
         }
 
+        // The date they agreed to pay on, if there is one. Read before the
+        // dialog is built so the message the owner reads is the message that
+        // gets sent — a date arriving late would change the text underneath them.
+        lifecycleScope.launch {
+            val promisedDate = withContext(Dispatchers.IO) {
+                runCatching { dao.promisedDateForParty(partyId) }.getOrNull()
+            }
+            showReminderDialog(viaWhatsApp, promisedDate)
+        }
+    }
+
+    private fun showReminderDialog(viaWhatsApp: Boolean, promisedDate: Long?) {
         val view = layoutInflater.inflate(R.layout.dialog_reminder_preview, null)
         val etMessage: EditText = view.findViewById(R.id.etMessage)
         etMessage.setText(
@@ -867,7 +879,8 @@ class PartyDetailActivity : AppCompatActivity() {
                 context = this,
                 partyName = partyName,
                 balance = currentBalance,
-                businessName = BusinessProfile.businessName(this)
+                businessName = BusinessProfile.businessName(this),
+                promisedDate = promisedDate
             )
         )
 
