@@ -48,6 +48,9 @@ class HelpActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnReportProblem).setOnClickListener {
             startActivity(Intent(this, ReportProblemActivity::class.java))
         }
+        findViewById<MaterialButton>(R.id.btnRateApp).setOnClickListener {
+            com.innovation313.roshankhata.ui.AppRating.launch(this)
+        }
     }
 
     private fun buildFaqList() {

@@ -739,6 +739,8 @@
     <!-- Printable business report -->
     <!-- Report a problem -->
     <string name="report_problem">Report a Problem</string>
+    <string name="rate_app">Rate this app</string>
+    <string name="rate_app_note">Your rating helps other shopkeepers find the app. Something wrong or missing? Use Report a Problem instead — it reaches us directly.</string>
     <string name="report_problem_sub">Tell us what went wrong</string>
     <string name="report_privacy">Your customers\u2019 names, numbers, and balances are NEVER sent. Only the app version and your phone model go with the report \u2014 that is what helps us find the fault.\n\nThe email opens in your own mail app, so you can see exactly what is being sent before it goes.</string>
 

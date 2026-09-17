@@ -147,6 +147,13 @@ dependencies {
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.cardview:cardview:1.0.0")
 
+    // Google's own in-app review flow: the Play rating card opens INSIDE the
+    // app, the owner types their own words, and it posts to Play. Deliberately
+    // not a home-grown "5 stars?" dialog with canned praise to pick from —
+    // Play forbids both pre-filling review text and routing people to the
+    // store by sentiment, and reviews collected that way get stripped.
+    implementation("com.google.android.play:review-ktx:2.0.2")
+
     // Google Sign-In + Drive, for cloud backup to the user's OWN Drive.
     // The backup file lives in the app's private "appDataFolder" on their
     // Drive — invisible in their file list, tied to this app, and counted
