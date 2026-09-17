@@ -193,9 +193,9 @@
     <string name="remind_whatsapp">واٹس ایپ</string>
     <string name="remind_sms">ایس ایم ایس</string>
     <string name="reminder_preview_help">بھیجنے سے پہلے پڑھ لیں۔ یہاں کچھ بھی بدل سکتے ہیں — روشن کھاتہ اسے واٹس ایپ یا ایس ایم ایس ایپ کو دے گا، اور بھیجنے کا بٹن آپ خود دبائیں گے۔</string>
-    <string name="reminder_they_owe">\uD83E\uDDFE *ادائیگی کی یاد دہانی*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\n\nبراہِ کرم جلد از جلد ادائیگی کا بندوبست فرمائیں۔\n\nشکریہ۔</string>
-    <string name="reminder_they_owe_by_date">\uD83E\uDDFE *ادائیگی کی یاد دہانی*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\nطے شدہ تاریخ: *%3$s*\n\nبراہِ کرم طے شدہ تاریخ تک ادا فرما دیں۔\n\nشکریہ۔</string>
-    <string name="reminder_i_owe">\uD83E\uDDFE *حساب کی اطلاع*\n\nمحترم *%1$s*،\n\nہمارے ذمے آپ کا: *%2$s*\n\nان شاء اللہ جلد ادا کر دیں گے۔ اگر آپ کا حساب ہم سے مختلف ہو تو بتا دیں۔\n\nشکریہ۔</string>
+    <string name="reminder_they_owe">*ادائیگی کی یاد دہانی*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\n\nبراہِ کرم جلد از جلد ادائیگی کا بندوبست فرمائیں۔\n\nشکریہ۔</string>
+    <string name="reminder_they_owe_by_date">*ادائیگی کی یاد دہانی*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\nطے شدہ تاریخ: *%3$s*\n\nبراہِ کرم طے شدہ تاریخ تک ادا فرما دیں۔\n\nشکریہ۔</string>
+    <string name="reminder_i_owe">*حساب کی اطلاع*\n\nمحترم *%1$s*،\n\nہمارے ذمے آپ کا: *%2$s*\n\nان شاء اللہ جلد ادا کر دیں گے۔ اگر آپ کا حساب ہم سے مختلف ہو تو بتا دیں۔\n\nشکریہ۔</string>
     <string name="send_reminder">یاد دہانی بھیجیں</string>
     <string name="open_whatsapp">واٹس ایپ کھولیں</string>
     <string name="open_sms">ایس ایم ایس کھولیں</string>
