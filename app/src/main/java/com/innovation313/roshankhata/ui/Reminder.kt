@@ -40,19 +40,35 @@ object Reminder {
         }
     }
 
-    /** The message body. Kept plain and polite — this goes to a real customer. */
+    /**
+     * The message body. Kept plain and polite — this goes to a real customer.
+     *
+     * [promisedDate] is the date the party themselves agreed to pay on, taken
+     * from an open payment plan. When there is one the message names it, since
+     * "by the date you promised" is both clearer and fairer than a vague ask.
+     * When there is none it simply asks for payment soon: a reminder must
+     * never invent a date the customer never gave.
+     */
     fun buildMessage(
         context: Context,
         partyName: String,
         balance: Double,
-        businessName: String?
+        businessName: String?,
+        promisedDate: Long? = null
     ): String {
         val amount = Format.money(balance)
         val from = if (businessName.isNullOrBlank()) "" else "\n\n— $businessName"
 
         return if (Money.isPositive(balance)) {
             // They owe me.
-            context.getString(R.string.reminder_they_owe, partyName, amount) + from
+            if (promisedDate != null) {
+                context.getString(
+                    R.string.reminder_they_owe_by_date,
+                    partyName, amount, Format.dateOnly(promisedDate)
+                ) + from
+            } else {
+                context.getString(R.string.reminder_they_owe, partyName, amount) + from
+            }
         } else {
             // I owe them — a courtesy note, not a demand.
             context.getString(R.string.reminder_i_owe, partyName, amount) + from

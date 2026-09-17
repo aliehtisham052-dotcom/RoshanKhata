@@ -1205,6 +1205,25 @@ interface KhataDao {
     )
     suspend fun openPlansOnce(): List<PlanProgress>
 
+    /**
+     * The date this party has actually AGREED to pay on — the earliest
+     * nextDueDate across their open plans — or null if nothing was agreed.
+     *
+     * The reminder uses it to say "by the date you promised" instead of a
+     * vague "whenever suits you". Null is the normal case, not an error: most
+     * customers have no plan, and a reminder must never invent a date the
+     * party never gave.
+     */
+    @Query(
+        """
+        SELECT MIN(nextDueDate) FROM payment_plans
+        WHERE partyId = :partyId
+          AND isClosed = 0 AND isDeleted = 0
+          AND nextDueDate IS NOT NULL
+        """
+    )
+    suspend fun promisedDateForParty(partyId: Long): Long?
+
     @Query(
         """
         SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
