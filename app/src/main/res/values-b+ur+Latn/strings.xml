@@ -744,6 +744,7 @@
     <string name="drive_not_connected">Apna Google account jorein to aap ka Khata aap ki APNI Google Drive mein khudkar backup hota rahega. Phone badlein, dobara sign in karein, sab wapas. Data aap ki Drive mein rehta hai; hamare paas kabhi nahi aata.</string>
     <string name="drive_connected">%1$s ke tor par jura hai. Aakhri cloud backup: %2$s</string>
     <string name="drive_connected_never">%1$s ke tor par jura hai. Abhi koi cloud backup nahi \u2014 "Drive Mein Backup" dabayen.</string>
+    <string name="drive_connected_welcome">%1$s ke tor par sign in ho gaye</string>
     <string name="drive_connect">Google Drive Jorein</string>
     <string name="drive_backup_now">Abhi Drive Mein Backup Lein</string>
     <string name="drive_backup_images">Images bhi shamil karein (photos, bill photos, QR)</string>
