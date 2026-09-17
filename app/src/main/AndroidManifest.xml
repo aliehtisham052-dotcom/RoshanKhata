@@ -99,6 +99,11 @@
             android:parentActivityName=".KhataActivity" />
 
         <activity
+            android:name=".InspectorReportActivity"
+            android:exported="false"
+            android:parentActivityName=".ProductsActivity" />
+
+        <activity
             android:name=".PartyDetailActivity"
             android:exported="false"
             android:parentActivityName=".KhataActivity" />

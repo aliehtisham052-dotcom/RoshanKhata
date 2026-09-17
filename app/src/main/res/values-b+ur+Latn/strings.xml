@@ -1053,4 +1053,26 @@
     <string name="product_name_taken">Ye naam pehle hi “%1$s” ke paas hai.</string>
     <string name="edit_details">Tafseelat mein tarmeem</string>
     <string name="son_of_prefix">walad %1$s</string>
+
+    <!-- Inspector mode: the stock and compliance register -->
+    <string name="inspector_title">Stock aur compliance register</string>
+    <string name="inspector_subtitle">Stock, batch aur expiry ek hi PDF mein</string>
+    <string name="inspector_window_title">EXPIRY WINDOW</string>
+    <string name="inspector_window_30">30 din</string>
+    <string name="inspector_window_60">60 din</string>
+    <string name="inspector_window_90">90 din</string>
+    <string name="inspector_count_batches">Stock mein batch</string>
+    <string name="inspector_count_expiring">Expire hone wale</string>
+    <string name="inspector_count_expired">Expired</string>
+    <string name="inspector_col_product">Product / batch</string>
+    <string name="inspector_col_expiry">Expiry</string>
+    <string name="inspector_col_left">Baqi</string>
+    <string name="inspector_empty">Abhi koi batch stock nahi. Supplier bill mein batch number aur expiry likhein, register khud bhar jayega.</string>
+    <string name="inspector_generating">Register ban raha hai…</string>
+    <string name="inspector_failed">Register nahi ban saka.</string>
+    <string name="inspector_no_expiry">Expiry nahi</string>
+    <string name="inspector_expired">EXPIRED</string>
+    <string name="inspector_batch_prefix">Batch</string>
+    <string name="inspector_gap_labels">Stock mein %1$d products ki label tafseel mojood nahi</string>
+    <string name="inspector_gap_expiry">%1$d batch ki expiry date darj nahi</string>
 </resources>

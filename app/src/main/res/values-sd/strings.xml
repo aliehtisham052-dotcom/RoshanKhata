@@ -1081,4 +1081,26 @@
     <string name="product_name_taken">هي نالو اڳ ۾ ئي ”%1$s“ وٽ آهي.</string>
     <string name="edit_details">تفصيلن ۾ ترميم</string>
     <string name="son_of_prefix">ولد %1$s</string>
+
+    <!-- Inspector mode: the stock and compliance register -->
+    <string name="inspector_title">اسٽاڪ ۽ ڪمپلائنس رجسٽر</string>
+    <string name="inspector_subtitle">اسٽاڪ، بيچ ۽ ايڪسپائري هڪ ئي پي ڊي ايف ۾</string>
+    <string name="inspector_window_title">ايڪسپائري جي مدت</string>
+    <string name="inspector_window_30">30 ڏينهن</string>
+    <string name="inspector_window_60">60 ڏينهن</string>
+    <string name="inspector_window_90">90 ڏينهن</string>
+    <string name="inspector_count_batches">اسٽاڪ ۾ بيچ</string>
+    <string name="inspector_count_expiring">ايڪسپائر ٿيندڙ</string>
+    <string name="inspector_count_expired">ايڪسپائر ٿيل</string>
+    <string name="inspector_col_product">پراڊڪٽ / بيچ</string>
+    <string name="inspector_col_expiry">ايڪسپائري</string>
+    <string name="inspector_col_left">باقي</string>
+    <string name="inspector_empty">اڃا ڪو بيچ اسٽاڪ ناهي. سپلائر بل ۾ بيچ نمبر ۽ ايڪسپائري لکو، رجسٽر پاڻ ڀرجي ويندو.</string>
+    <string name="inspector_generating">رجسٽر ٺهي رهيو آهي…</string>
+    <string name="inspector_failed">رجسٽر ٺهي نه سگهيو.</string>
+    <string name="inspector_no_expiry">ايڪسپائري ناهي</string>
+    <string name="inspector_expired">ايڪسپائر</string>
+    <string name="inspector_batch_prefix">بيچ</string>
+    <string name="inspector_gap_labels">اسٽاڪ ۾ %1$d پراڊڪٽس جي ليبل تفصيل موجود ناهي</string>
+    <string name="inspector_gap_expiry">%1$d بيچ جي ايڪسپائري تاريخ درج ناهي</string>
 </resources>

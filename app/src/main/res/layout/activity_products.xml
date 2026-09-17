@@ -52,7 +52,7 @@
         android:id="@+id/rvProducts"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/btnLinkGoods"
+        app:layout_constraintBottom_toTopOf="@id/productsActions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvProductsNote" />
@@ -73,14 +73,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/rvProducts" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLinkGoods"
+    <!-- Two actions of this screen, side by side: tie loose goods to products,
+         or take the stock register an inspection asks for. The register sits
+         here rather than in a menu because this is the screen whose numbers it
+         prints. -->
+    <LinearLayout
+        android:id="@+id/productsActions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/link_goods"
+        android:orientation="vertical"
+        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnInspectorReport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:maxLines="1"
+            android:text="@string/inspector_title"
+            app:backgroundTint="@color/section_bills"
+            app:icon="@android:drawable/ic_menu_agenda"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLinkGoods"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/link_goods" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

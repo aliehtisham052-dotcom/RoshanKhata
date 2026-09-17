@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg">
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/section_bills"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/inspector_title"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/inspector_subtitle"
+            android:textColor="@color/section_bills_soft"
+            android:textSize="12sp" />
+
+        <!-- The one control this screen has: how far ahead to warn. Grouped as
+             one quiet white card, the shape the owner settled on for the ledger
+             report's date controls, with the live choice filled brand green. -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/inspector_window_title"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnInsWindow30"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:maxLines="1"
+                        android:text="@string/inspector_window_30"
+                        android:textAllCaps="false"
+                        android:textColor="@color/ink"
+                        android:textSize="13sp"
+                        app:cornerRadius="10dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnInsWindow60"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_weight="1"
+                        android:maxLines="1"
+                        android:text="@string/inspector_window_60"
+                        android:textAllCaps="false"
+                        android:textColor="@color/ink"
+                        android:textSize="13sp"
+                        app:cornerRadius="10dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnInsWindow90"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:maxLines="1"
+                        android:text="@string/inspector_window_90"
+                        android:textAllCaps="false"
+                        android:textColor="@color/ink"
+                        android:textSize="13sp"
+                        app:cornerRadius="10dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <!-- The three figures an inspection turns on, always in sight. -->
+    <LinearLayout
+        android:id="@+id/insCountsBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/section_bills"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/inspector_count_batches"
+                android:textColor="@color/gold_on_dark"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvInsBatches"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/inspector_count_expiring"
+                android:textColor="@color/gold_on_dark"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvInsExpiring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/inspector_count_expired"
+                android:textColor="@color/gold_on_dark"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvInsExpired"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/red_gave_on_dark"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- What the register will have to print a dash for. Shown here so it can
+         be fixed before the document is handed to anyone. -->
+    <TextView
+        android:id="@+id/tvInsGaps"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FFF6E0"
+        android:padding="10dp"
+        android:textColor="#5C4A16"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/insCountsBar" />
+
+    <LinearLayout
+        android:id="@+id/insColumnHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/page_line"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvInsGaps">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/inspector_col_product"
+            android:textColor="@color/text_muted"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:text="@string/inspector_col_expiry"
+            android:textColor="@color/text_muted"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="72dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:text="@string/inspector_col_left"
+            android:textColor="@color/text_muted"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvInspector"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="88dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/insColumnHeader" />
+
+    <TextView
+        android:id="@+id/tvInsEmpty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:gravity="center"
+        android:text="@string/inspector_empty"
+        android:textColor="@color/text_muted"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/insColumnHeader" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnInsDownload"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:text="@string/ledger_report_download"
+            app:backgroundTint="@color/black"
+            app:icon="@android:drawable/stat_sys_download_done"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnInsShare"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:text="@string/share"
+            app:backgroundTint="@color/section_cashbook"
+            app:icon="@android:drawable/ic_menu_share"
+            app:iconGravity="textStart" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
