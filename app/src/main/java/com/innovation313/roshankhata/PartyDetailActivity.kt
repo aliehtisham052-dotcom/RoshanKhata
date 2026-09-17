@@ -888,6 +888,11 @@ class PartyDetailActivity : AppCompatActivity() {
             )
         )
 
+        // Park the cursor past the last character. setText leaves it at
+        // position 0 — sitting inside the amount, where one accidental key
+        // turns "Rs 200" into a figure the customer was never owed.
+        etMessage.setSelection(etMessage.text?.length ?: 0)
+
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.send_reminder)
             .setView(view)
