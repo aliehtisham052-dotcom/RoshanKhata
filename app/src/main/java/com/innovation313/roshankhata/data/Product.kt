@@ -73,6 +73,53 @@ data class Product(
     /** Bottle, litre, kg, bag, packet — what this is normally counted in. */
     val defaultUnit: String? = null,
 
+    /**
+     * Engro, FMC, Syngenta, Bayer — who makes it.
+     *
+     * An agri dealer stocks a dozen companies at once and thinks in them:
+     * "how much Engro do I have left", "what did I buy from Bayer this
+     * season". Kept separate from [category] because they answer different
+     * questions — category is what the thing IS, company is who made it.
+     */
+    val company: String? = null,
+
+    // ---- Agriculture Department compliance ----
+    //
+    // A pesticide dealer in Punjab can be inspected without warning and has
+    // to show a stock register naming, for every product, what it actually
+    // is: its registration, its active ingredient, its formulation. The
+    // ledger has never held any of that, so an inspection has always meant
+    // paperwork kept somewhere else.
+    //
+    // All four are nullable and none is ever required to save a product. A
+    // shop selling only feed or seed should never be made to fill in a
+    // pesticide registration number, and a dealer adding a product mid-sale
+    // should not be stopped by a form. They are filled in when the owner has
+    // the label in hand, and what is filled in is what the reports can show.
+
+    /** Pesticide, Fertilizer, Seed — which register this belongs in. */
+    val productType: String? = null,
+
+    /**
+     * EC, WP, SC, GR, SL, WG, DP, SP, AS — how the pesticide is formulated.
+     * Printed on every label and asked for by name in an inspection.
+     */
+    val formulation: String? = null,
+
+    /**
+     * The DRAP / Agriculture Department registration number of the product.
+     * Free text: the format has changed over the years and an old stock's
+     * number must still be recordable exactly as the label prints it.
+     */
+    val registrationNumber: String? = null,
+
+    /**
+     * The active ingredient as the label states it — "Chlorpyrifos 40% EC",
+     * "Urea 46% N". This is the column an inspector actually reads; the trade
+     * name alone does not tell them what is in the bottle.
+     */
+    val technicalName: String? = null,
+
     val note: String? = null,
 
     val createdAt: Long = System.currentTimeMillis(),

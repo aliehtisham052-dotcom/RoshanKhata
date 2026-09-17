@@ -450,6 +450,34 @@ val MIGRATION_16_17 = object : Migration(16, 17) {
 }
 
 /**
+ * Room for what a product IS, and for which of three Ali Razas this one is.
+ *
+ * Six columns, all TEXT and all nullable, and that is the whole of it. Every
+ * existing row stays valid unread and unchanged: nothing is required, nothing
+ * is back-filled, no default invents an answer the owner never gave. A shop
+ * that never opens the new fields behaves exactly as it does today.
+ *
+ * Deliberately NOT touched: the ledger. A balance here is the sum of what was
+ * given minus what came back, out of the transactions table alone — a product's
+ * company or a customer's village cannot reach that arithmetic, today or after
+ * this migration.
+ */
+val MIGRATION_17_18 = object : Migration(17, 18) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // What the product is — the four an inspector asks for, plus the maker.
+        db.execSQL("ALTER TABLE products ADD COLUMN company TEXT")
+        db.execSQL("ALTER TABLE products ADD COLUMN productType TEXT")
+        db.execSQL("ALTER TABLE products ADD COLUMN formulation TEXT")
+        db.execSQL("ALTER TABLE products ADD COLUMN registrationNumber TEXT")
+        db.execSQL("ALTER TABLE products ADD COLUMN technicalName TEXT")
+
+        // Who the customer is, the way a village names them.
+        db.execSQL("ALTER TABLE parties ADD COLUMN fatherName TEXT")
+        db.execSQL("ALTER TABLE parties ADD COLUMN village TEXT")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -458,7 +486,7 @@ val MIGRATION_16_17 = object : Migration(16, 17) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 17
+const val KHATA_DB_VERSION = 18
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -477,5 +505,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_13_14,
     MIGRATION_14_15,
     MIGRATION_15_16,
-    MIGRATION_16_17
+    MIGRATION_16_17,
+    MIGRATION_17_18
 )

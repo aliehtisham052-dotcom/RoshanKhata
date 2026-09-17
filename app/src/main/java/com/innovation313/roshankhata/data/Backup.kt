@@ -519,6 +519,8 @@ object Backup {
         put("id", p.id)
         put("name", p.name)
         put("phone", p.phone ?: JSONObject.NULL)
+        put("fatherName", p.fatherName ?: JSONObject.NULL)
+        put("village", p.village ?: JSONObject.NULL)
         put("isCustomer", p.isCustomer)
         put("photoPath", p.photoPath ?: JSONObject.NULL)
         put("creditLimit", p.creditLimit ?: JSONObject.NULL)
@@ -531,6 +533,8 @@ object Backup {
         id = o.getLong("id"),
         name = o.getString("name"),
         phone = o.optNullableString("phone"),
+        fatherName = o.optNullableString("fatherName"),
+        village = o.optNullableString("village"),
         isCustomer = o.optBoolean("isCustomer", true),
         photoPath = o.optNullableString("photoPath"),
         creditLimit = o.optNullableDouble("creditLimit"),
@@ -754,6 +758,11 @@ object Backup {
         put("normalisedName", p.normalisedName)
         put("category", p.category ?: JSONObject.NULL)
         put("defaultUnit", p.defaultUnit ?: JSONObject.NULL)
+        put("company", p.company ?: JSONObject.NULL)
+        put("productType", p.productType ?: JSONObject.NULL)
+        put("formulation", p.formulation ?: JSONObject.NULL)
+        put("registrationNumber", p.registrationNumber ?: JSONObject.NULL)
+        put("technicalName", p.technicalName ?: JSONObject.NULL)
         put("note", p.note ?: JSONObject.NULL)
         put("createdAt", p.createdAt)
         put("isDeleted", p.isDeleted)
@@ -778,6 +787,14 @@ object Backup {
             normalisedName = ProductName.normalised(name),
             category = o.optNullableString("category"),
             defaultUnit = o.optNullableString("defaultUnit"),
+            // Absent from every backup written before these columns existed.
+            // optNullableString returns null for a key that is not there, so
+            // an older file restores exactly as it always did.
+            company = o.optNullableString("company"),
+            productType = o.optNullableString("productType"),
+            formulation = o.optNullableString("formulation"),
+            registrationNumber = o.optNullableString("registrationNumber"),
+            technicalName = o.optNullableString("technicalName"),
             note = o.optNullableString("note"),
             createdAt = o.optLong("createdAt", System.currentTimeMillis()),
             isDeleted = o.optBoolean("isDeleted", false),

@@ -14,6 +14,19 @@ data class Party(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val phone: String? = null,
+
+    /**
+     * How a village customer is actually told apart from the next one.
+     *
+     * Three men named Ali Raza buy from the same shop; what separates them is
+     * whose son they are and which village they come from. A ledger that
+     * holds only the name leaves the owner to write "Ali Raza 2" and hope
+     * they remember which is which. Both nullable: a town customer with a
+     * phone number needs neither, and neither is ever required to save.
+     */
+    val fatherName: String? = null,
+    val village: String? = null,
+
     /** true = customer, false = supplier */
     val isCustomer: Boolean = true,
     /** Local file path to the party's photo, if set. Never leaves the device. */
