@@ -193,9 +193,9 @@
     <string name="remind_whatsapp">واتساب</string>
     <string name="remind_sms">رسالة نصية</string>
     <string name="reminder_preview_help">اقرأها قبل الإرسال. يمكنك تعديل أي شيء هنا — سيسلّمها روشن كهاتا إلى واتساب أو تطبيق الرسائل، وأنت تضغط إرسال بنفسك.</string>
-    <string name="reminder_they_owe">\U0001F9FE *تذكير بالسداد*\n\nالسيد *%1$s*،\n\nالمبلغ المستحق: *%2$s*\n\nنرجو ترتيب السداد في أقرب وقت.\n\nشكراً لكم.</string>
-    <string name="reminder_they_owe_by_date">\U0001F9FE *تذكير بالسداد*\n\nالسيد *%1$s*،\n\nالمبلغ المستحق: *%2$s*\nالتاريخ المتفق عليه: *%3$s*\n\nنرجو السداد بحلول التاريخ المتفق عليه.\n\nشكراً لكم.</string>
-    <string name="reminder_i_owe">\U0001F9FE *إشعار حساب*\n\nالسيد *%1$s*،\n\nلكم علينا: *%2$s*\n\nسنسدده قريباً إن شاء الله. إن اختلف حسابكم عن حسابنا فأخبرونا.\n\nشكراً لكم.</string>
+    <string name="reminder_they_owe">\uD83E\uDDFE *تذكير بالسداد*\n\nالسيد *%1$s*،\n\nالمبلغ المستحق: *%2$s*\n\nنرجو ترتيب السداد في أقرب وقت.\n\nشكراً لكم.</string>
+    <string name="reminder_they_owe_by_date">\uD83E\uDDFE *تذكير بالسداد*\n\nالسيد *%1$s*،\n\nالمبلغ المستحق: *%2$s*\nالتاريخ المتفق عليه: *%3$s*\n\nنرجو السداد بحلول التاريخ المتفق عليه.\n\nشكراً لكم.</string>
+    <string name="reminder_i_owe">\uD83E\uDDFE *إشعار حساب*\n\nالسيد *%1$s*،\n\nلكم علينا: *%2$s*\n\nسنسدده قريباً إن شاء الله. إن اختلف حسابكم عن حسابنا فأخبرونا.\n\nشكراً لكم.</string>
     <string name="send_reminder">إرسال تذكير</string>
     <string name="open_whatsapp">فتح واتساب</string>
     <string name="open_sms">فتح الرسائل</string>

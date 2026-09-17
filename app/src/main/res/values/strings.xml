@@ -202,12 +202,12 @@
     <string name="remind_whatsapp">WhatsApp</string>
     <string name="remind_sms">SMS</string>
     <string name="reminder_preview_help">Read it over before sending. You can edit anything here — Roshan Khata will hand it to WhatsApp or your SMS app, and you press send yourself.</string>
-    <string name="reminder_they_owe">\U0001F9FE *Payment Reminder*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\n\nKindly arrange the payment at your earliest.\n\nThank you.</string>
+    <string name="reminder_they_owe">\uD83E\uDDFE *Payment Reminder*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\n\nKindly arrange the payment at your earliest.\n\nThank you.</string>
     <!-- Used instead of the above when the party has an open payment plan with an
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
-    <string name="reminder_they_owe_by_date">\U0001F9FE *Payment Reminder*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\nAgreed date: *%3$s*\n\nKindly clear it by the agreed date.\n\nThank you.</string>
-    <string name="reminder_i_owe">\U0001F9FE *Payment Note*\n\nDear *%1$s*,\n\nWe owe you: *%2$s*\n\nWe will settle it soon. If your records differ from ours, please let us know.\n\nThank you.</string>
+    <string name="reminder_they_owe_by_date">\uD83E\uDDFE *Payment Reminder*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\nAgreed date: *%3$s*\n\nKindly clear it by the agreed date.\n\nThank you.</string>
+    <string name="reminder_i_owe">\uD83E\uDDFE *Payment Note*\n\nDear *%1$s*,\n\nWe owe you: *%2$s*\n\nWe will settle it soon. If your records differ from ours, please let us know.\n\nThank you.</string>
     <string name="send_reminder">Send Reminder</string>
     <string name="open_whatsapp">Open WhatsApp</string>
     <string name="open_sms">Open SMS</string>
