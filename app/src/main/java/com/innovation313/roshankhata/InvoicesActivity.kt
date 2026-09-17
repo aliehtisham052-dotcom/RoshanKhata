@@ -20,6 +20,7 @@ import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.InvoiceAdapter
 import com.innovation313.roshankhata.ui.NumberWords
+import com.innovation313.roshankhata.ui.Reminder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -83,6 +84,7 @@ class InvoicesActivity : AppCompatActivity() {
         val options = arrayOf(
             getString(R.string.view),
             getString(R.string.edit),
+            getString(R.string.invoice_send_whatsapp),
             getString(R.string.invoice_share_pdf),
             getString(R.string.delete)
         )
@@ -92,11 +94,78 @@ class InvoicesActivity : AppCompatActivity() {
                 when (which) {
                     0 -> viewInvoice(invoice)
                     1 -> editInvoice(invoice)
-                    2 -> sharePdf(invoice)
-                    3 -> confirmDeleteInvoice(invoice)
+                    2 -> sendPdfToCustomer(invoice)
+                    3 -> sharePdf(invoice)
+                    4 -> confirmDeleteInvoice(invoice)
                 }
             }
             .show()
+    }
+
+    /**
+     * The invoice, to the customer it was written for, without a contact hunt.
+     *
+     * The generic share sheet asks the owner to pick an app and then pick the
+     * person — for an invoice that already carries that person's number, both
+     * questions are already answered, and picking the wrong name from a
+     * contact list sends someone else's bill to them.
+     *
+     * WhatsApp exposes no documented way to attach a file to a named chat.
+     * The undocumented "jid" extra usually opens the right one; when it does
+     * not, WhatsApp falls back to its own picker with the PDF already
+     * attached, which is still one step fewer than the share sheet. If
+     * WhatsApp is not installed at all the plain chooser opens instead, so
+     * the invoice can still go out by email or Bluetooth.
+     */
+    private fun sendPdfToCustomer(invoice: InvoiceSummary) {
+        lifecycleScope.launch {
+            val full = dao.getInvoice(invoice.id) ?: return@launch
+
+            val number = full.customerPhone?.let { Reminder.toWhatsAppNumber(it) }
+            if (number.isNullOrBlank()) {
+                // No number on this invoice — say why rather than opening
+                // WhatsApp at nobody.
+                Toast.makeText(this@InvoicesActivity, R.string.no_phone_number, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+
+            val uri = buildPdfUri(full.id) ?: return@launch
+
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                putExtra(Intent.EXTRA_SUBJECT, invoice.invoiceNumber)
+                putExtra("jid", "$number@s.whatsapp.net")
+                setPackage("com.whatsapp")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            try {
+                startActivity(send)
+            } catch (_: android.content.ActivityNotFoundException) {
+                Toast.makeText(
+                    this@InvoicesActivity, R.string.whatsapp_not_installed, Toast.LENGTH_LONG
+                ).show()
+                sharePdf(invoice)
+            }
+        }
+    }
+
+    /** Builds the PDF and returns a shareable uri, or null after reporting why. */
+    private suspend fun buildPdfUri(invoiceId: Long): android.net.Uri? {
+        val full = dao.getInvoice(invoiceId) ?: return null
+        val items = dao.invoiceItems(invoiceId)
+
+        val file = withContext(Dispatchers.IO) {
+            InvoicePdfExport.build(this@InvoicesActivity, full, items)
+        }
+        if (file == null) {
+            Toast.makeText(this@InvoicesActivity, R.string.invoice_pdf_failed, Toast.LENGTH_LONG).show()
+            return null
+        }
+        return androidx.core.content.FileProvider.getUriForFile(
+            this@InvoicesActivity, "$packageName.fileprovider", file
+        )
     }
 
     private fun editInvoice(invoice: InvoiceSummary) {
@@ -119,21 +188,8 @@ class InvoicesActivity : AppCompatActivity() {
      */
     private fun sharePdf(invoice: InvoiceSummary) {
         lifecycleScope.launch {
-            val full = dao.getInvoice(invoice.id) ?: return@launch
-            val items = dao.invoiceItems(invoice.id)
+            val uri = buildPdfUri(invoice.id) ?: return@launch
 
-            val file = withContext(Dispatchers.IO) {
-                InvoicePdfExport.build(this@InvoicesActivity, full, items)
-            }
-
-            if (file == null) {
-                Toast.makeText(this@InvoicesActivity, R.string.invoice_pdf_failed, Toast.LENGTH_LONG).show()
-                return@launch
-            }
-
-            val uri = androidx.core.content.FileProvider.getUriForFile(
-                this@InvoicesActivity, "$packageName.fileprovider", file
-            )
             val share = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
                 putExtra(Intent.EXTRA_STREAM, uri)
