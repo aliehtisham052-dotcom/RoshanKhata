@@ -48,32 +48,53 @@ object Reminder {
      * "by the date you promised" is both clearer and fairer than a vague ask.
      * When there is none it simply asks for payment soon: a reminder must
      * never invent a date the customer never gave.
+     *
+     * [forSms] strips the WhatsApp markup. The strings are written once, in
+     * WhatsApp's own *bold* syntax with a heading emoji — SMS renders neither,
+     * so there the asterisks would show up as literal clutter and the emoji
+     * would flip the whole message to UCS-2, cutting an SMS from 160
+     * characters to 70 and costing the owner extra parts per send.
      */
     fun buildMessage(
         context: Context,
         partyName: String,
         balance: Double,
         businessName: String?,
-        promisedDate: Long? = null
+        promisedDate: Long? = null,
+        forSms: Boolean = false
     ): String {
         val amount = Format.money(balance)
         val from = if (businessName.isNullOrBlank()) "" else "\n\n— $businessName"
 
-        return if (Money.isPositive(balance)) {
+        val body = if (Money.isPositive(balance)) {
             // They owe me.
             if (promisedDate != null) {
                 context.getString(
                     R.string.reminder_they_owe_by_date,
                     partyName, amount, Format.dateOnly(promisedDate)
-                ) + from
+                )
             } else {
-                context.getString(R.string.reminder_they_owe, partyName, amount) + from
+                context.getString(R.string.reminder_they_owe, partyName, amount)
             }
         } else {
             // I owe them — a courtesy note, not a demand.
-            context.getString(R.string.reminder_i_owe, partyName, amount) + from
+            context.getString(R.string.reminder_i_owe, partyName, amount)
         }
+
+        return (if (forSms) toPlainText(body) else body) + from
     }
+
+    /**
+     * WhatsApp markup out, readable text in: drop the bold asterisks and the
+     * heading emoji, and close the blank line the emoji leaves behind.
+     */
+    private fun toPlainText(message: String): String =
+        message
+            .replace("*", "")
+            .replace("\uD83E\uDDFE", "")   // 🧾 — the only emoji these strings use
+            .lines()
+            .joinToString("\n") { it.trim() }
+            .trim()
 
     /** Opens WhatsApp with the message ready. The user presses send. */
     fun sendViaWhatsApp(context: Context, phone: String?, message: String) {
