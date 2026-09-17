@@ -706,6 +706,8 @@
     <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
 
     <string name="report_problem">Masla Batayen</string>
+    <string name="rate_app">App ko rating dein</string>
+    <string name="rate_app_note">Aap ki rating se doosre dukandaron tak ye app pohanchti hai. Koi kharabi ya kami ho to "Masla batayen" istemal karein — wo seedha hum tak pohanchta hai.</string>
     <string name="report_problem_sub">Batayen kya kharab hua</string>
     <string name="report_privacy">Aap ke gahakon ke naam, number aur balance kabhi nahi bheje jate. Report ke saath sirf app version aur phone model jata hai \u2014 yehi kharabi dhoondne mein madad deta hai.\n\nEmail aap ki apni mail app mein khulti hai, is liye bhejne se pehle aap dekh sakte hain ke kya ja raha hai.</string>
 

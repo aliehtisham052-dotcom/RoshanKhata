@@ -706,6 +706,8 @@
     <string name="backup_saved_at">%1$s \u00B7 %2$d KB</string>
 
     <string name="report_problem">الإبلاغ عن مشكلة</string>
+    <string name="rate_app">قيّم هذا التطبيق</string>
+    <string name="rate_app_note">تقييمك يساعد أصحاب المحلات الآخرين على اكتشاف التطبيق. إن وجدت خللاً أو نقصاً فاستخدم "الإبلاغ عن مشكلة" — فهي تصلنا مباشرة.</string>
     <string name="report_problem_sub">أخبرنا بما حدث</string>
     <string name="report_privacy">أسماء عملائك وأرقامهم وأرصدتهم لا تُرسل أبدًا. يذهب مع البلاغ إصدار التطبيق وطراز هاتفك فقط \u2014 وهذا ما يعيننا على إيجاد الخلل.\n\nيفتح البريد في تطبيقك أنت، فترى ما يُرسل قبل أن يذهب.</string>
 

@@ -732,6 +732,8 @@
     <!-- Printable business report -->
     <!-- Report a problem -->
     <string name="report_problem">مسئلو ٻڌايو</string>
+    <string name="rate_app">ايپ کي ريٽنگ ڏيو</string>
+    <string name="rate_app_note">توهان جي ريٽنگ سان ٻين دڪاندارن تائين هي ايپ پهچندي آهي. ڪا خرابي يا کوٽ هجي ته "مسئلو ٻڌايو" استعمال ڪريو — اهو سڌو اسان تائين پهچندو آهي.</string>
     <string name="report_problem_sub">ٻڌايو ڇا خراب ٿيو</string>
     <string name="report_privacy">توهان جي گراهڪن جا نالا، نمبر ۽ بيلنس ڪڏهن به نه موڪليا ويندا. رپورٽ سان رڳو ايپ جو ورزن ۽ فون جو ماڊل ويندو \u2014 اهو ئي خرابي ڳولڻ ۾ مدد ڪري ٿو.\n\nاي ميل توهان جي پنهنجي ميل ايپ ۾ کلندي، تنهنڪري موڪلڻ کان اڳ ڏسي سگهو ٿا ته ڇا وڃي رهيو آهي.</string>
 
