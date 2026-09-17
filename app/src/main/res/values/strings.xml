@@ -1075,4 +1075,20 @@
     <string name="change_party_type_help">This only corrects what kind of party they are. The ledger, the balance and every bill stay exactly as they are — no money moves. It does decide who appears in product promotion lists, which include customers only.</string>
     <string name="now_a_customer">Saved as a customer</string>
     <string name="now_a_supplier">Saved as a supplier</string>
+
+    <string name="father_name_optional">Father name (optional)</string>
+    <string name="village_optional">Village (optional)</string>
+    <string name="product_name">Product name</string>
+    <string name="company_optional">Company / brand (optional)</string>
+    <string name="category_optional">Category (optional)</string>
+    <string name="unit_optional">Unit — bottle, kg, bag (optional)</string>
+    <string name="compliance_section">Agriculture Department details</string>
+    <string name="compliance_explain">Only needed if an inspection may ask for them. Leave blank for feed or seed.</string>
+    <string name="product_type_hint">Type — pesticide, fertilizer, seed</string>
+    <string name="technical_name_hint">Active ingredient, e.g. Chlorpyrifos 40% EC</string>
+    <string name="formulation_hint">Formulation — EC, WP, SC, GR, SL, WG</string>
+    <string name="registration_number_hint">Registration number (DRAP)</string>
+    <string name="product_who_bought">Who bought this</string>
+    <string name="product_edit_details">Edit details</string>
+    <string name="product_name_taken">“%1$s” already uses that name.</string>
 </resources>

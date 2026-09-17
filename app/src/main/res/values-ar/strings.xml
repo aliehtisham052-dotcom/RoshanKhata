@@ -1043,4 +1043,20 @@
     <string name="change_party_type_help">هذا يصحح نوع الطرف فقط. دفتر الحساب والرصيد وكل فاتورة تبقى كما هي — لا تنتقل أي أموال. لكنه يحدد من يظهر في قوائم ترويج المنتجات، وهي تضم العملاء فقط.</string>
     <string name="now_a_customer">حُفظ كعميل</string>
     <string name="now_a_supplier">حُفظ كمورد</string>
+
+    <string name="father_name_optional">اسم الأب (اختياري)</string>
+    <string name="village_optional">القرية (اختياري)</string>
+    <string name="product_name">اسم المنتج</string>
+    <string name="company_optional">الشركة / العلامة (اختياري)</string>
+    <string name="category_optional">الفئة (اختياري)</string>
+    <string name="unit_optional">الوحدة — زجاجة، كجم، كيس (اختياري)</string>
+    <string name="compliance_section">بيانات دائرة الزراعة</string>
+    <string name="compliance_explain">مطلوبة فقط إن سُئل عنها في التفتيش. اتركها فارغة للأعلاف أو البذور.</string>
+    <string name="product_type_hint">النوع — مبيد، سماد، بذور</string>
+    <string name="technical_name_hint">المادة الفعالة، مثل Chlorpyrifos 40% EC</string>
+    <string name="formulation_hint">التركيبة — EC, WP, SC, GR, SL, WG</string>
+    <string name="registration_number_hint">رقم التسجيل (DRAP)</string>
+    <string name="product_who_bought">من اشترى هذا</string>
+    <string name="product_edit_details">تعديل البيانات</string>
+    <string name="product_name_taken">هذا الاسم يستخدمه ”%1$s“ بالفعل.</string>
 </resources>

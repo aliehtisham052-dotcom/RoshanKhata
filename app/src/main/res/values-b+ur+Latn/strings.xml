@@ -1035,4 +1035,20 @@
     <string name="change_party_type_help">Ye sirf ye durust karta hai ke party kis qism ki hai. Khata, balance aur har bill jaise hain waise hi rahenge — koi raqam idhar udhar nahi hoti. Haan, ye tay karta hai ke product promotion list mein kaun aayega, kyunki us mein sirf customers aate hain.</string>
     <string name="now_a_customer">Customer ke tor par mehfooz</string>
     <string name="now_a_supplier">Supplier ke tor par mehfooz</string>
+
+    <string name="father_name_optional">Walid ka naam (ikhtiyari)</string>
+    <string name="village_optional">Gaon (ikhtiyari)</string>
+    <string name="product_name">Product ka naam</string>
+    <string name="company_optional">Company / brand (ikhtiyari)</string>
+    <string name="category_optional">Qisam (ikhtiyari)</string>
+    <string name="unit_optional">Unit — bottle, kilo, bori (ikhtiyari)</string>
+    <string name="compliance_section">Mehkama-e-Zaraat ki tafseelat</string>
+    <string name="compliance_explain">Sirf us waqt darkaar jab muaine mein poocha jaye. Feed ya beej ke liye khali chhod dein.</string>
+    <string name="product_type_hint">Qisam — pesticide, khaad, beej</string>
+    <string name="technical_name_hint">Moassir juzu, maslan Chlorpyrifos 40% EC</string>
+    <string name="formulation_hint">Formulation — EC, WP, SC, GR, SL, WG</string>
+    <string name="registration_number_hint">Registration number (DRAP)</string>
+    <string name="product_who_bought">Kis kis ne khareeda</string>
+    <string name="product_edit_details">Tafseelat mein tarmeem</string>
+    <string name="product_name_taken">Ye naam pehle hi “%1$s” ke paas hai.</string>
 </resources>

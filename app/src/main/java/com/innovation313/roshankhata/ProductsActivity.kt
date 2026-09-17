@@ -13,6 +13,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.data.Stock
 import com.innovation313.roshankhata.ui.ProductAdapter
 import com.innovation313.roshankhata.ui.ScreenInsets
@@ -89,11 +90,117 @@ class ProductsActivity : AppCompatActivity() {
     }
 
     private fun openCustomers(stock: Stock.ProductStock) {
+        // Two things an owner wants from a product, so ask which rather than
+        // guessing: who bought it, or what it actually is. Same shape as the
+        // invoice list's own tap.
+        MaterialAlertDialogBuilder(this)
+            .setTitle(stock.name)
+            .setItems(
+                arrayOf(
+                    getString(R.string.product_who_bought),
+                    getString(R.string.product_edit_details)
+                )
+            ) { _, which ->
+                when (which) {
+                    0 -> openProductCustomers(stock)
+                    1 -> editProduct(stock)
+                }
+            }
+            .show()
+    }
+
+    private fun openProductCustomers(stock: Stock.ProductStock) {
         startActivity(
             Intent(this, ProductCustomersActivity::class.java)
                 .putExtra(ProductCustomersActivity.EXTRA_PRODUCT_ID, stock.productId)
                 .putExtra(ProductCustomersActivity.EXTRA_PRODUCT_NAME, stock.name)
         )
+    }
+
+    /**
+     * The first way to correct a product since the app shipped.
+     *
+     * Until now a product was whatever got typed into a bill the first time,
+     * for good — a misspelling stayed a misspelling, and there was nowhere to
+     * record what the product actually is. The compliance fields are why this
+     * exists: an inspector asks for the registration number and the active
+     * ingredient, and the ledger has never had anywhere to keep them.
+     *
+     * The name is renamed along with the two keys derived from it; every
+     * other field is a plain copy. An empty field saves as null and is simply
+     * not known yet — never as an empty string, which would later read as an
+     * answer that was given.
+     *
+     * The rename is checked first. nameKey is a UNIQUE index, so renaming
+     * "Urea" to a name another product already holds is a write the database
+     * refuses — silently, inside a coroutine, with the owner believing it
+     * saved. Better to catch it here and say which product is in the way.
+     */
+    private fun editProduct(stock: Stock.ProductStock) {
+        lifecycleScope.launch {
+            val product = dao.productById(stock.productId) ?: return@launch
+
+            val view = layoutInflater.inflate(R.layout.dialog_edit_product, null)
+            fun field(id: Int) = view.findViewById<android.widget.EditText>(id)
+
+            val etName = field(R.id.etProductName).apply { setText(product.name) }
+            val etCompany = field(R.id.etProductCompany).apply { setText(product.company) }
+            val etCategory = field(R.id.etProductCategory).apply { setText(product.category) }
+            val etUnit = field(R.id.etProductUnit).apply { setText(product.defaultUnit) }
+            val etType = field(R.id.etProductType).apply { setText(product.productType) }
+            val etTechnical = field(R.id.etTechnicalName).apply { setText(product.technicalName) }
+            val etFormulation = field(R.id.etFormulation).apply { setText(product.formulation) }
+            val etRegistration =
+                field(R.id.etRegistrationNumber).apply { setText(product.registrationNumber) }
+
+            MaterialAlertDialogBuilder(this@ProductsActivity)
+                .setTitle(R.string.product_edit_details)
+                .setView(view)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.save) { _, _ ->
+                    val newName = etName.text.toString().trim()
+                    if (newName.isEmpty()) {
+                        Toast.makeText(
+                            this@ProductsActivity, R.string.enter_name, Toast.LENGTH_SHORT
+                        ).show()
+                        return@setPositiveButton
+                    }
+
+                    fun typed(e: android.widget.EditText) =
+                        e.text.toString().trim().ifEmpty { null }
+
+                    val updated = product.copy(
+                        name = newName,
+                        nameKey = ProductName.key(newName),
+                        normalisedName = ProductName.normalised(newName),
+                        company = typed(etCompany),
+                        category = typed(etCategory),
+                        defaultUnit = typed(etUnit),
+                        productType = typed(etType),
+                        technicalName = typed(etTechnical),
+                        formulation = typed(etFormulation),
+                        registrationNumber = typed(etRegistration)
+                    )
+
+                    lifecycleScope.launch {
+                        // Only a rename can collide; keeping the same name
+                        // finds this very product and is no clash at all.
+                        val clash = dao.productByKey(updated.nameKey)
+                        if (clash != null && clash.id != product.id) {
+                            Toast.makeText(
+                                this@ProductsActivity,
+                                getString(R.string.product_name_taken, clash.name),
+                                Toast.LENGTH_LONG
+                            ).show()
+                            return@launch
+                        }
+                        // AppScope for the write itself: leaving the screen
+                        // right after Save must not cancel it.
+                        AppScope.launch { dao.updateProduct(updated) }
+                    }
+                }
+                .show()
+        }
     }
 
     /**

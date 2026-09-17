@@ -1063,4 +1063,20 @@
     <string name="change_party_type_help">هي رڳو اهو درست ڪري ٿو ته ڌر ڪهڙي قسم جي آهي. کاتو، بيلنس ۽ هر بل جيئن آهن تيئن رهندا — ڪا رقم هيڏانهن هوڏانهن نه ٿي ٿئي. ها، هي طئي ڪري ٿو ته پراڊڪٽ پروموشن لسٽ ۾ ڪير ايندو، ڇو ته ان ۾ رڳو گراهڪ ايندا آهن.</string>
     <string name="now_a_customer">گراهڪ طور سيڀ ٿيو</string>
     <string name="now_a_supplier">سپلائر طور سيڀ ٿيو</string>
+
+    <string name="father_name_optional">پيءُ جو نالو (اختياري)</string>
+    <string name="village_optional">ڳوٺ (اختياري)</string>
+    <string name="product_name">پراڊڪٽ جو نالو</string>
+    <string name="company_optional">ڪمپني / برانڊ (اختياري)</string>
+    <string name="category_optional">قسم (اختياري)</string>
+    <string name="unit_optional">يونٽ — بوتل، ڪلو، ٻوري (اختياري)</string>
+    <string name="compliance_section">زراعت کاتي جون تفصيلون</string>
+    <string name="compliance_explain">رڳو تڏهن گهربل جڏهن معائني ۾ پڇيو وڃي. فيڊ يا ٻج لاءِ خالي ڇڏيو.</string>
+    <string name="product_type_hint">قسم — پيسٽيسائيڊ، ڀاڻ، ٻج</string>
+    <string name="technical_name_hint">مؤثر جزو، مثال Chlorpyrifos 40% EC</string>
+    <string name="formulation_hint">فارموليشن — EC, WP, SC, GR, SL, WG</string>
+    <string name="registration_number_hint">رجسٽريشن نمبر (DRAP)</string>
+    <string name="product_who_bought">ڪنهن ڪنهن ورتو</string>
+    <string name="product_edit_details">تفصيلن ۾ ترميم</string>
+    <string name="product_name_taken">هي نالو اڳ ۾ ئي ”%1$s“ وٽ آهي.</string>
 </resources>

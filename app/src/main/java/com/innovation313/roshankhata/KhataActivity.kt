@@ -389,6 +389,8 @@ class KhataActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_add_party, null)
         val etName: EditText = view.findViewById(R.id.etName)
         val etPhone: EditText = view.findViewById(R.id.etPhone)
+        val etFatherName: EditText = view.findViewById(R.id.etFatherName)
+        val etVillage: EditText = view.findViewById(R.id.etVillage)
         val rbCustomer: RadioButton = view.findViewById(R.id.rbCustomer)
         val tvWarning: TextView = view.findViewById(R.id.tvAddPartyDuplicateWarning)
 
@@ -442,6 +444,8 @@ class KhataActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
                 val phone = etPhone.text.toString().trim().ifEmpty { null }
+                val fatherName = etFatherName.text.toString().trim().ifEmpty { null }
+                val village = etVillage.text.toString().trim().ifEmpty { null }
                 // Read here, on the main thread, not inside the coroutine
                 // below — a View's own field is not something to reach across
                 // to from a background dispatcher.
@@ -474,7 +478,13 @@ class KhataActivity : AppCompatActivity() {
                         // quick Back press right after Save.
                         AppScope.launch {
                             dao.insertParty(
-                                Party(name = name, phone = phone, isCustomer = isCustomer)
+                                Party(
+                                    name = name,
+                                    phone = phone,
+                                    fatherName = fatherName,
+                                    village = village,
+                                    isCustomer = isCustomer
+                                )
                             )
                         }
                         return@launch
@@ -486,7 +496,13 @@ class KhataActivity : AppCompatActivity() {
                         } else {
                             AppScope.launch {
                                 dao.insertParty(
-                                    Party(name = name, phone = phone, isCustomer = isCustomer)
+                                    Party(
+                                    name = name,
+                                    phone = phone,
+                                    fatherName = fatherName,
+                                    village = village,
+                                    isCustomer = isCustomer
+                                )
                                 )
                             }
                         }
