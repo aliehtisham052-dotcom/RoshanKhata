@@ -1091,4 +1091,5 @@
     <string name="product_who_bought">Who bought this</string>
     <string name="product_edit_details">Edit details</string>
     <string name="product_name_taken">“%1$s” already uses that name.</string>
+    <string name="edit_details">Edit details</string>
 </resources>

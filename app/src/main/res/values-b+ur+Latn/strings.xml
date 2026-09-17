@@ -1051,4 +1051,5 @@
     <string name="product_who_bought">Kis kis ne khareeda</string>
     <string name="product_edit_details">Tafseelat mein tarmeem</string>
     <string name="product_name_taken">Ye naam pehle hi “%1$s” ke paas hai.</string>
+    <string name="edit_details">Tafseelat mein tarmeem</string>
 </resources>
