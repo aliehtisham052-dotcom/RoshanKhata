@@ -1035,4 +1035,20 @@
     <string name="change_party_type_help">یہ صرف یہ درست کرتا ہے کہ پارٹی کس قسم کی ہے۔ کھاتہ، بیلنس اور ہر بل جیسے ہیں ویسے ہی رہیں گے — کوئی رقم اِدھر اُدھر نہیں ہوتی۔ ہاں، یہ طے کرتا ہے کہ پروڈکٹ پروموشن لسٹ میں کون آئے گا، کیونکہ اس میں صرف گاہک آتے ہیں۔</string>
     <string name="now_a_customer">گاہک کے طور پر محفوظ</string>
     <string name="now_a_supplier">سپلائر کے طور پر محفوظ</string>
+
+    <string name="father_name_optional">والد کا نام (اختیاری)</string>
+    <string name="village_optional">گاؤں (اختیاری)</string>
+    <string name="product_name">پروڈکٹ کا نام</string>
+    <string name="company_optional">کمپنی / برانڈ (اختیاری)</string>
+    <string name="category_optional">قسم (اختیاری)</string>
+    <string name="unit_optional">یونٹ — بوتل، کلو، بوری (اختیاری)</string>
+    <string name="compliance_section">محکمہ زراعت کی تفصیلات</string>
+    <string name="compliance_explain">صرف اُس وقت درکار جب معائنے میں پوچھا جائے۔ فیڈ یا بیج کے لیے خالی چھوڑ دیں۔</string>
+    <string name="product_type_hint">قسم — پیسٹیسائیڈ، کھاد، بیج</string>
+    <string name="technical_name_hint">مؤثر جزو، مثلاً Chlorpyrifos 40% EC</string>
+    <string name="formulation_hint">فارمولیشن — EC, WP, SC, GR, SL, WG</string>
+    <string name="registration_number_hint">رجسٹریشن نمبر (DRAP)</string>
+    <string name="product_who_bought">کس کس نے خریدا</string>
+    <string name="product_edit_details">تفصیلات میں ترمیم</string>
+    <string name="product_name_taken">یہ نام پہلے ہی ”%1$s“ کے پاس ہے۔</string>
 </resources>

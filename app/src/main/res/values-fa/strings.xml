@@ -1063,4 +1063,20 @@
     <string name="change_party_type_help">این فقط نوع طرف را اصلاح می‌کند. دفتر، مانده و هر فاکتور دقیقاً همان‌طور می‌ماند — هیچ پولی جابه‌جا نمی‌شود. اما تعیین می‌کند چه کسی در فهرست‌های تبلیغ محصول بیاید، چون آن فهرست فقط مشتریان را دارد.</string>
     <string name="now_a_customer">به‌عنوان مشتری ذخیره شد</string>
     <string name="now_a_supplier">به‌عنوان تأمین‌کننده ذخیره شد</string>
+
+    <string name="father_name_optional">نام پدر (اختیاری)</string>
+    <string name="village_optional">روستا (اختیاری)</string>
+    <string name="product_name">نام محصول</string>
+    <string name="company_optional">شرکت / برند (اختیاری)</string>
+    <string name="category_optional">دسته (اختیاری)</string>
+    <string name="unit_optional">واحد — بطری، کیلو، کیسه (اختیاری)</string>
+    <string name="compliance_section">مشخصات اداره کشاورزی</string>
+    <string name="compliance_explain">فقط اگر در بازرسی پرسیده شود لازم است. برای خوراک یا بذر خالی بگذارید.</string>
+    <string name="product_type_hint">نوع — آفت‌کش، کود، بذر</string>
+    <string name="technical_name_hint">ماده مؤثر، مثلاً Chlorpyrifos 40% EC</string>
+    <string name="formulation_hint">فرمولاسیون — EC, WP, SC, GR, SL, WG</string>
+    <string name="registration_number_hint">شماره ثبت (DRAP)</string>
+    <string name="product_who_bought">چه کسانی خریدند</string>
+    <string name="product_edit_details">ویرایش مشخصات</string>
+    <string name="product_name_taken">این نام را «%1$s» دارد.</string>
 </resources>

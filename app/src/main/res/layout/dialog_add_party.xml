@@ -26,6 +26,29 @@
         android:inputType="phone" />
 
     <!--
+      Both optional, and placed after the phone on purpose: a shop with the
+      number saved rarely needs either, while a village round needs them more
+      than the number. Nothing here blocks Save.
+    -->
+    <EditText
+        android:id="@+id/etFatherName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/father_name_optional"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etVillage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/village_optional"
+        android:importantForAutofill="no"
+        android:inputType="textCapWords" />
+
+    <!--
       Live heads-up while still typing — the same check that runs again,
       harder, at Save (see confirmDuplicate in KhataActivity). This one is
       quiet and non-blocking: it just gives the owner a chance to notice
