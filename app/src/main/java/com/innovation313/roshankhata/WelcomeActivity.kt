@@ -98,8 +98,7 @@ class WelcomeActivity : AppCompatActivity() {
                     // Already granted — connected. Say so before moving on;
                     // the welcome screen hands off to the ledger too fast
                     // for the owner to otherwise notice the connection took.
-                    showConnectedToast()
-                    markSeenAndProceed()
+                    showConnectedAndProceed()
                 }
             }
             .addOnFailureListener {
@@ -110,27 +109,56 @@ class WelcomeActivity : AppCompatActivity() {
             }
     }
 
-    /** A brief confirmation the owner can actually see before the screen changes. */
-    private fun showConnectedToast() {
-        val email = DriveAuth.accountName(this) ?: return
-        Toast.makeText(
-            this,
-            getString(R.string.drive_connected_welcome, email),
-            Toast.LENGTH_LONG
-        ).show()
+    /**
+     * Confirm the sign-in ON THIS SCREEN and hold a moment before moving on.
+     *
+     * A toast was tried first and was the wrong tool: this activity finishes
+     * immediately after, and the ledger's first-run walkthrough opens a dimmed
+     * card over the whole screen — the toast landed underneath it and the owner
+     * never saw that the account had connected. The banner is part of this
+     * layout, so nothing can cover it, and the short pause is what makes it
+     * readable rather than a flash.
+     */
+    private fun showConnectedAndProceed() {
+        val email = DriveAuth.accountName(this)
+        if (email == null) {
+            markSeenAndProceed()
+            return
+        }
+
+        findViewById<android.widget.TextView>(R.id.tvWelcomeSignedInEmail).text = email
+        val banner = findViewById<android.view.View>(R.id.welcomeSignedIn)
+        banner.alpha = 0f
+        banner.visibility = android.view.View.VISIBLE
+        banner.animate().alpha(1f).setDuration(200).start()
+
+        // Nothing left to decide once the account is connected, and a second
+        // tap during the pause would start the ledger twice.
+        findViewById<MaterialButton>(R.id.btnWelcomeConnect).isEnabled = false
+        findViewById<MaterialButton>(R.id.btnWelcomeSkip).isEnabled = false
+
+        // Long enough to read an email address, short enough not to feel stuck.
+        // The guard matters: the owner can leave during the pause, and starting
+        // an activity from a finished one crashes.
+        banner.postDelayed({
+            if (!isFinishing && !isDestroyed) markSeenAndProceed()
+        }, 1800L)
     }
 
     private val driveAuthorize = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { activityResult ->
-        try {
+        val connected = try {
             DriveAuth.resultFromIntent(this, activityResult.data)
-            showConnectedToast()
+            true
         } catch (_: Exception) {
             // Declined the Drive consent. Fine — account is remembered, they
             // can finish later. Proceed regardless.
+            false
         }
-        markSeenAndProceed()
+        // showConnectedAndProceed moves on by itself once the banner has been
+        // up long enough to read; a decline has nothing to confirm.
+        if (connected) showConnectedAndProceed() else markSeenAndProceed()
     }
 
     /** Record that the welcome has been shown, then go to the ledger. */

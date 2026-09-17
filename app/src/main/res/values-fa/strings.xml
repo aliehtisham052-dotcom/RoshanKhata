@@ -772,7 +772,7 @@
     <string name="drive_not_connected">حساب Google خود را وصل کنید تا دفترتان خودکار در Google Drive خودتان پشتیبان‌گیری شود. گوشی را عوض کنید، دوباره وارد شوید، همه‌چیز برمی‌گردد. داده‌ها در Drive خودتان می‌ماند؛ هرگز نزد ما نمی‌آید.</string>
     <string name="drive_connected">متصل به‌عنوان %1$s. آخرین پشتیبان ابری: %2$s</string>
     <string name="drive_connected_never">متصل به‌عنوان %1$s. هنوز پشتیبان ابری نیست \u2014 روی «اکنون در Drive پشتیبان بگیر» بزنید.</string>
-    <string name="drive_connected_welcome">با %1$s وارد شدید</string>
+    <string name="welcome_signed_in_title">با موفقیت وارد شدید</string>
     <string name="drive_connect">اتصال Google Drive</string>
     <string name="drive_backup_now">اکنون در Drive پشتیبان بگیر</string>
     <string name="drive_backup_images">تصاویر را هم شامل کن (عکس‌ها، عکس فاکتور، QR)</string>
