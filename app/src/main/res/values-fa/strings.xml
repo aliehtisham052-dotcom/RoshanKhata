@@ -1080,4 +1080,5 @@
     <string name="product_edit_details">ویرایش مشخصات</string>
     <string name="product_name_taken">این نام را «%1$s» دارد.</string>
     <string name="edit_details">ویرایش مشخصات</string>
+    <string name="son_of_prefix">فرزند %1$s</string>
 </resources>

@@ -220,6 +220,7 @@ class PartyDetailActivity : AppCompatActivity() {
     private enum class EntrySort { NEWEST, OLDEST, AMOUNT_HIGH, AMOUNT_LOW }
     private lateinit var adapter: EntryAdapter
     private lateinit var tvPartyName: TextView
+    private lateinit var tvPartyIdentity: TextView
     private lateinit var tvPartyPhone: TextView
     private lateinit var tvPartyBalance: TextView
     private lateinit var tvBalanceHint: TextView
@@ -264,6 +265,7 @@ class PartyDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         tvPartyName = findViewById(R.id.tvPartyName)
+        tvPartyIdentity = findViewById(R.id.tvPartyIdentity)
         tvPartyPhone = findViewById(R.id.tvPartyPhone)
         tvPartyBalance = findViewById(R.id.tvPartyBalance)
         tvPartyBalance.setOnClickListener { copyBalance() }
@@ -371,6 +373,19 @@ class PartyDetailActivity : AppCompatActivity() {
                 tvPartyName.text = p.name
                 tvPartyPhone.text = p.phone.orEmpty()
                 tvPartyPhone.visibility = if (p.phone.isNullOrBlank()) View.GONE else View.VISIBLE
+
+                // "s/o Muhammad · Khichi" — whichever parts are known, joined
+                // by a dot, and nothing at all when neither is. Built here
+                // rather than in the layout so a customer with only a village
+                // does not get a stray "s/o" in front of it.
+                val identity = listOfNotNull(
+                    p.fatherName?.takeIf { it.isNotBlank() }
+                        ?.let { getString(R.string.son_of_prefix, it) },
+                    p.village?.takeIf { it.isNotBlank() }
+                ).joinToString("  ·  ")
+                tvPartyIdentity.text = identity
+                tvPartyIdentity.visibility = if (identity.isEmpty()) View.GONE else View.VISIBLE
+
                 refreshAvatar()
             }
         }
