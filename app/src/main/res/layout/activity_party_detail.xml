@@ -94,6 +94,24 @@
             android:textSize="13sp"
             android:visibility="gone" />
 
+        <!--
+          Father's name and village on ONE line, smaller and dimmer than the
+          number above it. The header already carries a name, a number, a
+          balance, four buttons and a search box; two more full lines would
+          push the balance — the thing the owner opened this screen for — down
+          the screen. Gone entirely when neither is known, so a customer
+          entered before these fields existed sees the screen unchanged.
+        -->
+        <TextView
+            android:id="@+id/tvPartyIdentity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:alpha="0.75"
+            android:textColor="@color/gold_on_dark"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/tvPartyBalance"
             android:layout_width="wrap_content"

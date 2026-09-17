@@ -1052,4 +1052,5 @@
     <string name="product_edit_details">تفصیلات میں ترمیم</string>
     <string name="product_name_taken">یہ نام پہلے ہی ”%1$s“ کے پاس ہے۔</string>
     <string name="edit_details">تفصیلات میں ترمیم</string>
+    <string name="son_of_prefix">ولد %1$s</string>
 </resources>
