@@ -776,6 +776,10 @@
     <string name="drive_not_connected">Connect your Google account and your Khata backs up to your OWN Google Drive \u2014 automatically. Change your phone, sign in again, and it is all back. Your data stays in your Drive; it never goes to us.</string>
     <string name="drive_connected">Connected as %1$s. Last cloud backup: %2$s</string>
     <string name="drive_connected_never">Connected as %1$s. No cloud backup yet \u2014 tap \u201CBack up to Drive\u201D.</string>
+    <!-- Shown as a toast the moment the welcome screen connects an account. It
+         only confirms the sign-in: the backup state belongs on the backup
+         screen, not here, where it reads as a complaint about a brand-new account. -->
+    <string name="drive_connected_welcome">Signed in as %1$s</string>
     <string name="drive_connect">Connect Google Drive</string>
     <string name="drive_backup_now">Back up to Drive now</string>
     <string name="drive_backup_images">Include images (photos, bill photos, QR)</string>

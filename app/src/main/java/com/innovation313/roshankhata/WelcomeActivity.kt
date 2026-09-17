@@ -115,7 +115,7 @@ class WelcomeActivity : AppCompatActivity() {
         val email = DriveAuth.accountName(this) ?: return
         Toast.makeText(
             this,
-            getString(R.string.drive_connected_never, email),
+            getString(R.string.drive_connected_welcome, email),
             Toast.LENGTH_LONG
         ).show()
     }
