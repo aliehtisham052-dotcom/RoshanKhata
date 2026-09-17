@@ -779,7 +779,7 @@
     <!-- Shown as a toast the moment the welcome screen connects an account. It
          only confirms the sign-in: the backup state belongs on the backup
          screen, not here, where it reads as a complaint about a brand-new account. -->
-    <string name="drive_connected_welcome">Signed in as %1$s</string>
+    <string name="welcome_signed_in_title">Successfully signed in</string>
     <string name="drive_connect">Connect Google Drive</string>
     <string name="drive_backup_now">Back up to Drive now</string>
     <string name="drive_backup_images">Include images (photos, bill photos, QR)</string>

@@ -744,7 +744,7 @@
     <string name="drive_not_connected">اربط حساب Google ويُنسخ دفترك تلقائيًا إلى Drive الخاص بك أنت. غيّر هاتفك وسجّل الدخول ثانية فيعود كل شيء. بياناتك في Drive حسابك؛ لا تصلنا أبدًا.</string>
     <string name="drive_connected">متصل باسم %1$s. آخر نسخة سحابية: %2$s</string>
     <string name="drive_connected_never">متصل باسم %1$s. لا نسخة سحابية بعد \u2014 اضغط «نسخ إلى Drive».</string>
-    <string name="drive_connected_welcome">تم تسجيل الدخول باسم %1$s</string>
+    <string name="welcome_signed_in_title">تم تسجيل الدخول بنجاح</string>
     <string name="drive_connect">ربط Google Drive</string>
     <string name="drive_backup_now">نسخ إلى Drive الآن</string>
     <string name="drive_backup_images">تضمين الصور (الصور، صور الفواتير، QR)</string>
