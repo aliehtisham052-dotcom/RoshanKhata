@@ -50,10 +50,8 @@ object Reminder {
      * never invent a date the customer never gave.
      *
      * [forSms] strips the WhatsApp markup. The strings are written once, in
-     * WhatsApp's own *bold* syntax with a heading emoji — SMS renders neither,
-     * so there the asterisks would show up as literal clutter and the emoji
-     * would flip the whole message to UCS-2, cutting an SMS from 160
-     * characters to 70 and costing the owner extra parts per send.
+     * WhatsApp's own *bold* syntax — SMS does not render it, so there the
+     * asterisks would show up as literal clutter around every figure.
      */
     fun buildMessage(
         context: Context,
@@ -85,16 +83,11 @@ object Reminder {
     }
 
     /**
-     * WhatsApp markup out, readable text in: drop the bold asterisks and the
-     * heading emoji, and close the blank line the emoji leaves behind.
+     * WhatsApp markup out, readable text in: drop the bold asterisks, which
+     * SMS shows literally.
      */
     private fun toPlainText(message: String): String =
-        message
-            .replace("*", "")
-            .replace("\uD83E\uDDFE", "")   // 🧾 — the only emoji these strings use
-            .lines()
-            .joinToString("\n") { it.trim() }
-            .trim()
+        message.replace("*", "")
 
     /** Opens WhatsApp with the message ready. The user presses send. */
     fun sendViaWhatsApp(context: Context, phone: String?, message: String) {
