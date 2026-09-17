@@ -197,6 +197,61 @@ data class BatchOption(
 }
 
 /**
+ * One batch as a compliance register wants to read it.
+ *
+ * [BatchOption] answers "which batch shall I sell from"; this answers "prove
+ * what is on your shelf and what it legally is". Hence the four compliance
+ * columns carried along from the product row, and hence the supplier and bill
+ * date: an inspector's next question after "what is this" is "where did you
+ * get it".
+ *
+ * All five product columns are nullable for two separate reasons, and both are
+ * legitimate: the product row may not have them filled in yet, or the bill
+ * line may never have been linked to a product row at all. Neither is an error
+ * and neither hides the line — the register prints a dash and the owner can
+ * see exactly which rows still need the label in hand.
+ */
+data class InspectorBatch(
+    val itemId: Long,
+    val productId: Long?,
+    val productName: String,
+    val company: String?,
+    val productType: String?,
+    val technicalName: String?,
+    val registrationNumber: String?,
+    val formulation: String?,
+    val batchNumber: String?,
+    val expiryDate: Long?,
+    val quantity: Double,
+    val unit: String?,
+    val rate: Double?,
+    val soldFromBatch: Double,
+    val partyName: String,
+    val billNumber: String?,
+    val billDate: Long
+) {
+    /**
+     * Arrived minus what was sold OUT OF THIS BATCH specifically.
+     *
+     * Read this as "not more than this much". A sale the owner never tagged to
+     * a batch subtracts from nothing, so the figure can only ever be too high,
+     * never too low — which is the safe direction for a document someone signs
+     * their name under, and the report says so in plain words rather than
+     * leaving the reader to assume it is exact.
+     */
+    val remaining: Double get() = quantity - soldFromBatch
+
+    val hasExpiry: Boolean get() = expiryDate != null
+
+    val daysLeft: Int?
+        get() = expiryDate?.let {
+            ((it - System.currentTimeMillis()) / (24L * 60 * 60 * 1000)).toInt()
+        }
+
+    val hasExpired: Boolean get() = (daysLeft ?: 1) < 0
+}
+
+/**
  * A batch nearing or past its expiry.
  *
  * Deliberately carries the supplier's name and the bill it came on, because

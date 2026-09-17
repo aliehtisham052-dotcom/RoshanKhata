@@ -1093,4 +1093,26 @@
     <string name="product_name_taken">“%1$s” already uses that name.</string>
     <string name="edit_details">Edit details</string>
     <string name="son_of_prefix">s/o %1$s</string>
+
+    <!-- Inspector mode: the stock and compliance register -->
+    <string name="inspector_title">Stock &amp; compliance register</string>
+    <string name="inspector_subtitle">Stock, batches and expiry in one PDF</string>
+    <string name="inspector_window_title">EXPIRY WINDOW</string>
+    <string name="inspector_window_30">30 days</string>
+    <string name="inspector_window_60">60 days</string>
+    <string name="inspector_window_90">90 days</string>
+    <string name="inspector_count_batches">Batches in stock</string>
+    <string name="inspector_count_expiring">Expiring</string>
+    <string name="inspector_count_expired">Expired</string>
+    <string name="inspector_col_product">Product / batch</string>
+    <string name="inspector_col_expiry">Expiry</string>
+    <string name="inspector_col_left">Left</string>
+    <string name="inspector_empty">No batch stock yet. Record the batch number and expiry on a supplier bill, and this register fills itself.</string>
+    <string name="inspector_generating">Building the register…</string>
+    <string name="inspector_failed">Could not build the register.</string>
+    <string name="inspector_no_expiry">No expiry</string>
+    <string name="inspector_expired">EXPIRED</string>
+    <string name="inspector_batch_prefix">Batch</string>
+    <string name="inspector_gap_labels">%1$d products in stock are missing label details</string>
+    <string name="inspector_gap_expiry">%1$d batches have no expiry date</string>
 </resources>

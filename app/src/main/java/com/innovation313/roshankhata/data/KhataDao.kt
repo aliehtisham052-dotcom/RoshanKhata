@@ -797,6 +797,58 @@ interface KhataDao {
     suspend fun batchOptionsForProduct(productId: Long): List<BatchOption>
 
     /**
+     * Every batch in the shop, of every product, with what is left of it.
+     *
+     * The batch-wise stock register an inspection asks for. This is
+     * [batchOptionsForProduct] widened to the whole book, and widened on
+     * purpose rather than called once per product: a dealer with two hundred
+     * products would mean two hundred queries and a report that takes visible
+     * seconds to build, on a phone, while someone is standing at the counter
+     * waiting for it.
+     *
+     * The unit rule is copied exactly from [batchOptionsForProduct] and must
+     * stay that way: a sale only subtracts from a batch when it is tagged to
+     * that batch AND counted in the same unit. Two screens disagreeing about
+     * what is left of a batch is worse than either figure being approximate.
+     *
+     * The product columns come from a LEFT JOIN, so a bill line that was never
+     * linked to a product row still appears — with its own typed
+     * [InspectorBatch.productName] and empty compliance columns. Dropping
+     * those lines would understate the stock on a compliance document, which
+     * is the one place understating it is dangerous.
+     *
+     * Ordered by product, then soonest expiry: the order it gets read aloud
+     * from, product by product, with the oldest stock of each first.
+     */
+    @Query(
+        """
+        SELECT i.id AS itemId, i.productId AS productId,
+               COALESCE(pr.name, i.productName) AS productName,
+               pr.company AS company, pr.productType AS productType,
+               pr.technicalName AS technicalName,
+               pr.registrationNumber AS registrationNumber,
+               pr.formulation AS formulation,
+               i.batchNumber AS batchNumber, i.expiryDate AS expiryDate,
+               i.quantity AS quantity, i.unit AS unit, i.rate AS rate,
+               COALESCE((
+                   SELECT SUM(t.quantity) FROM transactions t
+                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+               ), 0) AS soldFromBatch,
+               p.name AS partyName, b.billNumber AS billNumber, b.billDate AS billDate
+        FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        JOIN parties p ON p.id = b.partyId
+        LEFT JOIN products pr ON pr.id = i.productId
+        WHERE i.isDeleted = 0 AND b.isDeleted = 0
+        ORDER BY productName COLLATE NOCASE ASC,
+                 CASE WHEN i.expiryDate IS NULL THEN 1 ELSE 0 END ASC,
+                 i.expiryDate ASC
+        """
+    )
+    suspend fun allBatchesOnce(): List<InspectorBatch>
+
+    /**
      * Batches at or near expiry — showing what is LEFT of each, not what
      * arrived.
      *
@@ -913,6 +965,17 @@ interface KhataDao {
 
     @Query("SELECT * FROM products WHERE isDeleted = 0 ORDER BY name COLLATE NOCASE")
     fun observeProducts(): Flow<List<Product>>
+
+    /**
+     * The same list as [observeProducts], taken once.
+     *
+     * A report is a snapshot by definition — it is built, written to a file and
+     * handed over, and a Flow that kept firing afterwards would have nothing
+     * left to update. Every other report in this app reads through a ...Once()
+     * query for exactly that reason; this is the products one.
+     */
+    @Query("SELECT * FROM products WHERE isDeleted = 0 ORDER BY name COLLATE NOCASE")
+    suspend fun productsOnce(): List<Product>
 
     @Query("SELECT * FROM products WHERE id = :id")
     suspend fun productById(id: Long): Product?

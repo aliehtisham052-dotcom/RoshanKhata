@@ -58,6 +58,13 @@ class ProductsActivity : AppCompatActivity() {
 
         btnLink.setOnClickListener { confirmLink() }
 
+        // The stock register an inspection asks for. It opens from here, on the
+        // screen whose figures it prints, rather than from a settings list
+        // where it would be looked for only after the inspector had left.
+        findViewById<MaterialButton>(R.id.btnInspectorReport).setOnClickListener {
+            startActivity(Intent(this, InspectorReportActivity::class.java))
+        }
+
         refresh()
     }
 

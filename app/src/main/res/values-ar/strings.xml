@@ -1061,4 +1061,26 @@
     <string name="product_name_taken">هذا الاسم يستخدمه ”%1$s“ بالفعل.</string>
     <string name="edit_details">تعديل البيانات</string>
     <string name="son_of_prefix">بن %1$s</string>
+
+    <!-- Inspector mode: the stock and compliance register -->
+    <string name="inspector_title">سجل المخزون والامتثال</string>
+    <string name="inspector_subtitle">المخزون والدفعات وتاريخ الانتهاء في ملف PDF واحد</string>
+    <string name="inspector_window_title">مدة الانتهاء</string>
+    <string name="inspector_window_30">30 يوماً</string>
+    <string name="inspector_window_60">60 يوماً</string>
+    <string name="inspector_window_90">90 يوماً</string>
+    <string name="inspector_count_batches">الدفعات في المخزون</string>
+    <string name="inspector_count_expiring">قريبة الانتهاء</string>
+    <string name="inspector_count_expired">منتهية</string>
+    <string name="inspector_col_product">المنتج / الدفعة</string>
+    <string name="inspector_col_expiry">الانتهاء</string>
+    <string name="inspector_col_left">المتبقي</string>
+    <string name="inspector_empty">لا يوجد مخزون دفعات بعد. أدخل رقم الدفعة وتاريخ الانتهاء في فاتورة المورد وسيمتلئ هذا السجل تلقائياً.</string>
+    <string name="inspector_generating">جارٍ إنشاء السجل…</string>
+    <string name="inspector_failed">لم يتم إنشاء السجل.</string>
+    <string name="inspector_no_expiry">لا يوجد تاريخ انتهاء</string>
+    <string name="inspector_expired">منتهية</string>
+    <string name="inspector_batch_prefix">دفعة</string>
+    <string name="inspector_gap_labels">%1$d منتجات في المخزون تنقصها بيانات الملصق</string>
+    <string name="inspector_gap_expiry">%1$d دفعات بدون تاريخ انتهاء</string>
 </resources>

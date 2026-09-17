@@ -1081,4 +1081,26 @@
     <string name="product_name_taken">این نام را «%1$s» دارد.</string>
     <string name="edit_details">ویرایش مشخصات</string>
     <string name="son_of_prefix">فرزند %1$s</string>
+
+    <!-- Inspector mode: the stock and compliance register -->
+    <string name="inspector_title">ثبت موجودی و انطباق</string>
+    <string name="inspector_subtitle">موجودی، بچ و تاریخ انقضا در یک PDF</string>
+    <string name="inspector_window_title">بازه انقضا</string>
+    <string name="inspector_window_30">30 روز</string>
+    <string name="inspector_window_60">60 روز</string>
+    <string name="inspector_window_90">90 روز</string>
+    <string name="inspector_count_batches">بچ‌های موجود</string>
+    <string name="inspector_count_expiring">در حال انقضا</string>
+    <string name="inspector_count_expired">منقضی‌شده</string>
+    <string name="inspector_col_product">کالا / بچ</string>
+    <string name="inspector_col_expiry">انقضا</string>
+    <string name="inspector_col_left">باقی‌مانده</string>
+    <string name="inspector_empty">هنوز موجودی بچ ثبت نشده است. شماره بچ و تاریخ انقضا را در فاکتور تأمین‌کننده وارد کنید تا این ثبت خودکار پر شود.</string>
+    <string name="inspector_generating">در حال ساخت ثبت…</string>
+    <string name="inspector_failed">ثبت ساخته نشد.</string>
+    <string name="inspector_no_expiry">بدون تاریخ انقضا</string>
+    <string name="inspector_expired">منقضی</string>
+    <string name="inspector_batch_prefix">بچ</string>
+    <string name="inspector_gap_labels">%1$d کالا در موجودی، مشخصات برچسب ندارند</string>
+    <string name="inspector_gap_expiry">%1$d بچ بدون تاریخ انقضا</string>
 </resources>
