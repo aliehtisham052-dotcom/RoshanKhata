@@ -880,7 +880,11 @@ class PartyDetailActivity : AppCompatActivity() {
                 partyName = partyName,
                 balance = currentBalance,
                 businessName = BusinessProfile.businessName(this),
-                promisedDate = promisedDate
+                promisedDate = promisedDate,
+                // The preview must be what actually gets sent: SMS shows no
+                // bold, so the owner should not be reading asterisks here
+                // and wondering what the customer will see.
+                forSms = !viaWhatsApp
             )
         )
 
