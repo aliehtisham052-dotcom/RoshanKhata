@@ -1059,4 +1059,5 @@
     <string name="product_who_bought">من اشترى هذا</string>
     <string name="product_edit_details">تعديل البيانات</string>
     <string name="product_name_taken">هذا الاسم يستخدمه ”%1$s“ بالفعل.</string>
+    <string name="edit_details">تعديل البيانات</string>
 </resources>

@@ -1457,6 +1457,72 @@ class PartyDetailActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * The first way to correct a customer since the app shipped.
+     *
+     * A misspelt name or a wrong number could only ever be fixed by starting
+     * a second account, which is exactly how a book ends up holding the same
+     * man twice. Father name and village are here for a different reason:
+     * they arrived after most customers were already entered, and a field
+     * that can only be set at creation is a field the existing hundred can
+     * never have.
+     *
+     * Nothing here can collide: parties carry no unique index on name or
+     * phone (only on the QR token, which this does not touch), so a rename is
+     * a plain write. Type and credit limit are deliberately absent — each
+     * already has its own item in this menu.
+     */
+    private fun showEditPartyDialog() {
+        lifecycleScope.launch {
+            val party = dao.getParty(partyId) ?: return@launch
+
+            val view = layoutInflater.inflate(R.layout.dialog_edit_party, null)
+            val etName: EditText = view.findViewById(R.id.etEditName)
+            val etPhone: EditText = view.findViewById(R.id.etEditPhone)
+            val etFather: EditText = view.findViewById(R.id.etEditFatherName)
+            val etVillage: EditText = view.findViewById(R.id.etEditVillage)
+
+            etName.setText(party.name)
+            etPhone.setText(party.phone)
+            etFather.setText(party.fatherName)
+            etVillage.setText(party.village)
+
+            MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                .setTitle(R.string.edit_details)
+                .setView(view)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.save) { _, _ ->
+                    val newName = etName.text.toString().trim()
+                    if (newName.isEmpty()) {
+                        Toast.makeText(
+                            this@PartyDetailActivity, R.string.enter_name, Toast.LENGTH_SHORT
+                        ).show()
+                        return@setPositiveButton
+                    }
+
+                    fun typed(e: EditText) = e.text.toString().trim().ifEmpty { null }
+
+                    val updated = party.copy(
+                        name = newName,
+                        phone = typed(etPhone),
+                        fatherName = typed(etFather),
+                        village = typed(etVillage)
+                    )
+
+                    // AppScope for the write — leaving right after Save must
+                    // not cancel it. The header is reloaded afterwards so the
+                    // screen shows what was actually saved.
+                    AppScope.launch {
+                        dao.updateParty(updated)
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) loadParty()
+                        }
+                    }
+                }
+                .show()
+        }
+    }
+
     private fun showCreditLimitDialog() {
         val view = layoutInflater.inflate(R.layout.dialog_credit_limit, null)
         val etLimit: EditText = view.findViewById(R.id.etCreditLimit)
@@ -1600,6 +1666,10 @@ class PartyDetailActivity : AppCompatActivity() {
             }
             R.id.action_party_type -> {
                 showPartyTypeDialog()
+                true
+            }
+            R.id.action_edit_party -> {
+                showEditPartyDialog()
                 true
             }
             R.id.action_credit_limit -> {
