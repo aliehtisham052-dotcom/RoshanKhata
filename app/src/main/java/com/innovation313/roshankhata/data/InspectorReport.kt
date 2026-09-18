@@ -43,8 +43,17 @@ import java.util.Locale
  */
 object InspectorReport {
 
-    private const val PAGE_W = 595
-    private const val PAGE_H = 842
+    // LANDSCAPE A4, and the reason is the table itself. This register answers
+    // six or eight questions about every product — company, technical name,
+    // formulation, Reg#, batch, supplier, bill, expiry — and on a 595pt
+    // portrait page those cannot each own a column, which is why they were
+    // once strung onto one line with dots between them. A register is read by
+    // running a finger DOWN a column: "which of these has no Reg#", "which
+    // came from this supplier". A dotted line cannot be read that way.
+    // 842pt across leaves 762 of usable width, which is what the columns below
+    // are measured against.
+    private const val PAGE_W = 842
+    private const val PAGE_H = 595
     private const val MARGIN = 40f
 
     private const val NAVY = 0xFF094C2E.toInt()
@@ -245,6 +254,75 @@ object InspectorReport {
             return text.substring(0, end) + "\u2026"
         }
 
+        // ---- The table machinery ----
+        //
+        // One definition of a column, used by every table below, so the three
+        // registers cannot drift into three different-looking tables. A column
+        // owns its width and its alignment; the row helper does the measuring,
+        // the clipping and the padding, because those were the three things
+        // hand-written per section before and the reason text ran into the
+        // figure beside it.
+        //
+        // PAD is inside the column, so the vertical rule never touches ink.
+        val cellPad = 5f
+        val ruleLight = Paint().apply { color = 0xFFE4E4E4.toInt(); strokeWidth = 0.5f }
+
+        /** [w] is the column's full width; [right] right-aligns its contents. */
+        class Col(val title: String, val w: Float, val right: Boolean = false)
+
+        /**
+         * Draws the grey title strip, and returns each column's left edge so a
+         * row can be written against the same measurements the header used.
+         * Called again after every page break — a table whose headings are on
+         * page 1 only is unreadable on page 2, which is the page an inspector
+         * is usually holding.
+         */
+        fun tableHead(cols: List<Col>): List<Float> {
+            canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
+            val lefts = mutableListOf<Float>()
+            var x = MARGIN
+            cols.forEach { c ->
+                lefts += x
+                val t = clip(c.title, tableHeaderFg, c.w - cellPad * 2)
+                val tx = if (c.right) x + c.w - cellPad - tableHeaderFg.measureText(t) else x + cellPad
+                canvas.drawText(t, tx, y + 12.5f, tableHeaderFg)
+                x += c.w
+            }
+            y += 18f
+            return lefts
+        }
+
+        /**
+         * One row of cells, already paired with the paint each should use.
+         *
+         * A null cell prints an em dash in grey: the register's own rule is
+         * that a dash means NEVER RECORDED, never "none", and leaving the box
+         * blank would quietly say the opposite.
+         */
+        fun tableRow(
+            cols: List<Col>,
+            lefts: List<Float>,
+            rowH: Float,
+            cells: List<Pair<String?, Paint>>
+        ) {
+            val baseline = y + rowH / 2 + 4f
+            cols.forEachIndexed { i, c ->
+                val (raw, paint) = cells[i]
+                val usePaint = if (raw.isNullOrBlank()) mutedBig else paint
+                val text = clip(raw?.takeIf { it.isNotBlank() } ?: "\u2014", usePaint, c.w - cellPad * 2)
+                val x = if (c.right) {
+                    lefts[i] + c.w - cellPad - usePaint.measureText(text)
+                } else {
+                    lefts[i] + cellPad
+                }
+                canvas.drawText(text, x, baseline, usePaint)
+                // The separator sits on the column's LEFT edge, so the first
+                // one is skipped: a line there would double the page margin.
+                if (i > 0) canvas.drawLine(lefts[i], y, lefts[i], y + rowH, ruleLight)
+            }
+            y += rowH
+        }
+
         // ---- The warning first, same placement and reason as the other two ----
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 40f, warnFill)
         canvas.drawText(
@@ -311,67 +389,67 @@ object InspectorReport {
             canvas.drawText("No stock movement recorded yet.", MARGIN, y, mutedBig)
             y += 18f
         } else {
-            val xName = MARGIN + 4f
-            val xQtyRight = PAGE_W - MARGIN - 4f
-            val nameMaxW = xQtyRight - 150f - xName
-
-            fun stockHeader() {
-                canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
-                canvas.drawText("PRODUCT / COMPANY / LABEL DETAILS", xName, y + 12.5f, tableHeaderFg)
-                canvas.drawText(
-                    "ON HAND", xQtyRight - tableHeaderFg.measureText("ON HAND"), y + 12.5f, tableHeaderFg
-                )
-                y += 18f
-            }
-
-            stockHeader()
+            // 190 + 130 + 150 + 70 + 110 + 112 = 762, the full usable width.
+            // Product and technical name get the most room because they are
+            // the two that genuinely run long; formulation is EC/WP/SL/WG and
+            // never needs more than a few characters.
+            val cols = listOf(
+                Col("PRODUCT", 190f),
+                Col("COMPANY", 130f),
+                Col("TECHNICAL NAME", 150f),
+                Col("FORM.", 70f),
+                Col("REG#", 110f),
+                Col("ON HAND", 112f, right = true)
+            )
+            var lefts = tableHead(cols)
+            val rowH = 20f
 
             traded.forEachIndexed { index, s ->
-                if (y + 30f > PAGE_H - 60f) {
+                if (y + rowH > PAGE_H - 60f) {
                     newPage()
                     canvas.drawText("1. Current stock (continued)", MARGIN, y, section)
                     y += 18f
-                    stockHeader()
+                    lefts = tableHead(cols)
                 }
-                if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 30f, zebra)
-
-                val baseline = y + 13f
-                canvas.drawText(clip(s.name, body, nameMaxW), xName, baseline, body)
+                if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + rowH, zebra)
 
                 // The honest figure, or the honest refusal to give one. Bought
                 // in bags and sold in kilos cannot be subtracted, and the
                 // register says which two numbers it has instead of inventing
                 // a conversion nobody told this app.
                 val onHand = s.onHand
+                val qtyText: String
+                val qtyPaint: Paint
                 if (onHand != null) {
-                    val text = Format.qty(onHand, s.unit)
-                    val paint = if (onHand > 0) body else mutedBig
-                    canvas.drawText(text, xQtyRight - paint.measureText(text), baseline, paint)
+                    qtyText = Format.qty(onHand, s.unit)
+                    qtyPaint = if (onHand > 0) body else mutedBig
                 } else {
-                    val text = "units differ"
-                    canvas.drawText(text, xQtyRight - mutedBig.measureText(text), baseline, mutedBig)
+                    qtyText = "units differ"
+                    qtyPaint = mutedBig
                 }
 
-                // The label line: everything an inspector reads off the bottle,
-                // or a dash where the app was never told.
                 val p = d.productsById[s.productId]
-                val label = listOf(
-                    p?.company,
-                    p?.technicalName,
-                    p?.formulation,
-                    p?.registrationNumber?.let { "Reg# $it" }
-                ).filter { !it.isNullOrBlank() }.joinToString(" \u00B7 ")
-                val sub = if (label.isEmpty()) "\u2014 label details not recorded" else label
-                canvas.drawText(clip(sub, muted, PAGE_W - MARGIN - xName - 90f), xName, baseline + 12f, muted)
+                tableRow(
+                    cols, lefts, rowH,
+                    listOf(
+                        s.name to body,
+                        p?.company to body,
+                        p?.technicalName to body,
+                        p?.formulation to body,
+                        p?.registrationNumber to body,
+                        qtyText to qtyPaint
+                    )
+                )
 
                 // Where a figure could not be given, the two sides that could.
+                // This is the one case that still needs a second line, because
+                // it is two numbers in one column rather than a missing one.
                 if (onHand == null) {
-                    val split = "in ${Format.qty(s.boughtQty + s.returnedQty, s.boughtUnit)} / out ${Format.qty(s.soldQty, s.soldUnit)}"
-                    val w = muted.measureText(split)
-                    canvas.drawText(split, xQtyRight - w, baseline + 12f, muted)
+                    val split = "in ${Format.qty(s.boughtQty + s.returnedQty, s.boughtUnit)} \u00B7 out ${Format.qty(s.soldQty, s.soldUnit)}"
+                    val t = clip(split, muted, cols.last().w + cols[4].w - cellPad * 2)
+                    canvas.drawText(t, PAGE_W - MARGIN - cellPad - muted.measureText(t), y + 10f, muted)
+                    y += 13f
                 }
-
-                y += 30f
             }
         }
 
@@ -393,42 +471,34 @@ object InspectorReport {
             )
             y += 18f
         } else {
-            val xName = MARGIN + 4f
-            val xExpiryRight = PAGE_W - MARGIN - 96f
-            val xQtyRight = PAGE_W - MARGIN - 4f
-            val nameMaxW = xExpiryRight - 82f - xName
-
-            fun batchHeader() {
-                canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
-                canvas.drawText("PRODUCT / BATCH / SUPPLIER", xName, y + 12.5f, tableHeaderFg)
-                canvas.drawText(
-                    "EXPIRY", xExpiryRight - tableHeaderFg.measureText("EXPIRY"), y + 12.5f, tableHeaderFg
-                )
-                canvas.drawText(
-                    "LEFT", xQtyRight - tableHeaderFg.measureText("LEFT"), y + 12.5f, tableHeaderFg
-                )
-                y += 18f
-            }
-
-            batchHeader()
+            // 140 + 80 + 100 + 130 + 70 + 78 + 82 + 82 = 762.
+            val cols = listOf(
+                Col("PRODUCT", 140f),
+                Col("BATCH", 80f),
+                Col("COMPANY", 100f),
+                Col("SUPPLIER", 130f),
+                Col("BILL", 70f),
+                Col("BILL DATE", 78f),
+                Col("EXPIRY", 82f, right = true),
+                Col("LEFT", 82f, right = true)
+            )
+            var lefts = tableHead(cols)
+            val rowH = 20f
 
             d.batches.forEachIndexed { index, b ->
-                if (y + 30f > PAGE_H - 60f) {
+                if (y + rowH > PAGE_H - 60f) {
                     newPage()
                     canvas.drawText("2. Batch-wise stock (continued)", MARGIN, y, section)
                     y += 18f
-                    batchHeader()
+                    lefts = tableHead(cols)
                 }
-                if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 30f, zebra)
-
-                val baseline = y + 13f
-                canvas.drawText(clip(b.productName, body, nameMaxW), xName, baseline, body)
+                if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + rowH, zebra)
 
                 // Expiry, and how it reads: expired is the one word that must
                 // not be missed on a page someone official is holding.
                 val exp = b.expiryDate
                 val expiryText = when {
-                    exp == null -> "\u2014"
+                    exp == null -> null
                     b.hasExpired -> "EXPIRED"
                     else -> dayFmt.format(Date(exp))
                 }
@@ -438,27 +508,20 @@ object InspectorReport {
                     (b.daysLeft ?: Int.MAX_VALUE) <= d.windowDays -> red
                     else -> body
                 }
-                canvas.drawText(
-                    expiryText, xExpiryRight - expiryPaint.measureText(expiryText), baseline, expiryPaint
+
+                tableRow(
+                    cols, lefts, rowH,
+                    listOf(
+                        b.productName to body,
+                        b.batchNumber to body,
+                        b.company to body,
+                        b.partyName to body,
+                        b.billNumber to body,
+                        dayFmt.format(Date(b.billDate)) to body,
+                        expiryText to expiryPaint,
+                        Format.qty(b.remaining, b.unit) to bodyBold
+                    )
                 )
-
-                val left = Format.qty(b.remaining, b.unit)
-                canvas.drawText(left, xQtyRight - bodyBold.measureText(left), baseline, bodyBold)
-
-                val sub = buildString {
-                    append("Batch ")
-                    append(b.batchNumber?.takeIf { it.isNotBlank() } ?: "\u2014")
-                    b.company?.takeIf { it.isNotBlank() }?.let { append(" \u00B7 $it") }
-                    b.registrationNumber?.takeIf { it.isNotBlank() }?.let { append(" \u00B7 Reg# $it") }
-                    append(" \u00B7 ")
-                    append(b.partyName)
-                    b.billNumber?.takeIf { it.isNotBlank() }?.let { append(" \u00B7 Bill $it") }
-                    append(" \u00B7 ")
-                    append(dayFmt.format(Date(b.billDate)))
-                }
-                canvas.drawText(clip(sub, muted, PAGE_W - MARGIN - xName - 8f), xName, baseline + 12f, muted)
-
-                y += 30f
             }
         }
 
@@ -487,36 +550,49 @@ object InspectorReport {
                 y += 16f
             }
         } else {
-            fun expiryRow(b: InspectorBatch) {
-                if (y + 28f > PAGE_H - 60f) {
+            // 170 + 90 + 150 + 90 + 150 + 112 = 762.
+            val cols = listOf(
+                Col("PRODUCT", 170f),
+                Col("BATCH", 90f),
+                Col("SUPPLIER", 150f),
+                Col("EXPIRY", 90f),
+                Col("STATUS", 150f),
+                Col("LEFT", 112f, right = true)
+            )
+            var lefts = tableHead(cols)
+            val rowH = 20f
+
+            fun expiryRow(index: Int, b: InspectorBatch) {
+                if (y + rowH > PAGE_H - 60f) {
                     newPage()
                     canvas.drawText("3. Expiry report (continued)", MARGIN, y, section)
-                    y += 20f
+                    y += 18f
+                    lefts = tableHead(cols)
                 }
-                val baseline = y + 12f
-                canvas.drawText(clip(b.productName, body, 300f), MARGIN + 4f, baseline, body)
+                if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + rowH, zebra)
 
                 val days = b.daysLeft
-                val right = when {
-                    b.hasExpired -> "EXPIRED " + (days?.let { "${-it} days ago" } ?: "")
+                val status = when {
+                    b.hasExpired -> "EXPIRED" + (days?.let { " \u00B7 ${-it} days ago" } ?: "")
                     else -> "${days ?: 0} days left"
                 }
-                canvas.drawText(right, PAGE_W - MARGIN - red.measureText(right), baseline, red)
 
-                val sub = buildString {
-                    append(Format.qty(b.remaining, b.unit))
-                    append(" left \u00B7 Batch ")
-                    append(b.batchNumber?.takeIf { it.isNotBlank() } ?: "\u2014")
-                    b.expiryDate?.let { append(" \u00B7 exp ${dayFmt.format(Date(it))}") }
-                    append(" \u00B7 from ")
-                    append(b.partyName)
-                }
-                canvas.drawText(clip(sub, muted, PAGE_W - 2 * MARGIN - 8f), MARGIN + 12f, baseline + 12f, muted)
-                y += 28f
+                tableRow(
+                    cols, lefts, rowH,
+                    listOf(
+                        b.productName to body,
+                        b.batchNumber to body,
+                        b.partyName to body,
+                        b.expiryDate?.let { dayFmt.format(Date(it)) } to body,
+                        status to red,
+                        Format.qty(b.remaining, b.unit) to bodyBold
+                    )
+                )
             }
 
-            d.expired.forEach { expiryRow(it) }
-            d.expiringSoon.forEach { expiryRow(it) }
+            // Numbered across BOTH lists so the zebra does not restart and
+            // print two shaded rows against each other where they meet.
+            (d.expired + d.expiringSoon).forEachIndexed { i, b -> expiryRow(i, b) }
         }
 
         // ---- 4. What the register could not say ----
@@ -564,40 +640,58 @@ object InspectorReport {
             canvas.drawText("5. Company-wise stock", MARGIN, y, section)
             y += 18f
 
-            val xName = MARGIN + 12f
-            val xQtyRight = PAGE_W - MARGIN - 4f
-            val nameMaxW = xQtyRight - 150f - xName
+            // 330 + 250 + 182 = 762. The company is the heading above each
+            // group, so it is not repeated as a column; the technical name
+            // takes its place, because within ONE brand that is what tells two
+            // products apart on an inspector's list.
+            val cols = listOf(
+                Col("PRODUCT", 330f),
+                Col("TECHNICAL NAME", 250f),
+                Col("ON HAND", 182f, right = true)
+            )
+            var lefts = tableHead(cols)
+            val rowH = 18f
 
             d.companyStock.forEach { (company, list) ->
-                if (y + 34f > PAGE_H - 60f) {
+                if (y + rowH * 2 > PAGE_H - 60f) {
                     newPage()
                     canvas.drawText("5. Company-wise stock (continued)", MARGIN, y, section)
-                    y += 20f
+                    y += 18f
+                    lefts = tableHead(cols)
                 }
-                // The brand heading, with how many products sit under it.
-                canvas.drawText(clip(company, bodyBold, PAGE_W - 2 * MARGIN - 60f), MARGIN, y + 11f, bodyBold)
+                // The brand heading, with how many products sit under it. It
+                // spans the table rather than sitting in a column — it is a
+                // divider, not a value.
+                canvas.drawText(clip(company, bodyBold, PAGE_W - 2 * MARGIN - 60f), MARGIN + cellPad, y + 12f, bodyBold)
                 val count = "${list.size}"
-                canvas.drawText(count, xQtyRight - muted.measureText(count), y + 11f, muted)
+                canvas.drawText(count, PAGE_W - MARGIN - cellPad - muted.measureText(count), y + 12f, muted)
                 y += 18f
 
                 list.forEach { s ->
-                    if (y + 16f > PAGE_H - 60f) {
+                    if (y + rowH > PAGE_H - 60f) {
                         newPage()
                         canvas.drawText("5. Company-wise stock (continued)", MARGIN, y, section)
-                        y += 20f
+                        y += 18f
+                        lefts = tableHead(cols)
                     }
-                    val baseline = y + 11f
-                    canvas.drawText(clip(s.name, body, nameMaxW), xName, baseline, body)
                     val onHand = s.onHand
+                    val qtyText: String
+                    val qtyPaint: Paint
                     if (onHand != null) {
-                        val text = Format.qty(onHand, s.unit)
-                        val paint = if (onHand > 0) body else mutedBig
-                        canvas.drawText(text, xQtyRight - paint.measureText(text), baseline, paint)
+                        qtyText = Format.qty(onHand, s.unit)
+                        qtyPaint = if (onHand > 0) body else mutedBig
                     } else {
-                        val text = "units differ"
-                        canvas.drawText(text, xQtyRight - mutedBig.measureText(text), baseline, mutedBig)
+                        qtyText = "units differ"
+                        qtyPaint = mutedBig
                     }
-                    y += 16f
+                    tableRow(
+                        cols, lefts, rowH,
+                        listOf(
+                            s.name to body,
+                            d.productsById[s.productId]?.technicalName to body,
+                            qtyText to qtyPaint
+                        )
+                    )
                 }
                 y += 6f
             }
