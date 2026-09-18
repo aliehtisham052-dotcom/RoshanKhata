@@ -104,6 +104,11 @@
             android:parentActivityName=".ProductsActivity" />
 
         <activity
+            android:name=".RegisterReportActivity"
+            android:exported="false"
+            android:parentActivityName=".ProductsActivity" />
+
+        <activity
             android:name=".PartyDetailActivity"
             android:exported="false"
             android:parentActivityName=".KhataActivity" />

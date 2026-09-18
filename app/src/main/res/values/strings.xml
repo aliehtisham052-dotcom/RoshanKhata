@@ -1115,4 +1115,16 @@
     <string name="inspector_batch_prefix">Batch</string>
     <string name="inspector_gap_labels">%1$d products in stock are missing label details</string>
     <string name="inspector_gap_expiry">%1$d batches have no expiry date</string>
+    <!-- Sales & purchase register (date-ranged) -->
+    <string name="register_title">Sales &amp; purchase register</string>
+    <string name="register_subtitle">What came in and went out, for a period</string>
+    <string name="register_period_title">PERIOD</string>
+    <string name="register_download">Download PDF</string>
+    <string name="register_share">Share PDF</string>
+    <string name="register_generating">Building the register…</string>
+    <string name="register_failed">Could not build the register.</string>
+    <string name="register_empty">No sales or purchases in this period. Pick another range.</string>
+    <string name="register_summary_sales">Sales: %1$d · %2$s</string>
+    <string name="register_summary_purchases">Purchases: %1$d · %2$s</string>
+    <string name="register_missing_rate">%1$d purchase line(s) have no rate — not in the total</string>
 </resources>

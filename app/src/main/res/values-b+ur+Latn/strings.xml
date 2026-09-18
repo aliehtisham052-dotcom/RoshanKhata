@@ -1075,4 +1075,16 @@
     <string name="inspector_batch_prefix">Batch</string>
     <string name="inspector_gap_labels">Stock mein %1$d products ki label tafseel mojood nahi</string>
     <string name="inspector_gap_expiry">%1$d batch ki expiry date darj nahi</string>
+    <!-- Sales & purchase register (date-ranged) -->
+    <string name="register_title">Farokht o Khareed register</string>
+    <string name="register_subtitle">Aik muddat mein kya aaya, kya gaya</string>
+    <string name="register_period_title">MUDDAT</string>
+    <string name="register_download">PDF download karein</string>
+    <string name="register_share">PDF share karein</string>
+    <string name="register_generating">Register ban raha hai…</string>
+    <string name="register_failed">Register nahi ban saka.</string>
+    <string name="register_empty">Is muddat mein koi farokht ya khareed nahi. Doosri muddat chunein.</string>
+    <string name="register_summary_sales">Farokht: %1$d · %2$s</string>
+    <string name="register_summary_purchases">Khareed: %1$d · %2$s</string>
+    <string name="register_missing_rate">%1$d khareed line(s) ka rate darj nahi — total mein shamil nahi</string>
 </resources>

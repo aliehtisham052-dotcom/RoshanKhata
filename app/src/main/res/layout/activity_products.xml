@@ -99,6 +99,17 @@
             app:iconGravity="textStart" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegisterReport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:maxLines="1"
+            android:text="@string/register_title"
+            app:backgroundTint="@color/section_bills"
+            app:icon="@android:drawable/ic_menu_month"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLinkGoods"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

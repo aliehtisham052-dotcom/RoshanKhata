@@ -1075,4 +1075,16 @@
     <string name="inspector_batch_prefix">بیچ</string>
     <string name="inspector_gap_labels">اسٹاک میں %1$d پروڈکٹس کی لیبل تفصیل موجود نہیں</string>
     <string name="inspector_gap_expiry">%1$d بیچ کی ایکسپائری تاریخ درج نہیں</string>
+    <!-- Sales & purchase register (date-ranged) -->
+    <string name="register_title">فروخت و خرید رجسٹر</string>
+    <string name="register_subtitle">ایک مدت میں کیا آیا، کیا گیا</string>
+    <string name="register_period_title">مدت</string>
+    <string name="register_download">PDF ڈاؤن لوڈ کریں</string>
+    <string name="register_share">PDF شیئر کریں</string>
+    <string name="register_generating">رجسٹر بن رہا ہے…</string>
+    <string name="register_failed">رجسٹر نہیں بن سکا۔</string>
+    <string name="register_empty">اس مدت میں کوئی فروخت یا خرید نہیں۔ دوسری مدت منتخب کریں۔</string>
+    <string name="register_summary_sales">فروخت: %1$d · %2$s</string>
+    <string name="register_summary_purchases">خرید: %1$d · %2$s</string>
+    <string name="register_missing_rate">%1$d خرید سطور کا ریٹ درج نہیں — ٹوٹل میں شامل نہیں</string>
 </resources>

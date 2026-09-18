@@ -275,6 +275,63 @@ data class ExpiringBatch(
     val hasExpired: Boolean get() = daysLeft < 0
 }
 
+/**
+ * One line of the sales register, for a period an inspector names.
+ *
+ * A sale here is a ledger "I Gave" entry that carried GOODS — a quantity or a
+ * linked product — never a bare cash movement and never a benevolent loan
+ * (qarz-e-hasna), because a register that counted those as sales would be a
+ * document the owner signed his name under and could not defend. The
+ * definition is deliberately narrow and the report states it in words rather
+ * than leaving the reader to guess what was counted.
+ *
+ * The compliance columns come off the linked product where the sale was tagged
+ * to one; both are nullable and print as a dash otherwise, the same honesty the
+ * stock register keeps.
+ */
+data class SaleRegisterRow(
+    val date: Long,
+    val refNumber: String?,
+    val partyName: String,
+    val itemName: String?,
+    val batchNumber: String?,
+    val quantity: Double?,
+    val unit: String?,
+    val amount: Double,
+    val company: String?,
+    val registrationNumber: String?
+)
+
+/**
+ * One line of the purchase register — a single item off a single supplier bill.
+ *
+ * Item-level rather than bill-level on purpose: a purchase register is read
+ * "what came in, batch by batch", and a dealer tracing a bad batch back to the
+ * bill it arrived on needs the line, not just the invoice total. The bill's own
+ * header (number, date, supplier) rides along on every line of it.
+ *
+ * [lineAmount] is quantity times rate only where a rate was recorded; where it
+ * was not, it is null and the register shows a dash rather than a zero, because
+ * a zero would read as "bought for nothing" instead of "price not entered".
+ */
+data class PurchaseRegisterRow(
+    val date: Long,
+    val billNumber: String?,
+    val billId: Long,
+    val supplierName: String,
+    val itemName: String,
+    val batchNumber: String?,
+    val expiryDate: Long?,
+    val quantity: Double,
+    val unit: String?,
+    val rate: Double?,
+    val company: String?,
+    val registrationNumber: String?
+) {
+    /** Quantity times rate, or null when no rate was ever entered. */
+    val lineAmount: Double? get() = rate?.let { quantity * it }
+}
+
 object ExpiryWindow {
     /**
      * How far ahead to warn.
