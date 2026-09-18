@@ -1115,4 +1115,22 @@
     <string name="register_summary_sales">فروش: %1$d · %2$s</string>
     <string name="register_summary_purchases">خرید: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d سطر خرید بدون نرخ — در جمع لحاظ نشده</string>
+
+    <string name="sale_price_hint">قیمت نقدی (هر واحد)</string>
+    <string name="credit_price_hint">قیمت نسیه (هر واحد)</string>
+    <string name="price_help">اختیاری. فقط برای پیشنهاد مبلغ — خودکار دریافت نمی‌شود.</string>
+    <string name="credit_rate_suggestion">نرخ نسیه %1$s × %2$s = %3$s. برای پر کردن بزنید.</string>
+    <string name="sale_rate_suggestion">نرخ %1$s × %2$s = %3$s. برای پر کردن بزنید.</string>
+
+    <string name="payment_method_label">پرداخت چگونه انجام شد؟</string>
+    <string name="payment_method_cash">نقدی</string>
+    <string name="payment_method_bank">انتقال بانکی</string>
+    <string name="payment_method_cheque">چک</string>
+    <string name="payment_method_online">آنلاین</string>
+
+    <string name="quick_amount_label">از مانده %1$s</string>
+    <string name="quick_amount_quarter">25%</string>
+    <string name="quick_amount_half">50%</string>
+    <string name="quick_amount_three_quarter">75%</string>
+    <string name="quick_amount_full">کامل</string>
 </resources>

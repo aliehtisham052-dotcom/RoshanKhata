@@ -1087,4 +1087,22 @@
     <string name="register_summary_sales">فروخت: %1$d · %2$s</string>
     <string name="register_summary_purchases">خرید: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d خرید سطور کا ریٹ درج نہیں — ٹوٹل میں شامل نہیں</string>
+
+    <string name="sale_price_hint">نقد قیمت (فی یونٹ)</string>
+    <string name="credit_price_hint">ادھار قیمت (فی یونٹ)</string>
+    <string name="price_help">اختیاری۔ صرف رقم تجویز کرنے کے لیے — خود بخود وصول نہیں ہوتی۔</string>
+    <string name="credit_rate_suggestion">ادھار ریٹ %1$s × %2$s = %3$s۔ بھرنے کے لیے دبائیں۔</string>
+    <string name="sale_rate_suggestion">ریٹ %1$s × %2$s = %3$s۔ بھرنے کے لیے دبائیں۔</string>
+
+    <string name="payment_method_label">ادائیگی کیسے ہوئی؟</string>
+    <string name="payment_method_cash">نقد</string>
+    <string name="payment_method_bank">بینک ٹرانسفر</string>
+    <string name="payment_method_cheque">چیک</string>
+    <string name="payment_method_online">آن لائن</string>
+
+    <string name="quick_amount_label">بقایا %1$s میں سے</string>
+    <string name="quick_amount_quarter">25%</string>
+    <string name="quick_amount_half">50%</string>
+    <string name="quick_amount_three_quarter">75%</string>
+    <string name="quick_amount_full">پورا</string>
 </resources>

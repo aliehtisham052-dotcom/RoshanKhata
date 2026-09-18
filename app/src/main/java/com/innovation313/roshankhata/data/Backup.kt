@@ -561,6 +561,7 @@ object Backup {
         // Carried from the day the column exists, so a backup taken before
         // staff logins arrive is still a complete record of its own rows.
         put("createdBy", e.createdBy ?: JSONObject.NULL)
+        put("paymentMethod", e.paymentMethod ?: JSONObject.NULL)
         put("isDeleted", e.isDeleted)
         put("deletedAt", e.deletedAt ?: JSONObject.NULL)
     }
@@ -581,6 +582,10 @@ object Backup {
         productId = o.optNullableLong("productId"),
         billItemId = o.optNullableLong("billItemId"),
         createdBy = o.optString("createdBy").takeIf { it.isNotBlank() },
+        // Absent from every backup written before this column existed; an
+        // older file restores with no method, which is what those entries
+        // actually recorded.
+        paymentMethod = o.optNullableString("paymentMethod"),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")
     )
@@ -763,6 +768,8 @@ object Backup {
         put("formulation", p.formulation ?: JSONObject.NULL)
         put("registrationNumber", p.registrationNumber ?: JSONObject.NULL)
         put("technicalName", p.technicalName ?: JSONObject.NULL)
+        put("salePrice", p.salePrice ?: JSONObject.NULL)
+        put("creditPrice", p.creditPrice ?: JSONObject.NULL)
         put("note", p.note ?: JSONObject.NULL)
         put("createdAt", p.createdAt)
         put("isDeleted", p.isDeleted)
@@ -795,6 +802,8 @@ object Backup {
             formulation = o.optNullableString("formulation"),
             registrationNumber = o.optNullableString("registrationNumber"),
             technicalName = o.optNullableString("technicalName"),
+            salePrice = o.optNullableDouble("salePrice"),
+            creditPrice = o.optNullableDouble("creditPrice"),
             note = o.optNullableString("note"),
             createdAt = o.optLong("createdAt", System.currentTimeMillis()),
             isDeleted = o.optBoolean("isDeleted", false),

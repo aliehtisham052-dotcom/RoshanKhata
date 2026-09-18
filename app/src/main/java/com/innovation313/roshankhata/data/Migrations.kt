@@ -478,6 +478,32 @@ val MIGRATION_17_18 = object : Migration(17, 18) {
 }
 
 /**
+ * Two rates for a product, and how a payment arrived.
+ *
+ * Three columns, all nullable, none back-filled. A shop that never opens the
+ * new fields behaves exactly as it does today: no rate is invented for a
+ * product that never had one, and an entry written yesterday is not
+ * retrospectively declared to have been paid in cash.
+ *
+ * Deliberately NOT touched: the ledger's arithmetic. A balance remains the sum
+ * of what was given minus what came back. A credit price only ever OFFERS a
+ * figure into the amount box for the owner to accept or overwrite, and the
+ * payment method is a label on money that had already been counted.
+ */
+val MIGRATION_18_19 = object : Migration(18, 19) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // What the product sells for, cash and on udhar. REAL: a rate is not
+        // always whole rupees, and rounding one at the schema would quietly
+        // change what the owner typed.
+        db.execSQL("ALTER TABLE products ADD COLUMN salePrice REAL")
+        db.execSQL("ALTER TABLE products ADD COLUMN creditPrice REAL")
+
+        // How the money came in. TEXT holding a PaymentMethod key.
+        db.execSQL("ALTER TABLE transactions ADD COLUMN paymentMethod TEXT")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -486,7 +512,7 @@ val MIGRATION_17_18 = object : Migration(17, 18) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 18
+const val KHATA_DB_VERSION = 19
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -506,5 +532,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_14_15,
     MIGRATION_15_16,
     MIGRATION_16_17,
-    MIGRATION_17_18
+    MIGRATION_17_18,
+    MIGRATION_18_19
 )

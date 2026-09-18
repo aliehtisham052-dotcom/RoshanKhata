@@ -1087,4 +1087,22 @@
     <string name="register_summary_sales">Farokht: %1$d · %2$s</string>
     <string name="register_summary_purchases">Khareed: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d khareed line(s) ka rate darj nahi — total mein shamil nahi</string>
+
+    <string name="sale_price_hint">Naqd qeemat (fi unit)</string>
+    <string name="credit_price_hint">Udhar qeemat (fi unit)</string>
+    <string name="price_help">Ikhtiyari. Sirf raqam tajweez karne ke liye — khud se wasool nahi hoti.</string>
+    <string name="credit_rate_suggestion">Udhar rate %1$s × %2$s = %3$s. Bharne ke liye dabayen.</string>
+    <string name="sale_rate_suggestion">Rate %1$s × %2$s = %3$s. Bharne ke liye dabayen.</string>
+
+    <string name="payment_method_label">Adaigi kaise hui?</string>
+    <string name="payment_method_cash">Naqd</string>
+    <string name="payment_method_bank">Bank transfer</string>
+    <string name="payment_method_cheque">Cheque</string>
+    <string name="payment_method_online">Online</string>
+
+    <string name="quick_amount_label">Baqaya %1$s mein se</string>
+    <string name="quick_amount_quarter">25%</string>
+    <string name="quick_amount_half">50%</string>
+    <string name="quick_amount_three_quarter">75%</string>
+    <string name="quick_amount_full">Poora</string>
 </resources>

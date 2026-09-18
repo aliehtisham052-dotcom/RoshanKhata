@@ -90,6 +90,125 @@
 
 
         <!--
+          Quick shares of what is outstanding, for money coming IN.
+          
+          A shopkeeper collecting against a balance is usually taking a round
+          part of it — half now, the rest after the crop — and typing 17,250
+          when the app already knows the balance is 23,000 is arithmetic the
+          phone should have done. Hidden by default and shown only on an
+          "I Got" entry against a party who actually owes something: offering
+          "75% of nothing" would be noise on every other entry.
+        -->
+        <LinearLayout
+            android:id="@+id/quickAmounts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvQuickAmountLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnQuarter"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/quick_amount_quarter"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnHalf"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/quick_amount_half"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnThreeQuarter"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/quick_amount_three_quarter"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFullAmount"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/quick_amount_full"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:cornerRadius="8dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!--
+          What the product's own rate makes this sale come to.
+          
+          An OFFER, never an answer: it appears only once a known product and
+          a quantity are both present, it says what it multiplied, and the
+          figure only reaches the amount box if the owner taps it. Nothing
+          here can change an entry that was already typed.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRateSuggestion"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="start|center_vertical"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:textAllCaps="false"
+            android:textColor="@color/brand_green"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <!--
           The bill and the date, above the pad rather than below it.
 
           They sit with the amount because they belong to it — both answer
@@ -301,6 +420,72 @@
             app:cornerRadius="8dp" />
 
         <!-- An equal share of whatever the page has spare. -->
+
+        <!--
+          How the money arrived. Shown only on an "I Got" entry: goods handed
+          over on udhar were not paid by any method, and recording one against
+          them would put a falsehood on the statement.
+          
+          Optional throughout. An owner who does not say leaves it blank, and
+          blank is stored as blank — never quietly filed as cash.
+        -->
+        <LinearLayout
+            android:id="@+id/paymentMethodSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/payment_method_label"
+                android:textColor="@color/navy_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <!--
+              No selectionRequired: a chip already tapped can be tapped off
+              again. "I did not record how" is a real answer and must stay
+              reachable, or the first tap becomes permanent.
+            -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgPaymentMethod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCash"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/payment_method_cash" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBank"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/payment_method_bank" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCheque"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/payment_method_cheque" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipOnline"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/payment_method_online" />
+            </com.google.android.material.chip.ChipGroup>
+        </LinearLayout>
 
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/cbQarzeHasna"

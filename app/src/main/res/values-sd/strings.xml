@@ -1115,4 +1115,22 @@
     <string name="register_summary_sales">وڪرو: %1$d · %2$s</string>
     <string name="register_summary_purchases">خریداري: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d خریداري لائينن جو ريٽ درج ناهي — ٽوٽل ھ شامل ناهي</string>
+
+    <string name="sale_price_hint">نقد قيمت (في يونٽ)</string>
+    <string name="credit_price_hint">اڌاري قيمت (في يونٽ)</string>
+    <string name="price_help">اختياري. صرف رقم تجويز ڪرڻ لاءِ — پاڻ وصول نه ٿيندي.</string>
+    <string name="credit_rate_suggestion">اڌاري ريٽ %1$s × %2$s = %3$s. ڀرڻ لاءِ دٻايو.</string>
+    <string name="sale_rate_suggestion">ريٽ %1$s × %2$s = %3$s. ڀرڻ لاءِ دٻايو.</string>
+
+    <string name="payment_method_label">ادائيگي ڪيئن ٿي؟</string>
+    <string name="payment_method_cash">نقد</string>
+    <string name="payment_method_bank">بينڪ ٽرانسفر</string>
+    <string name="payment_method_cheque">چيڪ</string>
+    <string name="payment_method_online">آن لائن</string>
+
+    <string name="quick_amount_label">باقي %1$s مان</string>
+    <string name="quick_amount_quarter">25%</string>
+    <string name="quick_amount_half">50%</string>
+    <string name="quick_amount_three_quarter">75%</string>
+    <string name="quick_amount_full">پورو</string>
 </resources>

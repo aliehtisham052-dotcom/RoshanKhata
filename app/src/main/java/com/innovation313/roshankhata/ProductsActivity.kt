@@ -15,6 +15,7 @@ import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.data.Stock
+import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ProductAdapter
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
@@ -166,6 +167,16 @@ class ProductsActivity : AppCompatActivity() {
             val etRegistration =
                 field(R.id.etRegistrationNumber).apply { setText(product.registrationNumber) }
 
+            // Shown trimmed rather than as a raw double: a rate of 1850 should
+            // read "1850", not "1850.0", and the owner should get back exactly
+            // what they typed.
+            val etSalePrice = field(R.id.etSalePrice).apply {
+                setText(product.salePrice?.let { Format.plain(it) } ?: "")
+            }
+            val etCreditPrice = field(R.id.etCreditPrice).apply {
+                setText(product.creditPrice?.let { Format.plain(it) } ?: "")
+            }
+
             MaterialAlertDialogBuilder(this@ProductsActivity)
                 .setTitle(R.string.product_edit_details)
                 .setView(view)
@@ -192,7 +203,11 @@ class ProductsActivity : AppCompatActivity() {
                         productType = typed(etType),
                         technicalName = typed(etTechnical),
                         formulation = typed(etFormulation),
-                        registrationNumber = typed(etRegistration)
+                        registrationNumber = typed(etRegistration),
+                        // A cleared box means "I do not quote a rate for this",
+                        // which is a null and not a zero. Zero is a price.
+                        salePrice = typed(etSalePrice)?.toDoubleOrNull(),
+                        creditPrice = typed(etCreditPrice)?.toDoubleOrNull()
                     )
 
                     lifecycleScope.launch {
