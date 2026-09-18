@@ -217,8 +217,28 @@ object InspectorReport {
         val brandLogo = PdfBranding.logo(context)
         val businessName = d.businessName ?: "Roshan Khata"
 
-        fun header(): Float {
+        /**
+         * The full masthead on page 1, a slim one after it.
+         *
+         * The owner's objection was fair: the tall block repeated on every
+         * page read as the app announcing itself, when this document is about
+         * his stock and carries HIS name. A register that gets separated from
+         * its first page must still identify itself, so the line stays — but
+         * as one line, not four, and it says "continued" so nobody mistakes a
+         * later page for the start of a fresh register.
+         *
+         * Note the name printed here is the SHOP's, from Business Profile.
+         * "Roshan Khata" only appears when that has been left blank.
+         */
+        fun header(first: Boolean = true): Float {
             PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
+            if (!first) {
+                canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 34f, navyFill)
+                canvas.drawText(businessName, MARGIN, 22f, tagline)
+                val cont = "Stock & Compliance Register (continued)"
+                canvas.drawText(cont, PAGE_W - MARGIN - tagline.measureText(cont), 22f, tagline)
+                return 58f
+            }
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 88f, navyFill)
             canvas.drawText(businessName, MARGIN, 26f, title)
             canvas.drawText("Stock & Compliance Register", MARGIN, 44f, tagline)
@@ -241,7 +261,7 @@ object InspectorReport {
             pageNo++
             page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
             canvas = page.canvas
-            y = header()
+            y = header(first = false)
         }
 
         y = header()
@@ -380,8 +400,20 @@ object InspectorReport {
         canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
         y += 20f
 
+        // Section numbers are COUNTED, not written in by hand.
+        //
+        // They were literals, and two sections are conditional: with no
+        // incomplete products and nothing expiring, the page printed 1, 2, 3,
+        // 5 and the reader is left hunting for a section 4 that was never
+        // missing — on a document whose whole purpose is to look complete to
+        // someone official. Numbering from a counter means whatever survives
+        // the conditions is numbered 1..n with no gap.
+        var sectionNo = 0
+        fun sec(name: String): String { sectionNo++; return "$sectionNo. $name" }
+
         // ---- 1. Current stock, product by product ----
-        canvas.drawText("1. Current stock", MARGIN, y, section)
+        val s1 = sec("Current stock")
+        canvas.drawText(s1, MARGIN, y, section)
         y += 18f
 
         val traded = d.stock.filter { !it.isUntouched }
@@ -407,7 +439,7 @@ object InspectorReport {
             traded.forEachIndexed { index, s ->
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("1. Current stock (continued)", MARGIN, y, section)
+                    canvas.drawText("$s1 (continued)", MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -456,7 +488,8 @@ object InspectorReport {
         // ---- 2. Batch-wise stock ----
         if (y > PAGE_H - 140f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
 
-        canvas.drawText("2. Batch-wise stock", MARGIN, y, section)
+        val s2 = sec("Batch-wise stock")
+        canvas.drawText(s2, MARGIN, y, section)
         y += 14f
         canvas.drawText(
             "Every batch with stock left, oldest expiry first, with the bill it came on.",
@@ -488,7 +521,7 @@ object InspectorReport {
             d.batches.forEachIndexed { index, b ->
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("2. Batch-wise stock (continued)", MARGIN, y, section)
+                    canvas.drawText("$s2 (continued)", MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -528,7 +561,8 @@ object InspectorReport {
         // ---- 3. Expiry report ----
         if (y > PAGE_H - 140f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
 
-        canvas.drawText("3. Expiry report", MARGIN, y, section)
+        val s3 = sec("Expiry report")
+        canvas.drawText(s3, MARGIN, y, section)
         y += 14f
         canvas.drawText(
             "Expired stock first, then what expires within ${d.windowDays} days.",
@@ -565,7 +599,7 @@ object InspectorReport {
             fun expiryRow(index: Int, b: InspectorBatch) {
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("3. Expiry report (continued)", MARGIN, y, section)
+                    canvas.drawText("$s3 (continued)", MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -603,7 +637,8 @@ object InspectorReport {
         if (d.incompleteProducts.isNotEmpty()) {
             if (y > PAGE_H - 140f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
 
-            canvas.drawText("4. Label details still missing", MARGIN, y, section)
+            val s4 = sec("Label details still missing")
+            canvas.drawText(s4, MARGIN, y, section)
             y += 14f
             canvas.drawText(
                 "These products are in stock without company, technical name, formulation or Reg#.",
@@ -614,7 +649,7 @@ object InspectorReport {
             d.incompleteProducts.take(40).forEach { name ->
                 if (y + 15f > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("4. Label details still missing (continued)", MARGIN, y, section)
+                    canvas.drawText("$s4 (continued)", MARGIN, y, section)
                     y += 20f
                 }
                 canvas.drawText("\u2022  ${clip(name, body, PAGE_W - 2 * MARGIN - 20f)}", MARGIN + 4f, y + 11f, body)
@@ -637,7 +672,8 @@ object InspectorReport {
         if (d.companyStock.isNotEmpty()) {
             if (y > PAGE_H - 160f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
 
-            canvas.drawText("5. Company-wise stock", MARGIN, y, section)
+            val s5 = sec("Company-wise stock")
+            canvas.drawText(s5, MARGIN, y, section)
             y += 18f
 
             // 330 + 250 + 182 = 762. The company is the heading above each
@@ -655,7 +691,7 @@ object InspectorReport {
             d.companyStock.forEach { (company, list) ->
                 if (y + rowH * 2 > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("5. Company-wise stock (continued)", MARGIN, y, section)
+                    canvas.drawText("$s5 (continued)", MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -670,7 +706,7 @@ object InspectorReport {
                 list.forEach { s ->
                     if (y + rowH > PAGE_H - 60f) {
                         newPage()
-                        canvas.drawText("5. Company-wise stock (continued)", MARGIN, y, section)
+                        canvas.drawText("$s5 (continued)", MARGIN, y, section)
                         y += 18f
                         lefts = tableHead(cols)
                     }
@@ -725,7 +761,7 @@ object InspectorReport {
             )
             footerX += size + 6f
         }
-        canvas.drawText("Roshan Khata \u00B7 Page $pageNo", footerX, y, muted)
+        canvas.drawText("$businessName \u00B7 Page $pageNo", footerX, y, muted)
 
         doc.finishPage(page)
 
