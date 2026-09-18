@@ -95,7 +95,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="@string/price_help"
+            android:text="@string/product_price_help"
             android:textColor="@color/ink_soft"
             android:textSize="11sp" />
 

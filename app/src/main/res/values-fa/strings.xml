@@ -1118,7 +1118,7 @@
 
     <string name="sale_price_hint">قیمت نقدی (هر واحد)</string>
     <string name="credit_price_hint">قیمت نسیه (هر واحد)</string>
-    <string name="price_help">اختیاری. فقط برای پیشنهاد مبلغ — خودکار دریافت نمی‌شود.</string>
+    <string name="product_price_help">اختیاری. فقط برای پیشنهاد مبلغ — خودکار دریافت نمی‌شود.</string>
     <string name="credit_rate_suggestion">نرخ نسیه %1$s × %2$s = %3$s. برای پر کردن بزنید.</string>
     <string name="sale_rate_suggestion">نرخ %1$s × %2$s = %3$s. برای پر کردن بزنید.</string>
 
