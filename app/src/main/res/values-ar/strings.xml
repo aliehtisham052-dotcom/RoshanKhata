@@ -1098,7 +1098,7 @@
 
     <string name="sale_price_hint">سعر النقد (لكل وحدة)</string>
     <string name="credit_price_hint">سعر الآجل (لكل وحدة)</string>
-    <string name="price_help">اختياري. يُستخدم لاقتراح المبلغ فقط — لا يُحتسب تلقائيًا.</string>
+    <string name="product_price_help">اختياري. يُستخدم لاقتراح المبلغ فقط — لا يُحتسب تلقائيًا.</string>
     <string name="credit_rate_suggestion">سعر الآجل %1$s × %2$s = %3$s. اضغط للتعبئة.</string>
     <string name="sale_rate_suggestion">السعر %1$s × %2$s = %3$s. اضغط للتعبئة.</string>
 
