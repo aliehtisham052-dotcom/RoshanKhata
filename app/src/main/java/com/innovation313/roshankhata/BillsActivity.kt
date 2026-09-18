@@ -24,9 +24,11 @@ import com.innovation313.roshankhata.data.ExpiryWindow
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PartyWithBalance
+import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.SupplierBill
 import com.innovation313.roshankhata.ui.BillAdapter
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.ui.ProductDetailsDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -421,7 +423,7 @@ class BillsActivity : AppCompatActivity() {
                 )
             )
 
-            itemsForThisBill.forEach { item ->
+            val createdProducts = itemsForThisBill.map { item ->
                 // The product is born HERE, the moment its name first appears
                 // on a bill — which is what the Products screen's empty state
                 // has promised all along. findOrCreateProduct is idempotent
@@ -434,6 +436,7 @@ class BillsActivity : AppCompatActivity() {
                     defaultUnit = item.unit
                 )
                 dao.insertBillItem(item.copy(billId = billId, productId = product.id))
+                product
             }
 
             // The toast touches a screen the owner may already have left, so
@@ -447,9 +450,82 @@ class BillsActivity : AppCompatActivity() {
                         if (paidCash) R.string.bill_saved else R.string.bill_saved_credit,
                         Toast.LENGTH_LONG
                     ).show()
+
+                    // THE LABEL IS IN THEIR HAND RIGHT NOW. Company, technical
+                    // name, formulation and Reg# are facts about the product
+                    // rather than about this bill, so they are not bill fields
+                    // — filling them per bill would mean retyping them every
+                    // time and letting two bills disagree about one product.
+                    // But the only moment they are easy to answer is while the
+                    // bottle is on the counter, so this is where they are
+                    // asked for, once, after the bill is safely saved.
+                    offerLabelDetails(createdProducts.distinctBy { it.id })
                 }
             }
         }
+    }
+
+    /**
+     * Ask, once, for the label details of the products this bill just created
+     * or touched — and only for the ones actually missing something.
+     *
+     * WHY IT IS A PROMPT AND NOT A FIELD. The four compliance answers belong
+     * to the product, not to the bill: sulfur's company and registration
+     * number are the same on the tenth bill as on the first. Put them in the
+     * bill form and they get retyped every time, the form gets longer for the
+     * one thing done daily, and two bills are free to disagree about one
+     * product — which is exactly the contradiction the register would then
+     * print. Put them only on the Products screen and they are answered
+     * months later, or never, because the label has long since gone.
+     *
+     * So: the bill stays short, the product keeps the facts, and the asking
+     * happens here — after the save, never before it. Nothing about this can
+     * affect whether the bill was recorded; by the time this runs the bill,
+     * its items and its ledger entry are already written.
+     *
+     * "Missing" is [ProductDetailsDialog.needsLabelDetails], which is the
+     * register's own rule rather than a second one invented here.
+     */
+    private fun offerLabelDetails(products: List<Product>) {
+        val incomplete = products.filter { ProductDetailsDialog.needsLabelDetails(it) }
+        if (incomplete.isEmpty()) return
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.label_details_title)
+            .setMessage(
+                getString(
+                    R.string.label_details_ask,
+                    incomplete.joinToString(", ") { it.name }
+                )
+            )
+            // Later is a real answer, not a nag postponed: the register keeps
+            // listing these under "label details still missing", so nothing is
+            // lost by saying no here.
+            .setNegativeButton(R.string.label_details_later, null)
+            .setPositiveButton(R.string.label_details_fill) { _, _ ->
+                fillLabelDetails(incomplete, 0)
+            }
+            .show()
+    }
+
+    /**
+     * One product at a time, in order, each dialog opening the next when it
+     * closes — saved or skipped.
+     *
+     * Recursion rather than a loop because the dialogs are asynchronous: a
+     * for-loop would stack every dialog on screen at once, and the owner would
+     * be filling the last product's form first.
+     */
+    private fun fillLabelDetails(queue: List<Product>, index: Int) {
+        if (index >= queue.size || isFinishing || isDestroyed) return
+        val next = { fillLabelDetails(queue, index + 1) }
+        ProductDetailsDialog.show(
+            activity = this,
+            product = queue[index],
+            dao = dao,
+            onSaved = next,
+            onDismissed = next
+        )
     }
 
     // ---------- Viewing / deleting ----------

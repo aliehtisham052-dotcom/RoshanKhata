@@ -1081,6 +1081,10 @@
     <string name="product_who_bought">چه کسانی خریدند</string>
     <string name="product_edit_details">ویرایش مشخصات</string>
     <string name="product_name_taken">این نام را «%1$s» دارد.</string>
+    <string name="label_details_title">جزئیات برچسب</string>
+    <string name="label_details_ask">برای %1$s هنوز شرکت، نام فنی، فرمولاسیون یا شماره ثبت وارد نشده است. برچسب الآن در دست شماست — واردش می‌کنید؟</string>
+    <string name="label_details_fill">همین حالا وارد کن</string>
+    <string name="label_details_later">بعداً</string>
     <string name="edit_details">ویرایش مشخصات</string>
     <string name="son_of_prefix">فرزند %1$s</string>
 

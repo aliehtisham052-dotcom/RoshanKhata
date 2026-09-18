@@ -1093,6 +1093,11 @@
     <string name="product_who_bought">Who bought this</string>
     <string name="product_edit_details">Edit details</string>
     <string name="product_name_taken">“%1$s” already uses that name.</string>
+    <!-- Asked right after a supplier bill is saved, while the label is still in hand. -->
+    <string name="label_details_title">Label details</string>
+    <string name="label_details_ask">%1$s has no company, technical name, formulation or Reg# recorded yet. The label is in your hand now — fill it in?</string>
+    <string name="label_details_fill">Fill now</string>
+    <string name="label_details_later">Later</string>
     <string name="edit_details">Edit details</string>
     <string name="son_of_prefix">s/o %1$s</string>
 
