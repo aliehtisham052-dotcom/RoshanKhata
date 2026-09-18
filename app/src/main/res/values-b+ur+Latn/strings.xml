@@ -37,6 +37,8 @@
     <string name="coach_desc_bizcard">Apni dukan ke liye seconds mein share hone wala card banayein, teen andaaz mein.</string>
     <string name="coach_title_invoice">Invoice</string>
     <string name="coach_desc_invoice">Apne customers ke liye professional invoice banayein — tayyar designon mein se chunein, aap ke naam, muhar aur QR ke saath.</string>
+    <string name="coach_title_products">Products aur Stock</string>
+    <string name="coach_desc_products">Hath mein maujooda stock, batch ki expiry, aur compliance registers — wahi bills jo aap pehle se likhte hain, unhi se khud ban jaate hain.</string>
     <string name="followup_title">Wusooli</string>
     <string name="followup_subtitle">Kis se wusool karna hai — sab se purana pehle, raqam saath</string>
     <string name="followup_summary">%1$d customers ke zimme aap ka · kul %2$s</string>

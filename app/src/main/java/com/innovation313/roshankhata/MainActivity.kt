@@ -120,7 +120,14 @@ class MainActivity : AppCompatActivity() {
             Feature(R.drawable.ic_feature_lock, R.string.recycle_bin, RecycleBinActivity::class.java,
                 R.color.tile_bin_bg, R.color.tile_bin_fg),
             Feature(R.drawable.ic_feature_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
-                R.color.tile_invoice_bg, R.color.tile_invoice_fg)
+                R.color.tile_invoice_bg, R.color.tile_invoice_fg),
+            // Moved off the More sheet 18 Sep 2026: once Inspector Mode gave this
+            // screen its own registers (stock, batches, expiry, compliance), it
+            // stopped being a settings-style afterthought. It keeps Supplier
+            // Bills' own section colour because that is where its data comes
+            // from — a product is born the first time its name appears on a bill.
+            Feature(R.drawable.ic_feature_products, R.string.products_stock, ProductsActivity::class.java,
+                R.color.tile_bills_bg, R.color.section_bills)
         )
 
         featureViews.clear()
@@ -217,10 +224,12 @@ class MainActivity : AppCompatActivity() {
      * set once and then forgotten. Too few to earn tiles, too useful to drop.
      */
     private fun showMoreSheet() {
+        // Products & stock moved onto the grid (18 Sep 2026) — it earned a tile,
+        // not a line in a settings list. What is left here is genuinely the
+        // set-once-and-forget kind.
         val options = arrayOf(
             getString(R.string.app_lock),
             getString(R.string.screen_privacy),
-            getString(R.string.products_stock),
             getString(R.string.duplicate_customers),
             getString(R.string.language),
             getString(R.string.help_support),
@@ -233,13 +242,12 @@ class MainActivity : AppCompatActivity() {
                 when (which) {
                     0 -> showAppLockSettings()
                     1 -> ScreenPrivacyDialog.show(this)
-                    2 -> startActivity(Intent(this, ProductsActivity::class.java))
-                    3 -> startActivity(Intent(this, DuplicateCustomersActivity::class.java))
-                    4 -> startActivity(Intent(this, LanguageActivity::class.java))
+                    2 -> startActivity(Intent(this, DuplicateCustomersActivity::class.java))
+                    3 -> startActivity(Intent(this, LanguageActivity::class.java))
                     // Reporting a problem lives inside Help now, so there is
                     // one door marked "something is wrong" rather than two.
-                    5 -> startActivity(Intent(this, HelpActivity::class.java))
-                    6 -> startActivity(Intent(this, AboutActivity::class.java))
+                    4 -> startActivity(Intent(this, HelpActivity::class.java))
+                    5 -> startActivity(Intent(this, AboutActivity::class.java))
                 }
             }
             .show()
@@ -385,7 +393,8 @@ class MainActivity : AppCompatActivity() {
             tileStep(R.string.biz_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
             tileStep(R.string.business_settings, R.string.coach_title_settings, R.string.coach_desc_settings),
             tileStep(R.string.recycle_bin, R.string.coach_title_applock, R.string.coach_desc_applock),
-            tileStep(R.string.nav_invoice, R.string.coach_title_invoice, R.string.coach_desc_invoice)
+            tileStep(R.string.nav_invoice, R.string.coach_title_invoice, R.string.coach_desc_invoice),
+            tileStep(R.string.products_stock, R.string.coach_title_products, R.string.coach_desc_products)
         )
 
         if (steps.isEmpty()) return

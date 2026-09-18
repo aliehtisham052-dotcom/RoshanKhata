@@ -41,6 +41,8 @@
     <string name="coach_desc_bizcard">Make a shareable card for your shop in seconds, in three styles.</string>
     <string name="coach_title_invoice">Invoice</string>
     <string name="coach_desc_invoice">Make professional invoices for your customers — pick from ready designs with your name, stamp and QR.</string>
+    <string name="coach_title_products">Products &amp; Stock</string>
+    <string name="coach_desc_products">Stock on hand, batch expiry, and compliance registers — built from the bills you already write.</string>
     <string name="followup_title">Follow-up</string>
     <string name="followup_subtitle">Who to collect from — oldest first, amount alongside</string>
     <string name="followup_summary">%1$d customers owe you · %2$s in all</string>

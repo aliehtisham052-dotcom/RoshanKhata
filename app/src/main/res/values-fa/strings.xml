@@ -37,6 +37,8 @@
     <string name="coach_desc_bizcard">در چند ثانیه کارتی قابل اشتراک برای مغازه‌تان بسازید، در سه سبک.</string>
     <string name="coach_title_invoice">فاکتور</string>
     <string name="coach_desc_invoice">برای مشتریان خود فاکتورهای حرفه‌ای بسازید — از طرح‌های آماده با نام، مهر و QR خود انتخاب کنید.</string>
+    <string name="coach_title_products">محصولات و موجودی</string>
+    <string name="coach_desc_products">موجودی فعلی، تاریخ انقضای هر بچ، و گزارش‌های انطباق — همان که از فاکتورهایی که می‌نویسید خودکار ساخته می‌شود.</string>
     <string name="followup_title">پیگیری وصول</string>
     <string name="followup_subtitle">از چه کسی وصول کنید — قدیمی‌ترین اول، مبلغ در کنار</string>
     <string name="followup_summary">%1$d مشتری به شما بدهکارند · جمعاً %2$s</string>

@@ -37,6 +37,8 @@
     <string name="coach_desc_bizcard">أنشئ بطاقة قابلة للمشاركة لمتجرك في ثوانٍ، بثلاثة أنماط.</string>
     <string name="coach_title_invoice">فاتورة</string>
     <string name="coach_desc_invoice">أنشئ فواتير احترافية لعملائك — اختر من تصاميم جاهزة مع اسمك وختمك ورمز QR.</string>
+    <string name="coach_title_products">المنتجات والمخزون</string>
+    <string name="coach_desc_products">المخزون الحالي، تاريخ انتهاء كل دفعة، وتقارير الامتثال — تُبنى تلقائيًا من نفس الفواتير التي تُسجّلها.</string>
     <string name="followup_title">المتابعة</string>
     <string name="followup_subtitle">ممن تُحصّل — الأقدم أولاً، والمبلغ بجانبه</string>
     <string name="followup_summary">%1$d عميلاً مدينون لك · الإجمالي %2$s</string>
