@@ -177,6 +177,11 @@
                             <TextView android:id="@+id/tvGoods" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="4dp" android:paddingBottom="4dp" android:textColor="@color/ink" android:textSize="14sp" />
                         </TableRow>
 
+                        <TableRow android:id="@+id/rowPaymentMethod">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="4dp" android:paddingBottom="4dp" android:paddingEnd="16dp" android:text="@string/payment_method_label" android:textColor="@color/text_muted" android:textSize="14sp" />
+                            <TextView android:id="@+id/tvPaymentMethod" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="4dp" android:paddingBottom="4dp" android:textColor="@color/ink" android:textSize="14sp" />
+                        </TableRow>
+
                         <TableRow>
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="4dp" android:paddingBottom="4dp" android:paddingEnd="16dp" android:text="@string/balance_label" android:textColor="@color/text_muted" android:textSize="14sp" />
                             <TextView android:id="@+id/tvBalance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="4dp" android:paddingBottom="4dp" android:textColor="@color/ink" android:textSize="14sp" android:textStyle="bold" />

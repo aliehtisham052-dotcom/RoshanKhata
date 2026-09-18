@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BatchOption
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -137,6 +138,19 @@ class EntryDetailActivity : AppCompatActivity() {
         } else {
             rowGoods.visibility = View.VISIBLE
             findViewById<TextView>(R.id.tvGoods).text = goods
+        }
+
+        // How the money arrived, when it was recorded. Hidden entirely when it
+        // was not: a blank row would suggest the question was asked and left
+        // unanswered, and an entry that predates the column never had it to
+        // answer. Never guessed — an unrecorded method is not cash.
+        val rowPaymentMethod = findViewById<TableRow>(R.id.rowPaymentMethod)
+        val method = PaymentMethod.labelOf(this, e.paymentMethod)
+        if (method == null) {
+            rowPaymentMethod.visibility = View.GONE
+        } else {
+            rowPaymentMethod.visibility = View.VISIBLE
+            findViewById<TextView>(R.id.tvPaymentMethod).text = method
         }
 
         findViewById<TextView>(R.id.tvBalance).text = Format.money(e.amount)

@@ -1095,4 +1095,22 @@
     <string name="register_summary_sales">المبيعات: %1$d · %2$s</string>
     <string name="register_summary_purchases">المشتريات: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d من سطور الشراء بلا سعر — غير مدرجة في الإجمالي</string>
+
+    <string name="sale_price_hint">سعر النقد (لكل وحدة)</string>
+    <string name="credit_price_hint">سعر الآجل (لكل وحدة)</string>
+    <string name="price_help">اختياري. يُستخدم لاقتراح المبلغ فقط — لا يُحتسب تلقائيًا.</string>
+    <string name="credit_rate_suggestion">سعر الآجل %1$s × %2$s = %3$s. اضغط للتعبئة.</string>
+    <string name="sale_rate_suggestion">السعر %1$s × %2$s = %3$s. اضغط للتعبئة.</string>
+
+    <string name="payment_method_label">كيف تم الدفع؟</string>
+    <string name="payment_method_cash">نقدًا</string>
+    <string name="payment_method_bank">تحويل بنكي</string>
+    <string name="payment_method_cheque">شيك</string>
+    <string name="payment_method_online">عبر الإنترنت</string>
+
+    <string name="quick_amount_label">من الرصيد %1$s</string>
+    <string name="quick_amount_quarter">25%</string>
+    <string name="quick_amount_half">50%</string>
+    <string name="quick_amount_three_quarter">75%</string>
+    <string name="quick_amount_full">الكل</string>
 </resources>

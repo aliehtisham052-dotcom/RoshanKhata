@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.data
 
+import android.content.Context
+import com.innovation313.roshankhata.R
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -69,6 +71,41 @@ object Recovery {
     const val CERTAIN = 0
     /** Doubtful — many scholars hold Zakat is due only once it is actually received. */
     const val DOUBTFUL = 1
+}
+
+/**
+ * How a payment reached the shop.
+ *
+ * Stored as these keys, never as the translated label: a ledger restored on a
+ * phone set to Urdu must still know that "cheque" means cheque, and a key that
+ * changed with the language would make a backup unreadable by the app that
+ * wrote it.
+ *
+ * [labelOf] falls back to showing an unrecognised key as it was stored rather
+ * than blanking it or calling it cash. A value this version does not know is
+ * still something the owner recorded.
+ */
+object PaymentMethod {
+    const val CASH = "cash"
+    const val BANK = "bank"
+    const val CHEQUE = "cheque"
+    const val ONLINE = "online"
+
+    val ALL = listOf(CASH, BANK, CHEQUE, ONLINE)
+
+    fun labelRes(key: String): Int? = when (key) {
+        CASH -> R.string.payment_method_cash
+        BANK -> R.string.payment_method_bank
+        CHEQUE -> R.string.payment_method_cheque
+        ONLINE -> R.string.payment_method_online
+        else -> null
+    }
+
+    fun labelOf(context: Context, key: String?): String? {
+        if (key.isNullOrBlank()) return null
+        val res = labelRes(key) ?: return key
+        return context.getString(res)
+    }
 }
 
 /** A single ledger entry against a party. */
@@ -162,6 +199,22 @@ data class LedgerEntry(
      * name written on an entry should outlive the person leaving the shop.
      */
     val createdBy: String? = null,
+
+    /**
+     * How the money came in — cash, bank transfer, cheque, online.
+     *
+     * Only ever set on an "I Got" entry: money going OUT of the shop as goods
+     * on udhar was not paid by any method, and a method recorded against it
+     * would be a lie on the statement.
+     *
+     * Free text holding one of [PaymentMethod]'s keys rather than an Int, so
+     * a backup taken today still reads correctly if the list ever grows, and
+     * so an unknown value from a newer release degrades to "shown as typed"
+     * instead of pointing at the wrong method. Null on every entry written
+     * before this column existed, and on every entry where the owner did not
+     * say — which is not the same as cash, and is never displayed as cash.
+     */
+    val paymentMethod: String? = null,
 
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null

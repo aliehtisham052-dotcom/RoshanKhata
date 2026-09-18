@@ -37,6 +37,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BatchOption
+import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.QrTag
@@ -47,6 +48,8 @@ import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
 import com.innovation313.roshankhata.data.BillPhoto
+import com.google.android.material.chip.ChipGroup
+import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.ui.EntryAdapter
 import com.innovation313.roshankhata.ui.EntryRow
@@ -550,6 +553,38 @@ class PartyDetailActivity : AppCompatActivity() {
                 etAmount.setSelection(etAmount.text.length)
             }
         }
+        // ---- Quick shares of the outstanding balance ----
+        //
+        // Only for money coming IN, and only when there is something owed to
+        // collect against. On an "I Gave" entry, or a settled customer, the
+        // row stays hidden: a percentage of nothing is not a shortcut.
+        //
+        // The figure is put in the box for the owner to see and change, not
+        // saved. Nothing here reaches the ledger by itself.
+        val quickAmounts: View = view.findViewById(R.id.quickAmounts)
+        if (!isGiven && Money.isPositive(currentBalance)) {
+            quickAmounts.visibility = View.VISIBLE
+            view.findViewById<TextView>(R.id.tvQuickAmountLabel).text =
+                getString(R.string.quick_amount_label, Format.money(currentBalance))
+
+            fun share(fraction: Double) {
+                // Rounded to the rupee: a shopkeeper counts notes, not paisa,
+                // and "5,749.99" in the box would be corrected by hand every
+                // single time. The full share is left exactly as the balance
+                // stands — rounding THAT would leave a few paisa outstanding
+                // on a customer the owner was told is now clear.
+                val raw = currentBalance * fraction
+                val value = if (fraction == 1.0) currentBalance else kotlin.math.round(raw)
+                etAmount.setText(Calc.trim(value))
+                etAmount.setSelection(etAmount.text.length)
+            }
+
+            view.findViewById<MaterialButton>(R.id.btnQuarter).setOnClickListener { share(0.25) }
+            view.findViewById<MaterialButton>(R.id.btnHalf).setOnClickListener { share(0.50) }
+            view.findViewById<MaterialButton>(R.id.btnThreeQuarter).setOnClickListener { share(0.75) }
+            view.findViewById<MaterialButton>(R.id.btnFullAmount).setOnClickListener { share(1.0) }
+        }
+
         val etNote: EditText = view.findViewById(R.id.etNote)
         val etItemName: EditText = view.findViewById(R.id.etItemName)
         val etQuantity: EditText = view.findViewById(R.id.etQuantity)
@@ -573,6 +608,47 @@ class PartyDetailActivity : AppCompatActivity() {
         // through a bill has nothing to offer here, and is not asked.
         var selectedBatch: BatchOption? = null
         var matchedProductId: Long? = null
+        var matchedProduct: Product? = null
+
+        // ---- What the product's own rate makes this come to ----
+        //
+        // An OFFER and nothing more. It appears only when a known product, a
+        // recorded rate and a quantity are ALL present, it shows the
+        // multiplication in full so the owner can see what it did, and the
+        // figure moves into the amount box only on a tap.
+        //
+        // The credit rate is used for a sale — goods leaving on udhar is what
+        // that rate is for — and falls back to the cash rate when no credit
+        // rate was ever set. On money coming IN nothing is suggested at all:
+        // what a customer pays back is not a function of any rate.
+        val btnRateSuggestion: MaterialButton = view.findViewById(R.id.btnRateSuggestion)
+
+        fun refreshRateSuggestion() {
+            val product = matchedProduct
+            val qty = etQuantity.text.toString().trim().toDoubleOrNull()
+            val credit = product?.creditPrice
+            val cash = product?.salePrice
+            val rate = if (isGiven) (credit ?: cash) else null
+
+            if (product == null || qty == null || qty <= 0.0 || rate == null || rate <= 0.0) {
+                btnRateSuggestion.visibility = View.GONE
+                return
+            }
+
+            val total = rate * qty
+            btnRateSuggestion.visibility = View.VISIBLE
+            btnRateSuggestion.text = getString(
+                if (credit != null) R.string.credit_rate_suggestion
+                else R.string.sale_rate_suggestion,
+                Format.money(rate),
+                Format.plain(qty),
+                Format.money(total)
+            )
+            btnRateSuggestion.setOnClickListener {
+                etAmount.setText(Calc.trim(total))
+                etAmount.setSelection(etAmount.text.length)
+            }
+        }
 
         /**
          * Look up whether the typed name is a product with recorded batches,
@@ -603,6 +679,8 @@ class PartyDetailActivity : AppCompatActivity() {
                 if (etItemName.text.toString().trim() != typed) return@launch
 
                 matchedProductId = product?.id
+                matchedProduct = product
+                refreshRateSuggestion()
                 if (options.isEmpty()) {
                     selectedBatch = null
                     btnBatch.visibility = View.GONE
@@ -629,6 +707,12 @@ class PartyDetailActivity : AppCompatActivity() {
 
         etItemName.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) refreshBatchButton() }
 
+        etQuantity.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) = refreshRateSuggestion()
+            override fun beforeTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
+            override fun onTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
+        })
+
         val rgRecovery: RadioGroup = view.findViewById(R.id.rgRecovery)
         val rbDoubtful: RadioButton = view.findViewById(R.id.rbDoubtful)
         val tvRecoveryLabel: TextView = view.findViewById(R.id.tvRecoveryLabel)
@@ -639,6 +723,26 @@ class PartyDetailActivity : AppCompatActivity() {
         if (!isGiven) {
             tvRecoveryLabel.visibility = View.GONE
             rgRecovery.visibility = View.GONE
+        }
+
+        // ---- How the money arrived ----
+        //
+        // The mirror image of recovery above: meaningful only on money coming
+        // IN. Goods handed over on udhar were not paid by any method, so on an
+        // "I Gave" entry the whole section stays hidden and the column stays
+        // null.
+        val cgPaymentMethod: ChipGroup = view.findViewById(R.id.cgPaymentMethod)
+        if (!isGiven) {
+            view.findViewById<View>(R.id.paymentMethodSection).visibility = View.VISIBLE
+        }
+
+        /** The key behind whichever chip is checked, or null when none is. */
+        fun chosenPaymentMethod(): String? = when (cgPaymentMethod.checkedChipId) {
+            R.id.chipCash -> PaymentMethod.CASH
+            R.id.chipBank -> PaymentMethod.BANK
+            R.id.chipCheque -> PaymentMethod.CHEQUE
+            R.id.chipOnline -> PaymentMethod.ONLINE
+            else -> null
         }
 
         MaterialAlertDialogBuilder(this)
@@ -681,7 +785,10 @@ class PartyDetailActivity : AppCompatActivity() {
                     // confirms it, means this entry never needs the separate
                     // "tie existing entries" backfill to count towards stock.
                     productId = matchedProductId,
-                    billItemId = selectedBatch?.id
+                    billItemId = selectedBatch?.id,
+                    // Null unless a chip was actually tapped, and null on
+                    // every "I Gave" entry, where the section never appeared.
+                    paymentMethod = if (isGiven) null else chosenPaymentMethod()
                 )
 
                 // Warn BEFORE writing, not after — a warning that arrives once

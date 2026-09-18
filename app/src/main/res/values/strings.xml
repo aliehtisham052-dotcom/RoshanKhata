@@ -1127,4 +1127,25 @@
     <string name="register_summary_sales">Sales: %1$d · %2$s</string>
     <string name="register_summary_purchases">Purchases: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d purchase line(s) have no rate — not in the total</string>
+
+    <!-- Two rates a product carries: counter price and udhar price. -->
+    <string name="sale_price_hint">Cash price (per unit)</string>
+    <string name="credit_price_hint">Credit price (per unit)</string>
+    <string name="price_help">Optional. Used only to suggest an amount — never charged on its own.</string>
+    <string name="credit_rate_suggestion">Credit rate %1$s × %2$s = %3$s. Tap to fill.</string>
+    <string name="sale_rate_suggestion">Rate %1$s × %2$s = %3$s. Tap to fill.</string>
+
+    <!-- How a payment reached the shop. -->
+    <string name="payment_method_label">How was it paid?</string>
+    <string name="payment_method_cash">Cash</string>
+    <string name="payment_method_bank">Bank transfer</string>
+    <string name="payment_method_cheque">Cheque</string>
+    <string name="payment_method_online">Online</string>
+
+    <!-- Quick shares of an outstanding balance, when money comes in. -->
+    <string name="quick_amount_label">Of the balance %1$s</string>
+    <string name="quick_amount_quarter">25%</string>
+    <string name="quick_amount_half">50%</string>
+    <string name="quick_amount_three_quarter">75%</string>
+    <string name="quick_amount_full">Full</string>
 </resources>

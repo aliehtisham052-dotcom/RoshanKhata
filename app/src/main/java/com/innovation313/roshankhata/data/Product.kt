@@ -120,6 +120,32 @@ data class Product(
      */
     val technicalName: String? = null,
 
+    // ---- What it sells for ----
+    //
+    // Two rates, because an agri dealer genuinely has two. Cash off the
+    // counter is one price; the same bag on udhar until the crop is sold is
+    // another, and the difference is the cost of waiting. A shop that quotes
+    // one figure for both is either losing the wait or overcharging the man
+    // who paid today.
+    //
+    // Both nullable, both optional, and NOTHING is calculated from them
+    // without the owner asking. The ledger's arithmetic is untouched: an
+    // entry's amount is still only ever what was typed into the amount box.
+    // These rates offer a figure; they never write one.
+
+    /** Counter price, paid now. Per [defaultUnit]. */
+    val salePrice: Double? = null,
+
+    /**
+     * Udhar price, paid later. Per [defaultUnit].
+     *
+     * Kept apart from [salePrice] rather than derived from it by some
+     * percentage: the markup is a judgement about a particular product and a
+     * particular season, not a formula, and an app that guessed it would be
+     * quoting prices the owner never set.
+     */
+    val creditPrice: Double? = null,
+
     val note: String? = null,
 
     val createdAt: Long = System.currentTimeMillis(),

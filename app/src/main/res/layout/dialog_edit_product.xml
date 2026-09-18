@@ -58,6 +58,47 @@
             android:importantForAutofill="no"
             android:inputType="text" />
 
+        <!--
+          The two rates, side by side because they are the same figure asked
+          twice: what this costs paid today, and what it costs paid after the
+          crop. Both optional — a shop that quotes from memory fills in
+          neither and loses nothing.
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etSalePrice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/sale_price_hint"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/etCreditPrice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="@string/credit_price_hint"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/price_help"
+            android:textColor="@color/ink_soft"
+            android:textSize="11sp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
