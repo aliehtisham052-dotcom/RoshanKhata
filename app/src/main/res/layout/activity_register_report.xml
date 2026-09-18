@@ -20,7 +20,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/products_stock"
+            android:text="@string/register_title"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -29,56 +29,73 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="@string/products_subtitle"
+            android:text="@string/register_subtitle"
             android:textColor="@color/section_bills_soft"
             android:textSize="12sp" />
+
+        <!-- The one control this screen has: which stretch of days to print.
+             The register is a fact about a period, so a date range is right here
+             where the stock register correctly refuses one. -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/register_period_title"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRegRange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/range_this_month"
+                    app:icon="@android:drawable/ic_menu_my_calendar"
+                    app:iconGravity="textStart" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
-    <!-- The app's own limit, admitted rather than hidden -->
     <TextView
-        android:id="@+id/tvProductsNote"
+        android:id="@+id/tvRegSummary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#FFF6E0"
-        android:padding="10dp"
-        android:text="@string/products_note"
-        android:textColor="#5C4A16"
-        android:textSize="12sp"
+        android:layout_margin="16dp"
+        android:lineSpacingExtra="4dp"
+        android:textColor="@color/ink"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvProducts"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/productsActions"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvProductsNote" />
-
     <TextView
-        android:id="@+id/tvNoProducts"
+        android:id="@+id/tvRegEmpty"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
+        android:layout_margin="24dp"
         android:gravity="center"
-        android:text="@string/no_products"
+        android:text="@string/register_empty"
         android:textColor="@color/text_muted"
         android:textSize="14sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/rvProducts"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rvProducts" />
+        app:layout_constraintTop_toBottomOf="@id/header" />
 
-    <!-- Two actions of this screen, side by side: tie loose goods to products,
-         or take the stock register an inspection asks for. The register sits
-         here rather than in a menu because this is the screen whose numbers it
-         prints. -->
     <LinearLayout
-        android:id="@+id/productsActions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -88,32 +105,22 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnInspectorReport"
+            android:id="@+id/btnRegDownload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:maxLines="1"
-            android:text="@string/inspector_title"
+            android:text="@string/register_download"
             app:backgroundTint="@color/section_bills"
-            app:icon="@android:drawable/ic_menu_agenda"
+            app:icon="@android:drawable/stat_sys_download"
             app:iconGravity="textStart" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnRegisterReport"
+            android:id="@+id/btnRegShare"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:maxLines="1"
-            android:text="@string/register_title"
-            app:backgroundTint="@color/section_bills"
-            app:icon="@android:drawable/ic_menu_month"
+            android:text="@string/register_share"
+            app:icon="@android:drawable/ic_menu_share"
             app:iconGravity="textStart" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLinkGoods"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/link_goods" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

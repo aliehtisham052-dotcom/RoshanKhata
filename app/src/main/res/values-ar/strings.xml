@@ -1083,4 +1083,16 @@
     <string name="inspector_batch_prefix">دفعة</string>
     <string name="inspector_gap_labels">%1$d منتجات في المخزون تنقصها بيانات الملصق</string>
     <string name="inspector_gap_expiry">%1$d دفعات بدون تاريخ انتهاء</string>
+    <!-- Sales & purchase register (date-ranged) -->
+    <string name="register_title">سجل المبيعات والمشتريات</string>
+    <string name="register_subtitle">ما دخل وما خرج خلال فترة</string>
+    <string name="register_period_title">الفترة</string>
+    <string name="register_download">تنزيل PDF</string>
+    <string name="register_share">مشاركة PDF</string>
+    <string name="register_generating">جارٍ إنشاء السجل…</string>
+    <string name="register_failed">تعذّر إنشاء السجل.</string>
+    <string name="register_empty">لا توجد مبيعات أو مشتريات في هذه الفترة. اختر فترة أخرى.</string>
+    <string name="register_summary_sales">المبيعات: %1$d · %2$s</string>
+    <string name="register_summary_purchases">المشتريات: %1$d · %2$s</string>
+    <string name="register_missing_rate">%1$d من سطور الشراء بلا سعر — غير مدرجة في الإجمالي</string>
 </resources>

@@ -65,6 +65,12 @@ class ProductsActivity : AppCompatActivity() {
             startActivity(Intent(this, InspectorReportActivity::class.java))
         }
 
+        // The other half of what an inspection asks for: what came in and went
+        // out over a period, not just what is on the shelf today.
+        findViewById<MaterialButton>(R.id.btnRegisterReport).setOnClickListener {
+            startActivity(Intent(this, RegisterReportActivity::class.java))
+        }
+
         refresh()
     }
 

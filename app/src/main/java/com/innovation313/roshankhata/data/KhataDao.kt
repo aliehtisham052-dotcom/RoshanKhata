@@ -849,6 +849,76 @@ interface KhataDao {
     suspend fun allBatchesOnce(): List<InspectorBatch>
 
     /**
+     * The sales register for a period — every "I Gave" ledger entry that
+     * carried goods, between two dates.
+     *
+     * The WHERE clause is the whole definition of "a sale" and must not drift
+     * from [SaleRegisterRow]'s own words: given (isGiven = 1), not a benevolent
+     * loan (isQarzeHasna = 0), and actually carrying goods — a quantity was
+     * written OR a product was linked. A bare cash "I Gave" is money leaving,
+     * not a sale, and counting it would inflate a signed compliance total.
+     *
+     * Product columns come from a LEFT JOIN, so a sale typed as free text before
+     * products existed still appears, under its typed [itemName] with empty
+     * compliance columns. The batch, where the sale was tagged to one, rides
+     * along from the bill line it came out of.
+     *
+     * Bounds are inclusive on both ends; the caller passes start-of-day and
+     * end-of-day so a report titled with two dates contains both of them whole.
+     */
+    @Query(
+        """
+        SELECT t.timestamp AS date, t.entryNumber AS refNumber,
+               p.name AS partyName,
+               COALESCE(pr.name, t.itemName) AS itemName,
+               bi.batchNumber AS batchNumber,
+               t.quantity AS quantity, t.unit AS unit, t.amount AS amount,
+               pr.company AS company, pr.registrationNumber AS registrationNumber
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        LEFT JOIN products pr ON pr.id = t.productId
+        LEFT JOIN bill_items bi ON bi.id = t.billItemId
+        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0
+          AND (t.quantity IS NOT NULL OR t.productId IS NOT NULL)
+          AND t.timestamp >= :from AND t.timestamp <= :to
+        ORDER BY t.timestamp ASC, t.id ASC
+        """
+    )
+    suspend fun salesRegister(from: Long, to: Long): List<SaleRegisterRow>
+
+    /**
+     * The purchase register for a period — every supplier-bill line, item by
+     * item, between two dates.
+     *
+     * One row per bill line, not per bill: the register is read batch by batch,
+     * and the bill header (number, date, supplier) rides along on each of its
+     * lines so nothing has to be married back together on screen. Deleted bills
+     * and deleted lines are both excluded.
+     *
+     * Dated by the bill's own [SupplierBill.billDate], the date the goods came
+     * in, not the day the row was typed — a dealer entering last week's bill
+     * today expects it under last week.
+     */
+    @Query(
+        """
+        SELECT b.billDate AS date, b.billNumber AS billNumber, b.id AS billId,
+               p.name AS supplierName,
+               COALESCE(pr.name, i.productName) AS itemName,
+               i.batchNumber AS batchNumber, i.expiryDate AS expiryDate,
+               i.quantity AS quantity, i.unit AS unit, i.rate AS rate,
+               pr.company AS company, pr.registrationNumber AS registrationNumber
+        FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        JOIN parties p ON p.id = b.partyId
+        LEFT JOIN products pr ON pr.id = i.productId
+        WHERE i.isDeleted = 0 AND b.isDeleted = 0
+          AND b.billDate >= :from AND b.billDate <= :to
+        ORDER BY b.billDate ASC, b.id ASC, i.id ASC
+        """
+    )
+    suspend fun purchaseRegister(from: Long, to: Long): List<PurchaseRegisterRow>
+
+    /**
      * Batches at or near expiry — showing what is LEFT of each, not what
      * arrived.
      *

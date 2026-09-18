@@ -1103,4 +1103,16 @@
     <string name="inspector_batch_prefix">بيچ</string>
     <string name="inspector_gap_labels">اسٽاڪ ۾ %1$d پراڊڪٽس جي ليبل تفصيل موجود ناهي</string>
     <string name="inspector_gap_expiry">%1$d بيچ جي ايڪسپائري تاريخ درج ناهي</string>
+    <!-- Sales & purchase register (date-ranged) -->
+    <string name="register_title">وڪرو ھ خریداري رجسٽر</string>
+    <string name="register_subtitle">ھڪ عرصي ھ ڈا آيو، ڈا ويو</string>
+    <string name="register_period_title">عرصو</string>
+    <string name="register_download">PDF ڊائون لوڊ ڪريو</string>
+    <string name="register_share">PDF شيئر ڪريو</string>
+    <string name="register_generating">رجسٽر ٺھي رھيو آھي…</string>
+    <string name="register_failed">رجسٽر ٺھي نه سگھيو.</string>
+    <string name="register_empty">هن عرصي ھ ڪا وڪري يا خریداري ناهي. ٻيو عرصو چونڊيو.</string>
+    <string name="register_summary_sales">وڪرو: %1$d · %2$s</string>
+    <string name="register_summary_purchases">خریداري: %1$d · %2$s</string>
+    <string name="register_missing_rate">%1$d خریداري لائينن جو ريٽ درج ناهي — ٽوٽل ھ شامل ناهي</string>
 </resources>

@@ -82,6 +82,14 @@ object InspectorReport {
         val noExpiryCount: Int,
         /** Products carrying stock whose label details were never filled in. */
         val incompleteProducts: List<String>,
+        /**
+         * The same on-hand figures as [stock], regrouped under the company
+         * whose name is on the label — the "company-wise stock" an inspection
+         * asks for. Companies in name order; a product with no company recorded
+         * falls under one honest "not recorded" heading rather than being
+         * dropped. Only products that have actually moved appear.
+         */
+        val companyStock: List<Pair<String, List<Stock.ProductStock>>>,
         val windowDays: Int
     )
 
@@ -137,17 +145,36 @@ object InspectorReport {
             }
             .map { it.name }
 
+        // Company-wise: the same stock, grouped under the brand on the label.
+        // A product with no company recorded is not dropped — it goes under one
+        // honest heading, because a compliance total that quietly omits stock is
+        // worse than one that admits what it could not label. Untouched products
+        // are left out, matching section 1.
+        val productsById = products.associateBy { it.id }
+        val noCompany = "\u2014 company not recorded"
+        val companyStock = stock
+            .filter { !it.isUntouched }
+            .groupBy { productsById[it.productId]?.company?.trim()?.takeIf { c -> c.isNotEmpty() } ?: noCompany }
+            .toList()
+            .sortedWith(compareBy(
+                // The unlabelled group sits last, not jumbled into the alphabet.
+                { it.first == noCompany },
+                { it.first.lowercase() }
+            ))
+            .map { (company, list) -> company to list.sortedBy { it.name.lowercase() } }
+
         return ReportData(
             businessName = BusinessProfile.businessName(context),
             businessAddress = BusinessProfile.businessAddress(context),
             strn = BusinessProfile.strn(context),
             stock = stock,
-            productsById = products.associateBy { it.id },
+            productsById = productsById,
             batches = live,
             expired = expired,
             expiringSoon = expiringSoon,
             noExpiryCount = live.count { it.expiryDate == null },
             incompleteProducts = incomplete,
+            companyStock = companyStock,
             windowDays = windowDays
         )
     }
@@ -522,6 +549,57 @@ object InspectorReport {
                     "\u2026 and ${d.incompleteProducts.size - 40} more.", MARGIN + 4f, y + 11f, mutedBig
                 )
                 y += 15f
+            }
+        }
+
+        // ---- 5. Company-wise stock ----
+        //
+        // The same on-hand figures as section 1, gathered under the brand on
+        // the label. An inspector asks "how much Bayer, how much FMC"; this is
+        // that column read the other way round. Nothing new is computed — a row
+        // whose units could not be subtracted still says so, exactly as above.
+        if (d.companyStock.isNotEmpty()) {
+            if (y > PAGE_H - 160f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
+
+            canvas.drawText("5. Company-wise stock", MARGIN, y, section)
+            y += 18f
+
+            val xName = MARGIN + 12f
+            val xQtyRight = PAGE_W - MARGIN - 4f
+            val nameMaxW = xQtyRight - 150f - xName
+
+            d.companyStock.forEach { (company, list) ->
+                if (y + 34f > PAGE_H - 60f) {
+                    newPage()
+                    canvas.drawText("5. Company-wise stock (continued)", MARGIN, y, section)
+                    y += 20f
+                }
+                // The brand heading, with how many products sit under it.
+                canvas.drawText(clip(company, bodyBold, PAGE_W - 2 * MARGIN - 60f), MARGIN, y + 11f, bodyBold)
+                val count = "${list.size}"
+                canvas.drawText(count, xQtyRight - muted.measureText(count), y + 11f, muted)
+                y += 18f
+
+                list.forEach { s ->
+                    if (y + 16f > PAGE_H - 60f) {
+                        newPage()
+                        canvas.drawText("5. Company-wise stock (continued)", MARGIN, y, section)
+                        y += 20f
+                    }
+                    val baseline = y + 11f
+                    canvas.drawText(clip(s.name, body, nameMaxW), xName, baseline, body)
+                    val onHand = s.onHand
+                    if (onHand != null) {
+                        val text = Format.qty(onHand, s.unit)
+                        val paint = if (onHand > 0) body else mutedBig
+                        canvas.drawText(text, xQtyRight - paint.measureText(text), baseline, paint)
+                    } else {
+                        val text = "units differ"
+                        canvas.drawText(text, xQtyRight - mutedBig.measureText(text), baseline, mutedBig)
+                    }
+                    y += 16f
+                }
+                y += 6f
             }
         }
 

@@ -1103,4 +1103,16 @@
     <string name="inspector_batch_prefix">بچ</string>
     <string name="inspector_gap_labels">%1$d کالا در موجودی، مشخصات برچسب ندارند</string>
     <string name="inspector_gap_expiry">%1$d بچ بدون تاریخ انقضا</string>
+    <!-- Sales & purchase register (date-ranged) -->
+    <string name="register_title">دفتر فروش و خرید</string>
+    <string name="register_subtitle">در یک بازه چه آمد و چه رفت</string>
+    <string name="register_period_title">بازه</string>
+    <string name="register_download">دانلود PDF</string>
+    <string name="register_share">اشتراک PDF</string>
+    <string name="register_generating">در حال ساخت دفتر…</string>
+    <string name="register_failed">ساخت دفتر ممکن نشد.</string>
+    <string name="register_empty">در این بازه فروش یا خریدی نیست. بازهٔ دیگری انتخاب کنید.</string>
+    <string name="register_summary_sales">فروش: %1$d · %2$s</string>
+    <string name="register_summary_purchases">خرید: %1$d · %2$s</string>
+    <string name="register_missing_rate">%1$d سطر خرید بدون نرخ — در جمع لحاظ نشده</string>
 </resources>
