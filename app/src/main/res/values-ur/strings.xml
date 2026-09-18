@@ -37,6 +37,8 @@
     <string name="coach_desc_bizcard">اپنی دکان کے لیے سیکنڈوں میں شیئر ہونے والا کارڈ بنائیں، تین انداز میں۔</string>
     <string name="coach_title_invoice">انوائس</string>
     <string name="coach_desc_invoice">اپنے گاہکوں کے لیے پروفیشنل انوائس بنائیں — تیار ڈیزائنوں میں سے چنیں، آپ کے نام، مہر اور کیو آر کے ساتھ۔</string>
+    <string name="coach_title_products">پروڈکٹس اور اسٹاک</string>
+    <string name="coach_desc_products">دستیاب اسٹاک، بیچ کی میعاد، اور کمپلائنس رجسٹرز — وہی بل جو آپ پہلے سے لکھتے ہیں، انہی سے خود بن جاتے ہیں۔</string>
     <string name="followup_title">وصولی</string>
     <string name="followup_subtitle">کس سے وصول کرنا ہے — سب سے پرانا پہلے، رقم ساتھ</string>
     <string name="followup_summary">%1$d گاہکوں کے ذمے آپ کا · کل %2$s</string>

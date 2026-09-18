@@ -37,6 +37,8 @@
     <string name="coach_desc_bizcard">پنهنجي دڪان لاءِ سيڪنڊن ۾ شيئر ڪرڻ جوڳو ڪارڊ ٺاهيو، ٽن انداز ۾.</string>
     <string name="coach_title_invoice">انوائس</string>
     <string name="coach_desc_invoice">پنهنجن گراهڪن لاءِ پروفيشنل انوائس ٺاهيو — تيار ڊيزائنن مان چونڊيو، پنهنجي نالي، مهر ۽ QR سان.</string>
+    <string name="coach_title_products">پراڊڪٽس ۽ اسٽاڪ</string>
+    <string name="coach_desc_products">موجود اسٽاڪ، بيچ جي ختم ٿيڻ جي تاريخ، ۽ ڪمپلائنس رجسٽر — اهي ئي بل جيڪي توهان اڳ ۾ ئي لکو ٿا، انهن مان پاڻمرادو ٺهي وڃن ٿا.</string>
     <string name="followup_title">وصولي</string>
     <string name="followup_subtitle">ڪنهن کان وصول ڪرڻو آهي — سڀ کان پراڻو پهرين، رقم گڏ</string>
     <string name="followup_summary">%1$d گراهڪن جي ذمي توهان جو · ڪل %2$s</string>
