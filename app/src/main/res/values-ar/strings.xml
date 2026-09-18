@@ -1061,6 +1061,10 @@
     <string name="product_who_bought">من اشترى هذا</string>
     <string name="product_edit_details">تعديل البيانات</string>
     <string name="product_name_taken">هذا الاسم يستخدمه ”%1$s“ بالفعل.</string>
+    <string name="label_details_title">تفاصيل الملصق</string>
+    <string name="label_details_ask">لم تُسجّل بعد الشركة أو الاسم التقني أو التركيبة أو رقم التسجيل لـ %1$s. الملصق بين يديك الآن — تريد إدخالها؟</string>
+    <string name="label_details_fill">أدخلها الآن</string>
+    <string name="label_details_later">لاحقًا</string>
     <string name="edit_details">تعديل البيانات</string>
     <string name="son_of_prefix">بن %1$s</string>
 

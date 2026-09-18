@@ -1053,6 +1053,10 @@
     <string name="product_who_bought">Kis kis ne khareeda</string>
     <string name="product_edit_details">Tafseelat mein tarmeem</string>
     <string name="product_name_taken">Ye naam pehle hi “%1$s” ke paas hai.</string>
+    <string name="label_details_title">Label ki tafseel</string>
+    <string name="label_details_ask">%1$s ki company, technical naam, formulation ya registration number abhi darj nahi. Label abhi aap ke hath mein hai — bhar lein?</string>
+    <string name="label_details_fill">Abhi bharein</string>
+    <string name="label_details_later">Baad mein</string>
     <string name="edit_details">Tafseelat mein tarmeem</string>
     <string name="son_of_prefix">walad %1$s</string>
 

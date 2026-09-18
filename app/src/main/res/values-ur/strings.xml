@@ -1053,6 +1053,10 @@
     <string name="product_who_bought">کس کس نے خریدا</string>
     <string name="product_edit_details">تفصیلات میں ترمیم</string>
     <string name="product_name_taken">یہ نام پہلے ہی ”%1$s“ کے پاس ہے۔</string>
+    <string name="label_details_title">لیبل کی تفصیل</string>
+    <string name="label_details_ask">%1$s کی کمپنی، ٹیکنیکل نام، فارمولیشن یا رجسٹریشن نمبر ابھی درج نہیں۔ لیبل ابھی آپ کے ہاتھ میں ہے — بھر لیں؟</string>
+    <string name="label_details_fill">ابھی بھریں</string>
+    <string name="label_details_later">بعد میں</string>
     <string name="edit_details">تفصیلات میں ترمیم</string>
     <string name="son_of_prefix">ولد %1$s</string>
 
