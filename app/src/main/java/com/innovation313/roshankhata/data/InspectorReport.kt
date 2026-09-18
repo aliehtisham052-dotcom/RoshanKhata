@@ -90,7 +90,13 @@ object InspectorReport {
         /** In stock but with no expiry date ever recorded. */
         val noExpiryCount: Int,
         /** Products carrying stock whose label details were never filled in. */
-        val incompleteProducts: List<String>,
+        /**
+         * Name paired with exactly which of the four is absent. The name alone
+         * was useless: the owner reads "urea" under a heading saying company,
+         * technical name, formulation or Reg# are missing, sees he has filled
+         * three of them, and cannot tell which one the register still wants.
+         */
+        val incompleteProducts: List<Pair<String, String>>,
         /**
          * The same on-hand figures as [stock], regrouped under the company
          * whose name is on the label — the "company-wise stock" an inspection
@@ -152,7 +158,14 @@ object InspectorReport {
                     it.technicalName.isNullOrBlank() ||
                     it.formulation.isNullOrBlank()
             }
-            .map { it.name }
+            .map { p ->
+                p.name to listOfNotNull(
+                    "company".takeIf { p.company.isNullOrBlank() },
+                    "technical name".takeIf { p.technicalName.isNullOrBlank() },
+                    "formulation".takeIf { p.formulation.isNullOrBlank() },
+                    "Reg#".takeIf { p.registrationNumber.isNullOrBlank() }
+                ).joinToString(", ")
+            }
 
         // Company-wise: the same stock, grouped under the brand on the label.
         // A product with no company recorded is not dropped — it goes under one
@@ -204,6 +217,11 @@ object InspectorReport {
         val navyFill = Paint().apply { color = NAVY }
         val warnFill = Paint().apply { color = WARN_BG }
         val tableHeaderFill = Paint().apply { color = GREY }
+        // The company band in section 5: pale enough to read black text on,
+        // solid enough that it cannot be taken for a zebra stripe.
+        val groupFill = Paint().apply { color = 0xFFE8EDEA.toInt() }
+        val groupTag = Paint().apply { color = GREY; textSize = 8f; isFakeBoldText = true; isAntiAlias = true }
+        val groupName = Paint().apply { color = NAVY; textSize = 12f; isFakeBoldText = true; isAntiAlias = true }
         val rule = Paint().apply { color = 0xFFDDDDDD.toInt(); strokeWidth = 0.6f }
         // Translucent, not opaque — the same fix the ledger report needed: an
         // opaque stripe sliced the watermark wherever a table crossed it.
@@ -641,25 +659,37 @@ object InspectorReport {
             canvas.drawText(s4, MARGIN, y, section)
             y += 14f
             canvas.drawText(
-                "These products are in stock without company, technical name, formulation or Reg#.",
+                "Each product below is in stock with one or more label fields never recorded.",
                 MARGIN, y, muted
             )
             y += 18f
 
-            d.incompleteProducts.take(40).forEach { name ->
-                if (y + 15f > PAGE_H - 60f) {
+            // 300 + 462 = 762. A bare list of names was the fault the owner
+            // caught: with three of the four filled in he could not tell what
+            // the register still wanted. The second column answers exactly
+            // that, so the page doubles as the list of what to go and type.
+            val cols4 = listOf(
+                Col("PRODUCT", 300f),
+                Col("STILL NOT RECORDED", 462f)
+            )
+            var lefts4 = tableHead(cols4)
+            val rowH4 = 18f
+
+            d.incompleteProducts.take(40).forEachIndexed { index, (name, missing) ->
+                if (y + rowH4 > PAGE_H - 60f) {
                     newPage()
                     canvas.drawText("$s4 (continued)", MARGIN, y, section)
-                    y += 20f
+                    y += 18f
+                    lefts4 = tableHead(cols4)
                 }
-                canvas.drawText("\u2022  ${clip(name, body, PAGE_W - 2 * MARGIN - 20f)}", MARGIN + 4f, y + 11f, body)
-                y += 15f
+                if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + rowH4, zebra)
+                tableRow(cols4, lefts4, rowH4, listOf(name to body, missing to red))
             }
             if (d.incompleteProducts.size > 40) {
                 canvas.drawText(
-                    "\u2026 and ${d.incompleteProducts.size - 40} more.", MARGIN + 4f, y + 11f, mutedBig
+                    "\u2026 and ${d.incompleteProducts.size - 40} more.", MARGIN + cellPad, y + 12f, mutedBig
                 )
-                y += 15f
+                y += 16f
             }
         }
 
@@ -689,19 +719,31 @@ object InspectorReport {
             val rowH = 18f
 
             d.companyStock.forEach { (company, list) ->
-                if (y + rowH * 2 > PAGE_H - 60f) {
+                if (y + 20f + rowH > PAGE_H - 60f) {
                     newPage()
                     canvas.drawText("$s5 (continued)", MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
-                // The brand heading, with how many products sit under it. It
-                // spans the table rather than sitting in a column — it is a
-                // divider, not a value.
-                canvas.drawText(clip(company, bodyBold, PAGE_W - 2 * MARGIN - 60f), MARGIN + cellPad, y + 12f, bodyBold)
-                val count = "${list.size}"
-                canvas.drawText(count, PAGE_W - MARGIN - cellPad - muted.measureText(count), y + 12f, muted)
-                y += 18f
+                // THE BRAND HEADING, and it must not be mistakable for a row.
+                //
+                // The owner's objection, and it was exact: "Foji" and "urea"
+                // sat at the same x in the same PRODUCT column, one merely
+                // bold — so the page appeared to claim a company was a
+                // product. A heading is a divider, not a value, so it now gets
+                // its own tinted band across the full width, its label says
+                // the word COMPANY out loud, and the count says "products".
+                // The rows under it are indented past the band's label, which
+                // is the second half of the same signal.
+                canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 20f, groupFill)
+                canvas.drawText("COMPANY", MARGIN + cellPad, y + 13.5f, groupTag)
+                canvas.drawText(
+                    clip(company, groupName, 420f),
+                    MARGIN + cellPad + 52f, y + 13.5f, groupName
+                )
+                val count = if (list.size == 1) "1 product" else "${list.size} products"
+                canvas.drawText(count, PAGE_W - MARGIN - cellPad - muted.measureText(count), y + 13.5f, muted)
+                y += 20f
 
                 list.forEach { s ->
                     if (y + rowH > PAGE_H - 60f) {
@@ -723,7 +765,9 @@ object InspectorReport {
                     tableRow(
                         cols, lefts, rowH,
                         listOf(
-                            s.name to body,
+                            // Indented, so a product can never be read as a
+                            // heading or a heading as a product.
+                            "    ${s.name}" to body,
                             d.productsById[s.productId]?.technicalName to body,
                             qtyText to qtyPaint
                         )
