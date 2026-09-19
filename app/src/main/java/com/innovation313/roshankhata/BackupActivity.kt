@@ -584,7 +584,6 @@ class BackupActivity : AppCompatActivity() {
                     // Access was already granted -- the account is remembered,
                     // so just refresh.
                     refreshDriveUi()
-                    offerAutoBackup()
                 }
             }
             .addOnFailureListener {
@@ -602,7 +601,6 @@ class BackupActivity : AppCompatActivity() {
         try {
             DriveAuth.resultFromIntent(this, activityResult.data)
             refreshDriveUi()
-            offerAutoBackup()
         } catch (e: Exception) {
             Toast.makeText(this, R.string.drive_permission_needed, Toast.LENGTH_LONG).show()
             refreshDriveUi()
@@ -627,9 +625,19 @@ class BackupActivity : AppCompatActivity() {
      * choosing leaves the question unanswered and it may be offered again —
      * an accidental tap outside must not count as either answer.
      */
+    /** One offer per visit to this screen, however often the UI refreshes. */
+    private var autoBackupOfferShown = false
+
     private fun offerAutoBackup() {
         if (isFinishing || isDestroyed) return
         if (DriveBackup.autoBackupAnswered(this)) return
+        // refreshDriveUi runs several times in one visit — after a backup,
+        // after a restore, after a switch is flipped. Answering is what stops
+        // the question for good; this stops it stacking before he answers,
+        // and lets a dialog dismissed by a tap outside come back next visit
+        // rather than this instant.
+        if (autoBackupOfferShown) return
+        autoBackupOfferShown = true
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.auto_backup_offer_title)
@@ -684,6 +692,14 @@ class BackupActivity : AppCompatActivity() {
         imagesSwitch.visibility = android.view.View.VISIBLE
         autoSwitch.visibility = android.view.View.VISIBLE
         autoHint.visibility = android.view.View.VISIBLE
+
+        // Asked here, where the account is KNOWN to be connected — not on the
+        // connect flow, which was the first attempt and reached almost nobody.
+        // The Connect button is gone once an account is remembered, so
+        // connectDrive() never runs again for anyone who signed in before
+        // today. That is every existing owner, including the one who asked
+        // for this and then reported no question appeared. He was right.
+        offerAutoBackup()
 
         // Show the connection itself the instant it happens -- don't make
         // the owner wait on a network call just to see the email confirmed.
