@@ -93,3 +93,37 @@ jobs:
           name: RoshanKhata-release-aab
           path: app/build/outputs/bundle/release/*.aab
           retention-days: 14
+
+      # THE MINIFIED APK, and why this step had to exist.
+      #
+      # R8 runs on the RELEASE variant only. The rolling APK everyone installs
+      # comes from build.yml, which runs assembleDebug — so with minification
+      # now on, the build being tested on a real phone was the only build R8
+      # never touched, and the one shipped to Play was the only one nobody
+      # could install. An AAB cannot be sideloaded to check that.
+      #
+      # R8's failures are runtime failures: Drive sign-in, backup, restore and
+      # PDF all keep compiling perfectly while doing nothing. So the same
+      # minified code that goes to Play is also emitted as an installable APK,
+      # to be proven on a device BEFORE the bundle is uploaded.
+      - name: Build the same minified code as an installable APK
+        env:
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RoshanKhata-release-apk-minified
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 14
+
+      # Without the mapping file every future crash report is a list of a(),
+      # b(), c(). It is generated per build and cannot be recreated later, so
+      # it is kept beside the bundle it belongs to.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RoshanKhata-r8-mapping
+          path: app/build/outputs/mapping/release/
+          retention-days: 90

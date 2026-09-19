@@ -64,8 +64,30 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8 ON. Play Console measured this app at 1% obfuscation on an
+            // 18.7 MB DEX, and Google's requirement from February 2027 is 25%
+            // each of optimisation, obfuscation and shrinking for any app
+            // whose DEX exceeds 10 MB. Ours does, so this is a requirement
+            // rather than advice: below it, "visibility and publishing
+            // capabilities" are affected — for an app already on Play, that
+            // means updates.
+            //
+            // The keep rules live in proguard-rules.pro, each one naming what
+            // it protects. The danger here is NOT a red build: it is a green
+            // one that fails at runtime, in Drive backup or restore, which is
+            // the only part of this app that maps JSON onto fields by name.
+            // Nothing in our own source uses reflection — that was checked,
+            // not assumed — so the rules are aimed entirely at the Google
+            // client libraries.
+            isMinifyEnabled = true
+            // Play measures shrinking as its own percentage, and unused
+            // resources are the larger half of it in an app carrying ten
+            // invoice templates and six locales.
+            isShrinkResources = true
             proguardFiles(
+                // -optimize rather than the plain file: the plain one turns
+                // optimisation off, which is one of the three percentages
+                // being measured.
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
