@@ -15,11 +15,16 @@
 # the whole time the library was missing, because nothing in our own source
 # referenced it; it broke only when a Drive client was actually constructed.
 #
-# Our own code needs almost nothing here: a sweep for reflection found no
-# Class.forName, no getDeclaredField, no Serializable, no @Parcelize and no
-# WorkManager workers anywhere in app/src/main/java. Backup is written and
-# read with org.json by hand, field by field, so no model class is mapped by
-# name. The risk is concentrated entirely in the Google client libraries.
+# Our own code needs little here: a sweep found no Class.forName, no
+# getDeclaredField, no Serializable and no @Parcelize in app/src/main/java,
+# and backup is written and read with org.json by hand, field by field, so no
+# model class of ours is mapped by name.
+#
+# That sweep ALSO claimed there were no WorkManager workers. That was wrong —
+# there are two, and they are named below. They survived only because
+# WorkManager ships consumer rules of its own, which is luck standing in for
+# a decision. A verification pass over the built APK caught the false claim;
+# the rule that now protects them is ours.
 
 # ---------------------------------------------------------------------------
 # Crash reports must stay readable
@@ -107,6 +112,34 @@
 -keep class * extends androidx.room.RoomDatabase { <init>(); }
 -keep @androidx.room.Entity class * { *; }
 -dontwarn androidx.room.paging.**
+
+# ---------------------------------------------------------------------------
+# WorkManager
+# ---------------------------------------------------------------------------
+# WorkManager stores a worker as the CLASS NAME string in its own database and
+# instantiates it later by that name. Rename the class and the name written
+# last week no longer resolves — WorkManager logs and gives up, so cheque
+# reminders, installment nudges, expiry alerts and automatic backup simply
+# stop happening. Nothing crashes and nothing appears in a build log; the app
+# just quietly stops looking after the shop.
+#
+# WorkManager's own consumer rules keep ListenableWorker subclasses today, so
+# this is currently belt and braces. It is written anyway: the two workers
+# here are exactly the kind of feature nobody reopens to check, and depending
+# on another library's rules to protect them is not a decision, it is a
+# hope that has so far held.
+-keep class * extends androidx.work.ListenableWorker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+
+# ---------------------------------------------------------------------------
+# ML Kit component discovery
+# ---------------------------------------------------------------------------
+# ML Kit lists its registrars in the MANIFEST, as text, and loads them with
+# Class.forName. R8 reads code, not manifest strings, so it cannot see that
+# these names are used. Verified present in the built APK, again via consumer
+# rules; named here so the QR scanner does not depend on that continuing.
+-keep class com.google.mlkit.**.internal.*Registrar { *; }
 
 # ---------------------------------------------------------------------------
 # AndroidX / Play services
