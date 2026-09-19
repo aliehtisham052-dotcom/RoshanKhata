@@ -1094,9 +1094,9 @@
     <string name="register_summary_purchases">Khareed: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d khareed line(s) ka rate darj nahi — total mein shamil nahi</string>
 
-    <string name="sale_price_hint">Naqd qeemat (fi unit)</string>
-    <string name="credit_price_hint">Udhar qeemat (fi unit)</string>
-    <string name="product_price_help">Ikhtiyari. Sirf raqam tajweez karne ke liye — khud se wasool nahi hoti.</string>
+    <string name="sale_price_hint">Naqd qeemat</string>
+    <string name="credit_price_hint">Udhar qeemat</string>
+    <string name="product_price_help">Ikhtiyari, fi unit. Sirf raqam tajweez karne ke liye — khud se wasool nahi hoti.</string>
     <string name="credit_rate_suggestion">Udhar rate %1$s × %2$s = %3$s. Bharne ke liye dabayen.</string>
     <string name="sale_rate_suggestion">Rate %1$s × %2$s = %3$s. Bharne ke liye dabayen.</string>
 

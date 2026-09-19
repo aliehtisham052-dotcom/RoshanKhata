@@ -61,7 +61,6 @@ object ProductDetailsDialog {
 
         val etName = field(R.id.etProductName).apply { setText(product.name) }
         val etCompany = field(R.id.etProductCompany).apply { setText(product.company) }
-        val etCategory = field(R.id.etProductCategory).apply { setText(product.category) }
         val etUnit = field(R.id.etProductUnit).apply { setText(product.defaultUnit) }
         val etType = field(R.id.etProductType).apply { setText(product.productType) }
         val etTechnical = field(R.id.etTechnicalName).apply { setText(product.technicalName) }
@@ -103,7 +102,11 @@ object ProductDetailsDialog {
                     nameKey = ProductName.key(newName),
                     normalisedName = ProductName.normalised(newName),
                     company = typed(etCompany),
-                    category = typed(etCategory),
+                    // Carried through untouched: the box is gone from the
+                    // form, the column is not. Writing null here would erase
+                    // a value the owner typed before today and never asked
+                    // to lose.
+                    category = product.category,
                     defaultUnit = typed(etUnit),
                     productType = typed(etType),
                     technicalName = typed(etTechnical),

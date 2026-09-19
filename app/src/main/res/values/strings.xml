@@ -1136,9 +1136,9 @@
     <string name="register_missing_rate">%1$d purchase line(s) have no rate — not in the total</string>
 
     <!-- Two rates a product carries: counter price and udhar price. -->
-    <string name="sale_price_hint">Cash price (per unit)</string>
-    <string name="credit_price_hint">Credit price (per unit)</string>
-    <string name="product_price_help">Optional. Used only to suggest an amount — never charged on its own.</string>
+    <string name="sale_price_hint">Cash price</string>
+    <string name="credit_price_hint">Credit price</string>
+    <string name="product_price_help">Optional, per unit. Used only to suggest an amount — never charged on its own.</string>
     <string name="credit_rate_suggestion">Credit rate %1$s × %2$s = %3$s. Tap to fill.</string>
     <string name="sale_rate_suggestion">Rate %1$s × %2$s = %3$s. Tap to fill.</string>
 
