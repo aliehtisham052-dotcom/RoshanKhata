@@ -132,7 +132,11 @@ class CalculatorActivity : AppCompatActivity() {
     private fun render() {
         tvExpression.text = display(expression)
         val value = Calc.evalPad(expression)
-        tvResult.text = if (value == null) "" else Format.money(value)
+        // signedIfNegative, not money: money() strips the sign for ledger
+        // rows that state their direction in words, and this screen states
+        // nothing. 75 − 80 read back as "Rs 5" — the right digits with the
+        // meaning reversed, which on a shop counter is worse than no answer.
+        tvResult.text = if (value == null) "" else Format.signedIfNegative(value)
     }
 
     /** Evaluator syntax in, keypad symbols out — nobody types an asterisk. */

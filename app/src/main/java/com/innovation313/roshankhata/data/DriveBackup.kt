@@ -142,6 +142,20 @@ object DriveBackup {
     fun autoBackup(context: Context): Boolean =
         switchFor(context, KEY_AUTO_BACKUP, false)
 
+    /**
+     * Has this business ever been ASKED about automatic backup — and answered?
+     *
+     * Not the same question as [autoBackup], which returns false both for a
+     * deliberate no and for a shop that was never asked. Only the second of
+     * those is worth putting a question in front of; asking again after a no
+     * would be nagging, and that is how a switch gets turned off for good.
+     *
+     * Reads this business's OWN key only. A second shop deserves the offer in
+     * its own right: its books are separate, and so is its backup.
+     */
+    fun autoBackupAnswered(context: Context): Boolean =
+        prefs(context).contains(key(context, KEY_AUTO_BACKUP))
+
     fun setAutoBackup(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .edit().putBoolean(key(context, KEY_AUTO_BACKUP), enabled).apply()

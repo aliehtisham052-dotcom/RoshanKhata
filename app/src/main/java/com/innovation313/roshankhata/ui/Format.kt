@@ -23,6 +23,25 @@ object Format {
     }
 
     /**
+     * A figure that carries a minus when it IS one, and nothing when it is not.
+     *
+     * [money] drops the sign on purpose, and everywhere in the ledger that is
+     * right: a khata row says which way the money goes in words beside it, so
+     * printing a minus as well would say it twice and invite the reader to
+     * apply it twice. The calculator has no such words. There 75 − 80 is
+     * simply −5, and showing it as 5 is not a formatting choice, it is the
+     * wrong answer.
+     *
+     * No "+" on positives, unlike [signedTotal]: a calculator that answers
+     * "+ Rs 155" is announcing a direction nobody asked about.
+     *
+     * The minus is U+2212, the same character the expression line and the
+     * cashbook rows already use, not a hyphen.
+     */
+    fun signedIfNegative(value: Double): String =
+        if (value < 0) "\u2212 ${money(value)}" else money(value)
+
+    /**
      * A plain in-minus-out total, carrying its arithmetic sign.
      *
      * Deliberately NOT [customerBalance], which inverts the sign because a

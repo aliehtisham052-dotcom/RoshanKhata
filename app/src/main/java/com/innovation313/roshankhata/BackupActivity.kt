@@ -584,6 +584,7 @@ class BackupActivity : AppCompatActivity() {
                     // Access was already granted -- the account is remembered,
                     // so just refresh.
                     refreshDriveUi()
+                    offerAutoBackup()
                 }
             }
             .addOnFailureListener {
@@ -601,10 +602,49 @@ class BackupActivity : AppCompatActivity() {
         try {
             DriveAuth.resultFromIntent(this, activityResult.data)
             refreshDriveUi()
+            offerAutoBackup()
         } catch (e: Exception) {
             Toast.makeText(this, R.string.drive_permission_needed, Toast.LENGTH_LONG).show()
             refreshDriveUi()
         }
+    }
+
+    /**
+     * Offer automatic backup once, at the only moment it makes sense to ask.
+     *
+     * The switch defaults to off, deliberately — sending a shopkeeper's books
+     * to the cloud is his decision, not the app's. But off-by-default plus
+     * never-mentioned is not a decision either: the owner connected his
+     * account, which is the moment he is thinking about backup and the only
+     * moment the question is not an interruption. He found this himself,
+     * having to reach for the switch and wondering why nothing had asked.
+     *
+     * ASKED ONCE, and "Not now" is recorded as a real no so it is never asked
+     * again. A question that keeps coming back is how a switch gets turned
+     * off in irritation and left off.
+     *
+     * Nothing is turned on unless he taps it. Dismissing the dialog without
+     * choosing leaves the question unanswered and it may be offered again —
+     * an accidental tap outside must not count as either answer.
+     */
+    private fun offerAutoBackup() {
+        if (isFinishing || isDestroyed) return
+        if (DriveBackup.autoBackupAnswered(this)) return
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.auto_backup_offer_title)
+            .setMessage(R.string.auto_backup_offer_body)
+            .setPositiveButton(R.string.auto_backup_offer_yes) { _, _ ->
+                DriveBackup.setAutoBackup(this, true)
+                refreshDriveUi()
+            }
+            .setNegativeButton(R.string.auto_backup_offer_no) { _, _ ->
+                // Written down, not just dismissed: this is the answer, and
+                // recording it is what stops the question returning.
+                DriveBackup.setAutoBackup(this, false)
+                refreshDriveUi()
+            }
+            .show()
     }
 
     /** Show the right Drive controls for whether someone is signed in. */

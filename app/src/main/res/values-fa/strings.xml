@@ -784,6 +784,12 @@
     <string name="drive_backup_images">تصاویر را هم شامل کن (عکس‌ها، عکس فاکتور، QR)</string>
     <string name="drive_auto_backup">پشتیبان‌گیری خودکار</string>
     <string name="drive_auto_backup_hint">هرگاه دفتر تغییر کند خودش پشتیبان می‌گیرد — روی وای‌فای حداکثر هر ۳۰ دقیقه و روی داده همراه هر ۶ ساعت. هر زمان هم می‌توانید خودتان پشتیبان بگیرید.</string>
+    <string name="auto_backup_offer_title">پشتیبان‌گیری خودکار؟</string>
+    <string name="auto_backup_offer_body">حساب شما وصل شد. Roshan Khata می‌تواند هر بار که دفترتان تغییر کند آن را خودکار بارگذاری کند، تا با گم یا خراب شدن گوشی سوابق شما از بین نرود.
+
+هر زمان بخواهید می‌توانید این را از همین صفحه تغییر دهید.</string>
+    <string name="auto_backup_offer_yes">روشن کن</string>
+    <string name="auto_backup_offer_no">الان نه</string>
     <string name="drive_restore">بازگردانی از Drive</string>
     <string name="drive_sign_out">قطع اتصال حساب Google</string>
     <string name="drive_backing_up">در حال پشتیبان‌گیری در Drive\u2026</string>

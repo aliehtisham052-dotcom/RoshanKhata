@@ -756,6 +756,12 @@
     <string name="drive_backup_images">تضمين الصور (الصور، صور الفواتير، QR)</string>
     <string name="drive_auto_backup">نسخ احتياطي تلقائي</string>
     <string name="drive_auto_backup_hint">يحفظ نسخة تلقائيًا كلما تغيّر الدفتر — بحد أقصى كل 30 دقيقة على الواي فاي وكل 6 ساعات على بيانات الهاتف. ويمكنك أخذ نسخة يدويًا في أي وقت.</string>
+    <string name="auto_backup_offer_title">نسخ احتياطي تلقائي؟</string>
+    <string name="auto_backup_offer_body">تم ربط حسابك. يستطيع Roshan Khata رفع دفترك تلقائيًا كلما تغيّر، حتى لا تضيع سجلاتك مع هاتف مفقود أو تالف.
+
+يمكنك تغيير ذلك في أي وقت من هذه الشاشة.</string>
+    <string name="auto_backup_offer_yes">تشغيل</string>
+    <string name="auto_backup_offer_no">ليس الآن</string>
     <string name="drive_restore">استعادة من Drive</string>
     <string name="drive_sign_out">فصل حساب Google</string>
     <string name="drive_backing_up">جارٍ النسخ إلى Drive\u2026</string>
