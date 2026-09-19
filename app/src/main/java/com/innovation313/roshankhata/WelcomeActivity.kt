@@ -132,10 +132,24 @@ class WelcomeActivity : AppCompatActivity() {
         banner.visibility = android.view.View.VISIBLE
         banner.animate().alpha(1f).setDuration(200).start()
 
-        // Nothing left to decide once the account is connected, and a second
-        // tap during the pause would start the ledger twice.
-        findViewById<MaterialButton>(R.id.btnWelcomeConnect).isEnabled = false
-        findViewById<MaterialButton>(R.id.btnWelcomeSkip).isEnabled = false
+        // HIDDEN, not merely disabled.
+        //
+        // Disabling was enough to stop a second tap starting the ledger
+        // twice, and that part worked. What it did not do was LOOK disabled:
+        // the connect button paints itself from app:backgroundTint, a flat
+        // colour rather than a state list, so a dead button went on showing
+        // as solid brand green. For the moment before this screen hands off,
+        // the page therefore read "Successfully signed in" with a full-colour
+        // "Connect Google account" sitting directly beneath it — two
+        // statements that contradict each other, on the one screen whose
+        // entire job is trust. The owner photographed exactly that.
+        //
+        // Gone removes the contradiction instead of explaining it away, and
+        // keeps the guard: a hidden button cannot be tapped either.
+        findViewById<MaterialButton>(R.id.btnWelcomeConnect).visibility =
+            android.view.View.GONE
+        findViewById<MaterialButton>(R.id.btnWelcomeSkip).visibility =
+            android.view.View.GONE
 
         // Long enough to read an email address, short enough not to feel stuck.
         // The guard matters: the owner can leave during the pause, and starting
