@@ -81,8 +81,14 @@ class InvoicesActivity : AppCompatActivity() {
     // ---------- Viewing / deleting a saved invoice ----------
 
     private fun showInvoiceActions(invoice: InvoiceSummary) {
+        // Preview sits next to View, and they are not the same thing: View is
+        // the plain itemised readout for checking figures, Preview is the
+        // printed design exactly as the customer will receive it. Both come
+        // before the two ways of sending it, so the invoice can be READ
+        // before it is sent — which is the whole point of the button.
         val options = arrayOf(
             getString(R.string.view),
+            getString(R.string.pdf_preview),
             getString(R.string.edit),
             getString(R.string.invoice_send_whatsapp),
             getString(R.string.invoice_share_pdf),
@@ -93,10 +99,11 @@ class InvoicesActivity : AppCompatActivity() {
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> viewInvoice(invoice)
-                    1 -> editInvoice(invoice)
-                    2 -> sendPdfToCustomer(invoice)
-                    3 -> sharePdf(invoice)
-                    4 -> confirmDeleteInvoice(invoice)
+                    1 -> previewPdf(invoice)
+                    2 -> editInvoice(invoice)
+                    3 -> sendPdfToCustomer(invoice)
+                    4 -> sharePdf(invoice)
+                    5 -> confirmDeleteInvoice(invoice)
                 }
             }
             .show()
@@ -151,8 +158,8 @@ class InvoicesActivity : AppCompatActivity() {
         }
     }
 
-    /** Builds the PDF and returns a shareable uri, or null after reporting why. */
-    private suspend fun buildPdfUri(invoiceId: Long): android.net.Uri? {
+    /** Builds the PDF file itself, or null after reporting why. */
+    private suspend fun buildPdfFile(invoiceId: Long): java.io.File? {
         val full = dao.getInvoice(invoiceId) ?: return null
         val items = dao.invoiceItems(invoiceId)
 
@@ -161,11 +168,31 @@ class InvoicesActivity : AppCompatActivity() {
         }
         if (file == null) {
             Toast.makeText(this@InvoicesActivity, R.string.invoice_pdf_failed, Toast.LENGTH_LONG).show()
-            return null
         }
+        return file
+    }
+
+    /** Builds the PDF and returns a shareable uri, or null after reporting why. */
+    private suspend fun buildPdfUri(invoiceId: Long): android.net.Uri? {
+        val file = buildPdfFile(invoiceId) ?: return null
         return androidx.core.content.FileProvider.getUriForFile(
             this@InvoicesActivity, "$packageName.fileprovider", file
         )
+    }
+
+    /**
+     * The invoice in its printed design, opened to read — not sent anywhere.
+     *
+     * Built from the design already saved on the invoice, exactly as sharing
+     * does, so what is previewed is what the customer receives. Nothing here
+     * writes: the file lands in the share cache and the invoice row is not
+     * touched.
+     */
+    private fun previewPdf(invoice: InvoiceSummary) {
+        lifecycleScope.launch {
+            val file = buildPdfFile(invoice.id) ?: return@launch
+            com.innovation313.roshankhata.ui.PdfShare.open(this@InvoicesActivity, file)
+        }
     }
 
     private fun editInvoice(invoice: InvoiceSummary) {

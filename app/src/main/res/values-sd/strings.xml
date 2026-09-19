@@ -863,6 +863,8 @@
     <string name="statement_ready_title">اسٽيٽمينٽ تيار آهي</string>
     <string name="pdf_ready_body">پهرين کولي ڏسو، پوءِ جي چاهيو ته شيئر ڪريو.</string>
     <string name="pdf_open">کوليو</string>
+    <string name="pdf_preview">اڳواٽ ڏيک</string>
+    <string name="pdf_no_viewer">هن فون تي ڪا PDF ايپ نه ملي. ڊائون لوڊ ڪري وٺو، يا PDF ريڊر انسٽال ڪريو.</string>
     <string name="close">بند ڪريو</string>
     <string name="back">واپس</string>
     <string name="entry_not_found">داخلا نه ملي</string>
