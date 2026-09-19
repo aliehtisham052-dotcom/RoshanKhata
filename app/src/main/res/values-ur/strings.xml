@@ -1094,9 +1094,9 @@
     <string name="register_summary_purchases">خرید: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d خرید سطور کا ریٹ درج نہیں — ٹوٹل میں شامل نہیں</string>
 
-    <string name="sale_price_hint">نقد قیمت (فی یونٹ)</string>
-    <string name="credit_price_hint">ادھار قیمت (فی یونٹ)</string>
-    <string name="product_price_help">اختیاری۔ صرف رقم تجویز کرنے کے لیے — خود بخود وصول نہیں ہوتی۔</string>
+    <string name="sale_price_hint">نقد قیمت</string>
+    <string name="credit_price_hint">ادھار قیمت</string>
+    <string name="product_price_help">اختیاری، فی یونٹ۔ صرف رقم تجویز کرنے کے لیے — خود بخود وصول نہیں ہوتی۔</string>
     <string name="credit_rate_suggestion">ادھار ریٹ %1$s × %2$s = %3$s۔ بھرنے کے لیے دبائیں۔</string>
     <string name="sale_rate_suggestion">ریٹ %1$s × %2$s = %3$s۔ بھرنے کے لیے دبائیں۔</string>
 

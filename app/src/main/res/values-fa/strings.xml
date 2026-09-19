@@ -1122,9 +1122,9 @@
     <string name="register_summary_purchases">خرید: %1$d · %2$s</string>
     <string name="register_missing_rate">%1$d سطر خرید بدون نرخ — در جمع لحاظ نشده</string>
 
-    <string name="sale_price_hint">قیمت نقدی (هر واحد)</string>
-    <string name="credit_price_hint">قیمت نسیه (هر واحد)</string>
-    <string name="product_price_help">اختیاری. فقط برای پیشنهاد مبلغ — خودکار دریافت نمی‌شود.</string>
+    <string name="sale_price_hint">قیمت نقدی</string>
+    <string name="credit_price_hint">قیمت نسیه</string>
+    <string name="product_price_help">اختیاری، هر واحد. فقط برای پیشنهاد مبلغ — خودکار دریافت نمی‌شود.</string>
     <string name="credit_rate_suggestion">نرخ نسیه %1$s × %2$s = %3$s. برای پر کردن بزنید.</string>
     <string name="sale_rate_suggestion">نرخ %1$s × %2$s = %3$s. برای پر کردن بزنید.</string>
 

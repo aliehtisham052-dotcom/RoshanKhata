@@ -104,6 +104,23 @@ object PdfBranding {
         val cx = pageWidth / 2f
         val cy = pageHeight * 0.62f
 
+        // SIZED FROM THE SHORT SIDE, not the width.
+        //
+        // Every number below was fitted against a portrait sheet, where the
+        // width IS the short side, so "pageWidth * 0.28" quietly meant "28%
+        // of 595". The stock register is the one landscape document in the
+        // app — 842 across, 595 down — and the same expression handed it 28%
+        // of 842 instead. Logo and wordmark came out 42% larger on a sheet
+        // that is 42% shorter, and the mark ran to the edges of a page whose
+        // other numbers were all checked for 24pt of clearance.
+        //
+        // The short side is what the mark actually has to fit inside once it
+        // is rotated, so that is what it is measured against. On the four
+        // portrait documents min() returns the width and not one pixel of
+        // their output changes; the register gets the mark at the size it
+        // was always drawn for.
+        val shortSide = minOf(pageWidth, pageHeight).toFloat()
+
         canvas.save()
         canvas.rotate(-30f, cx, cy)
 
@@ -115,7 +132,7 @@ object PdfBranding {
         // the edges. Sizes and offsets here are the ones the geometry
         // check passed, not the ones that merely looked right.
         logo(context)?.let { mark ->
-            val size = pageWidth * 0.28f
+            val size = shortSide * 0.28f
             val dst = RectF(
                 cx - size / 2f, cy - 95f - size / 2f,
                 cx + size / 2f, cy - 95f + size / 2f
@@ -138,7 +155,7 @@ object PdfBranding {
                 isAntiAlias = true
                 color = tint
                 alpha = 20
-                textSize = pageWidth * 0.085f
+                textSize = shortSide * 0.085f
                 textAlign = Paint.Align.CENTER
                 isFakeBoldText = true
                 letterSpacing = 0.18f

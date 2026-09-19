@@ -40,14 +40,17 @@
             android:importantForAutofill="no"
             android:inputType="textCapWords" />
 
-        <EditText
-            android:id="@+id/etProductCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/category_optional"
-            android:importantForAutofill="no"
-            android:inputType="textCapWords" />
+        <!--
+          Category was removed here, not renamed. It asked for the same thing
+          as "Type" in the Agriculture Department block below — both were
+          documented in Product.kt as "pesticide, seed, fertiliser, feed" —
+          so the form asked one question twice and the owner could not tell
+          which box wanted what. Type is the one kept: it sits with the
+          registration fields it belongs to and it already travels with the
+          register's own query. The products.category COLUMN stays, and what
+          is already stored in it is preserved on save, so no backup written
+          before today loses anything.
+        -->
 
         <EditText
             android:id="@+id/etProductUnit"
