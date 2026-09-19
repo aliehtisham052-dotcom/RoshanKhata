@@ -201,7 +201,55 @@ object InspectorReport {
         )
     }
 
+    /**
+     * Two passes, and the page number is the whole reason.
+     *
+     * The footer now reads "Page 2 of 3" on EVERY page, not just the last —
+     * the owner's point, and a fair one: a register handed over loose with
+     * no numbers on it cannot be shown to be complete, and pages 1 and 2 of
+     * his three carried nothing at the foot at all. But a total cannot be
+     * known before the first footer is drawn, because it depends on where
+     * the rows happen to fall, and PdfDocument will not reopen a finished
+     * page to write it in afterwards.
+     *
+     * So the register is laid out twice: once to count, once for real. The
+     * first document is thrown away unwritten. Every measurement in [draw]
+     * comes from the data and the fixed page size — the footer's own width
+     * changes nothing above it — so the second pass breaks its pages in
+     * exactly the same places as the first, and the count holds.
+     */
     private fun render(context: Context, d: ReportData): File? {
+        val pageCount = try {
+            val (counting, n) = draw(context, d, null)
+            counting.close()
+            n
+        } catch (e: Exception) {
+            // A failed count must not cost the owner his register: fall
+            // through with no total and print the plain "Page 2" footer.
+            null
+        }
+
+        val (doc, _) = draw(context, d, pageCount)
+
+        val dir = File(context.cacheDir, "statements").apply { mkdirs() }
+        val file = File(dir, "RoshanKhata_StockRegister_${fileFmt.format(Date())}.pdf")
+
+        return try {
+            FileOutputStream(file).use { doc.writeTo(it) }
+            doc.close()
+            file
+        } catch (e: Exception) {
+            doc.close()
+            null
+        }
+    }
+
+    /**
+     * Lays the whole register out and returns the finished document with the
+     * number of pages it came to. [totalPages] is null on the counting pass,
+     * and the footer then omits the "of N" it cannot yet know.
+     */
+    private fun draw(context: Context, d: ReportData, totalPages: Int?): Pair<PdfDocument, Int> {
         val doc = PdfDocument()
 
         val title = Paint().apply { color = Color.WHITE; textSize = 20f; isFakeBoldText = true; isAntiAlias = true }
@@ -274,7 +322,34 @@ object InspectorReport {
             return 112f
         }
 
+        /**
+         * Drawn on the way OUT of every page, so no page can leave without
+         * it. Previously this ran once at the very end and only the last
+         * page carried a number.
+         */
+        fun footer() {
+            val fy = PAGE_H - 34f
+            var footerX = MARGIN
+            brandLogo?.let { mark ->
+                val size = 18f
+                canvas.drawBitmap(
+                    mark,
+                    android.graphics.Rect(0, 0, mark.width, mark.height),
+                    android.graphics.RectF(footerX, fy - 13f, footerX + size, fy + 5f),
+                    Paint().apply { isAntiAlias = true; isFilterBitmap = true }
+                )
+                footerX += size + 6f
+            }
+            val label = if (totalPages != null) {
+                "$businessName \u00B7 Page $pageNo of $totalPages"
+            } else {
+                "$businessName \u00B7 Page $pageNo"
+            }
+            canvas.drawText(label, footerX, fy, muted)
+        }
+
         fun newPage() {
+            footer()
             doc.finishPage(page)
             pageNo++
             page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
@@ -359,6 +434,34 @@ object InspectorReport {
                 if (i > 0) canvas.drawLine(lefts[i], y, lefts[i], y + rowH, ruleLight)
             }
             y += rowH
+        }
+
+        // ---- Keeping a heading with what it introduces ----
+        //
+        // Every section began with a hand-picked number: "if fewer than 140
+        // points are left, break the page". The number was a guess, and the
+        // owner caught what it cost. A heading, its description line and a
+        // table's grey head come to roughly 90 points BEFORE one row is
+        // drawn, so a section that scraped past the guess printed its title
+        // and an empty column head at the foot of one page, then the same
+        // head again at the top of the next. Nothing was lost, but the
+        // register appeared to state section 2 twice — and a document whose
+        // only job is to look complete to an inspector cannot afford that.
+        //
+        // [blockH] is what must not be split: the heading, its description,
+        // the table head and the first rows of it. Measured at each call
+        // site from the same numbers that section actually draws with.
+        val contentBottom = PAGE_H - 60f
+        fun startSection(blockH: Float) {
+            // Staying on this page costs the 34f divider gap first, so that
+            // is part of what has to fit — it was missing from the old check.
+            if (y + 34f + blockH > contentBottom) {
+                newPage()
+            } else {
+                y += 14f
+                canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
+                y += 20f
+            }
         }
 
         // ---- The warning first, same placement and reason as the other two ----
@@ -504,7 +607,9 @@ object InspectorReport {
         }
 
         // ---- 2. Batch-wise stock ----
-        if (y > PAGE_H - 140f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
+        // Heading 14 + description 16, grey head 18, two 20pt rows. When
+        // there are no batches it is the heading plus one line of prose.
+        startSection(if (d.batches.isEmpty()) 48f else 88f)
 
         val s2 = sec("Batch-wise stock")
         canvas.drawText(s2, MARGIN, y, section)
@@ -577,7 +682,9 @@ object InspectorReport {
         }
 
         // ---- 3. Expiry report ----
-        if (y > PAGE_H - 140f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
+        // Heading 14 + description 18, grey head 18, two 20pt rows. The
+        // all-clear wording is two 16pt lines instead of the table.
+        startSection(if (d.expired.isEmpty() && d.expiringSoon.isEmpty()) 66f else 90f)
 
         val s3 = sec("Expiry report")
         canvas.drawText(s3, MARGIN, y, section)
@@ -653,7 +760,8 @@ object InspectorReport {
         // there is a problem; the names tell him which bottle to pick up and
         // which four fields to type in before the next visit.
         if (d.incompleteProducts.isNotEmpty()) {
-            if (y > PAGE_H - 140f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
+            // Heading 14 + description 18, grey head 18, two 18pt rows.
+            startSection(86f)
 
             val s4 = sec("Label details still missing")
             canvas.drawText(s4, MARGIN, y, section)
@@ -700,7 +808,10 @@ object InspectorReport {
         // that column read the other way round. Nothing new is computed — a row
         // whose units could not be subtracted still says so, exactly as above.
         if (d.companyStock.isNotEmpty()) {
-            if (y > PAGE_H - 160f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
+            // Heading 18, grey head 18, the 20pt company band and two 18pt
+            // rows under it — a band stranded above a page break reads as a
+            // company with no stock, which is worse than a plain orphan.
+            startSection(92f)
 
             val s5 = sec("Company-wise stock")
             canvas.drawText(s5, MARGIN, y, section)
@@ -792,33 +903,10 @@ object InspectorReport {
             muted
         )
 
-        // ---- Footer ----
-        y = PAGE_H - 34f
-        var footerX = MARGIN
-        brandLogo?.let { mark ->
-            val size = 18f
-            canvas.drawBitmap(
-                mark,
-                android.graphics.Rect(0, 0, mark.width, mark.height),
-                android.graphics.RectF(footerX, y - 13f, footerX + size, y + 5f),
-                Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-            )
-            footerX += size + 6f
-        }
-        canvas.drawText("$businessName \u00B7 Page $pageNo", footerX, y, muted)
+        // ---- Footer, for the last page; every earlier one got it on exit ----
+        footer()
 
         doc.finishPage(page)
-
-        val dir = File(context.cacheDir, "statements").apply { mkdirs() }
-        val file = File(dir, "RoshanKhata_StockRegister_${fileFmt.format(Date())}.pdf")
-
-        return try {
-            FileOutputStream(file).use { doc.writeTo(it) }
-            doc.close()
-            file
-        } catch (e: Exception) {
-            doc.close()
-            null
-        }
+        return doc to pageNo
     }
 }
