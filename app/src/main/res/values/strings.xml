@@ -794,6 +794,12 @@
     <string name="drive_backup_images">Include images (photos, bill photos, QR)</string>
     <string name="drive_auto_backup">Automatic backup</string>
     <string name="drive_auto_backup_hint">Backs up by itself whenever the book changes — at most every 30 minutes on Wi-Fi, every 6 hours on mobile data. You can still back up any time.</string>
+    <string name="auto_backup_offer_title">Back up by itself?</string>
+    <string name="auto_backup_offer_body">Your account is connected. Roshan Khata can upload your book on its own whenever it changes, so a lost or broken phone does not take your records with it.
+
+You can change this any time from this screen.</string>
+    <string name="auto_backup_offer_yes">Turn it on</string>
+    <string name="auto_backup_offer_no">Not now</string>
     <string name="drive_restore">Restore from Drive</string>
     <string name="drive_sign_out">Disconnect Google account</string>
     <string name="drive_backing_up">Backing up to Drive\u2026</string>

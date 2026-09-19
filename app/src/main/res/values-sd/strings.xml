@@ -784,6 +784,12 @@
     <string name="drive_backup_images">تصويرون پڻ شامل ڪريو (فوٽو، بل جون فوٽو، QR)</string>
     <string name="drive_auto_backup">پاڻمرادو بيڪ اپ</string>
     <string name="drive_auto_backup_hint">جڏهن به کاتي ۾ تبديلي ٿئي، پاڻمرادو بيڪ اپ ٿي ويندو آهي — واءِ فاءِ تي وڌ ۾ وڌ هر 30 منٽن ۾، موبائيل ڊيٽا تي هر 6 ڪلاڪن ۾. توهان ڪڏهن به پاڻ به بيڪ اپ وٺي سگهو ٿا.</string>
+    <string name="auto_backup_offer_title">پاڻمرادو بيڪ اپ ڪجي؟</string>
+    <string name="auto_backup_offer_body">توهانجو اڪائونٽ ڳنڍجي ويو. Roshan Khata توهانجو کاتو پاڻ اپلوڊ ڪري سگهي ٿو جڏهن به ان ۾ ڦيرڦار ٿئي، ته جيئن فون گم يا خراب ٿيڻ تي توهانجو رڪارڊ ساڻ نه وڃي.
+
+هي توهان ڪڏهن به هن ئي اسڪرين تان بدلائي سگهو ٿا.</string>
+    <string name="auto_backup_offer_yes">چالو ڪريو</string>
+    <string name="auto_backup_offer_no">هينئر نه</string>
     <string name="drive_restore">Drive مان بحال ڪريو</string>
     <string name="drive_sign_out">Google اڪائونٽ ڌار ڪريو</string>
     <string name="drive_backing_up">Drive تي بيڪ اپ ٿي رهيو آهي\u2026</string>

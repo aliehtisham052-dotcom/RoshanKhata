@@ -756,6 +756,12 @@
     <string name="drive_backup_images">تصاویر بھی شامل کریں (فوٹوز، بل کی فوٹوز، QR)</string>
     <string name="drive_auto_backup">خودکار بیک اپ</string>
     <string name="drive_auto_backup_hint">جب بھی کھاتے میں تبدیلی ہو، خود بیک اپ ہو جاتا ہے — وائی فائی پر زیادہ سے زیادہ ہر 30 منٹ، موبائل ڈیٹا پر ہر 6 گھنٹے۔ آپ کبھی بھی خود بھی بیک اپ لے سکتے ہیں۔</string>
+    <string name="auto_backup_offer_title">خود بخود بیک اپ کریں؟</string>
+    <string name="auto_backup_offer_body">آپ کا اکاؤنٹ جڑ گیا ہے۔ روشن کھاتہ آپ کی کتاب خود اپ لوڈ کر سکتا ہے جب بھی اس میں تبدیلی ہو، تاکہ فون گم یا خراب ہونے پر آپ کا ریکارڈ ساتھ نہ جائے۔
+
+اسے آپ کبھی بھی اسی اسکرین سے بدل سکتے ہیں۔</string>
+    <string name="auto_backup_offer_yes">چالو کریں</string>
+    <string name="auto_backup_offer_no">ابھی نہیں</string>
     <string name="drive_restore">ڈرائیو سے بحال کریں</string>
     <string name="drive_sign_out">گوگل اکاؤنٹ الگ کریں</string>
     <string name="drive_backing_up">ڈرائیو میں بیک اپ ہو رہا ہے\u2026</string>

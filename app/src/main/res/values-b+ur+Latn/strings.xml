@@ -756,6 +756,12 @@
     <string name="drive_backup_images">Images bhi shamil karein (photos, bill photos, QR)</string>
     <string name="drive_auto_backup">Khudkar backup</string>
     <string name="drive_auto_backup_hint">Jab bhi khatay mein tabdeeli ho, khud backup ho jata hai — Wi-Fi par zyada se zyada har 30 minute, mobile data par har 6 ghante. Aap kabhi bhi khud bhi backup le sakte hain.</string>
+    <string name="auto_backup_offer_title">Khud ba khud backup karein?</string>
+    <string name="auto_backup_offer_body">Aap ka account jur gaya hai. Roshan Khata aap ki kitaab khud upload kar sakta hai jab bhi us mein tabdeeli ho, taake phone gum ya kharab hone par aap ka record saath na jaye.
+
+Ise aap kabhi bhi isi screen se badal sakte hain.</string>
+    <string name="auto_backup_offer_yes">Chaalu karein</string>
+    <string name="auto_backup_offer_no">Abhi nahi</string>
     <string name="drive_restore">Drive Se Bahal Karein</string>
     <string name="drive_sign_out">Google account alag karein</string>
     <string name="drive_backing_up">Drive mein backup ho raha hai\u2026</string>
