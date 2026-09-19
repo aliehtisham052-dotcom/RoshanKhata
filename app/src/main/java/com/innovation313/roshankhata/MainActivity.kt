@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.AppLock
@@ -18,6 +19,7 @@ import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.ui.CoachMarkController
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenPrivacyDialog
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -39,6 +41,12 @@ class MainActivity : AppCompatActivity() {
     private var netBalance = 0.0
     private var totalGet = 0.0
     private var totalGive = 0.0
+
+    /** The totals collector, so a stale one is cancelled before a new one starts. */
+    private var totalsJob: Job? = null
+
+    /** Which book the figures on screen belong to. Null until the first read. */
+    private var totalsBusinessId: Long? = null
 
     /** Tile views by label resource — the walkthrough needs them by name. */
     private val featureViews = mutableMapOf<Int, View>()
@@ -63,7 +71,6 @@ class MainActivity : AppCompatActivity() {
         buildFeatureGrid()
         sizeGridTail()
         setupBottomNav()
-        observeTotals()
         maybeShowCoachMarks()
     }
 
@@ -296,6 +303,24 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * The figures are re-read every time this screen comes forward, not once
+     * when it is built.
+     *
+     * Each business is its own database FILE, and switching closes one and
+     * opens another. A collector started in onCreate is bound to whichever
+     * file was open then; after a switch it is listening to a shut book and
+     * simply goes quiet, leaving whatever number it last read frozen on
+     * screen. Clearing the task on every switch is the first guard and the
+     * stronger one, but Home should not depend on someone else remembering
+     * to do that — it can check for itself, and this is the screen where a
+     * wrong figure is most believed.
+     */
+    override fun onStart() {
+        super.onStart()
+        observeTotals()
+    }
+
     override fun onResume() {
         super.onResume()
         // Returning from another screen, the bar must point at Home again.
@@ -315,7 +340,28 @@ class MainActivity : AppCompatActivity() {
      * database to run (see SnapshotsActivity — it works on the files).
      */
     private fun observeTotals() {
-        lifecycleScope.launch {
+        // One collector at a time. Without this, every return to Home would
+        // add another, each holding its own database handle.
+        totalsJob?.cancel()
+
+        // If the open book has CHANGED, clear the figures before re-reading.
+        // A brief blank is honest; another shop's balance sitting there until
+        // the first row arrives is not, and on this screen it would be read
+        // as this shop's money.
+        val openBusiness = try {
+            Businesses.active(this).id
+        } catch (e: Exception) {
+            null
+        }
+        if (openBusiness != null && totalsBusinessId != null && openBusiness != totalsBusinessId) {
+            totalGet = 0.0
+            totalGive = 0.0
+            netBalance = 0.0
+            renderBalance()
+        }
+        totalsBusinessId = openBusiness
+
+        totalsJob = lifecycleScope.launch {
             try {
                 val dao = KhataDatabase.get(this@MainActivity).khataDao()
                 dao.observePartiesWithBalance().collectLatest { parties ->
@@ -324,6 +370,13 @@ class MainActivity : AppCompatActivity() {
                     netBalance = totalGet - totalGive
                     renderBalance()
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Cancellation is this screen replacing its own collector, not
+                // a ledger that will not open. It is an Exception like any
+                // other, so without this it would fall into the branch below
+                // and accuse a perfectly healthy database — a recovery dialog
+                // every time the owner came back to Home.
+                throw e
             } catch (e: Exception) {
                 offerRecovery()
             }

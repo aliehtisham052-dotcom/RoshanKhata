@@ -428,11 +428,28 @@ class BackupActivity : AppCompatActivity() {
     }
 
     private fun goHome() {
-        // Back to a clean home screen — the ledger it was showing no longer
-        // exists, and leaving stale rows on screen would be alarming.
+        // CLEAR_TASK, not CLEAR_TOP — every screen dies, and with it every
+        // cached DAO and every Flow still collecting on a database file that
+        // no longer exists.
+        //
+        // All three callers get here after the ledger underneath the app has
+        // been REPLACED: a file restore, a Drive restore, an erase-all. The
+        // Drive route is the one that proved this: restoreAll switches
+        // business on every round, and a switch closes one database file and
+        // opens another. That is exactly what BusinessSwitchActivity already
+        // clears the task for, and its comment says why — but restore is a
+        // business switch too, and this path only cleared the activities
+        // ABOVE Home. Home survived, still collecting observePartiesWithBalance
+        // on the closed file, so it went on showing the zero it had read
+        // before the restore while the ledger screen showed the real figures.
+        // The owner saw Rs 0 on one screen and Rs 500 on the next.
+        //
+        // Nothing was wrong with the data; the screen was reading a book that
+        // had been shut. Clearing the task means no screen can outlive the
+        // database it was opened against.
         startActivity(
             Intent(this, MainActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                 .putExtra(MainActivity.EXTRA_UNLOCKED, true)
         )
         finish()
