@@ -835,6 +835,8 @@
     <string name="statement_ready_title">Statement tayyar hai</string>
     <string name="pdf_ready_body">Pehle khol kar dekhein, phir chahein to share karein.</string>
     <string name="pdf_open">Kholein</string>
+    <string name="pdf_preview">Preview</string>
+    <string name="pdf_no_viewer">Is phone par koi PDF app nahi mili. Download kar lein, ya PDF reader install karein.</string>
     <string name="close">Band karein</string>
     <string name="back">Wapas</string>
     <string name="entry_not_found">Entry nahi mili</string>

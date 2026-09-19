@@ -49,6 +49,7 @@ class InspectorReportActivity : AppCompatActivity() {
     private lateinit var btn30: MaterialButton
     private lateinit var btn60: MaterialButton
     private lateinit var btn90: MaterialButton
+    private lateinit var btnPreview: MaterialButton
     private lateinit var btnDownload: MaterialButton
     private lateinit var btnShare: MaterialButton
     private lateinit var tvBatches: TextView
@@ -85,8 +86,12 @@ class InspectorReportActivity : AppCompatActivity() {
         btn60.setOnClickListener { setWindow(60) }
         btn90.setOnClickListener { setWindow(90) }
 
+        btnPreview = findViewById(R.id.btnInsPreview)
         btnDownload = findViewById(R.id.btnInsDownload)
         btnShare = findViewById(R.id.btnInsShare)
+        // Read it before it leaves your hands: the register is the one
+        // document here that gets handed to an inspector.
+        btnPreview.setOnClickListener { buildPdf { file -> PdfShare.open(this, file) } }
         btnDownload.setOnClickListener { buildPdf { file -> saveToDownloads(file) } }
         btnShare.setOnClickListener { buildPdf { file -> PdfShare.shareDirect(this, file) } }
 
@@ -161,8 +166,13 @@ class InspectorReportActivity : AppCompatActivity() {
 
         val has = d.batches.isNotEmpty() || d.stock.any { !it.isUntouched }
         tvEmpty.visibility = if (has) View.GONE else View.VISIBLE
+        // Preview follows the same rule as the other two: with nothing to
+        // report there is nothing to preview either, and a live button that
+        // opens an empty document is worse than a grey one.
+        btnPreview.isEnabled = has
         btnDownload.isEnabled = has
         btnShare.isEnabled = has
+        btnPreview.alpha = if (has) 1f else 0.5f
         btnDownload.alpha = if (has) 1f else 0.5f
         btnShare.alpha = if (has) 1f else 0.5f
     }

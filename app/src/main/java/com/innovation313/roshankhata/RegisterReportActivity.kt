@@ -38,6 +38,7 @@ class RegisterReportActivity : AppCompatActivity() {
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
     private lateinit var btnRange: MaterialButton
+    private lateinit var btnPreview: MaterialButton
     private lateinit var btnDownload: MaterialButton
     private lateinit var btnShare: MaterialButton
     private lateinit var tvSummary: TextView
@@ -65,8 +66,10 @@ class RegisterReportActivity : AppCompatActivity() {
             }
         }
 
+        btnPreview = findViewById(R.id.btnRegPreview)
         btnDownload = findViewById(R.id.btnRegDownload)
         btnShare = findViewById(R.id.btnRegShare)
+        btnPreview.setOnClickListener { buildPdf { file -> PdfShare.open(this, file) } }
         btnDownload.setOnClickListener { buildPdf { file -> saveToDownloads(file) } }
         btnShare.setOnClickListener { buildPdf { file -> PdfShare.shareDirect(this, file) } }
 
@@ -107,8 +110,13 @@ class RegisterReportActivity : AppCompatActivity() {
         val has = !d.isEmpty
         tvEmpty.visibility = if (has) View.GONE else View.VISIBLE
         tvSummary.visibility = if (has) View.VISIBLE else View.GONE
+        // Preview follows the same rule as the other two: with nothing to
+        // report there is nothing to preview either, and a live button that
+        // opens an empty document is worse than a grey one.
+        btnPreview.isEnabled = has
         btnDownload.isEnabled = has
         btnShare.isEnabled = has
+        btnPreview.alpha = if (has) 1f else 0.5f
         btnDownload.alpha = if (has) 1f else 0.5f
         btnShare.alpha = if (has) 1f else 0.5f
     }

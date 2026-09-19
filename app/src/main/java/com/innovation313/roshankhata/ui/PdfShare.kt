@@ -87,6 +87,42 @@ object PdfShare {
         share(context, uri, file.name)
     }
 
+    /**
+     * Open [file] straight in the phone's PDF viewer — no dialog in between.
+     *
+     * [present] already offers Open, but it offers Share alongside it, and a
+     * screen that has its own Share button would then show Share twice and
+     * make the owner choose a path to a path. A Preview BUTTON should do one
+     * thing, so this is that one thing: Preview, Download and Share sit side
+     * by side, each doing exactly what it says.
+     *
+     * If the phone has no PDF viewer the owner is told so plainly. Falling
+     * back to the share sheet here would be wrong — they asked to read the
+     * document, not to send it somewhere.
+     */
+    fun open(context: Context, file: File) {
+        val uri = FileProvider.getUriForFile(
+            context, "${context.packageName}.fileprovider", file
+        )
+        val view = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        // Caught on the actual failure rather than checked with
+        // resolveActivity(), for the reason spelled out in present(): under
+        // Android 11 package visibility that check returns null even when a
+        // viewer exists, and acting on that wrong null is what once made
+        // Open behave as Share.
+        try {
+            context.startActivity(view)
+        } catch (e: android.content.ActivityNotFoundException) {
+            android.widget.Toast.makeText(
+                context, R.string.pdf_no_viewer, android.widget.Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
     private fun share(context: Context, uri: android.net.Uri, name: String) {
         val send = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"

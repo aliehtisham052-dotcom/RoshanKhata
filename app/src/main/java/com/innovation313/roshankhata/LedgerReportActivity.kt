@@ -54,6 +54,7 @@ class LedgerReportActivity : AppCompatActivity() {
     private lateinit var btnStartDate: MaterialButton
     private lateinit var btnEndDate: MaterialButton
     private lateinit var btnRangeAll: MaterialButton
+    private lateinit var btnPreview: MaterialButton
     private lateinit var btnDownload: MaterialButton
     private lateinit var btnShare: MaterialButton
     private lateinit var tvTotalGave: TextView
@@ -95,8 +96,12 @@ class LedgerReportActivity : AppCompatActivity() {
             applyRange()
         }
 
+        btnPreview = findViewById(R.id.btnLrPreview)
         btnDownload = findViewById(R.id.btnLrDownload)
         btnShare = findViewById(R.id.btnLrShare)
+        // PDF only, deliberately: this screen also exports CSV, and there is
+        // no such thing as previewing a spreadsheet in a PDF viewer.
+        btnPreview.setOnClickListener { buildPdf { file -> PdfShare.open(this, file) } }
         btnDownload.setOnClickListener { chooseDownload() }
         btnShare.setOnClickListener {
             buildPdf { file -> PdfShare.shareDirect(this, file) }
@@ -238,8 +243,13 @@ class LedgerReportActivity : AppCompatActivity() {
         // of an empty table is a confusing artefact, not a document. The
         // buttons grey out with the list instead of producing one.
         val has = entries.isNotEmpty()
+        // Preview follows the same rule as the other two: with nothing to
+        // report there is nothing to preview either, and a live button that
+        // opens an empty document is worse than a grey one.
+        btnPreview.isEnabled = has
         btnDownload.isEnabled = has
         btnShare.isEnabled = has
+        btnPreview.alpha = if (has) 1f else 0.5f
         btnDownload.alpha = if (has) 1f else 0.5f
         btnShare.alpha = if (has) 1f else 0.5f
 
