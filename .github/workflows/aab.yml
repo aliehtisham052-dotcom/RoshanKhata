@@ -10,6 +10,9 @@
 # when there is something to publish.
 name: Release AAB
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
 
@@ -127,3 +130,42 @@ jobs:
           name: RoshanKhata-r8-mapping
           path: app/build/outputs/mapping/release/
           retention-days: 90
+
+      # A DOWNLOAD LINK, not just an Actions artifact.
+      #
+      # Actions artifacts serve from Azure blob storage, which is unreachable
+      # from inside a locked-down network — this file needs to reach a
+      # phone, not stay inside CI. build.yml already solved exactly this for
+      # the debug build with a rolling "latest" release; this is the same
+      # mechanism under its OWN tag, deliberately not "latest" — that name
+      # already means "today's debug build" everywhere it is documented, and
+      # this is the release-minified build meant for one thing: proving R8
+      # on a real device BEFORE an AAB goes to Play. Overwriting "latest"
+      # here would point that link at the wrong build type.
+      - name: Rename minified APK for the test release
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/release/*.apk out/RoshanKhata-release-test.apk
+
+      - name: Publish minified build for device testing
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: release-test
+          name: "Roshan Khata — Minified Release Build (device test)"
+          body: |
+            The RELEASE build, R8-minified — the same code this run also
+            uploaded to Play as a signed AAB. This APK exists so it can be
+            installed and walked through on a real phone BEFORE that AAB is
+            trusted: R8's failures are runtime failures, not build failures,
+            so a green build proves nothing about backup, restore, Drive
+            sign-in, or PDF generation on their own.
+
+            **Commit:** ${{ github.sha }}
+
+            Test in this order: Google sign-in → Drive backup → Drive
+            restore → PDF (invoice and stock register) → app lock → QR scan
+            → close and reopen the app. If anything behaves differently
+            from the regular debug build, stop and report it — do not treat
+            this build as safe to keep using either way.
+          files: out/RoshanKhata-release-test.apk
+          make_latest: false
