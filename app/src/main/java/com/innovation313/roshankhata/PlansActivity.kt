@@ -225,6 +225,11 @@ class PlansActivity : AppCompatActivity() {
         view.findViewById<View>(R.id.etItemName).visibility = View.GONE
         view.findViewById<View>(R.id.etQuantity).visibility = View.GONE
         view.findViewById<View>(R.id.etUnit).visibility = View.GONE
+        // Nothing here opens the details, so the row that offers to would be
+        // a button that does nothing. It was already inert on this screen;
+        // now that it sits outside step one it would also be the last thing
+        // above Save, which is worse.
+        view.findViewById<View>(R.id.btnMoreDetails).visibility = View.GONE
 
         plan.installmentAmount?.let { etAmount.setText(Format.plain(it)) }
 

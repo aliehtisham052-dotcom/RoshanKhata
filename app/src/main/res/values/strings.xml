@@ -1007,6 +1007,7 @@ You can change this any time from this screen.</string>
     <string name="photo_on_statement_help">Off by default. Turning it on prints the customer\u2019s photo on their statement, which makes it harder to dispute — but a statement can be forwarded, and their photo travels with it.</string>
     <string name="made_with_app">Roshan Khata</string>
     <string name="more_details">Add note, goods or recovery</string>
+    <string name="back_to_amount">Back to amount</string>
     <string name="voice_entry">Speak an entry</string>
     <string name="voice_prompt">Say it like: Gave Bilal five thousand</string>
     <string name="voice_unavailable">This phone has no speech recogniser.</string>

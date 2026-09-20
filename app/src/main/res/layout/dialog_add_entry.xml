@@ -9,6 +9,7 @@
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -22,6 +23,28 @@
         android:paddingTop="12dp"
         android:paddingEnd="20dp"
         android:paddingBottom="12dp">
+
+        <!--
+          The amount, kept on screen once the details are open.
+
+          Until now opening the details replaced the amount with the note
+          field, and the figure just typed was nowhere: a shopkeeper who
+          wanted to check 5,000 had gone in as 5,000 had to go back for it.
+          Khatabook and OkCredit both treat the amount as the screen itself,
+          and it should not stop being the screen because an optional field
+          was opened. Read-only, and hidden while step one is showing, where
+          the field itself is already in view.
+        -->
+        <TextView
+            android:id="@+id/tvEntrySummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:textColor="@color/ink"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:ignore="RtlSymmetry" />
 
         <!--
           Step one: the amount, and the two things that qualify it. Everything
@@ -283,26 +306,6 @@
             android:layout_height="0dp"
             android:layout_weight="3" />
 
-        <!--
-          The way through to the rest. A row rather than a dialog button,
-          because it is an offer and not a step: Save sits beside it and works
-          without ever coming here.
-        -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMoreDetails"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="start|center_vertical"
-            android:text="@string/more_details"
-            android:textAllCaps="false"
-            android:textColor="@color/ink_soft"
-            android:textSize="13sp"
-            app:icon="@drawable/ic_chevron_right"
-            app:iconGravity="end"
-            app:iconSize="18dp"
-            app:iconTint="@color/ink_soft" />
 
         </LinearLayout>
 
@@ -544,5 +547,30 @@
         <!-- An equal share of whatever the page has spare. -->
 
         </LinearLayout>
+
+        <!--
+          The one way in and out of the details, on screen in both states.
+
+          It used to sit inside step one, so opening the details took it away
+          with the keypad and the only way back was the dialog's Cancel button
+          relabelled Back — a button in the corner, in a different place from
+          the one that had opened it. Here it is the same row in the same
+          place, and its text says which way it goes.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMoreDetails"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="start|center_vertical"
+            android:text="@string/more_details"
+            android:textAllCaps="false"
+            android:textColor="@color/ink_soft"
+            android:textSize="13sp"
+            app:icon="@drawable/ic_chevron_right"
+            app:iconGravity="end"
+            app:iconSize="18dp"
+            app:iconTint="@color/ink_soft" />
     </LinearLayout>
 </ScrollView>

@@ -857,6 +857,8 @@ class PartyDetailActivity : AppCompatActivity() {
                 // that need them.
                 val stepOne = view.findViewById<View>(R.id.stepOne)
                 val stepTwo = view.findViewById<View>(R.id.stepTwo)
+                val summary = view.findViewById<TextView>(R.id.tvEntrySummary)
+                val more = view.findViewById<MaterialButton>(R.id.btnMoreDetails)
                 val cancel = dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
 
                 fun show(next: View, gone: View, anim: Int, cancelLabel: Int) {
@@ -870,18 +872,34 @@ class PartyDetailActivity : AppCompatActivity() {
                     cancel.setText(cancelLabel)
                 }
 
-                view.findViewById<MaterialButton>(R.id.btnMoreDetails).setOnClickListener {
-                    // Cancel becomes Back: from here, leaving should mean
-                    // returning to the amount, not discarding it.
+                // Opening the details carries the amount up with it, so the
+                // figure just typed is still readable while the optional
+                // fields are filled in. Blank amount, blank strip: an empty
+                // "Rs 0" would be a statement about the entry that is not
+                // true yet.
+                fun openDetails() {
+                    val typed = Calc.eval(etAmount.text.toString())
+                    summary.text = if (typed == null) "" else Format.money(typed)
+                    summary.visibility = if (typed == null) View.GONE else View.VISIBLE
+                    more.setText(R.string.back_to_amount)
                     show(stepTwo, stepOne, R.anim.slide_in_right, R.string.back)
                 }
 
+                fun closeDetails() {
+                    summary.visibility = View.GONE
+                    more.setText(R.string.more_details)
+                    show(stepOne, stepTwo, R.anim.slide_in_left, R.string.cancel)
+                }
+
+                // The same row both ways. Cancel still goes back from the
+                // details for anyone who learnt it that way, but it is no
+                // longer the only way.
+                more.setOnClickListener {
+                    if (stepTwo.visibility == View.VISIBLE) closeDetails() else openDetails()
+                }
+
                 cancel.setOnClickListener {
-                    if (stepTwo.visibility == View.VISIBLE) {
-                        show(stepOne, stepTwo, R.anim.slide_in_left, R.string.cancel)
-                    } else {
-                        dialog.dismiss()
-                    }
+                    if (stepTwo.visibility == View.VISIBLE) closeDetails() else dialog.dismiss()
                 }
             }
     }
