@@ -79,9 +79,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/display">
 
+        <!--
+          match_parent against fillViewport, so the keypad takes the whole
+          space under the display on a tall screen instead of leaving a band
+          of empty white at the bottom.
+
+          minHeight is the other half of it. On a short screen, or in
+          landscape, five rows sharing the height would squeeze the keys down
+          to a size no thumb can hit; below 360dp the keypad keeps its size
+          and the NestedScrollView scrolls instead.
+        -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:minHeight="360dp"
             android:orientation="vertical"
             android:padding="10dp">
 

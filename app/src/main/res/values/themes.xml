@@ -165,15 +165,26 @@
     </style>
 
     <!-- Calculator keypad. Four keys to a row, each row an equal share. -->
+    <!--
+      A row of the full Calculator screen's keypad.
+
+      Zero height and a weight, not wrap_content: the five rows share whatever
+      the screen has left under the display, so the keypad ends where the
+      screen ends. It used to be five rows of a fixed 78dp, about 440dp of
+      keypad on a screen with 700dp to give, and the difference sat at the
+      bottom as a band of empty white — the keypad floating in the middle of
+      the screen, touching neither the display above nor the bottom edge.
+    -->
     <style name="CalcRow">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="CalcKey" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">78dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_margin">5dp</item>
         <item name="android:textSize">26sp</item>
