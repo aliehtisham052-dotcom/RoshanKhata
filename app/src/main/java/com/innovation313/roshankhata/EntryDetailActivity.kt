@@ -25,6 +25,8 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.BillPhoto
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.ProductName
+import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.DateTimeField
 import com.innovation313.roshankhata.ui.Format
@@ -169,14 +171,17 @@ class EntryDetailActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_edit_entry, null)
         val etAmount = view.findViewById<EditText>(R.id.etEditAmount)
         val etNote = view.findViewById<EditText>(R.id.etEditNote)
-        val etItemName = view.findViewById<EditText>(R.id.etEditItemName)
+        val etItemName = view.findViewById<AutoCompleteTextView>(R.id.etEditItemName)
         val etQuantity = view.findViewById<EditText>(R.id.etEditQuantity)
         val etUnit = view.findViewById<AutoCompleteTextView>(R.id.etEditUnit)
         val btnBatch = view.findViewById<MaterialButton>(R.id.btnEditBatch)
 
         etAmount.setText(Format.plain(e.amount))
         etNote.setText(e.note.orEmpty())
-        etItemName.setText(e.itemName.orEmpty())
+        // Pre-fill without asking the adapter to match — see the same call in
+        // BillsActivity. Harmless today because the products load after this,
+        // and not left resting on that ordering.
+        etItemName.setText(e.itemName.orEmpty(), false)
         etQuantity.setText(e.quantity?.let { Format.plain(it) } ?: "")
         etUnit.setAdapter(
             ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, resources.getStringArray(R.array.units))
@@ -269,6 +274,18 @@ class EntryDetailActivity : AppCompatActivity() {
 
         etItemName.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) refreshBatchButton(etItemName.text.toString().trim())
+        }
+
+        // The same product list Add Entry offers, so correcting a name reaches
+        // the same products as writing it did. Read once as the dialog opens.
+        lifecycleScope.launch {
+            SmartSuggest.attach(etItemName, dao.productsOnce().asSuggestions())
+        }
+
+        // Tapping a suggestion finishes the name, so the batch lookup runs
+        // now rather than waiting for the focus to leave the box.
+        etItemName.setOnItemClickListener { _, _, _, _ ->
+            refreshBatchButton(etItemName.text.toString().trim())
         }
 
         // Starts at whatever the entry already carries, so leaving it alone

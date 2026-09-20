@@ -23,6 +23,8 @@ import com.innovation313.roshankhata.data.InvoiceFeatureSettings
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.TemplatePagerAdapter
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
@@ -125,13 +127,30 @@ class InvoiceEditorActivity : AppCompatActivity() {
     /** One inflated item row and the fields inside it. */
     private class Row(
         val view: View,
-        val name: EditText,
+        val name: AutoCompleteTextView,
         val qty: EditText,
         val unit: EditText,
         val rate: EditText
     )
 
     private val rows = mutableListOf<Row>()
+
+    /**
+     * The shop's products, for the item-name box on every row.
+     *
+     * Held here rather than fetched per row because rows are added as the
+     * invoice is written — an invoice of twelve lines would otherwise ask the
+     * database twelve times for the same answer. Empty until the read
+     * finishes, and a row built before then is caught up by [offerProducts]
+     * when it does, so the first row is never the one row without
+     * suggestions.
+     */
+    private var productSuggestions: List<SmartSuggest.Item> = emptyList()
+
+    /** Offer the loaded products on one row's name box. */
+    private fun offerProducts(row: Row) {
+        if (productSuggestions.isNotEmpty()) SmartSuggest.attach(row.name, productSuggestions)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -213,6 +232,13 @@ class InvoiceEditorActivity : AppCompatActivity() {
                 val picked = etCustomer.adapter.getItem(position) as? String ?: return@setOnItemClickListener
                 phoneByName[picked]?.takeIf { it.isNotBlank() }?.let { etPhone.setText(it) }
             }
+        }
+
+        // The products, once, for every row's name box — including the rows
+        // that were on screen before this read came back.
+        lifecycleScope.launch {
+            productSuggestions = dao.productsOnce().asSuggestions()
+            rows.forEach { offerProducts(it) }
         }
 
         val editId = intent.getLongExtra(EXTRA_INVOICE_ID, -1L).takeIf { it > 0 }
@@ -338,7 +364,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
             v.findViewById(R.id.etRowRate)
         )
         if (existing != null) {
-            row.name.setText(existing.itemName)
+            row.name.setText(existing.itemName, false)
             row.qty.setText(Format.plain(existing.quantity))
             row.unit.setText(existing.unit.orEmpty())
             row.rate.setText(Format.plain(existing.rate))
@@ -350,6 +376,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
                 rows.remove(row)
             }
         }
+        offerProducts(row)
         rows.add(row)
         itemRows.addView(v)
     }

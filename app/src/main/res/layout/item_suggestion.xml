@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One row of a suggestion dropdown.
+
+  Two lines rather than one, because the name alone is often not enough to
+  choose by: an agri shop stocks the same trade name from two companies, and
+  the same product in a bottle and in a bag. The second line carries whatever
+  tells them apart — company, unit — and is hidden outright when there is
+  nothing to say, so a plain list of units or villages stays a plain list and
+  does not grow a blank line under every row.
+
+  Sized against android's own simple_dropdown_item_1line so a field that gains
+  subtitles does not suddenly look like a different app from the one beside it.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="48dp"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvSuggestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/ink"
+        android:textSize="16sp"
+        tools:text="Confidor 200SL"/>
+
+    <TextView
+        android:id="@+id/tvSuggestionSub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/text_muted"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="Bayer · bottle"
+        tools:visibility="visible"/>
+
+</LinearLayout>

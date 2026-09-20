@@ -368,14 +368,15 @@
             android:textColor="@color/text_muted"
             android:textSize="11sp" />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/etItemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="@string/item_name_hint"
             android:importantForAutofill="no"
-            android:inputType="text" />
+            android:inputType="text"
+            android:completionThreshold="1" />
 
         <LinearLayout
             android:layout_marginTop="8dp"

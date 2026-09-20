@@ -46,14 +46,15 @@
             app:iconGravity="textStart"
             app:iconTint="@color/brand_green" />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/etEditItemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="@string/item_name_hint"
             android:importantForAutofill="no"
-            android:inputType="text" />
+            android:inputType="text"
+            android:completionThreshold="1" />
 
         <LinearLayout
             android:layout_marginTop="8dp"

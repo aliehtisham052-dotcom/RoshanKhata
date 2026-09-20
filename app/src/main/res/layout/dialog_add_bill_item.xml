@@ -13,13 +13,14 @@
         android:paddingEnd="24dp"
         android:paddingBottom="8dp">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/etProductName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/product_name_hint"
             android:importantForAutofill="no"
-            android:inputType="text" />
+            android:inputType="text"
+            android:completionThreshold="1" />
 
         <EditText
             android:id="@+id/etBatchNumber"
