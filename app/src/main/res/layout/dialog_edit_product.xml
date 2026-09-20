@@ -8,6 +8,20 @@
 
   Everything below the name is optional and says so. A feed or seed shop must
   never be made to answer pesticide questions to save a product.
+
+  The four Agriculture Department questions are asked ABOVE their boxes, not
+  inside them. A hint lives on one line and is cut off when it runs past the
+  edge, and these four run well past it: "Active ingredient, e.g.
+  Chlorpyrifos 40% EC" arrived on screen as "Active ingredient, e.g. Chlorpy"
+  with no way to see the rest — the owner could not tell what was being asked
+  for, and the example, which is the part that actually answers the question,
+  was the part that vanished. As a label the same string wraps and is read in
+  full. Urdu, Arabic, Sindhi and Persian run longer than English, so this was
+  worse in the languages most of these shops read.
+
+  The strings themselves are untouched, which is the point: all six locales
+  already have them, and nothing needed retranslating to fix this. The three
+  short fields above keep their hints, which fit.
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -125,39 +139,67 @@
             android:textColor="@color/ink_soft"
             android:textSize="12sp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:labelFor="@+id/etProductType"
+            android:text="@string/product_type_hint"
+            android:textColor="@color/ink_soft"
+            android:textSize="12sp" />
+
         <EditText
             android:id="@+id/etProductType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:hint="@string/product_type_hint"
             android:importantForAutofill="no"
             android:inputType="textCapWords" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:labelFor="@+id/etTechnicalName"
+            android:text="@string/technical_name_hint"
+            android:textColor="@color/ink_soft"
+            android:textSize="12sp" />
 
         <EditText
             android:id="@+id/etTechnicalName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/technical_name_hint"
             android:importantForAutofill="no"
             android:inputType="text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:labelFor="@+id/etFormulation"
+            android:text="@string/formulation_hint"
+            android:textColor="@color/ink_soft"
+            android:textSize="12sp" />
 
         <EditText
             android:id="@+id/etFormulation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/formulation_hint"
             android:importantForAutofill="no"
             android:inputType="textCapCharacters" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:labelFor="@+id/etRegistrationNumber"
+            android:text="@string/registration_number_hint"
+            android:textColor="@color/ink_soft"
+            android:textSize="12sp" />
 
         <EditText
             android:id="@+id/etRegistrationNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/registration_number_hint"
             android:importantForAutofill="no"
             android:inputType="text" />
 
