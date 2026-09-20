@@ -298,6 +298,20 @@ class KhataActivity : AppCompatActivity() {
 
         observeData()
 
+        builtInLocale = com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
+    }
+
+    /**
+     * The language this ledger was built in. It can be changed from this
+     * screen's own menu, which leaves this instance in the back stack with
+     * its old wording until it checks for itself.
+     */
+    private var builtInLocale: String? = null
+
+    override fun onStart() {
+        super.onStart()
+        builtInLocale = com.innovation313.roshankhata.ui.LocaleRefresh
+            .refresh(this, builtInLocale)
     }
 
     private fun observeData() {

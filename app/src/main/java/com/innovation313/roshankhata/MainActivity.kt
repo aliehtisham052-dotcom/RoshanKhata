@@ -51,6 +51,13 @@ class MainActivity : AppCompatActivity() {
     /** Tile views by label resource — the walkthrough needs them by name. */
     private val featureViews = mutableMapOf<Int, View>()
 
+    /**
+     * The language this Home was built in. Changing it from More → Language
+     * leaves this screen sitting in the back stack with its old wording, so
+     * it checks on the way back and rebuilds itself if the answer moved.
+     */
+    private var builtInLocale: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -72,6 +79,8 @@ class MainActivity : AppCompatActivity() {
         sizeGridTail()
         setupBottomNav()
         maybeShowCoachMarks()
+
+        builtInLocale = com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
     }
 
     /**
@@ -318,6 +327,16 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onStart() {
         super.onStart()
+
+        // A language picked while this screen waited in the back stack does
+        // not reach it by itself. Check first: if it has changed, this
+        // instance is about to be replaced and there is no sense reading the
+        // ledger for a screen that will not be shown.
+        val before = builtInLocale
+        builtInLocale = com.innovation313.roshankhata.ui.LocaleRefresh
+            .refresh(this, before)
+        if (before != null && before != builtInLocale) return
+
         observeTotals()
     }
 
