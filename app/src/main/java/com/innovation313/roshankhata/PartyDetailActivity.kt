@@ -1,6 +1,8 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.ui.Calc
+import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.DateTimeField
 import com.innovation313.roshankhata.ui.fillDialogHeight
@@ -586,9 +588,23 @@ class PartyDetailActivity : AppCompatActivity() {
         }
 
         val etNote: EditText = view.findViewById(R.id.etNote)
-        val etItemName: EditText = view.findViewById(R.id.etItemName)
+        val etItemName: AutoCompleteTextView = view.findViewById(R.id.etItemName)
         val etQuantity: EditText = view.findViewById(R.id.etQuantity)
         val etUnit: AutoCompleteTextView = view.findViewById(R.id.etUnit)
+
+        // The products this shop actually deals in, offered as the name is
+        // typed. Read once as the dialog opens rather than on every keystroke
+        // — a shop's product list is hundreds of rows, not thousands, and
+        // re-reading it per letter would put the database on the typing path
+        // for no gain.
+        //
+        // Nothing is required of the owner here: a product that has never
+        // been recorded is still perfectly typeable, and an empty list simply
+        // leaves this an ordinary text box.
+        lifecycleScope.launch {
+            val products = dao.productsOnce()
+            SmartSuggest.attach(etItemName, products.asSuggestions())
+        }
         val cbQarzeHasna: MaterialCheckBox = view.findViewById(R.id.cbQarzeHasna)
 
         // Suggest the units this trade actually uses — bag, maund, seer,
@@ -706,6 +722,12 @@ class PartyDetailActivity : AppCompatActivity() {
         }
 
         etItemName.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) refreshBatchButton() }
+
+        // Tapping a suggestion is the owner finishing the name, so the
+        // product lookup runs there and then. Without this it would wait for
+        // the focus to leave the box, and the rate offer and batch button
+        // would sit hidden while the name they name is already on screen.
+        etItemName.setOnItemClickListener { _, _, _, _ -> refreshBatchButton() }
 
         etQuantity.addTextChangedListener(object : android.text.TextWatcher {
             override fun afterTextChanged(s: android.text.Editable?) = refreshRateSuggestion()

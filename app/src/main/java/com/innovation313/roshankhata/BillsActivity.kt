@@ -26,6 +26,8 @@ import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.SupplierBill
+import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.BillAdapter
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ProductDetailsDialog
@@ -250,7 +252,7 @@ class BillsActivity : AppCompatActivity() {
      */
     private fun showAddItemDialog(existing: BillItem? = null, onDone: (BillItem) -> Unit) {
         val view = layoutInflater.inflate(R.layout.dialog_add_bill_item, null)
-        val etProduct: EditText = view.findViewById(R.id.etProductName)
+        val etProduct: AutoCompleteTextView = view.findViewById(R.id.etProductName)
         val etBatch: EditText = view.findViewById(R.id.etBatchNumber)
         val btnExpiry: MaterialButton = view.findViewById(R.id.btnExpiry)
         val etQty: EditText = view.findViewById(R.id.etItemQty)
@@ -265,10 +267,22 @@ class BillsActivity : AppCompatActivity() {
             )
         )
 
+        // Products already known to the shop, offered while the name is
+        // typed. This matters more on a bill than anywhere else: a supplier's
+        // delivery is where a product first enters the book, and a name
+        // spelled a second way here creates a second product that the sale
+        // side will never find.
+        lifecycleScope.launch {
+            SmartSuggest.attach(etProduct, dao.productsOnce().asSuggestions())
+        }
+
         var expiry: Long? = existing?.expiryDate
 
         if (existing != null) {
-            etProduct.setText(existing.productName)
+            // Filtering off for a pre-fill: setText on a suggestion field asks the
+            // adapter to match, and an Edit Item dialog would open with the dropdown
+            // already covering the fields it just filled in.
+            etProduct.setText(existing.productName, false)
             etBatch.setText(existing.batchNumber ?: "")
             etQty.setText(Format.plain(existing.quantity))
             etUnit.setText(existing.unit ?: "", false)
