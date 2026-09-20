@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The month currently being read — the best month when the screen opens, or
+  whichever bar the owner has tapped since. Gold, the same colour the product
+  bars use for "this is the one that matters".
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/brand_gold" />
+    <corners
+        android:topLeftRadius="3dp"
+        android:topRightRadius="3dp" />
+</shape>

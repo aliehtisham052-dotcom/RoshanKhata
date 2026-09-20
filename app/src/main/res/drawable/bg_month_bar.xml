@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One month's bar on the twelve-month chart.
+
+  Rounded only at the top: the bar grows up from a baseline, so the foot of it
+  should sit flat on that line rather than float above a rounded corner.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/section_insights" />
+    <corners
+        android:topLeftRadius="3dp"
+        android:topRightRadius="3dp" />
+</shape>

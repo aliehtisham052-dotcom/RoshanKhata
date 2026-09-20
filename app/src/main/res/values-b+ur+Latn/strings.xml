@@ -788,6 +788,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="insights_no_products">Is mahine koi product darj nahi. Entry karte waqt product ka naam likhein to ye nazar aayega.</string>
     <string name="insights_no_sales">Is mahine abhi koi farokht darj nahi.</string>
     <string name="insights_privacy_note">Sab hisaab aap ke phone par hota hai. Kuch bhi phone se bahar nahi jata.</string>
+    <string name="insights_monthly_title">Mahana Farokht \u00b7 Pichhle 12 mahine</string>
+    <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
+    <string name="insights_monthly_hint">Kisi bhi sutoon ko dabain to us mahine ki kul farokht nazar aayegi.</string>
+    <string name="insights_monthly_none">Pichhle 12 mahinon mein koi farokht darj nahi.</string>
     <string name="nisab_silver">Chandi</string>
     <string name="nisab_gold">Sona</string>
     <string name="gold_price_hint">Sone ki qeemat fi gram (Rs)</string>

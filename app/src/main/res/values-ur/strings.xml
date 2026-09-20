@@ -788,6 +788,10 @@
     <string name="insights_no_products">اس مہینے کوئی مصنوعات درج نہیں۔ اندراج کرتے وقت مصنوعات کا نام لکھیں تو یہ نظر آئے گا۔</string>
     <string name="insights_no_sales">اس مہینے ابھی کوئی فروخت درج نہیں۔</string>
     <string name="insights_privacy_note">سب حساب آپ کے فون پر ہوتا ہے۔ کچھ بھی فون سے باہر نہیں جاتا۔</string>
+    <string name="insights_monthly_title">ماہانہ فروخت \u00b7 پچھلے 12 مہینے</string>
+    <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
+    <string name="insights_monthly_hint">کسی ستون کو دبائیں تو اُس مہینے کی کل فروخت نظر آئے گی۔</string>
+    <string name="insights_monthly_none">پچھلے 12 مہینوں میں کوئی فروخت درج نہیں۔</string>
     <string name="nisab_silver">چاندی</string>
     <string name="nisab_gold">سونا</string>
     <string name="gold_price_hint">سونے کی قیمت فی گرام (روپے)</string>

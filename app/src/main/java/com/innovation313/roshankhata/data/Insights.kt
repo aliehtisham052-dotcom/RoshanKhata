@@ -1,6 +1,23 @@
 package com.innovation313.roshankhata.data
 
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+
+/**
+ * One month's sales, ready to draw as a bar.
+ *
+ * [shortLabel] is what fits under a bar on a phone ("Oct"); [fullLabel] is what
+ * the reader needs when they tap it and two Octobers could be meant ("Oct 2025").
+ * Month names stay in English like every other date in this app, so a date read
+ * on the ledger and a date read on the chart are the same word.
+ */
+data class MonthSale(
+    val shortLabel: String,
+    val fullLabel: String,
+    val total: Double
+)
 
 /**
  * Everything the Sale Insights screen shows, gathered in one place.
@@ -17,7 +34,9 @@ data class SaleInsights(
     val topCustomers: List<CustomerStat>,
     val todayGiven: Double = 0.0,
     val todayReceived: Double = 0.0,
-    val todayCount: Int = 0
+    val todayCount: Int = 0,
+    /** The last 12 months, oldest first — the month just gone at the end. */
+    val monthlySales: List<MonthSale> = emptyList()
 ) {
     /**
      * The month-on-month change as a percentage, or null when there is nothing
@@ -69,6 +88,30 @@ object Insights {
     }
 
     /**
+     * The last 12 months of sales, oldest first, ending with the month in
+     * progress.
+     *
+     * Twelve small indexed sums, not one big scan: the same query the month
+     * total already uses, asked twelve times. A year is the shortest window in
+     * which a seasonal trade can see its own season, which is the whole point
+     * of drawing it.
+     */
+    private suspend fun lastTwelveMonths(dao: KhataDao): List<MonthSale> {
+        val shortFmt = SimpleDateFormat("MMM", Locale.ENGLISH)
+        val fullFmt = SimpleDateFormat("MMM yyyy", Locale.ENGLISH)
+
+        return (11 downTo 0).map { monthsAgo ->
+            val from = monthStart(monthsAgo)
+            val to = if (monthsAgo == 0) nextMonthStart() else monthStart(monthsAgo - 1)
+            MonthSale(
+                shortLabel = shortFmt.format(Date(from)),
+                fullLabel = fullFmt.format(Date(from)),
+                total = dao.salesTotalBetween(from, to)
+            )
+        }
+    }
+
+    /**
      * Gather this month's insights. A single suspend call the UI can await; each
      * query is small and indexed on timestamp.
      */
@@ -86,7 +129,8 @@ object Insights {
             topCustomers = dao.topCustomersBetween(thisStart, thisEnd, 3),
             todayGiven = dao.givenBetween(todayStart(), now),
             todayReceived = dao.receivedBetween(todayStart(), now),
-            todayCount = dao.entryCountBetween(todayStart(), now)
+            todayCount = dao.entryCountBetween(todayStart(), now),
+            monthlySales = lastTwelveMonths(dao)
         )
     }
 }

@@ -788,6 +788,10 @@
     <string name="insights_no_products">لا منتجات مسجلة هذا الشهر. اكتب اسم المنتج عند القيد ليظهر هذا.</string>
     <string name="insights_no_sales">لا مبيعات مسجلة هذا الشهر بعد.</string>
     <string name="insights_privacy_note">يُحسب كل شيء على هاتفك. لا يغادر شيء جهازك.</string>
+    <string name="insights_monthly_title">المبيعات الشهرية \u00b7 آخر 12 شهرًا</string>
+    <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
+    <string name="insights_monthly_hint">اضغط على أي عمود لعرض إجمالي ذلك الشهر.</string>
+    <string name="insights_monthly_none">لا توجد مبيعات مسجَّلة في آخر 12 شهرًا.</string>
     <string name="nisab_silver">الفضة</string>
     <string name="nisab_gold">الذهب</string>
     <string name="gold_price_hint">سعر غرام الذهب (Rs)</string>
