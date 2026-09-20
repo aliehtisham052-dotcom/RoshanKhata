@@ -828,6 +828,10 @@ You can change this any time from this screen.</string>
     <string name="insights_no_products">No products recorded this month. Add a product name when you make an entry to see this.</string>
     <string name="insights_no_sales">No sales recorded this month yet.</string>
     <string name="insights_privacy_note">All calculated on your phone. Nothing leaves your device.</string>
+    <string name="insights_monthly_title">Monthly Sales \u00b7 Last 12 months</string>
+    <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
+    <string name="insights_monthly_hint">Tap any bar to see that month's total.</string>
+    <string name="insights_monthly_none">No sales recorded in the last 12 months.</string>
     <string name="nisab_silver">Silver</string>
     <string name="nisab_gold">Gold</string>
     <string name="gold_price_hint">Gold price per gram (Rs)</string>

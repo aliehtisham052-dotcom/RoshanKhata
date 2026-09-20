@@ -816,6 +816,10 @@
     <string name="insights_no_products">هن مهيني ڪو پراڊڪٽ نه لکيو ويو. داخلا وقت پراڊڪٽ جو نالو لکو ته هي ڏسي سگهو.</string>
     <string name="insights_no_sales">هن مهيني اڃا ڪو وڪرو نه لکيو ويو.</string>
     <string name="insights_privacy_note">سڀ حساب توهان جي فون تي ٿئي ٿو. ڪجهه به ڊوائيس کان ٻاهر نٿو وڃي.</string>
+    <string name="insights_monthly_title">ماهوار وڪرو \u00b7 گذريل 12 مهينا</string>
+    <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
+    <string name="insights_monthly_hint">ڪنهن به ٿنڀ تي دٻايو ته ان مهيني جو ڪل وڪرو نظر ايندو.</string>
+    <string name="insights_monthly_none">گذريل 12 مهينن ۾ ڪو وڪرو درج ناهي.</string>
     <string name="nisab_silver">چاندي</string>
     <string name="nisab_gold">سون</string>
     <string name="gold_price_hint">سون جي في گرام قيمت (Rs)</string>

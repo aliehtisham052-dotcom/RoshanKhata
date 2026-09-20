@@ -816,6 +816,10 @@
     <string name="insights_no_products">این ماه محصولی ثبت نشده. هنگام ثبت، نام محصول را بنویسید تا این را ببینید.</string>
     <string name="insights_no_sales">این ماه هنوز فروشی ثبت نشده.</string>
     <string name="insights_privacy_note">همه‌چیز روی گوشی شما محاسبه می‌شود. چیزی از دستگاه خارج نمی‌شود.</string>
+    <string name="insights_monthly_title">فروش ماهانه \u00b7 ۱۲ ماه گذشته</string>
+    <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
+    <string name="insights_monthly_hint">روی هر ستون بزنید تا مجموع همان ماه نمایش داده شود.</string>
+    <string name="insights_monthly_none">در ۱۲ ماه گذشته فروشی ثبت نشده است.</string>
     <string name="nisab_silver">نقره</string>
     <string name="nisab_gold">طلا</string>
     <string name="gold_price_hint">قیمت هر گرم طلا (Rs)</string>

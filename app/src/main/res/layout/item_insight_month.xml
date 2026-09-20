@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One month's column on the twelve-month sales chart.
+
+  The spacer above and the bar below are both weighted from the code, so the
+  bar's height is a share of the tallest month rather than a fixed number. The
+  label sits outside that split at its natural height, which keeps every
+  month's baseline on the same line no matter how tall its bar is.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/monthColumn"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="2dp"
+    android:paddingEnd="2dp">
+
+    <View
+        android:id="@+id/barSpacer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <View
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0"
+        android:background="@drawable/bg_month_bar" />
+
+    <TextView
+        android:id="@+id/tvMonth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@color/text_muted"
+        android:textSize="9sp" />
+</LinearLayout>

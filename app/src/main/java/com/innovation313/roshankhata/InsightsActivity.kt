@@ -12,6 +12,7 @@ import com.innovation313.roshankhata.data.CustomerStat
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.ProductStat
 import com.innovation313.roshankhata.data.Insights
+import com.innovation313.roshankhata.data.MonthSale
 import com.innovation313.roshankhata.data.SaleInsights
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
@@ -73,8 +74,82 @@ class InsightsActivity : AppCompatActivity() {
             }
         }
 
+        renderMonths(data.monthlySales)
         renderProducts(data.topProducts)
         renderCustomers(data.topCustomers)
+    }
+
+    /**
+     * The last twelve months as twelve bars.
+     *
+     * Twelve amounts cannot be printed side by side on a phone — each column is
+     * about thirty density points wide — so the chart carries shape only, and
+     * the figure for one month at a time is written underneath. It opens on the
+     * best month, because that is the one the owner came to find; tapping any
+     * bar moves the figure to that month.
+     */
+    private fun renderMonths(months: List<MonthSale>) {
+        val chart = findViewById<LinearLayout>(R.id.monthChart)
+        val pick = findViewById<TextView>(R.id.tvMonthPick)
+        val hint = findViewById<TextView>(R.id.tvMonthHint)
+        val empty = findViewById<TextView>(R.id.tvNoMonthly)
+        chart.removeAllViews()
+
+        val best = months.maxByOrNull { it.total }
+        // A year of zeros is not a chart. Say so in words instead of drawing
+        // twelve empty columns that look like a fault in the screen.
+        if (best == null || best.total <= 0.0) {
+            chart.visibility = View.GONE
+            pick.visibility = View.GONE
+            hint.visibility = View.GONE
+            empty.visibility = View.VISIBLE
+            return
+        }
+        chart.visibility = View.VISIBLE
+        pick.visibility = View.VISIBLE
+        hint.visibility = View.VISIBLE
+        empty.visibility = View.GONE
+
+        val bars = ArrayList<View>(months.size)
+
+        fun select(index: Int) {
+            val m = months[index]
+            pick.text = getString(R.string.insights_monthly_pick, m.fullLabel, Format.money(m.total))
+            bars.forEachIndexed { i, bar ->
+                bar.setBackgroundResource(
+                    if (i == index) R.drawable.bg_month_bar_selected else R.drawable.bg_month_bar
+                )
+            }
+        }
+
+        months.forEachIndexed { i, m ->
+            val col = layoutInflater.inflate(R.layout.item_insight_month, chart, false)
+            val colLp = col.layoutParams as LinearLayout.LayoutParams
+            colLp.weight = 1f
+            col.layoutParams = colLp
+
+            col.findViewById<TextView>(R.id.tvMonth).text = m.shortLabel
+
+            // A month with no sales still gets a sliver, so the reader can see
+            // the month was there and was empty, rather than see nothing at all.
+            val share = (m.total / best.total).toFloat().coerceAtLeast(0.015f)
+
+            val bar = col.findViewById<View>(R.id.bar)
+            val barLp = bar.layoutParams as LinearLayout.LayoutParams
+            barLp.weight = share
+            bar.layoutParams = barLp
+
+            val spacer = col.findViewById<View>(R.id.barSpacer)
+            val spacerLp = spacer.layoutParams as LinearLayout.LayoutParams
+            spacerLp.weight = (1f - share).coerceAtLeast(0f)
+            spacer.layoutParams = spacerLp
+
+            col.setOnClickListener { select(i) }
+            bars.add(bar)
+            chart.addView(col)
+        }
+
+        select(months.indexOf(best))
     }
 
     private fun renderProducts(products: List<ProductStat>) {
