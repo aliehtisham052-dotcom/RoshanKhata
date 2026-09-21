@@ -98,7 +98,6 @@ class KhataActivity : AppCompatActivity() {
     private lateinit var ivEye: ImageView
 
     /** The real figure. The view may be showing a mask over it. */
-    private var netBalance: Double = 0.0
 
     private enum class SortMode { NAME_AZ, NAME_ZA, OWES_MOST, I_OWE_MOST, RECENT }
 
@@ -121,7 +120,6 @@ class KhataActivity : AppCompatActivity() {
 
     /** Which stretch of days the list is showing. All of them, until asked. */
     private var dateRange = DateRangeFilter.Range.ALL
-    private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
     private lateinit var tvPartySummary: TextView
@@ -165,7 +163,6 @@ class KhataActivity : AppCompatActivity() {
         // once and in the right language.
         askPhoneWhatItSpeaks()
 
-        tvNetBalance = findViewById(R.id.tvNetBalance)
         tvTotalGet = findViewById(R.id.tvTotalGet)
         tvTotalGive = findViewById(R.id.tvTotalGive)
         tvPartySummary = findViewById(R.id.tvPartySummary)
@@ -285,14 +282,16 @@ class KhataActivity : AppCompatActivity() {
         // looks like customers have gone missing rather than been narrowed.
         renderFilterState()
 
+        // The eye alone is the toggle now. The row it sits in also holds the
+        // backup line, which opens Backup; with the balance gone from this
+        // row, making the whole row the toggle would have handed most of its
+        // width to that other action.
         ivEye = findViewById(R.id.ivEye)
-
-        findViewById<View>(R.id.balanceRow).setOnClickListener {
+        ivEye.setOnClickListener {
             BalancePrivacy.toggle(this)
-            renderNetBalance()
+            renderPrivacy()
         }
-
-        ivEye = findViewById(R.id.ivEye)
+        renderPrivacy()
 
         setupBottomNav()
 
@@ -327,8 +326,9 @@ class KhataActivity : AppCompatActivity() {
 
                 // The two box totals: everything owed TO the shop (positive
                 // balances, money to collect) and everything the shop owes OUT
-                // (negative balances). These are the parts the net figure above
-                // nets together.
+                // (negative balances). Shown as two figures and never netted:
+                // a number owed to one man and a number owed by another do
+                // not cancel, and the header no longer pretends they do.
                 // Money.isPositive / isNegative / isZero rather than > 0,
                 // < 0 and == 0.0: a settled ledger can land a millionth of a
                 // paisa off zero, and the three plain comparisons would put
@@ -340,12 +340,6 @@ class KhataActivity : AppCompatActivity() {
                 renderTotals()
                 renderPartySummary(list)
                 render()
-            }
-        }
-        lifecycleScope.launch {
-            dao.observeNetBalance().collectLatest { net ->
-                netBalance = net
-                renderNetBalance()
             }
         }
 
@@ -1064,10 +1058,10 @@ class KhataActivity : AppCompatActivity() {
      */
     /**
      * Fill the two summary boxes. Called from BOTH the party-list stream (which
-     * has just computed the totals) and renderNetBalance (for the privacy
-     * toggle). The old code only filled them inside renderNetBalance, which runs
-     * off the net-balance stream BEFORE the party list has set the totals — so
-     * the boxes were stuck at zero even though the net figure was right.
+     * has just computed the totals) and renderPrivacy (for the eye toggle). An
+     * earlier version only filled them from the old net-balance stream, which
+     * ran BEFORE the party list had set the totals, and left the boxes at zero;
+     * that stream is gone with the net figure it existed for.
      */
     /**
      * One line under the search: total customers, and how many with an
@@ -1167,14 +1161,9 @@ class KhataActivity : AppCompatActivity() {
         tvTotalGive.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGive)
     }
 
-    private fun renderNetBalance() {
+    /** The two boxes, masked or not, and the eye that says which. */
+    private fun renderPrivacy() {
         val hidden = BalancePrivacy.isHidden(this)
-
-        tvNetBalance.text = if (hidden) {
-            BalancePrivacy.MASK
-        } else {
-            Format.money(netBalance)
-        }
 
         renderTotals()
 
