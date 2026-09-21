@@ -61,13 +61,13 @@ class ProductsActivity : AppCompatActivity() {
         // The stock register an inspection asks for. It opens from here, on the
         // screen whose figures it prints, rather than from a settings list
         // where it would be looked for only after the inspector had left.
-        findViewById<MaterialButton>(R.id.btnInspectorReport).setOnClickListener {
+        findViewById<View>(R.id.btnInspectorReport).setOnClickListener {
             startActivity(Intent(this, InspectorReportActivity::class.java))
         }
 
         // The other half of what an inspection asks for: what came in and went
         // out over a period, not just what is on the shelf today.
-        findViewById<MaterialButton>(R.id.btnRegisterReport).setOnClickListener {
+        findViewById<View>(R.id.btnRegisterReport).setOnClickListener {
             startActivity(Intent(this, RegisterReportActivity::class.java))
         }
 

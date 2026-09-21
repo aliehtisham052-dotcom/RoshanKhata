@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The disc behind a register card's icon.
+
+  The same device as bg_feature_icon on the Home grid, in this screen's own
+  colour rather than the green: Products & stock runs on section_bills, and a
+  green disc here would be borrowed from another part of the app. Low opacity
+  so it reads as a seat for the glyph and never as a second button.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#165C4A16" />
+</shape>
