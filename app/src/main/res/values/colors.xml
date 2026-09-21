@@ -212,7 +212,10 @@
     <color name="summary_settled_bg">#E6E3D9</color>
 
     <!-- Behind the launcher icon, matching the cream inside the logo's rim. -->
-    <color name="icon_background">#F7F3EA</color>
+    <!-- The logo tile's own face green, sampled from it, so a launcher mask
+         that reaches past the gold rim meets more of the tile rather than a
+         cream plate the logo looks stuck onto. -->
+    <color name="icon_background">#035023</color>
     <!--
       A picked row in a list. Pale enough that the name and the balance on top
       of it stay as readable as on any other row — a selection should show
