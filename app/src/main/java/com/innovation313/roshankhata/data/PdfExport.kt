@@ -429,21 +429,12 @@ object PdfExport {
             y += 22f
         }
 
-        // The maker's strip, at the very end — the mark below as well as
-        // above, and the way for the statement's reader to get the app.
-        //
-        // A statement travels: it is sent to a customer, forwarded, printed.
-        // Every competitor treats that journey as their advert, and the owner
-        // asked for the same. The strip stays small and sits under a rule so
-        // it reads as the paper's maker, not a second party to the money.
-        //
-        // The address is our own page, not a store link: the app is not on
-        // Play yet, so a store link today would be a dead end in a customer's
-        // hand. Our page works now (it serves the APK) and will point to the
-        // store the day the app is there — statements already sent will carry
-        // readers to the right place without being reissued.
+        // The app's own invitation, at the foot of the last page: its logo, a
+        // line, and a DOWNLOAD button that opens the Play listing. The address
+        // is added as a real link once the file is written (see applyLinks);
+        // drawing the button alone would give a picture that does nothing.
         run {
-            val bandH = 42f
+            val bandH = PdfBranding.BANNER_HEIGHT + 10f
             if (y + bandH > PAGE_H - MARGIN) {
                 doc.finishPage(page)
                 pageNo++
@@ -453,29 +444,8 @@ object PdfExport {
                 c = page.canvas
                 y = MARGIN
             }
-
-            y += 6f
-            c.drawLine(MARGIN, y, PAGE_W - MARGIN, y, muted)
-            y += 14f
-
-            val logoSize = 26f
-            brandLogo?.let {
-                c.drawBitmap(
-                    it,
-                    Rect(0, 0, it.width, it.height),
-                    RectF(MARGIN, y - 8f, MARGIN + logoSize, y - 8f + logoSize),
-                    Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-                )
-            }
-            val textLeft = MARGIN + logoSize + 8f
-
-            // The mark and the name, no address. The owner chose to carry no
-            // link until the app is cleared and on Play Store — the day it is,
-            // one line returns here pointing straight at the store listing.
-            muted.textSize = 10f
-            muted.isFakeBoldText = true
-            c.drawText("Roshan Khata — Har Hisaab Roshan", textLeft, y + 6f, muted)
-            muted.isFakeBoldText = false
+            y += 10f
+            PdfBranding.drawDownloadBanner(context, doc, c, MARGIN, y, PAGE_W - 2 * MARGIN)
         }
 
         doc.finishPage(page)
@@ -488,6 +458,7 @@ object PdfExport {
 
         return try {
             FileOutputStream(file).use { doc.writeTo(it) }
+            PdfBranding.applyLinks(doc, file)
             file
         } catch (e: Exception) {
             null

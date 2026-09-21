@@ -346,7 +346,8 @@ object BusinessReport {
         }
 
         // ---- Footer ----
-        if (y > PAGE_H - 60f) newPage()
+        if (y > PAGE_H - 104f) newPage()
+        PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
         y = PAGE_H - 34f
         canvas.drawText(
             "Roshan Khata \u00B7 Page $pageNo",
@@ -362,6 +363,7 @@ object BusinessReport {
 
         return try {
             FileOutputStream(file).use { doc.writeTo(it) }
+            PdfBranding.applyLinks(doc, file)
             doc.close()
             file
         } catch (e: Exception) {
