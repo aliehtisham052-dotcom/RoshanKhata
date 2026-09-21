@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The status-bar icon for every notification (downloads, reminders).
+
+  Android draws a notification's small icon from its alpha channel only, so
+  the full-colour launcher tile showed up as a plain white square. This is the
+  "R" of the logo as a solid white silhouette; setColor(brand_green) on the
+  notification tints it green in the shade.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M6,4 H13 A4.5,4.5 0 0 1 14.6,12.7 L18,20 H14.2 L11.2,13 H9.6 V20 H6 Z M9.6,7 V10.2 H12.8 A1.6,1.6 0 0 0 12.8,7 Z" />
+</vector>

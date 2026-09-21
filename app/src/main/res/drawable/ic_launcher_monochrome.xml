@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Monochrome launcher layer for Android 13+ "Themed icons".
+
+  The same "R" as the notification icon, scaled x2 and centred in the 108dp
+  adaptive canvas (48dp glyph, well inside the 66dp safe zone). The system
+  supplies the colour; only the shape is read.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="2"
+        android:scaleY="2"
+        android:translateX="30"
+        android:translateY="30">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M6,4 H13 A4.5,4.5 0 0 1 14.6,12.7 L18,20 H14.2 L11.2,13 H9.6 V20 H6 Z M9.6,7 V10.2 H12.8 A1.6,1.6 0 0 0 12.8,7 Z" />
+    </group>
+</vector>
