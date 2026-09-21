@@ -27,6 +27,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -245,6 +246,7 @@ class PartyDetailActivity : AppCompatActivity() {
         cameraTarget = savedInstanceState?.getString(STATE_CAMERA_TARGET)
             ?.let { runCatching { PhotoTarget.valueOf(it) }.getOrNull() }
         setContentView(R.layout.activity_party_detail)
+        onBackPressedDispatcher.addCallback(this, selectionBack)
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
@@ -935,6 +937,7 @@ class PartyDetailActivity : AppCompatActivity() {
 
     private fun enterSelectionMode() {
         selectionMode = true
+        selectionBack.isEnabled = true
         selectedEntryIds.clear()
         buttonBar.visibility = View.GONE
         selectionBar.visibility = View.VISIBLE
@@ -944,6 +947,7 @@ class PartyDetailActivity : AppCompatActivity() {
 
     private fun exitSelectionMode() {
         selectionMode = false
+        selectionBack.isEnabled = false
         selectedEntryIds.clear()
         buttonBar.visibility = View.VISIBLE
         selectionBar.visibility = View.GONE
@@ -1858,7 +1862,14 @@ class PartyDetailActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (selectionMode) exitSelectionMode() else super.onBackPressed()
+    /**
+     * Back handling that works on every Android version. On Android 16+ an app
+     * targeting API 36 never receives onBackPressed(), so an override there is
+     * silently skipped. This callback goes through the OnBackPressedDispatcher
+     * instead, and it is enabled only while there is something for Back to undo,
+     * so predictive back (13+) knows when Back will leave the screen.
+     */
+    private val selectionBack = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = exitSelectionMode()
     }
 }

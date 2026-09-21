@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
@@ -155,6 +156,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_invoice_editor)
+        onBackPressedDispatcher.addCallback(this, stepBack)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
         setSupportActionBar(findViewById<Toolbar>(R.id.editorToolbar))
@@ -298,14 +300,22 @@ class InvoiceEditorActivity : AppCompatActivity() {
         if (step == 3) renderAllPreviews()
     }
 
-    override fun onBackPressed() {
-        if (step > 1) goBack() else super.onBackPressed()
+    /**
+     * Back handling that works on every Android version. On Android 16+ an app
+     * targeting API 36 never receives onBackPressed(), so an override there is
+     * silently skipped. This callback goes through the OnBackPressedDispatcher
+     * instead, and it is enabled only while there is an earlier step to return to,
+     * so predictive back (13+) knows when Back will leave the screen.
+     */
+    private val stepBack = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = goBack()
     }
 
     // ---------- Steps ----------
 
     private fun showStep(which: Int) {
         step = which
+        stepBack.isEnabled = which > 1
         stepCustomer.visibility = if (which == 1) View.VISIBLE else View.GONE
         stepItems.visibility = if (which == 2) View.VISIBLE else View.GONE
         stepDesign.visibility = if (which == 3) View.VISIBLE else View.GONE
