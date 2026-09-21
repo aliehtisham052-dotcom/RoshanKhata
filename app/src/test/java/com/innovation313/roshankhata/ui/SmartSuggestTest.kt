@@ -174,4 +174,26 @@ class SmartSuggestTest {
         ).asSuggestions()
         assertEquals(null, withNeither.single().subtitle)
     }
+
+    // ---------- How many rows a form asks for ----------
+
+    @Test
+    fun `a form can ask for fewer rows and gets the best ones`() {
+        val all = SmartSuggest.rank(shop, "s")
+        assertTrue("the shelf must have more than three s-names for this to mean anything", all.size > 3)
+        val three = SmartSuggest.rank(shop, "s", maxRows = 3)
+        assertEquals(3, three.size)
+        // The best three, in the same order: asking for fewer never reshuffles.
+        assertEquals(all.take(3), three)
+    }
+
+    @Test
+    fun `an empty box also respects the limit`() {
+        assertEquals(3, SmartSuggest.rank(shop, "", maxRows = 3).size)
+    }
+
+    @Test
+    fun `the default is unchanged`() {
+        assertEquals(8, SmartSuggest.rank(shop, "").size)
+    }
 }

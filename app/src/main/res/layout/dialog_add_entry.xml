@@ -87,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="8dp">
+            android:paddingBottom="16dp">
 
             <!-- The header's green carried under the top of the card, so the
                  card sits on the header rather than below it. -->
@@ -428,20 +428,22 @@
         <EditText
             android:id="@+id/etNote"
             android:layout_width="match_parent"
-            android:layout_height="96dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="top|start"
             android:hint="@string/note_optional"
             android:importantForAutofill="no"
             android:inputType="textMultiLine|textCapSentences"
-            android:minHeight="56dp"
+            android:maxLines="4"
+            android:minHeight="48dp"
+            android:minLines="1"
             android:scrollbars="vertical" />
 
         <!-- Goods, if any moved. Optional — a cash-only entry skips this. -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
             android:text="@string/goods_section"
             android:textColor="@color/brand_green"
             android:textSize="13sp"
@@ -537,7 +539,7 @@
             android:id="@+id/cbQarzeHasna"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
             android:text="@string/qarze_hasna"
             android:textSize="14sp" />
 
@@ -556,7 +558,7 @@
             android:id="@+id/tvRecoveryLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
             android:text="@string/recovery_label"
             android:textColor="@color/brand_green"
             android:textSize="13sp"
