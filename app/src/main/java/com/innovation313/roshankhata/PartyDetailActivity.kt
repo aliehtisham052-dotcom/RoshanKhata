@@ -455,13 +455,9 @@ class PartyDetailActivity : AppCompatActivity() {
         }
 
         // Suppress the system keyboard — the on-screen pad is the only input.
+        // The field's click and focus handling is set once the dialog is
+        // showing, next to the step switch it needs; see openDetails().
         etAmount.showSoftInputOnFocus = false
-        etAmount.setOnClickListener {
-            etAmount.requestFocus()
-            (getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
-                as android.view.inputmethod.InputMethodManager)
-                .hideSoftInputFromWindow(etAmount.windowToken, 0)
-        }
 
         // Fresh dialog, fresh attachment. Anything picked for a dialog that was
         // then cancelled is a file nobody will ever look at.
@@ -857,7 +853,6 @@ class PartyDetailActivity : AppCompatActivity() {
                 // that need them.
                 val stepOne = view.findViewById<View>(R.id.stepOne)
                 val stepTwo = view.findViewById<View>(R.id.stepTwo)
-                val summary = view.findViewById<TextView>(R.id.tvEntrySummary)
                 val more = view.findViewById<MaterialButton>(R.id.btnMoreDetails)
                 val cancel = dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
 
@@ -872,21 +867,14 @@ class PartyDetailActivity : AppCompatActivity() {
                     cancel.setText(cancelLabel)
                 }
 
-                // Opening the details carries the amount up with it, so the
-                // figure just typed is still readable while the optional
-                // fields are filled in. Blank amount, blank strip: an empty
-                // "Rs 0" would be a statement about the entry that is not
-                // true yet.
+                // The amount sits above both steps now, so it stays on screen
+                // with the details open and nothing has to stand in for it.
                 fun openDetails() {
-                    val typed = Calc.eval(etAmount.text.toString())
-                    summary.text = if (typed == null) "" else Format.money(typed)
-                    summary.visibility = if (typed == null) View.GONE else View.VISIBLE
                     more.setText(R.string.back_to_amount)
                     show(stepTwo, stepOne, R.anim.slide_in_right, R.string.back)
                 }
 
                 fun closeDetails() {
-                    summary.visibility = View.GONE
                     more.setText(R.string.more_details)
                     show(stepOne, stepTwo, R.anim.slide_in_left, R.string.cancel)
                 }
@@ -896,6 +884,26 @@ class PartyDetailActivity : AppCompatActivity() {
                 // longer the only way.
                 more.setOnClickListener {
                     if (stepTwo.visibility == View.VISIBLE) closeDetails() else openDetails()
+                }
+
+                // With the details open the keypad is hidden, and the system
+                // keyboard is suppressed on this field — so a tap on the
+                // amount would otherwise do nothing at all. Wanting to change
+                // the figure means wanting the keys, so bring them back.
+                //
+                // Focus as well as click: coming from the note field, the
+                // first tap on the amount only moves focus and never reaches
+                // the click listener, and that first tap is the one that
+                // should work.
+                etAmount.setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus && stepTwo.visibility == View.VISIBLE) closeDetails()
+                }
+                etAmount.setOnClickListener {
+                    if (stepTwo.visibility == View.VISIBLE) closeDetails()
+                    etAmount.requestFocus()
+                    (getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                        as android.view.inputmethod.InputMethodManager)
+                        .hideSoftInputFromWindow(etAmount.windowToken, 0)
                 }
 
                 cancel.setOnClickListener {
