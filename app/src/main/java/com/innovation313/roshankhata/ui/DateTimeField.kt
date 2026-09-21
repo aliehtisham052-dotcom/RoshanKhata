@@ -24,6 +24,9 @@ object DateTimeField {
 
     private val format = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
 
+    /** Chip-sized label ("21 Sep") for tight rows; the time is still picked. */
+    private val compactFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+
     /**
      * Wire [button] to pick a date and then a time, starting from [initial].
      *
@@ -34,12 +37,14 @@ object DateTimeField {
         activity: Activity,
         button: Button,
         initial: Long,
+        compact: Boolean = false,
         onPicked: (Long) -> Unit
     ) {
         var chosen = initial
 
         fun render() {
-            button.text = activity.getString(R.string.entry_date, format.format(Date(chosen)))
+            button.text = if (compact) compactFormat.format(Date(chosen))
+            else activity.getString(R.string.entry_date, format.format(Date(chosen)))
         }
         render()
 

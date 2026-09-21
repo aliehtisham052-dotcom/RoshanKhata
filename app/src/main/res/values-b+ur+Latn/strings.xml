@@ -1124,4 +1124,13 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="quick_amount_half">50%</string>
     <string name="quick_amount_three_quarter">75%</string>
     <string name="quick_amount_full">Poora</string>
+
+    <!-- Entry screen (dialog_add_entry) -->
+    <string name="entry_header_gave">%1$s ko diye · %2$s</string>
+    <string name="entry_header_got">%1$s se liye · %2$s</string>
+    <string name="entry_details_chip">+ Note / saman</string>
+    <string name="entry_preview_title">%1$s ka hisaab</string>
+    <string name="entry_preview_line">Abhi %1$s  →  is entry ke baad %2$s</string>
+    <string name="entry_bill_chip">Bill tasveer</string>
+    <string name="entry_bill_chip_done">✓ Bill</string>
 </resources>

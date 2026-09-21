@@ -127,7 +127,7 @@ class PartyDetailActivity : AppCompatActivity() {
             // Replacing an earlier pick: the old file is nothing but bytes now.
             BillPhoto.delete(pendingBillPhoto)
             pendingBillPhoto = path
-            billButton?.setText(R.string.bill_photo_attached)
+            billButton?.setText(R.string.entry_bill_chip_done)
         }
     }
 
@@ -467,7 +467,7 @@ class PartyDetailActivity : AppCompatActivity() {
         pendingBillPhoto = null
 
         billButton = view.findViewById(R.id.btnAddBill)
-        billButton?.setText(R.string.add_bill_photo)
+        billButton?.setText(R.string.entry_bill_chip)
         billButton?.setOnClickListener {
             // A bill is more often photographed at the counter than found in
             // the gallery afterwards, so the camera is offered first here too.
@@ -495,13 +495,17 @@ class PartyDetailActivity : AppCompatActivity() {
         DateTimeField.attach(
             activity = this,
             button = view.findViewById(R.id.btnEntryDate),
-            initial = chosenTime
+            initial = chosenTime,
+            compact = true
         ) { chosenTime = it }
 
         // The running total, shown as the sum is typed rather than waiting on
         // the equals key — the Calculator screen answers as you go, and this
         // pad looked broken beside it.
         val tvResult = view.findViewById<android.widget.TextView>(R.id.tvAmountResult)
+        // Set once the dialog exists (header, SAVE, preview); called on every
+        // change to the amount alongside showResult().
+        var onAmountChanged: () -> Unit = {}
         fun showResult() {
             val text = etAmount.text.toString()
             // Nothing to total until there is arithmetic in the box: a plain
@@ -517,7 +521,10 @@ class PartyDetailActivity : AppCompatActivity() {
         }
 
         etAmount.addTextChangedListener(object : android.text.TextWatcher {
-            override fun afterTextChanged(s: android.text.Editable?) = showResult()
+            override fun afterTextChanged(s: android.text.Editable?) {
+                showResult()
+                onAmountChanged()
+            }
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, cc: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, cc: Int) {}
         })
@@ -765,100 +772,146 @@ class PartyDetailActivity : AppCompatActivity() {
             else -> null
         }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(if (isGiven) R.string.i_gave else R.string.i_got)
-            .setView(view)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.evalPad(etAmount.text.toString())
-                if (amount == null || amount <= 0.0) {
-                    Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                val note = etNote.text.toString().trim().ifEmpty { null }
-
-                val recovery = if (isGiven && rbDoubtful.isChecked) {
-                    Recovery.DOUBTFUL
-                } else {
-                    Recovery.CERTAIN
-                }
-
-                val itemName = etItemName.text.toString().trim().ifEmpty { null }
-                val quantity = etQuantity.text.toString().trim().toDoubleOrNull()
-                val unit = etUnit.text.toString().trim().ifEmpty { null }
-
-                val entry = LedgerEntry(
-                    partyId = partyId,
-                    amount = amount,
-                    isGiven = isGiven,
-                    note = note,
-                    entryNumber = "",
-                    isQarzeHasna = cbQarzeHasna.isChecked,
-                    recovery = recovery,
-                    itemName = itemName,
-                    quantity = quantity,
-                    unit = unit,
-                    timestamp = chosenTime,
-                    billPhotoPath = pendingBillPhoto,
-                    // Both null unless a batch was actually picked above.
-                    // Tagging the product here, at the moment the owner
-                    // confirms it, means this entry never needs the separate
-                    // "tie existing entries" backfill to count towards stock.
-                    productId = matchedProductId,
-                    billItemId = selectedBatch?.id,
-                    // Null unless a chip was actually tapped, and null on
-                    // every "I Gave" entry, where the section never appeared.
-                    paymentMethod = if (isGiven) null else chosenPaymentMethod()
-                )
-
-                // Warn BEFORE writing, not after — a warning that arrives once
-                // the entry is already in the ledger is just an accusation.
-                checkTwinThenSave(entry)
+        // Validates and saves. False (and the screen stays open) when the
+        // amount is not a positive figure; the old dialog button closed the
+        // form even then, throwing away whatever had been typed.
+        fun trySave(): Boolean {
+            val amount = Calc.evalPad(etAmount.text.toString())
+            if (amount == null || amount <= 0.0) {
+                Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
+                return false
             }
-            .show()
-            .also { dialog ->
+            val note = etNote.text.toString().trim().ifEmpty { null }
+
+            val recovery = if (isGiven && rbDoubtful.isChecked) {
+                Recovery.DOUBTFUL
+            } else {
+                Recovery.CERTAIN
+            }
+
+            val itemName = etItemName.text.toString().trim().ifEmpty { null }
+            val quantity = etQuantity.text.toString().trim().toDoubleOrNull()
+            val unit = etUnit.text.toString().trim().ifEmpty { null }
+
+            val entry = LedgerEntry(
+                partyId = partyId,
+                amount = amount,
+                isGiven = isGiven,
+                note = note,
+                entryNumber = "",
+                isQarzeHasna = cbQarzeHasna.isChecked,
+                recovery = recovery,
+                itemName = itemName,
+                quantity = quantity,
+                unit = unit,
+                timestamp = chosenTime,
+                billPhotoPath = pendingBillPhoto,
+                // Both null unless a batch was actually picked above.
+                // Tagging the product here, at the moment the owner
+                // confirms it, means this entry never needs the separate
+                // "tie existing entries" backfill to count towards stock.
+                productId = matchedProductId,
+                billItemId = selectedBatch?.id,
+                // Null unless a chip was actually tapped, and null on
+                // every "I Gave" entry, where the section never appeared.
+                paymentMethod = if (isGiven) null else chosenPaymentMethod()
+            )
+
+            // Warn BEFORE writing, not after — a warning that arrives once
+            // the entry is already in the ledger is just an accusation.
+            checkTwinThenSave(entry)
+            return true
+        }
+
+        val dialog = MaterialAlertDialogBuilder(this).setView(view).create()
+
+        // ---- Header, SAVE, preview: who, which way, how much, live ----
+        val color = { id: Int -> ContextCompat.getColor(this, id) }
+        view.findViewById<View>(R.id.entryHeader).visibility = View.VISIBLE
+        view.findViewById<View>(R.id.entryHeaderBand).visibility = View.VISIBLE
+        val tvDirection = view.findViewById<TextView>(R.id.tvEntryDirection)
+        val tvTitle = view.findViewById<TextView>(R.id.tvEntryTitle)
+        val btnSave = view.findViewById<MaterialButton>(R.id.btnEntrySave)
+        btnSave.visibility = View.VISIBLE
+        tvDirection.setText(if (isGiven) R.string.i_gave else R.string.i_got)
+        // I Gave: red pill, white text. I Got: white pill, green text, so it
+        // still reads on the green header.
+        tvDirection.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            color(if (isGiven) R.color.red_gave else R.color.white)
+        )
+        tvDirection.setTextColor(color(if (isGiven) R.color.white else R.color.brand_green))
+        etAmount.setTextColor(color(if (isGiven) R.color.red_gave else R.color.brand_green))
+
+        val preview = view.findViewById<View>(R.id.entryBalancePreview)
+        val tvPreviewLine = view.findViewById<TextView>(R.id.tvPreviewLine)
+        if (isGiven) {
+            preview.visibility = View.VISIBLE
+            view.findViewById<TextView>(R.id.tvPreviewTitle).text =
+                getString(R.string.entry_preview_title, partyName)
+        }
+
+        onAmountChanged = {
+            val value = Calc.evalPad(etAmount.text.toString())
+            val valid = value != null && value > 0.0
+            val shown = if (valid) value!! else 0.0
+            tvTitle.text = getString(
+                if (isGiven) R.string.entry_header_gave else R.string.entry_header_got,
+                partyName, Format.money(shown)
+            )
+            btnSave.isEnabled = valid
+            btnSave.alpha = if (valid) 1f else 0.45f
+            if (isGiven) {
+                // Positive balance = the customer owes the shop; money given
+                // on udhar adds to it.
+                tvPreviewLine.text = getString(
+                    R.string.entry_preview_line,
+                    Format.customerBalance(currentBalance),
+                    Format.customerBalance(currentBalance + shown)
+                )
+            }
+        }
+        onAmountChanged()
+
+        btnSave.setOnClickListener { if (trySave()) dialog.dismiss() }
+
+        dialog.show()
+        dialog.also { dialog ->
                 // Full width and height, not a card floating in the middle.
-                //
-                // Writing an entry is the one thing this app is for; it
-                // deserves the screen rather than a box with the ledger
-                // greyed out around it. Set after show() because that is when
-                // the window exists.
+                // Set after show() because that is when the window exists.
                 dialog.window?.apply {
                     setBackgroundDrawable(
-                        android.graphics.drawable.ColorDrawable(
-                            androidx.core.content.ContextCompat.getColor(
-                                this@PartyDetailActivity, R.color.white
-                            )
-                        )
+                        android.graphics.drawable.ColorDrawable(color(R.color.page_bg))
                     )
                     setLayout(
                         android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                         android.view.ViewGroup.LayoutParams.MATCH_PARENT
                     )
+                    // The note field brings up the phone keyboard; SAVE is
+                    // pinned at the bottom and must ride above it.
+                    setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                 }
-
-                // And pass that height down to the form.
-                //
-                // A full-screen window is not a full-screen form. The dialog
-                // stacks title, content and buttons in panels that each wrap
-                // what they hold, so this view was measured against what it
-                // asked for and never against the window — which is why the
-                // calculator's weight bought it nothing and a third of the
-                // screen stayed white below the buttons.
                 view.fillDialogHeight()
 
-                // The second half opens on request and is never in the way.
-                //
-                // Save is live from the first page: most entries are a figure
-                // and a date, and making someone page past goods and recovery
-                // to reach it would tax every entry for the sake of the few
-                // that need them.
                 val stepOne = view.findViewById<View>(R.id.stepOne)
                 val stepTwo = view.findViewById<View>(R.id.stepTwo)
+                val keypad = view.findViewById<View>(R.id.entryKeypad)
                 val more = view.findViewById<MaterialButton>(R.id.btnMoreDetails)
-                val cancel = dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
 
-                fun show(next: View, gone: View, anim: Int, cancelLabel: Int) {
+                // The chip shows whether details are open (green outline and
+                // fill) and whether any were written (tick instead of plus).
+                fun renderDetailsChip(open: Boolean) {
+                    val filled = etNote.text.isNotBlank() || etItemName.text.isNotBlank()
+                    val base = getString(R.string.entry_details_chip)
+                    more.text = if (filled) "\u2713" + base.removePrefix("+") else base
+                    more.strokeColor = android.content.res.ColorStateList.valueOf(
+                        color(if (open || filled) R.color.brand_green else R.color.page_line)
+                    )
+                    more.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                        color(if (open) R.color.brand_green_soft else R.color.navy_surface)
+                    )
+                }
+
+                fun show(next: View, gone: View, anim: Int) {
                     gone.visibility = View.GONE
                     next.visibility = View.VISIBLE
                     next.startAnimation(
@@ -866,37 +919,44 @@ class PartyDetailActivity : AppCompatActivity() {
                             this@PartyDetailActivity, anim
                         )
                     )
-                    cancel.setText(cancelLabel)
                 }
 
-                // The amount sits above both steps now, so it stays on screen
-                // with the details open and nothing has to stand in for it.
+                // Back closes the details before it closes the form. A
+                // callback, not onBackPressed/KEYCODE_BACK, so it also works
+                // on Android 16+ (API 36 target).
+                val detailsBack = object : OnBackPressedCallback(false) {
+                    override fun handleOnBackPressed() {
+                        more.performClick()
+                    }
+                }
+                dialog.onBackPressedDispatcher.addCallback(detailsBack)
+
                 fun openDetails() {
-                    more.setText(R.string.back_to_amount)
-                    show(stepTwo, stepOne, R.anim.slide_in_right, R.string.back)
+                    show(stepTwo, stepOne, R.anim.slide_in_right)
+                    keypad.visibility = View.GONE
+                    detailsBack.isEnabled = true
+                    renderDetailsChip(open = true)
                 }
 
                 fun closeDetails() {
-                    more.setText(R.string.more_details)
-                    show(stepOne, stepTwo, R.anim.slide_in_left, R.string.cancel)
+                    show(stepOne, stepTwo, R.anim.slide_in_left)
+                    keypad.visibility = View.VISIBLE
+                    detailsBack.isEnabled = false
+                    renderDetailsChip(open = false)
+                    (getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                        as android.view.inputmethod.InputMethodManager)
+                        .hideSoftInputFromWindow(etAmount.windowToken, 0)
                 }
 
-                // The same row both ways. Cancel still goes back from the
-                // details for anyone who learnt it that way, but it is no
-                // longer the only way.
+                // The same chip both ways.
                 more.setOnClickListener {
                     if (stepTwo.visibility == View.VISIBLE) closeDetails() else openDetails()
                 }
 
-                // With the details open the keypad is hidden, and the system
-                // keyboard is suppressed on this field — so a tap on the
-                // amount would otherwise do nothing at all. Wanting to change
-                // the figure means wanting the keys, so bring them back.
-                //
-                // Focus as well as click: coming from the note field, the
-                // first tap on the amount only moves focus and never reaches
-                // the click listener, and that first tap is the one that
-                // should work.
+                // With the details open the keypad is hidden and the system
+                // keyboard is suppressed on this field, so a tap on the amount
+                // would otherwise do nothing. Focus as well as click: coming
+                // from the note field, the first tap only moves focus.
                 etAmount.setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus && stepTwo.visibility == View.VISIBLE) closeDetails()
                 }
@@ -908,7 +968,8 @@ class PartyDetailActivity : AppCompatActivity() {
                         .hideSoftInputFromWindow(etAmount.windowToken, 0)
                 }
 
-                cancel.setOnClickListener {
+                // Header arrow: same as the system Back.
+                view.findViewById<View>(R.id.btnEntryBack).setOnClickListener {
                     if (stepTwo.visibility == View.VISIBLE) closeDetails() else dialog.dismiss()
                 }
             }
