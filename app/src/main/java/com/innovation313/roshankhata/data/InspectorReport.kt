@@ -236,6 +236,7 @@ object InspectorReport {
 
         return try {
             FileOutputStream(file).use { doc.writeTo(it) }
+            PdfBranding.applyLinks(doc, file)
             doc.close()
             file
         } catch (e: Exception) {
@@ -892,7 +893,10 @@ object InspectorReport {
         //
         // A register that gets handed over gets signed. Leaving the line off
         // means it gets written on the back of the page in pen anyway.
-        if (y > PAGE_H - 120f) newPage() else y += 24f
+        // 160, not 120: room for the download banner between the signatures
+        // and the footer. Both layout passes see the same numbers, so the
+        // page count still holds.
+        if (y > PAGE_H - 160f) newPage() else y += 24f
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
         canvas.drawLine(PAGE_W - MARGIN - 180f, y + 24f, PAGE_W - MARGIN, y + 24f, rule)
         canvas.drawText("Dealer's signature", MARGIN, y + 38f, muted)
@@ -902,6 +906,9 @@ object InspectorReport {
             y + 38f,
             muted
         )
+
+        // ---- Download banner, just above the last page's footer ----
+        PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
 
         // ---- Footer, for the last page; every earlier one got it on exit ----
         footer()

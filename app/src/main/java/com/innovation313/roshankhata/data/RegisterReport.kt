@@ -317,7 +317,9 @@ object RegisterReport {
         }
 
         // ---- Signature strip ----
-        if (y > PAGE_H - 120f) newPage() else y += 24f
+        // 160, not 120: the download banner sits between the signatures and
+        // the footer, and needs the room.
+        if (y > PAGE_H - 160f) newPage() else y += 24f
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
         canvas.drawLine(PAGE_W - MARGIN - 180f, y + 24f, PAGE_W - MARGIN, y + 24f, rule)
         canvas.drawText("Dealer's signature", MARGIN, y + 38f, muted)
@@ -327,6 +329,9 @@ object RegisterReport {
             y + 38f,
             muted
         )
+
+        // ---- Download banner, just above the footer ----
+        PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
 
         // ---- Footer ----
         y = PAGE_H - 34f
@@ -350,6 +355,7 @@ object RegisterReport {
 
         return try {
             FileOutputStream(file).use { doc.writeTo(it) }
+            PdfBranding.applyLinks(doc, file)
             doc.close()
             file
         } catch (e: Exception) {

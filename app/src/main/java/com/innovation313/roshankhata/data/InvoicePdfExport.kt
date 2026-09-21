@@ -996,7 +996,8 @@ object InvoicePdfExport {
         }
         val footerLineCount = listOfNotNull(invoice.note, BusinessProfile.termsAndConditions(context)).size
         if (footerLineCount > 0) estimatedH += 32f + footerLineCount * 24f
-        estimatedH += 20f // the added maker's-mark line at the very end
+        // The download banner at the very end: 10 above it, its own height, 6 below.
+        estimatedH += 16f + PdfBranding.COMPACT_BANNER_HEIGHT
         val pageH = estimatedH.toInt().coerceAtLeast(400)
 
         val doc = PdfDocument()
@@ -1176,8 +1177,8 @@ object InvoicePdfExport {
         c.drawText("Shukriya!", cx, y, shopSub)
         y += 11f
         c.drawText("Dobara tashreef layein", cx, y, shopSub)
-        y += 16f
-        c.drawText("Roshan Khata — Har Hisaab Roshan", cx, y, Paint(shopSub).apply { textSize = 6.5f })
+        y += 10f
+        PdfBranding.drawDownloadBannerCompact(context, doc, c, pad, y, pageW - 2 * pad)
 
         doc.finishPage(page)
         return writeAndClose(doc, outputFile(context, invoice))
@@ -1232,7 +1233,7 @@ object InvoicePdfExport {
         var page = pageIn
         var c = canvasIn
         var y = yIn
-        val bandH = 42f
+        val bandH = PdfBranding.BANNER_HEIGHT + 10f
         if (y + bandH > PAGE_H_A4 - MARGIN) {
             doc.finishPage(page)
             page = doc.startPage(
@@ -1242,22 +1243,10 @@ object InvoicePdfExport {
             y = MARGIN
         }
 
-        val muted = Paint().apply { color = 0xFF7A7A7A.toInt(); textSize = 10f; isAntiAlias = true }
-        y += 6f
-        c.drawLine(MARGIN, y, PAGE_W_A4 - MARGIN, y, muted)
-        y += 14f
-
-        val logoSize = 26f
-        PdfBranding.logo(context)?.let {
-            c.drawBitmap(
-                it,
-                Rect(0, 0, it.width, it.height),
-                RectF(MARGIN, y - 8f, MARGIN + logoSize, y - 8f + logoSize),
-                Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-            )
-        }
-        muted.isFakeBoldText = true
-        c.drawText("Roshan Khata — Har Hisaab Roshan", MARGIN + logoSize + 8f, y + 6f, muted)
+        // The app's invitation: logo, a line, and a DOWNLOAD button that
+        // opens the Play listing (made tappable in writeAndClose).
+        y += 10f
+        PdfBranding.drawDownloadBanner(context, doc, c, MARGIN, y, PAGE_W_A4 - 2 * MARGIN)
 
         doc.finishPage(page)
         return page to c
@@ -1266,6 +1255,7 @@ object InvoicePdfExport {
     private fun writeAndClose(doc: PdfDocument, file: File): File? {
         return try {
             FileOutputStream(file).use { doc.writeTo(it) }
+            PdfBranding.applyLinks(doc, file)
             file
         } catch (e: Exception) {
             null

@@ -4,9 +4,13 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Typeface
+import android.graphics.pdf.PdfDocument
+import java.io.File
 
 /**
  * The logo on every printed page.
@@ -163,5 +167,147 @@ object PdfBranding {
         )
 
         canvas.restore()
+    }
+
+    // ------------------------------------------------------------------
+    // The download banner
+    // ------------------------------------------------------------------
+
+    /** Height of [drawDownloadBanner]; callers reserve this much room above their footer. */
+    const val BANNER_HEIGHT = 44f
+
+    private const val BAND = 0xFFEAF3EE.toInt()
+    private const val BAND_EDGE = 0xFFCFE0D5.toInt()
+    private const val BRAND_GREEN = 0xFF094C2E.toInt()
+    private const val INK = 0xFF1A1A18.toInt()
+    private const val SOFT = 0xFF4B5B52.toInt()
+
+    /** The app's Play listing. One place, so every document points at the same address. */
+    fun storeUrl(context: Context): String =
+        "https://play.google.com/store/apps/details?id=${context.packageName}"
+
+    // Links wait here, keyed by the document they belong to, until the file is
+    // written: a link can only be added to a PDF that exists. Weak, so a
+    // document that is thrown away (the Inspector report lays itself out once
+    // just to count pages) takes its entry with it.
+    private val pending: MutableMap<PdfDocument, MutableList<PdfLinks.Link>> =
+        java.util.Collections.synchronizedMap(java.util.WeakHashMap())
+
+    private fun register(doc: PdfDocument, band: RectF, context: Context) {
+        // Pages finished so far == the index of the page being drawn.
+        val link = PdfLinks.Link(doc.pages.size, band.left, band.top, band.right, band.bottom, storeUrl(context))
+        pending.getOrPut(doc) { mutableListOf() }.add(link)
+    }
+
+    /**
+     * Once the file is written, make every banner drawn on [doc] tappable.
+     * Returns false if there was nothing to add or the file's shape was not
+     * one this can safely touch; the document is then simply a correct PDF
+     * whose button does not open anything.
+     */
+    fun applyLinks(doc: PdfDocument, file: File): Boolean {
+        val links = pending.remove(doc) ?: return false
+        return PdfLinks.addLinks(file, links)
+    }
+
+    private fun paint(color: Int, size: Float, bold: Boolean = false) = Paint().apply {
+        this.color = color
+        textSize = size
+        isAntiAlias = true
+        if (bold) typeface = Typeface.DEFAULT_BOLD
+    }
+
+    /**
+     * "Apna khata ab mobile par / Roshan Khata download karein" and a green
+     * DOWNLOAD button, in the brand's own colours with its own logo. The whole
+     * band is the tap target, not just the button, so a thumb that lands near
+     * it still works.
+     *
+     * Drawn at [top] across [width] and returns its bottom edge.
+     */
+    fun drawDownloadBanner(
+        context: Context,
+        doc: PdfDocument,
+        canvas: Canvas,
+        left: Float,
+        top: Float,
+        width: Float
+    ): Float {
+        val right = left + width
+        val bottom = top + BANNER_HEIGHT
+        val band = RectF(left, top, right, bottom)
+
+        canvas.drawRoundRect(band, 10f, 10f, Paint().apply { color = BAND; isAntiAlias = true })
+        canvas.drawRoundRect(
+            band, 10f, 10f,
+            Paint().apply {
+                color = BAND_EDGE; style = Paint.Style.STROKE; strokeWidth = 0.8f; isAntiAlias = true
+            }
+        )
+
+        var textLeft = left + 12f
+        logo(context)?.let { mark ->
+            val size = 30f
+            canvas.drawBitmap(
+                mark,
+                Rect(0, 0, mark.width, mark.height),
+                RectF(left + 8f, top + 7f, left + 8f + size, top + 7f + size),
+                Paint().apply { isAntiAlias = true; isFilterBitmap = true }
+            )
+            textLeft = left + 8f + size + 8f
+        }
+
+        canvas.drawText("Apna khata ab mobile par", textLeft, top + 19f, paint(INK, 10.5f, bold = true))
+        canvas.drawText("Roshan Khata download karein", textLeft, top + 33f, paint(SOFT, 9f))
+
+        val pillW = 92f
+        val pillH = 20f
+        val pill = RectF(right - 10f - pillW, top + (BANNER_HEIGHT - pillH) / 2f, right - 10f, top + (BANNER_HEIGHT + pillH) / 2f)
+        canvas.drawRoundRect(pill, 10f, 10f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
+        val label = paint(Color.WHITE, 8.5f, bold = true).apply { letterSpacing = 0.08f; textAlign = Paint.Align.CENTER }
+        canvas.drawText("DOWNLOAD", pill.centerX(), pill.centerY() + 3f, label)
+
+        register(doc, band, context)
+        return bottom
+    }
+
+    /** Height of [drawDownloadBannerCompact]. */
+    const val COMPACT_BANNER_HEIGHT = 40f
+
+    /**
+     * The same invitation for the narrow thermal receipt: one centred line
+     * over a centred button, no logo (there is no room beside it).
+     */
+    fun drawDownloadBannerCompact(
+        context: Context,
+        doc: PdfDocument,
+        canvas: Canvas,
+        left: Float,
+        top: Float,
+        width: Float
+    ): Float {
+        val right = left + width
+        val bottom = top + COMPACT_BANNER_HEIGHT
+        val band = RectF(left, top, right, bottom)
+        canvas.drawRoundRect(band, 8f, 8f, Paint().apply { color = BAND; isAntiAlias = true })
+        canvas.drawRoundRect(
+            band, 8f, 8f,
+            Paint().apply {
+                color = BAND_EDGE; style = Paint.Style.STROKE; strokeWidth = 0.8f; isAntiAlias = true
+            }
+        )
+        val cx = (left + right) / 2f
+        canvas.drawText(
+            "Roshan Khata download karein", cx, top + 14f,
+            paint(INK, 7.5f, bold = true).apply { textAlign = Paint.Align.CENTER }
+        )
+        val pill = RectF(cx - 42f, top + 20f, cx + 42f, top + 35f)
+        canvas.drawRoundRect(pill, 7.5f, 7.5f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
+        canvas.drawText(
+            "DOWNLOAD", cx, pill.centerY() + 2.6f,
+            paint(Color.WHITE, 7f, bold = true).apply { letterSpacing = 0.08f; textAlign = Paint.Align.CENTER }
+        )
+        register(doc, band, context)
+        return bottom
     }
 }

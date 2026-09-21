@@ -232,7 +232,10 @@ object LedgerReport {
         // owner's direction: the head of the page belongs to HIS shop's
         // name, and the app signs at the foot, small, beside its own line —
         // the way a printer marks the bottom of a form, not the letterhead.
-        if (y > PAGE_H - 60f) newPage()
+        // The banner goes just above the footer line; the last of the content
+        // has to end above it, or the banner starts a page of its own.
+        if (y > PAGE_H - 104f) newPage()
+        PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
         y = PAGE_H - 34f
         var footerX = MARGIN
         brandLogo?.let { mark ->
@@ -254,6 +257,7 @@ object LedgerReport {
 
         return try {
             FileOutputStream(file).use { doc.writeTo(it) }
+            PdfBranding.applyLinks(doc, file)
             doc.close()
             file
         } catch (e: Exception) {
