@@ -2,19 +2,20 @@ package com.innovation313.roshankhata
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.util.TypedValue
-import android.widget.Button
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
-import androidx.core.widget.TextViewCompat
-import com.google.android.material.button.MaterialButton
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 /**
  * The first screen a new user sees: pick your language, in your own script.
+ * Drawn as artwork with real touch areas on the six buttons it shows; see
+ * activity_language.xml for how they are kept on those buttons.
  *
  * The choice is applied through AppCompat's per-app locales (persisted by the
  * autoStoreLocales holder in the manifest, and by the OS itself on Android 13+),
@@ -39,10 +40,23 @@ class LanguageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_language)
 
-        // Edge-to-edge, the mechanism proven on the Home screen.
-        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+        // Edge to edge with NO padding, unlike the other screens: the artwork
+        // is the whole screen and runs under both bars. Dark status icons for
+        // the cream wall at the top; light navigation icons for the deep-green
+        // footer at the bottom, with the system's grey scrim off so the footer
+        // is not cut by a bar.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = false
+        }
 
-        // Language tag per button. English clears to the default (base values/).
+        // Language tag per touch area. English clears to the default (base
+        // values/). The areas sit over the buttons drawn in the artwork, so
+        // they are plain Views: there is no button of their own to style.
         val choices = mapOf(
             R.id.langEnglish to "en",
             R.id.langRomanUrdu to "ur-Latn",
@@ -53,26 +67,7 @@ class LanguageActivity : AppCompatActivity() {
         )
 
         for ((id, tag) in choices) {
-            val btn = findViewById<Button>(id)
-            btn.setOnClickListener { choose(tag) }
-            btn.setTextColor(0xFF1A1A18.toInt())
-
-            // The style sets these too. Repeating them here because this
-            // screen is the first thing a new owner sees, and it has now
-            // been white-on-white once and black-on-black once: if the tag
-            // resolves to a MaterialButton these take effect, and if the
-            // style somehow does not reach it, the keys are still legible.
-            (btn as? MaterialButton)?.let { material ->
-                material.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
-                material.cornerRadius = (32 * resources.displayMetrics.density).toInt()
-            }
-
-            // The keys wrap to two lines now, so the text no longer has to
-            // shrink far to fit — 12sp is the floor rather than 9sp, which was
-            // small enough to strain on the one label that needed it.
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                btn, 12, 15, 1, TypedValue.COMPLEX_UNIT_SP
-            )
+            findViewById<View>(id).setOnClickListener { choose(tag) }
         }
     }
 
