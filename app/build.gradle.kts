@@ -120,6 +120,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    // Runs in CI after the APK is published (never blocks it). Only the checks
+    // that catch a crash on an older phone: an API call newer than minSdk 24
+    // (Android 7.0) without a version check. Report-only for now; CI turns
+    // each finding into an annotation on the run.
+    lint {
+        checkOnly += setOf("NewApi", "InlinedApi")
+        abortOnError = false
+        xmlReport = true
+    }
+
     kotlinOptions {
         jvmTarget = "17"
     }
