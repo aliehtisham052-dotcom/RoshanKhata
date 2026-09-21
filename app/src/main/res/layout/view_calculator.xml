@@ -69,6 +69,21 @@
                 <Button android:id="@+id/calcDot" style="@style/CalcPadKey" android:text="@string/calc_dot" />
             </LinearLayout>
         </LinearLayout>
-        <Button android:id="@+id/calcEquals" style="@style/CalcPadKeyOp" android:text="@string/calc_equals" />
+        <!-- The = key sits in a margin-free wrapper. A weighted row hands out
+             (width - its children's margins), so a key with its own margin
+             here made the 1 2 3 / 0 00 . block 1.5dp narrower per key than
+             the rows above. The wrapper takes exactly a quarter; the key's
+             margin then sits inside it, same as every other key. -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/calcEquals"
+                style="@style/CalcPadKeyOp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/calc_equals" />
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
