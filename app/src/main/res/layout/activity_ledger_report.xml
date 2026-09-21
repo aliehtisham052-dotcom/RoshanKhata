@@ -186,27 +186,16 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/net_change"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/tvLrNetChange"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+        <!--
+          Two totals, not three. A "Net change" column used to follow, gave
+          minus got across EVERY customer in the window: one man's sale and
+          another man's payment folded into a single figure that belongs to
+          nobody's account. Worse, it disagreed with its own PDF — this screen
+          printed got − gave and the PDF gave − got, so the same report showed
+          the same number with opposite signs. Removed from both, as the Khata
+          header's net balance was. A single party's own statement keeps its
+          net change; for one account it is exactly the useful number.
+        -->
     </LinearLayout>
 
     <!-- Column header row, pinned above the scrolling list. The two money
