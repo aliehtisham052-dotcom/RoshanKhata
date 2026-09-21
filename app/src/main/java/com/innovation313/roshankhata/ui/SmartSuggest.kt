@@ -204,12 +204,12 @@ object SmartSuggest {
      * Kept out of the adapter so it can be reasoned about — and tested —
      * without a screen.
      */
-    fun rank(items: List<Item>, typed: String): List<Item> =
-        rankCandidates(items.map { Candidate(it) }, typed)
+    fun rank(items: List<Item>, typed: String, maxRows: Int = MAX_ROWS): List<Item> =
+        rankCandidates(items.map { Candidate(it) }, typed, maxRows)
 
-    private fun rankCandidates(candidates: List<Candidate>, typed: String): List<Item> {
+    private fun rankCandidates(candidates: List<Candidate>, typed: String, maxRows: Int): List<Item> {
         val raw = typed.trim().lowercase()
-        if (raw.isEmpty()) return candidates.take(MAX_ROWS).map { it.item }
+        if (raw.isEmpty()) return candidates.take(maxRows).map { it.item }
         val folded = NameSearch.fold(raw)
         val urdu = hasUrduScript(raw)
 
@@ -219,7 +219,7 @@ object SmartSuggest {
                 compareBy({ it.first }, { it.second.item.value.length }, { it.second.lower })
             )
             .map { it.second.item }
-            .take(MAX_ROWS)
+            .take(maxRows)
     }
 
     /**
@@ -229,9 +229,14 @@ object SmartSuggest {
      * mid-entry can re-attach and the next keystroke sees it. Passing an
      * empty list leaves the field an ordinary text box rather than showing an
      * empty dropdown.
+     *
+     * [maxRows] is how many suggestions the list will show. Each row is two
+     * lines, so the default eight is close to half a screen: right in a small
+     * dialog, wrong on a form where the list opens over the fields still to be
+     * filled. A form like that asks for fewer.
      */
-    fun attach(field: AutoCompleteTextView, items: List<Item>) {
-        field.setAdapter(Adapter(field.context, items))
+    fun attach(field: AutoCompleteTextView, items: List<Item>, maxRows: Int = MAX_ROWS) {
+        field.setAdapter(Adapter(field.context, items, maxRows))
         // One character is enough. The owner is typing a name they already
         // know; making them type three before the app admits it knows it too
         // is the app being coy about something it could have said sooner.
@@ -250,7 +255,8 @@ object SmartSuggest {
      */
     private class Adapter(
         context: Context,
-        all: List<Item>
+        all: List<Item>,
+        private val maxRows: Int
     ) : BaseAdapter(), Filterable {
 
         /** Folded once here, so no keystroke ever folds the shelf again. */
@@ -289,7 +295,7 @@ object SmartSuggest {
                 (resultValue as? Item)?.value ?: ""
 
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val matches = rankCandidates(candidates, constraint?.toString().orEmpty())
+                val matches = rankCandidates(candidates, constraint?.toString().orEmpty(), maxRows)
                 return FilterResults().apply {
                     values = matches
                     count = matches.size

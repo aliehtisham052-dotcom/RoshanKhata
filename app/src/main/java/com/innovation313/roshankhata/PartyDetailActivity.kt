@@ -612,7 +612,10 @@ class PartyDetailActivity : AppCompatActivity() {
         // leaves this an ordinary text box.
         lifecycleScope.launch {
             val products = dao.productsOnce()
-            SmartSuggest.attach(etItemName, products.asSuggestions())
+            // Three rows, not the default eight: this list opens over Quantity,
+            // Unit and the rest of the form, and eight two-line rows fill the
+            // screen below the field.
+            SmartSuggest.attach(etItemName, products.asSuggestions(), maxRows = 3)
         }
         val cbQarzeHasna: MaterialCheckBox = view.findViewById(R.id.cbQarzeHasna)
 
