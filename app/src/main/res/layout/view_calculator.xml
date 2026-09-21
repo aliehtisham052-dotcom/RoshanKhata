@@ -27,63 +27,42 @@
     android:paddingTop="4dp"
     android:paddingEnd="4dp"
     android:paddingBottom="4dp">
-    <!-- Digits white, operators grey, = tall on the right. Backspace lives in
-         the amount box (dialog_add_entry), not here. Every key stays a Button:
-         PartyDetailActivity finds them as android.widget.Button. -->
+    <!-- 4 x 5 = 20 keys, one cell each: C, backspace, %, four operators, ten
+         digits, 00, the dot and =. Digits are white, operators grey.
+
+         Backspace is on the pad, where the thumb already is. It had been moved
+         into the amount box (which still has its own, calcBack) and a wrong
+         digit then meant reaching for a small icon at the far corner. A tall
+         = would need a 21st cell, so = is one cell again rather than dropping
+         a key. Every key is a Button: PartyDetailActivity binds them as one. -->
     <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calcClear" style="@style/CalcPadKeyMuted" android:text="@string/calc_clear" />
+        <Button android:id="@+id/calcBackKey" style="@style/CalcPadKeyMuted" android:text="@string/calc_backspace" />
         <Button android:id="@+id/calcPercent" style="@style/CalcPadKeyMuted" android:text="@string/calc_percent" />
         <Button android:id="@+id/calcDivide" style="@style/CalcPadKeyOp" android:text="@string/calc_divide" />
-        <Button android:id="@+id/calcTimes" style="@style/CalcPadKeyOp" android:text="@string/calc_multiply" />
     </LinearLayout>
     <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calc7" style="@style/CalcPadKey" android:text="7" />
         <Button android:id="@+id/calc8" style="@style/CalcPadKey" android:text="8" />
         <Button android:id="@+id/calc9" style="@style/CalcPadKey" android:text="9" />
-        <Button android:id="@+id/calcMinus" style="@style/CalcPadKeyOp" android:text="@string/calc_minus" />
+        <Button android:id="@+id/calcTimes" style="@style/CalcPadKeyOp" android:text="@string/calc_multiply" />
     </LinearLayout>
     <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calc4" style="@style/CalcPadKey" android:text="4" />
         <Button android:id="@+id/calc5" style="@style/CalcPadKey" android:text="5" />
         <Button android:id="@+id/calc6" style="@style/CalcPadKey" android:text="6" />
+        <Button android:id="@+id/calcMinus" style="@style/CalcPadKeyOp" android:text="@string/calc_minus" />
+    </LinearLayout>
+    <LinearLayout style="@style/CalcPadRow">
+        <Button android:id="@+id/calc1" style="@style/CalcPadKey" android:text="1" />
+        <Button android:id="@+id/calc2" style="@style/CalcPadKey" android:text="2" />
+        <Button android:id="@+id/calc3" style="@style/CalcPadKey" android:text="3" />
         <Button android:id="@+id/calcPlus" style="@style/CalcPadKeyOp" android:text="@string/calc_plus" />
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:orientation="horizontal">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="vertical">
-            <LinearLayout style="@style/CalcPadRow">
-                <Button android:id="@+id/calc1" style="@style/CalcPadKey" android:text="1" />
-                <Button android:id="@+id/calc2" style="@style/CalcPadKey" android:text="2" />
-                <Button android:id="@+id/calc3" style="@style/CalcPadKey" android:text="3" />
-            </LinearLayout>
-            <LinearLayout style="@style/CalcPadRow">
-                <Button android:id="@+id/calc0" style="@style/CalcPadKey" android:text="0" />
-                <Button android:id="@+id/calc00" style="@style/CalcPadKey" android:text="@string/calc_double_zero" />
-                <Button android:id="@+id/calcDot" style="@style/CalcPadKey" android:text="@string/calc_dot" />
-            </LinearLayout>
-        </LinearLayout>
-        <!-- The = key sits in a margin-free wrapper. A weighted row hands out
-             (width - its children's margins), so a key with its own margin
-             here made the 1 2 3 / 0 00 . block 1.5dp narrower per key than
-             the rows above. The wrapper takes exactly a quarter; the key's
-             margin then sits inside it, same as every other key. -->
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <Button
-                android:id="@+id/calcEquals"
-                style="@style/CalcPadKeyOp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/calc_equals" />
-        </FrameLayout>
+    <LinearLayout style="@style/CalcPadRow">
+        <Button android:id="@+id/calc0" style="@style/CalcPadKey" android:text="0" />
+        <Button android:id="@+id/calc00" style="@style/CalcPadKey" android:text="@string/calc_double_zero" />
+        <Button android:id="@+id/calcDot" style="@style/CalcPadKey" android:text="@string/calc_dot" />
+        <Button android:id="@+id/calcEquals" style="@style/CalcPadKeyOp" android:text="@string/calc_equals" />
     </LinearLayout>
 </LinearLayout>

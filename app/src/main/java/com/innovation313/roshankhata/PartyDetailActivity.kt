@@ -545,10 +545,14 @@ class PartyDetailActivity : AppCompatActivity() {
         view.findViewById<android.widget.Button>(R.id.calcClear).setOnClickListener {
             etAmount.setText("")
         }
-        view.findViewById<android.widget.Button>(R.id.calcBack).setOnClickListener {
+        // Two backspaces, one behaviour: the key on the pad, where the thumb
+        // is, and the small one inside the amount box.
+        val backspace = android.view.View.OnClickListener {
             val t = etAmount.text
             if (t.isNotEmpty()) etAmount.text.delete(t.length - 1, t.length)
         }
+        view.findViewById<android.widget.Button>(R.id.calcBack).setOnClickListener(backspace)
+        view.findViewById<android.widget.Button>(R.id.calcBackKey).setOnClickListener(backspace)
 
         view.findViewById<android.widget.Button>(R.id.calcEquals).setOnClickListener {
             // evalPad, not eval: it translates the pad's × ÷ − and resolves a
