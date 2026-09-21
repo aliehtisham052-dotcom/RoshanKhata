@@ -1152,4 +1152,13 @@
     <string name="quick_amount_half">50%</string>
     <string name="quick_amount_three_quarter">75%</string>
     <string name="quick_amount_full">پورو</string>
+
+    <!-- Entry screen (dialog_add_entry) -->
+    <string name="entry_header_gave">%1$s کي ڏنا · %2$s</string>
+    <string name="entry_header_got">%1$s کان ورتا · %2$s</string>
+    <string name="entry_details_chip">+ نوٽ / سامان</string>
+    <string name="entry_preview_title">%1$s جو حساب</string>
+    <string name="entry_preview_line">هاڻي %1$s  ←  هن داخلا کان پوءِ %2$s</string>
+    <string name="entry_bill_chip">بل تصوير</string>
+    <string name="entry_bill_chip_done">✓ بل</string>
 </resources>

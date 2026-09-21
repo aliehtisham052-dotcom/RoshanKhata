@@ -261,21 +261,46 @@
       tall phone that means larger keys instead of a larger empty margin,
       which is the right way round for a pad used at a counter.
     -->
+    <!-- Entry pad (dialog_add_entry): digits on white tiles, operators on
+         grey, so a number and a sum-sign read apart at a glance. -->
     <style name="CalcPadKey" parent="CalcKey">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_margin">3dp</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="strokeColor">@color/page_line</item>
+        <item name="strokeWidth">1dp</item>
         <item name="cornerRadius">12dp</item>
     </style>
 
     <style name="CalcPadKeyOp" parent="CalcPadKey">
-        <item name="android:textColor">@color/white</item>
-        <item name="backgroundTint">@color/brand_green</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="backgroundTint">@color/page_line</item>
     </style>
 
     <style name="CalcPadKeyMuted" parent="CalcPadKey">
         <item name="android:textColor">@color/ink_soft</item>
         <item name="backgroundTint">@color/page_line</item>
+    </style>
+
+    <!-- The three chips under the amount: note/goods, bill photo, date. -->
+    <style name="EntryChip" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_height">40dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/brand_green</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="strokeColor">@color/page_line</item>
+        <item name="backgroundTint">@color/navy_surface</item>
     </style>
 
 </resources>

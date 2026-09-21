@@ -27,40 +27,48 @@
     android:paddingTop="4dp"
     android:paddingEnd="4dp"
     android:paddingBottom="4dp">
-
+    <!-- Digits white, operators grey, = tall on the right. Backspace lives in
+         the amount box (dialog_add_entry), not here. Every key stays a Button:
+         PartyDetailActivity finds them as android.widget.Button. -->
     <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calcClear" style="@style/CalcPadKeyMuted" android:text="@string/calc_clear" />
-        <Button android:id="@+id/calcBack" style="@style/CalcPadKeyMuted" android:text="@string/calc_backspace" />
         <Button android:id="@+id/calcPercent" style="@style/CalcPadKeyMuted" android:text="@string/calc_percent" />
         <Button android:id="@+id/calcDivide" style="@style/CalcPadKeyOp" android:text="@string/calc_divide" />
+        <Button android:id="@+id/calcTimes" style="@style/CalcPadKeyOp" android:text="@string/calc_multiply" />
     </LinearLayout>
-
     <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calc7" style="@style/CalcPadKey" android:text="7" />
         <Button android:id="@+id/calc8" style="@style/CalcPadKey" android:text="8" />
         <Button android:id="@+id/calc9" style="@style/CalcPadKey" android:text="9" />
-        <Button android:id="@+id/calcTimes" style="@style/CalcPadKeyOp" android:text="@string/calc_multiply" />
+        <Button android:id="@+id/calcMinus" style="@style/CalcPadKeyOp" android:text="@string/calc_minus" />
     </LinearLayout>
-
     <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calc4" style="@style/CalcPadKey" android:text="4" />
         <Button android:id="@+id/calc5" style="@style/CalcPadKey" android:text="5" />
         <Button android:id="@+id/calc6" style="@style/CalcPadKey" android:text="6" />
-        <Button android:id="@+id/calcMinus" style="@style/CalcPadKeyOp" android:text="@string/calc_minus" />
-    </LinearLayout>
-
-    <LinearLayout style="@style/CalcPadRow">
-        <Button android:id="@+id/calc1" style="@style/CalcPadKey" android:text="1" />
-        <Button android:id="@+id/calc2" style="@style/CalcPadKey" android:text="2" />
-        <Button android:id="@+id/calc3" style="@style/CalcPadKey" android:text="3" />
         <Button android:id="@+id/calcPlus" style="@style/CalcPadKeyOp" android:text="@string/calc_plus" />
     </LinearLayout>
-
-    <LinearLayout style="@style/CalcPadRow">
-        <Button android:id="@+id/calc0" style="@style/CalcPadKey" android:text="0" />
-        <Button android:id="@+id/calc00" style="@style/CalcPadKey" android:text="@string/calc_double_zero" />
-        <Button android:id="@+id/calcDot" style="@style/CalcPadKey" android:text="@string/calc_dot" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="vertical">
+            <LinearLayout style="@style/CalcPadRow">
+                <Button android:id="@+id/calc1" style="@style/CalcPadKey" android:text="1" />
+                <Button android:id="@+id/calc2" style="@style/CalcPadKey" android:text="2" />
+                <Button android:id="@+id/calc3" style="@style/CalcPadKey" android:text="3" />
+            </LinearLayout>
+            <LinearLayout style="@style/CalcPadRow">
+                <Button android:id="@+id/calc0" style="@style/CalcPadKey" android:text="0" />
+                <Button android:id="@+id/calc00" style="@style/CalcPadKey" android:text="@string/calc_double_zero" />
+                <Button android:id="@+id/calcDot" style="@style/CalcPadKey" android:text="@string/calc_dot" />
+            </LinearLayout>
+        </LinearLayout>
         <Button android:id="@+id/calcEquals" style="@style/CalcPadKeyOp" android:text="@string/calc_equals" />
     </LinearLayout>
-
 </LinearLayout>

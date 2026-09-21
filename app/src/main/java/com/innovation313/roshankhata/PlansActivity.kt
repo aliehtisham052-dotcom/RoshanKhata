@@ -230,6 +230,10 @@ class PlansActivity : AppCompatActivity() {
         // now that it sits outside step one it would also be the last thing
         // above Save, which is worse.
         view.findViewById<View>(R.id.btnMoreDetails).visibility = View.GONE
+        // Bill photo and date are wired only by the ledger's entry screen; here
+        // they would be chips that do nothing.
+        view.findViewById<View>(R.id.btnAddBill).visibility = View.GONE
+        view.findViewById<View>(R.id.btnEntryDate).visibility = View.GONE
 
         plan.installmentAmount?.let { etAmount.setText(Format.plain(it)) }
 

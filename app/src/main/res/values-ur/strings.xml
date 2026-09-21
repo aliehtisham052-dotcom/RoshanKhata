@@ -1124,4 +1124,13 @@
     <string name="quick_amount_half">50%</string>
     <string name="quick_amount_three_quarter">75%</string>
     <string name="quick_amount_full">پورا</string>
+
+    <!-- Entry screen (dialog_add_entry) -->
+    <string name="entry_header_gave">%1$s کو دیے · %2$s</string>
+    <string name="entry_header_got">%1$s سے لیے · %2$s</string>
+    <string name="entry_details_chip">+ نوٹ / سامان</string>
+    <string name="entry_preview_title">%1$s کا حساب</string>
+    <string name="entry_preview_line">ابھی %1$s  ←  اس اندراج کے بعد %2$s</string>
+    <string name="entry_bill_chip">بل تصویر</string>
+    <string name="entry_bill_chip_done">✓ بل</string>
 </resources>

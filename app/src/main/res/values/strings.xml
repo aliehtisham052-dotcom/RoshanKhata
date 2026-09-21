@@ -1168,4 +1168,14 @@ You can change this any time from this screen.</string>
     <string name="quick_amount_half">50%</string>
     <string name="quick_amount_three_quarter">75%</string>
     <string name="quick_amount_full">Full</string>
+
+    <!-- Entry screen (dialog_add_entry) -->
+    <string name="entry_header_gave">Gave %1$s · %2$s</string>
+    <string name="entry_header_got">Got from %1$s · %2$s</string>
+    <string name="entry_details_chip">+ Note / goods</string>
+    <string name="entry_preview_title">%1$s · balance</string>
+    <string name="entry_preview_line">Now %1$s  →  after this %2$s</string>
+    <string name="entry_bill_chip">Bill photo</string>
+    <string name="entry_bill_chip_done">✓ Bill</string>
+    <string name="currency_rs" translatable="false">Rs</string>
 </resources>
