@@ -168,26 +168,25 @@
     <!--
       A row of the full Calculator screen's keypad.
 
-      Zero height and a weight, not wrap_content: the five rows share whatever
-      the screen has left under the display, so the keypad ends where the
-      screen ends. It used to be five rows of a fixed 78dp, about 440dp of
-      keypad on a screen with 700dp to give, and the difference sat at the
-      bottom as a band of empty white — the keypad floating in the middle of
-      the screen, touching neither the display above nor the bottom edge.
+      The row is as tall as its keys and no taller. Sharing the screen's
+      spare height between the five rows was tried and was worse: on a tall
+      phone it stretched every key to 100dp against 84dp of width, and a grid
+      of tall rectangles reads as a mess rather than a keypad. A key's
+      proportions are the thing to hold steady; the leftover height belongs to
+      the display, which is where a calculator puts it.
     -->
     <style name="CalcRow">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="CalcKey" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">64dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:layout_margin">5dp</item>
-        <item name="android:textSize">26sp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:textSize">23sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/ink</item>
         <item name="android:textAllCaps">false</item>
@@ -203,7 +202,7 @@
         <item name="android:paddingEnd">0dp</item>
         <item name="android:minWidth">0dp</item>
         <item name="backgroundTint">@color/white</item>
-        <item name="cornerRadius">16dp</item>
+        <item name="cornerRadius">14dp</item>
     </style>
 
     <!-- Operators, in the brand green so the eye finds them without reading. -->
