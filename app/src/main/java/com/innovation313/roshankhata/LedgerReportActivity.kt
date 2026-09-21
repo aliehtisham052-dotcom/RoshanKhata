@@ -59,7 +59,6 @@ class LedgerReportActivity : AppCompatActivity() {
     private lateinit var btnShare: MaterialButton
     private lateinit var tvTotalGave: TextView
     private lateinit var tvTotalGot: TextView
-    private lateinit var tvNetChange: TextView
     private lateinit var tvEmpty: TextView
 
     /** Null means unbounded on that side; both null is the whole book. */
@@ -79,7 +78,6 @@ class LedgerReportActivity : AppCompatActivity() {
         btnEndDate = findViewById(R.id.btnLrEndDate)
         tvTotalGave = findViewById(R.id.tvLrTotalGave)
         tvTotalGot = findViewById(R.id.tvLrTotalGot)
-        tvNetChange = findViewById(R.id.tvLrNetChange)
         tvEmpty = findViewById(R.id.tvLrEmpty)
 
         adapter = Adapter()
@@ -257,7 +255,6 @@ class LedgerReportActivity : AppCompatActivity() {
         val got = entries.filter { !it.isGiven }.sumOf { it.amount }
         tvTotalGave.text = Format.money(gave)
         tvTotalGot.text = Format.money(got)
-        tvNetChange.text = Format.signedTotal(got - gave)
     }
 
     /**

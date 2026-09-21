@@ -65,7 +65,6 @@ object LedgerReport {
         val tagline = Paint().apply { color = GOLD; textSize = 11f; isAntiAlias = true }
         val section = Paint().apply { color = NAVY; textSize = 14f; isFakeBoldText = true; isAntiAlias = true }
         val body = Paint().apply { color = Color.BLACK; textSize = 11f; isAntiAlias = true }
-        val bodyBold = Paint().apply { color = Color.BLACK; textSize = 11f; isFakeBoldText = true; isAntiAlias = true }
         val muted = Paint().apply { color = GREY; textSize = 10f; isAntiAlias = true }
         val warnText = Paint().apply { color = WARN_FG; textSize = 10f; isAntiAlias = true }
         val red = Paint().apply { color = RED; textSize = 11f; isFakeBoldText = true; isAntiAlias = true }
@@ -138,9 +137,12 @@ object LedgerReport {
             y += 16f
         }
 
+        // Two totals, never netted. "Net change" (gave − got) used to follow:
+        // one customer's sale less another customer's payment, a figure that
+        // is nobody's balance. It also carried the opposite sign to the same
+        // figure on the report's own screen. Gone from both.
         line("I gave (total)", Format.money(gave), red)
         line("I got (total)", Format.money(got), green)
-        line("Net change", Format.money(gave - got), bodyBold)
         line("Entries in this period", entries.size.toString())
 
         y += 10f
