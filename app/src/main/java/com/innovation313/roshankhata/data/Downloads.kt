@@ -13,6 +13,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.innovation313.roshankhata.R
 import java.io.File
 
@@ -138,7 +139,8 @@ object Downloads {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_stat_notify)
+            .setColor(ContextCompat.getColor(context, R.color.brand_green))
             .setContentTitle(name)
             .setContentText(context.getString(R.string.report_download_tap_open))
             .setContentIntent(pending)

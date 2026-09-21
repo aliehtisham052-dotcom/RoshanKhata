@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The header behind the balance.
+  The header behind the balance (Home, Khata, Business settings).
 
-  Gold on the left easing into the brand green on the right — the same warm-
-  to-green run as the reference, held a few shades deeper. The reference sits
-  on black, where a bright lime reads beautifully; this sits under white type,
-  and white on bright yellow cannot be read at arm's length across a counter.
-  Deeper keeps the mood and keeps the figures legible.
+  Brand green running into the logo's deep green, left to right. The three
+  stops live in colors.xml (header_grad_*), where the contrast figures are.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
