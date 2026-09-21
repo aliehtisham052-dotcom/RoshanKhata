@@ -144,6 +144,30 @@ jobs:
           files: out/RoshanKhata-latest.apk
           make_latest: true
 
+      # Android 7.0 (minSdk 24) compatibility: flags any API call that would
+      # crash on an older phone. Runs after the APK is published and is
+      # continue-on-error, so it can never hold back the download link.
+      - name: Old-Android API check (lint NewApi)
+        if: success()
+        continue-on-error: true
+        run: |
+          gradle lintDebug --no-daemon 2>&1 | tail -5
+          python3 - <<'PY'
+          import glob, xml.etree.ElementTree as ET
+          files = glob.glob("app/build/reports/lint-results-debug.xml")
+          if not files:
+              print("::warning::lint report not found"); raise SystemExit(0)
+          issues = ET.parse(files[0]).getroot().findall("issue")
+          print(f"Old-Android API findings: {len(issues)}")
+          for i in issues:
+              loc = i.find("location")
+              f = loc.get("file", "").split("/app/", 1)[-1] if loc is not None else ""
+              line = loc.get("line", "1") if loc is not None else "1"
+              msg = i.get("message", "").replace("\n", " ")
+              lvl = "error" if i.get("severity") in ("Error", "Fatal") else "warning"
+              print(f"::{lvl} file=app/{f},line={line}::[{i.get('id')}] {msg}")
+          PY
+
       - name: Upload APK artifact
         if: success()
         uses: actions/upload-artifact@v4
