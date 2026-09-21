@@ -1,76 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  First-run language picker, the way the competitor opens: a clean sheet of
-  twelve language buttons. Each button shows the language in its own script so
-  every reader finds their own tongue instantly. The choice is applied through
-  AppCompat's per-app locales and remembered; it can be changed later from More.
+  The language picker, drawn as one piece of artwork with real buttons on it.
+
+  The picture (lang_screen.webp, 839 x 1874) carries the logo, the heading and
+  the six drawn buttons. It is shown WHOLE: the stage below keeps the picture's
+  own shape and sits centred in whatever screen there is, so the artwork is
+  never cropped and the touch areas can never drift off the buttons they sit on.
+  Every touch area is placed as a percentage of the stage, measured against the
+  picture: the six buttons are 236 x 121 px at x 45 / 303 / 560, y 971 / 1114.
+
+  The line under the buttons is real text, not part of the picture. The drawn
+  one said "from Settings", which is not where the language lives (it is under
+  More), and a drawn line cannot be translated. This one is the app's own
+  string, in the language the app is currently showing.
+
+  Ids are the ones LanguageActivity has always bound.
 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brand_green"
-    android:fillViewport="true">
+    android:background="@drawable/bg_lang_root">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/langStage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="839:1874"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
-            android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="26sp"
-            android:textStyle="bold" />
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:importantForAccessibility="no"
+            android:scaleType="fitXY"
+            android:src="@drawable/lang_screen"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="4dp"
-            android:text="@string/powered_by"
-            android:textColor="@color/section_khata_soft"
-            android:textSize="13sp" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV1a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.0536" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV1b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.3349" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV2a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.3611" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV2b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.6424" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV3a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.6675" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV3b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.9487" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH1a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.5181" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH1b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.5827" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH2a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.5945" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH2b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.6585" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH3a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.688" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH3b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.734" />
 
-        <TextView
-            android:id="@+id/tvChooseLanguage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="28dp"
-            android:layout_marginBottom="14dp"
-            android:text="@string/select_language"
-            android:textColor="@color/white"
-            android:textSize="19sp"
-            android:textStyle="bold" />
+    <View
+        android:id="@+id/langEnglish"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_lang_hotspot"
+        android:clickable="true"
+        android:contentDescription="English"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@id/gH1b"
+        app:layout_constraintEnd_toEndOf="@id/gV1b"
+        app:layout_constraintStart_toStartOf="@id/gV1a"
+        app:layout_constraintTop_toTopOf="@id/gH1a" />
+    <View
+        android:id="@+id/langRomanUrdu"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_lang_hotspot"
+        android:clickable="true"
+        android:contentDescription="Roman Urdu"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@id/gH1b"
+        app:layout_constraintEnd_toEndOf="@id/gV2b"
+        app:layout_constraintStart_toStartOf="@id/gV2a"
+        app:layout_constraintTop_toTopOf="@id/gH1a" />
+    <View
+        android:id="@+id/langUrdu"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_lang_hotspot"
+        android:clickable="true"
+        android:contentDescription="اردو"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@id/gH1b"
+        app:layout_constraintEnd_toEndOf="@id/gV3b"
+        app:layout_constraintStart_toStartOf="@id/gV3a"
+        app:layout_constraintTop_toTopOf="@id/gH1a" />
+    <View
+        android:id="@+id/langSindhi"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_lang_hotspot"
+        android:clickable="true"
+        android:contentDescription="سنڌي"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@id/gH2b"
+        app:layout_constraintEnd_toEndOf="@id/gV1b"
+        app:layout_constraintStart_toStartOf="@id/gV1a"
+        app:layout_constraintTop_toTopOf="@id/gH2a" />
+    <View
+        android:id="@+id/langPersian"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_lang_hotspot"
+        android:clickable="true"
+        android:contentDescription="فارسی"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@id/gH2b"
+        app:layout_constraintEnd_toEndOf="@id/gV2b"
+        app:layout_constraintStart_toStartOf="@id/gV2a"
+        app:layout_constraintTop_toTopOf="@id/gH2a" />
+    <View
+        android:id="@+id/langArabic"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_lang_hotspot"
+        android:clickable="true"
+        android:contentDescription="العربية"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@id/gH2b"
+        app:layout_constraintEnd_toEndOf="@id/gV3b"
+        app:layout_constraintStart_toStartOf="@id/gV3a"
+        app:layout_constraintTop_toTopOf="@id/gH2a" />
 
-        <!-- Rows of language buttons, three per row like the competitor -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:baselineAligned="false" android:orientation="horizontal">
-            <Button android:id="@+id/langEnglish" style="@style/LangKey" android:textColor="#1A1A18" android:text="English" />
-            <Button android:id="@+id/langRomanUrdu" style="@style/LangKey" android:textColor="#1A1A18" android:text="Roman Urdu" />
-            <Button android:id="@+id/langUrdu" style="@style/LangKey" android:textColor="#1A1A18" android:text="اردو" />
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:baselineAligned="false" android:orientation="horizontal">
-            <Button android:id="@+id/langSindhi" style="@style/LangKey" android:textColor="#1A1A18" android:text="سنڌي" />
-            <Button android:id="@+id/langPersian" style="@style/LangKey" android:textColor="#1A1A18" android:text="فارسی" />
-            <Button android:id="@+id/langArabic" style="@style/LangKey" android:textColor="#1A1A18" android:text="العربية" />
-        </LinearLayout>
-
+        <!-- The app's own line, in the app's current language. -->
         <TextView
             android:id="@+id/tvLangNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:gravity="center"
             android:text="@string/language_change_note"
-            android:textColor="@color/section_khata_soft"
-            android:textSize="12sp" />
-
-    </LinearLayout>
-</ScrollView>
+            android:textColor="#2B3A33"
+            android:textSize="13sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@id/gH3b"
+            app:layout_constraintEnd_toEndOf="@id/gV3b"
+            app:layout_constraintStart_toStartOf="@id/gV1a"
+            app:layout_constraintTop_toTopOf="@id/gH3a" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
