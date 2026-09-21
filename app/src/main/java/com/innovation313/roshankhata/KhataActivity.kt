@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
@@ -135,6 +136,7 @@ class KhataActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_khata)
+        onBackPressedDispatcher.addCallback(this, selectionBack)
 
         // The day's ledger snapshot, off the main thread, at most once a day.
         // Here rather than in the Application class so it runs when the ledger
@@ -642,6 +644,7 @@ class KhataActivity : AppCompatActivity() {
     /** The bar, the count, and the rows, kept saying the same thing. */
     private fun renderSelection() {
         val picking = selectedIds.isNotEmpty()
+        selectionBack.isEnabled = picking
         selectionBar.visibility = if (picking) View.VISIBLE else View.GONE
         if (picking) {
             tvSelectedCount.text = getString(R.string.selected_count, selectedIds.size)
@@ -661,11 +664,18 @@ class KhataActivity : AppCompatActivity() {
         renderSelection()
     }
 
-    override fun onBackPressed() {
-        // Back gets out of a selection before it leaves the screen. Someone who
-        // has picked forty customers and wants out should not have to tap forty
-        // times or risk the Delete button to escape.
-        if (selectedIds.isNotEmpty()) clearSelection() else @Suppress("DEPRECATION") super.onBackPressed()
+    // Back gets out of a selection before it leaves the screen. Someone who
+    // has picked forty customers and wants out should not have to tap forty
+    // times or risk the Delete button to escape.
+    /**
+     * Back handling that works on every Android version. On Android 16+ an app
+     * targeting API 36 never receives onBackPressed(), so an override there is
+     * silently skipped. This callback goes through the OnBackPressedDispatcher
+     * instead, and it is enabled only while there is something for Back to undo,
+     * so predictive back (13+) knows when Back will leave the screen.
+     */
+    private val selectionBack = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = clearSelection()
     }
 
     /**
