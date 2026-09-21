@@ -1,28 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  The splash: the full Roshan Khata artwork, edge to edge, for the moment
+  GateActivity holds before routing on.
+
+  centerCrop against a 1:2 artwork. Phones run from about 9:18 to 9:20, so it
+  fills the height and loses a few percent off each SIDE, which is where the
+  artwork keeps its plants and gold sweep; the mark, the wordmark and
+  "Powered by Innovation-313" all sit on the centre line and are never cut.
+
+  ScreenInsets draws this screen under the status and navigation bars and pads
+  only views named header or bottomNav, of which there are none here, so the
+  artwork runs behind both bars instead of stopping short of them in white.
+
+  The id is the one the logo view carried, so nothing that finds it by id
+  needs to change.
+-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/page_bg">
 
-    <!--
-      The mark, centred and alone. The tagline used to sit beneath it in
-      text; it is printed inside the logo now, and the same words twice on
-      one screen read as a mistake.
-    -->
     <ImageView
         android:id="@+id/ivSplashLogo"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:contentDescription="@string/app_name"
-        android:scaleType="fitCenter"
-        android:src="@drawable/logo_full"
+        android:scaleType="centerCrop"
+        android:src="@drawable/splash_art"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
