@@ -130,74 +130,69 @@
         </LinearLayout>
 
         <!--
-          The net balance: its label and its figure share one line now. Two
-          stacked lines read grander, but the grandeur was costing the list a
-          row of customers — and the one number the owner opens the app for is
-          still the largest thing on the band. Tappable; the eye says it hides.
+          One thin line: the eye on the left, the backup's age on the right.
+
+          The big "Net balance Rs 178" that used to lead this band is gone,
+          deliberately. It added what the shop is owed to what the shop owes
+          and printed the difference — Rs 200 to collect from one man, Rs 22
+          to pay another, "Rs 178" that nobody will ever hand over. The two
+          boxes below are the real answer and now lead the header.
+
+          The eye is its own 40dp target. The whole row used to be the toggle,
+          which worked while the balance filled its left half; with the balance
+          gone, the backup line would have taken almost the entire width, and
+          it has a click of its own that opens Backup — so most taps meant to
+          hide the amounts would have opened another screen instead. Negative
+          start margin so the glyph still lines up with the text above it.
         -->
         <LinearLayout
             android:id="@+id/balanceRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:background="?attr/selectableItemBackground"
+            android:layout_marginTop="2dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingTop="2dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="2dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/net_balance"
-                android:textColor="@color/header_on_dark"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvNetBalance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rs 0"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+            android:paddingEnd="10dp">
 
             <ImageView
                 android:id="@+id/ivEye"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="10dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="-10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
                 android:contentDescription="@string/hide_balance"
+                android:focusable="true"
+                android:padding="10dp"
                 android:src="@drawable/ic_eye_open"
                 app:tint="@color/header_on_dark" />
 
-            <!--
-              The backup age lives here, beside the money it protects.
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
-              It went on the customer-count line first and wrapped to a second
-              row on a real phone, which put back height the header had just
-              given up. Measured afterwards, which was the wrong order: that
-              line has about 142dp beside the sort and export buttons — some
-              25 characters at 11sp — and nothing useful fits. This row ends
-              after the balance and has the space free.
+            <!--
+              The backup age, beside the money it protects. Wrap-content, not
+              weight: it takes only the width its words need, so the rest of
+              the row is not one large button that opens Backup.
             -->
             <TextView
                 android:id="@+id/tvBackupAge"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="10dp"
                 android:ellipsize="end"
                 android:gravity="end"
                 android:maxLines="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:textColor="@color/header_on_dark"
-                android:textSize="10sp" />
+                android:textSize="11sp" />
         </LinearLayout>
 
         <!--
-          Three boxes below the net figure, the way a shopkeeper actually
+          The boxes that lead the header, the way a shopkeeper actually
           thinks: one total for everything owed TO them (money to collect,
           red), one for everything they owe OUT (green), and — the owner
           asked for this third one specifically — a count of accounts sitting
