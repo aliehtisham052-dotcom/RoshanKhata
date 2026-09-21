@@ -171,43 +171,39 @@
     <color name="page_grad_bottom">#F7F6F2</color>
 
     <!--
-      The header behind the balance, on Home and on a customer's ledger.
+      The header behind the balance, on Home, Khata and Business settings.
 
-      Deep enough that white figures stay readable in daylight, and warm
-      rather than green — the ledger's own reds and greens then read as
-      information rather than as more of the background. That is measured,
-      not felt: the two summary boxes stand at about 10:1 against this
-      header and only 6:1 against the brand green, so a green header would
-      start absorbing the box that means "I have to give".
-      
-      What was wrong was the far end, not the idea. It used to finish on
-      #3A2340 — blue past red, a plum, and the only cool hue anywhere in the
-      app. That single step is what made the front screen look borrowed from
-      a different product. It now darkens while staying red, so the header
-      reads as this app's warm end rather than a colour of its own.
+      Brand green running into the logo's own deep green, so the header, the
+      launcher icon, the splash and every other section header read as one
+      family. It starts on exactly brand_green, the status-bar colour, so the
+      bar and the header meet with no seam.
+
+      Measured (WCAG), against the darkest stop: white title 7.75:1, the quiet
+      header text 5.74:1, gold outlines 5.72:1, both summary boxes 6.65:1.
+      Everything clears 4.5:1. The maroon it replaces read as a different app
+      beside the green logo.
     -->
-    <color name="header_grad_start">#6E1F2A</color>
-    <color name="header_grad_mid">#5A1F26</color>
-    <color name="header_grad_end">#43151C</color>
+    <color name="header_grad_start">#1B5E3A</color>
+    <color name="header_grad_mid">#154D30</color>
+    <color name="header_grad_end">#0E3A23</color>
 
     <!--
-      The quiet type on that header — the tagline, the "Net balance" label.
-      A warm off-white rather than the pale green it used to use: green on
-      maroon reads as a mistake, and pure white would compete with the figure
-      it is meant to introduce.
+      The quiet type on that header: the tagline, the "Net balance" label, the
+      backup age, the eye toggle. A green-tinted off-white, so it belongs to
+      the green header; pure white would compete with the figures.
     -->
-    <color name="header_on_dark">#E3CDCF</color>
+    <color name="header_on_dark">#CDE3D5</color>
 
     <!--
-      The two summary boxes, brought up a step.
+      The two summary boxes on the green header.
 
-      The header is maroon at one end, and "I have to get" is red — the same
-      family. Its fill is warmed towards apricot so the two separate; the
-      figure inside stays red, because red is what "money owed to me" means
-      in this ledger and that must not move.
+      "I have to give" is green on a green header, so its fill is lifted to a
+      near-white mint: it stands off the header on lightness (6.65:1) instead
+      of disappearing into the same hue, and its green figure still reads at
+      7.04:1. "I have to get" keeps its warm red fill (figure 7.48:1).
     -->
     <color name="summary_get_bg">#FBEAE6</color>
-    <color name="summary_give_bg">#D3EADD</color>
+    <color name="summary_give_bg">#E3F1E8</color>
     <!-- Neutral card for the "settled" count — its own light background, same pattern as get/give, not the dark header's own text colour repurposed for a light card. -->
     <color name="summary_settled_bg">#E6E3D9</color>
 
