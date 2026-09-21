@@ -297,37 +297,62 @@
             android:id="@+id/btnLrPreview"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
             android:layout_weight="1"
             android:maxLines="1"
             android:text="@string/pdf_preview"
             app:backgroundTint="@color/section_cashbook"
             app:icon="@android:drawable/ic_menu_view"
-            app:iconGravity="textStart" />
+            android:layout_marginEnd="6dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="56dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:textSize="12sp"
+            app:iconGravity="top"
+            app:iconPadding="2dp"
+            app:iconSize="18dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLrDownload"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
             android:layout_weight="1"
             android:maxLines="1"
             android:text="@string/ledger_report_download"
             app:backgroundTint="@color/black"
             app:icon="@android:drawable/stat_sys_download_done"
-            app:iconGravity="textStart" />
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="56dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:textSize="12sp"
+            app:iconGravity="top"
+            app:iconPadding="2dp"
+            app:iconSize="18dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLrShare"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
             android:layout_weight="1"
             android:maxLines="1"
             android:text="@string/share"
             app:backgroundTint="@color/section_cashbook"
             app:icon="@android:drawable/ic_menu_share"
-            app:iconGravity="textStart" />
+            android:layout_marginStart="6dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="56dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:textSize="12sp"
+            app:iconGravity="top"
+            app:iconPadding="2dp"
+            app:iconSize="18dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
