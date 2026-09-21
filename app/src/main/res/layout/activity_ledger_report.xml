@@ -63,7 +63,7 @@
                         android:textAllCaps="false"
                         android:textColor="@color/text_muted"
                         android:textSize="14sp"
-                        app:icon="@android:drawable/ic_menu_my_calendar"
+                        app:icon="@drawable/ic_calendar"
                         app:iconPadding="10dp"
                         app:iconTint="@color/text_muted" />
 
@@ -86,7 +86,7 @@
                         android:textAllCaps="false"
                         android:textColor="@color/text_muted"
                         android:textSize="14sp"
-                        app:icon="@android:drawable/ic_menu_my_calendar"
+                        app:icon="@drawable/ic_calendar"
                         app:iconPadding="10dp"
                         app:iconTint="@color/text_muted" />
                 </LinearLayout>
@@ -119,7 +119,7 @@
                     android:textColor="@color/ink"
                     android:textSize="14sp"
                     app:cornerRadius="10dp"
-                    app:icon="@android:drawable/ic_menu_agenda"
+                    app:icon="@drawable/ic_pdf_doc"
                     app:iconPadding="10dp"
                     app:iconTint="@color/text_muted" />
             </LinearLayout>
@@ -301,7 +301,7 @@
             android:maxLines="1"
             android:text="@string/pdf_preview"
             app:backgroundTint="@color/section_cashbook"
-            app:icon="@android:drawable/ic_menu_view"
+            app:icon="@drawable/ic_eye_open"
             android:layout_marginEnd="6dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -321,7 +321,7 @@
             android:maxLines="1"
             android:text="@string/ledger_report_download"
             app:backgroundTint="@color/black"
-            app:icon="@android:drawable/stat_sys_download_done"
+            app:icon="@drawable/ic_download"
             android:layout_marginStart="6dp"
             android:layout_marginEnd="6dp"
             android:insetTop="0dp"
@@ -342,7 +342,7 @@
             android:maxLines="1"
             android:text="@string/share"
             app:backgroundTint="@color/section_cashbook"
-            app:icon="@android:drawable/ic_menu_share"
+            app:icon="@drawable/ic_share"
             android:layout_marginStart="6dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"

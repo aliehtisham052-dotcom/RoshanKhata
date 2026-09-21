@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The sales and purchase register.
+
+  Two arrows crossing a page: what came in, what went out. That is the whole
+  content of this report, and an icon that says it is worth more than a
+  calendar — the report is about direction, not about dates, and the calendar
+  it used to carry (@android:drawable/ic_menu_month, complete with a baked-in
+  "31") pointed at the wrong idea as well as being drawn in another decade.
+
+  Same 24dp grid and single filled path as the rest of the set.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M19,2H5C3.9,2 3,2.9 3,4v16c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2V4C21,2.9 20.1,2 19,2zM19,20H5V4h14V20zM8.5,6.5l3.5,3.5H9.5v3h-2v-3H5L8.5,6.5zM15.5,17.5L12,14h2.5v-3h2v3H19L15.5,17.5z" />
+</vector>

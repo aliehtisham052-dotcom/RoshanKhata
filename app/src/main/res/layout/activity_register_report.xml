@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="@string/range_this_month"
-                    app:icon="@android:drawable/ic_menu_my_calendar"
+                    app:icon="@drawable/ic_calendar"
                     app:iconGravity="textStart" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -113,7 +113,7 @@
             android:maxLines="1"
             android:text="@string/pdf_preview"
             app:backgroundTint="@color/section_cashbook"
-            app:icon="@android:drawable/ic_menu_view"
+            app:icon="@drawable/ic_eye_open"
             app:iconGravity="textStart" />
 
         <com.google.android.material.button.MaterialButton
@@ -123,7 +123,7 @@
             android:layout_marginBottom="8dp"
             android:text="@string/register_download"
             app:backgroundTint="@color/section_bills"
-            app:icon="@android:drawable/stat_sys_download"
+            app:icon="@drawable/ic_download"
             app:iconGravity="textStart" />
 
         <com.google.android.material.button.MaterialButton
@@ -131,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/register_share"
-            app:icon="@android:drawable/ic_menu_share"
+            app:icon="@drawable/ic_share"
             app:iconGravity="textStart" />
     </LinearLayout>
 

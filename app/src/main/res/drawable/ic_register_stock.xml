@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The stock and compliance register.
+
+  A clipboard with ruled lines — the object an inspection arrives carrying,
+  and the one a shopkeeper recognises before reading the label under it. It
+  replaces @android:drawable/ic_menu_agenda, an Android 1.x system glyph that
+  was drawn for a 2008 phone and looked it: fussy at 24dp, a different weight
+  from every other icon in this app, and on the screen that is supposed to
+  say "your shop keeps proper records" it said the opposite.
+
+  Drawn on the same 24dp grid and as a single filled path, like the rest of
+  the set, so it takes its colour from the tint it is given.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M19,3h-4.18C14.4,1.84 13.3,1 12,1s-2.4,0.84 -2.82,2L5,3c-1.1,0 -2,0.9 -2,2v14c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2V5c0,-1.1 -0.9,-2 -2,-2zM12,2.75c0.41,0 0.75,0.34 0.75,0.75s-0.34,0.75 -0.75,0.75 -0.75,-0.34 -0.75,-0.75 0.34,-0.75 0.75,-0.75zM19,19H5V5h14v14zM7,10h2v2L7,12zM7,14h2v2L7,16zM11,10h6v2h-6zM11,14h6v2h-6z" />
+</vector>

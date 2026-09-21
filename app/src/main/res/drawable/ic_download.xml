@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Download.
+
+  Replaces @android:drawable/stat_sys_download and stat_sys_download_done,
+  which are STATUS BAR assets: drawn small, drawn for a notification strip,
+  and never intended to sit inside a button at 18dp. The "done" variant was
+  worse than wrong-sized — it shows a completed download on a control that
+  has not been pressed yet.
+
+  An arrow into a tray, which is what the button does. Same 24dp grid, single
+  filled path.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M13,3h-2v8H8l4,4 4,-4h-3V3zM5,18v2h14v-2H5z" />
+</vector>
