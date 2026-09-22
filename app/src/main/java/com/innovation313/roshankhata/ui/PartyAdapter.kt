@@ -63,10 +63,13 @@ class PartyAdapter(
         // have to sit somewhere on a row that already carries a photo, a name,
         // a number, a date and a balance, and would be there in the ninety-nine
         // per cent of the time when nothing is being selected at all.
-        holder.itemView.setBackgroundColor(
-            if (isSelected(item.id)) ContextCompat.getColor(ctx, R.color.row_selected)
-            else android.graphics.Color.TRANSPARENT
-        )
+        // The row is a card now (bg_party_card). Setting a background COLOUR
+        // would replace that drawable and the card would vanish, so the
+        // selection tints the card instead, and clearing the tint gives it back.
+        holder.itemView.backgroundTintList =
+            if (isSelected(item.id))
+                android.content.res.ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.row_selected))
+            else null
 
         holder.tvName.text = item.name
 

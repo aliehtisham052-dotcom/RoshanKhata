@@ -266,7 +266,12 @@ class KhataActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.btnVoiceEntry).setOnClickListener { startListening() }
 
-        findViewById<MaterialButton>(R.id.btnSortParties).setOnClickListener { showSortDialog() }
+        findViewById<MaterialButton>(R.id.btnSortParties).apply {
+            setOnClickListener { showSortDialog() }
+            // An icon now; a long-press says what it is (API 26+ natively,
+            // TooltipCompat makes it work from minSdk 24).
+            androidx.appcompat.widget.TooltipCompat.setTooltipText(this, getString(R.string.sort))
+        }
 
         // The two summary boxes are still filters. Tapping one shows the people
         // behind that figure; tapping it again puts everyone back. (The settled
