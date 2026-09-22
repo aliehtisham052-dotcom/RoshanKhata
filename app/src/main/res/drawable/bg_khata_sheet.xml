@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Khata sheet (khataCard): plain white, square, edge to edge, with one
+  hairline along its bottom so it reads apart from the cream page and the
+  party cards below. No corners and no side stroke: its top edge is where the
+  header's green ends, in one straight line.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/page_line" />
+    <item android:bottom="1dp" android:drawable="@color/white" />
+</layer-list>

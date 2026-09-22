@@ -11,7 +11,8 @@
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_khata_header"
+        android:background="@drawable/bg_header_gradient"
+        android:clipToPadding="false"
         android:orientation="vertical"
         android:paddingStart="14dp"
         android:paddingTop="12dp"
@@ -130,7 +131,11 @@
         </LinearLayout>
 
         <!--
-          One thin line: the eye on the left, the backup's age on the right.
+          One thin line: the backup's age on the right.
+
+          No eye here any more. Hiding the balance belongs to the Home screen
+          alone (the owner's call); this screen still honours it, since both
+          read the same BalancePrivacy setting, and re-reads it on resume.
 
           The big "Net balance Rs 178" that used to lead this band is gone,
           deliberately. It added what the shop is owed to what the shop owes
@@ -153,19 +158,6 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingEnd="10dp">
-
-            <ImageView
-                android:id="@+id/ivEye"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="-10dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:contentDescription="@string/hide_balance"
-                android:focusable="true"
-                android:padding="10dp"
-                android:src="@drawable/ic_eye_open"
-                app:tint="@color/header_on_dark" />
 
             <Space
                 android:layout_width="0dp"
@@ -209,9 +201,16 @@
           are the ones actually tapped to filter.
         -->
         <!--
-          The white card: totals, search and the list tools, sitting on the
-          header the way the entry screen's card does. Inside it the tools are
-          green on white rather than gold on green.
+          The white sheet: totals, search and the list tools. It runs from one
+          screen edge to the other and ends flush with the header's bottom, so
+          the green stops in one straight line exactly on the sheet's top edge:
+          the two touch, neither overlaps. The negative margins cancel the
+          header's own side (14dp) and bottom (10dp) padding, and the header
+          has clipToPadding="false" so the sheet is drawn into that padding.
+          The inner 26dp side padding keeps the contents where they were
+          (the old 14dp margin + 12dp padding). Tool icons are the app's
+          legible gold (gold_accent, 5.06:1 on white); the header's bright
+          gold would be 1.36:1 here and all but vanish.
 
           The card must open OUTSIDE the totals row. Opened inside it (as it
           once was), the two weighted boxes got zero width, the search and
@@ -222,10 +221,16 @@
             android:id="@+id/khataCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="-14dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/bg_entry_card"
+            android:layout_marginEnd="-14dp"
+            android:layout_marginBottom="-10dp"
+            android:background="@drawable/bg_khata_sheet"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:paddingStart="26dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="26dp"
+            android:paddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -353,7 +358,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:iconTint="@color/brand_green"
+                app:iconTint="@color/gold_accent"
                 app:strokeColor="@color/page_line" />
 
             <!--
@@ -379,7 +384,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:iconTint="@color/brand_green"
+                app:iconTint="@color/gold_accent"
                 app:strokeColor="@color/page_line" />
         </LinearLayout>
 
@@ -427,7 +432,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24dp"
-                app:iconTint="@color/brand_green"
+                app:iconTint="@color/gold_accent"
                 app:strokeColor="@color/page_line" />
 
             <com.google.android.material.button.MaterialButton
@@ -447,7 +452,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:iconTint="@color/brand_green"
+                app:iconTint="@color/gold_accent"
                 app:strokeColor="@color/page_line" />
 
             <com.google.android.material.button.MaterialButton
@@ -467,7 +472,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:iconTint="@color/brand_green"
+                app:iconTint="@color/gold_accent"
                 app:strokeColor="@color/page_line" />
         </LinearLayout>
 

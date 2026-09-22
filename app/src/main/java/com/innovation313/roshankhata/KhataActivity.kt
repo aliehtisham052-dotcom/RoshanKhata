@@ -8,7 +8,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
@@ -96,7 +95,6 @@ class KhataActivity : AppCompatActivity() {
     // somewhere in the middle of the alphabet.
     private var sortMode = SortMode.RECENT
 
-    private lateinit var ivEye: ImageView
 
     /** The real figure. The view may be showing a mask over it. */
 
@@ -289,15 +287,8 @@ class KhataActivity : AppCompatActivity() {
         // looks like customers have gone missing rather than been narrowed.
         renderFilterState()
 
-        // The eye alone is the toggle now. The row it sits in also holds the
-        // backup line, which opens Backup; with the balance gone from this
-        // row, making the whole row the toggle would have handed most of its
-        // width to that other action.
-        ivEye = findViewById(R.id.ivEye)
-        ivEye.setOnClickListener {
-            BalancePrivacy.toggle(this)
-            renderPrivacy()
-        }
+        // No eye on this screen: hiding the balance is toggled on Home only.
+        // The totals still follow that choice (same BalancePrivacy setting).
         renderPrivacy()
 
         setupBottomNav()
@@ -1043,6 +1034,9 @@ class KhataActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Balance hidden or shown on Home while this screen sat in the back
+        // stack: follow it now, since this screen has no eye of its own.
+        renderPrivacy()
         // Nothing to re-select here: Khata has no item in the bar, and
         // assigning selectedItemId would fire the listener and finish this
         // screen the moment it came back to the front.
@@ -1176,18 +1170,12 @@ class KhataActivity : AppCompatActivity() {
         tvTotalGive.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGive)
     }
 
-    /** The two boxes, masked or not, and the eye that says which. */
+    /**
+     * The two boxes, masked or not. The toggle itself lives on Home; this
+     * screen only follows the saved choice.
+     */
     private fun renderPrivacy() {
-        val hidden = BalancePrivacy.isHidden(this)
-
         renderTotals()
-
-        ivEye.setImageResource(
-            if (hidden) R.drawable.ic_eye_closed else R.drawable.ic_eye_open
-        )
-        ivEye.contentDescription = getString(
-            if (hidden) R.string.show_balance else R.string.hide_balance
-        )
     }
 
     /**
