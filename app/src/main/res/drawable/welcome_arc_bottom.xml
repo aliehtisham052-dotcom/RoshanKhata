@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bottom band of the welcome screen: darker green under a gold arc, as on the language artwork. Stretched to the screen width. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="390dp" android:height="210dp"
+    android:viewportWidth="390" android:viewportHeight="210">
+    <path android:fillColor="@color/welcome_band"
+        android:pathData="M0,20C120,80 270,80 390,10L390,210L0,210Z"/>
+    <path android:strokeColor="@color/brand_gold" android:strokeWidth="3"
+        android:pathData="M0,20C120,80 270,80 390,10"/>
+    <path android:strokeColor="@color/gold_on_dark" android:strokeWidth="1"
+        android:strokeAlpha="0.5"
+        android:pathData="M0,34C120,94 270,94 390,24"/>
+</vector>

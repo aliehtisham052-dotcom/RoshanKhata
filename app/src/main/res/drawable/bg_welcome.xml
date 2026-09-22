@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Welcome screen background. Top-anchored and bottom-anchored fixed-size
+  items (layer-list width/height + gravity, API 23+; minSdk 24), so the
+  sweeps keep their size whatever the content does. Set on the ScrollView,
+  whose background stays put while the content scrolls.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <color android:color="@color/welcome_bg" />
+    </item>
+    <item
+        android:width="170dp"
+        android:height="170dp"
+        android:gravity="top|start"
+        android:drawable="@drawable/welcome_sweep_top" />
+    <item
+        android:height="190dp"
+        android:gravity="bottom|fill_horizontal"
+        android:drawable="@drawable/welcome_arc_bottom" />
+</layer-list>

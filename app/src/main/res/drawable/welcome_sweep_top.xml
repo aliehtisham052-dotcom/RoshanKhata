@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Top-left corner of the welcome screen: a darker green wedge edged in gold, echoing the splash and language artwork. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="170dp" android:height="170dp"
+    android:viewportWidth="170" android:viewportHeight="170">
+    <path android:fillColor="@color/welcome_band"
+        android:pathData="M0,0L150,0C95,30 40,80 0,150Z"/>
+    <path android:strokeColor="@color/brand_gold" android:strokeWidth="3"
+        android:pathData="M150,0C95,30 40,80 0,150"/>
+    <path android:strokeColor="@color/gold_on_dark" android:strokeWidth="1"
+        android:strokeAlpha="0.55"
+        android:pathData="M168,0C110,34 52,86 0,164"/>
+</vector>
