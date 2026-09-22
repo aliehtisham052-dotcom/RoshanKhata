@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Khata header: the green gradient stops 64dp short of the bottom, and the
+  page colour shows there, so the white card at the foot of the header sits
+  half on the green and half on the page, the way the entry screen's card does.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/page_bg" />
+    <item android:bottom="64dp" android:drawable="@drawable/bg_header_gradient" />
+</layer-list>
