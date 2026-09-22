@@ -192,27 +192,13 @@ class MainActivity : AppCompatActivity() {
             topMargin = gap
             bottomMargin = gap
         }
-        // The card takes the feature's tint; the disc behind the icon and the
-        // icon itself take the full-strength colour. The icon set was drawn
-        // white for the old dark nav bar, so it is tinted here rather than
-        // thirteen files being redrawn.
-        val iconColor = androidx.core.content.ContextCompat.getColor(this, feature.iconColorRes)
-
-        (tile as? androidx.cardview.widget.CardView)?.setCardBackgroundColor(
-            androidx.core.content.ContextCompat.getColor(this, feature.tintRes)
-        )
-
-        tile.findViewById<View>(R.id.featureIconDisc)?.background =
-            androidx.core.content.ContextCompat.getDrawable(this, R.drawable.bg_feature_icon)
-                ?.mutate()?.apply {
-                    // A tenth of the icon's own colour: present enough to seat
-                    // the glyph, faint enough not to become a second card.
-                    setTint(androidx.core.graphics.ColorUtils.setAlphaComponent(iconColor, 28))
-                }
-
+        // Every tile is the same brand-green card now (set in the layout),
+        // with the header's bright gold for the icon — the owner's choice, to
+        // match the Khata tools. The icon set is drawn white, so it is tinted
+        // here rather than thirteen files being redrawn.
         tile.findViewById<ImageView>(R.id.ivFeatureIcon).apply {
             setImageResource(feature.iconRes)
-            setColorFilter(iconColor)
+            setColorFilter(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.gold_on_dark))
         }
         tile.findViewById<TextView>(R.id.tvFeatureLabel).setText(feature.labelRes)
         tile.setOnClickListener { startActivity(Intent(this, feature.destination)) }
@@ -494,9 +480,11 @@ class MainActivity : AppCompatActivity() {
                 target = tile,
                 titleRes = titleRes,
                 descRes = descRes,
-                // No radius given: the default rounds fully, and the overlay
-                // clamps it to half the shorter side — so the lit shape
-                // follows the tile, which is now a round one.
+                // The tile's own 18dp corner (item_home_feature). The old
+                // default rounded fully, which fitted the pill tiles but would
+                // leave ~8dp of each corner of a rounded-rect tile under the
+                // dim.
+                cornerRadiusDp = 18f,
                 //
                 // No padding either. The default 10dp ringed an oval that is
                 // already most of a third of the screen wide, which pushed the
@@ -533,10 +521,10 @@ class MainActivity : AppCompatActivity() {
 
         /** Tile height, in dp. Set here because the layout file's value is
          *  discarded when a tile is inflated against a null parent. */
-        private const val TILE_HEIGHT_DP = 86f
+        private const val TILE_HEIGHT_DP = 72f
 
         /** Space around each tile, in dp. Neighbours end up twice this apart. */
-        private const val TILE_GAP_DP = 8f
+        private const val TILE_GAP_DP = 5f
 
         /**
          * Set by the gate. MainActivity is not exported and cannot be launched

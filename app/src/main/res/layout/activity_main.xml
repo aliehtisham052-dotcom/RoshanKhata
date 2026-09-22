@@ -23,9 +23,9 @@
         android:background="@drawable/bg_header_gradient"
         android:orientation="vertical"
         android:paddingStart="20dp"
-        android:paddingTop="20dp"
+        android:paddingTop="12dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="18dp"
+        android:paddingBottom="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:text="@string/app_name"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
@@ -44,15 +44,15 @@
             android:layout_marginTop="1dp"
             android:text="@string/app_tagline"
             android:textColor="@color/header_on_dark"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:text="@string/net_balance"
             android:textColor="@color/header_on_dark"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <!-- Tappable: the eye says this can be hidden without anyone explaining it. -->
         <LinearLayout
@@ -73,13 +73,13 @@
                 android:layout_height="wrap_content"
                 android:text="Rs 0"
                 android:textColor="@color/white"
-                android:textSize="30sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/ivEye"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_marginStart="10dp"
                 android:contentDescription="@string/hide_balance"
                 android:src="@drawable/ic_eye_open"
@@ -93,7 +93,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:weightSum="2">
 
@@ -104,14 +104,17 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_summary_get"
                 android:orientation="vertical"
-                android:padding="10dp">
+                android:paddingStart="10dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="6dp">
 
                 <TextView
                     android:id="@+id/tvTotalGet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/bal_owed_to_me"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     tools:text="Rs 7,520" />
 
@@ -121,7 +124,7 @@
                     android:layout_marginTop="2dp"
                     android:text="@string/i_have_to_get"
                     android:textColor="@color/bal_owed_to_me"
-                    android:textSize="11sp" />
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -131,14 +134,17 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_summary_give"
                 android:orientation="vertical"
-                android:padding="10dp">
+                android:paddingStart="10dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="6dp">
 
                 <TextView
                     android:id="@+id/tvTotalGive"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/bal_i_owe"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     tools:text="Rs 167,665" />
 
@@ -148,7 +154,7 @@
                     android:layout_marginTop="2dp"
                     android:text="@string/i_have_to_give"
                     android:textColor="@color/bal_i_owe"
-                    android:textSize="11sp" />
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -184,7 +190,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="10dp"
-            android:paddingTop="18dp"
+            android:paddingTop="12dp"
             android:paddingEnd="10dp">
 
             <TextView
@@ -208,7 +214,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="14dp"
                 android:layout_marginBottom="8dp"
                 android:letterSpacing="0.12"
                 android:text="@string/home_section_business"

@@ -13,16 +13,18 @@
   here: inflating against a null parent discards every layout_* attribute in
   this file, so values written here would silently do nothing.
 -->
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="100dp"
-    app:cardElevation="1dp">
+    app:cardBackgroundColor="@color/brand_green"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/welcome_note_stroke"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:id="@+id/featureRoot"
@@ -30,19 +32,18 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
 
         <FrameLayout
             android:id="@+id/featureIconDisc"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:background="@drawable/bg_feature_icon">
+            android:layout_width="24dp"
+            android:layout_height="24dp">
 
             <ImageView
                 android:id="@+id/ivFeatureIcon"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_gravity="center"
                 android:contentDescription="@null"
                 tools:src="@drawable/ic_nav_khata" />
@@ -59,14 +60,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="2"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="3dp"
             android:gravity="center"
             android:lineSpacingExtra="1dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:textColor="@color/ink"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/white"
             android:textSize="10sp"
             android:textStyle="bold"
             tools:text="Khata" />
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
