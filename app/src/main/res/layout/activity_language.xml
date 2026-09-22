@@ -15,6 +15,12 @@
   because a drawn line cannot be translated. This one is the app's own string,
   in the language the app is currently showing.
 
+  The stage is forced left-to-right. The picture never mirrors, so its touch
+  areas must not either: under Urdu, Arabic, Sindhi or Persian the app runs
+  right-to-left, ConstraintLayout mirrors start/end and the guidelines, and the
+  drawn "Urdu" button would land on the English touch area (Sindhi on Arabic).
+  The note line still reads in its own language's direction (textDirection).
+
   Ids are the ones LanguageActivity has always bound.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,6 +32,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/langStage"
+        android:layoutDirection="ltr"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -137,6 +144,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:gravity="center"
+            android:textDirection="locale"
             android:text="@string/language_change_note"
             android:textColor="#DCE6DF"
             android:textSize="13sp"

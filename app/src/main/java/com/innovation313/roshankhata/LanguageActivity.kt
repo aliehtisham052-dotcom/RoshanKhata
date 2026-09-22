@@ -41,16 +41,15 @@ class LanguageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_language)
 
         // Edge to edge with NO padding, unlike the other screens: the artwork
-        // is the whole screen and runs under both bars. Dark status icons for
-        // the cream wall at the top; light navigation icons for the deep-green
-        // footer at the bottom, with the system's grey scrim off so the footer
-        // is not cut by a bar.
+        // is the whole screen and runs under both bars. The artwork is deep
+        // green top to bottom, so light icons on both bars, with the system's
+        // grey scrim off so the footer is not cut by a bar.
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
         window.navigationBarColor = Color.TRANSPARENT
         if (Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
         WindowInsetsControllerCompat(window, window.decorView).apply {
-            isAppearanceLightStatusBars = true
+            isAppearanceLightStatusBars = false
             isAppearanceLightNavigationBars = false
         }
 
