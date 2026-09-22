@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Behind the artwork, seen only where the screen is not the artwork's shape
-  (the picture is shown whole, never cropped): the cream wall above, the deep
-  green of the footer band below.
+  (the picture is shown whole, never cropped): the green of the picture's own
+  top edge above, the deeper green of its bottom edge below, so no seam shows.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <!-- angle 270 runs top to bottom: cream from the top down to 88%, then green -->
+    <!-- angle 270 runs top to bottom -->
     <gradient
         android:angle="270"
-        android:startColor="#F5F1E6"
-        android:centerColor="#F5F1E6"
-        android:endColor="#0E3A23"
-        android:centerY="0.88"
+        android:startColor="#1B532D"
+        android:endColor="#0B4827"
         android:type="linear" />
 </shape>
