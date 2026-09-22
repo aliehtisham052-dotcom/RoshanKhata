@@ -733,7 +733,21 @@ class PartyDetailActivity : AppCompatActivity() {
             }
         }
 
-        etItemName.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) refreshBatchButton() }
+        etItemName.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                // The list opens ABOVE the field, not below: below runs across
+                // Quantity, Unit and the rest of the form still to be filled.
+                // Supplier Bill's own product field already reads this way.
+                // Row height is approximate (a row is 48dp min, taller with
+                // its second line) — the constant is the worst case, so the
+                // list sits a little clear of the field rather than touching
+                // it, never overlapping it.
+                val rowHeight = (56 * resources.displayMetrics.density).toInt()
+                etItemName.dropDownVerticalOffset = -(etItemName.height + 3 * rowHeight)
+            } else {
+                refreshBatchButton()
+            }
+        }
 
         // Tapping a suggestion is the owner finishing the name, so the
         // product lookup runs there and then. Without this it would wait for
