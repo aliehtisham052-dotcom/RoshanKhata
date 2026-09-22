@@ -27,17 +27,24 @@
             app:theme="@style/ToolbarInk"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
+        <!--
+          Avatar beside a column of name, number and identity, the column
+          centred on the avatar. The number used to sit on its own line under
+          the avatar, so a two-line name left the circle floating high and
+          the number hanging off to the left of everything else.
+        -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <FrameLayout
                 android:id="@+id/flAvatar"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginEnd="12dp">
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="14dp">
 
                 <TextView
                     android:id="@+id/tvDetailInitials"
@@ -46,7 +53,7 @@
                     android:background="@drawable/bg_avatar_circle"
                     android:gravity="center"
                     android:textColor="@color/ink_soft"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -75,42 +82,53 @@
                     app:tint="@color/white" />
             </FrameLayout>
 
-            <TextView
-                android:id="@+id/tvPartyName"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvPartyName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- The handset is a compound drawable, so it hides with the number. -->
+                <TextView
+                    android:id="@+id/tvPartyPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:drawableStart="@drawable/ic_phone_small"
+                    android:drawablePadding="6dp"
+                    android:drawableTint="@color/gold_on_dark"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/gold_on_dark"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <!--
+                  Father's name and village on ONE line, smaller and dimmer than the
+                  number above it. The header already carries a name, a number, a
+                  balance, four buttons and a search box; two more full lines would
+                  push the balance — the thing the owner opened this screen for — down
+                  the screen. Gone entirely when neither is known, so a customer
+                  entered before these fields existed sees the screen unchanged.
+                -->
+                <TextView
+                    android:id="@+id/tvPartyIdentity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:alpha="0.75"
+                    android:textColor="@color/gold_on_dark"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+            </LinearLayout>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvPartyPhone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="@color/gold_on_dark"
-            android:textSize="13sp"
-            android:visibility="gone" />
-
-        <!--
-          Father's name and village on ONE line, smaller and dimmer than the
-          number above it. The header already carries a name, a number, a
-          balance, four buttons and a search box; two more full lines would
-          push the balance — the thing the owner opened this screen for — down
-          the screen. Gone entirely when neither is known, so a customer
-          entered before these fields existed sees the screen unchanged.
-        -->
-        <TextView
-            android:id="@+id/tvPartyIdentity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
-            android:alpha="0.75"
-            android:textColor="@color/gold_on_dark"
-            android:textSize="12sp"
-            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvPartyBalance"
@@ -129,21 +147,22 @@
             android:textSize="12sp" />
 
         <!--
-          The action buttons live in a horizontal scroller now. With Call added
-          there are four, and on a narrow phone the last one (Statement) ran off
-          the edge — half-visible, as the owner spotted. Scrolling keeps every
-          button reachable without shrinking the text.
-        -->
-        <!--
-          The four actions in one even row — Call, WhatsApp, SMS, Statement —
-          each equal width so the header reads as a tidy, deliberate toolbar
-          rather than a scrolling strip. Bright gold on the dark header.
+          The four actions as icon tiles — Call, WhatsApp, SMS, Statement —
+          drawn in the same language as the Khata screen's tool buttons and
+          header buttons: gold icon and gold outline, here on an 8% white
+          wash (header_tile_fill) because this header IS brand green and a
+          brand-green fill would vanish into it. Gold measures 4.68:1 on the
+          wash. Labels auto-size down to 7sp so the longest locale
+          ("صورت‌حساب", "STATEMENT") never wraps or clips. marginEnd 12dp
+          plus the header's 4dp end padding gives the same 16dp inset as the
+          start; before, Statement ran to the screen edge.
         -->
         <LinearLayout
             android:id="@+id/reminderBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="12dp"
             android:orientation="horizontal"
             android:weightSum="4">
 
@@ -151,78 +170,151 @@
                 android:id="@+id/btnCall"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="42dp"
+                android:layout_height="64dp"
                 android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
+                android:letterSpacing="0.02"
+                android:maxLines="1"
                 android:minWidth="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
+                android:paddingStart="2dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="2dp"
+                android:paddingBottom="6dp"
                 android:text="@string/call"
                 android:textColor="@color/gold_on_dark"
-                android:textSize="11sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/gold_on_dark" />
+                android:textSize="10sp"
+                android:textStyle="bold"
+                app:autoSizeMaxTextSize="10sp"
+                app:autoSizeMinTextSize="7sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform"
+                app:backgroundTint="@color/header_tile_fill"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_action_call"
+                app:iconGravity="top"
+                app:iconPadding="4dp"
+                app:iconSize="22dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark"
+                app:strokeWidth="1.5dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnWhatsApp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="42dp"
+                android:layout_height="64dp"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
+                android:letterSpacing="0.02"
+                android:maxLines="1"
                 android:minWidth="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
+                android:paddingStart="2dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="2dp"
+                android:paddingBottom="6dp"
                 android:text="@string/remind_whatsapp"
                 android:textColor="@color/gold_on_dark"
-                android:textSize="11sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/gold_on_dark" />
+                android:textSize="10sp"
+                android:textStyle="bold"
+                app:autoSizeMaxTextSize="10sp"
+                app:autoSizeMinTextSize="7sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform"
+                app:backgroundTint="@color/header_tile_fill"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_action_whatsapp"
+                app:iconGravity="top"
+                app:iconPadding="4dp"
+                app:iconSize="22dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark"
+                app:strokeWidth="1.5dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSms"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="42dp"
+                android:layout_height="64dp"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
+                android:letterSpacing="0.02"
+                android:maxLines="1"
                 android:minWidth="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
+                android:paddingStart="2dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="2dp"
+                android:paddingBottom="6dp"
                 android:text="@string/remind_sms"
                 android:textColor="@color/gold_on_dark"
-                android:textSize="11sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/gold_on_dark" />
+                android:textSize="10sp"
+                android:textStyle="bold"
+                app:autoSizeMaxTextSize="10sp"
+                app:autoSizeMinTextSize="7sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform"
+                app:backgroundTint="@color/header_tile_fill"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_action_sms"
+                app:iconGravity="top"
+                app:iconPadding="4dp"
+                app:iconSize="22dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark"
+                app:strokeWidth="1.5dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPdf"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="42dp"
+                android:layout_height="64dp"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
+                android:letterSpacing="0.02"
+                android:maxLines="1"
                 android:minWidth="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
+                android:paddingStart="2dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="2dp"
+                android:paddingBottom="6dp"
                 android:text="@string/statement_pdf"
                 android:textColor="@color/gold_on_dark"
-                android:textSize="11sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/gold_on_dark" />
+                android:textSize="10sp"
+                android:textStyle="bold"
+                app:autoSizeMaxTextSize="10sp"
+                app:autoSizeMinTextSize="7sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform"
+                app:backgroundTint="@color/header_tile_fill"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_pdf_doc"
+                app:iconGravity="top"
+                app:iconPadding="4dp"
+                app:iconSize="22dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark"
+                app:strokeWidth="1.5dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -319,7 +411,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="12dp">
+            android:paddingStart="16dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="14dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGave"
@@ -327,10 +422,21 @@
                 android:layout_height="56dp"
                 android:layout_marginEnd="6dp"
                 android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0.04"
+                android:maxLines="1"
                 android:text="@string/i_gave"
+                android:textColor="@color/white"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 app:backgroundTint="@color/red_gave"
-                app:cornerRadius="10dp" />
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_arrow_gave"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconSize="20dp"
+                app:iconTint="@color/white" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGot"
@@ -338,10 +444,21 @@
                 android:layout_height="56dp"
                 android:layout_marginStart="6dp"
                 android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0.04"
+                android:maxLines="1"
                 android:text="@string/i_got"
+                android:textColor="@color/white"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 app:backgroundTint="@color/green_got"
-                app:cornerRadius="10dp" />
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_arrow_got"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconSize="20dp"
+                app:iconTint="@color/white" />
         </LinearLayout>
 
         <!--
