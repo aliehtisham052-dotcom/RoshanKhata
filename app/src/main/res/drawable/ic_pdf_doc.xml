@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  A document with "PDF" on it. The old path drew only P and D; the F had
+  never been part of it, so the icon read "PD" everywhere it was used
+  (Khata tools, Ledger report, Business settings). The three letters are
+  plain blocks, 1 unit strokes, kept inside the page (x 7 to 17.4).
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
     <path android:fillColor="@android:color/white"
-        android:pathData="M14,2L6,2c-1.1,0 -1.99,0.9 -1.99,2L4,20c0,1.1 0.89,2 1.99,2L18,22c1.1,0 2,-0.9 2,-2L20,8l-6,-6zM6,20L6,4h7v5h5v11L6,20zM8,15.5h1.5v-1L11,14.5c0.55,0 1,-0.45 1,-1v-1c0,-0.55 -0.45,-1 -1,-1L8,11.5v4zM9.5,12.5h1v0.5h-1v-0.5zM13,15.5h2c0.55,0 1,-0.45 1,-1v-2c0,-0.55 -0.45,-1 -1,-1h-2v4zM14,12.5h0.5v1.5L14,14v-1.5z"/>
+        android:pathData="M14,2L6,2c-1.1,0 -1.99,0.9 -1.99,2L4,20c0,1.1 0.89,2 1.99,2L18,22c1.1,0 2,-0.9 2,-2L20,8l-6,-6zM6,20L6,4h7v5h5v11L6,20zM7,11.5H8V15.5H7ZM8,11.5H10.2V12.4H8ZM9.3,11.5H10.2V14.4H9.3ZM8,13.5H10.2V14.4H8ZM11,11.5H12V15.5H11ZM12,11.5H13.1V12.4H12ZM12,14.6H13.1V15.5H12ZM13.1,12.1H14V14.9H13.1ZM12.9,11.5H13.5V12.1H12.9ZM12.9,14.9H13.5V15.5H12.9ZM14.9,11.5H15.9V15.5H14.9ZM15.9,11.5H17.4V12.4H15.9ZM15.9,13.1H17V14H15.9Z"/>
 </vector>
