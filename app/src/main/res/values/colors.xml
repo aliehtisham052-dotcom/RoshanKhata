@@ -112,6 +112,25 @@
     <color name="header_tile_fill">#14FFFFFF</color>
 
     <!--
+      Welcome screen. welcome_bg is the green the language-screen logo sits on,
+      so logo_on_green blends into it without a box; welcome_band is the darker
+      green under the gold sweeps, as on the splash and language artwork.
+    -->
+    <color name="welcome_bg">#0A4726</color>
+    <color name="welcome_band">#06391E</color>
+    <color name="welcome_note_fill">#0FFFFFFF</color>
+    <color name="welcome_note_stroke">#66FFDA6B</color>
+
+    <!--
+      Google's own Light button, fixed by the Sign in with Google branding
+      guidelines (checked 22 Sep 2026, page updated 7 Jul 2026): fill #FFFFFF,
+      1px inside stroke #747775, text #1F1F1F. Not brand colours — do not
+      restyle them; the standard-colour G may only sit on this white.
+    -->
+    <color name="google_btn_stroke">#747775</color>
+    <color name="google_btn_text">#1F1F1F</color>
+
+    <!--
       Customer-balance colours, deliberately separate from green_got/red_gave.
 
       The owner wants the shopkeeper's convention: money a customer OWES the shop

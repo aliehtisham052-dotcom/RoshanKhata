@@ -41,8 +41,22 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_welcome)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
-        findViewById<MaterialButton>(R.id.btnWelcomeConnect).setOnClickListener {
-            connectDrive()
+        // The screen is deep green top to bottom now (bg_welcome), like the
+        // language screen: transparent bars with light icons over it.
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
+        if (android.os.Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
+        androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+        }
+
+        findViewById<MaterialButton>(R.id.btnWelcomeConnect).apply {
+            // Google's branding rules forbid a monochrome G. MaterialButton
+            // tints its icon with the text colour by default, which would turn
+            // the four-colour G dark grey; clearing the tint keeps it standard.
+            iconTint = null
+            setOnClickListener { connectDrive() }
         }
         findViewById<MaterialButton>(R.id.btnWelcomeSkip).setOnClickListener {
             markSeenAndProceed()
