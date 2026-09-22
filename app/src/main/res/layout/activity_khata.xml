@@ -208,17 +208,15 @@
           the backup status, where a plain count belongs — the two boxes up here
           are the ones actually tapped to filter.
         -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <!--
+        <!--
           The white card: totals, search and the list tools, sitting on the
           header the way the entry screen's card does. Inside it the tools are
           green on white rather than gold on green.
+
+          The card must open OUTSIDE the totals row. Opened inside it (as it
+          once was), the two weighted boxes got zero width, the search and
+          tool rows were pushed past the row's edge, and the card stretched
+          to the full screen height, leaving the party list no room at all.
         -->
         <LinearLayout
             android:id="@+id/khataCard"
@@ -228,6 +226,12 @@
             android:background="@drawable/bg_entry_card"
             android:orientation="vertical"
             android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
         <LinearLayout
                 android:id="@+id/boxTotalGet"
