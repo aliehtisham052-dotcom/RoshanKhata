@@ -208,9 +208,10 @@
           header's own side (14dp) and bottom (10dp) padding, and the header
           has clipToPadding="false" so the sheet is drawn into that padding.
           The inner 26dp side padding keeps the contents where they were
-          (the old 14dp margin + 12dp padding). Tool icons are the app's
-          legible gold (gold_accent, 5.06:1 on white); the header's bright
-          gold would be 1.36:1 here and all but vanish.
+          (the old 14dp margin + 12dp padding). The five tools are drawn like
+          the header's own backup and profile buttons: brand-green fill with
+          the bright header gold for icon and outline (about 5.7:1). That
+          gold straight on white would be 1.36:1 and all but vanish.
 
           The card must open OUTSIDE the totals row. Opened inside it (as it
           once was), the two weighted boxes got zero width, the search and
@@ -358,8 +359,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:iconTint="@color/gold_accent"
-                app:strokeColor="@color/page_line" />
+                app:backgroundTint="@color/brand_green"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
 
             <!--
               Open the filter sheet: Account (all / clear / to-get / to-give)
@@ -384,8 +386,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:iconTint="@color/gold_accent"
-                app:strokeColor="@color/page_line" />
+                app:backgroundTint="@color/brand_green"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
         </LinearLayout>
 
         <!--
@@ -432,8 +435,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24dp"
-                app:iconTint="@color/gold_accent"
-                app:strokeColor="@color/page_line" />
+                app:backgroundTint="@color/brand_green"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLedgerPdf"
@@ -452,8 +456,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:iconTint="@color/gold_accent"
-                app:strokeColor="@color/page_line" />
+                app:backgroundTint="@color/brand_green"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnScanQr"
@@ -472,8 +477,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:iconTint="@color/gold_accent"
-                app:strokeColor="@color/page_line" />
+                app:backgroundTint="@color/brand_green"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark" />
         </LinearLayout>
 
         <!--
