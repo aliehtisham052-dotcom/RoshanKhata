@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Two faint gold circles cut off by the header's top corner — the same
+  gold-sweep idea as the welcome screen, drawn as outlines so it decorates
+  without competing with the balance. The vector clips to its own box, so
+  only the arcs inside it show.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp" android:height="130dp"
+    android:viewportWidth="160" android:viewportHeight="130">
+    <path android:strokeColor="@color/home_header_sweep" android:strokeWidth="1.5"
+        android:pathData="M60,15a85,85 0 1,0 170,0a85,85 0 1,0 -170,0" />
+    <path android:strokeColor="@color/home_header_sweep" android:strokeWidth="1.5"
+        android:pathData="M100,20a55,55 0 1,0 110,0a55,55 0 1,0 -110,0" />
+</vector>

@@ -61,12 +61,20 @@ class CoachMarkController(
          * circle is drawn round its icon alone, but the card still has to sit
          * below the label underneath — otherwise it lands on top of it.
          */
-        val clearance: View? = null
+        val clearance: View? = null,
+        /**
+         * A Home HEADER step (net balance, I have to get, I have to give).
+         * These use the small pointer card under the lit item, counted
+         * among themselves ("1 / 3"), with a gold ring on the spotlight.
+         * Every other step keeps the original card, dots and placement.
+         */
+        val header: Boolean = false
     )
 
     private var index = 0
     private var overlay: CoachMarkOverlay? = null
     private var card: View? = null
+    private var tip: View? = null
     private var container: FrameLayout? = null
     private var scrollAnimator: ValueAnimator? = null
 
@@ -119,6 +127,25 @@ class CoachMarkController(
         cardView.findViewById<TextView>(R.id.tvCoachSkip).setOnClickListener { finish() }
         cardView.findViewById<Button>(R.id.btnCoachNext).setOnClickListener { advance() }
 
+        // The header steps' card. Placed by absolute left/top because it
+        // follows a measured spot on screen, not the reading direction.
+        val tipView = activity.layoutInflater.inflate(R.layout.view_coach_tip, host, false)
+        host.addView(
+            tipView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.LEFT
+                leftMargin = dp(TIP_SIDE_DP).toInt()
+                rightMargin = dp(TIP_SIDE_DP).toInt()
+            }
+        )
+        tipView.visibility = View.GONE
+        tip = tipView
+        tipView.findViewById<TextView>(R.id.tvTipSkip).setOnClickListener { finish() }
+        tipView.findViewById<Button>(R.id.btnTipNext).setOnClickListener { advance() }
+
         index = 0
         showStep()
     }
@@ -130,6 +157,14 @@ class CoachMarkController(
         val overlayView = overlay ?: return
         val cardView = card ?: return
         val host = container ?: return
+
+        if (step.header) {
+            showHeaderStep(step, overlayView, host)
+            return
+        }
+        tip?.visibility = View.GONE
+        cardView.visibility = View.VISIBLE
+        overlayView.ringColor = null
 
         cardView.findViewById<TextView>(R.id.tvCoachTitle).setText(step.titleRes)
         cardView.findViewById<TextView>(R.id.tvCoachDesc).setText(step.descRes)
@@ -309,19 +344,81 @@ class CoachMarkController(
         val screenDp =
             activity.resources.displayMetrics.widthPixels /
                 activity.resources.displayMetrics.density
-        val s = CoachDots.sizesFor(steps.size, screenDp)
+        // Only the tile steps are counted here — the header steps have their
+        // own card and their own "1 / 3".
+        val tileCount = steps.count { !it.header }
+        val position = steps.take(index).count { !it.header }
+        val s = CoachDots.sizesFor(tileCount, screenDp)
 
-        for (i in steps.indices) {
+        for (i in 0 until tileCount) {
             val dot = View(activity)
-            val width = if (i == index) dp(s.activeDp).toInt() else dp(s.dotDp).toInt()
+            val width = if (i == position) dp(s.activeDp).toInt() else dp(s.dotDp).toInt()
             val params = LinearLayout.LayoutParams(width, dp(s.dotDp).toInt()).apply {
                 marginEnd = dp(s.gapDp).toInt()
             }
             dot.layoutParams = params
             dot.setBackgroundResource(
-                if (i == index) R.drawable.coach_dot_active else R.drawable.coach_dot_inactive
+                if (i == position) R.drawable.coach_dot_active else R.drawable.coach_dot_inactive
             )
             holder.addView(dot)
+        }
+    }
+
+    /**
+     * A header step: the lit item gets a gold ring and a rounded hole the
+     * shape of the item itself; the pointer card sits right under it, its
+     * notch aimed at the item's centre, so the explanation is read in the
+     * same glance as the figure — and none of the tiles below are covered.
+     */
+    private fun showHeaderStep(step: Step, overlayView: CoachMarkOverlay, host: FrameLayout) {
+        val tipView = tip ?: return
+        card?.visibility = View.GONE
+        tipView.visibility = View.VISIBLE
+
+        val group = steps.filter { it.header }
+        val position = steps.take(index).count { it.header } + 1
+        tipView.findViewById<TextView>(R.id.tvTipCount).text = "$position / ${group.size}"
+        tipView.findViewById<TextView>(R.id.tvTipTitle).setText(step.titleRes)
+        tipView.findViewById<TextView>(R.id.tvTipDesc).setText(step.descRes)
+        val isLast = index == steps.size - 1
+        tipView.findViewById<Button>(R.id.btnTipNext)
+            .setText(if (isLast) R.string.coach_done else R.string.coach_next)
+
+        val dots = tipView.findViewById<LinearLayout>(R.id.coachTipDots)
+        dots.removeAllViews()
+        for (i in 1..group.size) {
+            val dot = View(activity)
+            dot.layoutParams = LinearLayout.LayoutParams(
+                dp(if (i == position) 18f else 6f).toInt(), dp(6f).toInt()
+            ).apply { marginStart = dp(4f).toInt() }
+            dot.setBackgroundResource(
+                if (i == position) R.drawable.coach_dot_active else R.drawable.coach_dot_inactive
+            )
+            dots.addView(dot)
+        }
+
+        overlayView.ringColor = activity.getColor(R.color.gold_on_dark)
+        val rect = CoachMarkOverlay.boundsWithin(step.target, host)
+        overlayView.holePadding = dp(step.paddingDp)
+        overlayView.holeRadius = dp(step.cornerRadiusDp)
+        overlayView.holeRect = rect
+
+        tipView.post {
+            try {
+                val lp = tipView.layoutParams as? FrameLayout.LayoutParams ?: return@post
+                val side = dp(TIP_SIDE_DP)
+                lp.topMargin = (rect.bottom + dp(step.paddingDp) + dp(6f)).toInt()
+                tipView.layoutParams = lp
+
+                // Aim the notch at the lit item's centre, kept clear of the
+                // card's rounded corners.
+                val pointer = tipView.findViewById<View>(R.id.coachTipPointer)
+                val cardWidth = host.width - 2 * side
+                val want = rect.centerX() - side - dp(8f)
+                pointer.translationX = want.coerceIn(dp(14f), (cardWidth - dp(30f)).coerceAtLeast(dp(14f)))
+            } catch (e: Exception) {
+                android.util.Log.e(TAG, "header card positioning failed", e)
+            }
         }
     }
 
@@ -337,6 +434,7 @@ class CoachMarkController(
         container?.let { root.removeView(it) }
         container = null
         card = null
+        tip = null
         overlay = null
         markRun(activity)
     }
@@ -350,6 +448,9 @@ class CoachMarkController(
          * NEXT stays within thumb reach.
          */
         private const val CARD_RESTING_FRACTION = 0.52f
+
+        /** Side margin of the header steps' pointer card. */
+        private const val TIP_SIDE_DP = 12f
 
         /** How long a row takes to travel, whatever the distance. */
         private const val SCROLL_MS = 200L

@@ -11,8 +11,9 @@
     <string name="coach_skip">رد کردن</string>
     <string name="coach_next">بعدی</string>
     <string name="coach_done">متوجه شدم</string>
-    <string name="coach_title_balance">موجودی شما</string>
-    <string name="coach_desc_balance">در یک نگاه ببینید چقدر طلبکار و چقدر بدهکار هستید. برای پنهان کردن، روی آیکون چشم بزنید.</string>
+    <string name="coach_desc_balance">همه طلب شما از مشتریان، منهای همه بدهی شما. اگر کسی نگاه می‌کند، روی چشم بزنید تا مبلغ پنهان شود.</string>
+    <string name="coach_desc_get">جمع مبلغی که مشتریان هنوز باید به شما بپردازند.</string>
+    <string name="coach_desc_give">جمع مبلغی که شما هنوز باید به تأمین‌کنندگان و دیگران بپردازید.</string>
     <string name="coach_title_search">جستجوی مشتری</string>
     <string name="coach_desc_search">از اینجا لیست مشتریان خود را جستجو یا مرتب کنید.</string>
     <string name="coach_title_nav_khata">دفتر حساب</string>
@@ -68,7 +69,7 @@
     <string name="coach_desc_applock">مشتری را اشتباهی حذف کردید؟ از اینجا بازگردانید.</string>
     <string name="coach_title_add">افزودن مشتری</string>
     <string name="coach_desc_add">برای افزودن اولین مشتری و شروع دفتر حساب، اینجا را بزنید.</string>
-    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="app_tagline">Innovation-313</string>
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">مانده خالص</string>

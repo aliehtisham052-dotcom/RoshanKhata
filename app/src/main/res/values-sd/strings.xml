@@ -11,8 +11,9 @@
     <string name="coach_skip">ڇڏي ڏيو</string>
     <string name="coach_next">اڳتي</string>
     <string name="coach_done">سمجهي ويس</string>
-    <string name="coach_title_balance">توهان جو بيلنس</string>
-    <string name="coach_desc_balance">هڪ نظر ۾ ڏسو ته توهان کي ڪيترو ملڻو آهي ۽ ڪيترو ڏيڻو آهي. لڪائڻ لاءِ اکين واري آئڪن تي دٻايو.</string>
+    <string name="coach_desc_balance">گراهڪن جو ڪل بقايو، مائنس جيڪو توهان کي ڏيڻو آهي. ڪو ڏسي رهيو هجي ته اک دٻائي رقم لڪايو.</string>
+    <string name="coach_desc_get">ڪل رقم جيڪا گراهڪن اڃا توهان کي ڏيڻي آهي.</string>
+    <string name="coach_desc_give">ڪل رقم جيڪا توهان اڃا سپلائرن ۽ ٻين کي ڏيڻي آهي.</string>
     <string name="coach_title_search">گراهڪ ڳوليو</string>
     <string name="coach_desc_search">هتان پنهنجي گراهڪن جي فهرست ڳوليو يا ترتيب ڏيو.</string>
     <string name="coach_title_nav_khata">کاتو</string>
@@ -68,7 +69,7 @@
     <string name="coach_desc_applock">غلطي سان ڪو گراهڪ ڊليٽ ڪيو؟ هتان واپس آڻيو.</string>
     <string name="coach_title_add">گراهڪ شامل ڪريو</string>
     <string name="coach_desc_add">پنهنجو پهريون گراهڪ شامل ڪرڻ ۽ کاتو شروع ڪرڻ لاءِ هتي دٻايو.</string>
-    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="app_tagline">Innovation-313</string>
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">خالص بيلنس</string>
