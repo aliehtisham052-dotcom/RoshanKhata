@@ -1189,4 +1189,11 @@
     <string name="pdf_label_account_title">عنوان</string>
     <string name="pdf_label_thank_you">سپاس!</string>
     <string name="pdf_label_visit_again">باز هم تشریف بیاورید</string>
+
+    <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
+    <string name="invoice_section_customer">مشتری</string>
+    <string name="invoice_section_details">جزئیات فاکتور</string>
+    <string name="invoice_number_auto_hint">%1$s (خودکار)</string>
+    <string name="invoice_editor_item_count">اقلام: %1$d</string>
+    <string name="invoice_editor_total">جمع %1$s</string>
 </resources>

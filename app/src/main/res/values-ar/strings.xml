@@ -1169,4 +1169,11 @@
     <string name="pdf_label_account_title">الاسم</string>
     <string name="pdf_label_thank_you">شكرًا لكم!</string>
     <string name="pdf_label_visit_again">نتشرف بزيارتكم مجددًا</string>
+
+    <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
+    <string name="invoice_section_customer">العميل</string>
+    <string name="invoice_section_details">تفاصيل الفاتورة</string>
+    <string name="invoice_number_auto_hint">%1$s (تلقائي)</string>
+    <string name="invoice_editor_item_count">الأصناف: %1$d</string>
+    <string name="invoice_editor_total">الإجمالي %1$s</string>
 </resources>

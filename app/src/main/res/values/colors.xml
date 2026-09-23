@@ -254,4 +254,10 @@
     <color name="filter_neutral_stroke">#BDB8A8</color>
     <color name="filter_give_stroke">#9CC9B5</color>
     <color name="filter_get_stroke">#E3AFA9</color>
+
+    <!-- Invoice editor: outline of an input box, and of a white section card. -->
+    <color name="editor_field_stroke">#C9C5B8</color>
+    <color name="editor_card_stroke">#E4E1D7</color>
+    <!-- An unreached step on the editor's progress bar: white at 22% on the green header. -->
+    <color name="step_bar_idle">#38FFFFFF</color>
 </resources>
