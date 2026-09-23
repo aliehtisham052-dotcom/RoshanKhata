@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  An outlined input box for the invoice editor: white, rounded, grey edge,
+  turning brand green while the field has focus so the owner can see where
+  they are typing. Replaces the bare underline EditText look.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white" />
+            <stroke android:width="1.5dp" android:color="@color/brand_green" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white" />
+            <stroke android:width="1dp" android:color="@color/editor_field_stroke" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+</selector>

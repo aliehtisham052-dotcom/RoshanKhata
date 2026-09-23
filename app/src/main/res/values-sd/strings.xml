@@ -1189,4 +1189,11 @@
     <string name="pdf_label_account_title">ٽائيٽل</string>
     <string name="pdf_label_thank_you">مهرباني!</string>
     <string name="pdf_label_visit_again">ٻيهر اچجو</string>
+
+    <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
+    <string name="invoice_section_customer">گراهڪ</string>
+    <string name="invoice_section_details">انوائس جي تفصيل</string>
+    <string name="invoice_number_auto_hint">%1$s (پاڻمرادو)</string>
+    <string name="invoice_editor_item_count">شيون: %1$d</string>
+    <string name="invoice_editor_total">ڪل %1$s</string>
 </resources>

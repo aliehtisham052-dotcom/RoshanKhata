@@ -1206,4 +1206,11 @@ You can change this any time from this screen.</string>
     <string name="pdf_label_account_title">Title</string>
     <string name="pdf_label_thank_you">Thank you!</string>
     <string name="pdf_label_visit_again">Please visit again</string>
+
+    <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
+    <string name="invoice_section_customer">Customer</string>
+    <string name="invoice_section_details">Invoice details</string>
+    <string name="invoice_number_auto_hint">%1$s (auto)</string>
+    <string name="invoice_editor_item_count">Items: %1$d</string>
+    <string name="invoice_editor_total">Total %1$s</string>
 </resources>

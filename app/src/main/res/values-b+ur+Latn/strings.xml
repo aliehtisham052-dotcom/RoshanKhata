@@ -1161,4 +1161,11 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_label_account_title">Title</string>
     <string name="pdf_label_thank_you">Shukriya!</string>
     <string name="pdf_label_visit_again">Dobara tashreef layein</string>
+
+    <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
+    <string name="invoice_section_customer">Customer</string>
+    <string name="invoice_section_details">Rasid ki tafseel</string>
+    <string name="invoice_number_auto_hint">%1$s (khud-ba-khud)</string>
+    <string name="invoice_editor_item_count">Items: %1$d</string>
+    <string name="invoice_editor_total">Kul %1$s</string>
 </resources>

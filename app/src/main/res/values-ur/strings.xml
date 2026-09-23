@@ -1161,4 +1161,11 @@
     <string name="pdf_label_account_title">ٹائٹل</string>
     <string name="pdf_label_thank_you">شکریہ!</string>
     <string name="pdf_label_visit_again">دوبارہ تشریف لائیں</string>
+
+    <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
+    <string name="invoice_section_customer">گاہک</string>
+    <string name="invoice_section_details">انوائس کی تفصیل</string>
+    <string name="invoice_number_auto_hint">%1$s (خودکار)</string>
+    <string name="invoice_editor_item_count">اشیاء: %1$d</string>
+    <string name="invoice_editor_total">کل %1$s</string>
 </resources>

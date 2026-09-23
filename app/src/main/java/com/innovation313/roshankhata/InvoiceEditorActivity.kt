@@ -14,6 +14,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.button.MaterialButton
@@ -22,6 +24,9 @@ import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceFeatureSettings
 import com.innovation313.roshankhata.data.InvoiceItem
+import com.innovation313.roshankhata.data.InvoiceMath
+import com.innovation313.roshankhata.data.InvoiceNumber
+import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.SmartSuggest
@@ -72,6 +77,10 @@ class InvoiceEditorActivity : AppCompatActivity() {
     private var pendingTemplateId: Int? = null
 
     private lateinit var tvStep: TextView
+    private lateinit var stepBars: List<View>
+    private lateinit var itemsTotalBar: View
+    private lateinit var tvItemsCount: TextView
+    private lateinit var tvItemsTotal: TextView
     private lateinit var stepCustomer: View
     private lateinit var stepItems: View
     private lateinit var stepDesign: View
@@ -131,7 +140,11 @@ class InvoiceEditorActivity : AppCompatActivity() {
         val name: AutoCompleteTextView,
         val qty: EditText,
         val unit: EditText,
-        val rate: EditText
+        val rate: EditText,
+        val number: TextView,
+        val totalLine: View,
+        val calc: TextView,
+        val total: TextView
     )
 
     private val rows = mutableListOf<Row>()
@@ -163,6 +176,10 @@ class InvoiceEditorActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         tvStep = findViewById(R.id.tvStep)
+        stepBars = listOf(findViewById(R.id.stepBar1), findViewById(R.id.stepBar2), findViewById(R.id.stepBar3))
+        itemsTotalBar = findViewById(R.id.itemsTotalBar)
+        tvItemsCount = findViewById(R.id.tvItemsCount)
+        tvItemsTotal = findViewById(R.id.tvItemsTotal)
         stepCustomer = findViewById(R.id.stepCustomer)
         stepItems = findViewById(R.id.stepItems)
         stepDesign = findViewById(R.id.stepDesign)
@@ -200,6 +217,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
             pickDate(dueDate ?: invoiceDate) {
                 dueDate = it
                 btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it))
+                btnDue.setTextColor(ContextCompat.getColor(this, R.color.ink))
             }
         }
         // The owner can turn either off entirely in Invoice Settings —
@@ -250,6 +268,22 @@ class InvoiceEditorActivity : AppCompatActivity() {
         } else {
             addRow()
             showStep(1)
+            showNextNumberHint()
+        }
+    }
+
+    /**
+     * A blank invoice number is filled in automatically on save — but the
+     * screen never said which number that would be. The hint now shows it
+     * ("INV-000013 (auto)"), read the same way the save does
+     * (InvoiceNumber.next of the current count). Only a hint: saving still
+     * takes the count inside its own transaction, so two invoices saved
+     * close together still cannot collide.
+     */
+    private fun showNextNumberHint() {
+        lifecycleScope.launch {
+            val next = InvoiceNumber.next(dao.totalInvoiceCount())
+            etInvoiceNumber.hint = getString(R.string.invoice_number_auto_hint, next)
         }
     }
 
@@ -275,6 +309,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
         invoice.dueDate?.let {
             dueDate = it
             btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it))
+            btnDue.setTextColor(ContextCompat.getColor(this, R.color.ink))
         }
         discountPercent = invoice.discountPercent
         taxPercent = invoice.taxPercent
@@ -333,6 +368,18 @@ class InvoiceEditorActivity : AppCompatActivity() {
         // and pushed to one side on Step 1 instead of filling the width.
         btnBack.visibility = if (which == 1) View.GONE else View.VISIBLE
         btnNext.setText(if (which == 3) R.string.save else R.string.invoice_next)
+        btnNext.setIconResource(if (which == 3) R.drawable.ic_check_plain else R.drawable.ic_arrow_forward)
+
+        // Gold for every step reached, faint white for the ones still ahead.
+        val reached = ContextCompat.getColor(this, R.color.gold_on_dark)
+        val ahead = ContextCompat.getColor(this, R.color.step_bar_idle)
+        stepBars.forEachIndexed { i, bar ->
+            bar.background.mutate().setTint(if (i < which) reached else ahead)
+        }
+
+        // The running total belongs to the items step only.
+        itemsTotalBar.visibility = if (which == 2) View.VISIBLE else View.GONE
+        if (which == 2) refreshTotals()
 
         if (which == 3) renderAllPreviews()
     }
@@ -371,7 +418,11 @@ class InvoiceEditorActivity : AppCompatActivity() {
             v.findViewById(R.id.etRowName),
             v.findViewById(R.id.etRowQty),
             v.findViewById(R.id.etRowUnit),
-            v.findViewById(R.id.etRowRate)
+            v.findViewById(R.id.etRowRate),
+            v.findViewById(R.id.tvRowNumber),
+            v.findViewById(R.id.rowTotalLine),
+            v.findViewById(R.id.tvRowCalc),
+            v.findViewById(R.id.tvRowTotal)
         )
         if (existing != null) {
             row.name.setText(existing.itemName, false)
@@ -384,11 +435,61 @@ class InvoiceEditorActivity : AppCompatActivity() {
             if (rows.size > 1) {
                 itemRows.removeView(v)
                 rows.remove(row)
+                renumberRows()
+                refreshTotals()
+            }
+        }
+        // Every keystroke in these three changes the line and the total.
+        listOf(row.name, row.qty, row.unit, row.rate).forEach { field ->
+            field.doAfterTextChanged {
+                refreshRow(row)
+                refreshTotals()
             }
         }
         offerProducts(row)
         rows.add(row)
         itemRows.addView(v)
+        renumberRows()
+        refreshRow(row)
+        refreshTotals()
+    }
+
+    private fun renumberRows() {
+        rows.forEachIndexed { i, r -> r.number.text = (i + 1).toString() }
+    }
+
+    /**
+     * The line's own sum under its fields — "55 gg × 33" and "Rs 1,815" —
+     * shown as soon as there is a quantity and a rate to multiply. Uses
+     * InvoiceItem.lineTotal, the same figure the PDF prints for the line.
+     */
+    private fun refreshRow(r: Row) {
+        val qty = r.qty.text.toString().trim().toDoubleOrNull()
+        val rate = r.rate.text.toString().trim().toDoubleOrNull()
+        if (qty == null || qty <= 0 || rate == null || rate < 0) {
+            r.totalLine.visibility = View.GONE
+            return
+        }
+        val unit = r.unit.text.toString().trim().ifEmpty { null }
+        val line = InvoiceItem(invoiceId = 0, itemName = "", quantity = qty, unit = unit, rate = rate)
+        r.calc.text = "${Format.qty(qty, unit)} \u00D7 ${Format.plain(rate)}"
+        r.total.text = Format.money(line.lineTotal)
+        r.totalLine.visibility = View.VISIBLE
+    }
+
+    /**
+     * The bar above Back/Next on step 2: how many complete lines there are
+     * and the invoice's grand total, including any discount, tax or extra
+     * charge set under More options. Worked out by InvoiceMath.totals from
+     * draft() — exactly what the PDF will print.
+     */
+    private fun refreshTotals() {
+        if (!::tvItemsTotal.isInitialized) return
+        val items = validItems()
+        val d = draft()
+        val totals = InvoiceMath.totals(items, d.discountPercent, d.taxPercent, d.additionalChargeAmount, d.receivedAmount)
+        tvItemsCount.text = getString(R.string.invoice_editor_item_count, items.size)
+        tvItemsTotal.text = getString(R.string.invoice_editor_total, Format.money(totals.grandTotal))
     }
 
     private fun validItems(): List<InvoiceItem> = rows.mapNotNull { r ->
@@ -467,6 +568,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
                 if (InvoiceFeatureSettings.noteEnabled(this)) {
                     note = etNote.text.toString().trim().ifEmpty { null }
                 }
+                refreshTotals()
             }
             .show()
     }

@@ -10,7 +10,7 @@
         android:id="@+id/editorToolbar"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/section_tools"
+        android:background="@color/brand_green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,21 +20,60 @@
 
     <!--
       One step at a time, in the owner's own order: customer, then items,
-      then the design. Asked for repeatedly, and modelled on the walkthrough
-      the app already uses for onboarding rather than a single long form.
+      then the design. The header continues the toolbar's brand green, with
+      three gold bars showing how far along the invoice is — the pale
+      grey-green strip it replaces read as a different app.
     -->
-    <TextView
-        android:id="@+id/tvStep"
+    <LinearLayout
+        android:id="@+id/stepHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/section_tools_soft"
-        android:padding="10dp"
-        android:textColor="@color/ink"
-        android:textSize="13sp"
-        android:textStyle="bold"
+        android:background="@color/brand_green"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editorToolbar" />
+        app:layout_constraintTop_toBottomOf="@id/editorToolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/stepBar1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bg_step_bar" />
+
+            <View
+                android:id="@+id/stepBar2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_step_bar" />
+
+            <View
+                android:id="@+id/stepBar3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bg_step_bar" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvStep"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/header_on_dark"
+            android:textSize="13sp" />
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="0dp"
@@ -42,71 +81,97 @@
         app:layout_constraintBottom_toTopOf="@id/bottomBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvStep">
+        app:layout_constraintTop_toBottomOf="@id/stepHeader">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:paddingStart="12dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp">
 
-            <!-- Step 1: customer -->
+            <!-- Step 1: customer, then the invoice's own details, each in a card -->
             <LinearLayout
                 android:id="@+id/stepCustomer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <AutoCompleteTextView
-                    android:id="@+id/etInvoiceCustomer"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:completionThreshold="1"
-                    android:hint="@string/invoice_customer_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="text"
-                    android:textSize="17sp" />
+                    android:background="@drawable/bg_editor_card"
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
-                <EditText
-                    android:id="@+id/etInvoicePhone"
+                    <TextView
+                        style="@style/EditorSectionLabel"
+                        android:text="@string/invoice_section_customer" />
+
+                    <AutoCompleteTextView
+                        android:id="@+id/etInvoiceCustomer"
+                        style="@style/EditorField"
+                        android:completionThreshold="1"
+                        android:drawableStart="@drawable/ic_person"
+                        android:hint="@string/invoice_customer_hint"
+                        android:inputType="textPersonName|textCapWords" />
+
+                    <EditText
+                        android:id="@+id/etInvoicePhone"
+                        style="@style/EditorField"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/ic_phone"
+                        android:hint="@string/invoice_phone_hint"
+                        android:inputType="phone" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:hint="@string/invoice_phone_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="phone"
-                    android:textSize="17sp" />
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_editor_card"
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnInvoiceDate"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="18dp"
-                    android:text="@string/pick_invoice_date"
-                    app:cornerRadius="8dp" />
+                    <TextView
+                        style="@style/EditorSectionLabel"
+                        android:text="@string/invoice_section_details" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnInvoiceDueDate"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/invoice_due_date_hint"
-                    app:cornerRadius="8dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
 
-                <!--
-                  Blank means "assign the next number automatically" — the
-                  owner types one here only to use their own paper series or
-                  correct a number, same as Vyapar's Change Invoice No.
-                -->
-                <EditText
-                    android:id="@+id/etInvoiceNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:hint="@string/invoice_number_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnInvoiceDate"
+                            style="@style/EditorDateButton"
+                            android:text="@string/pick_invoice_date" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnInvoiceDueDate"
+                            style="@style/EditorDateButton"
+                            android:layout_marginStart="8dp"
+                            android:text="@string/invoice_due_date_hint"
+                            android:textColor="@color/text_muted" />
+                    </LinearLayout>
+
+                    <!--
+                      Blank means "assign the next number automatically" — the
+                      hint shows which number that will be (set in code), and
+                      the owner types one here only to use their own paper
+                      series or correct a number, same as Vyapar's Change
+                      Invoice No.
+                    -->
+                    <EditText
+                        android:id="@+id/etInvoiceNumber"
+                        style="@style/EditorField"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/ic_hash"
+                        android:hint="@string/invoice_number_hint"
+                        android:inputType="text" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- Step 2: items -->
@@ -127,10 +192,22 @@
                     android:id="@+id/btnAddRow"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
-                    android:layout_height="46dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:letterSpacing="0"
                     android:text="@string/add_item"
-                    app:cornerRadius="8dp" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/brand_green"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_add_plain"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/brand_green"
+                    app:strokeColor="@color/brand_green"
+                    app:strokeWidth="1.5dp" />
 
                 <!--
                   Discount, tax, extra charge, received and note all moved
@@ -142,10 +219,23 @@
                     android:id="@+id/btnMoreOptions"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
-                    android:layout_height="46dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="start|center_vertical"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:letterSpacing="0"
                     android:text="@string/invoice_more_options"
-                    app:cornerRadius="8dp" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:backgroundTint="@color/white"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_tune"
+                    app:iconGravity="start"
+                    app:iconTint="@color/brand_green"
+                    app:strokeColor="@color/editor_card_stroke"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
 
             <!-- Step 3: design, with the preview under it -->
@@ -220,31 +310,90 @@
         android:id="@+id/bottomBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnBack"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_weight="1"
-            android:text="@string/invoice_back"
-            android:visibility="gone"
-            app:cornerRadius="10dp" />
+        <!--
+          The running total while items are being typed (Step 2 only). The
+          owner used to see the figure for the first time on the finished
+          PDF; a wrong rate now shows up here, before the invoice exists.
+          Worked out by InvoiceMath.totals — the same function the PDF uses —
+          so the two can never disagree.
+        -->
+        <LinearLayout
+            android:id="@+id/itemsTotalBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/brand_green_soft"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNext"
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:text="@string/invoice_next"
-            app:backgroundTint="@color/brand_green"
-            app:cornerRadius="10dp" />
+            <TextView
+                android:id="@+id/tvItemsCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/brand_green"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tvItemsTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/brand_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/invoice_back"
+                android:textColor="@color/brand_green"
+                android:textSize="15sp"
+                android:visibility="gone"
+                app:cornerRadius="14dp"
+                app:strokeColor="@color/brand_green"
+                app:strokeWidth="1.5dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNext"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/invoice_next"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:backgroundTint="@color/brand_green"
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_arrow_forward"
+                app:iconGravity="textEnd"
+                app:iconPadding="8dp"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/gold_on_dark"
+                app:strokeWidth="1.5dp" />
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

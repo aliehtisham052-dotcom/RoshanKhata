@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  One invoice line on the editor: a numbered card with the item name, then
+  Qty / Unit / Rate, then the line's own total worked out as the owner
+  types ("55 gg × 33" … "Rs 1,815"). The total row stays hidden until both
+  a quantity and a rate are there to multiply.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_editor_card"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="12dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,67 +20,118 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <TextView
+            android:id="@+id/tvRowNumber"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:background="@drawable/bg_row_number"
+            android:gravity="center"
+            android:textColor="@color/gold_on_dark"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
         <AutoCompleteTextView
             android:id="@+id/etRowName"
-            android:dropDownWidth="match_parent"
+            style="@style/EditorField"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
+            android:completionThreshold="1"
+            android:dropDownWidth="match_parent"
             android:hint="@string/invoice_item_name_hint"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:textSize="14sp"
-            android:completionThreshold="1" />
+            android:inputType="text|textCapSentences" />
 
         <ImageView
             android:id="@+id/btnRemoveRow"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="6dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/delete"
-            android:padding="4dp"
-            android:src="@drawable/ic_close"
-            app:tint="@color/text_muted"
-            xmlns:app="http://schemas.android.com/apk/res-auto" />
+            android:padding="9dp"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/bal_owed_to_me" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
+        android:baselineAligned="false"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/etRowQty"
+            style="@style/EditorField"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/qty_hint"
-            android:importantForAutofill="no"
             android:inputType="numberDecimal"
-            android:textSize="13sp" />
+            android:paddingStart="10dp"
+            android:paddingEnd="8dp"
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/etRowUnit"
+            style="@style/EditorField"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:hint="@string/invoice_row_unit_hint"
-            android:importantForAutofill="no"
             android:inputType="text"
-            android:textSize="13sp" />
+            android:paddingStart="10dp"
+            android:paddingEnd="8dp"
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/etRowRate"
+            style="@style/EditorField"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:hint="@string/invoice_item_rate_hint"
-            android:importantForAutofill="no"
             android:inputType="numberDecimal"
-            android:textSize="13sp" />
+            android:paddingStart="10dp"
+            android:paddingEnd="8dp"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rowTotalLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_dashed_rule"
+            android:layerType="software" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvRowCalc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tvRowTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
