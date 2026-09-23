@@ -167,12 +167,5 @@ class PartyAdapter(
     }
 
     /** "Nawab Batta Wala" -> "NB". One letter if there is only one word. */
-    private fun initialsOf(name: String): String {
-        val words = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
-        return when {
-            words.isEmpty() -> "?"
-            words.size == 1 -> words[0].take(1).uppercase()
-            else -> (words[0].take(1) + words[1].take(1)).uppercase()
-        }
-    }
+    private fun initialsOf(name: String): String = Format.initials(name)
 }

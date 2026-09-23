@@ -62,6 +62,8 @@
 
         <EditText
             android:id="@+id/etRowQty"
+            android:textDirection="ltr"
+            android:textAlignment="viewStart"
             style="@style/EditorField"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -85,6 +87,8 @@
 
         <EditText
             android:id="@+id/etRowRate"
+            android:textDirection="ltr"
+            android:textAlignment="viewStart"
             style="@style/EditorField"
             android:layout_width="0dp"
             android:layout_marginStart="8dp"

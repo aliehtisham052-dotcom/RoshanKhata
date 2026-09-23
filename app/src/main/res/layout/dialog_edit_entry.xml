@@ -12,6 +12,8 @@
 
         <EditText
             android:id="@+id/etEditAmount"
+            android:textDirection="ltr"
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/amount"
@@ -64,6 +66,8 @@
 
             <EditText
                 android:id="@+id/etEditQuantity"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

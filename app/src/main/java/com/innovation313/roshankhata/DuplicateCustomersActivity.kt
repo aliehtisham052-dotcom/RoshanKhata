@@ -88,7 +88,7 @@ class DuplicateCustomersActivity : AppCompatActivity() {
     private fun reviewGroup(group: DuplicateDetector.Group) {
         val options = group.members.map { m ->
             val phone = m.phone?.takeIf { it.isNotBlank() } ?: "—"
-            "${m.name}  —  $phone  —  ${Format.money(m.balance)}"
+            "${Format.isolate(m.name)}  —  ${Format.ltr(phone)}  —  ${Format.money(m.balance)}"
         }.toTypedArray()
 
         var chosen = 0

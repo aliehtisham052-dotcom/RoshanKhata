@@ -13,6 +13,50 @@ object Format {
     private val dateTimeFmt = SimpleDateFormat("d MMM yyyy, h:mm a", Locale.ENGLISH)
     private val dateOnlyFmt = SimpleDateFormat("d MMM yyyy", Locale.ENGLISH)
 
+    /**
+     * Seal a figure that must read left-to-right — a phone number above
+     * all — before it goes into a translated sentence.
+     *
+     * In Urdu, Sindhi, Arabic and Persian the sentence runs right-to-left,
+     * and a run of digits split by spaces is reordered piece by piece:
+     * "0340 7026467" shows as "7026467 0340", "+92 348 7239466" as
+     * "7239466 348 92+". (Checked with the Unicode bidi algorithm, and it is
+     * exactly what the owner's Urdu screenshot showed.) Wrapped, the number
+     * keeps its own order inside any sentence; in English nothing changes.
+     */
+    fun ltr(text: String): String =
+        androidx.core.text.BidiFormatter.getInstance()
+            .unicodeWrap(text, androidx.core.text.TextDirectionHeuristicsCompat.LTR)
+
+    /**
+     * A name dropped into a translated sentence, isolated so that brackets
+     * or Latin letters in it — "(Shari)Touseef" inside an Urdu line — are
+     * laid out by the name's own direction and do not flip around it.
+     */
+    fun isolate(text: String): String =
+        androidx.core.text.BidiFormatter.getInstance().unicodeWrap(text)
+
+    /**
+     * One or two letters for a customer's avatar — the only copy of this
+     * rule, used by the list and by the party screen alike.
+     *
+     * A bracketed tag is set aside first: "(Shari)Touseef Adnan" is Touseef
+     * Adnan from Shari, so TA, not "(A" — the bracket itself used to be
+     * taken as the first letter. Only letters count, so "M. Ashraf" is MA
+     * and "123 Traders" is T. If the tag is all there is, it is used.
+     */
+    fun initials(name: String): String {
+        fun pick(text: String): String? {
+            val words = text.split(Regex("[^\\p{L}\\p{N}]+"))
+                .map { w -> w.filter { it.isLetter() } }
+                .filter { it.isNotEmpty() }
+            if (words.isEmpty()) return null
+            return (words[0].take(1) + (words.getOrNull(1)?.take(1) ?: "")).uppercase()
+        }
+        val untagged = name.replace(Regex("\\([^)]*\\)|\\[[^\\]]*]"), " ")
+        return pick(untagged) ?: pick(name) ?: "?"
+    }
+
     fun money(value: Double): String {
         val rounded = abs(value)
         return if (rounded % 1.0 == 0.0) {

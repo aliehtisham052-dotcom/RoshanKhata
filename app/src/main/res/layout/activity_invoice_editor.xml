@@ -119,6 +119,8 @@
 
                     <EditText
                         android:id="@+id/etInvoicePhone"
+                        android:textDirection="ltr"
+                        android:textAlignment="viewStart"
                         style="@style/EditorField"
                         android:layout_marginTop="8dp"
                         android:drawableStart="@drawable/ic_phone"

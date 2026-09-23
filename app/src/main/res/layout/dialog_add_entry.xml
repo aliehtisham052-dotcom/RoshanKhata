@@ -139,6 +139,8 @@
 
                             <EditText
                                 android:id="@+id/etAmount"
+                                android:textDirection="ltr"
+                                android:textAlignment="viewStart"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_weight="1"
@@ -159,6 +161,8 @@
                             <!-- The running total of a sum, green, under what was typed. -->
                             <TextView
                                 android:id="@+id/tvAmountResult"
+                                android:textDirection="ltr"
+                                android:textAlignment="viewStart"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="4dp"
@@ -475,6 +479,8 @@
 
             <EditText
                 android:id="@+id/etQuantity"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

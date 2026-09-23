@@ -541,8 +541,8 @@ class KhataActivity : AppCompatActivity() {
         }
 
         tvWarning.text = match.phone?.let {
-            getString(R.string.add_party_duplicate_with_phone, match.name, it)
-        } ?: getString(R.string.add_party_duplicate_name_only, match.name)
+            getString(R.string.add_party_duplicate_with_phone, Format.isolate(match.name), Format.ltr(it))
+        } ?: getString(R.string.add_party_duplicate_name_only, Format.isolate(match.name))
         tvWarning.visibility = View.VISIBLE
     }
 

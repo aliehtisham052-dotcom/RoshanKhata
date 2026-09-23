@@ -46,7 +46,7 @@ class DuplicateGroupAdapter(
 
         holder.tvMembers.text = group.members.joinToString("\n") { m ->
             val phone = m.phone?.takeIf { it.isNotBlank() } ?: "—"
-            "${m.name}  —  $phone  —  ${Format.money(m.balance)}"
+            "${Format.isolate(m.name)}  —  ${Format.ltr(phone)}  —  ${Format.money(m.balance)}"
         }
 
         holder.itemView.setOnClickListener { onReview(group) }
