@@ -1193,6 +1193,14 @@ class PartyDetailActivity : AppCompatActivity() {
                     rows = allRows.map {
                         PdfExport.StatementRow(it.entry, it.runningBalance)
                     },
+                    // What the account stood at before the earliest row
+                    // printed here. Derived from that row's own running
+                    // balance by undoing its entry, so it holds whichever way
+                    // the list happens to be sorted, and is exactly zero on a
+                    // statement that starts at the beginning of the ledger.
+                    openingBalance = allRows.minByOrNull { it.entry.timestamp }?.let { r ->
+                        r.runningBalance - if (r.entry.isGiven) r.entry.amount else -r.entry.amount
+                    } ?: 0.0,
                     closingBalance = currentBalance,
                     businessName = BusinessProfile.businessName(this@PartyDetailActivity),
                     paymentQr = BusinessProfile.loadQr(this@PartyDetailActivity),

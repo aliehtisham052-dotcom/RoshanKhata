@@ -48,6 +48,16 @@ object PdfExport {
         partyPhone: String?,
         rows: List<StatementRow>,
         closingBalance: Double,
+        /**
+         * What the account stood at BEFORE the first row printed here.
+         *
+         * A statement for a date range prints only that window's entries, but
+         * the closing figure is the whole account's — so without this line a
+         * customer reads "you owe 8,000" under entries that add up to 500 and
+         * has no way to see where the rest came from. Zero on a full-ledger
+         * statement, where the account genuinely starts at nothing.
+         */
+        openingBalance: Double = 0.0,
         businessName: String?,
         paymentQr: Bitmap? = null,
         /**
@@ -60,7 +70,6 @@ object PdfExport {
          */
         partyPhoto: Bitmap? = null
     ): File? {
-        val doc = PdfDocument()
 
         val title = Paint().apply {
             color = Color.WHITE
@@ -102,6 +111,17 @@ object PdfExport {
         val xGot = 390f
         val xBal = 480f
 
+        /**
+         * Draws the whole statement once.
+         *
+         * [totalPages] is null on the first, throwaway pass — it exists only
+         * to count the pages, which cannot be known until the rows have been
+         * laid out. The second pass draws the same thing again with the count
+         * in hand, so page one can say "Page 1 of 3". Same device as
+         * InspectorReport, for the same reason.
+         */
+        fun render(totalPages: Int?): Pair<PdfDocument, Int> {
+        val doc = PdfDocument()
         var pageNo = 1
         var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
         var c = page.canvas
@@ -158,16 +178,22 @@ object PdfExport {
             body.textSize = 10f
             muted.textSize = 8f
 
-            // Background first — the statement's own bands, rules and
-            // figures all draw over the watermark, never under it.
-            PdfBranding.drawWatermark(context, c, PAGE_W, PAGE_H, NAVY)
+            // No watermark on a customer statement. The owner is sending a
+            // bill to their own customer, not advertising this app for us; a
+            // mark across the middle of the page made their document look
+            // like our document. The other five reports keep theirs — those
+            // stay inside the shop. The hint lives in the footer now.
 
             c.drawRect(0f, 0f, PAGE_W.toFloat(), 78f, navyFill)
             c.drawText(businessName?.takeIf { it.isNotBlank() } ?: "Roshan Khata", MARGIN, 32f, title)
-            c.drawText("Account Statement — $partyName", MARGIN, 52f, subtitle)
-            partyPhone?.takeIf { it.isNotBlank() }?.let {
-                c.drawText(it, MARGIN, 66f, subtitle)
-            }
+            // Name and number on one line. They used to be two, which on a
+            // customer saved under their phone number printed the same digits
+            // twice.
+            val phone = partyPhone?.takeIf { it.isNotBlank() && it != partyName }
+            c.drawText(
+                "Account Statement — $partyName" + (phone?.let { "  ·  $it" } ?: ""),
+                MARGIN, 52f, subtitle
+            )
 
             // The stretch of days this statement covers, read off the rows
             // themselves — first entry to last. Seen working in a
@@ -198,9 +224,10 @@ object PdfExport {
                 )
             }
 
-            // The logo, top-right of the band. The statement leaves the shop and
-            // becomes the app's best advertisement; the mark should ride with it.
-            PdfBranding.drawInHeader(c, brandLogo, PAGE_W, MARGIN, 78f)
+            // No app logo in this band, deliberately: this sheet is the
+            // SHOP's claim about money, and a customer receiving it should see
+            // the shop's identity, not the app's. The app's mark is one quiet
+            // line in the page footer instead.
 
             var yy = 94f
 
@@ -216,13 +243,20 @@ object PdfExport {
                     "No entries"
                 }
                 c.drawText(period, MARGIN, yy, periodPaint)
+                if (totalPages != null && totalPages > 1) {
+                    val pageLabel = Paint(periodPaint).apply {
+                        textSize = 8f
+                        textAlign = Paint.Align.RIGHT
+                    }
+                    c.drawText("Page $pageNo of $totalPages", PAGE_W - MARGIN, yy, pageLabel)
+                }
                 yy += 10f
 
-                // Three boxes: gave, got, and the balance they leave. Tinted
-                // to match the table's own colours so red means the same
-                // thing everywhere on the page.
+                // Two boxes, not three: the third repeated the closing bar a
+                // few centimetres below it. Tinted to match the table's own
+                // colours so red means the same thing everywhere.
                 val gap = 10f
-                val boxW = (PAGE_W - 2 * MARGIN - 2 * gap) / 3f
+                val boxW = (PAGE_W - 2 * MARGIN - gap) / 2f
                 val boxH = 42f
 
                 fun summaryBox(index: Int, label: String, value: String, tint: Int, valueColor: Int) {
@@ -237,21 +271,19 @@ object PdfExport {
                     c.drawText(value, left + 10f, yy + 33f, boxValue)
                 }
 
-                summaryBox(0, "Total You Gave (-)", Format.money(totalGave), 0xFFFDECEA.toInt(), RED)
-                summaryBox(1, "Total You Got (+)", Format.money(totalGot), 0xFFEAF7EF.toInt(), GREEN)
-                val netLabel = when {
-                    closingBalance > 0 -> "Net — You will pay"
-                    closingBalance < 0 -> "Net — You will receive"
-                    else -> "Net — Settled"
-                }
-                summaryBox(2, netLabel, Format.money(closingBalance), 0xFFEDF2EF.toInt(), NAVY)
+                // "You Gave" is the SHOPKEEPER's phrasing, and this sheet is
+                // read by the customer — who would take "You Gave Rs 8,000" to
+                // mean they had paid it. Same figures, told from the side of
+                // the person holding the page.
+                summaryBox(0, "You Owe (-)", Format.money(totalGave), 0xFFFDECEA.toInt(), RED)
+                summaryBox(1, "You Paid (+)", Format.money(totalGot), 0xFFEAF7EF.toInt(), GREEN)
 
                 yy += boxH + 18f
             }
 
             c.drawText("Date", xDate, yy, header)
-            c.drawText("You Gave (-)", xGave, yy, header)
-            c.drawText("You Got (+)", xGot, yy, header)
+            c.drawText("You Owe (-)", xGave, yy, header)
+            c.drawText("You Paid (+)", xGot, yy, header)
             c.drawText("Balance", xBal, yy, header)
             yy += 6f
             c.drawLine(MARGIN, yy, PAGE_W - MARGIN, yy, lineFill)
@@ -259,6 +291,27 @@ object PdfExport {
         }
 
         y = drawHeader(first = true)
+
+        // Where the account stood before the first row above — printed only
+        // when there is something to carry in, since a brand-new customer
+        // opening at zero is told nothing by a "Rs 0" line.
+        if (Money.isNotZero(openingBalance)) {
+            val opened = rows.firstOrNull()?.entry?.timestamp
+            val label = if (opened != null) {
+                "Opening balance (before ${Format.dateOnly(opened)})"
+            } else {
+                "Opening balance"
+            }
+            val italic = Paint(muted).apply {
+                textSize = 9f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+            }
+            c.drawText(label, xDate, y, italic)
+            c.drawText(Format.money(openingBalance), xBal, y, italic)
+            y += 8f
+            c.drawLine(MARGIN, y, PAGE_W - MARGIN, y, lineFill)
+            y += 16f
+        }
 
         for (row in rows) {
             // Two lines per entry (details + reference), so break before we run off.
@@ -274,7 +327,9 @@ object PdfExport {
 
             val e = row.entry
 
-            c.drawText(Format.dateTime(e.timestamp), xDate, y, body)
+            // A "12:00 AM" on every row is not a time anyone recorded — it is
+            // what a date with no time of day comes out as.
+            c.drawText(Format.statementStamp(e.timestamp), xDate, y, body)
 
             if (e.isGiven) {
                 body.color = RED
@@ -429,26 +484,21 @@ object PdfExport {
             y += 22f
         }
 
-        // The app's own invitation, at the foot of the last page: its logo, a
-        // line, and a DOWNLOAD button that opens the Play listing. The address
-        // is added as a real link once the file is written (see applyLinks);
-        // drawing the button alone would give a picture that does nothing.
-        run {
-            val bandH = PdfBranding.BANNER_HEIGHT + 10f
-            if (y + bandH > PAGE_H - MARGIN) {
-                doc.finishPage(page)
-                pageNo++
-                page = doc.startPage(
-                    PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
-                )
-                c = page.canvas
-                y = MARGIN
-            }
-            y += 10f
-            PdfBranding.drawDownloadBanner(context, doc, c, MARGIN, y, PAGE_W - 2 * MARGIN)
-        }
+        // One quiet line at the very FOOT of the last page — the app's mark,
+        // its tagline, and a DOWNLOAD link — rather than a bordered advert
+        // sitting directly under the customer's last entry. The address
+        // becomes a real link once the file is written (see applyLinks).
+        PdfBranding.drawFootLine(
+            context, doc, c, MARGIN, PAGE_H - MARGIN, PAGE_W - MARGIN, brandLogo
+        )
 
         doc.finishPage(page)
+        return doc to pageNo
+        }
+
+        val (counting, pageCount) = render(null)
+        counting.close()
+        val (doc, _) = render(pageCount)
 
         // Written to cache: a statement is a throwaway artefact, not something
         // to quietly accumulate in the user's storage.

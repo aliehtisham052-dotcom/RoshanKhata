@@ -254,6 +254,14 @@ class ReportActivity : AppCompatActivity() {
                     partyName = partyName,
                     partyPhone = partyPhone,
                     rows = rows.map { PdfExport.StatementRow(it.entry, it.runningBalance) },
+                    // What the account stood at before the earliest row
+                    // printed here. Derived from that row's own running
+                    // balance by undoing its entry, so it holds whichever way
+                    // the list happens to be sorted, and is exactly zero on a
+                    // statement that starts at the beginning of the ledger.
+                    openingBalance = rows.minByOrNull { it.entry.timestamp }?.let { r ->
+                        r.runningBalance - if (r.entry.isGiven) r.entry.amount else -r.entry.amount
+                    } ?: 0.0,
                     // The whole account's balance, never the window's net —
                     // this PDF goes to the customer.
                     closingBalance = closingBalance,
