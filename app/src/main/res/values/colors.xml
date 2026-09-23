@@ -242,4 +242,16 @@
     <color name="row_selected">#33C8A05A</color>
     <!-- The thin rule under a field. Visible, never competing with the text. -->
     <color name="hairline">#33000000</color>
+
+    <!--
+      Option tiles in the Khata filter sheet. Each unselected tile wears the
+      colour of what it filters — the same fills as the two summary boxes on
+      the header — so "I have to get" looks like the red box it narrows the
+      list to. These are only the hairline outlines around those fills;
+      the text on them is bal_i_owe / bal_owed_to_me / ink (7.04, 7.48, 13.57).
+      A chosen tile turns brand green with a gold edge, white text 7.75:1.
+    -->
+    <color name="filter_neutral_stroke">#BDB8A8</color>
+    <color name="filter_give_stroke">#9CC9B5</color>
+    <color name="filter_get_stroke">#E3AFA9</color>
 </resources>
