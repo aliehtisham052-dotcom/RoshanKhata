@@ -1177,4 +1177,33 @@ You can change this any time from this screen.</string>
     <string name="entry_bill_chip">Bill photo</string>
     <string name="entry_bill_chip_done">✓ Bill</string>
     <string name="currency_rs" translatable="false">Rs</string>
+
+    <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
+    <string name="pdf_label_invoice">INVOICE</string>
+    <string name="pdf_label_bill_to">BILL TO</string>
+    <string name="pdf_label_invoice_details">INVOICE DETAILS</string>
+    <string name="pdf_label_invoice_no">Invoice No</string>
+    <string name="pdf_label_date">Date</string>
+    <string name="pdf_label_due_date">Due Date</string>
+    <string name="pdf_label_time">Time</string>
+    <string name="pdf_label_item">DESCRIPTION</string>
+    <string name="pdf_label_qty">QTY</string>
+    <string name="pdf_label_rate">RATE</string>
+    <string name="pdf_label_amount">AMOUNT</string>
+    <string name="pdf_label_subtotal">Sub Total</string>
+    <string name="pdf_label_discount">Discount</string>
+    <string name="pdf_label_tax">Tax</string>
+    <string name="pdf_label_extra_charges">Additional Charges</string>
+    <string name="pdf_label_total">TOTAL</string>
+    <string name="pdf_label_received">Received</string>
+    <string name="pdf_label_balance_due">BALANCE DUE</string>
+    <string name="pdf_label_payment_info">PAYMENT INFO</string>
+    <string name="pdf_label_scan_to_pay">Scan to Pay</string>
+    <string name="pdf_label_amount_in_words">AMOUNT IN WORDS</string>
+    <string name="pdf_label_signatory">Authorized Signatory</string>
+    <string name="pdf_label_terms">TERMS</string>
+    <string name="pdf_label_bank">Bank</string>
+    <string name="pdf_label_account_title">Title</string>
+    <string name="pdf_label_thank_you">Thank you!</string>
+    <string name="pdf_label_visit_again">Please visit again</string>
 </resources>

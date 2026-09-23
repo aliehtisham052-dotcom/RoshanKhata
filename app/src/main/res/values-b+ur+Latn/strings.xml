@@ -1132,4 +1132,33 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="entry_preview_line">Abhi %1$s  →  is entry ke baad %2$s</string>
     <string name="entry_bill_chip">Bill tasveer</string>
     <string name="entry_bill_chip_done">✓ Bill</string>
+
+    <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
+    <string name="pdf_label_invoice">RASID</string>
+    <string name="pdf_label_bill_to">BILL BANAM</string>
+    <string name="pdf_label_invoice_details">RASID KI TAFSEEL</string>
+    <string name="pdf_label_invoice_no">Rasid No</string>
+    <string name="pdf_label_date">Tareekh</string>
+    <string name="pdf_label_due_date">Adaigi ki Tareekh</string>
+    <string name="pdf_label_time">Waqt</string>
+    <string name="pdf_label_item">TAFSEEL</string>
+    <string name="pdf_label_qty">TADAD</string>
+    <string name="pdf_label_rate">RATE</string>
+    <string name="pdf_label_amount">RAQAM</string>
+    <string name="pdf_label_subtotal">Jama</string>
+    <string name="pdf_label_discount">Discount</string>
+    <string name="pdf_label_tax">Tax</string>
+    <string name="pdf_label_extra_charges">Izafi Kharcha</string>
+    <string name="pdf_label_total">KUL RAQAM</string>
+    <string name="pdf_label_received">Wusool</string>
+    <string name="pdf_label_balance_due">BAQI RAQAM</string>
+    <string name="pdf_label_payment_info">ADAIGI KI MALOOMAT</string>
+    <string name="pdf_label_scan_to_pay">Scan kar ke ada karein</string>
+    <string name="pdf_label_amount_in_words">RAQAM ALFAAZ MEIN</string>
+    <string name="pdf_label_signatory">Mujaz Dastakhat</string>
+    <string name="pdf_label_terms">SHARAIT</string>
+    <string name="pdf_label_bank">Bank</string>
+    <string name="pdf_label_account_title">Title</string>
+    <string name="pdf_label_thank_you">Shukriya!</string>
+    <string name="pdf_label_visit_again">Dobara tashreef layein</string>
 </resources>

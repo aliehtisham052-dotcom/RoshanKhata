@@ -1140,4 +1140,33 @@
     <string name="entry_preview_line">الآن %1$s  ←  بعد هذا القيد %2$s</string>
     <string name="entry_bill_chip">صورة الفاتورة</string>
     <string name="entry_bill_chip_done">✓ الفاتورة</string>
+
+    <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
+    <string name="pdf_label_invoice">فاتورة</string>
+    <string name="pdf_label_bill_to">فاتورة إلى</string>
+    <string name="pdf_label_invoice_details">تفاصيل الفاتورة</string>
+    <string name="pdf_label_invoice_no">رقم الفاتورة</string>
+    <string name="pdf_label_date">التاريخ</string>
+    <string name="pdf_label_due_date">تاريخ الاستحقاق</string>
+    <string name="pdf_label_time">الوقت</string>
+    <string name="pdf_label_item">الوصف</string>
+    <string name="pdf_label_qty">الكمية</string>
+    <string name="pdf_label_rate">السعر</string>
+    <string name="pdf_label_amount">المبلغ</string>
+    <string name="pdf_label_subtotal">المجموع الفرعي</string>
+    <string name="pdf_label_discount">الخصم</string>
+    <string name="pdf_label_tax">الضريبة</string>
+    <string name="pdf_label_extra_charges">رسوم إضافية</string>
+    <string name="pdf_label_total">الإجمالي</string>
+    <string name="pdf_label_received">المستلم</string>
+    <string name="pdf_label_balance_due">الرصيد المستحق</string>
+    <string name="pdf_label_payment_info">معلومات الدفع</string>
+    <string name="pdf_label_scan_to_pay">امسح للدفع</string>
+    <string name="pdf_label_amount_in_words">المبلغ كتابةً</string>
+    <string name="pdf_label_signatory">التوقيع المعتمد</string>
+    <string name="pdf_label_terms">الشروط</string>
+    <string name="pdf_label_bank">البنك</string>
+    <string name="pdf_label_account_title">الاسم</string>
+    <string name="pdf_label_thank_you">شكرًا لكم!</string>
+    <string name="pdf_label_visit_again">نتشرف بزيارتكم مجددًا</string>
 </resources>

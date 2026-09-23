@@ -1160,4 +1160,33 @@
     <string name="entry_preview_line">هاڻي %1$s  ←  هن داخلا کان پوءِ %2$s</string>
     <string name="entry_bill_chip">بل تصوير</string>
     <string name="entry_bill_chip_done">✓ بل</string>
+
+    <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
+    <string name="pdf_label_invoice">انوائس</string>
+    <string name="pdf_label_bill_to">بل ڏانهن</string>
+    <string name="pdf_label_invoice_details">انوائس جي تفصيل</string>
+    <string name="pdf_label_invoice_no">انوائس نمبر</string>
+    <string name="pdf_label_date">تاريخ</string>
+    <string name="pdf_label_due_date">ادائيگي جي تاريخ</string>
+    <string name="pdf_label_time">وقت</string>
+    <string name="pdf_label_item">تفصيل</string>
+    <string name="pdf_label_qty">تعداد</string>
+    <string name="pdf_label_rate">ريٽ</string>
+    <string name="pdf_label_amount">رقم</string>
+    <string name="pdf_label_subtotal">ذيلي ڪل</string>
+    <string name="pdf_label_discount">رعايت</string>
+    <string name="pdf_label_tax">ٽيڪس</string>
+    <string name="pdf_label_extra_charges">اضافي خرچ</string>
+    <string name="pdf_label_total">ڪل رقم</string>
+    <string name="pdf_label_received">وصول</string>
+    <string name="pdf_label_balance_due">باقي رقم</string>
+    <string name="pdf_label_payment_info">ادائيگي جي معلومات</string>
+    <string name="pdf_label_scan_to_pay">اسڪين ڪري ادا ڪريو</string>
+    <string name="pdf_label_amount_in_words">رقم لفظن ۾</string>
+    <string name="pdf_label_signatory">بااختيار صحيح</string>
+    <string name="pdf_label_terms">شرطون</string>
+    <string name="pdf_label_bank">بئنڪ</string>
+    <string name="pdf_label_account_title">ٽائيٽل</string>
+    <string name="pdf_label_thank_you">مهرباني!</string>
+    <string name="pdf_label_visit_again">ٻيهر اچجو</string>
 </resources>

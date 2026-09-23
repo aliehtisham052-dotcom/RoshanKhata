@@ -10,6 +10,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.NumberWords
 
@@ -98,6 +99,56 @@ object InvoiceTemplateKit {
     data class Fonts(val heading: Typeface, val mono: Typeface, val monoBold: Typeface)
 
     /**
+     * Every word printed on an invoice, in the app's language.
+     *
+     * These used to be literals in this file — mostly English ("BILL TO",
+     * "QTY") with three Roman Urdu words in the middle ("RASID", "TAFSEEL",
+     * "Tareekh"), so an English invoice read in two languages at once. They
+     * now come from string resources, resolved by Android for whichever
+     * language the app is in, the same way the amount-in-words line already
+     * works. A Roman Urdu app still prints "TAFSEEL" and "Tareekh" — there
+     * they belong.
+     */
+    class Labels(context: Context) {
+        val invoice: String = context.getString(R.string.pdf_label_invoice)
+        val billTo: String = context.getString(R.string.pdf_label_bill_to)
+        val invoiceDetails: String = context.getString(R.string.pdf_label_invoice_details)
+        val invoiceNo: String = context.getString(R.string.pdf_label_invoice_no)
+        val date: String = context.getString(R.string.pdf_label_date)
+        val dueDate: String = context.getString(R.string.pdf_label_due_date)
+        val time: String = context.getString(R.string.pdf_label_time)
+        val item: String = context.getString(R.string.pdf_label_item)
+        val qty: String = context.getString(R.string.pdf_label_qty)
+        val rate: String = context.getString(R.string.pdf_label_rate)
+        val amount: String = context.getString(R.string.pdf_label_amount)
+        val subtotal: String = context.getString(R.string.pdf_label_subtotal)
+        val discount: String = context.getString(R.string.pdf_label_discount)
+        val tax: String = context.getString(R.string.pdf_label_tax)
+        val extraCharges: String = context.getString(R.string.pdf_label_extra_charges)
+        val total: String = context.getString(R.string.pdf_label_total)
+        val received: String = context.getString(R.string.pdf_label_received)
+        val balanceDue: String = context.getString(R.string.pdf_label_balance_due)
+        val paymentInfo: String = context.getString(R.string.pdf_label_payment_info)
+        val scanToPay: String = context.getString(R.string.pdf_label_scan_to_pay)
+        val amountInWords: String = context.getString(R.string.pdf_label_amount_in_words)
+        val signatory: String = context.getString(R.string.pdf_label_signatory)
+        val terms: String = context.getString(R.string.pdf_label_terms)
+        val bank: String = context.getString(R.string.pdf_label_bank)
+        val accountTitle: String = context.getString(R.string.pdf_label_account_title)
+        val thankYou: String = context.getString(R.string.pdf_label_thank_you)
+        val visitAgain: String = context.getString(R.string.pdf_label_visit_again)
+    }
+
+    /**
+     * Sub Total is only worth printing when something stands between it and
+     * the grand total. With no discount, tax or extra charge the two are the
+     * same figure, and printing it twice just makes the owner's customer
+     * check the same number twice.
+     */
+    fun showSubtotal(totals: InvoiceTotals): Boolean =
+        totals.discountAmount > 0 || totals.taxAmount > 0 || totals.additionalCharge > 0
+
+    /**
      * One extra column a vertical needs between the item name and Qty —
      * T2's Wazan (weight), T6's Serial/IMEI, T9's Size/Colour. Null for a
      * template with no extra column, which is most of them.
@@ -161,8 +212,8 @@ object InvoiceTemplateKit {
         pageW: Int,
         left: Float,
         right: Float,
-        subtitle: String = "RASID",
-        heading: String = "INVOICE"
+        subtitle: String = "",
+        heading: String = Labels(context).invoice
     ): Float {
         if (palette.bandFilled) {
             val band = Paint().apply {
@@ -234,7 +285,11 @@ object InvoiceTemplateKit {
             }
 
             c.drawText(heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
-            c.drawText(subtitle, right, 58f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.RIGHT))
+            // No default subtitle any more: "RASID" under "INVOICE" said the
+            // same word twice in two languages.
+            if (subtitle.isNotBlank()) {
+                c.drawText(subtitle, right, 58f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.RIGHT))
+            }
         }
 
         return 124f
@@ -243,6 +298,7 @@ object InvoiceTemplateKit {
     /** Bill To (left) and Invoice Details (right, meta rows for number/date/due date). Returns the y position work should continue from. */
     fun drawBillToAndMeta(
         c: Canvas,
+        context: Context,
         palette: Palette,
         fonts: Fonts,
         left: Float,
@@ -250,13 +306,14 @@ object InvoiceTemplateKit {
         y: Float,
         invoice: Invoice
     ): Float {
-        c.drawText("BILL TO", left, y, paint(fonts, 9f, palette.primary, bold = true))
+        val labels = Labels(context)
+        c.drawText(labels.billTo, left, y, paint(fonts, 9f, palette.primary, bold = true))
         c.drawText(invoice.customerName, left, y + 17f, paint(fonts, 13f, palette.ink, bold = true))
         invoice.customerPhone?.takeIf { it.isNotBlank() }?.let {
             c.drawText(it, left, y + 31f, paint(fonts, 10f, palette.muted))
         }
 
-        c.drawText("INVOICE DETAILS", right, y, paint(fonts, 9f, palette.primary, bold = true, align = Paint.Align.RIGHT))
+        c.drawText(labels.invoiceDetails, right, y, paint(fonts, 9f, palette.primary, bold = true, align = Paint.Align.RIGHT))
         val metaLabel = paint(fonts, 10.5f, palette.muted, align = Paint.Align.RIGHT)
         val metaValue = paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT)
         var my = y + 17f
@@ -265,9 +322,9 @@ object InvoiceTemplateKit {
             c.drawText(value, right, my, metaValue)
             my += 14f
         }
-        metaRow("Invoice No", invoice.invoiceNumber)
-        metaRow("Tareekh", Format.dateOnly(invoice.invoiceDate))
-        invoice.dueDate?.let { metaRow("Due Date", Format.dateOnly(it)) }
+        metaRow(labels.invoiceNo, invoice.invoiceNumber)
+        metaRow(labels.date, Format.dateOnly(invoice.invoiceDate))
+        invoice.dueDate?.let { metaRow(labels.dueDate, Format.dateOnly(it)) }
 
         return maxOf(y + 46f, my + 8f)
     }
@@ -283,6 +340,7 @@ object InvoiceTemplateKit {
      */
     fun drawItemsTable(
         c: Canvas,
+        context: Context,
         palette: Palette,
         fonts: Fonts,
         left: Float,
@@ -303,17 +361,18 @@ object InvoiceTemplateKit {
         val xRate = if (extraColumn != null) 452f + 20f else 452f
         val xAmt = right - 8f
         val rulePaint = Paint().apply { color = palette.ruleColor; strokeWidth = 0.7f }
+        val labels = Labels(context)
 
         fun tableHeader(atY: Float): Float {
             canvas.drawRect(left, atY, right, atY + 24f, solid(palette.tableHeaderFill ?: palette.ink))
             val th = paint(fonts, 10f, palette.onTableHeader, bold = true)
             val thR = paint(fonts, 10f, palette.onTableHeader, bold = true, align = Paint.Align.RIGHT)
             canvas.drawText("#", xNo, atY + 16f, th)
-            canvas.drawText("TAFSEEL", xItem, atY + 16f, th)
+            canvas.drawText(labels.item, xItem, atY + 16f, th)
             extraColumn?.let { canvas.drawText(it.label.uppercase(), xExtra, atY + 16f, thR) }
-            canvas.drawText("QTY", xQty, atY + 16f, thR)
-            canvas.drawText("RATE", xRate, atY + 16f, thR)
-            canvas.drawText("AMOUNT", xAmt, atY + 16f, thR)
+            canvas.drawText(labels.qty, xQty, atY + 16f, thR)
+            canvas.drawText(labels.rate, xRate, atY + 16f, thR)
+            canvas.drawText(labels.amount, xAmt, atY + 16f, thR)
             return atY + 24f
         }
 
@@ -360,9 +419,10 @@ object InvoiceTemplateKit {
         invoice: Invoice,
         totals: InvoiceTotals
     ): Float {
+        val labels = Labels(context)
         val bankRows = listOfNotNull(
-            BusinessProfile.bankName(context)?.let { "Bank" to it },
-            BusinessProfile.bankAccountTitle(context)?.let { "Title" to it },
+            BusinessProfile.bankName(context)?.let { labels.bank to it },
+            BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
             BusinessProfile.bankIban(context)?.let { "IBAN" to it },
             BusinessProfile.bankJazzCash(context)?.let { "JazzCash" to it }
         )
@@ -378,27 +438,27 @@ object InvoiceTemplateKit {
             c.drawText(value, right - 10f, ty + 12f, tValue)
             ty += 17f
         }
-        totalRow("Sub Total", Format.money(totals.subtotal))
+        if (showSubtotal(totals)) totalRow(labels.subtotal, Format.money(totals.subtotal))
         if (totals.discountAmount > 0) {
-            totalRow("Discount (${Format.plain(invoice.discountPercent ?: 0.0)}%)", "-" + Format.money(totals.discountAmount))
+            totalRow("${labels.discount} (${Format.plain(invoice.discountPercent ?: 0.0)}%)", "-" + Format.money(totals.discountAmount))
         }
         if (totals.taxAmount > 0) {
-            totalRow("Tax (${Format.plain(invoice.taxPercent ?: 0.0)}%)", Format.money(totals.taxAmount))
+            totalRow("${labels.tax} (${Format.plain(invoice.taxPercent ?: 0.0)}%)", Format.money(totals.taxAmount))
         }
         if (totals.additionalCharge > 0) {
-            totalRow(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: "Additional Charges", Format.money(totals.additionalCharge))
+            totalRow(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: labels.extraCharges, Format.money(totals.additionalCharge))
         }
 
         ty += 5f
         val totalBar = RectF(totalsX, ty, right, ty + 30f)
         c.drawRoundRect(totalBar, 7f, 7f, solid(palette.primary))
-        c.drawText("TOTAL", totalsX + 12f, ty + 20f, paint(fonts, 13f, palette.onTotalBar ?: palette.onPrimary, bold = true))
+        c.drawText(labels.total, totalsX + 12f, ty + 20f, paint(fonts, 13f, palette.onTotalBar ?: palette.onPrimary, bold = true))
         c.drawText(Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 14f, palette.onTotalBar ?: palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
         ty += 40f
 
         if (invoice.receivedAmount != null) {
-            totalRow("Received", Format.money(totals.received))
-            c.drawText("BALANCE DUE", totalsX + 10f, ty + 10f, paint(fonts, 10f, palette.muted, bold = true))
+            totalRow(labels.received, Format.money(totals.received))
+            c.drawText(labels.balanceDue, totalsX + 10f, ty + 10f, paint(fonts, 10f, palette.muted, bold = true))
             c.drawText(Format.money(totals.balanceDue), right - 10f, ty + 10f, paint(fonts, 10f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
             ty += 17f
         }
@@ -414,7 +474,7 @@ object InvoiceTemplateKit {
             val boxH = maxOf(textBoxH, qrBoxH)
 
             c.drawRoundRect(RectF(left, blockTop, boxRight, blockTop + boxH), 8f, 8f, solid(palette.boxFill))
-            c.drawText("PAYMENT INFO", left + 12f, blockTop + 16f, paint(fonts, 9f, palette.primary, bold = true))
+            c.drawText(labels.paymentInfo, left + 12f, blockTop + 16f, paint(fonts, 9f, palette.primary, bold = true))
             var ry = blockTop + 32f
             bankRows.forEach { (label, value) ->
                 c.drawText(label, left + 12f, ry, paint(fonts, 10.5f, palette.muted))
@@ -425,7 +485,7 @@ object InvoiceTemplateKit {
                 val qrLeft = boxRight - qrSize - 10f
                 val qrTop = blockTop + 22f
                 c.drawBitmap(it, null, RectF(qrLeft, qrTop, qrLeft + qrSize, qrTop + qrSize), null)
-                c.drawText("Scan to Pay", qrLeft + qrSize / 2f, qrTop + qrSize + 10f, paint(fonts, 6.5f, palette.muted, align = Paint.Align.CENTER))
+                c.drawText(labels.scanToPay, qrLeft + qrSize / 2f, qrTop + qrSize + 10f, paint(fonts, 6.5f, palette.muted, align = Paint.Align.CENTER))
             }
             by = blockTop + boxH
         }
@@ -436,7 +496,7 @@ object InvoiceTemplateKit {
     /** The tinted "AMOUNT IN WORDS" strip. Returns the y position work should continue from. */
     fun drawAmountInWords(c: Canvas, context: Context, palette: Palette, fonts: Fonts, left: Float, right: Float, y: Float, grandTotal: Double): Float {
         c.drawRoundRect(RectF(left, y, right, y + 34f), 7f, 7f, solid(palette.boxFill))
-        c.drawText("AMOUNT IN WORDS", left + 12f, y + 13f, paint(fonts, 8.5f, palette.primary, bold = true))
+        c.drawText(Labels(context).amountInWords, left + 12f, y + 13f, paint(fonts, 8.5f, palette.primary, bold = true))
         c.drawText(NumberWords.rupeesInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10.5f, palette.ink, italic = true))
         return y + 50f
     }
@@ -479,11 +539,11 @@ object InvoiceTemplateKit {
         }
 
         c.drawLine(sigBox.left + 20f, y + sigH - 24f, sigBox.right - 20f, y + sigH - 24f, Paint().apply { color = palette.ink; strokeWidth = 0.7f })
-        c.drawText("Authorized Signatory", sigBox.centerX(), y + sigH - 10f, paint(fonts, 9f, palette.muted, align = Paint.Align.CENTER))
+        c.drawText(Labels(context).signatory, sigBox.centerX(), y + sigH - 10f, paint(fonts, 9f, palette.muted, align = Paint.Align.CENTER))
 
         val footerLines = listOfNotNull(invoice.note?.takeIf { it.isNotBlank() }, BusinessProfile.termsAndConditions(context))
         if (footerLines.isNotEmpty()) {
-            c.drawText("TERMS", left, y + 12f, paint(fonts, 8.5f, palette.primary, bold = true))
+            c.drawText(Labels(context).terms, left, y + 12f, paint(fonts, 8.5f, palette.primary, bold = true))
             var fy = y + 27f
             footerLines.forEach {
                 c.drawText(it, left, fy, paint(fonts, 9f, palette.muted))
