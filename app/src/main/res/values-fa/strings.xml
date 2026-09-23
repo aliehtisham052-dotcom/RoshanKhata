@@ -6,8 +6,6 @@
     <string name="welcome_connect">ادامه با Google</string>
     <string name="welcome_skip">شاید بعداً</string>
 
-    <string name="coach_walkthrough">راهنمای سریع</string>
-    <string name="coach_home_screen">صفحه اصلی</string>
     <string name="coach_skip">رد کردن</string>
     <string name="coach_next">بعدی</string>
     <string name="coach_done">متوجه شدم</string>

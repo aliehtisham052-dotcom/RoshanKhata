@@ -23,10 +23,14 @@ import com.innovation313.roshankhata.R
  * No full-screen slides — every step points at the actual button the owner
  * will tap later.
  *
- * The card is CENTRED rather than pinned beside the target. Pinning looked
- * tidier on a large screen and collided with the very control it was
- * describing on a small one; the spotlight already says which control is
- * meant, so the card does not need to crowd it.
+ * ONE card for every step (view_coach_tip), header and tiles alike, counted
+ * straight through ("4 / 18") with a thin progress bar. It used to be two:
+ * a pointer card counting the three header steps and, for the tiles, a
+ * generic "Walk Through / Home Screen" card with bare dots — two counts that
+ * disagreed and two looks for one tour. The owner asked for one.
+ *
+ * The card sits directly under the lit item with a notch aimed at it, or
+ * above with the notch turned down when there is no room beneath.
  *
  * Shown once. [hasRun] / [markRun] persist that on-device, the same one-shot
  * pattern LanguageActivity already uses.
@@ -61,19 +65,11 @@ class CoachMarkController(
          * circle is drawn round its icon alone, but the card still has to sit
          * below the label underneath — otherwise it lands on top of it.
          */
-        val clearance: View? = null,
-        /**
-         * A Home HEADER step (net balance, I have to get, I have to give).
-         * These use the small pointer card under the lit item, counted
-         * among themselves ("1 / 3"), with a gold ring on the spotlight.
-         * Every other step keeps the original card, dots and placement.
-         */
-        val header: Boolean = false
+        val clearance: View? = null
     )
 
     private var index = 0
     private var overlay: CoachMarkOverlay? = null
-    private var card: View? = null
     private var tip: View? = null
     private var container: FrameLayout? = null
     private var scrollAnimator: ValueAnimator? = null
@@ -111,24 +107,8 @@ class CoachMarkController(
         overlayView.isFocusable = true
         overlay = overlayView
 
-        val cardView = activity.layoutInflater.inflate(R.layout.view_coach_bubble, host, false)
-        val lp = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
-            marginStart = dp(20f).toInt()
-            marginEnd = dp(20f).toInt()
-            topMargin = dp(20f).toInt()
-        }
-        host.addView(cardView, lp)
-        card = cardView
-
-        cardView.findViewById<TextView>(R.id.tvCoachSkip).setOnClickListener { finish() }
-        cardView.findViewById<Button>(R.id.btnCoachNext).setOnClickListener { advance() }
-
-        // The header steps' card. Placed by absolute left/top because it
-        // follows a measured spot on screen, not the reading direction.
+        // Placed by absolute left/top because it follows a measured spot on
+        // screen, not the reading direction.
         val tipView = activity.layoutInflater.inflate(R.layout.view_coach_tip, host, false)
         host.addView(
             tipView,
@@ -141,10 +121,10 @@ class CoachMarkController(
                 rightMargin = dp(TIP_SIDE_DP).toInt()
             }
         )
-        tipView.visibility = View.GONE
         tip = tipView
         tipView.findViewById<TextView>(R.id.tvTipSkip).setOnClickListener { finish() }
         tipView.findViewById<Button>(R.id.btnTipNext).setOnClickListener { advance() }
+        overlayView.ringColor = activity.getColor(R.color.gold_on_dark)
 
         index = 0
         showStep()
@@ -155,116 +135,104 @@ class CoachMarkController(
     private fun showStep() {
         val step = steps.getOrNull(index) ?: return finish()
         val overlayView = overlay ?: return
-        val cardView = card ?: return
+        val tipView = tip ?: return
         val host = container ?: return
 
-        if (step.header) {
-            showHeaderStep(step, overlayView, host)
-            return
-        }
-        tip?.visibility = View.GONE
-        cardView.visibility = View.VISIBLE
-        overlayView.ringColor = null
+        tipView.findViewById<TextView>(R.id.tvTipCount).text = "${index + 1} / ${steps.size}"
+        tipView.findViewById<TextView>(R.id.tvTipTitle).setText(step.titleRes)
+        tipView.findViewById<TextView>(R.id.tvTipDesc).setText(step.descRes)
 
-        cardView.findViewById<TextView>(R.id.tvCoachTitle).setText(step.titleRes)
-        cardView.findViewById<TextView>(R.id.tvCoachDesc).setText(step.descRes)
+        // Progress: the seen part and the rest, as two weights of one bar.
+        fun weigh(id: Int, w: Float) {
+            val v = tipView.findViewById<View>(id)
+            v.layoutParams = (v.layoutParams as LinearLayout.LayoutParams).apply { weight = w }
+        }
+        weigh(R.id.coachTipDone, (index + 1).toFloat())
+        weigh(R.id.coachTipRest, (steps.size - index - 1).toFloat())
 
         val isLast = index == steps.size - 1
-        cardView.findViewById<Button>(R.id.btnCoachNext)
+        tipView.findViewById<Button>(R.id.btnTipNext)
             .setText(if (isLast) R.string.coach_done else R.string.coach_next)
-
         // Skip stops offering an exit on the final step — there is nothing left
-        // to skip past, and "Skip" beside "Got it" only invites a misread.
-        cardView.findViewById<TextView>(R.id.tvCoachSkip).visibility =
+        // to skip past, and "Skip" beside "Done" only invites a misread.
+        tipView.findViewById<TextView>(R.id.tvTipSkip).visibility =
             if (isLast) View.INVISIBLE else View.VISIBLE
 
-        renderDots(cardView)
+        // Out of sight while the grid moves, so the new words never sit
+        // under the old tile.
+        tipView.visibility = View.INVISIBLE
 
         // The feature grid scrolls, so a tile further down can be off-screen
         // when its turn comes. Bring it into view first — a spotlight measured
         // before the scroll would land on empty space.
         scrollIntoView(step.clearance ?: step.target) {
             // Measured here, straight after the scroll reports it has landed.
-            //
-            // This used to wait on the overlay's next layout pass instead, and
-            // the overlay covers the whole screen — scrolling the grid beneath
-            // it does not resize it, so that pass often never came. The hole
-            // stayed where the previous step had left it, which looked like
-            // the tour skipping to the wrong tile.
+            // The overlay covers the whole screen, so scrolling beneath it does
+            // not re-lay it out; waiting on its layout pass left the hole on the
+            // previous tile.
             val rect = CoachMarkOverlay.boundsWithin(step.target, host)
             overlayView.holePadding = dp(step.paddingDp)
             overlayView.holeRadius = dp(step.cornerRadiusDp)
             overlayView.holeRect = rect
 
-            val cardAnchor = step.clearance
+            val anchor = step.clearance
                 ?.let { CoachMarkOverlay.boundsWithin(it, host) }
                 ?: rect
             // Post rather than place inline: assigning layoutParams during a
             // layout pass re-enters layout, which Android may treat as a loop.
-            cardView.post {
+            tipView.post {
                 try {
-                    positionCard(cardView, cardAnchor)
+                    positionTip(tipView, rect, anchor, dp(step.paddingDp))
                 } catch (e: Exception) {
                     // A misplaced card is a blemish; a crash is not.
                     android.util.Log.e(TAG, "positioning failed", e)
                 }
+                tipView.visibility = View.VISIBLE
             }
         }
     }
 
     /**
-     * Put the card directly beneath the tile it describes, so the owner reads
-     * the name and the explanation in one downward glance.
-     *
-     * Centring it looked neater in the abstract and buried the highlighted
-     * tile behind the card in practice — the one thing the step exists to
-     * show. If a tile sits so low that the card will not fit beneath it, the
-     * card goes above instead rather than running off the screen.
+     * Put the card directly beneath the lit item, notch pointing up at its
+     * centre, so the name and the explanation are read in one downward
+     * glance. If that would run into the bottom bar, the card goes above the
+     * item instead with the notch turned down — never over the item itself,
+     * the one thing the step exists to show.
      */
-    private fun positionCard(cardView: View, target: RectF) {
-        // The card lives in the tour's own FrameLayout, so these params are
-        // the ones we set and a topMargin means what it says.
-        val lp = cardView.layoutParams as? FrameLayout.LayoutParams ?: return
+    private fun positionTip(tipView: View, target: RectF, anchor: RectF, pad: Float) {
+        val lp = tipView.layoutParams as? FrameLayout.LayoutParams ?: return
         val host = container ?: return
-        val gap = dp(14f).toInt()
+        if (host.width <= 0 || host.height <= 0) return
 
-        val rootWidth = host.width
-        val rootHeight = host.height
-        if (rootWidth <= 0 || rootHeight <= 0) return
-
-        val available = (rootWidth - dp(40f).toInt()).coerceAtLeast(1)
-        cardView.measure(
-            View.MeasureSpec.makeMeasureSpec(available, View.MeasureSpec.EXACTLY),
+        val side = dp(TIP_SIDE_DP)
+        val gap = dp(6f)
+        val cardWidth = (host.width - 2 * side).toInt().coerceAtLeast(1)
+        tipView.measure(
+            View.MeasureSpec.makeMeasureSpec(cardWidth, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         )
-        val cardHeight = cardView.measuredHeight
+        val cardHeight = tipView.measuredHeight
+        val floor = host.height - bottomBarHeight() - dp(8f).toInt()
 
-        // The card holds one position for the whole tour rather than tracking
-        // each tile exactly. Following the tile meant the card jumped a row's
-        // height every time the grid moved on, and sat somewhere different
-        // again for the balance step — so the eye had to hunt for NEXT on
-        // every step. A fixed seat below the scrolled-to row is steadier, and
-        // the tour scrolls each tile to the same place anyway.
-        val restingTop = (rootHeight * CARD_RESTING_FRACTION).toInt()
-        val clearsTarget = target.bottom.toInt() + gap
+        val below = (anchor.bottom + pad + gap).toInt()
+        val fitsBelow = below + cardHeight <= floor
+        lp.topMargin = if (fitsBelow) {
+            below
+        } else {
+            (target.top - pad - gap - cardHeight).toInt().coerceAtLeast(dp(8f).toInt())
+        }
+        tipView.layoutParams = lp
 
-        // The host spans the whole screen, bottom bar included, so a card
-        // pushed to the foot of it sat behind that bar — which is where NEXT
-        // was disappearing to on the last rows. Measured from the bar itself
-        // rather than assumed: it is wrap_content and its height depends on
-        // the device's font scale.
-        val barHeight = bottomBarHeight()
-        val floor = rootHeight - barHeight - dp(12f).toInt()
-        val lowestTop = floor - cardHeight
+        val up = tipView.findViewById<View>(R.id.coachTipPointer)
+        val down = tipView.findViewById<View>(R.id.coachTipPointerDown)
+        up.visibility = if (fitsBelow) View.VISIBLE else View.INVISIBLE
+        down.visibility = if (fitsBelow) View.INVISIBLE else View.VISIBLE
 
-        // Below the tile, always — never over it. Clamping to lowestTop alone
-        // pulled the card up over its own target when the fit was tight,
-        // covering the one tile the step exists to show. Clearing the target
-        // wins that argument; the grid has room to scroll a row high enough
-        // that both fit.
-        lp.topMargin = maxOf(restingTop, clearsTarget)
-            .coerceAtMost(maxOf(lowestTop, clearsTarget))
-        cardView.layoutParams = lp
+        // Aim the notch at the lit item's centre, clear of the card's corners.
+        val want = target.centerX() - side - dp(8f)
+        val x = want.coerceIn(dp(14f), (cardWidth - dp(30f)).coerceAtLeast(dp(14f)))
+        up.translationX = x
+        down.translationX = x
     }
 
     /**
@@ -328,100 +296,6 @@ class CoachMarkController(
         }
     }
 
-    /**
-     * The progress dots. Rebuilt each step rather than animated: a dozen views
-     * is nothing, and a rebuild cannot drift out of sync with [index].
-     *
-     * Sizes come from [CoachDots] rather than being written here, because
-     * written here they were written once — for a tour of eight steps — and
-     * stayed that size while the tour grew to thirteen and pushed Skip off
-     * the card.
-     */
-    private fun renderDots(cardView: View) {
-        val holder = cardView.findViewById<LinearLayout>(R.id.coachDots)
-        holder.removeAllViews()
-
-        val screenDp =
-            activity.resources.displayMetrics.widthPixels /
-                activity.resources.displayMetrics.density
-        // Only the tile steps are counted here — the header steps have their
-        // own card and their own "1 / 3".
-        val tileCount = steps.count { !it.header }
-        val position = steps.take(index).count { !it.header }
-        val s = CoachDots.sizesFor(tileCount, screenDp)
-
-        for (i in 0 until tileCount) {
-            val dot = View(activity)
-            val width = if (i == position) dp(s.activeDp).toInt() else dp(s.dotDp).toInt()
-            val params = LinearLayout.LayoutParams(width, dp(s.dotDp).toInt()).apply {
-                marginEnd = dp(s.gapDp).toInt()
-            }
-            dot.layoutParams = params
-            dot.setBackgroundResource(
-                if (i == position) R.drawable.coach_dot_active else R.drawable.coach_dot_inactive
-            )
-            holder.addView(dot)
-        }
-    }
-
-    /**
-     * A header step: the lit item gets a gold ring and a rounded hole the
-     * shape of the item itself; the pointer card sits right under it, its
-     * notch aimed at the item's centre, so the explanation is read in the
-     * same glance as the figure — and none of the tiles below are covered.
-     */
-    private fun showHeaderStep(step: Step, overlayView: CoachMarkOverlay, host: FrameLayout) {
-        val tipView = tip ?: return
-        card?.visibility = View.GONE
-        tipView.visibility = View.VISIBLE
-
-        val group = steps.filter { it.header }
-        val position = steps.take(index).count { it.header } + 1
-        tipView.findViewById<TextView>(R.id.tvTipCount).text = "$position / ${group.size}"
-        tipView.findViewById<TextView>(R.id.tvTipTitle).setText(step.titleRes)
-        tipView.findViewById<TextView>(R.id.tvTipDesc).setText(step.descRes)
-        val isLast = index == steps.size - 1
-        tipView.findViewById<Button>(R.id.btnTipNext)
-            .setText(if (isLast) R.string.coach_done else R.string.coach_next)
-
-        val dots = tipView.findViewById<LinearLayout>(R.id.coachTipDots)
-        dots.removeAllViews()
-        for (i in 1..group.size) {
-            val dot = View(activity)
-            dot.layoutParams = LinearLayout.LayoutParams(
-                dp(if (i == position) 18f else 6f).toInt(), dp(6f).toInt()
-            ).apply { marginStart = dp(4f).toInt() }
-            dot.setBackgroundResource(
-                if (i == position) R.drawable.coach_dot_active else R.drawable.coach_dot_inactive
-            )
-            dots.addView(dot)
-        }
-
-        overlayView.ringColor = activity.getColor(R.color.gold_on_dark)
-        val rect = CoachMarkOverlay.boundsWithin(step.target, host)
-        overlayView.holePadding = dp(step.paddingDp)
-        overlayView.holeRadius = dp(step.cornerRadiusDp)
-        overlayView.holeRect = rect
-
-        tipView.post {
-            try {
-                val lp = tipView.layoutParams as? FrameLayout.LayoutParams ?: return@post
-                val side = dp(TIP_SIDE_DP)
-                lp.topMargin = (rect.bottom + dp(step.paddingDp) + dp(6f)).toInt()
-                tipView.layoutParams = lp
-
-                // Aim the notch at the lit item's centre, kept clear of the
-                // card's rounded corners.
-                val pointer = tipView.findViewById<View>(R.id.coachTipPointer)
-                val cardWidth = host.width - 2 * side
-                val want = rect.centerX() - side - dp(8f)
-                pointer.translationX = want.coerceIn(dp(14f), (cardWidth - dp(30f)).coerceAtLeast(dp(14f)))
-            } catch (e: Exception) {
-                android.util.Log.e(TAG, "header card positioning failed", e)
-            }
-        }
-    }
-
     private fun advance() {
         index++
         if (index >= steps.size) finish() else showStep()
@@ -433,7 +307,6 @@ class CoachMarkController(
         // Removing the host removes the scrim and the card with it.
         container?.let { root.removeView(it) }
         container = null
-        card = null
         tip = null
         overlay = null
         markRun(activity)
@@ -441,16 +314,6 @@ class CoachMarkController(
 
     companion object {
         private const val TAG = "CoachMarks"
-
-        /**
-         * Where the card sits, as a fraction of the screen height. Low enough
-         * to leave the top rows of the grid visible above it, high enough that
-         * NEXT stays within thumb reach.
-         */
-        private const val CARD_RESTING_FRACTION = 0.52f
-
-        /** Side margin of the header steps' pointer card. */
-        private const val TIP_SIDE_DP = 12f
 
         /** How long a row takes to travel, whatever the distance. */
         private const val SCROLL_MS = 200L

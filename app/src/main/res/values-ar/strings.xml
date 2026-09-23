@@ -6,8 +6,6 @@
     <string name="welcome_connect">المتابعة باستخدام Google</string>
     <string name="welcome_skip">ربما لاحقًا</string>
 
-    <string name="coach_walkthrough">جولة تعريفية</string>
-    <string name="coach_home_screen">الشاشة الرئيسية</string>
     <string name="coach_skip">تخطي</string>
     <string name="coach_next">التالي</string>
     <string name="coach_done">فهمت</string>
