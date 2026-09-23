@@ -315,6 +315,9 @@ class CoachMarkController(
     companion object {
         private const val TAG = "CoachMarks"
 
+        /** Side margin of the walkthrough card. */
+        private const val TIP_SIDE_DP = 12f
+
         /** How long a row takes to travel, whatever the distance. */
         private const val SCROLL_MS = 200L
 
