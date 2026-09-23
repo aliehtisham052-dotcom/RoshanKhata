@@ -11,8 +11,9 @@
     <string name="coach_skip">نظر انداز کریں</string>
     <string name="coach_next">اگلا</string>
     <string name="coach_done">سمجھ گیا</string>
-    <string name="coach_title_balance">آپ کا بیلنس</string>
-    <string name="coach_desc_balance">ایک نظر میں دیکھیں آپ کو کتنا ملنا ہے اور کتنا دینا ہے۔ چھپانے کے لیے آنکھ کے آئیکن پر ٹیپ کریں۔</string>
+    <string name="coach_desc_balance">گاہکوں کا کل بقایا، منفی جو آپ نے دینا ہے۔ کوئی دیکھ رہا ہو تو آنکھ دبا کر رقم چھپا لیں۔</string>
+    <string name="coach_desc_get">کل رقم جو گاہکوں نے ابھی آپ کو دینی ہے۔</string>
+    <string name="coach_desc_give">کل رقم جو آپ نے ابھی سپلائرز اور دوسروں کو دینی ہے۔</string>
     <string name="coach_title_search">گاہک تلاش کریں</string>
     <string name="coach_desc_search">یہاں سے اپنی گاہکوں کی فہرست تلاش یا ترتیب دیں۔</string>
     <string name="coach_title_nav_khata">کھاتہ</string>
@@ -68,7 +69,7 @@
     <string name="coach_desc_applock">غلطی سے کوئی گاہک ڈیلیٹ ہو گیا؟ یہاں سے واپس لائیں۔</string>
     <string name="coach_title_add">گاہک شامل کریں</string>
     <string name="coach_desc_add">اپنا پہلا گاہک شامل کرنے اور کھاتہ شروع کرنے کے لیے یہاں ٹیپ کریں۔</string>
-    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="app_tagline">Innovation-313</string>
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">کل بیلنس</string>

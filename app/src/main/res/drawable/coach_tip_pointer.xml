@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The little notch on top of the header walkthrough card, pointing up at the lit item. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp" android:height="8dp"
+    android:viewportWidth="16" android:viewportHeight="8">
+    <path android:fillColor="@color/white" android:pathData="M0,8L8,0L16,8Z" />
+</vector>

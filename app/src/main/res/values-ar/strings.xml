@@ -11,8 +11,9 @@
     <string name="coach_skip">تخطي</string>
     <string name="coach_next">التالي</string>
     <string name="coach_done">فهمت</string>
-    <string name="coach_title_balance">رصيدك</string>
-    <string name="coach_desc_balance">اطّلع على ما لك وما عليك بلمحة. اضغط على أيقونة العين لإخفائه.</string>
+    <string name="coach_desc_balance">كل ما يدين به عملاؤك لك، مطروحًا منه كل ما عليك. اضغط على العين لإخفاء المبلغ إذا كان أحد ينظر.</string>
+    <string name="coach_desc_get">إجمالي ما لا يزال على عملائك أن يدفعوه لك.</string>
+    <string name="coach_desc_give">إجمالي ما لا يزال عليك أن تدفعه للموردين وغيرهم.</string>
     <string name="coach_title_search">ابحث عن عميل</string>
     <string name="coach_desc_search">ابحث في قائمة عملائك أو رتّبها من هنا.</string>
     <string name="coach_title_nav_khata">كهاتا</string>
@@ -68,7 +69,7 @@
     <string name="coach_desc_applock">حذفت عميلًا بالخطأ؟ استعده من هنا.</string>
     <string name="coach_title_add">أضف عميلًا</string>
     <string name="coach_desc_add">اضغط هنا لإضافة عميلك الأول وبدء دفتر حساباتك.</string>
-    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="app_tagline">Innovation-313</string>
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">الرصيد الصافي</string>

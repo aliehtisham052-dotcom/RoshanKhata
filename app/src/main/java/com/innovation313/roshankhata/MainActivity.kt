@@ -428,14 +428,39 @@ class MainActivity : AppCompatActivity() {
             .getChildAt(0) as? android.view.ViewGroup ?: return
 
         val steps = listOfNotNull(
+            // The header, in three short steps: the net figure, then each of
+            // its two halves. Pointer card under each, counted "1 / 3" among
+            // themselves; the tile steps after them are unchanged.
             findViewById<View>(R.id.balanceRow)?.let { row ->
                 CoachMarkController.Step(
                     target = row,
-                    titleRes = R.string.coach_title_balance,
+                    titleRes = R.string.net_balance,
                     descRes = R.string.coach_desc_balance,
-                    // Tight. "Net balance" sits directly above this row, and a
+                    cornerRadiusDp = 12f,
+                    // Tight. "NET BALANCE" sits directly above this row, and a
                     // wider ring lights the caption along with the figure.
-                    paddingDp = 2f
+                    paddingDp = 3f,
+                    header = true
+                )
+            },
+            findViewById<View>(R.id.homeCardGet)?.let { card ->
+                CoachMarkController.Step(
+                    target = card,
+                    titleRes = R.string.i_have_to_get,
+                    descRes = R.string.coach_desc_get,
+                    cornerRadiusDp = 14f,
+                    paddingDp = 3f,
+                    header = true
+                )
+            },
+            findViewById<View>(R.id.homeCardGive)?.let { card ->
+                CoachMarkController.Step(
+                    target = card,
+                    titleRes = R.string.i_have_to_give,
+                    descRes = R.string.coach_desc_give,
+                    cornerRadiusDp = 14f,
+                    paddingDp = 3f,
+                    header = true
                 )
             },
             tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),

@@ -260,4 +260,22 @@
     <color name="editor_card_stroke">#E4E1D7</color>
     <!-- An unreached step on the editor's progress bar: white at 22% on the green header. -->
     <color name="step_bar_idle">#38FFFFFF</color>
+
+    <!--
+      Home header (redesign, 23 Sep). A diagonal of the brand green, a little
+      lighter at the top-left where the title sits and deeper at the bottom
+      right, finished with a gold rule underneath. Only Home uses these; the
+      Khata / settings / add-entry headers keep bg_header_gradient.
+    -->
+    <color name="home_header_start">#1F6A42</color>
+    <color name="home_header_mid">#154D30</color>
+    <color name="home_header_end">#0B301D</color>
+    <!-- The faint gold circles in the header's top corner (28% gold). -->
+    <color name="home_header_sweep">#47FFDA6B</color>
+    <!-- Outline of the two summary cards on the header (55% gold). -->
+    <color name="home_summary_stroke">#8CFFDA6B</color>
+    <!-- The eye button's round backing (12% white). -->
+    <color name="home_eye_fill">#1FFFFFFF</color>
+    <!-- Body text of the header walkthrough card; 7.3:1 on white. -->
+    <color name="coach_tip_body">#4B5B52</color>
 </resources>

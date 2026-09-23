@@ -59,6 +59,23 @@ class CoachMarkOverlay(context: Context) : View(context) {
             invalidate()
         }
 
+    /**
+     * An outline drawn round the hole, or null for none. The header steps
+     * use a gold ring so the lit card reads as chosen, in the same gold edge
+     * the header itself wears; the tile steps leave it off, as they always
+     * have.
+     */
+    var ringColor: Int? = null
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    private val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 2f * context.resources.displayMetrics.density
+    }
+
     init {
         // This view paints its own hole with CLEAR; it must not be flattened
         // into an opaque layer or the clear would show as black instead of see-through.
@@ -79,6 +96,10 @@ class CoachMarkOverlay(context: Context) : View(context) {
             val maxRadius = minOf(padded.width(), padded.height()) / 2f
             val radius = holeRadius.coerceAtMost(maxRadius)
             canvas.drawRoundRect(padded, radius, radius, holePaint)
+            ringColor?.let { colour ->
+                ringPaint.color = colour
+                canvas.drawRoundRect(padded, radius, radius, ringPaint)
+            }
         }
     }
 

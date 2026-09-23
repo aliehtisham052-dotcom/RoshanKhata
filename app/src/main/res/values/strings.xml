@@ -15,8 +15,9 @@
     <string name="coach_skip">Skip</string>
     <string name="coach_next">Next</string>
     <string name="coach_done">Got it</string>
-    <string name="coach_title_balance">Your Balance</string>
-    <string name="coach_desc_balance">See what you\'re owed and what you owe, at a glance. Tap the eye to hide it.</string>
+    <string name="coach_desc_balance">Everything your customers owe you, minus everything you owe. Tap the eye to hide it when someone is looking.</string>
+    <string name="coach_desc_get">The total your customers still have to pay you.</string>
+    <string name="coach_desc_give">The total you still have to pay your suppliers and others.</string>
     <string name="coach_title_search">Find a Customer</string>
     <string name="coach_desc_search">Search or sort your customer list here.</string>
     <string name="coach_title_nav_khata">Khata</string>
@@ -72,7 +73,7 @@
     <string name="coach_desc_applock">Deleted a customer by mistake? Restore them from here.</string>
     <string name="coach_title_add">Add a Customer</string>
     <string name="coach_desc_add">Tap here to add your first customer and start your khata.</string>
-    <string name="app_tagline">Innovation: وقت ہے بدلنے کا</string>
+    <string name="app_tagline">Innovation-313</string>
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Net balance</string>
