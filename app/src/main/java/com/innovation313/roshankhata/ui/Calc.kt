@@ -23,6 +23,31 @@ object Calc {
      */
     fun evalPad(input: String): Double? = eval(resolvePercent(normalize(input)))
 
+    /**
+     * Evaluate a pad expression as an AMOUNT — a magnitude, never a sign.
+     *
+     * Every amount box in the app (Khata entry, Cashbook, Cheques, Plans) is
+     * a scratch pad for reaching a total, not a signed ledger figure: which
+     * way the money moves is chosen elsewhere (I Gave/I Got, Income/Expense,
+     * Received/Issued), same as [Format.money] already drops the sign when
+     * IT prints an amount, for the same reason.
+     *
+     * Typed in the natural but "backwards" order — "7926-35554" meaning
+     * "the difference between these two" rather than "7926 minus 35554" —
+     * [evalPad] alone returns -27628, which every caller's `amount <= 0`
+     * check then silently rejected: the live preview under the box (which
+     * calls [Format.money], so already showed the correct 27,628) and the
+     * Save button disagreed, with no error explaining why Save refused to
+     * fire. This is the one place that difference is resolved, so every
+     * caller sees the same number the box already promised.
+     *
+     * Returns null for unparseable input OR a result of exactly zero —
+     * zero is still not an amount to save.
+     */
+    fun evalAmount(input: String): Double? =
+        evalPad(input)?.let { kotlin.math.abs(it) }?.takeIf { it > 0.0 }
+
+
     /** The pad prints × ÷ − for looks; the evaluator wants * / -. */
     fun normalize(text: String): String =
         text.replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')

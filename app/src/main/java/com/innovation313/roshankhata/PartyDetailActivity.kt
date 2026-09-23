@@ -557,10 +557,13 @@ class PartyDetailActivity : AppCompatActivity() {
         view.findViewById<android.widget.Button>(R.id.calcEquals).setOnClickListener {
             // evalPad, not eval: it translates the pad's × ÷ − and resolves a
             // percentage before the arithmetic runs, so "1200-15%" comes out
-            // as 1020 rather than as nothing at all.
+            // as 1020 rather than as nothing at all. Written back as a
+            // magnitude (abs), same as everywhere else this box is read —
+            // "7926-35554" must land back in the box as 27628, not -27628;
+            // a minus sign has no meaning in an amount field.
             val result = Calc.evalPad(etAmount.text.toString())
             if (result != null) {
-                etAmount.setText(Calc.trim(result))
+                etAmount.setText(Calc.trim(kotlin.math.abs(result)))
                 etAmount.setSelection(etAmount.text.length)
             }
         }
@@ -797,8 +800,8 @@ class PartyDetailActivity : AppCompatActivity() {
         // amount is not a positive figure; the old dialog button closed the
         // form even then, throwing away whatever had been typed.
         fun trySave(): Boolean {
-            val amount = Calc.evalPad(etAmount.text.toString())
-            if (amount == null || amount <= 0.0) {
+            val amount = Calc.evalAmount(etAmount.text.toString())
+            if (amount == null) {
                 Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                 return false
             }
@@ -872,9 +875,9 @@ class PartyDetailActivity : AppCompatActivity() {
         }
 
         onAmountChanged = {
-            val value = Calc.evalPad(etAmount.text.toString())
-            val valid = value != null && value > 0.0
-            val shown = if (valid) value!! else 0.0
+            val value = Calc.evalAmount(etAmount.text.toString())
+            val valid = value != null
+            val shown = value ?: 0.0
             tvTitle.text = getString(
                 if (isGiven) R.string.entry_header_gave else R.string.entry_header_got,
                 partyName, Format.money(shown)
