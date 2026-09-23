@@ -179,7 +179,6 @@ object PdfBranding {
     private const val BAND = 0xFFEAF3EE.toInt()
     private const val BAND_EDGE = 0xFFCFE0D5.toInt()
     private const val BRAND_GREEN = 0xFF094C2E.toInt()
-    private const val INK = 0xFF1A1A18.toInt()
     private const val SOFT = 0xFF4B5B52.toInt()
 
     /** The app's Play listing. One place, so every document points at the same address. */
@@ -217,8 +216,46 @@ object PdfBranding {
         if (bold) typeface = Typeface.DEFAULT_BOLD
     }
 
+    /** The app's name and tagline — one wording on every sheet the app prints. */
+    const val BRAND_NAME = "Roshan Khata"
+    const val BRAND_TAGLINE = "Har Hisaab Roshan"
+    const val BRAND_LINE = "$BRAND_NAME \u2014 $BRAND_TAGLINE"
+
     /**
-     * "Apna khata ab mobile par / Roshan Khata download karein" and a green
+     * "Roshan Khata — Har Hisaab Roshan" on one baseline: the name bold in
+     * [nameColor], the dash and tagline italic in [tagColor]. The owner asked
+     * for this one line everywhere — the invoice banner used to carry a
+     * different slogan ("Apna khata ab mobile par") from the statement
+     * footer and the report header, three wordings for one app.
+     *
+     * With [centered] the whole line is centred on [x]; otherwise it starts
+     * there. Returns the x where the line ends.
+     */
+    fun drawBrandLine(
+        canvas: Canvas,
+        x: Float,
+        baseline: Float,
+        nameSize: Float,
+        tagSize: Float,
+        nameColor: Int,
+        tagColor: Int,
+        centered: Boolean = false
+    ): Float {
+        val name = paint(nameColor, nameSize, bold = true)
+        val tag = paint(tagColor, tagSize).apply {
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+        }
+        val rest = " \u2014 $BRAND_TAGLINE"
+        val total = name.measureText(BRAND_NAME) + tag.measureText(rest)
+        var at = if (centered) x - total / 2f else x
+        canvas.drawText(BRAND_NAME, at, baseline, name)
+        at += name.measureText(BRAND_NAME)
+        canvas.drawText(rest, at, baseline, tag)
+        return at + tag.measureText(rest)
+    }
+
+    /**
+     * The brand line ("Roshan Khata — Har Hisaab Roshan") and a green
      * DOWNLOAD button, in the brand's own colours with its own logo. The whole
      * band is the tap target, not just the button, so a thumb that lands near
      * it still works.
@@ -257,8 +294,8 @@ object PdfBranding {
             textLeft = left + 8f + size + 8f
         }
 
-        canvas.drawText("Apna khata ab mobile par", textLeft, top + 19f, paint(INK, 10.5f, bold = true))
-        canvas.drawText("Roshan Khata download karein", textLeft, top + 33f, paint(SOFT, 9f))
+        // One line, vertically centred in the band.
+        drawBrandLine(canvas, textLeft, top + BANNER_HEIGHT / 2f + 4f, 11f, 10f, BRAND_GREEN, SOFT)
 
         val pillW = 92f
         val pillH = 20f
@@ -309,16 +346,7 @@ object PdfBranding {
             x += size + 6f
         }
 
-        val name = paint(BRAND_GREEN, 8.5f, bold = true)
-        canvas.drawText("Roshan Khata", x, ruleY + 13f, name)
-        x += name.measureText("Roshan Khata") + 6f
-        canvas.drawText(
-            "Har Hisaab Roshan",
-            x, ruleY + 13f,
-            paint(SOFT, 7.5f).apply {
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
-            }
-        )
+        drawBrandLine(canvas, x, ruleY + 13f, 8.5f, 7.5f, BRAND_GREEN, SOFT)
 
         // The tappable area, and the outline that shows where it is.
         val pillW = 62f
@@ -348,7 +376,7 @@ object PdfBranding {
     const val COMPACT_BANNER_HEIGHT = 40f
 
     /**
-     * The same invitation for the narrow thermal receipt: one centred line
+     * The same invitation for the narrow thermal receipt: the brand line centred
      * over a centred button, no logo (there is no room beside it).
      */
     fun drawDownloadBannerCompact(
@@ -370,10 +398,7 @@ object PdfBranding {
             }
         )
         val cx = (left + right) / 2f
-        canvas.drawText(
-            "Roshan Khata download karein", cx, top + 14f,
-            paint(INK, 7.5f, bold = true).apply { textAlign = Paint.Align.CENTER }
-        )
+        drawBrandLine(canvas, cx, top + 14f, 7.5f, 7f, BRAND_GREEN, SOFT, centered = true)
         val pill = RectF(cx - 42f, top + 20f, cx + 42f, top + 35f)
         canvas.drawRoundRect(pill, 7.5f, 7.5f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
         canvas.drawText(
