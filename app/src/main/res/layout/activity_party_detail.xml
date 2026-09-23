@@ -100,6 +100,8 @@
                 <!-- The handset is a compound drawable, so it hides with the number. -->
                 <TextView
                     android:id="@+id/tvPartyPhone"
+                    android:textDirection="ltr"
+                    android:textAlignment="viewStart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"

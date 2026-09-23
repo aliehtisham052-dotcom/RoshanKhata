@@ -20,6 +20,8 @@
 
             <EditText
                 android:id="@+id/etInvoiceDiscount"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -29,6 +31,8 @@
 
             <EditText
                 android:id="@+id/etInvoiceTax"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -61,6 +65,8 @@
 
             <EditText
                 android:id="@+id/etChargeAmount"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -73,6 +79,8 @@
         <!-- Blank means nothing recorded yet — a template then leaves the Balance Due line off entirely rather than printing zero. -->
         <EditText
             android:id="@+id/etReceived"
+            android:textDirection="ltr"
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
