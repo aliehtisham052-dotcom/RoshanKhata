@@ -195,8 +195,8 @@ class ChequesActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
-                val amount = Calc.evalPad(etAmount.text.toString())
-                if (amount == null || amount <= 0.0) {
+                val amount = Calc.evalAmount(etAmount.text.toString())
+                if (amount == null) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }

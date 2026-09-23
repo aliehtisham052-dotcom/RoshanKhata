@@ -301,8 +301,8 @@ class EntryDetailActivity : AppCompatActivity() {
             .setTitle(R.string.edit)
             .setView(view)
             .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.evalPad(etAmount.text.toString())
-                if (amount == null || amount <= 0) {
+                val amount = Calc.evalAmount(etAmount.text.toString())
+                if (amount == null) {
                     Toast.makeText(this, R.string.invalid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
