@@ -150,7 +150,7 @@ object BusinessReport {
             PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 74f, navyFill)
             canvas.drawText(d.businessName ?: "Roshan Khata", MARGIN, 34f, title)
-            canvas.drawText("Roshan Khata \u00B7 Har Hisaab Roshan", MARGIN, 52f, tagline)
+            canvas.drawText(PdfBranding.BRAND_LINE, MARGIN, 52f, tagline)
             canvas.drawText(
                 "Report generated ${dateFmt.format(Date())}",
                 MARGIN,
