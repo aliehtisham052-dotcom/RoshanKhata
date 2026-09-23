@@ -3,13 +3,19 @@ package com.innovation313.roshankhata.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.InvoiceSummary
 
+/**
+ * [onOpen] runs when the row itself is tapped — open the invoice.
+ * [onMore] runs from the three-dot button — the list of actions.
+ */
 class InvoiceAdapter(
-    private val onClick: (InvoiceSummary) -> Unit
+    private val onOpen: (InvoiceSummary) -> Unit,
+    private val onMore: (InvoiceSummary) -> Unit
 ) : RecyclerView.Adapter<InvoiceAdapter.VH>() {
 
     private var items: List<InvoiceSummary> = emptyList()
@@ -24,6 +30,7 @@ class InvoiceAdapter(
         val tvTotal: TextView = view.findViewById(R.id.tvInvoiceTotal)
         val tvNumber: TextView = view.findViewById(R.id.tvInvoiceNumber)
         val tvMeta: TextView = view.findViewById(R.id.tvInvoiceMeta)
+        val btnMore: ImageButton = view.findViewById(R.id.btnInvoiceMore)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -47,6 +54,7 @@ class InvoiceAdapter(
             append(ctx.getString(R.string.items_count, inv.itemCount))
         }
 
-        holder.itemView.setOnClickListener { onClick(inv) }
+        holder.itemView.setOnClickListener { onOpen(inv) }
+        holder.btnMore.setOnClickListener { onMore(inv) }
     }
 }
