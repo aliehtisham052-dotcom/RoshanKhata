@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The walkthrough card for the Home HEADER steps (net balance, I have to get,
-  I have to give). It sits directly under the lit item with a notch pointing
-  up at it, and counts only the header steps ("1 / 3"), so the owner sees
-  how short this part is.
+  The Home walkthrough card — one card for every step, header and tiles
+  alike, so the tour reads as one thing: "4 / 18" and a thin progress bar
+  instead of a separate count up top and bare dots below.
 
-  The tile steps below keep their own card, view_coach_bubble — unchanged.
-  CoachMarkController shows one or the other per step.
+  It sits right under the lit item with a notch pointing up at it; when the
+  item is too low for that, it sits above with the notch pointing down.
+  CoachMarkController places it and picks the notch.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -59,12 +59,26 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
+            <!-- Progress: two weighted halves, set in code. -->
             <LinearLayout
-                android:id="@+id/coachTipDots"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal" />
+                android:layout_width="84dp"
+                android:layout_height="4dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/coachTipDone"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/coach_progress_fill" />
+
+                <View
+                    android:id="@+id/coachTipRest"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/coach_progress_track" />
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
@@ -133,4 +147,21 @@
                 app:strokeWidth="1.5dp" />
         </LinearLayout>
     </LinearLayout>
+
+    <!-- The notch when the card sits ABOVE the lit item. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="8dp">
+
+        <ImageView
+            android:id="@+id/coachTipPointerDown"
+            android:layout_width="16dp"
+            android:layout_height="8dp"
+            android:layout_gravity="left"
+            android:importantForAccessibility="no"
+            android:rotation="180"
+            android:src="@drawable/coach_tip_pointer"
+            android:visibility="invisible"
+            tools:ignore="RtlHardcoded" />
+    </FrameLayout>
 </LinearLayout>
