@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   The filter sheet. Two axes the owner asked to keep together in one place:
-  Account (which side of the ledger) and Type (customer or supplier). The
-  chips are built in code so the selected one can be highlighted; this file
-  is the frame, the title, the two section labels and the Apply button.
+  Account (which side of the ledger) and Type (customer or supplier).
+
+  Account is a 2x2 grid of equal tiles, each coloured like the summary box it
+  narrows the list to (red for "I have to get", green for "I have to give").
+  Type is one segmented control. The chosen tile/segment turns brand green
+  with a gold edge — the same tile language as Home and Party detail. The
+  colours and selection are applied in KhataActivity.showFilterSheet(); this
+  file is the frame.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,13 +27,35 @@
         android:layout_marginBottom="14dp"
         android:background="@drawable/bg_sheet_grabber" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/filter_title"
-        android:textColor="@color/ink"
-        android:textSize="19sp"
-        android:textStyle="bold" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_filter_title_icon">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_filter_sliders"
+                app:tint="@color/gold_on_dark" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="@string/filter_title"
+            android:textColor="@color/ink"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
@@ -40,49 +67,117 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:letterSpacing="0.06"
         android:text="@string/filter_account_label"
-        android:textColor="@color/text_muted"
+        android:textAllCaps="true"
+        android:textColor="@color/gold_accent"
         android:textSize="12sp"
         android:textStyle="bold" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipsAccount"
+    <!-- Row 1: All / Clear -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:singleSelection="true"
-        app:selectionRequired="true" />
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
-    <View
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/optAccAll"
+            style="@style/FilterTile"
+            android:layout_marginEnd="4dp"
+            app:icon="@drawable/ic_list_all"
+            android:text="@string/filter_account_all" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/optAccClear"
+            style="@style/FilterTile"
+            android:layout_marginStart="4dp"
+            app:icon="@drawable/ic_check_circle"
+            android:text="@string/filter_clear" />
+    </LinearLayout>
+
+    <!-- Row 2: I have to give / I have to get -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginBottom="16dp"
-        android:background="@color/hairline" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/optAccGive"
+            style="@style/FilterTile"
+            android:layout_marginEnd="4dp"
+            app:icon="@drawable/ic_arrow_gave"
+            android:text="@string/i_have_to_give" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/optAccGet"
+            style="@style/FilterTile"
+            android:layout_marginStart="4dp"
+            app:icon="@drawable/ic_arrow_got"
+            android:text="@string/i_have_to_get" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:letterSpacing="0.06"
         android:text="@string/filter_type_label"
-        android:textColor="@color/text_muted"
+        android:textAllCaps="true"
+        android:textColor="@color/gold_accent"
         android:textSize="12sp"
         android:textStyle="bold" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipsType"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:singleSelection="true"
-        app:selectionRequired="true" />
+        android:background="@drawable/bg_filter_segment_track"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/optTypeAll"
+            style="@style/FilterSegment"
+            app:icon="@drawable/ic_people"
+            android:text="@string/filter_type_all" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/optTypeCustomers"
+            style="@style/FilterSegment"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            app:icon="@drawable/ic_person"
+            android:text="@string/filter_type_customers" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/optTypeSuppliers"
+            style="@style/FilterSegment"
+            app:icon="@drawable/ic_truck"
+            android:text="@string/filter_type_suppliers" />
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnApplyFilter"
         android:layout_width="match_parent"
-        android:layout_height="54dp"
+        android:layout_height="52dp"
         android:layout_marginTop="22dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
         android:text="@string/filter_apply"
+        android:textColor="@color/white"
         android:textSize="15sp"
-        app:cornerRadius="14dp" />
+        app:backgroundTint="@color/brand_green"
+        app:cornerRadius="14dp"
+        app:icon="@drawable/ic_check_plain"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/gold_on_dark"
+        app:strokeColor="@color/gold_on_dark"
+        app:strokeWidth="1.5dp" />
 
 </LinearLayout>

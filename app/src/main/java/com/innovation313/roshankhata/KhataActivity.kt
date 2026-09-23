@@ -888,53 +888,73 @@ class KhataActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.sheet_filter, null)
         sheet.setContentView(view)
 
-        val accountGroup = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipsAccount)
-        val typeGroup = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipsType)
+        fun col(id: Int) = ContextCompat.getColor(this, id)
+        val chosenFill = col(R.color.brand_green)
+        val chosenEdge = col(R.color.gold_on_dark)
+        val white = col(R.color.white)
+        val strokePx = (1.5f * resources.displayMetrics.density).toInt()
 
-        // Account chips: All / Clear / I have to give / I have to get.
-        // "Clear" means a clear account — the parties standing at zero. The
-        // filter for it was already built and correct (SETTLED, below), but
-        // this chip was wired to ALL, which means no filter at all: the
-        // switch existed, connected to nothing, so choosing it changed
-        // nothing on the list. The owner found it.
-        data class Opt(val label: String, val side: SideFilter)
+        // How an option looks when it is NOT chosen: the colours of the thing
+        // it filters for. Chosen, every option looks the same — brand green,
+        // gold edge — so the eye finds the active one in both groups at once.
+        data class Look(val fill: Int, val text: Int, val edge: Int)
+        fun paint(b: MaterialButton, chosen: Boolean, idle: Look) {
+            b.backgroundTintList = android.content.res.ColorStateList.valueOf(if (chosen) chosenFill else idle.fill)
+            b.strokeColor = android.content.res.ColorStateList.valueOf(if (chosen) chosenEdge else idle.edge)
+            b.strokeWidth = strokePx
+            b.setTextColor(if (chosen) white else idle.text)
+            b.iconTint = android.content.res.ColorStateList.valueOf(if (chosen) chosenEdge else idle.text)
+            b.isSelected = chosen
+        }
+
+        // Account: All / Clear / I have to give / I have to get.
+        // "Clear" means a clear account — the parties standing at zero
+        // (SETTLED). It was once wired to ALL, so choosing it changed
+        // nothing on the list; the owner found it. Each tile now stands for
+        // exactly one filter.
+        val neutral = Look(col(R.color.summary_settled_bg), col(R.color.ink), col(R.color.filter_neutral_stroke))
         val accountOpts = listOf(
-            Opt(getString(R.string.filter_account_all), SideFilter.ALL),
-            Opt(getString(R.string.filter_clear), SideFilter.SETTLED),
-            Opt(getString(R.string.i_have_to_give), SideFilter.TO_GIVE),
-            Opt(getString(R.string.i_have_to_get), SideFilter.TO_GET)
+            Triple(R.id.optAccAll, SideFilter.ALL, neutral),
+            Triple(R.id.optAccClear, SideFilter.SETTLED, neutral),
+            Triple(R.id.optAccGive, SideFilter.TO_GIVE,
+                Look(col(R.color.summary_give_bg), col(R.color.bal_i_owe), col(R.color.filter_give_stroke))),
+            Triple(R.id.optAccGet, SideFilter.TO_GET,
+                Look(col(R.color.summary_get_bg), col(R.color.bal_owed_to_me), col(R.color.filter_get_stroke)))
         )
         var pickedSide = sideFilter
-        accountOpts.forEach { opt ->
-            val chip = com.google.android.material.chip.Chip(this).apply {
-                text = opt.label
-                isCheckable = true
-                // Each chip now stands for a different filter, so the tick
-                // simply follows the active one. The position-based
-                // exception this line used to carry existed only to break
-                // the tie between two chips that both meant ALL.
-                isChecked = (opt.side == sideFilter)
-                setOnClickListener { pickedSide = opt.side }
-            }
-            accountGroup.addView(chip)
+        fun paintAccount() = accountOpts.forEach { (id, side, look) ->
+            paint(view.findViewById(id), side == pickedSide, look)
         }
+        accountOpts.forEach { (id, side, _) ->
+            view.findViewById<MaterialButton>(id).setOnClickListener {
+                pickedSide = side
+                paintAccount()
+            }
+        }
+        paintAccount()
 
+        // Type: one segmented control. Unchosen segments are plain text on
+        // the pale green track (brand green on brand_green_soft, 6.75:1).
+        val segIdle = Look(android.graphics.Color.TRANSPARENT, col(R.color.brand_green), android.graphics.Color.TRANSPARENT)
         val typeOpts = listOf(
-            getString(R.string.filter_type_all) to TypeFilter.ALL,
-            getString(R.string.filter_type_customers) to TypeFilter.CUSTOMERS,
-            getString(R.string.filter_type_suppliers) to TypeFilter.SUPPLIERS
+            R.id.optTypeAll to TypeFilter.ALL,
+            R.id.optTypeCustomers to TypeFilter.CUSTOMERS,
+            R.id.optTypeSuppliers to TypeFilter.SUPPLIERS
         )
         var pickedType = typeFilter
-        typeOpts.forEach { (label, t) ->
-            val chip = com.google.android.material.chip.Chip(this).apply {
-                text = label
-                isCheckable = true
-                isChecked = (t == typeFilter)
-                setOnClickListener { pickedType = t }
-            }
-            typeGroup.addView(chip)
+        fun paintType() = typeOpts.forEach { (id, t) ->
+            paint(view.findViewById(id), t == pickedType, segIdle)
         }
+        typeOpts.forEach { (id, t) ->
+            view.findViewById<MaterialButton>(id).setOnClickListener {
+                pickedType = t
+                paintType()
+            }
+        }
+        paintType()
 
+        // Choices apply only on Apply, so half-made changes never disturb
+        // the list underneath.
         view.findViewById<MaterialButton>(R.id.btnApplyFilter).setOnClickListener {
             sideFilter = pickedSide
             typeFilter = pickedType
