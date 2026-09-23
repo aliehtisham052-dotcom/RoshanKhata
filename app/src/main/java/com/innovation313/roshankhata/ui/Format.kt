@@ -103,6 +103,20 @@ object Format {
     fun dateOnly(millis: Long): String = dateOnlyFmt.format(Date(millis))
 
     /**
+     * The same stamp for a customer statement, minus a midnight time.
+     *
+     * An entry saved with only a date lands on 00:00, and printing
+     * "12:00 AM" beside it states a time of day nobody recorded. Every real
+     * time of day still prints.
+     */
+    fun statementStamp(millis: Long): String {
+        val cal = java.util.Calendar.getInstance().apply { timeInMillis = millis }
+        val midnight = cal.get(java.util.Calendar.HOUR_OF_DAY) == 0 &&
+            cal.get(java.util.Calendar.MINUTE) == 0
+        return if (midnight) dateOnly(millis) else dateTime(millis)
+    }
+
+    /**
      * "5 bag — Urea", or just "Urea" if no quantity was given.
      * Returns null when nothing was recorded, so the caller can hide the row.
      */

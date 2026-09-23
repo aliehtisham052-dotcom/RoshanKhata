@@ -271,6 +271,79 @@ object PdfBranding {
         return bottom
     }
 
+    /**
+     * The quietest form of the invitation, for a sheet that goes to someone
+     * else's customer: a hairline across the foot of the page, the mark, the
+     * app's name and tagline, and a small outlined DOWNLOAD.
+     *
+     * A statement is the SHOP's document. A bordered advert under the last
+     * entry, or a mark across the middle of the page, makes it look like
+     * ours; a footer line says where the sheet was made and gets out of the
+     * way. [bottom] is the baseline it sits on — pass the page's bottom
+     * margin. Returns the top of the line, so a caller can keep clear of it.
+     */
+    fun drawFootLine(
+        context: Context,
+        doc: PdfDocument,
+        canvas: Canvas,
+        left: Float,
+        bottom: Float,
+        right: Float,
+        mark: Bitmap? = null
+    ): Float {
+        val ruleY = bottom - 20f
+        canvas.drawLine(
+            left, ruleY, right, ruleY,
+            Paint().apply { color = BAND_EDGE; strokeWidth = 0.6f; isAntiAlias = true }
+        )
+
+        var x = left
+        (mark ?: logo(context))?.let { bmp ->
+            val size = 12f
+            canvas.drawBitmap(
+                bmp,
+                Rect(0, 0, bmp.width, bmp.height),
+                RectF(x, ruleY + 4f, x + size, ruleY + 4f + size),
+                Paint().apply { isAntiAlias = true; isFilterBitmap = true }
+            )
+            x += size + 6f
+        }
+
+        val name = paint(BRAND_GREEN, 8.5f, bold = true)
+        canvas.drawText("Roshan Khata", x, ruleY + 13f, name)
+        x += name.measureText("Roshan Khata") + 6f
+        canvas.drawText(
+            "Har Hisaab Roshan",
+            x, ruleY + 13f,
+            paint(SOFT, 7.5f).apply {
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+            }
+        )
+
+        // The tappable area, and the outline that shows where it is.
+        val pillW = 62f
+        val pillH = 14f
+        val pill = RectF(right - pillW, ruleY + 2f, right, ruleY + 2f + pillH)
+        canvas.drawRoundRect(
+            pill, 7f, 7f,
+            Paint().apply {
+                color = BRAND_GREEN; style = Paint.Style.STROKE
+                strokeWidth = 0.6f; isAntiAlias = true
+            }
+        )
+        canvas.drawText(
+            "DOWNLOAD",
+            pill.centerX(), pill.centerY() + 2.5f,
+            paint(BRAND_GREEN, 6.5f, bold = true).apply {
+                letterSpacing = 0.06f
+                textAlign = Paint.Align.CENTER
+            }
+        )
+
+        register(doc, pill, context)
+        return ruleY
+    }
+
     /** Height of [drawDownloadBannerCompact]. */
     const val COMPACT_BANNER_HEIGHT = 40f
 
