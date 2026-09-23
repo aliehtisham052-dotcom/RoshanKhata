@@ -54,7 +54,13 @@ class InvoicesActivity : AppCompatActivity() {
 
         tvEmpty = findViewById(R.id.tvNoInvoices)
 
-        adapter = InvoiceAdapter { invoice -> showInvoiceActions(invoice) }
+        // Row tap opens the invoice itself; the actions live behind the
+        // three-dot button. The owner's point: opening a bill should show
+        // the bill, not a menu about it.
+        adapter = InvoiceAdapter(
+            onOpen = { invoice -> previewPdf(invoice) },
+            onMore = { invoice -> showInvoiceActions(invoice) }
+        )
         val rv: RecyclerView = findViewById(R.id.rvInvoices)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
