@@ -258,8 +258,15 @@ object InvoiceTemplateKit {
             c.drawText(heading, mid, 84f, paint(fonts, 16f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
         } else {
             val tile = RectF(left, 26f, left + 40f, 66f)
+            // The real Roshan Khata mark in the tile, on white so its green
+            // and gold read on any band colour. It used to be the shop name's
+            // initials ("RK") on a faint tile — the owner noticed the
+            // invoice carried no actual logo at all. There is no shop-logo
+            // upload yet, so the app's mark stands in; the initials remain
+            // only as the fallback if the image cannot be loaded.
+            val mark = PdfBranding.logo(context)
             if (palette.bandFilled) {
-                c.drawRoundRect(tile, 9f, 9f, solid(0x33FFFFFF))
+                c.drawRoundRect(tile, 9f, 9f, solid(if (mark != null) Color.WHITE else 0x33FFFFFF))
             } else {
                 // Outlined rather than filled, same reason as the band itself.
                 c.drawRoundRect(tile, 9f, 9f, Paint().apply {
@@ -267,14 +274,19 @@ object InvoiceTemplateKit {
                     style = Paint.Style.STROKE; strokeWidth = 1f
                 })
             }
-            val initials = shopName.trim().split(Regex("\\s+"))
-                .filter { it.isNotEmpty() }
-                .take(2)
-                .joinToString("") { it.take(1).uppercase() }
-            c.drawText(
-                initials.ifEmpty { "R" }, tile.centerX(), tile.centerY() + 5f,
-                paint(fonts, 14f, palette.onPrimary, bold = true, align = Paint.Align.CENTER)
-            )
+            if (mark != null) {
+                val inset = 4f
+                drawBitmapFit(c, mark, RectF(tile.left + inset, tile.top + inset, tile.right - inset, tile.bottom - inset))
+            } else {
+                val initials = shopName.trim().split(Regex("\\s+"))
+                    .filter { it.isNotEmpty() }
+                    .take(2)
+                    .joinToString("") { it.take(1).uppercase() }
+                c.drawText(
+                    initials.ifEmpty { "R" }, tile.centerX(), tile.centerY() + 5f,
+                    paint(fonts, 14f, palette.onPrimary, bold = true, align = Paint.Align.CENTER)
+                )
+            }
 
             c.drawText(shopName, left + 52f, 44f, paint(fonts, 16f, palette.onPrimary, bold = true))
             address?.let {
