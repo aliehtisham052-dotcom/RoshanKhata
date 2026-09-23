@@ -201,10 +201,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -304,10 +304,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -392,10 +392,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -487,10 +487,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -578,10 +578,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -665,10 +665,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -749,10 +749,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -841,10 +841,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -924,10 +924,10 @@ object InvoicePdfExport {
         }
 
         var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
-        y = InvoiceTemplateKit.drawBillToAndMeta(c, palette, fonts, left, right, y, invoice)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -1029,6 +1029,8 @@ object InvoicePdfExport {
 
         val cx = pageW / 2f
         var y = 22f
+        // The receipt's words in the app's language (see InvoiceTemplateKit.Labels).
+        val labels = InvoiceTemplateKit.Labels(context)
 
         c.drawText(BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata", cx, y, shopName)
         BusinessProfile.businessAddress(context)?.let {
@@ -1044,18 +1046,18 @@ object InvoicePdfExport {
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
 
-        c.drawText("Rasid #:", pad, y, mono)
+        c.drawText("${labels.invoiceNo}:", pad, y, mono)
         c.drawText(invoice.invoiceNumber, pageW - pad, y, monoR)
         y += 13f
-        c.drawText("Tareekh:", pad, y, mono)
+        c.drawText("${labels.date}:", pad, y, mono)
         c.drawText(Format.dateOnly(invoice.invoiceDate), pageW - pad, y, monoR)
         invoice.dueDate?.let {
             y += 13f
-            c.drawText("Due Date:", pad, y, mono)
+            c.drawText("${labels.dueDate}:", pad, y, mono)
             c.drawText(Format.dateOnly(it), pageW - pad, y, monoR)
         }
         y += 13f
-        c.drawText("Waqt:", pad, y, mono)
+        c.drawText("${labels.time}:", pad, y, mono)
         c.drawText(timeFmt.format(Date(invoice.createdAt)), pageW - pad, y, monoR)
 
         y += 16f
@@ -1076,41 +1078,45 @@ object InvoicePdfExport {
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
 
-        c.drawText("Sub Total", pad, y, mono)
-        c.drawText(numberOnly(totals.subtotal), pageW - pad, y, monoR)
-        y += 13f
+        // Same rule as the A4 templates: only when something sits between it
+        // and the total, otherwise it just repeats the total.
+        if (InvoiceTemplateKit.showSubtotal(totals)) {
+            c.drawText(labels.subtotal, pad, y, mono)
+            c.drawText(numberOnly(totals.subtotal), pageW - pad, y, monoR)
+            y += 13f
+        }
         if (totals.discountAmount > 0) {
-            c.drawText("Discount", pad, y, mono)
+            c.drawText(labels.discount, pad, y, mono)
             c.drawText("-" + numberOnly(totals.discountAmount), pageW - pad, y, monoR)
             y += 13f
         }
         if (totals.taxAmount > 0) {
-            c.drawText("Tax", pad, y, mono)
+            c.drawText(labels.tax, pad, y, mono)
             c.drawText(numberOnly(totals.taxAmount), pageW - pad, y, monoR)
             y += 13f
         }
         if (totals.additionalCharge > 0) {
-            c.drawText(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: "Extra", pad, y, mono)
+            c.drawText(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: labels.extraCharges, pad, y, mono)
             c.drawText(numberOnly(totals.additionalCharge), pageW - pad, y, monoR)
             y += 13f
         }
         y += 4f
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 15f
-        c.drawText("TOTAL", pad, y, grandPaint)
+        c.drawText(labels.total, pad, y, grandPaint)
         c.drawText(Format.money(totals.grandTotal), pageW - pad, y, grandPaintR)
         y += 12f
         if (invoice.receivedAmount != null) {
-            c.drawText("Received", pad, y, mono)
+            c.drawText(labels.received, pad, y, mono)
             c.drawText(numberOnly(totals.received), pageW - pad, y, monoR)
             y += 13f
-            c.drawText("Balance Due", pad, y, monoBold)
+            c.drawText(labels.balanceDue, pad, y, monoBold)
             c.drawText(numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) })
             y += 12f
         }
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
-        c.drawText("Rupay Alfaaz Mein:", pad, y, Paint(mono).apply { textSize = 8f; color = 0xFF555555.toInt() })
+        c.drawText("${labels.amountInWords}:", pad, y, Paint(mono).apply { textSize = 8f; color = 0xFF555555.toInt() })
         y += 11f
         // Wrapped by hand, not left to overflow the receipt's own width —
         // the words for a large total are routinely longer than 226pt fits
@@ -1118,8 +1124,8 @@ object InvoicePdfExport {
         y = wrapMonoText(context, c, NumberWords.rupeesInWords(context, totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
 
         val bank = listOfNotNull(
-            BusinessProfile.bankName(context)?.let { "Bank" to it },
-            BusinessProfile.bankAccountTitle(context)?.let { "Title" to it },
+            BusinessProfile.bankName(context)?.let { labels.bank to it },
+            BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
             BusinessProfile.bankIban(context)?.let { "IBAN" to it },
             BusinessProfile.bankJazzCash(context)?.let { "JazzCash" to it }
         )
@@ -1128,7 +1134,7 @@ object InvoicePdfExport {
             y += 6f
             c.drawLine(pad, y, pageW - pad, y, dash)
             y += 16f
-            c.drawText("Payment Info", cx, y, Paint(shopSub).apply { color = Color.BLACK; isFakeBoldText = true })
+            c.drawText(labels.paymentInfo, cx, y, Paint(shopSub).apply { color = Color.BLACK; isFakeBoldText = true })
             y += 13f
             bank.forEach { (label, value) ->
                 c.drawText(label, pad, y, monoGrey)
@@ -1151,7 +1157,7 @@ object InvoicePdfExport {
             y += 6f
             c.drawLine(pad, y, pageW - pad, y, dash)
             y += 14f
-            c.drawText("Terms", pad, y, Paint(mono).apply { textSize = 8f; isFakeBoldText = true })
+            c.drawText(labels.terms, pad, y, Paint(mono).apply { textSize = 8f; isFakeBoldText = true })
             y += 12f
             footerLines.forEach {
                 y = wrapMonoText(context, c, it, pad, y, pageW - 2 * pad, 8f)
@@ -1174,9 +1180,9 @@ object InvoicePdfExport {
 
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
-        c.drawText("Shukriya!", cx, y, shopSub)
+        c.drawText(labels.thankYou, cx, y, shopSub)
         y += 11f
-        c.drawText("Dobara tashreef layein", cx, y, shopSub)
+        c.drawText(labels.visitAgain, cx, y, shopSub)
         y += 10f
         PdfBranding.drawDownloadBannerCompact(context, doc, c, pad, y, pageW - 2 * pad)
 

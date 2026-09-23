@@ -1132,4 +1132,33 @@
     <string name="entry_preview_line">ابھی %1$s  ←  اس اندراج کے بعد %2$s</string>
     <string name="entry_bill_chip">بل تصویر</string>
     <string name="entry_bill_chip_done">✓ بل</string>
+
+    <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
+    <string name="pdf_label_invoice">انوائس</string>
+    <string name="pdf_label_bill_to">بل بنام</string>
+    <string name="pdf_label_invoice_details">انوائس کی تفصیل</string>
+    <string name="pdf_label_invoice_no">انوائس نمبر</string>
+    <string name="pdf_label_date">تاریخ</string>
+    <string name="pdf_label_due_date">ادائیگی کی تاریخ</string>
+    <string name="pdf_label_time">وقت</string>
+    <string name="pdf_label_item">تفصیل</string>
+    <string name="pdf_label_qty">تعداد</string>
+    <string name="pdf_label_rate">ریٹ</string>
+    <string name="pdf_label_amount">رقم</string>
+    <string name="pdf_label_subtotal">ذیلی کل</string>
+    <string name="pdf_label_discount">رعایت</string>
+    <string name="pdf_label_tax">ٹیکس</string>
+    <string name="pdf_label_extra_charges">اضافی خرچہ</string>
+    <string name="pdf_label_total">کل رقم</string>
+    <string name="pdf_label_received">وصول</string>
+    <string name="pdf_label_balance_due">باقی رقم</string>
+    <string name="pdf_label_payment_info">ادائیگی کی معلومات</string>
+    <string name="pdf_label_scan_to_pay">اسکین کر کے ادا کریں</string>
+    <string name="pdf_label_amount_in_words">رقم الفاظ میں</string>
+    <string name="pdf_label_signatory">مجاز دستخط</string>
+    <string name="pdf_label_terms">شرائط</string>
+    <string name="pdf_label_bank">بینک</string>
+    <string name="pdf_label_account_title">ٹائٹل</string>
+    <string name="pdf_label_thank_you">شکریہ!</string>
+    <string name="pdf_label_visit_again">دوبارہ تشریف لائیں</string>
 </resources>
