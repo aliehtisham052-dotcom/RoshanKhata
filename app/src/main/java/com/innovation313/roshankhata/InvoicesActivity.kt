@@ -87,14 +87,12 @@ class InvoicesActivity : AppCompatActivity() {
     // ---------- Viewing / deleting a saved invoice ----------
 
     private fun showInvoiceActions(invoice: InvoiceSummary) {
-        // Preview sits next to View, and they are not the same thing: View is
-        // the plain itemised readout for checking figures, Preview is the
-        // printed design exactly as the customer will receive it. Both come
-        // before the two ways of sending it, so the invoice can be READ
-        // before it is sent — which is the whole point of the button.
+        // No "Preview" here: tapping the row itself already opens the printed
+        // design (previewPdf), so the same action in this list was a second
+        // door to the same room. View stays — it is the plain itemised
+        // readout for checking figures, which the printed design is not.
         val options = arrayOf(
             getString(R.string.view),
-            getString(R.string.pdf_preview),
             getString(R.string.edit),
             getString(R.string.invoice_send_whatsapp),
             getString(R.string.invoice_share_pdf),
@@ -105,11 +103,10 @@ class InvoicesActivity : AppCompatActivity() {
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> viewInvoice(invoice)
-                    1 -> previewPdf(invoice)
-                    2 -> editInvoice(invoice)
-                    3 -> sendPdfToCustomer(invoice)
-                    4 -> sharePdf(invoice)
-                    5 -> confirmDeleteInvoice(invoice)
+                    1 -> editInvoice(invoice)
+                    2 -> sendPdfToCustomer(invoice)
+                    3 -> sharePdf(invoice)
+                    4 -> confirmDeleteInvoice(invoice)
                 }
             }
             .show()
