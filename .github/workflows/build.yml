@@ -14,19 +14,24 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Pinned, not ubuntu-latest: GitHub moves that label to Ubuntu 26.04
+    # between 19 Oct and 19 Nov 2026, and the Android SDK this build uses
+    # comes from the runner image. Move to 26.04 on purpose, after one trial
+    # run on it, rather than find out from a red build on a release day.
+    # All actions are on their Node 24 majors (Node 20 is end-of-life).
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
         with:
           cache-disabled: true
           gradle-version: 8.14.3
@@ -129,7 +134,7 @@ jobs:
       # through Actions artifacts — just tap and install on the phone.
       - name: Publish to Releases
         if: success() && github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: latest
           name: "Roshan Khata — Latest Build"
@@ -170,7 +175,7 @@ jobs:
 
       - name: Upload APK artifact
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: RoshanKhata-debug-apk
           path: app/build/outputs/apk/debug/*.apk

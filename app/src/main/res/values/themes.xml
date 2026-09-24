@@ -361,7 +361,7 @@
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/ink</item>
         <item name="android:textColorHint">@color/text_muted</item>
-        <item name="android:importantForAutofill">no</item>
+        <item name="android:importantForAutofill" tools:targetApi="o">no</item>
     </style>
 
     <!-- The small gold capitals over each card on the invoice editor. -->
