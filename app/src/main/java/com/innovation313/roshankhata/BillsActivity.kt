@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * Supplier bills: stock bought in.
@@ -169,7 +170,7 @@ class BillsActivity : AppCompatActivity() {
 
         // Say what the bill is about to do to the ledger, before it does it.
         fun refreshEffect() {
-            val amount = etTotal.text.toString().trim().toDoubleOrNull()
+            val amount = Digits.parse(etTotal.text)
             val supplier = etSupplier.text.toString().trim()
 
             if (!cbPaidCash.isChecked && amount != null && amount > 0 && supplier.isNotEmpty()) {
@@ -197,7 +198,7 @@ class BillsActivity : AppCompatActivity() {
                 collectItems(
                     supplierName = etSupplier.text.toString().trim(),
                     billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                    total = etTotal.text.toString().trim().toDoubleOrNull(),
+                    total = Digits.parse(etTotal.text),
                     billDate = billDate,
                     dueDate = dueDate,
                     paidCash = cbPaidCash.isChecked,
@@ -208,7 +209,7 @@ class BillsActivity : AppCompatActivity() {
                 saveBill(
                     supplierName = etSupplier.text.toString().trim(),
                     billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                    total = etTotal.text.toString().trim().toDoubleOrNull(),
+                    total = Digits.parse(etTotal.text),
                     billDate = billDate,
                     dueDate = dueDate,
                     paidCash = cbPaidCash.isChecked,
@@ -318,7 +319,7 @@ class BillsActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
-                val qty = etQty.text.toString().trim().toDoubleOrNull() ?: 1.0
+                val qty = Digits.parse(etQty.text) ?: 1.0
 
                 val base = existing ?: BillItem(billId = 0, productName = product, quantity = qty)
                 onDone(
@@ -328,7 +329,7 @@ class BillsActivity : AppCompatActivity() {
                         expiryDate = expiry,
                         quantity = qty,
                         unit = etUnit.text.toString().trim().ifEmpty { null },
-                        rate = etRate.text.toString().trim().toDoubleOrNull()
+                        rate = Digits.parse(etRate.text)
                     )
                 )
             }
@@ -636,7 +637,7 @@ class BillsActivity : AppCompatActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                val total = etTotal.text.toString().trim().toDoubleOrNull()
+                val total = Digits.parse(etTotal.text)
                 if (total == null || total <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton

@@ -99,5 +99,5 @@ abstract class KhataDatabase : RoomDatabase() {
 /** Builds the next human-facing reference, e.g. "RK-000042". */
 object EntryNumber {
     fun next(existingCount: Int): String =
-        "RK-%06d".format(existingCount + 1)
+        "RK-%06d".format(Digits.FIGURES, existingCount + 1)
 }

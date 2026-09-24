@@ -178,5 +178,5 @@ data class InvoiceSummary(
  * customer holding both kinds of paper.
  */
 object InvoiceNumber {
-    fun next(existingCount: Int): String = "INV-%06d".format(existingCount + 1)
+    fun next(existingCount: Int): String = "INV-%06d".format(Digits.FIGURES, existingCount + 1)
 }

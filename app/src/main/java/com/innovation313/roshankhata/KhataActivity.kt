@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * Roshan Khata — Innovation-313
@@ -1163,8 +1164,11 @@ class KhataActivity : AppCompatActivity() {
             ageDays < 0 -> getString(R.string.summary_backup_never)
             ageDays == 0L -> getString(
                 R.string.summary_backup_time,
-                android.text.format.DateFormat.getTimeFormat(this)
-                    .format(java.util.Date(last))
+                // The phone's own 12/24-hour pattern, with 0-9 digits.
+                android.text.format.DateFormat.getTimeFormat(this).let { f ->
+                    (f as? java.text.SimpleDateFormat)
+                        ?.let { java.text.SimpleDateFormat(it.toPattern(), Digits.latinIn()) } ?: f
+                }.format(java.util.Date(last))
             )
             ageDays == 1L -> getString(R.string.summary_backup_yesterday)
             else -> getString(R.string.summary_backup_days, ageDays)

@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * Payment plans: an arrangement for clearing a debt in instalments.
@@ -156,7 +157,7 @@ class PlansActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
-                val total = etTotal.text.toString().trim().toDoubleOrNull()
+                val total = Digits.parse(etTotal.text)
                 if (total == null || total <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
@@ -172,8 +173,7 @@ class PlansActivity : AppCompatActivity() {
                         PaymentPlan(
                             partyId = party.id,
                             totalAmount = total,
-                            installmentAmount = etInstallment.text.toString().trim()
-                                .toDoubleOrNull()?.takeIf { it > 0 },
+                            installmentAmount = Digits.parse(etInstallment.text)?.takeIf { it > 0 },
                             nextDueDate = nextDue,
                             note = etNote.text.toString().trim().ifEmpty { null }
                         )

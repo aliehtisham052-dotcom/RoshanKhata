@@ -62,6 +62,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * A single party's ledger: full entry history with running balances,
@@ -656,7 +657,7 @@ class PartyDetailActivity : AppCompatActivity() {
 
         fun refreshRateSuggestion() {
             val product = matchedProduct
-            val qty = etQuantity.text.toString().trim().toDoubleOrNull()
+            val qty = Digits.parse(etQuantity.text)
             val credit = product?.creditPrice
             val cash = product?.salePrice
             val rate = if (isGiven) (credit ?: cash) else null
@@ -814,7 +815,7 @@ class PartyDetailActivity : AppCompatActivity() {
             }
 
             val itemName = etItemName.text.toString().trim().ifEmpty { null }
-            val quantity = etQuantity.text.toString().trim().toDoubleOrNull()
+            val quantity = Digits.parse(etQuantity.text)
             val unit = etUnit.text.toString().trim().ifEmpty { null }
 
             val entry = LedgerEntry(
@@ -1803,7 +1804,7 @@ class PartyDetailActivity : AppCompatActivity() {
             .setPositiveButton(R.string.save) { _, _ ->
                 // A blank field means "no limit" — that is a real choice, not
                 // an error, and it must be able to undo a limit set earlier.
-                val newLimit = etLimit.text.toString().trim().toDoubleOrNull()
+                val newLimit = Digits.parse(etLimit.text)
                     ?.takeIf { it > 0 }
 
                 // The read-then-write runs on AppScope — see AppScope's own

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 /**
  * A tiny, safe arithmetic evaluator for amount fields, so the owner can type
  * "500+300" or "1200-150" or "12*40" straight into the box and have it total
@@ -48,9 +50,12 @@ object Calc {
         evalPad(input)?.let { kotlin.math.abs(it) }?.takeIf { it > 0.0 }
 
 
-    /** The pad prints × ÷ − for looks; the evaluator wants * / -. */
+    /**
+     * The pad prints × ÷ − for looks; the evaluator wants * / -. Digits from
+     * an Arabic or Persian keyboard (٢٧٦, ۲۷۶) become 0-9 first, see [Digits].
+     */
     fun normalize(text: String): String =
-        text.replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
+        Digits.toLatin(text).replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
 
     /**
      * Rewrite percentages into plain arithmetic.
@@ -99,7 +104,7 @@ object Calc {
      * "invalid amount" handling.
      */
     fun eval(input: String): Double? {
-        val text = input.trim().replace(" ", "")
+        val text = Digits.toLatin(input).trim().replace(" ", "")
         if (text.isEmpty()) return null
 
         // Fast path: a plain number (possibly decimal). No math to do.

@@ -10,6 +10,7 @@ import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.ProductName
 import kotlinx.coroutines.launch
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * The one form that edits a product.
@@ -114,8 +115,8 @@ object ProductDetailsDialog {
                     registrationNumber = typed(etRegistration),
                     // A cleared box means "I do not quote a rate for this",
                     // which is a null and not a zero. Zero is a price.
-                    salePrice = typed(etSalePrice)?.toDoubleOrNull(),
-                    creditPrice = typed(etCreditPrice)?.toDoubleOrNull()
+                    salePrice = Digits.parse(typed(etSalePrice)),
+                    creditPrice = Digits.parse(typed(etCreditPrice))
                 )
 
                 // AppScope for the write itself: leaving the screen right
