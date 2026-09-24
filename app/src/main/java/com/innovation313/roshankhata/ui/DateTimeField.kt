@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * The "when did this happen" control, shared by every screen that records
@@ -22,10 +23,10 @@ import java.util.Locale
  */
 object DateTimeField {
 
-    private val format = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+    private val format = SimpleDateFormat("dd MMM yyyy, hh:mm a", Digits.latinIn())
 
     /** Chip-sized label ("21 Sep") for tight rows; the time is still picked. */
-    private val compactFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+    private val compactFormat = SimpleDateFormat("d MMM", Digits.latinIn())
 
     /**
      * Wire [button] to pick a date and then a time, starting from [initial].

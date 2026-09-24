@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
+import com.innovation313.roshankhata.data.Digits
 
 object Format {
 
@@ -60,9 +61,9 @@ object Format {
     fun money(value: Double): String {
         val rounded = abs(value)
         return if (rounded % 1.0 == 0.0) {
-            "Rs %,.0f".format(rounded)
+            "Rs %,.0f".format(Digits.FIGURES, rounded)
         } else {
-            "Rs %,.2f".format(rounded)
+            "Rs %,.2f".format(Digits.FIGURES, rounded)
         }
     }
 
@@ -169,7 +170,7 @@ object Format {
         if (item.isEmpty() && quantity == null) return null
 
         val qtyPart = quantity?.let { q ->
-            val n = if (q % 1.0 == 0.0) "%,.0f".format(q) else "%,.2f".format(q)
+            val n = if (q % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, q) else "%,.2f".format(Digits.FIGURES, q)
             val u = unit?.trim().orEmpty()
             if (u.isEmpty()) n else "$n $u"
         }
@@ -193,8 +194,8 @@ object Format {
      * it twice.
      */
     fun qty(quantity: Double, unit: String?): String {
-        val n = if (quantity % 1.0 == 0.0) "%,.0f".format(quantity)
-        else "%,.2f".format(quantity)
+        val n = if (quantity % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, quantity)
+        else "%,.2f".format(Digits.FIGURES, quantity)
         val u = unit?.trim().orEmpty()
         return if (u.isEmpty()) n else "$n $u"
     }

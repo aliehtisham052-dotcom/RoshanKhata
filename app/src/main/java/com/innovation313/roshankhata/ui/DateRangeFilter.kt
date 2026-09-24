@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * "Show me a particular stretch of days" — the same control on the customer
@@ -65,7 +66,7 @@ object DateRangeFilter {
         if (range.labelRes != R.string.range_custom) {
             activity.getString(range.labelRes)
         } else {
-            val fmt = SimpleDateFormat("d MMM", Locale.getDefault())
+            val fmt = SimpleDateFormat("d MMM", Digits.latinIn())
             "${fmt.format(Date(range.from))} – ${fmt.format(Date(range.to))}"
         }
 

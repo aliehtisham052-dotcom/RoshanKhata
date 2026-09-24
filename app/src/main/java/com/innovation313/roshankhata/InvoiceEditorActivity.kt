@@ -38,6 +38,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * Making an invoice as a three-step walkthrough, in the owner's own order:
@@ -464,8 +465,8 @@ class InvoiceEditorActivity : AppCompatActivity() {
      * InvoiceItem.lineTotal, the same figure the PDF prints for the line.
      */
     private fun refreshRow(r: Row) {
-        val qty = r.qty.text.toString().trim().toDoubleOrNull()
-        val rate = r.rate.text.toString().trim().toDoubleOrNull()
+        val qty = Digits.parse(r.qty.text)
+        val rate = Digits.parse(r.rate.text)
         if (qty == null || qty <= 0 || rate == null || rate < 0) {
             r.totalLine.visibility = View.GONE
             return
@@ -494,8 +495,8 @@ class InvoiceEditorActivity : AppCompatActivity() {
 
     private fun validItems(): List<InvoiceItem> = rows.mapNotNull { r ->
         val name = r.name.text.toString().trim()
-        val qty = r.qty.text.toString().trim().toDoubleOrNull()
-        val rate = r.rate.text.toString().trim().toDoubleOrNull()
+        val qty = Digits.parse(r.qty.text)
+        val rate = Digits.parse(r.rate.text)
         if (name.isEmpty() || qty == null || qty <= 0 || rate == null || rate < 0) return@mapNotNull null
         InvoiceItem(
             invoiceId = 0,
@@ -553,17 +554,17 @@ class InvoiceEditorActivity : AppCompatActivity() {
                 // that was never shown — turning Tax off should not erase a
                 // tax figure already set earlier in the same invoice.
                 if (InvoiceFeatureSettings.discountEnabled(this)) {
-                    discountPercent = etDiscount.text.toString().trim().toDoubleOrNull()
+                    discountPercent = Digits.parse(etDiscount.text)
                 }
                 if (InvoiceFeatureSettings.taxEnabled(this)) {
-                    taxPercent = etTax.text.toString().trim().toDoubleOrNull()
+                    taxPercent = Digits.parse(etTax.text)
                 }
                 if (InvoiceFeatureSettings.extraChargeEnabled(this)) {
                     chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
-                    chargeAmount = etChargeAmount.text.toString().trim().toDoubleOrNull()
+                    chargeAmount = Digits.parse(etChargeAmount.text)
                 }
                 if (InvoiceFeatureSettings.receivedEnabled(this)) {
-                    receivedAmount = etReceived.text.toString().trim().toDoubleOrNull()
+                    receivedAmount = Digits.parse(etReceived.text)
                 }
                 if (InvoiceFeatureSettings.noteEnabled(this)) {
                     note = etNote.text.toString().trim().ifEmpty { null }

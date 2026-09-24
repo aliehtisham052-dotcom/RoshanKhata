@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import com.innovation313.roshankhata.data.Digits
 
 /**
  * Shows a single ledger entry as a shareable payment receipt, and lets the
@@ -311,7 +312,7 @@ class EntryDetailActivity : AppCompatActivity() {
                     note = etNote.text.toString().trim().ifBlank { null },
                     timestamp = chosenTime,
                     itemName = etItemName.text.toString().trim().ifEmpty { null },
-                    quantity = etQuantity.text.toString().trim().toDoubleOrNull(),
+                    quantity = Digits.parse(etQuantity.text),
                     unit = etUnit.text.toString().trim().ifEmpty { null },
                     productId = matchedProductId,
                     billItemId = selectedBatch?.id
