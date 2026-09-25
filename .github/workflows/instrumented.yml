@@ -24,10 +24,15 @@ concurrency:
 
 jobs:
   instrumented:
-    # Pinned for the same reason as the other workflows: GitHub moves
-    # ubuntu-latest to Ubuntu 26.04 between 19 Oct and 19 Nov 2026, and the
-    # Android SDK comes from the runner image.
-    runs-on: ubuntu-24.04
+    # 22.04, NOT the 24.04 the other two workflows pin.
+    #
+    # Those build an APK and a bundle, where the runner's Android SDK is what
+    # matters. This one needs an EMULATOR, and android-emulator-runner has
+    # long-standing AVD trouble on 24.04 (their issues #400, #409, #414,
+    # #415). Measured here rather than assumed: the emulator step died at 78
+    # seconds without ever reaching gradle, while the compile step on the same
+    # runner passed in 172.
+    runs-on: ubuntu-22.04
     timeout-minutes: 45
 
     steps:
