@@ -70,7 +70,12 @@ jobs:
             -no-window -no-snapshot -noaudio -no-boot-anim
             -gpu swiftshader_indirect -camera-back none
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest --stacktrace
+          # `gradle`, not `./gradlew`: this repo has no wrapper checked in —
+          # build.yml and aab.yml both call the `gradle` that
+          # gradle/actions/setup-gradle puts on PATH, and the first run of this
+          # workflow failed with exit 127 (command not found) for exactly that
+          # reason. --no-daemon matches the other two.
+          script: gradle connectedDebugAndroidTest --no-daemon --stacktrace
 
       # The report says WHICH test failed and why. Without it a red tick is
       # just a red tick, and the next session guesses.
