@@ -411,48 +411,40 @@ class BillsActivity : AppCompatActivity() {
             // Paid in cash means nothing is owed, so nothing belongs in the
             // ledger against them. Writing an entry anyway and immediately
             // cancelling it would leave two phantom rows in their account.
-            val ledgerId: Long? = if (paidCash) {
-                null
-            } else {
-                dao.insertEntryNumbered(
-                    LedgerEntry(
-                        partyId = supplier.id,
-                        amount = total,
-                        isGiven = false,
-                        note = billNumber?.let { "Bill $it" } ?: note,
-                        entryNumber = ""
-                    )
-                )
-            }
-
-            val billId = dao.insertBill(
-                SupplierBill(
+            // The debt, the bill and its items go in as ONE transaction
+            // (dao.insertSupplierBill): all saved, or none — never a debt in
+            // the supplier's khata with no bill behind it.
+            //
+            // The ledger entry exists only when the stock was taken on credit.
+            // isGiven = false means money owed BY me TO them — the supplier's
+            // balance goes negative, which is exactly what "I owe them" means
+            // in this ledger's terms. Paid in cash means nothing is owed, so
+            // nothing belongs in the ledger against them.
+            //
+            // Each item's product is born the moment its name first appears on
+            // a bill (findOrCreateProduct is idempotent and restores a deleted
+            // product of the same name rather than inserting a twin), so a sale
+            // of it can offer its batches at once, with no backfill run needed.
+            val createdProducts = dao.insertSupplierBill(
+                entry = if (paidCash) null else LedgerEntry(
+                    partyId = supplier.id,
+                    amount = total,
+                    isGiven = false,
+                    note = billNumber?.let { "Bill $it" } ?: note,
+                    entryNumber = ""
+                ),
+                bill = SupplierBill(
                     partyId = supplier.id,
                     billNumber = billNumber,
                     totalAmount = total,
                     billDate = billDate,
                     dueDate = dueDate,
-                    ledgerEntryId = ledgerId,
+                    ledgerEntryId = null,
                     isPaidInFull = paidCash,
                     note = note
-                )
+                ),
+                items = itemsForThisBill
             )
-
-            val createdProducts = itemsForThisBill.map { item ->
-                // The product is born HERE, the moment its name first appears
-                // on a bill — which is what the Products screen's empty state
-                // has promised all along. findOrCreateProduct is idempotent
-                // and restores a deleted product of the same name rather than
-                // inserting a twin, so typing "Urea" twice can never make two.
-                // Tagging productId now also means a sale of this product can
-                // offer its batches immediately, with no backfill run needed.
-                val product = dao.findOrCreateProduct(
-                    name = item.productName,
-                    defaultUnit = item.unit
-                )
-                dao.insertBillItem(item.copy(billId = billId, productId = product.id))
-                product
-            }
 
             // The toast touches a screen the owner may already have left, so
             // it hops back to the main thread and is shown only if this
