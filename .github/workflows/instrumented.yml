@@ -1,0 +1,85 @@
+name: On-device tests
+
+# Deliberately its OWN workflow, not a job added to build.yml.
+#
+# build.yml builds the APK the owner installs and publishes it to Releases;
+# aab.yml builds the bundle for Play. An emulator takes ten to fifteen minutes
+# and can fail for reasons that have nothing to do with this app — a cold AVD,
+# a runner without KVM, a flaky boot. Sitting in either of those workflows it
+# could hold up or fail a build that is perfectly good. Here it reports on its
+# own, beside them, and neither waits for it.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A second push while the emulator is still booting cancels the first: the
+# answer for the older commit is no longer the one anybody needs.
+concurrency:
+  group: instrumented-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  instrumented:
+    # Pinned for the same reason as the other workflows: GitHub moves
+    # ubuntu-latest to Ubuntu 26.04 between 19 Oct and 19 Nov 2026, and the
+    # Android SDK comes from the runner image.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      # The emulator needs hardware acceleration to be usable at all. Without
+      # this the AVD falls back to software and times out rather than failing
+      # with anything that reads like a cause.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run the on-device tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          # API 30 rather than the newest: these tests exercise Room, org.json
+          # and Activity startup, none of which differ on a later release, and
+          # an older image boots faster and more reliably on CI. minSdk here
+          # is 24, so this is also nearer the oldest phone that runs the app
+          # than the newest.
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          # No window, no audio, no boot animation: nothing here looks at the
+          # screen, and each of those is a way for a headless runner to hang.
+          emulator-options: >-
+            -no-window -no-snapshot -noaudio -no-boot-anim
+            -gpu swiftshader_indirect -camera-back none
+          disable-animations: true
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
+
+      # The report says WHICH test failed and why. Without it a red tick is
+      # just a red tick, and the next session guesses.
+      - name: Publish the report when a test fails
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: instrumented-test-report
+          path: |
+            app/build/reports/androidTests/
+            app/build/outputs/androidTest-results/
+          retention-days: 14
