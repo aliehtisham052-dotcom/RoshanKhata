@@ -1270,6 +1270,35 @@ You can change this any time from this screen.</string>
     <string name="pdf_biz_days_left">%1$d days</string>
     <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
 
+    <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
+    <string name="pdf_reg_title">Sales &amp; Purchase Register</string>
+    <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
+    <string name="pdf_reg_period">Period: %1$s</string>
+    <string name="pdf_reg_note_1">This is the shop\'s own record of what it was told, printed for the period above.</string>
+    <string name="pdf_reg_note_2">A sale is a credit/goods entry that carried goods \u2014 cash-only and qarz-e-hasna are not counted.</string>
+    <string name="pdf_reg_sales_lines">Sales lines in period</string>
+    <string name="pdf_reg_total_sales">Total sales</string>
+    <string name="pdf_reg_purchase_lines">Purchase lines in period</string>
+    <string name="pdf_reg_total_purchases">Total purchases (priced lines)</string>
+    <string name="pdf_reg_no_rate_lines">Purchase lines with no rate recorded</string>
+    <string name="pdf_reg_section_sales">1. Sales register</string>
+    <string name="pdf_reg_section_sales_cont">1. Sales register (continued)</string>
+    <string name="pdf_reg_no_sales">No goods sold in this period.</string>
+    <string name="pdf_reg_section_purchases">2. Purchase register</string>
+    <string name="pdf_reg_section_purchases_cont">2. Purchase register (continued)</string>
+    <string name="pdf_reg_no_purchases">No purchases recorded in this period.</string>
+    <string name="pdf_reg_col_date">DATE</string>
+    <string name="pdf_reg_col_customer">CUSTOMER / PRODUCT / BATCH</string>
+    <string name="pdf_reg_col_supplier">SUPPLIER / PRODUCT / BATCH</string>
+    <string name="pdf_reg_col_amount">AMOUNT</string>
+    <string name="pdf_reg_batch">Batch %1$s</string>
+    <string name="pdf_reg_bill">Bill %1$s</string>
+    <string name="pdf_reg_expiry">exp %1$s</string>
+    <string name="pdf_reg_missing_rate">%1$d purchase line(s) had no rate recorded and are not in the total above.</string>
+    <string name="pdf_reg_dealer_sign">Dealer\'s signature</string>
+    <string name="pdf_reg_inspector_sign">Inspector\'s signature</string>
+    <string name="pdf_reg_footer">%1$s \u00B7 Generated %2$s \u00B7 Page %3$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>
     <string name="invoice_section_details">Invoice details</string>

@@ -1250,6 +1250,34 @@
     <string name="pdf_biz_days_left">%1$d ڏينهن</string>
     <string name="pdf_biz_batch">بيچ %1$s \u00B7 </string>
 
+    <string name="pdf_reg_title">سيلز ۽ پرچيز رجسٽر</string>
+    <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
+    <string name="pdf_reg_period">عرصو: %1$s</string>
+    <string name="pdf_reg_note_1">هي دڪان جو پنهنجو رڪارڊ آهي جيڪو کيس ٻڌايو ويو، مٿي ڏنل عرصي لاءِ.</string>
+    <string name="pdf_reg_note_2">سيل اها اوڌر/مال واري داخلا آهي جنهن ۾ مال ويو \u2014 رڳو نقد ۽ قرض حسنه شمار نه ٿيندا.</string>
+    <string name="pdf_reg_sales_lines">هن عرصي جون سيل لائينون</string>
+    <string name="pdf_reg_total_sales">ڪل سيل</string>
+    <string name="pdf_reg_purchase_lines">هن عرصي جون خريد لائينون</string>
+    <string name="pdf_reg_total_purchases">ڪل خريد (ريٽ واريون لائينون)</string>
+    <string name="pdf_reg_no_rate_lines">خريد لائينون جن جو ريٽ درج ناهي</string>
+    <string name="pdf_reg_section_sales">1. سيلز رجسٽر</string>
+    <string name="pdf_reg_section_sales_cont">1. سيلز رجسٽر (جاري)</string>
+    <string name="pdf_reg_no_sales">هن عرصي ۾ ڪو مال وڪرو نه ٿيو.</string>
+    <string name="pdf_reg_section_purchases">2. پرچيز رجسٽر</string>
+    <string name="pdf_reg_section_purchases_cont">2. پرچيز رجسٽر (جاري)</string>
+    <string name="pdf_reg_no_purchases">هن عرصي ۾ ڪا خريد درج ناهي.</string>
+    <string name="pdf_reg_col_date">تاريخ</string>
+    <string name="pdf_reg_col_customer">گراهڪ / پراڊڪٽ / بيچ</string>
+    <string name="pdf_reg_col_supplier">سپلائر / پراڊڪٽ / بيچ</string>
+    <string name="pdf_reg_col_amount">رقم</string>
+    <string name="pdf_reg_batch">بيچ %1$s</string>
+    <string name="pdf_reg_bill">بل %1$s</string>
+    <string name="pdf_reg_expiry">مدت %1$s</string>
+    <string name="pdf_reg_missing_rate">%1$d خريد لائينن جو ريٽ درج نه هو، انڪري اهي مٿين ڪل ۾ شامل ناهن.</string>
+    <string name="pdf_reg_dealer_sign">ڊيلر جي صحيح</string>
+    <string name="pdf_reg_inspector_sign">انسپيڪٽر جي صحيح</string>
+    <string name="pdf_reg_footer">%1$s \u00B7 ٺاهي وئي %2$s \u00B7 صفحو %3$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">گراهڪ</string>
     <string name="invoice_section_details">انوائس جي تفصيل</string>

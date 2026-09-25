@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.ui.Format
 import java.io.File
 import java.io.FileOutputStream
@@ -111,23 +112,28 @@ object RegisterReport {
         var pageNo = 1
 
         val brandLogo = PdfBranding.logo(context)
-        val businessName = d.businessName ?: "Roshan Khata"
+        // Read once: each is drawn on every page, and the column words are
+        // also measured, so measureText must see the same string that is drawn.
+        val appName = context.getString(R.string.app_name)
+        val businessName = d.businessName ?: appName
+        val colDate = context.getString(R.string.pdf_reg_col_date)
+        val colAmount = context.getString(R.string.pdf_reg_col_amount)
         val period = "${dayFmt.format(Date(d.from))}  \u2014  ${dayFmt.format(Date(d.to))}"
 
         fun header(): Float {
             PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 88f, navyFill)
             canvas.drawText(businessName, MARGIN, 26f, title)
-            canvas.drawText("Sales & Purchase Register", MARGIN, 44f, tagline)
+            canvas.drawText(context.getString(R.string.pdf_reg_title), MARGIN, 44f, tagline)
             val identity = buildString {
                 d.businessAddress?.let { append(it) }
                 d.strn?.let {
                     if (isNotEmpty()) append(" \u00B7 ")
-                    append("NTN/STRN: $it")
+                    append(context.getString(R.string.pdf_reg_ntn, it))
                 }
             }
             if (identity.isNotEmpty()) canvas.drawText(identity, MARGIN, 60f, tagline)
-            canvas.drawText("Period: $period", MARGIN, 78f, tagline)
+            canvas.drawText(context.getString(R.string.pdf_reg_period, period), MARGIN, 78f, tagline)
             return 112f
         }
 
@@ -151,17 +157,17 @@ object RegisterReport {
         // ---- What this document is, and is not ----
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 46f, warnFill)
         canvas.drawText(
-            "This is the shop's own record of what it was told, printed for the period above.",
+            context.getString(R.string.pdf_reg_note_1),
             MARGIN + 8f, y + 17f, warnText
         )
         canvas.drawText(
-            "A sale is a credit/goods entry that carried goods \u2014 cash-only and qarz-e-hasna are not counted.",
+            context.getString(R.string.pdf_reg_note_2),
             MARGIN + 8f, y + 31f, warnText
         )
         y += 62f
 
         // ---- Summary ----
-        canvas.drawText("Summary", MARGIN, y, section)
+        canvas.drawText(context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
         y += 20f
         fun line(label: String, value: String, paint: Paint = body) {
             canvas.drawText(label, MARGIN, y, body)
@@ -169,12 +175,12 @@ object RegisterReport {
             canvas.drawText(value, PAGE_W - MARGIN - w, y, paint)
             y += 16f
         }
-        line("Sales lines in period", d.sales.size.toString())
-        line("Total sales", Format.money(d.salesTotal), bodyBold)
-        line("Purchase lines in period", d.purchases.size.toString())
-        line("Total purchases (priced lines)", Format.money(d.purchaseTotal), bodyBold)
+        line(context.getString(R.string.pdf_reg_sales_lines), d.sales.size.toString())
+        line(context.getString(R.string.pdf_reg_total_sales), Format.money(d.salesTotal), bodyBold)
+        line(context.getString(R.string.pdf_reg_purchase_lines), d.purchases.size.toString())
+        line(context.getString(R.string.pdf_reg_total_purchases), Format.money(d.purchaseTotal), bodyBold)
         if (d.purchasesMissingRate > 0) {
-            line("Purchase lines with no rate recorded", d.purchasesMissingRate.toString(), mutedBig)
+            line(context.getString(R.string.pdf_reg_no_rate_lines), d.purchasesMissingRate.toString(), mutedBig)
         }
 
         y += 10f
@@ -182,11 +188,11 @@ object RegisterReport {
         y += 20f
 
         // ---- 1. Sales register ----
-        canvas.drawText("1. Sales register", MARGIN, y, section)
+        canvas.drawText(context.getString(R.string.pdf_reg_section_sales), MARGIN, y, section)
         y += 18f
 
         if (d.sales.isEmpty()) {
-            canvas.drawText("No goods sold in this period.", MARGIN, y, mutedBig)
+            canvas.drawText(context.getString(R.string.pdf_reg_no_sales), MARGIN, y, mutedBig)
             y += 18f
         } else {
             val xDate = MARGIN + 4f
@@ -196,9 +202,13 @@ object RegisterReport {
 
             fun salesHeader() {
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
-                canvas.drawText("DATE", xDate, y + 12.5f, tableHeaderFg)
-                canvas.drawText("CUSTOMER / PRODUCT / BATCH", xName, y + 12.5f, tableHeaderFg)
-                canvas.drawText("AMOUNT", xAmtRight - tableHeaderFg.measureText("AMOUNT"), y + 12.5f, tableHeaderFg)
+                canvas.drawText(colDate, xDate, y + 12.5f, tableHeaderFg)
+                canvas.drawText(
+                    context.getString(R.string.pdf_reg_col_customer), xName, y + 12.5f, tableHeaderFg
+                )
+                canvas.drawText(
+                    colAmount, xAmtRight - tableHeaderFg.measureText(colAmount), y + 12.5f, tableHeaderFg
+                )
                 y += 18f
             }
             salesHeader()
@@ -206,7 +216,7 @@ object RegisterReport {
             d.sales.forEachIndexed { index, s ->
                 if (y + 30f > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("1. Sales register (continued)", MARGIN, y, section)
+                    canvas.drawText(context.getString(R.string.pdf_reg_section_sales_cont), MARGIN, y, section)
                     y += 18f
                     salesHeader()
                 }
@@ -222,7 +232,7 @@ object RegisterReport {
                 val sub = buildList {
                     s.itemName?.takeIf { it.isNotBlank() }?.let { add(it) }
                     s.quantity?.let { add(Format.qty(it, s.unit)) }
-                    s.batchNumber?.takeIf { it.isNotBlank() }?.let { add("Batch $it") }
+                    s.batchNumber?.takeIf { it.isNotBlank() }?.let { add(context.getString(R.string.pdf_reg_batch, it)) }
                     s.company?.takeIf { it.isNotBlank() }?.let { add(it) }
                     s.refNumber?.takeIf { it.isNotBlank() }?.let { add(it) }
                 }.joinToString(" \u00B7 ").ifEmpty { "\u2014" }
@@ -235,7 +245,7 @@ object RegisterReport {
             if (y + 20f > PAGE_H - 60f) newPage()
             canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
             y += 16f
-            canvas.drawText("Total sales", MARGIN + 4f, y, bodyBold)
+            canvas.drawText(context.getString(R.string.pdf_reg_total_sales), MARGIN + 4f, y, bodyBold)
             val st = Format.money(d.salesTotal)
             canvas.drawText(st, PAGE_W - MARGIN - 4f - bodyBold.measureText(st), y, bodyBold)
             y += 8f
@@ -244,11 +254,11 @@ object RegisterReport {
         // ---- 2. Purchase register ----
         if (y > PAGE_H - 160f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
 
-        canvas.drawText("2. Purchase register", MARGIN, y, section)
+        canvas.drawText(context.getString(R.string.pdf_reg_section_purchases), MARGIN, y, section)
         y += 18f
 
         if (d.purchases.isEmpty()) {
-            canvas.drawText("No purchases recorded in this period.", MARGIN, y, mutedBig)
+            canvas.drawText(context.getString(R.string.pdf_reg_no_purchases), MARGIN, y, mutedBig)
             y += 18f
         } else {
             val xDate = MARGIN + 4f
@@ -258,9 +268,13 @@ object RegisterReport {
 
             fun purchaseHeader() {
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
-                canvas.drawText("DATE", xDate, y + 12.5f, tableHeaderFg)
-                canvas.drawText("SUPPLIER / PRODUCT / BATCH", xName, y + 12.5f, tableHeaderFg)
-                canvas.drawText("AMOUNT", xAmtRight - tableHeaderFg.measureText("AMOUNT"), y + 12.5f, tableHeaderFg)
+                canvas.drawText(colDate, xDate, y + 12.5f, tableHeaderFg)
+                canvas.drawText(
+                    context.getString(R.string.pdf_reg_col_supplier), xName, y + 12.5f, tableHeaderFg
+                )
+                canvas.drawText(
+                    colAmount, xAmtRight - tableHeaderFg.measureText(colAmount), y + 12.5f, tableHeaderFg
+                )
                 y += 18f
             }
             purchaseHeader()
@@ -268,7 +282,7 @@ object RegisterReport {
             d.purchases.forEachIndexed { index, s ->
                 if (y + 30f > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("2. Purchase register (continued)", MARGIN, y, section)
+                    canvas.drawText(context.getString(R.string.pdf_reg_section_purchases_cont), MARGIN, y, section)
                     y += 18f
                     purchaseHeader()
                 }
@@ -290,9 +304,9 @@ object RegisterReport {
                     add(s.itemName)
                     add(Format.qty(s.quantity, s.unit))
                     s.rate?.let { add("@ ${Format.money(it)}") }
-                    s.batchNumber?.takeIf { it.isNotBlank() }?.let { add("Batch $it") }
-                    s.expiryDate?.let { add("exp ${rowDayFmt.format(Date(it))}") }
-                    s.billNumber?.takeIf { it.isNotBlank() }?.let { add("Bill $it") }
+                    s.batchNumber?.takeIf { it.isNotBlank() }?.let { add(context.getString(R.string.pdf_reg_batch, it)) }
+                    s.expiryDate?.let { add(context.getString(R.string.pdf_reg_expiry, rowDayFmt.format(Date(it)))) }
+                    s.billNumber?.takeIf { it.isNotBlank() }?.let { add(context.getString(R.string.pdf_reg_bill, it)) }
                 }.joinToString(" \u00B7 ")
                 canvas.drawText(clip(sub, muted, xAmtRight - xName), xName, baseline + 12f, muted)
 
@@ -302,14 +316,14 @@ object RegisterReport {
             if (y + 20f > PAGE_H - 60f) newPage()
             canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
             y += 16f
-            canvas.drawText("Total purchases (priced lines)", MARGIN + 4f, y, bodyBold)
+            canvas.drawText(context.getString(R.string.pdf_reg_total_purchases), MARGIN + 4f, y, bodyBold)
             val pt = Format.money(d.purchaseTotal)
             canvas.drawText(pt, PAGE_W - MARGIN - 4f - bodyBold.measureText(pt), y, bodyBold)
             y += 8f
             if (d.purchasesMissingRate > 0) {
                 y += 12f
                 canvas.drawText(
-                    "${d.purchasesMissingRate} purchase line(s) had no rate recorded and are not in the total above.",
+                    context.getString(R.string.pdf_reg_missing_rate, d.purchasesMissingRate),
                     MARGIN + 4f, y, muted
                 )
                 y += 6f
@@ -322,10 +336,11 @@ object RegisterReport {
         if (y > PAGE_H - 160f) newPage() else y += 24f
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
         canvas.drawLine(PAGE_W - MARGIN - 180f, y + 24f, PAGE_W - MARGIN, y + 24f, rule)
-        canvas.drawText("Dealer's signature", MARGIN, y + 38f, muted)
+        canvas.drawText(context.getString(R.string.pdf_reg_dealer_sign), MARGIN, y + 38f, muted)
+        val inspectorSign = context.getString(R.string.pdf_reg_inspector_sign)
         canvas.drawText(
-            "Inspector's signature",
-            PAGE_W - MARGIN - muted.measureText("Inspector's signature"),
+            inspectorSign,
+            PAGE_W - MARGIN - muted.measureText(inspectorSign),
             y + 38f,
             muted
         )
@@ -346,7 +361,10 @@ object RegisterReport {
             )
             footerX += size + 6f
         }
-        canvas.drawText("Roshan Khata \u00B7 Generated ${dateFmt.format(Date())} \u00B7 Page $pageNo", footerX, y, muted)
+        canvas.drawText(
+            context.getString(R.string.pdf_reg_footer, appName, dateFmt.format(Date()), pageNo),
+            footerX, y, muted
+        )
 
         doc.finishPage(page)
 

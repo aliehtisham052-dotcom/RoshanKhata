@@ -1234,6 +1234,34 @@
     <string name="pdf_biz_days_left">%1$d يومًا</string>
     <string name="pdf_biz_batch">دفعة %1$s \u00B7 </string>
 
+    <string name="pdf_reg_title">سجل المبيعات والمشتريات</string>
+    <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
+    <string name="pdf_reg_period">الفترة: %1$s</string>
+    <string name="pdf_reg_note_1">هذا سجل المحل نفسه لما أُبلغ به، مطبوع عن الفترة أعلاه.</string>
+    <string name="pdf_reg_note_2">البيع قيد آجل/بضاعة انتقلت فيه البضاعة \u2014 النقد فقط والقرض الحسن غير محسوبين.</string>
+    <string name="pdf_reg_sales_lines">سطور البيع في الفترة</string>
+    <string name="pdf_reg_total_sales">إجمالي المبيعات</string>
+    <string name="pdf_reg_purchase_lines">سطور الشراء في الفترة</string>
+    <string name="pdf_reg_total_purchases">إجمالي المشتريات (السطور المسعّرة)</string>
+    <string name="pdf_reg_no_rate_lines">سطور شراء بلا سعر مسجل</string>
+    <string name="pdf_reg_section_sales">1. سجل المبيعات</string>
+    <string name="pdf_reg_section_sales_cont">1. سجل المبيعات (تابع)</string>
+    <string name="pdf_reg_no_sales">لم تُبع بضاعة في هذه الفترة.</string>
+    <string name="pdf_reg_section_purchases">2. سجل المشتريات</string>
+    <string name="pdf_reg_section_purchases_cont">2. سجل المشتريات (تابع)</string>
+    <string name="pdf_reg_no_purchases">لا مشتريات مسجلة في هذه الفترة.</string>
+    <string name="pdf_reg_col_date">التاريخ</string>
+    <string name="pdf_reg_col_customer">العميل / المنتج / الدفعة</string>
+    <string name="pdf_reg_col_supplier">المورد / المنتج / الدفعة</string>
+    <string name="pdf_reg_col_amount">المبلغ</string>
+    <string name="pdf_reg_batch">دفعة %1$s</string>
+    <string name="pdf_reg_bill">فاتورة %1$s</string>
+    <string name="pdf_reg_expiry">الانتهاء %1$s</string>
+    <string name="pdf_reg_missing_rate">%1$d من سطور الشراء بلا سعر مسجل، وهي غير مدرجة في الإجمالي أعلاه.</string>
+    <string name="pdf_reg_dealer_sign">توقيع التاجر</string>
+    <string name="pdf_reg_inspector_sign">توقيع المفتش</string>
+    <string name="pdf_reg_footer">%1$s \u00B7 أُنشئ %2$s \u00B7 صفحة %3$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">العميل</string>
     <string name="invoice_section_details">تفاصيل الفاتورة</string>

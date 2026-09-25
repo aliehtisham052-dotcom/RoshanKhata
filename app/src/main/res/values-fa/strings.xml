@@ -1250,6 +1250,34 @@
     <string name="pdf_biz_days_left">%1$d روز</string>
     <string name="pdf_biz_batch">بچ %1$s \u00B7 </string>
 
+    <string name="pdf_reg_title">دفتر فروش و خرید</string>
+    <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
+    <string name="pdf_reg_period">بازه: %1$s</string>
+    <string name="pdf_reg_note_1">این سابقه خودِ مغازه از آنچه به آن اعلام شده است، برای بازه بالا.</string>
+    <string name="pdf_reg_note_2">فروش یعنی ثبت نسیه/کالایی که کالا در آن جابه‌جا شده \u2014 نقدی و قرض‌الحسنه شمرده نمی‌شوند.</string>
+    <string name="pdf_reg_sales_lines">سطرهای فروش در بازه</string>
+    <string name="pdf_reg_total_sales">جمع فروش</string>
+    <string name="pdf_reg_purchase_lines">سطرهای خرید در بازه</string>
+    <string name="pdf_reg_total_purchases">جمع خرید (سطرهای نرخ‌دار)</string>
+    <string name="pdf_reg_no_rate_lines">سطرهای خرید بدون نرخ ثبت‌شده</string>
+    <string name="pdf_reg_section_sales">۱. دفتر فروش</string>
+    <string name="pdf_reg_section_sales_cont">۱. دفتر فروش (ادامه)</string>
+    <string name="pdf_reg_no_sales">در این بازه کالایی فروخته نشده است.</string>
+    <string name="pdf_reg_section_purchases">۲. دفتر خرید</string>
+    <string name="pdf_reg_section_purchases_cont">۲. دفتر خرید (ادامه)</string>
+    <string name="pdf_reg_no_purchases">در این بازه خریدی ثبت نشده است.</string>
+    <string name="pdf_reg_col_date">تاریخ</string>
+    <string name="pdf_reg_col_customer">مشتری / کالا / بچ</string>
+    <string name="pdf_reg_col_supplier">تأمین‌کننده / کالا / بچ</string>
+    <string name="pdf_reg_col_amount">مبلغ</string>
+    <string name="pdf_reg_batch">بچ %1$s</string>
+    <string name="pdf_reg_bill">فاکتور %1$s</string>
+    <string name="pdf_reg_expiry">انقضا %1$s</string>
+    <string name="pdf_reg_missing_rate">%1$d سطر خرید نرخ ثبت‌شده نداشت و در جمع بالا نیامده است.</string>
+    <string name="pdf_reg_dealer_sign">امضای فروشنده</string>
+    <string name="pdf_reg_inspector_sign">امضای بازرس</string>
+    <string name="pdf_reg_footer">%1$s \u00B7 ساخته‌شده %2$s \u00B7 صفحه %3$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">مشتری</string>
     <string name="invoice_section_details">جزئیات فاکتور</string>
