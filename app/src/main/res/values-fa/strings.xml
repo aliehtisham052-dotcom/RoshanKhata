@@ -1189,6 +1189,27 @@
     <string name="pdf_label_thank_you">سپاس!</string>
     <string name="pdf_label_visit_again">باز هم تشریف بیاورید</string>
 
+    <string name="pdf_stmt_title">صورت‌حساب — %1$s</string>
+    <string name="pdf_stmt_period">بازه: %1$s — %2$s</string>
+    <string name="pdf_stmt_no_entries">بدون ثبت</string>
+    <string name="pdf_stmt_page">صفحه %1$d / %2$d</string>
+    <string name="pdf_stmt_you_owe">بدهی شما (-)</string>
+    <string name="pdf_stmt_you_paid">پرداخت شما (+)</string>
+    <string name="pdf_stmt_balance">مانده</string>
+    <string name="pdf_stmt_opening_before">مانده ابتدایی (پیش از %1$s)</string>
+    <string name="pdf_stmt_opening">مانده ابتدایی</string>
+    <string name="pdf_stmt_qarze_hasna">قرض‌الحسنه</string>
+    <string name="pdf_stmt_you_will_pay">شما باید بپردازید</string>
+    <string name="pdf_stmt_you_will_receive">شما دریافت می‌کنید</string>
+    <string name="pdf_stmt_settled">تسویه‌شده — چیزی باقی نیست</string>
+    <string name="pdf_stmt_amount_to_pay">مبلغ قابل پرداخت:</string>
+    <string name="pdf_stmt_qr_hint_1">این کد شامل مبلغ نیست —</string>
+    <string name="pdf_stmt_qr_hint_2">هنگام پرداخت خودتان وارد کنید.</string>
+    <plurals name="pdf_stmt_entries">
+        <item quantity="one">%d ثبت</item>
+        <item quantity="other">%d ثبت</item>
+    </plurals>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">مشتری</string>
     <string name="invoice_section_details">جزئیات فاکتور</string>

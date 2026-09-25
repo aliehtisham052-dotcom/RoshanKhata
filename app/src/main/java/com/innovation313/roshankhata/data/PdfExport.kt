@@ -8,6 +8,7 @@ import android.graphics.RectF
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
+import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.ui.Format
 import java.io.File
 import java.io.FileOutputStream
@@ -70,6 +71,14 @@ object PdfExport {
          */
         partyPhoto: Bitmap? = null
     ): File? {
+
+        // "You gave" / "You got" is the SHOPKEEPER's phrasing, and this sheet
+        // is read by the CUSTOMER — who would take "You gave Rs 8,000" to mean
+        // they had paid it. Same figures, told from the side of the person
+        // holding the page. Read once here because the summary box and the
+        // table header must say the same words, on every page.
+        val owedLabel = context.getString(R.string.pdf_stmt_you_owe)
+        val paidLabel = context.getString(R.string.pdf_stmt_you_paid)
 
         val title = Paint().apply {
             color = Color.WHITE
@@ -185,13 +194,14 @@ object PdfExport {
             // stay inside the shop. The hint lives in the footer now.
 
             c.drawRect(0f, 0f, PAGE_W.toFloat(), 78f, navyFill)
-            c.drawText(businessName?.takeIf { it.isNotBlank() } ?: "Roshan Khata", MARGIN, 32f, title)
+            c.drawText(businessName?.takeIf { it.isNotBlank() } ?: context.getString(R.string.app_name), MARGIN, 32f, title)
             // Name and number on one line. They used to be two, which on a
             // customer saved under their phone number printed the same digits
             // twice.
             val phone = partyPhone?.takeIf { it.isNotBlank() && it != partyName }
             c.drawText(
-                "Account Statement — $partyName" + (phone?.let { "  ·  $it" } ?: ""),
+                context.getString(R.string.pdf_stmt_title, partyName) +
+                    (phone?.let { "  ·  $it" } ?: ""),
                 MARGIN, 52f, subtitle
             )
 
@@ -236,11 +246,15 @@ object PdfExport {
                 // entries — so a page that gets forwarded still says what it
                 // is a statement OF.
                 val period = if (rows.isNotEmpty()) {
-                    "Period: ${Format.dateOnly(rows.first().entry.timestamp)} — " +
-                        Format.dateOnly(rows.last().entry.timestamp) +
-                        "  ·  ${rows.size} entries"
+                    context.getString(
+                        R.string.pdf_stmt_period,
+                        Format.dateOnly(rows.first().entry.timestamp),
+                        Format.dateOnly(rows.last().entry.timestamp)
+                    ) + "  ·  " + context.resources.getQuantityString(
+                        R.plurals.pdf_stmt_entries, rows.size, rows.size
+                    )
                 } else {
-                    "No entries"
+                    context.getString(R.string.pdf_stmt_no_entries)
                 }
                 c.drawText(period, MARGIN, yy, periodPaint)
                 if (totalPages != null && totalPages > 1) {
@@ -248,7 +262,10 @@ object PdfExport {
                         textSize = 8f
                         textAlign = Paint.Align.RIGHT
                     }
-                    c.drawText("Page $pageNo of $totalPages", PAGE_W - MARGIN, yy, pageLabel)
+                    c.drawText(
+                        context.getString(R.string.pdf_stmt_page, pageNo, totalPages),
+                        PAGE_W - MARGIN, yy, pageLabel
+                    )
                 }
                 yy += 10f
 
@@ -271,20 +288,16 @@ object PdfExport {
                     c.drawText(value, left + 10f, yy + 33f, boxValue)
                 }
 
-                // "You Gave" is the SHOPKEEPER's phrasing, and this sheet is
-                // read by the customer — who would take "You Gave Rs 8,000" to
-                // mean they had paid it. Same figures, told from the side of
-                // the person holding the page.
-                summaryBox(0, "You Owe (-)", Format.money(totalGave), 0xFFFDECEA.toInt(), RED)
-                summaryBox(1, "You Paid (+)", Format.money(totalGot), 0xFFEAF7EF.toInt(), GREEN)
+                summaryBox(0, owedLabel, Format.money(totalGave), 0xFFFDECEA.toInt(), RED)
+                summaryBox(1, paidLabel, Format.money(totalGot), 0xFFEAF7EF.toInt(), GREEN)
 
                 yy += boxH + 18f
             }
 
-            c.drawText("Date", xDate, yy, header)
-            c.drawText("You Owe (-)", xGave, yy, header)
-            c.drawText("You Paid (+)", xGot, yy, header)
-            c.drawText("Balance", xBal, yy, header)
+            c.drawText(context.getString(R.string.pdf_label_date), xDate, yy, header)
+            c.drawText(owedLabel, xGave, yy, header)
+            c.drawText(paidLabel, xGot, yy, header)
+            c.drawText(context.getString(R.string.pdf_stmt_balance), xBal, yy, header)
             yy += 6f
             c.drawLine(MARGIN, yy, PAGE_W - MARGIN, yy, lineFill)
             return yy + 16f
@@ -298,9 +311,9 @@ object PdfExport {
         if (Money.isNotZero(openingBalance)) {
             val opened = rows.firstOrNull()?.entry?.timestamp
             val label = if (opened != null) {
-                "Opening balance (before ${Format.dateOnly(opened)})"
+                context.getString(R.string.pdf_stmt_opening_before, Format.dateOnly(opened))
             } else {
-                "Opening balance"
+                context.getString(R.string.pdf_stmt_opening)
             }
             val italic = Paint(muted).apply {
                 textSize = 9f
@@ -350,7 +363,7 @@ object PdfExport {
                 add(e.entryNumber)
                 Format.goods(e.itemName, e.quantity, e.unit)?.let { add(it) }
                 e.note?.takeIf { it.isNotBlank() }?.let { add(it) }
-                if (e.isQarzeHasna) add("Qarz-e-Hasna")
+                if (e.isQarzeHasna) add(context.getString(R.string.pdf_stmt_qarze_hasna))
             }.joinToString("  ·  ")
 
             c.drawText(detail, xDate, y, muted)
@@ -374,9 +387,9 @@ object PdfExport {
         c.drawRect(MARGIN, y, MARGIN + 4f, y + 52f, goldFill)
 
         val closingLabel = when {
-            closingBalance > 0 -> "You will pay"
-            closingBalance < 0 -> "You will receive"
-            else -> "Settled — nothing outstanding"
+            closingBalance > 0 -> context.getString(R.string.pdf_stmt_you_will_pay)
+            closingBalance < 0 -> context.getString(R.string.pdf_stmt_you_will_receive)
+            else -> context.getString(R.string.pdf_stmt_settled)
         }
 
         subtitle.color = GOLD
@@ -402,7 +415,7 @@ object PdfExport {
             }
 
             header.textSize = 11f
-            c.drawText("Scan to pay", MARGIN, y, header)
+            c.drawText(context.getString(R.string.pdf_label_scan_to_pay), MARGIN, y, header)
             y += 8f
 
             val qrSize = 120
@@ -419,7 +432,7 @@ object PdfExport {
             // it in themselves and needs to see it plainly.
             val textX = MARGIN + qrSize + 16f
             body.textSize = 10f
-            c.drawText("Amount to pay:", textX, y + 30f, body)
+            c.drawText(context.getString(R.string.pdf_stmt_amount_to_pay), textX, y + 30f, body)
 
             title.textSize = 16f
             title.color = NAVY
@@ -427,13 +440,13 @@ object PdfExport {
 
             muted.textSize = 8f
             c.drawText(
-                "This code does not carry the amount —",
+                context.getString(R.string.pdf_stmt_qr_hint_1),
                 textX,
                 y + 72f,
                 muted
             )
             c.drawText(
-                "please enter it yourself when paying.",
+                context.getString(R.string.pdf_stmt_qr_hint_2),
                 textX,
                 y + 82f,
                 muted
@@ -478,7 +491,7 @@ object PdfExport {
             y += 14f
             muted.textSize = 9f
             c.drawText(
-                BusinessProfile.businessName(context) ?: "Signature",
+                BusinessProfile.businessName(context) ?: context.getString(R.string.signature),
                 sigLeft, y, muted
             )
             y += 22f
