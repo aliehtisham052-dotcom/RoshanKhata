@@ -11,6 +11,11 @@ translation with no default. What it happily ships:
    default (%1$s dropped, %2$d retyped as %2$s) — that one is worse than
    silent: getString(key, args) CRASHES at runtime, only in that
    language, only on that screen.
+3. A <plurals> missing a form its language actually uses. Arabic inflects
+   a noun six ways by count; leave out "few" and every count from 3 to 10
+   silently borrows "other", so "3 شيكات" comes out as "3 شيك" — wrong to
+   an Arabic reader in the same way "3 cheque" is wrong to an English
+   one. Missing "other" is worse still: that one throws.
 
 Every push runs this so no session — human or Claude — has to remember
 to check by hand. Zero dependencies; stdlib only.
@@ -27,6 +32,17 @@ LOCALES = ["values-b+ur+Latn", "values-ur", "values-sd", "values-fa", "values-ar
 
 PLACEHOLDER = re.compile(r"%\d+\$[sd]")
 
+# The cardinal plural forms each language actually uses (Unicode CLDR).
+# Urdu, Roman Urdu, Sindhi and Persian split at one; Arabic does not.
+QUANTITIES = {
+    "values": {"one", "other"},
+    "values-b+ur+Latn": {"one", "other"},
+    "values-ur": {"one", "other"},
+    "values-sd": {"one", "other"},
+    "values-fa": {"one", "other"},
+    "values-ar": {"zero", "one", "two", "few", "many", "other"},
+}
+
 
 def load(path: Path):
     """name -> (text, translatable) for every <string> in the file."""
@@ -37,6 +53,17 @@ def load(path: Path):
         translatable = s.get("translatable", "true") != "false"
         # itertext so placeholders inside nested tags still count
         out[name] = ("".join(s.itertext()), translatable)
+    return out
+
+
+def load_plurals(path: Path):
+    """name -> {quantity: text} for every <plurals> in the file."""
+    out = {}
+    root = ET.parse(path).getroot()
+    for p in root.iter("plurals"):
+        out[p.get("name")] = {
+            i.get("quantity"): "".join(i.itertext()) for i in p.iter("item")
+        }
     return out
 
 
@@ -71,6 +98,34 @@ def main() -> int:
                     f"{folder}: PLACEHOLDER MISMATCH {key}: default {want} vs {got}"
                 )
 
+    # --- plurals ---
+    # A form may use FEWER placeholders than the default, never more or
+    # different. Arabic's "one" and "two" name the count in the word itself
+    # ("شيك واحد", "شيكان") and correctly leave %1$d out; asking for an index
+    # the code does not supply is what crashes.
+    default_plurals = load_plurals(DEFAULT)
+    for folder in ["values"] + LOCALES:
+        path = RES / folder / "strings.xml"
+        got_plurals = load_plurals(path)
+        for key, forms in sorted(default_plurals.items()):
+            allowed = set(shapes(forms.get("other", "")))
+            if key not in got_plurals:
+                failures.append(f'{folder}: MISSING <plurals name="{key}">')
+                continue
+            missing = QUANTITIES[folder] - set(got_plurals[key])
+            if missing:
+                failures.append(
+                    f"{folder}: {key} has no {sorted(missing)} form(s) — "
+                    f"this language uses {sorted(QUANTITIES[folder])}"
+                )
+            for quantity, text in sorted(got_plurals[key].items()):
+                extra = set(shapes(text)) - allowed
+                if extra:
+                    failures.append(
+                        f"{folder}: PLACEHOLDER {key}[{quantity}] asks for "
+                        f"{sorted(extra)}, which the code does not supply"
+                    )
+
     if failures:
         print(f"{len(failures)} string parity failure(s):")
         for f in failures:
@@ -78,8 +133,10 @@ def main() -> int:
         return 1
 
     print(
-        f"strings OK: {len(translatable)} translatable keys present in all "
-        f"{len(LOCALES)} locales with matching placeholders"
+        f"strings OK: {len(translatable)} translatable keys and "
+        f"{len(default_plurals)} plurals present in all {len(LOCALES)} "
+        f"locales, with matching placeholders and every plural form "
+        f"each language uses"
     )
     return 0
 

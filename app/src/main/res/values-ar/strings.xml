@@ -144,8 +144,12 @@
     <string name="bin_party_owed_to_me">لك %1$s</string>
     <string name="bin_party_i_owe">عليك %1$s</string>
     <plurals name="bin_party_entries">
-        <item quantity="one">%d قيد</item>
-        <item quantity="other">%d قيود</item>
+        <item quantity="zero">%d قيد</item>
+        <item quantity="one">قيد واحد</item>
+        <item quantity="two">قيدان</item>
+        <item quantity="few">%d قيود</item>
+        <item quantity="many">%d قيدًا</item>
+        <item quantity="other">%d قيد</item>
     </plurals>
     <string name="restore">استعادة</string>
     <string name="restored">تمت الاستعادة</string>
