@@ -1245,6 +1245,31 @@ You can change this any time from this screen.</string>
     <string name="pdf_rep_col_got">I GOT</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 Page %2$d</string>
 
+    <!-- Words printed on the BUSINESS REPORT pdf — the owner's own whole-shop summary. -->
+    <string name="pdf_biz_generated">Report generated %1$s</string>
+    <string name="pdf_biz_not_backup_2">%1$s cannot restore your records from a PDF. Keep the backup</string>
+    <string name="pdf_biz_not_backup_3">file (RoshanKhata_Backup...txt) safe \u2014 that is the one that brings</string>
+    <string name="pdf_biz_not_backup_4">your data back.</string>
+    <string name="pdf_biz_you_will_receive">You will receive</string>
+    <string name="pdf_biz_you_will_pay">You will pay</string>
+    <string name="pdf_biz_net_position">Net position</string>
+    <string name="pdf_biz_cash_in">Cash in (cashbook)</string>
+    <string name="pdf_biz_cash_out">Cash out (cashbook)</string>
+    <string name="pdf_biz_people_count">Customers and suppliers</string>
+    <string name="pdf_biz_accounts">Accounts</string>
+    <string name="pdf_biz_no_accounts">No accounts yet.</string>
+    <string name="pdf_biz_settled">Settled</string>
+    <string name="pdf_biz_cheques">Cheques not yet cleared</string>
+    <string name="pdf_biz_cheques_note">These are not money until they clear. They are not in the balances above.</string>
+    <string name="pdf_biz_cheque">Cheque</string>
+    <string name="pdf_biz_due"> \u00B7 due </string>
+    <string name="pdf_biz_plans">Payment plans still running</string>
+    <string name="pdf_biz_paid_of">%1$s of %2$s</string>
+    <string name="pdf_biz_expiring">Stock expiring soon</string>
+    <string name="pdf_biz_expired">EXPIRED</string>
+    <string name="pdf_biz_days_left">%1$d days</string>
+    <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>
     <string name="invoice_section_details">Invoice details</string>
