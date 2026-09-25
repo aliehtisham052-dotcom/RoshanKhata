@@ -211,7 +211,7 @@ class ProductsActivity : AppCompatActivity() {
                     Toast.makeText(
                         this@ProductsActivity,
                         if (linked == 0) getString(R.string.link_goods_none)
-                        else getString(R.string.link_goods_done, linked),
+                        else resources.getQuantityString(R.plurals.link_goods_done, linked, linked),
                         Toast.LENGTH_LONG
                     ).show()
                     refresh()

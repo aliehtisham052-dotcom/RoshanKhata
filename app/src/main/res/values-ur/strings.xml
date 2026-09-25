@@ -40,7 +40,10 @@
     <string name="coach_desc_products">دستیاب اسٹاک، بیچ کی میعاد، اور کمپلائنس رجسٹرز — وہی بل جو آپ پہلے سے لکھتے ہیں، انہی سے خود بن جاتے ہیں۔</string>
     <string name="followup_title">وصولی</string>
     <string name="followup_subtitle">کس سے وصول کرنا ہے — سب سے پرانا پہلے، رقم ساتھ</string>
-    <string name="followup_summary">%1$d گاہکوں کے ذمے آپ کا · کل %2$s</string>
+    <plurals name="followup_summary">
+        <item quantity="one">%1$d گاہک کے ذمے آپ کا · کل %2$s</item>
+        <item quantity="other">%1$d گاہکوں کے ذمے آپ کا · کل %2$s</item>
+    </plurals>
     <plurals name="followup_last_ago">
         <item quantity="one">آخری لین دین %1$d دن پہلے</item>
         <item quantity="other">آخری لین دین %1$d دن پہلے</item>
@@ -224,7 +227,10 @@
     <string name="import_selected">منتخب شامل کریں</string>
     <string name="search_contacts">نام یا نمبر سے تلاش کریں</string>
     <string name="selected_count">%1$d منتخب</string>
-    <string name="imported_count">%1$d رابطے شامل ہو گئے</string>
+    <plurals name="imported_count">
+        <item quantity="one">%1$d رابطہ شامل ہو گیا</item>
+        <item quantity="other">%1$d رابطے شامل ہو گئے</item>
+    </plurals>
     <string name="already_added">شامل ہے</string>
     <string name="loading_contacts">رابطے لوڈ ہو رہے ہیں\u2026</string>
     <string name="no_contacts_found">اس فون پر کوئی رابطہ نہیں ملا۔</string>
@@ -323,7 +329,10 @@
         <item quantity="one">%1$d دن گزر چکا</item>
         <item quantity="other">%1$d دن گزر چکے</item>
     </plurals>
-    <string name="due_summary">%1$d چیک بینک لے جانے کے لیے تیار</string>
+    <plurals name="due_summary">
+        <item quantity="one">%1$d چیک بینک لے جانے کے لیے تیار</item>
+        <item quantity="other">%1$d چیک بینک لے جانے کے لیے تیار</item>
+    </plurals>
     <string name="due_summary_none">کچھ واجب نہیں</string>
     <string name="due_summary_pending">%1$d کلیئر ہونے کے منتظر</string>
     <string name="due_summary_empty">کوئی چیک نہیں</string>
@@ -526,7 +535,10 @@
     <string name="restore_no_images">آپ کا ریکارڈ واپس آ گیا، لیکن اس بیک اپ کے ساتھ تصاویر نہیں تھیں، اس لیے فوٹو، بل کی تصاویر اور کیو آر بحال نہیں ہوئے۔ آئندہ بیک اپ میں تصاویر رکھنے کے لیے بیک اپ سے پہلے Include images آن کریں۔</string>
     <string name="restore_file_no_images">آپ کا ریکارڈ واپس آ گیا۔ فائل بیک اپ صرف ریکارڈ لے کر جاتا ہے — اس میں تصاویر کبھی شامل نہیں ہوتیں۔ تصاویر بھی محفوظ رکھنے کے لیے Include images آن کر کے گوگل ڈرائیو پر بیک اپ کریں۔</string>
     <string name="drive_looking">ڈرائیو پر دیکھ رہے ہیں…</string>
-    <string name="drive_found_businesses">ڈرائیو پر %1$d کاروبار ملے</string>
+    <plurals name="drive_found_businesses">
+        <item quantity="one">ڈرائیو پر %1$d کاروبار ملا</item>
+        <item quantity="other">ڈرائیو پر %1$d کاروبار ملے</item>
+    </plurals>
     <string name="drive_restore_all">سب بحال کریں</string>
     <string name="drive_restore_all_warning">یہ کاروبار ڈرائیو سے بحال ہوں گے، اور ہر ایک کا موجودہ ڈیٹا اس فون پر اُن سے بدل جائے گا:
 
@@ -730,7 +742,10 @@
     <string name="trace_batch_hint">بیچ نمبر لکھیں</string>
     <string name="trace_batch_help">اگر نمونے پر سوال ہو یا انسپکٹر پوچھے، یہاں بیچ نمبر تلاش کریں — کس سپلائر سے، کس بل پر، اور کب آیا۔</string>
     <string name="trace_no_results">اس بیچ نمبر کا کوئی مال نہیں ملا۔</string>
-    <string name="trace_results">%1$d ریکارڈ ملے</string>
+    <plurals name="trace_results">
+        <item quantity="one">%1$d ریکارڈ ملا</item>
+        <item quantity="other">%1$d ریکارڈ ملے</item>
+    </plurals>
 
     <string name="search_action">تلاش</string>
 
@@ -842,7 +857,10 @@
     <string name="metal_silver">چاندی</string>
     <string name="metal_gold">سونا</string>
     <string name="last_transacted">آخری لین دین %1$s</string>
-    <string name="summary_with_overdue">%1$s \u00b7 %2$d کو یاد دہانی چاہیے</string>
+    <plurals name="summary_with_overdue">
+        <item quantity="one">%1$s \u00b7 %2$d کو یاد دہانی چاہیے</item>
+        <item quantity="other">%1$s \u00b7 %2$d کو یاد دہانی چاہیے</item>
+    </plurals>
     <plurals name="customer_count">
         <item quantity="one">%d گاہک</item>
         <item quantity="other">%d گاہک</item>
@@ -1032,7 +1050,10 @@
         <item quantity="one">%1$d گاہک اور اُس کی تمام انٹریاں ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
         <item quantity="other">%1$d گاہک اور اُن کی تمام انٹریاں ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
     </plurals>
-    <string name="delete_parties_owing">اِن میں سے %1$d کا حساب باقی ہے — %2$s لینے ہیں، %3$s دینے ہیں۔ ہٹانے سے یہ آپ کے کل میزان سے نکل جائے گا، حساب ختم نہیں ہوگا۔</string>
+    <plurals name="delete_parties_owing">
+        <item quantity="one">اِن میں سے %1$d کا حساب باقی ہے — %2$s لینے ہیں، %3$s دینے ہیں۔ ہٹانے سے یہ آپ کے کل میزان سے نکل جائے گا، حساب ختم نہیں ہوگا۔</item>
+        <item quantity="other">اِن میں سے %1$d کا حساب باقی ہے — %2$s لینے ہیں، %3$s دینے ہیں۔ ہٹانے سے یہ آپ کے کل میزان سے نکل جائے گا، حساب ختم نہیں ہوگا۔</item>
+    </plurals>
     <string name="customer_qr">گاہک کا کیو آر</string>
     <string name="customer_qr_hint">روشن کھاتہ میں اسکین کریں تو یہ کھاتہ کھل جائے گا۔ کوڈ میں نہ نام ہے، نہ نمبر، نہ حساب۔</string>
     <string name="scan_customer_qr">گاہک کا کارڈ اسکین کریں</string>
@@ -1047,7 +1068,10 @@
     <string name="link_goods">پرانے اندراجات کو پروڈکٹس سے جوڑیں</string>
     <string name="link_goods_explain">یہ آپ کے بلوں اور کھاتوں پر پہلے سے لکھے ہوئے پروڈکٹ کے نام پڑھتا ہے، اور ہر نام کا ایک پروڈکٹ بنا دیتا ہے۔\n\nجو یہ نہیں کرے گا: آپ کا لکھا ہوا نام کبھی نہیں بدلے گا، اور جو پروڈکٹ آپ نے خود چنا ہو اسے کبھی تبدیل نہیں کرے گا۔ یہ ایک ہی قدم میں ہوتا ہے — یا پورا ہوگا یا بالکل نہیں — اور دوبارہ چلانے سے کچھ نہیں ہوتا۔</string>
     <string name="link_goods_go">جوڑ دیں</string>
-    <string name="link_goods_done">%1$d اندراجات جڑ گئے۔</string>
+    <plurals name="link_goods_done">
+        <item quantity="one">%1$d اندراج جڑ گیا۔</item>
+        <item quantity="other">%1$d اندراجات جڑ گئے۔</item>
+    </plurals>
     <string name="link_goods_none">جوڑنے کو کچھ باقی نہیں۔</string>
     <string name="link_goods_failed">اندراجات نہیں جڑ سکے۔ آپ کی کتاب جیسی تھی ویسی ہے۔</string>
 
@@ -1093,7 +1117,10 @@
     <string name="batch_chosen">بیچ: %1$s</string>
     <string name="batch_remaining">%1$s باقی</string>
     <string name="import_as_title">کس طور پر محفوظ کریں</string>
-    <string name="import_as_message">%1$d رابطے اس طرح محفوظ ہوں گے:</string>
+    <plurals name="import_as_message">
+        <item quantity="one">%1$d رابطہ اس طرح محفوظ ہو گا:</item>
+        <item quantity="other">%1$d رابطے اس طرح محفوظ ہوں گے:</item>
+    </plurals>
     <string name="bill_to_customer_title">یہ پارٹی گاہک ہے</string>
     <string name="bill_to_customer_warn">%1$s گاہک کے طور پر محفوظ ہے، سپلائر نہیں۔ سپلائر بل ان کے کھاتے میں وہ رقم لکھتی ہے جو آپ نے دینی ہے۔ اگر وہی شخص واقعی آپ کو مال دیتا ہے تو آگے بڑھیں — ورنہ نام چیک کر لیں۔</string>
     <string name="change_party_type">گاہک یا سپلائر</string>
@@ -1142,8 +1169,14 @@
     <string name="inspector_no_expiry">ایکسپائری نہیں</string>
     <string name="inspector_expired">ایکسپائر</string>
     <string name="inspector_batch_prefix">بیچ</string>
-    <string name="inspector_gap_labels">اسٹاک میں %1$d پروڈکٹس کی لیبل تفصیل موجود نہیں</string>
-    <string name="inspector_gap_expiry">%1$d بیچ کی ایکسپائری تاریخ درج نہیں</string>
+    <plurals name="inspector_gap_labels">
+        <item quantity="one">اسٹاک میں %1$d پروڈکٹ کی لیبل تفصیل موجود نہیں</item>
+        <item quantity="other">اسٹاک میں %1$d پروڈکٹس کی لیبل تفصیل موجود نہیں</item>
+    </plurals>
+    <plurals name="inspector_gap_expiry">
+        <item quantity="one">%1$d بیچ کی ایکسپائری تاریخ درج نہیں</item>
+        <item quantity="other">%1$d بیچ کی ایکسپائری تاریخ درج نہیں</item>
+    </plurals>
     <!-- Sales & purchase register (date-ranged) -->
     <string name="register_title">فروخت و خرید رجسٹر</string>
     <string name="register_subtitle">ایک مدت میں کیا آیا، کیا گیا</string>
@@ -1155,7 +1188,10 @@
     <string name="register_empty">اس مدت میں کوئی فروخت یا خرید نہیں۔ دوسری مدت منتخب کریں۔</string>
     <string name="register_summary_sales">فروخت: %1$d · %2$s</string>
     <string name="register_summary_purchases">خرید: %1$d · %2$s</string>
-    <string name="register_missing_rate">%1$d خرید سطور کا ریٹ درج نہیں — ٹوٹل میں شامل نہیں</string>
+    <plurals name="register_missing_rate">
+        <item quantity="one">%1$d خرید سطر کا ریٹ درج نہیں — ٹوٹل میں شامل نہیں</item>
+        <item quantity="other">%1$d خرید سطور کا ریٹ درج نہیں — ٹوٹل میں شامل نہیں</item>
+    </plurals>
 
     <string name="sale_price_hint">نقد قیمت</string>
     <string name="credit_price_hint">ادھار قیمت</string>

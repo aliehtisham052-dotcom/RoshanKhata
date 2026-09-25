@@ -80,7 +80,10 @@ class FollowUpActivity : AppCompatActivity() {
 
                 val total = debtors.sumOf { it.balance }
                 tvSummary.text =
-                    getString(R.string.followup_summary, debtors.size, Format.money(total))
+                    resources.getQuantityString(
+                        R.plurals.followup_summary, debtors.size,
+                        debtors.size, Format.money(total)
+                    )
                 tvSummary.visibility = if (debtors.isEmpty()) View.GONE else View.VISIBLE
                 tvEmpty.visibility = if (debtors.isEmpty()) View.VISIBLE else View.GONE
             }

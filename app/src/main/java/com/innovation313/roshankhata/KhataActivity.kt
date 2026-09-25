@@ -701,8 +701,9 @@ class KhataActivity : AppCompatActivity() {
             if (owing > 0) {
                 append("\n\n")
                 append(
-                    getString(
-                        R.string.delete_parties_owing,
+                    resources.getQuantityString(
+                        R.plurals.delete_parties_owing,
+                        owing,
                         owing,
                         Format.money(toCollect),
                         Format.money(toPay)
@@ -1108,7 +1109,9 @@ class KhataActivity : AppCompatActivity() {
 
         val countText = resources.getQuantityString(R.plurals.customer_count, count, count)
         val withCount = if (overdue > 0) {
-            getString(R.string.summary_with_overdue, countText, overdue)
+            resources.getQuantityString(
+                R.plurals.summary_with_overdue, overdue, countText, overdue
+            )
         } else {
             countText
         }

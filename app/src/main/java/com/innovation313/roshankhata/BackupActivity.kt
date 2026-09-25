@@ -802,7 +802,9 @@ class BackupActivity : AppCompatActivity() {
             }.toTypedArray()
 
             MaterialAlertDialogBuilder(this@BackupActivity)
-                .setTitle(getString(R.string.drive_found_businesses, found.size))
+                .setTitle(resources.getQuantityString(
+                    R.plurals.drive_found_businesses, found.size, found.size
+                ))
                 .setItems(labels) { _, which -> confirmRestoreAll(account, listOf(found[which])) }
                 .setNeutralButton(R.string.cancel, null)
                 .setPositiveButton(R.string.drive_restore_all) { _, _ ->

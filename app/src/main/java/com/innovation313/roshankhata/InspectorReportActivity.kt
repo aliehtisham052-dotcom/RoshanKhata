@@ -158,8 +158,12 @@ class InspectorReportActivity : AppCompatActivity() {
         val gaps = d.incompleteProducts.size
         val noExpiry = d.noExpiryCount
         val notes = buildList {
-            if (gaps > 0) add(getString(R.string.inspector_gap_labels, gaps))
-            if (noExpiry > 0) add(getString(R.string.inspector_gap_expiry, noExpiry))
+            if (gaps > 0) add(resources.getQuantityString(R.plurals.inspector_gap_labels, gaps, gaps))
+            if (noExpiry > 0) add(
+                resources.getQuantityString(
+                    R.plurals.inspector_gap_expiry, noExpiry, noExpiry
+                )
+            )
         }
         tvGaps.text = notes.joinToString(" \u00B7 ")
         tvGaps.visibility = if (notes.isEmpty()) View.GONE else View.VISIBLE

@@ -225,7 +225,9 @@ class ImportContactsActivity : AppCompatActivity() {
 
         val view = layoutInflater.inflate(R.layout.dialog_import_contact_type, null)
         view.findViewById<TextView>(R.id.tvImportTypeMessage).text =
-            getString(R.string.import_as_message, toImport.size)
+            resources.getQuantityString(
+                R.plurals.import_as_message, toImport.size, toImport.size
+            )
         val rbCustomer: RadioButton = view.findViewById(R.id.rbImportCustomer)
 
         MaterialAlertDialogBuilder(this)
@@ -248,7 +250,9 @@ class ImportContactsActivity : AppCompatActivity() {
                         if (!isFinishing && !isDestroyed) {
                             Toast.makeText(
                                 this@ImportContactsActivity,
-                                getString(R.string.imported_count, toImport.size),
+                                resources.getQuantityString(
+                                    R.plurals.imported_count, toImport.size, toImport.size
+                                ),
                                 Toast.LENGTH_SHORT
                             ).show()
                             finish()

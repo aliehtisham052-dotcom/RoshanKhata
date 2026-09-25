@@ -99,7 +99,9 @@ class ChequesActivity : AppCompatActivity() {
 
                     tvDueSummary.text = when {
                         all.isEmpty() -> getString(R.string.due_summary_empty)
-                        dueCount > 0 -> getString(R.string.due_summary, dueCount)
+                        dueCount > 0 -> resources.getQuantityString(
+                            R.plurals.due_summary, dueCount, dueCount
+                        )
                         pending > 0 -> getString(R.string.due_summary_pending, pending)
                         else -> getString(R.string.due_summary_all_settled)
                     }
