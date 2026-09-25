@@ -1210,6 +1210,30 @@
     <string name="pdf_rep_col_got">استلمت</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 صفحة %2$d</string>
 
+    <string name="pdf_biz_generated">أُنشئ التقرير في %1$s</string>
+    <string name="pdf_biz_not_backup_2">لا يستطيع %1$s استعادة سجلاتك من PDF. احتفظ بملف</string>
+    <string name="pdf_biz_not_backup_3">النسخة الاحتياطية (RoshanKhata_Backup...txt) \u2014 فهو الذي</string>
+    <string name="pdf_biz_not_backup_4">يعيد بياناتك.</string>
+    <string name="pdf_biz_you_will_receive">سوف تستلم</string>
+    <string name="pdf_biz_you_will_pay">سوف تدفع</string>
+    <string name="pdf_biz_net_position">الصافي</string>
+    <string name="pdf_biz_cash_in">نقد وارد (دفتر النقد)</string>
+    <string name="pdf_biz_cash_out">نقد صادر (دفتر النقد)</string>
+    <string name="pdf_biz_people_count">العملاء والموردون</string>
+    <string name="pdf_biz_accounts">الحسابات</string>
+    <string name="pdf_biz_no_accounts">لا حسابات بعد.</string>
+    <string name="pdf_biz_settled">مسدد</string>
+    <string name="pdf_biz_cheques">شيكات لم تُحصّل بعد</string>
+    <string name="pdf_biz_cheques_note">ليست مالًا حتى تُحصّل. وهي غير مدرجة في الأرصدة أعلاه.</string>
+    <string name="pdf_biz_cheque">شيك</string>
+    <string name="pdf_biz_due"> \u00B7 الاستحقاق </string>
+    <string name="pdf_biz_plans">خطط سداد جارية</string>
+    <string name="pdf_biz_paid_of">%1$s من %2$s</string>
+    <string name="pdf_biz_expiring">مخزون قارب على الانتهاء</string>
+    <string name="pdf_biz_expired">منتهي الصلاحية</string>
+    <string name="pdf_biz_days_left">%1$d يومًا</string>
+    <string name="pdf_biz_batch">دفعة %1$s \u00B7 </string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">العميل</string>
     <string name="invoice_section_details">تفاصيل الفاتورة</string>

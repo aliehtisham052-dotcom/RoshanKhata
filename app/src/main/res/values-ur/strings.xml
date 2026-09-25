@@ -1198,6 +1198,30 @@
     <string name="pdf_rep_col_got">میں نے لیا</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 صفحہ %2$d</string>
 
+    <string name="pdf_biz_generated">رپورٹ بنائی گئی %1$s</string>
+    <string name="pdf_biz_not_backup_2">%1$s پی ڈی ایف سے آپ کا ریکارڈ واپس نہیں لا سکتا۔ بیک اپ</string>
+    <string name="pdf_biz_not_backup_3">فائل (RoshanKhata_Backup...txt) محفوظ رکھیں \u2014 وہی آپ کا</string>
+    <string name="pdf_biz_not_backup_4">ڈیٹا واپس لاتی ہے۔</string>
+    <string name="pdf_biz_you_will_receive">آپ کو ملنے ہیں</string>
+    <string name="pdf_biz_you_will_pay">آپ نے دینے ہیں</string>
+    <string name="pdf_biz_net_position">صاف پوزیشن</string>
+    <string name="pdf_biz_cash_in">نقد آیا (کیش بک)</string>
+    <string name="pdf_biz_cash_out">نقد گیا (کیش بک)</string>
+    <string name="pdf_biz_people_count">گاہک اور سپلائر</string>
+    <string name="pdf_biz_accounts">کھاتے</string>
+    <string name="pdf_biz_no_accounts">ابھی کوئی کھاتہ نہیں۔</string>
+    <string name="pdf_biz_settled">حساب برابر</string>
+    <string name="pdf_biz_cheques">چیک جو ابھی کلیئر نہیں ہوئے</string>
+    <string name="pdf_biz_cheques_note">یہ کلیئر ہونے تک رقم نہیں۔ یہ اوپر کے بیلنس میں شامل نہیں۔</string>
+    <string name="pdf_biz_cheque">چیک</string>
+    <string name="pdf_biz_due"> \u00B7 مقررہ تاریخ </string>
+    <string name="pdf_biz_plans">جاری ادائیگی منصوبے</string>
+    <string name="pdf_biz_paid_of">%2$s میں سے %1$s</string>
+    <string name="pdf_biz_expiring">اسٹاک جو جلد ختم ہو رہا ہے</string>
+    <string name="pdf_biz_expired">میعاد ختم</string>
+    <string name="pdf_biz_days_left">%1$d دن</string>
+    <string name="pdf_biz_batch">بیچ %1$s \u00B7 </string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">گاہک</string>
     <string name="invoice_section_details">انوائس کی تفصیل</string>

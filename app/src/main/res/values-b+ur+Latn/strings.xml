@@ -1198,6 +1198,30 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_rep_col_got">MAIN NE LIYA</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 Safha %2$d</string>
 
+    <string name="pdf_biz_generated">Report banai gayi %1$s</string>
+    <string name="pdf_biz_not_backup_2">%1$s PDF se aap ka record wapas nahi la sakta. Backup</string>
+    <string name="pdf_biz_not_backup_3">file (RoshanKhata_Backup...txt) mehfooz rakhein \u2014 wahi aap ka</string>
+    <string name="pdf_biz_not_backup_4">data wapas laati hai.</string>
+    <string name="pdf_biz_you_will_receive">Aap ko milne hain</string>
+    <string name="pdf_biz_you_will_pay">Aap ne dene hain</string>
+    <string name="pdf_biz_net_position">Saaf position</string>
+    <string name="pdf_biz_cash_in">Cash aaya (cashbook)</string>
+    <string name="pdf_biz_cash_out">Cash gaya (cashbook)</string>
+    <string name="pdf_biz_people_count">Customer aur supplier</string>
+    <string name="pdf_biz_accounts">Khaate</string>
+    <string name="pdf_biz_no_accounts">Abhi koi khata nahi.</string>
+    <string name="pdf_biz_settled">Hisaab barabar</string>
+    <string name="pdf_biz_cheques">Cheque jo abhi clear nahi hue</string>
+    <string name="pdf_biz_cheques_note">Ye clear hone tak paisa nahi. Ye upar ke balance mein shamil nahi.</string>
+    <string name="pdf_biz_cheque">Cheque</string>
+    <string name="pdf_biz_due"> \u00B7 due </string>
+    <string name="pdf_biz_plans">Payment plans jo chal rahe hain</string>
+    <string name="pdf_biz_paid_of">%2$s mein se %1$s</string>
+    <string name="pdf_biz_expiring">Stock jo jald expire ho raha hai</string>
+    <string name="pdf_biz_expired">EXPIRE HO CHUKA</string>
+    <string name="pdf_biz_days_left">%1$d din</string>
+    <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>
     <string name="invoice_section_details">Rasid ki tafseel</string>
