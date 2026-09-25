@@ -4,22 +4,42 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.PhoneContact
 
+/** A contact together with whether its box is ticked, so the tick can be diffed. */
+data class ContactRow(val contact: PhoneContact, val isSelected: Boolean)
+
 class ContactAdapter(
     private val onToggle: (PhoneContact) -> Unit
-) : RecyclerView.Adapter<ContactAdapter.VH>() {
+) : ListAdapter<ContactRow, ContactAdapter.VH>(DIFF) {
 
-    private var items: List<PhoneContact> = emptyList()
-    private var selected: Set<String> = emptySet()
+    companion object {
+        /**
+         * A phone's address book runs to thousands of names, and this list was
+         * rebuilt whole on every change — including every single tick, since
+         * ticking a box re-submits the same list with a new selection. The
+         * owner picking twenty customers out of two thousand contacts paid for
+         * two thousand rebinds, twenty times.
+         *
+         * The tick is carried INSIDE the diffed row rather than held beside
+         * the list, so DiffUtil can see it: tick one box and exactly one row
+         * is found changed, and exactly one row repaints. Matched on phone
+         * number, which is what the selection itself is keyed by.
+         */
+        private val DIFF = object : DiffUtil.ItemCallback<ContactRow>() {
+            override fun areItemsTheSame(a: ContactRow, b: ContactRow) =
+                a.contact.phone == b.contact.phone
+            override fun areContentsTheSame(a: ContactRow, b: ContactRow) = a == b
+        }
+    }
 
     fun submit(newItems: List<PhoneContact>, newSelected: Set<String>) {
-        items = newItems
-        selected = newSelected
-        notifyDataSetChanged()
+        submitList(newItems.map { ContactRow(it, it.phone in newSelected) })
     }
 
     inner class VH(view: View) : RecyclerView.ViewHolder(view) {
@@ -34,10 +54,9 @@ class ContactAdapter(
         return VH(v)
     }
 
-    override fun getItemCount() = items.size
-
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val c = items[position]
+        val row = getItem(position)
+        val c = row.contact
 
         holder.tvName.text = c.name
         holder.tvPhone.text = c.phone
@@ -60,7 +79,7 @@ class ContactAdapter(
             holder.tvAdded.visibility = View.GONE
             holder.itemView.isEnabled = true
             holder.itemView.alpha = 1f
-            holder.cb.isChecked = c.phone in selected
+            holder.cb.isChecked = row.isSelected
             holder.itemView.setOnClickListener { onToggle(c) }
         }
     }
