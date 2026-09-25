@@ -41,7 +41,10 @@
     <string name="followup_title">Wusooli</string>
     <string name="followup_subtitle">Kis se wusool karna hai — sab se purana pehle, raqam saath</string>
     <string name="followup_summary">%1$d customers ke zimme aap ka · kul %2$s</string>
-    <string name="followup_last_ago">Aakhri len-den %1$d din pehle</string>
+    <plurals name="followup_last_ago">
+        <item quantity="one">Aakhri len-den %1$d din pehle</item>
+        <item quantity="other">Aakhri len-den %1$d din pehle</item>
+    </plurals>
     <string name="followup_today">Aaj len-den hua</string>
     <string name="followup_empty">Is waqt kisi ke zimme kuch nahi — sab settled.</string>
     <string name="coach_title_followup">Wusooli</string>
@@ -107,7 +110,10 @@
     <string name="summary_backup_never">Backup kabhi nahi hua</string>
     <string name="summary_backup_time">Backup hua %1$s</string>
     <string name="summary_backup_yesterday">Backup kal hua</string>
-    <string name="summary_backup_days">Backup %1$d din pehle</string>
+    <plurals name="summary_backup_days">
+        <item quantity="one">Backup %1$d din pehle</item>
+        <item quantity="other">Backup %1$d din pehle</item>
+    </plurals>
 
     <string name="name">Naam</string>
     <string name="phone_optional">Phone (ikhtiyari)</string>
@@ -152,7 +158,10 @@
     <string name="delete_entry_title">Entry delete karein?</string>
     <string name="delete_entry_confirm">Ye entry Recycle Bin mein chali jayegi. 30 din ke andar wapas la sakte hain.</string>
     <string name="select_entries_to_delete">Delete karne ke liye entries chunein</string>
-    <string name="delete_selected_entries_confirm">%1$d chuni gayi entries delete karein? Ye Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">%1$d chuni gayi entry delete karein? Ye Recycle Bin mein chali jayegi. Aap 30 din ke andar wapas la sakte hain.</item>
+        <item quantity="other">%1$d chuni gayi entries delete karein? Ye Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</item>
+    </plurals>
     <string name="moved_to_bin">Recycle Bin mein muntaqil ho gaya</string>
     <string name="long_press_to_delete">Party delete karne ke liye usey der tak dabayen</string>
 
@@ -306,8 +315,14 @@
     <string name="cheque_cancelled">Mansookh</string>
 
     <string name="due_today">Aaj wajib</string>
-    <string name="due_in_days">%1$d din mein wajib</string>
-    <string name="overdue_by_days">%1$d din guzar chuke</string>
+    <plurals name="due_in_days">
+        <item quantity="one">%1$d din mein wajib</item>
+        <item quantity="other">%1$d din mein wajib</item>
+    </plurals>
+    <plurals name="overdue_by_days">
+        <item quantity="one">%1$d din guzar chuka</item>
+        <item quantity="other">%1$d din guzar chuke</item>
+    </plurals>
     <string name="due_summary">%1$d cheque bank le jane ke liye tayyar</string>
     <string name="due_summary_none">Kuch wajib nahi</string>
     <string name="due_summary_pending">%1$d clear hone ke muntazir</string>
@@ -540,9 +555,18 @@
     <string name="business_never_backed_up">Kabhi backup nahi hua</string>
     <string name="notif_backup_body_named">%1$s ka backup hafte se zyada arse se nahi hua. Is ka record sirf isi phone par hai.</string>
 
-    <string name="notif_cheques_body_named">%1$s: %2$d cheque aaj due hain ya guzar chuke hain.</string>
-    <string name="notif_plans_body_named">%1$s: %2$d payment plan ki qist due hai.</string>
-    <string name="notif_expiry_body_named">%1$s: %2$d item 60 din mein expire ho rahe hain.</string>
+    <plurals name="notif_cheques_body_named">
+        <item quantity="one">%1$s: %2$d cheque aaj due hai ya guzar chuka hai.</item>
+        <item quantity="other">%1$s: %2$d cheque aaj due hain ya guzar chuke hain.</item>
+    </plurals>
+    <plurals name="notif_plans_body_named">
+        <item quantity="one">%1$s: %2$d payment plan ki qist due hai.</item>
+        <item quantity="other">%1$s: %2$d payment plans ki qist due hai.</item>
+    </plurals>
+    <plurals name="notif_expiry_body_named">
+        <item quantity="one">%1$s: %2$d item 60 din mein expire ho raha hai.</item>
+        <item quantity="other">%1$s: %2$d item 60 din mein expire ho rahe hain.</item>
+    </plurals>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Khata</string>
     <string name="filter_type_label">Qisam</string>
@@ -583,7 +607,10 @@
     <string name="qty_hint">Miqdaar</string>
     <string name="item_added">Cheez shamil ho gayi</string>
     <string name="no_items_yet">Abhi koi cheez shamil nahi</string>
-    <string name="items_count">%1$d cheezein</string>
+    <plurals name="items_count">
+        <item quantity="one">%1$d cheez</item>
+        <item quantity="other">%1$d cheezein</item>
+    </plurals>
 
     <string name="bill_saved">Bill mehfooz ho gaya</string>
     <string name="bill_account_settled">Chukta</string>
@@ -684,8 +711,14 @@
     <string name="expiring_subtitle">Bechein, riayat dein, ya wapas karein — jab tak waqt hai</string>
     <string name="no_expiring">Agle 60 dinon mein kuch expire nahi ho raha.\n\nSirf wahi maal dekha ja sakta hai jis ki expiry darj ho. Bill par wo khana khali chhorenge to Roshan Khata khabardar nahi kar sakega.</string>
     <string name="expiring_note">Sirf expiry darj shuda maal yahan aata hai. Roshan Khata sirf usi se khabardar kar sakta hai jo isey bataya gaya.</string>
-    <string name="expired_days">%1$d din pehle EXPIRE ho chuka</string>
-    <string name="expires_days">%1$d din mein expire hoga</string>
+    <plurals name="expired_days">
+        <item quantity="one">%1$d din pehle EXPIRE ho chuka</item>
+        <item quantity="other">%1$d din pehle EXPIRE ho chuka</item>
+    </plurals>
+    <plurals name="expires_days">
+        <item quantity="one">%1$d din mein expire hoga</item>
+        <item quantity="other">%1$d din mein expire hoga</item>
+    </plurals>
     <string name="expires_today">Aaj expire ho raha hai</string>
     <string name="batch_label">Batch: %1$s</string>
     <string name="batch_none">Koi batch number darj nahi</string>
@@ -865,11 +898,20 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="notif_channel_name">Yaad-dehaniyan</string>
     <string name="notif_channel_desc">Cheque, qistain, expire hota maal aur backup ki yaad-dehani</string>
     <string name="notif_cheques_title">Cheque bank mein lagane ke liye tayyar</string>
-    <string name="notif_cheques_body">%1$d cheque aaj ya pehle ke wajib hain.</string>
+    <plurals name="notif_cheques_body">
+        <item quantity="one">%1$d cheque aaj ya pehle ka wajib hai.</item>
+        <item quantity="other">%1$d cheque aaj ya pehle ke wajib hain.</item>
+    </plurals>
     <string name="notif_plans_title">Qist wajib hai</string>
-    <string name="notif_plans_body">%1$d payment plan ki qist ka waqt ho gaya hai.</string>
+    <plurals name="notif_plans_body">
+        <item quantity="one">%1$d payment plan ki qist ka waqt ho gaya hai.</item>
+        <item quantity="other">%1$d payment plans ki qist ka waqt ho gaya hai.</item>
+    </plurals>
     <string name="notif_expiry_title">Maal jald expire ho ga</string>
-    <string name="notif_expiry_body">%1$d cheezein 60 din mein expire hongi. Bechein, riayat dein ya wapas karein.</string>
+    <plurals name="notif_expiry_body">
+        <item quantity="one">%1$d cheez 60 din mein expire hogi. Bechein, riayat dein ya wapas karein.</item>
+        <item quantity="other">%1$d cheezein 60 din mein expire hongi. Bechein, riayat dein ya wapas karein.</item>
+    </plurals>
     <string name="notif_backup_title">Backup ki yaad-dehani</string>
     <string name="notif_backup_body">Aakhri backup ko hafte se zyada ho gaya. Aap ka record sirf isi phone par hai.</string>
     <string name="notif_backup_failed_title">Khudkar backup nakaam</string>
@@ -982,8 +1024,14 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="voice_no_amount">Is mein raqam nahi thi. Adad bhi kahein.</string>
     <string name="voice_open_entry">Indraj kholein</string>
     <string name="voice_which_party">%1$s — kaun sa gahak?</string>
-    <string name="delete_parties_title">%1$d gaahak delete karein?</string>
-    <string name="delete_parties_confirm">%1$d gaahak aur unki tamam entries Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</string>
+    <plurals name="delete_parties_title">
+        <item quantity="one">%1$d gaahak delete karein?</item>
+        <item quantity="other">%1$d gaahak delete karein?</item>
+    </plurals>
+    <plurals name="delete_parties_confirm">
+        <item quantity="one">%1$d gaahak aur uski tamam entries Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</item>
+        <item quantity="other">%1$d gaahak aur unki tamam entries Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</item>
+    </plurals>
     <string name="delete_parties_owing">In mein se %1$d ka hisaab baqi hai — %2$s lene hain, %3$s dene hain. Hataane se ye aap ke total se nikal jayega, hisaab khatm nahi hoga.</string>
     <string name="customer_qr">Gaahak ka QR</string>
     <string name="customer_qr_hint">Roshan Khata mein scan karein to yeh khata khul jayega. Code mein na naam hai, na number, na hisaab.</string>

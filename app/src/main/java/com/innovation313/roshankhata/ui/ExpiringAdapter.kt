@@ -46,7 +46,7 @@ class ExpiringAdapter : RecyclerView.Adapter<ExpiringAdapter.VH>() {
         val days = e.daysLeft
         when {
             e.hasExpired -> {
-                holder.tvDays.text = ctx.getString(R.string.expired_days, -days)
+                holder.tvDays.text = ctx.resources.getQuantityString(R.plurals.expired_days, -days, -days)
                 holder.tvDays.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave))
             }
             days == 0 -> {
@@ -54,7 +54,7 @@ class ExpiringAdapter : RecyclerView.Adapter<ExpiringAdapter.VH>() {
                 holder.tvDays.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave))
             }
             else -> {
-                holder.tvDays.text = ctx.getString(R.string.expires_days, days)
+                holder.tvDays.text = ctx.resources.getQuantityString(R.plurals.expires_days, days, days)
                 holder.tvDays.setTextColor(
                     ContextCompat.getColor(
                         ctx,

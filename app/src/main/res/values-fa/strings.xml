@@ -41,7 +41,10 @@
     <string name="followup_title">پیگیری وصول</string>
     <string name="followup_subtitle">از چه کسی وصول کنید — قدیمی‌ترین اول، مبلغ در کنار</string>
     <string name="followup_summary">%1$d مشتری به شما بدهکارند · جمعاً %2$s</string>
-    <string name="followup_last_ago">آخرین تراکنش %1$d روز پیش</string>
+    <plurals name="followup_last_ago">
+        <item quantity="one">آخرین تراکنش %1$d روز پیش</item>
+        <item quantity="other">آخرین تراکنش %1$d روز پیش</item>
+    </plurals>
     <string name="followup_today">امروز تراکنش شد</string>
     <string name="followup_empty">اکنون کسی به شما بدهکار نیست — همه تسویه.</string>
     <string name="coach_title_followup">پیگیری وصول</string>
@@ -107,7 +110,10 @@
     <string name="summary_backup_never">هرگز پشتیبان گرفته نشده</string>
     <string name="summary_backup_time">آخرین پشتیبان %1$s</string>
     <string name="summary_backup_yesterday">پشتیبان دیروز</string>
-    <string name="summary_backup_days">پشتیبان %1$d روز پیش</string>
+    <plurals name="summary_backup_days">
+        <item quantity="one">پشتیبان %1$d روز پیش</item>
+        <item quantity="other">پشتیبان %1$d روز پیش</item>
+    </plurals>
 
     <string name="name">نام</string>
     <string name="phone_optional">تلفن (اختیاری)</string>
@@ -154,7 +160,10 @@
     <string name="delete_entry_title">ثبت حذف شود؟</string>
     <string name="delete_entry_confirm">این ثبت به سطل بازیافت می‌رود. تا ۳۰ روز می‌توانید بازگردانید.</string>
     <string name="select_entries_to_delete">انتخاب ورودی‌ها برای حذف</string>
-    <string name="delete_selected_entries_confirm">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شوند. می‌توانید تا ۳۰ روز آن‌ها را بازگردانید.</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شود. می‌توانید تا ۳۰ روز آن را بازگردانید.</item>
+        <item quantity="other">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شوند. می‌توانید تا ۳۰ روز آن‌ها را بازگردانید.</item>
+    </plurals>
     <string name="moved_to_bin">به سطل بازیافت منتقل شد</string>
     <string name="long_press_to_delete">برای حذف، روی طرف‌حساب لمس طولانی کنید</string>
 
@@ -317,8 +326,14 @@
     <string name="cheque_cancelled">باطل‌شده</string>
 
     <string name="due_today">سررسید امروز</string>
-    <string name="due_in_days">سررسید تا %1$d روز</string>
-    <string name="overdue_by_days">%1$d روز از سررسید گذشته</string>
+    <plurals name="due_in_days">
+        <item quantity="one">سررسید تا %1$d روز</item>
+        <item quantity="other">سررسید تا %1$d روز</item>
+    </plurals>
+    <plurals name="overdue_by_days">
+        <item quantity="one">%1$d روز از سررسید گذشته</item>
+        <item quantity="other">%1$d روز از سررسید گذشته</item>
+    </plurals>
     <string name="due_summary">%1$d چک آماده وصول</string>
     <string name="due_summary_none">چیزی سررسید نیست</string>
     <string name="due_summary_pending">%1$d در انتظار وصول</string>
@@ -560,9 +575,18 @@
     <string name="business_never_backed_up">هرگز پشتیبان گرفته نشده</string>
     <string name="notif_backup_body_named">بیش از یک هفته است از %1$s پشتیبان گرفته نشده. سوابق آن فقط روی همین گوشی است.</string>
 
-    <string name="notif_cheques_body_named">%1$s: %2$d چک امروز سررسید شده یا گذشته است.</string>
-    <string name="notif_plans_body_named">%1$s: %2$d قسط طرح پرداخت سررسید شده است.</string>
-    <string name="notif_expiry_body_named">%1$s: %2$d قلم تا ۶۰ روز دیگر منقضی می‌شود.</string>
+    <plurals name="notif_cheques_body_named">
+        <item quantity="one">%1$s: %2$d چک امروز سررسید شده یا گذشته است.</item>
+        <item quantity="other">%1$s: %2$d چک امروز سررسید شده یا گذشته است.</item>
+    </plurals>
+    <plurals name="notif_plans_body_named">
+        <item quantity="one">%1$s: %2$d قسط طرح پرداخت سررسید شده است.</item>
+        <item quantity="other">%1$s: %2$d قسط طرح پرداخت سررسید شده است.</item>
+    </plurals>
+    <plurals name="notif_expiry_body_named">
+        <item quantity="one">%1$s: %2$d قلم تا ۶۰ روز دیگر منقضی می‌شود.</item>
+        <item quantity="other">%1$s: %2$d قلم تا ۶۰ روز دیگر منقضی می‌شود.</item>
+    </plurals>
     <string name="filter_title">فیلتر</string>
     <string name="filter_account_label">حساب</string>
     <string name="filter_type_label">نوع</string>
@@ -604,7 +628,10 @@
     <string name="qty_hint">مقدار</string>
     <string name="item_added">قلم اضافه شد</string>
     <string name="no_items_yet">هنوز قلمی اضافه نشده</string>
-    <string name="items_count">%1$d قلم</string>
+    <plurals name="items_count">
+        <item quantity="one">%1$d قلم</item>
+        <item quantity="other">%1$d قلم</item>
+    </plurals>
 
     <string name="bill_saved">فاکتور ذخیره شد</string>
     <string name="bill_account_settled">تسویه شده</string>
@@ -706,8 +733,14 @@
     <string name="expiring_subtitle">بفروشید، تخفیف بدهید یا برگردانید — تا هنوز می‌شود</string>
     <string name="no_expiring">در ۶۰ روز آینده چیزی منقضی نمی‌شود.\n\nفقط کالایی که تاریخ انقضایش ثبت شده قابل پایش است. اگر آن خانه را در فاکتور خالی بگذارید، روشن خاتا نمی‌تواند درباره‌اش هشدار دهد.</string>
     <string name="expiring_note">فقط کالایی که تاریخ انقضایش ثبت شده اینجا می‌آید. روشن خاتا فقط درباره چیزی هشدار می‌دهد که به او گفته شده.</string>
-    <string name="expired_days">%1$d روز پیش منقضی شده</string>
-    <string name="expires_days">%1$d روز تا انقضا</string>
+    <plurals name="expired_days">
+        <item quantity="one">%1$d روز پیش منقضی شده</item>
+        <item quantity="other">%1$d روز پیش منقضی شده</item>
+    </plurals>
+    <plurals name="expires_days">
+        <item quantity="one">%1$d روز تا انقضا</item>
+        <item quantity="other">%1$d روز تا انقضا</item>
+    </plurals>
     <string name="expires_today">امروز منقضی می‌شود</string>
     <string name="batch_label">بچ: %1$s</string>
     <string name="batch_none">شماره بچی ثبت نشده</string>
@@ -893,11 +926,20 @@
     <string name="notif_channel_name">یادآوری‌ها</string>
     <string name="notif_channel_desc">چک‌های سررسید، اقساط، کالای رو به انقضا و یادآوری پشتیبان‌گیری</string>
     <string name="notif_cheques_title">چک‌ها آماده وصول</string>
-    <string name="notif_cheques_body">%1$d چک امروز یا پیش‌تر سررسید شده است.</string>
+    <plurals name="notif_cheques_body">
+        <item quantity="one">%1$d چک امروز یا پیش‌تر سررسید شده است.</item>
+        <item quantity="other">%1$d چک امروز یا پیش‌تر سررسید شده است.</item>
+    </plurals>
     <string name="notif_plans_title">قسط سررسید شده</string>
-    <string name="notif_plans_body">%1$d برنامه پرداخت موعد پرداخت دارد.</string>
+    <plurals name="notif_plans_body">
+        <item quantity="one">%1$d برنامه پرداخت موعد پرداخت دارد.</item>
+        <item quantity="other">%1$d برنامه پرداخت موعد پرداخت دارد.</item>
+    </plurals>
     <string name="notif_expiry_title">کالا رو به انقضا</string>
-    <string name="notif_expiry_body">%1$d قلم تا 60 روز دیگر منقضی می‌شود. بفروشید، تخفیف دهید یا برگردانید.</string>
+    <plurals name="notif_expiry_body">
+        <item quantity="one">%1$d قلم تا 60 روز دیگر منقضی می‌شود. بفروشید، تخفیف دهید یا برگردانید.</item>
+        <item quantity="other">%1$d قلم تا 60 روز دیگر منقضی می‌شود. بفروشید، تخفیف دهید یا برگردانید.</item>
+    </plurals>
     <string name="notif_backup_title">یادآوری پشتیبان‌گیری</string>
     <string name="notif_backup_body">بیش از یک هفته از آخرین پشتیبان گذشته است. سوابق شما فقط روی همین گوشی است.</string>
     <string name="notif_backup_failed_title">پشتیبان‌گیری خودکار ناموفق شد</string>
@@ -1010,8 +1052,14 @@
     <string name="voice_no_amount">مبلغی در آن نبود. عدد را هم بگویید.</string>
     <string name="voice_open_entry">باز کردن ثبت</string>
     <string name="voice_which_party">%1$s — کدام مشتری؟</string>
-    <string name="delete_parties_title">حذف %1$d مشتری؟</string>
-    <string name="delete_parties_confirm">%1$d مشتری و همهٔ ثبت‌هایشان به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</string>
+    <plurals name="delete_parties_title">
+        <item quantity="one">حذف %1$d مشتری؟</item>
+        <item quantity="other">حذف %1$d مشتری؟</item>
+    </plurals>
+    <plurals name="delete_parties_confirm">
+        <item quantity="one">%1$d مشتری و همهٔ ثبت‌هایش به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</item>
+        <item quantity="other">%1$d مشتری و همهٔ ثبت‌هایشان به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</item>
+    </plurals>
     <string name="delete_parties_owing">%1$d نفر از آنها هنوز مانده‌حساب دارند — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</string>
     <string name="customer_qr">کد QR مشتری</string>
     <string name="customer_qr_hint">در روشن کھاتہ اسکن کنید تا این دفتر باز شود. کد نه نام دارد، نه شماره، نه مانده‌حساب.</string>

@@ -41,7 +41,14 @@
     <string name="followup_title">المتابعة</string>
     <string name="followup_subtitle">ممن تُحصّل — الأقدم أولاً، والمبلغ بجانبه</string>
     <string name="followup_summary">%1$d عميلاً مدينون لك · الإجمالي %2$s</string>
-    <string name="followup_last_ago">آخر معاملة قبل %1$d يومًا</string>
+    <plurals name="followup_last_ago">
+        <item quantity="zero">آخر معاملة قبل %1$d يوم</item>
+        <item quantity="one">آخر معاملة أمس</item>
+        <item quantity="two">آخر معاملة قبل يومين</item>
+        <item quantity="few">آخر معاملة قبل %1$d أيام</item>
+        <item quantity="many">آخر معاملة قبل %1$d يومًا</item>
+        <item quantity="other">آخر معاملة قبل %1$d يوم</item>
+    </plurals>
     <string name="followup_today">تمت معاملة اليوم</string>
     <string name="followup_empty">لا أحد مدين لك الآن — الكل مُسوّى.</string>
     <string name="coach_title_followup">المتابعة</string>
@@ -107,7 +114,14 @@
     <string name="summary_backup_never">لم يتم النسخ الاحتياطي قط</string>
     <string name="summary_backup_time">آخر نسخة %1$s</string>
     <string name="summary_backup_yesterday">نُسخ احتياطيًا أمس</string>
-    <string name="summary_backup_days">نُسخ احتياطيًا قبل %1$d يوم</string>
+    <plurals name="summary_backup_days">
+        <item quantity="zero">نُسخ احتياطيًا قبل %1$d يوم</item>
+        <item quantity="one">نُسخ احتياطيًا أمس</item>
+        <item quantity="two">نُسخ احتياطيًا قبل يومين</item>
+        <item quantity="few">نُسخ احتياطيًا قبل %1$d أيام</item>
+        <item quantity="many">نُسخ احتياطيًا قبل %1$d يومًا</item>
+        <item quantity="other">نُسخ احتياطيًا قبل %1$d يوم</item>
+    </plurals>
 
     <string name="name">الاسم</string>
     <string name="phone_optional">الهاتف (اختياري)</string>
@@ -152,7 +166,14 @@
     <string name="delete_entry_title">حذف القيد؟</string>
     <string name="delete_entry_confirm">سينتقل هذا القيد إلى سلة المحذوفات. يمكنك استعادته خلال 30 يومًا.</string>
     <string name="select_entries_to_delete">اختيار قيود للحذف</string>
-    <string name="delete_selected_entries_confirm">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="zero">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="one">حذف قيد واحد محدد؟ سينتقل إلى سلة المحذوفات. يمكنك استعادته خلال 30 يومًا.</item>
+        <item quantity="two">حذف قيدين محددين؟ سينتقلان إلى سلة المحذوفات. يمكنك استعادتهما خلال 30 يومًا.</item>
+        <item quantity="few">حذف %1$d قيود محددة؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="many">حذف %1$d قيدًا محددًا؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="other">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+    </plurals>
     <string name="moved_to_bin">نُقل إلى سلة المحذوفات</string>
     <string name="long_press_to_delete">اضغط مطولًا على الطرف لحذفه</string>
 
@@ -306,8 +327,22 @@
     <string name="cheque_cancelled">ملغى</string>
 
     <string name="due_today">يستحق اليوم</string>
-    <string name="due_in_days">يستحق خلال %1$d يومًا</string>
-    <string name="overdue_by_days">متأخر %1$d يومًا</string>
+    <plurals name="due_in_days">
+        <item quantity="zero">يستحق خلال %1$d يوم</item>
+        <item quantity="one">يستحق غدًا</item>
+        <item quantity="two">يستحق خلال يومين</item>
+        <item quantity="few">يستحق خلال %1$d أيام</item>
+        <item quantity="many">يستحق خلال %1$d يومًا</item>
+        <item quantity="other">يستحق خلال %1$d يوم</item>
+    </plurals>
+    <plurals name="overdue_by_days">
+        <item quantity="zero">متأخر %1$d يوم</item>
+        <item quantity="one">متأخر يومًا واحدًا</item>
+        <item quantity="two">متأخر يومين</item>
+        <item quantity="few">متأخر %1$d أيام</item>
+        <item quantity="many">متأخر %1$d يومًا</item>
+        <item quantity="other">متأخر %1$d يوم</item>
+    </plurals>
     <string name="due_summary">%1$d شيك جاهز للإيداع</string>
     <string name="due_summary_none">لا مستحقات</string>
     <string name="due_summary_pending">%1$d بانتظار الصرف</string>
@@ -540,9 +575,30 @@
     <string name="business_never_backed_up">لم يتم النسخ الاحتياطي قط</string>
     <string name="notif_backup_body_named">لم تُنسخ %1$s احتياطيًا منذ أكثر من أسبوع. سجلاتها موجودة على هذا الهاتف فقط.</string>
 
-    <string name="notif_cheques_body_named">%1$s: %2$d شيك مستحق اليوم أو فات موعده.</string>
-    <string name="notif_plans_body_named">%1$s: %2$d خطة سداد مستحقة الدفع.</string>
-    <string name="notif_expiry_body_named">%1$s: %2$d صنف ينتهي خلال 60 يومًا.</string>
+    <plurals name="notif_cheques_body_named">
+        <item quantity="zero">%1$s: %2$d شيك مستحق اليوم أو فات موعده.</item>
+        <item quantity="one">%1$s: شيك واحد مستحق اليوم أو فات موعده.</item>
+        <item quantity="two">%1$s: شيكان مستحقان اليوم أو فات موعدهما.</item>
+        <item quantity="few">%1$s: %2$d شيكات مستحقة اليوم أو فات موعدها.</item>
+        <item quantity="many">%1$s: %2$d شيكًا مستحقًا اليوم أو فات موعدها.</item>
+        <item quantity="other">%1$s: %2$d شيك مستحق اليوم أو فات موعده.</item>
+    </plurals>
+    <plurals name="notif_plans_body_named">
+        <item quantity="zero">%1$s: %2$d خطة سداد مستحقة الدفع.</item>
+        <item quantity="one">%1$s: خطة سداد واحدة مستحقة الدفع.</item>
+        <item quantity="two">%1$s: خطتا سداد مستحقتان للدفع.</item>
+        <item quantity="few">%1$s: %2$d خطط سداد مستحقة الدفع.</item>
+        <item quantity="many">%1$s: %2$d خطة سداد مستحقة الدفع.</item>
+        <item quantity="other">%1$s: %2$d خطة سداد مستحقة الدفع.</item>
+    </plurals>
+    <plurals name="notif_expiry_body_named">
+        <item quantity="zero">%1$s: %2$d صنف ينتهي خلال 60 يومًا.</item>
+        <item quantity="one">%1$s: صنف واحد ينتهي خلال 60 يومًا.</item>
+        <item quantity="two">%1$s: صنفان ينتهيان خلال 60 يومًا.</item>
+        <item quantity="few">%1$s: %2$d أصناف تنتهي خلال 60 يومًا.</item>
+        <item quantity="many">%1$s: %2$d صنفًا تنتهي خلال 60 يومًا.</item>
+        <item quantity="other">%1$s: %2$d صنف ينتهي خلال 60 يومًا.</item>
+    </plurals>
     <string name="filter_title">تصفية</string>
     <string name="filter_account_label">الحساب</string>
     <string name="filter_type_label">النوع</string>
@@ -583,7 +639,14 @@
     <string name="qty_hint">الكمية</string>
     <string name="item_added">أُضيف الصنف</string>
     <string name="no_items_yet">لا أصناف مضافة بعد</string>
-    <string name="items_count">%1$d أصناف</string>
+    <plurals name="items_count">
+        <item quantity="zero">%1$d صنف</item>
+        <item quantity="one">صنف واحد</item>
+        <item quantity="two">صنفان</item>
+        <item quantity="few">%1$d أصناف</item>
+        <item quantity="many">%1$d صنفًا</item>
+        <item quantity="other">%1$d صنف</item>
+    </plurals>
 
     <string name="bill_saved">حُفظت الفاتورة</string>
     <string name="bill_account_settled">مُسوّى</string>
@@ -684,8 +747,22 @@
     <string name="expiring_subtitle">بعها أو خفّضها أو أرجعها — ما دمت تستطيع</string>
     <string name="no_expiring">لا شيء ينتهي خلال 60 يومًا.\n\nلا تُراقب إلا البضاعة المسجل تاريخ انتهائها. إن تركت ذلك الحقل فارغًا في فاتورة، فلن يستطيع روشن كهاتا تحذيرك عنها.</string>
     <string name="expiring_note">لا يظهر هنا إلا ما سُجل تاريخ انتهائه. لا يحذر روشن كهاتا إلا مما أُخبر به.</string>
-    <string name="expired_days">انتهى منذ %1$d يومًا</string>
-    <string name="expires_days">ينتهي خلال %1$d يومًا</string>
+    <plurals name="expired_days">
+        <item quantity="zero">انتهى منذ %1$d يوم</item>
+        <item quantity="one">انتهى أمس</item>
+        <item quantity="two">انتهى منذ يومين</item>
+        <item quantity="few">انتهى منذ %1$d أيام</item>
+        <item quantity="many">انتهى منذ %1$d يومًا</item>
+        <item quantity="other">انتهى منذ %1$d يوم</item>
+    </plurals>
+    <plurals name="expires_days">
+        <item quantity="zero">ينتهي خلال %1$d يوم</item>
+        <item quantity="one">ينتهي غدًا</item>
+        <item quantity="two">ينتهي خلال يومين</item>
+        <item quantity="few">ينتهي خلال %1$d أيام</item>
+        <item quantity="many">ينتهي خلال %1$d يومًا</item>
+        <item quantity="other">ينتهي خلال %1$d يوم</item>
+    </plurals>
     <string name="expires_today">ينتهي اليوم</string>
     <string name="batch_label">الدُفعة: %1$s</string>
     <string name="batch_none">لا رقم دُفعة مسجل</string>
@@ -873,11 +950,32 @@
     <string name="notif_channel_name">تذكيرات</string>
     <string name="notif_channel_desc">شيكات مستحقة وأقساط وبضاعة قاربت الانتهاء وتذكير النسخ الاحتياطي</string>
     <string name="notif_cheques_title">شيكات جاهزة للإيداع</string>
-    <string name="notif_cheques_body">%1$d شيك مستحق اليوم أو متأخر.</string>
+    <plurals name="notif_cheques_body">
+        <item quantity="zero">%1$d شيك مستحق اليوم أو متأخر.</item>
+        <item quantity="one">شيك واحد مستحق اليوم أو متأخر.</item>
+        <item quantity="two">شيكان مستحقان اليوم أو متأخران.</item>
+        <item quantity="few">%1$d شيكات مستحقة اليوم أو متأخرة.</item>
+        <item quantity="many">%1$d شيكًا مستحقًا اليوم أو متأخرًا.</item>
+        <item quantity="other">%1$d شيك مستحق اليوم أو متأخر.</item>
+    </plurals>
     <string name="notif_plans_title">قسط مستحق</string>
-    <string name="notif_plans_body">%1$d خطة دفع حان موعد سدادها.</string>
+    <plurals name="notif_plans_body">
+        <item quantity="zero">%1$d خطة دفع حان موعد سدادها.</item>
+        <item quantity="one">خطة دفع واحدة حان موعد سدادها.</item>
+        <item quantity="two">خطتا دفع حان موعد سدادهما.</item>
+        <item quantity="few">%1$d خطط دفع حان موعد سدادها.</item>
+        <item quantity="many">%1$d خطة دفع حان موعد سدادها.</item>
+        <item quantity="other">%1$d خطة دفع حان موعد سدادها.</item>
+    </plurals>
     <string name="notif_expiry_title">بضاعة قاربت الانتهاء</string>
-    <string name="notif_expiry_body">%1$d صنف تنتهي صلاحيته خلال 60 يومًا. بِع أو خفّض السعر أو أرجِع.</string>
+    <plurals name="notif_expiry_body">
+        <item quantity="zero">%1$d صنف تنتهي صلاحيته خلال 60 يومًا. بِع أو خفّض السعر أو أرجِع.</item>
+        <item quantity="one">صنف واحد تنتهي صلاحيته خلال 60 يومًا. بِعه أو خفّض سعره أو أرجِعه.</item>
+        <item quantity="two">صنفان تنتهي صلاحيتهما خلال 60 يومًا. بِعهما أو خفّض سعرهما أو أرجِعهما.</item>
+        <item quantity="few">%1$d أصناف تنتهي صلاحيتها خلال 60 يومًا. بِعها أو خفّض سعرها أو أرجِعها.</item>
+        <item quantity="many">%1$d صنفًا تنتهي صلاحيتها خلال 60 يومًا. بِعها أو خفّض سعرها أو أرجِعها.</item>
+        <item quantity="other">%1$d صنف تنتهي صلاحيته خلال 60 يومًا. بِع أو خفّض السعر أو أرجِع.</item>
+    </plurals>
     <string name="notif_backup_title">تذكير النسخ الاحتياطي</string>
     <string name="notif_backup_body">مضى أكثر من أسبوع على آخر نسخة احتياطية. سجلاتك على هذا الهاتف فقط.</string>
     <string name="notif_backup_failed_title">فشل النسخ الاحتياطي التلقائي</string>
@@ -990,8 +1088,22 @@
     <string name="voice_no_amount">لا يوجد مبلغ في ذلك. قل الرقم أيضاً.</string>
     <string name="voice_open_entry">افتح القيد</string>
     <string name="voice_which_party">%1$s — أي عميل؟</string>
-    <string name="delete_parties_title">حذف %1$d من العملاء؟</string>
-    <string name="delete_parties_confirm">سيُنقل %1$d من العملاء وجميع قيودهم إلى سلة المحذوفات. يمكنك استعادتهم خلال 30 يومًا.</string>
+    <plurals name="delete_parties_title">
+        <item quantity="zero">حذف %1$d عميل؟</item>
+        <item quantity="one">حذف عميل واحد؟</item>
+        <item quantity="two">حذف عميلين؟</item>
+        <item quantity="few">حذف %1$d عملاء؟</item>
+        <item quantity="many">حذف %1$d عميلًا؟</item>
+        <item quantity="other">حذف %1$d عميل؟</item>
+    </plurals>
+    <plurals name="delete_parties_confirm">
+        <item quantity="zero">سيُنقل %1$d عميل وجميع قيودهم إلى سلة المحذوفات. يمكنك استعادتهم خلال 30 يومًا.</item>
+        <item quantity="one">سيُنقل عميل واحد وجميع قيوده إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="two">سيُنقل عميلان وجميع قيودهما إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="few">سيُنقل %1$d عملاء وجميع قيودهم إلى سلة المحذوفات. يمكنك استعادتهم خلال 30 يومًا.</item>
+        <item quantity="many">سيُنقل %1$d عميلًا وجميع قيودهم إلى سلة المحذوفات. يمكنك استعادتهم خلال 30 يومًا.</item>
+        <item quantity="other">سيُنقل %1$d عميل وجميع قيودهم إلى سلة المحذوفات. يمكنك استعادتهم خلال 30 يومًا.</item>
+    </plurals>
     <string name="delete_parties_owing">%1$d منهم لديهم رصيد — %2$s للتحصيل، %3$s للدفع. حذفهم يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</string>
     <string name="customer_qr">رمز QR للعميل</string>
     <string name="customer_qr_hint">امسحه في روشن كهاتا ليُفتح هذا الحساب. الرمز لا يحمل اسمًا ولا رقمًا ولا رصيدًا.</string>

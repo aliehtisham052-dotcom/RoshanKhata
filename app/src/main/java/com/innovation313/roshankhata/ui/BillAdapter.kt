@@ -49,7 +49,7 @@ class BillAdapter(
             append(Format.dateOnly(b.billDate))
             if (b.itemCount > 0) {
                 append(" · ")
-                append(ctx.getString(R.string.items_count, b.itemCount))
+                append(ctx.resources.getQuantityString(R.plurals.items_count, b.itemCount, b.itemCount))
             }
         }
 

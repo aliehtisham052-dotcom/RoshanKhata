@@ -234,7 +234,9 @@ class BillsActivity : AppCompatActivity() {
 
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.item_added)
-                .setMessage(getString(R.string.items_count, pendingItems.size))
+                .setMessage(resources.getQuantityString(
+                    R.plurals.items_count, pendingItems.size, pendingItems.size
+                ))
                 .setNeutralButton(R.string.add_item) { _, _ ->
                     collectItems(supplierName, billNumber, total, billDate, dueDate, paidCash, note)
                 }

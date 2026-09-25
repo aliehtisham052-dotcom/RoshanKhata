@@ -59,7 +59,7 @@ class FollowUpAdapter(
         holder.tvAge.text = if (days <= 0) {
             ctx.getString(R.string.followup_today)
         } else {
-            ctx.getString(R.string.followup_last_ago, days)
+            ctx.resources.getQuantityString(R.plurals.followup_last_ago, days, days)
         }
         holder.tvAge.setTextColor(
             ContextCompat.getColor(ctx, if (overdue) R.color.red_gave else R.color.text_muted)

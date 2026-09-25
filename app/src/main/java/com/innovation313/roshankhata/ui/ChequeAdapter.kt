@@ -67,8 +67,10 @@ class ChequeAdapter(
             holder.tvDue.visibility = View.VISIBLE
             holder.tvDue.text = when {
                 days == 0L -> ctx.getString(R.string.due_today)
-                days > 0 -> ctx.getString(R.string.due_in_days, days.toInt())
-                else -> ctx.getString(R.string.overdue_by_days, (-days).toInt())
+                days > 0 -> ctx.resources.getQuantityString(R.plurals.due_in_days, days.toInt(), days.toInt())
+                else -> ctx.resources.getQuantityString(
+                    R.plurals.overdue_by_days, (-days).toInt(), (-days).toInt()
+                )
             }
             holder.tvDue.setTextColor(
                 ContextCompat.getColor(

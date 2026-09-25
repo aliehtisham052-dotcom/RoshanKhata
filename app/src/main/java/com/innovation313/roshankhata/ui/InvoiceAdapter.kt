@@ -51,7 +51,7 @@ class InvoiceAdapter(
         holder.tvMeta.text = buildString {
             append(Format.dateOnly(inv.invoiceDate))
             append(" · ")
-            append(ctx.getString(R.string.items_count, inv.itemCount))
+            append(ctx.resources.getQuantityString(R.plurals.items_count, inv.itemCount, inv.itemCount))
         }
 
         holder.itemView.setOnClickListener { onOpen(inv) }
