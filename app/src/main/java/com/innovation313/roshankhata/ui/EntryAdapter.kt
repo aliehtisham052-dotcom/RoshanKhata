@@ -91,7 +91,8 @@ class EntryAdapter(
         val colour = if (e.isGiven) R.color.bal_owed_to_me else R.color.bal_i_owe
         holder.tvAmount.setTextColor(ContextCompat.getColor(ctx, colour))
 
-        holder.tvRunningBalance.text = "Bal: ${Format.money(row.runningBalance)}"
+        holder.tvRunningBalance.text =
+            ctx.getString(R.string.running_balance_short, Format.money(row.runningBalance))
 
         holder.cbSelect.visibility = if (selectionMode) View.VISIBLE else View.GONE
         holder.cbSelect.isChecked = e.id in selectedIds
