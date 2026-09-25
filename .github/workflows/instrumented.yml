@@ -75,11 +75,35 @@ jobs:
           # gradle/actions/setup-gradle puts on PATH, and the first run of this
           # workflow failed with exit 127 (command not found) for exactly that
           # reason. --no-daemon matches the other two.
-          script: gradle connectedDebugAndroidTest --no-daemon --stacktrace
+          script: |
+            set +e
+            gradle connectedDebugAndroidTest --no-daemon --stacktrace 2>&1 \
+              | tee /tmp/instrumented_output.txt
+            exit ${PIPESTATUS[0]}
 
-      # The report says WHICH test failed and why. Without it a red tick is
-      # just a red tick, and the next session guesses.
-      - name: Publish the report when a test fails
+      # A red tick on its own says nothing. build.yml solved this already and
+      # its comment says why: annotations come back through the REST API even
+      # when the log blobs do not, which is the only channel that actually
+      # reaches a later session. Same pattern here.
+      - name: Publish the failure
+        if: failure()
+        run: |
+          if [ ! -f /tmp/instrumented_output.txt ]; then exit 0; fi
+          echo "## On-device Test Failure" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -120 /tmp/instrumented_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          grep -iE "^e: |error:|FAILURE:|Caused by|Unresolved reference|Could not (find|resolve)|FAILED|AssertionError|INSTRUMENTATION" \
+            /tmp/instrumented_output.txt \
+            | head -25 \
+            | while IFS= read -r line; do
+                clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                echo "::error::$clean"
+              done
+
+      # The HTML report, when the tests ran far enough to write one.
+      - name: Upload the test report
         if: failure()
         uses: actions/upload-artifact@v6
         with:
@@ -88,3 +112,4 @@ jobs:
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
           retention-days: 14
+          if-no-files-found: ignore
