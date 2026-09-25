@@ -768,8 +768,17 @@ interface KhataDao {
      * Where a name is entered under more than one party, [PartyNameAndPhone]
      * is deliberately just a name/phone pair, not an id — this stays the
      * same plain convenience lookup it always was, never a link to a row.
+     *
+     * Customers come first, then suppliers, each alphabetical within its own
+     * group. An invoice is overwhelmingly made out to a customer, so where
+     * two parties match what has been typed so far, the likelier one should
+     * be the one under the finger. Suppliers are not removed — see above —
+     * only moved below.
      */
-    @Query("SELECT name, phone FROM parties WHERE isDeleted = 0 ORDER BY name ASC")
+    @Query(
+        "SELECT name, phone FROM parties WHERE isDeleted = 0 " +
+            "ORDER BY isCustomer DESC, name ASC"
+    )
     suspend fun allPartiesForInvoice(): List<PartyNameAndPhone>
 
     /**
