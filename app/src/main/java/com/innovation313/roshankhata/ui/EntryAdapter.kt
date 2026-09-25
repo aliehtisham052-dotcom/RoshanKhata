@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.LedgerEntry
@@ -21,9 +23,26 @@ class EntryAdapter(
     private val onLongClick: (LedgerEntry) -> Unit,
     /** Fires instead of [onClick] once selection mode is on — a tap toggles rather than opens. */
     private val onToggleSelect: (LedgerEntry) -> Unit = {}
-) : RecyclerView.Adapter<EntryAdapter.VH>() {
+) : ListAdapter<EntryRow, EntryAdapter.VH>(DIFF) {
 
-    private var rows: List<EntryRow> = emptyList()
+    companion object {
+        /**
+         * One party's history is the longest list in the app — a customer of
+         * several years runs to hundreds of entries — and it was rebuilt whole
+         * on every change: add one entry and all of them were re-bound, which
+         * on an older phone shows as a stutter and can throw away where the
+         * owner had scrolled to.
+         *
+         * areContentsTheSame compares the WHOLE row, running balance included,
+         * on purpose: inserting an entry in the middle changes the balance
+         * printed beside every entry after it, and those rows must repaint
+         * even though their own amounts did not change.
+         */
+        private val DIFF = object : DiffUtil.ItemCallback<EntryRow>() {
+            override fun areItemsTheSame(a: EntryRow, b: EntryRow) = a.entry.id == b.entry.id
+            override fun areContentsTheSame(a: EntryRow, b: EntryRow) = a == b
+        }
+    }
 
     /**
      * Select-and-delete for this one party's history — the bounded
@@ -39,14 +58,32 @@ class EntryAdapter(
     private var selectedIds: Set<Long> = emptySet()
 
     fun submit(newRows: List<EntryRow>) {
-        rows = newRows
-        notifyDataSetChanged()
+        submitList(newRows)
     }
 
+    /**
+     * Selection is NOT part of [EntryRow], so DiffUtil cannot see it and the
+     * rows that changed have to be named here.
+     *
+     * Turning the mode on or off shows or hides the checkbox on every row, so
+     * that repaints all of them. Ticking one entry, which is what happens over
+     * and over, repaints only the rows whose tick actually changed — the thing
+     * the comment above has claimed since this was written, and now true.
+     */
     fun setSelectionState(active: Boolean, selected: Set<Long>) {
+        val modeChanged = selectionMode != active
+        val changedIds = (selectedIds - selected) + (selected - selectedIds)
         selectionMode = active
         selectedIds = selected
-        notifyDataSetChanged()
+
+        if (modeChanged) {
+            notifyItemRangeChanged(0, itemCount)
+            return
+        }
+        for (id in changedIds) {
+            val at = currentList.indexOfFirst { it.entry.id == id }
+            if (at != -1) notifyItemChanged(at)
+        }
     }
 
     inner class VH(view: View) : RecyclerView.ViewHolder(view) {
@@ -64,10 +101,8 @@ class EntryAdapter(
         return VH(v)
     }
 
-    override fun getItemCount() = rows.size
-
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val row = rows[position]
+        val row = getItem(position)
         val e = row.entry
         val ctx = holder.itemView.context
 
