@@ -1210,6 +1210,22 @@
         <item quantity="other">%d داخلائون</item>
     </plurals>
 
+    <string name="pdf_rep_ledger_title">ليجر رپورٽ</string>
+    <string name="pdf_rep_generated">ٺاهي وئي %1$s</string>
+    <string name="pdf_rep_not_backup">هيءَ رپورٽ پڙهڻ ۽ ڇاپڻ لاءِ آهي \u2014 بيڪ اپ ناهي.</string>
+    <string name="pdf_rep_not_backup_restore">%1$s پي ڊي ايف مان توهان جو رڪارڊ واپس نٿو آڻي سگهي.</string>
+    <string name="pdf_rep_summary">خلاصو</string>
+    <string name="pdf_rep_total_gave">مون ڏنا (ڪل)</string>
+    <string name="pdf_rep_total_got">مون ورتا (ڪل)</string>
+    <string name="pdf_rep_entry_count">هن عرصي جون داخلائون</string>
+    <string name="pdf_rep_entries">داخلائون</string>
+    <string name="pdf_rep_entries_continued">داخلائون (جاري)</string>
+    <string name="pdf_rep_col_date">تاريخ</string>
+    <string name="pdf_rep_col_party">ڌر</string>
+    <string name="pdf_rep_col_gave">مون ڏنا</string>
+    <string name="pdf_rep_col_got">مون ورتا</string>
+    <string name="pdf_rep_footer_page">%1$s \u00B7 صفحو %2$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">گراهڪ</string>
     <string name="invoice_section_details">انوائس جي تفصيل</string>
