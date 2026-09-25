@@ -45,7 +45,10 @@
     <string name="followup_title">Follow-up</string>
     <string name="followup_subtitle">Who to collect from — oldest first, amount alongside</string>
     <string name="followup_summary">%1$d customers owe you · %2$s in all</string>
-    <string name="followup_last_ago">Last transaction %1$d days ago</string>
+    <plurals name="followup_last_ago">
+        <item quantity="one">Last transaction %1$d day ago</item>
+        <item quantity="other">Last transaction %1$d days ago</item>
+    </plurals>
     <string name="followup_today">Transacted today</string>
     <string name="followup_empty">No one owes you anything right now — all settled.</string>
     <string name="coach_title_followup">Follow-up</string>
@@ -111,7 +114,10 @@
     <string name="summary_backup_never">Never backed up</string>
     <string name="summary_backup_time">Backed up %1$s</string>
     <string name="summary_backup_yesterday">Backed up yesterday</string>
-    <string name="summary_backup_days">Backed up %1$d days ago</string>
+    <plurals name="summary_backup_days">
+        <item quantity="one">Backed up %1$d day ago</item>
+        <item quantity="other">Backed up %1$d days ago</item>
+    </plurals>
 
     <string name="name">Name</string>
     <string name="phone_optional">Phone (optional)</string>
@@ -158,7 +164,10 @@
     <string name="delete_entry_title">Delete entry?</string>
     <string name="delete_entry_confirm">This entry will move to the Recycle Bin. You can restore it within 30 days.</string>
     <string name="select_entries_to_delete">Select entries to delete</string>
-    <string name="delete_selected_entries_confirm">Delete %1$d selected entries? They will move to the Recycle Bin. You can restore them within 30 days.</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">Delete %1$d selected entry? It will move to the Recycle Bin. You can restore it within 30 days.</item>
+        <item quantity="other">Delete %1$d selected entries? They will move to the Recycle Bin. You can restore them within 30 days.</item>
+    </plurals>
     <string name="moved_to_bin">Moved to Recycle Bin</string>
     <string name="long_press_to_delete">Long-press a party to delete it</string>
 
@@ -324,8 +333,14 @@
     <string name="cheque_cancelled">Cancelled</string>
 
     <string name="due_today">Due today</string>
-    <string name="due_in_days">Due in %1$d days</string>
-    <string name="overdue_by_days">Overdue by %1$d days</string>
+    <plurals name="due_in_days">
+        <item quantity="one">Due in %1$d day</item>
+        <item quantity="other">Due in %1$d days</item>
+    </plurals>
+    <plurals name="overdue_by_days">
+        <item quantity="one">Overdue by %1$d day</item>
+        <item quantity="other">Overdue by %1$d days</item>
+    </plurals>
     <string name="due_summary">%1$d cheque(s) ready to bank</string>
     <string name="due_summary_none">Nothing due</string>
     <string name="due_summary_pending">%1$d waiting to clear</string>
@@ -568,9 +583,18 @@
     <string name="notif_backup_body_named">%1$s has not been backed up in over a week. Its records live only on this phone.</string>
 
     <!-- Reminders for a shop that is NOT the one currently open: the shop has to be named, or the owner cannot tell whose cheque is due. -->
-    <string name="notif_cheques_body_named">%1$s: %2$d cheque(s) due today or overdue.</string>
-    <string name="notif_plans_body_named">%1$s: %2$d payment plan(s) due for a payment.</string>
-    <string name="notif_expiry_body_named">%1$s: %2$d item(s) expire within 60 days.</string>
+    <plurals name="notif_cheques_body_named">
+        <item quantity="one">%1$s: %2$d cheque due today or overdue.</item>
+        <item quantity="other">%1$s: %2$d cheques due today or overdue.</item>
+    </plurals>
+    <plurals name="notif_plans_body_named">
+        <item quantity="one">%1$s: %2$d payment plan due for a payment.</item>
+        <item quantity="other">%1$s: %2$d payment plans due for a payment.</item>
+    </plurals>
+    <plurals name="notif_expiry_body_named">
+        <item quantity="one">%1$s: %2$d item expires within 60 days.</item>
+        <item quantity="other">%1$s: %2$d items expire within 60 days.</item>
+    </plurals>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Account</string>
     <string name="filter_type_label">Type</string>
@@ -612,7 +636,10 @@
     <string name="qty_hint">Quantity</string>
     <string name="item_added">Item added</string>
     <string name="no_items_yet">No items added yet</string>
-    <string name="items_count">%1$d items</string>
+    <plurals name="items_count">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
 
     <string name="bill_saved">Bill saved</string>
     <string name="bill_account_settled">Settled</string>
@@ -714,8 +741,14 @@
     <string name="expiring_subtitle">Sell it, discount it, or return it — while you still can</string>
     <string name="no_expiring">Nothing expiring in the next 60 days.\n\nOnly stock with an expiry date recorded can be watched. If you leave that field blank on a bill, Roshan Khata cannot warn you about it.</string>
     <string name="expiring_note">Only stock with an expiry date recorded appears here. Roshan Khata can only warn you about what it was told.</string>
-    <string name="expired_days">EXPIRED %1$d days ago</string>
-    <string name="expires_days">Expires in %1$d days</string>
+    <plurals name="expired_days">
+        <item quantity="one">EXPIRED %1$d day ago</item>
+        <item quantity="other">EXPIRED %1$d days ago</item>
+    </plurals>
+    <plurals name="expires_days">
+        <item quantity="one">Expires in %1$d day</item>
+        <item quantity="other">Expires in %1$d days</item>
+    </plurals>
     <string name="expires_today">Expires today</string>
     <string name="batch_label">Batch: %1$s</string>
     <string name="batch_none">No batch number recorded</string>
@@ -906,11 +939,20 @@ You can change this any time from this screen.</string>
     <string name="notif_channel_name">Reminders</string>
     <string name="notif_channel_desc">Cheques due, instalments due, expiring stock and backup nudges</string>
     <string name="notif_cheques_title">Cheques ready to bank</string>
-    <string name="notif_cheques_body">%1$d cheque(s) are due today or overdue.</string>
+    <plurals name="notif_cheques_body">
+        <item quantity="one">%1$d cheque is due today or overdue.</item>
+        <item quantity="other">%1$d cheques are due today or overdue.</item>
+    </plurals>
     <string name="notif_plans_title">Instalment due</string>
-    <string name="notif_plans_body">%1$d payment plan(s) are due for a payment.</string>
+    <plurals name="notif_plans_body">
+        <item quantity="one">%1$d payment plan is due for a payment.</item>
+        <item quantity="other">%1$d payment plans are due for a payment.</item>
+    </plurals>
     <string name="notif_expiry_title">Stock expiring soon</string>
-    <string name="notif_expiry_body">%1$d item(s) expire within 60 days. Sell, discount or return them.</string>
+    <plurals name="notif_expiry_body">
+        <item quantity="one">%1$d item expires within 60 days. Sell, discount or return it.</item>
+        <item quantity="other">%1$d items expire within 60 days. Sell, discount or return them.</item>
+    </plurals>
     <string name="notif_backup_title">Backup reminder</string>
     <string name="notif_backup_body">Over a week since your last backup. Your records live only on this phone.</string>
     <string name="notif_backup_failed_title">Automatic backup failed</string>
@@ -1023,8 +1065,14 @@ You can change this any time from this screen.</string>
     <string name="voice_no_amount">No amount in that. Say the figure too.</string>
     <string name="voice_open_entry">Open entry</string>
     <string name="voice_which_party">%1$s — which customer?</string>
-    <string name="delete_parties_title">Delete %1$d customers?</string>
-    <string name="delete_parties_confirm">%1$d customers and all their entries will move to the Recycle Bin. You can restore them within 30 days.</string>
+    <plurals name="delete_parties_title">
+        <item quantity="one">Delete %1$d customer?</item>
+        <item quantity="other">Delete %1$d customers?</item>
+    </plurals>
+    <plurals name="delete_parties_confirm">
+        <item quantity="one">%1$d customer and all their entries will move to the Recycle Bin. You can restore them within 30 days.</item>
+        <item quantity="other">%1$d customers and all their entries will move to the Recycle Bin. You can restore them within 30 days.</item>
+    </plurals>
     <string name="delete_parties_owing">%1$d of them still have a balance — %2$s to collect, %3$s to pay. Removing them takes that off your totals; it does not settle it.</string>
     <string name="customer_qr">Customer QR</string>
     <string name="customer_qr_hint">Scan this in Roshan Khata to open this ledger. The code carries no name, number or balance.</string>

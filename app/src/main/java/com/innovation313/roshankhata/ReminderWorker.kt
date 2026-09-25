@@ -79,17 +79,17 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         if (here.cheques > 0) notify(
             ctx, ID_CHEQUES, ChequesActivity::class.java,
             ctx.getString(R.string.notif_cheques_title),
-            ctx.getString(R.string.notif_cheques_body, here.cheques)
+            ctx.resources.getQuantityString(R.plurals.notif_cheques_body, here.cheques, here.cheques)
         )
         if (here.plans > 0) notify(
             ctx, ID_PLANS, PlansActivity::class.java,
             ctx.getString(R.string.notif_plans_title),
-            ctx.getString(R.string.notif_plans_body, here.plans)
+            ctx.resources.getQuantityString(R.plurals.notif_plans_body, here.plans, here.plans)
         )
         if (here.expiring > 0) notify(
             ctx, ID_EXPIRY, ExpiringActivity::class.java,
             ctx.getString(R.string.notif_expiry_title),
-            ctx.getString(R.string.notif_expiry_body, here.expiring)
+            ctx.resources.getQuantityString(R.plurals.notif_expiry_body, here.expiring, here.expiring)
         )
 
         // EVERY OTHER SHOP. Until now the sweep saw only the open one, so a
@@ -126,17 +126,23 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             if (due.cheques > 0) notify(
                 ctx, ID_CHEQUES_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
                 ctx.getString(R.string.notif_cheques_title),
-                ctx.getString(R.string.notif_cheques_body_named, shop, due.cheques)
+                ctx.resources.getQuantityString(
+                    R.plurals.notif_cheques_body_named, due.cheques, shop, due.cheques
+                )
             )
             if (due.plans > 0) notify(
                 ctx, ID_PLANS_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
                 ctx.getString(R.string.notif_plans_title),
-                ctx.getString(R.string.notif_plans_body_named, shop, due.plans)
+                ctx.resources.getQuantityString(
+                    R.plurals.notif_plans_body_named, due.plans, shop, due.plans
+                )
             )
             if (due.expiring > 0) notify(
                 ctx, ID_EXPIRY_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
                 ctx.getString(R.string.notif_expiry_title),
-                ctx.getString(R.string.notif_expiry_body_named, shop, due.expiring)
+                ctx.resources.getQuantityString(
+                    R.plurals.notif_expiry_body_named, due.expiring, shop, due.expiring
+                )
             )
         }
 

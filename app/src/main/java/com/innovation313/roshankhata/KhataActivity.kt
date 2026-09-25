@@ -695,7 +695,9 @@ class KhataActivity : AppCompatActivity() {
         val owing = picked.count { Money.isNotZero(it.balance) }
 
         val message = buildString {
-            append(getString(R.string.delete_parties_confirm, picked.size))
+            append(resources.getQuantityString(
+                R.plurals.delete_parties_confirm, picked.size, picked.size
+            ))
             if (owing > 0) {
                 append("\n\n")
                 append(
@@ -710,7 +712,7 @@ class KhataActivity : AppCompatActivity() {
         }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.delete_parties_title, picked.size))
+            .setTitle(resources.getQuantityString(R.plurals.delete_parties_title, picked.size, picked.size))
             .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
@@ -1171,7 +1173,9 @@ class KhataActivity : AppCompatActivity() {
                 }.format(java.util.Date(last))
             )
             ageDays == 1L -> getString(R.string.summary_backup_yesterday)
-            else -> getString(R.string.summary_backup_days, ageDays)
+            else -> resources.getQuantityString(
+                R.plurals.summary_backup_days, ageDays.toInt(), ageDays.toInt()
+            )
         }
         val stale = ageDays < 0 || ageDays >= 7
 

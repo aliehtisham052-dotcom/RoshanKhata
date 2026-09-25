@@ -1073,7 +1073,9 @@ class PartyDetailActivity : AppCompatActivity() {
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_entry_title)
-            .setMessage(getString(R.string.delete_selected_entries_confirm, ids.size))
+            .setMessage(resources.getQuantityString(
+                R.plurals.delete_selected_entries_confirm, ids.size, ids.size
+            ))
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {

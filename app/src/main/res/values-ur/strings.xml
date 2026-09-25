@@ -41,7 +41,10 @@
     <string name="followup_title">وصولی</string>
     <string name="followup_subtitle">کس سے وصول کرنا ہے — سب سے پرانا پہلے، رقم ساتھ</string>
     <string name="followup_summary">%1$d گاہکوں کے ذمے آپ کا · کل %2$s</string>
-    <string name="followup_last_ago">آخری لین دین %1$d دن پہلے</string>
+    <plurals name="followup_last_ago">
+        <item quantity="one">آخری لین دین %1$d دن پہلے</item>
+        <item quantity="other">آخری لین دین %1$d دن پہلے</item>
+    </plurals>
     <string name="followup_today">آج لین دین ہوا</string>
     <string name="followup_empty">اس وقت کسی کے ذمے کچھ نہیں — سب ادا شدہ۔</string>
     <string name="coach_title_followup">وصولی</string>
@@ -107,7 +110,10 @@
     <string name="summary_backup_never">بیک اپ کبھی نہیں ہوا</string>
     <string name="summary_backup_time">بیک اپ ہوا %1$s</string>
     <string name="summary_backup_yesterday">بیک اپ کل ہوا</string>
-    <string name="summary_backup_days">بیک اپ %1$d دن پہلے</string>
+    <plurals name="summary_backup_days">
+        <item quantity="one">بیک اپ %1$d دن پہلے</item>
+        <item quantity="other">بیک اپ %1$d دن پہلے</item>
+    </plurals>
 
     <string name="name">نام</string>
     <string name="phone_optional">فون (اختیاری)</string>
@@ -152,7 +158,10 @@
     <string name="delete_entry_title">اندراج حذف کریں؟</string>
     <string name="delete_entry_confirm">یہ اندراج ری سائیکل بن میں چلا جائے گا۔ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
     <string name="select_entries_to_delete">حذف کرنے کے لیے اندراجات چنیں</string>
-    <string name="delete_selected_entries_confirm">%1$d چنی گئی اندراجات حذف کریں؟ یہ ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">%1$d چنی گئی انٹری حذف کریں؟ یہ ری سائیکل بن میں چلی جائے گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
+        <item quantity="other">%1$d چنی گئی اندراجات حذف کریں؟ یہ ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
+    </plurals>
     <string name="moved_to_bin">ری سائیکل بن میں منتقل ہو گیا</string>
     <string name="long_press_to_delete">پارٹی حذف کرنے کے لیے اسے دیر تک دبائیں</string>
 
@@ -306,8 +315,14 @@
     <string name="cheque_cancelled">منسوخ</string>
 
     <string name="due_today">آج واجب</string>
-    <string name="due_in_days">%1$d دن میں واجب</string>
-    <string name="overdue_by_days">%1$d دن گزر چکے</string>
+    <plurals name="due_in_days">
+        <item quantity="one">%1$d دن میں واجب</item>
+        <item quantity="other">%1$d دن میں واجب</item>
+    </plurals>
+    <plurals name="overdue_by_days">
+        <item quantity="one">%1$d دن گزر چکا</item>
+        <item quantity="other">%1$d دن گزر چکے</item>
+    </plurals>
     <string name="due_summary">%1$d چیک بینک لے جانے کے لیے تیار</string>
     <string name="due_summary_none">کچھ واجب نہیں</string>
     <string name="due_summary_pending">%1$d کلیئر ہونے کے منتظر</string>
@@ -540,9 +555,18 @@
     <string name="business_never_backed_up">کبھی بیک اپ نہیں ہوا</string>
     <string name="notif_backup_body_named">%1$s کا بیک اپ ایک ہفتے سے زیادہ عرصے سے نہیں ہوا۔ اس کا ریکارڈ صرف اسی فون پر ہے۔</string>
 
-    <string name="notif_cheques_body_named">%1$s: %2$d چیک آج واجب ہیں یا تاریخ گزر چکی ہے۔</string>
-    <string name="notif_plans_body_named">%1$s: %2$d ادائیگی پلان کی قسط واجب ہے۔</string>
-    <string name="notif_expiry_body_named">%1$s: %2$d اشیاء 60 دن میں ختم ہو رہی ہیں۔</string>
+    <plurals name="notif_cheques_body_named">
+        <item quantity="one">%1$s: %2$d چیک آج واجب ہے یا تاریخ گزر چکی ہے۔</item>
+        <item quantity="other">%1$s: %2$d چیک آج واجب ہیں یا تاریخ گزر چکی ہے۔</item>
+    </plurals>
+    <plurals name="notif_plans_body_named">
+        <item quantity="one">%1$s: %2$d ادائیگی پلان کی قسط واجب ہے۔</item>
+        <item quantity="other">%1$s: %2$d ادائیگی پلانوں کی قسط واجب ہے۔</item>
+    </plurals>
+    <plurals name="notif_expiry_body_named">
+        <item quantity="one">%1$s: %2$d شے 60 دن میں ختم ہو رہی ہے۔</item>
+        <item quantity="other">%1$s: %2$d اشیاء 60 دن میں ختم ہو رہی ہیں۔</item>
+    </plurals>
     <string name="filter_title">فلٹر</string>
     <string name="filter_account_label">کھاتہ</string>
     <string name="filter_type_label">قسم</string>
@@ -583,7 +607,10 @@
     <string name="qty_hint">مقدار</string>
     <string name="item_added">چیز شامل ہو گئی</string>
     <string name="no_items_yet">ابھی کوئی چیز شامل نہیں</string>
-    <string name="items_count">%1$d چیزیں</string>
+    <plurals name="items_count">
+        <item quantity="one">%1$d چیز</item>
+        <item quantity="other">%1$d چیزیں</item>
+    </plurals>
 
     <string name="bill_saved">بل محفوظ ہو گیا</string>
     <string name="bill_account_settled">ادا شدہ</string>
@@ -684,8 +711,14 @@
     <string name="expiring_subtitle">بیچیں، رعایت دیں، یا واپس کریں — جب تک وقت ہے</string>
     <string name="no_expiring">اگلے 60 دنوں میں کچھ ایکسپائر نہیں ہو رہا۔\n\nصرف وہی مال دیکھا جا سکتا ہے جس کی ایکسپائری درج ہو۔ بل پر وہ خانہ خالی چھوڑیں گے تو روشن کھاتہ خبردار نہیں کر سکے گا۔</string>
     <string name="expiring_note">صرف ایکسپائری درج شدہ مال یہاں آتا ہے۔ روشن کھاتہ صرف اسی سے خبردار کر سکتا ہے جو اسے بتایا گیا۔</string>
-    <string name="expired_days">%1$d دن پہلے ایکسپائر ہو چکا</string>
-    <string name="expires_days">%1$d دن میں ایکسپائر ہو گا</string>
+    <plurals name="expired_days">
+        <item quantity="one">%1$d دن پہلے ایکسپائر ہو چکا</item>
+        <item quantity="other">%1$d دن پہلے ایکسپائر ہو چکا</item>
+    </plurals>
+    <plurals name="expires_days">
+        <item quantity="one">%1$d دن میں ایکسپائر ہو گا</item>
+        <item quantity="other">%1$d دن میں ایکسپائر ہو گا</item>
+    </plurals>
     <string name="expires_today">آج ایکسپائر ہو رہا ہے</string>
     <string name="batch_label">بیچ: %1$s</string>
     <string name="batch_none">کوئی بیچ نمبر درج نہیں</string>
@@ -865,11 +898,20 @@
     <string name="notif_channel_name">یاد دہانیاں</string>
     <string name="notif_channel_desc">چیک، قسطیں، ایکسپائر ہوتا مال اور بیک اپ کی یاد دہانی</string>
     <string name="notif_cheques_title">چیک بینک میں لگانے کے لیے تیار</string>
-    <string name="notif_cheques_body">%1$d چیک آج یا پہلے کے واجب ہیں۔</string>
+    <plurals name="notif_cheques_body">
+        <item quantity="one">%1$d چیک آج یا پہلے کا واجب ہے۔</item>
+        <item quantity="other">%1$d چیک آج یا پہلے کے واجب ہیں۔</item>
+    </plurals>
     <string name="notif_plans_title">قسط واجب ہے</string>
-    <string name="notif_plans_body">%1$d ادائیگی منصوبوں کی قسط کا وقت ہو گیا ہے۔</string>
+    <plurals name="notif_plans_body">
+        <item quantity="one">%1$d ادائیگی منصوبے کی قسط کا وقت ہو گیا ہے۔</item>
+        <item quantity="other">%1$d ادائیگی منصوبوں کی قسط کا وقت ہو گیا ہے۔</item>
+    </plurals>
     <string name="notif_expiry_title">مال جلد ایکسپائر ہو گا</string>
-    <string name="notif_expiry_body">%1$d چیزیں 60 دن میں ایکسپائر ہوں گی۔ بیچیں، رعایت دیں یا واپس کریں۔</string>
+    <plurals name="notif_expiry_body">
+        <item quantity="one">%1$d چیز 60 دن میں ایکسپائر ہو گی۔ بیچیں، رعایت دیں یا واپس کریں۔</item>
+        <item quantity="other">%1$d چیزیں 60 دن میں ایکسپائر ہوں گی۔ بیچیں، رعایت دیں یا واپس کریں۔</item>
+    </plurals>
     <string name="notif_backup_title">بیک اپ کی یاد دہانی</string>
     <string name="notif_backup_body">آخری بیک اپ کو ہفتے سے زیادہ ہو گیا۔ آپ کا ریکارڈ صرف اسی فون پر ہے۔</string>
     <string name="notif_backup_failed_title">خودکار بیک اپ ناکام</string>
@@ -982,8 +1024,14 @@
     <string name="voice_no_amount">اس میں رقم نہیں تھی۔ عدد بھی کہیں۔</string>
     <string name="voice_open_entry">اندراج کھولیں</string>
     <string name="voice_which_party">%1$s — کون سا گاہک؟</string>
-    <string name="delete_parties_title">%1$d گاہک حذف کریں؟</string>
-    <string name="delete_parties_confirm">%1$d گاہک اور اُن کی تمام انٹریاں ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
+    <plurals name="delete_parties_title">
+        <item quantity="one">%1$d گاہک حذف کریں؟</item>
+        <item quantity="other">%1$d گاہک حذف کریں؟</item>
+    </plurals>
+    <plurals name="delete_parties_confirm">
+        <item quantity="one">%1$d گاہک اور اُس کی تمام انٹریاں ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
+        <item quantity="other">%1$d گاہک اور اُن کی تمام انٹریاں ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
+    </plurals>
     <string name="delete_parties_owing">اِن میں سے %1$d کا حساب باقی ہے — %2$s لینے ہیں، %3$s دینے ہیں۔ ہٹانے سے یہ آپ کے کل میزان سے نکل جائے گا، حساب ختم نہیں ہوگا۔</string>
     <string name="customer_qr">گاہک کا کیو آر</string>
     <string name="customer_qr_hint">روشن کھاتہ میں اسکین کریں تو یہ کھاتہ کھل جائے گا۔ کوڈ میں نہ نام ہے، نہ نمبر، نہ حساب۔</string>
