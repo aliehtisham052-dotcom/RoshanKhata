@@ -141,6 +141,29 @@ jobs:
                 done
           fi
 
+      # The numbers, pass or fail, as annotations: those come back through the
+      # REST API even when log blobs and artifacts do not, so "green" can be
+      # checked for what it actually covered instead of taken on trust.
+      - name: Publish the result
+        if: always()
+        run: |
+          tests=0; failed=0; skipped=0
+          for f in $(find app/build/outputs/androidTest-results -name 'TEST-*.xml' 2>/dev/null); do
+            t=$(grep -o 'tests="[0-9]*"' "$f" | head -1 | tr -dc '0-9')
+            x=$(grep -o 'failures="[0-9]*"' "$f" | head -1 | tr -dc '0-9')
+            k=$(grep -o 'skipped="[0-9]*"' "$f" | head -1 | tr -dc '0-9')
+            tests=$((tests + ${t:-0})); failed=$((failed + ${x:-0})); skipped=$((skipped + ${k:-0}))
+          done
+          echo "::notice::On-device tests: $tests run, $failed failed, $skipped skipped"
+          if [ -f /tmp/monkey_output.txt ]; then
+            injected=$(grep -o 'Events injected: [0-9]*' /tmp/monkey_output.txt | tail -1 | tr -dc '0-9')
+            crashes=$(grep -c '// CRASH' /tmp/monkey_output.txt)
+            anrs=$(grep -c 'NOT RESPONDING' /tmp/monkey_output.txt)
+            echo "::notice::Monkey: ${injected:-0} events injected, $crashes crashes, $anrs ANR reports"
+          else
+            echo "::notice::Monkey: did not run"
+          fi
+
       - name: Upload the test report
         if: always()
         uses: actions/upload-artifact@v6
