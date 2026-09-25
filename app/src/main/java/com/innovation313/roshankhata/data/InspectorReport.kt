@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.ui.Format
 import java.io.File
 import java.io.FileOutputStream
@@ -160,10 +161,10 @@ object InspectorReport {
             }
             .map { p ->
                 p.name to listOfNotNull(
-                    "company".takeIf { p.company.isNullOrBlank() },
-                    "technical name".takeIf { p.technicalName.isNullOrBlank() },
-                    "formulation".takeIf { p.formulation.isNullOrBlank() },
-                    "Reg#".takeIf { p.registrationNumber.isNullOrBlank() }
+                    context.getString(R.string.pdf_insp_miss_company).takeIf { p.company.isNullOrBlank() },
+                    context.getString(R.string.pdf_insp_miss_technical).takeIf { p.technicalName.isNullOrBlank() },
+                    context.getString(R.string.pdf_insp_miss_form).takeIf { p.formulation.isNullOrBlank() },
+                    context.getString(R.string.pdf_insp_miss_reg).takeIf { p.registrationNumber.isNullOrBlank() }
                 ).joinToString(", ")
             }
 
@@ -173,7 +174,7 @@ object InspectorReport {
         // worse than one that admits what it could not label. Untouched products
         // are left out, matching section 1.
         val productsById = products.associateBy { it.id }
-        val noCompany = "\u2014 company not recorded"
+        val noCompany = context.getString(R.string.pdf_insp_no_company)
         val companyStock = stock
             .filter { !it.isUntouched }
             .groupBy { productsById[it.productId]?.company?.trim()?.takeIf { c -> c.isNotEmpty() } ?: noCompany }
@@ -282,7 +283,7 @@ object InspectorReport {
         var pageNo = 1
 
         val brandLogo = PdfBranding.logo(context)
-        val businessName = d.businessName ?: "Roshan Khata"
+        val businessName = d.businessName ?: context.getString(R.string.app_name)
 
         /**
          * The full masthead on page 1, a slim one after it.
@@ -302,24 +303,27 @@ object InspectorReport {
             if (!first) {
                 canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 34f, navyFill)
                 canvas.drawText(businessName, MARGIN, 22f, tagline)
-                val cont = "Stock & Compliance Register (continued)"
+                val cont = context.getString(R.string.pdf_insp_title_cont)
                 canvas.drawText(cont, PAGE_W - MARGIN - tagline.measureText(cont), 22f, tagline)
                 return 58f
             }
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 88f, navyFill)
             canvas.drawText(businessName, MARGIN, 26f, title)
-            canvas.drawText("Stock & Compliance Register", MARGIN, 44f, tagline)
+            canvas.drawText(context.getString(R.string.pdf_insp_title), MARGIN, 44f, tagline)
             // The shop's own identity lines, because this is the first thing
             // asked for and the owner should not have to write them on by hand.
             val identity = buildString {
                 d.businessAddress?.let { append(it) }
                 d.strn?.let {
                     if (isNotEmpty()) append(" \u00B7 ")
-                    append("NTN/STRN: $it")
+                    append(context.getString(R.string.pdf_insp_ntn, it))
                 }
             }
             if (identity.isNotEmpty()) canvas.drawText(identity, MARGIN, 60f, tagline)
-            canvas.drawText("Generated ${dateFmt.format(Date())}", MARGIN, 78f, tagline)
+            canvas.drawText(
+                context.getString(R.string.pdf_insp_generated, dateFmt.format(Date())),
+                MARGIN, 78f, tagline
+            )
             return 112f
         }
 
@@ -342,9 +346,9 @@ object InspectorReport {
                 footerX += size + 6f
             }
             val label = if (totalPages != null) {
-                "$businessName \u00B7 Page $pageNo of $totalPages"
+                context.getString(R.string.pdf_insp_footer_of, businessName, pageNo, totalPages)
             } else {
-                "$businessName \u00B7 Page $pageNo"
+                context.getString(R.string.pdf_insp_footer, businessName, pageNo)
             }
             canvas.drawText(label, footerX, fy, muted)
         }
@@ -468,12 +472,15 @@ object InspectorReport {
         // ---- The warning first, same placement and reason as the other two ----
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 40f, warnFill)
         canvas.drawText(
-            "This is a register to read and print \u2014 it is NOT a backup.",
+            context.getString(R.string.pdf_insp_not_backup),
             MARGIN + 10f, y + 16f,
             Paint(warnText).apply { isFakeBoldText = true }
         )
         canvas.drawText(
-            "Roshan Khata cannot restore your records from a PDF.",
+            context.getString(
+                R.string.pdf_rep_not_backup_restore,
+                context.getString(R.string.app_name)
+            ),
             MARGIN + 10f, y + 30f, warnText
         )
         y += 52f
@@ -486,22 +493,22 @@ object InspectorReport {
         // not "none".
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 52f, warnFill)
         canvas.drawText(
-            "How to read this: quantities are \u201Cnot more than\u201D figures.",
+            context.getString(R.string.pdf_insp_how_to_read),
             MARGIN + 10f, y + 15f,
             Paint(warnText).apply { isFakeBoldText = true }
         )
         canvas.drawText(
-            "A sale not tagged to a batch does not reduce that batch here, so stock",
+            context.getString(R.string.pdf_insp_how_1),
             MARGIN + 10f, y + 28f, warnText
         )
         canvas.drawText(
-            "shown can be higher than the shelf. A dash means never recorded.",
+            context.getString(R.string.pdf_insp_how_2),
             MARGIN + 10f, y + 41f, warnText
         )
         y += 66f
 
         // ---- Summary ----
-        canvas.drawText("Summary", MARGIN, y, section)
+        canvas.drawText(context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
         y += 20f
 
         fun line(label: String, value: String, paint: Paint = body) {
@@ -511,12 +518,16 @@ object InspectorReport {
             y += 16f
         }
 
-        line("Products on the books", d.stock.size.toString())
-        line("Batches in stock", d.batches.size.toString(), bodyBold)
-        line("Expired, still in stock", d.expired.size.toString(), if (d.expired.isEmpty()) body else red)
-        line("Expiring within ${d.windowDays} days", d.expiringSoon.size.toString(), if (d.expiringSoon.isEmpty()) body else red)
-        line("In stock with no expiry recorded", d.noExpiryCount.toString())
-        line("Products missing label details", d.incompleteProducts.size.toString())
+        line(context.getString(R.string.pdf_insp_sum_products), d.stock.size.toString())
+        line(context.getString(R.string.pdf_insp_sum_batches), d.batches.size.toString(), bodyBold)
+        line(context.getString(R.string.pdf_insp_sum_expired), d.expired.size.toString(), if (d.expired.isEmpty()) body else red)
+        line(
+            context.getString(R.string.pdf_insp_sum_expiring, d.windowDays),
+            d.expiringSoon.size.toString(),
+            if (d.expiringSoon.isEmpty()) body else red
+        )
+        line(context.getString(R.string.pdf_insp_sum_no_expiry), d.noExpiryCount.toString())
+        line(context.getString(R.string.pdf_insp_sum_incomplete), d.incompleteProducts.size.toString())
 
         y += 10f
         canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
@@ -532,15 +543,18 @@ object InspectorReport {
         // the conditions is numbered 1..n with no gap.
         var sectionNo = 0
         fun sec(name: String): String { sectionNo++; return "$sectionNo. $name" }
+        // The number is already inside the heading, so this only adds the word.
+        fun cont(heading: String): String =
+            context.getString(R.string.pdf_insp_sec_cont, heading)
 
         // ---- 1. Current stock, product by product ----
-        val s1 = sec("Current stock")
+        val s1 = sec(context.getString(R.string.pdf_insp_sec_current))
         canvas.drawText(s1, MARGIN, y, section)
         y += 18f
 
         val traded = d.stock.filter { !it.isUntouched }
         if (traded.isEmpty()) {
-            canvas.drawText("No stock movement recorded yet.", MARGIN, y, mutedBig)
+            canvas.drawText(context.getString(R.string.pdf_insp_no_movement), MARGIN, y, mutedBig)
             y += 18f
         } else {
             // 190 + 130 + 150 + 70 + 110 + 112 = 762, the full usable width.
@@ -548,12 +562,12 @@ object InspectorReport {
             // the two that genuinely run long; formulation is EC/WP/SL/WG and
             // never needs more than a few characters.
             val cols = listOf(
-                Col("PRODUCT", 190f),
-                Col("COMPANY", 130f),
-                Col("TECHNICAL NAME", 150f),
-                Col("FORM.", 70f),
-                Col("REG#", 110f),
-                Col("ON HAND", 112f, right = true)
+                Col(context.getString(R.string.pdf_insp_col_product), 190f),
+                Col(context.getString(R.string.pdf_insp_col_company), 130f),
+                Col(context.getString(R.string.pdf_insp_col_technical), 150f),
+                Col(context.getString(R.string.pdf_insp_col_form), 70f),
+                Col(context.getString(R.string.pdf_insp_col_reg), 110f),
+                Col(context.getString(R.string.pdf_insp_col_onhand), 112f, right = true)
             )
             var lefts = tableHead(cols)
             val rowH = 20f
@@ -561,7 +575,7 @@ object InspectorReport {
             traded.forEachIndexed { index, s ->
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("$s1 (continued)", MARGIN, y, section)
+                    canvas.drawText(cont(s1), MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -578,7 +592,7 @@ object InspectorReport {
                     qtyText = Format.qty(onHand, s.unit)
                     qtyPaint = if (onHand > 0) body else mutedBig
                 } else {
-                    qtyText = "units differ"
+                    qtyText = context.getString(R.string.pdf_insp_units_differ)
                     qtyPaint = mutedBig
                 }
 
@@ -599,7 +613,11 @@ object InspectorReport {
                 // This is the one case that still needs a second line, because
                 // it is two numbers in one column rather than a missing one.
                 if (onHand == null) {
-                    val split = "in ${Format.qty(s.boughtQty + s.returnedQty, s.boughtUnit)} \u00B7 out ${Format.qty(s.soldQty, s.soldUnit)}"
+                    val split = context.getString(
+                        R.string.pdf_insp_in_out,
+                        Format.qty(s.boughtQty + s.returnedQty, s.boughtUnit),
+                        Format.qty(s.soldQty, s.soldUnit)
+                    )
                     val t = clip(split, muted, cols.last().w + cols[4].w - cellPad * 2)
                     canvas.drawText(t, PAGE_W - MARGIN - cellPad - muted.measureText(t), y + 10f, muted)
                     y += 13f
@@ -612,32 +630,32 @@ object InspectorReport {
         // there are no batches it is the heading plus one line of prose.
         startSection(if (d.batches.isEmpty()) 48f else 88f)
 
-        val s2 = sec("Batch-wise stock")
+        val s2 = sec(context.getString(R.string.pdf_insp_sec_batches))
         canvas.drawText(s2, MARGIN, y, section)
         y += 14f
         canvas.drawText(
-            "Every batch with stock left, oldest expiry first, with the bill it came on.",
+            context.getString(R.string.pdf_insp_batches_note),
             MARGIN, y, muted
         )
         y += 16f
 
         if (d.batches.isEmpty()) {
             canvas.drawText(
-                "No batches in stock. Batch and expiry are recorded on a supplier bill.",
+                context.getString(R.string.pdf_insp_no_batches),
                 MARGIN, y, mutedBig
             )
             y += 18f
         } else {
             // 140 + 80 + 100 + 130 + 70 + 78 + 82 + 82 = 762.
             val cols = listOf(
-                Col("PRODUCT", 140f),
-                Col("BATCH", 80f),
-                Col("COMPANY", 100f),
-                Col("SUPPLIER", 130f),
-                Col("BILL", 70f),
-                Col("BILL DATE", 78f),
-                Col("EXPIRY", 82f, right = true),
-                Col("LEFT", 82f, right = true)
+                Col(context.getString(R.string.pdf_insp_col_product), 140f),
+                Col(context.getString(R.string.pdf_insp_col_batch), 80f),
+                Col(context.getString(R.string.pdf_insp_col_company), 100f),
+                Col(context.getString(R.string.pdf_insp_col_supplier), 130f),
+                Col(context.getString(R.string.pdf_insp_col_bill), 70f),
+                Col(context.getString(R.string.pdf_insp_col_bill_date), 78f),
+                Col(context.getString(R.string.pdf_insp_col_expiry), 82f, right = true),
+                Col(context.getString(R.string.pdf_insp_col_left), 82f, right = true)
             )
             var lefts = tableHead(cols)
             val rowH = 20f
@@ -645,7 +663,7 @@ object InspectorReport {
             d.batches.forEachIndexed { index, b ->
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("$s2 (continued)", MARGIN, y, section)
+                    canvas.drawText(cont(s2), MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -656,7 +674,7 @@ object InspectorReport {
                 val exp = b.expiryDate
                 val expiryText = when {
                     exp == null -> null
-                    b.hasExpired -> "EXPIRED"
+                    b.hasExpired -> context.getString(R.string.pdf_insp_expired)
                     else -> dayFmt.format(Date(exp))
                 }
                 val expiryPaint = when {
@@ -687,24 +705,24 @@ object InspectorReport {
         // all-clear wording is two 16pt lines instead of the table.
         startSection(if (d.expired.isEmpty() && d.expiringSoon.isEmpty()) 66f else 90f)
 
-        val s3 = sec("Expiry report")
+        val s3 = sec(context.getString(R.string.pdf_insp_sec_expiry))
         canvas.drawText(s3, MARGIN, y, section)
         y += 14f
         canvas.drawText(
-            "Expired stock first, then what expires within ${d.windowDays} days.",
+            context.getString(R.string.pdf_insp_expiry_note, d.windowDays),
             MARGIN, y, muted
         )
         y += 18f
 
         if (d.expired.isEmpty() && d.expiringSoon.isEmpty()) {
             canvas.drawText(
-                "Nothing expired and nothing expiring within ${d.windowDays} days.",
+                context.getString(R.string.pdf_insp_nothing_expiring, d.windowDays),
                 MARGIN, y, mutedBig
             )
             y += 16f
             if (d.noExpiryCount > 0) {
                 canvas.drawText(
-                    "${d.noExpiryCount} batch(es) in stock carry no expiry date, so they cannot be checked.",
+                    context.getString(R.string.pdf_insp_no_expiry_note, d.noExpiryCount),
                     MARGIN, y, muted
                 )
                 y += 16f
@@ -712,12 +730,12 @@ object InspectorReport {
         } else {
             // 170 + 90 + 150 + 90 + 150 + 112 = 762.
             val cols = listOf(
-                Col("PRODUCT", 170f),
-                Col("BATCH", 90f),
-                Col("SUPPLIER", 150f),
-                Col("EXPIRY", 90f),
-                Col("STATUS", 150f),
-                Col("LEFT", 112f, right = true)
+                Col(context.getString(R.string.pdf_insp_col_product), 170f),
+                Col(context.getString(R.string.pdf_insp_col_batch), 90f),
+                Col(context.getString(R.string.pdf_insp_col_supplier), 150f),
+                Col(context.getString(R.string.pdf_insp_col_expiry), 90f),
+                Col(context.getString(R.string.pdf_insp_col_status), 150f),
+                Col(context.getString(R.string.pdf_insp_col_left), 112f, right = true)
             )
             var lefts = tableHead(cols)
             val rowH = 20f
@@ -725,7 +743,7 @@ object InspectorReport {
             fun expiryRow(index: Int, b: InspectorBatch) {
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("$s3 (continued)", MARGIN, y, section)
+                    canvas.drawText(cont(s3), MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -733,8 +751,10 @@ object InspectorReport {
 
                 val days = b.daysLeft
                 val status = when {
-                    b.hasExpired -> "EXPIRED" + (days?.let { " \u00B7 ${-it} days ago" } ?: "")
-                    else -> "${days ?: 0} days left"
+                    b.hasExpired -> days?.let {
+                        context.getString(R.string.pdf_insp_expired_ago, -it)
+                    } ?: context.getString(R.string.pdf_insp_expired)
+                    else -> context.getString(R.string.pdf_insp_days_left, days ?: 0)
                 }
 
                 tableRow(
@@ -764,11 +784,11 @@ object InspectorReport {
             // Heading 14 + description 18, grey head 18, two 18pt rows.
             startSection(86f)
 
-            val s4 = sec("Label details still missing")
+            val s4 = sec(context.getString(R.string.pdf_insp_sec_missing))
             canvas.drawText(s4, MARGIN, y, section)
             y += 14f
             canvas.drawText(
-                "Each product below is in stock with one or more label fields never recorded.",
+                context.getString(R.string.pdf_insp_missing_note),
                 MARGIN, y, muted
             )
             y += 18f
@@ -778,8 +798,8 @@ object InspectorReport {
             // the register still wanted. The second column answers exactly
             // that, so the page doubles as the list of what to go and type.
             val cols4 = listOf(
-                Col("PRODUCT", 300f),
-                Col("STILL NOT RECORDED", 462f)
+                Col(context.getString(R.string.pdf_insp_col_product), 300f),
+                Col(context.getString(R.string.pdf_insp_col_still_missing), 462f)
             )
             var lefts4 = tableHead(cols4)
             val rowH4 = 18f
@@ -787,7 +807,7 @@ object InspectorReport {
             d.incompleteProducts.take(40).forEachIndexed { index, (name, missing) ->
                 if (y + rowH4 > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("$s4 (continued)", MARGIN, y, section)
+                    canvas.drawText(cont(s4), MARGIN, y, section)
                     y += 18f
                     lefts4 = tableHead(cols4)
                 }
@@ -796,7 +816,8 @@ object InspectorReport {
             }
             if (d.incompleteProducts.size > 40) {
                 canvas.drawText(
-                    "\u2026 and ${d.incompleteProducts.size - 40} more.", MARGIN + cellPad, y + 12f, mutedBig
+                    context.getString(R.string.pdf_insp_and_more, d.incompleteProducts.size - 40),
+                    MARGIN + cellPad, y + 12f, mutedBig
                 )
                 y += 16f
             }
@@ -814,7 +835,7 @@ object InspectorReport {
             // company with no stock, which is worse than a plain orphan.
             startSection(92f)
 
-            val s5 = sec("Company-wise stock")
+            val s5 = sec(context.getString(R.string.pdf_insp_sec_company))
             canvas.drawText(s5, MARGIN, y, section)
             y += 18f
 
@@ -823,9 +844,9 @@ object InspectorReport {
             // takes its place, because within ONE brand that is what tells two
             // products apart on an inspector's list.
             val cols = listOf(
-                Col("PRODUCT", 330f),
-                Col("TECHNICAL NAME", 250f),
-                Col("ON HAND", 182f, right = true)
+                Col(context.getString(R.string.pdf_insp_col_product), 330f),
+                Col(context.getString(R.string.pdf_insp_col_technical), 250f),
+                Col(context.getString(R.string.pdf_insp_col_onhand), 182f, right = true)
             )
             var lefts = tableHead(cols)
             val rowH = 18f
@@ -833,7 +854,7 @@ object InspectorReport {
             d.companyStock.forEach { (company, list) ->
                 if (y + 20f + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("$s5 (continued)", MARGIN, y, section)
+                    canvas.drawText(cont(s5), MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -848,19 +869,21 @@ object InspectorReport {
                 // The rows under it are indented past the band's label, which
                 // is the second half of the same signal.
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 20f, groupFill)
-                canvas.drawText("COMPANY", MARGIN + cellPad, y + 13.5f, groupTag)
+                canvas.drawText(context.getString(R.string.pdf_insp_company_tag), MARGIN + cellPad, y + 13.5f, groupTag)
                 canvas.drawText(
                     clip(company, groupName, 420f),
                     MARGIN + cellPad + 52f, y + 13.5f, groupName
                 )
-                val count = if (list.size == 1) "1 product" else "${list.size} products"
+                val count = context.resources.getQuantityString(
+                    R.plurals.pdf_insp_products, list.size, list.size
+                )
                 canvas.drawText(count, PAGE_W - MARGIN - cellPad - muted.measureText(count), y + 13.5f, muted)
                 y += 20f
 
                 list.forEach { s ->
                     if (y + rowH > PAGE_H - 60f) {
                         newPage()
-                        canvas.drawText("$s5 (continued)", MARGIN, y, section)
+                        canvas.drawText(cont(s5), MARGIN, y, section)
                         y += 18f
                         lefts = tableHead(cols)
                     }
@@ -871,7 +894,7 @@ object InspectorReport {
                         qtyText = Format.qty(onHand, s.unit)
                         qtyPaint = if (onHand > 0) body else mutedBig
                     } else {
-                        qtyText = "units differ"
+                        qtyText = context.getString(R.string.pdf_insp_units_differ)
                         qtyPaint = mutedBig
                     }
                     tableRow(
@@ -899,10 +922,11 @@ object InspectorReport {
         if (y > PAGE_H - 160f) newPage() else y += 24f
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
         canvas.drawLine(PAGE_W - MARGIN - 180f, y + 24f, PAGE_W - MARGIN, y + 24f, rule)
-        canvas.drawText("Dealer's signature", MARGIN, y + 38f, muted)
+        canvas.drawText(context.getString(R.string.pdf_insp_dealer_sign), MARGIN, y + 38f, muted)
+        val inspectorSign = context.getString(R.string.pdf_insp_inspector_sign)
         canvas.drawText(
-            "Inspector's signature",
-            PAGE_W - MARGIN - muted.measureText("Inspector's signature"),
+            inspectorSign,
+            PAGE_W - MARGIN - muted.measureText(inspectorSign),
             y + 38f,
             muted
         )
