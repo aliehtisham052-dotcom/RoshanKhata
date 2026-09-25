@@ -31,10 +31,6 @@ android {
 
     defaultConfig {
         applicationId = "com.innovation313.roshankhata"
-        // Runs the instrumented tests in app/src/androidTest. This line has no
-        // effect on the APK or the bundle: the runner is packaged only into the
-        // separate test APK the emulator installs alongside it.
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 24
         // 36 is Google Play's floor for new apps from 31 Aug 2026. Raised
         // last, after the window-inset handling in ScreenInsets had been
@@ -68,6 +64,17 @@ android {
                 keyAlias = System.getenv("RELEASE_KEY_ALIAS")
                 keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
             }
+        }
+    }
+
+    // The Android-facing tests (app launch, the balance SUM in real SQLite, the
+    // backup round trip through org.json) run under Robolectric in the ordinary
+    // unit-test step, so they need the app's merged manifest, theme and layouts
+    // on the test classpath — without this an Activity cannot even inflate.
+    // Test-only: nothing here reaches the APK or the bundle.
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
         }
     }
 
@@ -239,11 +246,13 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
 
-    // Instrumented tests only — androidTestImplementation is a separate
-    // configuration from implementation, so none of this is compiled into the
-    // app the owner installs. Versions are the ones Google's own AndroidX Test
-    // setup page lists.
-    androidTestImplementation("androidx.test:core-ktx:1.7.0")
-    androidTestImplementation("androidx.test:runner:1.7.0")
-    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    // Robolectric: the Android framework simulated inside the JVM, so tests that
+    // need an Activity, SQLite or org.json run in the same unit-test step as the
+    // rest — no emulator. testImplementation only; none of it is compiled into
+    // the app. 4.16 supports SDK 23-36; the tests run at SDK 34, pinned in
+    // src/test/resources/robolectric.properties, because 36 needs JDK 21 and CI
+    // builds with JDK 17.
+    testImplementation("org.robolectric:robolectric:4.16")
+    testImplementation("androidx.test:core-ktx:1.7.0")
+    testImplementation("androidx.test.ext:junit:1.3.0")
 }

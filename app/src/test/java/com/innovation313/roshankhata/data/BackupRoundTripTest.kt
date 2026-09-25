@@ -19,13 +19,13 @@ import org.junit.runner.RunWith
  * by hand; a backup that parses but comes back short cannot, and the owner
  * finds out at the worst moment — after a lost phone, with the old one gone.
  *
- * It has to run on a device because both halves are device code: the SQL that
- * reads every table, and org.json, which is an Android class with no
- * behaviour on a plain JVM. So this path could not be tested at all until
- * now.
+ * Both halves are Android code: the SQL that reads every table, and org.json,
+ * which on a plain JVM is only a stub that throws. Under Robolectric both are
+ * real — native SQLite, and the Android framework's own org.json — so this
+ * path, which could not be tested at all before, now runs on every push.
  *
  * Two in-memory databases stand in for two phones — the old one and the new
- * one. Neither touches the real ledger on the device running the test.
+ * one. Neither is ever written anywhere.
  */
 @RunWith(AndroidJUnit4::class)
 class BackupRoundTripTest {

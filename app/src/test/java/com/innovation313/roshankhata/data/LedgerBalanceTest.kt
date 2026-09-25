@@ -14,18 +14,17 @@ import org.junit.runner.RunWith
  * A customer's balance, computed by SQLite itself.
  *
  * The balance is the one number in this app that must never be wrong, and it
- * is not computed in Kotlin — it is a SUM inside a Room @Query. The unit
- * tests cannot reach it: Room generates that code at build time and it needs
- * a real SQLite engine to run, which only a device has. So the arithmetic
- * the owner trusts has been checked by hand, on a phone, and never by the
- * build.
+ * is not computed in Kotlin — it is a SUM inside a Room @Query. Room generates
+ * that code at build time and it needs a real SQLite engine to run. Robolectric
+ * supplies one (its native SQLite mode is the actual SQLite library, not an
+ * imitation), so the arithmetic the owner trusts is now checked by the build
+ * on every push instead of by hand on a phone.
  *
  * The database here is IN-MEMORY: it exists only for the length of this test
- * and is never written to disk, so nothing this file does can touch the real
- * ledger on the device it runs on.
+ * and is never written anywhere.
  */
 @RunWith(AndroidJUnit4::class)
-class LedgerBalanceOnDeviceTest {
+class LedgerBalanceTest {
 
     private lateinit var db: KhataDatabase
     private lateinit var dao: KhataDao
