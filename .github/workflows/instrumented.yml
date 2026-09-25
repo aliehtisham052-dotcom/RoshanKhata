@@ -24,15 +24,12 @@ concurrency:
 
 jobs:
   instrumented:
-    # 22.04, NOT the 24.04 the other two workflows pin.
-    #
-    # Those build an APK and a bundle, where the runner's Android SDK is what
-    # matters. This one needs an EMULATOR, and android-emulator-runner has
-    # long-standing AVD trouble on 24.04 (their issues #400, #409, #414,
-    # #415). Measured here rather than assumed: the emulator step died at 78
-    # seconds without ever reaching gradle, while the compile step on the same
-    # runner passed in 172.
-    runs-on: ubuntu-22.04
+    # Back on 24.04, with the other workflows. 22.04 was tried on the theory
+    # that the AVD trouble was the runner; it failed the same way, which ruled
+    # the runner out. The very first run of this workflow booted an emulator
+    # here perfectly well — its error was a missing gradlew, which only a
+    # RUNNING emulator could have reported.
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
 
     steps:
@@ -96,8 +93,18 @@ jobs:
           # an older image boots faster and more reliably on CI. minSdk here
           # is 24, so this is also nearer the oldest phone that runs the app
           # than the newest.
-          api-level: 29
+          # Back to the image that demonstrably worked. Simplifying this to
+          # api-level 29 with the default target was my own mistake and it
+          # cost three runs: API 29 has no plain x86_64 system image, so the
+          # AVD could not be created at all and the emulator step died in
+          # 78-93 seconds without ever starting gradle — which then read as
+          # "the emulator is broken" when the truth was "I asked for an image
+          # that does not exist". The first run, with exactly these four
+          # lines, got as far as running the script.
+          api-level: 30
+          target: google_apis
           arch: x86_64
+          profile: pixel_2
           # No window, no audio, no boot animation: nothing here looks at the
           # screen, and each of those is a way for a headless runner to hang.
           emulator-options: >-
