@@ -52,6 +52,28 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # Before any emulator: do these tests even COMPILE? Three runs failed
+      # inside the emulator step with nothing readable, and "my test is wrong"
+      # and "the emulator did not start" look identical from outside. This
+      # takes a minute, needs no device, and tells the two apart.
+      - name: Compile the on-device tests
+        run: |
+          set +e
+          gradle assembleDebugAndroidTest --no-daemon --stacktrace 2>&1 \
+            | tee /tmp/compile_output.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: Publish compile errors
+        if: failure()
+        run: |
+          if [ ! -f /tmp/compile_output.txt ]; then exit 0; fi
+          grep -iE "^e: |error:|FAILURE:|Caused by|Unresolved reference|Could not (find|resolve)" \
+            /tmp/compile_output.txt | head -25 \
+            | while IFS= read -r line; do
+                clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                echo "::error::$clean"
+              done
+
       - name: Run the on-device tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -60,10 +82,8 @@ jobs:
           # an older image boots faster and more reliably on CI. minSdk here
           # is 24, so this is also nearer the oldest phone that runs the app
           # than the newest.
-          api-level: 30
-          target: google_apis
+          api-level: 29
           arch: x86_64
-          profile: pixel_2
           # No window, no audio, no boot animation: nothing here looks at the
           # screen, and each of those is a way for a headless runner to hang.
           emulator-options: >-
