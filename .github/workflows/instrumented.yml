@@ -1,13 +1,27 @@
-name: On-device tests
+name: On-device tests (compile)
 
-# Deliberately its OWN workflow, not a job added to build.yml.
+# What this DOES check: that everything in app/src/androidTest compiles
+# against the app. A test that no longer matches the code it tests — a renamed
+# DAO method, a changed entity field — fails here, on every push, in about
+# three minutes and with no device involved.
 #
-# build.yml builds the APK the owner installs and publishes it to Releases;
-# aab.yml builds the bundle for Play. An emulator takes ten to fifteen minutes
-# and can fail for reasons that have nothing to do with this app — a cold AVD,
-# a runner without KVM, a flaky boot. Sitting in either of those workflows it
-# could hold up or fail a build that is perfectly good. Here it reports on its
-# own, beside them, and neither waits for it.
+# What it does NOT yet do: RUN those tests. Six attempts at an emulator on
+# GitHub's runners produced six red ticks and no verdict, so that half is
+# parked rather than left failing forever and teaching everyone to ignore a
+# red tick. The tests themselves are written, compile, and can be run on a
+# real phone at any time with:
+#
+#     gradle connectedDebugAndroidTest
+#
+# from a machine with a device or emulator attached. Whoever picks the CI side
+# back up starts from a known-good state: Gradle must be pinned to 8.14.3 (9.x
+# breaks the Android plugin), the emulator action runs its script in POSIX sh,
+# and api-level 30 / google_apis / x86_64 / pixel_2 is an AVD that does boot
+# here — api-level 29 with the default target has no image and fails in 80
+# seconds looking exactly like a broken emulator.
+#
+# Its own workflow, not a job in build.yml or aab.yml, so it can never hold up
+# the APK or the bundle — which is what kept those green through all six.
 
 on:
   push:
@@ -30,7 +44,7 @@ jobs:
     # here perfectly well — its error was a missing gradlew, which only a
     # RUNNING emulator could have reported.
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v5
@@ -56,17 +70,7 @@ jobs:
       # The emulator needs hardware acceleration to be usable at all. Without
       # this the AVD falls back to software and times out rather than failing
       # with anything that reads like a cause.
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
-            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      # Before any emulator: do these tests even COMPILE? Three runs failed
-      # inside the emulator step with nothing readable, and "my test is wrong"
-      # and "the emulator did not start" look identical from outside. This
-      # takes a minute, needs no device, and tells the two apart.
+      # Does everything in app/src/androidTest still compile against the app?
       - name: Compile the on-device tests
         run: |
           set +e
@@ -84,82 +88,3 @@ jobs:
                 clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
                 echo "::error::$clean"
               done
-
-      - name: Run the on-device tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          # API 30 rather than the newest: these tests exercise Room, org.json
-          # and Activity startup, none of which differ on a later release, and
-          # an older image boots faster and more reliably on CI. minSdk here
-          # is 24, so this is also nearer the oldest phone that runs the app
-          # than the newest.
-          # Back to the image that demonstrably worked. Simplifying this to
-          # api-level 29 with the default target was my own mistake and it
-          # cost three runs: API 29 has no plain x86_64 system image, so the
-          # AVD could not be created at all and the emulator step died in
-          # 78-93 seconds without ever starting gradle — which then read as
-          # "the emulator is broken" when the truth was "I asked for an image
-          # that does not exist". The first run, with exactly these four
-          # lines, got as far as running the script.
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: pixel_2
-          # No window, no audio, no boot animation: nothing here looks at the
-          # screen, and each of those is a way for a headless runner to hang.
-          emulator-options: >-
-            -no-window -no-snapshot -noaudio -no-boot-anim
-            -gpu swiftshader_indirect -camera-back none
-          disable-animations: true
-          # `gradle`, not `./gradlew`: this repo has no wrapper checked in —
-          # build.yml and aab.yml both call the `gradle` that
-          # gradle/actions/setup-gradle puts on PATH, and the first run of this
-          # workflow failed with exit 127 (command not found) for exactly that
-          # reason. --no-daemon matches the other two.
-          # POSIX sh, NOT bash: the action runs this with /usr/bin/sh, where
-          # ${PIPESTATUS[0]} does not exist. Writing it here meant the step
-          # reported a shell error instead of gradle's exit status, and the
-          # reporting step below found nothing to publish. Redirect and read
-          # $? instead, which every shell has.
-          script: |
-            gradle connectedDebugAndroidTest --no-daemon --stacktrace \
-              > /tmp/instrumented_output.txt 2>&1
-            STATUS=$?
-            tail -120 /tmp/instrumented_output.txt
-            exit $STATUS
-
-      # A red tick on its own says nothing. build.yml solved this already and
-      # its comment says why: annotations come back through the REST API even
-      # when the log blobs do not, which is the only channel that actually
-      # reaches a later session. Same pattern here.
-      - name: Publish the failure
-        if: failure()
-        run: |
-          if [ ! -f /tmp/instrumented_output.txt ]; then
-            echo "::error::The emulator step failed before gradle ran — no output was captured."
-            exit 0
-          fi
-          echo "## On-device Test Failure" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -120 /tmp/instrumented_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-
-          grep -iE "^e: |error:|FAILURE:|Caused by|Unresolved reference|Could not (find|resolve)|FAILED|AssertionError|INSTRUMENTATION" \
-            /tmp/instrumented_output.txt \
-            | head -25 \
-            | while IFS= read -r line; do
-                clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
-                echo "::error::$clean"
-              done
-
-      # The HTML report, when the tests ran far enough to write one.
-      - name: Upload the test report
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: instrumented-test-report
-          path: |
-            app/build/reports/androidTests/
-            app/build/outputs/androidTest-results/
-          retention-days: 14
-          if-no-files-found: ignore
