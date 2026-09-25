@@ -1521,6 +1521,35 @@ interface KhataDao {
         return insertEntry(entry.copy(entryNumber = EntryNumber.next(count)))
     }
 
+    /**
+     * A new supplier bill, as ONE all-or-nothing write.
+     *
+     * A credit bill is three things: the debt (a ledger entry, [entry]; null
+     * for a bill paid in cash, which owes nothing), the paperwork (the bill
+     * row), and the batch records (its items, each tied to a product). They
+     * used to be written one after another; a phone dying or the process
+     * being killed between them could leave the debt in the supplier's khata
+     * with no bill behind it, or a bill with half its items — a state no
+     * screen can explain. Inside @Transaction either all of it is saved or
+     * none of it is. Numbering (insertEntryNumbered) and product creation
+     * (findOrCreateProduct) are the same calls as before, now nested in this
+     * one transaction. Returns the products the items were tied to, in order.
+     */
+    @Transaction
+    suspend fun insertSupplierBill(
+        entry: LedgerEntry?,
+        bill: SupplierBill,
+        items: List<BillItem>
+    ): List<Product> {
+        val ledgerId = entry?.let { insertEntryNumbered(it) }
+        val billId = insertBill(bill.copy(ledgerEntryId = ledgerId))
+        return items.map { item ->
+            val product = findOrCreateProduct(name = item.productName, defaultUnit = item.unit)
+            insertBillItem(item.copy(billId = billId, productId = product.id))
+            product
+        }
+    }
+
     @Update
     suspend fun updateEntry(entry: LedgerEntry)
 
