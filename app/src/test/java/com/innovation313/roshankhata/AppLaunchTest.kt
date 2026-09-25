@@ -10,12 +10,15 @@ import org.junit.runner.RunWith
 /**
  * The app opens.
  *
- * This is the smallest possible instrumented test and the most valuable one
- * to have first: the worst failure this app can ship is an update that
- * crashes before the owner sees their ledger, which no unit test can catch
- * because no unit test ever starts an Activity, inflates a layout, reads a
- * theme, or applies the language. Those live on a device, and until now
- * nothing checked them except a person holding a phone.
+ * The worst failure this app can ship is an update that crashes before the
+ * owner sees their ledger. A plain JVM test cannot catch it, because it never
+ * starts an Activity, inflates a layout or reads a theme. Robolectric can: it
+ * runs the real Activity lifecycle against a simulated Android inside the
+ * JVM, with the app's merged manifest and resources — so a missing layout
+ * id, a broken theme or a crash in onCreate fails this test on every push.
+ *
+ * It is not a physical phone. It will not catch something only one device
+ * maker's Android does; the owner's own testing still covers that.
  *
  * [GateActivity] is the real launcher — the one the home-screen icon starts —
  * so this walks the same path a user does: splash, then the routing decision.
