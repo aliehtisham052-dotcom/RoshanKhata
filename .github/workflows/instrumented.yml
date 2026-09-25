@@ -147,22 +147,39 @@ jobs:
       - name: Publish the result
         if: always()
         run: |
-          tests=0; failed=0; skipped=0
-          for f in $(find app/build/outputs/androidTest-results -name 'TEST-*.xml' 2>/dev/null); do
+          # Reporting only: it must never be the thing that turns a run red.
+          # (grep -c exits 1 on a count of zero — zero crashes — which under
+          # the default `bash -eo pipefail` used to fail this step.)
+          set +e +o pipefail
+          # Test counts from the JUnit XML. Device names put spaces and
+          # brackets in these file names, so read them line by line.
+          tests=0; failed=0; files=0
+          find app/build -name 'TEST-*.xml' -path '*androidTest*' 2>/dev/null > /tmp/xmls.txt
+          while IFS= read -r f; do
+            files=$((files + 1))
             t=$(grep -o 'tests="[0-9]*"' "$f" | head -1 | tr -dc '0-9')
             x=$(grep -o 'failures="[0-9]*"' "$f" | head -1 | tr -dc '0-9')
-            k=$(grep -o 'skipped="[0-9]*"' "$f" | head -1 | tr -dc '0-9')
-            tests=$((tests + ${t:-0})); failed=$((failed + ${x:-0})); skipped=$((skipped + ${k:-0}))
-          done
-          echo "::notice::On-device tests: $tests run, $failed failed, $skipped skipped"
+            tests=$((tests + ${t:-0})); failed=$((failed + ${x:-0}))
+          done < /tmp/xmls.txt
+          echo "::notice::On-device tests (JUnit XML, $files files): $tests run, $failed failed"
+          # Gradle's own line, as a cross-check that does not depend on paths.
+          if [ -f /tmp/instrumented_output.txt ]; then
+            line=$(grep -E "Finished [0-9]+ tests|Tests on .* [0-9]+|tests completed|BUILD (SUCCESSFUL|FAILED)" /tmp/instrumented_output.txt | tr -d '\r' | tr '\n' ' ' | cut -c1-400)
+            echo "::notice::Gradle said: ${line:-nothing matched}"
+          fi
+          if [ "$files" -eq 0 ]; then
+            where=$(find app/build -path '*androidTest*' -name '*.xml' 2>/dev/null | head -5 | tr '\n' ' ')
+            echo "::notice::No TEST-*.xml found. androidTest XMLs present: ${where:-none}"
+          fi
           if [ -f /tmp/monkey_output.txt ]; then
             injected=$(grep -o 'Events injected: [0-9]*' /tmp/monkey_output.txt | tail -1 | tr -dc '0-9')
             crashes=$(grep -c '// CRASH' /tmp/monkey_output.txt)
             anrs=$(grep -c 'NOT RESPONDING' /tmp/monkey_output.txt)
-            echo "::notice::Monkey: ${injected:-0} events injected, $crashes crashes, $anrs ANR reports"
+            echo "::notice::Monkey: ${injected:-0} events injected, ${crashes:-0} crashes, ${anrs:-0} ANR reports"
           else
             echo "::notice::Monkey: did not run"
           fi
+          exit 0
 
       - name: Upload the test report
         if: always()
