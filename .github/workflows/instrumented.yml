@@ -41,6 +41,15 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-disabled: true
+          # The SAME pin build.yml and aab.yml use, and the reason this
+          # workflow failed four times: without it setup-gradle takes the
+          # newest Gradle, which is now 9.7.1, and 9.x removed an internal API
+          # the Android Gradle Plugin still calls — the build dies while
+          # applying the plugin, before a single line of this project is read.
+          # Whatever Gradle this app is built with, its tests are built with.
+          gradle-version: 8.14.3
 
       # The emulator needs hardware acceleration to be usable at all. Without
       # this the AVD falls back to software and times out rather than failing
