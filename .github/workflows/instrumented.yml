@@ -1,6 +1,8 @@
 name: On-device tests
 
-# The tests in app/src/androidTest, run on a real Android emulator.
+# The tests in app/src/androidTest, run on a real Android emulator, then the
+# monkey: thousands of random taps across the whole app, failing on any crash.
+# Both are driven by scripts/device-check.sh.
 #
 # The data side (balance SUM, backup round trip, launcher) already runs on
 # every push under Robolectric in build.yml. This covers what a simulated
@@ -92,9 +94,11 @@ jobs:
             -no-window -no-snapshot -noaudio -no-boot-anim
             -gpu swiftshader_indirect -camera-back none
           disable-animations: true
-          # ONE line (see note 2 at the top). Output goes to a file so the step
-          # below can publish the cause; the tail keeps it in the log too.
-          script: 'gradle connectedDebugAndroidTest --no-daemon --stacktrace > /tmp/instrumented_output.txt 2>&1; s=$?; tail -150 /tmp/instrumented_output.txt; exit $s'
+          # ONE line (see note 2 at the top). The real steps live in
+          # scripts/device-check.sh, which runs as one sh process: the written
+          # tests, then the monkey crash hunt. Outputs go to /tmp files so the
+          # step below can publish the cause.
+          script: sh scripts/device-check.sh
 
       # Annotations come back through the REST API even when log blobs do not
       # (the same reason build.yml does this), so the cause reaches whoever
@@ -116,6 +120,26 @@ jobs:
                 clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
                 echo "::error::$clean"
               done
+          # The monkey's own crash, if that is what failed: the stack trace
+          # from the crash buffer names the screen and the line.
+          if [ -f /tmp/crash_log.txt ] && grep -q "com.innovation313" /tmp/crash_log.txt; then
+            echo "## Monkey found a crash" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -80 /tmp/crash_log.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            grep -E "FATAL EXCEPTION|Process:|Exception|Error|at com\.innovation313" /tmp/crash_log.txt | head -20 \
+              | while IFS= read -r line; do
+                  clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                  echo "::error::monkey: $clean"
+                done
+          fi
+          if [ -f /tmp/monkey_output.txt ] && grep -q "// CRASH" /tmp/monkey_output.txt; then
+            grep -A12 "// CRASH" /tmp/monkey_output.txt | head -25 \
+              | while IFS= read -r line; do
+                  clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                  echo "::error::monkey: $clean"
+                done
+          fi
 
       - name: Upload the test report
         if: always()
@@ -125,5 +149,8 @@ jobs:
           path: |
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
+            /tmp/instrumented_output.txt
+            /tmp/monkey_output.txt
+            /tmp/crash_log.txt
           retention-days: 14
           if-no-files-found: ignore
