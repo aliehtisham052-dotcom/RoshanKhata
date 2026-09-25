@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.ui.Format
 import java.io.File
 import java.io.FileOutputStream
@@ -85,8 +86,15 @@ object LedgerReport {
         var y: Float
         var pageNo = 1
 
+        // The four column words, read once: tableHeader() runs again on every
+        // page, and each measureText must measure the same string it draws.
+        val colDate = context.getString(R.string.pdf_rep_col_date)
+        val colParty = context.getString(R.string.pdf_rep_col_party)
+        val colGave = context.getString(R.string.pdf_rep_col_gave)
+        val colGot = context.getString(R.string.pdf_rep_col_got)
+
         val brandLogo = PdfBranding.logo(context)
-        val businessName = BusinessProfile.businessName(context) ?: "Roshan Khata"
+        val businessName = BusinessProfile.businessName(context) ?: context.getString(R.string.app_name)
 
         fun header(): Float {
             // Before anything else on the page: the watermark is a
@@ -95,8 +103,14 @@ object LedgerReport {
             PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 74f, navyFill)
             canvas.drawText(businessName, MARGIN, 30f, title)
-            canvas.drawText("Ledger Report \u00B7 $rangeLabel", MARGIN, 48f, tagline)
-            canvas.drawText("Generated ${dateFmt.format(Date())}", MARGIN, 64f, tagline)
+            canvas.drawText(
+                context.getString(R.string.pdf_rep_ledger_title) + " \u00B7 " + rangeLabel,
+                MARGIN, 48f, tagline
+            )
+            canvas.drawText(
+                context.getString(R.string.pdf_rep_generated, dateFmt.format(Date())),
+                MARGIN, 64f, tagline
+            )
             return 100f
         }
 
@@ -113,12 +127,15 @@ object LedgerReport {
         // ---- The warning first, same placement and same reason as BusinessReport ----
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 40f, warnFill)
         canvas.drawText(
-            "This is a report to read and print \u2014 it is NOT a backup.",
+            context.getString(R.string.pdf_rep_not_backup),
             MARGIN + 10f, y + 16f,
             Paint(warnText).apply { isFakeBoldText = true }
         )
         canvas.drawText(
-            "Roshan Khata cannot restore your records from a PDF.",
+            context.getString(
+                R.string.pdf_rep_not_backup_restore,
+                context.getString(R.string.app_name)
+            ),
             MARGIN + 10f, y + 30f, warnText
         )
         y += 54f
@@ -127,7 +144,7 @@ object LedgerReport {
         val gave = entries.filter { it.isGiven }.sumOf { it.amount }
         val got = entries.filter { !it.isGiven }.sumOf { it.amount }
 
-        canvas.drawText("Summary", MARGIN, y, section)
+        canvas.drawText(context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
         y += 20f
 
         fun line(label: String, value: String, paint: Paint = body) {
@@ -141,20 +158,20 @@ object LedgerReport {
         // one customer's sale less another customer's payment, a figure that
         // is nobody's balance. It also carried the opposite sign to the same
         // figure on the report's own screen. Gone from both.
-        line("I gave (total)", Format.money(gave), red)
-        line("I got (total)", Format.money(got), green)
-        line("Entries in this period", entries.size.toString())
+        line(context.getString(R.string.pdf_rep_total_gave), Format.money(gave), red)
+        line(context.getString(R.string.pdf_rep_total_got), Format.money(got), green)
+        line(context.getString(R.string.pdf_rep_entry_count), entries.size.toString())
 
         y += 10f
         canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
         y += 20f
 
         // ---- Entries, oldest first, every party mixed together ----
-        canvas.drawText("Entries", MARGIN, y, section)
+        canvas.drawText(context.getString(R.string.pdf_rep_entries), MARGIN, y, section)
         y += 18f
 
         if (entries.isEmpty()) {
-            canvas.drawText("No entries in this period.", MARGIN, y, muted)
+            canvas.drawText(context.getString(R.string.no_entries_in_range), MARGIN, y, muted)
             y += 16f
         } else {
             // Two money columns, the way a statement reads: what went out (I
@@ -169,13 +186,13 @@ object LedgerReport {
 
             fun tableHeader() {
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
-                canvas.drawText("DATE", xDate, y + 12.5f, tableHeaderFg)
-                canvas.drawText("PARTY", xParty, y + 12.5f, tableHeaderFg)
+                canvas.drawText(colDate, xDate, y + 12.5f, tableHeaderFg)
+                canvas.drawText(colParty, xParty, y + 12.5f, tableHeaderFg)
                 canvas.drawText(
-                    "I GAVE", xGave - tableHeaderFg.measureText("I GAVE"), y + 12.5f, tableHeaderFg
+                    colGave, xGave - tableHeaderFg.measureText(colGave), y + 12.5f, tableHeaderFg
                 )
                 canvas.drawText(
-                    "I GOT", xGot - tableHeaderFg.measureText("I GOT"), y + 12.5f, tableHeaderFg
+                    colGot, xGot - tableHeaderFg.measureText(colGot), y + 12.5f, tableHeaderFg
                 )
                 y += 18f
             }
@@ -198,7 +215,7 @@ object LedgerReport {
 
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText("Entries (continued)", MARGIN, y, section)
+                    canvas.drawText(context.getString(R.string.pdf_rep_entries_continued), MARGIN, y, section)
                     y += 18f
                     tableHeader()
                 }
@@ -248,7 +265,14 @@ object LedgerReport {
             )
             footerX += size + 6f
         }
-        canvas.drawText("Roshan Khata \u00B7 Page $pageNo", footerX, y, muted)
+        canvas.drawText(
+            context.getString(
+                R.string.pdf_rep_footer_page,
+                context.getString(R.string.app_name),
+                pageNo
+            ),
+            footerX, y, muted
+        )
 
         doc.finishPage(page)
 

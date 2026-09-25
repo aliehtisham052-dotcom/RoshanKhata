@@ -1182,6 +1182,22 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="other">%d entries</item>
     </plurals>
 
+    <string name="pdf_rep_ledger_title">Ledger Report</string>
+    <string name="pdf_rep_generated">Banaya gaya %1$s</string>
+    <string name="pdf_rep_not_backup">Ye report parhne aur print karne ke liye hai \u2014 backup NAHI hai.</string>
+    <string name="pdf_rep_not_backup_restore">%1$s PDF se aap ka record wapas nahi la sakta.</string>
+    <string name="pdf_rep_summary">Khulasa</string>
+    <string name="pdf_rep_total_gave">Main ne diya (kul)</string>
+    <string name="pdf_rep_total_got">Main ne liya (kul)</string>
+    <string name="pdf_rep_entry_count">Is muddat ke andraaj</string>
+    <string name="pdf_rep_entries">Andraaj</string>
+    <string name="pdf_rep_entries_continued">Andraaj (jari)</string>
+    <string name="pdf_rep_col_date">TAREEKH</string>
+    <string name="pdf_rep_col_party">PARTY</string>
+    <string name="pdf_rep_col_gave">MAIN NE DIYA</string>
+    <string name="pdf_rep_col_got">MAIN NE LIYA</string>
+    <string name="pdf_rep_footer_page">%1$s \u00B7 Safha %2$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>
     <string name="invoice_section_details">Rasid ki tafseel</string>

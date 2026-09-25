@@ -1228,6 +1228,23 @@ You can change this any time from this screen.</string>
         <item quantity="other">%d entries</item>
     </plurals>
 
+    <!-- Words printed on the LEDGER REPORT pdf. Said from the OWNER's side (this sheet stays in the shop), unlike a customer statement. -->
+    <string name="pdf_rep_ledger_title">Ledger Report</string>
+    <string name="pdf_rep_generated">Generated %1$s</string>
+    <string name="pdf_rep_not_backup">This is a report to read and print \u2014 it is NOT a backup.</string>
+    <string name="pdf_rep_not_backup_restore">%1$s cannot restore your records from a PDF.</string>
+    <string name="pdf_rep_summary">Summary</string>
+    <string name="pdf_rep_total_gave">I gave (total)</string>
+    <string name="pdf_rep_total_got">I got (total)</string>
+    <string name="pdf_rep_entry_count">Entries in this period</string>
+    <string name="pdf_rep_entries">Entries</string>
+    <string name="pdf_rep_entries_continued">Entries (continued)</string>
+    <string name="pdf_rep_col_date">DATE</string>
+    <string name="pdf_rep_col_party">PARTY</string>
+    <string name="pdf_rep_col_gave">I GAVE</string>
+    <string name="pdf_rep_col_got">I GOT</string>
+    <string name="pdf_rep_footer_page">%1$s \u00B7 Page %2$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>
     <string name="invoice_section_details">Invoice details</string>
