@@ -104,11 +104,17 @@ jobs:
           # gradle/actions/setup-gradle puts on PATH, and the first run of this
           # workflow failed with exit 127 (command not found) for exactly that
           # reason. --no-daemon matches the other two.
+          # POSIX sh, NOT bash: the action runs this with /usr/bin/sh, where
+          # ${PIPESTATUS[0]} does not exist. Writing it here meant the step
+          # reported a shell error instead of gradle's exit status, and the
+          # reporting step below found nothing to publish. Redirect and read
+          # $? instead, which every shell has.
           script: |
-            set +e
-            gradle connectedDebugAndroidTest --no-daemon --stacktrace 2>&1 \
-              | tee /tmp/instrumented_output.txt
-            exit ${PIPESTATUS[0]}
+            gradle connectedDebugAndroidTest --no-daemon --stacktrace \
+              > /tmp/instrumented_output.txt 2>&1
+            STATUS=$?
+            tail -120 /tmp/instrumented_output.txt
+            exit $STATUS
 
       # A red tick on its own says nothing. build.yml solved this already and
       # its comment says why: annotations come back through the REST API even
@@ -117,7 +123,10 @@ jobs:
       - name: Publish the failure
         if: failure()
         run: |
-          if [ ! -f /tmp/instrumented_output.txt ]; then exit 0; fi
+          if [ ! -f /tmp/instrumented_output.txt ]; then
+            echo "::error::The emulator step failed before gradle ran — no output was captured."
+            exit 0
+          fi
           echo "## On-device Test Failure" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           tail -120 /tmp/instrumented_output.txt >> $GITHUB_STEP_SUMMARY
