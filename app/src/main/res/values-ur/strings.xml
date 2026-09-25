@@ -1222,6 +1222,34 @@
     <string name="pdf_biz_days_left">%1$d دن</string>
     <string name="pdf_biz_batch">بیچ %1$s \u00B7 </string>
 
+    <string name="pdf_reg_title">سیلز اینڈ پرچیز رجسٹر</string>
+    <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
+    <string name="pdf_reg_period">مدت: %1$s</string>
+    <string name="pdf_reg_note_1">یہ دکان کا اپنا ریکارڈ ہے جو اسے بتایا گیا، اوپر دی گئی مدت کے لیے۔</string>
+    <string name="pdf_reg_note_2">سیل وہ ادھار/مال والا اندراج ہے جس میں مال گیا \u2014 صرف نقد اور قرضِ حسنہ شمار نہیں ہوتے۔</string>
+    <string name="pdf_reg_sales_lines">اس مدت کی سیل لائنیں</string>
+    <string name="pdf_reg_total_sales">کل سیل</string>
+    <string name="pdf_reg_purchase_lines">اس مدت کی خرید لائنیں</string>
+    <string name="pdf_reg_total_purchases">کل خرید (ریٹ والی لائنیں)</string>
+    <string name="pdf_reg_no_rate_lines">خرید لائنیں جن کا ریٹ درج نہیں</string>
+    <string name="pdf_reg_section_sales">1۔ سیلز رجسٹر</string>
+    <string name="pdf_reg_section_sales_cont">1۔ سیلز رجسٹر (جاری)</string>
+    <string name="pdf_reg_no_sales">اس مدت میں کوئی مال فروخت نہیں ہوا۔</string>
+    <string name="pdf_reg_section_purchases">2۔ پرچیز رجسٹر</string>
+    <string name="pdf_reg_section_purchases_cont">2۔ پرچیز رجسٹر (جاری)</string>
+    <string name="pdf_reg_no_purchases">اس مدت میں کوئی خرید درج نہیں۔</string>
+    <string name="pdf_reg_col_date">تاریخ</string>
+    <string name="pdf_reg_col_customer">گاہک / پروڈکٹ / بیچ</string>
+    <string name="pdf_reg_col_supplier">سپلائر / پروڈکٹ / بیچ</string>
+    <string name="pdf_reg_col_amount">رقم</string>
+    <string name="pdf_reg_batch">بیچ %1$s</string>
+    <string name="pdf_reg_bill">بل %1$s</string>
+    <string name="pdf_reg_expiry">میعاد %1$s</string>
+    <string name="pdf_reg_missing_rate">%1$d خرید لائنوں کا ریٹ درج نہیں تھا، اس لیے وہ اوپر کے کل میں شامل نہیں۔</string>
+    <string name="pdf_reg_dealer_sign">ڈیلر کے دستخط</string>
+    <string name="pdf_reg_inspector_sign">انسپکٹر کے دستخط</string>
+    <string name="pdf_reg_footer">%1$s \u00B7 بنائی گئی %2$s \u00B7 صفحہ %3$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">گاہک</string>
     <string name="invoice_section_details">انوائس کی تفصیل</string>

@@ -1222,6 +1222,34 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_biz_days_left">%1$d din</string>
     <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
 
+    <string name="pdf_reg_title">Sales &amp; Purchase Register</string>
+    <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
+    <string name="pdf_reg_period">Muddat: %1$s</string>
+    <string name="pdf_reg_note_1">Ye dukaan ka apna record hai jo usay bataya gaya, upar wali muddat ke liye.</string>
+    <string name="pdf_reg_note_2">Sale wo credit/goods entry hai jis mein maal gaya \u2014 sirf cash aur qarz-e-hasna shumar nahi hote.</string>
+    <string name="pdf_reg_sales_lines">Is muddat ki sale lines</string>
+    <string name="pdf_reg_total_sales">Kul sale</string>
+    <string name="pdf_reg_purchase_lines">Is muddat ki purchase lines</string>
+    <string name="pdf_reg_total_purchases">Kul purchase (rate wali lines)</string>
+    <string name="pdf_reg_no_rate_lines">Purchase lines jin ka rate darj nahi</string>
+    <string name="pdf_reg_section_sales">1. Sales register</string>
+    <string name="pdf_reg_section_sales_cont">1. Sales register (jari)</string>
+    <string name="pdf_reg_no_sales">Is muddat mein koi maal farokht nahi hua.</string>
+    <string name="pdf_reg_section_purchases">2. Purchase register</string>
+    <string name="pdf_reg_section_purchases_cont">2. Purchase register (jari)</string>
+    <string name="pdf_reg_no_purchases">Is muddat mein koi khareed darj nahi.</string>
+    <string name="pdf_reg_col_date">TAREEKH</string>
+    <string name="pdf_reg_col_customer">CUSTOMER / PRODUCT / BATCH</string>
+    <string name="pdf_reg_col_supplier">SUPPLIER / PRODUCT / BATCH</string>
+    <string name="pdf_reg_col_amount">RAQAM</string>
+    <string name="pdf_reg_batch">Batch %1$s</string>
+    <string name="pdf_reg_bill">Bill %1$s</string>
+    <string name="pdf_reg_expiry">exp %1$s</string>
+    <string name="pdf_reg_missing_rate">%1$d purchase lines ka rate darj nahi tha, is liye wo upar ke total mein shamil nahi.</string>
+    <string name="pdf_reg_dealer_sign">Dealer ke dastkhat</string>
+    <string name="pdf_reg_inspector_sign">Inspector ke dastkhat</string>
+    <string name="pdf_reg_footer">%1$s \u00B7 Banaya gaya %2$s \u00B7 Safha %3$d</string>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>
     <string name="invoice_section_details">Rasid ki tafseel</string>
