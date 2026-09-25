@@ -38,8 +38,13 @@ android {
         // apps behind the status and navigation bars whether they are ready
         // or not, and this app is now ready.
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        // THE PLAY VERSION. Raise versionCode by one before EVERY Play upload:
+        // Play refuses a bundle whose versionCode it has already seen, and
+        // aab.yml builds with exactly this number. 1 (0.1.0) is the build
+        // that went live in Aug 2026; 2 is the first update after it.
+        // versionName is what the owner reads in About/Help.
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     signingConfigs {
