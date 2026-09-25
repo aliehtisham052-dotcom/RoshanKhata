@@ -539,6 +539,10 @@
     <string name="business_last_backup">آخر نسخة احتياطية %1$s</string>
     <string name="business_never_backed_up">لم يتم النسخ الاحتياطي قط</string>
     <string name="notif_backup_body_named">لم تُنسخ %1$s احتياطيًا منذ أكثر من أسبوع. سجلاتها موجودة على هذا الهاتف فقط.</string>
+
+    <string name="notif_cheques_body_named">%1$s: %2$d شيك مستحق اليوم أو فات موعده.</string>
+    <string name="notif_plans_body_named">%1$s: %2$d خطة سداد مستحقة الدفع.</string>
+    <string name="notif_expiry_body_named">%1$s: %2$d صنف ينتهي خلال 60 يومًا.</string>
     <string name="filter_title">تصفية</string>
     <string name="filter_account_label">الحساب</string>
     <string name="filter_type_label">النوع</string>

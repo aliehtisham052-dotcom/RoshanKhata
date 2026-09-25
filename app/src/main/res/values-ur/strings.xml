@@ -539,6 +539,10 @@
     <string name="business_last_backup">آخری بیک اپ %1$s</string>
     <string name="business_never_backed_up">کبھی بیک اپ نہیں ہوا</string>
     <string name="notif_backup_body_named">%1$s کا بیک اپ ایک ہفتے سے زیادہ عرصے سے نہیں ہوا۔ اس کا ریکارڈ صرف اسی فون پر ہے۔</string>
+
+    <string name="notif_cheques_body_named">%1$s: %2$d چیک آج واجب ہیں یا تاریخ گزر چکی ہے۔</string>
+    <string name="notif_plans_body_named">%1$s: %2$d ادائیگی پلان کی قسط واجب ہے۔</string>
+    <string name="notif_expiry_body_named">%1$s: %2$d اشیاء 60 دن میں ختم ہو رہی ہیں۔</string>
     <string name="filter_title">فلٹر</string>
     <string name="filter_account_label">کھاتہ</string>
     <string name="filter_type_label">قسم</string>
