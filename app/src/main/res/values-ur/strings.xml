@@ -1161,6 +1161,27 @@
     <string name="pdf_label_thank_you">شکریہ!</string>
     <string name="pdf_label_visit_again">دوبارہ تشریف لائیں</string>
 
+    <string name="pdf_stmt_title">کھاتہ اسٹیٹمنٹ — %1$s</string>
+    <string name="pdf_stmt_period">مدت: %1$s — %2$s</string>
+    <string name="pdf_stmt_no_entries">کوئی اندراج نہیں</string>
+    <string name="pdf_stmt_page">صفحہ %1$d / %2$d</string>
+    <string name="pdf_stmt_you_owe">آپ کے ذمے (-)</string>
+    <string name="pdf_stmt_you_paid">آپ نے ادا کیا (+)</string>
+    <string name="pdf_stmt_balance">بیلنس</string>
+    <string name="pdf_stmt_opening_before">ابتدائی بیلنس (%1$s سے پہلے)</string>
+    <string name="pdf_stmt_opening">ابتدائی بیلنس</string>
+    <string name="pdf_stmt_qarze_hasna">قرضِ حسنہ</string>
+    <string name="pdf_stmt_you_will_pay">آپ کو ادا کرنا ہے</string>
+    <string name="pdf_stmt_you_will_receive">آپ کو وصول کرنا ہے</string>
+    <string name="pdf_stmt_settled">حساب برابر — کچھ باقی نہیں</string>
+    <string name="pdf_stmt_amount_to_pay">قابلِ ادائیگی رقم:</string>
+    <string name="pdf_stmt_qr_hint_1">اس کوڈ میں رقم شامل نہیں —</string>
+    <string name="pdf_stmt_qr_hint_2">ادائیگی کے وقت خود درج کریں۔</string>
+    <plurals name="pdf_stmt_entries">
+        <item quantity="one">%d اندراج</item>
+        <item quantity="other">%d اندراجات</item>
+    </plurals>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">گاہک</string>
     <string name="invoice_section_details">انوائس کی تفصیل</string>

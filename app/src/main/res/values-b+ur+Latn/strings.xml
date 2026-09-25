@@ -1161,6 +1161,27 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_label_thank_you">Shukriya!</string>
     <string name="pdf_label_visit_again">Dobara tashreef layein</string>
 
+    <string name="pdf_stmt_title">Khata Statement — %1$s</string>
+    <string name="pdf_stmt_period">Muddat: %1$s — %2$s</string>
+    <string name="pdf_stmt_no_entries">Koi entry nahi</string>
+    <string name="pdf_stmt_page">Safha %1$d / %2$d</string>
+    <string name="pdf_stmt_you_owe">Aap ke zimme (-)</string>
+    <string name="pdf_stmt_you_paid">Aap ne ada kiya (+)</string>
+    <string name="pdf_stmt_balance">Balance</string>
+    <string name="pdf_stmt_opening_before">Ibtidai balance (%1$s se pehle)</string>
+    <string name="pdf_stmt_opening">Ibtidai balance</string>
+    <string name="pdf_stmt_qarze_hasna">Qarz-e-Hasna</string>
+    <string name="pdf_stmt_you_will_pay">Aap ko ada karna hai</string>
+    <string name="pdf_stmt_you_will_receive">Aap ko wasool karna hai</string>
+    <string name="pdf_stmt_settled">Hisaab barabar — kuch baqi nahi</string>
+    <string name="pdf_stmt_amount_to_pay">Qabil-e-adaigi raqam:</string>
+    <string name="pdf_stmt_qr_hint_1">Is code mein raqam shamil nahi —</string>
+    <string name="pdf_stmt_qr_hint_2">Adaigi ke waqt khud likhein.</string>
+    <plurals name="pdf_stmt_entries">
+        <item quantity="one">%d entry</item>
+        <item quantity="other">%d entries</item>
+    </plurals>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>
     <string name="invoice_section_details">Rasid ki tafseel</string>

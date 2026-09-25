@@ -1206,6 +1206,28 @@ You can change this any time from this screen.</string>
     <string name="pdf_label_thank_you">Thank you!</string>
     <string name="pdf_label_visit_again">Please visit again</string>
 
+    <!-- Words printed on a customer STATEMENT pdf — the sheet the customer keeps, so every label is said from their side, in the app's language. -->
+    <string name="pdf_stmt_title">Account Statement — %1$s</string>
+    <string name="pdf_stmt_period">Period: %1$s — %2$s</string>
+    <string name="pdf_stmt_no_entries">No entries</string>
+    <string name="pdf_stmt_page">Page %1$d of %2$d</string>
+    <string name="pdf_stmt_you_owe">You Owe (-)</string>
+    <string name="pdf_stmt_you_paid">You Paid (+)</string>
+    <string name="pdf_stmt_balance">Balance</string>
+    <string name="pdf_stmt_opening_before">Opening balance (before %1$s)</string>
+    <string name="pdf_stmt_opening">Opening balance</string>
+    <string name="pdf_stmt_qarze_hasna">Qarz-e-Hasna</string>
+    <string name="pdf_stmt_you_will_pay">You will pay</string>
+    <string name="pdf_stmt_you_will_receive">You will receive</string>
+    <string name="pdf_stmt_settled">Settled — nothing outstanding</string>
+    <string name="pdf_stmt_amount_to_pay">Amount to pay:</string>
+    <string name="pdf_stmt_qr_hint_1">This code does not carry the amount —</string>
+    <string name="pdf_stmt_qr_hint_2">please enter it yourself when paying.</string>
+    <plurals name="pdf_stmt_entries">
+        <item quantity="one">%d entry</item>
+        <item quantity="other">%d entries</item>
+    </plurals>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>
     <string name="invoice_section_details">Invoice details</string>

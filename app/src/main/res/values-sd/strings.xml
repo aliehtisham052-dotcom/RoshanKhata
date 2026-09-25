@@ -1189,6 +1189,27 @@
     <string name="pdf_label_thank_you">مهرباني!</string>
     <string name="pdf_label_visit_again">ٻيهر اچجو</string>
 
+    <string name="pdf_stmt_title">کھاتي جي اسٽيٽمينٽ — %1$s</string>
+    <string name="pdf_stmt_period">عرصو: %1$s — %2$s</string>
+    <string name="pdf_stmt_no_entries">ڪا داخلا ناهي</string>
+    <string name="pdf_stmt_page">صفحو %1$d / %2$d</string>
+    <string name="pdf_stmt_you_owe">توهان جي ذمي (-)</string>
+    <string name="pdf_stmt_you_paid">توهان ادا ڪيو (+)</string>
+    <string name="pdf_stmt_balance">بيلنس</string>
+    <string name="pdf_stmt_opening_before">شروعاتي بيلنس (%1$s کان اڳ)</string>
+    <string name="pdf_stmt_opening">شروعاتي بيلنس</string>
+    <string name="pdf_stmt_qarze_hasna">قرض حسنه</string>
+    <string name="pdf_stmt_you_will_pay">توهان کي ادا ڪرڻو آهي</string>
+    <string name="pdf_stmt_you_will_receive">توهان کي وصول ڪرڻو آهي</string>
+    <string name="pdf_stmt_settled">حساب برابر — ڪجهه باقي ناهي</string>
+    <string name="pdf_stmt_amount_to_pay">ادا ڪرڻ جي رقم:</string>
+    <string name="pdf_stmt_qr_hint_1">هن ڪوڊ ۾ رقم شامل ناهي —</string>
+    <string name="pdf_stmt_qr_hint_2">ادائيگي وقت پاڻ لکو.</string>
+    <plurals name="pdf_stmt_entries">
+        <item quantity="one">%d داخلا</item>
+        <item quantity="other">%d داخلائون</item>
+    </plurals>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">گراهڪ</string>
     <string name="invoice_section_details">انوائس جي تفصيل</string>

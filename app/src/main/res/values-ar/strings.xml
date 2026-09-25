@@ -1169,6 +1169,31 @@
     <string name="pdf_label_thank_you">شكرًا لكم!</string>
     <string name="pdf_label_visit_again">نتشرف بزيارتكم مجددًا</string>
 
+    <string name="pdf_stmt_title">كشف حساب — %1$s</string>
+    <string name="pdf_stmt_period">الفترة: %1$s — %2$s</string>
+    <string name="pdf_stmt_no_entries">لا قيود</string>
+    <string name="pdf_stmt_page">صفحة %1$d / %2$d</string>
+    <string name="pdf_stmt_you_owe">عليك (-)</string>
+    <string name="pdf_stmt_you_paid">دفعت (+)</string>
+    <string name="pdf_stmt_balance">الرصيد</string>
+    <string name="pdf_stmt_opening_before">الرصيد الافتتاحي (قبل %1$s)</string>
+    <string name="pdf_stmt_opening">الرصيد الافتتاحي</string>
+    <string name="pdf_stmt_qarze_hasna">قرض حسن</string>
+    <string name="pdf_stmt_you_will_pay">عليك أن تدفع</string>
+    <string name="pdf_stmt_you_will_receive">لك أن تستلم</string>
+    <string name="pdf_stmt_settled">الحساب مسدد — لا شيء متبقٍ</string>
+    <string name="pdf_stmt_amount_to_pay">المبلغ المستحق:</string>
+    <string name="pdf_stmt_qr_hint_1">هذا الرمز لا يتضمن المبلغ —</string>
+    <string name="pdf_stmt_qr_hint_2">يرجى إدخاله بنفسك عند الدفع.</string>
+    <plurals name="pdf_stmt_entries">
+        <item quantity="zero">%d قيود</item>
+        <item quantity="one">قيد واحد</item>
+        <item quantity="two">قيدان</item>
+        <item quantity="few">%d قيود</item>
+        <item quantity="many">%d قيدًا</item>
+        <item quantity="other">%d قيد</item>
+    </plurals>
+
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">العميل</string>
     <string name="invoice_section_details">تفاصيل الفاتورة</string>
