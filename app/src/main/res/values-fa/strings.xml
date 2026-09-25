@@ -40,7 +40,10 @@
     <string name="coach_desc_products">موجودی فعلی، تاریخ انقضای هر بچ، و گزارش‌های انطباق — همان که از فاکتورهایی که می‌نویسید خودکار ساخته می‌شود.</string>
     <string name="followup_title">پیگیری وصول</string>
     <string name="followup_subtitle">از چه کسی وصول کنید — قدیمی‌ترین اول، مبلغ در کنار</string>
-    <string name="followup_summary">%1$d مشتری به شما بدهکارند · جمعاً %2$s</string>
+    <plurals name="followup_summary">
+        <item quantity="one">%1$d مشتری به شما بدهکار است · جمعاً %2$s</item>
+        <item quantity="other">%1$d مشتری به شما بدهکارند · جمعاً %2$s</item>
+    </plurals>
     <plurals name="followup_last_ago">
         <item quantity="one">آخرین تراکنش %1$d روز پیش</item>
         <item quantity="other">آخرین تراکنش %1$d روز پیش</item>
@@ -231,7 +234,10 @@
     <string name="import_selected">افزودن منتخب‌ها</string>
     <string name="search_contacts">جستجو با نام یا شماره</string>
     <string name="selected_count">%1$d انتخاب شد</string>
-    <string name="imported_count">%1$d مخاطب اضافه شد</string>
+    <plurals name="imported_count">
+        <item quantity="one">%1$d مخاطب اضافه شد</item>
+        <item quantity="other">%1$d مخاطب اضافه شد</item>
+    </plurals>
     <string name="already_added">اضافه شده</string>
     <string name="loading_contacts">در حال بارگیری مخاطبین\u2026</string>
     <string name="no_contacts_found">مخاطبی روی این گوشی یافت نشد.</string>
@@ -334,7 +340,10 @@
         <item quantity="one">%1$d روز از سررسید گذشته</item>
         <item quantity="other">%1$d روز از سررسید گذشته</item>
     </plurals>
-    <string name="due_summary">%1$d چک آماده وصول</string>
+    <plurals name="due_summary">
+        <item quantity="one">%1$d چک آماده وصول</item>
+        <item quantity="other">%1$d چک آماده وصول</item>
+    </plurals>
     <string name="due_summary_none">چیزی سررسید نیست</string>
     <string name="due_summary_pending">%1$d در انتظار وصول</string>
     <string name="due_summary_empty">چکی نیست</string>
@@ -546,7 +555,10 @@
     <string name="restore_no_images">سوابق شما بازگشت، اما این پشتیبان تصویری همراه نداشت، بنابراین عکس‌ها، عکس صورتحساب‌ها و کیوآر بازیابی نشدند. برای نگه‌داشتن تصاویر در پشتیبان‌های بعدی، پیش از پشتیبان‌گیری Include images را روشن کنید.</string>
     <string name="restore_file_no_images">سوابق شما بازگشت. پشتیبان فایلی تنها سوابق را می‌برد و هرگز تصاویر را شامل نمی‌شود. برای حفظ عکس‌ها نیز، Include images را روشن کنید و در گوگل درایو پشتیبان بگیرید.</string>
     <string name="drive_looking">در حال جست‌وجو در درایو…</string>
-    <string name="drive_found_businesses">%1$d کسب‌وکار در درایو پیدا شد</string>
+    <plurals name="drive_found_businesses">
+        <item quantity="one">%1$d کسب‌وکار در درایو پیدا شد</item>
+        <item quantity="other">%1$d کسب‌وکار در درایو پیدا شد</item>
+    </plurals>
     <string name="drive_restore_all">بازیابی همه</string>
     <string name="drive_restore_all_warning">این کسب‌وکارها از درایو بازیابی می‌شوند و داده‌های فعلی هرکدام روی این گوشی جایگزین می‌شود:
 
@@ -753,7 +765,10 @@
     <string name="trace_batch_hint">شماره بچ را وارد کنید</string>
     <string name="trace_batch_help">اگر نمونه‌ای زیر سؤال رفت یا بازرس پرسید، شماره بچ را اینجا جستجو کنید تا ببینید از کدام تأمین‌کننده، روی کدام فاکتور و چه زمانی آمده.</string>
     <string name="trace_no_results">کالایی با این شماره بچ یافت نشد.</string>
-    <string name="trace_results">%1$d رکورد یافت شد</string>
+    <plurals name="trace_results">
+        <item quantity="one">%1$d رکورد یافت شد</item>
+        <item quantity="other">%1$d رکورد یافت شد</item>
+    </plurals>
 
     <string name="search_action">جستجو</string>
 
@@ -870,7 +885,10 @@
     <string name="metal_silver">نقره</string>
     <string name="metal_gold">طلا</string>
     <string name="last_transacted">آخرین معامله %1$s</string>
-    <string name="summary_with_overdue">%1$s \u00b7 %2$d نیازمند یادآوری</string>
+    <plurals name="summary_with_overdue">
+        <item quantity="one">%1$s \u00b7 %2$d نیازمند یادآوری</item>
+        <item quantity="other">%1$s \u00b7 %2$d نیازمند یادآوری</item>
+    </plurals>
     <plurals name="customer_count">
         <item quantity="one">%d مشتری</item>
         <item quantity="other">%d مشتری</item>
@@ -1060,7 +1078,10 @@
         <item quantity="one">%1$d مشتری و همهٔ ثبت‌هایش به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</item>
         <item quantity="other">%1$d مشتری و همهٔ ثبت‌هایشان به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</item>
     </plurals>
-    <string name="delete_parties_owing">%1$d نفر از آنها هنوز مانده‌حساب دارند — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</string>
+    <plurals name="delete_parties_owing">
+        <item quantity="one">%1$d نفر از آنها هنوز مانده‌حساب دارد — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</item>
+        <item quantity="other">%1$d نفر از آنها هنوز مانده‌حساب دارند — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</item>
+    </plurals>
     <string name="customer_qr">کد QR مشتری</string>
     <string name="customer_qr_hint">در روشن کھاتہ اسکن کنید تا این دفتر باز شود. کد نه نام دارد، نه شماره، نه مانده‌حساب.</string>
     <string name="scan_customer_qr">اسکن کارت مشتری</string>
@@ -1075,7 +1096,10 @@
     <string name="link_goods">ثبت‌های قبلی را به محصولات وصل کنید</string>
     <string name="link_goods_explain">این کار نام محصولاتی را که از قبل روی فاکتورها و دفترتان نوشته شده می‌خواند و برای هر نام یک محصول می‌سازد.\n\nآنچه انجام نمی‌دهد: نامی را که نوشته‌اید هرگز تغییر نمی‌دهد، و محصولی را که خودتان انتخاب کرده‌اید جایگزین نمی‌کند. در یک مرحله انجام می‌شود — یا همه یا هیچ — و اجرای دوباره کاری نمی‌کند.</string>
     <string name="link_goods_go">وصل کن</string>
-    <string name="link_goods_done">%1$d ثبت وصل شد.</string>
+    <plurals name="link_goods_done">
+        <item quantity="one">%1$d ثبت وصل شد.</item>
+        <item quantity="other">%1$d ثبت وصل شد.</item>
+    </plurals>
     <string name="link_goods_none">چیزی برای وصل کردن نمانده.</string>
     <string name="link_goods_failed">ثبت‌ها وصل نشد. دفتر شما بدون تغییر است.</string>
 
@@ -1121,7 +1145,10 @@
     <string name="batch_chosen">بچ: %1$s</string>
     <string name="batch_remaining">%1$s باقی‌مانده</string>
     <string name="import_as_title">ذخیره به‌عنوان</string>
-    <string name="import_as_message">%1$d مخاطب این‌گونه ذخیره خواهند شد:</string>
+    <plurals name="import_as_message">
+        <item quantity="one">%1$d مخاطب این‌گونه ذخیره خواهد شد:</item>
+        <item quantity="other">%1$d مخاطب این‌گونه ذخیره خواهند شد:</item>
+    </plurals>
     <string name="bill_to_customer_title">این طرف مشتری است</string>
     <string name="bill_to_customer_warn">%1$s به‌عنوان مشتری ذخیره شده، نه تأمین‌کننده. فاکتور تأمین‌کننده آنچه را شما بدهکارید در حساب او می‌نویسد. اگر همین شخص واقعاً به شما جنس می‌دهد ادامه دهید — وگرنه نام را بررسی کنید.</string>
     <string name="change_party_type">مشتری یا تأمین‌کننده</string>
@@ -1170,8 +1197,14 @@
     <string name="inspector_no_expiry">بدون تاریخ انقضا</string>
     <string name="inspector_expired">منقضی</string>
     <string name="inspector_batch_prefix">بچ</string>
-    <string name="inspector_gap_labels">%1$d کالا در موجودی، مشخصات برچسب ندارند</string>
-    <string name="inspector_gap_expiry">%1$d بچ بدون تاریخ انقضا</string>
+    <plurals name="inspector_gap_labels">
+        <item quantity="one">%1$d کالا در موجودی، مشخصات برچسب ندارد</item>
+        <item quantity="other">%1$d کالا در موجودی، مشخصات برچسب ندارند</item>
+    </plurals>
+    <plurals name="inspector_gap_expiry">
+        <item quantity="one">%1$d بچ بدون تاریخ انقضا</item>
+        <item quantity="other">%1$d بچ بدون تاریخ انقضا</item>
+    </plurals>
     <!-- Sales & purchase register (date-ranged) -->
     <string name="register_title">دفتر فروش و خرید</string>
     <string name="register_subtitle">در یک بازه چه آمد و چه رفت</string>
@@ -1183,7 +1216,10 @@
     <string name="register_empty">در این بازه فروش یا خریدی نیست. بازهٔ دیگری انتخاب کنید.</string>
     <string name="register_summary_sales">فروش: %1$d · %2$s</string>
     <string name="register_summary_purchases">خرید: %1$d · %2$s</string>
-    <string name="register_missing_rate">%1$d سطر خرید بدون نرخ — در جمع لحاظ نشده</string>
+    <plurals name="register_missing_rate">
+        <item quantity="one">%1$d سطر خرید بدون نرخ — در جمع لحاظ نشده</item>
+        <item quantity="other">%1$d سطر خرید بدون نرخ — در جمع لحاظ نشده</item>
+    </plurals>
 
     <string name="sale_price_hint">قیمت نقدی</string>
     <string name="credit_price_hint">قیمت نسیه</string>

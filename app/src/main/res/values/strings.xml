@@ -44,7 +44,10 @@
     <string name="coach_desc_products">Stock on hand, batch expiry, and compliance registers — built from the bills you already write.</string>
     <string name="followup_title">Follow-up</string>
     <string name="followup_subtitle">Who to collect from — oldest first, amount alongside</string>
-    <string name="followup_summary">%1$d customers owe you · %2$s in all</string>
+    <plurals name="followup_summary">
+        <item quantity="one">%1$d customer owes you · %2$s in all</item>
+        <item quantity="other">%1$d customers owe you · %2$s in all</item>
+    </plurals>
     <plurals name="followup_last_ago">
         <item quantity="one">Last transaction %1$d day ago</item>
         <item quantity="other">Last transaction %1$d days ago</item>
@@ -238,7 +241,10 @@
     <string name="import_selected">Import Selected</string>
     <string name="search_contacts">Search by name or number</string>
     <string name="selected_count">%1$d selected</string>
-    <string name="imported_count">%1$d contacts imported</string>
+    <plurals name="imported_count">
+        <item quantity="one">%1$d contact imported</item>
+        <item quantity="other">%1$d contacts imported</item>
+    </plurals>
     <string name="already_added">Added</string>
     <string name="loading_contacts">Loading contacts\u2026</string>
     <string name="no_contacts_found">No contacts found on this phone.</string>
@@ -341,7 +347,10 @@
         <item quantity="one">Overdue by %1$d day</item>
         <item quantity="other">Overdue by %1$d days</item>
     </plurals>
-    <string name="due_summary">%1$d cheque(s) ready to bank</string>
+    <plurals name="due_summary">
+        <item quantity="one">%1$d cheque ready to bank</item>
+        <item quantity="other">%1$d cheques ready to bank</item>
+    </plurals>
     <string name="due_summary_none">Nothing due</string>
     <string name="due_summary_pending">%1$d waiting to clear</string>
     <string name="due_summary_empty">No cheques</string>
@@ -553,7 +562,10 @@
     <string name="restore_no_images">Your records are back, but this backup had no images with it, so photos, bill photos and the QR were not restored. To keep images in future backups, turn on Include images before backing up.</string>
     <string name="restore_file_no_images">Your records are back. A file backup carries records only — it never includes images. Back up to Google Drive with Include images turned on to keep photos as well.</string>
     <string name="drive_looking">Looking on Drive…</string>
-    <string name="drive_found_businesses">%1$d business(es) on Drive</string>
+    <plurals name="drive_found_businesses">
+        <item quantity="one">%1$d business on Drive</item>
+        <item quantity="other">%1$d businesses on Drive</item>
+    </plurals>
     <string name="drive_restore_all">Restore all</string>
     <string name="drive_restore_all_warning">These businesses will be restored from Drive, replacing whatever is on this phone for each of them:
 
@@ -761,7 +773,10 @@
     <string name="trace_batch_hint">Enter a batch number</string>
     <string name="trace_batch_help">If a sample is questioned or an inspector asks, search the batch number here to see which supplier it came from, on which bill, and when.</string>
     <string name="trace_no_results">No stock found with that batch number.</string>
-    <string name="trace_results">%1$d records found</string>
+    <plurals name="trace_results">
+        <item quantity="one">%1$d record found</item>
+        <item quantity="other">%1$d records found</item>
+    </plurals>
 
     <string name="search_action">Search</string>
 
@@ -883,7 +898,10 @@ You can change this any time from this screen.</string>
     <string name="metal_silver">silver</string>
     <string name="metal_gold">gold</string>
     <string name="last_transacted">Last transacted %1$s</string>
-    <string name="summary_with_overdue">%1$s \u00b7 %2$d need a reminder</string>
+    <plurals name="summary_with_overdue">
+        <item quantity="one">%1$s \u00b7 %2$d needs a reminder</item>
+        <item quantity="other">%1$s \u00b7 %2$d need a reminder</item>
+    </plurals>
     <plurals name="customer_count">
         <item quantity="one">%d customer</item>
         <item quantity="other">%d customers</item>
@@ -1073,7 +1091,10 @@ You can change this any time from this screen.</string>
         <item quantity="one">%1$d customer and all their entries will move to the Recycle Bin. You can restore them within 30 days.</item>
         <item quantity="other">%1$d customers and all their entries will move to the Recycle Bin. You can restore them within 30 days.</item>
     </plurals>
-    <string name="delete_parties_owing">%1$d of them still have a balance — %2$s to collect, %3$s to pay. Removing them takes that off your totals; it does not settle it.</string>
+    <plurals name="delete_parties_owing">
+        <item quantity="one">%1$d of them still has a balance — %2$s to collect, %3$s to pay. Removing them takes that off your totals; it does not settle it.</item>
+        <item quantity="other">%1$d of them still have a balance — %2$s to collect, %3$s to pay. Removing them takes that off your totals; it does not settle it.</item>
+    </plurals>
     <string name="customer_qr">Customer QR</string>
     <string name="customer_qr_hint">Scan this in Roshan Khata to open this ledger. The code carries no name, number or balance.</string>
     <string name="scan_customer_qr">Scan customer card</string>
@@ -1088,7 +1109,10 @@ You can change this any time from this screen.</string>
     <string name="link_goods">Tie existing entries to products</string>
     <string name="link_goods_explain">This reads the product names already written on your bills and ledger entries, and creates a product for each one.\n\nWhat it will NOT do: it never changes a name you typed, and it never replaces a product you chose yourself. It runs as one step — either all of it happens or none of it does — and running it again does nothing.</string>
     <string name="link_goods_go">Tie them</string>
-    <string name="link_goods_done">Tied %1$d entries.</string>
+    <plurals name="link_goods_done">
+        <item quantity="one">Tied %1$d entry.</item>
+        <item quantity="other">Tied %1$d entries.</item>
+    </plurals>
     <string name="link_goods_none">Nothing left to tie.</string>
     <string name="link_goods_failed">Could not tie the entries. Your book is unchanged.</string>
 
@@ -1134,7 +1158,10 @@ You can change this any time from this screen.</string>
     <string name="batch_chosen">Batch: %1$s</string>
     <string name="batch_remaining">%1$s left</string>
     <string name="import_as_title">Save as</string>
-    <string name="import_as_message">%1$d contacts will be saved as:</string>
+    <plurals name="import_as_message">
+        <item quantity="one">%1$d contact will be saved as:</item>
+        <item quantity="other">%1$d contacts will be saved as:</item>
+    </plurals>
     <string name="bill_to_customer_title">This party is a customer</string>
     <string name="bill_to_customer_warn">%1$s is saved as a customer, not a supplier. A supplier bill puts what YOU owe on their account. If the same person really does supply you, go ahead — otherwise check the name.</string>
     <string name="change_party_type">Customer or supplier</string>
@@ -1184,8 +1211,14 @@ You can change this any time from this screen.</string>
     <string name="inspector_no_expiry">No expiry</string>
     <string name="inspector_expired">EXPIRED</string>
     <string name="inspector_batch_prefix">Batch</string>
-    <string name="inspector_gap_labels">%1$d products in stock are missing label details</string>
-    <string name="inspector_gap_expiry">%1$d batches have no expiry date</string>
+    <plurals name="inspector_gap_labels">
+        <item quantity="one">%1$d product in stock is missing label details</item>
+        <item quantity="other">%1$d products in stock are missing label details</item>
+    </plurals>
+    <plurals name="inspector_gap_expiry">
+        <item quantity="one">%1$d batch has no expiry date</item>
+        <item quantity="other">%1$d batches have no expiry date</item>
+    </plurals>
     <!-- Sales & purchase register (date-ranged) -->
     <string name="register_title">Sales &amp; purchase register</string>
     <string name="register_subtitle">What came in and went out, for a period</string>
@@ -1197,7 +1230,10 @@ You can change this any time from this screen.</string>
     <string name="register_empty">No sales or purchases in this period. Pick another range.</string>
     <string name="register_summary_sales">Sales: %1$d · %2$s</string>
     <string name="register_summary_purchases">Purchases: %1$d · %2$s</string>
-    <string name="register_missing_rate">%1$d purchase line(s) have no rate — not in the total</string>
+    <plurals name="register_missing_rate">
+        <item quantity="one">%1$d purchase line has no rate — not in the total</item>
+        <item quantity="other">%1$d purchase lines have no rate — not in the total</item>
+    </plurals>
 
     <!-- Two rates a product carries: counter price and udhar price. -->
     <string name="sale_price_hint">Cash price</string>

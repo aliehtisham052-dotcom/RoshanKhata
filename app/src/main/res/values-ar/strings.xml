@@ -40,7 +40,14 @@
     <string name="coach_desc_products">المخزون الحالي، تاريخ انتهاء كل دفعة، وتقارير الامتثال — تُبنى تلقائيًا من نفس الفواتير التي تُسجّلها.</string>
     <string name="followup_title">المتابعة</string>
     <string name="followup_subtitle">ممن تُحصّل — الأقدم أولاً، والمبلغ بجانبه</string>
-    <string name="followup_summary">%1$d عميلاً مدينون لك · الإجمالي %2$s</string>
+    <plurals name="followup_summary">
+        <item quantity="zero">%1$d عميل مدين لك · الإجمالي %2$s</item>
+        <item quantity="one">عميل واحد مدين لك · الإجمالي %2$s</item>
+        <item quantity="two">عميلان مدينان لك · الإجمالي %2$s</item>
+        <item quantity="few">%1$d عملاء مدينون لك · الإجمالي %2$s</item>
+        <item quantity="many">%1$d عميلًا مدينون لك · الإجمالي %2$s</item>
+        <item quantity="other">%1$d عميل مدين لك · الإجمالي %2$s</item>
+    </plurals>
     <plurals name="followup_last_ago">
         <item quantity="zero">آخر معاملة قبل %1$d يوم</item>
         <item quantity="one">آخر معاملة أمس</item>
@@ -240,7 +247,14 @@
     <string name="import_selected">استيراد المحدد</string>
     <string name="search_contacts">ابحث بالاسم أو الرقم</string>
     <string name="selected_count">%1$d محدد</string>
-    <string name="imported_count">استُورد %1$d من جهات الاتصال</string>
+    <plurals name="imported_count">
+        <item quantity="zero">استُورد %1$d جهة اتصال</item>
+        <item quantity="one">استُوردت جهة اتصال واحدة</item>
+        <item quantity="two">استُوردت جهتا اتصال</item>
+        <item quantity="few">استُوردت %1$d جهات اتصال</item>
+        <item quantity="many">استُوردت %1$d جهة اتصال</item>
+        <item quantity="other">استُوردت %1$d جهة اتصال</item>
+    </plurals>
     <string name="already_added">مضاف</string>
     <string name="loading_contacts">جارٍ تحميل جهات الاتصال\u2026</string>
     <string name="no_contacts_found">لا جهات اتصال على هذا الهاتف.</string>
@@ -347,7 +361,14 @@
         <item quantity="many">متأخر %1$d يومًا</item>
         <item quantity="other">متأخر %1$d يوم</item>
     </plurals>
-    <string name="due_summary">%1$d شيك جاهز للإيداع</string>
+    <plurals name="due_summary">
+        <item quantity="zero">%1$d شيك جاهز للإيداع</item>
+        <item quantity="one">شيك واحد جاهز للإيداع</item>
+        <item quantity="two">شيكان جاهزان للإيداع</item>
+        <item quantity="few">%1$d شيكات جاهزة للإيداع</item>
+        <item quantity="many">%1$d شيكًا جاهزًا للإيداع</item>
+        <item quantity="other">%1$d شيك جاهز للإيداع</item>
+    </plurals>
     <string name="due_summary_none">لا مستحقات</string>
     <string name="due_summary_pending">%1$d بانتظار الصرف</string>
     <string name="due_summary_empty">لا شيكات</string>
@@ -550,7 +571,14 @@
     <string name="restore_no_images">عادت سجلاتك، لكن هذه النسخة الاحتياطية لم تكن معها صور، لذلك لم تُستعد الصور وصور الفواتير ورمز الاستجابة. للاحتفاظ بالصور في النسخ القادمة، فعّل Include images قبل النسخ الاحتياطي.</string>
     <string name="restore_file_no_images">عادت سجلاتك. النسخة الاحتياطية بملف تحمل السجلات فقط ولا تتضمن الصور أبدًا. للاحتفاظ بالصور أيضًا، فعّل Include images وانسخ احتياطيًا إلى جوجل درايف.</string>
     <string name="drive_looking">جارٍ البحث في درايف…</string>
-    <string name="drive_found_businesses">تم العثور على %1$d نشاط تجاري في درايف</string>
+    <plurals name="drive_found_businesses">
+        <item quantity="zero">تم العثور على %1$d نشاط تجاري في درايف</item>
+        <item quantity="one">تم العثور على نشاط تجاري واحد في درايف</item>
+        <item quantity="two">تم العثور على نشاطين تجاريين في درايف</item>
+        <item quantity="few">تم العثور على %1$d أنشطة تجارية في درايف</item>
+        <item quantity="many">تم العثور على %1$d نشاطًا تجاريًا في درايف</item>
+        <item quantity="other">تم العثور على %1$d نشاط تجاري في درايف</item>
+    </plurals>
     <string name="drive_restore_all">استعادة الكل</string>
     <string name="drive_restore_all_warning">ستُستعاد هذه الأنشطة من درايف، وستُستبدل بيانات كل منها على هذا الهاتف:
 
@@ -778,7 +806,14 @@
     <string name="trace_batch_hint">أدخل رقم الدُفعة</string>
     <string name="trace_batch_help">إن شُكك في عينة أو سأل مفتش، ابحث هنا برقم الدُفعة — من أي مورّد وعلى أي فاتورة ومتى.</string>
     <string name="trace_no_results">لا بضاعة بهذا الرقم.</string>
-    <string name="trace_results">وُجد %1$d سجل</string>
+    <plurals name="trace_results">
+        <item quantity="zero">وُجد %1$d سجل</item>
+        <item quantity="one">وُجد سجل واحد</item>
+        <item quantity="two">وُجد سجلان</item>
+        <item quantity="few">وُجدت %1$d سجلات</item>
+        <item quantity="many">وُجد %1$d سجلًا</item>
+        <item quantity="other">وُجد %1$d سجل</item>
+    </plurals>
 
     <string name="search_action">بحث</string>
 
@@ -890,7 +925,14 @@
     <string name="metal_silver">فضة</string>
     <string name="metal_gold">ذهب</string>
     <string name="last_transacted">آخر معاملة %1$s</string>
-    <string name="summary_with_overdue">%1$s \u00b7 %2$d يحتاجون تذكيرًا</string>
+    <plurals name="summary_with_overdue">
+        <item quantity="zero">%1$s \u00b7 %2$d يحتاج تذكيرًا</item>
+        <item quantity="one">%1$s \u00b7 واحد يحتاج تذكيرًا</item>
+        <item quantity="two">%1$s \u00b7 اثنان يحتاجان تذكيرًا</item>
+        <item quantity="few">%1$s \u00b7 %2$d يحتاجون تذكيرًا</item>
+        <item quantity="many">%1$s \u00b7 %2$d يحتاجون تذكيرًا</item>
+        <item quantity="other">%1$s \u00b7 %2$d يحتاج تذكيرًا</item>
+    </plurals>
     <plurals name="customer_count">
         <item quantity="zero">%d عملاء</item>
         <item quantity="one">عميل واحد</item>
@@ -1108,7 +1150,14 @@
         <item quantity="many">سيُنقل %1$d عميلًا وجميع قيودهم إلى سلة المحذوفات. يمكنك استعادتهم خلال 30 يومًا.</item>
         <item quantity="other">سيُنقل %1$d عميل وجميع قيودهم إلى سلة المحذوفات. يمكنك استعادتهم خلال 30 يومًا.</item>
     </plurals>
-    <string name="delete_parties_owing">%1$d منهم لديهم رصيد — %2$s للتحصيل، %3$s للدفع. حذفهم يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</string>
+    <plurals name="delete_parties_owing">
+        <item quantity="zero">%1$d منهم لديهم رصيد — %2$s للتحصيل، %3$s للدفع. حذفهم يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</item>
+        <item quantity="one">واحد منهم لديه رصيد — %2$s للتحصيل، %3$s للدفع. حذفه يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</item>
+        <item quantity="two">اثنان منهم لديهما رصيد — %2$s للتحصيل، %3$s للدفع. حذفهما يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</item>
+        <item quantity="few">%1$d منهم لديهم رصيد — %2$s للتحصيل، %3$s للدفع. حذفهم يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</item>
+        <item quantity="many">%1$d منهم لديهم رصيد — %2$s للتحصيل، %3$s للدفع. حذفهم يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</item>
+        <item quantity="other">%1$d منهم لديهم رصيد — %2$s للتحصيل، %3$s للدفع. حذفهم يزيل ذلك من إجمالياتك ولا يسوّي الحساب.</item>
+    </plurals>
     <string name="customer_qr">رمز QR للعميل</string>
     <string name="customer_qr_hint">امسحه في روشن كهاتا ليُفتح هذا الحساب. الرمز لا يحمل اسمًا ولا رقمًا ولا رصيدًا.</string>
     <string name="scan_customer_qr">مسح بطاقة العميل</string>
@@ -1123,7 +1172,14 @@
     <string name="link_goods">اربط القيود السابقة بالمنتجات</string>
     <string name="link_goods_explain">يقرأ هذا أسماء المنتجات المكتوبة أصلاً في فواتيرك وقيودك، ويُنشئ منتجاً لكل اسم.\n\nما لن يفعله: لن يغيّر اسماً كتبته أبداً، ولن يستبدل منتجاً اخترته بنفسك. يجري في خطوة واحدة — إما كله أو لا شيء — وتشغيله مرة أخرى لا يفعل شيئاً.</string>
     <string name="link_goods_go">اربطها</string>
-    <string name="link_goods_done">تم ربط %1$d قيداً.</string>
+    <plurals name="link_goods_done">
+        <item quantity="zero">تم ربط %1$d قيد.</item>
+        <item quantity="one">تم ربط قيد واحد.</item>
+        <item quantity="two">تم ربط قيدين.</item>
+        <item quantity="few">تم ربط %1$d قيود.</item>
+        <item quantity="many">تم ربط %1$d قيدًا.</item>
+        <item quantity="other">تم ربط %1$d قيد.</item>
+    </plurals>
     <string name="link_goods_none">لم يبق شيء لربطه.</string>
     <string name="link_goods_failed">تعذّر ربط القيود. دفترك كما كان.</string>
 
@@ -1169,7 +1225,14 @@
     <string name="batch_chosen">الدفعة: %1$s</string>
     <string name="batch_remaining">المتبقي %1$s</string>
     <string name="import_as_title">حفظ كـ</string>
-    <string name="import_as_message">سيتم حفظ %1$d جهة اتصال كالتالي:</string>
+    <plurals name="import_as_message">
+        <item quantity="zero">سيتم حفظ %1$d جهة اتصال كالتالي:</item>
+        <item quantity="one">سيتم حفظ جهة اتصال واحدة كالتالي:</item>
+        <item quantity="two">سيتم حفظ جهتي اتصال كالتالي:</item>
+        <item quantity="few">سيتم حفظ %1$d جهات اتصال كالتالي:</item>
+        <item quantity="many">سيتم حفظ %1$d جهة اتصال كالتالي:</item>
+        <item quantity="other">سيتم حفظ %1$d جهة اتصال كالتالي:</item>
+    </plurals>
     <string name="bill_to_customer_title">هذا الطرف عميل</string>
     <string name="bill_to_customer_warn">%1$s محفوظ كعميل، لا كمورد. فاتورة المورد تضع ما تدين به أنت في حسابه. إن كان الشخص نفسه يورد لك فعلاً فتابع — وإلا فراجع الاسم.</string>
     <string name="change_party_type">عميل أم مورد</string>
@@ -1218,8 +1281,22 @@
     <string name="inspector_no_expiry">لا يوجد تاريخ انتهاء</string>
     <string name="inspector_expired">منتهية</string>
     <string name="inspector_batch_prefix">دفعة</string>
-    <string name="inspector_gap_labels">%1$d منتجات في المخزون تنقصها بيانات الملصق</string>
-    <string name="inspector_gap_expiry">%1$d دفعات بدون تاريخ انتهاء</string>
+    <plurals name="inspector_gap_labels">
+        <item quantity="zero">%1$d منتج في المخزون تنقصه بيانات الملصق</item>
+        <item quantity="one">منتج واحد في المخزون تنقصه بيانات الملصق</item>
+        <item quantity="two">منتجان في المخزون تنقصهما بيانات الملصق</item>
+        <item quantity="few">%1$d منتجات في المخزون تنقصها بيانات الملصق</item>
+        <item quantity="many">%1$d منتجًا في المخزون تنقصها بيانات الملصق</item>
+        <item quantity="other">%1$d منتج في المخزون تنقصه بيانات الملصق</item>
+    </plurals>
+    <plurals name="inspector_gap_expiry">
+        <item quantity="zero">%1$d دفعة بدون تاريخ انتهاء</item>
+        <item quantity="one">دفعة واحدة بدون تاريخ انتهاء</item>
+        <item quantity="two">دفعتان بدون تاريخ انتهاء</item>
+        <item quantity="few">%1$d دفعات بدون تاريخ انتهاء</item>
+        <item quantity="many">%1$d دفعة بدون تاريخ انتهاء</item>
+        <item quantity="other">%1$d دفعة بدون تاريخ انتهاء</item>
+    </plurals>
     <!-- Sales & purchase register (date-ranged) -->
     <string name="register_title">سجل المبيعات والمشتريات</string>
     <string name="register_subtitle">ما دخل وما خرج خلال فترة</string>
@@ -1231,7 +1308,14 @@
     <string name="register_empty">لا توجد مبيعات أو مشتريات في هذه الفترة. اختر فترة أخرى.</string>
     <string name="register_summary_sales">المبيعات: %1$d · %2$s</string>
     <string name="register_summary_purchases">المشتريات: %1$d · %2$s</string>
-    <string name="register_missing_rate">%1$d من سطور الشراء بلا سعر — غير مدرجة في الإجمالي</string>
+    <plurals name="register_missing_rate">
+        <item quantity="zero">%1$d من سطور الشراء بلا سعر — غير مدرجة في الإجمالي</item>
+        <item quantity="one">سطر شراء واحد بلا سعر — غير مدرج في الإجمالي</item>
+        <item quantity="two">سطرا شراء بلا سعر — غير مدرجين في الإجمالي</item>
+        <item quantity="few">%1$d سطور شراء بلا سعر — غير مدرجة في الإجمالي</item>
+        <item quantity="many">%1$d سطرًا من سطور الشراء بلا سعر — غير مدرجة في الإجمالي</item>
+        <item quantity="other">%1$d من سطور الشراء بلا سعر — غير مدرجة في الإجمالي</item>
+    </plurals>
 
     <string name="sale_price_hint">سعر النقد</string>
     <string name="credit_price_hint">سعر الآجل</string>

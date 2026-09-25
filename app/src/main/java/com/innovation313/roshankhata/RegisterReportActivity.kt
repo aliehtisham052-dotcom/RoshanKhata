@@ -103,7 +103,10 @@ class RegisterReportActivity : AppCompatActivity() {
             append(getString(R.string.register_summary_purchases, d.purchases.size, Format.money(d.purchaseTotal)))
             if (d.purchasesMissingRate > 0) {
                 append("\n")
-                append(getString(R.string.register_missing_rate, d.purchasesMissingRate))
+                append(resources.getQuantityString(
+                        R.plurals.register_missing_rate,
+                        d.purchasesMissingRate, d.purchasesMissingRate
+                    ))
             }
         }
 

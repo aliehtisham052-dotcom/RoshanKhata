@@ -40,7 +40,10 @@
     <string name="coach_desc_products">Hath mein maujooda stock, batch ki expiry, aur compliance registers — wahi bills jo aap pehle se likhte hain, unhi se khud ban jaate hain.</string>
     <string name="followup_title">Wusooli</string>
     <string name="followup_subtitle">Kis se wusool karna hai — sab se purana pehle, raqam saath</string>
-    <string name="followup_summary">%1$d customers ke zimme aap ka · kul %2$s</string>
+    <plurals name="followup_summary">
+        <item quantity="one">%1$d customer ke zimme aap ka · kul %2$s</item>
+        <item quantity="other">%1$d customers ke zimme aap ka · kul %2$s</item>
+    </plurals>
     <plurals name="followup_last_ago">
         <item quantity="one">Aakhri len-den %1$d din pehle</item>
         <item quantity="other">Aakhri len-den %1$d din pehle</item>
@@ -224,7 +227,10 @@
     <string name="import_selected">Muntakhib Shamil Karein</string>
     <string name="search_contacts">Naam ya number se talash karein</string>
     <string name="selected_count">%1$d muntakhib</string>
-    <string name="imported_count">%1$d contacts shamil ho gaye</string>
+    <plurals name="imported_count">
+        <item quantity="one">%1$d contact shamil ho gaya</item>
+        <item quantity="other">%1$d contacts shamil ho gaye</item>
+    </plurals>
     <string name="already_added">Shamil hai</string>
     <string name="loading_contacts">Contacts load ho rahe hain\u2026</string>
     <string name="no_contacts_found">Is phone par koi contact nahi mila.</string>
@@ -323,7 +329,10 @@
         <item quantity="one">%1$d din guzar chuka</item>
         <item quantity="other">%1$d din guzar chuke</item>
     </plurals>
-    <string name="due_summary">%1$d cheque bank le jane ke liye tayyar</string>
+    <plurals name="due_summary">
+        <item quantity="one">%1$d cheque bank le jane ke liye tayyar</item>
+        <item quantity="other">%1$d cheque bank le jane ke liye tayyar</item>
+    </plurals>
     <string name="due_summary_none">Kuch wajib nahi</string>
     <string name="due_summary_pending">%1$d clear hone ke muntazir</string>
     <string name="due_summary_empty">Koi cheque nahi</string>
@@ -526,7 +535,10 @@
     <string name="restore_no_images">Aap ka record wapas aa gaya, lekin is backup ke sath images nahi thin, is liye photos, bill photos aur QR bahal nahi hue. Aainda backup mein images rakhne ke liye backup se pehle Include images on karein.</string>
     <string name="restore_file_no_images">Aap ka record wapas aa gaya. File backup sirf record le kar jata hai — usme images kabhi shamil nahi hotin. Photos bhi mehfooz rakhne ke liye Include images on kar ke Google Drive par backup karein.</string>
     <string name="drive_looking">Drive par dekh rahe hain…</string>
-    <string name="drive_found_businesses">Drive par %1$d business mile</string>
+    <plurals name="drive_found_businesses">
+        <item quantity="one">Drive par %1$d business mila</item>
+        <item quantity="other">Drive par %1$d business mile</item>
+    </plurals>
     <string name="drive_restore_all">Sab bahal karein</string>
     <string name="drive_restore_all_warning">Ye business Drive se bahal honge, aur har ek ka mojooda data is phone par un se badal jayega:
 
@@ -730,7 +742,10 @@
     <string name="trace_batch_hint">Batch number likhein</string>
     <string name="trace_batch_help">Agar namoone par sawal ho ya inspector pooche, yahan batch number talash karein — kis supplier se, kis bill par, aur kab aaya.</string>
     <string name="trace_no_results">Is batch number ka koi maal nahi mila.</string>
-    <string name="trace_results">%1$d record mile</string>
+    <plurals name="trace_results">
+        <item quantity="one">%1$d record mila</item>
+        <item quantity="other">%1$d record mile</item>
+    </plurals>
 
     <string name="search_action">Talash</string>
 
@@ -842,7 +857,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="metal_silver">chandi</string>
     <string name="metal_gold">sona</string>
     <string name="last_transacted">Aakhri len den %1$s</string>
-    <string name="summary_with_overdue">%1$s \u00b7 %2$d ko yaad dehani chahiye</string>
+    <plurals name="summary_with_overdue">
+        <item quantity="one">%1$s \u00b7 %2$d ko yaad dehani chahiye</item>
+        <item quantity="other">%1$s \u00b7 %2$d ko yaad dehani chahiye</item>
+    </plurals>
     <plurals name="customer_count">
         <item quantity="one">%d gahak</item>
         <item quantity="other">%d gahak</item>
@@ -1032,7 +1050,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">%1$d gaahak aur uski tamam entries Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</item>
         <item quantity="other">%1$d gaahak aur unki tamam entries Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</item>
     </plurals>
-    <string name="delete_parties_owing">In mein se %1$d ka hisaab baqi hai — %2$s lene hain, %3$s dene hain. Hataane se ye aap ke total se nikal jayega, hisaab khatm nahi hoga.</string>
+    <plurals name="delete_parties_owing">
+        <item quantity="one">In mein se %1$d ka hisaab baqi hai — %2$s lene hain, %3$s dene hain. Hataane se ye aap ke total se nikal jayega, hisaab khatm nahi hoga.</item>
+        <item quantity="other">In mein se %1$d ka hisaab baqi hai — %2$s lene hain, %3$s dene hain. Hataane se ye aap ke total se nikal jayega, hisaab khatm nahi hoga.</item>
+    </plurals>
     <string name="customer_qr">Gaahak ka QR</string>
     <string name="customer_qr_hint">Roshan Khata mein scan karein to yeh khata khul jayega. Code mein na naam hai, na number, na hisaab.</string>
     <string name="scan_customer_qr">Gaahak ka card scan karein</string>
@@ -1047,7 +1068,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="link_goods">Purani entries ko products se jorein</string>
     <string name="link_goods_explain">Ye aap ke bills aur khaton par pehle se likhe hue product ke naam parhta hai, aur har naam ka ek product bana deta hai.\n\nJo ye NAHI karega: aap ka likha hua naam kabhi nahi badlega, aur jo product aap ne khud chuna ho use kabhi tabdeel nahi karega. Ye ek hi qadam mein hota hai — ya poora hoga ya bilkul nahi — aur dobara chalane se kuch nahi hota.</string>
     <string name="link_goods_go">Jor dein</string>
-    <string name="link_goods_done">%1$d entries jur gayin.</string>
+    <plurals name="link_goods_done">
+        <item quantity="one">%1$d entry jur gayi.</item>
+        <item quantity="other">%1$d entries jur gayin.</item>
+    </plurals>
     <string name="link_goods_none">Jorne ko kuch baqi nahi.</string>
     <string name="link_goods_failed">Entries nahi jur sakin. Aap ki kitab jaisi thi waisi hai.</string>
 
@@ -1093,7 +1117,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="batch_chosen">Batch: %1$s</string>
     <string name="batch_remaining">%1$s baqi</string>
     <string name="import_as_title">Kis tor par save karein</string>
-    <string name="import_as_message">%1$d contacts is tor par save honge:</string>
+    <plurals name="import_as_message">
+        <item quantity="one">%1$d contact is tor par save hoga:</item>
+        <item quantity="other">%1$d contacts is tor par save honge:</item>
+    </plurals>
     <string name="bill_to_customer_title">Ye party customer hai</string>
     <string name="bill_to_customer_warn">%1$s customer ke tor par save hai, supplier nahi. Supplier bill un ke khate mein wo raqam likhti hai jo AAP ne dena hai. Agar wahi shakhs waqai aap ko maal deta hai to aage barhein — warna naam check kar lein.</string>
     <string name="change_party_type">Customer ya supplier</string>
@@ -1142,8 +1169,14 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="inspector_no_expiry">Expiry nahi</string>
     <string name="inspector_expired">EXPIRED</string>
     <string name="inspector_batch_prefix">Batch</string>
-    <string name="inspector_gap_labels">Stock mein %1$d products ki label tafseel mojood nahi</string>
-    <string name="inspector_gap_expiry">%1$d batch ki expiry date darj nahi</string>
+    <plurals name="inspector_gap_labels">
+        <item quantity="one">Stock mein %1$d product ki label tafseel mojood nahi</item>
+        <item quantity="other">Stock mein %1$d products ki label tafseel mojood nahi</item>
+    </plurals>
+    <plurals name="inspector_gap_expiry">
+        <item quantity="one">%1$d batch ki expiry date darj nahi</item>
+        <item quantity="other">%1$d batch ki expiry date darj nahi</item>
+    </plurals>
     <!-- Sales & purchase register (date-ranged) -->
     <string name="register_title">Farokht o Khareed register</string>
     <string name="register_subtitle">Aik muddat mein kya aaya, kya gaya</string>
@@ -1155,7 +1188,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="register_empty">Is muddat mein koi farokht ya khareed nahi. Doosri muddat chunein.</string>
     <string name="register_summary_sales">Farokht: %1$d · %2$s</string>
     <string name="register_summary_purchases">Khareed: %1$d · %2$s</string>
-    <string name="register_missing_rate">%1$d khareed line(s) ka rate darj nahi — total mein shamil nahi</string>
+    <plurals name="register_missing_rate">
+        <item quantity="one">%1$d khareed line ka rate darj nahi — total mein shamil nahi</item>
+        <item quantity="other">%1$d khareed lines ka rate darj nahi — total mein shamil nahi</item>
+    </plurals>
 
     <string name="sale_price_hint">Naqd qeemat</string>
     <string name="credit_price_hint">Udhar qeemat</string>

@@ -901,7 +901,9 @@ class BillsActivity : AppCompatActivity() {
                     }
 
                     MaterialAlertDialogBuilder(this@BillsActivity)
-                        .setTitle(getString(R.string.trace_results, results.size))
+                        .setTitle(resources.getQuantityString(
+                            R.plurals.trace_results, results.size, results.size
+                        ))
                         .setMessage(text)
                         .setPositiveButton(R.string.ok, null)
                         .show()
