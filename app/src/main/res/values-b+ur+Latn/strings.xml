@@ -1167,4 +1167,5 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="invoice_number_auto_hint">%1$s (khud-ba-khud)</string>
     <string name="invoice_editor_item_count">Items: %1$d</string>
     <string name="invoice_editor_total">Kul %1$s</string>
+    <string name="running_balance_short">Baqaya: %1$s</string>
 </resources>

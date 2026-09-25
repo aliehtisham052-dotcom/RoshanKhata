@@ -1175,4 +1175,5 @@
     <string name="invoice_number_auto_hint">%1$s (تلقائي)</string>
     <string name="invoice_editor_item_count">الأصناف: %1$d</string>
     <string name="invoice_editor_total">الإجمالي %1$s</string>
+    <string name="running_balance_short">الرصيد: %1$s</string>
 </resources>

@@ -1195,4 +1195,5 @@
     <string name="invoice_number_auto_hint">%1$s (پاڻمرادو)</string>
     <string name="invoice_editor_item_count">شيون: %1$d</string>
     <string name="invoice_editor_total">ڪل %1$s</string>
+    <string name="running_balance_short">بقايا: %1$s</string>
 </resources>

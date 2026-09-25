@@ -1195,4 +1195,5 @@
     <string name="invoice_number_auto_hint">%1$s (خودکار)</string>
     <string name="invoice_editor_item_count">اقلام: %1$d</string>
     <string name="invoice_editor_total">جمع %1$s</string>
+    <string name="running_balance_short">مانده: %1$s</string>
 </resources>
