@@ -83,6 +83,32 @@ abstract class KhataDatabase : RoomDatabase() {
         }
 
         /**
+         * A SEPARATE, short-lived handle on ANOTHER business's file — never
+         * the singleton, and never the active business.
+         *
+         * [get] keeps exactly one instance, and opening a second business
+         * through it would close the one the open screens are using. That is
+         * why the daily reminder sweep could only ever see the shop that
+         * happened to be open, and a cheque due in a closed shop passed in
+         * silence. This gives a background job its own handle instead: it
+         * reads, it closes, and INSTANCE is never touched.
+         *
+         * Two live handles on ONE file would let a write race a switch, so
+         * this refuses the active file outright rather than trusting callers.
+         * Returns null when the business has no database file yet (created
+         * but never written to) — a reader must not bring a file into
+         * existence. The caller MUST close what it receives.
+         */
+        fun openOther(context: Context, business: Businesses.Business): KhataDatabase? {
+            val app = context.applicationContext
+            if (business.file == Businesses.activeDbFile(app)) return null
+            if (!app.getDatabasePath(business.file).exists()) return null
+            return Room.databaseBuilder(app, KhataDatabase::class.java, business.file)
+                .addMigrations(*ALL_MIGRATIONS)
+                .build()
+        }
+
+        /**
          * Called by [Businesses.switchTo] after the active business changes.
          * The next [get] opens the newly active business's own file.
          */

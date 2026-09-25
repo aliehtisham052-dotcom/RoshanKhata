@@ -21,6 +21,7 @@ import com.innovation313.roshankhata.data.BackupReminder
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.ChequeStatus
 import com.innovation313.roshankhata.data.DriveBackup
+import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.KhataDatabase
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -72,39 +73,72 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         }.timeInMillis
         val expiryWindow = System.currentTimeMillis() + 60L * 24 * 60 * 60 * 1000
 
-        // Cheques: still pending, written date reached or passed.
-        val chequesDue = dao.allChequesForBackup().count {
-            !it.isDeleted && it.status == ChequeStatus.PENDING && it.dueDate <= endOfToday
-        }
-        if (chequesDue > 0) notify(
+        // The shop that is open: its own screens can show every one of these,
+        // so each notification lands on the list it is about.
+        val here = countDue(dao, endOfToday, expiryWindow)
+        if (here.cheques > 0) notify(
             ctx, ID_CHEQUES, ChequesActivity::class.java,
             ctx.getString(R.string.notif_cheques_title),
-            ctx.getString(R.string.notif_cheques_body, chequesDue)
+            ctx.getString(R.string.notif_cheques_body, here.cheques)
         )
-
-        // Payment plans: open, with an agreed date that has arrived.
-        val plansDue = dao.allPlansForBackup().count {
-            !it.isDeleted && !it.isClosed &&
-                it.nextDueDate != null && it.nextDueDate <= endOfToday
-        }
-        if (plansDue > 0) notify(
+        if (here.plans > 0) notify(
             ctx, ID_PLANS, PlansActivity::class.java,
             ctx.getString(R.string.notif_plans_title),
-            ctx.getString(R.string.notif_plans_body, plansDue)
+            ctx.getString(R.string.notif_plans_body, here.plans)
         )
-
-        // Expiring stock: items with a recorded expiry inside the 60-day window
-        // (or already past it), on bills that still exist.
-        val liveBills = dao.allBillsForBackup()
-            .filter { !it.isDeleted }.map { it.id }.toSet()
-        val expiringCount = dao.allBillItemsForBackup().count {
-            it.billId in liveBills && it.expiryDate != null && it.expiryDate <= expiryWindow
-        }
-        if (expiringCount > 0) notify(
+        if (here.expiring > 0) notify(
             ctx, ID_EXPIRY, ExpiringActivity::class.java,
             ctx.getString(R.string.notif_expiry_title),
-            ctx.getString(R.string.notif_expiry_body, expiringCount)
+            ctx.getString(R.string.notif_expiry_body, here.expiring)
         )
+
+        // EVERY OTHER SHOP. Until now the sweep saw only the open one, so a
+        // cheque due in a shop the owner had not opened for a week passed in
+        // silence — the money was the same money, the book was just closed.
+        // Each shop is read through its own short-lived handle
+        // (KhataDatabase.openOther) so the singleton the open screens use is
+        // never disturbed, and closed again immediately.
+        //
+        // These notifications name the shop and open the business switcher,
+        // not the cheque list: the cheque list can only ever show the shop
+        // that is currently open, so sending the owner there would show them
+        // the wrong book. Switching first is the step that actually helps.
+        val openId = Businesses.active(ctx).id
+        for (biz in Businesses.list(ctx)) {
+            if (biz.id == openId) continue
+            // A shop whose file cannot be opened or read (a corrupt file, a
+            // migration that is not written yet) must not take down the sweep
+            // for the shops that CAN be read.
+            var due: Due? = null
+            var other: KhataDatabase? = null
+            try {
+                other = KhataDatabase.openOther(ctx, biz)
+                if (other != null) due = countDue(other.khataDao(), endOfToday, expiryWindow)
+            } catch (_: Exception) {
+                due = null
+            } finally {
+                other?.close()
+            }
+            if (due == null) continue
+
+            val shop = Businesses.displayName(ctx, biz)
+                ?: ctx.getString(R.string.business_numbered, biz.id)
+            if (due.cheques > 0) notify(
+                ctx, ID_CHEQUES_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
+                ctx.getString(R.string.notif_cheques_title),
+                ctx.getString(R.string.notif_cheques_body_named, shop, due.cheques)
+            )
+            if (due.plans > 0) notify(
+                ctx, ID_PLANS_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
+                ctx.getString(R.string.notif_plans_title),
+                ctx.getString(R.string.notif_plans_body_named, shop, due.plans)
+            )
+            if (due.expiring > 0) notify(
+                ctx, ID_EXPIRY_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
+                ctx.getString(R.string.notif_expiry_title),
+                ctx.getString(R.string.notif_expiry_body_named, shop, due.expiring)
+            )
+        }
 
         // Backup: same rule the home screen uses — data exists, and a week of
         // silence since the last backup (or never backed up at all). Skipped
@@ -115,7 +149,6 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         val hasData = dao.totalEntryCount() > 0
         if (!autoBackupFailed) {
             val businesses = Businesses.list(ctx)
-            val openId = Businesses.active(ctx).id
 
             // The open shop keeps the fuller rule, because its book can
             // actually be counted here.
@@ -145,6 +178,35 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         }
 
         return Result.success()
+    }
+
+    /** What one shop's book owes the owner's attention today. */
+    private data class Due(val cheques: Int, val plans: Int, val expiring: Int)
+
+    /**
+     * The same three questions asked of ANY shop's book, open or not.
+     *
+     * Pulled out of doWork so the closed shops are judged by exactly the rule
+     * the open one is, rather than a second copy that drifts from it.
+     */
+    private suspend fun countDue(dao: KhataDao, endOfToday: Long, expiryWindow: Long): Due {
+        // Cheques: still pending, written date reached or passed.
+        val cheques = dao.allChequesForBackup().count {
+            !it.isDeleted && it.status == ChequeStatus.PENDING && it.dueDate <= endOfToday
+        }
+        // Payment plans: open, with an agreed date that has arrived.
+        val plans = dao.allPlansForBackup().count {
+            !it.isDeleted && !it.isClosed &&
+                it.nextDueDate != null && it.nextDueDate <= endOfToday
+        }
+        // Expiring stock: items with a recorded expiry inside the 60-day
+        // window (or already past it), on bills that still exist.
+        val liveBills = dao.allBillsForBackup()
+            .filter { !it.isDeleted }.map { it.id }.toSet()
+        val expiring = dao.allBillItemsForBackup().count {
+            it.billId in liveBills && it.expiryDate != null && it.expiryDate <= expiryWindow
+        }
+        return Due(cheques, plans, expiring)
     }
 
     /**
@@ -206,6 +268,16 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
          * notification — the id is the base plus the business's own number.
          */
         private const val ID_BACKUP_BUSINESS = 1100
+
+        /**
+         * The same idea for the other three topics, one band each so a shop's
+         * cheque nudge can never overwrite its own expiry nudge, nor another
+         * shop's. The gap of 1000 leaves far more room than any owner will
+         * ever need shops.
+         */
+        private const val ID_CHEQUES_BUSINESS = 2000
+        private const val ID_PLANS_BUSINESS = 3000
+        private const val ID_EXPIRY_BUSINESS = 4000
 
         fun ensureChannel(ctx: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

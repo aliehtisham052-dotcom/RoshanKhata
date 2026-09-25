@@ -566,6 +566,11 @@
     <string name="business_last_backup">Last backup %1$s</string>
     <string name="business_never_backed_up">Never backed up</string>
     <string name="notif_backup_body_named">%1$s has not been backed up in over a week. Its records live only on this phone.</string>
+
+    <!-- Reminders for a shop that is NOT the one currently open: the shop has to be named, or the owner cannot tell whose cheque is due. -->
+    <string name="notif_cheques_body_named">%1$s: %2$d cheque(s) due today or overdue.</string>
+    <string name="notif_plans_body_named">%1$s: %2$d payment plan(s) due for a payment.</string>
+    <string name="notif_expiry_body_named">%1$s: %2$d item(s) expire within 60 days.</string>
     <string name="filter_title">Filter</string>
     <string name="filter_account_label">Account</string>
     <string name="filter_type_label">Type</string>
