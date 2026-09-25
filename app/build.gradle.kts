@@ -31,6 +31,10 @@ android {
 
     defaultConfig {
         applicationId = "com.innovation313.roshankhata"
+        // Runs app/src/androidTest on a real Android (the CI emulator, or a
+        // phone on USB). Packaged only into the separate test APK — this line
+        // changes nothing in the APK or the bundle.
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 24
         // 36 is Google Play's floor for new apps from 31 Aug 2026. Raised
         // last, after the window-inset handling in ScreenInsets had been
@@ -255,4 +259,12 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.16")
     testImplementation("androidx.test:core-ktx:1.7.0")
     testImplementation("androidx.test.ext:junit:1.3.0")
+
+    // On-device tests (app/src/androidTest): only what a real Android can show
+    // and Robolectric cannot — the real launcher, rotation, going to the
+    // background and back, a real tap. Separate configuration from
+    // implementation, so none of it reaches the app.
+    androidTestImplementation("androidx.test:core-ktx:1.7.0")
+    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
 }
