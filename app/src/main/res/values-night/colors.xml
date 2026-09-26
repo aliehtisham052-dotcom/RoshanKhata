@@ -8,7 +8,7 @@
 -->
 <resources>
     <color name="page_bg">#121513</color>
-    <color name="page_line">#2C302D</color>
+    <color name="page_line">#4E554F</color>
     <color name="navy_surface">#1A1E1B</color>
     <color name="navy_deep">#1A1E1B</color>
     <color name="surface">#1E2220</color>
@@ -60,8 +60,8 @@
     <color name="filter_neutral_stroke">#5A5648</color>
     <color name="filter_give_stroke">#3E6B58</color>
     <color name="filter_get_stroke">#7A4944</color>
-    <color name="editor_field_stroke">#4A473E</color>
-    <color name="editor_card_stroke">#34312A</color>
+    <color name="editor_field_stroke">#5E5A50</color>
+    <color name="editor_card_stroke">#4E4A40</color>
     <!-- Dark buttons with white text: a lighter green at night, so the pill
          stands out from the page and white text still reads on it. -->
     <color name="button_dark">#2E7D52</color>
