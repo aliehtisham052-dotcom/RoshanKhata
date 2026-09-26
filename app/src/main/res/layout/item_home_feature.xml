@@ -54,12 +54,16 @@
           wrap_content, "Khata" made a short tile and "Business Settings" a
           tall one, and a grid of tiles at differing heights reads as a
           mistake however carefully each one is drawn.
+
+          ellipsize: if a translation ever needs a third line at the largest
+          text size, it ends in "…" instead of being cut through the middle.
         -->
         <TextView
             android:id="@+id/tvFeatureLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="2"
+            android:ellipsize="end"
             android:layout_marginTop="3dp"
             android:gravity="center"
             android:lineSpacingExtra="1dp"
