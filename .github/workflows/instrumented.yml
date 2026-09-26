@@ -176,6 +176,16 @@ jobs:
             crashes=$(grep -c '// CRASH' /tmp/monkey_output.txt)
             anrs=$(grep -c 'NOT RESPONDING' /tmp/monkey_output.txt)
             echo "::notice::Monkey: ${injected:-0} events injected, ${crashes:-0} crashes, ${anrs:-0} ANR reports"
+            # Which screen stalled, for each ANR: the monkey prints the
+            # activity and the reason right after the marker.
+            grep -A4 'NOT RESPONDING' /tmp/monkey_output.txt | grep -E 'NOT RESPONDING|Reason|ANR in|Activity|Subject' | head -8 \
+              | while IFS= read -r line; do
+                  clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g' | cut -c1-300)
+                  echo "::notice::monkey ANR: $clean"
+                done
+            # The last screen the monkey was on before it stopped.
+            last=$(grep -o 'cmp=com.innovation313[^ }]*' /tmp/monkey_output.txt | tail -1)
+            echo "::notice::Monkey last screen: ${last:-unknown}"
           else
             echo "::notice::Monkey: did not run"
           fi
