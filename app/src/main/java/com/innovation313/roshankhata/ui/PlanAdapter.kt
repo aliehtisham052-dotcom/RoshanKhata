@@ -61,7 +61,7 @@ class PlanAdapter(
 
         if (p.isClosed) {
             holder.tvStatus.setText(R.string.plan_closed)
-            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got))
+            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got_text))
             holder.tvDue.visibility = View.GONE
             holder.itemView.alpha = 0.6f
         } else {

@@ -118,7 +118,7 @@
                         android:minHeight="48dp"
                         android:text="@string/about_privacy_policy"
                         android:textAllCaps="false"
-                        android:textColor="@color/brand_green"
+                        android:textColor="@color/brand_green_text"
                         android:textSize="14sp"
                         app:cornerRadius="12dp"
                         app:strokeColor="@color/brand_green" />

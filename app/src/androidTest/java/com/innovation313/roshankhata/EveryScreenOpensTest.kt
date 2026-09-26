@@ -176,7 +176,7 @@ class EveryScreenOpensTest(
             val ratio = ColorUtils.calculateContrast(fg, bg)
             if (ratio < 3.0) {
                 val id = if (v.id != View.NO_ID) v.resources.getResourceEntryName(v.id) else "?"
-                out += "'${v.text.toString().take(24)}' ($id) %.1f:1".format(ratio)
+                out += "'${v.text.toString().take(24)}' ($id) %.1f:1 on #%06X".format(ratio, bg and 0xFFFFFF)
             }
         }
         if (v is ViewGroup) for (i in 0 until v.childCount) checkContrast(v.getChildAt(i), page, out)
@@ -205,12 +205,25 @@ class EveryScreenOpensTest(
 
     private fun drawableColour(d: Drawable, state: IntArray): Int? = when (d) {
         is ColorDrawable -> d.color
+        // A gradient header: its average colour is what text sits on.
         is GradientDrawable -> d.color?.let { it.getColorForState(state, it.defaultColor) }
+            ?: d.colors?.takeIf { it.isNotEmpty() }?.let { average(it) }
         is MaterialShapeDrawable -> d.fillColor?.let { it.getColorForState(state, it.defaultColor) }
-        is LayerDrawable -> (d.numberOfLayers - 1 downTo 0).firstNotNullOfOrNull { drawableColour(d.getDrawable(it), state) }
+        // Top-most layer that covers the whole area. A layer with its own
+        // height or width is decoration (the 2dp gold rule under the Home
+        // header), not the colour behind the text.
+        is LayerDrawable -> (d.numberOfLayers - 1 downTo 0)
+            .filter { d.getLayerHeight(it) <= 0 && d.getLayerWidth(it) <= 0 }
+            .firstNotNullOfOrNull { drawableColour(d.getDrawable(it), state) }
         is InsetDrawable -> d.drawable?.let { drawableColour(it, state) }
         else -> null
     }
+
+    private fun average(colours: IntArray): Int = Color.rgb(
+        colours.sumOf { Color.red(it) } / colours.size,
+        colours.sumOf { Color.green(it) } / colours.size,
+        colours.sumOf { Color.blue(it) } / colours.size
+    )
 
     companion object {
 

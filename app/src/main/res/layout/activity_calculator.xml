@@ -74,7 +74,7 @@
             android:layout_marginTop="8dp"
             android:gravity="end"
             android:maxLines="1"
-            android:textColor="@color/brand_green"
+            android:textColor="@color/brand_green_text"
             android:textSize="26sp"
             android:textStyle="bold"
             tools:text="1,050" />

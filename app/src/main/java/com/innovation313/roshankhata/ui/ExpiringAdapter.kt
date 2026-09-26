@@ -47,11 +47,11 @@ class ExpiringAdapter : RecyclerView.Adapter<ExpiringAdapter.VH>() {
         when {
             e.hasExpired -> {
                 holder.tvDays.text = ctx.resources.getQuantityString(R.plurals.expired_days, -days, -days)
-                holder.tvDays.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave))
+                holder.tvDays.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave_text))
             }
             days == 0 -> {
                 holder.tvDays.setText(R.string.expires_today)
-                holder.tvDays.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave))
+                holder.tvDays.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave_text))
             }
             else -> {
                 holder.tvDays.text = ctx.resources.getQuantityString(R.plurals.expires_days, days, days)

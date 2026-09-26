@@ -27,7 +27,7 @@
             android:id="@+id/tvBillAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/red_gave"
+            android:textColor="@color/red_gave_text"
             android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>

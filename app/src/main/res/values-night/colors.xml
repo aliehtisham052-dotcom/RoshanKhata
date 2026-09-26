@@ -24,7 +24,6 @@
     <color name="text_faint">#8C8B85</color>
     <color name="coach_tip_body">#C9D3CC</color>
     <color name="gold_accent">#E5BE55</color>
-    <color name="google_btn_text">#E8E8E8</color>
     <color name="bal_owed_to_me">#FF9C9C</color>
     <color name="bal_i_owe">#7FE3C4</color>
     <color name="note_bg">#3A3320</color>
@@ -63,8 +62,14 @@
     <color name="filter_get_stroke">#7A4944</color>
     <color name="editor_field_stroke">#4A473E</color>
     <color name="editor_card_stroke">#34312A</color>
-    <color name="google_btn_stroke">#8E918F</color>
     <!-- Dark buttons with white text: a lighter green at night, so the pill
          stands out from the page and white text still reads on it. -->
     <color name="button_dark">#2E7D52</color>
+    <!-- Text versions of the dark brand colours (see values/colors.xml). -->
+    <color name="brand_green_text">#7FD1A3</color>
+    <color name="red_gave_text">#FF8A80</color>
+    <color name="green_got_text">#6FD6B5</color>
+    <color name="section_insights_text">#8FD3C0</color>
+    <color name="section_bills_text">#E0C878</color>
+    <color name="section_tools_text">#B5C9BC</color>
 </resources>

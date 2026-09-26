@@ -52,10 +52,10 @@
         android:layout_marginTop="6dp"
         android:gravity="start|center_vertical"
         android:textAllCaps="false"
-        android:textColor="@color/brand_green"
+        android:textColor="@color/brand_green_text"
         android:textSize="14sp"
         app:icon="@drawable/ic_calendar"
         app:iconGravity="textStart"
-        app:iconTint="@color/brand_green" />
+        app:iconTint="@color/brand_green_text" />
 
 </LinearLayout>

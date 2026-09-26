@@ -306,4 +306,16 @@
     <color name="ink_fixed">#1A1A18</color>
     <color name="primary_variant">#5F5E5A</color>
     <color name="gold_fill">#8A6A15</color>
+
+    <!--
+      TEXT versions of the brand greens, red and section colours. Those
+      colours are also header and button FILLS, which must stay dark at night;
+      as text on a page they were dark-on-dark. Same by day, lighter at night.
+    -->
+    <color name="brand_green_text">#1B5E3A</color>
+    <color name="red_gave_text">#A32D2D</color>
+    <color name="green_got_text">#0F6E56</color>
+    <color name="section_insights_text">#1E5A4E</color>
+    <color name="section_bills_text">#5C4A16</color>
+    <color name="section_tools_text">#374A40</color>
 </resources>

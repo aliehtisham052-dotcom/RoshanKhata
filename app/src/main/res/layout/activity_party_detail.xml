@@ -401,7 +401,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_entries_yet"
-        android:textColor="@color/navy_primary"
+        android:textColor="@color/brand_green_text"
         android:textSize="15sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/rvEntries"

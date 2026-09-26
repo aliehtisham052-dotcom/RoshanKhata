@@ -118,7 +118,7 @@
                         android:minHeight="50dp"
                         android:text="@string/report_problem"
                         android:textAllCaps="false"
-                        android:textColor="@color/brand_green"
+                        android:textColor="@color/brand_green_text"
                         android:textSize="15sp"
                         app:cornerRadius="12dp"
                         app:strokeColor="@color/brand_green" />
@@ -132,7 +132,7 @@
                         android:minHeight="50dp"
                         android:text="@string/rate_app"
                         android:textAllCaps="false"
-                        android:textColor="@color/brand_green"
+                        android:textColor="@color/brand_green_text"
                         android:textSize="15sp"
                         app:cornerRadius="12dp"
                         app:strokeColor="@color/brand_green" />

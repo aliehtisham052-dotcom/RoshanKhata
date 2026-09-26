@@ -43,7 +43,7 @@
             android:id="@+id/tvGoods"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/navy_primary"
+            android:textColor="@color/brand_green_text"
             android:textSize="12sp"
             android:textStyle="bold" />
 

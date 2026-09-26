@@ -167,7 +167,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="4dp"
                                 android:maxLines="1"
-                                android:textColor="@color/brand_green"
+                                android:textColor="@color/brand_green_text"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
                                 android:visibility="gone" />
@@ -250,7 +250,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:textColor="@color/brand_green"
+                        android:textColor="@color/brand_green_text"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -363,7 +363,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="@string/payment_method_label"
-                android:textColor="@color/brand_green"
+                android:textColor="@color/brand_green_text"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -449,7 +449,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="@string/goods_section"
-            android:textColor="@color/brand_green"
+            android:textColor="@color/brand_green_text"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -515,7 +515,7 @@
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:textAllCaps="false"
-            android:textColor="@color/brand_green"
+            android:textColor="@color/brand_green_text"
             android:textSize="12sp"
             android:visibility="gone" />
 
@@ -566,7 +566,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="@string/recovery_label"
-            android:textColor="@color/brand_green"
+            android:textColor="@color/brand_green_text"
             android:textSize="13sp"
             android:textStyle="bold" />
 
