@@ -68,7 +68,7 @@
         android:layout_margin="20dp"
         android:text="@string/add_cheque"
         android:textColor="@color/white"
-        app:backgroundTint="@color/ink"
+        app:backgroundTint="@color/button_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

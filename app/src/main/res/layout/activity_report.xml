@@ -213,7 +213,7 @@
         android:layout_height="52dp"
         android:layout_margin="16dp"
         android:text="@string/share_report"
-        app:backgroundTint="@color/ink"
+        app:backgroundTint="@color/button_dark"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

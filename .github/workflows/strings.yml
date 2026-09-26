@@ -11,11 +11,25 @@ on:
       - 'app/src/main/res/values*/strings.xml'
       - 'scripts/check_strings.py'
       - '.github/workflows/strings.yml'
+      # Dark-mode colour guard: any layout, drawable, colour or theme change.
+      - 'app/src/main/res/layout/**'
+      - 'app/src/main/res/drawable*/**'
+      - 'app/src/main/res/color/**'
+      - 'app/src/main/res/values*/colors.xml'
+      - 'app/src/main/res/values/themes.xml'
+      - 'scripts/check_dark_colours.py'
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
       - 'scripts/check_strings.py'
       - '.github/workflows/strings.yml'
+      # Dark-mode colour guard: any layout, drawable, colour or theme change.
+      - 'app/src/main/res/layout/**'
+      - 'app/src/main/res/drawable*/**'
+      - 'app/src/main/res/color/**'
+      - 'app/src/main/res/values*/colors.xml'
+      - 'app/src/main/res/values/themes.xml'
+      - 'scripts/check_dark_colours.py'
 
 jobs:
   parity:
@@ -24,3 +38,5 @@ jobs:
       - uses: actions/checkout@v5
       - name: String parity across 6 locales
         run: python3 scripts/check_strings.py
+      - name: Dark-mode colours keep one job (text or fill)
+        run: python3 scripts/check_dark_colours.py

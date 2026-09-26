@@ -680,7 +680,7 @@
         android:layout_margin="20dp"
         android:text="@string/add_party"
         android:textColor="@color/white"
-        app:backgroundTint="@color/ink"
+        app:backgroundTint="@color/button_dark"
         app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent" />
 

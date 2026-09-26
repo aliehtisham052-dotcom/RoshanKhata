@@ -9,5 +9,5 @@
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:color="@color/page_line" android:state_enabled="false" />
-    <item android:color="@color/ink" />
+    <item android:color="@color/button_dark" />
 </selector>

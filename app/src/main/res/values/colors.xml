@@ -292,4 +292,18 @@
     <color name="divider_grey">#E0E0E0</color>
     <color name="text_grey">#777777</color>
     <color name="text_faint">#999999</color>
+
+    <!--
+      Split out of ink / ink_soft / gold_accent, which are TEXT colours and
+      turn light at night. These four are fills and keep a dark value:
+        button_dark     the dark pill behind white text (Add Party, Add Entry,
+                        Download, Share...). Its night value is in values-night.
+        ink_fixed       the crop screen's backdrop; black in both modes.
+        primary_variant theme colorPrimaryVariant.
+        gold_fill       theme colorSecondary (checkboxes, switches, accents).
+    -->
+    <color name="button_dark">#1A1A18</color>
+    <color name="ink_fixed">#1A1A18</color>
+    <color name="primary_variant">#5F5E5A</color>
+    <color name="gold_fill">#8A6A15</color>
 </resources>

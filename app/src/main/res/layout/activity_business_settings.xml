@@ -369,7 +369,7 @@
                         android:layout_weight="1"
                         android:minHeight="48dp"
                         android:text="@string/choose_stamp"
-                        app:backgroundTint="@color/ink"
+                        app:backgroundTint="@color/button_dark"
                         app:cornerRadius="10dp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -462,7 +462,7 @@
                         android:layout_weight="1"
                         android:minHeight="48dp"
                         android:text="@string/choose_signature"
-                        app:backgroundTint="@color/ink"
+                        app:backgroundTint="@color/button_dark"
                         app:cornerRadius="10dp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -567,7 +567,7 @@
                         android:layout_weight="1"
                         android:minHeight="48dp"
                         android:text="@string/choose_qr_image"
-                        app:backgroundTint="@color/ink"
+                        app:backgroundTint="@color/button_dark"
                         app:cornerRadius="10dp" />
 
                     <com.google.android.material.button.MaterialButton

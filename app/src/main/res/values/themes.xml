@@ -9,11 +9,11 @@
     -->
     <style name="Theme.RoshanKhata" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
-        <item name="colorPrimary">@color/ink</item>
-        <item name="colorPrimaryVariant">@color/ink_soft</item>
+        <item name="colorPrimary">@color/button_dark</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <item name="colorSecondary">@color/gold_accent</item>
+        <item name="colorSecondary">@color/gold_fill</item>
         <item name="colorOnSecondary">@color/white</item>
 
         <item name="colorSurface">@color/surface</item>
