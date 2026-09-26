@@ -3,6 +3,7 @@ package com.innovation313.roshankhata.ui
 import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -46,27 +47,36 @@ object ScreenInsets {
         val header: View? = activity.findViewById(R.id.header)
         val ownBottomBar: View? = activity.findViewById(R.id.bottomNav)
 
+        // Start/end, never left/right. A layout's padding is written as start
+        // and end so it mirrors in Arabic, Farsi, Sindhi and Urdu. Reading it
+        // back as left/right and writing it with setPadding() froze it in its
+        // left-to-right form: the ledger header (16dp start, 4dp end) came out
+        // 16dp on the LEFT and 4dp on the right in those languages, so its
+        // Call button and avatar sat hard against the right-hand edge while
+        // an empty band opened up on the left. paddingStart/End read the
+        // start and end values whichever way the view has resolved, and
+        // setPaddingRelative() lets the view mirror them itself.
         if (header != null) {
             val base = intArrayOf(
-                header.paddingLeft, header.paddingTop,
-                header.paddingRight, header.paddingBottom
+                header.paddingStart, header.paddingTop,
+                header.paddingEnd, header.paddingBottom
             )
             ViewCompat.setOnApplyWindowInsetsListener(header) { v, insets ->
                 val bars = insets.getInsets(
                     WindowInsetsCompat.Type.systemBars() or
                         WindowInsetsCompat.Type.displayCutout()
                 )
-                v.setPadding(
-                    base[0] + bars.left, base[1] + bars.top,
-                    base[2] + bars.right, base[3]
+                v.setPaddingRelative(
+                    base[0] + bars.startOf(v), base[1] + bars.top,
+                    base[2] + bars.endOf(v), base[3]
                 )
                 insets
             }
         }
 
         val rootBase = intArrayOf(
-            root.paddingLeft, root.paddingTop,
-            root.paddingRight, root.paddingBottom
+            root.paddingStart, root.paddingTop,
+            root.paddingEnd, root.paddingBottom
         )
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(
@@ -75,12 +85,24 @@ object ScreenInsets {
             )
             val top = if (header == null) rootBase[1] + bars.top else rootBase[1]
             val bottom = if (ownBottomBar == null) rootBase[3] + bars.bottom else rootBase[3]
-            val left = if (header == null) rootBase[0] + bars.left else rootBase[0]
-            val right = if (header == null) rootBase[2] + bars.right else rootBase[2]
-            v.setPadding(left, top, right, bottom)
+            val start = if (header == null) rootBase[0] + bars.startOf(v) else rootBase[0]
+            val end = if (header == null) rootBase[2] + bars.endOf(v) else rootBase[2]
+            v.setPaddingRelative(start, top, end, bottom)
             insets
         }
 
         ViewCompat.requestApplyInsets(root)
     }
+
+    /*
+     * System-bar and cutout insets are physical: left and right. The screen's
+     * direction is taken from the configuration, which is settled before the
+     * first inset pass, rather than from the view, which may not have
+     * resolved its own direction yet at that moment.
+     */
+    private fun rtl(v: View) =
+        v.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+
+    private fun Insets.startOf(v: View) = if (rtl(v)) right else left
+    private fun Insets.endOf(v: View) = if (rtl(v)) left else right
 }
