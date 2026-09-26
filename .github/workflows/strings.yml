@@ -40,3 +40,5 @@ jobs:
         run: python3 scripts/check_strings.py
       - name: Dark-mode colours keep one job (text or fill)
         run: python3 scripts/check_dark_colours.py
+      - name: No text that vanishes on a fixed-white background at night
+        run: python3 scripts/check_dark_pairs.py

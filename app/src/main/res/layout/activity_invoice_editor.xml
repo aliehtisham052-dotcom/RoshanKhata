@@ -231,7 +231,7 @@
                     android:textAllCaps="false"
                     android:textColor="@color/ink"
                     android:textSize="14sp"
-                    app:backgroundTint="@color/white"
+                    app:backgroundTint="@color/surface"
                     app:cornerRadius="12dp"
                     app:icon="@drawable/ic_tune"
                     app:iconGravity="start"

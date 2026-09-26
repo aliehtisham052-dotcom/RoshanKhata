@@ -201,7 +201,7 @@
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>
         <item name="android:minWidth">0dp</item>
-        <item name="backgroundTint">@color/white</item>
+        <item name="backgroundTint">@color/surface</item>
         <item name="cornerRadius">14dp</item>
     </style>
 
@@ -268,7 +268,7 @@
         <item name="android:layout_margin">3dp</item>
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/ink</item>
-        <item name="backgroundTint">@color/white</item>
+        <item name="backgroundTint">@color/surface</item>
         <item name="strokeColor">@color/page_line</item>
         <item name="strokeWidth">1dp</item>
         <item name="cornerRadius">12dp</item>
@@ -392,7 +392,7 @@
         <item name="android:letterSpacing">0</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/ink</item>
-        <item name="backgroundTint">@color/white</item>
+        <item name="backgroundTint">@color/surface</item>
         <item name="strokeColor">@color/editor_field_stroke</item>
         <item name="strokeWidth">1dp</item>
         <item name="cornerRadius">10dp</item>
