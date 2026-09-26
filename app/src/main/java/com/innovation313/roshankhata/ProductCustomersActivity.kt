@@ -3,7 +3,6 @@ package com.innovation313.roshankhata
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +34,7 @@ import kotlinx.coroutines.launch
  * same shopkeeper sending "GREAT OFFER" to eleven hundred people is doing
  * something else, and the app should not make the second one easier.
  */
-class ProductCustomersActivity : AppCompatActivity() {
+class ProductCustomersActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_PRODUCT_ID = "productId"

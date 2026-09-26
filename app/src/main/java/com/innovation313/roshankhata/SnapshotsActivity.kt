@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +31,7 @@ import kotlinx.coroutines.withContext
  * a file copy, so this screen still works on the day the database is the
  * broken thing.
  */
-class SnapshotsActivity : AppCompatActivity() {
+class SnapshotsActivity : BaseActivity() {
 
     private lateinit var adapter: Adapter
     private lateinit var empty: View

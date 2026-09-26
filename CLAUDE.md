@@ -30,6 +30,10 @@ app/src/main/java/com/innovation313/roshankhata/
   BusinessCardActivity.kt   Card picker
   BusinessSettingsActivity  QR, signature, photo-on-statement switch
   RecycleBinActivity.kt     Bin + bulk delete
+  BaseActivity.kt           Every screen extends this (not AppCompatActivity): text size
+  data/TextSize.kt          Owner's text size (Home ⋮) x phone scale, 85%-150% bounds
+  ui/TextFit.kt             Fixed-height buttons may grow ONLY when text > 100%;
+                            call TextFit.relax(view) after inflating any dialog/row in code
   data/
     VoiceEntry.kt           Spoken sentence -> party, amount, direction
     BusinessProfile.kt      QR, signature, photo-on-statement setting

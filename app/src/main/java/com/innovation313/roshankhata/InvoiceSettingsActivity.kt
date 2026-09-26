@@ -3,7 +3,6 @@ package com.innovation313.roshankhata
 import android.os.Bundle
 import android.widget.Switch
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.innovation313.roshankhata.data.InvoiceFeatureSettings
 
@@ -19,7 +18,7 @@ import com.innovation313.roshankhata.data.InvoiceFeatureSettings
  * these switches decide what can be ENTERED going forward, not what gets
  * printed on invoices already made.
  */
-class InvoiceSettingsActivity : AppCompatActivity() {
+class InvoiceSettingsActivity : BaseActivity() {
 
     private data class FeatureRow(
         val rowId: Int,

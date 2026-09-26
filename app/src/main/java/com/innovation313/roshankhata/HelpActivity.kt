@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.data.ProblemReport
@@ -24,7 +23,7 @@ import com.innovation313.roshankhata.data.ProblemReport
  * own mail app, so they read every word before it leaves the phone. Nothing is
  * sent from here in the background, and no part of the ledger goes with it.
  */
-class HelpActivity : AppCompatActivity() {
+class HelpActivity : BaseActivity() {
 
     /** Question and answer, paired so the list cannot fall out of step. */
     private data class Faq(val questionRes: Int, val answerRes: Int)

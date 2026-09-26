@@ -3,7 +3,6 @@ package com.innovation313.roshankhata
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
@@ -18,7 +17,7 @@ import com.innovation313.roshankhata.ui.Format
  * handed over: the evaluator is load-bearing for five screens where money is
  * entered, and a calculator key is not worth the risk of changing it.
  */
-class CalculatorActivity : AppCompatActivity() {
+class CalculatorActivity : BaseActivity() {
 
     private lateinit var tvExpression: TextView
     private lateinit var tvResult: TextView

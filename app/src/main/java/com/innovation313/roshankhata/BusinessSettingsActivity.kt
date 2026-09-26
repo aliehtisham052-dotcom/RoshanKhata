@@ -10,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -26,7 +25,7 @@ import kotlinx.coroutines.withContext
  * permission — the user grants access to exactly the one image they choose,
  * and nothing else.
  */
-class BusinessSettingsActivity : AppCompatActivity() {
+class BusinessSettingsActivity : BaseActivity() {
 
     private lateinit var etBusinessName: EditText
     private lateinit var etBusinessAddress: EditText

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,7 +40,7 @@ import java.util.Locale
  * varies is how far ahead the owner wants to be warned, which is what the
  * 30/60/90 buttons choose.
  */
-class InspectorReportActivity : AppCompatActivity() {
+class InspectorReportActivity : BaseActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 

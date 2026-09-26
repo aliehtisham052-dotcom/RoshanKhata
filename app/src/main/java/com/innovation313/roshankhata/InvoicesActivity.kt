@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,7 +37,7 @@ import kotlinx.coroutines.withContext
  * [InvoiceEditorActivity], with the actual printed design visible live
  * while it is filled in.
  */
-class InvoicesActivity : AppCompatActivity() {
+class InvoicesActivity : BaseActivity() {
 
     private lateinit var adapter: InvoiceAdapter
     private lateinit var tvEmpty: TextView

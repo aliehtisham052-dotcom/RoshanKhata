@@ -2,7 +2,6 @@ package com.innovation313.roshankhata
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import com.innovation313.roshankhata.data.AppLock
@@ -14,7 +13,7 @@ import com.innovation313.roshankhata.data.AppLock
  * is not started until authentication succeeds, so a locked app shows nothing
  * even in the recent-apps preview.
  */
-class LockActivity : AppCompatActivity() {
+class LockActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

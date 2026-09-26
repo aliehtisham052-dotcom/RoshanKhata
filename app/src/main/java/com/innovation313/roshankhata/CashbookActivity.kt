@@ -11,7 +11,6 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,7 +33,7 @@ import kotlinx.coroutines.launch
  * ever touch a balance. Mixing the two would either invent a phantom party or
  * quietly corrupt a real one's account.
  */
-class CashbookActivity : AppCompatActivity() {
+class CashbookActivity : BaseActivity() {
 
     private lateinit var adapter: CashAdapter
     private lateinit var tvIn: TextView

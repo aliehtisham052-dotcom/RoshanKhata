@@ -12,7 +12,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
@@ -55,7 +54,7 @@ import com.innovation313.roshankhata.data.Digits
  *
  * See the class doc on [Invoice]: nothing here reads or writes a balance.
  */
-class InvoiceEditorActivity : AppCompatActivity() {
+class InvoiceEditorActivity : BaseActivity() {
 
     companion object {
         /** Present only when editing a saved invoice; absent means creating a new one. */
@@ -414,6 +413,7 @@ class InvoiceEditorActivity : AppCompatActivity() {
 
     private fun addRow(existing: InvoiceItem? = null) {
         val v = layoutInflater.inflate(R.layout.item_invoice_editor_row, itemRows, false)
+        com.innovation313.roshankhata.ui.TextFit.relax(v)
         val row = Row(
             v,
             v.findViewById(R.id.etRowName),
