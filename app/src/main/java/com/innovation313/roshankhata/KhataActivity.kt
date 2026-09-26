@@ -12,7 +12,6 @@ import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -55,7 +54,7 @@ import com.innovation313.roshankhata.data.Digits
  * Roshan Khata — Innovation-313
  * Home: customers and suppliers with their outstanding balances.
  */
-class KhataActivity : AppCompatActivity() {
+class KhataActivity : BaseActivity() {
 
     private lateinit var adapter: PartyAdapter
     private lateinit var etSearch: EditText
@@ -890,6 +889,7 @@ class KhataActivity : AppCompatActivity() {
     private fun showFilterSheet() {
         val sheet = com.google.android.material.bottomsheet.BottomSheetDialog(this)
         val view = layoutInflater.inflate(R.layout.sheet_filter, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         sheet.setContentView(view)
 
         fun col(id: Int) = ContextCompat.getColor(this, id)

@@ -18,7 +18,9 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.SupplierBill
+import com.innovation313.roshankhata.data.TextSize
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -54,7 +56,8 @@ import org.junit.runners.Parameterized
 @RunWith(Parameterized::class)
 class EveryScreenOpensTest(
     private val screen: String,
-    private val intentFor: (Context, Seed) -> Intent
+    private val intentFor: (Context, Seed) -> Intent,
+    private val textSize: Int
 ) {
 
     /** Row ids the screens that open one record need. */
@@ -84,6 +87,13 @@ class EveryScreenOpensTest(
         if (Build.VERSION.SDK_INT >= 33) {
             ui.grantRuntimePermission(pkg, Manifest.permission.POST_NOTIFICATIONS)
         }
+
+        TextSize.setLevel(context, textSize)
+    }
+
+    @After
+    fun normalSize() {
+        TextSize.setLevel(context, TextSize.NORMAL)
     }
 
     @Test
@@ -186,9 +196,21 @@ class EveryScreenOpensTest(
             { c: Context, s: Seed -> Intent(c, T::class.java).apply { extras(s) } }
         )
 
+        /**
+         * Every screen twice: at normal size, and at the largest text size
+         * this app offers — where fixed-height buttons are relaxed at runtime
+         * (TextFit) and the most layout code runs that normal size never does.
+         */
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
-        fun screens(): List<Array<Any>> = listOf(
+        fun screens(): List<Array<Any>> = baseScreens().flatMap { row ->
+            listOf(
+                arrayOf(row[0], row[1], TextSize.NORMAL),
+                arrayOf("${row[0]} @ largest text", row[1], TextSize.LARGEST)
+            )
+        }
+
+        private fun baseScreens(): List<Array<Any>> = listOf(
             open<WelcomeActivity>("Welcome"),
             open<MainActivity>("Home") { putExtra(MainActivity.EXTRA_UNLOCKED, true) },
             open<KhataActivity>("Khata list"),

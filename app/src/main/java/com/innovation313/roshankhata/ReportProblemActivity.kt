@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.EditText
 import android.widget.RadioGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.data.ProblemReport
 
@@ -23,7 +22,7 @@ import com.innovation313.roshankhata.data.ProblemReport
  * read every word before it leaves, and delete any of it. Nothing is sent
  * behind their back.
  */
-class ReportProblemActivity : AppCompatActivity() {
+class ReportProblemActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

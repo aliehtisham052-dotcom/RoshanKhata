@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.view.WindowCompat
@@ -25,7 +24,7 @@ import androidx.core.view.WindowInsetsControllerCompat
  * Shown once on first run; afterwards the app goes straight to the gate. It can
  * be reopened any time from More → Language.
  */
-class LanguageActivity : AppCompatActivity() {
+class LanguageActivity : BaseActivity() {
 
     companion object {
         private const val PREFS = "language"

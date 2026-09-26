@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -15,6 +14,7 @@ import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.AppLock
+import com.innovation313.roshankhata.data.TextSize
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.ui.CoachMarkController
 import com.innovation313.roshankhata.ui.Format
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
  * all. Each one now has a tile on this screen and its own destination; the
  * customer ledger keeps its own screen, one tap away in the bar.
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
@@ -234,6 +234,7 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.screen_privacy),
             getString(R.string.duplicate_customers),
             getString(R.string.language),
+            getString(R.string.text_size),
             getString(R.string.help_support),
             getString(R.string.about_us)
         )
@@ -246,12 +247,39 @@ class MainActivity : AppCompatActivity() {
                     1 -> ScreenPrivacyDialog.show(this)
                     2 -> startActivity(Intent(this, DuplicateCustomersActivity::class.java))
                     3 -> startActivity(Intent(this, LanguageActivity::class.java))
+                    4 -> showTextSizeSettings()
                     // Reporting a problem lives inside Help now, so there is
                     // one door marked "something is wrong" rather than two.
-                    4 -> startActivity(Intent(this, HelpActivity::class.java))
-                    5 -> startActivity(Intent(this, AboutActivity::class.java))
+                    5 -> startActivity(Intent(this, HelpActivity::class.java))
+                    6 -> startActivity(Intent(this, AboutActivity::class.java))
                 }
             }
+            .show()
+    }
+
+    /**
+     * The owner's own text size (see [TextSize]). Home is the bottom of the
+     * back stack — every other screen is opened from it — so rebuilding Home
+     * is enough: each screen opened afterwards is built at the new size.
+     */
+    private fun showTextSizeSettings() {
+        val labels = arrayOf(
+            getString(R.string.text_size_small),
+            getString(R.string.text_size_normal),
+            getString(R.string.text_size_large),
+            getString(R.string.text_size_largest)
+        )
+        val current = TextSize.level(this)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.text_size)
+            .setSingleChoiceItems(labels, current) { dialog, which ->
+                dialog.dismiss()
+                if (which != current) {
+                    TextSize.setLevel(this, which)
+                    recreate()
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 

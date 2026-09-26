@@ -12,7 +12,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.BusinessProfile
@@ -31,7 +30,7 @@ import java.io.FileOutputStream
  * and handed to the share sheet via FileProvider, the same road the receipt
  * image already travels.
  */
-class BusinessCardActivity : AppCompatActivity() {
+class BusinessCardActivity : BaseActivity() {
 
     private lateinit var preview: ImageView
     private lateinit var etBizName: EditText

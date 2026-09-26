@@ -1407,4 +1407,11 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="invoice_editor_item_count">Items: %1$d</string>
     <string name="invoice_editor_total">Kul %1$s</string>
     <string name="running_balance_short">Baqaya: %1$s</string>
+
+    <!-- Text size (Home ⋮ menu) -->
+    <string name="text_size">Likhai ka size</string>
+    <string name="text_size_small">Chhota</string>
+    <string name="text_size_normal">Aam</string>
+    <string name="text_size_large">Bara</string>
+    <string name="text_size_largest">Sab se bara</string>
 </resources>

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +29,7 @@ import kotlinx.coroutines.launch
  * The list is live (the same reactive stream the home screen uses), so a
  * payment recorded while this screen is open drops the row on its own.
  */
-class FollowUpActivity : AppCompatActivity() {
+class FollowUpActivity : BaseActivity() {
 
     private lateinit var adapter: FollowUpAdapter
     private lateinit var tvSummary: TextView

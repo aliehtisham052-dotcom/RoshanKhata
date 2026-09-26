@@ -1539,4 +1539,11 @@
     <string name="invoice_editor_item_count">الأصناف: %1$d</string>
     <string name="invoice_editor_total">الإجمالي %1$s</string>
     <string name="running_balance_short">الرصيد: %1$s</string>
+
+    <!-- Text size (Home ⋮ menu) -->
+    <string name="text_size">حجم النص</string>
+    <string name="text_size_small">صغير</string>
+    <string name="text_size_normal">عادي</string>
+    <string name="text_size_large">كبير</string>
+    <string name="text_size_largest">كبير جدًا</string>
 </resources>

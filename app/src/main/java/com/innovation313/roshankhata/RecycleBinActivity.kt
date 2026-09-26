@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +25,7 @@ import kotlinx.coroutines.withContext
  * Recycle Bin — nothing is destroyed on delete. Items sit here until the
  * owner restores them, empties the bin, or the retention window lapses.
  */
-class RecycleBinActivity : AppCompatActivity() {
+class RecycleBinActivity : BaseActivity() {
 
     companion object {
         /** Items older than this are purged automatically on open. */

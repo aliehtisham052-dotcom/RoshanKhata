@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.data.ProblemReport
@@ -19,7 +18,7 @@ import com.innovation313.roshankhata.data.ProblemReport
  * full policy is a tap away for anyone who wants the long version — and Play
  * requires it to be reachable, which a link inside the app satisfies.
  */
-class AboutActivity : AppCompatActivity() {
+class AboutActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

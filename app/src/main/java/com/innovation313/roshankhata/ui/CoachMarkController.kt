@@ -110,6 +110,7 @@ class CoachMarkController(
         // Placed by absolute left/top because it follows a measured spot on
         // screen, not the reading direction.
         val tipView = activity.layoutInflater.inflate(R.layout.view_coach_tip, host, false)
+        com.innovation313.roshankhata.ui.TextFit.relax(tipView)
         host.addView(
             tipView,
             FrameLayout.LayoutParams(

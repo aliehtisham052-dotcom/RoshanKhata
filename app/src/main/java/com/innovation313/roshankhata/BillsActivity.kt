@@ -10,7 +10,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,7 +51,7 @@ import com.innovation313.roshankhata.data.Digits
  * Agriculture Department inspector arrives, or when a batch goes bad and has to
  * be traced back to the supplier it came from.
  */
-class BillsActivity : AppCompatActivity() {
+class BillsActivity : BaseActivity() {
 
     private lateinit var adapter: BillAdapter
     private lateinit var tvEmpty: TextView
@@ -132,6 +131,7 @@ class BillsActivity : AppCompatActivity() {
         pendingItems.clear()
 
         val view = layoutInflater.inflate(R.layout.dialog_add_bill, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etSupplier: AutoCompleteTextView = view.findViewById(R.id.etBillSupplier)
         val etNumber: EditText = view.findViewById(R.id.etBillNumber)
         val etTotal: EditText = view.findViewById(R.id.etBillTotal)
@@ -255,6 +255,7 @@ class BillsActivity : AppCompatActivity() {
      */
     private fun showAddItemDialog(existing: BillItem? = null, onDone: (BillItem) -> Unit) {
         val view = layoutInflater.inflate(R.layout.dialog_add_bill_item, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etProduct: AutoCompleteTextView = view.findViewById(R.id.etProductName)
         val etBatch: EditText = view.findViewById(R.id.etBatchNumber)
         val btnExpiry: MaterialButton = view.findViewById(R.id.btnExpiry)
@@ -575,6 +576,7 @@ class BillsActivity : AppCompatActivity() {
 
     private fun showEditBillDialog(existing: SupplierBill, supplierName: String) {
         val view = layoutInflater.inflate(R.layout.dialog_add_bill, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etSupplier: AutoCompleteTextView = view.findViewById(R.id.etBillSupplier)
         val etNumber: EditText = view.findViewById(R.id.etBillNumber)
         val etTotal: EditText = view.findViewById(R.id.etBillTotal)

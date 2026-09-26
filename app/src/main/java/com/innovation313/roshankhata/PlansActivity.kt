@@ -11,7 +11,6 @@ import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,7 +42,7 @@ import com.innovation313.roshankhata.data.Digits
  * exactly ONE ledger entry — never two. Double-counting here would have the
  * customer chased for money they never owed.
  */
-class PlansActivity : AppCompatActivity() {
+class PlansActivity : BaseActivity() {
 
     private lateinit var adapter: PlanAdapter
     private lateinit var tvEmpty: TextView
@@ -92,6 +91,7 @@ class PlansActivity : AppCompatActivity() {
         }
 
         val view = layoutInflater.inflate(R.layout.dialog_add_plan, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etParty: AutoCompleteTextView = view.findViewById(R.id.etPlanParty)
         val tvOwes: TextView = view.findViewById(R.id.tvPlanOwes)
         val etTotal: EditText = view.findViewById(R.id.etPlanTotal)
@@ -214,6 +214,7 @@ class PlansActivity : AppCompatActivity() {
 
     private fun showRecordPaymentDialog(plan: PlanProgress) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
         val etNote: EditText = view.findViewById(R.id.etNote)
 

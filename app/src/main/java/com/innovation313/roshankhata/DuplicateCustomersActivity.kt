@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +36,7 @@ import kotlinx.coroutines.withContext
  * is stated plainly in the confirm dialog rather than left for the owner to
  * discover later.
  */
-class DuplicateCustomersActivity : AppCompatActivity() {
+class DuplicateCustomersActivity : BaseActivity() {
 
     private lateinit var adapter: DuplicateGroupAdapter
     private lateinit var tvEmpty: TextView

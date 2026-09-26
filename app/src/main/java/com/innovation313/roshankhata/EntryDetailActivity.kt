@@ -13,7 +13,6 @@ import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
@@ -44,7 +43,7 @@ import com.innovation313.roshankhata.data.Digits
  * Everything stays on the device: the shared image is written to the app's
  * cache and handed to the chooser via FileProvider — nothing is uploaded.
  */
-class EntryDetailActivity : AppCompatActivity() {
+class EntryDetailActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_ENTRY_ID = "entry_id"
@@ -170,6 +169,7 @@ class EntryDetailActivity : AppCompatActivity() {
     private fun showEditDialog() {
         val e = entry ?: return
         val view = layoutInflater.inflate(R.layout.dialog_edit_entry, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount = view.findViewById<EditText>(R.id.etEditAmount)
         val etNote = view.findViewById<EditText>(R.id.etEditNote)
         val etItemName = view.findViewById<AutoCompleteTextView>(R.id.etEditItemName)

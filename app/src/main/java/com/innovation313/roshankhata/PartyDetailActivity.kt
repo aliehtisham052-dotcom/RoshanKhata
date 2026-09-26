@@ -28,7 +28,6 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -68,7 +67,7 @@ import com.innovation313.roshankhata.data.Digits
  * A single party's ledger: full entry history with running balances,
  * plus the two core actions — "I Gave" and "I Got".
  */
-class PartyDetailActivity : AppCompatActivity() {
+class PartyDetailActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_PARTY_ID = "party_id"
@@ -448,6 +447,7 @@ class PartyDetailActivity : AppCompatActivity() {
 
     private fun showAddEntryDialog(isGiven: Boolean, prefillAmount: Double? = null) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
 
         // What the microphone heard, sitting in the box for the owner to read

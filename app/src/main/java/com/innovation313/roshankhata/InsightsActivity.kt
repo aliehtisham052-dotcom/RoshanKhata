@@ -5,7 +5,6 @@ import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.innovation313.roshankhata.data.CustomerStat
@@ -27,7 +26,7 @@ import kotlinx.coroutines.withContext
  * sales summed, ranked, and compared to last month. The screen is deliberately
  * read-only — a place to glance at, not another thing to maintain.
  */
-class InsightsActivity : AppCompatActivity() {
+class InsightsActivity : BaseActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
@@ -169,6 +168,7 @@ class InsightsActivity : AppCompatActivity() {
 
         products.forEachIndexed { i, p ->
             val row = layoutInflater.inflate(R.layout.item_insight_product, list, false)
+            com.innovation313.roshankhata.ui.TextFit.relax(row)
             row.findViewById<TextView>(R.id.tvRank).text = (i + 1).toString()
             row.findViewById<TextView>(R.id.tvProductName).text = p.name
             row.findViewById<TextView>(R.id.tvProductQty).text = Format.qty(p.qty, p.unit)

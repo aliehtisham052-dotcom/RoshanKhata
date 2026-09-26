@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,7 +33,7 @@ import java.util.Calendar
  * a period's net as though it were the balance would be a false statement, and
  * this document is shareable.
  */
-class ReportActivity : AppCompatActivity() {
+class ReportActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_PARTY_ID = "party_id"

@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
@@ -35,7 +34,7 @@ import java.io.File
  * says so plainly rather than leaving the owner to discover it the day the
  * phone breaks.
  */
-class BackupActivity : AppCompatActivity() {
+class BackupActivity : BaseActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 

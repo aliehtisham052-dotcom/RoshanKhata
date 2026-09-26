@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +36,7 @@ import kotlinx.coroutines.withContext
  * [Businesses.canDelete] for exactly when Delete is offered at all, and
  * [Businesses.delete] for what removing a shop actually does.
  */
-class BusinessSwitchActivity : AppCompatActivity() {
+class BusinessSwitchActivity : BaseActivity() {
 
     private lateinit var adapter: Adapter
 

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.data.DriveAuth
@@ -34,7 +33,7 @@ import kotlinx.coroutines.launch
  * App Lock (a PIN) is a separate matter and is not touched here — it stays the
  * owner's own choice, offered in settings, never mixed into this sign-in.
  */
-class WelcomeActivity : AppCompatActivity() {
+class WelcomeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

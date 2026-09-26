@@ -5,7 +5,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -23,7 +22,7 @@ import kotlinx.coroutines.launch
  * at the top of the screen — not buried below the result — because the number
  * this produces could otherwise be mistaken for a fatwa.
  */
-class ZakatActivity : AppCompatActivity() {
+class ZakatActivity : BaseActivity() {
 
     private lateinit var etSilverPrice: EditText
     private lateinit var etCashStock: EditText

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +34,7 @@ import kotlinx.coroutines.withContext
  * the expiry screen does. A stock figure that silently omits half the shop is
  * worse than no figure, because it will be believed.
  */
-class ProductsActivity : AppCompatActivity() {
+class ProductsActivity : BaseActivity() {
 
     private lateinit var adapter: ProductAdapter
     private lateinit var tvEmpty: TextView

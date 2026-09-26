@@ -11,7 +11,6 @@ import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,7 +42,7 @@ import java.util.Calendar
  * it is handed over is how a bounced cheque quietly corrupts a ledger — the
  * balance says paid, the money never came, and it surfaces weeks later.
  */
-class ChequesActivity : AppCompatActivity() {
+class ChequesActivity : BaseActivity() {
 
     private lateinit var adapter: ChequeAdapter
     private lateinit var tvNoCheques: TextView
@@ -128,6 +127,7 @@ class ChequesActivity : AppCompatActivity() {
         }
 
         val view = layoutInflater.inflate(R.layout.dialog_add_cheque, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etParty: AutoCompleteTextView = view.findViewById(R.id.etChequeParty)
         val rbReceived: RadioButton = view.findViewById(R.id.rbReceived)
         val rbIssued: RadioButton = view.findViewById(R.id.rbIssued)

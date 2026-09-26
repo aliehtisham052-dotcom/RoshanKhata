@@ -3,7 +3,6 @@ package com.innovation313.roshankhata
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +23,7 @@ import kotlinx.coroutines.launch
  * whose expiry date was actually recorded. Silence here does not mean nothing
  * is expiring — it may only mean nobody entered a date.
  */
-class ExpiringActivity : AppCompatActivity() {
+class ExpiringActivity : BaseActivity() {
 
     private lateinit var adapter: ExpiringAdapter
     private lateinit var tvEmpty: TextView

@@ -1435,4 +1435,11 @@
     <string name="invoice_editor_item_count">اقلام: %1$d</string>
     <string name="invoice_editor_total">جمع %1$s</string>
     <string name="running_balance_short">مانده: %1$s</string>
+
+    <!-- Text size (Home ⋮ menu) -->
+    <string name="text_size">اندازهٔ متن</string>
+    <string name="text_size_small">کوچک</string>
+    <string name="text_size_normal">معمولی</string>
+    <string name="text_size_large">بزرگ</string>
+    <string name="text_size_largest">خیلی بزرگ</string>
 </resources>

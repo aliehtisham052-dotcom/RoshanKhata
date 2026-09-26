@@ -11,7 +11,6 @@ import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,7 +38,7 @@ import kotlinx.coroutines.withContext
  * number. Anyone who declines the permission can still add parties by hand;
  * nothing in the app depends on this.
  */
-class ImportContactsActivity : AppCompatActivity() {
+class ImportContactsActivity : BaseActivity() {
 
     private lateinit var adapter: ContactAdapter
     private lateinit var tvStatus: TextView

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.appcompat.app.AppCompatActivity
 import com.innovation313.roshankhata.data.AppLock
 
 /**
@@ -18,7 +17,7 @@ import com.innovation313.roshankhata.data.AppLock
  * This also carries the system splash — the single logo beat during cold
  * start — so there is no separate splash screen to show the mark a second time.
  */
-class GateActivity : AppCompatActivity() {
+class GateActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
@@ -35,7 +34,7 @@ import java.io.FileOutputStream
  * regardless of what the background contains because a person is
  * deciding, not a pixel threshold.
  */
-class ImageCropActivity : AppCompatActivity() {
+class ImageCropActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_SOURCE_URI = "source_uri"
