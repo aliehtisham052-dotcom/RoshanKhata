@@ -162,6 +162,28 @@ jobs:
             tests=$((tests + ${t:-0})); failed=$((failed + ${x:-0}))
           done < /tmp/xmls.txt
           echo "::notice::On-device tests (JUnit XML, $files files): $tests run, $failed failed"
+          # The failure MESSAGES, not just the count: the assertion text lives
+          # in the JUnit XML, which (like the log) is otherwise unreachable
+          # through the API. Deduplicated, so twelve cases failing for one
+          # reason read as one line with a count, within GitHub's limit of
+          # ten error annotations per step.
+          python3 - <<'PY'
+          import glob, xml.etree.ElementTree as ET
+          from collections import OrderedDict
+          seen = OrderedDict()
+          for f in glob.glob('app/build/**/TEST-*.xml', recursive=True):
+              if 'androidTest' not in f:
+                  continue
+              for tc in ET.parse(f).getroot().iter('testcase'):
+                  for bad in tc.findall('failure') + tc.findall('error'):
+                      text = (bad.get('message') or bad.text or '').strip()
+                      first = text.splitlines()[0] if text else '(no message)'
+                      key = tc.get('classname', '').split('.')[-1] + ': ' + first[:500]
+                      seen.setdefault(key, []).append(tc.get('name', ''))
+          for key, names in list(seen.items())[:10]:
+              line = '%s  [%d case(s), e.g. %s]' % (key, len(names), names[0])
+              print('::error::' + line.replace('%', '%25').replace('\r', '').replace('\n', ' '))
+          PY
           # Gradle's own line, as a cross-check that does not depend on paths.
           if [ -f /tmp/instrumented_output.txt ]; then
             line=$(grep -E "Finished [0-9]+ tests|Tests on .* [0-9]+|tests completed|BUILD (SUCCESSFUL|FAILED)" /tmp/instrumented_output.txt | tr -d '\r' | tr '\n' ' ' | cut -c1-400)
