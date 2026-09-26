@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/nisab_section"
-                android:textColor="@color/navy_primary"
+                android:textColor="@color/brand_green_text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -181,7 +181,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/red_gave"
+                android:textColor="@color/red_gave_text"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
@@ -191,7 +191,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/navy_primary"
+                android:textColor="@color/brand_green_text"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -201,7 +201,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="@string/cash_stock_section"
-                android:textColor="@color/navy_primary"
+                android:textColor="@color/brand_green_text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -231,7 +231,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="@string/from_your_ledger"
-                android:textColor="@color/navy_primary"
+                android:textColor="@color/brand_green_text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -264,7 +264,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/red_gave"
+                android:textColor="@color/red_gave_text"
                 android:textSize="14sp" />
 
             <com.google.android.material.checkbox.MaterialCheckBox

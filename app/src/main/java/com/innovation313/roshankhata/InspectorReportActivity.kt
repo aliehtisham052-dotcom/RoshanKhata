@@ -116,7 +116,7 @@ class InspectorReportActivity : BaseActivity() {
     /** The buttons wear their own state, the way the ledger report's do. */
     private fun paintWindow() {
         fun dress(view: MaterialButton, on: Boolean) {
-            val colour = ContextCompat.getColor(this, if (on) R.color.brand_green else R.color.white)
+            val colour = ContextCompat.getColor(this, if (on) R.color.brand_green else R.color.surface)
             view.backgroundTintList = android.content.res.ColorStateList.valueOf(colour)
             view.setTextColor(
                 ContextCompat.getColor(this, if (on) R.color.white else R.color.ink)
@@ -256,7 +256,7 @@ class InspectorReportActivity : BaseActivity() {
                 }
                 b.hasExpired -> {
                     holder.expiry.text = getString(R.string.inspector_expired)
-                    holder.expiry.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.red_gave))
+                    holder.expiry.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.red_gave_text))
                 }
                 else -> {
                     holder.expiry.text = dayFmt.format(Date(exp))

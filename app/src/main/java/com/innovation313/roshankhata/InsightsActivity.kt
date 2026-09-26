@@ -213,7 +213,7 @@ class InsightsActivity : BaseActivity() {
                 text = Format.money(c.total)
                 textSize = 14f
                 gravity = Gravity.END
-                setTextColor(ContextCompat.getColor(this@InsightsActivity, R.color.section_insights))
+                setTextColor(ContextCompat.getColor(this@InsightsActivity, R.color.section_insights_text))
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
             }
             row.addView(name)

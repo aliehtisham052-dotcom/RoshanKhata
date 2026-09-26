@@ -48,8 +48,8 @@
         android:id="@+id/optRemove"
         style="@style/PhotoOptionRow"
         android:text="@string/remove_photo"
-        android:textColor="@color/red_gave"
+        android:textColor="@color/red_gave_text"
         android:visibility="gone"
         app:icon="@drawable/ic_delete"
-        app:iconTint="@color/red_gave" />
+        app:iconTint="@color/red_gave_text" />
 </LinearLayout>

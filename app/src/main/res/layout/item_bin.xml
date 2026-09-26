@@ -57,7 +57,7 @@
             android:minWidth="0dp"
             android:minHeight="40dp"
             android:text="@string/restore"
-            android:textColor="@color/navy_primary"
+            android:textColor="@color/brand_green_text"
             android:textSize="13sp"
             app:strokeColor="@color/navy_primary" />
 
@@ -70,7 +70,7 @@
             android:minWidth="0dp"
             android:minHeight="36dp"
             android:text="@string/delete_forever"
-            android:textColor="@color/red_gave"
+            android:textColor="@color/red_gave_text"
             android:textSize="12sp" />
     </LinearLayout>
 

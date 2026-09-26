@@ -144,7 +144,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_register_stock"
-                        app:tint="@color/section_bills" />
+                        app:tint="@color/section_bills_text" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -216,7 +216,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_register_sales"
-                        app:tint="@color/section_bills" />
+                        app:tint="@color/section_bills_text" />
                 </FrameLayout>
 
                 <LinearLayout

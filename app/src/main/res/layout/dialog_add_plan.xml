@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:textColor="@color/navy_primary"
+            android:textColor="@color/brand_green_text"
             android:textSize="12sp"
             android:textStyle="bold" />
 

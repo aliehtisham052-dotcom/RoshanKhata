@@ -201,13 +201,13 @@
                     android:letterSpacing="0"
                     android:text="@string/add_item"
                     android:textAllCaps="false"
-                    android:textColor="@color/brand_green"
+                    android:textColor="@color/brand_green_text"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     app:cornerRadius="12dp"
                     app:icon="@drawable/ic_add_plain"
                     app:iconGravity="textStart"
-                    app:iconTint="@color/brand_green"
+                    app:iconTint="@color/brand_green_text"
                     app:strokeColor="@color/brand_green"
                     app:strokeWidth="1.5dp" />
 
@@ -235,7 +235,7 @@
                     app:cornerRadius="12dp"
                     app:icon="@drawable/ic_tune"
                     app:iconGravity="start"
-                    app:iconTint="@color/brand_green"
+                    app:iconTint="@color/brand_green_text"
                     app:strokeColor="@color/editor_card_stroke"
                     app:strokeWidth="1dp" />
             </LinearLayout>
@@ -342,14 +342,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/brand_green"
+                android:textColor="@color/brand_green_text"
                 android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/tvItemsTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/brand_green"
+                android:textColor="@color/brand_green_text"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -369,7 +369,7 @@
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="@string/invoice_back"
-                android:textColor="@color/brand_green"
+                android:textColor="@color/brand_green_text"
                 android:textSize="15sp"
                 android:visibility="gone"
                 app:cornerRadius="14dp"

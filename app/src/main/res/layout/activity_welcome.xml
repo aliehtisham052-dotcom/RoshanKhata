@@ -153,7 +153,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/welcome_signed_in_title"
-                    android:textColor="@color/brand_green"
+                    android:textColor="@color/brand_green_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 

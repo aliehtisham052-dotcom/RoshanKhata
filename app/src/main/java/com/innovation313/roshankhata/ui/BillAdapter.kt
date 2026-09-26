@@ -60,12 +60,12 @@ class BillAdapter(
         // to the due-date reminder.
         if (b.isPaidInFull) {
             holder.tvStatus.setText(R.string.plan_closed)
-            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got))
+            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got_text))
             holder.tvStatus.visibility = View.VISIBLE
         } else if (b.supplierBalance >= 0) {
             // Owe them nothing right now — the account is clear.
             holder.tvStatus.setText(R.string.bill_account_settled)
-            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got))
+            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got_text))
             holder.tvStatus.visibility = View.VISIBLE
         } else {
             // Still owed. Show how much is outstanding to this supplier, and the
@@ -75,7 +75,7 @@ class BillAdapter(
             val due = b.dueDate
             if (due != null && due < System.currentTimeMillis()) {
                 holder.tvStatus.text = ctx.getString(R.string.bill_owe_overdue, owed)
-                holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave))
+                holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave_text))
             } else {
                 holder.tvStatus.text = ctx.getString(R.string.bill_owe_amount, owed)
                 holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.ink))

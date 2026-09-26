@@ -50,7 +50,7 @@
         android:id="@+id/tvExpSupplier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/navy_primary"
+        android:textColor="@color/brand_green_text"
         android:textSize="12sp" />
 
 </LinearLayout>

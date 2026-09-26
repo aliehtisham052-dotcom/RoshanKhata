@@ -381,7 +381,7 @@
                         android:layout_weight="1"
                         android:minHeight="48dp"
                         android:text="@string/remove_stamp"
-                        android:textColor="@color/red_gave"
+                        android:textColor="@color/red_gave_text"
                         android:visibility="gone"
                         app:cornerRadius="10dp"
                         app:strokeColor="@color/red_gave" />
@@ -474,7 +474,7 @@
                         android:layout_weight="1"
                         android:minHeight="48dp"
                         android:text="@string/remove_signature"
-                        android:textColor="@color/red_gave"
+                        android:textColor="@color/red_gave_text"
                         android:visibility="gone"
                         app:cornerRadius="10dp"
                         app:strokeColor="@color/red_gave" />
@@ -579,7 +579,7 @@
                         android:layout_weight="1"
                         android:minHeight="48dp"
                         android:text="@string/remove_qr"
-                        android:textColor="@color/red_gave"
+                        android:textColor="@color/red_gave_text"
                         android:visibility="gone"
                         app:cornerRadius="10dp"
                         app:strokeColor="@color/red_gave" />

@@ -86,7 +86,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/app_name"
-                        android:textColor="@color/brand_green"
+                        android:textColor="@color/brand_green_text"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -250,7 +250,7 @@
             android:layout_height="52dp"
             android:layout_weight="1"
             android:text="@string/edit"
-            android:textColor="@color/brand_green"
+            android:textColor="@color/brand_green_text"
             app:cornerRadius="12dp"
             app:strokeColor="@color/brand_green" />
 
