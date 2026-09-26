@@ -159,6 +159,15 @@
           ("صورت‌حساب", "STATEMENT") never wraps or clips. marginEnd 12dp
           plus the header's 4dp end padding gives the same 16dp inset as the
           start; before, Statement ran to the screen edge.
+
+          baselineAligned=false, match_parent height, 46dp minimum: the row
+          lines the four up by their EDGES, not by their text. Left at the
+          default, LinearLayout lined up the text baselines, and a Latin
+          label ("SMS") sits on a different baseline from an Arabic-script
+          one, so SMS rode up and the other three were pushed down and cut
+          off at the bottom of the row. Now all four share the tallest one's
+          height: 46dp as designed, taller only when a script or a larger
+          text size needs it.
         -->
         <LinearLayout
             android:id="@+id/reminderBar"
@@ -166,6 +175,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="12dp"
+            android:baselineAligned="false"
             android:orientation="horizontal"
             android:weightSum="4">
 
@@ -173,7 +183,8 @@
                 android:id="@+id/btnCall"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
+                android:layout_height="match_parent"
+                android:minHeight="46dp"
                 android:layout_weight="1"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -208,7 +219,8 @@
                 android:id="@+id/btnWhatsApp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
+                android:layout_height="match_parent"
+                android:minHeight="46dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:insetTop="0dp"
@@ -244,7 +256,8 @@
                 android:id="@+id/btnSms"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
+                android:layout_height="match_parent"
+                android:minHeight="46dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:insetTop="0dp"
@@ -280,7 +293,8 @@
                 android:id="@+id/btnPdf"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
+                android:layout_height="match_parent"
+                android:minHeight="46dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:insetTop="0dp"
