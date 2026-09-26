@@ -43,6 +43,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipAll"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -51,6 +52,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipToday"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/range_today" />
@@ -58,6 +60,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipWeek"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/range_week" />
@@ -65,6 +68,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipMonth"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/range_month" />
@@ -72,6 +76,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCustom"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/range_custom" />

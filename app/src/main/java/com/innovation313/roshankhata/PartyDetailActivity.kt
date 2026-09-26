@@ -865,7 +865,7 @@ class PartyDetailActivity : BaseActivity() {
             color(if (isGiven) R.color.red_gave else R.color.white)
         )
         tvDirection.setTextColor(color(if (isGiven) R.color.white else R.color.brand_green))
-        etAmount.setTextColor(color(if (isGiven) R.color.red_gave else R.color.brand_green))
+        etAmount.setTextColor(color(if (isGiven) R.color.red_gave_text else R.color.brand_green_text))
 
         val preview = view.findViewById<View>(R.id.entryBalancePreview)
         val tvPreviewLine = view.findViewById<TextView>(R.id.tvPreviewLine)

@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.LayerDrawable
 import android.view.View
@@ -209,6 +210,15 @@ class EveryScreenOpensTest(
         is GradientDrawable -> d.color?.let { it.getColorForState(state, it.defaultColor) }
             ?: d.colors?.takeIf { it.isNotEmpty() }?.let { average(it) }
         is MaterialShapeDrawable -> d.fillColor?.let { it.getColorForState(state, it.defaultColor) }
+        // A ripple (every tappable row) carries a white MASK layer that is
+        // never drawn: it only bounds the ripple. Reading it as the colour
+        // behind the text flagged every list row as "on #FFFFFF". Skip the
+        // mask; a ripple with no other layer is transparent, so the search
+        // carries on up to the parent.
+        is RippleDrawable -> (d.numberOfLayers - 1 downTo 0)
+            .filter { d.getId(it) != android.R.id.mask }
+            .filter { d.getLayerHeight(it) <= 0 && d.getLayerWidth(it) <= 0 }
+            .firstNotNullOfOrNull { drawableColour(d.getDrawable(it), state) }
         // Top-most layer that covers the whole area. A layer with its own
         // height or width is decoration (the 2dp gold rule under the Home
         // header), not the colour behind the text.

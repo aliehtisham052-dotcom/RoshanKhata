@@ -52,7 +52,7 @@ class CashAdapter(
         holder.tvAmount.setTextColor(
             ContextCompat.getColor(
                 ctx,
-                if (e.isIncome) R.color.green_got else R.color.red_gave
+                if (e.isIncome) R.color.green_got_text else R.color.red_gave_text
             )
         )
 

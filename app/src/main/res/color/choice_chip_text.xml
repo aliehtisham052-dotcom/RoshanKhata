@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Text of the choice chips (statement filters, entry-type chips).
+  Material's default colours a CHECKED choice chip's text with colorPrimary,
+  which is brand_green: a fill colour that stays dark at night, so the chosen
+  chip read dark green on dark green (2.5:1). The _text colours are identical
+  by day and light at night.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/brand_green_text" android:state_checked="true" />
+    <item android:color="@color/ink" />
+</selector>

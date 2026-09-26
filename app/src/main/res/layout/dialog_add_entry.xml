@@ -382,6 +382,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCash"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/payment_method_cash" />
@@ -389,6 +390,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipBank"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/payment_method_bank" />
@@ -396,6 +398,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCheque"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/payment_method_cheque" />
@@ -403,6 +406,7 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipOnline"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/payment_method_online" />

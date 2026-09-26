@@ -143,7 +143,7 @@ class PartyAdapter(
                     holder.tvLimitWarning.visibility = View.VISIBLE
                     holder.tvLimitWarning.setText(R.string.over_limit_badge)
                     holder.tvLimitWarning.setTextColor(
-                        ContextCompat.getColor(ctx, R.color.red_gave)
+                        ContextCompat.getColor(ctx, R.color.red_gave_text)
                     )
                 }
                 item.balance >= limit * 0.9 -> {

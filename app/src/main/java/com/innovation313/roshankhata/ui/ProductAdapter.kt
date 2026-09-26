@@ -70,7 +70,7 @@ class ProductAdapter(
                 holder.tvStock.setTextColor(
                     ContextCompat.getColor(
                         ctx,
-                        if (onHand < 0) R.color.red_gave else R.color.green_got
+                        if (onHand < 0) R.color.red_gave_text else R.color.green_got_text
                     )
                 )
             }

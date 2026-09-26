@@ -264,7 +264,7 @@ class InspectorReportActivity : BaseActivity() {
                     holder.expiry.setTextColor(
                         ContextCompat.getColor(
                             holder.itemView.context,
-                            if (soon) R.color.red_gave else R.color.ink
+                            if (soon) R.color.red_gave_text else R.color.ink
                         )
                     )
                 }
