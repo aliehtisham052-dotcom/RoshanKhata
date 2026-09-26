@@ -94,6 +94,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditBatch"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:textColor="@color/ink"
+        app:strokeColor="@color/editor_field_stroke"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:layout_marginTop="8dp"

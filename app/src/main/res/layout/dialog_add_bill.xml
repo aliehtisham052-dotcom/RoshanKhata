@@ -45,6 +45,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBillDate"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:textColor="@color/ink"
+        app:strokeColor="@color/editor_field_stroke"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
@@ -54,6 +56,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBillDue"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:textColor="@color/ink"
+        app:strokeColor="@color/editor_field_stroke"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="8dp"
