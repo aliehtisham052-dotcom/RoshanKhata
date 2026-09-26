@@ -3,6 +3,7 @@ package com.innovation313.roshankhata
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -149,6 +150,38 @@ class MainActivity : BaseActivity() {
         featureViews.clear()
         fillGrid(findViewById(R.id.gridDaily), daily)
         fillGrid(findViewById(R.id.gridBusiness), business)
+        equalizeTileHeights()
+    }
+
+    /**
+     * One height for every tile in both grids: the tallest tile's own.
+     *
+     * Each tile measures to fit its label (see createTile), so in a script
+     * with tall lines a tile holding a two-line name comes out taller than
+     * one holding a single word. A grid of uneven tiles reads as a mistake,
+     * so just before the first frame is drawn every tile is set to the
+     * tallest height and that frame is skipped — the owner only ever sees the
+     * finished, even grid. In English at normal size the tallest tile is the
+     * 72dp minimum, so the screen is exactly as it was before.
+     */
+    private fun equalizeTileHeights() {
+        val tiles = featureViews.values.toList()
+        if (tiles.isEmpty()) return
+        val anchor = findViewById<View>(R.id.gridDaily)
+        anchor.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                anchor.viewTreeObserver.removeOnPreDrawListener(this)
+                val tallest = tiles.maxOf { it.height }
+                if (tallest <= 0) return true
+                val uneven = tiles.filter { it.layoutParams.height != tallest }
+                if (uneven.isEmpty()) return true
+                uneven.forEach { tile ->
+                    tile.layoutParams = tile.layoutParams.apply { height = tallest }
+                }
+                // Skip this frame; the next layout pass draws the even grid.
+                return false
+            }
+        })
     }
 
     private fun fillGrid(container: LinearLayout, features: List<Feature>) {
@@ -181,10 +214,20 @@ class MainActivity : BaseActivity() {
         // XML twice over changed nothing on screen: the value was being
         // discarded before it was ever measured. Set here instead, where it
         // survives.
+        //
+        // The height is a MINIMUM now, not a fixed value. 72dp was measured
+        // against Latin text: two lines of 10sp fit with room to spare. Arabic,
+        // Farsi, Sindhi and Urdu are drawn in a fallback font whose lines are
+        // about half as tall again, so the second line of "Business Settings"
+        // or "Products & Stock" in those languages was sliced off at the
+        // bottom of the card — at normal text size too, not only when enlarged.
+        // Each tile now measures its own content; equalizeTileHeights() then
+        // gives every tile the tallest one's height, so the grid stays even.
         val gap = (TILE_GAP_DP * resources.displayMetrics.density).toInt()
+        tile.minimumHeight = (TILE_HEIGHT_DP * resources.displayMetrics.density).toInt()
         tile.layoutParams = LinearLayout.LayoutParams(
             0,
-            (TILE_HEIGHT_DP * resources.displayMetrics.density).toInt(),
+            LinearLayout.LayoutParams.WRAP_CONTENT,
             1f
         ).apply {
             marginStart = gap
