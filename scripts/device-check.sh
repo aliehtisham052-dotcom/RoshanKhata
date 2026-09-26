@@ -44,6 +44,10 @@ else
   adb shell monkey -p $PKG -s $SEED --throttle 75 --pct-syskeys 0 --ignore-timeouts --ignore-security-exceptions -v $EVENTS > /tmp/monkey_output.txt 2>&1
   monkey=$?
   adb logcat -d -b crash > /tmp/crash_log.txt 2>&1
+  # Android's own ANR reports, with every thread's stack at the moment the
+  # app stopped answering. The monkey only says THAT a screen froze; this
+  # says which line of our code the main thread was stuck on.
+  adb shell dumpsys dropbox --print data_app_anr > /tmp/anr_traces.txt 2>&1
   if grep -q "// CRASH" /tmp/monkey_output.txt; then monkey=1; fi
   if grep -q "$PKG" /tmp/crash_log.txt; then monkey=1; fi
 fi
