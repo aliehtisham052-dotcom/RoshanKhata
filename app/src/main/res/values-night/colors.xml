@@ -30,14 +30,6 @@
     <color name="note_bg">#3A3320</color>
     <color name="note_text">#F0DFA8</color>
     <color name="brand_green_soft">#1F3528</color>
-    <color name="section_khata_soft">#2A4033</color>
-    <color name="section_cashbook_soft">#23402F</color>
-    <color name="section_cheques_soft">#23403B</color>
-    <color name="section_plans_soft">#34402A</color>
-    <color name="section_bills_soft">#40381F</color>
-    <color name="section_tools_soft">#2E3A33</color>
-    <color name="section_insights_soft">#233D37</color>
-    <color name="section_followup_soft">#2F3D28</color>
     <color name="summary_get_bg">#3A2422</color>
     <color name="summary_give_bg">#1F3528</color>
     <color name="summary_settled_bg">#2C2A24</color>
@@ -72,4 +64,7 @@
     <color name="editor_field_stroke">#4A473E</color>
     <color name="editor_card_stroke">#34312A</color>
     <color name="google_btn_stroke">#8E918F</color>
+    <!-- Dark buttons with white text: a lighter green at night, so the pill
+         stands out from the page and white text still reads on it. -->
+    <color name="button_dark">#2E7D52</color>
 </resources>

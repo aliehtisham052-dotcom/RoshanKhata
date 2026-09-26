@@ -6,6 +6,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
+import android.graphics.drawable.LayerDrawable
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.shape.MaterialShapeDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.innovation313.roshankhata.data.ThemeMode
@@ -125,6 +138,15 @@ class EveryScreenOpensTest(
                 assertEquals("$screen: not in night mode", Configuration.UI_MODE_NIGHT_YES, night)
                 val page = ContextCompat.getColor(activity, R.color.page_bg)
                 assertTrue("$screen: page colour is not dark", ColorUtils.calculateLuminance(page) < 0.1)
+
+                // Every visible piece of text must stand out from what is
+                // actually behind it. The owner found text that vanished
+                // into its own background in dark mode (header subtitles,
+                // the Add Party / Add Entry pills); this measures it on
+                // every screen instead of waiting to be spotted.
+                val faint = mutableListOf<String>()
+                checkContrast(activity.findViewById(android.R.id.content), page, faint)
+                assertTrue("$screen: text too faint in dark mode: ${faint.take(8).joinToString("; ")}", faint.isEmpty())
             }
 
             scenario.recreate()                              // rotation / dark mode / font size
@@ -138,6 +160,56 @@ class EveryScreenOpensTest(
                     scenario.state == Lifecycle.State.DESTROYED
             )
         }
+    }
+
+
+    /**
+     * Walks the screen and records every visible, enabled text whose colour
+     * is too close to the colour really drawn behind it (contrast below 3:1,
+     * the level at which text stops being comfortably readable).
+     */
+    private fun checkContrast(v: View?, page: Int, out: MutableList<String>) {
+        if (v == null || !v.isShown || v.alpha < 0.5f) return
+        if (v is TextView && v.isEnabled && v.text.isNotBlank() && v !is EditText) {
+            val bg = backgroundBehind(v, page)
+            val fg = ColorUtils.compositeColors(v.currentTextColor, bg)
+            val ratio = ColorUtils.calculateContrast(fg, bg)
+            if (ratio < 3.0) {
+                val id = if (v.id != View.NO_ID) v.resources.getResourceEntryName(v.id) else "?"
+                out += "'${v.text.toString().take(24)}' ($id) %.1f:1".format(ratio)
+            }
+        }
+        if (v is ViewGroup) for (i in 0 until v.childCount) checkContrast(v.getChildAt(i), page, out)
+    }
+
+    /** The first solid colour found behind [v], walking up its parents. */
+    private fun backgroundBehind(v: View, page: Int): Int {
+        var p: View? = v
+        while (p != null) {
+            solidColourOf(p)?.let { c ->
+                if (Color.alpha(c) >= 200) return ColorUtils.compositeColors(c, page)
+            }
+            p = p.parent as? View
+        }
+        return page
+    }
+
+    private fun solidColourOf(v: View): Int? {
+        val state = v.drawableState
+        if (v is MaterialCardView) return v.cardBackgroundColor.getColorForState(state, v.cardBackgroundColor.defaultColor)
+        if (v is MaterialButton) v.backgroundTintList?.let { return it.getColorForState(state, it.defaultColor) }
+        val bg = v.background ?: return null
+        v.backgroundTintList?.let { return it.getColorForState(state, it.defaultColor) }
+        return drawableColour(bg, state)
+    }
+
+    private fun drawableColour(d: Drawable, state: IntArray): Int? = when (d) {
+        is ColorDrawable -> d.color
+        is GradientDrawable -> d.color?.let { it.getColorForState(state, it.defaultColor) }
+        is MaterialShapeDrawable -> d.fillColor?.let { it.getColorForState(state, it.defaultColor) }
+        is LayerDrawable -> (d.numberOfLayers - 1 downTo 0).firstNotNullOfOrNull { drawableColour(d.getDrawable(it), state) }
+        is InsetDrawable -> d.drawable?.let { drawableColour(it, state) }
+        else -> null
     }
 
     companion object {
