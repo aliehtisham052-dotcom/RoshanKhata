@@ -525,10 +525,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="#FFF6E0"
+                    android:background="@color/note_bg"
                     android:padding="12dp"
                     android:text="@string/payment_qr_caveat"
-                    android:textColor="#5C4A16"
+                    android:textColor="@color/note_text"
                     android:textSize="12sp" />
 
                 <ImageView

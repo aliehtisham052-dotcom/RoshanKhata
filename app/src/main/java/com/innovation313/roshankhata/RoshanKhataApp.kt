@@ -38,6 +38,9 @@ class RoshanKhataApp : Application() {
     override fun onCreate() {
         super.onCreate()
         CrashLog.install(this)
+        // Before any screen is built, so the first frame is already in the
+        // owner's chosen theme.
+        runCatching { com.innovation313.roshankhata.data.ThemeMode.apply(this) }
         registerActivityLifecycleCallbacks(ScreenSecurityCallbacks())
         registerActivityLifecycleCallbacks(BackgroundWatcher(this))
     }

@@ -323,7 +323,7 @@
         android:id="@+id/bottomNav"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/surface"
         app:elevation="8dp"
         app:itemActiveIndicatorStyle="@null"
         app:itemIconTint="@color/nav_item_colour"
