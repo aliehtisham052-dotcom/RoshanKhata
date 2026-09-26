@@ -114,7 +114,14 @@ class HomeTilesFitTest(
 
                 assertTrue("[$language, level $level] ${problems.joinToString("; ")}", problems.isEmpty())
                 assertEquals("[$language, level $level] tiles of different heights: $heights", 1, heights.size)
-                assertEquals("[$language, level $level] tiles of different widths: $widths", 1, widths.size)
+                // One width, to the pixel. LinearLayout shares out the pixels left
+                // over when the row width does not divide by three, so on a real
+                // screen one tile can be a single pixel wider (316 vs 317px on the
+                // CI emulator). Invisible; the slot was wrong by 2 x TILE_GAP_DP.
+                assertTrue(
+                    "[$language, level $level] tiles of different widths: $widths",
+                    widths.max() - widths.min() <= 1
+                )
                 // Three columns means exactly three left edges across every row.
                 assertEquals("[$language, level $level] tiles off the column lines: $columnEdges", 3, columnEdges.size)
             }
