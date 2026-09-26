@@ -205,6 +205,19 @@ jobs:
                   clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g' | cut -c1-300)
                   echo "::notice::monkey ANR: $clean"
                 done
+            # For an ANR in OUR app: the main thread's stack at that moment,
+            # from Android's own report. The top frames name the call it
+            # was stuck in; our own frames say where in the code.
+            if [ -f /tmp/anr_traces.txt ] && grep -q 'Process: com.innovation313' /tmp/anr_traces.txt; then
+              awk '/Process: com.innovation313/{p=1} p&&/^"main"/{m=1} m{print} m&&/^$/{exit}' /tmp/anr_traces.txt \
+                | grep -E '^"main"|^  \| state=|^  at |^  - ' | head -14 \
+                | while IFS= read -r line; do
+                    clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g' | cut -c1-240)
+                    echo "::notice::ANR main thread: $clean"
+                  done
+              ours=$(awk '/Process: com.innovation313/{p=1} p&&/^"main"/{m=1} m&&/^$/{exit} m' /tmp/anr_traces.txt | grep -m3 'at com.innovation313' | tr -d '\r' | tr '\n' ' ' | cut -c1-400)
+              echo "::notice::ANR our frames: ${ours:-none on the main thread}"
+            fi
             # The last screen the monkey was on before it stopped.
             last=$(grep -o 'cmp=com.innovation313[^ }]*' /tmp/monkey_output.txt | tail -1)
             echo "::notice::Monkey last screen: ${last:-unknown}"
