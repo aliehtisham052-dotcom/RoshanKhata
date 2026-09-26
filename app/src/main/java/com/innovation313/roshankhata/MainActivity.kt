@@ -198,8 +198,19 @@ class MainActivity : BaseActivity() {
 
             // Pad a short last row with empty weight, so three tiles and two
             // tiles come out the same width instead of the pair stretching.
+            //
+            // The filler carries the same side margins as a tile. Without
+            // them it was 2 x TILE_GAP_DP narrower than the slot it stands
+            // in for, LinearLayout shared that space out among the real
+            // tiles, and the last row came out wider than the rows above and
+            // shifted out of line with them (seen on the Calculator tile, and
+            // on the last two business tiles in right-to-left languages).
+            val gap = (TILE_GAP_DP * resources.displayMetrics.density).toInt()
             repeat(COLUMNS - rowFeatures.size) {
-                row.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
+                row.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f).apply {
+                    marginStart = gap
+                    marginEnd = gap
+                })
             }
             container.addView(row)
         }

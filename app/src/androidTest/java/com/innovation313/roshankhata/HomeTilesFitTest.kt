@@ -33,6 +33,8 @@ import org.junit.runners.Parameterized
  *  - the label's last visible line ends inside the label (no self-clipping);
  *  - the label ends inside its tile (the card does not cut it);
  *  - every tile in both grids has the same height (the grid stays even);
+ *  - every tile has the same width, and a short last row lines up with the
+ *    columns above it (it used to come out wider and shifted);
  *  - at normal size, no name is cut short with "…" in any language.
  */
 @RunWith(Parameterized::class)
@@ -76,12 +78,16 @@ class HomeTilesFitTest(
 
                 val problems = mutableListOf<String>()
                 val heights = mutableSetOf<Int>()
+                val widths = mutableSetOf<Int>()
+                val columnEdges = mutableSetOf<Int>()
                 for (label in labels) {
                     val text = label.text.toString()
                     val layout = label.layout
                     if (layout == null) { problems += "'$text': not laid out"; continue }
                     val tile = label.parent.parent as View
                     heights += tile.height
+                    widths += tile.width
+                    columnEdges += IntArray(2).also { tile.getLocationOnScreen(it) }[0]
 
                     // 1. The last visible line ends inside the label itself.
                     val shown = minOf(layout.lineCount, 2)
@@ -108,6 +114,9 @@ class HomeTilesFitTest(
 
                 assertTrue("[$language, level $level] ${problems.joinToString("; ")}", problems.isEmpty())
                 assertEquals("[$language, level $level] tiles of different heights: $heights", 1, heights.size)
+                assertEquals("[$language, level $level] tiles of different widths: $widths", 1, widths.size)
+                // Three columns means exactly three left edges across every row.
+                assertEquals("[$language, level $level] tiles off the column lines: $columnEdges", 3, columnEdges.size)
             }
         }
     }
