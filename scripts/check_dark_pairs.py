@@ -52,8 +52,29 @@ for f in glob.glob(f"{RES}/layout*/*.xml"):
         if bg and bg.lower() in WHITE and turns_light(g("textColor")):
             problems.append(f"{f.split('/')[-1]} {g('id') or el.tag}: white background + {g('textColor')} text")
 
+# Kotlin: a FILL colour (dark at night, because it is a header or button
+# fill) used as TEXT colour. Found 10 such calls on 26 Sep 2026 — amounts,
+# due dates and expiry days in dark red/green on a dark page. The *_text
+# colours are the same by day and light at night.
+FILLS = r"R\.color\.(red_gave|green_got|brand_green|section_[a-z]+)\b(?!_)"
+ALLOWED = ["tvDirection"]  # the I Gave / I Got pill is white in both modes
+for f in glob.glob("app/src/main/java/**/*.kt", recursive=True):
+    lines = open(f, encoding="utf-8").read().split("\n")
+    for i, l in enumerate(lines):
+        if "setTextColor" not in l or any(a in l for a in ALLOWED):
+            continue
+        j, depth, started = i, 0, False
+        while j < len(lines):
+            depth += lines[j].count("(") - lines[j].count(")")
+            started = started or "(" in lines[j]
+            if started and depth <= 0: break
+            j += 1
+        stmt = " ".join(lines[i:j + 1])
+        for m in re.finditer(FILLS, stmt):
+            problems.append(f"{f.split('/')[-1]}:{i + 1}: text coloured with fill {m.group(0)} (use {m.group(0)}_text)")
+
 if problems:
     print("Text that vanishes in dark mode (use @color/surface for the background):")
     print("\n".join("  " + p for p in problems))
     sys.exit(1)
-print(f"dark pairs OK: {len(styles)} styles and every layout checked")
+print(f"dark pairs OK: {len(styles)} styles, every layout, and every Kotlin setTextColor checked")

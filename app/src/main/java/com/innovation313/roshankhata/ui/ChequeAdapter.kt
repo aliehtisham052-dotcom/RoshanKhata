@@ -55,7 +55,7 @@ class ChequeAdapter(
         holder.tvAmount.setTextColor(
             ContextCompat.getColor(
                 ctx,
-                if (c.isReceived) R.color.green_got else R.color.red_gave
+                if (c.isReceived) R.color.green_got_text else R.color.red_gave_text
             )
         )
 
@@ -75,7 +75,7 @@ class ChequeAdapter(
             holder.tvDue.setTextColor(
                 ContextCompat.getColor(
                     ctx,
-                    if (days <= 0) R.color.red_gave else R.color.ink
+                    if (days <= 0) R.color.red_gave_text else R.color.ink
                 )
             )
         } else {

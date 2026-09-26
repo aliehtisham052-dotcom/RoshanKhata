@@ -58,7 +58,7 @@ class ExpiringAdapter : RecyclerView.Adapter<ExpiringAdapter.VH>() {
                 holder.tvDays.setTextColor(
                     ContextCompat.getColor(
                         ctx,
-                        if (days <= 14) R.color.red_gave else R.color.gold_accent
+                        if (days <= 14) R.color.red_gave_text else R.color.gold_accent
                     )
                 )
             }

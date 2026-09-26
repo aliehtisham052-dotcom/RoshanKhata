@@ -18,6 +18,8 @@ on:
       - 'app/src/main/res/values*/colors.xml'
       - 'app/src/main/res/values/themes.xml'
       - 'scripts/check_dark_colours.py'
+      - 'scripts/check_dark_pairs.py'
+      - 'app/src/main/java/**'
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
@@ -30,6 +32,8 @@ on:
       - 'app/src/main/res/values*/colors.xml'
       - 'app/src/main/res/values/themes.xml'
       - 'scripts/check_dark_colours.py'
+      - 'scripts/check_dark_pairs.py'
+      - 'app/src/main/java/**'
 
 jobs:
   parity:

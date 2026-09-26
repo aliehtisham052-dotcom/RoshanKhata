@@ -62,7 +62,7 @@ class FollowUpAdapter(
             ctx.resources.getQuantityString(R.plurals.followup_last_ago, days, days)
         }
         holder.tvAge.setTextColor(
-            ContextCompat.getColor(ctx, if (overdue) R.color.red_gave else R.color.text_muted)
+            ContextCompat.getColor(ctx, if (overdue) R.color.red_gave_text else R.color.text_muted)
         )
 
         // A customer with no number cannot be messaged, and the row should

@@ -84,7 +84,7 @@ class PlanAdapter(
                 holder.tvDue.setTextColor(
                     ContextCompat.getColor(
                         ctx,
-                        if (overdue) R.color.red_gave else R.color.ink
+                        if (overdue) R.color.red_gave_text else R.color.ink
                     )
                 )
             }
