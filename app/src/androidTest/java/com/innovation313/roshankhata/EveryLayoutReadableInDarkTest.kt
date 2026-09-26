@@ -109,7 +109,11 @@ class EveryLayoutReadableInDarkTest {
 
     /** Empty labels get a sample, so a row drawn with no data can still be measured. */
     private fun fillBlanks(v: View) {
-        if (v is TextView && v !is EditText && v.text.isNullOrBlank()) v.text = "Aa 123"
+        // An empty text view gets sample text so its colour can be measured,
+        // except an icon-only button: it never shows text, so its text colour
+        // is never seen (its icon is measured separately).
+        val iconOnly = v is com.google.android.material.button.MaterialButton && v.icon != null
+        if (v is TextView && v !is EditText && v.text.isNullOrBlank() && !iconOnly) v.text = "Aa 123"
         if (v is ViewGroup) for (i in 0 until v.childCount) fillBlanks(v.getChildAt(i))
     }
 }
