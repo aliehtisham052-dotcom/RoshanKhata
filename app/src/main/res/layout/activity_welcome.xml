@@ -201,6 +201,7 @@
             app:backgroundTint="@color/white"
             app:cornerRadius="26dp"
             app:icon="@drawable/ic_google_g"
+            app:iconTint="@null"
             app:iconGravity="textStart"
             app:iconPadding="13dp"
             app:iconSize="26dp"
