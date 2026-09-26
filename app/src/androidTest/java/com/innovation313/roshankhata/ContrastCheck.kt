@@ -37,7 +37,7 @@ object ContrastCheck {
             val fg = ColorUtils.compositeColors(v.currentTextColor, bg)
             val ratio = ColorUtils.calculateContrast(fg, bg)
             if (ratio < 3.0) {
-                val id = if (v.id != View.NO_ID) v.resources.getResourceEntryName(v.id) else "?"
+                val id = idName(v)
                 out += "'${v.text.toString().take(24)}' ($id) %.1f:1 on #%06X".format(ratio, bg and 0xFFFFFF)
             }
         }
@@ -105,7 +105,7 @@ object ContrastCheck {
      */
     fun iconsAndBorders(v: View?, page: Int, out: MutableList<String>) {
         if (v == null || !v.isShown || v.alpha < 0.5f) return
-        val id = if (v.id != View.NO_ID) v.resources.getResourceEntryName(v.id) else "?"
+        val id = idName(v)
         if (v.isEnabled) {
             val bg = backgroundBehind(v, page)
             if (v is MaterialButton) {
@@ -130,4 +130,14 @@ object ContrastCheck {
         }
         if (v is ViewGroup) for (i in 0 until v.childCount) iconsAndBorders(v.getChildAt(i), page, out)
     }
+
+    /**
+     * A view's id as written in the layout, for the failure message. Ids set
+     * in code (View.generateViewId, or a library's own small ints like 0x2)
+     * are not resources; asking for their name threw NotFoundException and
+     * ended the all-layouts test before it had measured anything.
+     */
+    private fun idName(v: View): String =
+        if (v.id == View.NO_ID) "?"
+        else runCatching { v.resources.getResourceEntryName(v.id) }.getOrDefault("#${v.id}")
 }

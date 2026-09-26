@@ -37,6 +37,8 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnWindow"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:textColor="@color/ink"
+        app:strokeColor="@color/editor_field_stroke"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

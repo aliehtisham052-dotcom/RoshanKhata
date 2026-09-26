@@ -68,6 +68,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCropCancel"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:textColor="@color/ink"
+        app:strokeColor="@color/editor_field_stroke"
             android:layout_width="0dp"
             android:layout_height="52dp"
             android:layout_weight="1"
