@@ -1442,4 +1442,8 @@
     <string name="text_size_normal">عام</string>
     <string name="text_size_large">وڏو</string>
     <string name="text_size_largest">تمام وڏو</string>
+    <string name="theme">ٿيم</string>
+    <string name="theme_light">روشن</string>
+    <string name="theme_dark">اونداهي</string>
+    <string name="theme_system">فون مطابق</string>
 </resources>

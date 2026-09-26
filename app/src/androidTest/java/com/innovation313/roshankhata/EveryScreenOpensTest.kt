@@ -5,6 +5,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.content.res.Configuration
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import com.innovation313.roshankhata.data.ThemeMode
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -22,6 +26,7 @@ import com.innovation313.roshankhata.data.TextSize
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,7 +62,8 @@ import org.junit.runners.Parameterized
 class EveryScreenOpensTest(
     private val screen: String,
     private val intentFor: (Context, Seed) -> Intent,
-    private val textSize: Int
+    private val textSize: Int,
+    private val dark: Boolean
 ) {
 
     /** Row ids the screens that open one record need. */
@@ -89,11 +95,17 @@ class EveryScreenOpensTest(
         }
 
         TextSize.setLevel(context, textSize)
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            ThemeMode.set(context, if (dark) ThemeMode.DARK else ThemeMode.LIGHT)
+        }
     }
 
     @After
     fun normalSize() {
         TextSize.setLevel(context, TextSize.NORMAL)
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            ThemeMode.set(context, ThemeMode.LIGHT)
+        }
     }
 
     @Test
@@ -104,6 +116,16 @@ class EveryScreenOpensTest(
             // this test with the stack trace; the asserts only guard against
             // a screen stuck in a state it should never be left in.
             if (scenario.state == Lifecycle.State.DESTROYED) return
+
+            // In dark mode the screen must actually BE dark: night resources
+            // resolved, and the page colour it draws on a dark one.
+            if (dark) scenario.onActivity { activity ->
+                val night = activity.resources.configuration.uiMode and
+                    Configuration.UI_MODE_NIGHT_MASK
+                assertEquals("$screen: not in night mode", Configuration.UI_MODE_NIGHT_YES, night)
+                val page = ContextCompat.getColor(activity, R.color.page_bg)
+                assertTrue("$screen: page colour is not dark", ColorUtils.calculateLuminance(page) < 0.1)
+            }
 
             scenario.recreate()                              // rotation / dark mode / font size
             if (scenario.state == Lifecycle.State.DESTROYED) return
@@ -205,8 +227,9 @@ class EveryScreenOpensTest(
         @Parameterized.Parameters(name = "{0}")
         fun screens(): List<Array<Any>> = baseScreens().flatMap { row ->
             listOf(
-                arrayOf(row[0], row[1], TextSize.NORMAL),
-                arrayOf("${row[0]} @ largest text", row[1], TextSize.LARGEST)
+                arrayOf(row[0], row[1], TextSize.NORMAL, false),
+                arrayOf("${row[0]} @ largest text", row[1], TextSize.LARGEST, false),
+                arrayOf("${row[0]} @ dark", row[1], TextSize.NORMAL, true)
             )
         }
 

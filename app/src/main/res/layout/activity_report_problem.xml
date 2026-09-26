@@ -42,10 +42,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFF6E0"
+            android:background="@color/note_bg"
             android:padding="14dp"
             android:text="@string/report_privacy"
-            android:textColor="#5C4A16"
+            android:textColor="@color/note_text"
             android:textSize="12sp" />
 
         <LinearLayout

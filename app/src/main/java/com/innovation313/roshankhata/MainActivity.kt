@@ -16,6 +16,7 @@ import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.AppLock
 import com.innovation313.roshankhata.data.TextSize
+import com.innovation313.roshankhata.data.ThemeMode
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.ui.CoachMarkController
 import com.innovation313.roshankhata.ui.Format
@@ -289,6 +290,7 @@ class MainActivity : BaseActivity() {
             getString(R.string.duplicate_customers),
             getString(R.string.language),
             getString(R.string.text_size),
+            getString(R.string.theme),
             getString(R.string.help_support),
             getString(R.string.about_us)
         )
@@ -302,10 +304,11 @@ class MainActivity : BaseActivity() {
                     2 -> startActivity(Intent(this, DuplicateCustomersActivity::class.java))
                     3 -> startActivity(Intent(this, LanguageActivity::class.java))
                     4 -> showTextSizeSettings()
+                    5 -> showThemeSettings()
                     // Reporting a problem lives inside Help now, so there is
                     // one door marked "something is wrong" rather than two.
-                    5 -> startActivity(Intent(this, HelpActivity::class.java))
-                    6 -> startActivity(Intent(this, AboutActivity::class.java))
+                    6 -> startActivity(Intent(this, HelpActivity::class.java))
+                    7 -> startActivity(Intent(this, AboutActivity::class.java))
                 }
             }
             .show()
@@ -332,6 +335,27 @@ class MainActivity : BaseActivity() {
                     TextSize.setLevel(this, which)
                     recreate()
                 }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    /**
+     * Light, dark, or the phone's own setting (see [ThemeMode]). No recreate()
+     * here: setDefaultNightMode rebuilds every open screen by itself.
+     */
+    private fun showThemeSettings() {
+        val labels = arrayOf(
+            getString(R.string.theme_light),
+            getString(R.string.theme_dark),
+            getString(R.string.theme_system)
+        )
+        val current = ThemeMode.get(this)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.theme)
+            .setSingleChoiceItems(labels, current) { dialog, which ->
+                dialog.dismiss()
+                if (which != current) ThemeMode.set(this, which)
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

@@ -44,7 +44,7 @@
         android:layoutDirection="ltr"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/white"
+        android:background="@color/surface"
         android:gravity="bottom|end"
         android:orientation="vertical"
         android:paddingStart="22dp"

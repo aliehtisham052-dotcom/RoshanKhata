@@ -278,4 +278,18 @@
     <color name="home_eye_fill">#1FFFFFFF</color>
     <!-- Body text of the header walkthrough card; 7.3:1 on white. -->
     <color name="coach_tip_body">#4B5B52</color>
+
+    <!--
+      Dark mode (26 Sep 2026). Surfaces that used to borrow @color/white, and
+      the few hex values written straight into layouts, now have names, so
+      values-night can repaint them without touching the white used for
+      text on the green headers. The day values are exactly what was there.
+    -->
+    <color name="surface">#FFFFFF</color>
+    <color name="note_bg">#FFF6E0</color>
+    <color name="note_text">#5C4A16</color>
+    <color name="panel_bg">#F0EFEA</color>
+    <color name="divider_grey">#E0E0E0</color>
+    <color name="text_grey">#777777</color>
+    <color name="text_faint">#999999</color>
 </resources>

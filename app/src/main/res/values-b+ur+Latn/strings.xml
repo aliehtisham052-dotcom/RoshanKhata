@@ -1414,4 +1414,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="text_size_normal">Aam</string>
     <string name="text_size_large">Bara</string>
     <string name="text_size_largest">Sab se bara</string>
+    <string name="theme">Theme</string>
+    <string name="theme_light">Roshan</string>
+    <string name="theme_dark">Tareek</string>
+    <string name="theme_system">Phone ke mutabiq</string>
 </resources>
