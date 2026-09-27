@@ -1230,7 +1230,7 @@
     <string name="rate_not_set_credit">هن پراڊڪٽ جو اڌاري ريٽ درج ناهي.</string>
     <string name="rate_not_set_cash">هن پراڊڪٽ جو نقد ريٽ درج ناهي.</string>
     <string name="rate_unit_mismatch">هي ريٽ %1$s جو آهي، ان ڪري %2$s تي نه لڳايو ويو.</string>
-    <string name="rate_hint">ريٽ</string>
+    <string name="entry_rate_hint">ريٽ</string>
     <string name="add_line">+ ٻي شيءِ</string>
     <string name="lines_total_fill">شين جو جوڙ %1$s. ڀرڻ لاءِ دٻايو.</string>
     <string name="lines_total_unknown">ڪنهن شيءِ جو ريٽ ناهي، ان ڪري جوڙ نٿو ٺهي.</string>

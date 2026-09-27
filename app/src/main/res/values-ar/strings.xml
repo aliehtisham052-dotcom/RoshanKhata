@@ -1326,7 +1326,7 @@
     <string name="rate_not_set_credit">لم يُحدَّد سعر الآجل لهذا المنتج.</string>
     <string name="rate_not_set_cash">لم يُحدَّد السعر النقدي لهذا المنتج.</string>
     <string name="rate_unit_mismatch">هذا السعر لكل %1$s، لذلك لم يُطبَّق على %2$s.</string>
-    <string name="rate_hint">السعر</string>
+    <string name="entry_rate_hint">السعر</string>
     <string name="add_line">+ إضافة صنف</string>
     <string name="lines_total_fill">مجموع الأصناف %1$s. اضغط للتعبئة.</string>
     <string name="lines_total_unknown">صنف بلا سعر، لذلك لا يوجد مجموع.</string>

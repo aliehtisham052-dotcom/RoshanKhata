@@ -1202,7 +1202,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="rate_not_set_credit">Is product ka udhar rate set nahi.</string>
     <string name="rate_not_set_cash">Is product ka naqd rate set nahi.</string>
     <string name="rate_unit_mismatch">Ye rate %1$s ka hai, is liye %2$s par nahi lagaya.</string>
-    <string name="rate_hint">Rate</string>
+    <string name="entry_rate_hint">Rate</string>
     <string name="add_line">+ Aur item</string>
     <string name="lines_total_fill">Items ka jor %1$s. Bharne ke liye dabayen.</string>
     <string name="lines_total_unknown">Kisi item ka rate nahi, is liye jor nahi ban sakta.</string>

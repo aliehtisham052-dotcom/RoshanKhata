@@ -85,6 +85,23 @@ def main() -> int:
     translatable = {k: v[0] for k, v in default.items() if v[1]}
 
     failures = []
+
+    # The same name twice in ONE file is a build failure (Android's resource
+    # merger refuses it: "Found item String/x more than one time"), yet it
+    # passes every comparison below, because each locale then has the key.
+    # Push 3 (7721d84) shipped exactly that: a new rate_hint beside an old
+    # one. Checked first, in the default file and every locale.
+    for folder in ["values"] + list(LOCALES):
+        path = RES / folder / "strings.xml"
+        seen = set()
+        for el in ET.parse(path).getroot():
+            if el.tag not in ("string", "plurals", "string-array"):
+                continue
+            key = (el.tag, el.get("name"))
+            if key in seen:
+                failures.append(f"{folder}: DUPLICATE <{el.tag} name=\"{key[1]}\">")
+            seen.add(key)
+
     for folder in LOCALES:
         path = RES / folder / "strings.xml"
         locale = load(path)
