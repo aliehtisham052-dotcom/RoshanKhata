@@ -810,14 +810,15 @@ class PartyDetailActivity : BaseActivity() {
                     orientation = LinearLayout.HORIZONTAL
                     gravity = android.view.Gravity.CENTER_VERTICAL
                 }
+                // Built OUTSIDE the TextView's apply block: inside it, a bare
+                // append() binds to TextView.append (which returns nothing),
+                // not to a StringBuilder — that broke the build once.
+                val rateText = d.rate?.let { " × " + Format.money(it) }.orEmpty()
+                val totalText = d.total()?.let { " = " + Format.money(it) }.orEmpty()
+                val lineText = "${i + 1}. " +
+                    Format.goods(d.itemName, d.quantity, d.unit).orEmpty() + rateText + totalText
                 val label = TextView(this).apply {
-                    val total = d.total()
-                    text = buildString {
-                        append(i + 1).append(". ")
-                        append(Format.goods(d.itemName, d.quantity, d.unit).orEmpty())
-                        if (d.rate != null) append(" × ").append(Format.money(d.rate))
-                        if (total != null) append(" = ").append(Format.money(total))
-                    }
+                    text = lineText
                     setTextColor(ContextCompat.getColor(this@PartyDetailActivity, R.color.ink))
                     textSize = 14f
                     layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
