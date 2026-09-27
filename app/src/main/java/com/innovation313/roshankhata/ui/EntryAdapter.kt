@@ -11,11 +11,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.EntryItem
 
 /** Pairs an entry with the balance as it stood immediately after that entry. */
 data class EntryRow(
     val entry: LedgerEntry,
-    val runningBalance: Double
+    val runningBalance: Double,
+    /** The entry's goods lines, in order. Empty for a money-only entry. */
+    val items: List<EntryItem> = emptyList()
 )
 
 class EntryAdapter(
@@ -112,7 +115,7 @@ class EntryAdapter(
         holder.tvNote.visibility = if (e.note.isNullOrBlank()) View.GONE else View.VISIBLE
 
         // Show the goods only when something actually moved.
-        val goods = Format.goods(e.itemName, e.quantity, e.unit)
+        val goods = Format.goods(row.items)
         holder.tvGoods.text = goods.orEmpty()
         holder.tvGoods.visibility = if (goods == null) View.GONE else View.VISIBLE
 

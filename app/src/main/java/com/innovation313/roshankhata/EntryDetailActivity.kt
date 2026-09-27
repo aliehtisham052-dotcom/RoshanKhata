@@ -23,6 +23,7 @@ import com.innovation313.roshankhata.data.BatchOption
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.BillPhoto
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.asSuggestions
@@ -53,6 +54,8 @@ class EntryDetailActivity : BaseActivity() {
     private var entryId: Long = 0
     private var partyName: String = ""
     private var entry: LedgerEntry? = null
+    /** This entry's goods lines, in order. Empty for a money-only entry. */
+    private var items: List<EntryItem> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +84,7 @@ class EntryDetailActivity : BaseActivity() {
                 finish(); return@launch
             }
             entry = e
+            items = dao.itemsOfEntry(entryId)
             render(e)
         }
     }
@@ -133,7 +137,7 @@ class EntryDetailActivity : BaseActivity() {
             findViewById<TextView>(R.id.tvNote).text = e.note
         }
 
-        val goods = Format.goods(e.itemName, e.quantity, e.unit)
+        val goods = Format.goods(items)
         val rowGoods = findViewById<TableRow>(R.id.rowGoods)
         if (goods == null) {
             rowGoods.visibility = View.GONE
@@ -182,12 +186,25 @@ class EntryDetailActivity : BaseActivity() {
         // Pre-fill without asking the adapter to match — see the same call in
         // BillsActivity. Harmless today because the products load after this,
         // and not left resting on that ordering.
-        etItemName.setText(e.itemName.orEmpty(), false)
-        etQuantity.setText(e.quantity?.let { Format.plain(it) } ?: "")
+        // Goods live on the entry's lines (v20). This dialog edits a single
+        // line — which every entry has at most, until multi-item entry
+        // arrives. If an entry ever carries SEVERAL lines, this simple form
+        // cannot show them honestly, so the goods fields are hidden and the
+        // lines are left exactly as they are; only amount, note and date can
+        // be changed here. Collapsing three lines into one would lose goods.
+        val line = items.firstOrNull()
+        val canEditGoods = items.size <= 1
+        etItemName.setText(line?.itemName.orEmpty(), false)
+        etQuantity.setText(line?.quantity?.let { Format.plain(it) } ?: "")
         etUnit.setAdapter(
             ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, resources.getStringArray(R.array.units))
         )
-        etUnit.setText(e.unit.orEmpty(), false)
+        etUnit.setText(line?.unit.orEmpty(), false)
+        if (!canEditGoods) {
+            etItemName.visibility = View.GONE
+            (etQuantity.parent as? View)?.visibility = View.GONE
+            btnBatch.visibility = View.GONE
+        }
 
         val dao = KhataDatabase.get(this).khataDao()
 
@@ -195,7 +212,7 @@ class EntryDetailActivity : BaseActivity() {
         // already carries, so opening Edit and changing only the amount
         // leaves the product/batch link exactly as it was.
         var selectedBatch: BatchOption? = null
-        var matchedProductId: Long? = e.productId
+        var matchedProductId: Long? = line?.productId
         var batchOptions: List<BatchOption> = emptyList()
 
         fun labelFor(batch: BatchOption?) = if (batch == null) {
@@ -250,25 +267,27 @@ class EntryDetailActivity : BaseActivity() {
         // Prime the button with what this entry already has, before the
         // owner touches anything, so opening Edit never looks like a choice
         // was forgotten.
-        val entryProductId = e.productId
-        if (e.isGiven && entryProductId != null) {
+        val entryProductId = line?.productId
+        if (!canEditGoods) {
+            // Nothing to prime: the goods fields are hidden (see above).
+        } else if (e.isGiven && entryProductId != null) {
             lifecycleScope.launch {
                 val options = dao.batchOptionsForProduct(entryProductId)
                 batchOptions = options
                 if (options.isNotEmpty()) {
                     btnBatch.visibility = View.VISIBLE
-                    selectedBatch = e.billItemId?.let { id -> options.find { it.id == id } }
+                    selectedBatch = line?.billItemId?.let { id -> options.find { it.id == id } }
                     btnBatch.text = labelFor(selectedBatch)
                     wireBatchClick()
                 } else {
                     btnBatch.visibility = View.GONE
                 }
             }
-        } else if (e.isGiven && !e.itemName.isNullOrBlank()) {
+        } else if (e.isGiven && !line?.itemName.isNullOrBlank()) {
             // Not yet tagged to a product — an older entry, or one the
             // backfill has not reached — so fall back to the same
             // name lookup the add-entry screen uses.
-            refreshBatchButton(e.itemName)
+            refreshBatchButton(line?.itemName.orEmpty())
         } else {
             btnBatch.visibility = View.GONE
         }
@@ -307,26 +326,44 @@ class EntryDetailActivity : BaseActivity() {
                     Toast.makeText(this, R.string.invalid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
+                // Only money, note and date live on the entry. The legacy goods
+                // columns are carried through untouched (copy keeps them) —
+                // nothing writes them any more.
                 val updated = e.copy(
                     amount = amount,
                     note = etNote.text.toString().trim().ifBlank { null },
-                    timestamp = chosenTime,
-                    itemName = etItemName.text.toString().trim().ifEmpty { null },
-                    quantity = Digits.parse(etQuantity.text),
-                    unit = etUnit.text.toString().trim().ifEmpty { null },
-                    productId = matchedProductId,
-                    billItemId = selectedBatch?.id
+                    timestamp = chosenTime
                 )
+                // The goods, as the entry's complete new set of lines. A
+                // several-line entry keeps its lines untouched (see above).
+                // A single line keeps its rate and bonus flag, which this
+                // dialog does not show; everything else is what was typed.
+                val newItems: List<EntryItem> = if (!canEditGoods) {
+                    items
+                } else {
+                    listOfNotNull(
+                        EntryItem.ofGoods(
+                            itemName = etItemName.text.toString().trim().ifEmpty { null },
+                            quantity = Digits.parse(etQuantity.text),
+                            unit = etUnit.text.toString().trim().ifEmpty { null },
+                            productId = matchedProductId,
+                            billItemId = selectedBatch?.id,
+                            rate = line?.rate
+                        )?.copy(isBonus = line?.isBonus ?: false)
+                    )
+                }
                 // AppScope, not lifecycleScope — see AppScope's own comment.
                 // This dialog closes the instant Save is tapped, while the
                 // write is still in flight; a quick Back press right after
                 // must not be able to cancel a correction any more than it
                 // could a new entry.
                 AppScope.launch {
-                    dao.updateEntry(updated)
+                    dao.updateEntryWithItems(updated, newItems)
+                    val savedItems = dao.itemsOfEntry(updated.id)
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
                             entry = updated
+                            items = savedItems
                             render(updated)
                             Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT)
                                 .show()

@@ -504,6 +504,74 @@ val MIGRATION_18_19 = object : Migration(18, 19) {
 }
 
 /**
+ * Goods lines: one entry can now carry several products.
+ *
+ * A customer rarely takes one thing in a day — urea, sulphur and a pesticide
+ * come in one visit, in different quantities. Until now an entry had room for
+ * exactly one item. This adds `entry_items`, one row per line, and makes it
+ * the ONLY record of goods from here on (see [EntryItem]).
+ *
+ * Three steps, and what each deliberately does NOT do:
+ *
+ *  1. Two nullable columns on `transactions` — rateType (was this sold at the
+ *     udhar or the cash rate) and pairedEntryId (the two halves of a cash
+ *     sale). ADD COLUMN only: no table is rebuilt, no existing value changes,
+ *     both start NULL, which means "not recorded" and is never read as cash.
+ *
+ *  2. The new table, with a real foreign key to `transactions` that
+ *     cascades — so a line can never outlive its entry. Written to match
+ *     Room's own schema for [EntryItem] exactly (column types, NOT NULL,
+ *     index names); Room compares the two on open and refuses to start on
+ *     any difference. EntryItemsMigrationTest opens a real v19 database
+ *     through this migration on every build to prove they agree.
+ *
+ *  3. Every entry that recorded goods gets one line copied from it, under the
+ *     same rule as [EntryItem.fromLegacy]. INSERT only: the legacy columns are
+ *     read, never written or cleared, so the book as it stood is still there
+ *     to inspect if anything ever looks wrong. Rate is left NULL — the old
+ *     entries never recorded one, and dividing an old amount by a quantity
+ *     would invent a price. Binned entries are copied too: their lines must
+ *     come back with them if they are restored.
+ *
+ * Money is not touched at any step. A balance is the sum of
+ * `transactions.amount`, before and after.
+ */
+val MIGRATION_19_20 = object : Migration(19, 20) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE transactions ADD COLUMN rateType TEXT")
+        db.execSQL("ALTER TABLE transactions ADD COLUMN pairedEntryId INTEGER")
+
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `entry_items` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`entryId` INTEGER NOT NULL, " +
+                "`lineNo` INTEGER NOT NULL, " +
+                "`itemName` TEXT, " +
+                "`quantity` REAL, " +
+                "`unit` TEXT, " +
+                "`rate` REAL, " +
+                "`isBonus` INTEGER NOT NULL, " +
+                "`productId` INTEGER, " +
+                "`billItemId` INTEGER, " +
+                "FOREIGN KEY(`entryId`) REFERENCES `transactions`(`id`) " +
+                "ON UPDATE NO ACTION ON DELETE CASCADE)"
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_entry_items_entryId` ON `entry_items` (`entryId`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_entry_items_productId` ON `entry_items` (`productId`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_entry_items_billItemId` ON `entry_items` (`billItemId`)")
+
+        db.execSQL(
+            "INSERT INTO entry_items " +
+                "(entryId, lineNo, itemName, quantity, unit, rate, isBonus, productId, billItemId) " +
+                "SELECT id, 0, itemName, quantity, unit, NULL, 0, productId, billItemId " +
+                "FROM transactions " +
+                "WHERE (itemName IS NOT NULL AND TRIM(itemName) != '') " +
+                "OR quantity IS NOT NULL OR productId IS NOT NULL OR billItemId IS NOT NULL"
+        )
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -512,7 +580,7 @@ val MIGRATION_18_19 = object : Migration(18, 19) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 19
+const val KHATA_DB_VERSION = 20
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -533,5 +601,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_15_16,
     MIGRATION_16_17,
     MIGRATION_17_18,
-    MIGRATION_18_19
+    MIGRATION_18_19,
+    MIGRATION_19_20
 )

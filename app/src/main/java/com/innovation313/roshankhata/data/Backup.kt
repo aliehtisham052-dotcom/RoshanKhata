@@ -29,7 +29,11 @@ object Backup {
 
     /**
      * Raised to 4 when products arrived, to 5 when invoices and the Business
-     * Profile text joined, and to 6 when the "not a duplicate" decisions did.
+     * Profile text joined, to 6 when the "not a duplicate" decisions did, and
+     * to 7 when goods moved into their own lines (entryItems). A version-6-or-
+     * older file has no lines; restore builds them from its entries by the
+     * same rule the database migration uses (EntryItem.fromLegacy), so the
+     * restored book matches one that was migrated on the phone.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -38,7 +42,7 @@ object Backup {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 6
+    const val FORMAT_VERSION = 7
 
     private val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
@@ -84,6 +88,9 @@ object Backup {
         })
         root.put("entries", JSONArray().apply {
             dao.allEntriesForBackup().forEach { put(entryToJson(it)) }
+        })
+        root.put("entryItems", JSONArray().apply {
+            dao.allEntryItemsForBackup().forEach { put(entryItemToJson(it)) }
         })
         root.put("cheques", JSONArray().apply {
             dao.allChequesForBackup().forEach { put(chequeToJson(it)) }
@@ -329,6 +336,15 @@ object Backup {
                 (0 until arr.length()).map { jsonToEntry(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Goods lines. A version-7 file carries them; an older file does
+            // not, and its goods still sit on the entries themselves — so they
+            // are rebuilt from there by the one shared rule. The presence of
+            // the key decides, not the version number: a v7 file with no goods
+            // at all carries an empty array and must restore with no lines.
+            val entryItems = root.optJSONArray("entryItems")?.let { arr ->
+                (0 until arr.length()).map { jsonToEntryItem(arr.getJSONObject(it)) }
+            } ?: entries.mapNotNull { EntryItem.fromLegacy(it) }
+
             val cheques = root.optJSONArray("cheques")?.let { arr ->
                 (0 until arr.length()).map { jsonToCheque(arr.getJSONObject(it)) }
             } ?: emptyList()
@@ -404,7 +420,15 @@ object Backup {
             // item with no bill. Invoices themselves have no parent (customerName
             // is a copied string, never a party link), so they need no check.
             val invoiceIds = invoices.map { it.id }.toSet()
+            // A goods line must belong to an entry in this same file, and may
+            // only point at products and batches the file also carries. A
+            // cash-sale pairing must lead to an entry that exists.
+            val entryIds = entries.map { it.id }.toSet()
             val orphans = entries.count { it.productId != null && it.productId !in productIds } +
+                entryItems.count { it.entryId !in entryIds } +
+                entryItems.count { it.productId != null && it.productId !in productIds } +
+                entryItems.count { it.billItemId != null && it.billItemId !in billItemIds } +
+                entries.count { it.pairedEntryId != null && it.pairedEntryId !in entryIds } +
                 entries.count { it.billItemId != null && it.billItemId !in billItemIds } +
                 billItems.count { it.productId != null && it.productId !in productIds } +
                 entries.count { it.partyId !in partyIds } +
@@ -434,7 +458,8 @@ object Backup {
                 parties, entries, cheques, cash, plans, installments,
                 bills, billItems, products, invoices, invoiceItems, businessProfile,
                 dismissedDuplicates,
-                businessName = root.optString("businessName").takeIf { it.isNotBlank() }
+                businessName = root.optString("businessName").takeIf { it.isNotBlank() },
+                entryItems = entryItems
             )
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
@@ -460,7 +485,9 @@ object Backup {
         val businessProfile: BusinessProfileData? = null,
         val dismissedDuplicates: List<DismissedDuplicate> = emptyList(),
         /** Which shop's book this file says it is. Null on any pre-multi-business backup. */
-        val businessName: String? = null
+        val businessName: String? = null,
+        /** Goods lines — read from the file, or rebuilt from an older file's entries. */
+        val entryItems: List<EntryItem> = emptyList()
     )
 
     /**
@@ -507,7 +534,8 @@ object Backup {
             products = data.products,
             invoices = data.invoices,
             invoiceItems = data.invoiceItems,
-            dismissedDuplicates = data.dismissedDuplicates
+            dismissedDuplicates = data.dismissedDuplicates,
+            entryItems = data.entryItems
         )
 
         data.businessProfile?.let { restoreBusinessProfile(context, it) }
@@ -562,6 +590,8 @@ object Backup {
         // staff logins arrive is still a complete record of its own rows.
         put("createdBy", e.createdBy ?: JSONObject.NULL)
         put("paymentMethod", e.paymentMethod ?: JSONObject.NULL)
+        put("rateType", e.rateType ?: JSONObject.NULL)
+        put("pairedEntryId", e.pairedEntryId ?: JSONObject.NULL)
         put("isDeleted", e.isDeleted)
         put("deletedAt", e.deletedAt ?: JSONObject.NULL)
     }
@@ -586,8 +616,39 @@ object Backup {
         // older file restores with no method, which is what those entries
         // actually recorded.
         paymentMethod = o.optNullableString("paymentMethod"),
+        // Absent before format 7 — those entries never recorded either.
+        rateType = o.optNullableString("rateType"),
+        pairedEntryId = o.optNullableLong("pairedEntryId"),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")
+    )
+
+    private fun entryItemToJson(i: EntryItem) = JSONObject().apply {
+        put("id", i.id)
+        put("entryId", i.entryId)
+        put("lineNo", i.lineNo)
+        put("itemName", i.itemName ?: JSONObject.NULL)
+        put("quantity", i.quantity ?: JSONObject.NULL)
+        put("unit", i.unit ?: JSONObject.NULL)
+        put("rate", i.rate ?: JSONObject.NULL)
+        put("isBonus", i.isBonus)
+        put("productId", i.productId ?: JSONObject.NULL)
+        put("billItemId", i.billItemId ?: JSONObject.NULL)
+    }
+
+    // The real id is kept, like every other table: a line's identity must
+    // survive a phone move exactly as its entry's does.
+    private fun jsonToEntryItem(o: JSONObject) = EntryItem(
+        id = o.getLong("id"),
+        entryId = o.getLong("entryId"),
+        lineNo = o.optInt("lineNo", 0),
+        itemName = o.optNullableString("itemName"),
+        quantity = o.optNullableDouble("quantity"),
+        unit = o.optNullableString("unit"),
+        rate = o.optNullableDouble("rate"),
+        isBonus = o.optBoolean("isBonus", false),
+        productId = o.optNullableLong("productId"),
+        billItemId = o.optNullableLong("billItemId")
     )
 
     private fun chequeToJson(c: Cheque) = JSONObject().apply {

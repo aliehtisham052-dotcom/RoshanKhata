@@ -37,7 +37,9 @@ object PdfExport {
 
     data class StatementRow(
         val entry: LedgerEntry,
-        val runningBalance: Double
+        val runningBalance: Double,
+        /** Goods lines, in order — empty for a money-only entry. */
+        val items: List<EntryItem> = emptyList()
     )
 
     /**
@@ -361,7 +363,7 @@ object PdfExport {
             y += 12f
             val detail = buildList {
                 add(e.entryNumber)
-                Format.goods(e.itemName, e.quantity, e.unit)?.let { add(it) }
+                Format.goods(row.items)?.let { add(it) }
                 e.note?.takeIf { it.isNotBlank() }?.let { add(it) }
                 if (e.isQarzeHasna) add(context.getString(R.string.pdf_stmt_qarze_hasna))
             }.joinToString("  ·  ")
