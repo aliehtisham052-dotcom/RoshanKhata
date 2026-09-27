@@ -172,6 +172,20 @@ class EntryDetailActivity : BaseActivity() {
      */
     private fun showEditDialog() {
         val e = entry ?: return
+        // An entry made with the item list — several items, a rate, or a free
+        // item — is edited on the full form it was made on; this small dialog
+        // cannot show a list or a rate honestly. Plain and older entries keep
+        // this dialog, unchanged.
+        if (items.size > 1 || items.any { it.rate != null || it.isBonus }) {
+            startActivity(
+                Intent(this, PartyDetailActivity::class.java)
+                    .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, e.partyId)
+                    .putExtra(PartyDetailActivity.EXTRA_EDIT_ENTRY_ID, e.id)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
+            finish()
+            return
+        }
         val view = layoutInflater.inflate(R.layout.dialog_edit_entry, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount = view.findViewById<EditText>(R.id.etEditAmount)
