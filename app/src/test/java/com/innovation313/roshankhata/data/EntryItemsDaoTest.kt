@@ -311,4 +311,24 @@ class EntryItemsDaoTest {
         dao.softDeleteEntry(newest)
         assertEquals(4500.0, dao.lastSaleWithItems(ahmad)!!.orderedItems().single().rate!!, 0.0)
     }
+
+    @Test
+    fun aCashSaleAndItsMoneyArePairedBothWaysAndNetToNothing() = runBlocking {
+        val ahmad = dao.insertParty(Party(name = "Ahmad"))
+        val sale = dao.insertEntryWithItems(visit(ahmad, 17800.0).copy(rateType = RateType.CASH), threeLines)
+
+        val got = dao.recordCashForSale(sale)!!
+        val saleRow = dao.getEntry(sale)!!
+        val gotRow = dao.getEntry(got)!!
+        assertEquals(got, saleRow.pairedEntryId)
+        assertEquals(sale, gotRow.pairedEntryId)
+        assertEquals(false, gotRow.isGiven)
+        assertEquals(PaymentMethod.CASH, gotRow.paymentMethod)
+        assertEquals(17800.0, gotRow.amount, 0.0)
+        assertTrue("the money has no goods of its own", dao.itemsOfEntry(got).isEmpty())
+        assertEquals(0.0, dao.partiesWithBalanceOnce().single { it.id == ahmad }.balance, 0.001)
+
+        // Never paired twice.
+        assertEquals(null, dao.recordCashForSale(sale))
+    }
 }

@@ -1265,6 +1265,15 @@ You can change this any time from this screen.</string>
     <string name="repeat_last_sale">Last time\'s items (%1$s)</string>
     <string name="update_product_rate">Also set %1$s\'s %2$s to %3$s</string>
     <string name="add_to_products">Also add %1$s to the products list</string>
+    <string name="supplier_bill_button">Record a supplier bill (items, batch, expiry)</string>
+    <string name="cash_received_offer">Was %1$s received just now?</string>
+    <string name="cash_received_help">Yes records an \"I got\" in cash for the same amount, linked to this sale. Nothing is written otherwise.</string>
+    <string name="cash_received_yes">Yes, received</string>
+    <string name="cash_received_no">Not yet</string>
+    <string name="delete_pair_title">Delete its other half too?</string>
+    <string name="delete_pair_message">This entry is one half of a cash sale (%1$s). Deleting only one half leaves the balance wrong.</string>
+    <string name="delete_pair_both">Delete both</string>
+    <string name="delete_pair_one">Only this one</string>
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">How was it paid?</string>

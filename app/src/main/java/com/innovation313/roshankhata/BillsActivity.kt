@@ -61,6 +61,14 @@ class BillsActivity : BaseActivity() {
 
     private var parties: List<PartyWithBalance> = emptyList()
 
+    // A new bill asked for from a supplier's khata: opened, with that
+    // supplier filled in, as soon as the party list is loaded. Once only.
+    private var pendingSupplier: String? = null
+
+    companion object {
+        const val EXTRA_NEW_BILL_SUPPLIER = "new_bill_supplier"
+    }
+
     /** Items being collected for the bill currently being entered. */
     private val pendingItems = mutableListOf<BillItem>()
 
@@ -89,6 +97,9 @@ class BillsActivity : BaseActivity() {
 
         findViewById<MaterialButton>(R.id.btnTrace).setOnClickListener { showTraceDialog() }
 
+        if (savedInstanceState == null) {
+            pendingSupplier = intent.getStringExtra(EXTRA_NEW_BILL_SUPPLIER)?.takeIf { it.isNotBlank() }
+        }
         observe()
     }
 
@@ -101,7 +112,13 @@ class BillsActivity : BaseActivity() {
         }
 
         lifecycleScope.launch {
-            dao.observePartiesWithBalance().collectLatest { parties = it }
+            dao.observePartiesWithBalance().collectLatest {
+                parties = it
+                pendingSupplier?.let { name ->
+                    pendingSupplier = null
+                    startNewBill(name)
+                }
+            }
         }
 
         // The expiry banner only appears when there is something to act on. A
@@ -122,7 +139,7 @@ class BillsActivity : BaseActivity() {
 
     // ---------- Entering a bill ----------
 
-    private fun startNewBill() {
+    private fun startNewBill(prefillSupplier: String? = null) {
         if (parties.isEmpty()) {
             Toast.makeText(this, R.string.enter_supplier, Toast.LENGTH_LONG).show()
             return
@@ -148,6 +165,7 @@ class BillsActivity : BaseActivity() {
                 parties.map { it.name }
             )
         )
+        prefillSupplier?.let { etSupplier.setText(it, false) }
 
         var billDate = System.currentTimeMillis()
         var dueDate: Long? = null

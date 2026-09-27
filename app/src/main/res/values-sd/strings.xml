@@ -1250,6 +1250,15 @@
     <string name="repeat_last_sale">پوئين ڀيري وارو مال (%1$s)</string>
     <string name="update_product_rate">%1$s جو %2$s به %3$s ڪريو</string>
     <string name="add_to_products">%1$s کي پراڊڪٽس لسٽ ۾ به وجهو</string>
+    <string name="supplier_bill_button">سپلائر بل ٺاهيو (مال، بيچ، ايڪسپائري)</string>
+    <string name="cash_received_offer">ڇا %1$s هاڻي مليا؟</string>
+    <string name="cash_received_help">ها دٻائڻ سان ساڳي رقم جي نقد \"ورتا\" انٽري ٺهندي، هن سودي سان جڙيل. ٻي صورت ۾ ڪجهه نه لکيو ويندو.</string>
+    <string name="cash_received_yes">ها، مليا</string>
+    <string name="cash_received_no">اڃا نه</string>
+    <string name="delete_pair_title">ان جو ٻيو حصو به ميٽيو؟</string>
+    <string name="delete_pair_message">هي انٽري هڪ نقد سودي جو هڪ حصو آهي (%1$s). صرف هڪ حصو ميٽڻ سان بيلنس غلط ٿي ويندو.</string>
+    <string name="delete_pair_both">ٻئي ميٽيو</string>
+    <string name="delete_pair_one">صرف هي</string>
 
     <string name="payment_method_label">ادائيگي ڪيئن ٿي؟</string>
     <string name="payment_method_cash">نقد</string>

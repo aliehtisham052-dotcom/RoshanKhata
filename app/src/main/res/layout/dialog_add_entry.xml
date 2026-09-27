@@ -687,6 +687,25 @@
             android:visibility="gone"
             app:cornerRadius="8dp" />
 
+        <!--
+          On a SUPPLIER's account, goods coming in are recorded as a supplier
+          bill (items, batch, expiry, rate) — never as loose lines here, which
+          would count the same purchase twice.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSupplierBill"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:textColor="@color/brand_green_text"
+            app:strokeColor="@color/editor_field_stroke"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/supplier_bill_button"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:cornerRadius="8dp" />
+
         <!-- Moves the item above into the list and clears the boxes for the next. -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAddLine"
