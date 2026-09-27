@@ -1240,7 +1240,13 @@ You can change this any time from this screen.</string>
     <string name="credit_price_hint">Credit price</string>
     <string name="product_price_help">Optional, per unit. Used only to suggest an amount — never charged on its own.</string>
     <string name="credit_rate_suggestion">Credit rate %1$s × %2$s = %3$s. Tap to fill.</string>
-    <string name="sale_rate_suggestion">Rate %1$s × %2$s = %3$s. Tap to fill.</string>
+    <string name="rate_type_label">Which rate?</string>
+    <string name="rate_type_credit">Credit rate</string>
+    <string name="rate_type_cash">Cash rate</string>
+    <string name="cash_rate_suggestion">Cash rate %1$s × %2$s = %3$s. Tap to fill.</string>
+    <string name="rate_not_set_credit">No credit rate set for this product.</string>
+    <string name="rate_not_set_cash">No cash rate set for this product.</string>
+    <string name="rate_unit_mismatch">This rate is per %1$s, so it is not applied to %2$s.</string>
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">How was it paid?</string>
