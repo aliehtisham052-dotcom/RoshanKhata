@@ -1245,7 +1245,7 @@ You can change this any time from this screen.</string>
     <string name="rate_not_set_credit">No credit rate set for this product.</string>
     <string name="rate_not_set_cash">No cash rate set for this product.</string>
     <string name="rate_unit_mismatch">This rate is per %1$s, so it is not applied to %2$s.</string>
-    <string name="rate_hint">Rate</string>
+    <string name="entry_rate_hint">Rate</string>
     <string name="add_line">+ Add item</string>
     <string name="lines_total_fill">Items total %1$s. Tap to fill.</string>
     <string name="lines_total_unknown">An item has no rate, so there is no total.</string>

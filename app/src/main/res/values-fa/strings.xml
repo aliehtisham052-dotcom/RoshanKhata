@@ -1230,7 +1230,7 @@
     <string name="rate_not_set_credit">نرخ نسیه برای این کالا ثبت نشده.</string>
     <string name="rate_not_set_cash">نرخ نقدی برای این کالا ثبت نشده.</string>
     <string name="rate_unit_mismatch">این نرخ برای هر %1$s است، پس روی %2$s اعمال نشد.</string>
-    <string name="rate_hint">نرخ</string>
+    <string name="entry_rate_hint">نرخ</string>
     <string name="add_line">+ افزودن کالا</string>
     <string name="lines_total_fill">جمع کالاها %1$s. برای پر کردن بزنید.</string>
     <string name="lines_total_unknown">یک کالا نرخ ندارد، پس جمعی نیست.</string>

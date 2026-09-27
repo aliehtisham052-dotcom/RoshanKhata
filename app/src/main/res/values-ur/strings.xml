@@ -1202,7 +1202,7 @@
     <string name="rate_not_set_credit">اس پروڈکٹ کا ادھار ریٹ درج نہیں۔</string>
     <string name="rate_not_set_cash">اس پروڈکٹ کا نقد ریٹ درج نہیں۔</string>
     <string name="rate_unit_mismatch">یہ ریٹ %1$s کا ہے، اس لیے %2$s پر نہیں لگایا۔</string>
-    <string name="rate_hint">ریٹ</string>
+    <string name="entry_rate_hint">ریٹ</string>
     <string name="add_line">+ اور آئٹم</string>
     <string name="lines_total_fill">آئٹمز کا جوڑ %1$s۔ بھرنے کے لیے دبائیں۔</string>
     <string name="lines_total_unknown">کسی آئٹم کا ریٹ نہیں، اس لیے جوڑ نہیں بن سکتا۔</string>
