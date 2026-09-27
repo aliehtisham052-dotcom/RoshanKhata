@@ -1490,19 +1490,29 @@ interface KhataDao {
 
     // ---------- Sale Insights (all read-only, all on-device) ----------
     //
-    // "A sale" here means an entry where goods/money went OUT to the customer
-    // (isGiven = 1) — that is the shop selling something. Money coming back in
-    // is a payment, not a new sale, so it is excluded from these totals. All
-    // queries skip deleted rows.
+    // "A sale" here means an entry where goods/money went OUT to a CUSTOMER
+    // (isGiven = 1 on a party with isCustomer = 1) — that is the shop selling
+    // something. Money coming back in is a payment, not a new sale, so it is
+    // excluded from these totals. All queries skip deleted rows.
+    //
+    // p.isCustomer = 1 is required on every sale figure. On a SUPPLIER's
+    // account "I gave" is the shop PAYING a bill (or returning goods) — money
+    // going out, the opposite of a sale. Without the filter, paying a supplier
+    // 50,000 raised this month's "sales" by 50,000 and the 12-month chart
+    // with it. The same rule the season and recall lists already follow.
 
     /** Total value of sales between two timestamps. */
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions " +
-           "WHERE isGiven = 1 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM transactions t " +
+           "JOIN parties p ON p.id = t.partyId " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
+           "AND t.timestamp >= :from AND t.timestamp < :to")
     suspend fun salesTotalBetween(from: Long, to: Long): Double
 
     /** How many sales (entry count) between two timestamps. */
-    @Query("SELECT COUNT(*) FROM transactions " +
-           "WHERE isGiven = 1 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
+    @Query("SELECT COUNT(*) FROM transactions t " +
+           "JOIN parties p ON p.id = t.partyId " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
+           "AND t.timestamp >= :from AND t.timestamp < :to")
     suspend fun salesCountBetween(from: Long, to: Long): Int
 
     /**
@@ -1512,7 +1522,9 @@ interface KhataDao {
      */
     @Query("SELECT ei.itemName AS name, SUM(ei.quantity) AS qty, ei.unit AS unit, COUNT(*) AS lines " +
            "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND t.timestamp >= :from AND t.timestamp < :to " +
+           "JOIN parties p ON p.id = t.partyId " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
+           "AND t.timestamp >= :from AND t.timestamp < :to " +
            "AND ei.itemName IS NOT NULL AND ei.itemName != '' AND ei.quantity IS NOT NULL " +
            "GROUP BY ei.itemName, ei.unit ORDER BY qty DESC LIMIT :limit")
     suspend fun topProductsBetween(from: Long, to: Long, limit: Int): List<ProductStat>
@@ -1520,7 +1532,7 @@ interface KhataDao {
     /** Top customers by total purchases in a period. */
     @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
            "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 " +
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "GROUP BY t.partyId ORDER BY total DESC LIMIT :limit")
     suspend fun topCustomersBetween(from: Long, to: Long, limit: Int): List<CustomerStat>
@@ -1552,8 +1564,8 @@ interface KhataDao {
     /**
      * The ONLY way a numbered ledger entry should be created.
      *
-     * The receipt number is count+1, and for that to be trustworthy the
-     * count must be read and the row written as one indivisible step. Read
+     * The receipt number is the highest existing number + 1, and for that to
+     * be trustworthy it must be read and the row written as one indivisible step. Read
      * outside the transaction — as every call site used to do — two saves
      * landing close together could both read the same count and both become
      * RK-000123, and a duplicate receipt number on a business record is the
@@ -1562,9 +1574,27 @@ interface KhataDao {
      */
     @Transaction
     suspend fun insertEntryNumbered(entry: LedgerEntry): Long {
-        val count = totalEntryCount()
-        return insertEntry(entry.copy(entryNumber = EntryNumber.next(count)))
+        // The next number is one past the HIGHEST number already in the book,
+        // not one past the row count. A count shrinks when an entry is deleted
+        // for good (emptying the Recycle Bin, the 30-day purge), and count+1
+        // then hands out a number that is still printed on another entry:
+        // ten entries, #3 purged, count = 9, next = RK-000010 — which exists.
+        // The count is still consulted so a book whose entries were never
+        // numbered in the RK- form keeps moving forward, never backward.
+        val next = maxOf(totalEntryCount(), highestEntryNumber())
+        return insertEntry(entry.copy(entryNumber = EntryNumber.next(next)))
     }
+
+    /**
+     * The largest RK- number in the book, binned entries included (they may
+     * yet come back, number and all). 0 when there is none. Numbers are
+     * always written with Latin digits (Digits.FIGURES), so the cast is exact.
+     */
+    @Query(
+        "SELECT COALESCE(MAX(CAST(SUBSTR(entryNumber, 4) AS INTEGER)), 0) " +
+        "FROM transactions WHERE entryNumber LIKE 'RK-%'"
+    )
+    suspend fun highestEntryNumber(): Int
 
     // ---------- Goods lines (entry_items, v20) ----------
     //
