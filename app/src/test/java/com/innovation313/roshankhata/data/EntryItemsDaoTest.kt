@@ -289,7 +289,7 @@ class EntryItemsDaoTest {
     fun lastPricesAreKeptPerRateTypeAndLastTimesItemsAreFound() = runBlocking {
         val ahmad = dao.insertParty(Party(name = "Ahmad"))
         val urea = dao.findOrCreateProduct("Urea", defaultUnit = "bori")
-        fun sale(ts: Long, type: String, rate: Double) = dao.insertEntryWithItems(
+        suspend fun sale(ts: Long, type: String, rate: Double) = dao.insertEntryWithItems(
             visit(ahmad, rate * 2).copy(timestamp = ts, rateType = type),
             listOf(EntryItem(entryId = 0, itemName = "Urea", quantity = 2.0, unit = "bori", rate = rate, productId = urea.id))
         )
