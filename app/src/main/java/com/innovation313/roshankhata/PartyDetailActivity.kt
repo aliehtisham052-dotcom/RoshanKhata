@@ -52,6 +52,7 @@ import com.innovation313.roshankhata.data.RateType
 import com.innovation313.roshankhata.data.RateOffer
 import com.innovation313.roshankhata.data.LineDraft
 import com.innovation313.roshankhata.data.EntryLines
+import com.innovation313.roshankhata.data.LastRate
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
@@ -680,6 +681,8 @@ class PartyDetailActivity : BaseActivity() {
         val linesContainer: LinearLayout = view.findViewById(R.id.linesContainer)
         val btnAddLine: MaterialButton = view.findViewById(R.id.btnAddLine)
         val tvLinesNote: TextView = view.findViewById(R.id.tvLinesNote)
+        val cbBonus: MaterialCheckBox = view.findViewById(R.id.cbBonus)
+        val paymentSection: View = view.findViewById(R.id.paymentMethodSection)
 
         // False until the lookup below confirms a customer, so nothing
         // sale-only ever flashes up on a supplier's account.
@@ -688,11 +691,30 @@ class PartyDetailActivity : BaseActivity() {
         // The value the app itself last put in the Rate box. Anything else
         // there was typed by the owner, and is left alone.
         var autoRate: Double? = null
+        // Where an item tapped back out of the list came from, so it goes
+        // back into the same place rather than to the end.
+        var editingIndex: Int? = null
+        // A batch to re-select once the product lookup returns (an item
+        // tapped back out of the list keeps the batch it was drawn from).
+        var pendingBatchId: Long? = null
+        // For a return: this customer's last price for the product.
+        var lastSale: LastRate? = null
+        // Set once the owner has seen (or not needed) the over-return
+        // warning for exactly what is on the form; any change clears it.
+        var returnChecked = false
 
         fun chosenRateType(): String =
             if (cgRateType.checkedChipId == R.id.chipRateCash) RateType.CASH else RateType.CREDIT
 
         fun isSale(): Boolean = isGiven && partyIsCustomer
+
+        // Goods coming BACK from a customer ("I got" with items): returned at
+        // the price they went out at, and put back on the shelf. On a
+        // supplier's account goods arrive through a bill, not here.
+        fun isReturn(): Boolean = !isGiven && partyIsCustomer
+
+        /** A list of items is offered on a customer's account, both ways. */
+        fun goodsListAllowed(): Boolean = partyIsCustomer
 
         fun rateWasTyped(): Boolean {
             val r = Digits.parse(etRate.text)
@@ -709,21 +731,26 @@ class PartyDetailActivity : BaseActivity() {
                 itemName = name,
                 quantity = qty,
                 unit = etUnit.text.toString().trim().ifEmpty { null },
-                rate = if (isSale()) Digits.parse(etRate.text) else null,
+                rate = if (goodsListAllowed()) Digits.parse(etRate.text) else null,
                 productId = matchedProductId,
                 billItemId = selectedBatch?.id,
                 creditPrice = product?.creditPrice,
                 cashPrice = product?.salePrice,
                 productUnit = product?.defaultUnit,
-                rateEdited = rateWasTyped()
+                rateEdited = rateWasTyped(),
+                isBonus = goodsListAllowed() && cbBonus.isChecked
             )
         }
 
         fun refreshTotal() {
+            returnChecked = false
             btnTotalFill.visibility = View.GONE
             tvLinesNote.visibility = View.GONE
-            if (!isSale()) return
+            if (!goodsListAllowed()) return
             val all = lines + listOfNotNull(editorDraft())
+            // Goods coming back were not "paid" by cash, bank or cheque:
+            // "How was it paid?" makes no sense on a return and is hidden.
+            if (isReturn()) paymentSection.visibility = if (all.isEmpty()) View.VISIBLE else View.GONE
             if (all.isEmpty()) return
 
             fun note(text: String) {
@@ -776,9 +803,22 @@ class PartyDetailActivity : BaseActivity() {
             rateSection.visibility =
                 if (isSale() && (result !is RateOffer.Result.Hidden || listPriced)) View.VISIBLE else View.GONE
 
-            // Fill (or clear) the Rate box — never over a rate the owner typed.
-            if (isSale() && !rateWasTyped()) {
-                val offered = (result as? RateOffer.Result.Offer)?.rate
+            // A free item has no rate to fill.
+            etRate.isEnabled = !cbBonus.isChecked
+
+            // Fill (or clear) the Rate box — never over a rate the owner
+            // typed. A sale takes the product's price for the chip; a return
+            // takes the price this customer was last charged, when it was
+            // per the same unit (else nothing — never a guess).
+            if (goodsListAllowed() && !rateWasTyped() && !cbBonus.isChecked) {
+                val typedUnit = etUnit.text.toString().trim()
+                val offered = when {
+                    isSale() -> (result as? RateOffer.Result.Offer)?.rate
+                    isReturn() -> lastSale?.takeIf {
+                        typedUnit.isEmpty() || it.unit == null || it.unit.equals(typedUnit, ignoreCase = true)
+                    }?.rate
+                    else -> null
+                }
                 val text = offered?.let { Calc.trim(it) } ?: ""
                 if (etRate.text.toString() != text) etRate.setText(text)
                 autoRate = offered
@@ -802,6 +842,9 @@ class PartyDetailActivity : BaseActivity() {
             refreshTotal()
         }
 
+        // Set just below renderLines (it needs refreshBatchButton, defined later).
+        var pullBack: (Int) -> Unit = {}
+
         fun renderLines() {
             linesContainer.removeAllViews()
             val density = resources.displayMetrics.density
@@ -813,8 +856,9 @@ class PartyDetailActivity : BaseActivity() {
                 // Built OUTSIDE the TextView's apply block: inside it, a bare
                 // append() binds to TextView.append (which returns nothing),
                 // not to a StringBuilder — that broke the build once.
-                val rateText = d.rate?.let { " × " + Format.money(it) }.orEmpty()
-                val totalText = d.total()?.let { " = " + Format.money(it) }.orEmpty()
+                val rateText = if (d.isBonus) " (" + getString(R.string.bonus_tag) + ")"
+                    else d.rate?.let { " × " + Format.money(it) }.orEmpty()
+                val totalText = if (d.isBonus) "" else d.total()?.let { " = " + Format.money(it) }.orEmpty()
                 val lineText = "${i + 1}. " +
                     Format.goods(d.itemName, d.quantity, d.unit).orEmpty() + rateText + totalText
                 val label = TextView(this).apply {
@@ -822,6 +866,11 @@ class PartyDetailActivity : BaseActivity() {
                     setTextColor(ContextCompat.getColor(this@PartyDetailActivity, R.color.ink))
                     textSize = 14f
                     layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    minHeight = (48 * density).toInt()
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                    // Tap to correct an item: it goes back into the boxes
+                    // (and later back into the same place in the list).
+                    setOnClickListener { pullBack(i) }
                 }
                 val remove = android.widget.ImageButton(this).apply {
                     setImageResource(R.drawable.ic_close)
@@ -835,6 +884,7 @@ class PartyDetailActivity : BaseActivity() {
                     layoutParams = LinearLayout.LayoutParams((48 * density).toInt(), (48 * density).toInt())
                     setOnClickListener {
                         lines.removeAt(i)
+                        editingIndex = editingIndex?.let { if (i < it) it - 1 else it }
                         renderLines()
                         refreshRateSuggestion()
                     }
@@ -872,7 +922,9 @@ class PartyDetailActivity : BaseActivity() {
                 etQuantity.requestFocus()
                 return@setOnClickListener
             }
-            lines += draft
+            val at = editingIndex
+            if (at != null && at <= lines.size) lines.add(at, draft) else lines += draft
+            editingIndex = null
             // Clear the boxes for the next item.
             etItemName.setText("", false)
             etQuantity.setText("")
@@ -882,11 +934,16 @@ class PartyDetailActivity : BaseActivity() {
             matchedProduct = null
             matchedProductId = null
             selectedBatch = null
+            pendingBatchId = null
+            lastSale = null
+            cbBonus.isChecked = false
             btnBatch.visibility = View.GONE
             renderLines()
             refreshRateSuggestion()
             etItemName.requestFocus()
         }
+
+        cbBonus.setOnCheckedChangeListener { _, _ -> refreshRateSuggestion() }
 
         val simpleWatcher = { action: () -> Unit ->
             object : android.text.TextWatcher {
@@ -901,9 +958,10 @@ class PartyDetailActivity : BaseActivity() {
         // Whether this is a customer decides everything sale-only above.
         lifecycleScope.launch {
             partyIsCustomer = dao.getParty(partyId)?.isCustomer ?: false
-            val sale = isSale()
-            etRate.visibility = if (sale) View.VISIBLE else View.GONE
-            btnAddLine.visibility = if (sale) View.VISIBLE else View.GONE
+            val list = goodsListAllowed()
+            etRate.visibility = if (list) View.VISIBLE else View.GONE
+            btnAddLine.visibility = if (list) View.VISIBLE else View.GONE
+            cbBonus.visibility = if (list) View.VISIBLE else View.GONE
             refreshRateSuggestion()
         }
 
@@ -919,10 +977,11 @@ class PartyDetailActivity : BaseActivity() {
          * mid-lookup.
          */
         fun refreshBatchButton() {
-            if (!isGiven) return
+            if (!isGiven && !isReturn()) return
             val typed = etItemName.text.toString().trim()
             if (typed.isEmpty()) {
                 selectedBatch = null
+                lastSale = null
                 matchedProductId = null
                 // The product goes with the name: a cleared name must not
                 // leave the last product's rate sitting in the Rate box.
@@ -933,7 +992,10 @@ class PartyDetailActivity : BaseActivity() {
             }
             lifecycleScope.launch {
                 val product = dao.productByKey(ProductName.key(typed))
-                val options = product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+                // Batches are what a SALE is drawn from; a return offers none.
+                val options = if (isGiven) product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+                    else emptyList()
+                val last = if (isReturn() && product != null) dao.lastSaleRate(partyId, product.id) else null
 
                 // The item name changed since this lookup started (the owner
                 // kept typing) — do not act on a stale answer.
@@ -941,6 +1003,7 @@ class PartyDetailActivity : BaseActivity() {
 
                 matchedProductId = product?.id
                 matchedProduct = product
+                lastSale = last
                 // The product's own unit, when the owner has not typed one —
                 // so the same goods are not counted as "bori" one day and
                 // "bag" the next (stock adds only like to like). Never over
@@ -955,8 +1018,12 @@ class PartyDetailActivity : BaseActivity() {
                     btnBatch.visibility = View.GONE
                 } else {
                     btnBatch.visibility = View.VISIBLE
-                    btnBatch.text = getString(R.string.pick_batch)
-                    selectedBatch = null
+                    // An item tapped back out of the list keeps its batch.
+                    selectedBatch = pendingBatchId?.let { id -> options.find { it.id == id } }
+                    pendingBatchId = null
+                    btnBatch.text = selectedBatch?.let {
+                        getString(R.string.batch_chosen, it.batchNumber ?: getString(R.string.batch_none))
+                    } ?: getString(R.string.pick_batch)
                     btnBatch.setOnClickListener {
                         showBatchPicker(options) { chosen ->
                             selectedBatch = chosen
@@ -972,6 +1039,31 @@ class PartyDetailActivity : BaseActivity() {
                     }
                 }
             }
+        }
+
+        pullBack = pull@{ i ->
+            // One item in the boxes at a time: the owner finishes (adds) or
+            // clears what is there before pulling another back.
+            if (editorDraft() != null) {
+                Toast.makeText(this, R.string.line_editor_busy, Toast.LENGTH_SHORT).show()
+                return@pull
+            }
+            if (i !in lines.indices) return@pull
+            val d = lines.removeAt(i)
+            editingIndex = i
+            etItemName.setText(d.itemName.orEmpty(), false)
+            etQuantity.setText(d.quantity?.let { Format.plain(it) } ?: "")
+            etUnit.setText(d.unit.orEmpty(), false)
+            cbBonus.isChecked = d.isBonus
+            etRate.setText(if (d.isBonus) "" else d.rate?.let { Calc.trim(it) } ?: "")
+            // A rate the owner typed stays his; one that came from the
+            // product may be refreshed by the lookup below.
+            autoRate = if (d.rateEdited) null else d.rate
+            matchedProductId = d.productId
+            pendingBatchId = d.billItemId
+            renderLines()
+            refreshBatchButton()
+            refreshRateSuggestion()
         }
 
         etItemName.setOnFocusChangeListener { _, hasFocus ->
@@ -1040,6 +1132,10 @@ class PartyDetailActivity : BaseActivity() {
             else -> null
         }
 
+        // The Save button's action, set once the dialog exists below; the
+        // over-return check calls it again after the owner has answered.
+        var requestSave: () -> Unit = {}
+
         // Validates and saves. False (and the screen stays open) when the
         // amount is not a positive figure; the old dialog button closed the
         // form even then, throwing away whatever had been typed.
@@ -1071,7 +1167,50 @@ class PartyDetailActivity : BaseActivity() {
                 }
                 return false
             }
-            val items = (lines + listOfNotNull(editor)).mapNotNull { it.toItem() }
+            val all = lines.toMutableList()
+            val at = editingIndex
+            if (editor != null) {
+                if (at != null && at <= all.size) all.add(at, editor) else all.add(editor)
+            }
+            val items = all.mapNotNull { it.toItem() }
+
+            // A return larger than this customer holds on the book is not
+            // refused (the goods may predate the app), but the owner is asked
+            // FIRST, while the form is still open — "No" loses nothing.
+            if (isReturn() && !returnChecked && items.any { it.productId != null && it.quantity != null }) {
+                lifecycleScope.launch {
+                    val over = mutableListOf<String>()
+                    items.filter { it.productId != null && it.quantity != null }
+                        .groupBy { Pair(it.productId ?: 0L, it.unit) }
+                        .forEach { (key, group) ->
+                            val returning = group.sumOf { it.quantity ?: 0.0 }
+                            val held = dao.netGoodsWithParty(partyId, key.first, key.second)
+                            if (returning > held + 1e-9) {
+                                over += getString(
+                                    R.string.return_more_than_taken,
+                                    partyName,
+                                    Format.plain(maxOf(held, 0.0)),
+                                    key.second.orEmpty(),
+                                    group.first().itemName.orEmpty()
+                                )
+                            }
+                        }
+                    if (over.isEmpty()) {
+                        returnChecked = true
+                        requestSave()
+                    } else {
+                        MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                            .setMessage(over.joinToString("\n\n"))
+                            .setPositiveButton(R.string.proceed_anyway) { _, _ ->
+                                returnChecked = true
+                                requestSave()
+                            }
+                            .setNegativeButton(R.string.cancel, null)
+                            .show()
+                    }
+                }
+                return false
+            }
 
             // Which price list the sale was at — recorded when a rate was.
             // Fixed now, never recalculated (see LedgerEntry.rateType).
@@ -1089,7 +1228,10 @@ class PartyDetailActivity : BaseActivity() {
                 billPhotoPath = pendingBillPhoto,
                 // Null unless a chip was actually tapped, and null on
                 // every "I Gave" entry, where the section never appeared.
-                paymentMethod = if (isGiven) null else chosenPaymentMethod(),
+                // A goods return was not "paid" by any method (the section is
+                // hidden for it), so nothing is recorded there either.
+                paymentMethod = if (isGiven || (isReturn() && items.isNotEmpty())) null
+                    else chosenPaymentMethod(),
                 rateType = rateType
             )
 
@@ -1155,7 +1297,8 @@ class PartyDetailActivity : BaseActivity() {
         }
         onAmountChanged()
 
-        btnSave.setOnClickListener { if (trySave()) dialog.dismiss() }
+        requestSave = { if (trySave()) dialog.dismiss() }
+        btnSave.setOnClickListener { requestSave() }
 
         dialog.show()
         dialog.also { dialog ->

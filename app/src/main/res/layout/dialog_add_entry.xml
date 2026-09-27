@@ -544,6 +544,20 @@
         </LinearLayout>
 
         <!--
+          A free item (a company scheme: 10 + 1). It leaves the shelf like any
+          other, but costs nothing: its line comes to Rs 0 and the Rate box is
+          set aside. Shown whenever a list of items is (a customer's account).
+        -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbBonus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/bonus_label"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <!--
           Which of the product's two prices this sale goes at. Shown only for
           goods going OUT to a CUSTOMER, and only once a product with at least
           one recorded rate is recognised — on a supplier's account these are

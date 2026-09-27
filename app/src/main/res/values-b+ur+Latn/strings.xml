@@ -1211,6 +1211,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="line_need_name">Shai ka naam likhein</string>
     <string name="line_need_qty">Miqdaar likhein</string>
     <string name="remove_line">Item hatayein</string>
+    <string name="bonus_label">Muft (bonus)</string>
+    <string name="bonus_tag">muft</string>
+    <string name="line_editor_busy">Pehle upar wala item list mein daalein ya mita dein.</string>
+    <string name="return_more_than_taken">%1$s ke khaate mein %4$s sirf %2$s %3$s darj hai. Phir bhi mehfooz karein?</string>
 
     <string name="payment_method_label">Adaigi kaise hui?</string>
     <string name="payment_method_cash">Naqd</string>

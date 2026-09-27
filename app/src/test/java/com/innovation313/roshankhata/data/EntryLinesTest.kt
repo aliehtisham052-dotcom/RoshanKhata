@@ -80,4 +80,15 @@ class EntryLinesTest {
         assertEquals(4800.0, item.rate!!, 0.0)
         assertEquals(1L, item.productId)
     }
+
+    @Test
+    fun `a free item costs nothing, keeps no rate, and is never re-priced`() {
+        val free = sulphur.copy(quantity = 1.0, isBonus = true)
+        assertEquals(0.0, free.total()!!, 0.0)
+        assertEquals(19200.0, EntryLines.total(listOf(urea(), sulphur, chlorpyrifos, free))!!, 0.0)
+        val saved = free.toItem()!!
+        assertTrue(saved.isBonus)
+        assertNull("a free line records no price", saved.rate)
+        assertEquals(free, free.repriced(RateType.CASH, isCustomer = true))
+    }
 }
