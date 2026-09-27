@@ -83,7 +83,16 @@ object RegisterReport {
             strn = BusinessProfile.strn(context),
             from = from,
             to = to,
-            sales = dao.salesRegister(from, to),
+            // Each item at quantity × rate, plus one "discount / difference"
+            // row after any several-item sale written at a different amount,
+            // so the register's total is the ledger's. sortedWith is stable:
+            // the difference row stays right after its own items.
+            sales = (
+                dao.salesRegister(from, to) +
+                    dao.salesAdjustments(from, to).map {
+                        it.copy(itemName = context.getString(R.string.register_adjustment))
+                    }
+                ).sortedWith(compareBy({ it.date }, { it.refNumber })),
             purchases = dao.purchaseRegister(from, to)
         )
     }
