@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.ui
 
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.EntryItem
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -165,6 +166,16 @@ object Format {
      * "5 bag — Urea", or just "Urea" if no quantity was given.
      * Returns null when nothing was recorded, so the caller can hide the row.
      */
+    /**
+     * An entry's goods lines as one line of text, in the order they were
+     * typed. A single line reads exactly as an entry's goods always have.
+     * Null when no line records anything — a money-only entry.
+     */
+    fun goods(items: List<EntryItem>): String? {
+        val parts = items.mapNotNull { goods(it.itemName, it.quantity, it.unit) }
+        return if (parts.isEmpty()) null else parts.joinToString("  ·  ")
+    }
+
     fun goods(itemName: String?, quantity: Double?, unit: String?): String? {
         val item = itemName?.trim().orEmpty()
         if (item.isEmpty() && quantity == null) return null

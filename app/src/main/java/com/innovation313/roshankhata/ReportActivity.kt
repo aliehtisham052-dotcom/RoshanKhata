@@ -117,13 +117,14 @@ class ReportActivity : BaseActivity() {
         }
 
         lifecycleScope.launch {
-            dao.observeEntries(partyId).collectLatest { newestFirst ->
+            dao.observeEntriesWithItems(partyId).collectLatest { newestFirst ->
                 val oldestFirst = newestFirst.reversed()
 
                 var running = 0.0
-                allRows = oldestFirst.map { e ->
+                allRows = oldestFirst.map { ew ->
+                    val e = ew.entry
                     running += if (e.isGiven) e.amount else -e.amount
-                    EntryRow(e, running)
+                    EntryRow(e, running, ew.orderedItems())
                 }.reversed()
 
                 // The account's true position, regardless of the window chosen.
@@ -252,7 +253,7 @@ class ReportActivity : BaseActivity() {
                     context = this@ReportActivity,
                     partyName = partyName,
                     partyPhone = partyPhone,
-                    rows = rows.map { PdfExport.StatementRow(it.entry, it.runningBalance) },
+                    rows = rows.map { PdfExport.StatementRow(it.entry, it.runningBalance, it.items) },
                     // What the account stood at before the earliest row
                     // printed here. Derived from that row's own running
                     // balance by undoing its entry, so it holds whichever way

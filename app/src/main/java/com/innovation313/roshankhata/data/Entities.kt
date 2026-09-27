@@ -216,6 +216,26 @@ data class LedgerEntry(
      */
     val paymentMethod: String? = null,
 
+    /**
+     * Which of the product's two prices this entry's goods went at — one of
+     * [RateType]. Fixed when the entry is saved and never recalculated: the
+     * price is agreed at the time of the sale, and a later change to the
+     * product's rate must not reach back into what was already agreed.
+     * Null on every entry written before this column existed, and on any
+     * entry that carried no priced goods — unknown, never assumed.
+     */
+    val rateType: String? = null,
+
+    /**
+     * The other half of a cash sale: the "I got" entry recorded when the
+     * money for this "I gave" arrived on the spot (or the reverse). Kept so
+     * that deleting one half can offer to delete the other — a cash sale with
+     * only one side left in the book is a balance that is simply wrong.
+     * No foreign key: the pairing is a convenience, and an entry must stay
+     * deletable on its own if the owner chooses.
+     */
+    val pairedEntryId: Long? = null,
+
     val isDeleted: Boolean = false,
     val deletedAt: Long? = null
 )

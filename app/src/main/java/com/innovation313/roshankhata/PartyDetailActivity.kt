@@ -46,6 +46,7 @@ import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.ui.QrImage
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
@@ -403,13 +404,14 @@ class PartyDetailActivity : BaseActivity() {
             // Entries arrive newest-first. Running balance must be computed
             // oldest-first, then mapped back so each row shows the balance
             // as it stood right after that entry.
-            dao.observeEntries(partyId).collectLatest { newestFirst ->
+            dao.observeEntriesWithItems(partyId).collectLatest { newestFirst ->
                 val oldestFirst = newestFirst.reversed()
 
                 var running = 0.0
-                val rowsOldestFirst = oldestFirst.map { e ->
+                val rowsOldestFirst = oldestFirst.map { ew ->
+                    val e = ew.entry
                     running += if (e.isGiven) e.amount else -e.amount
-                    EntryRow(e, running)
+                    EntryRow(e, running, ew.orderedItems())
                 }
 
                 // Running balances are computed once, against the ledger's own
@@ -826,25 +828,34 @@ class PartyDetailActivity : BaseActivity() {
                 entryNumber = "",
                 isQarzeHasna = cbQarzeHasna.isChecked,
                 recovery = recovery,
-                itemName = itemName,
-                quantity = quantity,
-                unit = unit,
                 timestamp = chosenTime,
                 billPhotoPath = pendingBillPhoto,
-                // Both null unless a batch was actually picked above.
-                // Tagging the product here, at the moment the owner
-                // confirms it, means this entry never needs the separate
-                // "tie existing entries" backfill to count towards stock.
-                productId = matchedProductId,
-                billItemId = selectedBatch?.id,
                 // Null unless a chip was actually tapped, and null on
                 // every "I Gave" entry, where the section never appeared.
                 paymentMethod = if (isGiven) null else chosenPaymentMethod()
             )
 
+            // The goods travel as a line, not on the entry (v20 — see
+            // EntryItem). The same "anything recorded?" rule as the migration:
+            // a bare money entry gets no line at all. Product and batch are
+            // both null unless actually recognised/picked above; tagging them
+            // here, at the moment the owner confirms, means this sale never
+            // needs the separate "tie existing entries" backfill to count
+            // towards stock. entryId and lineNo are set by the DAO from the id
+            // the insert returns, inside the same transaction.
+            val items = listOfNotNull(
+                EntryItem.ofGoods(
+                    itemName = itemName,
+                    quantity = quantity,
+                    unit = unit,
+                    productId = matchedProductId,
+                    billItemId = selectedBatch?.id
+                )
+            )
+
             // Warn BEFORE writing, not after — a warning that arrives once
             // the entry is already in the ledger is just an accusation.
-            checkTwinThenSave(entry)
+            checkTwinThenSave(entry, items)
             return true
         }
 
@@ -1197,7 +1208,7 @@ class PartyDetailActivity : BaseActivity() {
                     // rows because a search box was open would be a false
                     // document, and it goes to a customer.
                     rows = allRows.map {
-                        PdfExport.StatementRow(it.entry, it.runningBalance)
+                        PdfExport.StatementRow(it.entry, it.runningBalance, it.items)
                     },
                     // What the account stood at before the earliest row
                     // printed here. Derived from that row's own running
@@ -1263,13 +1274,12 @@ class PartyDetailActivity : BaseActivity() {
         } else {
             inRange.filter { row ->
                 val e = row.entry
-                val haystack = listOfNotNull(
-                    e.note,
-                    e.itemName,
-                    e.unit,
-                    e.entryNumber,
-                    Format.money(e.amount)
-                ).joinToString(" ").lowercase()
+                // Every line's goods are searchable, not just the first —
+                // "urea" must find the visit where urea was the third item.
+                val haystack = (
+                    listOfNotNull(e.note, e.entryNumber, Format.money(e.amount)) +
+                        row.items.flatMap { listOfNotNull(it.itemName, it.unit) }
+                    ).joinToString(" ").lowercase()
 
                 haystack.contains(query)
             }
@@ -1584,7 +1594,7 @@ class PartyDetailActivity : BaseActivity() {
      * customer the same amount twice in a day; the question is cheap to ask
      * once and the answer is his.
      */
-    private fun checkTwinThenSave(entry: LedgerEntry) {
+    private fun checkTwinThenSave(entry: LedgerEntry, items: List<EntryItem>) {
         lifecycleScope.launch {
             val day = java.util.Calendar.getInstance().apply {
                 timeInMillis = entry.timestamp
@@ -1601,7 +1611,7 @@ class PartyDetailActivity : BaseActivity() {
             }
 
             if (twin == null) {
-                afterTwinCheck(entry)
+                afterTwinCheck(entry, items)
                 return@launch
             }
 
@@ -1616,30 +1626,32 @@ class PartyDetailActivity : BaseActivity() {
                     )
                 )
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.twin_entry_add) { _, _ -> afterTwinCheck(entry) }
+                .setPositiveButton(R.string.twin_entry_add) { _, _ -> afterTwinCheck(entry, items) }
                 .show()
         }
     }
 
     /** The credit-limit gate, which used to sit inline in the save button. */
-    private fun afterTwinCheck(entry: LedgerEntry) {
+    private fun afterTwinCheck(entry: LedgerEntry, items: List<EntryItem>) {
         val limit = creditLimit
         val projected = currentBalance + (if (entry.isGiven) entry.amount else -entry.amount)
 
         if (entry.isGiven && limit != null && limit > 0 &&
             projected > limit && currentBalance <= limit
         ) {
-            warnOverLimit(entry, limit, projected)
+            warnOverLimit(entry, items, limit, projected)
         } else {
-            saveEntry(entry)
+            saveEntry(entry, items)
         }
     }
 
-    private fun saveEntry(entry: LedgerEntry) {
+    private fun saveEntry(entry: LedgerEntry, items: List<EntryItem>) {
         AppScope.launch {
-            // Numbering happens inside the DAO's own transaction — see
-            // insertEntryNumbered for why the count must not be read out here.
-            dao.insertEntryNumbered(entry)
+            // Numbering, the entry and its goods lines all happen inside the
+            // DAO's own transaction — see insertEntryNumbered for why the count
+            // must not be read out here, and insertEntryWithItems for why the
+            // lines are written in the same step.
+            dao.insertEntryWithItems(entry, items)
         }
     }
 
@@ -1648,7 +1660,7 @@ class PartyDetailActivity : BaseActivity() {
      * own risk better than a number in a database does — so we tell them
      * plainly what this entry will do, and let them decide.
      */
-    private fun warnOverLimit(entry: LedgerEntry, limit: Double, projected: Double) {
+    private fun warnOverLimit(entry: LedgerEntry, items: List<EntryItem>, limit: Double, projected: Double) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.limit_warning_title)
             .setMessage(
@@ -1662,7 +1674,7 @@ class PartyDetailActivity : BaseActivity() {
                 )
             )
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.proceed_anyway) { _, _ -> saveEntry(entry) }
+            .setPositiveButton(R.string.proceed_anyway) { _, _ -> saveEntry(entry, items) }
             .show()
     }
 

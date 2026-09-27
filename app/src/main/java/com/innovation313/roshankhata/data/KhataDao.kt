@@ -489,6 +489,15 @@ interface KhataDao {
     @Query("DELETE FROM transactions")
     suspend fun wipeEntries()
 
+    @Query("DELETE FROM entry_items")
+    suspend fun wipeEntryItems()
+
+    @Query("SELECT * FROM entry_items")
+    suspend fun allEntryItemsForBackup(): List<EntryItem>
+
+    @Insert
+    suspend fun restoreEntryItems(items: List<EntryItem>)
+
     @Query("DELETE FROM cheques")
     suspend fun wipeCheques()
 
@@ -793,9 +802,10 @@ interface KhataDao {
         SELECT i.id AS id, i.batchNumber AS batchNumber, i.expiryDate AS expiryDate,
                i.quantity AS quantity, i.unit AS unit,
                COALESCE((
-                   SELECT SUM(t.quantity) FROM transactions t
-                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+                   SELECT SUM(ei.quantity) FROM entry_items ei
+                   JOIN transactions t ON t.id = ei.entryId
+                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
                ), 0) AS soldFromBatch
         FROM bill_items i
         JOIN supplier_bills b ON b.id = i.billId
@@ -840,9 +850,10 @@ interface KhataDao {
                i.batchNumber AS batchNumber, i.expiryDate AS expiryDate,
                i.quantity AS quantity, i.unit AS unit, i.rate AS rate,
                COALESCE((
-                   SELECT SUM(t.quantity) FROM transactions t
-                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+                   SELECT SUM(ei.quantity) FROM entry_items ei
+                   JOIN transactions t ON t.id = ei.entryId
+                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
                ), 0) AS soldFromBatch,
                p.name AS partyName, b.billNumber AS billNumber, b.billDate AS billDate
         FROM bill_items i
@@ -874,23 +885,33 @@ interface KhataDao {
      *
      * Bounds are inclusive on both ends; the caller passes start-of-day and
      * end-of-day so a report titled with two dates contains both of them whole.
+     *
+     * One row per goods LINE (from v20). The amount column is the entry's own
+     * amount when the entry has a single line — exactly what it printed
+     * before lines existed — and the line's quantity × rate when it has
+     * several, so no entry's money is printed twice.
      */
     @Query(
         """
         SELECT t.timestamp AS date, t.entryNumber AS refNumber,
                p.name AS partyName,
-               COALESCE(pr.name, t.itemName) AS itemName,
+               COALESCE(pr.name, ei.itemName) AS itemName,
                bi.batchNumber AS batchNumber,
-               t.quantity AS quantity, t.unit AS unit, t.amount AS amount,
+               ei.quantity AS quantity, ei.unit AS unit,
+               CASE WHEN (SELECT COUNT(*) FROM entry_items c WHERE c.entryId = t.id) = 1
+                    THEN t.amount
+                    ELSE COALESCE(ROUND(ei.quantity * ei.rate, 2), 0)
+               END AS amount,
                pr.company AS company, pr.registrationNumber AS registrationNumber
-        FROM transactions t
+        FROM entry_items ei
+        JOIN transactions t ON t.id = ei.entryId
         JOIN parties p ON p.id = t.partyId
-        LEFT JOIN products pr ON pr.id = t.productId
-        LEFT JOIN bill_items bi ON bi.id = t.billItemId
+        LEFT JOIN products pr ON pr.id = ei.productId
+        LEFT JOIN bill_items bi ON bi.id = ei.billItemId
         WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0
-          AND (t.quantity IS NOT NULL OR t.productId IS NOT NULL)
+          AND (ei.quantity IS NOT NULL OR ei.productId IS NOT NULL)
           AND t.timestamp >= :from AND t.timestamp <= :to
-        ORDER BY t.timestamp ASC, t.id ASC
+        ORDER BY t.timestamp ASC, t.id ASC, ei.lineNo ASC, ei.id ASC
         """
     )
     suspend fun salesRegister(from: Long, to: Long): List<SaleRegisterRow>
@@ -953,9 +974,10 @@ interface KhataDao {
         """
         SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
                (i.quantity - COALESCE((
-                   SELECT SUM(t.quantity) FROM transactions t
-                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+                   SELECT SUM(ei.quantity) FROM entry_items ei
+                   JOIN transactions t ON t.id = ei.entryId
+                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
                ), 0)) AS quantity,
                i.unit, p.name AS partyName, b.billNumber
         FROM bill_items i
@@ -965,9 +987,10 @@ interface KhataDao {
           AND i.expiryDate IS NOT NULL
           AND i.expiryDate <= :cutoff
           AND i.quantity > COALESCE((
-                   SELECT SUM(t.quantity) FROM transactions t
-                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+                   SELECT SUM(ei.quantity) FROM entry_items ei
+                   JOIN transactions t ON t.id = ei.entryId
+                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
                ), 0)
         ORDER BY i.expiryDate ASC
         """
@@ -984,9 +1007,10 @@ interface KhataDao {
           AND i.expiryDate IS NOT NULL
           AND i.expiryDate <= :cutoff
           AND i.quantity > COALESCE((
-                   SELECT SUM(t.quantity) FROM transactions t
-                   WHERE t.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (t.unit = i.unit OR (t.unit IS NULL AND i.unit IS NULL))
+                   SELECT SUM(ei.quantity) FROM entry_items ei
+                   JOIN transactions t ON t.id = ei.entryId
+                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
+                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
                ), 0)
         """
     )
@@ -1157,21 +1181,23 @@ interface KhataDao {
      * bare cash entry against a product name moved money, not stock.
      */
     @Query(
-        "SELECT t.productId AS productId, SUM(t.quantity) AS qty, MIN(t.unit) AS unit " +
-        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-        "WHERE t.productId IS NOT NULL AND t.quantity IS NOT NULL AND t.isGiven = 1 " +
+        "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, MIN(ei.unit) AS unit " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "JOIN parties p ON p.id = t.partyId " +
+        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 1 " +
         "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
-        "GROUP BY t.productId"
+        "GROUP BY ei.productId"
     )
     suspend fun soldPerProduct(): List<Stock.ProductQty>
 
     /** Goods that came back in. Same shape, other direction. */
     @Query(
-        "SELECT t.productId AS productId, SUM(t.quantity) AS qty, MIN(t.unit) AS unit " +
-        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-        "WHERE t.productId IS NOT NULL AND t.quantity IS NOT NULL AND t.isGiven = 0 " +
+        "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, MIN(ei.unit) AS unit " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "JOIN parties p ON p.id = t.partyId " +
+        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 0 " +
         "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
-        "GROUP BY t.productId"
+        "GROUP BY ei.productId"
     )
     suspend fun returnedPerProduct(): List<Stock.ProductQty>
 
@@ -1191,8 +1217,9 @@ interface KhataDao {
     @Query(
         "SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath, " +
         "0.0 AS balance, MAX(t.timestamp) AS lastActivity, p.creditLimit " +
-        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-        "WHERE t.billItemId = :billItemId AND t.isGiven = 1 " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "JOIN parties p ON p.id = t.partyId " +
+        "WHERE ei.billItemId = :billItemId AND t.isGiven = 1 " +
         "AND p.isCustomer = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 " +
         "GROUP BY p.id ORDER BY p.name COLLATE NOCASE"
     )
@@ -1217,8 +1244,9 @@ interface KhataDao {
     @Query(
         "SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath, " +
         "0.0 AS balance, MAX(t.timestamp) AS lastActivity, p.creditLimit " +
-        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-        "WHERE t.productId = :productId AND t.isGiven = 1 " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "JOIN parties p ON p.id = t.partyId " +
+        "WHERE ei.productId = :productId AND t.isGiven = 1 " +
         "AND p.isCustomer = 1 AND t.timestamp >= :from AND t.timestamp < :to " +
         "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
         "GROUP BY p.id ORDER BY MAX(t.timestamp) DESC"
@@ -1232,7 +1260,7 @@ interface KhataDao {
     // they can do is nothing.
 
     @Query(
-        "SELECT DISTINCT itemName FROM transactions " +
+        "SELECT DISTINCT itemName FROM entry_items " +
         "WHERE productId IS NULL AND itemName IS NOT NULL AND TRIM(itemName) != ''"
     )
     suspend fun unlinkedEntryNames(): List<String>
@@ -1245,7 +1273,7 @@ interface KhataDao {
 
     /** Fills the blank only. An entry already tied to a product is never re-tied. */
     @Query(
-        "UPDATE transactions SET productId = :productId " +
+        "UPDATE entry_items SET productId = :productId " +
         "WHERE productId IS NULL AND itemName = :name"
     )
     suspend fun linkEntriesNamed(name: String, productId: Long): Int
@@ -1416,7 +1444,9 @@ interface KhataDao {
         invoices: List<Invoice> = emptyList(),
         invoiceItems: List<InvoiceItem> = emptyList(),
         // Also additive: the owner's "not a duplicate" decisions.
-        dismissedDuplicates: List<DismissedDuplicate> = emptyList()
+        dismissedDuplicates: List<DismissedDuplicate> = emptyList(),
+        // Goods lines (v20). Additive and default empty, like the rest.
+        entryItems: List<EntryItem> = emptyList()
     ) {
         // Children before parents on the way out. invoice_items cascades off
         // invoices, so items are wiped first; wiping invoices first would fire
@@ -1427,6 +1457,10 @@ interface KhataDao {
         wipeBills()
         wipeInstallments()
         wipePlans()
+        // Lines before their entries — the cascade would take them anyway,
+        // but children-first is this method's rule and it keeps the step
+        // explicit rather than a side effect.
+        wipeEntryItems()
         wipeEntries()
         wipeCheques()
         wipeCash()
@@ -1437,6 +1471,8 @@ interface KhataDao {
         restoreProducts(products)
         restoreParties(parties)
         restoreEntries(entries)
+        // Parents before children: a line's foreign key needs its entry.
+        restoreEntryItems(entryItems)
         restoreCheques(cheques)
         restoreCash(cash)
         restorePlans(plans)
@@ -1474,11 +1510,11 @@ interface KhataDao {
      * named a product and gave a quantity count — a bare cash sale has no
      * product to rank.
      */
-    @Query("SELECT itemName AS name, SUM(quantity) AS qty, unit AS unit, COUNT(*) AS lines " +
-           "FROM transactions " +
-           "WHERE isGiven = 1 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to " +
-           "AND itemName IS NOT NULL AND itemName != '' AND quantity IS NOT NULL " +
-           "GROUP BY itemName, unit ORDER BY qty DESC LIMIT :limit")
+    @Query("SELECT ei.itemName AS name, SUM(ei.quantity) AS qty, ei.unit AS unit, COUNT(*) AS lines " +
+           "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND t.timestamp >= :from AND t.timestamp < :to " +
+           "AND ei.itemName IS NOT NULL AND ei.itemName != '' AND ei.quantity IS NOT NULL " +
+           "GROUP BY ei.itemName, ei.unit ORDER BY qty DESC LIMIT :limit")
     suspend fun topProductsBetween(from: Long, to: Long, limit: Int): List<ProductStat>
 
     /** Top customers by total purchases in a period. */
@@ -1529,6 +1565,53 @@ interface KhataDao {
         val count = totalEntryCount()
         return insertEntry(entry.copy(entryNumber = EntryNumber.next(count)))
     }
+
+    // ---------- Goods lines (entry_items, v20) ----------
+    //
+    // The ONLY way lines are written. An entry and its lines are saved in one
+    // transaction: either both exist or neither does, so a crash between the
+    // two can never leave an entry that shows money for goods it lost, or
+    // lines hanging off an entry that was never written. Each line's entryId
+    // and lineNo are set HERE, from the id the insert actually returned —
+    // never trusted from the caller — so a line cannot land on the wrong entry.
+
+    @Insert
+    suspend fun insertEntryItems(items: List<EntryItem>)
+
+    @Query("DELETE FROM entry_items WHERE entryId = :entryId")
+    suspend fun deleteItemsOfEntry(entryId: Long)
+
+    @Query("SELECT * FROM entry_items WHERE entryId = :entryId ORDER BY lineNo ASC, id ASC")
+    suspend fun itemsOfEntry(entryId: Long): List<EntryItem>
+
+    /** A new numbered entry with its goods lines, as one all-or-nothing write. */
+    @Transaction
+    suspend fun insertEntryWithItems(entry: LedgerEntry, items: List<EntryItem>): Long {
+        val id = insertEntryNumbered(entry)
+        if (items.isNotEmpty()) {
+            insertEntryItems(items.mapIndexed { i, item -> item.copy(id = 0, entryId = id, lineNo = i) })
+        }
+        return id
+    }
+
+    /**
+     * An edited entry and its complete new set of lines. The old lines are
+     * replaced wholesale inside the same transaction, so an edit can never
+     * leave a mixture of old and new lines behind.
+     */
+    @Transaction
+    suspend fun updateEntryWithItems(entry: LedgerEntry, items: List<EntryItem>) {
+        updateEntry(entry)
+        deleteItemsOfEntry(entry.id)
+        if (items.isNotEmpty()) {
+            insertEntryItems(items.mapIndexed { i, item -> item.copy(id = 0, entryId = entry.id, lineNo = i) })
+        }
+    }
+
+    /** One party's entries with their lines, newest first — the khata screen. */
+    @Transaction
+    @Query("SELECT * FROM transactions WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC")
+    fun observeEntriesWithItems(partyId: Long): Flow<List<EntryWithItems>>
 
     /**
      * A new supplier bill, as ONE all-or-nothing write.
