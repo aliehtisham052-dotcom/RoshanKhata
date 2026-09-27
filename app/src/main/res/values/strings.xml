@@ -1254,6 +1254,10 @@ You can change this any time from this screen.</string>
     <string name="line_need_name">Write the item name</string>
     <string name="line_need_qty">Write the quantity</string>
     <string name="remove_line">Remove item</string>
+    <string name="bonus_label">Free (bonus)</string>
+    <string name="bonus_tag">free</string>
+    <string name="line_editor_busy">Add the item above to the list, or clear it, first.</string>
+    <string name="return_more_than_taken">%1$s has only %2$s %3$s of %4$s on record. Save anyway?</string>
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">How was it paid?</string>

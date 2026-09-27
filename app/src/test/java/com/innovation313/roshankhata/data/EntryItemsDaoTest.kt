@@ -234,4 +234,35 @@ class EntryItemsDaoTest {
         assertTrue("a line pointing at no entry must be refused", result is Backup.ImportResult.Failed)
         assertEquals(null, parsed)
     }
+
+    @Test
+    fun aReturnFindsTheCustomersLastPriceAndWhatHeStillHolds() = runBlocking {
+        val ahmad = dao.insertParty(Party(name = "Ahmad"))
+        val bilal = dao.insertParty(Party(name = "Bilal"))
+        val sulphur = dao.findOrCreateProduct("Sulphur", defaultUnit = "bag")
+        fun line(qty: Double, rate: Double?, bonus: Boolean = false) = EntryItem(
+            entryId = 0, itemName = "Sulphur", quantity = qty, unit = "bag",
+            rate = rate, isBonus = bonus, productId = sulphur.id
+        )
+        // Two sales at different prices, then a free bag, then a return.
+        dao.insertEntryWithItems(visit(ahmad, 3000.0).copy(timestamp = 1_000L), listOf(line(4.0, 750.0)))
+        dao.insertEntryWithItems(visit(ahmad, 780.0).copy(timestamp = 2_000L), listOf(line(1.0, 780.0)))
+        dao.insertEntryWithItems(visit(ahmad, 0.0).copy(timestamp = 3_000L), listOf(line(1.0, null, bonus = true)))
+        dao.insertEntryWithItems(
+            LedgerEntry(partyId = ahmad, amount = 750.0, isGiven = false, entryNumber = "", timestamp = 4_000L),
+            listOf(line(1.0, 750.0))
+        )
+        // Another customer's sale must not leak in.
+        dao.insertEntryWithItems(visit(bilal, 999.0).copy(timestamp = 5_000L), listOf(line(1.0, 999.0)))
+
+        // The latest priced sale to Ahmad (the free bag has no price).
+        val last = dao.lastSaleRate(ahmad, sulphur.id)!!
+        assertEquals(780.0, last.rate, 0.0)
+        assertEquals("bag", last.unit)
+
+        // 4 + 1 + 1 free given, 1 returned = 5 bags still with him.
+        assertEquals(5.0, dao.netGoodsWithParty(ahmad, sulphur.id, "bag"), 0.0)
+        // A different unit is not added in.
+        assertEquals(0.0, dao.netGoodsWithParty(ahmad, sulphur.id, "kg"), 0.0)
+    }
 }

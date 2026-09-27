@@ -1239,6 +1239,10 @@
     <string name="line_need_name">شيءِ جو نالو لکو</string>
     <string name="line_need_qty">مقدار لکو</string>
     <string name="remove_line">شيءِ هٽايو</string>
+    <string name="bonus_label">مفت (بونس)</string>
+    <string name="bonus_tag">مفت</string>
+    <string name="line_editor_busy">پهريان مٿين شيءِ لسٽ ۾ وجهو يا ميٽيو.</string>
+    <string name="return_more_than_taken">%1$s جي کاتي ۾ %4$s صرف %2$s %3$s درج آهي. پوءِ به محفوظ ڪريو؟</string>
 
     <string name="payment_method_label">ادائيگي ڪيئن ٿي؟</string>
     <string name="payment_method_cash">نقد</string>

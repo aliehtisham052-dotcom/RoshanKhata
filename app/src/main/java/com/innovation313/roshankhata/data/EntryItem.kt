@@ -154,6 +154,9 @@ data class EntryWithItems(
     fun orderedItems(): List<EntryItem> = items.sortedWith(compareBy({ it.lineNo }, { it.id }))
 }
 
+/** A customer's last price for a product, and the unit it was per. */
+data class LastRate(val rate: Double, val unit: String?)
+
 /** Which of a product's two prices an entry was charged at. */
 object RateType {
     const val CREDIT = "CREDIT"

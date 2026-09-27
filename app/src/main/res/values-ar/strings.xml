@@ -1335,6 +1335,10 @@
     <string name="line_need_name">اكتب اسم الصنف</string>
     <string name="line_need_qty">اكتب الكمية</string>
     <string name="remove_line">حذف الصنف</string>
+    <string name="bonus_label">مجاني (مكافأة)</string>
+    <string name="bonus_tag">مجاني</string>
+    <string name="line_editor_busy">أضف الصنف أعلاه إلى القائمة أو امسحه أولًا.</string>
+    <string name="return_more_than_taken">لدى %1$s من %4$s %2$s %3$s فقط في السجل. هل تحفظ على أي حال؟</string>
 
     <string name="payment_method_label">كيف تم الدفع؟</string>
     <string name="payment_method_cash">نقدًا</string>

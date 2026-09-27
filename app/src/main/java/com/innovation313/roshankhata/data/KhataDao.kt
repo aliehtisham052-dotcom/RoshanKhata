@@ -1638,6 +1638,35 @@ interface KhataDao {
         }
     }
 
+    /**
+     * The rate this customer was last charged for this product, and the unit
+     * it was per — for a return, which goes back at the price it went out at.
+     * Only real sales count: a free (bonus) line has no price, and a line
+     * with no recorded rate says nothing.
+     */
+    @Query(
+        "SELECT ei.rate AS rate, ei.unit AS unit FROM entry_items ei " +
+        "JOIN transactions t ON t.id = ei.entryId " +
+        "WHERE t.partyId = :partyId AND ei.productId = :productId AND t.isGiven = 1 " +
+        "AND t.isDeleted = 0 AND ei.isBonus = 0 AND ei.rate IS NOT NULL " +
+        "ORDER BY t.timestamp DESC, t.id DESC, ei.lineNo DESC LIMIT 1"
+    )
+    suspend fun lastSaleRate(partyId: Long, productId: Long): LastRate?
+
+    /**
+     * How much of a product this party still holds on the book, in one unit:
+     * everything given minus everything returned. A return larger than this
+     * is not refused — the goods may predate the app — but the owner is told.
+     */
+    @Query(
+        "SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN ei.quantity ELSE -ei.quantity END), 0) " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "WHERE t.partyId = :partyId AND ei.productId = :productId AND t.isDeleted = 0 " +
+        "AND ei.quantity IS NOT NULL " +
+        "AND (ei.unit = :unit OR (ei.unit IS NULL AND :unit IS NULL))"
+    )
+    suspend fun netGoodsWithParty(partyId: Long, productId: Long, unit: String?): Double
+
     /** One party's entries with their lines, newest first — the khata screen. */
     @Transaction
     @Query("SELECT * FROM transactions WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC")

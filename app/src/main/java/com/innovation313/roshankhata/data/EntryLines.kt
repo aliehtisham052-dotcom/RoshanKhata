@@ -21,14 +21,17 @@ data class LineDraft(
     val creditPrice: Double? = null,
     val cashPrice: Double? = null,
     val productUnit: String? = null,
-    val rateEdited: Boolean = false
+    val rateEdited: Boolean = false,
+    /** A free item (a company scheme): leaves the shelf, costs nothing. */
+    val isBonus: Boolean = false
 ) {
     /** The saved line, or null if nothing about goods was filled in. */
     fun toItem(): EntryItem? =
-        EntryItem.ofGoods(itemName, quantity, unit, productId, billItemId, rate)
+        EntryItem.ofGoods(itemName, quantity, unit, productId, billItemId, if (isBonus) null else rate)
+            ?.copy(isBonus = isBonus)
 
     /** What this line comes to, to the paisa — null when qty or rate is missing. */
-    fun total(): Double? = LineMath.lineTotal(quantity, rate)
+    fun total(): Double? = LineMath.lineTotal(quantity, rate, isBonus)
 
     /** Complete enough to go into the list: a name and a quantity above zero. */
     fun isComplete(): Boolean = !itemName.isNullOrBlank() && quantity != null && quantity > 0.0
@@ -40,7 +43,7 @@ data class LineDraft(
      * — unknown, never the other type's price.
      */
     fun repriced(rateType: String, isCustomer: Boolean): LineDraft {
-        if (rateEdited || productId == null) return this
+        if (rateEdited || isBonus || productId == null) return this
         val price = RateOffer.price(isCustomer, creditPrice, cashPrice, productUnit, rateType, unit.orEmpty())
         return copy(rate = (price as? RateOffer.Result.Offer)?.rate)
     }
