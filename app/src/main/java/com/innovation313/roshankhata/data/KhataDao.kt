@@ -1722,6 +1722,35 @@ interface KhataDao {
         excludeEntryId: Long = 0L
     ): Double
 
+    @Query("UPDATE transactions SET pairedEntryId = :other WHERE id = :id")
+    suspend fun setPairedEntry(id: Long, other: Long?)
+
+    /**
+     * A cash sale's money arrived on the spot: an "I got", in cash, for the
+     * same amount and moment (one millisecond later, so it lists after the
+     * sale), each entry pointing at the other. Written only when the owner
+     * says yes; nothing if the sale is gone, binned, not a sale, or already
+     * paired. One transaction: never one half without the other.
+     */
+    @Transaction
+    suspend fun recordCashForSale(saleId: Long): Long? {
+        val sale = getEntry(saleId) ?: return null
+        if (!sale.isGiven || sale.isDeleted || sale.pairedEntryId != null) return null
+        val gotId = insertEntryNumbered(
+            LedgerEntry(
+                partyId = sale.partyId,
+                amount = sale.amount,
+                isGiven = false,
+                entryNumber = "",
+                timestamp = sale.timestamp + 1,
+                paymentMethod = PaymentMethod.CASH,
+                pairedEntryId = saleId
+            )
+        )
+        setPairedEntry(saleId, gotId)
+        return gotId
+    }
+
     /** One party's entries with their lines, newest first — the khata screen. */
     @Transaction
     @Query("SELECT * FROM transactions WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC")

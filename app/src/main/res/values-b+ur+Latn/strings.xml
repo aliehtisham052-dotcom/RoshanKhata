@@ -1222,6 +1222,15 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="repeat_last_sale">Pichli dafa wala maal (%1$s)</string>
     <string name="update_product_rate">%1$s ka %2$s bhi %3$s kar dein</string>
     <string name="add_to_products">%1$s ko products list mein bhi daal dein</string>
+    <string name="supplier_bill_button">Supplier bill banayein (maal, batch, expiry)</string>
+    <string name="cash_received_offer">Kya %1$s abhi mil gaye?</string>
+    <string name="cash_received_help">Haan dabane par isi raqam ki naqd \"liye\" entry ban jayegi, is sauday se juri hui. Warna kuch nahi likha jayega.</string>
+    <string name="cash_received_yes">Haan, mil gaye</string>
+    <string name="cash_received_no">Abhi nahi</string>
+    <string name="delete_pair_title">Is ka doosra hissa bhi mitayein?</string>
+    <string name="delete_pair_message">Ye entry aik naqd sauday ka aik hissa hai (%1$s). Sirf aik hissa mitane se balance ghalat ho jayega.</string>
+    <string name="delete_pair_both">Dono mitayein</string>
+    <string name="delete_pair_one">Sirf ye</string>
 
     <string name="payment_method_label">Adaigi kaise hui?</string>
     <string name="payment_method_cash">Naqd</string>

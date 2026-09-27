@@ -428,7 +428,33 @@ class EntryDetailActivity : BaseActivity() {
             .setMessage(R.string.delete_entry_message)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    KhataDatabase.get(this@EntryDetailActivity).khataDao().softDeleteEntry(entryId)
+                    val dao = KhataDatabase.get(this@EntryDetailActivity).khataDao()
+                    // Half of a cash sale: offer to bin the other half with it —
+                    // one half alone leaves the balance wrong.
+                    val pair = entry?.pairedEntryId?.let { dao.getEntry(it) }?.takeIf { !it.isDeleted }
+                    if (pair != null) {
+                        AlertDialog.Builder(this@EntryDetailActivity)
+                            .setTitle(R.string.delete_pair_title)
+                            .setMessage(getString(R.string.delete_pair_message, pair.entryNumber))
+                            .setPositiveButton(R.string.delete_pair_both) { _, _ ->
+                                lifecycleScope.launch {
+                                    dao.softDeleteEntry(entryId)
+                                    dao.softDeleteEntry(pair.id)
+                                    Toast.makeText(this@EntryDetailActivity, R.string.entry_deleted, Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                            }
+                            .setNegativeButton(R.string.delete_pair_one) { _, _ ->
+                                lifecycleScope.launch {
+                                    dao.softDeleteEntry(entryId)
+                                    Toast.makeText(this@EntryDetailActivity, R.string.entry_deleted, Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                            }
+                            .show()
+                        return@launch
+                    }
+                    dao.softDeleteEntry(entryId)
                     Toast.makeText(this@EntryDetailActivity, R.string.entry_deleted, Toast.LENGTH_SHORT).show()
                     finish()
                 }

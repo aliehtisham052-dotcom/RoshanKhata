@@ -1222,6 +1222,15 @@
     <string name="repeat_last_sale">پچھلی دفعہ والا مال (%1$s)</string>
     <string name="update_product_rate">%1$s کا %2$s بھی %3$s کر دیں</string>
     <string name="add_to_products">%1$s کو پروڈکٹس لسٹ میں بھی ڈال دیں</string>
+    <string name="supplier_bill_button">سپلائر بل بنائیں (مال، بیچ، ایکسپائری)</string>
+    <string name="cash_received_offer">کیا %1$s ابھی مل گئے؟</string>
+    <string name="cash_received_help">ہاں دبانے پر اسی رقم کی نقد \"لیے\" انٹری بن جائے گی، اس سودے سے جڑی ہوئی۔ ورنہ کچھ نہیں لکھا جائے گا۔</string>
+    <string name="cash_received_yes">ہاں، مل گئے</string>
+    <string name="cash_received_no">ابھی نہیں</string>
+    <string name="delete_pair_title">اس کا دوسرا حصہ بھی مٹائیں؟</string>
+    <string name="delete_pair_message">یہ انٹری ایک نقد سودے کا ایک حصہ ہے (%1$s)۔ صرف ایک حصہ مٹانے سے بیلنس غلط ہو جائے گا۔</string>
+    <string name="delete_pair_both">دونوں مٹائیں</string>
+    <string name="delete_pair_one">صرف یہ</string>
 
     <string name="payment_method_label">ادائیگی کیسے ہوئی؟</string>
     <string name="payment_method_cash">نقد</string>

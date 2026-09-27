@@ -69,6 +69,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
 import com.innovation313.roshankhata.data.Digits
 
 /**
@@ -735,6 +736,7 @@ class PartyDetailActivity : BaseActivity() {
         val tvLastRate: TextView = view.findViewById(R.id.tvLastRate)
         val cbUpdateRate: MaterialCheckBox = view.findViewById(R.id.cbUpdateRate)
         val cbAddProduct: MaterialCheckBox = view.findViewById(R.id.cbAddProduct)
+        val btnSupplierBill: MaterialButton = view.findViewById(R.id.btnSupplierBill)
 
         // False until the lookup below confirms a customer, so nothing
         // sale-only ever flashes up on a supplier's account.
@@ -1072,6 +1074,9 @@ class PartyDetailActivity : BaseActivity() {
             lastSaleEntry?.let {
                 btnRepeatLast.text = getString(R.string.repeat_last_sale, Format.dateOnly(it.entry.timestamp))
             }
+            // Goods coming IN from a supplier belong on a supplier bill.
+            btnSupplierBill.visibility =
+                if (!partyIsCustomer && !isGiven && editing == null) View.VISIBLE else View.GONE
             val list = goodsListAllowed()
             etRate.visibility = if (list) View.VISIBLE else View.GONE
             btnAddLine.visibility = if (list) View.VISIBLE else View.GONE
@@ -1510,6 +1515,14 @@ class PartyDetailActivity : BaseActivity() {
 
         val dialog = MaterialAlertDialogBuilder(this).setView(view).create()
 
+        btnSupplierBill.setOnClickListener {
+            dialog.dismiss()
+            startActivity(
+                Intent(this, BillsActivity::class.java)
+                    .putExtra(BillsActivity.EXTRA_NEW_BILL_SUPPLIER, partyName)
+            )
+        }
+
         // ---- Header, SAVE, preview: who, which way, how much, live ----
         val color = { id: Int -> ContextCompat.getColor(this, id) }
         view.findViewById<View>(R.id.entryHeader).visibility = View.VISIBLE
@@ -1673,7 +1686,13 @@ class PartyDetailActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    AppScope.launch { dao.softDeleteEntry(entry.id) }.join()
+                    // Half of a cash sale: ask about the other half first.
+                    val pair = entry.pairedEntryId?.let { dao.getEntry(it) }?.takeIf { !it.isDeleted }
+                    val alsoPair = if (pair == null) false else askDeletePair(pair.entryNumber)
+                    AppScope.launch {
+                        dao.softDeleteEntry(entry.id)
+                        if (alsoPair && pair != null) dao.softDeleteEntry(pair.id)
+                    }.join()
                     Toast.makeText(
                         this@PartyDetailActivity,
                         R.string.moved_to_bin,
@@ -1683,6 +1702,18 @@ class PartyDetailActivity : BaseActivity() {
             }
             .show()
     }
+
+    /** Delete the other half of a cash sale too? Suspends until answered; true = both. */
+    private suspend fun askDeletePair(pairNumber: String): Boolean =
+        kotlinx.coroutines.suspendCancellableCoroutine { cont ->
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.delete_pair_title)
+                .setMessage(getString(R.string.delete_pair_message, pairNumber))
+                .setPositiveButton(R.string.delete_pair_both) { _, _ -> if (cont.isActive) cont.resume(true) }
+                .setNegativeButton(R.string.delete_pair_one) { _, _ -> if (cont.isActive) cont.resume(false) }
+                .setOnCancelListener { if (cont.isActive) cont.resume(false) }
+                .show()
+        }
 
     // ---------- Select-and-delete, several entries at once ----------
 
@@ -2305,8 +2336,31 @@ class PartyDetailActivity : BaseActivity() {
             // DAO's own transaction — see insertEntryNumbered for why the count
             // must not be read out here, and insertEntryWithItems for why the
             // lines are written in the same step.
-            dao.insertEntryWithItems(entry, items)
+            val id = dao.insertEntryWithItems(entry, items)
+            // Sold at the cash (naqd) rate: ask whether the money came now.
+            if (entry.isGiven && entry.rateType == RateType.CASH) {
+                withContext(Dispatchers.Main) {
+                    if (!isFinishing && !isDestroyed) offerCashReceived(id, entry.amount)
+                }
+            }
         }
+    }
+
+    /**
+     * "Was Rs 17,800 received just now?" — after a sale at the cash rate. Yes
+     * records the matching "I got" in cash, paired with the sale, so the pair
+     * nets to nothing and each can find the other. No writes nothing: the
+     * ledger never records money the owner has not said arrived.
+     */
+    private fun offerCashReceived(saleId: Long, amount: Double) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.cash_received_offer, Format.money(amount)))
+            .setMessage(R.string.cash_received_help)
+            .setPositiveButton(R.string.cash_received_yes) { _, _ ->
+                AppScope.launch { dao.recordCashForSale(saleId) }
+            }
+            .setNegativeButton(R.string.cash_received_no, null)
+            .show()
     }
 
     /**
