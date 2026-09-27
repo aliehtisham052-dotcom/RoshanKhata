@@ -102,6 +102,19 @@ def main() -> int:
                 failures.append(f"{folder}: DUPLICATE <{el.tag} name=\"{key[1]}\">")
             seen.add(key)
 
+    # An apostrophe must be written \\' in Android strings (unless the whole
+    # text is in double quotes). A bare ' passes XML parsing and every check
+    # above, then fails aapt2 at build time ("Can not extract resource").
+    # Push 6 (b480b5f) shipped two: "Last time's items", "%1$s's".
+    for folder in ["values"] + list(LOCALES):
+        path = RES / folder / "strings.xml"
+        for el in ET.parse(path).getroot().iter("string"):
+            text = "".join(el.itertext())
+            if len(text) >= 2 and text.startswith('"') and text.endswith('"'):
+                continue
+            if re.search(r"(?<!\\)'", text):
+                failures.append(f"{folder}: UNESCAPED APOSTROPHE in <string name=\"{el.get('name')}\">")
+
     for folder in LOCALES:
         path = RES / folder / "strings.xml"
         locale = load(path)
