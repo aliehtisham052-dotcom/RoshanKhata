@@ -1225,7 +1225,13 @@
     <string name="credit_price_hint">اڌاري قيمت</string>
     <string name="product_price_help">اختياري، في يونٽ. صرف رقم تجويز ڪرڻ لاءِ — پاڻ وصول نه ٿيندي.</string>
     <string name="credit_rate_suggestion">اڌاري ريٽ %1$s × %2$s = %3$s. ڀرڻ لاءِ دٻايو.</string>
-    <string name="sale_rate_suggestion">ريٽ %1$s × %2$s = %3$s. ڀرڻ لاءِ دٻايو.</string>
+    <string name="rate_type_label">ڪهڙو ريٽ؟</string>
+    <string name="rate_type_credit">اڌاري ريٽ</string>
+    <string name="rate_type_cash">نقد ريٽ</string>
+    <string name="cash_rate_suggestion">نقد ريٽ %1$s × %2$s = %3$s. ڀرڻ لاءِ دٻايو.</string>
+    <string name="rate_not_set_credit">هن پراڊڪٽ جو اڌاري ريٽ درج ناهي.</string>
+    <string name="rate_not_set_cash">هن پراڊڪٽ جو نقد ريٽ درج ناهي.</string>
+    <string name="rate_unit_mismatch">هي ريٽ %1$s جو آهي، ان ڪري %2$s تي نه لڳايو ويو.</string>
 
     <string name="payment_method_label">ادائيگي ڪيئن ٿي؟</string>
     <string name="payment_method_cash">نقد</string>

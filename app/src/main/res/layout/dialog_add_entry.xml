@@ -513,6 +513,67 @@
         </LinearLayout>
 
         <!--
+          Which of the product's two prices this sale goes at. Shown only for
+          goods going OUT to a CUSTOMER, and only once a product with at least
+          one recorded rate is recognised — on a supplier's account these are
+          the wrong prices entirely. selectionRequired: the sale is always at
+          one of the two; Credit (udhar) is pre-chosen because goods on a
+          khata usually leave on udhar. tvRateNote says, in words, why no
+          figure is offered (rate not set, or set for a different unit).
+        -->
+        <LinearLayout
+            android:id="@+id/rateSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/rate_type_label"
+                android:textColor="@color/brand_green_text"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgRateType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRateCredit"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/rate_type_credit" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRateCash"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rate_type_cash" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/tvRateNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!--
           Shown only for a sale, and only once a product with a recorded batch
           is recognised. A cash sale or an unrecognised item name never shows
           this — asking for a batch that cannot exist is worse than not asking.

@@ -47,6 +47,8 @@ import com.innovation313.roshankhata.ui.QrImage
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.EntryItem
+import com.innovation313.roshankhata.data.RateType
+import com.innovation313.roshankhata.data.RateOffer
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
@@ -646,43 +648,110 @@ class PartyDetailActivity : BaseActivity() {
 
         // ---- What the product's own rate makes this come to ----
         //
-        // An OFFER and nothing more. It appears only when a known product, a
-        // recorded rate and a quantity are ALL present, it shows the
-        // multiplication in full so the owner can see what it did, and the
-        // figure moves into the amount box only on a tap.
+        // An OFFER and nothing more. It shows the multiplication in full so
+        // the owner can see what it did, and the figure moves into the amount
+        // box only on a tap.
         //
-        // The credit rate is used for a sale — goods leaving on udhar is what
-        // that rate is for — and falls back to the cash rate when no credit
-        // rate was ever set. On money coming IN nothing is suggested at all:
-        // what a customer pays back is not a function of any rate.
+        // Which rate is the owner's choice: the two chips, Udhar (credit,
+        // pre-chosen — goods on a khata usually leave on udhar) or Naqd
+        // (cash). There is NO silent fallback any more: udhar chosen and no
+        // udhar rate recorded shows "not set", never the cash price passed
+        // off as the credit one.
+        //
+        // Offered only on goods going OUT to a CUSTOMER. On money coming in
+        // nothing is suggested (a repayment is not a function of any rate),
+        // and on a supplier's account these selling prices are simply the
+        // wrong prices.
+        //
+        // Unit-aware: a product's rate is per its own unit. 25 kg of a
+        // product priced per bori is not 25 × the bori price, so when the
+        // typed unit differs the offer is withheld and the note says why.
+        //
+        // Arithmetic through LineMath, rounded to the paisa: 3 × 1,950.10 is
+        // 5,850.30, never 5850.299999999999 in the amount box.
         val btnRateSuggestion: MaterialButton = view.findViewById(R.id.btnRateSuggestion)
+        val rateSection: View = view.findViewById(R.id.rateSection)
+        val cgRateType: ChipGroup = view.findViewById(R.id.cgRateType)
+        val tvRateNote: TextView = view.findViewById(R.id.tvRateNote)
+
+        // Confirmed by the product lookup before anything is offered.
+        var partyIsCustomer = true
+
+        fun chosenRateType(): String =
+            if (cgRateType.checkedChipId == R.id.chipRateCash) RateType.CASH else RateType.CREDIT
+
+        // What the owner actually applied with a tap, and exactly which
+        // inputs it was worked out from. At save the rate is recorded only if
+        // ALL of these still match the form — change the quantity, unit,
+        // product or chip after tapping and the tapped figure no longer
+        // describes this sale, so the line keeps no rate (unknown, never a
+        // stale one).
+        data class AppliedRate(
+            val rate: Double,
+            val type: String,
+            val productId: Long,
+            val qty: Double,
+            val unit: String
+        )
+        var applied: AppliedRate? = null
 
         fun refreshRateSuggestion() {
+            btnRateSuggestion.visibility = View.GONE
+            tvRateNote.visibility = View.GONE
             val product = matchedProduct
-            val qty = Digits.parse(etQuantity.text)
-            val credit = product?.creditPrice
-            val cash = product?.salePrice
-            val rate = if (isGiven) (credit ?: cash) else null
-
-            if (product == null || qty == null || qty <= 0.0 || rate == null || rate <= 0.0) {
-                btnRateSuggestion.visibility = View.GONE
+            if (product == null) {
+                rateSection.visibility = View.GONE
                 return
             }
+            val type = chosenRateType()
+            val qty = Digits.parse(etQuantity.text)
+            val typedUnit = etUnit.text.toString().trim()
 
-            val total = rate * qty
-            btnRateSuggestion.visibility = View.VISIBLE
-            btnRateSuggestion.text = getString(
-                if (credit != null) R.string.credit_rate_suggestion
-                else R.string.sale_rate_suggestion,
-                Format.money(rate),
-                Format.plain(qty),
-                Format.money(total)
+            // Every rule lives in RateOffer (and its tests); this only shows
+            // the answer.
+            val result = RateOffer.decide(
+                isGiven = isGiven,
+                isCustomer = partyIsCustomer,
+                creditPrice = product.creditPrice,
+                cashPrice = product.salePrice,
+                productUnit = product.defaultUnit,
+                rateType = type,
+                quantity = qty,
+                typedUnit = typedUnit
             )
-            btnRateSuggestion.setOnClickListener {
-                etAmount.setText(Calc.trim(total))
-                etAmount.setSelection(etAmount.text.length)
+            rateSection.visibility = if (result is RateOffer.Result.Hidden) View.GONE else View.VISIBLE
+
+            fun note(text: String) {
+                tvRateNote.text = text
+                tvRateNote.visibility = View.VISIBLE
+            }
+
+            when (result) {
+                is RateOffer.Result.Hidden, is RateOffer.Result.NeedQuantity -> Unit
+                is RateOffer.Result.NotSet -> note(
+                    getString(if (type == RateType.CASH) R.string.rate_not_set_cash else R.string.rate_not_set_credit)
+                )
+                is RateOffer.Result.UnitMismatch ->
+                    note(getString(R.string.rate_unit_mismatch, result.productUnit, result.typedUnit))
+                is RateOffer.Result.Offer -> {
+                    btnRateSuggestion.visibility = View.VISIBLE
+                    btnRateSuggestion.text = getString(
+                        if (type == RateType.CASH) R.string.cash_rate_suggestion
+                        else R.string.credit_rate_suggestion,
+                        Format.money(result.rate),
+                        Format.plain(qty ?: 0.0),
+                        Format.money(result.total)
+                    )
+                    btnRateSuggestion.setOnClickListener {
+                        etAmount.setText(Calc.trim(result.total))
+                        etAmount.setSelection(etAmount.text.length)
+                        applied = AppliedRate(result.rate, type, product.id, qty ?: 0.0, typedUnit)
+                    }
+                }
             }
         }
+
+        cgRateType.setOnCheckedStateChangeListener { _, _ -> refreshRateSuggestion() }
 
         /**
          * Look up whether the typed name is a product with recorded batches,
@@ -712,8 +781,19 @@ class PartyDetailActivity : BaseActivity() {
                 // kept typing) — do not act on a stale answer.
                 if (etItemName.text.toString().trim() != typed) return@launch
 
+                partyIsCustomer = dao.getParty(partyId)?.isCustomer ?: true
+                if (etItemName.text.toString().trim() != typed) return@launch
+
                 matchedProductId = product?.id
                 matchedProduct = product
+                // The product's own unit, when the owner has not typed one —
+                // so the same goods are not counted as "bori" one day and
+                // "bag" the next (stock adds only like to like). Never over
+                // what he typed; filter=false keeps the dropdown shut.
+                val productUnit = product?.defaultUnit?.trim()
+                if (!productUnit.isNullOrEmpty() && etUnit.text.toString().isBlank()) {
+                    etUnit.setText(productUnit, false)
+                }
                 refreshRateSuggestion()
                 if (options.isEmpty()) {
                     selectedBatch = null
@@ -762,6 +842,12 @@ class PartyDetailActivity : BaseActivity() {
         etItemName.setOnItemClickListener { _, _, _, _ -> refreshBatchButton() }
 
         etQuantity.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) = refreshRateSuggestion()
+            override fun beforeTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
+            override fun onTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
+        })
+        // The unit decides whether the rate applies at all (see above).
+        etUnit.addTextChangedListener(object : android.text.TextWatcher {
             override fun afterTextChanged(s: android.text.Editable?) = refreshRateSuggestion()
             override fun beforeTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
             override fun onTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
@@ -820,6 +906,20 @@ class PartyDetailActivity : BaseActivity() {
             val quantity = Digits.parse(etQuantity.text)
             val unit = etUnit.text.toString().trim().ifEmpty { null }
 
+            // The rate is recorded only when the owner applied it with a tap
+            // AND nothing it was worked out from has changed since. Typing the
+            // amount by hand records no rate: the app does not know one.
+            // If he applied it and then lowered the amount (a discount), the
+            // rate still stands — the difference is his, and the book keeps
+            // what he wrote.
+            val appliedNow = applied?.takeIf {
+                isGiven && partyIsCustomer &&
+                    it.productId == matchedProductId &&
+                    it.qty == quantity &&
+                    it.unit == unit.orEmpty() &&
+                    it.type == chosenRateType()
+            }
+
             val entry = LedgerEntry(
                 partyId = partyId,
                 amount = amount,
@@ -832,7 +932,9 @@ class PartyDetailActivity : BaseActivity() {
                 billPhotoPath = pendingBillPhoto,
                 // Null unless a chip was actually tapped, and null on
                 // every "I Gave" entry, where the section never appeared.
-                paymentMethod = if (isGiven) null else chosenPaymentMethod()
+                paymentMethod = if (isGiven) null else chosenPaymentMethod(),
+                // Fixed now, never recalculated (see LedgerEntry.rateType).
+                rateType = appliedNow?.type
             )
 
             // The goods travel as a line, not on the entry (v20 — see
@@ -849,7 +951,8 @@ class PartyDetailActivity : BaseActivity() {
                     quantity = quantity,
                     unit = unit,
                     productId = matchedProductId,
-                    billItemId = selectedBatch?.id
+                    billItemId = selectedBatch?.id,
+                    rate = appliedNow?.rate
                 )
             )
 
