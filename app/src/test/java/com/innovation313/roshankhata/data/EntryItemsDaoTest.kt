@@ -248,7 +248,7 @@ class EntryItemsDaoTest {
         dao.insertEntryWithItems(visit(ahmad, 3000.0).copy(timestamp = 1_000L), listOf(line(4.0, 750.0)))
         dao.insertEntryWithItems(visit(ahmad, 780.0).copy(timestamp = 2_000L), listOf(line(1.0, 780.0)))
         dao.insertEntryWithItems(visit(ahmad, 0.0).copy(timestamp = 3_000L), listOf(line(1.0, null, bonus = true)))
-        dao.insertEntryWithItems(
+        val back = dao.insertEntryWithItems(
             LedgerEntry(partyId = ahmad, amount = 750.0, isGiven = false, entryNumber = "", timestamp = 4_000L),
             listOf(line(1.0, 750.0))
         )
@@ -262,6 +262,8 @@ class EntryItemsDaoTest {
 
         // 4 + 1 + 1 free given, 1 returned = 5 bags still with him.
         assertEquals(5.0, dao.netGoodsWithParty(ahmad, sulphur.id, "bag"), 0.0)
+        // Editing that return: its own bag is not counted as already back.
+        assertEquals(6.0, dao.netGoodsWithParty(ahmad, sulphur.id, "bag", excludeEntryId = back), 0.0)
         // A different unit is not added in.
         assertEquals(0.0, dao.netGoodsWithParty(ahmad, sulphur.id, "kg"), 0.0)
     }

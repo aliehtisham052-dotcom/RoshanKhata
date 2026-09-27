@@ -53,6 +53,7 @@ import com.innovation313.roshankhata.data.RateOffer
 import com.innovation313.roshankhata.data.LineDraft
 import com.innovation313.roshankhata.data.EntryLines
 import com.innovation313.roshankhata.data.LastRate
+import com.innovation313.roshankhata.data.EntryWithItems
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
@@ -78,6 +79,13 @@ class PartyDetailActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_PARTY_ID = "party_id"
+
+        /**
+         * Open this entry on the full add-entry form, to edit it. The only
+         * way to change an entry carrying items, rates or free goods; the
+         * small dialog on the entry screen cannot show a list honestly.
+         */
+        const val EXTRA_EDIT_ENTRY_ID = "edit_entry_id"
 
         /** A camera capture waiting to come back, kept across a rebuild. */
         private const val STATE_CAMERA_PATH = "camera_path"
@@ -273,6 +281,7 @@ class PartyDetailActivity : BaseActivity() {
             finish()
             return
         }
+        intent.getLongExtra(EXTRA_EDIT_ENTRY_ID, 0L).takeIf { it > 0L }?.let { openEditor(it) }
 
         setSupportActionBar(findViewById<Toolbar>(R.id.detailToolbar))
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -453,7 +462,38 @@ class PartyDetailActivity : BaseActivity() {
         }
     }
 
-    private fun showAddEntryDialog(isGiven: Boolean, prefillAmount: Double? = null) {
+    // Arriving again with an entry to edit, while this customer's screen is
+    // already open underneath (the entry screen asks with CLEAR_TOP|SINGLE_TOP,
+    // so the khata is reused rather than stacked twice).
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val editId = intent.getLongExtra(EXTRA_EDIT_ENTRY_ID, 0L)
+        if (editId > 0L && intent.getLongExtra(EXTRA_PARTY_ID, 0L) == partyId) openEditor(editId)
+    }
+
+    /** Put an existing entry back on the full form. Its own customer only; never a binned one. */
+    private fun openEditor(entryId: Long) {
+        lifecycleScope.launch {
+            val e = dao.getEntry(entryId) ?: return@launch
+            if (e.partyId != partyId || e.isDeleted) return@launch
+            if (partyName.isEmpty()) dao.getParty(partyId)?.let { partyName = it.name }
+            showAddEntryDialog(e.isGiven, editing = EntryWithItems(e, dao.itemsOfEntry(entryId)))
+        }
+    }
+
+    /**
+     * The add-entry form. With [editing] it is the same form holding an
+     * existing entry: its amount, note, date, recovery, payment method, rate
+     * type and items are put back, and Save rewrites THAT entry (number and
+     * all) with its complete new set of items in one transaction. The twin
+     * and credit-limit warnings are for new entries and are skipped.
+     */
+    private fun showAddEntryDialog(
+        isGiven: Boolean,
+        prefillAmount: Double? = null,
+        editing: EntryWithItems? = null
+    ) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
@@ -462,6 +502,10 @@ class PartyDetailActivity : BaseActivity() {
         // back before it becomes an entry.
         prefillAmount?.let {
             etAmount.setText(Calc.trim(it))
+            etAmount.setSelection(etAmount.text.length)
+        }
+        editing?.let {
+            etAmount.setText(Calc.trim(it.entry.amount))
             etAmount.setSelection(etAmount.text.length)
         }
 
@@ -496,11 +540,14 @@ class PartyDetailActivity : BaseActivity() {
                 onRemove = null
             )
         }
+        // An entry's bill photo is managed on its own screen; editing here
+        // keeps whatever it has.
+        if (editing != null) billButton?.visibility = View.GONE
 
         // When it happened. Defaults to now — right most of the time — but an
         // entry written up in the evening for something that changed hands at
         // noon should carry noon, not the evening.
-        var chosenTime = System.currentTimeMillis()
+        var chosenTime = editing?.entry?.timestamp ?: System.currentTimeMillis()
         DateTimeField.attach(
             activity = this,
             button = view.findViewById(R.id.btnEntryDate),
@@ -585,7 +632,8 @@ class PartyDetailActivity : BaseActivity() {
         // The figure is put in the box for the owner to see and change, not
         // saved. Nothing here reaches the ledger by itself.
         val quickAmounts: View = view.findViewById(R.id.quickAmounts)
-        if (!isGiven && Money.isPositive(currentBalance)) {
+        // Not when editing: the balance already contains this entry.
+        if (editing == null && !isGiven && Money.isPositive(currentBalance)) {
             quickAmounts.visibility = View.VISIBLE
             view.findViewById<TextView>(R.id.tvQuickAmountLabel).text =
                 getString(R.string.quick_amount_label, Format.money(currentBalance))
@@ -1132,6 +1180,40 @@ class PartyDetailActivity : BaseActivity() {
             else -> null
         }
 
+        // ---- Editing: put the entry back on the form ----
+        if (editing != null) {
+            val e = editing.entry
+            etNote.setText(e.note.orEmpty())
+            cbQarzeHasna.isChecked = e.isQarzeHasna
+            if (isGiven && e.recovery == Recovery.DOUBTFUL) rbDoubtful.isChecked = true
+            when (e.paymentMethod) {
+                PaymentMethod.CASH -> cgPaymentMethod.check(R.id.chipCash)
+                PaymentMethod.BANK -> cgPaymentMethod.check(R.id.chipBank)
+                PaymentMethod.CHEQUE -> cgPaymentMethod.check(R.id.chipCheque)
+                PaymentMethod.ONLINE -> cgPaymentMethod.check(R.id.chipOnline)
+            }
+            // The chip first, while the list is still empty, so nothing is
+            // re-priced by setting it.
+            if (e.rateType == RateType.CASH) cgRateType.check(R.id.chipRateCash)
+            // Every saved rate counts as the owner's own: it was agreed at the
+            // time of the sale, and a chip switch while editing must not move
+            // it to today's price.
+            lines.addAll(editing.orderedItems().map {
+                LineDraft(
+                    itemName = it.itemName,
+                    quantity = it.quantity,
+                    unit = it.unit,
+                    rate = it.rate,
+                    productId = it.productId,
+                    billItemId = it.billItemId,
+                    rateEdited = true,
+                    isBonus = it.isBonus
+                )
+            })
+            renderLines()
+            refreshRateSuggestion()
+        }
+
         // The Save button's action, set once the dialog exists below; the
         // over-return check calls it again after the owner has answered.
         var requestSave: () -> Unit = {}
@@ -1184,7 +1266,10 @@ class PartyDetailActivity : BaseActivity() {
                         .groupBy { Pair(it.productId ?: 0L, it.unit) }
                         .forEach { (key, group) ->
                             val returning = group.sumOf { it.quantity ?: 0.0 }
-                            val held = dao.netGoodsWithParty(partyId, key.first, key.second)
+                            val held = dao.netGoodsWithParty(
+                                partyId, key.first, key.second,
+                                excludeEntryId = editing?.entry?.id ?: 0L
+                            )
                             if (returning > held + 1e-9) {
                                 over += getString(
                                     R.string.return_more_than_taken,
@@ -1242,6 +1327,24 @@ class PartyDetailActivity : BaseActivity() {
             // stock. entryId and lineNo are set by the DAO from the id the
             // insert returns, inside the same transaction.
 
+            if (editing != null) {
+                // The same entry, its number and creation untouched, with its
+                // complete new set of items — one transaction (see
+                // updateEntryWithItems). Legacy goods columns ride along as
+                // they were (copy), written by nothing.
+                val updated = editing.entry.copy(
+                    amount = amount,
+                    note = note,
+                    isQarzeHasna = entry.isQarzeHasna,
+                    recovery = recovery,
+                    timestamp = chosenTime,
+                    paymentMethod = entry.paymentMethod,
+                    rateType = rateType
+                )
+                AppScope.launch { dao.updateEntryWithItems(updated, items) }
+                return true
+            }
+
             // Warn BEFORE writing, not after — a warning that arrives once
             // the entry is already in the ledger is just an accusation.
             checkTwinThenSave(entry, items)
@@ -1288,10 +1391,12 @@ class PartyDetailActivity : BaseActivity() {
             if (isGiven) {
                 // Positive balance = the customer owes the shop; money given
                 // on udhar adds to it.
+                // When editing, "before" is the balance WITHOUT this entry.
+                val before = currentBalance - (editing?.entry?.let { if (it.isGiven) it.amount else -it.amount } ?: 0.0)
                 tvPreviewLine.text = getString(
                     R.string.entry_preview_line,
-                    Format.customerBalance(currentBalance),
-                    Format.customerBalance(currentBalance + shown)
+                    Format.customerBalance(before),
+                    Format.customerBalance(before + shown)
                 )
             }
         }
@@ -1378,6 +1483,8 @@ class PartyDetailActivity : BaseActivity() {
                 more.setOnClickListener {
                     if (stepTwo.visibility == View.VISIBLE) closeDetails() else openDetails()
                 }
+                // Editing opens on the items — that is what it is for.
+                if (editing != null) openDetails()
 
                 // With the details open the keypad is hidden and the system
                 // keyboard is suppressed on this field, so a tap on the amount

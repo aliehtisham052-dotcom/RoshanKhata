@@ -1662,10 +1662,16 @@ interface KhataDao {
         "SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN ei.quantity ELSE -ei.quantity END), 0) " +
         "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
         "WHERE t.partyId = :partyId AND ei.productId = :productId AND t.isDeleted = 0 " +
-        "AND ei.quantity IS NOT NULL " +
+        "AND ei.quantity IS NOT NULL AND t.id != :excludeEntryId " +
         "AND (ei.unit = :unit OR (ei.unit IS NULL AND :unit IS NULL))"
     )
-    suspend fun netGoodsWithParty(partyId: Long, productId: Long, unit: String?): Double
+    suspend fun netGoodsWithParty(
+        partyId: Long,
+        productId: Long,
+        unit: String?,
+        /** The entry being edited: its own current lines are not "held". */
+        excludeEntryId: Long = 0L
+    ): Double
 
     /** One party's entries with their lines, newest first — the khata screen. */
     @Transaction
