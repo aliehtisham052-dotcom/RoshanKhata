@@ -478,6 +478,19 @@
           with a remove button. Empty for an ordinary single-item or money
           entry, so nothing changes for an owner who never adds a second item.
         -->
+        <!-- "Last time's items (12 Aug)": fills the list from this customer's last sale, at today's prices. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRepeatLast"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:textColor="@color/brand_green_text"
+            app:strokeColor="@color/editor_field_stroke"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:cornerRadius="8dp" />
+
         <LinearLayout
             android:id="@+id/linesContainer"
             android:layout_width="match_parent"
@@ -555,6 +568,31 @@
             android:layout_marginTop="4dp"
             android:text="@string/bonus_label"
             android:textSize="14sp"
+            android:visibility="gone" />
+
+        <!-- "Last time for this customer: Rs 4,700" — same product, same rate type. -->
+        <TextView
+            android:id="@+id/tvLastRate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <!-- Offered when the owner types a rate other than the product's price. Off by default. -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbUpdateRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <!-- Offered for a name that is not in the products list yet. Off by default. -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbAddProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
             android:visibility="gone" />
 
         <!--

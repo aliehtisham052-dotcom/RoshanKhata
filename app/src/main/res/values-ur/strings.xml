@@ -1218,6 +1218,10 @@
     <string name="entry_items_count">آئٹمز: %1$d</string>
     <string name="receipt_items_total">آئٹمز کا جوڑ %1$s</string>
     <string name="register_adjustment">رعایت / فرق</string>
+    <string name="last_rate_hint">اس گاہک کو پچھلی دفعہ: %1$s</string>
+    <string name="repeat_last_sale">پچھلی دفعہ والا مال (%1$s)</string>
+    <string name="update_product_rate">%1$s کا %2$s بھی %3$s کر دیں</string>
+    <string name="add_to_products">%1$s کو پروڈکٹس لسٹ میں بھی ڈال دیں</string>
 
     <string name="payment_method_label">ادائیگی کیسے ہوئی؟</string>
     <string name="payment_method_cash">نقد</string>

@@ -284,4 +284,31 @@ class EntryItemsDaoTest {
         assertEquals(19000.0 + 19200.0, register.sumOf { it.amount }, 0.001)
         assertEquals(dao.salesTotalBetween(0, Long.MAX_VALUE), register.sumOf { it.amount }, 0.001)
     }
+
+    @Test
+    fun lastPricesAreKeptPerRateTypeAndLastTimesItemsAreFound() = runBlocking {
+        val ahmad = dao.insertParty(Party(name = "Ahmad"))
+        val urea = dao.findOrCreateProduct("Urea", defaultUnit = "bori")
+        fun sale(ts: Long, type: String, rate: Double) = dao.insertEntryWithItems(
+            visit(ahmad, rate * 2).copy(timestamp = ts, rateType = type),
+            listOf(EntryItem(entryId = 0, itemName = "Urea", quantity = 2.0, unit = "bori", rate = rate, productId = urea.id))
+        )
+        sale(1_000L, RateType.CREDIT, 4700.0)
+        sale(2_000L, RateType.CASH, 4500.0)
+        val newest = sale(3_000L, RateType.CREDIT, 4800.0)
+        // A later money-only entry is not "last time's items".
+        dao.insertEntryWithItems(visit(ahmad, 100.0).copy(timestamp = 4_000L), emptyList())
+
+        assertEquals(4800.0, dao.lastSaleRate(ahmad, urea.id, RateType.CREDIT)!!.rate, 0.0)
+        assertEquals(4500.0, dao.lastSaleRate(ahmad, urea.id, RateType.CASH)!!.rate, 0.0)
+        assertEquals(4800.0, dao.lastSaleRate(ahmad, urea.id)!!.rate, 0.0)
+
+        val last = dao.lastSaleWithItems(ahmad)!!
+        assertEquals(newest, last.entry.id)
+        assertEquals(listOf("Urea"), last.orderedItems().map { it.itemName })
+
+        // Binned, it no longer counts.
+        dao.softDeleteEntry(newest)
+        assertEquals(4500.0, dao.lastSaleWithItems(ahmad)!!.orderedItems().single().rate!!, 0.0)
+    }
 }

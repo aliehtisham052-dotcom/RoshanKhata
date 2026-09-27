@@ -1218,6 +1218,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="entry_items_count">Items: %1$d</string>
     <string name="receipt_items_total">Items ka jor %1$s</string>
     <string name="register_adjustment">Riayat / farq</string>
+    <string name="last_rate_hint">Is gahak ko pichli dafa: %1$s</string>
+    <string name="repeat_last_sale">Pichli dafa wala maal (%1$s)</string>
+    <string name="update_product_rate">%1$s ka %2$s bhi %3$s kar dein</string>
+    <string name="add_to_products">%1$s ko products list mein bhi daal dein</string>
 
     <string name="payment_method_label">Adaigi kaise hui?</string>
     <string name="payment_method_cash">Naqd</string>
