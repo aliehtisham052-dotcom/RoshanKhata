@@ -473,6 +473,18 @@
             android:textColor="@color/text_muted"
             android:textSize="11sp" />
 
+        <!--
+          The items already added to this entry ("+ Add item"), one row each
+          with a remove button. Empty for an ordinary single-item or money
+          entry, so nothing changes for an owner who never adds a second item.
+        -->
+        <LinearLayout
+            android:id="@+id/linesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical" />
+
         <AutoCompleteTextView
             android:id="@+id/etItemName"
             android:layout_width="match_parent"
@@ -510,6 +522,25 @@
                 android:hint="@string/unit_hint"
                 android:importantForAutofill="no"
                 android:inputType="text" />
+
+            <!--
+              The rate this item goes at, per its unit. Filled from the
+              product's price for the chosen Udhar/Naqd chip; the owner may
+              type over it (a bargain), and a typed rate is then his and is
+              never overwritten. Shown only for a sale to a customer.
+            -->
+            <EditText
+                android:id="@+id/etRate"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="@string/rate_hint"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!--
@@ -603,6 +634,33 @@
             android:text="@string/pick_batch"
             android:visibility="gone"
             app:cornerRadius="8dp" />
+
+        <!-- Moves the item above into the list and clears the boxes for the next. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddLine"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:textColor="@color/brand_green_text"
+            app:strokeColor="@color/editor_field_stroke"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/add_line"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:cornerRadius="8dp" />
+
+        <!--
+          How the written amount compares with the items' total ("17,900 ·
+          written 17,800 · 100 less"), or why there is no total.
+        -->
+        <TextView
+            android:id="@+id/tvLinesNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
         <!-- An equal share of whatever the page has spare. -->
 

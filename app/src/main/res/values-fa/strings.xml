@@ -1224,14 +1224,21 @@
     <string name="sale_price_hint">قیمت نقدی</string>
     <string name="credit_price_hint">قیمت نسیه</string>
     <string name="product_price_help">اختیاری، هر واحد. فقط برای پیشنهاد مبلغ — خودکار دریافت نمی‌شود.</string>
-    <string name="credit_rate_suggestion">نرخ نسیه %1$s × %2$s = %3$s. برای پر کردن بزنید.</string>
     <string name="rate_type_label">کدام نرخ؟</string>
     <string name="rate_type_credit">نرخ نسیه</string>
     <string name="rate_type_cash">نرخ نقدی</string>
-    <string name="cash_rate_suggestion">نرخ نقدی %1$s × %2$s = %3$s. برای پر کردن بزنید.</string>
     <string name="rate_not_set_credit">نرخ نسیه برای این کالا ثبت نشده.</string>
     <string name="rate_not_set_cash">نرخ نقدی برای این کالا ثبت نشده.</string>
     <string name="rate_unit_mismatch">این نرخ برای هر %1$s است، پس روی %2$s اعمال نشد.</string>
+    <string name="rate_hint">نرخ</string>
+    <string name="add_line">+ افزودن کالا</string>
+    <string name="lines_total_fill">جمع کالاها %1$s. برای پر کردن بزنید.</string>
+    <string name="lines_total_unknown">یک کالا نرخ ندارد، پس جمعی نیست.</string>
+    <string name="lines_amount_less">کالاها %1$s · نوشته %2$s · %3$s کمتر</string>
+    <string name="lines_amount_more">کالاها %1$s · نوشته %2$s · %3$s بیشتر</string>
+    <string name="line_need_name">نام کالا را بنویسید</string>
+    <string name="line_need_qty">مقدار را بنویسید</string>
+    <string name="remove_line">حذف کالا</string>
 
     <string name="payment_method_label">پرداخت چگونه انجام شد؟</string>
     <string name="payment_method_cash">نقدی</string>

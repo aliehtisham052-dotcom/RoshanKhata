@@ -1196,14 +1196,21 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="sale_price_hint">Naqd qeemat</string>
     <string name="credit_price_hint">Udhar qeemat</string>
     <string name="product_price_help">Ikhtiyari, fi unit. Sirf raqam tajweez karne ke liye — khud se wasool nahi hoti.</string>
-    <string name="credit_rate_suggestion">Udhar rate %1$s × %2$s = %3$s. Bharne ke liye dabayen.</string>
     <string name="rate_type_label">Kaunsa rate?</string>
     <string name="rate_type_credit">Udhar rate</string>
     <string name="rate_type_cash">Naqd rate</string>
-    <string name="cash_rate_suggestion">Naqd rate %1$s × %2$s = %3$s. Bharne ke liye dabayen.</string>
     <string name="rate_not_set_credit">Is product ka udhar rate set nahi.</string>
     <string name="rate_not_set_cash">Is product ka naqd rate set nahi.</string>
     <string name="rate_unit_mismatch">Ye rate %1$s ka hai, is liye %2$s par nahi lagaya.</string>
+    <string name="rate_hint">Rate</string>
+    <string name="add_line">+ Aur item</string>
+    <string name="lines_total_fill">Items ka jor %1$s. Bharne ke liye dabayen.</string>
+    <string name="lines_total_unknown">Kisi item ka rate nahi, is liye jor nahi ban sakta.</string>
+    <string name="lines_amount_less">Items %1$s · likha %2$s · %3$s kam</string>
+    <string name="lines_amount_more">Items %1$s · likha %2$s · %3$s zyada</string>
+    <string name="line_need_name">Shai ka naam likhein</string>
+    <string name="line_need_qty">Miqdaar likhein</string>
+    <string name="remove_line">Item hatayein</string>
 
     <string name="payment_method_label">Adaigi kaise hui?</string>
     <string name="payment_method_cash">Naqd</string>

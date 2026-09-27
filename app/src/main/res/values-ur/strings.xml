@@ -1196,14 +1196,21 @@
     <string name="sale_price_hint">نقد قیمت</string>
     <string name="credit_price_hint">ادھار قیمت</string>
     <string name="product_price_help">اختیاری، فی یونٹ۔ صرف رقم تجویز کرنے کے لیے — خود بخود وصول نہیں ہوتی۔</string>
-    <string name="credit_rate_suggestion">ادھار ریٹ %1$s × %2$s = %3$s۔ بھرنے کے لیے دبائیں۔</string>
     <string name="rate_type_label">کون سا ریٹ؟</string>
     <string name="rate_type_credit">ادھار ریٹ</string>
     <string name="rate_type_cash">نقد ریٹ</string>
-    <string name="cash_rate_suggestion">نقد ریٹ %1$s × %2$s = %3$s۔ بھرنے کے لیے دبائیں۔</string>
     <string name="rate_not_set_credit">اس پروڈکٹ کا ادھار ریٹ درج نہیں۔</string>
     <string name="rate_not_set_cash">اس پروڈکٹ کا نقد ریٹ درج نہیں۔</string>
     <string name="rate_unit_mismatch">یہ ریٹ %1$s کا ہے، اس لیے %2$s پر نہیں لگایا۔</string>
+    <string name="rate_hint">ریٹ</string>
+    <string name="add_line">+ اور آئٹم</string>
+    <string name="lines_total_fill">آئٹمز کا جوڑ %1$s۔ بھرنے کے لیے دبائیں۔</string>
+    <string name="lines_total_unknown">کسی آئٹم کا ریٹ نہیں، اس لیے جوڑ نہیں بن سکتا۔</string>
+    <string name="lines_amount_less">آئٹمز %1$s · لکھا %2$s · %3$s کم</string>
+    <string name="lines_amount_more">آئٹمز %1$s · لکھا %2$s · %3$s زیادہ</string>
+    <string name="line_need_name">شے کا نام لکھیں</string>
+    <string name="line_need_qty">مقدار لکھیں</string>
+    <string name="remove_line">آئٹم ہٹائیں</string>
 
     <string name="payment_method_label">ادائیگی کیسے ہوئی؟</string>
     <string name="payment_method_cash">نقد</string>
