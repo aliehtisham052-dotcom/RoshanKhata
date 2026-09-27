@@ -80,12 +80,46 @@ class EntryItemsMigrationTest {
         }
 
         // 2. Take the file back to version 19: remove exactly what 19→20 adds.
+        //    Robolectric's SQLite predates ALTER TABLE … DROP COLUMN (3.35),
+        //    so the two columns are removed the way every SQLite supports:
+        //    rebuild `transactions` from its own CREATE statement minus those
+        //    two columns, copy the rows across, and put its indices back.
         SQLiteDatabase.openDatabase(
             context.getDatabasePath(name).path, null, SQLiteDatabase.OPEN_READWRITE
         ).use { raw ->
+            raw.execSQL("PRAGMA foreign_keys = OFF")
+            // Rename must not rewrite references elsewhere (newer SQLite would).
+            raw.execSQL("PRAGMA legacy_alter_table = ON")
             raw.execSQL("DROP TABLE entry_items")
-            raw.execSQL("ALTER TABLE transactions DROP COLUMN rateType")
-            raw.execSQL("ALTER TABLE transactions DROP COLUMN pairedEntryId")
+
+            fun sqlOf(type: String, table: String): List<String> =
+                raw.rawQuery(
+                    "SELECT sql FROM sqlite_master WHERE type = ? AND tbl_name = ? AND sql IS NOT NULL",
+                    arrayOf(type, table)
+                ).use { c -> buildList { while (c.moveToNext()) add(c.getString(0)) } }
+
+            val createV20 = sqlOf("table", "transactions").single()
+            val indices = sqlOf("index", "transactions")
+            val createV19 = createV20
+                .replace(", `rateType` TEXT", "")
+                .replace(", `pairedEntryId` INTEGER", "")
+            assertTrue("could not strip the v20 columns from: $createV20",
+                !createV19.contains("rateType") && !createV19.contains("pairedEntryId"))
+
+            val v19Columns = raw.rawQuery("PRAGMA table_info(transactions)", null).use { c ->
+                buildList {
+                    while (c.moveToNext()) {
+                        val col = c.getString(c.getColumnIndexOrThrow("name"))
+                        if (col != "rateType" && col != "pairedEntryId") add("`$col`")
+                    }
+                }
+            }.joinToString(", ")
+
+            raw.execSQL("ALTER TABLE transactions RENAME TO transactions_v20")
+            raw.execSQL(createV19)
+            raw.execSQL("INSERT INTO transactions ($v19Columns) SELECT $v19Columns FROM transactions_v20")
+            raw.execSQL("DROP TABLE transactions_v20")
+            indices.forEach { raw.execSQL(it) }
             raw.version = 19
         }
 
