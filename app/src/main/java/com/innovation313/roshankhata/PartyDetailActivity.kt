@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -49,6 +50,8 @@ import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.RateType
 import com.innovation313.roshankhata.data.RateOffer
+import com.innovation313.roshankhata.data.LineDraft
+import com.innovation313.roshankhata.data.EntryLines
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
@@ -646,112 +649,262 @@ class PartyDetailActivity : BaseActivity() {
         var matchedProductId: Long? = null
         var matchedProduct: Product? = null
 
-        // ---- What the product's own rate makes this come to ----
+        // ---- Items, their rates, and the total ----
         //
-        // An OFFER and nothing more. It shows the multiplication in full so
-        // the owner can see what it did, and the figure moves into the amount
-        // box only on a tap.
+        // A customer rarely takes one thing: urea, sulphur and a pesticide go
+        // in one visit. The boxes above (name, quantity, unit, rate) are the
+        // item being written; "+ Add item" moves it into the list and clears
+        // the boxes for the next. An owner who never adds a second item sees
+        // the form work exactly as a single-item entry always has.
         //
-        // Which rate is the owner's choice: the two chips, Udhar (credit,
-        // pre-chosen — goods on a khata usually leave on udhar) or Naqd
-        // (cash). There is NO silent fallback any more: udhar chosen and no
-        // udhar rate recorded shows "not set", never the cash price passed
-        // off as the credit one.
+        // RATE. Filled from the product's price for the chosen chip — Udhar
+        // (credit, pre-chosen) or Naqd (cash) — through RateOffer, which also
+        // refuses a price per bori for a line in kg and never passes the cash
+        // price off as the credit one. The owner may type over it (a bargain);
+        // a typed rate is his and is never overwritten, not even by a chip
+        // switch, which re-prices only the lines whose rate came from the
+        // product. Shown only for a sale to a CUSTOMER: on a supplier's
+        // account these selling prices are the wrong prices, and on money
+        // coming in no rate applies.
         //
-        // Offered only on goods going OUT to a CUSTOMER. On money coming in
-        // nothing is suggested (a repayment is not a function of any rate),
-        // and on a supplier's account these selling prices are simply the
-        // wrong prices.
-        //
-        // Unit-aware: a product's rate is per its own unit. 25 kg of a
-        // product priced per bori is not 25 × the bori price, so when the
-        // typed unit differs the offer is withheld and the note says why.
-        //
-        // Arithmetic through LineMath, rounded to the paisa: 3 × 1,950.10 is
-        // 5,850.30, never 5850.299999999999 in the amount box.
-        val btnRateSuggestion: MaterialButton = view.findViewById(R.id.btnRateSuggestion)
+        // TOTAL. The items added up, to the paisa (LineMath). It is OFFERED —
+        // "Items total Rs 19,200. Tap to fill." — and goes into the amount box
+        // only on a tap: the ledger is the money, and the owner writes it. If
+        // what he writes differs (a discount, a round-off) the difference is
+        // shown in words, and the book keeps what he wrote.
+        val btnTotalFill: MaterialButton = view.findViewById(R.id.btnRateSuggestion)
         val rateSection: View = view.findViewById(R.id.rateSection)
         val cgRateType: ChipGroup = view.findViewById(R.id.cgRateType)
         val tvRateNote: TextView = view.findViewById(R.id.tvRateNote)
+        val etRate: EditText = view.findViewById(R.id.etRate)
+        val linesContainer: LinearLayout = view.findViewById(R.id.linesContainer)
+        val btnAddLine: MaterialButton = view.findViewById(R.id.btnAddLine)
+        val tvLinesNote: TextView = view.findViewById(R.id.tvLinesNote)
 
-        // Confirmed by the product lookup before anything is offered.
-        var partyIsCustomer = true
+        // False until the lookup below confirms a customer, so nothing
+        // sale-only ever flashes up on a supplier's account.
+        var partyIsCustomer = false
+        val lines = mutableListOf<LineDraft>()
+        // The value the app itself last put in the Rate box. Anything else
+        // there was typed by the owner, and is left alone.
+        var autoRate: Double? = null
 
         fun chosenRateType(): String =
             if (cgRateType.checkedChipId == R.id.chipRateCash) RateType.CASH else RateType.CREDIT
 
-        // What the owner actually applied with a tap, and exactly which
-        // inputs it was worked out from. At save the rate is recorded only if
-        // ALL of these still match the form — change the quantity, unit,
-        // product or chip after tapping and the tapped figure no longer
-        // describes this sale, so the line keeps no rate (unknown, never a
-        // stale one).
-        data class AppliedRate(
-            val rate: Double,
-            val type: String,
-            val productId: Long,
-            val qty: Double,
-            val unit: String
-        )
-        var applied: AppliedRate? = null
+        fun isSale(): Boolean = isGiven && partyIsCustomer
 
-        fun refreshRateSuggestion() {
-            btnRateSuggestion.visibility = View.GONE
-            tvRateNote.visibility = View.GONE
+        fun rateWasTyped(): Boolean {
+            val r = Digits.parse(etRate.text)
+            return r != null && r != autoRate
+        }
+
+        /** The item being written in the boxes, or null if nothing about goods is there. */
+        fun editorDraft(): LineDraft? {
+            val name = etItemName.text.toString().trim().ifEmpty { null }
+            val qty = Digits.parse(etQuantity.text)
+            if (name == null && qty == null && matchedProductId == null && selectedBatch == null) return null
             val product = matchedProduct
-            if (product == null) {
-                rateSection.visibility = View.GONE
+            return LineDraft(
+                itemName = name,
+                quantity = qty,
+                unit = etUnit.text.toString().trim().ifEmpty { null },
+                rate = if (isSale()) Digits.parse(etRate.text) else null,
+                productId = matchedProductId,
+                billItemId = selectedBatch?.id,
+                creditPrice = product?.creditPrice,
+                cashPrice = product?.salePrice,
+                productUnit = product?.defaultUnit,
+                rateEdited = rateWasTyped()
+            )
+        }
+
+        fun refreshTotal() {
+            btnTotalFill.visibility = View.GONE
+            tvLinesNote.visibility = View.GONE
+            if (!isSale()) return
+            val all = lines + listOfNotNull(editorDraft())
+            if (all.isEmpty()) return
+
+            fun note(text: String) {
+                tvLinesNote.text = text
+                tvLinesNote.visibility = View.VISIBLE
+            }
+
+            val total = EntryLines.total(all)
+            if (total == null) {
+                // Only worth saying once there is a list; a single item with
+                // no rate is an ordinary entry, as it always was.
+                if (lines.isNotEmpty()) note(getString(R.string.lines_total_unknown))
                 return
             }
-            val type = chosenRateType()
-            val qty = Digits.parse(etQuantity.text)
-            val typedUnit = etUnit.text.toString().trim()
+            btnTotalFill.visibility = View.VISIBLE
+            btnTotalFill.text = getString(R.string.lines_total_fill, Format.money(total))
+            btnTotalFill.setOnClickListener {
+                etAmount.setText(Calc.trim(total))
+                etAmount.setSelection(etAmount.text.length)
+            }
+            val amount = Calc.evalAmount(etAmount.text.toString()) ?: return
+            when (val check = EntryLines.compare(total, amount)) {
+                is EntryLines.AmountCheck.Equal -> Unit
+                is EntryLines.AmountCheck.Less -> note(
+                    getString(R.string.lines_amount_less, Format.money(total), Format.money(amount), Format.money(check.by))
+                )
+                is EntryLines.AmountCheck.More -> note(
+                    getString(R.string.lines_amount_more, Format.money(total), Format.money(amount), Format.money(check.by))
+                )
+            }
+        }
 
-            // Every rule lives in RateOffer (and its tests); this only shows
-            // the answer.
-            val result = RateOffer.decide(
-                isGiven = isGiven,
-                isCustomer = partyIsCustomer,
-                creditPrice = product.creditPrice,
-                cashPrice = product.salePrice,
-                productUnit = product.defaultUnit,
-                rateType = type,
-                quantity = qty,
-                typedUnit = typedUnit
-            )
-            rateSection.visibility = if (result is RateOffer.Result.Hidden) View.GONE else View.VISIBLE
+        fun refreshRateSuggestion() {
+            tvRateNote.visibility = View.GONE
+            val product = matchedProduct
+            val result = if (product == null || !isSale()) {
+                RateOffer.Result.Hidden
+            } else {
+                RateOffer.price(
+                    isCustomer = true,
+                    creditPrice = product.creditPrice,
+                    cashPrice = product.salePrice,
+                    productUnit = product.defaultUnit,
+                    rateType = chosenRateType(),
+                    typedUnit = etUnit.text.toString()
+                )
+            }
+            // The chips stay while any listed item can still be re-priced by them.
+            val listPriced = lines.any { it.productId != null && (it.creditPrice != null || it.cashPrice != null) }
+            rateSection.visibility =
+                if (isSale() && (result !is RateOffer.Result.Hidden || listPriced)) View.VISIBLE else View.GONE
+
+            // Fill (or clear) the Rate box — never over a rate the owner typed.
+            if (isSale() && !rateWasTyped()) {
+                val offered = (result as? RateOffer.Result.Offer)?.rate
+                val text = offered?.let { Calc.trim(it) } ?: ""
+                if (etRate.text.toString() != text) etRate.setText(text)
+                autoRate = offered
+            }
 
             fun note(text: String) {
                 tvRateNote.text = text
                 tvRateNote.visibility = View.VISIBLE
             }
-
             when (result) {
-                is RateOffer.Result.Hidden, is RateOffer.Result.NeedQuantity -> Unit
                 is RateOffer.Result.NotSet -> note(
-                    getString(if (type == RateType.CASH) R.string.rate_not_set_cash else R.string.rate_not_set_credit)
+                    getString(
+                        if (chosenRateType() == RateType.CASH) R.string.rate_not_set_cash
+                        else R.string.rate_not_set_credit
+                    )
                 )
                 is RateOffer.Result.UnitMismatch ->
                     note(getString(R.string.rate_unit_mismatch, result.productUnit, result.typedUnit))
-                is RateOffer.Result.Offer -> {
-                    btnRateSuggestion.visibility = View.VISIBLE
-                    btnRateSuggestion.text = getString(
-                        if (type == RateType.CASH) R.string.cash_rate_suggestion
-                        else R.string.credit_rate_suggestion,
-                        Format.money(result.rate),
-                        Format.plain(qty ?: 0.0),
-                        Format.money(result.total)
+                else -> Unit
+            }
+            refreshTotal()
+        }
+
+        fun renderLines() {
+            linesContainer.removeAllViews()
+            val density = resources.displayMetrics.density
+            lines.forEachIndexed { i, d ->
+                val row = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                }
+                val label = TextView(this).apply {
+                    val total = d.total()
+                    text = buildString {
+                        append(i + 1).append(". ")
+                        append(Format.goods(d.itemName, d.quantity, d.unit).orEmpty())
+                        if (d.rate != null) append(" × ").append(Format.money(d.rate))
+                        if (total != null) append(" = ").append(Format.money(total))
+                    }
+                    setTextColor(ContextCompat.getColor(this@PartyDetailActivity, R.color.ink))
+                    textSize = 14f
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                }
+                val remove = android.widget.ImageButton(this).apply {
+                    setImageResource(R.drawable.ic_close)
+                    contentDescription = getString(R.string.remove_line)
+                    imageTintList = android.content.res.ColorStateList.valueOf(
+                        ContextCompat.getColor(this@PartyDetailActivity, R.color.text_muted)
                     )
-                    btnRateSuggestion.setOnClickListener {
-                        etAmount.setText(Calc.trim(result.total))
-                        etAmount.setSelection(etAmount.text.length)
-                        applied = AppliedRate(result.rate, type, product.id, qty ?: 0.0, typedUnit)
+                    val ripple = android.util.TypedValue()
+                    theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, ripple, true)
+                    setBackgroundResource(ripple.resourceId)
+                    layoutParams = LinearLayout.LayoutParams((48 * density).toInt(), (48 * density).toInt())
+                    setOnClickListener {
+                        lines.removeAt(i)
+                        renderLines()
+                        refreshRateSuggestion()
                     }
                 }
+                row.addView(label)
+                row.addView(remove)
+                linesContainer.addView(row)
+            }
+            // Qarz-e-Hasna is a loan of money. An entry carrying a list of
+            // goods is a sale, and cannot be one.
+            if (lines.isNotEmpty()) {
+                cbQarzeHasna.isChecked = false
+                cbQarzeHasna.isEnabled = false
+            } else {
+                cbQarzeHasna.isEnabled = true
             }
         }
 
-        cgRateType.setOnCheckedStateChangeListener { _, _ -> refreshRateSuggestion() }
+        cgRateType.setOnCheckedStateChangeListener { _, _ ->
+            val type = chosenRateType()
+            for (i in lines.indices) lines[i] = lines[i].repriced(type, partyIsCustomer)
+            renderLines()
+            refreshRateSuggestion()
+        }
+
+        btnAddLine.setOnClickListener {
+            val draft = editorDraft()
+            if (draft == null || draft.itemName.isNullOrBlank()) {
+                etItemName.error = getString(R.string.line_need_name)
+                etItemName.requestFocus()
+                return@setOnClickListener
+            }
+            if (draft.quantity == null || draft.quantity <= 0.0) {
+                etQuantity.error = getString(R.string.line_need_qty)
+                etQuantity.requestFocus()
+                return@setOnClickListener
+            }
+            lines += draft
+            // Clear the boxes for the next item.
+            etItemName.setText("", false)
+            etQuantity.setText("")
+            etUnit.setText("", false)
+            etRate.setText("")
+            autoRate = null
+            matchedProduct = null
+            matchedProductId = null
+            selectedBatch = null
+            btnBatch.visibility = View.GONE
+            renderLines()
+            refreshRateSuggestion()
+            etItemName.requestFocus()
+        }
+
+        val simpleWatcher = { action: () -> Unit ->
+            object : android.text.TextWatcher {
+                override fun afterTextChanged(s: android.text.Editable?) = action()
+                override fun beforeTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
+                override fun onTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
+            }
+        }
+        etRate.addTextChangedListener(simpleWatcher { refreshTotal() })
+        etAmount.addTextChangedListener(simpleWatcher { refreshTotal() })
+
+        // Whether this is a customer decides everything sale-only above.
+        lifecycleScope.launch {
+            partyIsCustomer = dao.getParty(partyId)?.isCustomer ?: false
+            val sale = isSale()
+            etRate.visibility = if (sale) View.VISIBLE else View.GONE
+            btnAddLine.visibility = if (sale) View.VISIBLE else View.GONE
+            refreshRateSuggestion()
+        }
 
         /**
          * Look up whether the typed name is a product with recorded batches,
@@ -770,7 +923,11 @@ class PartyDetailActivity : BaseActivity() {
             if (typed.isEmpty()) {
                 selectedBatch = null
                 matchedProductId = null
+                // The product goes with the name: a cleared name must not
+                // leave the last product's rate sitting in the Rate box.
+                matchedProduct = null
                 btnBatch.visibility = View.GONE
+                refreshRateSuggestion()
                 return
             }
             lifecycleScope.launch {
@@ -779,9 +936,6 @@ class PartyDetailActivity : BaseActivity() {
 
                 // The item name changed since this lookup started (the owner
                 // kept typing) — do not act on a stale answer.
-                if (etItemName.text.toString().trim() != typed) return@launch
-
-                partyIsCustomer = dao.getParty(partyId)?.isCustomer ?: true
                 if (etItemName.text.toString().trim() != typed) return@launch
 
                 matchedProductId = product?.id
@@ -902,23 +1056,25 @@ class PartyDetailActivity : BaseActivity() {
                 Recovery.CERTAIN
             }
 
-            val itemName = etItemName.text.toString().trim().ifEmpty { null }
-            val quantity = Digits.parse(etQuantity.text)
-            val unit = etUnit.text.toString().trim().ifEmpty { null }
-
-            // The rate is recorded only when the owner applied it with a tap
-            // AND nothing it was worked out from has changed since. Typing the
-            // amount by hand records no rate: the app does not know one.
-            // If he applied it and then lowered the amount (a discount), the
-            // rate still stands — the difference is his, and the book keeps
-            // what he wrote.
-            val appliedNow = applied?.takeIf {
-                isGiven && partyIsCustomer &&
-                    it.productId == matchedProductId &&
-                    it.qty == quantity &&
-                    it.unit == unit.orEmpty() &&
-                    it.type == chosenRateType()
+            // The items: every one in the list, plus whatever is still in the
+            // boxes. With a list, the boxes must hold a complete item or
+            // nothing — half an item is not saved silently.
+            val editor = editorDraft()
+            if (lines.isNotEmpty() && editor != null && !editor.isComplete()) {
+                if (editor.itemName.isNullOrBlank()) {
+                    etItemName.error = getString(R.string.line_need_name)
+                    etItemName.requestFocus()
+                } else {
+                    etQuantity.error = getString(R.string.line_need_qty)
+                    etQuantity.requestFocus()
+                }
+                return false
             }
+            val items = (lines + listOfNotNull(editor)).mapNotNull { it.toItem() }
+
+            // Which price list the sale was at — recorded when a rate was.
+            // Fixed now, never recalculated (see LedgerEntry.rateType).
+            val rateType = if (isSale() && items.any { it.rate != null }) chosenRateType() else null
 
             val entry = LedgerEntry(
                 partyId = partyId,
@@ -933,28 +1089,15 @@ class PartyDetailActivity : BaseActivity() {
                 // Null unless a chip was actually tapped, and null on
                 // every "I Gave" entry, where the section never appeared.
                 paymentMethod = if (isGiven) null else chosenPaymentMethod(),
-                // Fixed now, never recalculated (see LedgerEntry.rateType).
-                rateType = appliedNow?.type
+                rateType = rateType
             )
 
-            // The goods travel as a line, not on the entry (v20 — see
-            // EntryItem). The same "anything recorded?" rule as the migration:
-            // a bare money entry gets no line at all. Product and batch are
-            // both null unless actually recognised/picked above; tagging them
-            // here, at the moment the owner confirms, means this sale never
-            // needs the separate "tie existing entries" backfill to count
-            // towards stock. entryId and lineNo are set by the DAO from the id
-            // the insert returns, inside the same transaction.
-            val items = listOfNotNull(
-                EntryItem.ofGoods(
-                    itemName = itemName,
-                    quantity = quantity,
-                    unit = unit,
-                    productId = matchedProductId,
-                    billItemId = selectedBatch?.id,
-                    rate = appliedNow?.rate
-                )
-            )
+            // The goods travel as lines, not on the entry (v20 — see
+            // EntryItem). A bare money entry has none. Product and batch are
+            // tagged per line at the moment the owner confirms, so this sale
+            // never needs the "tie existing entries" backfill to count towards
+            // stock. entryId and lineNo are set by the DAO from the id the
+            // insert returns, inside the same transaction.
 
             // Warn BEFORE writing, not after — a warning that arrives once
             // the entry is already in the ledger is just an accusation.

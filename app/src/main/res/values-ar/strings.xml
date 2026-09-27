@@ -1320,14 +1320,21 @@
     <string name="sale_price_hint">سعر النقد</string>
     <string name="credit_price_hint">سعر الآجل</string>
     <string name="product_price_help">اختياري، لكل وحدة. يُستخدم لاقتراح المبلغ فقط — لا يُحتسب تلقائيًا.</string>
-    <string name="credit_rate_suggestion">سعر الآجل %1$s × %2$s = %3$s. اضغط للتعبئة.</string>
     <string name="rate_type_label">أي سعر؟</string>
     <string name="rate_type_credit">سعر الآجل</string>
     <string name="rate_type_cash">السعر النقدي</string>
-    <string name="cash_rate_suggestion">السعر النقدي %1$s × %2$s = %3$s. اضغط للتعبئة.</string>
     <string name="rate_not_set_credit">لم يُحدَّد سعر الآجل لهذا المنتج.</string>
     <string name="rate_not_set_cash">لم يُحدَّد السعر النقدي لهذا المنتج.</string>
     <string name="rate_unit_mismatch">هذا السعر لكل %1$s، لذلك لم يُطبَّق على %2$s.</string>
+    <string name="rate_hint">السعر</string>
+    <string name="add_line">+ إضافة صنف</string>
+    <string name="lines_total_fill">مجموع الأصناف %1$s. اضغط للتعبئة.</string>
+    <string name="lines_total_unknown">صنف بلا سعر، لذلك لا يوجد مجموع.</string>
+    <string name="lines_amount_less">الأصناف %1$s · المكتوب %2$s · أقل بـ %3$s</string>
+    <string name="lines_amount_more">الأصناف %1$s · المكتوب %2$s · أكثر بـ %3$s</string>
+    <string name="line_need_name">اكتب اسم الصنف</string>
+    <string name="line_need_qty">اكتب الكمية</string>
+    <string name="remove_line">حذف الصنف</string>
 
     <string name="payment_method_label">كيف تم الدفع؟</string>
     <string name="payment_method_cash">نقدًا</string>

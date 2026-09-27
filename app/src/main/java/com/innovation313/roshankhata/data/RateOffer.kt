@@ -55,4 +55,28 @@ object RateOffer {
         val total = LineMath.lineTotal(quantity, rate) ?: return Result.NeedQuantity
         return Result.Offer(rate, total)
     }
+
+    /**
+     * Just the price that applies to one unit of the product for a sale to
+     * this party at this rate type, or why none does — for filling the Rate
+     * box before a quantity is known. Same rules as [decide]; an [Result.Offer]
+     * here carries the price as both rate and total (one unit).
+     */
+    fun price(
+        isCustomer: Boolean,
+        creditPrice: Double?,
+        cashPrice: Double?,
+        productUnit: String?,
+        rateType: String,
+        typedUnit: String
+    ): Result = decide(
+        isGiven = true,
+        isCustomer = isCustomer,
+        creditPrice = creditPrice,
+        cashPrice = cashPrice,
+        productUnit = productUnit,
+        rateType = rateType,
+        quantity = 1.0,
+        typedUnit = typedUnit
+    )
 }
