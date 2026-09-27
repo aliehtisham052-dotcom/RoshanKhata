@@ -267,4 +267,21 @@ class EntryItemsDaoTest {
         // A different unit is not added in.
         assertEquals(0.0, dao.netGoodsWithParty(ahmad, sulphur.id, "kg"), 0.0)
     }
+
+    @Test
+    fun theRegisterTotalEqualsTheLedgerWhenASaleWasDiscounted() = runBlocking {
+        val ahmad = dao.insertParty(Party(name = "Ahmad"))
+        // Items come to 19,200; the owner wrote 19,000.
+        dao.insertEntryWithItems(visit(ahmad, 19000.0), threeLines)
+        // Written at exactly the items' total: no difference row.
+        dao.insertEntryWithItems(visit(ahmad, 19200.0).copy(timestamp = 2_000L), threeLines)
+
+        val adjustments = dao.salesAdjustments(0, Long.MAX_VALUE)
+        assertEquals(1, adjustments.size)
+        assertEquals(-200.0, adjustments.single().amount, 0.001)
+
+        val register = dao.salesRegister(0, Long.MAX_VALUE) + adjustments
+        assertEquals(19000.0 + 19200.0, register.sumOf { it.amount }, 0.001)
+        assertEquals(dao.salesTotalBetween(0, Long.MAX_VALUE), register.sumOf { it.amount }, 0.001)
+    }
 }

@@ -137,7 +137,10 @@ class EntryDetailActivity : BaseActivity() {
             findViewById<TextView>(R.id.tvNote).text = e.note
         }
 
-        val goods = Format.goods(items)
+        // Each item with its rate and total, then the items' total, the rate
+        // type and any difference from the amount — this card IS the receipt
+        // the customer is sent.
+        val goods = com.innovation313.roshankhata.ui.GoodsText.receipt(this, items, e.rateType, e.amount)
         val rowGoods = findViewById<TableRow>(R.id.rowGoods)
         if (goods == null) {
             rowGoods.visibility = View.GONE

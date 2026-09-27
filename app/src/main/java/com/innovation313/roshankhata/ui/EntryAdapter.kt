@@ -114,8 +114,10 @@ class EntryAdapter(
         holder.tvNote.text = e.note.orEmpty()
         holder.tvNote.visibility = if (e.note.isNullOrBlank()) View.GONE else View.VISIBLE
 
-        // Show the goods only when something actually moved.
-        val goods = Format.goods(row.items)
+        // Show the goods only when something actually moved. Several items
+        // read as their names plus "Items: 3 · Credit rate"; the receipt
+        // carries each item's rate and total.
+        val goods = GoodsText.row(ctx, row.items, e.rateType)
         holder.tvGoods.text = goods.orEmpty()
         holder.tvGoods.visibility = if (goods == null) View.GONE else View.VISIBLE
 

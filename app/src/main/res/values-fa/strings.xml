@@ -1243,6 +1243,9 @@
     <string name="bonus_tag">رایگان</string>
     <string name="line_editor_busy">اول کالای بالا را به فهرست اضافه یا پاک کنید.</string>
     <string name="return_more_than_taken">در حساب %1$s از %4$s فقط %2$s %3$s ثبت است. باز هم ذخیره شود؟</string>
+    <string name="entry_items_count">کالاها: %1$d</string>
+    <string name="receipt_items_total">جمع کالاها %1$s</string>
+    <string name="register_adjustment">تخفیف / تفاوت</string>
 
     <string name="payment_method_label">پرداخت چگونه انجام شد؟</string>
     <string name="payment_method_cash">نقدی</string>

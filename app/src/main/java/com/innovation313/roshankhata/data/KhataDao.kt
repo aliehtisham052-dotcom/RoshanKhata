@@ -1639,6 +1639,33 @@ interface KhataDao {
     }
 
     /**
+     * For the sales register: one row per several-item sale whose written
+     * amount differs from its items' total (a discount, a round-off). The
+     * register prints each item at quantity × rate; this row carries the
+     * difference, so the register's total equals what the ledger holds.
+     * itemName is left for the caller to fill in the owner's language.
+     * Bonus lines (no rate) count as 0, as they are charged.
+     */
+    @Query(
+        """
+        SELECT t.timestamp AS date, t.entryNumber AS refNumber, p.name AS partyName,
+               NULL AS itemName, NULL AS batchNumber, NULL AS quantity, NULL AS unit,
+               ROUND(t.amount - SUM(COALESCE(ROUND(ei.quantity * ei.rate, 2), 0)), 2) AS amount,
+               NULL AS company, NULL AS registrationNumber
+        FROM entry_items ei
+        JOIN transactions t ON t.id = ei.entryId
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0
+          AND t.timestamp >= :from AND t.timestamp <= :to
+        GROUP BY t.id
+        HAVING COUNT(*) > 1
+           AND ABS(t.amount - SUM(COALESCE(ROUND(ei.quantity * ei.rate, 2), 0))) >= 0.005
+        ORDER BY t.timestamp ASC, t.id ASC
+        """
+    )
+    suspend fun salesAdjustments(from: Long, to: Long): List<SaleRegisterRow>
+
+    /**
      * The rate this customer was last charged for this product, and the unit
      * it was per — for a return, which goes back at the price it went out at.
      * Only real sales count: a free (bonus) line has no price, and a line
