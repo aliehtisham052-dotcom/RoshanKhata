@@ -1676,9 +1676,31 @@ interface KhataDao {
         "JOIN transactions t ON t.id = ei.entryId " +
         "WHERE t.partyId = :partyId AND ei.productId = :productId AND t.isGiven = 1 " +
         "AND t.isDeleted = 0 AND ei.isBonus = 0 AND ei.rate IS NOT NULL " +
+        "AND (:rateType IS NULL OR t.rateType = :rateType) " +
         "ORDER BY t.timestamp DESC, t.id DESC, ei.lineNo DESC LIMIT 1"
     )
-    suspend fun lastSaleRate(partyId: Long, productId: Long): LastRate?
+    suspend fun lastSaleRate(
+        partyId: Long,
+        productId: Long,
+        /**
+         * Only sales at this rate type (udhar or naqd) — a sale's hint must
+         * compare like with like. Null: any type (a return goes back at
+         * whatever it went out at).
+         */
+        rateType: String? = null
+    ): LastRate?
+
+    /**
+     * This customer's most recent sale that carried items, with them — for
+     * "Last time's items". Binned entries never count.
+     */
+    @Transaction
+    @Query(
+        "SELECT * FROM transactions WHERE partyId = :partyId AND isGiven = 1 AND isDeleted = 0 " +
+        "AND id IN (SELECT entryId FROM entry_items) " +
+        "ORDER BY timestamp DESC, id DESC LIMIT 1"
+    )
+    suspend fun lastSaleWithItems(partyId: Long): EntryWithItems?
 
     /**
      * How much of a product this party still holds on the book, in one unit:

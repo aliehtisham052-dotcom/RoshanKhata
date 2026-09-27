@@ -1342,6 +1342,10 @@
     <string name="entry_items_count">الأصناف: %1$d</string>
     <string name="receipt_items_total">مجموع الأصناف %1$s</string>
     <string name="register_adjustment">خصم / فرق</string>
+    <string name="last_rate_hint">آخر مرة لهذا العميل: %1$s</string>
+    <string name="repeat_last_sale">أصناف المرة الماضية (%1$s)</string>
+    <string name="update_product_rate">اجعل %2$s لـ %1$s أيضًا %3$s</string>
+    <string name="add_to_products">أضف %1$s إلى قائمة المنتجات أيضًا</string>
 
     <string name="payment_method_label">كيف تم الدفع؟</string>
     <string name="payment_method_cash">نقدًا</string>

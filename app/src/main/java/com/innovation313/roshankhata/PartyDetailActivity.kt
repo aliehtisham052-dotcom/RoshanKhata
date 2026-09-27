@@ -731,6 +731,10 @@ class PartyDetailActivity : BaseActivity() {
         val tvLinesNote: TextView = view.findViewById(R.id.tvLinesNote)
         val cbBonus: MaterialCheckBox = view.findViewById(R.id.cbBonus)
         val paymentSection: View = view.findViewById(R.id.paymentMethodSection)
+        val btnRepeatLast: MaterialButton = view.findViewById(R.id.btnRepeatLast)
+        val tvLastRate: TextView = view.findViewById(R.id.tvLastRate)
+        val cbUpdateRate: MaterialCheckBox = view.findViewById(R.id.cbUpdateRate)
+        val cbAddProduct: MaterialCheckBox = view.findViewById(R.id.cbAddProduct)
 
         // False until the lookup below confirms a customer, so nothing
         // sale-only ever flashes up on a supplier's account.
@@ -750,6 +754,11 @@ class PartyDetailActivity : BaseActivity() {
         // Set once the owner has seen (or not needed) the over-return
         // warning for exactly what is on the form; any change clears it.
         var returnChecked = false
+        // For a sale: this customer's last price for the product, per type.
+        var lastCredit: LastRate? = null
+        var lastCash: LastRate? = null
+        // This customer's last sale with items, for "Last time's items".
+        var lastSaleEntry: EntryWithItems? = null
 
         fun chosenRateType(): String =
             if (cgRateType.checkedChipId == R.id.chipRateCash) RateType.CASH else RateType.CREDIT
@@ -786,12 +795,18 @@ class PartyDetailActivity : BaseActivity() {
                 cashPrice = product?.salePrice,
                 productUnit = product?.defaultUnit,
                 rateEdited = rateWasTyped(),
-                isBonus = goodsListAllowed() && cbBonus.isChecked
+                isBonus = goodsListAllowed() && cbBonus.isChecked,
+                updateProductRate = cbUpdateRate.visibility == View.VISIBLE && cbUpdateRate.isChecked,
+                addToProducts = cbAddProduct.visibility == View.VISIBLE && cbAddProduct.isChecked
             )
         }
 
         fun refreshTotal() {
             returnChecked = false
+            // "Last time's items" only on an empty new sale form.
+            btnRepeatLast.visibility =
+                if (isSale() && editing == null && lastSaleEntry != null && lines.isEmpty() && editorDraft() == null)
+                    View.VISIBLE else View.GONE
             btnTotalFill.visibility = View.GONE
             tvLinesNote.visibility = View.GONE
             if (!goodsListAllowed()) return
@@ -831,7 +846,10 @@ class PartyDetailActivity : BaseActivity() {
             }
         }
 
-        fun refreshRateSuggestion() {
+        // fill = false when the owner is typing in the Rate box himself: the
+        // hints and offers follow his figure, but the box is never refilled
+        // under his fingers (clearing it must leave it clear).
+        fun refreshRateSuggestion(fill: Boolean = true) {
             tvRateNote.visibility = View.GONE
             val product = matchedProduct
             val result = if (product == null || !isSale()) {
@@ -858,7 +876,7 @@ class PartyDetailActivity : BaseActivity() {
             // typed. A sale takes the product's price for the chip; a return
             // takes the price this customer was last charged, when it was
             // per the same unit (else nothing — never a guess).
-            if (goodsListAllowed() && !rateWasTyped() && !cbBonus.isChecked) {
+            if (fill && goodsListAllowed() && !rateWasTyped() && !cbBonus.isChecked) {
                 val typedUnit = etUnit.text.toString().trim()
                 val offered = when {
                     isSale() -> (result as? RateOffer.Result.Offer)?.rate
@@ -886,6 +904,46 @@ class PartyDetailActivity : BaseActivity() {
                 is RateOffer.Result.UnitMismatch ->
                     note(getString(R.string.rate_unit_mismatch, result.productUnit, result.typedUnit))
                 else -> Unit
+            }
+
+            // What this customer paid last time, same product, same rate
+            // type and unit — so a bargain is made knowing the history.
+            val typedUnit = etUnit.text.toString().trim()
+            val sameUnit = { r: LastRate -> typedUnit.isEmpty() || r.unit == null || r.unit.equals(typedUnit, ignoreCase = true) }
+            val last = if (isSale() && !cbBonus.isChecked) {
+                (if (chosenRateType() == RateType.CASH) lastCash else lastCredit)?.takeIf(sameUnit)
+            } else null
+            tvLastRate.visibility = if (last != null) View.VISIBLE else View.GONE
+            if (last != null) tvLastRate.text = getString(R.string.last_rate_hint, Format.money(last.rate))
+
+            // A typed rate that differs from the product's price for this chip
+            // may be made the product's price too — offered, off by default.
+            val typedRate = Digits.parse(etRate.text)
+            val offeredRate = (result as? RateOffer.Result.Offer)?.rate
+            val showUpdate = isSale() && product != null && !cbBonus.isChecked && rateWasTyped() &&
+                typedRate != null && typedRate > 0.0 && typedRate != offeredRate &&
+                result !is RateOffer.Result.UnitMismatch
+            if (showUpdate && product != null && typedRate != null) {
+                cbUpdateRate.text = getString(
+                    R.string.update_product_rate,
+                    product.name,
+                    getString(if (chosenRateType() == RateType.CASH) R.string.rate_type_cash else R.string.rate_type_credit),
+                    Format.money(typedRate)
+                )
+                cbUpdateRate.visibility = View.VISIBLE
+            } else {
+                cbUpdateRate.isChecked = false
+                cbUpdateRate.visibility = View.GONE
+            }
+
+            // A name that is not a product yet may be added to the list.
+            val typedName = etItemName.text.toString().trim()
+            if (goodsListAllowed() && product == null && typedName.isNotEmpty()) {
+                cbAddProduct.text = getString(R.string.add_to_products, typedName)
+                cbAddProduct.visibility = View.VISIBLE
+            } else {
+                cbAddProduct.isChecked = false
+                cbAddProduct.visibility = View.GONE
             }
             refreshTotal()
         }
@@ -984,7 +1042,11 @@ class PartyDetailActivity : BaseActivity() {
             selectedBatch = null
             pendingBatchId = null
             lastSale = null
+            lastCredit = null
+            lastCash = null
             cbBonus.isChecked = false
+            cbUpdateRate.isChecked = false
+            cbAddProduct.isChecked = false
             btnBatch.visibility = View.GONE
             renderLines()
             refreshRateSuggestion()
@@ -1000,12 +1062,16 @@ class PartyDetailActivity : BaseActivity() {
                 override fun onTextChanged(c: CharSequence?, a: Int, b: Int, cc: Int) {}
             }
         }
-        etRate.addTextChangedListener(simpleWatcher { refreshTotal() })
+        etRate.addTextChangedListener(simpleWatcher { refreshRateSuggestion(fill = false) })
         etAmount.addTextChangedListener(simpleWatcher { refreshTotal() })
 
         // Whether this is a customer decides everything sale-only above.
         lifecycleScope.launch {
             partyIsCustomer = dao.getParty(partyId)?.isCustomer ?: false
+            if (isSale() && editing == null) lastSaleEntry = dao.lastSaleWithItems(partyId)
+            lastSaleEntry?.let {
+                btnRepeatLast.text = getString(R.string.repeat_last_sale, Format.dateOnly(it.entry.timestamp))
+            }
             val list = goodsListAllowed()
             etRate.visibility = if (list) View.VISIBLE else View.GONE
             btnAddLine.visibility = if (list) View.VISIBLE else View.GONE
@@ -1030,6 +1096,8 @@ class PartyDetailActivity : BaseActivity() {
             if (typed.isEmpty()) {
                 selectedBatch = null
                 lastSale = null
+                lastCredit = null
+                lastCash = null
                 matchedProductId = null
                 // The product goes with the name: a cleared name must not
                 // leave the last product's rate sitting in the Rate box.
@@ -1044,6 +1112,8 @@ class PartyDetailActivity : BaseActivity() {
                 val options = if (isGiven) product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
                     else emptyList()
                 val last = if (isReturn() && product != null) dao.lastSaleRate(partyId, product.id) else null
+                val lastCr = if (isSale() && product != null) dao.lastSaleRate(partyId, product.id, RateType.CREDIT) else null
+                val lastCa = if (isSale() && product != null) dao.lastSaleRate(partyId, product.id, RateType.CASH) else null
 
                 // The item name changed since this lookup started (the owner
                 // kept typing) — do not act on a stale answer.
@@ -1052,6 +1122,8 @@ class PartyDetailActivity : BaseActivity() {
                 matchedProductId = product?.id
                 matchedProduct = product
                 lastSale = last
+                lastCredit = lastCr
+                lastCash = lastCa
                 // The product's own unit, when the owner has not typed one —
                 // so the same goods are not counted as "bori" one day and
                 // "bag" the next (stock adds only like to like). Never over
@@ -1112,6 +1184,50 @@ class PartyDetailActivity : BaseActivity() {
             renderLines()
             refreshBatchButton()
             refreshRateSuggestion()
+        }
+
+        // "Last time's items": the same goods, at TODAY's prices for the chip
+        // (an item with no product keeps its old rate, as the owner's). No
+        // batches — last time's batch may be finished. Everything lands in the
+        // list, to change or remove before saving.
+        btnRepeatLast.setOnClickListener {
+            val source = lastSaleEntry ?: return@setOnClickListener
+            lifecycleScope.launch {
+                val type = chosenRateType()
+                val drafts = source.orderedItems().map { item ->
+                    val product = item.productId?.let { dao.productById(it) }
+                    when {
+                        item.isBonus -> LineDraft(
+                            itemName = item.itemName, quantity = item.quantity, unit = item.unit, rate = null,
+                            productId = product?.id, isBonus = true
+                        )
+                        product != null -> {
+                            val price = RateOffer.price(
+                                isCustomer = true,
+                                creditPrice = product.creditPrice,
+                                cashPrice = product.salePrice,
+                                productUnit = product.defaultUnit,
+                                rateType = type,
+                                typedUnit = item.unit.orEmpty()
+                            )
+                            LineDraft(
+                                itemName = item.itemName, quantity = item.quantity, unit = item.unit,
+                                rate = (price as? RateOffer.Result.Offer)?.rate,
+                                productId = product.id,
+                                creditPrice = product.creditPrice, cashPrice = product.salePrice,
+                                productUnit = product.defaultUnit
+                            )
+                        }
+                        else -> LineDraft(
+                            itemName = item.itemName, quantity = item.quantity, unit = item.unit,
+                            rate = item.rate, rateEdited = true
+                        )
+                    }
+                }
+                lines.addAll(drafts)
+                renderLines()
+                refreshRateSuggestion()
+            }
         }
 
         etItemName.setOnFocusChangeListener { _, hasFocus ->
@@ -1255,6 +1371,47 @@ class PartyDetailActivity : BaseActivity() {
                 if (at != null && at <= all.size) all.add(at, editor) else all.add(editor)
             }
             val items = all.mapNotNull { it.toItem() }
+
+            // The product offers the owner ticked — add a new name to the
+            // products list, or make a typed rate the product's price — are
+            // applied first, then Save runs again with each item linked.
+            if (all.any { it.updateProductRate || it.addToProducts }) {
+                // Exactly where the boxes' item was placed above — not a
+                // search, which would find an identical listed item first.
+                val editorPos = when {
+                    editor == null -> -1
+                    at != null && at <= lines.size -> at
+                    else -> all.size - 1
+                }
+                val type = chosenRateType()
+                lifecycleScope.launch {
+                    for (idx in all.indices) {
+                        val d = all[idx]
+                        if (!d.updateProductRate && !d.addToProducts) continue
+                        var productId = d.productId
+                        if (d.addToProducts && productId == null && !d.itemName.isNullOrBlank()) {
+                            productId = dao.findOrCreateProduct(d.itemName, defaultUnit = d.unit).id
+                        }
+                        val rate = d.rate
+                        if (isSale() && productId != null && rate != null && rate > 0.0 && !d.isBonus) {
+                            dao.productById(productId)?.let { p ->
+                                dao.updateProduct(
+                                    if (type == RateType.CASH) p.copy(salePrice = rate) else p.copy(creditPrice = rate)
+                                )
+                            }
+                        }
+                        all[idx] = d.copy(productId = productId, updateProductRate = false, addToProducts = false)
+                    }
+                    lines.clear()
+                    all.forEachIndexed { i, d -> if (i != editorPos) lines += d }
+                    if (editorPos >= 0) matchedProductId = all[editorPos].productId
+                    cbUpdateRate.isChecked = false
+                    cbAddProduct.isChecked = false
+                    renderLines()
+                    requestSave()
+                }
+                return false
+            }
 
             // A return larger than this customer holds on the book is not
             // refused (the goods may predate the app), but the owner is asked

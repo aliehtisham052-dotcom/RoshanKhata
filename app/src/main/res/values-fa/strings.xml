@@ -1246,6 +1246,10 @@
     <string name="entry_items_count">کالاها: %1$d</string>
     <string name="receipt_items_total">جمع کالاها %1$s</string>
     <string name="register_adjustment">تخفیف / تفاوت</string>
+    <string name="last_rate_hint">دفعه قبل برای این مشتری: %1$s</string>
+    <string name="repeat_last_sale">کالاهای دفعه قبل (%1$s)</string>
+    <string name="update_product_rate">%2$s %1$s را هم %3$s کن</string>
+    <string name="add_to_products">%1$s را به فهرست کالاها هم اضافه کن</string>
 
     <string name="payment_method_label">پرداخت چگونه انجام شد؟</string>
     <string name="payment_method_cash">نقدی</string>

@@ -1246,6 +1246,10 @@
     <string name="entry_items_count">شيون: %1$d</string>
     <string name="receipt_items_total">شين جو جوڙ %1$s</string>
     <string name="register_adjustment">رعايت / فرق</string>
+    <string name="last_rate_hint">هن گراهڪ کي پوئين ڀيري: %1$s</string>
+    <string name="repeat_last_sale">پوئين ڀيري وارو مال (%1$s)</string>
+    <string name="update_product_rate">%1$s جو %2$s به %3$s ڪريو</string>
+    <string name="add_to_products">%1$s کي پراڊڪٽس لسٽ ۾ به وجهو</string>
 
     <string name="payment_method_label">ادائيگي ڪيئن ٿي؟</string>
     <string name="payment_method_cash">نقد</string>

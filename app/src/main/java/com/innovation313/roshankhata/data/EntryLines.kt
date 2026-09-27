@@ -23,7 +23,14 @@ data class LineDraft(
     val productUnit: String? = null,
     val rateEdited: Boolean = false,
     /** A free item (a company scheme): leaves the shelf, costs nothing. */
-    val isBonus: Boolean = false
+    val isBonus: Boolean = false,
+    /**
+     * The owner ticked "also set the product's price to this rate". Applied
+     * (and cleared) just before the entry is saved; never on its own.
+     */
+    val updateProductRate: Boolean = false,
+    /** The owner ticked "also add this item to the products list". */
+    val addToProducts: Boolean = false
 ) {
     /** The saved line, or null if nothing about goods was filled in. */
     fun toItem(): EntryItem? =
