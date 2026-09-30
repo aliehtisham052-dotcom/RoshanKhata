@@ -1238,21 +1238,25 @@ object InvoicePdfExport {
     ): Pair<PdfDocument.Page, Canvas> {
         var page = pageIn
         var c = canvasIn
-        var y = yIn
-        val bandH = PdfBranding.BANNER_HEIGHT + 10f
-        if (y + bandH > PAGE_H_A4 - MARGIN) {
+        // Sits at the foot of the page, where a footer belongs and where every
+        // other report the app prints (ledger, business, register, inspector)
+        // already puts it: PAGE_H - 96. It used to follow straight on from
+        // the signature, so on a short invoice it hung mid-page, stuck to the
+        // bill itself (owner's note, 30 Sep 2026).
+        val bandTop = PAGE_H_A4 - 96f
+        // Needs a little air above it; with no room left on this page it goes
+        // to the foot of the next one, as before.
+        if (yIn + 10f > bandTop) {
             doc.finishPage(page)
             page = doc.startPage(
                 PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, doc.pages.size + 1).create()
             )
             c = page.canvas
-            y = MARGIN
         }
 
         // The app's invitation: logo, a line, and a DOWNLOAD button that
         // opens the Play listing (made tappable in writeAndClose).
-        y += 10f
-        PdfBranding.drawDownloadBanner(context, doc, c, MARGIN, y, PAGE_W_A4 - 2 * MARGIN)
+        PdfBranding.drawDownloadBanner(context, doc, c, MARGIN, bandTop, PAGE_W_A4 - 2 * MARGIN)
 
         doc.finishPage(page)
         return page to c
