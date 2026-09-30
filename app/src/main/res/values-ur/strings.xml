@@ -1459,4 +1459,7 @@
     <string name="bp_leave_msg">اس اسکرین پر آپ کی تبدیلیاں ضائع ہو جائیں گی۔</string>
     <string name="bp_leave_discard">چھوڑ دیں</string>
     <string name="bp_leave_keep">ترمیم جاری رکھیں</string>
+    <string name="bp_phone">فون نمبر</string>
+    <string name="bp_phone_help">انوائس پر چھپتا ہے تاکہ گاہک آپ کو فون کر سکیں۔</string>
+    <string name="bp_phone_hint">مثلاً 0300 1234567</string>
 </resources>

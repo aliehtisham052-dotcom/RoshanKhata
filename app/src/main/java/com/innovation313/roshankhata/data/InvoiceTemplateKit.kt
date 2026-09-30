@@ -249,12 +249,18 @@ object InvoiceTemplateKit {
         // deliberately, since FBR's own guidance is that an invoice with no
         // STRN should not be charging sales tax in the first place.
         val strn = BusinessProfile.strn(context)
+        // STRN and the shop's phone share one line, so a phone never needs a
+        // slot of its own in a header whose lines are already placed.
+        val contact = listOfNotNull(
+            strn?.let { "STRN: $it" },
+            BusinessProfile.businessPhone(context)
+        ).joinToString("  \u00B7  ").ifEmpty { null }
 
         if (palette.centeredHeader) {
             val mid = pageW / 2f
             PdfRtl.drawText(c, shopName, mid, 36f, paint(fonts, 18f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
             address?.let { PdfRtl.drawText(c, it, mid, 51f, paint(fonts, 9f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
-            strn?.let { PdfRtl.drawText(c, "STRN: $it", mid, 63f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
+            contact?.let { PdfRtl.drawText(c, it, mid, 63f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
             PdfRtl.drawText(c, heading, mid, 84f, paint(fonts, 16f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
         } else {
             val tile = RectF(left, 26f, left + 40f, 66f)
@@ -292,8 +298,8 @@ object InvoiceTemplateKit {
             address?.let {
                 PdfRtl.drawText(c, it, left + 52f, 58f, paint(fonts, 9f, palette.onPrimaryMuted))
             }
-            strn?.let {
-                PdfRtl.drawText(c, "STRN: $it", left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted))
+            contact?.let {
+                PdfRtl.drawText(c, it, left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted))
             }
 
             PdfRtl.drawText(c, heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))

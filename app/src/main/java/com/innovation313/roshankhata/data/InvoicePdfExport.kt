@@ -1041,6 +1041,10 @@ object InvoicePdfExport {
             y += 11f
             PdfRtl.drawText(c, "STRN: $it", cx, y, shopSub)
         }
+        BusinessProfile.businessPhone(context)?.let {
+            y += 11f
+            PdfRtl.drawText(c, it, cx, y, shopSub)
+        }
 
         y += 16f
         c.drawLine(pad, y, pageW - pad, y, dash)

@@ -503,7 +503,9 @@ object Backup {
         val bankJazzCash: String?,
         val termsAndConditions: String?,
         val strn: String?,
-        val photoOnStatement: Boolean
+        val photoOnStatement: Boolean,
+        /** Added 30 Sep 2026. A file from before it has no key and restores as blank. */
+        val businessPhone: String? = null
     )
 
     /**
@@ -945,6 +947,7 @@ object Backup {
     private fun businessProfileToJson(context: Context) = JSONObject().apply {
         put("businessName", BusinessProfile.businessName(context) ?: JSONObject.NULL)
         put("businessAddress", BusinessProfile.businessAddress(context) ?: JSONObject.NULL)
+        put("businessPhone", BusinessProfile.businessPhone(context) ?: JSONObject.NULL)
         put("bankName", BusinessProfile.bankName(context) ?: JSONObject.NULL)
         put("bankAccountTitle", BusinessProfile.bankAccountTitle(context) ?: JSONObject.NULL)
         put("bankIban", BusinessProfile.bankIban(context) ?: JSONObject.NULL)
@@ -963,7 +966,8 @@ object Backup {
         bankJazzCash = o.optNullableString("bankJazzCash"),
         termsAndConditions = o.optNullableString("termsAndConditions"),
         strn = o.optNullableString("strn"),
-        photoOnStatement = o.optBoolean("photoOnStatement", false)
+        photoOnStatement = o.optBoolean("photoOnStatement", false),
+        businessPhone = o.optNullableString("businessPhone")
     )
 
     // Written through the existing setters so trimming/normalisation stays in
@@ -974,6 +978,7 @@ object Backup {
     private fun restoreBusinessProfile(context: Context, p: BusinessProfileData) {
         BusinessProfile.setBusinessName(context, p.businessName)
         BusinessProfile.setBusinessAddress(context, p.businessAddress)
+        BusinessProfile.setBusinessPhone(context, p.businessPhone)
         BusinessProfile.setBankName(context, p.bankName)
         BusinessProfile.setBankAccountTitle(context, p.bankAccountTitle)
         BusinessProfile.setBankIban(context, p.bankIban)

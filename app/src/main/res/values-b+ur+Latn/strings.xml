@@ -1459,4 +1459,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bp_leave_msg">Is screen par aap ki tabdeeliyan zaya ho jayengi.</string>
     <string name="bp_leave_discard">Chhor dein</string>
     <string name="bp_leave_keep">Tarmeem jaari rakhein</string>
+    <string name="bp_phone">Phone number</string>
+    <string name="bp_phone_help">Invoice par chhapta hai taake customer aap ko call kar sakein.</string>
+    <string name="bp_phone_hint">Maslan 0300 1234567</string>
 </resources>

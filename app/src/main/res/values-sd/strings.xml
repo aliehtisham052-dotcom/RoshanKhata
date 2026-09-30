@@ -1487,4 +1487,7 @@
     <string name="bp_leave_msg">هن اسڪرين تي توهان جون تبديليون ضايع ٿي وينديون.</string>
     <string name="bp_leave_discard">ڇڏي ڏيو</string>
     <string name="bp_leave_keep">ترميم جاري رکو</string>
+    <string name="bp_phone">فون نمبر</string>
+    <string name="bp_phone_help">انوائس تي ڇپجي ٿو ته جيئن گراهڪ توهان کي فون ڪري سگهن.</string>
+    <string name="bp_phone_hint">مثال 0300 1234567</string>
 </resources>

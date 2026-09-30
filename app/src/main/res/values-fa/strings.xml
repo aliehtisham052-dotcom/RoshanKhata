@@ -1487,4 +1487,7 @@
     <string name="bp_leave_msg">تغییرات شما در این صفحه از بین می‌رود.</string>
     <string name="bp_leave_discard">رها کردن</string>
     <string name="bp_leave_keep">ادامهٔ ویرایش</string>
+    <string name="bp_phone">شمارهٔ تلفن</string>
+    <string name="bp_phone_help">روی فاکتور چاپ می‌شود تا مشتریان با شما تماس بگیرند.</string>
+    <string name="bp_phone_hint">مثلاً 0300 1234567</string>
 </resources>
