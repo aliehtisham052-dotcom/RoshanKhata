@@ -1236,6 +1236,7 @@
     <string name="add_line">+ افزودن کالا</string>
     <string name="lines_total_fill">جمع کالاها %1$s. برای پر کردن بزنید.</string>
     <string name="lines_total_unknown">یک کالا نرخ ندارد، پس جمعی نیست.</string>
+    <string name="lines_total_need_qty">برای جمع، مقدار را وارد کنید.</string>
     <string name="lines_amount_less">کالاها %1$s · نوشته %2$s · %3$s کمتر</string>
     <string name="lines_amount_more">کالاها %1$s · نوشته %2$s · %3$s بیشتر</string>
     <string name="line_need_name">نام کالا را بنویسید</string>

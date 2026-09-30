@@ -741,11 +741,19 @@ class PartyDetailActivity : BaseActivity() {
         // sale-only ever flashes up on a supplier's account.
         var partyIsCustomer = false
         val lines = mutableListOf<LineDraft>()
-        // The amount follows the items' total, as a bill does, until the
-        // owner writes a figure of his own (a discount, a round-off). An
-        // empty box hands it back to the items. A plain entry with no items
-        // is untouched: the first key he presses makes the figure his.
-        var amountAuto = etAmount.text.isBlank()
+        // The amount follows the items' total, as a bill does. Two facts,
+        // kept apart so neither is guessed from the other:
+        //  - amountOwn: the owner wrote the figure while goods were on the
+        //    form (a discount, a round-off). The items leave it alone.
+        //    A figure typed BEFORE any goods is not that: it cannot be a
+        //    discount on items not yet written, so the items' total replaces
+        //    it the moment there is one (30 Sep 2026: 8,787 typed first,
+        //    then 2 x 1,300 stayed 8,787 and the receipt read 'Rs 6,187 more').
+        //  - amountByItems: the figure in the box is one the items wrote, so
+        //    it goes when the items go. Only such a figure is ever cleared:
+        //    a plain entry's typed amount never is.
+        var amountOwn = false
+        var amountByItems = false
         // True only while the items are writing the box, so that write is
         // not mistaken for the owner's.
         var autoWriting = false
@@ -814,6 +822,7 @@ class PartyDetailActivity : BaseActivity() {
             try {
                 etAmount.setText(text)
                 etAmount.setSelection(etAmount.text.length)
+                amountByItems = text.isNotEmpty()
             } finally {
                 autoWriting = false
             }
@@ -834,7 +843,7 @@ class PartyDetailActivity : BaseActivity() {
             if (isReturn()) paymentSection.visibility = if (all.isEmpty()) View.VISIBLE else View.GONE
             if (all.isEmpty()) {
                 // Every item removed: a figure the items wrote goes with them.
-                if (amountAuto && etAmount.text.isNotEmpty()) writeAmount("")
+                if (amountByItems && etAmount.text.isNotEmpty()) writeAmount("")
                 return
             }
 
@@ -845,9 +854,16 @@ class PartyDetailActivity : BaseActivity() {
 
             val total = EntryLines.total(all)
             if (total == null) {
-                // Only worth saying once there is a list; a single item with
-                // no rate is an ordinary entry, as it always was.
-                if (lines.isNotEmpty()) note(getString(R.string.lines_total_unknown))
+                // Said once there is a list, or whenever the box is empty and
+                // Save therefore off: the owner must learn why (a single item
+                // with a rate but no quantity used to leave Save grey, silent).
+                // Name what is missing: the quantity first, as the form reads.
+                if (lines.isNotEmpty() || etAmount.text.isBlank()) {
+                    note(getString(
+                        if (all.any { it.quantity == null }) R.string.lines_total_need_qty
+                        else R.string.lines_total_unknown
+                    ))
+                }
                 return
             }
             // Following the items: the box is the total, live, item by item.
@@ -856,7 +872,7 @@ class PartyDetailActivity : BaseActivity() {
             val written = Calc.evalAmount(etAmount.text.toString())
             // A total of 0 (a rate of 0) is not an amount: the box would read
             // it as empty and be written again, forever. Leave it to the owner.
-            if (amountAuto && total > 0.0 && (written == null ||
+            if (!amountOwn && total > 0.0 && (written == null ||
                     EntryLines.compare(total, written) !is EntryLines.AmountCheck.Equal)) {
                 writeAmount(Calc.trim(total))
             }
@@ -868,7 +884,7 @@ class PartyDetailActivity : BaseActivity() {
             btnTotalFill.visibility = View.VISIBLE
             btnTotalFill.text = getString(R.string.lines_total_fill, Format.money(total))
             btnTotalFill.setOnClickListener {
-                amountAuto = true
+                amountOwn = false
                 writeAmount(Calc.trim(total))
             }
             if (amount == null) return
@@ -1102,9 +1118,12 @@ class PartyDetailActivity : BaseActivity() {
         }
         etRate.addTextChangedListener(simpleWatcher { refreshRateSuggestion(fill = false) })
         etAmount.addTextChangedListener(simpleWatcher {
-            // Any change but the items' own write is the owner's figure;
-            // clearing the box hands it back to the items.
-            if (!autoWriting) amountAuto = etAmount.text.isBlank()
+            // The owner's own change. It is his figure only when goods are
+            // already on the form; before that, or cleared, the items rule.
+            if (!autoWriting) {
+                amountByItems = false
+                amountOwn = etAmount.text.isNotBlank() && (lines.isNotEmpty() || editorDraft() != null)
+            }
             refreshTotal()
         })
 
@@ -1376,10 +1395,13 @@ class PartyDetailActivity : BaseActivity() {
                 )
             })
             // Saved at exactly its items' total: keeps following them. Saved
-            // at a figure of its own (a discount): keeps that figure.
-            amountAuto = EntryLines.total(lines)?.let {
+            // at a figure of its own (a discount, or items with no total):
+            // keeps that figure.
+            val savedAtTotal = EntryLines.total(lines)?.let {
                 EntryLines.compare(it, e.amount) is EntryLines.AmountCheck.Equal
             } ?: false
+            amountByItems = savedAtTotal
+            amountOwn = lines.isNotEmpty() && !savedAtTotal
             renderLines()
             refreshRateSuggestion()
         }

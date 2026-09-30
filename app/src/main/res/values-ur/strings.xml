@@ -1208,6 +1208,7 @@
     <string name="add_line">+ اور آئٹم</string>
     <string name="lines_total_fill">آئٹمز کا جوڑ %1$s۔ بھرنے کے لیے دبائیں۔</string>
     <string name="lines_total_unknown">کسی آئٹم کا ریٹ نہیں، اس لیے جوڑ نہیں بن سکتا۔</string>
+    <string name="lines_total_need_qty">جوڑ کے لیے مقدار لکھیں۔</string>
     <string name="lines_amount_less">آئٹمز %1$s · لکھا %2$s · %3$s کم</string>
     <string name="lines_amount_more">آئٹمز %1$s · لکھا %2$s · %3$s زیادہ</string>
     <string name="line_need_name">شے کا نام لکھیں</string>
