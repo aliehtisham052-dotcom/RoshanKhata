@@ -742,6 +742,14 @@ class PartyDetailActivity : BaseActivity() {
         // sale-only ever flashes up on a supplier's account.
         var partyIsCustomer = false
         val lines = mutableListOf<LineDraft>()
+        // The amount follows the items' total, as a bill does, until the
+        // owner writes a figure of his own (a discount, a round-off). An
+        // empty box hands it back to the items. A plain entry with no items
+        // is untouched: the first key he presses makes the figure his.
+        var amountAuto = etAmount.text.isBlank()
+        // True only while the items are writing the box, so that write is
+        // not mistaken for the owner's.
+        var autoWriting = false
         // The value the app itself last put in the Rate box. Anything else
         // there was typed by the owner, and is left alone.
         var autoRate: Double? = null
@@ -803,6 +811,16 @@ class PartyDetailActivity : BaseActivity() {
             )
         }
 
+        fun writeAmount(text: String) {
+            autoWriting = true
+            try {
+                etAmount.setText(text)
+                etAmount.setSelection(etAmount.text.length)
+            } finally {
+                autoWriting = false
+            }
+        }
+
         fun refreshTotal() {
             returnChecked = false
             // "Last time's items" only on an empty new sale form.
@@ -816,7 +834,11 @@ class PartyDetailActivity : BaseActivity() {
             // Goods coming back were not "paid" by cash, bank or cheque:
             // "How was it paid?" makes no sense on a return and is hidden.
             if (isReturn()) paymentSection.visibility = if (all.isEmpty()) View.VISIBLE else View.GONE
-            if (all.isEmpty()) return
+            if (all.isEmpty()) {
+                // Every item removed: a figure the items wrote goes with them.
+                if (amountAuto && etAmount.text.isNotEmpty()) writeAmount("")
+                return
+            }
 
             fun note(text: String) {
                 tvLinesNote.text = text
@@ -830,13 +852,24 @@ class PartyDetailActivity : BaseActivity() {
                 if (lines.isNotEmpty()) note(getString(R.string.lines_total_unknown))
                 return
             }
+            // Following the items: the box is the total, live, item by item.
+            // The write re-enters here through the box's watcher and finds
+            // the figures equal, so it stops there.
+            val written = Calc.evalAmount(etAmount.text.toString())
+            if (amountAuto && (written == null ||
+                    EntryLines.compare(total, written) !is EntryLines.AmountCheck.Equal)) {
+                writeAmount(Calc.trim(total))
+            }
+            val amount = Calc.evalAmount(etAmount.text.toString())
+            if (amount != null && EntryLines.compare(total, amount) is EntryLines.AmountCheck.Equal) return
+            // The owner's own figure differs: offer the items' total back.
             btnTotalFill.visibility = View.VISIBLE
             btnTotalFill.text = getString(R.string.lines_total_fill, Format.money(total))
             btnTotalFill.setOnClickListener {
-                etAmount.setText(Calc.trim(total))
-                etAmount.setSelection(etAmount.text.length)
+                amountAuto = true
+                writeAmount(Calc.trim(total))
             }
-            val amount = Calc.evalAmount(etAmount.text.toString()) ?: return
+            if (amount == null) return
             when (val check = EntryLines.compare(total, amount)) {
                 is EntryLines.AmountCheck.Equal -> Unit
                 is EntryLines.AmountCheck.Less -> note(
@@ -1065,7 +1098,12 @@ class PartyDetailActivity : BaseActivity() {
             }
         }
         etRate.addTextChangedListener(simpleWatcher { refreshRateSuggestion(fill = false) })
-        etAmount.addTextChangedListener(simpleWatcher { refreshTotal() })
+        etAmount.addTextChangedListener(simpleWatcher {
+            // Any change but the items' own write is the owner's figure;
+            // clearing the box hands it back to the items.
+            if (!autoWriting) amountAuto = etAmount.text.isBlank()
+            refreshTotal()
+        })
 
         // Whether this is a customer decides everything sale-only above.
         lifecycleScope.launch {
@@ -1331,6 +1369,11 @@ class PartyDetailActivity : BaseActivity() {
                     isBonus = it.isBonus
                 )
             })
+            // Saved at exactly its items' total: keeps following them. Saved
+            // at a figure of its own (a discount): keeps that figure.
+            amountAuto = EntryLines.total(lines)?.let {
+                EntryLines.compare(it, e.amount) is EntryLines.AmountCheck.Equal
+            } ?: false
             renderLines()
             refreshRateSuggestion()
         }

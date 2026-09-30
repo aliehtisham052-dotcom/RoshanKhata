@@ -1275,7 +1275,7 @@
     <!-- Entry screen (dialog_add_entry) -->
     <string name="entry_header_gave">به %1$s دادید · %2$s</string>
     <string name="entry_header_got">از %1$s گرفتید · %2$s</string>
-    <string name="entry_details_chip">+ یادداشت / کالا</string>
+    <string name="entry_details_chip">+ کالا / یادداشت</string>
     <string name="entry_preview_title">حساب %1$s</string>
     <string name="entry_preview_line">اکنون %1$s  ←  پس از این %2$s</string>
     <string name="entry_bill_chip">عکس فاکتور</string>
