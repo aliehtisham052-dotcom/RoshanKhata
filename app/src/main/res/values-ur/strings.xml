@@ -1390,9 +1390,6 @@
     <string name="pdf_insp_sum_no_expiry">اسٹاک میں جن کی میعاد درج نہیں</string>
     <string name="pdf_insp_sum_incomplete">پروڈکٹس جن کی لیبل تفصیل ادھوری ہے</string>
     <string name="pdf_insp_sec_current">موجودہ اسٹاک</string>
-    <string name="pdf_insp_sec_batches">بیچ کے حساب سے اسٹاک</string>
-    <string name="pdf_insp_sec_expiry">میعاد رپورٹ</string>
-    <string name="pdf_insp_sec_missing">لیبل تفصیل ابھی ادھوری</string>
     <string name="pdf_insp_sec_company">کمپنی کے حساب سے اسٹاک</string>
     <string name="pdf_insp_sec_cont">%1$s (جاری)</string>
     <string name="pdf_insp_no_movement">ابھی کوئی اسٹاک حرکت درج نہیں۔</string>
@@ -1409,18 +1406,12 @@
     <string name="pdf_insp_col_expiry">میعاد</string>
     <string name="pdf_insp_col_left">باقی</string>
     <string name="pdf_insp_col_status">حالت</string>
-    <string name="pdf_insp_col_still_missing">ابھی درج نہیں</string>
-    <string name="pdf_insp_batches_note">ہر وہ بیچ جس میں اسٹاک باقی ہے، پہلے سب سے پہلے ختم ہونے والا، اس کے بل کے ساتھ۔</string>
     <string name="pdf_insp_no_batches">اسٹاک میں کوئی بیچ نہیں۔ بیچ اور میعاد سپلائر بل پر درج ہوتی ہے۔</string>
-    <string name="pdf_insp_expiry_note">پہلے میعاد ختم اسٹاک، پھر جو %1$d دن میں ختم ہوگا۔</string>
-    <string name="pdf_insp_nothing_expiring">نہ کچھ ختم ہوا اور نہ %1$d دن میں ہو رہا ہے۔</string>
-    <string name="pdf_insp_no_expiry_note">اسٹاک کے %1$d بیچ پر میعاد درج نہیں، اس لیے ان کی جانچ نہیں ہو سکتی۔</string>
     <string name="pdf_insp_missing_note">نیچے ہر پروڈکٹ اسٹاک میں ہے لیکن اس کے ایک یا زیادہ لیبل خانے کبھی درج نہیں ہوئے۔</string>
     <string name="pdf_insp_expired">میعاد ختم</string>
     <string name="pdf_insp_expired_ago">میعاد ختم \u00B7 %1$d دن پہلے</string>
     <string name="pdf_insp_days_left">%1$d دن باقی</string>
     <string name="pdf_insp_units_differ">یونٹ مختلف</string>
-    <string name="pdf_insp_in_out">آیا %1$s \u00B7 گیا %2$s</string>
     <string name="pdf_insp_company_tag">کمپنی</string>
     <plurals name="pdf_insp_products">
         <item quantity="one">%d پروڈکٹ</item>
@@ -1434,6 +1425,19 @@
     <string name="pdf_insp_miss_reg">رجسٹریشن نمبر</string>
     <string name="pdf_insp_dealer_sign">ڈیلر کے دستخط</string>
     <string name="pdf_insp_inspector_sign">انسپکٹر کے دستخط</string>
+    <string name="pdf_insp_as_of">بتاریخ %1$s</string>
+    <string name="pdf_insp_col_in">آمد</string>
+    <string name="pdf_insp_col_out">فروخت</string>
+    <string name="pdf_insp_current_note">آمد = بلوں پر خریدا \u00B7 فروخت = بیچا \u00B7 موجود = آمد \u2212 فروخت</string>
+    <string name="pdf_insp_no_total">کل میزان نہیں: پروڈکٹس مختلف اکائیوں میں گنی جاتی ہیں۔</string>
+    <string name="pdf_insp_sec_batch_expiry">بیچ اور میعاد</string>
+    <string name="pdf_insp_batch_expiry_note">پہلے میعاد ختم، پھر %1$d دن میں ختم ہونے والا، پھر باقی \u2014 ہر ایک اپنے بل کے ساتھ۔</string>
+    <string name="pdf_insp_status_ok">میعاد میں</string>
+    <string name="pdf_insp_sec_checklist">لیبل تفصیلات کی فہرست</string>
+    <string name="pdf_insp_col_missing">کمی</string>
+    <string name="pdf_insp_chip_missing">درج نہیں</string>
+    <string name="pdf_insp_missing_of">%2$d میں سے %1$d</string>
+    <string name="pdf_insp_date_blank">تاریخ: ____________</string>
 
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">گاہک</string>
