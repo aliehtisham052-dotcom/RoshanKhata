@@ -14,12 +14,22 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.ProfileChecks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * The owner's own details: business name and payment QR.
+ * Business Profile: everything the shop prints on its invoices, statements
+ * and reports — name, address, STRN, bank and wallet rows, payment QR, stamp,
+ * signature, terms.
+ *
+ * Redesigned 30 Sep 2026 (owner-approved mockup): labelled Material fields
+ * whose label stays visible after typing, a live preview of the invoice
+ * header, Add/Change buttons that say what they will do, a pinned Save with
+ * an "unsaved changes" line, and a question before leaving with unsaved
+ * edits. IBAN and wallet numbers are checked as typed; a warning never
+ * blocks Save, because an account number that is not an IBAN is legitimate.
  *
  * The QR is picked through the system photo picker, which needs no storage
  * permission — the user grants access to exactly the one image they choose,
@@ -30,21 +40,23 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var etBusinessName: EditText
     private lateinit var etBusinessAddress: EditText
     private lateinit var ivQrPreview: ImageView
-    private lateinit var tvNoQr: TextView
+    private lateinit var tvNoQr: View
     private lateinit var btnRemoveQr: MaterialButton
 
     private lateinit var ivSignaturePreview: ImageView
-    private lateinit var tvNoSignature: TextView
+    private lateinit var tvNoSignature: View
     private lateinit var btnRemoveSignature: MaterialButton
 
     private lateinit var ivStampPreview: ImageView
-    private lateinit var tvNoStamp: TextView
+    private lateinit var tvNoStamp: View
     private lateinit var btnRemoveStamp: MaterialButton
 
     // The small "how this prints" card at the top of the screen. It mirrors
     // the same three things a statement actually shows — name, stamp, QR —
     // so a mistake is caught here, not on a document a customer already has.
     private lateinit var tvPreviewBusinessName: TextView
+    private lateinit var tvPreviewInitials: TextView
+    private lateinit var tvPreviewDetails: TextView
     private lateinit var ivPreviewStampThumb: ImageView
     private lateinit var tvPreviewStampPlaceholder: View
     private lateinit var ivPreviewQrThumb: ImageView
@@ -56,6 +68,34 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var etBankJazzCash: EditText
     private lateinit var etInvoiceTerms: EditText
     private lateinit var etStrn: EditText
+    private lateinit var tvUnsaved: TextView
+    private lateinit var btnPickQr: MaterialButton
+    private lateinit var btnPickStamp: MaterialButton
+    private lateinit var btnPickSignature: MaterialButton
+
+    /** The text fields as they were loaded, to tell whether anything changed. */
+    private var saved: List<String> = emptyList()
+    private val fields: List<EditText> get() = listOf(
+        etBusinessName, etBusinessAddress, etStrn,
+        etBankName, etBankTitle, etBankIban, etBankJazzCash, etInvoiceTerms
+    )
+    private fun current(): List<String> = fields.map { it.text.toString().trim() }
+    private val isDirty: Boolean get() = current() != saved
+
+    /** Asks before a back press throws typed changes away; only armed while something is unsaved. */
+    private val leaveGuard = object : androidx.activity.OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            MaterialAlertDialogBuilder(this@BusinessSettingsActivity)
+                .setTitle(R.string.bp_leave_title)
+                .setMessage(R.string.bp_leave_msg)
+                .setNegativeButton(R.string.bp_leave_keep, null)
+                .setPositiveButton(R.string.bp_leave_discard) { _, _ ->
+                    isEnabled = false
+                    finish()
+                }
+                .show()
+        }
+    }
 
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -142,6 +182,12 @@ class BusinessSettingsActivity : BaseActivity() {
         etBankJazzCash = findViewById(R.id.etBankJazzCash)
         etInvoiceTerms = findViewById(R.id.etInvoiceTerms)
         etStrn = findViewById(R.id.etStrn)
+        tvUnsaved = findViewById(R.id.tvUnsaved)
+        btnPickQr = findViewById(R.id.btnPickQr)
+        btnPickStamp = findViewById(R.id.btnPickStamp)
+        btnPickSignature = findViewById(R.id.btnPickSignature)
+        tvPreviewInitials = findViewById(R.id.tvPreviewInitials)
+        tvPreviewDetails = findViewById(R.id.tvPreviewDetails)
 
         tvPreviewBusinessName = findViewById(R.id.tvPreviewBusinessName)
         ivPreviewStampThumb = findViewById(R.id.ivPreviewStampThumb)
@@ -158,7 +204,7 @@ class BusinessSettingsActivity : BaseActivity() {
         etInvoiceTerms.setText(BusinessProfile.termsAndConditions(this).orEmpty())
         etStrn.setText(BusinessProfile.strn(this).orEmpty())
 
-        findViewById<MaterialButton>(R.id.btnPickQr).setOnClickListener {
+        btnPickQr.setOnClickListener {
             pickImage.launch(
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
@@ -166,24 +212,30 @@ class BusinessSettingsActivity : BaseActivity() {
 
         btnRemoveQr.setOnClickListener { confirmRemoveQr() }
 
-        findViewById<MaterialButton>(R.id.btnPickSignature).setOnClickListener {
+        btnPickSignature.setOnClickListener {
             pickSignature.launch(
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
         }
         btnRemoveSignature.setOnClickListener {
-            BusinessProfile.removeSignature(this)
-            refreshSignature()
+            // The remove button is a small icon now; one tap on it by accident
+            // must not throw the signature away, so it asks first, as the QR does.
+            confirmRemove(R.string.remove_signature, R.string.signature) {
+                BusinessProfile.removeSignature(this)
+                refreshSignature()
+            }
         }
 
-        findViewById<MaterialButton>(R.id.btnPickStamp).setOnClickListener {
+        btnPickStamp.setOnClickListener {
             pickStamp.launch(
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
         }
         btnRemoveStamp.setOnClickListener {
-            BusinessProfile.removeStamp(this)
-            refreshStamp()
+            confirmRemove(R.string.remove_stamp, R.string.stamp) {
+                BusinessProfile.removeStamp(this)
+                refreshStamp()
+            }
         }
 
         findViewById<MaterialButton>(R.id.btnSaveProfile).setOnClickListener {
@@ -202,6 +254,7 @@ class BusinessSettingsActivity : BaseActivity() {
             BusinessProfile.setTermsAndConditions(this, etInvoiceTerms.text.toString().trim().ifEmpty { null })
             BusinessProfile.setStrn(this, etStrn.text.toString().trim().ifEmpty { null })
             Toast.makeText(this, R.string.profile_saved, Toast.LENGTH_SHORT).show()
+            leaveGuard.isEnabled = false
             finish()
         }
 
@@ -213,24 +266,75 @@ class BusinessSettingsActivity : BaseActivity() {
             BusinessProfile.setPhotoOnStatement(this, on)
         }
 
-        // Preview name starts from whatever is already saved (falling back to
-        // the app name in XML, same as the khata header does), then tracks
-        // every keystroke so the preview always matches the field above it.
-        BusinessProfile.businessName(this)?.takeIf { it.isNotBlank() }?.let {
-            tvPreviewBusinessName.text = it
-        }
-        etBusinessName.addTextChangedListener(object : android.text.TextWatcher {
+        // The preview tracks every keystroke, so it always matches the
+        // fields below it — a mistake is caught here, not on a document a
+        // customer already has.
+        saved = current()
+        onBackPressedDispatcher.addCallback(this, leaveGuard)
+        val watcher = object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: android.text.Editable?) {
-                val typed = s?.toString()?.trim().orEmpty()
-                tvPreviewBusinessName.text = typed.ifEmpty { getString(R.string.app_name) }
+                refreshPreviewText()
+                val dirty = isDirty
+                tvUnsaved.visibility = if (dirty) View.VISIBLE else View.GONE
+                leaveGuard.isEnabled = dirty
             }
-        })
+        }
+        fields.forEach { it.addTextChangedListener(watcher) }
+        refreshPreviewText()
+
+        // IBAN and wallet number: checked when the owner leaves the box, and
+        // cleared as soon as it is corrected. A warning, never a block.
+        val tilIban = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankIban)
+        val tilWallet = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankJazzCash)
+        fun checkIban() {
+            tilIban.error = if (ProfileChecks.ibanLooksWrong(etBankIban.text.toString())) getString(R.string.bp_iban_bad) else null
+        }
+        fun checkWallet() {
+            tilWallet.error = if (ProfileChecks.mobileLooksWrong(etBankJazzCash.text.toString())) getString(R.string.bp_mobile_bad) else null
+        }
+        etBankIban.setOnFocusChangeListener { _, has -> if (!has) checkIban() }
+        etBankJazzCash.setOnFocusChangeListener { _, has -> if (!has) checkWallet() }
+        etBankIban.addTextChangedListener(afterChange { if (tilIban.error != null) checkIban() })
+        etBankJazzCash.addTextChangedListener(afterChange { if (tilWallet.error != null) checkWallet() })
+        checkIban()
+        checkWallet()
 
         refreshQr()
         refreshSignature()
         refreshStamp()
+    }
+
+    private fun afterChange(block: () -> Unit) = object : android.text.TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        override fun afterTextChanged(s: android.text.Editable?) = block()
+    }
+
+    /**
+     * The preview's name, the initials in its logo square, and one detail
+     * line — address and STRN — exactly as the invoice header prints them.
+     */
+    private fun refreshPreviewText() {
+        val name = etBusinessName.text.toString().trim()
+        tvPreviewBusinessName.text = name.ifEmpty { getString(R.string.app_name) }
+        tvPreviewInitials.text = ProfileChecks.initials(name.ifEmpty { getString(R.string.app_name) })
+        val details = listOfNotNull(
+            etBusinessAddress.text.toString().trim().ifEmpty { null },
+            etStrn.text.toString().trim().ifEmpty { null }?.let { "STRN $it" }
+        ).joinToString(" \u00B7 ")
+        tvPreviewDetails.text = details
+        tvPreviewDetails.visibility = if (details.isEmpty()) View.GONE else View.VISIBLE
+    }
+
+    private fun confirmRemove(title: Int, message: Int, onYes: () -> Unit) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(title) { _, _ -> onYes() }
+            .show()
     }
 
     private fun saveSignature(uri: Uri) {
@@ -256,11 +360,13 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivSignaturePreview.visibility = android.view.View.GONE
                 tvNoSignature.visibility = android.view.View.VISIBLE
                 btnRemoveSignature.visibility = android.view.View.GONE
+                btnPickSignature.setText(R.string.bp_add)
             } else {
                 ivSignaturePreview.setImageBitmap(signature)
                 ivSignaturePreview.visibility = android.view.View.VISIBLE
                 tvNoSignature.visibility = android.view.View.GONE
                 btnRemoveSignature.visibility = android.view.View.VISIBLE
+                btnPickSignature.setText(R.string.bp_change)
             }
         }
     }
@@ -297,6 +403,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivStampPreview.visibility = View.GONE
                 tvNoStamp.visibility = View.VISIBLE
                 btnRemoveStamp.visibility = View.GONE
+                btnPickStamp.setText(R.string.bp_add)
                 ivPreviewStampThumb.visibility = View.GONE
                 tvPreviewStampPlaceholder.visibility = View.VISIBLE
             } else {
@@ -304,6 +411,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivStampPreview.visibility = View.VISIBLE
                 tvNoStamp.visibility = View.GONE
                 btnRemoveStamp.visibility = View.VISIBLE
+                btnPickStamp.setText(R.string.bp_change)
                 ivPreviewStampThumb.setImageBitmap(stamp)
                 ivPreviewStampThumb.visibility = View.VISIBLE
                 tvPreviewStampPlaceholder.visibility = View.GONE
@@ -379,6 +487,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivQrPreview.visibility = View.VISIBLE
                 tvNoQr.visibility = View.GONE
                 btnRemoveQr.visibility = View.VISIBLE
+                btnPickQr.setText(R.string.bp_change)
                 ivPreviewQrThumb.setImageBitmap(bitmap)
                 ivPreviewQrThumb.visibility = View.VISIBLE
                 tvPreviewQrPlaceholder.visibility = View.GONE
@@ -386,6 +495,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivQrPreview.visibility = View.GONE
                 tvNoQr.visibility = View.VISIBLE
                 btnRemoveQr.visibility = View.GONE
+                btnPickQr.setText(R.string.bp_add)
                 ivPreviewQrThumb.visibility = View.GONE
                 tvPreviewQrPlaceholder.visibility = View.VISIBLE
             }

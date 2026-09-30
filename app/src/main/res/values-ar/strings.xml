@@ -292,31 +292,20 @@
     <string name="ok">حسنًا</string>
 
     <string name="business_settings">إعدادات النشاط التجاري</string>
-    <string name="business_profile">الملف الشخصي</string>
-    <string name="profile_preview_caption">هكذا سيظهر ملفك الشخصي على الفواتير والكشوف.</string>
-    <string name="profile_section_business">العمل</string>
-    <string name="profile_section_seals">الأختام والتوقيعات</string>
-    <string name="profile_section_statement">خيارات الكشف</string>
-    <string name="profile_section_payment_tax">الدفع والضرائب</string>
-    <string name="business_settings_subtitle">اسمك ورمز الدفع على الكشوف</string>
+    <string name="business_profile">ملف النشاط التجاري</string>
+    <string name="profile_preview_caption">معاينة مباشرة لرأس فاتورتك</string>
+    <string name="business_settings_subtitle">تُطبع على فواتيرك وكشوفك وتقاريرك</string>
     <string name="business_name">اسم النشاط التجاري</string>
-    <string name="business_name_help">يظهر أعلى كل كشف وفي نهاية كل تذكير ترسله.</string>
     <string name="business_name_hint">مثل بهاتي للتجارة</string>
     <string name="business_address">عنوان المحل</string>
-    <string name="business_address_help">يُطبع تحت اسم نشاطك التجاري في كل فاتورة.</string>
     <string name="business_address_hint">مثل السوق الرئيسي، باسرور</string>
-    <string name="invoice_bank_details">تفاصيل الحساب البنكي</string>
-    <string name="invoice_bank_details_help">لمربع الدفع في قوالب الفواتير التي تعرضه. اترك أيًا منها فارغًا ليُحذف ذلك السطر.</string>
     <string name="invoice_bank_name_hint">اسم البنك</string>
     <string name="invoice_bank_title_hint">اسم صاحب الحساب</string>
     <string name="invoice_bank_iban_hint">رقم الآيبان / الحساب</string>
     <string name="invoice_bank_jazzcash_hint">رقم جاز كاش / إيزي بيسا</string>
 
     <string name="payment_qr">رمز QR للدفع</string>
-    <string name="payment_qr_help">لقطة شاشة أو صورة لرمز QR الخاص بـ EasyPaisa أو JazzCash — يقتصّ التطبيق تلقائيًا على الرمز فقط. سيُرفق بكشوف الحساب حتى يتمكن العميل من المسح والدفع.</string>
-    <string name="payment_qr_caveat">افحص الرمز جيدًا قبل الحفظ. لا يستطيع روشن كهاتا التحقق لمن يعود الرمز — إن حُفظت صورة خاطئة ذهب دفع العميل إلى حساب آخر.\n\nولاحظ: رمز QR الشخصي لا يحمل المبلغ. سيكتبه عميلك بنفسه، لذا يُكتب المبلغ بوضوح بجانبه.</string>
     <string name="no_qr_yet">لا رمز دفع محفوظ بعد.</string>
-    <string name="choose_qr_image">اختيار صورة</string>
     <string name="remove_qr">إزالة</string>
     <string name="qr_saved">حُفظ رمز الدفع</string>
     <string name="qr_save_failed">تعذر حفظ هذه الصورة. اختر أخرى.</string>
@@ -748,10 +737,7 @@
     <string name="invoice_charge_amount_hint">المبلغ</string>
     <string name="invoice_received_hint">المبلغ المستلم (اختياري)</string>
     <string name="invoice_terms">الشروط والأحكام</string>
-    <string name="invoice_terms_help">تُطبع تلقائيًا على كل فاتورة. اتركها فارغة لعدم طباعة شيء.</string>
     <string name="invoice_terms_hint">مثل السداد خلال 14 يومًا.</string>
-    <string name="invoice_strn">رقم تسجيل ضريبة المبيعات (STRN)</string>
-    <string name="invoice_strn_help">فقط إذا كان هذا المحل مسجلاً لضريبة المبيعات. اتركه فارغًا خلاف ذلك — يُطبع على كل فاتورة عند تعبئته، ولا يُطبع إطلاقًا إن لم يُملأ.</string>
     <string name="invoice_strn_hint">مثل 1234567-8 (اختياري)</string>
     <string name="adjust_crop_title">ضبط الاقتصاص</string>
     <string name="adjust_crop_hint">اسحب الزوايا حتى يغطي الإطار الجزء المطلوب فقط.</string>
@@ -1103,21 +1089,15 @@
     <string name="biz_tpl_olive">ظرف</string>
     <string name="biz_tpl_stamp">نصل</string>
     <string name="signature">التوقيع</string>
-    <string name="signature_help">صوّر توقيعك على ورق عادي — يقتصّ التطبيق تلقائيًا على الحبر فقط. يُطبع أسفل كشوف الحساب التي ترسلها، ويبقى على هذا الهاتف.</string>
     <string name="no_signature_yet">لم تتم إضافة توقيع بعد.</string>
-    <string name="choose_signature">اختر التوقيع</string>
     <string name="remove_signature">إزالة</string>
     <string name="signature_saved">تم حفظ التوقيع.</string>
     <string name="signature_save_failed">تعذّر حفظ تلك الصورة.</string>
     <string name="stamp">الختم</string>
-    <string name="stamp_help">صوّر ختم محلك على ورق عادي — يقتصّ التطبيق تلقائيًا على الختم فقط. يظهر تلقائيًا على الفاتورة إذا أضفت واحدًا — وإلا يُطبع اسمك وعنوانك فقط.</string>
     <string name="no_stamp_yet">لم يُضَف ختم بعد.</string>
-    <string name="choose_stamp">اختر الختم</string>
     <string name="remove_stamp">إزالة</string>
     <string name="stamp_saved">تم حفظ الختم.</string>
     <string name="stamp_save_failed">تعذّر حفظ تلك الصورة.</string>
-    <string name="photo_on_statement">تضمين صورة العميل في كشف الحساب</string>
-    <string name="photo_on_statement_help">معطّل افتراضيًا. تفعيله يطبع صورة العميل على كشف حسابه فيصعب إنكاره — لكن الكشف قد يُعاد إرساله، وتنتقل صورته معه.</string>
     <string name="made_with_app">روشن كهاتا</string>
     <string name="more_details">أضف ملاحظة أو بضاعة أو حالة التحصيل</string>
     <string name="back_to_amount">العودة إلى المبلغ</string>
@@ -1589,4 +1569,26 @@
     <string name="theme_light">فاتح</string>
     <string name="theme_dark">داكن</string>
     <string name="theme_system">حسب الهاتف</string>
+    <string name="bp_section_identity">الهوية</string>
+    <string name="bp_section_paid">استلام المدفوعات</string>
+    <string name="bp_section_seals">الختم والتوقيع</string>
+    <string name="bp_section_docs">الفاتورة والكشف</string>
+    <string name="bp_strn">رقم ضريبة المبيعات (STRN)</string>
+    <string name="bp_strn_help">فقط إن كنت مسجلًا. فارغ = لا يُطبع.</string>
+    <string name="bp_paid_help">يظهر في خانة الدفع بالفاتورة. الأسطر الفارغة لا تُطبع.</string>
+    <string name="bp_qr">رمز QR للدفع</string>
+    <string name="bp_qr_help">رمز QR لإيزي بيسه / جاز كاش، للكشوف.</string>
+    <string name="bp_add">إضافة</string>
+    <string name="bp_change">تغيير</string>
+    <string name="bp_seals_help">صوّرها على ورق أبيض عادي — يقصّها التطبيق تلقائيًا.</string>
+    <string name="bp_terms_help">تُطبع على كل فاتورة. فارغ = لا شيء.</string>
+    <string name="bp_photo">صورة العميل على الكشوف</string>
+    <string name="bp_photo_help">مُطفأ افتراضيًا — قد يُعاد توجيه الكشف.</string>
+    <string name="bp_unsaved">تغييرات غير محفوظة</string>
+    <string name="bp_iban_bad">يتكون IBAN من 24 حرفًا ويبدأ بـ PK.</string>
+    <string name="bp_mobile_bad">رقم الجوال 11 رقمًا، مثل 03001234567.</string>
+    <string name="bp_leave_title">المغادرة دون حفظ؟</string>
+    <string name="bp_leave_msg">ستضيع تغييراتك في هذه الشاشة.</string>
+    <string name="bp_leave_discard">تجاهل</string>
+    <string name="bp_leave_keep">متابعة التعديل</string>
 </resources>

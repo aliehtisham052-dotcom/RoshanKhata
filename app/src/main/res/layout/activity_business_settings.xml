@@ -1,843 +1,620 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Profile — redesigned to match the ledger's own look (maroon/gold header,
-  clean grouped cards) instead of the old long flat form. A live preview up
-  top shows the name, stamp and QR the way they will actually print, so a
-  mistake is caught here rather than on a statement a customer already has.
-  Every field below keeps its original id — only the surrounding layout and
-  styling changed, so no data-handling code needed to move.
+  Business Profile (redesigned 30 Sep 2026 from the owner's approved mockup).
+
+  Order follows how professional invoicing apps lay out a company profile
+  (identity first, then how you get paid, then seals, then document options):
+  Identity -> Getting paid -> Stamp & signature -> Invoice & statement.
+
+  Every text box is a Material TextInputLayout, so its label moves up and
+  STAYS once text is typed. The old plain EditText showed its name only as a
+  hint, which vanished on typing — four filled bank boxes read "gggg / vgg /
+  bvbb / 999" with nothing to say which was the IBAN.
+
+  Save sits in a bar pinned below the scroll, with an "unsaved changes" line
+  that appears only when something differs from what is stored.
+
+  Every id the activity reads is kept.
 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/page_bg"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <!-- ===== Header ===== -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_header_gradient"
-            android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingTop="20dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="30dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/business_profile"
-                android:textColor="@color/white"
-                android:textSize="21sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/business_settings_subtitle"
-                android:textColor="@color/header_on_dark"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <!-- ===== Live preview card — sits on the header, like a statement ===== -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="-16dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_profile_card"
             android:orientation="vertical">
 
+            <!-- ===== Header ===== -->
             <LinearLayout
+                android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_preview_band_top"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="14dp">
-
-                <ImageView
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:background="@drawable/bg_business_logo"
-                    android:contentDescription="@string/business_profile"
-                    android:padding="7dp"
-                    android:src="@drawable/ic_storefront"
-                    app:tint="@color/gold_on_dark" />
+                android:background="@drawable/bg_header_gradient"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingTop="22dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="46dp">
 
                 <TextView
-                    android:id="@+id/tvPreviewBusinessName"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="@string/app_name"
+                    android:text="@string/business_profile"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/business_settings_subtitle"
+                    android:textColor="@color/header_on_dark"
+                    android:textSize="13sp" />
             </LinearLayout>
 
+            <!-- ===== Live preview: the invoice header as it will print ===== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="14dp">
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="-30dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_profile_card"
+                android:elevation="3dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="14dp">
+
+                    <FrameLayout
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/bg_business_logo">
+
+                        <TextView
+                            android:id="@+id/tvPreviewInitials"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textColor="@color/gold_on_dark"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/ivPreviewLogo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/business_profile"
+                            android:padding="3dp"
+                            android:scaleType="fitCenter"
+                            android:visibility="gone" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvPreviewBusinessName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/app_name"
+                            android:textColor="@color/brand_green_text"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvPreviewDetails"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:textColor="@color/text_muted"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_preview_thumb_slot">
+
+                        <ImageView
+                            android:id="@+id/ivPreviewStampThumb"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/stamp"
+                            android:padding="4dp"
+                            android:scaleType="fitCenter"
+                            android:visibility="gone" />
+
+                        <ImageView
+                            android:id="@+id/tvPreviewStampPlaceholder"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center"
+                            android:alpha="0.35"
+                            android:contentDescription="@string/stamp"
+                            android:src="@drawable/ic_seal_stamp"
+                            app:tint="@color/text_muted" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_preview_thumb_slot">
+
+                        <ImageView
+                            android:id="@+id/ivPreviewQrThumb"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/payment_qr"
+                            android:padding="4dp"
+                            android:scaleType="fitCenter"
+                            android:visibility="gone" />
+
+                        <ImageView
+                            android:id="@+id/tvPreviewQrPlaceholder"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center"
+                            android:alpha="0.35"
+                            android:contentDescription="@string/payment_qr"
+                            android:src="@drawable/ic_qr_scan"
+                            app:tint="@color/text_muted" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/hairline" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="10dp"
                     android:text="@string/profile_preview_caption"
                     android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
-
-                <FrameLayout
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_preview_thumb_slot">
-
-                    <ImageView
-                        android:id="@+id/ivPreviewStampThumb"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/stamp"
-                        android:padding="4dp"
-                        android:scaleType="fitCenter"
-                        android:visibility="gone" />
-
-                    <ImageView
-                        android:id="@+id/tvPreviewStampPlaceholder"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_gravity="center"
-                        android:alpha="0.35"
-                        android:contentDescription="@string/stamp"
-                        android:src="@drawable/ic_seal_stamp"
-                        app:tint="@color/text_muted" />
-                </FrameLayout>
-
-                <FrameLayout
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_marginStart="6dp"
-                    android:background="@drawable/bg_preview_thumb_slot">
-
-                    <ImageView
-                        android:id="@+id/ivPreviewQrThumb"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/payment_qr"
-                        android:padding="3dp"
-                        android:scaleType="fitCenter"
-                        android:visibility="gone" />
-
-                    <ImageView
-                        android:id="@+id/tvPreviewQrPlaceholder"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_gravity="center"
-                        android:alpha="0.35"
-                        android:contentDescription="@string/payment_qr"
-                        android:src="@drawable/ic_qr_scan"
-                        app:tint="@color/text_muted" />
-                </FrameLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- ===== Body ===== -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingTop="18dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp">
-
-            <!-- Section: Business -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="8dp"
-                android:letterSpacing="0.08"
-                android:text="@string/profile_section_business"
-                android:textAllCaps="true"
-                android:textColor="@color/gold_accent"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_profile_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Business name -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@string/business_name"
-                        android:src="@drawable/ic_storefront"
-                        app:tint="@color/gold_accent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/business_name"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/business_name_help"
-                    android:textColor="@color/text_muted"
                     android:textSize="12sp" />
-
-                <EditText
-                    android:id="@+id/etBusinessName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/business_name_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginBottom="18dp"
-                    android:background="@color/hairline" />
-
-                <!-- Shop address -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@string/business_address"
-                        android:src="@drawable/ic_pdf_doc"
-                        app:tint="@color/gold_accent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/business_address"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/business_address_help"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
-
-                <EditText
-                    android:id="@+id/etBusinessAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/business_address_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="textMultiLine"
-                    android:maxLines="3" />
             </LinearLayout>
 
-            <!-- Section: Seals & signatures -->
+            <!-- ===== Identity ===== -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"
-                android:letterSpacing="0.08"
-                android:text="@string/profile_section_seals"
-                android:textAllCaps="true"
-                android:textColor="@color/gold_accent"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                style="@style/ProfileSectionLabel"
+                android:text="@string/bp_section_identity" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_profile_card"
-                android:orientation="vertical"
-                android:padding="16dp">
+            <LinearLayout style="@style/ProfileCard">
 
-                <!-- Stamp -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:hint="@string/business_name"
+                    app:placeholderText="@string/business_name_hint">
 
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@string/stamp"
-                        android:src="@drawable/ic_seal_stamp"
-                        app:tint="@color/gold_accent" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBusinessName"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="textCapWords" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/stamp"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:hint="@string/business_address"
+                    app:placeholderText="@string/business_address_hint">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/stamp_help"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBusinessAddress"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="textPostalAddress|textCapWords" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <ImageView
-                    android:id="@+id/ivStampPreview"
-                    android:layout_width="match_parent"
-                    android:layout_height="110dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_preview_thumb_slot"
-                    android:contentDescription="@string/stamp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    android:visibility="gone" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:hint="@string/bp_strn"
+                    app:helperText="@string/bp_strn_help"
+                    app:placeholderText="@string/invoice_strn_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etStrn"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <!-- ===== Getting paid ===== -->
+            <TextView
+                style="@style/ProfileSectionLabel"
+                android:text="@string/bp_section_paid" />
+
+            <LinearLayout style="@style/ProfileCard">
 
                 <TextView
-                    android:id="@+id/tvNoStamp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:text="@string/no_stamp_yet"
-                    android:visibility="gone"
+                    android:text="@string/bp_paid_help"
                     android:textColor="@color/text_muted"
                     android:textSize="13sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:hint="@string/invoice_bank_name_hint">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPickStamp"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:minHeight="48dp"
-                        android:text="@string/choose_stamp"
-                        app:backgroundTint="@color/button_dark"
-                        app:cornerRadius="10dp" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBankName"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="textCapWords" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnRemoveStamp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:minHeight="48dp"
-                        android:text="@string/remove_stamp"
-                        android:textColor="@color/red_gave_text"
-                        android:visibility="gone"
-                        app:cornerRadius="10dp"
-                        app:strokeColor="@color/red_gave" />
-                </LinearLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:hint="@string/invoice_bank_title_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBankTitle"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="textPersonName|textCapWords" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilBankIban"
+                    style="@style/ProfileField"
+                    android:hint="@string/invoice_bank_iban_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBankIban"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="textCapCharacters|textNoSuggestions" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilBankJazzCash"
+                    style="@style/ProfileField"
+                    android:hint="@string/invoice_bank_jazzcash_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBankJazzCash"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="phone" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="18dp"
-                    android:layout_marginBottom="18dp"
                     android:background="@color/hairline" />
 
-                <!-- Signature -->
+                <!-- Payment QR: one compact row. The long warning now appears
+                     where it is read — in the confirm dialog right after a QR
+                     is chosen (qr_confirm_message) — not as a paragraph on
+                     every visit. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@string/signature"
-                        android:src="@drawable/ic_signature_pen"
-                        app:tint="@color/gold_accent" />
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/bg_preview_thumb_slot">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/signature"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/ivQrPreview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/payment_qr"
+                            android:padding="4dp"
+                            android:scaleType="fitCenter"
+                            android:visibility="gone" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/signature_help"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
+                        <ImageView
+                            android:id="@+id/tvNoQr"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:alpha="0.45"
+                            android:contentDescription="@string/no_qr_yet"
+                            android:src="@drawable/ic_qr_scan"
+                            app:tint="@color/text_muted" />
+                    </FrameLayout>
 
-                <ImageView
-                    android:id="@+id/ivSignaturePreview"
-                    android:layout_width="match_parent"
-                    android:layout_height="110dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_preview_thumb_slot"
-                    android:contentDescription="@string/signature"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/tvNoSignature"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:text="@string/no_signature_yet"
-                    android:visibility="gone"
-                    android:textColor="@color/text_muted"
-                    android:textSize="13sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPickSignature"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:minHeight="48dp"
-                        android:text="@string/choose_signature"
-                        app:backgroundTint="@color/button_dark"
-                        app:cornerRadius="10dp" />
+                        android:orientation="vertical">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnRemoveSignature"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:minHeight="48dp"
-                        android:text="@string/remove_signature"
-                        android:textColor="@color/red_gave_text"
-                        android:visibility="gone"
-                        app:cornerRadius="10dp"
-                        app:strokeColor="@color/red_gave" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bp_qr"
+                            android:textColor="@color/ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginBottom="18dp"
-                    android:background="@color/hairline" />
-
-                <!-- Payment QR -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@string/payment_qr"
-                        android:src="@drawable/ic_qr_scan"
-                        app:tint="@color/gold_accent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/payment_qr"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/payment_qr_help"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
-
-                <!-- The honest caveat, stated up front rather than discovered later -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/note_bg"
-                    android:padding="12dp"
-                    android:text="@string/payment_qr_caveat"
-                    android:textColor="@color/note_text"
-                    android:textSize="12sp" />
-
-                <ImageView
-                    android:id="@+id/ivQrPreview"
-                    android:layout_width="180dp"
-                    android:layout_height="180dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="14dp"
-                    android:background="@drawable/bg_preview_thumb_slot"
-                    android:contentDescription="@string/payment_qr"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/tvNoQr"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:text="@string/no_qr_yet"
-                    android:visibility="gone"
-                    android:textColor="@color/text_muted"
-                    android:textSize="13sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/bp_qr_help"
+                            android:textColor="@color/text_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPickQr"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:minHeight="48dp"
-                        android:text="@string/choose_qr_image"
-                        app:backgroundTint="@color/button_dark"
-                        app:cornerRadius="10dp" />
+                        style="@style/ProfileSmallButton"
+                        android:text="@string/bp_add" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRemoveQr"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        style="@style/ProfileRemoveButton"
+                        android:contentDescription="@string/remove_qr"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== Stamp & signature ===== -->
+            <TextView
+                style="@style/ProfileSectionLabel"
+                android:text="@string/bp_section_seals" />
+
+            <LinearLayout style="@style/ProfileCard">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        style="@style/ProfileTile"
+                        android:layout_marginEnd="6dp">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="96dp"
+                            android:background="@drawable/bg_preview_thumb_slot">
+
+                            <ImageView
+                                android:id="@+id/ivStampPreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:contentDescription="@string/stamp"
+                                android:padding="6dp"
+                                android:scaleType="fitCenter"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/tvNoStamp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="center"
+                                android:alpha="0.4"
+                                android:contentDescription="@string/no_stamp_yet"
+                                android:src="@drawable/ic_seal_stamp"
+                                app:tint="@color/text_muted" />
+                        </FrameLayout>
+
+                        <TextView
+                            style="@style/ProfileTileTitle"
+                            android:text="@string/stamp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnPickStamp"
+                                style="@style/ProfileTileButton"
+                                android:text="@string/bp_add" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnRemoveStamp"
+                                style="@style/ProfileRemoveButton"
+                                android:contentDescription="@string/remove_stamp"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/ProfileTile"
+                        android:layout_marginStart="6dp">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="96dp"
+                            android:background="@drawable/bg_preview_thumb_slot">
+
+                            <ImageView
+                                android:id="@+id/ivSignaturePreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:contentDescription="@string/signature"
+                                android:padding="6dp"
+                                android:scaleType="fitCenter"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/tvNoSignature"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="center"
+                                android:alpha="0.4"
+                                android:contentDescription="@string/no_signature_yet"
+                                android:src="@drawable/ic_signature_pen"
+                                app:tint="@color/text_muted" />
+                        </FrameLayout>
+
+                        <TextView
+                            style="@style/ProfileTileTitle"
+                            android:text="@string/signature" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnPickSignature"
+                                style="@style/ProfileTileButton"
+                                android:text="@string/bp_add" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnRemoveSignature"
+                                style="@style/ProfileRemoveButton"
+                                android:contentDescription="@string/remove_signature"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/bp_seals_help"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- ===== Invoice & statement ===== -->
+            <TextView
+                style="@style/ProfileSectionLabel"
+                android:text="@string/bp_section_docs" />
+
+            <LinearLayout
+                style="@style/ProfileCard"
+                android:layout_marginBottom="24dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:layout_marginTop="4dp"
+                    android:hint="@string/invoice_terms"
+                    app:helperText="@string/bp_terms_help"
+                    app:placeholderText="@string/invoice_terms_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etInvoiceTerms"
+                        style="@style/ProfileFieldInput"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:minLines="2" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="18dp"
+                    android:background="@color/hairline" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:layout_weight="1"
-                        android:minHeight="48dp"
-                        android:text="@string/remove_qr"
-                        android:textColor="@color/red_gave_text"
-                        android:visibility="gone"
-                        app:cornerRadius="10dp"
-                        app:strokeColor="@color/red_gave" />
-                </LinearLayout>
-            </LinearLayout>
+                        android:orientation="vertical">
 
-            <!-- Section: Statement options -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"
-                android:letterSpacing="0.08"
-                android:text="@string/profile_section_statement"
-                android:textAllCaps="true"
-                android:textColor="@color/gold_accent"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:labelFor="@+id/swPhotoOnStatement"
+                            android:text="@string/bp_photo"
+                            android:textColor="@color/ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_profile_card"
-                android:orientation="vertical"
-                android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/bp_photo_help"
+                            android:textColor="@color/text_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-                <!--
-                  Whether a customer's photo rides along on their statement.
-                  Off unless turned on: the customer agreed to the shopkeeper
-                  holding their photo, not to it travelling on with a document
-                  that gets forwarded.
-                -->
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/swPhotoOnStatement"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/photo_on_statement"
-                    android:textColor="@color/ink"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/photo_on_statement_help"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <!-- Section: Payment & tax -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"
-                android:letterSpacing="0.08"
-                android:text="@string/profile_section_payment_tax"
-                android:textAllCaps="true"
-                android:textColor="@color/gold_accent"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_profile_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!--
-                  For an invoice's optional payment-info box. All four fields
-                  independent — a template prints whichever are set and leaves
-                  out a row for anything blank.
-                -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@string/invoice_bank_details"
-                        android:src="@drawable/ic_bank_building"
-                        app:tint="@color/gold_accent" />
-
-                    <TextView
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/swPhotoOnStatement"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="@string/invoice_bank_details"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                        android:contentDescription="@string/bp_photo"
+                        android:minHeight="48dp" />
                 </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/invoice_bank_details_help"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
-
-                <EditText
-                    android:id="@+id/etBankName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:hint="@string/invoice_bank_name_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-                <EditText
-                    android:id="@+id/etBankTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/invoice_bank_title_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-                <EditText
-                    android:id="@+id/etBankIban"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/invoice_bank_iban_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-                <EditText
-                    android:id="@+id/etBankJazzCash"
-                    android:textDirection="ltr"
-                    android:textAlignment="viewStart"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/invoice_bank_jazzcash_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="phone" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginBottom="18dp"
-                    android:background="@color/hairline" />
-
-                <!-- Printed automatically on every invoice, so it is set once here. -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@string/invoice_terms"
-                        android:src="@drawable/ic_pdf_doc"
-                        app:tint="@color/gold_accent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/invoice_terms"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/invoice_terms_help"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
-
-                <EditText
-                    android:id="@+id/etInvoiceTerms"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/invoice_terms_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="textMultiLine"
-                    android:maxLines="3" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginBottom="18dp"
-                    android:background="@color/hairline" />
-
-                <!-- Only for a shop registered for sales tax — left blank otherwise. -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@string/invoice_strn"
-                        android:src="@drawable/ic_pdf_doc"
-                        app:tint="@color/gold_accent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/invoice_strn"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/invoice_strn_help"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
-
-                <EditText
-                    android:id="@+id/etStrn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/invoice_strn_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
             </LinearLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSaveProfile"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="20dp"
-                android:letterSpacing="0.02"
-                android:text="@string/save"
-                app:backgroundTint="@color/header_grad_mid"
-                app:cornerRadius="12dp" />
-
         </LinearLayout>
+    </ScrollView>
+
+    <!-- ===== Save, pinned below the scroll ===== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvUnsaved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:drawablePadding="6dp"
+            android:text="@string/bp_unsaved"
+            android:textColor="@color/gold_accent"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveProfile"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/save"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/header_grad_mid"
+            app:cornerRadius="14dp" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>
