@@ -1441,9 +1441,6 @@ You can change this any time from this screen.</string>
     <string name="pdf_insp_sum_no_expiry">In stock with no expiry recorded</string>
     <string name="pdf_insp_sum_incomplete">Products missing label details</string>
     <string name="pdf_insp_sec_current">Current stock</string>
-    <string name="pdf_insp_sec_batches">Batch-wise stock</string>
-    <string name="pdf_insp_sec_expiry">Expiry report</string>
-    <string name="pdf_insp_sec_missing">Label details still missing</string>
     <string name="pdf_insp_sec_company">Company-wise stock</string>
     <string name="pdf_insp_sec_cont">%1$s (continued)</string>
     <string name="pdf_insp_no_movement">No stock movement recorded yet.</string>
@@ -1460,18 +1457,12 @@ You can change this any time from this screen.</string>
     <string name="pdf_insp_col_expiry">EXPIRY</string>
     <string name="pdf_insp_col_left">LEFT</string>
     <string name="pdf_insp_col_status">STATUS</string>
-    <string name="pdf_insp_col_still_missing">STILL NOT RECORDED</string>
-    <string name="pdf_insp_batches_note">Every batch with stock left, oldest expiry first, with the bill it came on.</string>
     <string name="pdf_insp_no_batches">No batches in stock. Batch and expiry are recorded on a supplier bill.</string>
-    <string name="pdf_insp_expiry_note">Expired stock first, then what expires within %1$d days.</string>
-    <string name="pdf_insp_nothing_expiring">Nothing expired and nothing expiring within %1$d days.</string>
-    <string name="pdf_insp_no_expiry_note">%1$d batch(es) in stock carry no expiry date, so they cannot be checked.</string>
     <string name="pdf_insp_missing_note">Each product below is in stock with one or more label fields never recorded.</string>
     <string name="pdf_insp_expired">EXPIRED</string>
     <string name="pdf_insp_expired_ago">EXPIRED \u00B7 %1$d days ago</string>
     <string name="pdf_insp_days_left">%1$d days left</string>
     <string name="pdf_insp_units_differ">units differ</string>
-    <string name="pdf_insp_in_out">in %1$s \u00B7 out %2$s</string>
     <string name="pdf_insp_company_tag">COMPANY</string>
     <plurals name="pdf_insp_products">
         <item quantity="one">%d product</item>
@@ -1485,6 +1476,19 @@ You can change this any time from this screen.</string>
     <string name="pdf_insp_miss_reg">Reg#</string>
     <string name="pdf_insp_dealer_sign">Dealer\'s signature</string>
     <string name="pdf_insp_inspector_sign">Inspector\'s signature</string>
+    <string name="pdf_insp_as_of">As of %1$s</string>
+    <string name="pdf_insp_col_in">IN</string>
+    <string name="pdf_insp_col_out">OUT</string>
+    <string name="pdf_insp_current_note">In = bought on bills \u00B7 Out = sold \u00B7 On hand = In \u2212 Out</string>
+    <string name="pdf_insp_no_total">No grand total: products are counted in different units.</string>
+    <string name="pdf_insp_sec_batch_expiry">Batch &amp; expiry</string>
+    <string name="pdf_insp_batch_expiry_note">Expired first, then expiring within %1$d days, then the rest \u2014 each with the bill it came on.</string>
+    <string name="pdf_insp_status_ok">In date</string>
+    <string name="pdf_insp_sec_checklist">Label details checklist</string>
+    <string name="pdf_insp_col_missing">MISSING</string>
+    <string name="pdf_insp_chip_missing">Missing</string>
+    <string name="pdf_insp_missing_of">%1$d of %2$d</string>
+    <string name="pdf_insp_date_blank">Date: ____________</string>
 
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>

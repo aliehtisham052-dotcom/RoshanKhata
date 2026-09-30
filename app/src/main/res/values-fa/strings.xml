@@ -1418,9 +1418,6 @@
     <string name="pdf_insp_sum_no_expiry">موجود بدون تاریخ انقضای ثبت‌شده</string>
     <string name="pdf_insp_sum_incomplete">کالاهای با مشخصات ناقص</string>
     <string name="pdf_insp_sec_current">موجودی فعلی</string>
-    <string name="pdf_insp_sec_batches">موجودی بچ به بچ</string>
-    <string name="pdf_insp_sec_expiry">گزارش انقضا</string>
-    <string name="pdf_insp_sec_missing">مشخصات برچسب ناقص</string>
     <string name="pdf_insp_sec_company">موجودی به تفکیک شرکت</string>
     <string name="pdf_insp_sec_cont">%1$s (ادامه)</string>
     <string name="pdf_insp_no_movement">هنوز گردش موجودی ثبت نشده است.</string>
@@ -1437,18 +1434,12 @@
     <string name="pdf_insp_col_expiry">انقضا</string>
     <string name="pdf_insp_col_left">باقی</string>
     <string name="pdf_insp_col_status">وضعیت</string>
-    <string name="pdf_insp_col_still_missing">هنوز ثبت نشده</string>
-    <string name="pdf_insp_batches_note">هر بچ با موجودی باقی‌مانده، ابتدا نزدیک‌ترین انقضا، همراه با فاکتور آن.</string>
     <string name="pdf_insp_no_batches">هیچ بچی موجود نیست. بچ و انقضا روی فاکتور تأمین‌کننده ثبت می‌شود.</string>
-    <string name="pdf_insp_expiry_note">ابتدا موجودی منقضی، سپس آنچه طی %1$d روز منقضی می‌شود.</string>
-    <string name="pdf_insp_nothing_expiring">نه چیزی منقضی شده و نه طی %1$d روز منقضی می‌شود.</string>
-    <string name="pdf_insp_no_expiry_note">%1$d بچ موجود تاریخ انقضا ندارند و قابل بررسی نیستند.</string>
     <string name="pdf_insp_missing_note">هر کالای زیر موجود است اما یک یا چند فیلد برچسب آن هرگز ثبت نشده است.</string>
     <string name="pdf_insp_expired">منقضی</string>
     <string name="pdf_insp_expired_ago">منقضی \u00B7 %1$d روز پیش</string>
     <string name="pdf_insp_days_left">%1$d روز مانده</string>
     <string name="pdf_insp_units_differ">واحدها متفاوت</string>
-    <string name="pdf_insp_in_out">ورودی %1$s \u00B7 خروجی %2$s</string>
     <string name="pdf_insp_company_tag">شرکت</string>
     <plurals name="pdf_insp_products">
         <item quantity="one">%d کالا</item>
@@ -1462,6 +1453,19 @@
     <string name="pdf_insp_miss_reg">شماره ثبت</string>
     <string name="pdf_insp_dealer_sign">امضای فروشنده</string>
     <string name="pdf_insp_inspector_sign">امضای بازرس</string>
+    <string name="pdf_insp_as_of">تا تاریخ %1$s</string>
+    <string name="pdf_insp_col_in">ورودی</string>
+    <string name="pdf_insp_col_out">خروجی</string>
+    <string name="pdf_insp_current_note">ورودی = خرید با فاکتور \u00B7 خروجی = فروش \u00B7 موجودی = ورودی \u2212 خروجی</string>
+    <string name="pdf_insp_no_total">جمع کل ندارد: کالاها با واحدهای مختلف شمرده می‌شوند.</string>
+    <string name="pdf_insp_sec_batch_expiry">بچ و انقضا</string>
+    <string name="pdf_insp_batch_expiry_note">اول منقضی‌شده‌ها، سپس آنچه ظرف %1$d روز منقضی می‌شود، سپس بقیه \u2014 هر کدام با فاکتور خود.</string>
+    <string name="pdf_insp_status_ok">معتبر</string>
+    <string name="pdf_insp_sec_checklist">فهرست بررسی مشخصات برچسب</string>
+    <string name="pdf_insp_col_missing">کسری</string>
+    <string name="pdf_insp_chip_missing">ثبت نشده</string>
+    <string name="pdf_insp_missing_of">%1$d از %2$d</string>
+    <string name="pdf_insp_date_blank">تاریخ: ____________</string>
 
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">مشتری</string>

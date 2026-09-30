@@ -1390,9 +1390,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_insp_sum_no_expiry">Stock mein jin ki expiry darj nahi</string>
     <string name="pdf_insp_sum_incomplete">Products jin ki label tafseel adhoori hai</string>
     <string name="pdf_insp_sec_current">Mojooda stock</string>
-    <string name="pdf_insp_sec_batches">Batch ke hisaab se stock</string>
-    <string name="pdf_insp_sec_expiry">Expiry report</string>
-    <string name="pdf_insp_sec_missing">Label tafseel abhi adhoori</string>
     <string name="pdf_insp_sec_company">Company ke hisaab se stock</string>
     <string name="pdf_insp_sec_cont">%1$s (jari)</string>
     <string name="pdf_insp_no_movement">Abhi koi stock harkat darj nahi.</string>
@@ -1409,18 +1406,12 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_insp_col_expiry">EXPIRY</string>
     <string name="pdf_insp_col_left">BACHA</string>
     <string name="pdf_insp_col_status">HAALAT</string>
-    <string name="pdf_insp_col_still_missing">ABHI DARJ NAHI</string>
-    <string name="pdf_insp_batches_note">Har wo batch jis mein stock bacha hai, pehle sab se pehle expire hone wala, us ke bill ke saath.</string>
     <string name="pdf_insp_no_batches">Stock mein koi batch nahi. Batch aur expiry supplier bill par darj hoti hai.</string>
-    <string name="pdf_insp_expiry_note">Pehle expire shuda stock, phir jo %1$d din mein expire hoga.</string>
-    <string name="pdf_insp_nothing_expiring">Na kuch expire hua aur na %1$d din mein ho raha hai.</string>
-    <string name="pdf_insp_no_expiry_note">Stock ke %1$d batches par expiry darj nahi, is liye un ki janch nahi ho sakti.</string>
     <string name="pdf_insp_missing_note">Neeche har product stock mein hai lekin us ke ek ya zyada label khane kabhi darj nahi hue.</string>
     <string name="pdf_insp_expired">EXPIRE HO CHUKA</string>
     <string name="pdf_insp_expired_ago">EXPIRE HO CHUKA \u00B7 %1$d din pehle</string>
     <string name="pdf_insp_days_left">%1$d din baqi</string>
     <string name="pdf_insp_units_differ">units alag</string>
-    <string name="pdf_insp_in_out">aaya %1$s \u00B7 gaya %2$s</string>
     <string name="pdf_insp_company_tag">COMPANY</string>
     <plurals name="pdf_insp_products">
         <item quantity="one">%d product</item>
@@ -1434,6 +1425,19 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_insp_miss_reg">Reg#</string>
     <string name="pdf_insp_dealer_sign">Dealer ke dastkhat</string>
     <string name="pdf_insp_inspector_sign">Inspector ke dastkhat</string>
+    <string name="pdf_insp_as_of">Tareekh: %1$s</string>
+    <string name="pdf_insp_col_in">AAYA</string>
+    <string name="pdf_insp_col_out">GAYA</string>
+    <string name="pdf_insp_current_note">Aaya = bill par khareeda \u00B7 Gaya = becha \u00B7 Mojood = Aaya \u2212 Gaya</string>
+    <string name="pdf_insp_no_total">Kul jora nahi: products alag alag unit mein gini jati hain.</string>
+    <string name="pdf_insp_sec_batch_expiry">Batch aur expiry</string>
+    <string name="pdf_insp_batch_expiry_note">Pehle expire ho chuka, phir %1$d din mein expire hone wala, phir baqi \u2014 har ek apne bill ke saath.</string>
+    <string name="pdf_insp_status_ok">Theek hai</string>
+    <string name="pdf_insp_sec_checklist">Label ki tafseel ki checklist</string>
+    <string name="pdf_insp_col_missing">KAMI</string>
+    <string name="pdf_insp_chip_missing">Darj nahi</string>
+    <string name="pdf_insp_missing_of">%2$d mein se %1$d</string>
+    <string name="pdf_insp_date_blank">Tareekh: ____________</string>
 
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">Customer</string>

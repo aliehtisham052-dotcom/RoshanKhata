@@ -1518,9 +1518,6 @@
     <string name="pdf_insp_sum_no_expiry">في المخزون بلا تاريخ انتهاء مسجل</string>
     <string name="pdf_insp_sum_incomplete">منتجات ناقصة بيانات الملصق</string>
     <string name="pdf_insp_sec_current">المخزون الحالي</string>
-    <string name="pdf_insp_sec_batches">المخزون حسب الدفعة</string>
-    <string name="pdf_insp_sec_expiry">تقرير الانتهاء</string>
-    <string name="pdf_insp_sec_missing">بيانات الملصق ما زالت ناقصة</string>
     <string name="pdf_insp_sec_company">المخزون حسب الشركة</string>
     <string name="pdf_insp_sec_cont">%1$s (تابع)</string>
     <string name="pdf_insp_no_movement">لا حركة مخزون مسجلة بعد.</string>
@@ -1537,18 +1534,12 @@
     <string name="pdf_insp_col_expiry">الانتهاء</string>
     <string name="pdf_insp_col_left">المتبقي</string>
     <string name="pdf_insp_col_status">الحالة</string>
-    <string name="pdf_insp_col_still_missing">لم يُسجل بعد</string>
-    <string name="pdf_insp_batches_note">كل دفعة بها مخزون متبق، الأقرب انتهاءً أولًا، مع الفاتورة التي وردت بها.</string>
     <string name="pdf_insp_no_batches">لا دفعات في المخزون. تُسجل الدفعة وتاريخ الانتهاء على فاتورة المورد.</string>
-    <string name="pdf_insp_expiry_note">المخزون المنتهي أولًا، ثم ما ينتهي خلال %1$d يومًا.</string>
-    <string name="pdf_insp_nothing_expiring">لا شيء منتهٍ ولا شيء ينتهي خلال %1$d يومًا.</string>
-    <string name="pdf_insp_no_expiry_note">%1$d دفعة في المخزون بلا تاريخ انتهاء، فلا يمكن فحصها.</string>
     <string name="pdf_insp_missing_note">كل منتج أدناه متوفر في المخزون لكن حقلًا أو أكثر من حقول ملصقه لم يُسجل قط.</string>
     <string name="pdf_insp_expired">منتهي الصلاحية</string>
     <string name="pdf_insp_expired_ago">منتهي الصلاحية \u00B7 قبل %1$d يومًا</string>
     <string name="pdf_insp_days_left">بقي %1$d يومًا</string>
     <string name="pdf_insp_units_differ">الوحدات مختلفة</string>
-    <string name="pdf_insp_in_out">وارد %1$s \u00B7 صادر %2$s</string>
     <string name="pdf_insp_company_tag">الشركة</string>
     <plurals name="pdf_insp_products">
         <item quantity="zero">%d منتجات</item>
@@ -1566,6 +1557,19 @@
     <string name="pdf_insp_miss_reg">رقم التسجيل</string>
     <string name="pdf_insp_dealer_sign">توقيع التاجر</string>
     <string name="pdf_insp_inspector_sign">توقيع المفتش</string>
+    <string name="pdf_insp_as_of">حتى تاريخ %1$s</string>
+    <string name="pdf_insp_col_in">الوارد</string>
+    <string name="pdf_insp_col_out">الصادر</string>
+    <string name="pdf_insp_current_note">الوارد = المشترى بالفواتير \u00B7 الصادر = المبيع \u00B7 المتوفر = الوارد \u2212 الصادر</string>
+    <string name="pdf_insp_no_total">لا يوجد مجموع كلي: المنتجات تُعدّ بوحدات مختلفة.</string>
+    <string name="pdf_insp_sec_batch_expiry">الدفعات والصلاحية</string>
+    <string name="pdf_insp_batch_expiry_note">المنتهي أولًا، ثم ما ينتهي خلال %1$d يومًا، ثم الباقي \u2014 كلٌّ مع فاتورته.</string>
+    <string name="pdf_insp_status_ok">صالح</string>
+    <string name="pdf_insp_sec_checklist">قائمة تحقق بيانات الملصق</string>
+    <string name="pdf_insp_col_missing">الناقص</string>
+    <string name="pdf_insp_chip_missing">غير مسجل</string>
+    <string name="pdf_insp_missing_of">%1$d من %2$d</string>
+    <string name="pdf_insp_date_blank">التاريخ: ____________</string>
 
     <!-- Invoice editor: card headings, the auto-number hint, and the running total. -->
     <string name="invoice_section_customer">العميل</string>
