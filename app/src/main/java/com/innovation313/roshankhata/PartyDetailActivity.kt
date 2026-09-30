@@ -730,7 +730,6 @@ class PartyDetailActivity : BaseActivity() {
         val linesContainer: LinearLayout = view.findViewById(R.id.linesContainer)
         val btnAddLine: MaterialButton = view.findViewById(R.id.btnAddLine)
         val tvLinesNote: TextView = view.findViewById(R.id.tvLinesNote)
-        val cbBonus: MaterialCheckBox = view.findViewById(R.id.cbBonus)
         val paymentSection: View = view.findViewById(R.id.paymentMethodSection)
         val btnRepeatLast: MaterialButton = view.findViewById(R.id.btnRepeatLast)
         val tvLastRate: TextView = view.findViewById(R.id.tvLastRate)
@@ -805,7 +804,6 @@ class PartyDetailActivity : BaseActivity() {
                 cashPrice = product?.salePrice,
                 productUnit = product?.defaultUnit,
                 rateEdited = rateWasTyped(),
-                isBonus = goodsListAllowed() && cbBonus.isChecked,
                 updateProductRate = cbUpdateRate.visibility == View.VISIBLE && cbUpdateRate.isChecked,
                 addToProducts = cbAddProduct.visibility == View.VISIBLE && cbAddProduct.isChecked
             )
@@ -856,10 +854,14 @@ class PartyDetailActivity : BaseActivity() {
             // The write re-enters here through the box's watcher and finds
             // the figures equal, so it stops there.
             val written = Calc.evalAmount(etAmount.text.toString())
-            if (amountAuto && (written == null ||
+            // A total of 0 (a rate of 0) is not an amount: the box would read
+            // it as empty and be written again, forever. Leave it to the owner.
+            if (amountAuto && total > 0.0 && (written == null ||
                     EntryLines.compare(total, written) !is EntryLines.AmountCheck.Equal)) {
                 writeAmount(Calc.trim(total))
             }
+            // Nothing to offer from a zero total (the same endless write).
+            if (total <= 0.0) return
             val amount = Calc.evalAmount(etAmount.text.toString())
             if (amount != null && EntryLines.compare(total, amount) is EntryLines.AmountCheck.Equal) return
             // The owner's own figure differs: offer the items' total back.
@@ -904,14 +906,11 @@ class PartyDetailActivity : BaseActivity() {
             rateSection.visibility =
                 if (isSale() && (result !is RateOffer.Result.Hidden || listPriced)) View.VISIBLE else View.GONE
 
-            // A free item has no rate to fill.
-            etRate.isEnabled = !cbBonus.isChecked
-
             // Fill (or clear) the Rate box — never over a rate the owner
             // typed. A sale takes the product's price for the chip; a return
             // takes the price this customer was last charged, when it was
             // per the same unit (else nothing — never a guess).
-            if (fill && goodsListAllowed() && !rateWasTyped() && !cbBonus.isChecked) {
+            if (fill && goodsListAllowed() && !rateWasTyped()) {
                 val typedUnit = etUnit.text.toString().trim()
                 val offered = when {
                     isSale() -> (result as? RateOffer.Result.Offer)?.rate
@@ -945,7 +944,7 @@ class PartyDetailActivity : BaseActivity() {
             // type and unit — so a bargain is made knowing the history.
             val typedUnit = etUnit.text.toString().trim()
             val sameUnit = { r: LastRate -> typedUnit.isEmpty() || r.unit == null || r.unit.equals(typedUnit, ignoreCase = true) }
-            val last = if (isSale() && !cbBonus.isChecked) {
+            val last = if (isSale()) {
                 (if (chosenRateType() == RateType.CASH) lastCash else lastCredit)?.takeIf(sameUnit)
             } else null
             tvLastRate.visibility = if (last != null) View.VISIBLE else View.GONE
@@ -955,7 +954,7 @@ class PartyDetailActivity : BaseActivity() {
             // may be made the product's price too — offered, off by default.
             val typedRate = Digits.parse(etRate.text)
             val offeredRate = (result as? RateOffer.Result.Offer)?.rate
-            val showUpdate = isSale() && product != null && !cbBonus.isChecked && rateWasTyped() &&
+            val showUpdate = isSale() && product != null && rateWasTyped() &&
                 typedRate != null && typedRate > 0.0 && typedRate != offeredRate &&
                 result !is RateOffer.Result.UnitMismatch
             if (showUpdate && product != null && typedRate != null) {
@@ -1079,7 +1078,6 @@ class PartyDetailActivity : BaseActivity() {
             lastSale = null
             lastCredit = null
             lastCash = null
-            cbBonus.isChecked = false
             cbUpdateRate.isChecked = false
             cbAddProduct.isChecked = false
             btnBatch.visibility = View.GONE
@@ -1087,8 +1085,6 @@ class PartyDetailActivity : BaseActivity() {
             refreshRateSuggestion()
             etItemName.requestFocus()
         }
-
-        cbBonus.setOnCheckedChangeListener { _, _ -> refreshRateSuggestion() }
 
         val simpleWatcher = { action: () -> Unit ->
             object : android.text.TextWatcher {
@@ -1118,7 +1114,6 @@ class PartyDetailActivity : BaseActivity() {
             val list = goodsListAllowed()
             etRate.visibility = if (list) View.VISIBLE else View.GONE
             btnAddLine.visibility = if (list) View.VISIBLE else View.GONE
-            cbBonus.visibility = if (list) View.VISIBLE else View.GONE
             refreshRateSuggestion()
         }
 
@@ -1217,7 +1212,8 @@ class PartyDetailActivity : BaseActivity() {
             etItemName.setText(d.itemName.orEmpty(), false)
             etQuantity.setText(d.quantity?.let { Format.plain(it) } ?: "")
             etUnit.setText(d.unit.orEmpty(), false)
-            cbBonus.isChecked = d.isBonus
+            // The Free option was retired (30 Sep 2026): an old free line comes
+            // back as a plain one with no rate, for the owner to price or remove.
             etRate.setText(if (d.isBonus) "" else d.rate?.let { Calc.trim(it) } ?: "")
             // A rate the owner typed stays his; one that came from the
             // product may be refreshed by the lookup below.
@@ -1240,9 +1236,12 @@ class PartyDetailActivity : BaseActivity() {
                 val drafts = source.orderedItems().map { item ->
                     val product = item.productId?.let { dao.productById(it) }
                     when {
+                        // Went free last time. Free is no longer offered, so it
+                        // comes as a plain line with NO rate: never priced
+                        // silently; the owner prices it or removes it.
                         item.isBonus -> LineDraft(
                             itemName = item.itemName, quantity = item.quantity, unit = item.unit, rate = null,
-                            productId = product?.id, isBonus = true
+                            productId = product?.id
                         )
                         product != null -> {
                             val price = RateOffer.price(
