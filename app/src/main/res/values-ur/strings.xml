@@ -1264,7 +1264,7 @@
     <string name="pdf_label_due_date">ادائیگی کی تاریخ</string>
     <string name="pdf_label_time">وقت</string>
     <string name="pdf_label_item">تفصیل</string>
-    <string name="pdf_label_qty">تعداد</string>
+    <string name="pdf_label_qty">مقدار</string>
     <string name="pdf_label_rate">ریٹ</string>
     <string name="pdf_label_amount">رقم</string>
     <string name="pdf_label_subtotal">ذیلی کل</string>
@@ -1280,7 +1280,7 @@
     <string name="pdf_label_signatory">مجاز دستخط</string>
     <string name="pdf_label_terms">شرائط</string>
     <string name="pdf_label_bank">بینک</string>
-    <string name="pdf_label_account_title">ٹائٹل</string>
+    <string name="pdf_label_account_title">اکاؤنٹ ٹائٹل</string>
     <string name="pdf_label_thank_you">شکریہ!</string>
     <string name="pdf_label_visit_again">دوبارہ تشریف لائیں</string>
 

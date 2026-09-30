@@ -1326,7 +1326,7 @@ You can change this any time from this screen.</string>
     <string name="pdf_label_signatory">Authorized Signatory</string>
     <string name="pdf_label_terms">TERMS</string>
     <string name="pdf_label_bank">Bank</string>
-    <string name="pdf_label_account_title">Title</string>
+    <string name="pdf_label_account_title">Account Title</string>
     <string name="pdf_label_thank_you">Thank you!</string>
     <string name="pdf_label_visit_again">Please visit again</string>
 

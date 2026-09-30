@@ -1404,7 +1404,7 @@
     <string name="pdf_label_signatory">التوقيع المعتمد</string>
     <string name="pdf_label_terms">الشروط</string>
     <string name="pdf_label_bank">البنك</string>
-    <string name="pdf_label_account_title">الاسم</string>
+    <string name="pdf_label_account_title">اسم الحساب</string>
     <string name="pdf_label_thank_you">شكرًا لكم!</string>
     <string name="pdf_label_visit_again">نتشرف بزيارتكم مجددًا</string>
 
