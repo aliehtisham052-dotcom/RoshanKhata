@@ -238,8 +238,14 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
     private fun notify(
         ctx: Context, id: Int, target: Class<*>, title: String, body: String
     ) {
-        val intent = Intent(ctx, target)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        // Through the gate, never straight to the screen. Opened directly, the
+        // screen skipped App Lock (Backup, with Erase all data, opened with no
+        // fingerprint) and stood alone in its task, so Back closed the app.
+        // The gate checks the lock, the home screen opens, and the screen the
+        // reminder is about opens on top of it: Back lands on the home screen.
+        val intent = Intent(ctx, GateActivity::class.java)
+            .putExtra(MainActivity.EXTRA_OPEN, target.name)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         val pending = PendingIntent.getActivity(
             ctx, id, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

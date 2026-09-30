@@ -71,7 +71,10 @@ class GateActivity : BaseActivity() {
         val next = if (locked) LockActivity::class.java else MainActivity::class.java
 
         startActivity(
-            Intent(this, next).putExtra(MainActivity.EXTRA_UNLOCKED, !locked)
+            Intent(this, next)
+                .putExtra(MainActivity.EXTRA_UNLOCKED, !locked)
+                // A notification's screen, carried through the lock unopened.
+                .putExtra(MainActivity.EXTRA_OPEN, intent.getStringExtra(MainActivity.EXTRA_OPEN))
         )
         finish()
     }
