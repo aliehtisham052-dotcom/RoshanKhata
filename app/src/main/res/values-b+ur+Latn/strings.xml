@@ -1247,7 +1247,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <!-- Entry screen (dialog_add_entry) -->
     <string name="entry_header_gave">%1$s ko diye · %2$s</string>
     <string name="entry_header_got">%1$s se liye · %2$s</string>
-    <string name="entry_details_chip">+ Note / saman</string>
+    <string name="entry_details_chip">+ Saman / note</string>
     <string name="entry_preview_title">%1$s ka hisaab</string>
     <string name="entry_preview_line">Abhi %1$s  →  is entry ke baad %2$s</string>
     <string name="entry_bill_chip">Bill tasveer</string>
