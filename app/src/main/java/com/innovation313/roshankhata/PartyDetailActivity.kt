@@ -903,8 +903,15 @@ class PartyDetailActivity : BaseActivity() {
             }
             // The chips stay while any listed item can still be re-priced by them.
             val listPriced = lines.any { it.productId != null && (it.creditPrice != null || it.cashPrice != null) }
+            // Any goods on a sale show the choice, priced list item or not. It was
+            // hidden for goods not on the products list, yet the entry was still
+            // saved as "Credit rate", a choice the owner never saw, and a cash
+            // sale of such goods could not be recorded at all (the "money
+            // received?" pairing follows Cash). Udhar stays the default.
+            val goodsOnSale = goodsListAllowed() &&
+                (lines.isNotEmpty() || etItemName.text.isNotBlank())
             rateSection.visibility =
-                if (isSale() && (result !is RateOffer.Result.Hidden || listPriced)) View.VISIBLE else View.GONE
+                if (isSale() && (result !is RateOffer.Result.Hidden || listPriced || goodsOnSale)) View.VISIBLE else View.GONE
 
             // Fill (or clear) the Rate box — never over a rate the owner
             // typed. A sale takes the product's price for the chip; a return

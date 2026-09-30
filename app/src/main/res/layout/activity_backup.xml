@@ -109,16 +109,41 @@
                 android:textColor="@color/text_muted"
                 android:textSize="13sp" />
 
+            <!--
+              Google's Light sign-in pill, the same one the welcome screen
+              uses (see activity_welcome.xml): white fill, 1dp #747775 stroke,
+              Google Sans Medium, the standard-colour G, "Continue with
+              Google". Google's colours, not the app's: do not restyle.
+            -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDriveConnect"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="52dp"
                 android:layout_marginTop="12dp"
-                android:text="@string/drive_connect"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                app:backgroundTint="@color/brand_green"
-                app:cornerRadius="10dp" />
+                android:fontFamily="@font/google_sans_medium"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0"
+                android:maxLines="1"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/welcome_connect"
+                android:textAllCaps="false"
+                android:textColor="@color/google_btn_text"
+                android:textSize="17sp"
+                app:autoSizeMaxTextSize="17sp"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="26dp"
+                app:icon="@drawable/ic_google_g"
+                app:iconTint="@null"
+                app:iconGravity="textStart"
+                app:iconPadding="13dp"
+                app:iconSize="26dp"
+                app:strokeColor="@color/google_btn_stroke"
+                app:strokeWidth="1dp" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchAutoBackup"

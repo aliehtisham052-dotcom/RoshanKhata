@@ -67,6 +67,13 @@ class MainActivity : BaseActivity() {
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
+        // A reminder's screen, now that the gate (and the lock) are behind us.
+        // Only the screens reminders open; anything else is ignored.
+        if (savedInstanceState == null) {
+            OPENABLE.firstOrNull { it.name == intent.getStringExtra(EXTRA_OPEN) }
+                ?.let { startActivity(Intent(this, it)) }
+        }
+
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvTotalGet = findViewById(R.id.tvTotalGet)
         tvTotalGive = findViewById(R.id.tvTotalGive)
@@ -661,5 +668,17 @@ class MainActivity : BaseActivity() {
          * this activity until the lock has been cleared.
          */
         const val EXTRA_UNLOCKED = "unlocked"
+
+        /** The screen a reminder notification asked for; see ReminderWorker. */
+        const val EXTRA_OPEN = "open_screen"
+
+        /** The only screens EXTRA_OPEN may name: the ones reminders open. */
+        private val OPENABLE = listOf(
+            BackupActivity::class.java,
+            ChequesActivity::class.java,
+            PlansActivity::class.java,
+            ExpiringActivity::class.java,
+            BusinessSwitchActivity::class.java
+        )
     }
 }
