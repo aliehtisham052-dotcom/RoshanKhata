@@ -278,31 +278,20 @@
 
     <!-- Business settings / payment QR -->
     <string name="business_settings">تنظیمات کسب‌وکار</string>
-    <string name="business_profile">پروفایل</string>
-    <string name="profile_preview_caption">پروفایل شما به این شکل روی فاکتورها و صورت‌حساب‌ها چاپ می‌شود.</string>
-    <string name="profile_section_business">کسب‌وکار</string>
-    <string name="profile_section_seals">مهر و امضا</string>
-    <string name="profile_section_statement">گزینه‌های صورت‌حساب</string>
-    <string name="profile_section_payment_tax">پرداخت و مالیات</string>
-    <string name="business_settings_subtitle">نام و کد پرداخت شما روی صورت‌حساب‌ها</string>
+    <string name="business_profile">پروفایل کسب‌وکار</string>
+    <string name="profile_preview_caption">پیش‌نمایش زندهٔ سربرگ فاکتور شما</string>
+    <string name="business_settings_subtitle">روی فاکتورها، صورت‌حساب‌ها و گزارش‌های شما چاپ می‌شود</string>
     <string name="business_name">نام کسب‌وکار</string>
-    <string name="business_name_help">بالای هر صورت‌حساب و در پایان هر یادآوری ارسالی شما نمایش داده می‌شود.</string>
     <string name="business_name_hint">مثلاً بهاتی تریدرز</string>
     <string name="business_address">آدرس مغازه</string>
-    <string name="business_address_help">زیر نام کسب‌وکار شما روی هر فاکتور چاپ می‌شود.</string>
     <string name="business_address_hint">مثلاً بازار اصلی، پسرور</string>
-    <string name="invoice_bank_details">اطلاعات بانکی</string>
-    <string name="invoice_bank_details_help">برای کادر پرداخت در قالب‌های فاکتوری که آن را نشان می‌دهند. هر کدام را خالی بگذارید، آن سطر چاپ نمی‌شود.</string>
     <string name="invoice_bank_name_hint">نام بانک</string>
     <string name="invoice_bank_title_hint">عنوان حساب</string>
     <string name="invoice_bank_iban_hint">شماره شبا / حساب</string>
     <string name="invoice_bank_jazzcash_hint">شماره جاز کش / ایزی پیسا</string>
 
     <string name="payment_qr">کد QR پرداخت</string>
-    <string name="payment_qr_help">اسکرین‌شات یا عکس کد QR ایزی‌پیسه یا جاز‌کش شما — برنامه به‌طور خودکار فقط کد را برش می‌زند. این به صورت‌حساب‌ها پیوست می‌شود تا مشتری بتواند اسکن کرده و پرداخت کند.</string>
-    <string name="payment_qr_caveat">پیش از ذخیره، کد را با دقت بررسی کنید. روشن خاتا نمی‌تواند تشخیص دهد QR متعلق به چه حسابی است — اگر تصویر اشتباه ذخیره شود، پرداخت مشتری به حساب دیگری می‌رود.\n\nهمچنین: QR شخصی ایزی‌پیسه/جاز کش مبلغ را در خود ندارد. مشتری مبلغ را خودش وارد می‌کند، پس مبلغ به‌روشنی کنارش نوشته می‌شود.</string>
     <string name="no_qr_yet">هنوز QR پرداختی ذخیره نشده است.</string>
-    <string name="choose_qr_image">انتخاب تصویر</string>
     <string name="remove_qr">حذف</string>
     <string name="qr_saved">QR پرداخت ذخیره شد</string>
     <string name="qr_save_failed">آن تصویر ذخیره نشد. لطفاً تصویر دیگری انتخاب کنید.</string>
@@ -713,10 +702,7 @@
     <string name="invoice_charge_amount_hint">مبلغ</string>
     <string name="invoice_received_hint">مبلغ دریافتی (اختیاری)</string>
     <string name="invoice_terms">شرایط و ضوابط</string>
-    <string name="invoice_terms_help">به‌طور خودکار روی هر فاکتور چاپ می‌شود. خالی بگذارید تا چیزی چاپ نشود.</string>
     <string name="invoice_terms_hint">مثلاً پرداخت ظرف ۱۴ روز.</string>
-    <string name="invoice_strn">شماره ثبت مالیات بر فروش (STRN)</string>
-    <string name="invoice_strn_help">فقط اگر این مغازه برای مالیات بر فروش ثبت‌نام شده باشد. در غیر این صورت خالی بگذارید — در صورت پر شدن روی هر فاکتور چاپ می‌شود، وگرنه اصلاً چاپ نمی‌شود.</string>
     <string name="invoice_strn_hint">مثلاً 1234567-8 (اختیاری)</string>
     <string name="adjust_crop_title">تنظیم برش</string>
     <string name="adjust_crop_hint">گوشه‌ها را بکشید تا کادر فقط روی همان قسمتی باشد که می‌خواهید نگه دارید.</string>
@@ -1039,21 +1025,15 @@
     <string name="biz_tpl_olive">پاکت</string>
     <string name="biz_tpl_stamp">تیغه</string>
     <string name="signature">امضا</string>
-    <string name="signature_help">امضای خود را روی کاغذ ساده عکس بگیرید — برنامه به‌طور خودکار فقط جوهر را برش می‌زند. در پایین صورت‌حساب‌های ارسالی چاپ می‌شود و روی همین گوشی می‌ماند.</string>
     <string name="no_signature_yet">هنوز امضایی افزوده نشده.</string>
-    <string name="choose_signature">انتخاب امضا</string>
     <string name="remove_signature">حذف</string>
     <string name="signature_saved">امضا ذخیره شد.</string>
     <string name="signature_save_failed">آن تصویر ذخیره نشد.</string>
     <string name="stamp">مهر</string>
-    <string name="stamp_help">مهر مغازه خود را روی کاغذ ساده عکس بگیرید — برنامه به‌طور خودکار فقط مهر را برش می‌زند. در صورت افزودن، به‌طور خودکار روی فاکتور نشان داده می‌شود — در غیر این صورت فقط نام و آدرس شما چاپ می‌شود.</string>
     <string name="no_stamp_yet">هنوز مهری افزوده نشده.</string>
-    <string name="choose_stamp">انتخاب مهر</string>
     <string name="remove_stamp">حذف</string>
     <string name="stamp_saved">مهر ذخیره شد.</string>
     <string name="stamp_save_failed">آن تصویر ذخیره نشد.</string>
-    <string name="photo_on_statement">درج عکس مشتری روی صورت‌حساب</string>
-    <string name="photo_on_statement_help">به‌طور پیش‌فرض خاموش. روشن کنید تا عکس مشتری روی صورت‌حسابش چاپ شود و انکارش سخت‌تر باشد — اما صورت‌حساب ممکن است فرستاده شود و عکس با آن برود.</string>
     <string name="made_with_app">روشن خاتا</string>
     <string name="more_details">افزودن یادداشت، کالا یا وضعیت وصول</string>
     <string name="back_to_amount">بازگشت به مبلغ</string>
@@ -1485,4 +1465,26 @@
     <string name="theme_light">روشن</string>
     <string name="theme_dark">تیره</string>
     <string name="theme_system">مطابق گوشی</string>
+    <string name="bp_section_identity">هویت</string>
+    <string name="bp_section_paid">دریافت وجه</string>
+    <string name="bp_section_seals">مهر و امضا</string>
+    <string name="bp_section_docs">فاکتور و صورت‌حساب</string>
+    <string name="bp_strn">شمارهٔ مالیات بر فروش (STRN)</string>
+    <string name="bp_strn_help">فقط اگر ثبت‌نام شده‌اید. خالی = چاپ نمی‌شود.</string>
+    <string name="bp_paid_help">در کادر پرداخت فاکتور نمایش داده می‌شود. ردیف‌های خالی حذف می‌شوند.</string>
+    <string name="bp_qr">QR پرداخت</string>
+    <string name="bp_qr_help">QR ایزی‌پیسه / جازکش شما، برای صورت‌حساب‌ها.</string>
+    <string name="bp_add">افزودن</string>
+    <string name="bp_change">تغییر</string>
+    <string name="bp_seals_help">روی کاغذ سفید ساده عکس بگیرید — برنامه خودش برش می‌دهد.</string>
+    <string name="bp_terms_help">روی هر فاکتور چاپ می‌شود. خالی = هیچ.</string>
+    <string name="bp_photo">عکس مشتری روی صورت‌حساب</string>
+    <string name="bp_photo_help">به‌طور پیش‌فرض خاموش — صورت‌حساب ممکن است بازارسال شود.</string>
+    <string name="bp_unsaved">تغییرات ذخیره نشده</string>
+    <string name="bp_iban_bad">IBAN دارای 24 نویسه است و با PK شروع می‌شود.</string>
+    <string name="bp_mobile_bad">شمارهٔ موبایل 11 رقمی است، مثل 03001234567.</string>
+    <string name="bp_leave_title">بدون ذخیره خارج می‌شوید؟</string>
+    <string name="bp_leave_msg">تغییرات شما در این صفحه از بین می‌رود.</string>
+    <string name="bp_leave_discard">رها کردن</string>
+    <string name="bp_leave_keep">ادامهٔ ویرایش</string>
 </resources>

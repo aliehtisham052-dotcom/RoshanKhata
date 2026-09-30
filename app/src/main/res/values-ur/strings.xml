@@ -268,31 +268,20 @@
     <string name="ok">ٹھیک ہے</string>
 
     <string name="business_settings">کاروباری ترتیبات</string>
-    <string name="business_profile">پروفائل</string>
-    <string name="profile_preview_caption">آپ کا پروفائل انوائسز اور اسٹیٹمنٹس پر اس طرح چھپے گا۔</string>
-    <string name="profile_section_business">کاروبار</string>
-    <string name="profile_section_seals">مہر اور دستخط</string>
-    <string name="profile_section_statement">اسٹیٹمنٹ کے آپشنز</string>
-    <string name="profile_section_payment_tax">ادائیگی اور ٹیکس</string>
-    <string name="business_settings_subtitle">اسٹیٹمنٹ پر آپ کا نام اور پیمنٹ کوڈ</string>
+    <string name="business_profile">کاروباری پروفائل</string>
+    <string name="profile_preview_caption">آپ کے انوائس کا اوپری حصہ — ساتھ ساتھ بدلتا ہے</string>
+    <string name="business_settings_subtitle">انوائس، اسٹیٹمنٹ اور رپورٹس پر چھپنے والی معلومات</string>
     <string name="business_name">کاروبار کا نام</string>
-    <string name="business_name_help">ہر اسٹیٹمنٹ کے اوپر اور ہر یاد دہانی کے آخر میں آتا ہے۔</string>
     <string name="business_name_hint">مثلاً بھٹی ٹریڈرز</string>
     <string name="business_address">دکان کا پتہ</string>
-    <string name="business_address_help">ہر انوائس پر آپ کے کاروبار کے نام کے نیچے چھپتا ہے۔</string>
     <string name="business_address_hint">مثلاً مین بازار، پسرور</string>
-    <string name="invoice_bank_details">بینک تفصیلات</string>
-    <string name="invoice_bank_details_help">ان انوائس ٹیمپلیٹس کے پیمنٹ بکس کے لیے جو یہ دکھاتے ہیں۔ کوئی بھی خالی چھوڑ دیں تو وہ لائن نہیں چھپے گی۔</string>
     <string name="invoice_bank_name_hint">بینک کا نام</string>
     <string name="invoice_bank_title_hint">اکاؤنٹ ٹائٹل</string>
     <string name="invoice_bank_iban_hint">IBAN / اکاؤنٹ نمبر</string>
     <string name="invoice_bank_jazzcash_hint">جاز کیش / ایزی پیسہ نمبر</string>
 
     <string name="payment_qr">پیمنٹ QR کوڈ</string>
-    <string name="payment_qr_help">اپنے ایزی پیسہ یا جاز کیش QR کوڈ کا اسکرین شاٹ یا تصویر — ایپ خودکار طور پر صرف کوڈ تک کاٹ دیتی ہے۔ یہ اسٹیٹمنٹس کے ساتھ منسلک ہو گا تاکہ کسٹمر اسکین کر کے ادائیگی کر سکے۔</string>
-    <string name="payment_qr_caveat">محفوظ کرنے سے پہلے کوڈ غور سے دیکھ لیں۔ روشن کھاتہ یہ تصدیق نہیں کر سکتا کہ QR کس کے اکاؤنٹ کا ہے — اگر غلط تصویر محفوظ ہوئی تو گاہک کی ادائیگی غلط اکاؤنٹ میں جائے گی۔\n\nیہ بھی جان لیں: ذاتی ایزی پیسہ/جاز کیش QR میں رقم شامل نہیں ہوتی۔ گاہک رقم خود لکھے گا، اس لیے رقم ساتھ صاف لکھی جاتی ہے۔</string>
     <string name="no_qr_yet">ابھی کوئی پیمنٹ QR محفوظ نہیں۔</string>
-    <string name="choose_qr_image">تصویر چنیں</string>
     <string name="remove_qr">ہٹائیں</string>
     <string name="qr_saved">پیمنٹ QR محفوظ ہو گیا</string>
     <string name="qr_save_failed">یہ تصویر محفوظ نہیں ہو سکی۔ دوسری چنیں۔</string>
@@ -692,10 +681,7 @@
     <string name="invoice_charge_amount_hint">رقم</string>
     <string name="invoice_received_hint">موصول شدہ رقم (اختیاری)</string>
     <string name="invoice_terms">شرائط و ضوابط</string>
-    <string name="invoice_terms_help">ہر انوائس پر خودکار طور پر چھپتی ہیں۔ خالی چھوڑیں تو کچھ نہیں چھپے گا۔</string>
     <string name="invoice_terms_hint">مثلاً ادائیگی 14 دن کے اندر۔</string>
-    <string name="invoice_strn">سیلز ٹیکس رجسٹریشن (STRN)</string>
-    <string name="invoice_strn_help">صرف اگر یہ دکان سیلز ٹیکس میں رجسٹرڈ ہے۔ ورنہ خالی چھوڑ دیں — بھرنے پر ہر انوائس پر چھپے گا، نہ بھرنے پر بالکل نہیں۔</string>
     <string name="invoice_strn_hint">مثلاً 1234567-8 (اختیاری)</string>
     <string name="adjust_crop_title">کراپ درست کریں</string>
     <string name="adjust_crop_hint">کونوں کو گھسیٹ کر باکس کو صرف اس حصے پر رکھیں جو رکھنا ہے۔</string>
@@ -1011,21 +997,15 @@
     <string name="biz_tpl_olive">لفافہ</string>
     <string name="biz_tpl_stamp">دھار</string>
     <string name="signature">دستخط</string>
-    <string name="signature_help">اپنے دستخط سادہ کاغذ پر فوٹو کریں — ایپ خودکار طور پر صرف سیاہی تک کاٹ دیتی ہے۔ یہ آپ کے بھیجے گئے اسٹیٹمنٹس کے آخر میں چھپتا ہے، اور اس فون پر ہی رہتا ہے۔</string>
     <string name="no_signature_yet">ابھی کوئی دستخط شامل نہیں کیے گئے۔</string>
-    <string name="choose_signature">دستخط منتخب کریں</string>
     <string name="remove_signature">ہٹائیں</string>
     <string name="signature_saved">دستخط محفوظ ہو گئے۔</string>
     <string name="signature_save_failed">وہ تصویر محفوظ نہیں ہو سکی۔</string>
     <string name="stamp">مہر</string>
-    <string name="stamp_help">اپنی دکان کی مہر سادہ کاغذ پر فوٹو کریں — ایپ خودکار طور پر صرف مہر تک کاٹ دیتی ہے۔ اگر آپ ایک شامل کریں تو انوائس پر خودکار طور پر دکھتی ہے — ورنہ صرف آپ کا نام اور پتہ چھپتا ہے۔</string>
     <string name="no_stamp_yet">ابھی کوئی مہر شامل نہیں کی گئی۔</string>
-    <string name="choose_stamp">مہر منتخب کریں</string>
     <string name="remove_stamp">ہٹائیں</string>
     <string name="stamp_saved">مہر محفوظ ہو گئی۔</string>
     <string name="stamp_save_failed">وہ تصویر محفوظ نہیں ہو سکی۔</string>
-    <string name="photo_on_statement">کھاتے پر گاہک کی تصویر شامل کریں</string>
-    <string name="photo_on_statement_help">پہلے سے بند ہے۔ آن کرنے پر گاہک کی تصویر اس کے کھاتے پر چھپے گی، جس سے انکار مشکل ہو جاتا ہے — لیکن کھاتہ آگے بھی بھیجا جا سکتا ہے، اور تصویر اس کے ساتھ جائے گی۔</string>
     <string name="made_with_app">روشن کھاتہ</string>
     <string name="more_details">نوٹ، مال یا وصولی شامل کریں</string>
     <string name="back_to_amount">رقم پر واپس</string>
@@ -1457,4 +1437,26 @@
     <string name="theme_light">روشن</string>
     <string name="theme_dark">تاریک</string>
     <string name="theme_system">فون کے مطابق</string>
+    <string name="bp_section_identity">پہچان</string>
+    <string name="bp_section_paid">ادائیگی وصول کرنا</string>
+    <string name="bp_section_seals">مہر اور دستخط</string>
+    <string name="bp_section_docs">انوائس اور اسٹیٹمنٹ</string>
+    <string name="bp_strn">سیلز ٹیکس نمبر (STRN)</string>
+    <string name="bp_strn_help">صرف رجسٹرڈ ہونے پر۔ خالی = نہیں چھپے گا۔</string>
+    <string name="bp_paid_help">انوائس کے ادائیگی والے خانے میں آتا ہے۔ خالی لائن نہیں چھپتی۔</string>
+    <string name="bp_qr">پیمنٹ QR</string>
+    <string name="bp_qr_help">آپ کا ایزی پیسہ / جاز کیش QR، اسٹیٹمنٹ کے لیے۔</string>
+    <string name="bp_add">شامل کریں</string>
+    <string name="bp_change">بدلیں</string>
+    <string name="bp_seals_help">سادہ سفید کاغذ پر تصویر لیں — ایپ خود کاٹ دیتی ہے۔</string>
+    <string name="bp_terms_help">ہر انوائس پر چھپتی ہیں۔ خالی = کچھ نہیں۔</string>
+    <string name="bp_photo">اسٹیٹمنٹ پر گاہک کی تصویر</string>
+    <string name="bp_photo_help">پہلے سے بند — اسٹیٹمنٹ آگے بھیجی جا سکتی ہے۔</string>
+    <string name="bp_unsaved">تبدیلیاں محفوظ نہیں ہوئیں</string>
+    <string name="bp_iban_bad">IBAN کے 24 حروف ہوتے ہیں اور یہ PK سے شروع ہوتا ہے۔</string>
+    <string name="bp_mobile_bad">موبائل نمبر 11 ہندسوں کا ہوتا ہے، جیسے 03001234567۔</string>
+    <string name="bp_leave_title">محفوظ کیے بغیر نکلیں؟</string>
+    <string name="bp_leave_msg">اس اسکرین پر آپ کی تبدیلیاں ضائع ہو جائیں گی۔</string>
+    <string name="bp_leave_discard">چھوڑ دیں</string>
+    <string name="bp_leave_keep">ترمیم جاری رکھیں</string>
 </resources>

@@ -285,31 +285,20 @@
 
     <!-- Business settings / payment QR -->
     <string name="business_settings">Business Settings</string>
-    <string name="business_profile">Profile</string>
-    <string name="profile_preview_caption">This is how your profile prints on invoices &amp; statements.</string>
-    <string name="profile_section_business">Business</string>
-    <string name="profile_section_seals">Seals &amp; signatures</string>
-    <string name="profile_section_statement">Statement options</string>
-    <string name="profile_section_payment_tax">Payment &amp; tax</string>
-    <string name="business_settings_subtitle">Your name and payment code on statements</string>
+    <string name="business_profile">Business Profile</string>
+    <string name="profile_preview_caption">Live preview of your invoice header</string>
+    <string name="business_settings_subtitle">Printed on your invoices, statements and reports</string>
     <string name="business_name">Business name</string>
-    <string name="business_name_help">Appears at the top of every statement and at the end of every reminder you send.</string>
     <string name="business_name_hint">e.g. Bhatti Traders</string>
     <string name="business_address">Shop address</string>
-    <string name="business_address_help">Printed under your business name on every invoice.</string>
     <string name="business_address_hint">e.g. Main Bazaar, Pasrur</string>
-    <string name="invoice_bank_details">Bank details</string>
-    <string name="invoice_bank_details_help">For the payment box on invoice templates that show one. Leave any of these blank to leave that row off.</string>
     <string name="invoice_bank_name_hint">Bank name</string>
     <string name="invoice_bank_title_hint">Account title</string>
     <string name="invoice_bank_iban_hint">IBAN / account number</string>
     <string name="invoice_bank_jazzcash_hint">JazzCash / EasyPaisa number</string>
 
     <string name="payment_qr">Payment QR code</string>
-    <string name="payment_qr_help">A screenshot or photo of your EasyPaisa or JazzCash QR code — the app crops to just the code automatically. It will be attached to statements so a customer can scan and pay you.</string>
-    <string name="payment_qr_caveat">Check the code carefully before saving. Roshan Khata cannot verify whose account a QR belongs to — if the wrong image is saved, a customer\'s payment will go to the wrong account.\n\nAlso note: a personal EasyPaisa/JazzCash QR does not carry the amount. Your customer will still type it in themselves, so the amount is written clearly alongside.</string>
     <string name="no_qr_yet">No payment QR saved yet.</string>
-    <string name="choose_qr_image">Choose Image</string>
     <string name="remove_qr">Remove</string>
     <string name="qr_saved">Payment QR saved</string>
     <string name="qr_save_failed">That image could not be saved. Please pick another.</string>
@@ -722,10 +711,7 @@
     <string name="invoice_charge_amount_hint">Amount</string>
     <string name="invoice_received_hint">Amount received (optional)</string>
     <string name="invoice_terms">Terms &amp; Conditions</string>
-    <string name="invoice_terms_help">Printed on every invoice automatically. Leave blank to print none.</string>
     <string name="invoice_terms_hint">e.g. Payment due within 14 days.</string>
-    <string name="invoice_strn">Sales Tax Registration (STRN)</string>
-    <string name="invoice_strn_help">Only if this shop is registered for sales tax. Leave blank otherwise — printed on every invoice when set, left off entirely when not.</string>
     <string name="invoice_strn_hint">e.g. 1234567-8 (optional)</string>
     <string name="adjust_crop_title">Adjust crop</string>
     <string name="adjust_crop_hint">Drag the corners so the box covers just what you want to keep.</string>
@@ -1052,21 +1038,15 @@ You can change this any time from this screen.</string>
     <string name="biz_tpl_olive">Envelope</string>
     <string name="biz_tpl_stamp">Blade</string>
     <string name="signature">Signature</string>
-    <string name="signature_help">Photograph your signature on plain paper — the app crops to just the ink automatically. It is printed at the foot of statements you send, and stays on this phone.</string>
     <string name="no_signature_yet">No signature added yet.</string>
-    <string name="choose_signature">Choose signature</string>
     <string name="remove_signature">Remove</string>
     <string name="signature_saved">Signature saved.</string>
     <string name="signature_save_failed">That image could not be saved.</string>
     <string name="stamp">Stamp</string>
-    <string name="stamp_help">Photograph the muhar for your shop on plain paper — the app crops to just the stamp automatically. Shown on an invoice automatically if you add one — otherwise just your name and address print instead.</string>
     <string name="no_stamp_yet">No stamp added yet.</string>
-    <string name="choose_stamp">Choose stamp</string>
     <string name="remove_stamp">Remove</string>
     <string name="stamp_saved">Stamp saved.</string>
     <string name="stamp_save_failed">That image could not be saved.</string>
-    <string name="photo_on_statement">Include customer photo on statements</string>
-    <string name="photo_on_statement_help">Off by default. Turning it on prints the customer\u2019s photo on their statement, which makes it harder to dispute — but a statement can be forwarded, and their photo travels with it.</string>
     <string name="made_with_app">Roshan Khata</string>
     <string name="more_details">Add note, goods or recovery</string>
     <string name="back_to_amount">Back to amount</string>
@@ -1509,4 +1489,26 @@ You can change this any time from this screen.</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">Same as phone</string>
+    <string name="bp_section_identity">Identity</string>
+    <string name="bp_section_paid">Getting paid</string>
+    <string name="bp_section_seals">Stamp &amp; signature</string>
+    <string name="bp_section_docs">Invoice &amp; statement</string>
+    <string name="bp_strn">Sales tax no. (STRN)</string>
+    <string name="bp_strn_help">Only if registered. Blank = not printed.</string>
+    <string name="bp_paid_help">Shown in the payment box on your invoice. Blank rows are left off.</string>
+    <string name="bp_qr">Payment QR</string>
+    <string name="bp_qr_help">Your EasyPaisa / JazzCash QR, for statements.</string>
+    <string name="bp_add">Add</string>
+    <string name="bp_change">Change</string>
+    <string name="bp_seals_help">Photo on plain white paper — the app crops it for you.</string>
+    <string name="bp_terms_help">Printed on every invoice. Blank = none.</string>
+    <string name="bp_photo">Customer photo on statements</string>
+    <string name="bp_photo_help">Off by default — a statement can be forwarded.</string>
+    <string name="bp_unsaved">Unsaved changes</string>
+    <string name="bp_iban_bad">An IBAN is 24 characters and starts with PK.</string>
+    <string name="bp_mobile_bad">A mobile number has 11 digits, like 03001234567.</string>
+    <string name="bp_leave_title">Leave without saving?</string>
+    <string name="bp_leave_msg">Your changes on this screen will be lost.</string>
+    <string name="bp_leave_discard">Discard</string>
+    <string name="bp_leave_keep">Keep editing</string>
 </resources>
