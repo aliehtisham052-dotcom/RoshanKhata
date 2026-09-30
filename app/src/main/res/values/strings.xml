@@ -1514,4 +1514,9 @@ You can change this any time from this screen.</string>
     <string name="bp_phone">Phone number</string>
     <string name="bp_phone_help">Printed on invoices so customers can call you.</string>
     <string name="bp_phone_hint">e.g. 0300 1234567</string>
+    <string name="bp_logo">Shop logo</string>
+    <string name="bp_logo_help">Optional — printed at the top of invoices and the stock register.</string>
+    <string name="bp_remove_logo">Remove logo</string>
+    <string name="bp_logo_saved">Logo saved</string>
+    <string name="bp_logo_save_failed">Could not save the logo. Try another picture.</string>
 </resources>

@@ -1490,4 +1490,9 @@
     <string name="bp_phone">فون نمبر</string>
     <string name="bp_phone_help">انوائس تي ڇپجي ٿو ته جيئن گراهڪ توهان کي فون ڪري سگهن.</string>
     <string name="bp_phone_hint">مثال 0300 1234567</string>
+    <string name="bp_logo">دڪان جو لوگو</string>
+    <string name="bp_logo_help">اختياري — انوائس ۽ اسٽاڪ رجسٽر جي مٿان ڇپجي ٿو.</string>
+    <string name="bp_remove_logo">لوگو هٽايو</string>
+    <string name="bp_logo_saved">لوگو محفوظ ٿي ويو</string>
+    <string name="bp_logo_save_failed">لوگو محفوظ نه ٿي سگهيو. ٻي تصوير آزمايو.</string>
 </resources>

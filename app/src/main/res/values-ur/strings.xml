@@ -1462,4 +1462,9 @@
     <string name="bp_phone">فون نمبر</string>
     <string name="bp_phone_help">انوائس پر چھپتا ہے تاکہ گاہک آپ کو فون کر سکیں۔</string>
     <string name="bp_phone_hint">مثلاً 0300 1234567</string>
+    <string name="bp_logo">دکان کا لوگو</string>
+    <string name="bp_logo_help">اختیاری — انوائس اور اسٹاک رجسٹر کے اوپر چھپتا ہے۔</string>
+    <string name="bp_remove_logo">لوگو ہٹائیں</string>
+    <string name="bp_logo_saved">لوگو محفوظ ہو گیا</string>
+    <string name="bp_logo_save_failed">لوگو محفوظ نہیں ہو سکا۔ کوئی اور تصویر آزمائیں۔</string>
 </resources>

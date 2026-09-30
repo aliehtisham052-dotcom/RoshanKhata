@@ -1594,4 +1594,9 @@
     <string name="bp_phone">رقم الهاتف</string>
     <string name="bp_phone_help">يُطبع على الفواتير ليتمكن العملاء من الاتصال بك.</string>
     <string name="bp_phone_hint">مثال: 0300 1234567</string>
+    <string name="bp_logo">شعار المتجر</string>
+    <string name="bp_logo_help">اختياري — يُطبع أعلى الفواتير وسجل المخزون.</string>
+    <string name="bp_remove_logo">إزالة الشعار</string>
+    <string name="bp_logo_saved">تم حفظ الشعار</string>
+    <string name="bp_logo_save_failed">تعذّر حفظ الشعار. جرّب صورة أخرى.</string>
 </resources>

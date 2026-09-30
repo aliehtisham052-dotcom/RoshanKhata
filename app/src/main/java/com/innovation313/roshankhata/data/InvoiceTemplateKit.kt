@@ -264,13 +264,12 @@ object InvoiceTemplateKit {
             PdfRtl.drawText(c, heading, mid, 84f, paint(fonts, 16f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
         } else {
             val tile = RectF(left, 26f, left + 40f, 66f)
-            // The real Roshan Khata mark in the tile, on white so its green
-            // and gold read on any band colour. It used to be the shop name's
-            // initials ("RK") on a faint tile — the owner noticed the
-            // invoice carried no actual logo at all. There is no shop-logo
-            // upload yet, so the app's mark stands in; the initials remain
-            // only as the fallback if the image cannot be loaded.
-            val mark = PdfBranding.logo(context)
+            // The shop's own logo in the tile when the owner has added one
+            // (Business Profile, 30 Sep 2026); otherwise the Roshan Khata
+            // mark stands in, on white so its green and gold read on any
+            // band colour. The initials remain only as the fallback if no
+            // image can be loaded at all.
+            val mark = BusinessProfile.loadLogo(context) ?: PdfBranding.logo(context)
             if (palette.bandFilled) {
                 c.drawRoundRect(tile, 9f, 9f, solid(if (mark != null) Color.WHITE else 0x33FFFFFF))
             } else {

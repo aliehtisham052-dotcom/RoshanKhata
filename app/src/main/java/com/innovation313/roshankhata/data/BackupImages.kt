@@ -37,6 +37,7 @@ object BackupImages {
     private const val ROOT_QR = "payment_qr.png"
     private const val ROOT_SIGNATURE = "signature.png"
     private const val ROOT_STAMP = "stamp.png"
+    private const val ROOT_LOGO = "logo.png"
 
     /**
      * Pack every image into a zip in the cache directory, or return null if
@@ -106,7 +107,8 @@ object BackupImages {
         val roots = listOf(
             ROOT_QR to BusinessProfile.qrFile(context),
             ROOT_SIGNATURE to BusinessProfile.signatureFile(context),
-            ROOT_STAMP to BusinessProfile.stampFile(context)
+            ROOT_STAMP to BusinessProfile.stampFile(context),
+            ROOT_LOGO to BusinessProfile.logoFile(context)
         )
         for ((name, f) in roots) {
             if (f.exists()) out += name to f
@@ -197,6 +199,7 @@ object BackupImages {
         name == ROOT_QR -> BusinessProfile.qrFile(context)
         name == ROOT_SIGNATURE -> BusinessProfile.signatureFile(context)
         name == ROOT_STAMP -> BusinessProfile.stampFile(context)
+        name == ROOT_LOGO -> BusinessProfile.logoFile(context)
         else -> null
     }
 

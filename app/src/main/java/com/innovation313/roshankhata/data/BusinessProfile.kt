@@ -33,10 +33,12 @@ object BusinessProfile {
     private const val KEY_QR_SAVED = "payment_qr_saved"
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
     private const val KEY_STAMP_SAVED = "stamp_saved"
+    private const val KEY_LOGO_SAVED = "logo_saved"
     private const val KEY_PHOTO_ON_STATEMENT = "photo_on_statement"
     private const val QR_FILE = "payment_qr.png"
     private const val SIGNATURE_FILE = "signature.png"
     private const val STAMP_FILE = "stamp.png"
+    private const val LOGO_FILE = "logo.png"
 
     /** Long edge of the stored QR. Big enough to scan, small enough to attach. */
     private const val MAX_EDGE = 1000
@@ -375,6 +377,53 @@ object BusinessProfile {
         prefs(context).edit().putBoolean(KEY_STAMP_SAVED, false).apply()
     }
 
+    // ---------- Shop logo ----------
+
+    /**
+     * The shop's own logo (added 30 Sep 2026), printed in the letterhead tile
+     * of an invoice and the masthead of the stock register. Optional: with
+     * none, the invoice keeps the app's mark in its tile and the register
+     * keeps the shop's initials. Stored exactly like the stamp — the owner's
+     * file, own storage, never uploaded, PNG so a cut-out logo stays
+     * transparent.
+     */
+    fun logoFile(context: Context): File =
+        imageFile(context, LOGO_FILE)
+
+    fun hasLogo(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_LOGO_SAVED, false) && logoFile(context).exists()
+
+    fun loadLogo(context: Context): Bitmap? {
+        if (!hasLogo(context)) return null
+        return try {
+            BitmapFactory.decodeFile(logoFile(context).absolutePath)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** @return true if it was saved; a logo that failed to save is never marked present. */
+    fun saveLogo(context: Context, source: Uri): Boolean {
+        return try {
+            val original = PhotoDecode.read(context, source, MAX_EDGE, keepShortEdge = false)
+                ?: return false
+            val scaled = downscale(original)
+            FileOutputStream(logoFile(context)).use { out ->
+                scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
+            }
+            if (scaled !== original) original.recycle()
+            prefs(context).edit().putBoolean(KEY_LOGO_SAVED, true).apply()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun removeLogo(context: Context) {
+        logoFile(context).delete()
+        prefs(context).edit().putBoolean(KEY_LOGO_SAVED, false).apply()
+    }
+
     // ---------- Customer photo on statements ----------
 
     /**
@@ -412,6 +461,7 @@ object BusinessProfile {
             .putBoolean(KEY_QR_SAVED, qrFile(context).exists())
             .putBoolean(KEY_SIGNATURE_SAVED, signatureFile(context).exists())
             .putBoolean(KEY_STAMP_SAVED, stampFile(context).exists())
+            .putBoolean(KEY_LOGO_SAVED, logoFile(context).exists())
             .apply()
     }
 

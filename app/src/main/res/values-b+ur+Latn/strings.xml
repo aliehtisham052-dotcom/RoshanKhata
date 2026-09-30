@@ -1462,4 +1462,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bp_phone">Phone number</string>
     <string name="bp_phone_help">Invoice par chhapta hai taake customer aap ko call kar sakein.</string>
     <string name="bp_phone_hint">Maslan 0300 1234567</string>
+    <string name="bp_logo">Dukaan ka logo</string>
+    <string name="bp_logo_help">Ikhtiyari — invoice aur stock register ke upar chhapta hai.</string>
+    <string name="bp_remove_logo">Logo hatayein</string>
+    <string name="bp_logo_saved">Logo save ho gaya</string>
+    <string name="bp_logo_save_failed">Logo save nahi ho saka. Koi aur tasveer try karein.</string>
 </resources>
