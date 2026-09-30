@@ -508,6 +508,21 @@
             android:inputType="text"
             android:completionThreshold="1" />
 
+        <!--
+          Unit on its own full-width line, so its hint (bag, litre, kg…) is
+          read whole in every language; a third of the row cut it off.
+          Then Quantity × Rate side by side, as a bill reads.
+        -->
+        <AutoCompleteTextView
+            android:id="@+id/etUnit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:completionThreshold="1"
+            android:hint="@string/unit_hint"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
         <LinearLayout
             android:layout_marginTop="8dp"
             android:layout_width="match_parent"
@@ -524,17 +539,6 @@
                 android:hint="@string/quantity_hint"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal" />
-
-            <AutoCompleteTextView
-                android:id="@+id/etUnit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:completionThreshold="1"
-                android:hint="@string/unit_hint"
-                android:importantForAutofill="no"
-                android:inputType="text" />
 
             <!--
               The rate this item goes at, per its unit. Filled from the
@@ -556,19 +560,6 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <!--
-          A free item (a company scheme: 10 + 1). It leaves the shelf like any
-          other, but costs nothing: its line comes to Rs 0 and the Rate box is
-          set aside. Shown whenever a list of items is (a customer's account).
-        -->
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/cbBonus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/bonus_label"
-            android:textSize="14sp"
-            android:visibility="gone" />
 
         <!-- "Last time for this customer: Rs 4,700" — same product, same rate type. -->
         <TextView
