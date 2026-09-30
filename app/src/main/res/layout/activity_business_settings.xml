@@ -237,6 +237,18 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/ProfileField"
+                    android:hint="@string/bp_phone"
+                    app:helperText="@string/bp_phone_help"
+                    app:placeholderText="@string/bp_phone_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBusinessPhone"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="phone" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
                     android:hint="@string/bp_strn"
                     app:helperText="@string/bp_strn_help"
                     app:placeholderText="@string/invoice_strn_hint">

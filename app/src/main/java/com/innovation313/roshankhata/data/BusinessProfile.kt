@@ -23,6 +23,7 @@ object BusinessProfile {
     private const val PREFS = "roshan_khata_prefs"
     private const val KEY_BUSINESS_NAME = "business_name"
     private const val KEY_BUSINESS_ADDRESS = "business_address"
+    private const val KEY_BUSINESS_PHONE = "business_phone"
     private const val KEY_BANK_NAME = "bank_name"
     private const val KEY_BANK_TITLE = "bank_account_title"
     private const val KEY_BANK_IBAN = "bank_iban"
@@ -104,6 +105,21 @@ object BusinessProfile {
     fun setBusinessAddress(context: Context, address: String?) {
         prefs(context).edit()
             .putString(KEY_BUSINESS_ADDRESS, address?.trim().orEmpty())
+            .apply()
+    }
+
+    /**
+     * The shop's phone, printed on invoices so a customer can call. Its own
+     * field (added 30 Sep 2026) rather than typed into the address, so the
+     * invoice can place it on its own line. Free text: a landline is as
+     * valid here as a mobile.
+     */
+    fun businessPhone(context: Context): String? =
+        prefs(context).getString(KEY_BUSINESS_PHONE, null)?.takeIf { it.isNotBlank() }
+
+    fun setBusinessPhone(context: Context, phone: String?) {
+        prefs(context).edit()
+            .putString(KEY_BUSINESS_PHONE, phone?.trim().orEmpty())
             .apply()
     }
 

@@ -1511,4 +1511,7 @@ You can change this any time from this screen.</string>
     <string name="bp_leave_msg">Your changes on this screen will be lost.</string>
     <string name="bp_leave_discard">Discard</string>
     <string name="bp_leave_keep">Keep editing</string>
+    <string name="bp_phone">Phone number</string>
+    <string name="bp_phone_help">Printed on invoices so customers can call you.</string>
+    <string name="bp_phone_hint">e.g. 0300 1234567</string>
 </resources>
