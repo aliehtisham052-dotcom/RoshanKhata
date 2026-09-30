@@ -1208,6 +1208,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="add_line">+ Aur item</string>
     <string name="lines_total_fill">Items ka jor %1$s. Bharne ke liye dabayen.</string>
     <string name="lines_total_unknown">Kisi item ka rate nahi, is liye jor nahi ban sakta.</string>
+    <string name="lines_total_need_qty">Jor ke liye miqdaar likhein.</string>
     <string name="lines_amount_less">Items %1$s · likha %2$s · %3$s kam</string>
     <string name="lines_amount_more">Items %1$s · likha %2$s · %3$s zyada</string>
     <string name="line_need_name">Shai ka naam likhein</string>

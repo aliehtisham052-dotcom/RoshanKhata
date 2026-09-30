@@ -1236,6 +1236,7 @@
     <string name="add_line">+ ٻي شيءِ</string>
     <string name="lines_total_fill">شين جو جوڙ %1$s. ڀرڻ لاءِ دٻايو.</string>
     <string name="lines_total_unknown">ڪنهن شيءِ جو ريٽ ناهي، ان ڪري جوڙ نٿو ٺهي.</string>
+    <string name="lines_total_need_qty">جوڙ لاءِ مقدار لکو.</string>
     <string name="lines_amount_less">شيون %1$s · لکيل %2$s · %3$s گهٽ</string>
     <string name="lines_amount_more">شيون %1$s · لکيل %2$s · %3$s وڌيڪ</string>
     <string name="line_need_name">شيءِ جو نالو لکو</string>

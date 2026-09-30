@@ -1332,6 +1332,7 @@
     <string name="add_line">+ إضافة صنف</string>
     <string name="lines_total_fill">مجموع الأصناف %1$s. اضغط للتعبئة.</string>
     <string name="lines_total_unknown">صنف بلا سعر، لذلك لا يوجد مجموع.</string>
+    <string name="lines_total_need_qty">أدخل الكمية لحساب المجموع.</string>
     <string name="lines_amount_less">الأصناف %1$s · المكتوب %2$s · أقل بـ %3$s</string>
     <string name="lines_amount_more">الأصناف %1$s · المكتوب %2$s · أكثر بـ %3$s</string>
     <string name="line_need_name">اكتب اسم الصنف</string>

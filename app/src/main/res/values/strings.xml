@@ -1251,6 +1251,7 @@ You can change this any time from this screen.</string>
     <string name="add_line">+ Add item</string>
     <string name="lines_total_fill">Items total %1$s. Tap to fill.</string>
     <string name="lines_total_unknown">An item has no rate, so there is no total.</string>
+    <string name="lines_total_need_qty">Enter the quantity to get the total.</string>
     <string name="lines_amount_less">Items %1$s · written %2$s · %3$s less</string>
     <string name="lines_amount_more">Items %1$s · written %2$s · %3$s more</string>
     <string name="line_need_name">Write the item name</string>
