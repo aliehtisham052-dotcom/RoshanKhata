@@ -1234,6 +1234,9 @@
     </plurals>
     <string name="bill_to_customer_title">هذا الطرف عميل</string>
     <string name="bill_to_customer_warn">%1$s محفوظ كعميل، لا كمورد. فاتورة المورد تضع ما تدين به أنت في حسابه. إن كان الشخص نفسه يورد لك فعلاً فتابع — وإلا فراجع الاسم.</string>
+    <string name="bill_new_supplier_title">مورّد جديد؟</string>
+    <string name="bill_new_supplier_msg">%1$s غير موجود في دفترك بعد. هل تضيفه كمورّد وتحفظ هذه الفاتورة؟</string>
+    <string name="bill_new_supplier_yes">أضف المورّد واحفظ</string>
     <string name="change_party_type">عميل أم مورد</string>
     <string name="change_party_type_help">هذا يصحح نوع الطرف فقط. دفتر الحساب والرصيد وكل فاتورة تبقى كما هي — لا تنتقل أي أموال. لكنه يحدد من يظهر في قوائم ترويج المنتجات، وهي تضم العملاء فقط.</string>
     <string name="now_a_customer">حُفظ كعميل</string>

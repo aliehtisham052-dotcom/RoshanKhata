@@ -1163,6 +1163,9 @@ You can change this any time from this screen.</string>
     </plurals>
     <string name="bill_to_customer_title">This party is a customer</string>
     <string name="bill_to_customer_warn">%1$s is saved as a customer, not a supplier. A supplier bill puts what YOU owe on their account. If the same person really does supply you, go ahead — otherwise check the name.</string>
+    <string name="bill_new_supplier_title">New supplier?</string>
+    <string name="bill_new_supplier_msg">%1$s is not in your khata yet. Add them as a supplier and save this bill?</string>
+    <string name="bill_new_supplier_yes">Add supplier and save</string>
     <string name="change_party_type">Customer or supplier</string>
     <string name="change_party_type_help">This only corrects what kind of party they are. The ledger, the balance and every bill stay exactly as they are — no money moves. It does decide who appears in product promotion lists, which include customers only.</string>
     <string name="now_a_customer">Saved as a customer</string>

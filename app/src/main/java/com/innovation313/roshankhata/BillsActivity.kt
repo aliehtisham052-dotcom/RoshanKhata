@@ -22,6 +22,7 @@ import com.innovation313.roshankhata.data.BillSummary
 import com.innovation313.roshankhata.data.ExpiryWindow
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.SupplierBill
@@ -139,13 +140,25 @@ class BillsActivity : BaseActivity() {
 
     // ---------- Entering a bill ----------
 
-    private fun startNewBill(prefillSupplier: String? = null) {
-        if (parties.isEmpty()) {
-            Toast.makeText(this, R.string.enter_supplier, Toast.LENGTH_LONG).show()
-            return
-        }
+    /** Everything typed on the bill form, so it can be put back unchanged. */
+    private data class BillDraft(
+        val supplierName: String,
+        val billNumber: String?,
+        val total: Double?,
+        val billDate: Long,
+        val dueDate: Long?,
+        val paidCash: Boolean,
+        val note: String?
+    )
 
-        pendingItems.clear()
+    /**
+     * [restore] reopens the form exactly as the owner left it (with the items
+     * already added still pending) when a save could not go through: nothing
+     * he typed is ever thrown away. A first-time supplier no longer stops the
+     * form opening either; the name is offered as a new supplier on Save.
+     */
+    private fun startNewBill(prefillSupplier: String? = null, restore: BillDraft? = null) {
+        if (restore == null) pendingItems.clear()
 
         val view = layoutInflater.inflate(R.layout.dialog_add_bill, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
@@ -165,12 +178,17 @@ class BillsActivity : BaseActivity() {
                 parties.map { it.name }
             )
         )
-        prefillSupplier?.let { etSupplier.setText(it, false) }
+        (restore?.supplierName ?: prefillSupplier)?.let { etSupplier.setText(it, false) }
+        restore?.billNumber?.let { etNumber.setText(it) }
+        restore?.total?.let { etTotal.setText(com.innovation313.roshankhata.ui.Calc.trim(it)) }
+        restore?.note?.let { etNote.setText(it) }
+        cbPaidCash.isChecked = restore?.paidCash ?: false
 
-        var billDate = System.currentTimeMillis()
-        var dueDate: Long? = null
+        var billDate = restore?.billDate ?: System.currentTimeMillis()
+        var dueDate: Long? = restore?.dueDate
 
         btnDate.text = getString(R.string.due_date_set, Format.dateOnly(billDate))
+        dueDate?.let { btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
 
         btnDate.setOnClickListener {
             pickDate(billDate) { picked ->
@@ -206,6 +224,7 @@ class BillsActivity : BaseActivity() {
         cbPaidCash.setOnCheckedChangeListener { _, _ -> refreshEffect() }
         etTotal.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) refreshEffect() }
         etSupplier.setOnItemClickListener { _, _, _, _ -> refreshEffect() }
+        if (restore != null) refreshEffect()
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.add_bill)
@@ -366,14 +385,39 @@ class BillsActivity : BaseActivity() {
         paidCash: Boolean,
         note: String?
     ) {
-        val supplier = parties.firstOrNull { it.name.equals(supplierName, ignoreCase = true) }
-        if (supplier == null) {
+        // The dialog has already closed by the time this runs, so every stop
+        // below reopens the form as it was rather than losing the bill.
+        val draft = BillDraft(supplierName, billNumber, total, billDate, dueDate, paidCash, note)
+
+        if (supplierName.isEmpty()) {
             Toast.makeText(this, R.string.enter_supplier, Toast.LENGTH_LONG).show()
+            startNewBill(restore = draft)
             return
         }
 
+        // Checked before a new supplier is offered, so a supplier is never
+        // created for a bill that then cannot be saved.
         if (total == null || total <= 0.0) {
             Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
+            startNewBill(restore = draft)
+            return
+        }
+
+        val supplier = parties.firstOrNull { it.name.equals(supplierName, ignoreCase = true) }
+
+        // A name not in the khata yet: the owner's first bill from a new
+        // supplier. Offer to add them here rather than send him off to make
+        // the party first and type the whole bill again.
+        if (supplier == null) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.bill_new_supplier_title)
+                .setMessage(getString(R.string.bill_new_supplier_msg, supplierName))
+                .setNegativeButton(R.string.back) { _, _ -> startNewBill(restore = draft) }
+                .setOnCancelListener { startNewBill(restore = draft) }
+                .setPositiveButton(R.string.bill_new_supplier_yes) { _, _ ->
+                    dispatchSaveBill(null, supplierName, billNumber, total, billDate, dueDate, paidCash, note)
+                }
+                .show()
             return
         }
 
@@ -389,19 +433,26 @@ class BillsActivity : BaseActivity() {
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.bill_to_customer_title)
                 .setMessage(getString(R.string.bill_to_customer_warn, supplier.name))
-                .setNegativeButton(R.string.cancel, null)
+                .setNegativeButton(R.string.cancel) { _, _ -> startNewBill(restore = draft) }
+                .setOnCancelListener { startNewBill(restore = draft) }
                 .setPositiveButton(R.string.proceed_anyway) { _, _ ->
-                    dispatchSaveBill(supplier, billNumber, total, billDate, dueDate, paidCash, note)
+                    dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidCash, note)
                 }
                 .show()
             return
         }
 
-        dispatchSaveBill(supplier, billNumber, total, billDate, dueDate, paidCash, note)
+        dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidCash, note)
     }
 
+    /**
+     * [supplierId] is the saved supplier; when it is null, [newSupplierName]
+     * is added as a supplier first, in the same background job as the bill,
+     * so the party and its bill are written together.
+     */
     private fun dispatchSaveBill(
-        supplier: PartyWithBalance,
+        supplierId: Long?,
+        newSupplierName: String?,
         billNumber: String?,
         total: Double,
         billDate: Long,
@@ -423,6 +474,12 @@ class BillsActivity : BaseActivity() {
         pendingItems.clear()
 
         AppScope.launch {
+            // A new supplier: reuse one of the same name if it appeared in the
+            // meantime (a second tap), otherwise add it as a supplier.
+            val partyId = supplierId
+                ?: dao.findPartyByName(newSupplierName.orEmpty())?.id
+                ?: dao.insertParty(Party(name = newSupplierName.orEmpty().trim(), isCustomer = false))
+
             // ONE ledger entry, and only when the stock was taken on credit.
             //
             // isGiven = false means money owed BY me TO them — the supplier's
@@ -448,14 +505,14 @@ class BillsActivity : BaseActivity() {
             // of it can offer its batches at once, with no backfill run needed.
             val createdProducts = dao.insertSupplierBill(
                 entry = if (paidCash) null else LedgerEntry(
-                    partyId = supplier.id,
+                    partyId = partyId,
                     amount = total,
                     isGiven = false,
                     note = billNumber?.let { "Bill $it" } ?: note,
                     entryNumber = ""
                 ),
                 bill = SupplierBill(
-                    partyId = supplier.id,
+                    partyId = partyId,
                     billNumber = billNumber,
                     totalAmount = total,
                     billDate = billDate,
