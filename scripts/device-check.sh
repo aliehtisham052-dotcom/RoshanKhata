@@ -25,6 +25,10 @@ gradle connectedDebugAndroidTest --no-daemon --stacktrace > /tmp/instrumented_ou
 tests=$?
 tail -150 /tmp/instrumented_output.txt
 
+# Urdu invoice pictures from PdfRtlOnDeviceTest, attached to the run so a
+# person can look at the right-to-left layout, not only the assertions.
+adb pull /sdcard/Download/rtl-proof /tmp/rtl-proof > /dev/null 2>&1 || true
+
 # ---- 2. Monkey -------------------------------------------------------------
 # connectedDebugAndroidTest uninstalls the app when it finishes, so install
 # the same debug APK again: fresh, as a new owner would get it. -g grants every

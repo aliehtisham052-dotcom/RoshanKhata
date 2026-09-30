@@ -70,7 +70,7 @@ object InvoicePdfExport {
         }
         val left = box.centerX() - w / 2f
         val top = box.centerY() - h / 2f
-        c.drawBitmap(
+        PdfRtl.drawBitmap(c,
             bmp, null,
             Rect(left.toInt(), top.toInt(), (left + w).toInt(), (top + h).toInt()),
             null
@@ -188,13 +188,13 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
             return c to bandY
@@ -287,14 +287,14 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
         InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             // Before anything else — a continuation page left white would
             // be a jarring break in the middle of a dark document.
@@ -379,13 +379,13 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
             return c to bandY
@@ -474,13 +474,13 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
             return c to bandY
@@ -565,13 +565,13 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
             return c to bandY
@@ -650,14 +650,14 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
         InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
@@ -734,14 +734,14 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
         InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
@@ -826,14 +826,14 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
         InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
@@ -909,14 +909,14 @@ object InvoicePdfExport {
         val right = PAGE_W_A4 - MARGIN
 
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
         var c = page.canvas
         InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
 
         fun newPage(): Pair<Canvas, Float> {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
             val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
@@ -1001,7 +1001,7 @@ object InvoicePdfExport {
         val pageH = estimatedH.toInt().coerceAtLeast(400)
 
         val doc = PdfDocument()
-        val page = doc.startPage(PdfDocument.PageInfo.Builder(pageW, pageH, 1).create())
+        val page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(pageW, pageH, 1).create())
         val c = page.canvas
 
         val center = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -1032,46 +1032,46 @@ object InvoicePdfExport {
         // The receipt's words in the app's language (see InvoiceTemplateKit.Labels).
         val labels = InvoiceTemplateKit.Labels(context)
 
-        c.drawText(BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata", cx, y, shopName)
+        PdfRtl.drawText(c, BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata", cx, y, shopName)
         BusinessProfile.businessAddress(context)?.let {
             y += 12f
-            c.drawText(it, cx, y, shopSub)
+            PdfRtl.drawText(c, it, cx, y, shopSub)
         }
         BusinessProfile.strn(context)?.let {
             y += 11f
-            c.drawText("STRN: $it", cx, y, shopSub)
+            PdfRtl.drawText(c, "STRN: $it", cx, y, shopSub)
         }
 
         y += 16f
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
 
-        c.drawText("${labels.invoiceNo}:", pad, y, mono)
-        c.drawText(invoice.invoiceNumber, pageW - pad, y, monoR)
+        PdfRtl.drawText(c, "${labels.invoiceNo}:", pad, y, mono)
+        PdfRtl.drawText(c, invoice.invoiceNumber, pageW - pad, y, monoR)
         y += 13f
-        c.drawText("${labels.date}:", pad, y, mono)
-        c.drawText(Format.dateOnly(invoice.invoiceDate), pageW - pad, y, monoR)
+        PdfRtl.drawText(c, "${labels.date}:", pad, y, mono)
+        PdfRtl.drawText(c, Format.dateOnly(invoice.invoiceDate), pageW - pad, y, monoR)
         invoice.dueDate?.let {
             y += 13f
-            c.drawText("${labels.dueDate}:", pad, y, mono)
-            c.drawText(Format.dateOnly(it), pageW - pad, y, monoR)
+            PdfRtl.drawText(c, "${labels.dueDate}:", pad, y, mono)
+            PdfRtl.drawText(c, Format.dateOnly(it), pageW - pad, y, monoR)
         }
         y += 13f
-        c.drawText("${labels.time}:", pad, y, mono)
-        c.drawText(timeFmt.format(Date(invoice.createdAt)), pageW - pad, y, monoR)
+        PdfRtl.drawText(c, "${labels.time}:", pad, y, mono)
+        PdfRtl.drawText(c, timeFmt.format(Date(invoice.createdAt)), pageW - pad, y, monoR)
 
         y += 16f
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
 
         items.forEach { item ->
-            c.drawText(item.itemName, pad, y, monoBold)
+            PdfRtl.drawText(c, item.itemName, pad, y, monoBold)
             y += 11f
-            c.drawText(
+            PdfRtl.drawText(c,
                 "${Format.qty(item.quantity, item.unit)} × ${numberOnly(item.rate)}",
                 pad, y, monoGrey
             )
-            c.drawText(numberOnly(item.lineTotal), pageW - pad, y, monoGreyR)
+            PdfRtl.drawText(c, numberOnly(item.lineTotal), pageW - pad, y, monoGreyR)
             y += 15f
         }
 
@@ -1081,42 +1081,42 @@ object InvoicePdfExport {
         // Same rule as the A4 templates: only when something sits between it
         // and the total, otherwise it just repeats the total.
         if (InvoiceTemplateKit.showSubtotal(totals)) {
-            c.drawText(labels.subtotal, pad, y, mono)
-            c.drawText(numberOnly(totals.subtotal), pageW - pad, y, monoR)
+            PdfRtl.drawText(c, labels.subtotal, pad, y, mono)
+            PdfRtl.drawText(c, numberOnly(totals.subtotal), pageW - pad, y, monoR)
             y += 13f
         }
         if (totals.discountAmount > 0) {
-            c.drawText(labels.discount, pad, y, mono)
-            c.drawText("-" + numberOnly(totals.discountAmount), pageW - pad, y, monoR)
+            PdfRtl.drawText(c, labels.discount, pad, y, mono)
+            PdfRtl.drawText(c, "-" + numberOnly(totals.discountAmount), pageW - pad, y, monoR)
             y += 13f
         }
         if (totals.taxAmount > 0) {
-            c.drawText(labels.tax, pad, y, mono)
-            c.drawText(numberOnly(totals.taxAmount), pageW - pad, y, monoR)
+            PdfRtl.drawText(c, labels.tax, pad, y, mono)
+            PdfRtl.drawText(c, numberOnly(totals.taxAmount), pageW - pad, y, monoR)
             y += 13f
         }
         if (totals.additionalCharge > 0) {
-            c.drawText(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: labels.extraCharges, pad, y, mono)
-            c.drawText(numberOnly(totals.additionalCharge), pageW - pad, y, monoR)
+            PdfRtl.drawText(c, invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: labels.extraCharges, pad, y, mono)
+            PdfRtl.drawText(c, numberOnly(totals.additionalCharge), pageW - pad, y, monoR)
             y += 13f
         }
         y += 4f
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 15f
-        c.drawText(labels.total, pad, y, grandPaint)
-        c.drawText(Format.money(totals.grandTotal), pageW - pad, y, grandPaintR)
+        PdfRtl.drawText(c, labels.total, pad, y, grandPaint)
+        PdfRtl.drawText(c, Format.money(totals.grandTotal), pageW - pad, y, grandPaintR)
         y += 12f
         if (invoice.receivedAmount != null) {
-            c.drawText(labels.received, pad, y, mono)
-            c.drawText(numberOnly(totals.received), pageW - pad, y, monoR)
+            PdfRtl.drawText(c, labels.received, pad, y, mono)
+            PdfRtl.drawText(c, numberOnly(totals.received), pageW - pad, y, monoR)
             y += 13f
-            c.drawText(labels.balanceDue, pad, y, monoBold)
-            c.drawText(numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) })
+            PdfRtl.drawText(c, labels.balanceDue, pad, y, monoBold)
+            PdfRtl.drawText(c, numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) })
             y += 12f
         }
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
-        c.drawText("${labels.amountInWords}:", pad, y, Paint(mono).apply { textSize = 8f; color = 0xFF555555.toInt() })
+        PdfRtl.drawText(c, "${labels.amountInWords}:", pad, y, Paint(mono).apply { textSize = 8f; color = 0xFF555555.toInt() })
         y += 11f
         // Wrapped by hand, not left to overflow the receipt's own width —
         // the words for a large total are routinely longer than 226pt fits
@@ -1134,11 +1134,11 @@ object InvoicePdfExport {
             y += 6f
             c.drawLine(pad, y, pageW - pad, y, dash)
             y += 16f
-            c.drawText(labels.paymentInfo, cx, y, Paint(shopSub).apply { color = Color.BLACK; isFakeBoldText = true })
+            PdfRtl.drawText(c, labels.paymentInfo, cx, y, Paint(shopSub).apply { color = Color.BLACK; isFakeBoldText = true })
             y += 13f
             bank.forEach { (label, value) ->
-                c.drawText(label, pad, y, monoGrey)
-                c.drawText(value, pageW - pad, y, monoGreyR)
+                PdfRtl.drawText(c, label, pad, y, monoGrey)
+                PdfRtl.drawText(c, value, pageW - pad, y, monoGreyR)
                 y += 12f
             }
             qr?.let {
@@ -1157,7 +1157,7 @@ object InvoicePdfExport {
             y += 6f
             c.drawLine(pad, y, pageW - pad, y, dash)
             y += 14f
-            c.drawText(labels.terms, pad, y, Paint(mono).apply { textSize = 8f; isFakeBoldText = true })
+            PdfRtl.drawText(c, labels.terms, pad, y, Paint(mono).apply { textSize = 8f; isFakeBoldText = true })
             y += 12f
             footerLines.forEach {
                 y = wrapMonoText(context, c, it, pad, y, pageW - 2 * pad, 8f)
@@ -1180,9 +1180,9 @@ object InvoicePdfExport {
 
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
-        c.drawText(labels.thankYou, cx, y, shopSub)
+        PdfRtl.drawText(c, labels.thankYou, cx, y, shopSub)
         y += 11f
-        c.drawText(labels.visitAgain, cx, y, shopSub)
+        PdfRtl.drawText(c, labels.visitAgain, cx, y, shopSub)
         y += 10f
         PdfBranding.drawDownloadBannerCompact(context, doc, c, pad, y, pageW - 2 * pad)
 
@@ -1207,7 +1207,7 @@ object InvoicePdfExport {
         for (word in words) {
             val candidate = if (line.isEmpty()) word else "$line $word"
             if (paint.measureText(candidate) > maxWidth && line.isNotEmpty()) {
-                c.drawText(line.toString(), x, y, paint)
+                PdfRtl.drawText(c, line.toString(), x, y, paint)
                 y += size + 3f
                 line = StringBuilder(word)
             } else {
@@ -1215,7 +1215,7 @@ object InvoicePdfExport {
             }
         }
         if (line.isNotEmpty()) {
-            c.drawText(line.toString(), x, y, paint)
+            PdfRtl.drawText(c, line.toString(), x, y, paint)
             y += size + 3f
         }
         return y
@@ -1248,7 +1248,7 @@ object InvoicePdfExport {
         // to the foot of the next one, as before.
         if (yIn + 10f > bandTop) {
             doc.finishPage(page)
-            page = doc.startPage(
+            page = PdfRtl.startPage(context, doc, 
                 PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, doc.pages.size + 1).create()
             )
             c = page.canvas

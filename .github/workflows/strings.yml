@@ -19,6 +19,7 @@ on:
       - 'app/src/main/res/values/themes.xml'
       - 'scripts/check_dark_colours.py'
       - 'scripts/check_dark_pairs.py'
+      - 'scripts/check_pdf_rtl.py'
       - 'app/src/main/java/**'
   pull_request:
     paths:
@@ -33,6 +34,7 @@ on:
       - 'app/src/main/res/values/themes.xml'
       - 'scripts/check_dark_colours.py'
       - 'scripts/check_dark_pairs.py'
+      - 'scripts/check_pdf_rtl.py'
       - 'app/src/main/java/**'
 
 jobs:
@@ -46,3 +48,5 @@ jobs:
         run: python3 scripts/check_dark_colours.py
       - name: No text that vanishes on a fixed-white background at night
         run: python3 scripts/check_dark_pairs.py
+      - name: Every PDF draw goes through PdfRtl (right-to-left languages)
+        run: python3 scripts/check_pdf_rtl.py

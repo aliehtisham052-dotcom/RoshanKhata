@@ -277,7 +277,7 @@ object InspectorReport {
         // opaque stripe sliced the watermark wherever a table crossed it.
         val zebra = Paint().apply { color = 0x08000000 }
 
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create())
         var canvas: Canvas = page.canvas
         var y: Float
         var pageNo = 1
@@ -302,14 +302,14 @@ object InspectorReport {
             PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
             if (!first) {
                 canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 34f, navyFill)
-                canvas.drawText(businessName, MARGIN, 22f, tagline)
+                PdfRtl.drawText(canvas, businessName, MARGIN, 22f, tagline)
                 val cont = context.getString(R.string.pdf_insp_title_cont)
-                canvas.drawText(cont, PAGE_W - MARGIN - tagline.measureText(cont), 22f, tagline)
+                PdfRtl.drawText(canvas, cont, PAGE_W - MARGIN - tagline.measureText(cont), 22f, tagline)
                 return 58f
             }
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 88f, navyFill)
-            canvas.drawText(businessName, MARGIN, 26f, title)
-            canvas.drawText(context.getString(R.string.pdf_insp_title), MARGIN, 44f, tagline)
+            PdfRtl.drawText(canvas, businessName, MARGIN, 26f, title)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_insp_title), MARGIN, 44f, tagline)
             // The shop's own identity lines, because this is the first thing
             // asked for and the owner should not have to write them on by hand.
             val identity = buildString {
@@ -319,8 +319,8 @@ object InspectorReport {
                     append(context.getString(R.string.pdf_insp_ntn, it))
                 }
             }
-            if (identity.isNotEmpty()) canvas.drawText(identity, MARGIN, 60f, tagline)
-            canvas.drawText(
+            if (identity.isNotEmpty()) PdfRtl.drawText(canvas, identity, MARGIN, 60f, tagline)
+            PdfRtl.drawText(canvas,
                 context.getString(R.string.pdf_insp_generated, dateFmt.format(Date())),
                 MARGIN, 78f, tagline
             )
@@ -337,7 +337,7 @@ object InspectorReport {
             var footerX = MARGIN
             brandLogo?.let { mark ->
                 val size = 18f
-                canvas.drawBitmap(
+                PdfRtl.drawBitmap(canvas,
                     mark,
                     android.graphics.Rect(0, 0, mark.width, mark.height),
                     android.graphics.RectF(footerX, fy - 13f, footerX + size, fy + 5f),
@@ -350,14 +350,14 @@ object InspectorReport {
             } else {
                 context.getString(R.string.pdf_insp_footer, businessName, pageNo)
             }
-            canvas.drawText(label, footerX, fy, muted)
+            PdfRtl.drawText(canvas, label, footerX, fy, muted)
         }
 
         fun newPage() {
             footer()
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
             canvas = page.canvas
             y = header(first = false)
         }
@@ -403,7 +403,7 @@ object InspectorReport {
                 lefts += x
                 val t = clip(c.title, tableHeaderFg, c.w - cellPad * 2)
                 val tx = if (c.right) x + c.w - cellPad - tableHeaderFg.measureText(t) else x + cellPad
-                canvas.drawText(t, tx, y + 12.5f, tableHeaderFg)
+                PdfRtl.drawText(canvas, t, tx, y + 12.5f, tableHeaderFg)
                 x += c.w
             }
             y += 18f
@@ -433,7 +433,7 @@ object InspectorReport {
                 } else {
                     lefts[i] + cellPad
                 }
-                canvas.drawText(text, x, baseline, usePaint)
+                PdfRtl.drawText(canvas, text, x, baseline, usePaint)
                 // The separator sits on the column's LEFT edge, so the first
                 // one is skipped: a line there would double the page margin.
                 if (i > 0) canvas.drawLine(lefts[i], y, lefts[i], y + rowH, ruleLight)
@@ -471,12 +471,12 @@ object InspectorReport {
 
         // ---- The warning first, same placement and reason as the other two ----
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 40f, warnFill)
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_insp_not_backup),
             MARGIN + 10f, y + 16f,
             Paint(warnText).apply { isFakeBoldText = true }
         )
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(
                 R.string.pdf_rep_not_backup_restore,
                 context.getString(R.string.app_name)
@@ -492,29 +492,29 @@ object InspectorReport {
         // reading a dash should see immediately that it means "not recorded",
         // not "none".
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 52f, warnFill)
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_insp_how_to_read),
             MARGIN + 10f, y + 15f,
             Paint(warnText).apply { isFakeBoldText = true }
         )
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_insp_how_1),
             MARGIN + 10f, y + 28f, warnText
         )
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_insp_how_2),
             MARGIN + 10f, y + 41f, warnText
         )
         y += 66f
 
         // ---- Summary ----
-        canvas.drawText(context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
         y += 20f
 
         fun line(label: String, value: String, paint: Paint = body) {
-            canvas.drawText(label, MARGIN, y, body)
+            PdfRtl.drawText(canvas, label, MARGIN, y, body)
             val w = paint.measureText(value)
-            canvas.drawText(value, PAGE_W - MARGIN - w, y, paint)
+            PdfRtl.drawText(canvas, value, PAGE_W - MARGIN - w, y, paint)
             y += 16f
         }
 
@@ -549,12 +549,12 @@ object InspectorReport {
 
         // ---- 1. Current stock, product by product ----
         val s1 = sec(context.getString(R.string.pdf_insp_sec_current))
-        canvas.drawText(s1, MARGIN, y, section)
+        PdfRtl.drawText(canvas, s1, MARGIN, y, section)
         y += 18f
 
         val traded = d.stock.filter { !it.isUntouched }
         if (traded.isEmpty()) {
-            canvas.drawText(context.getString(R.string.pdf_insp_no_movement), MARGIN, y, mutedBig)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_insp_no_movement), MARGIN, y, mutedBig)
             y += 18f
         } else {
             // 190 + 130 + 150 + 70 + 110 + 112 = 762, the full usable width.
@@ -575,7 +575,7 @@ object InspectorReport {
             traded.forEachIndexed { index, s ->
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText(cont(s1), MARGIN, y, section)
+                    PdfRtl.drawText(canvas, cont(s1), MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -619,7 +619,7 @@ object InspectorReport {
                         Format.qty(s.soldQty, s.soldUnit)
                     )
                     val t = clip(split, muted, cols.last().w + cols[4].w - cellPad * 2)
-                    canvas.drawText(t, PAGE_W - MARGIN - cellPad - muted.measureText(t), y + 10f, muted)
+                    PdfRtl.drawText(canvas, t, PAGE_W - MARGIN - cellPad - muted.measureText(t), y + 10f, muted)
                     y += 13f
                 }
             }
@@ -631,16 +631,16 @@ object InspectorReport {
         startSection(if (d.batches.isEmpty()) 48f else 88f)
 
         val s2 = sec(context.getString(R.string.pdf_insp_sec_batches))
-        canvas.drawText(s2, MARGIN, y, section)
+        PdfRtl.drawText(canvas, s2, MARGIN, y, section)
         y += 14f
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_insp_batches_note),
             MARGIN, y, muted
         )
         y += 16f
 
         if (d.batches.isEmpty()) {
-            canvas.drawText(
+            PdfRtl.drawText(canvas,
                 context.getString(R.string.pdf_insp_no_batches),
                 MARGIN, y, mutedBig
             )
@@ -663,7 +663,7 @@ object InspectorReport {
             d.batches.forEachIndexed { index, b ->
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText(cont(s2), MARGIN, y, section)
+                    PdfRtl.drawText(canvas, cont(s2), MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -706,22 +706,22 @@ object InspectorReport {
         startSection(if (d.expired.isEmpty() && d.expiringSoon.isEmpty()) 66f else 90f)
 
         val s3 = sec(context.getString(R.string.pdf_insp_sec_expiry))
-        canvas.drawText(s3, MARGIN, y, section)
+        PdfRtl.drawText(canvas, s3, MARGIN, y, section)
         y += 14f
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_insp_expiry_note, d.windowDays),
             MARGIN, y, muted
         )
         y += 18f
 
         if (d.expired.isEmpty() && d.expiringSoon.isEmpty()) {
-            canvas.drawText(
+            PdfRtl.drawText(canvas,
                 context.getString(R.string.pdf_insp_nothing_expiring, d.windowDays),
                 MARGIN, y, mutedBig
             )
             y += 16f
             if (d.noExpiryCount > 0) {
-                canvas.drawText(
+                PdfRtl.drawText(canvas,
                     context.getString(R.string.pdf_insp_no_expiry_note, d.noExpiryCount),
                     MARGIN, y, muted
                 )
@@ -743,7 +743,7 @@ object InspectorReport {
             fun expiryRow(index: Int, b: InspectorBatch) {
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText(cont(s3), MARGIN, y, section)
+                    PdfRtl.drawText(canvas, cont(s3), MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -785,9 +785,9 @@ object InspectorReport {
             startSection(86f)
 
             val s4 = sec(context.getString(R.string.pdf_insp_sec_missing))
-            canvas.drawText(s4, MARGIN, y, section)
+            PdfRtl.drawText(canvas, s4, MARGIN, y, section)
             y += 14f
-            canvas.drawText(
+            PdfRtl.drawText(canvas,
                 context.getString(R.string.pdf_insp_missing_note),
                 MARGIN, y, muted
             )
@@ -807,7 +807,7 @@ object InspectorReport {
             d.incompleteProducts.take(40).forEachIndexed { index, (name, missing) ->
                 if (y + rowH4 > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText(cont(s4), MARGIN, y, section)
+                    PdfRtl.drawText(canvas, cont(s4), MARGIN, y, section)
                     y += 18f
                     lefts4 = tableHead(cols4)
                 }
@@ -815,7 +815,7 @@ object InspectorReport {
                 tableRow(cols4, lefts4, rowH4, listOf(name to body, missing to red))
             }
             if (d.incompleteProducts.size > 40) {
-                canvas.drawText(
+                PdfRtl.drawText(canvas,
                     context.getString(R.string.pdf_insp_and_more, d.incompleteProducts.size - 40),
                     MARGIN + cellPad, y + 12f, mutedBig
                 )
@@ -836,7 +836,7 @@ object InspectorReport {
             startSection(92f)
 
             val s5 = sec(context.getString(R.string.pdf_insp_sec_company))
-            canvas.drawText(s5, MARGIN, y, section)
+            PdfRtl.drawText(canvas, s5, MARGIN, y, section)
             y += 18f
 
             // 330 + 250 + 182 = 762. The company is the heading above each
@@ -854,7 +854,7 @@ object InspectorReport {
             d.companyStock.forEach { (company, list) ->
                 if (y + 20f + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText(cont(s5), MARGIN, y, section)
+                    PdfRtl.drawText(canvas, cont(s5), MARGIN, y, section)
                     y += 18f
                     lefts = tableHead(cols)
                 }
@@ -869,21 +869,21 @@ object InspectorReport {
                 // The rows under it are indented past the band's label, which
                 // is the second half of the same signal.
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 20f, groupFill)
-                canvas.drawText(context.getString(R.string.pdf_insp_company_tag), MARGIN + cellPad, y + 13.5f, groupTag)
-                canvas.drawText(
+                PdfRtl.drawText(canvas, context.getString(R.string.pdf_insp_company_tag), MARGIN + cellPad, y + 13.5f, groupTag)
+                PdfRtl.drawText(canvas,
                     clip(company, groupName, 420f),
                     MARGIN + cellPad + 52f, y + 13.5f, groupName
                 )
                 val count = context.resources.getQuantityString(
                     R.plurals.pdf_insp_products, list.size, list.size
                 )
-                canvas.drawText(count, PAGE_W - MARGIN - cellPad - muted.measureText(count), y + 13.5f, muted)
+                PdfRtl.drawText(canvas, count, PAGE_W - MARGIN - cellPad - muted.measureText(count), y + 13.5f, muted)
                 y += 20f
 
                 list.forEach { s ->
                     if (y + rowH > PAGE_H - 60f) {
                         newPage()
-                        canvas.drawText(cont(s5), MARGIN, y, section)
+                        PdfRtl.drawText(canvas, cont(s5), MARGIN, y, section)
                         y += 18f
                         lefts = tableHead(cols)
                     }
@@ -922,9 +922,9 @@ object InspectorReport {
         if (y > PAGE_H - 160f) newPage() else y += 24f
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
         canvas.drawLine(PAGE_W - MARGIN - 180f, y + 24f, PAGE_W - MARGIN, y + 24f, rule)
-        canvas.drawText(context.getString(R.string.pdf_insp_dealer_sign), MARGIN, y + 38f, muted)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_insp_dealer_sign), MARGIN, y + 38f, muted)
         val inspectorSign = context.getString(R.string.pdf_insp_inspector_sign)
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             inspectorSign,
             PAGE_W - MARGIN - muted.measureText(inspectorSign),
             y + 38f,

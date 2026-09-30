@@ -136,7 +136,7 @@ object BusinessReport {
             strokeWidth = 0.6f
         }
 
-        var page = doc.startPage(
+        var page = PdfRtl.startPage(context, doc, 
             PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create()
         )
         var canvas: Canvas = page.canvas
@@ -154,9 +154,9 @@ object BusinessReport {
             // top of the watermark, never under it.
             PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 74f, navyFill)
-            canvas.drawText(d.businessName ?: context.getString(R.string.app_name), MARGIN, 34f, title)
-            canvas.drawText(PdfBranding.BRAND_LINE, MARGIN, 52f, tagline)
-            canvas.drawText(
+            PdfRtl.drawText(canvas, d.businessName ?: context.getString(R.string.app_name), MARGIN, 34f, title)
+            PdfRtl.drawText(canvas, PdfBranding.BRAND_LINE, MARGIN, 52f, tagline)
+            PdfRtl.drawText(canvas,
                 context.getString(R.string.pdf_biz_generated, dateFmt.format(Date())),
                 MARGIN,
                 66f,
@@ -169,7 +169,7 @@ object BusinessReport {
         fun newPage() {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(
+            page = PdfRtl.startPage(context, doc, 
                 PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
             )
             canvas = page.canvas
@@ -184,39 +184,39 @@ object BusinessReport {
         // document for their backup, they will do it in the first ten seconds,
         // and the consequence is that they delete the real one.
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 54f, warnFill)
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_rep_not_backup),
             MARGIN + 10f,
             y + 18f,
             Paint(warnText).apply { isFakeBoldText = true; textSize = 11f }
         )
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_biz_not_backup_2, appName),
             MARGIN + 10f,
             y + 32f,
             warnText
         )
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_biz_not_backup_3),
             MARGIN + 10f,
             y + 44f,
             warnText
         )
         y += 66f
-        canvas.drawText(context.getString(R.string.pdf_biz_not_backup_4), MARGIN + 10f, y, warnText)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_biz_not_backup_4), MARGIN + 10f, y, warnText)
         y += 24f
 
         // ---- Summary ----
         val owedToMe = d.parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
         val owedByMe = d.parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
 
-        canvas.drawText(context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
         y += 20f
 
         fun line(label: String, value: String, paint: Paint = body) {
-            canvas.drawText(label, MARGIN, y, body)
+            PdfRtl.drawText(canvas, label, MARGIN, y, body)
             val w = paint.measureText(value)
-            canvas.drawText(value, PAGE_W - MARGIN - w, y, paint)
+            PdfRtl.drawText(canvas, value, PAGE_W - MARGIN - w, y, paint)
             y += 16f
         }
 
@@ -234,21 +234,21 @@ object BusinessReport {
         y += 20f
 
         // ---- Accounts ----
-        canvas.drawText(context.getString(R.string.pdf_biz_accounts), MARGIN, y, section)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_biz_accounts), MARGIN, y, section)
         y += 20f
 
         if (d.parties.isEmpty()) {
-            canvas.drawText(context.getString(R.string.pdf_biz_no_accounts), MARGIN, y, muted)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_biz_no_accounts), MARGIN, y, muted)
             y += 18f
         } else {
             d.parties.sortedByDescending { it.balance }.forEach { p ->
                 if (y > PAGE_H - 70f) newPage()
 
-                canvas.drawText(p.name, MARGIN, y, body)
+                PdfRtl.drawText(canvas, p.name, MARGIN, y, body)
 
                 p.phone?.let {
                     val w = muted.measureText(it)
-                    canvas.drawText(it, MARGIN + 200f, y, muted)
+                    PdfRtl.drawText(canvas, it, MARGIN + 200f, y, muted)
                 }
 
                 val (text, paint) = when {
@@ -257,7 +257,7 @@ object BusinessReport {
                     else -> context.getString(R.string.pdf_biz_settled) to muted
                 }
                 val w = paint.measureText(text)
-                canvas.drawText(text, PAGE_W - MARGIN - w, y, paint)
+                PdfRtl.drawText(canvas, text, PAGE_W - MARGIN - w, y, paint)
 
                 y += 15f
             }
@@ -270,9 +270,9 @@ object BusinessReport {
             canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
             y += 20f
 
-            canvas.drawText(context.getString(R.string.pdf_biz_cheques), MARGIN, y, section)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_biz_cheques), MARGIN, y, section)
             y += 14f
-            canvas.drawText(
+            PdfRtl.drawText(canvas,
                 context.getString(R.string.pdf_biz_cheques_note),
                 MARGIN,
                 y,
@@ -288,10 +288,10 @@ object BusinessReport {
                     append(context.getString(R.string.pdf_biz_due))
                     append(Format.dateOnly(c.dueDate))
                 }
-                canvas.drawText(label, MARGIN, y, body)
+                PdfRtl.drawText(canvas, label, MARGIN, y, body)
                 val amt = Format.money(c.amount)
                 val w = body.measureText(amt)
-                canvas.drawText(amt, PAGE_W - MARGIN - w, y, body)
+                PdfRtl.drawText(canvas, amt, PAGE_W - MARGIN - w, y, body)
                 y += 15f
             }
         }
@@ -303,19 +303,19 @@ object BusinessReport {
             canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
             y += 20f
 
-            canvas.drawText(context.getString(R.string.pdf_biz_plans), MARGIN, y, section)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_biz_plans), MARGIN, y, section)
             y += 18f
 
             d.openPlans.forEach { p ->
                 if (y > PAGE_H - 60f) newPage()
-                canvas.drawText(p.partyName, MARGIN, y, body)
+                PdfRtl.drawText(canvas, p.partyName, MARGIN, y, body)
                 val txt = context.getString(
                     R.string.pdf_biz_paid_of,
                     Format.money(p.paidSoFar),
                     Format.money(p.totalAmount)
                 )
                 val w = body.measureText(txt)
-                canvas.drawText(txt, PAGE_W - MARGIN - w, y, body)
+                PdfRtl.drawText(canvas, txt, PAGE_W - MARGIN - w, y, body)
                 y += 15f
             }
         }
@@ -330,27 +330,27 @@ object BusinessReport {
             canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
             y += 20f
 
-            canvas.drawText(context.getString(R.string.pdf_biz_expiring), MARGIN, y, section)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_biz_expiring), MARGIN, y, section)
             y += 18f
 
             d.expiringBatches.forEach { e ->
                 if (y > PAGE_H - 60f) newPage()
 
-                canvas.drawText(e.productName, MARGIN, y, body)
+                PdfRtl.drawText(canvas, e.productName, MARGIN, y, body)
 
                 val days = e.daysLeft
                 val txt = if (e.hasExpired) context.getString(R.string.pdf_biz_expired)
                     else context.getString(R.string.pdf_biz_days_left, days)
                 val paint = if (e.hasExpired || days <= 14) red else body
                 val w = paint.measureText(txt)
-                canvas.drawText(txt, PAGE_W - MARGIN - w, y, paint)
+                PdfRtl.drawText(canvas, txt, PAGE_W - MARGIN - w, y, paint)
                 y += 13f
 
                 val sub = buildString {
                     e.batchNumber?.let { append(context.getString(R.string.pdf_biz_batch, it)) }
                     append(e.partyName)
                 }
-                canvas.drawText(sub, MARGIN + 10f, y, muted)
+                PdfRtl.drawText(canvas, sub, MARGIN + 10f, y, muted)
                 y += 16f
             }
         }
@@ -359,7 +359,7 @@ object BusinessReport {
         if (y > PAGE_H - 104f) newPage()
         PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
         y = PAGE_H - 34f
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_rep_footer_page, appName, pageNo),
             MARGIN,
             y,

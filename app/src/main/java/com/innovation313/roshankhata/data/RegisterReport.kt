@@ -115,7 +115,7 @@ object RegisterReport {
         val rule = Paint().apply { color = 0xFFDDDDDD.toInt(); strokeWidth = 0.6f }
         val zebra = Paint().apply { color = 0x08000000 }
 
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create())
         var canvas: Canvas = page.canvas
         var y: Float
         var pageNo = 1
@@ -132,8 +132,8 @@ object RegisterReport {
         fun header(): Float {
             PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 88f, navyFill)
-            canvas.drawText(businessName, MARGIN, 26f, title)
-            canvas.drawText(context.getString(R.string.pdf_reg_title), MARGIN, 44f, tagline)
+            PdfRtl.drawText(canvas, businessName, MARGIN, 26f, title)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_title), MARGIN, 44f, tagline)
             val identity = buildString {
                 d.businessAddress?.let { append(it) }
                 d.strn?.let {
@@ -141,15 +141,15 @@ object RegisterReport {
                     append(context.getString(R.string.pdf_reg_ntn, it))
                 }
             }
-            if (identity.isNotEmpty()) canvas.drawText(identity, MARGIN, 60f, tagline)
-            canvas.drawText(context.getString(R.string.pdf_reg_period, period), MARGIN, 78f, tagline)
+            if (identity.isNotEmpty()) PdfRtl.drawText(canvas, identity, MARGIN, 60f, tagline)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_period, period), MARGIN, 78f, tagline)
             return 112f
         }
 
         fun newPage() {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
             canvas = page.canvas
             y = header()
         }
@@ -165,23 +165,23 @@ object RegisterReport {
 
         // ---- What this document is, and is not ----
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 46f, warnFill)
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_reg_note_1),
             MARGIN + 8f, y + 17f, warnText
         )
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_reg_note_2),
             MARGIN + 8f, y + 31f, warnText
         )
         y += 62f
 
         // ---- Summary ----
-        canvas.drawText(context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
         y += 20f
         fun line(label: String, value: String, paint: Paint = body) {
-            canvas.drawText(label, MARGIN, y, body)
+            PdfRtl.drawText(canvas, label, MARGIN, y, body)
             val w = paint.measureText(value)
-            canvas.drawText(value, PAGE_W - MARGIN - w, y, paint)
+            PdfRtl.drawText(canvas, value, PAGE_W - MARGIN - w, y, paint)
             y += 16f
         }
         line(context.getString(R.string.pdf_reg_sales_lines), d.sales.size.toString())
@@ -197,11 +197,11 @@ object RegisterReport {
         y += 20f
 
         // ---- 1. Sales register ----
-        canvas.drawText(context.getString(R.string.pdf_reg_section_sales), MARGIN, y, section)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_section_sales), MARGIN, y, section)
         y += 18f
 
         if (d.sales.isEmpty()) {
-            canvas.drawText(context.getString(R.string.pdf_reg_no_sales), MARGIN, y, mutedBig)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_no_sales), MARGIN, y, mutedBig)
             y += 18f
         } else {
             val xDate = MARGIN + 4f
@@ -211,11 +211,11 @@ object RegisterReport {
 
             fun salesHeader() {
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
-                canvas.drawText(colDate, xDate, y + 12.5f, tableHeaderFg)
-                canvas.drawText(
+                PdfRtl.drawText(canvas, colDate, xDate, y + 12.5f, tableHeaderFg)
+                PdfRtl.drawText(canvas,
                     context.getString(R.string.pdf_reg_col_customer), xName, y + 12.5f, tableHeaderFg
                 )
-                canvas.drawText(
+                PdfRtl.drawText(canvas,
                     colAmount, xAmtRight - tableHeaderFg.measureText(colAmount), y + 12.5f, tableHeaderFg
                 )
                 y += 18f
@@ -225,18 +225,18 @@ object RegisterReport {
             d.sales.forEachIndexed { index, s ->
                 if (y + 30f > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText(context.getString(R.string.pdf_reg_section_sales_cont), MARGIN, y, section)
+                    PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_section_sales_cont), MARGIN, y, section)
                     y += 18f
                     salesHeader()
                 }
                 if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 30f, zebra)
 
                 val baseline = y + 13f
-                canvas.drawText(rowDayFmt.format(Date(s.date)), xDate, baseline, muted)
-                canvas.drawText(clip(s.partyName, body, nameMaxW), xName, baseline, body)
+                PdfRtl.drawText(canvas, rowDayFmt.format(Date(s.date)), xDate, baseline, muted)
+                PdfRtl.drawText(canvas, clip(s.partyName, body, nameMaxW), xName, baseline, body)
 
                 val amt = Format.money(s.amount)
-                canvas.drawText(amt, xAmtRight - body.measureText(amt), baseline, body)
+                PdfRtl.drawText(canvas, amt, xAmtRight - body.measureText(amt), baseline, body)
 
                 val sub = buildList {
                     s.itemName?.takeIf { it.isNotBlank() }?.let { add(it) }
@@ -245,7 +245,7 @@ object RegisterReport {
                     s.company?.takeIf { it.isNotBlank() }?.let { add(it) }
                     s.refNumber?.takeIf { it.isNotBlank() }?.let { add(it) }
                 }.joinToString(" \u00B7 ").ifEmpty { "\u2014" }
-                canvas.drawText(clip(sub, muted, xAmtRight - xName), xName, baseline + 12f, muted)
+                PdfRtl.drawText(canvas, clip(sub, muted, xAmtRight - xName), xName, baseline + 12f, muted)
 
                 y += 30f
             }
@@ -254,20 +254,20 @@ object RegisterReport {
             if (y + 20f > PAGE_H - 60f) newPage()
             canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
             y += 16f
-            canvas.drawText(context.getString(R.string.pdf_reg_total_sales), MARGIN + 4f, y, bodyBold)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_total_sales), MARGIN + 4f, y, bodyBold)
             val st = Format.money(d.salesTotal)
-            canvas.drawText(st, PAGE_W - MARGIN - 4f - bodyBold.measureText(st), y, bodyBold)
+            PdfRtl.drawText(canvas, st, PAGE_W - MARGIN - 4f - bodyBold.measureText(st), y, bodyBold)
             y += 8f
         }
 
         // ---- 2. Purchase register ----
         if (y > PAGE_H - 160f) newPage() else { y += 14f; canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule); y += 20f }
 
-        canvas.drawText(context.getString(R.string.pdf_reg_section_purchases), MARGIN, y, section)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_section_purchases), MARGIN, y, section)
         y += 18f
 
         if (d.purchases.isEmpty()) {
-            canvas.drawText(context.getString(R.string.pdf_reg_no_purchases), MARGIN, y, mutedBig)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_no_purchases), MARGIN, y, mutedBig)
             y += 18f
         } else {
             val xDate = MARGIN + 4f
@@ -277,11 +277,11 @@ object RegisterReport {
 
             fun purchaseHeader() {
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
-                canvas.drawText(colDate, xDate, y + 12.5f, tableHeaderFg)
-                canvas.drawText(
+                PdfRtl.drawText(canvas, colDate, xDate, y + 12.5f, tableHeaderFg)
+                PdfRtl.drawText(canvas,
                     context.getString(R.string.pdf_reg_col_supplier), xName, y + 12.5f, tableHeaderFg
                 )
-                canvas.drawText(
+                PdfRtl.drawText(canvas,
                     colAmount, xAmtRight - tableHeaderFg.measureText(colAmount), y + 12.5f, tableHeaderFg
                 )
                 y += 18f
@@ -291,22 +291,22 @@ object RegisterReport {
             d.purchases.forEachIndexed { index, s ->
                 if (y + 30f > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText(context.getString(R.string.pdf_reg_section_purchases_cont), MARGIN, y, section)
+                    PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_section_purchases_cont), MARGIN, y, section)
                     y += 18f
                     purchaseHeader()
                 }
                 if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 30f, zebra)
 
                 val baseline = y + 13f
-                canvas.drawText(rowDayFmt.format(Date(s.date)), xDate, baseline, muted)
-                canvas.drawText(clip(s.supplierName, body, nameMaxW), xName, baseline, body)
+                PdfRtl.drawText(canvas, rowDayFmt.format(Date(s.date)), xDate, baseline, muted)
+                PdfRtl.drawText(canvas, clip(s.supplierName, body, nameMaxW), xName, baseline, body)
 
                 val amount = s.lineAmount
                 if (amount != null) {
                     val a = Format.money(amount)
-                    canvas.drawText(a, xAmtRight - body.measureText(a), baseline, body)
+                    PdfRtl.drawText(canvas, a, xAmtRight - body.measureText(a), baseline, body)
                 } else {
-                    canvas.drawText("\u2014", xAmtRight - mutedBig.measureText("\u2014"), baseline, mutedBig)
+                    PdfRtl.drawText(canvas, "\u2014", xAmtRight - mutedBig.measureText("\u2014"), baseline, mutedBig)
                 }
 
                 val sub = buildList {
@@ -317,7 +317,7 @@ object RegisterReport {
                     s.expiryDate?.let { add(context.getString(R.string.pdf_reg_expiry, rowDayFmt.format(Date(it)))) }
                     s.billNumber?.takeIf { it.isNotBlank() }?.let { add(context.getString(R.string.pdf_reg_bill, it)) }
                 }.joinToString(" \u00B7 ")
-                canvas.drawText(clip(sub, muted, xAmtRight - xName), xName, baseline + 12f, muted)
+                PdfRtl.drawText(canvas, clip(sub, muted, xAmtRight - xName), xName, baseline + 12f, muted)
 
                 y += 30f
             }
@@ -325,13 +325,13 @@ object RegisterReport {
             if (y + 20f > PAGE_H - 60f) newPage()
             canvas.drawLine(MARGIN, y, PAGE_W - MARGIN, y, rule)
             y += 16f
-            canvas.drawText(context.getString(R.string.pdf_reg_total_purchases), MARGIN + 4f, y, bodyBold)
+            PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_total_purchases), MARGIN + 4f, y, bodyBold)
             val pt = Format.money(d.purchaseTotal)
-            canvas.drawText(pt, PAGE_W - MARGIN - 4f - bodyBold.measureText(pt), y, bodyBold)
+            PdfRtl.drawText(canvas, pt, PAGE_W - MARGIN - 4f - bodyBold.measureText(pt), y, bodyBold)
             y += 8f
             if (d.purchasesMissingRate > 0) {
                 y += 12f
-                canvas.drawText(
+                PdfRtl.drawText(canvas,
                     context.getString(R.string.pdf_reg_missing_rate, d.purchasesMissingRate),
                     MARGIN + 4f, y, muted
                 )
@@ -345,9 +345,9 @@ object RegisterReport {
         if (y > PAGE_H - 160f) newPage() else y += 24f
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
         canvas.drawLine(PAGE_W - MARGIN - 180f, y + 24f, PAGE_W - MARGIN, y + 24f, rule)
-        canvas.drawText(context.getString(R.string.pdf_reg_dealer_sign), MARGIN, y + 38f, muted)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_dealer_sign), MARGIN, y + 38f, muted)
         val inspectorSign = context.getString(R.string.pdf_reg_inspector_sign)
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             inspectorSign,
             PAGE_W - MARGIN - muted.measureText(inspectorSign),
             y + 38f,
@@ -362,7 +362,7 @@ object RegisterReport {
         var footerX = MARGIN
         brandLogo?.let { mark ->
             val size = 18f
-            canvas.drawBitmap(
+            PdfRtl.drawBitmap(canvas,
                 mark,
                 android.graphics.Rect(0, 0, mark.width, mark.height),
                 android.graphics.RectF(footerX, y - 13f, footerX + size, y + 5f),
@@ -370,7 +370,7 @@ object RegisterReport {
             )
             footerX += size + 6f
         }
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_reg_footer, appName, dateFmt.format(Date()), pageNo),
             footerX, y, muted
         )

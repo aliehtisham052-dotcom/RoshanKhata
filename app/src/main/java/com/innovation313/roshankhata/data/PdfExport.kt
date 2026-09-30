@@ -134,7 +134,7 @@ object PdfExport {
         fun render(totalPages: Int?): Pair<PdfDocument, Int> {
         val doc = PdfDocument()
         var pageNo = 1
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
         var c = page.canvas
         var y: Float
 
@@ -196,12 +196,12 @@ object PdfExport {
             // stay inside the shop. The hint lives in the footer now.
 
             c.drawRect(0f, 0f, PAGE_W.toFloat(), 78f, navyFill)
-            c.drawText(businessName?.takeIf { it.isNotBlank() } ?: context.getString(R.string.app_name), MARGIN, 32f, title)
+            PdfRtl.drawText(c, businessName?.takeIf { it.isNotBlank() } ?: context.getString(R.string.app_name), MARGIN, 32f, title)
             // Name and number on one line. They used to be two, which on a
             // customer saved under their phone number printed the same digits
             // twice.
             val phone = partyPhone?.takeIf { it.isNotBlank() && it != partyName }
-            c.drawText(
+            PdfRtl.drawText(c,
                 context.getString(R.string.pdf_stmt_title, partyName) +
                     (phone?.let { "  ·  $it" } ?: ""),
                 MARGIN, 52f, subtitle
@@ -219,7 +219,7 @@ object PdfExport {
                 val till = fmt.format(java.util.Date(rows.maxOf { it.entry.timestamp }))
                 val period = if (from == till) from else "$from \u2013 $till"
                 val periodPaint = Paint(subtitle).apply { textAlign = Paint.Align.RIGHT }
-                c.drawText(period, PAGE_W - MARGIN - 50f, 66f, periodPaint)
+                PdfRtl.drawText(c, period, PAGE_W - MARGIN - 50f, 66f, periodPaint)
             }
 
             // The customer's photo, beside their name — the same face the
@@ -228,7 +228,7 @@ object PdfExport {
             partyPhoto?.let { photo ->
                 val size = 54
                 val left = PAGE_W - MARGIN - 90 - size
-                c.drawBitmap(
+                PdfRtl.drawBitmap(c,
                     photo,
                     null,
                     Rect(left.toInt(), 12, left.toInt() + size, 12 + size),
@@ -258,13 +258,13 @@ object PdfExport {
                 } else {
                     context.getString(R.string.pdf_stmt_no_entries)
                 }
-                c.drawText(period, MARGIN, yy, periodPaint)
+                PdfRtl.drawText(c, period, MARGIN, yy, periodPaint)
                 if (totalPages != null && totalPages > 1) {
                     val pageLabel = Paint(periodPaint).apply {
                         textSize = 8f
                         textAlign = Paint.Align.RIGHT
                     }
-                    c.drawText(
+                    PdfRtl.drawText(c,
                         context.getString(R.string.pdf_stmt_page, pageNo, totalPages),
                         PAGE_W - MARGIN, yy, pageLabel
                     )
@@ -285,9 +285,9 @@ object PdfExport {
                     c.drawRoundRect(r, 5f, 5f, fill)
                     boxStroke.color = valueColor
                     c.drawRoundRect(r, 5f, 5f, boxStroke)
-                    c.drawText(label, left + 10f, yy + 15f, boxLabel)
+                    PdfRtl.drawText(c, label, left + 10f, yy + 15f, boxLabel)
                     boxValue.color = valueColor
-                    c.drawText(value, left + 10f, yy + 33f, boxValue)
+                    PdfRtl.drawText(c, value, left + 10f, yy + 33f, boxValue)
                 }
 
                 summaryBox(0, owedLabel, Format.money(totalGave), 0xFFFDECEA.toInt(), RED)
@@ -296,10 +296,10 @@ object PdfExport {
                 yy += boxH + 18f
             }
 
-            c.drawText(context.getString(R.string.pdf_label_date), xDate, yy, header)
-            c.drawText(owedLabel, xGave, yy, header)
-            c.drawText(paidLabel, xGot, yy, header)
-            c.drawText(context.getString(R.string.pdf_stmt_balance), xBal, yy, header)
+            PdfRtl.drawText(c, context.getString(R.string.pdf_label_date), xDate, yy, header)
+            PdfRtl.drawText(c, owedLabel, xGave, yy, header)
+            PdfRtl.drawText(c, paidLabel, xGot, yy, header)
+            PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_balance), xBal, yy, header)
             yy += 6f
             c.drawLine(MARGIN, yy, PAGE_W - MARGIN, yy, lineFill)
             return yy + 16f
@@ -321,8 +321,8 @@ object PdfExport {
                 textSize = 9f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
             }
-            c.drawText(label, xDate, y, italic)
-            c.drawText(Format.money(openingBalance), xBal, y, italic)
+            PdfRtl.drawText(c, label, xDate, y, italic)
+            PdfRtl.drawText(c, Format.money(openingBalance), xBal, y, italic)
             y += 8f
             c.drawLine(MARGIN, y, PAGE_W - MARGIN, y, lineFill)
             y += 16f
@@ -333,7 +333,7 @@ object PdfExport {
             if (y > PAGE_H - 110f) {
                 doc.finishPage(page)
                 pageNo++
-                page = doc.startPage(
+                page = PdfRtl.startPage(context, doc, 
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
@@ -344,20 +344,20 @@ object PdfExport {
 
             // A "12:00 AM" on every row is not a time anyone recorded — it is
             // what a date with no time of day comes out as.
-            c.drawText(Format.statementStamp(e.timestamp), xDate, y, body)
+            PdfRtl.drawText(c, Format.statementStamp(e.timestamp), xDate, y, body)
 
             if (e.isGiven) {
                 body.color = RED
-                c.drawText(Format.money(e.amount), xGave, y, body)
+                PdfRtl.drawText(c, Format.money(e.amount), xGave, y, body)
             } else {
                 body.color = GREEN
-                c.drawText(Format.money(e.amount), xGot, y, body)
+                PdfRtl.drawText(c, Format.money(e.amount), xGot, y, body)
             }
             body.color = Color.BLACK
 
             // The running balance is the column a reader actually follows
             // down the page, so it gets the weight — bold, like the summary.
-            c.drawText(Format.money(row.runningBalance), xBal, y, header)
+            PdfRtl.drawText(c, Format.money(row.runningBalance), xBal, y, header)
 
             // Second line: reference number, note, and any goods that moved.
             y += 12f
@@ -368,7 +368,7 @@ object PdfExport {
                 if (e.isQarzeHasna) add(context.getString(R.string.pdf_stmt_qarze_hasna))
             }.joinToString("  ·  ")
 
-            c.drawText(detail, xDate, y, muted)
+            PdfRtl.drawText(c, detail, xDate, y, muted)
 
             y += 8f
             c.drawLine(MARGIN, y, PAGE_W - MARGIN, y, lineFill)
@@ -379,7 +379,7 @@ object PdfExport {
         if (y > PAGE_H - 100f) {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
             c = page.canvas
             y = drawHeader(first = false)
         }
@@ -395,10 +395,10 @@ object PdfExport {
         }
 
         subtitle.color = GOLD
-        c.drawText(closingLabel, MARGIN + 16f, y + 20f, subtitle)
+        PdfRtl.drawText(c, closingLabel, MARGIN + 16f, y + 20f, subtitle)
 
         title.textSize = 18f
-        c.drawText(Format.money(closingBalance), MARGIN + 16f, y + 42f, title)
+        PdfRtl.drawText(c, Format.money(closingBalance), MARGIN + 16f, y + 42f, title)
 
         y += 70f
 
@@ -409,7 +409,7 @@ object PdfExport {
             if (y > PAGE_H - 190f) {
                 doc.finishPage(page)
                 pageNo++
-                page = doc.startPage(
+                page = PdfRtl.startPage(context, doc, 
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
@@ -417,7 +417,7 @@ object PdfExport {
             }
 
             header.textSize = 11f
-            c.drawText(context.getString(R.string.pdf_label_scan_to_pay), MARGIN, y, header)
+            PdfRtl.drawText(c, context.getString(R.string.pdf_label_scan_to_pay), MARGIN, y, header)
             y += 8f
 
             val qrSize = 120
@@ -427,27 +427,27 @@ object PdfExport {
                 MARGIN.toInt() + qrSize,
                 y.toInt() + qrSize
             )
-            c.drawBitmap(paymentQr, null, dst, null)
+            PdfRtl.drawBitmap(c, paymentQr, null, dst, null)
 
             // Say the amount in words next to the code: a personal
             // EasyPaisa/JazzCash QR carries no amount, so the customer types
             // it in themselves and needs to see it plainly.
             val textX = MARGIN + qrSize + 16f
             body.textSize = 10f
-            c.drawText(context.getString(R.string.pdf_stmt_amount_to_pay), textX, y + 30f, body)
+            PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_amount_to_pay), textX, y + 30f, body)
 
             title.textSize = 16f
             title.color = NAVY
-            c.drawText(Format.money(closingBalance), textX, y + 52f, title)
+            PdfRtl.drawText(c, Format.money(closingBalance), textX, y + 52f, title)
 
             muted.textSize = 8f
-            c.drawText(
+            PdfRtl.drawText(c,
                 context.getString(R.string.pdf_stmt_qr_hint_1),
                 textX,
                 y + 72f,
                 muted
             )
-            c.drawText(
+            PdfRtl.drawText(c,
                 context.getString(R.string.pdf_stmt_qr_hint_2),
                 textX,
                 y + 82f,
@@ -467,7 +467,7 @@ object PdfExport {
             if (y > PAGE_H - 150f) {
                 doc.finishPage(page)
                 pageNo++
-                page = doc.startPage(
+                page = PdfRtl.startPage(context, doc, 
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
@@ -481,7 +481,7 @@ object PdfExport {
 
             val ratio = signature.height.toFloat() / signature.width.toFloat()
             val drawH = (sigW * ratio).toInt().coerceAtMost(sigH)
-            c.drawBitmap(
+            PdfRtl.drawBitmap(c,
                 signature,
                 null,
                 Rect(sigLeft.toInt(), y.toInt(), (sigLeft + sigW).toInt(), y.toInt() + drawH),
@@ -492,7 +492,7 @@ object PdfExport {
             c.drawLine(sigLeft, y, PAGE_W - MARGIN, y, muted)
             y += 14f
             muted.textSize = 9f
-            c.drawText(
+            PdfRtl.drawText(c,
                 BusinessProfile.businessName(context) ?: context.getString(R.string.signature),
                 sigLeft, y, muted
             )
