@@ -1490,4 +1490,9 @@
     <string name="bp_phone">شمارهٔ تلفن</string>
     <string name="bp_phone_help">روی فاکتور چاپ می‌شود تا مشتریان با شما تماس بگیرند.</string>
     <string name="bp_phone_hint">مثلاً 0300 1234567</string>
+    <string name="bp_logo">لوگوی فروشگاه</string>
+    <string name="bp_logo_help">اختیاری — بالای فاکتورها و دفتر موجودی چاپ می‌شود.</string>
+    <string name="bp_remove_logo">حذف لوگو</string>
+    <string name="bp_logo_saved">لوگو ذخیره شد</string>
+    <string name="bp_logo_save_failed">لوگو ذخیره نشد. تصویر دیگری را امتحان کنید.</string>
 </resources>

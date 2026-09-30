@@ -73,6 +73,11 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var btnPickQr: MaterialButton
     private lateinit var btnPickStamp: MaterialButton
     private lateinit var btnPickSignature: MaterialButton
+    private lateinit var btnPickLogo: MaterialButton
+    private lateinit var btnRemoveLogo: MaterialButton
+    private lateinit var ivLogoPreview: ImageView
+    private lateinit var ivNoLogo: View
+    private lateinit var ivPreviewLogo: ImageView
 
     /** The text fields as they were loaded, to tell whether anything changed. */
     private var saved: List<String> = emptyList()
@@ -115,6 +120,12 @@ class BusinessSettingsActivity : BaseActivity() {
         if (uri != null) launchCrop(uri, "ink", cropSignatureResult)
     }
 
+    private val pickLogo = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) launchCrop(uri, "ink", cropLogoResult)
+    }
+
     private val pickStamp = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -133,6 +144,10 @@ class BusinessSettingsActivity : BaseActivity() {
     private val cropSignatureResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result -> handleCropResult(result) { uri -> saveSignature(uri) } }
+
+    private val cropLogoResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result -> handleCropResult(result) { uri -> saveLogo(uri) } }
 
     private val cropStampResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -188,6 +203,11 @@ class BusinessSettingsActivity : BaseActivity() {
         btnPickQr = findViewById(R.id.btnPickQr)
         btnPickStamp = findViewById(R.id.btnPickStamp)
         btnPickSignature = findViewById(R.id.btnPickSignature)
+        btnPickLogo = findViewById(R.id.btnPickLogo)
+        btnRemoveLogo = findViewById(R.id.btnRemoveLogo)
+        ivLogoPreview = findViewById(R.id.ivLogoPreview)
+        ivNoLogo = findViewById(R.id.ivNoLogo)
+        ivPreviewLogo = findViewById(R.id.ivPreviewLogo)
         tvPreviewInitials = findViewById(R.id.tvPreviewInitials)
         tvPreviewDetails = findViewById(R.id.tvPreviewDetails)
 
@@ -226,6 +246,18 @@ class BusinessSettingsActivity : BaseActivity() {
             confirmRemove(R.string.remove_signature, R.string.signature) {
                 BusinessProfile.removeSignature(this)
                 refreshSignature()
+            }
+        }
+
+        btnPickLogo.setOnClickListener {
+            pickLogo.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+        btnRemoveLogo.setOnClickListener {
+            confirmRemove(R.string.bp_remove_logo, R.string.bp_logo) {
+                BusinessProfile.removeLogo(this)
+                refreshLogo()
             }
         }
 
@@ -308,6 +340,7 @@ class BusinessSettingsActivity : BaseActivity() {
         refreshQr()
         refreshSignature()
         refreshStamp()
+        refreshLogo()
     }
 
     private fun afterChange(block: () -> Unit) = object : android.text.TextWatcher {
@@ -340,6 +373,46 @@ class BusinessSettingsActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(title) { _, _ -> onYes() }
             .show()
+    }
+
+    private fun saveLogo(uri: Uri) {
+        lifecycleScope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                BusinessProfile.saveLogo(this@BusinessSettingsActivity, uri)
+            }
+            Toast.makeText(
+                this@BusinessSettingsActivity,
+                if (ok) R.string.bp_logo_saved else R.string.bp_logo_save_failed,
+                Toast.LENGTH_SHORT
+            ).show()
+            refreshLogo()
+        }
+    }
+
+    /** The logo row and the preview's square: the logo when there is one, the initials when not. */
+    private fun refreshLogo() {
+        lifecycleScope.launch {
+            val logo = withContext(Dispatchers.IO) {
+                BusinessProfile.loadLogo(this@BusinessSettingsActivity)
+            }
+            if (logo == null) {
+                ivLogoPreview.visibility = View.GONE
+                ivNoLogo.visibility = View.VISIBLE
+                btnRemoveLogo.visibility = View.GONE
+                btnPickLogo.setText(R.string.bp_add)
+                ivPreviewLogo.visibility = View.GONE
+                tvPreviewInitials.visibility = View.VISIBLE
+            } else {
+                ivLogoPreview.setImageBitmap(logo)
+                ivLogoPreview.visibility = View.VISIBLE
+                ivNoLogo.visibility = View.GONE
+                btnRemoveLogo.visibility = View.VISIBLE
+                btnPickLogo.setText(R.string.bp_change)
+                ivPreviewLogo.setImageBitmap(logo)
+                ivPreviewLogo.visibility = View.VISIBLE
+                tvPreviewInitials.visibility = View.GONE
+            }
+        }
     }
 
     private fun saveSignature(uri: Uri) {

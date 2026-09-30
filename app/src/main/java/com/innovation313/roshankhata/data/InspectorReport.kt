@@ -383,6 +383,7 @@ object InspectorReport {
         var pageNo = 1
 
         val brandLogo = PdfBranding.logo(context)
+        val shopLogo = BusinessProfile.loadLogo(context)
         val businessName = d.businessName ?: context.getString(R.string.app_name)
 
         // Shorten text that would collide with the column to its right.
@@ -442,7 +443,19 @@ object InspectorReport {
 
             val square = RectF(MARGIN, 20f, MARGIN + 44f, 64f)
             canvas.drawRoundRect(square, 10f, 10f, goldFill)
-            if (initials != null) {
+            if (shopLogo != null) {
+                // The shop's own logo, on white so any logo colours read.
+                canvas.drawRoundRect(square, 10f, 10f, fill(Color.WHITE))
+                val box = RectF(square.left + 4f, square.top + 4f, square.right - 4f, square.bottom - 4f)
+                val scale = minOf(box.width() / shopLogo.width, box.height() / shopLogo.height)
+                val w = shopLogo.width * scale
+                val h = shopLogo.height * scale
+                PdfRtl.drawBitmap(canvas, shopLogo,
+                    android.graphics.Rect(0, 0, shopLogo.width, shopLogo.height),
+                    RectF(box.centerX() - w / 2f, box.centerY() - h / 2f, box.centerX() + w / 2f, box.centerY() + h / 2f),
+                    Paint().apply { isAntiAlias = true; isFilterBitmap = true }
+                )
+            } else if (initials != null) {
                 PdfRtl.drawText(canvas, initials, square.centerX(), square.centerY() + 5.5f, monogram)
             } else {
                 brandLogo?.let { mark ->

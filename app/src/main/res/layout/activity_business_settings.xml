@@ -100,7 +100,7 @@
                             android:id="@+id/ivPreviewLogo"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:contentDescription="@string/business_profile"
+                            android:contentDescription="@string/bp_logo"
                             android:padding="3dp"
                             android:scaleType="fitCenter"
                             android:visibility="gone" />
@@ -212,6 +212,75 @@
                 android:text="@string/bp_section_identity" />
 
             <LinearLayout style="@style/ProfileCard">
+
+                <!-- Shop logo: optional; the invoice tile falls back to the
+                     app's mark and the stock register to the initials. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/bg_preview_thumb_slot">
+
+                        <ImageView
+                            android:id="@+id/ivLogoPreview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/bp_logo"
+                            android:padding="4dp"
+                            android:scaleType="fitCenter"
+                            android:visibility="gone" />
+
+                        <ImageView
+                            android:id="@+id/ivNoLogo"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:alpha="0.45"
+                            android:contentDescription="@string/bp_logo"
+                            android:src="@drawable/ic_image"
+                            app:tint="@color/text_muted" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bp_logo"
+                            android:textColor="@color/ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/bp_logo_help"
+                            android:textColor="@color/text_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPickLogo"
+                        style="@style/ProfileSmallButton"
+                        android:text="@string/bp_add" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRemoveLogo"
+                        style="@style/ProfileRemoveButton"
+                        android:contentDescription="@string/bp_remove_logo"
+                        android:visibility="gone" />
+                </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/ProfileField"
