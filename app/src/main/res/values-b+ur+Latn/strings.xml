@@ -1256,18 +1256,18 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="entry_bill_chip_done">✓ Bill</string>
 
     <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
-    <string name="pdf_label_invoice">RASID</string>
+    <string name="pdf_label_invoice">INVOICE</string>
     <string name="pdf_label_bill_to">BILL BANAM</string>
-    <string name="pdf_label_invoice_details">RASID KI TAFSEEL</string>
-    <string name="pdf_label_invoice_no">Rasid No</string>
+    <string name="pdf_label_invoice_details">INVOICE KI TAFSEEL</string>
+    <string name="pdf_label_invoice_no">Invoice No</string>
     <string name="pdf_label_date">Tareekh</string>
     <string name="pdf_label_due_date">Adaigi ki Tareekh</string>
     <string name="pdf_label_time">Waqt</string>
     <string name="pdf_label_item">TAFSEEL</string>
-    <string name="pdf_label_qty">TADAD</string>
+    <string name="pdf_label_qty">MIQDAAR</string>
     <string name="pdf_label_rate">RATE</string>
     <string name="pdf_label_amount">RAQAM</string>
-    <string name="pdf_label_subtotal">Jama</string>
+    <string name="pdf_label_subtotal">Zaili Jama</string>
     <string name="pdf_label_discount">Discount</string>
     <string name="pdf_label_tax">Tax</string>
     <string name="pdf_label_extra_charges">Izafi Kharcha</string>
@@ -1280,7 +1280,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_label_signatory">Mujaz Dastakhat</string>
     <string name="pdf_label_terms">SHARAIT</string>
     <string name="pdf_label_bank">Bank</string>
-    <string name="pdf_label_account_title">Title</string>
+    <string name="pdf_label_account_title">Account Title</string>
     <string name="pdf_label_thank_you">Shukriya!</string>
     <string name="pdf_label_visit_again">Dobara tashreef layein</string>
 

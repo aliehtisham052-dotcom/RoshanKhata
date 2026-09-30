@@ -1292,7 +1292,7 @@
     <string name="pdf_label_due_date">سررسید</string>
     <string name="pdf_label_time">زمان</string>
     <string name="pdf_label_item">شرح</string>
-    <string name="pdf_label_qty">تعداد</string>
+    <string name="pdf_label_qty">مقدار</string>
     <string name="pdf_label_rate">نرخ</string>
     <string name="pdf_label_amount">مبلغ</string>
     <string name="pdf_label_subtotal">جمع جزء</string>
@@ -1308,7 +1308,7 @@
     <string name="pdf_label_signatory">امضای مجاز</string>
     <string name="pdf_label_terms">شرایط</string>
     <string name="pdf_label_bank">بانک</string>
-    <string name="pdf_label_account_title">عنوان</string>
+    <string name="pdf_label_account_title">نام حساب</string>
     <string name="pdf_label_thank_you">سپاس!</string>
     <string name="pdf_label_visit_again">باز هم تشریف بیاورید</string>
 
