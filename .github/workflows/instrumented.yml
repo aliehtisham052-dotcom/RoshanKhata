@@ -237,5 +237,6 @@ jobs:
             /tmp/instrumented_output.txt
             /tmp/monkey_output.txt
             /tmp/crash_log.txt
+            /tmp/rtl-proof/
           retention-days: 14
           if-no-files-found: ignore

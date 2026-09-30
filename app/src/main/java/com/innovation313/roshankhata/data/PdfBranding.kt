@@ -58,7 +58,7 @@ object PdfBranding {
         val right = pageWidth - margin
         val top = (bandHeight - size) / 2f
         val dst = RectF(right - size, top, right, top + size)
-        canvas.drawBitmap(logo, Rect(0, 0, logo.width, logo.height), dst, Paint().apply {
+        PdfRtl.drawBitmap(canvas, logo, Rect(0, 0, logo.width, logo.height), dst, Paint().apply {
             isAntiAlias = true
             isFilterBitmap = true
         })
@@ -141,7 +141,7 @@ object PdfBranding {
                 cx - size / 2f, cy - 95f - size / 2f,
                 cx + size / 2f, cy - 95f + size / 2f
             )
-            canvas.drawBitmap(mark, Rect(0, 0, mark.width, mark.height), dst, Paint().apply {
+            PdfRtl.drawBitmap(canvas, mark, Rect(0, 0, mark.width, mark.height), dst, Paint().apply {
                 isAntiAlias = true
                 isFilterBitmap = true
                 alpha = 18
@@ -151,7 +151,7 @@ object PdfBranding {
         // The wordmark back at FULL size — the owner asked for it big, and
         // in the lower half there is room to give it: the shrink was
         // compensating for a bad position, not a real constraint.
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             "ROSHAN KHATA",
             cx,
             cy + 45f,
@@ -192,7 +192,12 @@ object PdfBranding {
     private val pending: MutableMap<PdfDocument, MutableList<PdfLinks.Link>> =
         java.util.Collections.synchronizedMap(java.util.WeakHashMap())
 
-    private fun register(doc: PdfDocument, band: RectF, context: Context) {
+    private fun register(doc: PdfDocument, canvas: Canvas, drawnAt: RectF, context: Context) {
+        // The link is written into the file by position, not drawn, so it
+        // must use where the button really is on the page — on a mirrored
+        // (right-to-left) page that is the opposite side from the code's own
+        // coordinates. See [PdfRtl.onPage].
+        val band = PdfRtl.onPage(canvas, drawnAt)
         // Pages finished so far == the index of the page being drawn.
         val link = PdfLinks.Link(doc.pages.size, band.left, band.top, band.right, band.bottom, storeUrl(context))
         pending.getOrPut(doc) { mutableListOf() }.add(link)
@@ -247,11 +252,14 @@ object PdfBranding {
         }
         val rest = " \u2014 $BRAND_TAGLINE"
         val total = name.measureText(BRAND_NAME) + tag.measureText(rest)
-        var at = if (centered) x - total / 2f else x
-        canvas.drawText(BRAND_NAME, at, baseline, name)
-        at += name.measureText(BRAND_NAME)
-        canvas.drawText(rest, at, baseline, tag)
-        return at + tag.measureText(rest)
+        val start = if (centered) x - total / 2f else x
+        // One English phrase: on a right-to-left page it moves as a whole,
+        // its two runs keeping their order.
+        PdfRtl.asOne(canvas, start, start + total) {
+            PdfRtl.drawText(canvas, BRAND_NAME, start, baseline, name)
+            PdfRtl.drawText(canvas, rest, start + name.measureText(BRAND_NAME), baseline, tag)
+        }
+        return start + total
     }
 
     /**
@@ -285,7 +293,7 @@ object PdfBranding {
         var textLeft = left + 12f
         logo(context)?.let { mark ->
             val size = 30f
-            canvas.drawBitmap(
+            PdfRtl.drawBitmap(canvas,
                 mark,
                 Rect(0, 0, mark.width, mark.height),
                 RectF(left + 8f, top + 7f, left + 8f + size, top + 7f + size),
@@ -302,9 +310,9 @@ object PdfBranding {
         val pill = RectF(right - 10f - pillW, top + (BANNER_HEIGHT - pillH) / 2f, right - 10f, top + (BANNER_HEIGHT + pillH) / 2f)
         canvas.drawRoundRect(pill, 10f, 10f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
         val label = paint(Color.WHITE, 8.5f, bold = true).apply { letterSpacing = 0.08f; textAlign = Paint.Align.CENTER }
-        canvas.drawText("DOWNLOAD", pill.centerX(), pill.centerY() + 3f, label)
+        PdfRtl.drawText(canvas, "DOWNLOAD", pill.centerX(), pill.centerY() + 3f, label)
 
-        register(doc, band, context)
+        register(doc, canvas, band, context)
         return bottom
     }
 
@@ -337,7 +345,7 @@ object PdfBranding {
         var x = left
         (mark ?: logo(context))?.let { bmp ->
             val size = 12f
-            canvas.drawBitmap(
+            PdfRtl.drawBitmap(canvas,
                 bmp,
                 Rect(0, 0, bmp.width, bmp.height),
                 RectF(x, ruleY + 4f, x + size, ruleY + 4f + size),
@@ -359,7 +367,7 @@ object PdfBranding {
                 strokeWidth = 0.6f; isAntiAlias = true
             }
         )
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             "DOWNLOAD",
             pill.centerX(), pill.centerY() + 2.5f,
             paint(BRAND_GREEN, 6.5f, bold = true).apply {
@@ -368,7 +376,7 @@ object PdfBranding {
             }
         )
 
-        register(doc, pill, context)
+        register(doc, canvas, pill, context)
         return ruleY
     }
 
@@ -401,11 +409,11 @@ object PdfBranding {
         drawBrandLine(canvas, cx, top + 14f, 7.5f, 7f, BRAND_GREEN, SOFT, centered = true)
         val pill = RectF(cx - 42f, top + 20f, cx + 42f, top + 35f)
         canvas.drawRoundRect(pill, 7.5f, 7.5f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             "DOWNLOAD", cx, pill.centerY() + 2.6f,
             paint(Color.WHITE, 7f, bold = true).apply { letterSpacing = 0.08f; textAlign = Paint.Align.CENTER }
         )
-        register(doc, band, context)
+        register(doc, canvas, band, context)
         return bottom
     }
 }

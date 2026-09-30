@@ -81,7 +81,7 @@ object LedgerReport {
         // crossed it, which the owner rightly called unprofessional.
         val zebra = Paint().apply { color = 0x08000000 }
 
-        var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create())
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create())
         var canvas: Canvas = page.canvas
         var y: Float
         var pageNo = 1
@@ -102,12 +102,12 @@ object LedgerReport {
             // on top of it rather than under it.
             PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 74f, navyFill)
-            canvas.drawText(businessName, MARGIN, 30f, title)
-            canvas.drawText(
+            PdfRtl.drawText(canvas, businessName, MARGIN, 30f, title)
+            PdfRtl.drawText(canvas,
                 context.getString(R.string.pdf_rep_ledger_title) + " \u00B7 " + rangeLabel,
                 MARGIN, 48f, tagline
             )
-            canvas.drawText(
+            PdfRtl.drawText(canvas,
                 context.getString(R.string.pdf_rep_generated, dateFmt.format(Date())),
                 MARGIN, 64f, tagline
             )
@@ -117,7 +117,7 @@ object LedgerReport {
         fun newPage() {
             doc.finishPage(page)
             pageNo++
-            page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
             canvas = page.canvas
             y = header()
         }
@@ -126,12 +126,12 @@ object LedgerReport {
 
         // ---- The warning first, same placement and same reason as BusinessReport ----
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 40f, warnFill)
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_rep_not_backup),
             MARGIN + 10f, y + 16f,
             Paint(warnText).apply { isFakeBoldText = true }
         )
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(
                 R.string.pdf_rep_not_backup_restore,
                 context.getString(R.string.app_name)
@@ -144,13 +144,13 @@ object LedgerReport {
         val gave = entries.filter { it.isGiven }.sumOf { it.amount }
         val got = entries.filter { !it.isGiven }.sumOf { it.amount }
 
-        canvas.drawText(context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_rep_summary), MARGIN, y, section)
         y += 20f
 
         fun line(label: String, value: String, paint: Paint = body) {
-            canvas.drawText(label, MARGIN, y, body)
+            PdfRtl.drawText(canvas, label, MARGIN, y, body)
             val w = paint.measureText(value)
-            canvas.drawText(value, PAGE_W - MARGIN - w, y, paint)
+            PdfRtl.drawText(canvas, value, PAGE_W - MARGIN - w, y, paint)
             y += 16f
         }
 
@@ -167,11 +167,11 @@ object LedgerReport {
         y += 20f
 
         // ---- Entries, oldest first, every party mixed together ----
-        canvas.drawText(context.getString(R.string.pdf_rep_entries), MARGIN, y, section)
+        PdfRtl.drawText(canvas, context.getString(R.string.pdf_rep_entries), MARGIN, y, section)
         y += 18f
 
         if (entries.isEmpty()) {
-            canvas.drawText(context.getString(R.string.no_entries_in_range), MARGIN, y, muted)
+            PdfRtl.drawText(canvas, context.getString(R.string.no_entries_in_range), MARGIN, y, muted)
             y += 16f
         } else {
             // Two money columns, the way a statement reads: what went out (I
@@ -186,12 +186,12 @@ object LedgerReport {
 
             fun tableHeader() {
                 canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 18f, tableHeaderFill)
-                canvas.drawText(colDate, xDate, y + 12.5f, tableHeaderFg)
-                canvas.drawText(colParty, xParty, y + 12.5f, tableHeaderFg)
-                canvas.drawText(
+                PdfRtl.drawText(canvas, colDate, xDate, y + 12.5f, tableHeaderFg)
+                PdfRtl.drawText(canvas, colParty, xParty, y + 12.5f, tableHeaderFg)
+                PdfRtl.drawText(canvas,
                     colGave, xGave - tableHeaderFg.measureText(colGave), y + 12.5f, tableHeaderFg
                 )
-                canvas.drawText(
+                PdfRtl.drawText(canvas,
                     colGot, xGot - tableHeaderFg.measureText(colGot), y + 12.5f, tableHeaderFg
                 )
                 y += 18f
@@ -215,29 +215,29 @@ object LedgerReport {
 
                 if (y + rowH > PAGE_H - 60f) {
                     newPage()
-                    canvas.drawText(context.getString(R.string.pdf_rep_entries_continued), MARGIN, y, section)
+                    PdfRtl.drawText(canvas, context.getString(R.string.pdf_rep_entries_continued), MARGIN, y, section)
                     y += 18f
                     tableHeader()
                 }
                 if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + rowH, zebra)
 
                 val baseline = y + 14f
-                canvas.drawText(entryDateFmt.format(Date(e.timestamp)), xDate, baseline, muted)
-                canvas.drawText(clip(e.partyName, body, partyMaxW), xParty, baseline, body)
+                PdfRtl.drawText(canvas, entryDateFmt.format(Date(e.timestamp)), xDate, baseline, muted)
+                PdfRtl.drawText(canvas, clip(e.partyName, body, partyMaxW), xParty, baseline, body)
 
                 // The amount sits in exactly one of the two columns.
                 val money = Format.money(e.amount)
                 if (e.isGiven) {
-                    canvas.drawText(money, xGave - red.measureText(money), baseline, red)
+                    PdfRtl.drawText(canvas, money, xGave - red.measureText(money), baseline, red)
                 } else {
-                    canvas.drawText(money, xGot - green.measureText(money), baseline, green)
+                    PdfRtl.drawText(canvas, money, xGot - green.measureText(money), baseline, green)
                 }
 
                 // The note, if any, on its own quiet line under the name — this
                 // is the "what was it for" the owner asked to see in the report.
                 if (hasNote) {
                     val note = clip(e.note!!.trim(), muted, xGave - xParty - 8f)
-                    canvas.drawText(note, xParty, baseline + 12f, muted)
+                    PdfRtl.drawText(canvas, note, xParty, baseline + 12f, muted)
                 }
 
                 y += rowH
@@ -257,7 +257,7 @@ object LedgerReport {
         var footerX = MARGIN
         brandLogo?.let { mark ->
             val size = 18f
-            canvas.drawBitmap(
+            PdfRtl.drawBitmap(canvas,
                 mark,
                 android.graphics.Rect(0, 0, mark.width, mark.height),
                 android.graphics.RectF(footerX, y - 13f, footerX + size, y + 5f),
@@ -265,7 +265,7 @@ object LedgerReport {
             )
             footerX += size + 6f
         }
-        canvas.drawText(
+        PdfRtl.drawText(canvas,
             context.getString(
                 R.string.pdf_rep_footer_page,
                 context.getString(R.string.app_name),

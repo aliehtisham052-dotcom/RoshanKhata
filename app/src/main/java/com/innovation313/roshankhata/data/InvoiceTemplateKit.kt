@@ -252,10 +252,10 @@ object InvoiceTemplateKit {
 
         if (palette.centeredHeader) {
             val mid = pageW / 2f
-            c.drawText(shopName, mid, 36f, paint(fonts, 18f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
-            address?.let { c.drawText(it, mid, 51f, paint(fonts, 9f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
-            strn?.let { c.drawText("STRN: $it", mid, 63f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
-            c.drawText(heading, mid, 84f, paint(fonts, 16f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
+            PdfRtl.drawText(c, shopName, mid, 36f, paint(fonts, 18f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
+            address?.let { PdfRtl.drawText(c, it, mid, 51f, paint(fonts, 9f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
+            strn?.let { PdfRtl.drawText(c, "STRN: $it", mid, 63f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
+            PdfRtl.drawText(c, heading, mid, 84f, paint(fonts, 16f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
         } else {
             val tile = RectF(left, 26f, left + 40f, 66f)
             // The real Roshan Khata mark in the tile, on white so its green
@@ -282,25 +282,25 @@ object InvoiceTemplateKit {
                     .filter { it.isNotEmpty() }
                     .take(2)
                     .joinToString("") { it.take(1).uppercase() }
-                c.drawText(
+                PdfRtl.drawText(c,
                     initials.ifEmpty { "R" }, tile.centerX(), tile.centerY() + 5f,
                     paint(fonts, 14f, palette.onPrimary, bold = true, align = Paint.Align.CENTER)
                 )
             }
 
-            c.drawText(shopName, left + 52f, 44f, paint(fonts, 16f, palette.onPrimary, bold = true))
+            PdfRtl.drawText(c, shopName, left + 52f, 44f, paint(fonts, 16f, palette.onPrimary, bold = true))
             address?.let {
-                c.drawText(it, left + 52f, 58f, paint(fonts, 9f, palette.onPrimaryMuted))
+                PdfRtl.drawText(c, it, left + 52f, 58f, paint(fonts, 9f, palette.onPrimaryMuted))
             }
             strn?.let {
-                c.drawText("STRN: $it", left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted))
+                PdfRtl.drawText(c, "STRN: $it", left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted))
             }
 
-            c.drawText(heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
+            PdfRtl.drawText(c, heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
             // No default subtitle any more: "RASID" under "INVOICE" said the
             // same word twice in two languages.
             if (subtitle.isNotBlank()) {
-                c.drawText(subtitle, right, 58f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.RIGHT))
+                PdfRtl.drawText(c, subtitle, right, 58f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.RIGHT))
             }
         }
 
@@ -319,19 +319,19 @@ object InvoiceTemplateKit {
         invoice: Invoice
     ): Float {
         val labels = Labels(context)
-        c.drawText(labels.billTo, left, y, paint(fonts, 9f, palette.primary, bold = true))
-        c.drawText(invoice.customerName, left, y + 17f, paint(fonts, 13f, palette.ink, bold = true))
+        PdfRtl.drawText(c, labels.billTo, left, y, paint(fonts, 9f, palette.primary, bold = true))
+        PdfRtl.drawText(c, invoice.customerName, left, y + 17f, paint(fonts, 13f, palette.ink, bold = true))
         invoice.customerPhone?.takeIf { it.isNotBlank() }?.let {
-            c.drawText(it, left, y + 31f, paint(fonts, 10f, palette.muted))
+            PdfRtl.drawText(c, it, left, y + 31f, paint(fonts, 10f, palette.muted))
         }
 
-        c.drawText(labels.invoiceDetails, right, y, paint(fonts, 9f, palette.primary, bold = true, align = Paint.Align.RIGHT))
+        PdfRtl.drawText(c, labels.invoiceDetails, right, y, paint(fonts, 9f, palette.primary, bold = true, align = Paint.Align.RIGHT))
         val metaLabel = paint(fonts, 10.5f, palette.muted, align = Paint.Align.RIGHT)
         val metaValue = paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT)
         var my = y + 17f
         fun metaRow(label: String, value: String) {
-            c.drawText(label, right - 104f, my, metaLabel)
-            c.drawText(value, right, my, metaValue)
+            PdfRtl.drawText(c, label, right - 104f, my, metaLabel)
+            PdfRtl.drawText(c, value, right, my, metaValue)
             my += 14f
         }
         metaRow(labels.invoiceNo, invoice.invoiceNumber)
@@ -379,12 +379,12 @@ object InvoiceTemplateKit {
             canvas.drawRect(left, atY, right, atY + 24f, solid(palette.tableHeaderFill ?: palette.ink))
             val th = paint(fonts, 10f, palette.onTableHeader, bold = true)
             val thR = paint(fonts, 10f, palette.onTableHeader, bold = true, align = Paint.Align.RIGHT)
-            canvas.drawText("#", xNo, atY + 16f, th)
-            canvas.drawText(labels.item, xItem, atY + 16f, th)
-            extraColumn?.let { canvas.drawText(it.label.uppercase(), xExtra, atY + 16f, thR) }
-            canvas.drawText(labels.qty, xQty, atY + 16f, thR)
-            canvas.drawText(labels.rate, xRate, atY + 16f, thR)
-            canvas.drawText(labels.amount, xAmt, atY + 16f, thR)
+            PdfRtl.drawText(canvas, "#", xNo, atY + 16f, th)
+            PdfRtl.drawText(canvas, labels.item, xItem, atY + 16f, th)
+            extraColumn?.let { PdfRtl.drawText(canvas, it.label.uppercase(), xExtra, atY + 16f, thR) }
+            PdfRtl.drawText(canvas, labels.qty, xQty, atY + 16f, thR)
+            PdfRtl.drawText(canvas, labels.rate, xRate, atY + 16f, thR)
+            PdfRtl.drawText(canvas, labels.amount, xAmt, atY + 16f, thR)
             return atY + 24f
         }
 
@@ -401,12 +401,12 @@ object InvoiceTemplateKit {
             }
             if (index % 2 == 1) canvas.drawRect(left, y, right, y + rowH, solid(palette.zebra))
             val baseline = y + 16f
-            canvas.drawText((index + 1).toString(), xNo, baseline, body)
-            canvas.drawText(item.itemName, xItem, baseline, body)
-            extraColumn?.let { canvas.drawText(it.valueOf(item), xExtra, baseline, bodyR) }
-            canvas.drawText(Format.qty(item.quantity, item.unit), xQty, baseline, bodyR)
-            canvas.drawText(numberOnlyMoney(item.rate), xRate, baseline, bodyR)
-            canvas.drawText(numberOnlyMoney(item.lineTotal), xAmt, baseline, bodyR)
+            PdfRtl.drawText(canvas, (index + 1).toString(), xNo, baseline, body)
+            PdfRtl.drawText(canvas, item.itemName, xItem, baseline, body)
+            extraColumn?.let { PdfRtl.drawText(canvas, it.valueOf(item), xExtra, baseline, bodyR) }
+            PdfRtl.drawText(canvas, Format.qty(item.quantity, item.unit), xQty, baseline, bodyR)
+            PdfRtl.drawText(canvas, numberOnlyMoney(item.rate), xRate, baseline, bodyR)
+            PdfRtl.drawText(canvas, numberOnlyMoney(item.lineTotal), xAmt, baseline, bodyR)
             y += rowH
             canvas.drawLine(left, y, right, y, rulePaint)
         }
@@ -446,8 +446,8 @@ object InvoiceTemplateKit {
         val tLabel = paint(fonts, 11f, palette.muted)
         val tValue = paint(fonts, 11f, palette.ink, align = Paint.Align.RIGHT, mono = true)
         fun totalRow(label: String, value: String) {
-            c.drawText(label, totalsX + 10f, ty + 12f, tLabel)
-            c.drawText(value, right - 10f, ty + 12f, tValue)
+            PdfRtl.drawText(c, label, totalsX + 10f, ty + 12f, tLabel)
+            PdfRtl.drawText(c, value, right - 10f, ty + 12f, tValue)
             ty += 17f
         }
         if (showSubtotal(totals)) totalRow(labels.subtotal, Format.money(totals.subtotal))
@@ -464,14 +464,14 @@ object InvoiceTemplateKit {
         ty += 5f
         val totalBar = RectF(totalsX, ty, right, ty + 30f)
         c.drawRoundRect(totalBar, 7f, 7f, solid(palette.primary))
-        c.drawText(labels.total, totalsX + 12f, ty + 20f, paint(fonts, 13f, palette.onTotalBar ?: palette.onPrimary, bold = true))
-        c.drawText(Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 14f, palette.onTotalBar ?: palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
+        PdfRtl.drawText(c, labels.total, totalsX + 12f, ty + 20f, paint(fonts, 13f, palette.onTotalBar ?: palette.onPrimary, bold = true))
+        PdfRtl.drawText(c, Format.money(totals.grandTotal), right - 12f, ty + 20f, paint(fonts, 14f, palette.onTotalBar ?: palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
         ty += 40f
 
         if (invoice.receivedAmount != null) {
             totalRow(labels.received, Format.money(totals.received))
-            c.drawText(labels.balanceDue, totalsX + 10f, ty + 10f, paint(fonts, 10f, palette.muted, bold = true))
-            c.drawText(Format.money(totals.balanceDue), right - 10f, ty + 10f, paint(fonts, 10f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
+            PdfRtl.drawText(c, labels.balanceDue, totalsX + 10f, ty + 10f, paint(fonts, 10f, palette.muted, bold = true))
+            PdfRtl.drawText(c, Format.money(totals.balanceDue), right - 10f, ty + 10f, paint(fonts, 10f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
             ty += 17f
         }
 
@@ -486,18 +486,18 @@ object InvoiceTemplateKit {
             val boxH = maxOf(textBoxH, qrBoxH)
 
             c.drawRoundRect(RectF(left, blockTop, boxRight, blockTop + boxH), 8f, 8f, solid(palette.boxFill))
-            c.drawText(labels.paymentInfo, left + 12f, blockTop + 16f, paint(fonts, 9f, palette.primary, bold = true))
+            PdfRtl.drawText(c, labels.paymentInfo, left + 12f, blockTop + 16f, paint(fonts, 9f, palette.primary, bold = true))
             var ry = blockTop + 32f
             bankRows.forEach { (label, value) ->
-                c.drawText(label, left + 12f, ry, paint(fonts, 10.5f, palette.muted))
-                c.drawText(value, textRight, ry, paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
+                PdfRtl.drawText(c, label, left + 12f, ry, paint(fonts, 10.5f, palette.muted))
+                PdfRtl.drawText(c, value, textRight, ry, paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
                 ry += 14f
             }
             qr?.let {
                 val qrLeft = boxRight - qrSize - 10f
                 val qrTop = blockTop + 22f
-                c.drawBitmap(it, null, RectF(qrLeft, qrTop, qrLeft + qrSize, qrTop + qrSize), null)
-                c.drawText(labels.scanToPay, qrLeft + qrSize / 2f, qrTop + qrSize + 10f, paint(fonts, 6.5f, palette.muted, align = Paint.Align.CENTER))
+                PdfRtl.drawBitmap(c, it, null, RectF(qrLeft, qrTop, qrLeft + qrSize, qrTop + qrSize), null)
+                PdfRtl.drawText(c, labels.scanToPay, qrLeft + qrSize / 2f, qrTop + qrSize + 10f, paint(fonts, 6.5f, palette.muted, align = Paint.Align.CENTER))
             }
             by = blockTop + boxH
         }
@@ -508,8 +508,8 @@ object InvoiceTemplateKit {
     /** The tinted "AMOUNT IN WORDS" strip. Returns the y position work should continue from. */
     fun drawAmountInWords(c: Canvas, context: Context, palette: Palette, fonts: Fonts, left: Float, right: Float, y: Float, grandTotal: Double): Float {
         c.drawRoundRect(RectF(left, y, right, y + 34f), 7f, 7f, solid(palette.boxFill))
-        c.drawText(Labels(context).amountInWords, left + 12f, y + 13f, paint(fonts, 8.5f, palette.primary, bold = true))
-        c.drawText(NumberWords.rupeesInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10.5f, palette.ink, italic = true))
+        PdfRtl.drawText(c, Labels(context).amountInWords, left + 12f, y + 13f, paint(fonts, 8.5f, palette.primary, bold = true))
+        PdfRtl.drawText(c, NumberWords.rupeesInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10.5f, palette.ink, italic = true))
         return y + 50f
     }
 
@@ -551,14 +551,14 @@ object InvoiceTemplateKit {
         }
 
         c.drawLine(sigBox.left + 20f, y + sigH - 24f, sigBox.right - 20f, y + sigH - 24f, Paint().apply { color = palette.ink; strokeWidth = 0.7f })
-        c.drawText(Labels(context).signatory, sigBox.centerX(), y + sigH - 10f, paint(fonts, 9f, palette.muted, align = Paint.Align.CENTER))
+        PdfRtl.drawText(c, Labels(context).signatory, sigBox.centerX(), y + sigH - 10f, paint(fonts, 9f, palette.muted, align = Paint.Align.CENTER))
 
         val footerLines = listOfNotNull(invoice.note?.takeIf { it.isNotBlank() }, BusinessProfile.termsAndConditions(context))
         if (footerLines.isNotEmpty()) {
-            c.drawText(Labels(context).terms, left, y + 12f, paint(fonts, 8.5f, palette.primary, bold = true))
+            PdfRtl.drawText(c, Labels(context).terms, left, y + 12f, paint(fonts, 8.5f, palette.primary, bold = true))
             var fy = y + 27f
             footerLines.forEach {
-                c.drawText(it, left, fy, paint(fonts, 9f, palette.muted))
+                PdfRtl.drawText(c, it, left, fy, paint(fonts, 9f, palette.muted))
                 fy += 12f
             }
         }
@@ -582,6 +582,6 @@ object InvoiceTemplateKit {
         }
         val left = box.centerX() - w / 2f
         val top = box.centerY() - h / 2f
-        c.drawBitmap(bmp, null, Rect(left.toInt(), top.toInt(), (left + w).toInt(), (top + h).toInt()), null)
+        PdfRtl.drawBitmap(c, bmp, null, Rect(left.toInt(), top.toInt(), (left + w).toInt(), (top + h).toInt()), null)
     }
 }
