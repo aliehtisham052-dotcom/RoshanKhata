@@ -124,8 +124,11 @@ class PdfRtlOnDeviceTest {
             val tileRight = 595 - 60
             // A no-band design (outlined tile, white page) cannot be told apart
             // by colour at that point, so only assert where the band is filled.
-            val bandLeftEn = en.getPixel(tileRight, y)
-            if (!isWhite(bandLeftEn)) {
+            // The band is probed at the top centre, above every line of text:
+            // probing at (tileRight, 28) hit the INVOICE heading's ink on T5,
+            // the one design with no band, and mistook the ink for a band.
+            val bandFilled = !isWhite(en.getPixel(595 / 2, 8))
+            if (bandFilled) {
                 assertTrue("T$t English: tile top-left", isWhite(en.getPixel(tileLeft, y)))
                 assertTrue("T$t Urdu: tile moved top-right", isWhite(ur.getPixel(tileRight, y)))
                 assertFalse("T$t Urdu: top-left is band, not tile", isWhite(ur.getPixel(tileLeft, y)))
