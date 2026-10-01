@@ -20,7 +20,9 @@ import android.widget.TextView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.shape.MaterialShapeDrawable
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.os.LocaleListCompat
 import androidx.core.graphics.ColorUtils
 import com.innovation313.roshankhata.data.ThemeMode
 import androidx.lifecycle.Lifecycle
@@ -71,13 +73,26 @@ import org.junit.runners.Parameterized
  *  - LockActivity: only reachable with App Lock on and a fingerprint enrolled;
  *    on an emulator with neither, its biometric prompt errors and it closes
  *    the whole task (finishAffinity) by design, which would end the run.
+ *
+ * Every language, not only English (1 Oct). The owner reads English, Urdu
+ * and Roman Urdu but cannot check Sindhi, Persian or Arabic by eye, and a
+ * screen that only breaks in one of those would reach a user unseen. So each
+ * screen also runs once in each of the five other languages, and there it is
+ * checked for two things a person who cannot read the language would miss:
+ *  - the reading direction: right-to-left for Urdu, Sindhi, Persian and
+ *    Arabic, left-to-right for Roman Urdu;
+ *  - no raw placeholder (%1$s, %d) left showing, the sign of a translation
+ *    whose arguments do not match the code that fills it.
+ * The placeholder check runs in English too.
  */
 @RunWith(Parameterized::class)
 class EveryScreenOpensTest(
     private val screen: String,
     private val intentFor: (Context, Seed) -> Intent,
     private val textSize: Int,
-    private val dark: Boolean
+    private val dark: Boolean,
+    /** BCP-47 tag, or "" for the device default (English on the emulator). */
+    private val language: String
 ) {
 
     /** Row ids the screens that open one record need. */
@@ -111,6 +126,10 @@ class EveryScreenOpensTest(
         TextSize.setLevel(context, textSize)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             ThemeMode.set(context, if (dark) ThemeMode.DARK else ThemeMode.LIGHT)
+            AppCompatDelegate.setApplicationLocales(
+                if (language.isEmpty()) LocaleListCompat.getEmptyLocaleList()
+                else LocaleListCompat.forLanguageTags(language)
+            )
         }
     }
 
@@ -119,6 +138,7 @@ class EveryScreenOpensTest(
         TextSize.setLevel(context, TextSize.NORMAL)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             ThemeMode.set(context, ThemeMode.LIGHT)
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
         }
     }
 
@@ -151,6 +171,8 @@ class EveryScreenOpensTest(
                 assertTrue("$screen: text too faint in dark mode: ${faint.take(8).joinToString("; ")}", faint.isEmpty())
             }
 
+            scenario.onActivity { activity -> checkLanguage(activity) }
+
             scenario.recreate()                              // rotation / dark mode / font size
             if (scenario.state == Lifecycle.State.DESTROYED) return
 
@@ -161,12 +183,48 @@ class EveryScreenOpensTest(
                 scenario.state == Lifecycle.State.RESUMED ||
                     scenario.state == Lifecycle.State.DESTROYED
             )
+            // The rebuilt screen must still be in the same language.
+            if (scenario.state == Lifecycle.State.RESUMED) {
+                scenario.onActivity { activity -> checkLanguage(activity) }
+            }
         }
+    }
+
+    /** Direction for the language under test, and no raw placeholder on screen. */
+    private fun checkLanguage(activity: Activity) {
+        val root = activity.findViewById<View>(android.R.id.content)
+        if (language.isNotEmpty()) {
+            val wantRtl = language in RTL_LANGUAGES
+            val isRtl = root.layoutDirection == View.LAYOUT_DIRECTION_RTL
+            assertEquals(
+                "$screen: reading direction in '$language' is " + (if (isRtl) "right-to-left" else "left-to-right"),
+                wantRtl, isRtl
+            )
+        }
+        val raw = mutableListOf<String>()
+        collectRawPlaceholders(root, raw)
+        assertTrue("$screen: placeholder left unfilled: ${raw.take(5).joinToString(" | ")}", raw.isEmpty())
+    }
+
+    private fun collectRawPlaceholders(view: View, out: MutableList<String>) {
+        if (view.visibility != View.VISIBLE) return
+        if (view is TextView && view !is EditText) {
+            val text = view.text?.toString().orEmpty()
+            if (PLACEHOLDER.containsMatchIn(text)) out += text.take(60)
+        }
+        if (view is ViewGroup) for (i in 0 until view.childCount) collectRawPlaceholders(view.getChildAt(i), out)
     }
 
 
 
     companion object {
+
+        /** The app's other languages; English is the default rows below. */
+        private val LANGUAGES = listOf("ur", "ur-Latn", "sd", "fa", "ar")
+        private val RTL_LANGUAGES = setOf("ur", "sd", "fa", "ar")
+
+        /** A format argument that reached the screen unfilled: %s, %d, %1$s, %2$d. */
+        private val PLACEHOLDER = Regex("%(\\d+\\$)?[sd]")
 
         @Volatile
         private var seeded: Seed? = null
@@ -245,18 +303,21 @@ class EveryScreenOpensTest(
         )
 
         /**
-         * Every screen twice: at normal size, and at the largest text size
-         * this app offers — where fixed-height buttons are relaxed at runtime
-         * (TextFit) and the most layout code runs that normal size never does.
+         * Every screen at normal size, at the largest text size this app
+         * offers — where fixed-height buttons are relaxed at runtime (TextFit)
+         * and the most layout code runs that normal size never does — in dark
+         * mode, and once in each of the app's other five languages.
          */
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
         fun screens(): List<Array<Any>> = baseScreens().flatMap { row ->
             listOf(
-                arrayOf(row[0], row[1], TextSize.NORMAL, false),
-                arrayOf("${row[0]} @ largest text", row[1], TextSize.LARGEST, false),
-                arrayOf("${row[0]} @ dark", row[1], TextSize.NORMAL, true)
-            )
+                arrayOf(row[0], row[1], TextSize.NORMAL, false, ""),
+                arrayOf("${row[0]} @ largest text", row[1], TextSize.LARGEST, false, ""),
+                arrayOf("${row[0]} @ dark", row[1], TextSize.NORMAL, true, "")
+            ) + LANGUAGES.map { lang ->
+                arrayOf("${row[0]} @ $lang", row[1], TextSize.NORMAL, false, lang)
+            }
         }
 
         private fun baseScreens(): List<Array<Any>> = listOf(
