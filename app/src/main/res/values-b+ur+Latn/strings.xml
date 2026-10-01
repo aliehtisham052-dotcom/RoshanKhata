@@ -1502,6 +1502,15 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bill_scan_photo_kept">Bill ki tasveer is bill ki khata entry ke saath mehfooz hogi</string>
     <string name="bill_date_set">Bill ki tareekh: %1$s</string>
     <string name="bill_scan_supplier">Supplier: %1$s</string>
+    <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
+    <string name="payment_scan">Payment slip scan karein</string>
+    <string name="payment_scan_reading">Slip parhi ja rahi hai…</string>
+    <string name="payment_scan_nothing">Is tasveer se raqam, reference ya tareekh nahi parhi ja saki. Saaf screenshot lein, ya slip ko achi roshni mein seedha rakhein, aur dobara koshish karein. English mein chhapa text sab se behtar parha jata hai.</string>
+    <string name="payment_scan_found_title">Slip par ye mila</string>
+    <string name="payment_scan_use">Ye istemal karein</string>
+    <string name="payment_scan_amount">Raqam: %1$s</string>
+    <string name="payment_scan_reference">Ref: %1$s</string>
+    <string name="payment_scan_no_amount">Raqam yaqeeni tor par nahi parhi ja saki. Khud likhein.</string>
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">Kisi item ko badalne ya hatane ke liye us par tap karein</string>
     <string name="label_guess_note">Kuch khane bill se bhare gaye hain (company, unit, qism, formulation). Save karne se pehle label se mila lein.</string>

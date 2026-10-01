@@ -32,6 +32,8 @@ import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.TemplatePagerAdapter
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.ui.BillScanFlow
+import com.innovation313.roshankhata.data.BillPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -59,6 +61,61 @@ class InvoiceEditorActivity : BaseActivity() {
     companion object {
         /** Present only when editing a saved invoice; absent means creating a new one. */
         const val EXTRA_INVOICE_ID = "invoice_id"
+        private const val STATE_SCAN_CAMERA_PATH = "scan_camera_path"
+    }
+
+    // ---------- Scan bill (1 Oct) ----------
+    //
+    // A printed bill's lines (BillScanFlow — the same reader as a supplier's
+    // bill), checked by the owner, become rows here at the bill's rates, all
+    // still editable. An invoice keeps no photo, so the picture's private
+    // copy is deleted as soon as its lines are taken.
+    private val scanFlow = BillScanFlow(
+        activity = this,
+        onPhoto = { uri, temp -> readScannedRows(uri, temp) },
+        onNothing = {}
+    )
+
+    private fun readScannedRows(photo: android.net.Uri, temp: java.io.File?) {
+        lifecycleScope.launch {
+            val known = runCatching { dao.productsOnce().map { it.name } }.getOrDefault(emptyList())
+            when (val outcome = BillScanFlow.read(this@InvoiceEditorActivity, photo, temp, known, emptyList())) {
+                is BillScanFlow.Outcome.Found -> BillScanFlow.review(
+                    activity = this@InvoiceEditorActivity,
+                    bill = outcome.bill,
+                    keptPhoto = outcome.keptPhoto,
+                    showSupplier = false,
+                    onUse = { kept ->
+                        BillPhoto.delete(outcome.keptPhoto)
+                        addScannedRows(kept)
+                    },
+                    onCancel = {}
+                )
+                else -> BillScanFlow.showProblem(this@InvoiceEditorActivity, outcome) {}
+            }
+        }
+    }
+
+    /** The kept lines as rows; a row left completely blank makes way for them. */
+    private fun addScannedRows(kept: List<com.innovation313.roshankhata.data.ScannedItem>) {
+        if (kept.isEmpty()) return
+        val blank = rows.filter { r ->
+            listOf(r.name, r.qty, r.unit, r.rate).all { it.text.isNullOrBlank() }
+        }
+        kept.forEach { item ->
+            addRow(InvoiceItem(invoiceId = 0, itemName = item.name, quantity = item.quantity, unit = item.unit, rate = item.rate))
+        }
+        blank.forEach { r ->
+            itemRows.removeView(r.view)
+            rows.remove(r)
+        }
+        renumberRows()
+        refreshTotals()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        scanFlow.saveState(outState, STATE_SCAN_CAMERA_PATH)
     }
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -227,6 +284,8 @@ class InvoiceEditorActivity : BaseActivity() {
         btnDue.visibility = if (InvoiceFeatureSettings.dueDateEnabled(this)) View.VISIBLE else View.GONE
 
         findViewById<MaterialButton>(R.id.btnAddRow).setOnClickListener { addRow() }
+        findViewById<MaterialButton>(R.id.btnScanRows).setOnClickListener { scanFlow.chooseSource() }
+        scanFlow.restoreState(savedInstanceState, STATE_SCAN_CAMERA_PATH)
         val btnMore = findViewById<MaterialButton>(R.id.btnMoreOptions)
         btnMore.setOnClickListener { showMoreOptions() }
         btnMore.visibility = if (InvoiceFeatureSettings.anyOptionalFieldEnabled(this)) View.VISIBLE else View.GONE

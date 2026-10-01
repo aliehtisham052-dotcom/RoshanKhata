@@ -419,6 +419,23 @@
                     android:layout_height="wrap_content"
                     android:text="@string/payment_method_online" />
             </com.google.android.material.chip.ChipGroup>
+
+            <!-- "Scan payment slip": a payment app's screenshot or a bank slip, read into this "I got" entry (1 Oct). New entries only. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnScanPayment"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:textColor="@color/brand_green_text"
+                app:strokeColor="@color/editor_field_stroke"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/payment_scan"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:icon="@drawable/ic_camera"
+                app:iconGravity="textStart"
+                app:iconTint="@color/brand_green_text"
+                app:cornerRadius="8dp" />
         </LinearLayout>
             </LinearLayout>
 
@@ -489,6 +506,23 @@
             android:layout_marginTop="8dp"
             android:textAllCaps="false"
             android:visibility="gone"
+            app:cornerRadius="8dp" />
+
+        <!-- "Scan bill photo": a printed bill's lines, read on the phone, into the list below (1 Oct). New sale only. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnScanBill"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:textColor="@color/brand_green_text"
+            app:strokeColor="@color/editor_field_stroke"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/bill_scan"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:icon="@drawable/ic_camera"
+            app:iconGravity="textStart"
+            app:iconTint="@color/brand_green_text"
             app:cornerRadius="8dp" />
 
         <LinearLayout

@@ -211,6 +211,26 @@
                     app:strokeColor="@color/brand_green"
                     app:strokeWidth="1.5dp" />
 
+                <!-- "Scan bill photo": a printed bill's lines, read on the phone, as rows here (1 Oct). -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnScanRows"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:letterSpacing="0"
+                    android:text="@string/bill_scan"
+                    android:textAllCaps="false"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="15sp"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_camera"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/brand_green_text"
+                    app:strokeColor="@color/editor_field_stroke" />
+
                 <!--
                   Discount, tax, extra charge, received and note all moved
                   into one dialog behind this button — the owner asked for

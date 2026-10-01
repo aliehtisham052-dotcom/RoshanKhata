@@ -1502,6 +1502,15 @@
     <string name="bill_scan_photo_kept">بل کی تصویر اس بل کی کھاتہ انٹری کے ساتھ محفوظ ہوگی</string>
     <string name="bill_date_set">بل کی تاریخ: %1$s</string>
     <string name="bill_scan_supplier">سپلائر: %1$s</string>
+    <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
+    <string name="payment_scan">ادائیگی کی رسید سکین کریں</string>
+    <string name="payment_scan_reading">رسید پڑھی جا رہی ہے…</string>
+    <string name="payment_scan_nothing">اس تصویر سے رقم، ریفرنس یا تاریخ نہیں پڑھی جا سکی۔ صاف سکرین شاٹ لیں، یا رسید کو اچھی روشنی میں سیدھا رکھیں، اور دوبارہ کوشش کریں۔ انگریزی میں چھپا متن سب سے بہتر پڑھا جاتا ہے۔</string>
+    <string name="payment_scan_found_title">رسید پر یہ ملا</string>
+    <string name="payment_scan_use">یہ استعمال کریں</string>
+    <string name="payment_scan_amount">رقم: %1$s</string>
+    <string name="payment_scan_reference">ریفرنس: %1$s</string>
+    <string name="payment_scan_no_amount">رقم یقینی طور پر نہیں پڑھی جا سکی۔ خود لکھیں۔</string>
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">کسی آئٹم کو بدلنے یا ہٹانے کے لیے اس پر ٹیپ کریں</string>
     <string name="label_guess_note">کچھ خانے بل سے بھرے گئے ہیں (کمپنی، یونٹ، قسم، فارمولیشن)۔ محفوظ کرنے سے پہلے لیبل سے ملا لیں۔</string>

@@ -58,6 +58,10 @@ import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
 import com.innovation313.roshankhata.data.BillPhoto
+import com.innovation313.roshankhata.data.ScannedBill
+import com.innovation313.roshankhata.data.ScannedItem
+import com.innovation313.roshankhata.data.ScannedPayment
+import com.innovation313.roshankhata.ui.BillScanFlow
 import com.google.android.material.chip.ChipGroup
 import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.Recovery
@@ -90,6 +94,7 @@ class PartyDetailActivity : BaseActivity() {
 
         /** A camera capture waiting to come back, kept across a rebuild. */
         private const val STATE_CAMERA_PATH = "camera_path"
+        private const val STATE_SCAN_CAMERA_PATH = "scan_camera_path"
         private const val STATE_CAMERA_TARGET = "camera_target"
 
         /**
@@ -144,6 +149,84 @@ class PartyDetailActivity : BaseActivity() {
             BillPhoto.delete(pendingBillPhoto)
             pendingBillPhoto = path
             billButton?.setText(R.string.entry_bill_chip_done)
+        }
+    }
+
+    // ---------- Scan bill (1 Oct) ----------
+    //
+    // The same flow as a supplier's bill (BillScanFlow): scanner, camera or
+    // gallery, read on the phone, checked line by line. On a customer's sale
+    // the ticked lines join the entry's item list, the bill's picture becomes
+    // the entry's bill photo, and nothing is saved until the owner presses
+    // Save. The entry form stays open behind the scanner, so the open form
+    // hands in [onScanUsed]; with no form open, a reading is let go.
+
+    private val scanFlow = BillScanFlow(
+        activity = this,
+        onPhoto = { uri, temp -> readScannedBill(uri, temp) },
+        onNothing = {}
+    )
+
+    /** Set while a sale form is open: what to do with the lines the owner kept. */
+    private var onScanUsed: ((ScannedBill, List<ScannedItem>, String?) -> Unit)? = null
+
+    /**
+     * Set while an "I got" form is open: what to do with a payment slip the
+     * owner checked (amount, reference, date) and the slip's kept photo.
+     */
+    private var onPaymentScanUsed: ((ScannedPayment, String?) -> Unit)? = null
+
+    /**
+     * Which reading the picture on its way back is for. One BillScanFlow
+     * serves both (its launchers must be registered once, up front), and only
+     * one form, and so one kind of scan, can be open at a time.
+     */
+    private var scanForPayment = false
+
+    private fun readScannedBill(photo: android.net.Uri, temp: java.io.File?) {
+        if (scanForPayment) {
+            readScannedPayment(photo, temp)
+            return
+        }
+        lifecycleScope.launch {
+            val known = runCatching { dao.productsOnce().map { it.name } }.getOrDefault(emptyList())
+            when (val outcome = BillScanFlow.read(this@PartyDetailActivity, photo, temp, known, emptyList())) {
+                is BillScanFlow.Outcome.Found -> BillScanFlow.review(
+                    activity = this@PartyDetailActivity,
+                    bill = outcome.bill,
+                    keptPhoto = outcome.keptPhoto,
+                    showSupplier = false,
+                    onUse = { kept ->
+                        val use = onScanUsed
+                        // The form was closed meanwhile (screen restarted):
+                        // nothing to put the lines into, so the copy goes too.
+                        if (use == null) BillPhoto.delete(outcome.keptPhoto)
+                        else use(outcome.bill, kept, outcome.keptPhoto)
+                    },
+                    onCancel = {}
+                )
+                else -> BillScanFlow.showProblem(this@PartyDetailActivity, outcome) {}
+            }
+        }
+    }
+
+    private fun readScannedPayment(photo: android.net.Uri, temp: java.io.File?) {
+        lifecycleScope.launch {
+            when (val outcome = BillScanFlow.readPayment(this@PartyDetailActivity, photo, temp)) {
+                is BillScanFlow.Outcome.PaymentFound -> BillScanFlow.reviewPayment(
+                    activity = this@PartyDetailActivity,
+                    payment = outcome.payment,
+                    keptPhoto = outcome.keptPhoto,
+                    onUse = { payment ->
+                        val use = onPaymentScanUsed
+                        // The form was closed meanwhile: the copy goes too.
+                        if (use == null) BillPhoto.delete(outcome.keptPhoto)
+                        else use(payment, outcome.keptPhoto)
+                    },
+                    onCancel = {}
+                )
+                else -> BillScanFlow.showProblem(this@PartyDetailActivity, outcome, forPayment = true) {}
+            }
         }
     }
 
@@ -259,6 +342,7 @@ class PartyDetailActivity : BaseActivity() {
         // a screen that had forgotten it asked, and be thrown away after the
         // owner had already taken it.
         cameraPath = savedInstanceState?.getString(STATE_CAMERA_PATH)
+        scanFlow.restoreState(savedInstanceState, STATE_SCAN_CAMERA_PATH)
         cameraTarget = savedInstanceState?.getString(STATE_CAMERA_TARGET)
             ?.let { runCatching { PhotoTarget.valueOf(it) }.getOrNull() }
         setContentView(R.layout.activity_party_detail)
@@ -549,12 +633,13 @@ class PartyDetailActivity : BaseActivity() {
         // entry written up in the evening for something that changed hands at
         // noon should carry noon, not the evening.
         var chosenTime = editing?.entry?.timestamp ?: System.currentTimeMillis()
-        DateTimeField.attach(
+        fun attachDate() = DateTimeField.attach(
             activity = this,
             button = view.findViewById(R.id.btnEntryDate),
             initial = chosenTime,
             compact = true
         ) { chosenTime = it }
+        attachDate()
 
         // The running total, shown as the sum is typed rather than waiting on
         // the equals key — the Calculator screen answers as you go, and this
@@ -736,6 +821,7 @@ class PartyDetailActivity : BaseActivity() {
         val cbUpdateRate: MaterialCheckBox = view.findViewById(R.id.cbUpdateRate)
         val cbAddProduct: MaterialCheckBox = view.findViewById(R.id.cbAddProduct)
         val btnSupplierBill: MaterialButton = view.findViewById(R.id.btnSupplierBill)
+        val btnScanBill: MaterialButton = view.findViewById(R.id.btnScanBill)
 
         // False until the lookup below confirms a customer, so nothing
         // sale-only ever flashes up on a supplier's account.
@@ -834,6 +920,8 @@ class PartyDetailActivity : BaseActivity() {
             btnRepeatLast.visibility =
                 if (isSale() && editing == null && lastSaleEntry != null && lines.isEmpty() && editorDraft() == null)
                     View.VISIBLE else View.GONE
+            // A printed bill read into a new sale; editing has its own items.
+            btnScanBill.visibility = if (isSale() && editing == null) View.VISIBLE else View.GONE
             btnTotalFill.visibility = View.GONE
             tvLinesNote.visibility = View.GONE
             if (!goodsListAllowed()) return
@@ -1255,6 +1343,42 @@ class PartyDetailActivity : BaseActivity() {
         // (an item with no product keeps its old rate, as the owner's). No
         // batches — last time's batch may be finished. Everything lands in the
         // list, to change or remove before saving.
+        // "Scan bill photo": the kept lines join the list at the BILL's rate
+        // (what was actually charged — marked as the owner's, so no price
+        // chip re-prices it), matched to a product where the name is one.
+        // The bill's picture becomes this entry's bill photo, and its number
+        // goes into an empty note. All of it stays editable until Save.
+        btnScanBill.setOnClickListener {
+            scanForPayment = false
+            scanFlow.chooseSource()
+        }
+        onScanUsed = { bill, kept, photo ->
+            if (photo != null) {
+                BillPhoto.delete(pendingBillPhoto)
+                pendingBillPhoto = photo
+                billButton?.setText(R.string.entry_bill_chip_done)
+            }
+            if (etNote.text.isBlank()) {
+                bill.billNumber?.let { etNote.setText(getString(R.string.bill_scan_number, it)) }
+            }
+            lifecycleScope.launch {
+                val products = runCatching { dao.productsOnce() }.getOrDefault(emptyList())
+                val drafts = kept.map { item ->
+                    val product = products.firstOrNull { it.name.trim().equals(item.name.trim(), ignoreCase = true) }
+                    LineDraft(
+                        itemName = item.name, quantity = item.quantity, unit = item.unit,
+                        rate = item.rate, rateEdited = true,
+                        productId = product?.id,
+                        creditPrice = product?.creditPrice, cashPrice = product?.salePrice,
+                        productUnit = product?.defaultUnit
+                    )
+                }
+                lines.addAll(drafts)
+                renderLines()
+                refreshRateSuggestion()
+            }
+        }
+
         btnRepeatLast.setOnClickListener {
             val source = lastSaleEntry ?: return@setOnClickListener
             lifecycleScope.launch {
@@ -1353,6 +1477,47 @@ class PartyDetailActivity : BaseActivity() {
         val cgPaymentMethod: ChipGroup = view.findViewById(R.id.cgPaymentMethod)
         if (!isGiven) {
             view.findViewById<View>(R.id.paymentMethodSection).visibility = View.VISIBLE
+        }
+
+        // "Scan payment slip" (1 Oct): a JazzCash/Easypaisa screenshot or a
+        // bank slip, read on the phone (PaymentScan) and checked by the owner.
+        // A new "I got" entry only: an entry being edited keeps what it has.
+        // What was read only fills boxes; nothing is saved until Save.
+        //  - amount: replaces the box, since the owner chose to use it;
+        //  - reference: into the note, added to whatever is written there;
+        //  - date: only a day that has already come, kept at the time now
+        //    when it is today (a ledger never takes a future date);
+        //  - the slip's picture: this entry's bill photo.
+        // How it was paid is left to the owner: a screenshot does not say
+        // for certain whether it was a bank or a wallet.
+        val btnScanPayment: MaterialButton = view.findViewById(R.id.btnScanPayment)
+        btnScanPayment.visibility = if (!isGiven && editing == null) View.VISIBLE else View.GONE
+        btnScanPayment.setOnClickListener {
+            scanForPayment = true
+            scanFlow.chooseSource(R.string.payment_scan)
+        }
+        onPaymentScanUsed = { payment, photo ->
+            payment.amount?.let {
+                etAmount.setText(Calc.trim(it))
+                etAmount.setSelection(etAmount.text.length)
+            }
+            payment.reference?.let { ref ->
+                val tag = getString(R.string.payment_scan_reference, ref)
+                val now = etNote.text.toString().trim()
+                if (!now.contains(ref)) etNote.setText(if (now.isEmpty()) tag else "$now\n$tag")
+            }
+            payment.date?.let { day ->
+                val now = System.currentTimeMillis()
+                if (!android.text.format.DateUtils.isToday(day) && day <= now) {
+                    chosenTime = day
+                    attachDate()
+                }
+            }
+            if (photo != null) {
+                BillPhoto.delete(pendingBillPhoto)
+                pendingBillPhoto = photo
+                billButton?.setText(R.string.entry_bill_chip_done)
+            }
         }
 
         /** The key behind whichever chip is checked, or null when none is. */
@@ -1585,6 +1750,11 @@ class PartyDetailActivity : BaseActivity() {
         }
 
         val dialog = MaterialAlertDialogBuilder(this).setView(view).create()
+        // A scan that comes back after the form is gone has nowhere to go.
+        dialog.setOnDismissListener {
+            onScanUsed = null
+            onPaymentScanUsed = null
+        }
 
         btnSupplierBill.setOnClickListener {
             dialog.dismiss()
@@ -2626,6 +2796,7 @@ class PartyDetailActivity : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         cameraPath?.let { outState.putString(STATE_CAMERA_PATH, it) }
+        scanFlow.saveState(outState, STATE_SCAN_CAMERA_PATH)
         cameraTarget?.let { outState.putString(STATE_CAMERA_TARGET, it.name) }
     }
 

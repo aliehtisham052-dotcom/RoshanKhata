@@ -22,7 +22,9 @@ import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BillOcr
 import com.innovation313.roshankhata.data.BillPhoto
 import com.innovation313.roshankhata.data.BillScan
+import com.innovation313.roshankhata.data.PaymentScan
 import com.innovation313.roshankhata.data.ScannedBill
+import com.innovation313.roshankhata.data.ScannedPayment
 import com.innovation313.roshankhata.data.ScannedItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -88,11 +90,14 @@ class BillScanFlow(
         if (uri == null) onNothing() else onPhoto(uri, null)
     }
 
-    /** Camera or gallery. Cancel, Back or a tap outside counts as nothing. */
-    fun chooseSource() {
+    /**
+     * Camera or gallery. Cancel, Back or a tap outside counts as nothing.
+     * [titleRes]: a payment slip is not a bill, and should not be called one.
+     */
+    fun chooseSource(titleRes: Int = R.string.bill_scan) {
         var chosen = false
         MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.bill_scan)
+            .setTitle(titleRes)
             .setItems(
                 arrayOf(activity.getString(R.string.bill_scan_camera), activity.getString(R.string.bill_scan_gallery))
             ) { _, which ->
@@ -177,6 +182,8 @@ class BillScanFlow(
          * use it must delete it.
          */
         class Found(val bill: ScannedBill, val keptPhoto: String?) : Outcome()
+        /** A payment slip or screenshot with something on it; [keptPhoto] as above. */
+        class PaymentFound(val payment: ScannedPayment, val keptPhoto: String?) : Outcome()
     }
 
     companion object {
@@ -219,12 +226,106 @@ class BillScanFlow(
             }
         }
 
-        /** The plain message for a reading that found nothing usable. */
-        fun showProblem(activity: AppCompatActivity, outcome: Outcome, then: () -> Unit) {
-            val message = if (outcome is Outcome.Unavailable) R.string.bill_scan_unavailable
-            else R.string.bill_scan_nothing
+        /**
+         * Read [photo] as money received: a payment app's screenshot or a
+         * bank slip (PaymentScan). Same shape as [read]: a private copy kept
+         * only when something was found, [temp] deleted either way.
+         */
+        suspend fun readPayment(
+            activity: AppCompatActivity,
+            photo: Uri,
+            temp: java.io.File?
+        ): Outcome {
+            val reading = MaterialAlertDialogBuilder(activity)
+                .setMessage(R.string.payment_scan_reading)
+                .setCancelable(false)
+                .show()
+            try {
+                val result = BillOcr.read(activity, photo)
+                val payment = (result as? BillOcr.Result.Read)?.let { read ->
+                    withContext(Dispatchers.Default) { PaymentScan.parse(BillScan.rows(read.lines)) }
+                }
+                val kept = if (payment != null && !payment.isEmpty) {
+                    withContext(Dispatchers.IO) { BillPhoto.save(activity, photo) }
+                } else null
+                return when {
+                    result is BillOcr.Result.Unavailable -> Outcome.Unavailable
+                    payment == null || payment.isEmpty -> Outcome.Nothing
+                    else -> Outcome.PaymentFound(payment, kept)
+                }
+            } finally {
+                runCatching { temp?.delete() }
+                reading.dismiss()
+            }
+        }
+
+        /**
+         * What was read off a payment slip, for the owner to check before it
+         * reaches the form. An amount the reader could not be sure of is
+         * shown as missing, never guessed. [onUse] gets the reading;
+         * [onCancel] runs otherwise, after the kept photo has been deleted.
+         */
+        fun reviewPayment(
+            activity: AppCompatActivity,
+            payment: ScannedPayment,
+            keptPhoto: String?,
+            onUse: (ScannedPayment) -> Unit,
+            onCancel: () -> Unit
+        ) {
+            val dp = activity.resources.displayMetrics.density
+            val pad = (24 * dp).toInt()
+            val column = LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(pad, (8 * dp).toInt(), pad, 0)
+            }
+            fun line(text: String, color: Int = R.color.ink, bold: Boolean = false) {
+                column.addView(TextView(activity).apply {
+                    this.text = text
+                    textSize = 14f
+                    setTextColor(activity.getColor(color))
+                    if (bold) setTypeface(typeface, android.graphics.Typeface.BOLD)
+                    setPadding(0, (3 * dp).toInt(), 0, (3 * dp).toInt())
+                })
+            }
+            if (payment.amount != null) {
+                line(activity.getString(R.string.payment_scan_amount, Format.money(payment.amount)), bold = true)
+            } else {
+                line(activity.getString(R.string.payment_scan_no_amount), R.color.gold_accent, bold = true)
+            }
+            payment.reference?.let { line(activity.getString(R.string.payment_scan_reference, it)) }
+            payment.date?.let { line(activity.getString(R.string.bill_scan_date, Format.dateOnly(it))) }
+            line(activity.getString(R.string.bill_scan_check), R.color.text_muted)
+
+            var used = false
             MaterialAlertDialogBuilder(activity)
-                .setTitle(R.string.bill_scan)
+                .setTitle(R.string.payment_scan_found_title)
+                .setView(column)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.payment_scan_use) { _, _ ->
+                    used = true
+                    onUse(payment)
+                }
+                .setOnDismissListener {
+                    if (!used) {
+                        keptPhoto?.let { path -> AppScope.launch { runCatching { java.io.File(path).delete() } } }
+                        onCancel()
+                    }
+                }
+                .show()
+        }
+
+        /**
+         * The plain message for a reading that found nothing usable.
+         * [forPayment]: the slip's own wording instead of the bill's.
+         */
+        fun showProblem(activity: AppCompatActivity, outcome: Outcome, forPayment: Boolean = false, then: () -> Unit) {
+            val message = when {
+                outcome is Outcome.Unavailable -> R.string.bill_scan_unavailable
+                forPayment -> R.string.payment_scan_nothing
+                else -> R.string.bill_scan_nothing
+            }
+            MaterialAlertDialogBuilder(activity)
+                .setTitle(if (forPayment) R.string.payment_scan else R.string.bill_scan)
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, null)
                 .setOnDismissListener { then() }
