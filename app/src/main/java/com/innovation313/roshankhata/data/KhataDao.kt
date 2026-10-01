@@ -1825,6 +1825,13 @@ interface KhataDao {
     @Query("UPDATE transactions SET billPhotoPath = :path WHERE id = :id")
     suspend fun setBillPhotoPath(id: Long, path: String)
 
+    /** Cash bills that kept their photo (v21) — the image backup's second allow-list. */
+    @Query("SELECT id, photoPath FROM supplier_bills WHERE photoPath IS NOT NULL AND photoPath != ''")
+    suspend fun supplierBillsWithPhoto(): List<SupplierBillPhoto>
+
+    @Query("UPDATE supplier_bills SET photoPath = :path WHERE id = :id")
+    suspend fun setSupplierBillPhotoPath(id: Long, path: String)
+
     // ---------- Duplicate-customer merge ----------
 
     @Query("UPDATE transactions SET partyId = :survivorId WHERE partyId = :loserId")

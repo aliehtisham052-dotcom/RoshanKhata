@@ -97,8 +97,9 @@ object BackupImages {
             ?.filter { it.isFile }
             ?.forEach { out += "$PARTY_DIR/${it.name}" to it }
 
-        val ownBills = dao.entriesWithBillPhoto()
-            .mapNotNull { it.billPhotoPath?.substringAfterLast('/') }
+        val ownBills = (dao.entriesWithBillPhoto().map { it.billPhotoPath } +
+            dao.supplierBillsWithPhoto().map { it.photoPath })
+            .mapNotNull { it?.substringAfterLast('/') }
             .toSet()
         File(context.filesDir, BILLS_DIR).listFiles()
             ?.filter { it.isFile && it.name in ownBills }
@@ -183,6 +184,12 @@ object BackupImages {
             val fileName = oldPath.substringAfterLast('/')
             val newPath = File(billsDir, fileName).absolutePath
             if (newPath != oldPath) dao.setBillPhotoPath(row.id, newPath)
+        }
+        // A cash bill's photo (v21): same folder, same by-name rule.
+        for (row in dao.supplierBillsWithPhoto()) {
+            val oldPath = row.photoPath ?: continue
+            val newPath = File(billsDir, oldPath.substringAfterLast('/')).absolutePath
+            if (newPath != oldPath) dao.setSupplierBillPhotoPath(row.id, newPath)
         }
     }
 

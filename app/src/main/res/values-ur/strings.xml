@@ -1499,7 +1499,7 @@
         <item quantity="one">⚠ %1$d گاہک معمول سے دیر سے ادائیگی کر رہا ہے — دیکھنے کے لیے ٹیپ کریں</item>
         <item quantity="other">⚠ %1$d گاہک معمول سے دیر سے ادائیگی کر رہے ہیں — دیکھنے کے لیے ٹیپ کریں</item>
     </plurals>
-    <string name="bill_scan_photo_kept">بل کی تصویر اس بل کی کھاتہ انٹری کے ساتھ محفوظ ہوگی</string>
+    <string name="bill_scan_photo_kept">بل کی تصویر اس بل کے ساتھ محفوظ ہوگی</string>
     <string name="bill_date_set">بل کی تاریخ: %1$s</string>
     <string name="bill_scan_supplier">سپلائر: %1$s</string>
     <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
@@ -1520,4 +1520,6 @@
         <item quantity="one">آج %d کو یاد دہانی</item>
         <item quantity="other">آج %d کو یاد دہانی</item>
     </plurals>
+    <string name="view_bill_photo">بل کی تصویر دیکھیں</string>
+    <string name="bill_photo_missing">اس بل کی تصویر اس فون پر موجود نہیں</string>
 </resources>

@@ -772,6 +772,7 @@ object Backup {
         put("createdAt", b.createdAt)
         put("isDeleted", b.isDeleted)
         put("deletedAt", b.deletedAt ?: JSONObject.NULL)
+        put("photoPath", b.photoPath ?: JSONObject.NULL)
     }
 
     private fun jsonToBill(o: JSONObject) = SupplierBill(
@@ -786,7 +787,9 @@ object Backup {
         note = o.optNullableString("note"),
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
-        deletedAt = o.optNullableLong("deletedAt")
+        deletedAt = o.optNullableLong("deletedAt"),
+        // Absent in every backup written before v21: no photo.
+        photoPath = o.optNullableString("photoPath")
     )
 
     private fun billItemToJson(i: BillItem) = JSONObject().apply {
