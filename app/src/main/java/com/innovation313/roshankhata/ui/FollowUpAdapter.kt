@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.FollowUpRank
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.PaymentHabit
 
@@ -37,6 +38,9 @@ class FollowUpAdapter(
      * a party missing here has too little history and shows no habit line.
      */
     var habits: Map<Long, PaymentHabit.Habit> = emptyMap()
+
+    /** Party id → earliest open promised date; set with [habits], before submitList. */
+    var promises: Map<Long, Long> = emptyMap()
 
     class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvName: TextView = view.findViewById(R.id.tvFollowUpName)
@@ -78,23 +82,25 @@ class FollowUpAdapter(
         // not red, because red already means "30 days quiet" on the line
         // above and the two are different facts.
         val habit = habits[p.id]
-        if (habit == null) {
+        val promise = promises[p.id]
+        if (habit == null && promise == null) {
             holder.tvHabit.visibility = View.GONE
         } else {
             holder.tvHabit.visibility = View.VISIBLE
             val res = ctx.resources
-            holder.tvHabit.text = if (habit.isLate) {
-                res.getQuantityString(
-                    R.plurals.followup_habit_late, habit.waitingDays,
-                    habit.waitingDays, habit.typicalDays
-                )
-            } else {
-                res.getQuantityString(R.plurals.followup_habit, habit.typicalDays, habit.typicalDays)
+            val habitText = habit?.let {
+                if (it.isLate) res.getQuantityString(R.plurals.followup_habit_late, it.waitingDays, it.waitingDays, it.typicalDays)
+                else res.getQuantityString(R.plurals.followup_habit, it.typicalDays, it.typicalDays)
             }
+            // The customer's own date comes first: it is what the reminder quotes.
+            val promiseText = promise?.let { ctx.getString(R.string.followup_promised, Format.dateOnly(it)) }
+            holder.tvHabit.text = listOfNotNull(promiseText, habitText).joinToString("  ·  ")
+            val urgent = habit?.isLate == true ||
+                FollowUpRank.isDue(promise, System.currentTimeMillis(), java.util.TimeZone.getDefault())
             holder.tvHabit.setTextColor(
-                ContextCompat.getColor(ctx, if (habit.isLate) R.color.gold_accent else R.color.text_muted)
+                ContextCompat.getColor(ctx, if (urgent) R.color.gold_accent else R.color.text_muted)
             )
-            holder.tvHabit.setTypeface(null, if (habit.isLate) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+            holder.tvHabit.setTypeface(null, if (urgent) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
         }
 
         // A customer with no number cannot be messaged, and the row should

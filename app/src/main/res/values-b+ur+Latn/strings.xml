@@ -1515,4 +1515,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bill_items_tap_hint">Kisi item ko badalne ya hatane ke liye us par tap karein</string>
     <string name="label_guess_note">Kuch khane bill se bhare gaye hain (company, unit, qism, formulation). Save karne se pehle label se mila lein.</string>
     <string name="entry_make_invoice">Invoice</string>
+    <string name="followup_promised">Wada: %1$s</string>
+    <plurals name="followup_today">
+        <item quantity="one">Aaj %d ko yaad dihani</item>
+        <item quantity="other">Aaj %d ko yaad dihani</item>
+    </plurals>
 </resources>

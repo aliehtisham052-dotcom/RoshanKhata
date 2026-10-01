@@ -1567,4 +1567,9 @@ You can change this any time from this screen.</string>
     <string name="bill_items_tap_hint">Tap an item to change or remove it</string>
     <string name="label_guess_note">Some boxes are filled from the bill (company, unit, type, formulation). Check them against the label before saving.</string>
     <string name="entry_make_invoice">Invoice</string>
+    <string name="followup_promised">Promised for %1$s</string>
+    <plurals name="followup_today">
+        <item quantity="one">%d to remind today</item>
+        <item quantity="other">%d to remind today</item>
+    </plurals>
 </resources>

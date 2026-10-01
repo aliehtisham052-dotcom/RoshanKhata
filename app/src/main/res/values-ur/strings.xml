@@ -1515,4 +1515,9 @@
     <string name="bill_items_tap_hint">کسی آئٹم کو بدلنے یا ہٹانے کے لیے اس پر ٹیپ کریں</string>
     <string name="label_guess_note">کچھ خانے بل سے بھرے گئے ہیں (کمپنی، یونٹ، قسم، فارمولیشن)۔ محفوظ کرنے سے پہلے لیبل سے ملا لیں۔</string>
     <string name="entry_make_invoice">انوائس</string>
+    <string name="followup_promised">وعدہ: %1$s</string>
+    <plurals name="followup_today">
+        <item quantity="one">آج %d کو یاد دہانی</item>
+        <item quantity="other">آج %d کو یاد دہانی</item>
+    </plurals>
 </resources>

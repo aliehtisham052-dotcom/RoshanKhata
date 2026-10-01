@@ -1659,4 +1659,13 @@
     <string name="bill_items_tap_hint">اضغط على أي بند لتعديله أو حذفه</string>
     <string name="label_guess_note">بعض الحقول مُلئت من الفاتورة (الشركة، الوحدة، النوع، التركيبة). طابقها مع الملصق قبل الحفظ.</string>
     <string name="entry_make_invoice">فاتورة</string>
+    <string name="followup_promised">وعد بالسداد: %1$s</string>
+    <plurals name="followup_today">
+        <item quantity="zero">للتذكير اليوم: %d</item>
+        <item quantity="one">للتذكير اليوم: %d</item>
+        <item quantity="two">للتذكير اليوم: %d</item>
+        <item quantity="few">للتذكير اليوم: %d</item>
+        <item quantity="many">للتذكير اليوم: %d</item>
+        <item quantity="other">للتذكير اليوم: %d</item>
+    </plurals>
 </resources>
