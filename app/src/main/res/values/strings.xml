@@ -1556,4 +1556,5 @@ You can change this any time from this screen.</string>
     <string name="bill_scan_supplier">Supplier: %1$s</string>
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">Tap an item to change or remove it</string>
+    <string name="label_guess_note">Some boxes are filled from the bill (company, unit, type, formulation). Check them against the label before saving.</string>
 </resources>

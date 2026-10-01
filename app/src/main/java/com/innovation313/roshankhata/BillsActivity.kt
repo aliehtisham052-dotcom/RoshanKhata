@@ -910,6 +910,9 @@ class BillsActivity : BaseActivity() {
         pendingItems.clear()
         val photoForThisBill = scanKeptPhoto
         scanKeptPhoto = null
+        // Read on the main thread, before the background save: who sent the
+        // goods, for the label-details suggestions afterwards.
+        val supplierLabel = newSupplierName ?: parties.firstOrNull { it.id == supplierId }?.name
 
         AppScope.launch {
             // A new supplier: reuse one of the same name if it appeared in the
@@ -986,7 +989,17 @@ class BillsActivity : BaseActivity() {
                     // But the only moment they are easy to answer is while the
                     // bottle is on the counter, so this is where they are
                     // asked for, once, after the bill is safely saved.
-                    offerLabelDetails(createdProducts.distinctBy { it.id })
+                    // What this bill says about each product (formulation, type,
+                    // unit, the supplier as company), offered in the label form.
+                    val guesses = createdProducts.distinctBy { it.id }.associate { product ->
+                        val line = itemsForThisBill.firstOrNull {
+                            com.innovation313.roshankhata.data.ProductName.key(it.productName) == product.nameKey
+                        }
+                        product.id to com.innovation313.roshankhata.data.LabelGuess.of(
+                            product.name, line?.unit, supplierLabel
+                        )
+                    }
+                    offerLabelDetails(createdProducts.distinctBy { it.id }, guesses)
                 }
             }
         }
@@ -1013,7 +1026,10 @@ class BillsActivity : BaseActivity() {
      * "Missing" is [ProductDetailsDialog.needsLabelDetails], which is the
      * register's own rule rather than a second one invented here.
      */
-    private fun offerLabelDetails(products: List<Product>) {
+    private fun offerLabelDetails(
+        products: List<Product>,
+        guesses: Map<Long, com.innovation313.roshankhata.data.LabelGuess.Guess> = emptyMap()
+    ) {
         val incomplete = products.filter { ProductDetailsDialog.needsLabelDetails(it) }
         if (incomplete.isEmpty()) return
 
@@ -1030,7 +1046,7 @@ class BillsActivity : BaseActivity() {
             // lost by saying no here.
             .setNegativeButton(R.string.label_details_later, null)
             .setPositiveButton(R.string.label_details_fill) { _, _ ->
-                fillLabelDetails(incomplete, 0)
+                fillLabelDetails(incomplete, 0, guesses)
             }
             .show()
     }
@@ -1043,15 +1059,20 @@ class BillsActivity : BaseActivity() {
      * for-loop would stack every dialog on screen at once, and the owner would
      * be filling the last product's form first.
      */
-    private fun fillLabelDetails(queue: List<Product>, index: Int) {
+    private fun fillLabelDetails(
+        queue: List<Product>,
+        index: Int,
+        guesses: Map<Long, com.innovation313.roshankhata.data.LabelGuess.Guess> = emptyMap()
+    ) {
         if (index >= queue.size || isFinishing || isDestroyed) return
-        val next = { fillLabelDetails(queue, index + 1) }
+        val next = { fillLabelDetails(queue, index + 1, guesses) }
         ProductDetailsDialog.show(
             activity = this,
             product = queue[index],
             dao = dao,
             onSaved = next,
-            onDismissed = next
+            onDismissed = next,
+            guess = guesses[queue[index].id]
         )
     }
 
