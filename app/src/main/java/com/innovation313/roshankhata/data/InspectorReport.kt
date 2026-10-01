@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.ui.Format
@@ -71,6 +72,8 @@ object InspectorReport {
     // still reads when printed in black and white.
     private const val NAVY = 0xFF094C2E.toInt()
     private const val GOLD = 0xFFE1AF3F.toInt()
+    /** = colors.xml gold_on_dark: gold TEXT on the dark green band. */
+    private const val GOLD_ON_DARK = 0xFFFFDA6B.toInt()
     private const val ON_NAVY = 0xFFCFE3D6.toInt()
     private const val INK = 0xFF1A1F1C.toInt()
     private const val NOTE_INK = 0xFF33403A.toInt()
@@ -357,8 +360,13 @@ object InspectorReport {
         // Manrope, the same bundled face the invoices use, so every document
         // the shop hands over looks like it came from one place. Tabular
         // figures keep a column of quantities lined up digit under digit.
-        val tf = InvoiceFonts.manrope(context)
-        val tfBold = InvoiceFonts.bold(tf)
+        // The system sans, as every other report uses (1 Oct). Manrope here was
+        // the VARIABLE font, whose default instance is weight 200 (ExtraLight);
+        // Typeface.BOLD only fake-emboldens that, so the whole register printed
+        // faint and thin. A real Regular and Bold, readable on every phone
+        // (fontVariationSettings would need API 26; minSdk is 24).
+        val tf = Typeface.DEFAULT
+        val tfBold = Typeface.DEFAULT_BOLD
         fun paint(color: Int, size: Float, bold: Boolean = false, spaced: Float = 0f) = Paint().apply {
             this.color = color
             textSize = size
@@ -372,10 +380,12 @@ object InspectorReport {
 
         val bandName = paint(Color.WHITE, 19f, bold = true)
         val bandSmall = paint(ON_NAVY, 9f)
-        val bandTitle = paint(GOLD, 8.5f, bold = true, spaced = 0.12f)
+        // Small gold text on the dark band: the app's own bright gold for text
+        // on dark green (gold_on_dark), a size up, so it reads instead of glowing.
+        val bandTitle = paint(GOLD_ON_DARK, 9.5f, bold = true, spaced = 0.1f)
         val bandAsOf = paint(Color.WHITE, 13f, bold = true)
         val contName = paint(Color.WHITE, 11f, bold = true)
-        val contTitle = paint(GOLD, 8.5f, bold = true, spaced = 0.08f)
+        val contTitle = paint(GOLD_ON_DARK, 9f, bold = true, spaced = 0.06f)
         val monogram = paint(NAVY, 16f, bold = true).apply { textAlign = Paint.Align.CENTER }
         val secNo = paint(OK_FG, 9f, bold = true)
         val secTitle = paint(NAVY, 13f, bold = true)
