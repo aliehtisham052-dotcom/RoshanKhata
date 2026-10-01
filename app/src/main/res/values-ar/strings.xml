@@ -1670,4 +1670,6 @@
     </plurals>
     <string name="view_bill_photo">عرض صورة الفاتورة</string>
     <string name="bill_photo_missing">صورة هذه الفاتورة غير موجودة على هذا الهاتف</string>
+    <string name="pdf_insp_by_type">حسب النوع: %1$s</string>
+    <string name="pdf_insp_type_not_set">النوع غير محدد</string>
 </resources>

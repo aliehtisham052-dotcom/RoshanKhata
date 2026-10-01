@@ -1550,4 +1550,6 @@
     </plurals>
     <string name="view_bill_photo">بل جي تصوير ڏسو</string>
     <string name="bill_photo_missing">هن بل جي تصوير هن فون تي موجود ناهي</string>
+    <string name="pdf_insp_by_type">قسم موجب: %1$s</string>
+    <string name="pdf_insp_type_not_set">قسم درج ناهي</string>
 </resources>

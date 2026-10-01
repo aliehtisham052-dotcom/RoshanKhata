@@ -1522,4 +1522,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     </plurals>
     <string name="view_bill_photo">Bill ki tasveer dekhein</string>
     <string name="bill_photo_missing">Is bill ki tasveer is phone par maujood nahi</string>
+    <string name="pdf_insp_by_type">Qism ke lehaz se: %1$s</string>
+    <string name="pdf_insp_type_not_set">Qism darj nahi</string>
 </resources>

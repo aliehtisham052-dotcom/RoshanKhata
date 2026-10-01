@@ -1574,4 +1574,6 @@ You can change this any time from this screen.</string>
     </plurals>
     <string name="view_bill_photo">View bill photo</string>
     <string name="bill_photo_missing">This bill’s photo is not on this phone</string>
+    <string name="pdf_insp_by_type">By type: %1$s</string>
+    <string name="pdf_insp_type_not_set">Type not set</string>
 </resources>
