@@ -1475,4 +1475,24 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bp_remove_logo">Logo hatayein</string>
     <string name="bp_logo_saved">Logo save ho gaya</string>
     <string name="bp_logo_save_failed">Logo save nahi ho saka. Koi aur tasveer try karein.</string>
+
+    <!-- Scan bill (1 Oct) -->
+    <string name="bill_scan">Bill ki tasveer scan karein</string>
+    <string name="bill_scan_camera">Tasveer khainchein</string>
+    <string name="bill_scan_gallery">Gallery se chunein</string>
+    <string name="bill_scan_reading">Bill parha ja raha hai…</string>
+    <string name="bill_scan_unavailable">Is phone par bill parhne ki sahulat abhi tayyar nahi. Aik minute ke liye internet chalayein taake Google Play services ise mukammal kar le, phir dobara koshish karein.</string>
+    <string name="bill_scan_nothing">Is tasveer se kuch kaam ka nahi parha ja saka. Bill ko achi roshni mein seedha rakhein, poori tasveer mein bill ho, aur dobara koshish karein. English mein chhape bill sab se behtar parhe jate hain.</string>
+    <string name="bill_scan_found_title">Bill par ye mila</string>
+    <string name="bill_scan_use">Ye istemal karein</string>
+    <string name="bill_scan_number">Bill number: %1$s</string>
+    <string name="bill_scan_date">Tareekh: %1$s</string>
+    <string name="bill_scan_total">Kul: %1$s</string>
+    <string name="bill_scan_item_line">%1$s — %2$s × %3$s = %4$s</string>
+    <string name="bill_scan_expiry">Miyaad: %1$s</string>
+    <string name="bill_scan_sum_matches">✓ Satron ka jor bill ke kul ke barabar hai</string>
+    <string name="bill_scan_sum_differs">Satron ka jor %1$s hai; bill par %2$s likha hai. Koi satar reh gayi ho sakti hai — save karne se pehle dekh lein.</string>
+    <string name="bill_scan_no_items">Koi maal ki satar nahi parhi ja saki; haath se shamil karein.</string>
+    <string name="bill_scan_check">Ye phone ne tasveer se parha hai. Save karne se pehle har raqam dekh lein.</string>
+    <string name="bill_scan_items_ready">✓ Is bill ke saath %1$s</string>
 </resources>

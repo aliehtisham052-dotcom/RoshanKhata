@@ -178,6 +178,11 @@ dependencies {
     // Scanning, through Google Play Services: the scanner UI and models live
     // there, so the app needs no CAMERA permission and gains no model weight.
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+    // Reading a supplier's printed bill (BillScan). The Play Services build:
+    // the text model lives in Play Services, not in this APK, and is fetched
+    // at install through the "ocr" dependency declared in the manifest.
+    // On-device only; Latin script, which is what company invoices print in.
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.core:core-ktx:1.13.1")
     // Reads the orientation flag a camera writes into a JPEG. Without it a

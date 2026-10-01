@@ -13,6 +13,38 @@
         android:paddingEnd="24dp"
         android:paddingBottom="8dp">
 
+        <!--
+          Scan bill (1 Oct): read a supplier's printed bill from a photo into
+          this form. First on the form, because scanning is how a bill is
+          started, not something done after typing it.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBillScan"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/bill_scan"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/brand_green"
+            app:cornerRadius="8dp"
+            app:icon="@drawable/ic_camera"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white" />
+
+        <!-- How many product lines this bill already carries (from a scan). -->
+        <TextView
+            android:id="@+id/tvBillPendingItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:textColor="@color/green_got_text"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
         <AutoCompleteTextView
             android:id="@+id/etBillSupplier"
             android:layout_width="match_parent"

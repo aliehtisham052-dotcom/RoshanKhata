@@ -1527,4 +1527,24 @@ You can change this any time from this screen.</string>
     <string name="bp_remove_logo">Remove logo</string>
     <string name="bp_logo_saved">Logo saved</string>
     <string name="bp_logo_save_failed">Could not save the logo. Try another picture.</string>
+
+    <!-- Scan bill (1 Oct) -->
+    <string name="bill_scan">Scan bill photo</string>
+    <string name="bill_scan_camera">Take a photo</string>
+    <string name="bill_scan_gallery">Choose from gallery</string>
+    <string name="bill_scan_reading">Reading the bill…</string>
+    <string name="bill_scan_unavailable">Bill reading is not ready on this phone yet. Connect to the internet for a minute so Google Play services can finish setting it up, then try again.</string>
+    <string name="bill_scan_nothing">Nothing useful could be read from this photo. Lay the bill flat in good light, fill the frame with it, and try again. Printed English bills read best.</string>
+    <string name="bill_scan_found_title">Found on the bill</string>
+    <string name="bill_scan_use">Use these</string>
+    <string name="bill_scan_number">Bill no: %1$s</string>
+    <string name="bill_scan_date">Date: %1$s</string>
+    <string name="bill_scan_total">Total: %1$s</string>
+    <string name="bill_scan_item_line">%1$s — %2$s × %3$s = %4$s</string>
+    <string name="bill_scan_expiry">Expiry: %1$s</string>
+    <string name="bill_scan_sum_matches">✓ Lines add up to the bill total</string>
+    <string name="bill_scan_sum_differs">Lines add up to %1$s; the bill says %2$s. A line may be missing — check before saving.</string>
+    <string name="bill_scan_no_items">No product lines could be read; add them by hand.</string>
+    <string name="bill_scan_check">Read by the phone from the photo. Check every figure before you save.</string>
+    <string name="bill_scan_items_ready">✓ %1$s with this bill</string>
 </resources>

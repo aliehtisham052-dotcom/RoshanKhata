@@ -1615,4 +1615,24 @@
     <string name="bp_remove_logo">إزالة الشعار</string>
     <string name="bp_logo_saved">تم حفظ الشعار</string>
     <string name="bp_logo_save_failed">تعذّر حفظ الشعار. جرّب صورة أخرى.</string>
+
+    <!-- Scan bill (1 Oct) -->
+    <string name="bill_scan">مسح صورة الفاتورة</string>
+    <string name="bill_scan_camera">التقاط صورة</string>
+    <string name="bill_scan_gallery">اختيار من المعرض</string>
+    <string name="bill_scan_reading">جارٍ قراءة الفاتورة…</string>
+    <string name="bill_scan_unavailable">قراءة الفواتير غير جاهزة على هذا الهاتف بعد. اتصل بالإنترنت لمدة دقيقة حتى تكمل خدمات Google Play إعدادها، ثم حاول مرة أخرى.</string>
+    <string name="bill_scan_nothing">لم يُقرأ شيء مفيد من هذه الصورة. ضع الفاتورة مستوية في إضاءة جيدة واملأ الإطار بها، ثم حاول مرة أخرى. الفواتير المطبوعة بالإنجليزية تُقرأ بشكل أفضل.</string>
+    <string name="bill_scan_found_title">وُجد في الفاتورة</string>
+    <string name="bill_scan_use">استخدم هذه</string>
+    <string name="bill_scan_number">رقم الفاتورة: %1$s</string>
+    <string name="bill_scan_date">التاريخ: %1$s</string>
+    <string name="bill_scan_total">الإجمالي: %1$s</string>
+    <string name="bill_scan_item_line">%1$s — %2$s × %3$s = %4$s</string>
+    <string name="bill_scan_expiry">الانتهاء: %1$s</string>
+    <string name="bill_scan_sum_matches">✓ مجموع البنود يساوي إجمالي الفاتورة</string>
+    <string name="bill_scan_sum_differs">مجموع البنود %1$s؛ والفاتورة تذكر %2$s. قد يكون هناك بند ناقص — تحقق قبل الحفظ.</string>
+    <string name="bill_scan_no_items">لم يُقرأ أي بند من البضاعة؛ أضفها يدويًا.</string>
+    <string name="bill_scan_check">قرأ الهاتف هذا من الصورة. تحقق من كل رقم قبل الحفظ.</string>
+    <string name="bill_scan_items_ready">✓ مع هذه الفاتورة: %1$s</string>
 </resources>
