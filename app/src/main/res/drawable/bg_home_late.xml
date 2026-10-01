@@ -2,6 +2,6 @@
 <!-- The Home "paying late" note: the app's note colours, rounded like the tiles. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
     <solid android:color="@color/note_bg" />
-    <stroke android:width="1dp" android:color="@color/gold_accent" />
+    <stroke android:width="1dp" android:color="@color/gold_fill" />
     <corners android:radius="12dp" />
 </shape>
