@@ -1658,4 +1658,5 @@
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">اضغط على أي بند لتعديله أو حذفه</string>
     <string name="label_guess_note">بعض الحقول مُلئت من الفاتورة (الشركة، الوحدة، النوع، التركيبة). طابقها مع الملصق قبل الحفظ.</string>
+    <string name="entry_make_invoice">فاتورة</string>
 </resources>
