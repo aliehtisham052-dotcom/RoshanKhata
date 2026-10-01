@@ -27,13 +27,16 @@ data class ScannedItem(
 
 /** Everything read off one bill. Any field may be missing; nothing here is saved as-is. */
 data class ScannedBill(
+    /** The company the bill is from: its printed heading, or the shop's own spelling of it. */
+    val supplierName: String? = null,
     val billNumber: String? = null,
     val billDate: Long? = null,
     val total: Double? = null,
     val items: List<ScannedItem> = emptyList()
 ) {
     val itemsTotal: Double get() = items.sumOf { it.amount }
-    val isEmpty: Boolean get() = billNumber == null && billDate == null && total == null && items.isEmpty()
+    val isEmpty: Boolean get() =
+        supplierName == null && billNumber == null && billDate == null && total == null && items.isEmpty()
 }
 
 /**
@@ -93,16 +96,24 @@ object BillScan {
         lines: List<OcrLine>,
         knownProducts: List<String> = emptyList(),
         now: Long = System.currentTimeMillis(),
-        tz: TimeZone = TimeZone.getDefault()
-    ): ScannedBill = parseRows(rows(lines), knownProducts, now, tz)
+        tz: TimeZone = TimeZone.getDefault(),
+        knownSuppliers: List<String> = emptyList()
+    ): ScannedBill {
+        val fromRows = parseRows(rows(lines), knownProducts, now, tz, knownSuppliers)
+        val heading = supplierFromLines(lines)?.let { tidyName(it, knownSuppliers) }
+        return if (heading != null) fromRows.copy(supplierName = heading) else fromRows
+    }
 
     fun parseRows(
         rows: List<String>,
         knownProducts: List<String> = emptyList(),
         now: Long = System.currentTimeMillis(),
-        tz: TimeZone = TimeZone.getDefault()
+        tz: TimeZone = TimeZone.getDefault(),
+        knownSuppliers: List<String> = emptyList()
     ): ScannedBill {
+        val supplier = supplierFromRows(rows)?.let { tidyName(it, knownSuppliers) }
         val billNumber = rows.firstNotNullOfOrNull { billNumberIn(it) }
+            ?: rows.firstNotNullOfOrNull { shortBillNumberIn(it) }
         val billDate = billDateIn(rows, tz)
         val total = totalIn(rows)
         val rateBeforeQty = rows.any { headerSaysRateFirst(it) }
@@ -112,7 +123,7 @@ object BillScan {
             .mapNotNull { itemIn(it, rateBeforeQty, billDate ?: now, tz) }
             .map { it.copy(name = knownName(it.name, knownProducts)) }
 
-        return ScannedBill(billNumber, billDate, total, items)
+        return ScannedBill(supplier, billNumber, billDate, total, items)
     }
 
     // ------------------------------------------------------ bill number
@@ -121,6 +132,21 @@ object BillScan {
         """\b(?:invoice|inv|bill|challan|voucher|memo|receipt)\s*(?:no|num|number|#)?\.?\s*[:#\-]?\s*([A-Za-z0-9][A-Za-z0-9\-/]{1,24})""",
         RegexOption.IGNORE_CASE
     )
+
+    /**
+     * Distributors number their paper as a supply order or delivery challan
+     * ("S.O No.", "D.C No.", "Order #", "Ref No."). Short labels, so "No",
+     * "#" or "Number" must follow them, or "so 12" in a sentence would count.
+     * Tried only when no invoice or bill number was found.
+     */
+    private val SHORT_NO = Regex(
+        """\b(?:s\.?\s*o|d\.?\s*c|order|ref|gp)\.?\s*(?:no|num|number|#)\.?\s*[:#\-]?\s*([A-Za-z0-9][A-Za-z0-9\-/]{1,24})""",
+        RegexOption.IGNORE_CASE
+    )
+
+    private fun shortBillNumberIn(row: String): String? =
+        SHORT_NO.findAll(row).map { it.groupValues[1] }
+            .firstOrNull { v -> v.any { it.isDigit() } && !looksLikeDate(v) }
 
     private fun billNumberIn(row: String): String? =
         BILL_NO.findAll(row).map { it.groupValues[1] }
@@ -247,6 +273,51 @@ object BillScan {
         return null
     }
 
+    // ----------------------------------------------------------- supplier
+
+    /**
+     * Words that mark a line as anything but the company's name: the title,
+     * labels, the address, the CUSTOMER (which is the shop itself — the
+     * worst possible thing to file a bill under).
+     */
+    private val NOT_A_NAME = Regex(
+        """\b(invoice|bill|order|challan|receipt|memo|quotation|estimate|customer|name|address|date|phone|ph|tel|cell|mobile|mob|ntn|gst|strn|cnic|road|street|bazar|bazaar|market|tehsil|district|distt|city|territory|total|thank|page|tax|sales)\b""",
+        RegexOption.IGNORE_CASE
+    )
+
+    private fun couldBeName(text: String): Boolean {
+        val t = text.trim()
+        return t.length in 4..48 && t.count { it.isLetter() } >= 4 && t.none { it.isDigit() } &&
+            !NOT_A_NAME.containsMatchIn(t)
+    }
+
+    /** The tallest line in the top part of the page that could be a name: the printed heading. */
+    private fun supplierFromLines(lines: List<OcrLine>): String? {
+        if (lines.isEmpty()) return null
+        val top = lines.minOf { it.top }
+        val bottom = lines.maxOf { it.bottom }
+        val band = top + (bottom - top) * 0.3
+        return lines.filter { it.top <= band && couldBeName(it.text) }
+            .maxByOrNull { it.bottom - it.top }
+            ?.text?.trim()
+    }
+
+    /** Without positions: the first name-like row among the first few. */
+    private fun supplierFromRows(rows: List<String>): String? =
+        rows.take(4).firstOrNull { couldBeName(it) }?.trim()
+
+    /** The book's own spelling when this supplier is already in it; else the heading in Title Case. */
+    private fun tidyName(read: String, known: List<String>): String {
+        val matched = knownName(read, known)
+        if (matched != read) return matched
+        val letters = read.filter { it.isLetter() }
+        return if (letters.isNotEmpty() && letters.all { it.isUpperCase() }) {
+            read.lowercase(Locale.ROOT).split(Regex("""\s+""")).joinToString(" ") { w ->
+                w.replaceFirstChar { it.titlecase(Locale.ROOT) }
+            }
+        } else read
+    }
+
     // -------------------------------------------------------------- items
 
     private val QTY_HEAD = Regex("""\b(qty|quantity|qnty)\b""", RegexOption.IGNORE_CASE)
@@ -329,6 +400,13 @@ object BillScan {
                 else -> false
             }
         }.toMutableList()
+        // A batch printed as bare digits ("20260706", "202501"), in the column
+        // just before the figures. Five digits or more: a pack size or a
+        // strength in a name is never that long.
+        if (nameToks.size > 1 && Regex("""^\d{5,16}$""").matches(nameToks.last())) {
+            val b = nameToks.removeAt(nameToks.size - 1)
+            if (batch == null) batch = b
+        }
         while (nameToks.size > 1 && looksLikeBatch(nameToks.last())) {
             val b = nameToks.removeAt(nameToks.size - 1).trim(',', ';', ':', '|')
             if (batch == null) batch = b

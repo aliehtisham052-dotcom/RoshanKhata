@@ -1528,4 +1528,8 @@
         <item quantity="other">⚠ %1$d گراهڪ معمول کان دير سان ادائيگي ڪري رهيا آهن — ڏسڻ لاءِ ٽيپ ڪريو</item>
     </plurals>
     <string name="bill_scan_photo_kept">بل جي تصوير هن بل جي کاتي جي انٽري سان محفوظ ٿيندي</string>
+    <string name="bill_date_set">بل جي تاريخ: %1$s</string>
+    <string name="bill_scan_supplier">سپلائر: %1$s</string>
+    <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
+    <string name="bill_items_tap_hint">ڪنهن آئٽم کي بدلائڻ يا هٽائڻ لاءِ ان تي ٽيپ ڪريو</string>
 </resources>

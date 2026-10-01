@@ -45,6 +45,19 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
+        <!--
+          Every product line waiting to go with this bill — scanned or typed —
+          each one tappable to change or remove before the bill is saved.
+          Filled in code (BillsActivity.renderPendingItems).
+        -->
+        <LinearLayout
+            android:id="@+id/llBillItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:orientation="vertical"
+            android:visibility="gone" />
+
         <AutoCompleteTextView
             android:id="@+id/etBillSupplier"
             android:layout_width="match_parent"

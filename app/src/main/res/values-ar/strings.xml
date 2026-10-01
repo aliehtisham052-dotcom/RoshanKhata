@@ -1644,4 +1644,8 @@
         <item quantity="other">⚠ %1$d عميل يتأخرون في السداد عن المعتاد — اضغط للعرض</item>
     </plurals>
     <string name="bill_scan_photo_kept">ستُحفظ صورة الفاتورة مع قيد الدفتر الخاص بهذه الفاتورة</string>
+    <string name="bill_date_set">تاريخ الفاتورة: %1$s</string>
+    <string name="bill_scan_supplier">المورّد: %1$s</string>
+    <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
+    <string name="bill_items_tap_hint">اضغط على أي بند لتعديله أو حذفه</string>
 </resources>
