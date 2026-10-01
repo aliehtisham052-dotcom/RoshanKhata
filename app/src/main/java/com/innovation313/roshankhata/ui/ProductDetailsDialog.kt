@@ -55,17 +55,23 @@ object ProductDetailsDialog {
         product: Product,
         dao: KhataDao,
         onSaved: () -> Unit = {},
-        onDismissed: () -> Unit = {}
+        onDismissed: () -> Unit = {},
+        /**
+         * What the supplier's bill already says (LabelGuess): put into EMPTY
+         * boxes only, never over a value the product already has, and saved
+         * only if the owner presses Save.
+         */
+        guess: com.innovation313.roshankhata.data.LabelGuess.Guess? = null
     ) {
         val view = activity.layoutInflater.inflate(R.layout.dialog_edit_product, null)
         fun field(id: Int) = view.findViewById<EditText>(id)
 
         val etName = field(R.id.etProductName).apply { setText(product.name) }
-        val etCompany = field(R.id.etProductCompany).apply { setText(product.company) }
-        val etUnit = field(R.id.etProductUnit).apply { setText(product.defaultUnit) }
-        val etType = field(R.id.etProductType).apply { setText(product.productType) }
+        val etCompany = field(R.id.etProductCompany).apply { setText(product.company ?: guess?.company) }
+        val etUnit = field(R.id.etProductUnit).apply { setText(product.defaultUnit ?: guess?.unit) }
+        val etType = field(R.id.etProductType).apply { setText(product.productType ?: guess?.type) }
         val etTechnical = field(R.id.etTechnicalName).apply { setText(product.technicalName) }
-        val etFormulation = field(R.id.etFormulation).apply { setText(product.formulation) }
+        val etFormulation = field(R.id.etFormulation).apply { setText(product.formulation ?: guess?.formulation) }
         val etRegistration =
             field(R.id.etRegistrationNumber).apply { setText(product.registrationNumber) }
 
@@ -79,8 +85,18 @@ object ProductDetailsDialog {
             setText(product.creditPrice?.let { Format.plain(it) } ?: "")
         }
 
+        // Said when anything came from the bill, so a guessed box is never
+        // mistaken for one the owner filled himself.
+        val guessed = guess != null && (
+            (product.company == null && guess.company != null) ||
+                (product.defaultUnit == null && guess.unit != null) ||
+                (product.productType == null && guess.type != null) ||
+                (product.formulation == null && guess.formulation != null)
+            )
+
         MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.product_edit_details)
+            .apply { if (guessed) setMessage(R.string.label_guess_note) }
             .setView(view)
             // Cancel still advances a queue — an owner who skips one product
             // should reach the next, not be dropped out of the run.

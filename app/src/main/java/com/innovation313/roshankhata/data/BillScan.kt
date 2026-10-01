@@ -400,6 +400,10 @@ object BillScan {
                 else -> false
             }
         }.toMutableList()
+        // Pack sizes mended first ("1OOML" -> "100ML"), so a misread size is
+        // never mistaken for a batch number below and cut from the name.
+        nameToks = fixPackSize(nameToks).toMutableList()
+
         // A batch printed as bare digits ("20260706", "202501"), in the column
         // just before the figures. Five digits or more: a pack size or a
         // strength in a name is never that long.
@@ -416,7 +420,7 @@ object BillScan {
             unit = toks.drop(first.token).firstNotNullOfOrNull { UNITS[it.lowercase(Locale.ROOT).trim('.', ',')] }
         }
 
-        val name = nameToks.joinToString(" ").trim(' ', '-', ':', '|', ',', '.')
+        val name = fixPackSize(nameToks).joinToString(" ").trim(' ', '-', ':', '|', ',', '.')
         if (name.count { it.isLetter() } < 3) return null
         if (qty > 100_000 || amount.value > 100_000_000) return null
 
@@ -425,6 +429,39 @@ object BillScan {
         val expiry = dates.maxOrNull()?.takeIf { it > billDay }
 
         return ScannedItem(name, qty, rate, amount.value, batch, expiry, unit)
+    }
+
+    // -------------------------------------------------- misread pack size
+
+    /** Letters the reader confuses with digits on a printed bill. */
+    private val LOOKS_LIKE_DIGIT = mapOf('O' to '0', 'o' to '0', 'D' to '0', 'Q' to '0',
+        'B' to '8', 'I' to '1', 'l' to '1', 'S' to '5', 'Z' to '2')
+    private val SIZE_UNIT = Regex("""^(ml|l|ltr|ltrs|litre|liter|gm|gms|g|kg|kgs)$""", RegexOption.IGNORE_CASE)
+    private val SIZE_WITH_UNIT = Regex("""^([0-9OoDQBIlSZ]{1,5})(ml|ltr|gm|gms|kg|kgs)$""", RegexOption.IGNORE_CASE)
+
+    /**
+     * "800 ML" read as "BOO ML" (1 Oct, the owner's Leptokill line). Only a
+     * pack size is mended: a short run made of nothing but digits and
+     * digit-shaped letters, standing right before a unit. A real word in
+     * front of "ML" ("BIO", "SOIL") has letters outside that set and is
+     * left alone.
+     */
+    private fun fixPackSize(toks: List<String>): List<String> = toks.mapIndexed { i, t ->
+        fun mend(run: String): String? {
+            if (run.isEmpty() || run.length > 5) return null
+            if (run.none { it in LOOKS_LIKE_DIGIT }) return null           // already digits
+            if (!run.all { it.isDigit() || it in LOOKS_LIKE_DIGIT }) return null
+            val fixed = run.map { LOOKS_LIKE_DIGIT[it] ?: it }.joinToString("")
+            return fixed.takeIf { it.first() != '0' }                       // "OO" is not a size
+        }
+        val next = toks.getOrNull(i + 1)
+        if (next != null && SIZE_UNIT.matches(next)) {
+            mend(t)?.let { return@mapIndexed it }
+        }
+        SIZE_WITH_UNIT.matchEntire(t)?.let { m ->
+            mend(m.groupValues[1])?.let { return@mapIndexed it + m.groupValues[2] }
+        }
+        t
     }
 
     // ------------------------------------------------------ known names

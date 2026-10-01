@@ -235,5 +235,18 @@ class BillScanTest {
         )
         assertEquals("Sayban International", BillScan.parse(lines, now = now, tz = utc).supplierName)
     }
+
+    /** The owner's phone read 800 as "BOO". Mended only in front of a unit. */
+    @Test
+    fun `a pack size misread as letters is mended`() {
+        val b = BillScan.parseRows(
+            listOf("LEPTOKILL 20%EC BOO ML  24  2760  66,240.00", "Bio Power 2SO ML  2  100  200", "BIO SOIL ML  1  50  50"),
+            now = now, tz = utc
+        )
+        assertEquals("LEPTOKILL 20%EC 800 ML", b.items[0].name)
+        assertEquals("Bio Power 250 ML", b.items[1].name)
+        assertEquals("BIO SOIL ML", b.items[2].name)          // a real word is left alone
+        assertEquals("Coragen 100ML", BillScan.parseRows(listOf("Coragen 1OOML  2  100  200"), now = now, tz = utc).items[0].name)
+    }
 }
 
