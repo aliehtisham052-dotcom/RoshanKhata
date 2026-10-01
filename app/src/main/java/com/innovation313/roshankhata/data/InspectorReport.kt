@@ -137,7 +137,14 @@ object InspectorReport {
          * label fields as recorded or not — the checklist section prints a
          * tick or "Missing" per field instead of a comma-separated sentence.
          */
-        val labelChecks: List<LabelCheck> = emptyList()
+        val labelChecks: List<LabelCheck> = emptyList(),
+        /**
+         * Traded products counted by the Type on their label (Fertilizer,
+         * Pesticide, Seed — free text, grouped ignoring case and spaces), the
+         * unset ones last under one honest label. Printed as one line under
+         * the summary cards (1 Oct).
+         */
+        val typeCounts: List<Pair<String, Int>> = emptyList()
     )
 
     /** One in-stock product and which of the four label fields it has. */
@@ -238,6 +245,11 @@ object InspectorReport {
             ))
             .map { (company, list) -> company to list.sortedBy { it.name.lowercase() } }
 
+        val typeCounts = typeCounts(
+            stock.filter { !it.isUntouched }.map { productsById[it.productId]?.productType },
+            context.getString(R.string.pdf_insp_type_not_set)
+        )
+
         return ReportData(
             businessName = BusinessProfile.businessName(context),
             businessAddress = BusinessProfile.businessAddress(context),
@@ -251,8 +263,31 @@ object InspectorReport {
             incompleteProducts = incomplete,
             companyStock = companyStock,
             windowDays = windowDays,
-            labelChecks = labelChecks
+            labelChecks = labelChecks,
+            typeCounts = typeCounts
         )
+    }
+
+    /**
+     * "Fertilizer 3, Pesticide 5, Not set 2": one count per Type as typed.
+     * "pesticide" and " Pesticide " are one group, shown as first typed;
+     * biggest group first, the unset group always last.
+     */
+    fun typeCounts(types: List<String?>, notSet: String): List<Pair<String, Int>> {
+        val shown = LinkedHashMap<String, String>()
+        val counts = HashMap<String, Int>()
+        var unset = 0
+        for (t in types) {
+            val clean = t?.trim()?.replace(Regex("""\s+"""), " ")?.takeIf { it.isNotEmpty() }
+            if (clean == null) { unset++; continue }
+            val key = clean.lowercase()
+            shown.getOrPut(key) { clean }
+            counts[key] = (counts[key] ?: 0) + 1
+        }
+        val known = shown.entries
+            .sortedWith(compareByDescending<Map.Entry<String, String>> { counts[it.key] ?: 0 }.thenBy { it.key })
+            .map { it.value to (counts[it.key] ?: 0) }
+        return if (unset > 0) known + (notSet to unset) else known
     }
 
     /**
@@ -666,6 +701,17 @@ object InspectorReport {
             }
         }
         y += cardH
+
+        // One line, by Type: only when at least one product has a Type, so a
+        // shop that never filled the field is not shown "Not set 12".
+        if (d.typeCounts.any { it.first != context.getString(R.string.pdf_insp_type_not_set) }) {
+            val text = context.getString(
+                R.string.pdf_insp_by_type,
+                d.typeCounts.joinToString("  ·  ") { (type, n) -> "$type $n" }
+            )
+            y += 14f
+            PdfRtl.drawText(canvas, clip(text, cardLabel, usable), MARGIN, y, cardLabel)
+        }
 
         // ---- 1. Current stock: In / Out / On hand ----
         //
