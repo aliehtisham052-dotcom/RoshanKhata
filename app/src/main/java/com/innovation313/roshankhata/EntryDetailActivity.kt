@@ -90,6 +90,16 @@ class EntryDetailActivity : BaseActivity() {
     }
 
     private fun render(e: LedgerEntry) {
+        // A sale can become an invoice; a payment received cannot.
+        findViewById<MaterialButton>(R.id.btnMakeInvoice).apply {
+            visibility = if (e.isGiven && !e.isDeleted) View.VISIBLE else View.GONE
+            setOnClickListener {
+                startActivity(
+                    Intent(this@EntryDetailActivity, InvoiceEditorActivity::class.java)
+                        .putExtra(InvoiceEditorActivity.EXTRA_FROM_ENTRY_ID, e.id)
+                )
+            }
+        }
         val tvDirection = findViewById<TextView>(R.id.tvDirection)
         val tvAmount = findViewById<TextView>(R.id.tvAmount)
         val banner = findViewById<View>(R.id.amountBanner)

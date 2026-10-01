@@ -20,6 +20,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
+import com.innovation313.roshankhata.data.EntryInvoice
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceFeatureSettings
 import com.innovation313.roshankhata.data.InvoiceItem
@@ -61,6 +62,8 @@ class InvoiceEditorActivity : BaseActivity() {
     companion object {
         /** Present only when editing a saved invoice; absent means creating a new one. */
         const val EXTRA_INVOICE_ID = "invoice_id"
+        /** A khata sale ("I gave") to start a NEW invoice from; see [EntryInvoice]. */
+        const val EXTRA_FROM_ENTRY_ID = "from_entry_id"
         private const val STATE_SCAN_CAMERA_PATH = "scan_camera_path"
     }
 
@@ -325,10 +328,38 @@ class InvoiceEditorActivity : BaseActivity() {
             supportActionBar?.setTitle(R.string.edit_invoice)
             lifecycleScope.launch { loadForEditing(editId) }
         } else {
-            addRow()
-            showStep(1)
+            val fromEntry = intent.getLongExtra(EXTRA_FROM_ENTRY_ID, -1L).takeIf { it > 0 }
+            // Read again after a rotation too, the same way an edited invoice is.
+            if (fromEntry != null) {
+                lifecycleScope.launch { loadFromEntry(fromEntry) }
+            } else {
+                addRow()
+                showStep(1)
+            }
             showNextNumberHint()
         }
+    }
+
+    /**
+     * A new invoice pre-filled from a khata sale: the customer, the day and
+     * the goods lines (rules in [EntryInvoice]). Still a NEW invoice — nothing
+     * is written until Save, and every field stays editable.
+     */
+    private suspend fun loadFromEntry(entryId: Long) {
+        val entry = dao.getEntry(entryId)?.takeIf { it.isGiven && !it.isDeleted }
+        if (entry == null) {
+            addRow()
+            showStep(1)
+            return
+        }
+        dao.getParty(entry.partyId)?.let { party ->
+            etCustomer.setText(party.name)
+            party.phone?.takeIf { it.isNotBlank() }?.let { etPhone.setText(it) }
+        }
+        invoiceDate = entry.timestamp
+        btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
+        EntryInvoice.rows(entry, dao.itemsOfEntry(entryId)).forEach { addRow(it) }
+        showStep(1)
     }
 
     /**

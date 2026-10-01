@@ -1542,4 +1542,5 @@
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">ڪنهن آئٽم کي بدلائڻ يا هٽائڻ لاءِ ان تي ٽيپ ڪريو</string>
     <string name="label_guess_note">ڪجهه خانا بل مان ڀريا ويا آهن (ڪمپني، يونٽ، قسم، فارموليشن). محفوظ ڪرڻ کان اڳ ليبل سان ملائي وٺو.</string>
+    <string name="entry_make_invoice">انوائس</string>
 </resources>
