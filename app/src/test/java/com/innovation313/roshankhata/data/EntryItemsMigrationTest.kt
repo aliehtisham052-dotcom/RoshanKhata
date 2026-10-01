@@ -120,6 +120,18 @@ class EntryItemsMigrationTest {
             raw.execSQL("INSERT INTO transactions ($v19Columns) SELECT $v19Columns FROM transactions_v20")
             raw.execSQL("DROP TABLE transactions_v20")
             indices.forEach { raw.execSQL(it) }
+
+            // v21 added supplier_bills.photoPath; a v19 file never had it, so
+            // the chain's 20→21 must find it absent. The table is empty here,
+            // so it is simply rebuilt from its own CREATE minus that column.
+            val billsV21 = sqlOf("table", "supplier_bills").single()
+            val billIndices = sqlOf("index", "supplier_bills")
+            val billsV20 = billsV21.replace(", `photoPath` TEXT", "")
+            assertTrue("could not strip photoPath from: $billsV21", !billsV20.contains("photoPath"))
+            raw.execSQL("DROP TABLE supplier_bills")
+            raw.execSQL(billsV20)
+            billIndices.forEach { raw.execSQL(it) }
+
             raw.version = 19
         }
 
