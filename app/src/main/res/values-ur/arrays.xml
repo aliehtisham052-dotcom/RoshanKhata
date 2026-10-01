@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Urdu starting suggestions for the Cashbook category, same order as
+      values/arrays.xml. Display text only: the owner's chosen words are
+      what is saved, and nothing in the app reads a category back as a key,
+      so a translation here cannot break any total.
+
+      The units list is deliberately NOT translated: the unit is saved with
+      every goods line, and the app groups a product's lines and finds its
+      last rate by item AND unit (KhataDao product stats, PartyDetailActivity
+      stock and last-rate lookup). "kg" on one entry and a translated word on
+      the next would split one product in two and lose its last rate.
+    -->
+    <string-array name="cash_categories">
+        <item>نقد فروخت</item>
+        <item>کرایہ</item>
+        <item>بجلی</item>
+        <item>تنخواہ / مزدوری</item>
+        <item>ڈیزل / پٹرول</item>
+        <item>ٹرانسپورٹ</item>
+        <item>مرمت</item>
+        <item>چائے پانی</item>
+        <item>اسٹیشنری</item>
+        <item>خیرات / صدقہ</item>
+        <item>ذاتی خرچ</item>
+        <item>دیگر</item>
+    </string-array>
+</resources>

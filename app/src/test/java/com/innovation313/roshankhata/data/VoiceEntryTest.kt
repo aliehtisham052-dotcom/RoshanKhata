@@ -364,4 +364,42 @@ class VoiceEntryTest {
     fun `a single candidate is taken as it is`() {
         assertEquals(0, VoiceEntry.bestCandidate(listOf("Maine Bilal"), emptyList()) { 0.0 })
     }
+
+    // ------------------------------------------------- Persian, Arabic, Sindhi
+
+    /** Persian digits and هزار (with ه, not Urdu's ہ): 5000, not 5. */
+    @Test
+    fun `persian digits followed by hazar read as thousands`() {
+        val p = VoiceEntry.parse("به علی ۵ هزار دادم", listOf("Ali"))
+        assertEquals(5000.0, p.amount!!, 0.0)
+    }
+
+    @Test
+    fun `arabic digits followed by alf read as thousands`() {
+        assertEquals(3000.0, VoiceEntry.parse("٣ آلاف", emptyList()).amount!!, 0.0)
+        assertEquals(2_000_000.0, VoiceEntry.parse("2 مليون", emptyList()).amount!!, 0.0)
+    }
+
+    @Test
+    fun `sindhi lakh and crore after digits`() {
+        assertEquals(200_000.0, VoiceEntry.parse("2 لک", emptyList()).amount!!, 0.0)
+        assertEquals(10_000_000.0, VoiceEntry.parse("1 ڪروڙ", emptyList()).amount!!, 0.0)
+    }
+
+    /**
+     * The safety rule: a Persian number WORD before هزار is not understood, so
+     * no amount is given rather than a wrong 1000. The owner types it.
+     */
+    @Test
+    fun `persian number words are not guessed`() {
+        assertNull(VoiceEntry.parse("پنج هزار", emptyList()).amount)
+    }
+
+    /** A scale word is never mistaken for a customer's name. */
+    @Test
+    fun `scale words are not names`() {
+        val p = VoiceEntry.parse("۵ هزار", listOf("Hazar Khan"))
+        assertNull(p.partyName)
+    }
 }
+
