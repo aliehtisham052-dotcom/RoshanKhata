@@ -583,6 +583,16 @@ val MIGRATION_20_21 = object : Migration(20, 21) {
 }
 
 /**
+ * v22 (1 Oct 2026): an invoice remembers the khata sale it was made from, so
+ * one sale is not invoiced twice by mistake. One nullable column.
+ */
+val MIGRATION_21_22 = object : Migration(21, 22) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE invoices ADD COLUMN sourceEntryId INTEGER")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -591,7 +601,7 @@ val MIGRATION_20_21 = object : Migration(20, 21) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 21
+const val KHATA_DB_VERSION = 22
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -614,5 +624,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_17_18,
     MIGRATION_18_19,
     MIGRATION_19_20,
-    MIGRATION_20_21
+    MIGRATION_20_21,
+    MIGRATION_21_22
 )

@@ -1553,4 +1553,5 @@
     <string name="pdf_insp_by_type">قسم موجب: %1$s</string>
     <string name="pdf_insp_type_not_set">قسم درج ناهي</string>
     <string name="followup_reminded_today">اڄ کوليو ✓</string>
+    <string name="entry_open_invoice">انوائس کوليو</string>
 </resources>

@@ -1577,4 +1577,5 @@ You can change this any time from this screen.</string>
     <string name="pdf_insp_by_type">By type: %1$s</string>
     <string name="pdf_insp_type_not_set">Type not set</string>
     <string name="followup_reminded_today">Opened today ✓</string>
+    <string name="entry_open_invoice">Open invoice</string>
 </resources>

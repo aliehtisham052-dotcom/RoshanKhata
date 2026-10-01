@@ -891,6 +891,7 @@ object Backup {
         put("receivedAmount", i.receivedAmount ?: JSONObject.NULL)
         put("note", i.note ?: JSONObject.NULL)
         put("templateId", i.templateId)
+        put("sourceEntryId", i.sourceEntryId ?: JSONObject.NULL)
         put("createdAt", i.createdAt)
         put("isDeleted", i.isDeleted)
         put("deletedAt", i.deletedAt ?: JSONObject.NULL)
@@ -910,6 +911,8 @@ object Backup {
         receivedAmount = o.optNullableDouble("receivedAmount"),
         note = o.optNullableString("note"),
         templateId = o.optInt("templateId", 1),
+        // Absent before v22: not made from a sale.
+        sourceEntryId = o.optNullableLong("sourceEntryId"),
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")

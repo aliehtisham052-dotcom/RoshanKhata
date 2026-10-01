@@ -75,6 +75,16 @@ class EntryDetailActivity : BaseActivity() {
         load()
     }
 
+    /**
+     * Back from the invoice editor: if an invoice was saved for this sale,
+     * the button must now open it rather than start a second one.
+     */
+    private var seenOnce = false
+    override fun onResume() {
+        super.onResume()
+        if (seenOnce) load() else seenOnce = true
+    }
+
     private fun load() {
         lifecycleScope.launch {
             val dao = KhataDatabase.get(this@EntryDetailActivity).khataDao()
@@ -91,13 +101,17 @@ class EntryDetailActivity : BaseActivity() {
 
     private fun render(e: LedgerEntry) {
         // A sale can become an invoice; a payment received cannot.
-        findViewById<MaterialButton>(R.id.btnMakeInvoice).apply {
-            visibility = if (e.isGiven && !e.isDeleted) View.VISIBLE else View.GONE
-            setOnClickListener {
-                startActivity(
-                    Intent(this@EntryDetailActivity, InvoiceEditorActivity::class.java)
-                        .putExtra(InvoiceEditorActivity.EXTRA_FROM_ENTRY_ID, e.id)
-                )
+        // Once invoiced, the same button opens that invoice instead of a twin.
+        val btnInvoice = findViewById<MaterialButton>(R.id.btnMakeInvoice)
+        btnInvoice.visibility = if (e.isGiven && !e.isDeleted) View.VISIBLE else View.GONE
+        if (e.isGiven && !e.isDeleted) lifecycleScope.launch {
+            val existing = KhataDatabase.get(this@EntryDetailActivity).khataDao().invoiceForEntry(e.id)
+            btnInvoice.setText(if (existing != null) R.string.entry_open_invoice else R.string.entry_make_invoice)
+            btnInvoice.setOnClickListener {
+                val intent = Intent(this@EntryDetailActivity, InvoiceEditorActivity::class.java)
+                if (existing != null) intent.putExtra(InvoiceEditorActivity.EXTRA_INVOICE_ID, existing)
+                else intent.putExtra(InvoiceEditorActivity.EXTRA_FROM_ENTRY_ID, e.id)
+                startActivity(intent)
             }
         }
         val tvDirection = findViewById<TextView>(R.id.tvDirection)

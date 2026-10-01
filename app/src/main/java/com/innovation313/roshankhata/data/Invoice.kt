@@ -75,7 +75,16 @@ data class Invoice(
 
     val createdAt: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false,
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
+
+    /**
+     * The khata sale this invoice was made from (v22), or null for one typed
+     * from scratch. Lets that entry open its existing invoice instead of
+     * making a second one for the same sale. A plain number, not a foreign
+     * key: the customer name on an invoice is already a snapshot, and binning
+     * the entry must not touch a document that may have been handed over.
+     */
+    val sourceEntryId: Long? = null
 )
 
 /**
