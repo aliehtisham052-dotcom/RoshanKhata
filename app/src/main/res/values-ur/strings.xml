@@ -1495,4 +1495,9 @@
     <string name="bill_scan_no_items">کوئی مال کی سطر نہیں پڑھی جا سکی؛ ہاتھ سے شامل کریں۔</string>
     <string name="bill_scan_check">یہ فون نے تصویر سے پڑھا ہے۔ محفوظ کرنے سے پہلے ہر رقم دیکھ لیں۔</string>
     <string name="bill_scan_items_ready">✓ اس بل کے ساتھ %1$s</string>
+    <plurals name="home_paying_late">
+        <item quantity="one">⚠ %1$d گاہک معمول سے دیر سے ادائیگی کر رہا ہے — دیکھنے کے لیے ٹیپ کریں</item>
+        <item quantity="other">⚠ %1$d گاہک معمول سے دیر سے ادائیگی کر رہے ہیں — دیکھنے کے لیے ٹیپ کریں</item>
+    </plurals>
+    <string name="bill_scan_photo_kept">بل کی تصویر اس بل کی کھاتہ انٹری کے ساتھ محفوظ ہوگی</string>
 </resources>

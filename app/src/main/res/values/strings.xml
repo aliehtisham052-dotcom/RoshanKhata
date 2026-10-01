@@ -1547,4 +1547,9 @@ You can change this any time from this screen.</string>
     <string name="bill_scan_no_items">No product lines could be read; add them by hand.</string>
     <string name="bill_scan_check">Read by the phone from the photo. Check every figure before you save.</string>
     <string name="bill_scan_items_ready">✓ %1$s with this bill</string>
+    <plurals name="home_paying_late">
+        <item quantity="one">⚠ %1$d customer is paying later than usual — tap to see</item>
+        <item quantity="other">⚠ %1$d customers are paying later than usual — tap to see</item>
+    </plurals>
+    <string name="bill_scan_photo_kept">Bill photo will be kept with this bill’s khata entry</string>
 </resources>

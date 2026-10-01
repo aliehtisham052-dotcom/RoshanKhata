@@ -1523,4 +1523,9 @@
     <string name="bill_scan_no_items">هیچ سطر کالایی خوانده نشد؛ آن‌ها را دستی اضافه کنید.</string>
     <string name="bill_scan_check">این را گوشی از عکس خوانده است. پیش از ذخیره هر رقم را بررسی کنید.</string>
     <string name="bill_scan_items_ready">✓ همراه این فاکتور: %1$s</string>
+    <plurals name="home_paying_late">
+        <item quantity="one">⚠ %1$d مشتری دیرتر از معمول پرداخت می‌کند — برای دیدن ضربه بزنید</item>
+        <item quantity="other">⚠ %1$d مشتری دیرتر از معمول پرداخت می‌کنند — برای دیدن ضربه بزنید</item>
+    </plurals>
+    <string name="bill_scan_photo_kept">عکس فاکتور همراه ثبت دفتر این فاکتور نگه داشته می‌شود</string>
 </resources>
