@@ -4,9 +4,17 @@
   gold-sweep idea as the welcome screen, drawn as outlines so it decorates
   without competing with the balance. The vector clips to its own box, so
   only the arcs inside it show.
+
+  autoMirrored (1 Oct): the circles run off the box's right side, which is
+  the screen edge only in left-to-right languages. Under Urdu, Arabic,
+  Sindhi and Persian the box sits at the left (gravity top|end) and, unmirrored,
+  the circles were cut by the box's own right side in a hard straight edge
+  160dp in from the left. Mirrored, they run off the left screen edge there,
+  exactly as they run off the right one in English.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="160dp" android:height="130dp"
+    android:autoMirrored="true"
     android:viewportWidth="160" android:viewportHeight="130">
     <path android:strokeColor="@color/home_header_sweep" android:strokeWidth="1.5"
         android:pathData="M60,15a85,85 0 1,0 170,0a85,85 0 1,0 -170,0" />

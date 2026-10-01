@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -96,13 +97,38 @@ class DeviceSmokeTest {
     }
 
     @Test
+    fun aTapOnlyMarksALanguageAndBackClearsTheMark() {
+        // Since 1 Oct a tap only marks; nothing is saved until Continue. A
+        // stray tap followed by Back must leave the app exactly as before.
+        ActivityScenario.launch(LanguageActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val english = activity.findViewById<View>(R.id.langEnglish)
+                val go = activity.findViewById<View>(R.id.btnLangContinue)
+                assertFalse("Continue was usable before anything was marked", go.isEnabled)
+                english.performClick()
+                assertTrue("the tapped language was not marked", english.isSelected)
+                assertTrue("Continue stayed disabled after a mark", go.isEnabled)
+                activity.onBackPressedDispatcher.onBackPressed()
+                assertFalse("Back did not clear the mark", english.isSelected)
+                assertFalse("Continue stayed usable after Back cleared the mark", go.isEnabled)
+            }
+        }
+        assertFalse(
+            "a tap alone saved the language; it must wait for Continue",
+            LanguageActivity.isChosen(context)
+        )
+    }
+
+    @Test
     fun choosingALanguageOnFirstRunIsRememberedAndMovesOn() {
-        // The first tap every new owner makes. performClick goes through the
-        // real view system and the real click listener, then the real
-        // per-app-locale call and the hand-off to the welcome screen.
+        // The first choice every new owner makes: mark, then Continue.
+        // performClick goes through the real view system and the real click
+        // listeners, then the real per-app-locale call and the hand-off to the
+        // welcome screen.
         ActivityScenario.launch(LanguageActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
                 activity.findViewById<View>(R.id.langEnglish).performClick()
+                activity.findViewById<View>(R.id.btnLangContinue).performClick()
             }
         }
         assertTrue(

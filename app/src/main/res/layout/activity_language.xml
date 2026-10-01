@@ -22,6 +22,13 @@
   The note line still reads in its own language's direction (textDirection).
 
   Ids are the ones LanguageActivity has always bound.
+
+  Choosing is two steps (1 Oct): a tap only marks a button (gold ring, the
+  selected state of bg_lang_hotspot) and the choice is applied by the Continue
+  button below the artwork. The artwork has no room for a full-size button
+  under its six (about 5% of its height before the plants and book start), so
+  the button sits under the stage and the stage fits whole in the space above
+  it. The button's bottom margin takes the navigation bar's height in code.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -35,7 +42,7 @@
         android:layoutDirection="ltr"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnLangContinue"
         app:layout_constraintDimensionRatio="1024:1536"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -156,4 +163,30 @@
             app:layout_constraintStart_toStartOf="@id/gV1a"
             app:layout_constraintTop_toTopOf="@id/gH3a" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Applies the marked language. Disabled until one is marked; its label
+         is drawn in the marked language (LanguageActivity.mark). -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLangContinue"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="20dp"
+        android:enabled="false"
+        android:fontFamily="@font/google_sans_medium"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:letterSpacing="0"
+        android:maxLines="1"
+        android:text="@string/continue_action"
+        android:textAllCaps="false"
+        android:textColor="@color/lang_continue_text"
+        android:textSize="17sp"
+        app:backgroundTint="@color/lang_continue_fill"
+        app:cornerRadius="26dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="360dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
