@@ -4,16 +4,8 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.ScrollView
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.PickVisualMediaRequest
-import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.innovation313.roshankhata.data.BillPhoto
-import androidx.activity.result.contract.ActivityResultContracts
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.CheckBox
@@ -28,8 +20,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BillItem
-import com.innovation313.roshankhata.data.BillOcr
-import com.innovation313.roshankhata.data.BillScan
 import com.innovation313.roshankhata.data.ScannedBill
 import com.innovation313.roshankhata.data.BillSummary
 import com.innovation313.roshankhata.data.ExpiryWindow
@@ -42,6 +32,7 @@ import com.innovation313.roshankhata.data.SupplierBill
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.BillAdapter
+import com.innovation313.roshankhata.ui.BillScanFlow
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ProductDetailsDialog
 import kotlinx.coroutines.Dispatchers
@@ -109,7 +100,6 @@ class BillsActivity : BaseActivity() {
     // because Android may close this screen while the camera is up.
 
     private var scanDraft: BillDraft? = null
-    private var scanPhotoPath: String? = null
 
     /**
      * The scanned bill's picture, already copied into the app's private
@@ -125,49 +115,16 @@ class BillsActivity : BaseActivity() {
         scanKeptPhoto = null
     }
 
-    /**
-     * Google's document scanner (Play services): finds the bill's edges,
-     * straightens and flattens the page, removes shadows — a far cleaner
-     * picture to read than a hand-held photo. Falls back to the plain camera
-     * wherever it cannot run (under 1.7 GB of RAM, no Play services).
-     */
-    private val docScanner = registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        val uri = if (result.resultCode == RESULT_OK) {
-            GmsDocumentScanningResult.fromActivityResultIntent(result.data)?.pages?.firstOrNull()?.imageUri
-        } else null
-        if (uri == null) reopenFromScan() else readBillPhoto(uri, null)
-    }
-
-    private val takeBillPhoto = registerForActivityResult(
-        ActivityResultContracts.TakePicture()
-    ) { written: Boolean ->
-        val file = scanPhotoPath?.let { java.io.File(it) }
-        scanPhotoPath = null
-        val uri = if (written && file != null) {
-            runCatching {
-                androidx.core.content.FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
-            }.getOrNull()
-        } else null
-        if (uri == null) {
-            file?.delete()
-            reopenFromScan()
-        } else {
-            readBillPhoto(uri, file)
-        }
-    }
-
-    private val pickBillPhoto = registerForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        // The gallery's picture is the owner's own, never ours to delete.
-        if (uri == null) reopenFromScan() else readBillPhoto(uri, null)
-    }
+    /** Scanner, camera or gallery — the one flow every bill-reading screen shares. */
+    private val scanFlow = BillScanFlow(
+        activity = this,
+        onPhoto = { uri, temp -> readBillPhoto(uri, temp) },
+        onNothing = { reopenFromScan() }
+    )
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        scanPhotoPath?.let { outState.putString(STATE_SCAN_PHOTO, it) }
+        scanFlow.saveState(outState, STATE_SCAN_PHOTO)
         scanKeptPhoto?.let { outState.putString(STATE_SCAN_KEPT, it) }
         scanDraft?.let { d ->
             outState.putString(STATE_SCAN_SUPPLIER, d.supplierName)
@@ -182,7 +139,7 @@ class BillsActivity : BaseActivity() {
 
     private fun restoreScanState(state: Bundle?) {
         state ?: return
-        scanPhotoPath = state.getString(STATE_SCAN_PHOTO)
+        scanFlow.restoreState(state, STATE_SCAN_PHOTO)
         scanKeptPhoto = state.getString(STATE_SCAN_KEPT)
         val supplier = state.getString(STATE_SCAN_SUPPLIER) ?: return
         scanDraft = BillDraft(
@@ -478,68 +435,7 @@ class BillsActivity : BaseActivity() {
 
     private fun chooseScanSource(draft: BillDraft) {
         scanDraft = draft
-        var chosen = false
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.bill_scan)
-            .setItems(
-                arrayOf(getString(R.string.bill_scan_camera), getString(R.string.bill_scan_gallery))
-            ) { _, which ->
-                chosen = true
-                if (which == 0) launchDocScanner()
-                else pickBillPhoto.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                )
-            }
-            .setNegativeButton(R.string.cancel, null)
-            // Cancel, Back or a tap outside: straight back to the form as it was.
-            .setOnDismissListener { if (!chosen) reopenFromScan() }
-            .show()
-    }
-
-    private fun launchDocScanner() {
-        val options = GmsDocumentScannerOptions.Builder()
-            .setGalleryImportAllowed(false)
-            .setPageLimit(1)
-            .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
-            .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
-            .build()
-        GmsDocumentScanning.getClient(options).getStartScanIntent(this)
-            .addOnSuccessListener { sender ->
-                try {
-                    docScanner.launch(IntentSenderRequest.Builder(sender).build())
-                } catch (e: Exception) {
-                    launchBillCamera()
-                }
-            }
-            // Unsupported phone (under 1.7 GB RAM), no Play services, or the
-            // scanner could not start: the plain camera still reads the bill.
-            .addOnFailureListener { launchBillCamera() }
-    }
-
-    private fun launchBillCamera() {
-        val file = runCatching {
-            val dir = java.io.File(cacheDir, "camera").apply { mkdirs() }
-            java.io.File(dir, "bill_scan_${System.currentTimeMillis()}.jpg")
-        }.getOrNull()
-        val uri = file?.let {
-            runCatching {
-                androidx.core.content.FileProvider.getUriForFile(this, "$packageName.fileprovider", it)
-            }.getOrNull()
-        }
-        if (file == null || uri == null) {
-            Toast.makeText(this, R.string.photo_save_failed, Toast.LENGTH_LONG).show()
-            reopenFromScan()
-            return
-        }
-        scanPhotoPath = file.absolutePath
-        try {
-            takeBillPhoto.launch(uri)
-        } catch (e: android.content.ActivityNotFoundException) {
-            scanPhotoPath = null
-            file.delete()
-            Toast.makeText(this, R.string.camera_unavailable, Toast.LENGTH_LONG).show()
-            reopenFromScan()
-        }
+        scanFlow.chooseSource()
     }
 
     /** The form again, exactly as it was before the scan was started. */
@@ -549,117 +445,32 @@ class BillsActivity : BaseActivity() {
     }
 
     private fun readBillPhoto(photo: android.net.Uri, temp: java.io.File?) {
-        val reading = MaterialAlertDialogBuilder(this)
-            .setMessage(R.string.bill_scan_reading)
-            .setCancelable(false)
-            .show()
-
         lifecycleScope.launch {
-            val result = BillOcr.read(this@BillsActivity, photo)
             val known = runCatching { dao.productsOnce().map { it.name } }.getOrDefault(emptyList())
-            val bill = (result as? BillOcr.Result.Read)?.let { read ->
-                val suppliers = parties.filter { !it.isCustomer }.map { it.name }
-                withContext(Dispatchers.Default) {
-                    BillScan.parse(read.lines, known, knownSuppliers = suppliers)
-                }
-            }
-            // A copy of the picture, scaled and private (BillPhoto), offered to
-            // go with the bill; only when something was read from it.
-            val kept = if (bill != null && !bill.isEmpty) {
-                withContext(Dispatchers.IO) { BillPhoto.save(this@BillsActivity, photo) }
-            } else null
-            // The camera's working file is done with once read and copied.
-            temp?.let { withContext(Dispatchers.IO) { it.delete() } }
-            reading.dismiss()
-
-            when {
-                result is BillOcr.Result.Unavailable -> scanProblem(R.string.bill_scan_unavailable)
-                bill == null || bill.isEmpty -> scanProblem(R.string.bill_scan_nothing)
-                else -> showScanReview(bill, kept)
+            val suppliers = parties.filter { !it.isCustomer }.map { it.name }
+            when (val outcome = BillScanFlow.read(this@BillsActivity, photo, temp, known, suppliers)) {
+                is BillScanFlow.Outcome.Found -> showScanReview(outcome.bill, outcome.keptPhoto)
+                else -> BillScanFlow.showProblem(this@BillsActivity, outcome) { reopenFromScan() }
             }
         }
-    }
-
-    private fun scanProblem(message: Int) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.bill_scan)
-            .setMessage(message)
-            .setPositiveButton(R.string.ok, null)
-            .setOnDismissListener { reopenFromScan() }
-            .show()
     }
 
     /**
-     * What was read, for the owner to check before any of it reaches the
-     * form: the bill's number, date and total, every product line with a tick
-     * (all ticked), and whether the lines add up to the bill's own total.
+     * What was read, checked by the owner (BillScanFlow.review); the ticked
+     * lines go into the pending items and only blank fields are filled.
      */
     private fun showScanReview(bill: ScannedBill, keptPhoto: String?) {
-        val dp = resources.displayMetrics.density
-        val pad = (24 * dp).toInt()
-        val column = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(pad, (8 * dp).toInt(), pad, 0)
-        }
-        fun line(text: String, color: Int = R.color.ink, bold: Boolean = false) {
-            column.addView(TextView(this).apply {
-                this.text = text
-                textSize = 14f
-                setTextColor(getColor(color))
-                if (bold) setTypeface(typeface, android.graphics.Typeface.BOLD)
-                setPadding(0, (3 * dp).toInt(), 0, (3 * dp).toInt())
-            })
-        }
-
-        bill.supplierName?.let { line(getString(R.string.bill_scan_supplier, it), bold = true) }
-        bill.billNumber?.let { line(getString(R.string.bill_scan_number, it)) }
-        bill.billDate?.let { line(getString(R.string.bill_scan_date, Format.dateOnly(it))) }
-        bill.total?.let { line(getString(R.string.bill_scan_total, Format.money(it)), bold = true) }
-
-        val boxes = bill.items.map { item ->
-            CheckBox(this).apply {
-                isChecked = true
-                text = buildString {
-                    append(getString(
-                        R.string.bill_scan_item_line, item.name, Format.plain(item.quantity),
-                        Format.money(item.rate), Format.money(item.amount)
-                    ))
-                    item.batch?.let { append("\n").append(getString(R.string.batch_label, it)) }
-                    item.expiry?.let { append("\n").append(getString(R.string.bill_scan_expiry, Format.dateOnly(it))) }
-                }
-                setTextColor(getColor(R.color.ink))
-                setPadding(0, (6 * dp).toInt(), 0, (6 * dp).toInt())
-            }.also { column.addView(it) }
-        }
-
-        if (bill.items.isNotEmpty() && bill.total != null) {
-            val sum = bill.itemsTotal
-            if (kotlin.math.abs(sum - bill.total) < 1.0) {
-                line(getString(R.string.bill_scan_sum_matches), R.color.green_got_text, bold = true)
-            } else {
-                line(getString(R.string.bill_scan_sum_differs, Format.money(sum), Format.money(bill.total)), R.color.gold_accent, bold = true)
-            }
-        }
-        if (bill.items.isEmpty()) line(getString(R.string.bill_scan_no_items), R.color.text_muted)
-        line(getString(R.string.bill_scan_check), R.color.text_muted)
-
-        val scroll = ScrollView(this).apply {
-            addView(column, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-        }
-
-        var used = false
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.bill_scan_found_title)
-            .setView(scroll)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.bill_scan_use) { _, _ ->
-                used = true
+        BillScanFlow.review(
+            activity = this,
+            bill = bill,
+            keptPhoto = keptPhoto,
+            showSupplier = true,
+            onUse = { kept ->
                 if (keptPhoto != null) {
                     dropKeptPhoto()          // a newer scan replaces an earlier one
                     scanKeptPhoto = keptPhoto
                 }
                 val draft = scanDraft ?: BillDraft("", null, null, System.currentTimeMillis(), null, false, null)
-                val kept = bill.items.filterIndexed { i, _ -> boxes[i].isChecked }
                 kept.forEach { item ->
                     pendingItems.add(
                         BillItem(
@@ -682,14 +493,9 @@ class BillsActivity : BaseActivity() {
                     billDate = bill.billDate ?: draft.billDate
                 )
                 reopenFromScan(merged)
-            }
-            .setOnDismissListener {
-                if (!used) {
-                    keptPhoto?.let { path -> AppScope.launch { runCatching { java.io.File(path).delete() } } }
-                    reopenFromScan()
-                }
-            }
-            .show()
+            },
+            onCancel = { reopenFromScan() }
+        )
     }
 
     /** Add items one at a time, then save the bill with all of them. */
