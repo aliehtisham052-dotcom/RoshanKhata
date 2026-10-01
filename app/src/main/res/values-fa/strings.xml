@@ -1528,4 +1528,8 @@
         <item quantity="other">⚠ %1$d مشتری دیرتر از معمول پرداخت می‌کنند — برای دیدن ضربه بزنید</item>
     </plurals>
     <string name="bill_scan_photo_kept">عکس فاکتور همراه ثبت دفتر این فاکتور نگه داشته می‌شود</string>
+    <string name="bill_date_set">تاریخ فاکتور: %1$s</string>
+    <string name="bill_scan_supplier">تأمین‌کننده: %1$s</string>
+    <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
+    <string name="bill_items_tap_hint">برای تغییر یا حذف یک قلم، روی آن ضربه بزنید</string>
 </resources>

@@ -1552,4 +1552,8 @@ You can change this any time from this screen.</string>
         <item quantity="other">⚠ %1$d customers are paying later than usual — tap to see</item>
     </plurals>
     <string name="bill_scan_photo_kept">Bill photo will be kept with this bill’s khata entry</string>
+    <string name="bill_date_set">Bill date: %1$s</string>
+    <string name="bill_scan_supplier">Supplier: %1$s</string>
+    <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
+    <string name="bill_items_tap_hint">Tap an item to change or remove it</string>
 </resources>

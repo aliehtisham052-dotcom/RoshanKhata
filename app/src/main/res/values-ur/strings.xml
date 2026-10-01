@@ -1500,4 +1500,8 @@
         <item quantity="other">⚠ %1$d گاہک معمول سے دیر سے ادائیگی کر رہے ہیں — دیکھنے کے لیے ٹیپ کریں</item>
     </plurals>
     <string name="bill_scan_photo_kept">بل کی تصویر اس بل کی کھاتہ انٹری کے ساتھ محفوظ ہوگی</string>
+    <string name="bill_date_set">بل کی تاریخ: %1$s</string>
+    <string name="bill_scan_supplier">سپلائر: %1$s</string>
+    <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
+    <string name="bill_items_tap_hint">کسی آئٹم کو بدلنے یا ہٹانے کے لیے اس پر ٹیپ کریں</string>
 </resources>

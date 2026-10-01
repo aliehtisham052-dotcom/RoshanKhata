@@ -299,20 +299,11 @@ class BillsActivity : BaseActivity() {
         val etNote: EditText = view.findViewById(R.id.etBillNote)
         val btnScan: MaterialButton = view.findViewById(R.id.btnBillScan)
         val tvPending: TextView = view.findViewById(R.id.tvBillPendingItems)
+        val llItems: LinearLayout = view.findViewById(R.id.llBillItems)
 
         // Lines already waiting to go with this bill (from a scan, or added
         // before a save that had to be reopened), so the owner can see them.
-        val readyLines = buildList {
-            if (pendingItems.isNotEmpty()) add(getString(
-                R.string.bill_scan_items_ready,
-                resources.getQuantityString(R.plurals.items_count, pendingItems.size, pendingItems.size)
-            ))
-            if (scanKeptPhoto != null) add(getString(R.string.bill_scan_photo_kept))
-        }
-        if (readyLines.isNotEmpty()) {
-            tvPending.visibility = View.VISIBLE
-            tvPending.text = readyLines.joinToString("\n")
-        }
+        renderPendingItems(tvPending, llItems)
 
         etSupplier.setAdapter(
             ArrayAdapter(
@@ -330,13 +321,13 @@ class BillsActivity : BaseActivity() {
         var billDate = restore?.billDate ?: System.currentTimeMillis()
         var dueDate: Long? = restore?.dueDate
 
-        btnDate.text = getString(R.string.due_date_set, Format.dateOnly(billDate))
+        btnDate.text = getString(R.string.bill_date_set, Format.dateOnly(billDate))
         dueDate?.let { btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
 
         btnDate.setOnClickListener {
             pickDate(billDate) { picked ->
                 billDate = picked
-                btnDate.text = getString(R.string.due_date_set, Format.dateOnly(picked))
+                btnDate.text = getString(R.string.bill_date_set, Format.dateOnly(picked))
             }
         }
 
@@ -410,6 +401,76 @@ class BillsActivity : BaseActivity() {
             )
             form.dismiss()
             chooseScanSource(draft)
+        }
+    }
+
+    /**
+     * The bill's waiting product lines, shown on the form itself: name,
+     * quantity x rate = amount, batch and expiry, each tappable to change or
+     * remove before saving. Until now a scan's lines were only counted, so
+     * the owner could not see — or correct — what had been read.
+     */
+    private fun renderPendingItems(tvPending: TextView, llItems: LinearLayout) {
+        val notes = buildList {
+            if (pendingItems.isNotEmpty()) add(getString(
+                R.string.bill_scan_items_ready,
+                resources.getQuantityString(R.plurals.items_count, pendingItems.size, pendingItems.size)
+            ))
+            if (scanKeptPhoto != null) add(getString(R.string.bill_scan_photo_kept))
+            if (pendingItems.isNotEmpty()) add(getString(R.string.bill_items_tap_hint))
+        }
+        tvPending.visibility = if (notes.isEmpty()) View.GONE else View.VISIBLE
+        tvPending.text = notes.joinToString("\n")
+
+        llItems.removeAllViews()
+        llItems.visibility = if (pendingItems.isEmpty()) View.GONE else View.VISIBLE
+        val dp = resources.displayMetrics.density
+        pendingItems.forEachIndexed { index, item ->
+            val row = TextView(this).apply {
+                text = buildString {
+                    append(item.productName)
+                    append("\n")
+                    val rate = item.rate
+                    if (rate != null) {
+                        append(getString(
+                            R.string.bill_item_figures, Format.plain(item.quantity),
+                            Format.money(rate), Format.money(item.quantity * rate)
+                        ))
+                    } else {
+                        append(Format.plain(item.quantity))
+                    }
+                    item.unit?.let { append(" ").append(it) }
+                    item.batchNumber?.let { append("\n").append(getString(R.string.batch_label, it)) }
+                    item.expiryDate?.let { append("\n").append(getString(R.string.bill_scan_expiry, Format.dateOnly(it))) }
+                }
+                textSize = 13f
+                setTextColor(getColor(R.color.ink))
+                setBackgroundResource(R.drawable.bg_editor_card)
+                val p = (10 * dp).toInt()
+                setPadding(p, p, p, p)
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    MaterialAlertDialogBuilder(this@BillsActivity)
+                        .setTitle(item.productName)
+                        .setItems(arrayOf(getString(R.string.edit_item), getString(R.string.delete_item))) { _, which ->
+                            if (which == 0) {
+                                showAddItemDialog(existing = item) { changed ->
+                                    val at = pendingItems.indexOf(item)
+                                    if (at >= 0) pendingItems[at] = changed
+                                    renderPendingItems(tvPending, llItems)
+                                }
+                            } else {
+                                pendingItems.remove(item)
+                                renderPendingItems(tvPending, llItems)
+                            }
+                        }
+                        .show()
+                }
+            }
+            llItems.addView(row, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = if (index == 0) 0 else (6 * dp).toInt() })
         }
     }
 
@@ -497,7 +558,10 @@ class BillsActivity : BaseActivity() {
             val result = BillOcr.read(this@BillsActivity, photo)
             val known = runCatching { dao.productsOnce().map { it.name } }.getOrDefault(emptyList())
             val bill = (result as? BillOcr.Result.Read)?.let { read ->
-                withContext(Dispatchers.Default) { BillScan.parse(read.lines, known) }
+                val suppliers = parties.filter { !it.isCustomer }.map { it.name }
+                withContext(Dispatchers.Default) {
+                    BillScan.parse(read.lines, known, knownSuppliers = suppliers)
+                }
             }
             // A copy of the picture, scaled and private (BillPhoto), offered to
             // go with the bill; only when something was read from it.
@@ -547,6 +611,7 @@ class BillsActivity : BaseActivity() {
             })
         }
 
+        bill.supplierName?.let { line(getString(R.string.bill_scan_supplier, it), bold = true) }
         bill.billNumber?.let { line(getString(R.string.bill_scan_number, it)) }
         bill.billDate?.let { line(getString(R.string.bill_scan_date, Format.dateOnly(it))) }
         bill.total?.let { line(getString(R.string.bill_scan_total, Format.money(it)), bold = true) }
@@ -611,6 +676,7 @@ class BillsActivity : BaseActivity() {
                 // Only blanks are filled: anything the owner typed stays theirs.
                 // The bill's own total if it was read, else the ticked lines'.
                 val merged = draft.copy(
+                    supplierName = draft.supplierName.ifBlank { bill.supplierName.orEmpty() },
                     billNumber = draft.billNumber ?: bill.billNumber,
                     total = draft.total ?: bill.total ?: kept.sumOf { it.amount }.takeIf { it > 0 },
                     billDate = bill.billDate ?: draft.billDate
@@ -698,7 +764,7 @@ class BillsActivity : BaseActivity() {
             etQty.setText(Format.plain(existing.quantity))
             etUnit.setText(existing.unit ?: "", false)
             etRate.setText(existing.rate?.let { Format.plain(it) } ?: "")
-            expiry?.let { btnExpiry.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
+            expiry?.let { btnExpiry.text = getString(R.string.bill_scan_expiry, Format.dateOnly(it)) }
         }
 
         btnExpiry.setOnClickListener {
@@ -714,7 +780,7 @@ class BillsActivity : BaseActivity() {
             // Today is also simply where a person's thumb expects to land.
             pickDate(expiry ?: System.currentTimeMillis()) { picked ->
                 expiry = picked
-                btnExpiry.text = getString(R.string.due_date_set, Format.dateOnly(picked))
+                btnExpiry.text = getString(R.string.bill_scan_expiry, Format.dateOnly(picked))
             }
         }
 
@@ -1052,13 +1118,13 @@ class BillsActivity : BaseActivity() {
         var billDate = existing.billDate
         var dueDate = existing.dueDate
 
-        btnDate.text = getString(R.string.due_date_set, Format.dateOnly(billDate))
+        btnDate.text = getString(R.string.bill_date_set, Format.dateOnly(billDate))
         dueDate?.let { btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
 
         btnDate.setOnClickListener {
             pickDate(billDate) { picked ->
                 billDate = picked
-                btnDate.text = getString(R.string.due_date_set, Format.dateOnly(picked))
+                btnDate.text = getString(R.string.bill_date_set, Format.dateOnly(picked))
             }
         }
         btnDue.setOnClickListener {

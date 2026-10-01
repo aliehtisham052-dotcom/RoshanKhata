@@ -1500,4 +1500,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="other">⚠ %1$d gahak maamool se der se adaigi kar rahe hain — dekhne ke liye tap karein</item>
     </plurals>
     <string name="bill_scan_photo_kept">Bill ki tasveer is bill ki khata entry ke saath mehfooz hogi</string>
+    <string name="bill_date_set">Bill ki tareekh: %1$s</string>
+    <string name="bill_scan_supplier">Supplier: %1$s</string>
+    <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
+    <string name="bill_items_tap_hint">Kisi item ko badalne ya hatane ke liye us par tap karein</string>
 </resources>

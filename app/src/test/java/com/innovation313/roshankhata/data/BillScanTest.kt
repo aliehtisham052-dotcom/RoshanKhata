@@ -157,4 +157,83 @@ class BillScanTest {
         assertTrue(BillScan.parseRows(listOf("Thank you for your business"), now = now, tz = utc).isEmpty)
         assertFalse(BillScan.parseRows(bill, now = now, tz = utc).isEmpty)
     }
+
+    // -------------------------------------------- the owner's own bill, 1 Oct
+
+    /**
+     * Sayban International's supply order, as the owner photographed it.
+     * Before this, only the total and date came through: the company name,
+     * the "S.O No." and the batches (printed as bare digits) were lost.
+     */
+    private val sayban = listOf(
+        "SAYBAN INTERNATIONAL",
+        "62-KM MULTAN ROAD, ROHI NALA KHAN KEY MORE, PHOOL NAGAR, TEHSIL PATTOKI DISTT KASUR",
+        "SUPPLY ORDER / INVOICE",
+        "Date: 20-07-2026",
+        "S.O No. : 2101003668  Ref. No.",
+        "Customer Name:  BHATTI TRADERS LAPPAY WALI",
+        "G.S.T./NTN/CNIC No.:",
+        "Address:  LAPPAY WALI TEHSIL PASRUR DISTRICT SIALKOT 0348-7239466",
+        "Territory:  NAROWAL  Order #:  Please Confirm this Order",
+        "PRODUCT  BATCH NO.  QTY  Rate  Gross Amount  Disc %  Discount Amount  Net Amount",
+        "NAAMVAR UREA PHOSPHATE 1C  20260706  15  5660  84,900.00  .00  .00  84,900.00",
+        "ANAAJ GOLI 56% (TAB) 90 GM  202501  100  288  28,800.00  .00  .00  28,800.00",
+        "LEPTOKILL 20%EC 800 ML  SI/CBM/26050801  24  2760  66,240.00  .00  .00  66,240.00",
+        "Total:  179,940.00  .00  179,940.00",
+        "Gate Pass #:  G.P. Date:  Veh. #:  Bilty # :  Opening Balance:  (329,048.44)",
+        "Current D.C.:  179,940.00",
+        "Transporter:  Driver Name:  Balance:  (149,108.44)"
+    )
+
+    @Test
+    fun `the owner's sayban bill - header`() {
+        val b = BillScan.parseRows(sayban, now = now, tz = utc)
+        assertEquals("Sayban International", b.supplierName)
+        assertEquals("2101003668", b.billNumber)
+        assertEquals(day(2026, 7, 20), b.billDate)
+        assertEquals(179_940.0, b.total!!, 0.0)
+    }
+
+    @Test
+    fun `the owner's sayban bill - every product with its batch`() {
+        val items = BillScan.parseRows(sayban, now = now, tz = utc).items
+        assertEquals(3, items.size)
+        assertEquals("NAAMVAR UREA PHOSPHATE 1C", items[0].name)
+        assertEquals("20260706", items[0].batch)
+        assertEquals(15.0, items[0].quantity, 0.0)
+        assertEquals(5_660.0, items[0].rate, 0.0)
+        assertEquals("ANAAJ GOLI 56% (TAB) 90 GM", items[1].name)
+        assertEquals("202501", items[1].batch)
+        assertEquals(100.0, items[1].quantity, 0.0)
+        assertEquals("LEPTOKILL 20%EC 800 ML", items[2].name)
+        assertEquals("SI/CBM/26050801", items[2].batch)
+        assertEquals(179_940.0, BillScan.parseRows(sayban, now = now, tz = utc).itemsTotal, 0.0)
+    }
+
+    /** The shop's own name is printed as the CUSTOMER; it must never become the supplier. */
+    @Test
+    fun `the customer line is never taken for the supplier`() {
+        val b = BillScan.parseRows(listOf("Customer Name: BHATTI TRADERS", "Date: 20-07-2026"), now = now, tz = utc)
+        assertNull(b.supplierName)
+    }
+
+    @Test
+    fun `a supplier already in the book is matched by its own spelling`() {
+        val b = BillScan.parseRows(sayban, emptyList(), now, utc, listOf("Sayban Intl", "Sayban International Pattoki"))
+        assertEquals("Sayban International Pattoki", b.supplierName)
+    }
+
+    /** From real lines: the tallest heading near the top, not the title "SUPPLY ORDER / INVOICE". */
+    @Test
+    fun `supplier is the big heading at the top`() {
+        val lines = listOf(
+            OcrLine("Phone 0300-1112223", 100, 10, 400, 30),
+            OcrLine("SAYBAN INTERNATIONAL", 300, 40, 1100, 100),
+            OcrLine("62-KM MULTAN ROAD", 200, 110, 1200, 135),
+            OcrLine("SUPPLY ORDER / INVOICE", 350, 150, 1050, 205),
+            OcrLine("Grand Total 1,000", 10, 900, 400, 930)
+        )
+        assertEquals("Sayban International", BillScan.parse(lines, now = now, tz = utc).supplierName)
+    }
 }
+
