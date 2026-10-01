@@ -1530,6 +1530,15 @@
     <string name="bill_scan_photo_kept">عکس فاکتور همراه ثبت دفتر این فاکتور نگه داشته می‌شود</string>
     <string name="bill_date_set">تاریخ فاکتور: %1$s</string>
     <string name="bill_scan_supplier">تأمین‌کننده: %1$s</string>
+    <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
+    <string name="payment_scan">اسکن رسید پرداخت</string>
+    <string name="payment_scan_reading">در حال خواندن رسید…</string>
+    <string name="payment_scan_nothing">از این عکس مبلغ، شماره پیگیری یا تاریخ خوانده نشد. یک اسکرین‌شات واضح بگیرید، یا رسید را صاف و در نور خوب قرار دهید و دوباره امتحان کنید. متن چاپی انگلیسی بهتر خوانده می‌شود.</string>
+    <string name="payment_scan_found_title">در رسید پیدا شد</string>
+    <string name="payment_scan_use">استفاده از این</string>
+    <string name="payment_scan_amount">مبلغ: %1$s</string>
+    <string name="payment_scan_reference">شماره پیگیری: %1$s</string>
+    <string name="payment_scan_no_amount">مبلغ با اطمینان خوانده نشد. خودتان وارد کنید.</string>
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">برای تغییر یا حذف یک قلم، روی آن ضربه بزنید</string>
     <string name="label_guess_note">برخی خانه‌ها از روی فاکتور پر شده‌اند (شرکت، واحد، نوع، فرمولاسیون). پیش از ذخیره با برچسب مقایسه کنید.</string>

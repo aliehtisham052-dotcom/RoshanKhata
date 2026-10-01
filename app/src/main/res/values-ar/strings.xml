@@ -1646,6 +1646,15 @@
     <string name="bill_scan_photo_kept">ستُحفظ صورة الفاتورة مع قيد الدفتر الخاص بهذه الفاتورة</string>
     <string name="bill_date_set">تاريخ الفاتورة: %1$s</string>
     <string name="bill_scan_supplier">المورّد: %1$s</string>
+    <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
+    <string name="payment_scan">مسح إيصال الدفع</string>
+    <string name="payment_scan_reading">جارٍ قراءة الإيصال…</string>
+    <string name="payment_scan_nothing">لم يُقرأ مبلغ أو رقم مرجعي أو تاريخ من هذه الصورة. استخدم لقطة شاشة واضحة، أو ضع الإيصال مستويًا في إضاءة جيدة، ثم حاول مرة أخرى. النص المطبوع بالإنجليزية يُقرأ بشكل أفضل.</string>
+    <string name="payment_scan_found_title">وُجد في الإيصال</string>
+    <string name="payment_scan_use">استخدم هذا</string>
+    <string name="payment_scan_amount">المبلغ: %1$s</string>
+    <string name="payment_scan_reference">المرجع: %1$s</string>
+    <string name="payment_scan_no_amount">تعذّرت قراءة المبلغ بشكل مؤكد. أدخله بنفسك.</string>
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">اضغط على أي بند لتعديله أو حذفه</string>
     <string name="label_guess_note">بعض الحقول مُلئت من الفاتورة (الشركة، الوحدة، النوع، التركيبة). طابقها مع الملصق قبل الحفظ.</string>

@@ -1554,6 +1554,15 @@ You can change this any time from this screen.</string>
     <string name="bill_scan_photo_kept">Bill photo will be kept with this bill’s khata entry</string>
     <string name="bill_date_set">Bill date: %1$s</string>
     <string name="bill_scan_supplier">Supplier: %1$s</string>
+    <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
+    <string name="payment_scan">Scan payment slip</string>
+    <string name="payment_scan_reading">Reading the slip…</string>
+    <string name="payment_scan_nothing">No amount, reference or date could be read from this photo. Use a clear screenshot, or lay the slip flat in good light, and try again. Printed English text reads best.</string>
+    <string name="payment_scan_found_title">Found on the slip</string>
+    <string name="payment_scan_use">Use this</string>
+    <string name="payment_scan_amount">Amount: %1$s</string>
+    <string name="payment_scan_reference">Ref: %1$s</string>
+    <string name="payment_scan_no_amount">The amount could not be read for certain. Type it yourself.</string>
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">Tap an item to change or remove it</string>
     <string name="label_guess_note">Some boxes are filled from the bill (company, unit, type, formulation). Check them against the label before saving.</string>
