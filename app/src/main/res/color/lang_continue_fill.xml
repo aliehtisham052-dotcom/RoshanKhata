@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Language picker's Continue: brand gold once a language is marked, a faint
+     gold until then so it reads as "not yet". -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false" android:color="#4DD4A02A" />
+    <item android:color="@color/brand_gold" />
+</selector>
