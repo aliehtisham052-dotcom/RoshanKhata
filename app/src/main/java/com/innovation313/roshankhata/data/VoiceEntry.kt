@@ -88,6 +88,28 @@ object VoiceEntry {
     )
 
     /**
+     * Scale words in Persian, Arabic and Sindhi, honoured ONLY straight after
+     * digits: "۵ هزار" and "5 ألف" are 5000 (1 Oct).
+     *
+     * Deliberately kept out of [MULTIPLIERS], which [fromWords] also reads.
+     * The number words before them (پنج، خمسة، پنج) are not in [UNITS], so
+     * "پنج هزار" would be read as a bare هزار — 1000 instead of 5000, a wrong
+     * figure with no warning. Unread, that sentence gives no amount and the
+     * owner types it, which is the safe outcome. Adding these languages'
+     * number words is the real fix, and needs a native speaker to check.
+     *
+     * Persian and Sindhi write هزار with ه, not Urdu's ہ, so the Urdu entry
+     * never matched them. Sindhi's crore is spelled with its own ڪ.
+     */
+    private val DIGIT_MULTIPLIERS = mapOf(
+        "صد" to 100.0, "هزار" to 1000.0, "میلیون" to 1_000_000.0,   // Persian (هزار also Sindhi)
+        "مئة" to 100.0, "مائة" to 100.0,                               // Arabic
+        "ألف" to 1000.0, "الف" to 1000.0, "آلاف" to 1000.0, "الاف" to 1000.0,
+        "مليون" to 1_000_000.0, "ملايين" to 1_000_000.0,
+        "لک" to 100_000.0, "ڪروڙ" to 10_000_000.0                      // Sindhi
+    )
+
+    /**
      * Read [spoken] against the shop's own customer names.
      *
      * [knownNames] is passed in rather than looked up, so this stays pure and
@@ -246,6 +268,7 @@ object VoiceEntry {
         word in STOPWORDS ||
             UNITS.containsKey(word) ||
             MULTIPLIERS.containsKey(word) ||
+            DIGIT_MULTIPLIERS.containsKey(word) ||
             word in GAVE ||
             word in GOT ||
             word.all { it.isDigit() }
@@ -419,7 +442,7 @@ object VoiceEntry {
             cleaned.toDoubleOrNull()?.let { digits ->
                 // "5 hazaar" — a digit followed by a multiplier word.
                 val after = text.substring(m.range.last + 1).trim().split(" ").firstOrNull()
-                val mult = MULTIPLIERS[after]
+                val mult = MULTIPLIERS[after] ?: DIGIT_MULTIPLIERS[after]
                 return if (mult != null) digits * mult else digits
             }
         }
