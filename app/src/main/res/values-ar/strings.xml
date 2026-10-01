@@ -1672,4 +1672,5 @@
     <string name="bill_photo_missing">صورة هذه الفاتورة غير موجودة على هذا الهاتف</string>
     <string name="pdf_insp_by_type">حسب النوع: %1$s</string>
     <string name="pdf_insp_type_not_set">النوع غير محدد</string>
+    <string name="followup_reminded_today">فُتح اليوم ✓</string>
 </resources>

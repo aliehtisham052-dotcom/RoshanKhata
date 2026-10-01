@@ -1524,4 +1524,5 @@
     <string name="bill_photo_missing">اس بل کی تصویر اس فون پر موجود نہیں</string>
     <string name="pdf_insp_by_type">قسم کے لحاظ سے: %1$s</string>
     <string name="pdf_insp_type_not_set">قسم درج نہیں</string>
+    <string name="followup_reminded_today">آج کھولا ✓</string>
 </resources>

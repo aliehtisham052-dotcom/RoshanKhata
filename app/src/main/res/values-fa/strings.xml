@@ -1552,4 +1552,5 @@
     <string name="bill_photo_missing">عکس این فاکتور روی این گوشی نیست</string>
     <string name="pdf_insp_by_type">بر اساس نوع: %1$s</string>
     <string name="pdf_insp_type_not_set">نوع ثبت نشده</string>
+    <string name="followup_reminded_today">امروز باز شد ✓</string>
 </resources>

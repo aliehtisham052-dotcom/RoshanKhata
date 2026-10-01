@@ -14,6 +14,8 @@ data class PartyPromise(val partyId: Long, val due: Long)
  *     so a reminder on it is the least awkward one there is.
  *  2. Then late by their own habit ([PaymentHabit]), furthest behind first.
  *  3. Then, unchanged from before: quiet longest, bigger balance first.
+ *  A customer whose reminder was already opened today ([ReminderLog]) goes
+ *  below all of these and is not counted in "today".
  *
  * "Today" counts rows 1 and 2 only. A promise still in the future is shown
  * on the row but is NOT a reason to remind.
@@ -30,17 +32,22 @@ object FollowUpRank {
         habits: Map<Long, PaymentHabit.Habit>,
         promises: Map<Long, Long>,
         now: Long,
-        tz: TimeZone
-    ): Boolean = isDue(promises[partyId], now, tz) || habits[partyId]?.isLate == true
+        tz: TimeZone,
+        remindedToday: Set<Long> = emptySet()
+    ): Boolean = partyId !in remindedToday &&
+        (isDue(promises[partyId], now, tz) || habits[partyId]?.isLate == true)
 
     fun order(
         debtors: List<PartyWithBalance>,
         habits: Map<Long, PaymentHabit.Habit>,
         promises: Map<Long, Long>,
         now: Long = System.currentTimeMillis(),
-        tz: TimeZone = TimeZone.getDefault()
+        tz: TimeZone = TimeZone.getDefault(),
+        remindedToday: Set<Long> = emptySet()
     ): List<PartyWithBalance> = debtors.sortedWith(
-        compareByDescending<PartyWithBalance> { isDue(promises[it.id], now, tz) }
+        // Already reminded today: to the bottom, whatever else is true.
+        compareBy<PartyWithBalance> { it.id in remindedToday }
+            .thenByDescending { isDue(promises[it.id], now, tz) }
             .thenBy { p -> promises[p.id]?.takeIf { isDue(it, now, tz) } ?: Long.MAX_VALUE }
             .thenByDescending { habits[it.id]?.isLate == true }
             .thenByDescending { p ->
