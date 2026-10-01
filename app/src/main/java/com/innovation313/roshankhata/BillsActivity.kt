@@ -767,13 +767,12 @@ class BillsActivity : BaseActivity() {
                     dueDate = dueDate,
                     ledgerEntryId = null,
                     isPaidInFull = paidCash,
-                    note = note
+                    note = note,
+                    // Cash: no khata entry, so the bill keeps its own picture.
+                    photoPath = if (paidCash) photoForThisBill else null
                 ),
                 items = itemsForThisBill
             )
-            // A cash bill writes no khata entry, so its scanned picture has
-            // nowhere to live: let it go rather than leave it orphaned.
-            if (paidCash) photoForThisBill?.let { runCatching { java.io.File(it).delete() } }
 
             // The toast touches a screen the owner may already have left, so
             // it hops back to the main thread and is shown only if this
@@ -885,22 +884,50 @@ class BillsActivity : BaseActivity() {
     // ---------- Viewing / deleting ----------
 
     private fun showBillActions(bill: BillSummary) {
-        val options = arrayOf(
-            getString(R.string.edit_bill),
-            getString(R.string.manage_items),
-            getString(R.string.delete_bill)
-        )
+        lifecycleScope.launch {
+            // A cash bill may carry its own photo (v21); offer it only then.
+            val photo = dao.getBill(bill.id)?.photoPath?.takeIf { it.isNotBlank() }
+            val options = listOfNotNull(
+                getString(R.string.edit_bill),
+                getString(R.string.manage_items),
+                getString(R.string.delete_bill),
+                photo?.let { getString(R.string.view_bill_photo) }
+            ).toTypedArray()
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.bill_actions)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> startEditBill(bill)
-                    1 -> manageItems(bill.id)
-                    2 -> confirmDeleteBill(bill)
+            MaterialAlertDialogBuilder(this@BillsActivity)
+                .setTitle(R.string.bill_actions)
+                .setItems(options) { _, which ->
+                    when (which) {
+                        0 -> startEditBill(bill)
+                        1 -> manageItems(bill.id)
+                        2 -> confirmDeleteBill(bill)
+                        3 -> photo?.let { showBillPhoto(it) }
+                    }
                 }
+                .show()
+        }
+    }
+
+    /** The kept picture of a cash bill, full width; decoded off the main thread. */
+    private fun showBillPhoto(path: String) {
+        lifecycleScope.launch {
+            val bitmap = withContext(Dispatchers.IO) { BillPhoto.load(path) }
+            if (isFinishing || isDestroyed) return@launch
+            if (bitmap == null) {
+                Toast.makeText(this@BillsActivity, R.string.bill_photo_missing, Toast.LENGTH_SHORT).show()
+                return@launch
             }
-            .show()
+            val image = android.widget.ImageView(this@BillsActivity).apply {
+                setImageBitmap(bitmap)
+                adjustViewBounds = true
+                contentDescription = getString(R.string.bill_photo_label)
+            }
+            MaterialAlertDialogBuilder(this@BillsActivity)
+                .setTitle(R.string.bill_photo_label)
+                .setView(android.widget.ScrollView(this@BillsActivity).apply { addView(image) })
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        }
     }
 
     // ---------- Editing an existing bill ----------

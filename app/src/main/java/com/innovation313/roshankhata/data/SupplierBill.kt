@@ -67,8 +67,19 @@ data class SupplierBill(
 
     val createdAt: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false,
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
+
+    /**
+     * The photographed bill, for a bill paid in CASH (v21). A credit bill's
+     * picture lives on its khata entry (LedgerEntry.billPhotoPath), so it is
+     * left null there — one picture, one owner. Absolute path under
+     * filesDir/bills, re-pointed on an image restore like the entry's.
+     */
+    val photoPath: String? = null
 )
+
+/** A cash bill's photo path, for the image backup and its restore. */
+data class SupplierBillPhoto(val id: Long, val photoPath: String?)
 
 /**
  * One line on a supplier bill: a product, its batch, and when it expires.

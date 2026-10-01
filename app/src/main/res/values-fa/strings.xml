@@ -1527,7 +1527,7 @@
         <item quantity="one">⚠ %1$d مشتری دیرتر از معمول پرداخت می‌کند — برای دیدن ضربه بزنید</item>
         <item quantity="other">⚠ %1$d مشتری دیرتر از معمول پرداخت می‌کنند — برای دیدن ضربه بزنید</item>
     </plurals>
-    <string name="bill_scan_photo_kept">عکس فاکتور همراه ثبت دفتر این فاکتور نگه داشته می‌شود</string>
+    <string name="bill_scan_photo_kept">عکس فاکتور همراه این فاکتور نگه داشته می‌شود</string>
     <string name="bill_date_set">تاریخ فاکتور: %1$s</string>
     <string name="bill_scan_supplier">تأمین‌کننده: %1$s</string>
     <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
@@ -1548,4 +1548,6 @@
         <item quantity="one">یادآوری امروز: %d</item>
         <item quantity="other">یادآوری امروز: %d</item>
     </plurals>
+    <string name="view_bill_photo">دیدن عکس فاکتور</string>
+    <string name="bill_photo_missing">عکس این فاکتور روی این گوشی نیست</string>
 </resources>

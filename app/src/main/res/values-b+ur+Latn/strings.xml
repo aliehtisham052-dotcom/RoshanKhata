@@ -1499,7 +1499,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">⚠ %1$d gahak maamool se der se adaigi kar raha hai — dekhne ke liye tap karein</item>
         <item quantity="other">⚠ %1$d gahak maamool se der se adaigi kar rahe hain — dekhne ke liye tap karein</item>
     </plurals>
-    <string name="bill_scan_photo_kept">Bill ki tasveer is bill ki khata entry ke saath mehfooz hogi</string>
+    <string name="bill_scan_photo_kept">Bill ki tasveer is bill ke saath mehfooz hogi</string>
     <string name="bill_date_set">Bill ki tareekh: %1$s</string>
     <string name="bill_scan_supplier">Supplier: %1$s</string>
     <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
@@ -1520,4 +1520,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">Aaj %d ko yaad dihani</item>
         <item quantity="other">Aaj %d ko yaad dihani</item>
     </plurals>
+    <string name="view_bill_photo">Bill ki tasveer dekhein</string>
+    <string name="bill_photo_missing">Is bill ki tasveer is phone par maujood nahi</string>
 </resources>

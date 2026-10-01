@@ -572,6 +572,17 @@ val MIGRATION_19_20 = object : Migration(19, 20) {
 }
 
 /**
+ * v21 (1 Oct 2026): a photo for a supplier bill paid in cash. A credit bill's
+ * photo already rides on its khata entry; a cash bill has no entry, so the
+ * scanned picture used to be thrown away. One nullable column, no data moved.
+ */
+val MIGRATION_20_21 = object : Migration(20, 21) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE supplier_bills ADD COLUMN photoPath TEXT")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -580,7 +591,7 @@ val MIGRATION_19_20 = object : Migration(19, 20) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 20
+const val KHATA_DB_VERSION = 21
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -602,5 +613,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_16_17,
     MIGRATION_17_18,
     MIGRATION_18_19,
-    MIGRATION_19_20
+    MIGRATION_19_20,
+    MIGRATION_20_21
 )
