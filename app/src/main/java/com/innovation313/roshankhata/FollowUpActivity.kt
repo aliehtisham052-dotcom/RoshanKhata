@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.FollowUpRank
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyWithBalance
@@ -74,38 +75,39 @@ class FollowUpActivity : BaseActivity() {
     private fun observeDebtors() {
         lifecycleScope.launch {
             dao.observePartiesWithBalance()
-                .combine(dao.observeLedgerPoints()) { all, points ->
+                .combine(dao.observeLedgerPoints()) { all, points -> all to points }
+                .combine(dao.observePromises()) { (all, points), promiseRows ->
                     // balance > 0 means they owe the shop — the only rows
                     // this screen is for.
                     val debtors = all.filter { Money.isPositive(it.balance) }
                     val habits = PaymentHabit.forAll(points)
-                    // Late by their own habit first, the furthest behind at
-                    // the top. Then, as before, the account quiet longest,
-                    // the bigger balance winning between two equally quiet.
-                    val ordered = debtors.sortedWith(
-                        compareByDescending<PartyWithBalance> { habits[it.id]?.isLate == true }
-                            .thenByDescending { p ->
-                                habits[p.id]?.takeIf { it.isLate }
-                                    ?.let { it.waitingDays - it.typicalDays } ?: 0
-                            }
-                            .thenBy { it.lastActivity }
-                            .thenByDescending { it.balance }
-                    )
-                    ordered to habits
+                    val promises = promiseRows.associate { it.partyId to it.due }
+                    val now = System.currentTimeMillis()
+                    val tz = java.util.TimeZone.getDefault()
+                    // Promise due first, then late by habit, then quiet longest:
+                    // see FollowUpRank.
+                    val ordered = FollowUpRank.order(debtors, habits, promises, now, tz)
+                    val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz) }
+                    FollowUpState(ordered, habits, promises, today)
                 }
                 // A big book is thousands of lines; the arithmetic stays off
                 // the main thread.
                 .flowOn(Dispatchers.Default)
-                .collectLatest { (debtors, habits) ->
-                    adapter.habits = habits
+                .collectLatest { state ->
+                    val debtors = state.debtors
+                    adapter.habits = state.habits
+                    adapter.promises = state.promises
                     adapter.submitList(debtors)
 
                     val total = debtors.sumOf { it.balance }
-                    tvSummary.text =
-                        resources.getQuantityString(
-                            R.plurals.followup_summary, debtors.size,
-                            debtors.size, Format.money(total)
-                        )
+                    val summary = resources.getQuantityString(
+                        R.plurals.followup_summary, debtors.size,
+                        debtors.size, Format.money(total)
+                    )
+                    // The one number the owner opens this screen for.
+                    tvSummary.text = if (state.today > 0) {
+                        summary + "\n" + resources.getQuantityString(R.plurals.followup_today, state.today, state.today)
+                    } else summary
                     tvSummary.visibility = if (debtors.isEmpty()) View.GONE else View.VISIBLE
                     tvEmpty.visibility = if (debtors.isEmpty()) View.VISIBLE else View.GONE
                 }
@@ -133,3 +135,10 @@ class FollowUpActivity : BaseActivity() {
         }
     }
 }
+
+private class FollowUpState(
+    val debtors: List<PartyWithBalance>,
+    val habits: Map<Long, PaymentHabit.Habit>,
+    val promises: Map<Long, Long>,
+    val today: Int
+)

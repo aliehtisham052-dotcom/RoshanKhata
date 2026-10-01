@@ -1,0 +1,55 @@
+package com.innovation313.roshankhata.data
+
+import java.util.TimeZone
+
+/** The earliest open promised date of one party (payment plans). */
+data class PartyPromise(val partyId: Long, val due: Long)
+
+/**
+ * "Who do I remind TODAY?" — the order of the Follow-up list, in one
+ * testable place (1 Oct).
+ *
+ *  1. A promise that has come due (its day is today or earlier) comes first,
+ *     the oldest promise at the top. The customer named this day themselves,
+ *     so a reminder on it is the least awkward one there is.
+ *  2. Then late by their own habit ([PaymentHabit]), furthest behind first.
+ *  3. Then, unchanged from before: quiet longest, bigger balance first.
+ *
+ * "Today" counts rows 1 and 2 only. A promise still in the future is shown
+ * on the row but is NOT a reason to remind.
+ */
+object FollowUpRank {
+
+    private const val DAY = 24L * 60 * 60 * 1000
+
+    fun isDue(due: Long?, now: Long, tz: TimeZone): Boolean =
+        due != null && dayOf(due, tz) <= dayOf(now, tz)
+
+    fun remindToday(
+        partyId: Long,
+        habits: Map<Long, PaymentHabit.Habit>,
+        promises: Map<Long, Long>,
+        now: Long,
+        tz: TimeZone
+    ): Boolean = isDue(promises[partyId], now, tz) || habits[partyId]?.isLate == true
+
+    fun order(
+        debtors: List<PartyWithBalance>,
+        habits: Map<Long, PaymentHabit.Habit>,
+        promises: Map<Long, Long>,
+        now: Long = System.currentTimeMillis(),
+        tz: TimeZone = TimeZone.getDefault()
+    ): List<PartyWithBalance> = debtors.sortedWith(
+        compareByDescending<PartyWithBalance> { isDue(promises[it.id], now, tz) }
+            .thenBy { p -> promises[p.id]?.takeIf { isDue(it, now, tz) } ?: Long.MAX_VALUE }
+            .thenByDescending { habits[it.id]?.isLate == true }
+            .thenByDescending { p ->
+                habits[p.id]?.takeIf { it.isLate }?.let { it.waitingDays - it.typicalDays } ?: 0
+            }
+            .thenBy { it.lastActivity }
+            .thenByDescending { it.balance }
+    )
+
+    private fun dayOf(millis: Long, tz: TimeZone): Long =
+        (millis + tz.getOffset(millis)).floorDiv(DAY)
+}

@@ -1405,6 +1405,16 @@ interface KhataDao {
     )
     suspend fun promisedDateForParty(partyId: Long): Long?
 
+    /** Every party's earliest open promised date — the Follow-up list's "promise due". */
+    @Query(
+        """
+        SELECT partyId, MIN(nextDueDate) AS due FROM payment_plans
+        WHERE isClosed = 0 AND isDeleted = 0 AND nextDueDate IS NOT NULL
+        GROUP BY partyId
+        """
+    )
+    fun observePromises(): Flow<List<PartyPromise>>
+
     @Query(
         """
         SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,

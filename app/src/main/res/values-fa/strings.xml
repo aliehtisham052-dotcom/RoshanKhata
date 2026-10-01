@@ -1543,4 +1543,9 @@
     <string name="bill_items_tap_hint">برای تغییر یا حذف یک قلم، روی آن ضربه بزنید</string>
     <string name="label_guess_note">برخی خانه‌ها از روی فاکتور پر شده‌اند (شرکت، واحد، نوع، فرمولاسیون). پیش از ذخیره با برچسب مقایسه کنید.</string>
     <string name="entry_make_invoice">فاکتور</string>
+    <string name="followup_promised">قول پرداخت: %1$s</string>
+    <plurals name="followup_today">
+        <item quantity="one">یادآوری امروز: %d</item>
+        <item quantity="other">یادآوری امروز: %d</item>
+    </plurals>
 </resources>
