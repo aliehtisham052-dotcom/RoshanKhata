@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
+import com.innovation313.roshankhata.data.BillPhoto
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.BinAdapter
@@ -63,8 +64,11 @@ class RecycleBinActivity : BaseActivity() {
     private fun purgeExpired() {
         AppScope.launch {
             val cutoff = System.currentTimeMillis() - (RETENTION_DAYS * DAY_MS)
-            dao.purgeOldEntries(cutoff)
-            dao.purgeOldParties(cutoff)
+            // Photos of what is purged go too (BillPhoto.purgingOrphans).
+            BillPhoto.purgingOrphans(dao) {
+                dao.purgeOldEntries(cutoff)
+                dao.purgeOldParties(cutoff)
+            }
         }
     }
 
@@ -196,9 +200,11 @@ class RecycleBinActivity : BaseActivity() {
                 // delete interrupted by the screen closing would leave the
                 // row half-gone from the user's point of view.
                 AppScope.launch {
-                    when (item) {
-                        is BinItem.DeletedParty -> dao.purgeParty(item.id)
-                        is BinItem.DeletedEntry -> dao.purgeEntry(item.id)
+                    BillPhoto.purgingOrphans(dao) {
+                        when (item) {
+                            is BinItem.DeletedParty -> dao.purgeParty(item.id)
+                            is BinItem.DeletedEntry -> dao.purgeEntry(item.id)
+                        }
                     }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
@@ -224,8 +230,10 @@ class RecycleBinActivity : BaseActivity() {
                 // leaves parties whose every entry is already gone forever —
                 // rows that look restorable and would come back empty.
                 AppScope.launch {
-                    dao.purgeAllEntries()
-                    dao.purgeAllParties()
+                    BillPhoto.purgingOrphans(dao) {
+                        dao.purgeAllEntries()
+                        dao.purgeAllParties()
+                    }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
                             Toast.makeText(

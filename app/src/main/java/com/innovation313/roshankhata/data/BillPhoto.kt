@@ -66,6 +66,25 @@ object BillPhoto {
         }
     }
 
+    /**
+     * Run a permanent delete, then remove the bill photos it left with no
+     * row pointing at them (1 Oct). Compared by the exact paths THIS
+     * business's rows referenced before and after, so a photo belonging to
+     * another shop (the bills folder is shared) is never touched, and a
+     * cascade (a party taking its entries and bills with it) is covered
+     * without listing each case.
+     */
+    suspend fun <T> purgingOrphans(dao: KhataDao, block: suspend () -> T): T {
+        suspend fun referenced(): Set<String> =
+            (dao.entriesWithBillPhoto().map { it.billPhotoPath } +
+                dao.supplierBillsWithPhoto().map { it.photoPath })
+                .filterNotNull().filter { it.isNotBlank() }.toSet()
+        val before = referenced()
+        val result = block()
+        (before - referenced()).forEach { delete(it) }
+        return result
+    }
+
     /** Remove a photo's file. Safe to call when it has already gone. */
     fun delete(path: String?) {
         if (path.isNullOrBlank()) return

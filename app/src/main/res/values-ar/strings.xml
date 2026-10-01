@@ -1673,4 +1673,5 @@
     <string name="pdf_insp_by_type">حسب النوع: %1$s</string>
     <string name="pdf_insp_type_not_set">النوع غير محدد</string>
     <string name="followup_reminded_today">فُتح اليوم ✓</string>
+    <string name="entry_open_invoice">فتح الفاتورة</string>
 </resources>

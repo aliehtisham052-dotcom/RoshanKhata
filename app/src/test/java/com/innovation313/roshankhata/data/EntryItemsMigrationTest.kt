@@ -132,6 +132,15 @@ class EntryItemsMigrationTest {
             raw.execSQL(billsV20)
             billIndices.forEach { raw.execSQL(it) }
 
+            // v22 added invoices.sourceEntryId; same treatment (empty table).
+            val invV22 = sqlOf("table", "invoices").single()
+            val invIndices = sqlOf("index", "invoices")
+            val invV21 = invV22.replace(", `sourceEntryId` INTEGER", "")
+            assertTrue("could not strip sourceEntryId from: $invV22", !invV21.contains("sourceEntryId"))
+            raw.execSQL("DROP TABLE invoices")
+            raw.execSQL(invV21)
+            invIndices.forEach { raw.execSQL(it) }
+
             raw.version = 19
         }
 

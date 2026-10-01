@@ -729,6 +729,10 @@ interface KhataDao {
     @Query("SELECT * FROM invoices WHERE id = :id")
     suspend fun getInvoice(id: Long): Invoice?
 
+    /** The live invoice already made from this khata sale, if any (v22). */
+    @Query("SELECT id FROM invoices WHERE sourceEntryId = :entryId AND isDeleted = 0 ORDER BY id DESC LIMIT 1")
+    suspend fun invoiceForEntry(entryId: Long): Long?
+
     @Update
     suspend fun updateInvoice(invoice: Invoice)
 
@@ -1831,6 +1835,9 @@ interface KhataDao {
 
     @Query("UPDATE supplier_bills SET photoPath = :path WHERE id = :id")
     suspend fun setSupplierBillPhotoPath(id: Long, path: String)
+
+    @Query("UPDATE supplier_bills SET photoPath = NULL WHERE id = :id")
+    suspend fun clearSupplierBillPhoto(id: Long)
 
     // ---------- Duplicate-customer merge ----------
 

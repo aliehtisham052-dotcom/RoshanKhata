@@ -159,6 +159,9 @@ class InvoiceEditorActivity : BaseActivity() {
     private var discountPercent: Double? = null
     private var taxPercent: Double? = null
     private var note: String? = null
+
+    /** The khata sale this invoice came from (v22); kept through edits. */
+    private var sourceEntryId: Long? = null
     private var chargeLabel: String? = null
     private var chargeAmount: Double? = null
     private var receivedAmount: Double? = null
@@ -356,6 +359,7 @@ class InvoiceEditorActivity : BaseActivity() {
             etCustomer.setText(party.name)
             party.phone?.takeIf { it.isNotBlank() }?.let { etPhone.setText(it) }
         }
+        sourceEntryId = entry.id
         invoiceDate = entry.timestamp
         btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
         EntryInvoice.rows(entry, dao.itemsOfEntry(entryId)).forEach { addRow(it) }
@@ -408,6 +412,7 @@ class InvoiceEditorActivity : BaseActivity() {
         receivedAmount = invoice.receivedAmount
         note = invoice.note
         pendingTemplateId = invoice.templateId
+        sourceEntryId = invoice.sourceEntryId
 
         if (items.isEmpty()) addRow() else items.forEach { addRow(it) }
 
@@ -681,7 +686,8 @@ class InvoiceEditorActivity : BaseActivity() {
             additionalChargeAmount = if (hasCharge) chargeAmount else null,
             receivedAmount = receivedAmount,
             templateId = templateId(),
-            note = note
+            note = note,
+            sourceEntryId = sourceEntryId
         )
     }
 

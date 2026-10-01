@@ -1207,6 +1207,13 @@ class BillsActivity : BaseActivity() {
                             dao.softDeleteEntry(entryId)
                         }
                         dao.softDeleteBill(bill.id)
+                        // A cash bill has no recycle-bin way back, so its
+                        // photo goes now; a credit bill's photo stays on its
+                        // binned entry until that is purged.
+                        dao.getBill(bill.id)?.photoPath?.let { path ->
+                            dao.clearSupplierBillPhoto(bill.id)
+                            BillPhoto.delete(path)
+                        }
                     }.join()
                     Toast.makeText(
                         this@BillsActivity,
