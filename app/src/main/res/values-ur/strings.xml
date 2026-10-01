@@ -48,6 +48,14 @@
         <item quantity="one">آخری لین دین %1$d دن پہلے</item>
         <item quantity="other">آخری لین دین %1$d دن پہلے</item>
     </plurals>
+    <plurals name="followup_habit">
+        <item quantity="one">عموماً ہر %1$d دن میں ادائیگی</item>
+        <item quantity="other">عموماً ہر %1$d دن میں ادائیگی</item>
+    </plurals>
+    <plurals name="followup_habit_late">
+        <item quantity="one">ادائیگی میں تاخیر — اب %1$d دن، عموماً ~%2$d</item>
+        <item quantity="other">ادائیگی میں تاخیر — اب %1$d دن، عموماً ~%2$d</item>
+    </plurals>
     <string name="followup_today">آج لین دین ہوا</string>
     <string name="followup_empty">اس وقت کسی کے ذمے کچھ نہیں — سب ادا شدہ۔</string>
     <string name="coach_title_followup">وصولی</string>

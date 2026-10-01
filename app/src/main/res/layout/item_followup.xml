@@ -30,6 +30,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textSize="12sp" />
+
+        <!-- The customer's own payment rhythm (PaymentHabit); gone when there
+             is too little history to have one. -->
+        <TextView
+            android:id="@+id/tvFollowUpHabit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textSize="12sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout

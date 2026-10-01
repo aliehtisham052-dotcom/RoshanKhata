@@ -48,6 +48,14 @@
         <item quantity="one">آخرین تراکنش %1$d روز پیش</item>
         <item quantity="other">آخرین تراکنش %1$d روز پیش</item>
     </plurals>
+    <plurals name="followup_habit">
+        <item quantity="one">معمولاً هر %1$d روز پرداخت می‌کند</item>
+        <item quantity="other">معمولاً هر %1$d روز پرداخت می‌کند</item>
+    </plurals>
+    <plurals name="followup_habit_late">
+        <item quantity="one">پرداخت با تأخیر — اکنون %1$d روز، معمولاً ~%2$d</item>
+        <item quantity="other">پرداخت با تأخیر — اکنون %1$d روز، معمولاً ~%2$d</item>
+    </plurals>
     <string name="followup_today">امروز تراکنش شد</string>
     <string name="followup_empty">اکنون کسی به شما بدهکار نیست — همه تسویه.</string>
     <string name="coach_title_followup">پیگیری وصول</string>
