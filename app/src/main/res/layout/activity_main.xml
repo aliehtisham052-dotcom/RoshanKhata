@@ -272,6 +272,31 @@
             android:paddingTop="12dp"
             android:paddingEnd="10dp">
 
+            <!--
+              "N customers are paying later than usual" (1 Oct): counted from
+              each customer's own payment habit (PaymentHabit), the same rule
+              as the Follow-up screen it opens. Gone when nobody is late.
+            -->
+            <TextView
+                android:id="@+id/tvHomeLate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_home_late"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:paddingStart="14dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="14dp"
+                android:paddingBottom="10dp"
+                android:textColor="@color/note_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

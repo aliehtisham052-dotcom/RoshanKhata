@@ -183,6 +183,11 @@ dependencies {
     // at install through the "ocr" dependency declared in the manifest.
     // On-device only; Latin script, which is what company invoices print in.
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
+    // Google's document scanner for Scan bill: finds the page, straightens and
+    // flattens it before it is read. UI and models live in Play Services
+    // (~300 KB here), no CAMERA permission; on phones it cannot serve (under
+    // 1.7 GB RAM) BillsActivity falls back to the plain camera.
+    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.core:core-ktx:1.13.1")
     // Reads the orientation flag a camera writes into a JPEG. Without it a

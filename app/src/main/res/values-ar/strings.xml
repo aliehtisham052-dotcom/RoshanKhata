@@ -1635,4 +1635,13 @@
     <string name="bill_scan_no_items">لم يُقرأ أي بند من البضاعة؛ أضفها يدويًا.</string>
     <string name="bill_scan_check">قرأ الهاتف هذا من الصورة. تحقق من كل رقم قبل الحفظ.</string>
     <string name="bill_scan_items_ready">✓ مع هذه الفاتورة: %1$s</string>
+    <plurals name="home_paying_late">
+        <item quantity="zero">⚠ %1$d عميل يتأخر في السداد عن المعتاد — اضغط للعرض</item>
+        <item quantity="one">⚠ عميل واحد (%1$d) يتأخر في السداد عن المعتاد — اضغط للعرض</item>
+        <item quantity="two">⚠ عميلان (%1$d) يتأخران في السداد عن المعتاد — اضغط للعرض</item>
+        <item quantity="few">⚠ %1$d عملاء يتأخرون في السداد عن المعتاد — اضغط للعرض</item>
+        <item quantity="many">⚠ %1$d عميلًا يتأخرون في السداد عن المعتاد — اضغط للعرض</item>
+        <item quantity="other">⚠ %1$d عميل يتأخرون في السداد عن المعتاد — اضغط للعرض</item>
+    </plurals>
+    <string name="bill_scan_photo_kept">ستُحفظ صورة الفاتورة مع قيد الدفتر الخاص بهذه الفاتورة</string>
 </resources>

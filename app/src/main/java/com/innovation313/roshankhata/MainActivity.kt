@@ -13,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.PaymentHabit
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.AppLock
 import com.innovation313.roshankhata.data.TextSize
@@ -22,7 +23,10 @@ import com.innovation313.roshankhata.ui.CoachMarkController
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenPrivacyDialog
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 /**
@@ -37,6 +41,8 @@ class MainActivity : BaseActivity() {
 
     private lateinit var tvNetBalance: TextView
     private lateinit var tvTotalGet: TextView
+    private lateinit var tvHomeLate: TextView
+    private var lateJob: kotlinx.coroutines.Job? = null
     private lateinit var tvTotalGive: TextView
     private lateinit var ivEye: ImageView
 
@@ -76,6 +82,10 @@ class MainActivity : BaseActivity() {
 
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvTotalGet = findViewById(R.id.tvTotalGet)
+        tvHomeLate = findViewById(R.id.tvHomeLate)
+        tvHomeLate.setOnClickListener {
+            startActivity(android.content.Intent(this, FollowUpActivity::class.java))
+        }
         tvTotalGive = findViewById(R.id.tvTotalGive)
         ivEye = findViewById(R.id.ivEye)
 
@@ -457,10 +467,45 @@ class MainActivity : BaseActivity() {
      * offered the copies screen, which deliberately never needs the live
      * database to run (see SnapshotsActivity — it works on the files).
      */
+    /**
+     * "N customers are paying later than usual", from each debtor's own
+     * payment habit — the same rule and the same order as the Follow-up
+     * screen the note opens. A count only, never an amount, so it shows the
+     * same with balances hidden. Started and replaced with the totals (same
+     * open book); a failure here only hides the note, since the totals
+     * collector is the one that reports a ledger that will not open.
+     */
+    private fun observeLate() {
+        lateJob?.cancel()
+        tvHomeLate.visibility = View.GONE
+        lateJob = lifecycleScope.launch {
+            try {
+                val dao = KhataDatabase.get(this@MainActivity).khataDao()
+                dao.observePartiesWithBalance()
+                    .combine(dao.observeLedgerPoints()) { parties, points ->
+                        val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
+                        PaymentHabit.forAll(points).count { (id, habit) -> id in owing && habit.isLate }
+                    }
+                    .flowOn(Dispatchers.Default)
+                    .collectLatest { late ->
+                        tvHomeLate.visibility = if (late > 0) View.VISIBLE else View.GONE
+                        if (late > 0) {
+                            tvHomeLate.text = resources.getQuantityString(R.plurals.home_paying_late, late, late)
+                        }
+                    }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                tvHomeLate.visibility = View.GONE
+            }
+        }
+    }
+
     private fun observeTotals() {
         // One collector at a time. Without this, every return to Home would
         // add another, each holding its own database handle.
         totalsJob?.cancel()
+        observeLate()
 
         // If the open book has CHANGED, clear the figures before re-reading.
         // A brief blank is honest; another shop's balance sitting there until

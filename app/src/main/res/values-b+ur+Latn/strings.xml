@@ -1495,4 +1495,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bill_scan_no_items">Koi maal ki satar nahi parhi ja saki; haath se shamil karein.</string>
     <string name="bill_scan_check">Ye phone ne tasveer se parha hai. Save karne se pehle har raqam dekh lein.</string>
     <string name="bill_scan_items_ready">✓ Is bill ke saath %1$s</string>
+    <plurals name="home_paying_late">
+        <item quantity="one">⚠ %1$d gahak maamool se der se adaigi kar raha hai — dekhne ke liye tap karein</item>
+        <item quantity="other">⚠ %1$d gahak maamool se der se adaigi kar rahe hain — dekhne ke liye tap karein</item>
+    </plurals>
+    <string name="bill_scan_photo_kept">Bill ki tasveer is bill ki khata entry ke saath mehfooz hogi</string>
 </resources>
