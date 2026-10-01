@@ -1388,7 +1388,7 @@ class KhataActivity : BaseActivity() {
         val usedIndex = chooseSpoken(candidates)
         val heard = candidates[usedIndex]
 
-        val parsed = VoiceEntry.parse(heard, allParties.map { it.name })
+        val parsed = VoiceEntry.parse(heard, allParties.map { it.name }, lastVoiceLanguage)
 
         // Who was named, decided by the same measure that orders the picker.
         //

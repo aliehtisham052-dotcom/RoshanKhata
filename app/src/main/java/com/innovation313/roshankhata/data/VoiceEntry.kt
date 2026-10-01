@@ -110,16 +110,49 @@ object VoiceEntry {
     )
 
     /**
+     * Persian number words (1 Oct), read ONLY when the microphone was set to
+     * Persian ([parse]'s language starts with "fa"). Never mixed into
+     * [UNITS]: سی is thirty in Persian but an everyday particle in Urdu
+     * ("تھوڑی سی"), and would silently add 30 to an Urdu sentence.
+     *
+     * Persian joins parts with و ("پنج هزار و پانصد" = 5500); و is not a
+     * number word, so the reader simply passes over it. Arabic and Sindhi
+     * number words are still NOT read (gender and dual forms in Arabic;
+     * Sindhi needs a native speaker) — only their digit + scale forms are.
+     */
+    private val PERSIAN_UNITS = mapOf(
+        "یک" to 1.0, "يك" to 1.0, "دو" to 2.0, "سه" to 3.0, "چهار" to 4.0, "پنج" to 5.0,
+        "شش" to 6.0, "هفت" to 7.0, "هشت" to 8.0, "نه" to 9.0, "ده" to 10.0,
+        "یازده" to 11.0, "دوازده" to 12.0, "سیزده" to 13.0, "چهارده" to 14.0,
+        "پانزده" to 15.0, "شانزده" to 16.0, "هفده" to 17.0, "هجده" to 18.0,
+        "هیجده" to 18.0, "نوزده" to 19.0,
+        "بیست" to 20.0, "سی" to 30.0, "چهل" to 40.0, "پنجاه" to 50.0,
+        "شصت" to 60.0, "هفتاد" to 70.0, "هشتاد" to 80.0, "نود" to 90.0,
+        // The hundreds are single words; each counts as a unit, the way
+        // "pachees" does, so "پانصد هزار" is 500 thousands.
+        "یکصد" to 100.0, "دویست" to 200.0, "سیصد" to 300.0,
+        "چهارصد" to 400.0, "پانصد" to 500.0, "ششصد" to 600.0, "هفتصد" to 700.0,
+        "هشتصد" to 800.0, "نهصد" to 900.0
+    )
+
+    private val PERSIAN_MULTIPLIERS = mapOf(
+        // صد folds like "sau": "پنج صد" (written apart) is 500, not 105.
+        "صد" to 100.0,
+        "هزار" to 1000.0, "میلیون" to 1_000_000.0, "ميليون" to 1_000_000.0
+    )
+
+    /**
      * Read [spoken] against the shop's own customer names.
      *
      * [knownNames] is passed in rather than looked up, so this stays pure and
      * can be checked without a database behind it.
      */
-    fun parse(spoken: String, knownNames: List<String>): Parsed {
+    fun parse(spoken: String, knownNames: List<String>, language: String? = null): Parsed {
         val text = normalise(spoken)
+        val persian = language?.lowercase()?.startsWith("fa") == true
         return Parsed(
             partyName = findParty(text, knownNames),
-            amount = findAmount(text),
+            amount = findAmount(text, persian),
             isGiven = findDirection(text)
         )
     }
@@ -436,7 +469,7 @@ object VoiceEntry {
      * Digits win when present: someone who says "5000" means 5000, and no
      * word-reading can improve on that.
      */
-    private fun findAmount(text: String): Double? {
+    private fun findAmount(text: String, persian: Boolean = false): Double? {
         Regex("\\d[\\d,]*(\\.\\d+)?").find(text)?.let { m ->
             val cleaned = m.value.replace(",", "")
             cleaned.toDoubleOrNull()?.let { digits ->
@@ -446,7 +479,7 @@ object VoiceEntry {
                 return if (mult != null) digits * mult else digits
             }
         }
-        return fromWords(text)
+        return fromWords(text, persian)
     }
 
     /**
@@ -460,19 +493,19 @@ object VoiceEntry {
      * thousand: reading it as the latter, which the earlier version did, gave
      * 1,100 for a figure a shopkeeper meant as 100,000.
      */
-    private fun fromWords(text: String): Double? {
+    private fun fromWords(text: String, persian: Boolean = false): Double? {
         var total = 0.0
         var current = 0.0
         var seen = false
 
         for (w in text.split(" ", "،", ",")) {
-            val unit = UNITS[w]
+            val unit = UNITS[w] ?: if (persian) PERSIAN_UNITS[w] else null
             if (unit != null) {
                 current += unit
                 seen = true
                 continue
             }
-            val mult = MULTIPLIERS[w] ?: continue
+            val mult = MULTIPLIERS[w] ?: (if (persian) PERSIAN_MULTIPLIERS[w] else null) ?: continue
             seen = true
             // A multiplier with nothing before it counts once: "hazaar" is one
             // thousand, not none.

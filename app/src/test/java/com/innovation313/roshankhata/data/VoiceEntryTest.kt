@@ -401,5 +401,23 @@ class VoiceEntryTest {
         val p = VoiceEntry.parse("۵ هزار", listOf("Hazar Khan"))
         assertNull(p.partyName)
     }
-}
 
+    /** Persian number words, only when the microphone was set to Persian (1 Oct). */
+    @Test
+    fun `persian number words are read when the language is persian`() {
+        fun amount(t: String) = VoiceEntry.parse(t, emptyList(), "fa-IR").amount
+        assertEquals(5000.0, amount("پنج هزار")!!, 0.0)
+        assertEquals(5500.0, amount("پنج هزار و پانصد")!!, 0.0)
+        assertEquals(25000.0, amount("بیست و پنج هزار")!!, 0.0)
+        assertEquals(500.0, amount("پنج صد")!!, 0.0)
+        assertEquals(2_300_000.0, amount("دو میلیون و سیصد هزار")!!, 0.0)
+    }
+
+    /** سی is thirty in Persian but a particle in Urdu: never read for Urdu. */
+    @Test
+    fun `persian words never touch an urdu sentence`() {
+        val p = VoiceEntry.parse("تھوڑی سی رقم پانچ ہزار دی", emptyList(), "ur-PK")
+        assertEquals(5000.0, p.amount!!, 0.0)
+        assertNull(VoiceEntry.parse("پنج هزار", emptyList(), "ur-PK").amount?.takeIf { it == 5000.0 })
+    }
+}
