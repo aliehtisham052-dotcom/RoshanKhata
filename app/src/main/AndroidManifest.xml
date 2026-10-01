@@ -47,6 +47,16 @@
         android:theme="@style/Theme.RoshanKhata">
 
         <!--
+          Ask Play Services to fetch the on-device text model when the app is
+          installed, so Scan bill works the first time it is tapped instead of
+          failing while the model downloads.
+        -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr" />
+
+
+        <!--
           The gate. It decides whether the ledger needs unlocking and hands
           straight through when App Lock is off, so an unlocked app costs the
           user nothing.

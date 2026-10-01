@@ -1503,4 +1503,24 @@
     <string name="bp_remove_logo">لوگو هٽايو</string>
     <string name="bp_logo_saved">لوگو محفوظ ٿي ويو</string>
     <string name="bp_logo_save_failed">لوگو محفوظ نه ٿي سگهيو. ٻي تصوير آزمايو.</string>
+
+    <!-- Scan bill (1 Oct) -->
+    <string name="bill_scan">بل جي تصوير اسڪين ڪريو</string>
+    <string name="bill_scan_camera">تصوير ڪڍو</string>
+    <string name="bill_scan_gallery">گيلري مان چونڊيو</string>
+    <string name="bill_scan_reading">بل پڙهيو پيو وڃي…</string>
+    <string name="bill_scan_unavailable">هن فون تي بل پڙهڻ جي سهولت اڃا تيار ناهي. هڪ منٽ لاءِ انٽرنيٽ هلايو ته جيئن گوگل پلي سروسز ان کي مڪمل ڪري، پوءِ ٻيهر ڪوشش ڪريو.</string>
+    <string name="bill_scan_nothing">هن تصوير مان ڪجهه ڪم جو نه پڙهي سگهيو. بل کي سٺي روشني ۾ سڌو رکو، سڄي تصوير ۾ بل هجي، ۽ ٻيهر ڪوشش ڪريو. انگريزي ۾ ڇپيل بل سڀ کان بهتر پڙهيا وڃن ٿا.</string>
+    <string name="bill_scan_found_title">بل تي هي مليو</string>
+    <string name="bill_scan_use">هي استعمال ڪريو</string>
+    <string name="bill_scan_number">بل نمبر: %1$s</string>
+    <string name="bill_scan_date">تاريخ: %1$s</string>
+    <string name="bill_scan_total">ڪل: %1$s</string>
+    <string name="bill_scan_item_line">%1$s — %2$s × %3$s = %4$s</string>
+    <string name="bill_scan_expiry">ميعاد: %1$s</string>
+    <string name="bill_scan_sum_matches">✓ سٽن جو جوڙ بل جي ڪل جي برابر آهي</string>
+    <string name="bill_scan_sum_differs">سٽن جو جوڙ %1$s آهي؛ بل تي %2$s لکيل آهي. ڪا سٽ رهجي وئي هجي — محفوظ ڪرڻ کان اڳ ڏسي وٺو.</string>
+    <string name="bill_scan_no_items">ڪا به مال جي سٽ نه پڙهي سگهي؛ هٿ سان شامل ڪريو.</string>
+    <string name="bill_scan_check">هي فون تصوير مان پڙهيو آهي. محفوظ ڪرڻ کان اڳ هر رقم ڏسي وٺو.</string>
+    <string name="bill_scan_items_ready">✓ هن بل سان %1$s</string>
 </resources>

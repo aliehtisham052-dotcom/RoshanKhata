@@ -1475,4 +1475,24 @@
     <string name="bp_remove_logo">لوگو ہٹائیں</string>
     <string name="bp_logo_saved">لوگو محفوظ ہو گیا</string>
     <string name="bp_logo_save_failed">لوگو محفوظ نہیں ہو سکا۔ کوئی اور تصویر آزمائیں۔</string>
+
+    <!-- Scan bill (1 Oct) -->
+    <string name="bill_scan">بل کی تصویر سکین کریں</string>
+    <string name="bill_scan_camera">تصویر کھینچیں</string>
+    <string name="bill_scan_gallery">گیلری سے چنیں</string>
+    <string name="bill_scan_reading">بل پڑھا جا رہا ہے…</string>
+    <string name="bill_scan_unavailable">اس فون پر بل پڑھنے کی سہولت ابھی تیار نہیں۔ ایک منٹ کے لیے انٹرنیٹ چلائیں تاکہ گوگل پلے سروسز اسے مکمل کر لے، پھر دوبارہ کوشش کریں۔</string>
+    <string name="bill_scan_nothing">اس تصویر سے کچھ کام کا نہیں پڑھا جا سکا۔ بل کو اچھی روشنی میں سیدھا رکھیں، پوری تصویر میں بل ہو، اور دوبارہ کوشش کریں۔ انگریزی میں چھپے بل سب سے بہتر پڑھے جاتے ہیں۔</string>
+    <string name="bill_scan_found_title">بل پر یہ ملا</string>
+    <string name="bill_scan_use">یہ استعمال کریں</string>
+    <string name="bill_scan_number">بل نمبر: %1$s</string>
+    <string name="bill_scan_date">تاریخ: %1$s</string>
+    <string name="bill_scan_total">کل: %1$s</string>
+    <string name="bill_scan_item_line">%1$s — %2$s × %3$s = %4$s</string>
+    <string name="bill_scan_expiry">میعاد: %1$s</string>
+    <string name="bill_scan_sum_matches">✓ سطروں کا جوڑ بل کے کل کے برابر ہے</string>
+    <string name="bill_scan_sum_differs">سطروں کا جوڑ %1$s ہے؛ بل پر %2$s لکھا ہے۔ کوئی سطر رہ گئی ہو سکتی ہے — محفوظ کرنے سے پہلے دیکھ لیں۔</string>
+    <string name="bill_scan_no_items">کوئی مال کی سطر نہیں پڑھی جا سکی؛ ہاتھ سے شامل کریں۔</string>
+    <string name="bill_scan_check">یہ فون نے تصویر سے پڑھا ہے۔ محفوظ کرنے سے پہلے ہر رقم دیکھ لیں۔</string>
+    <string name="bill_scan_items_ready">✓ اس بل کے ساتھ %1$s</string>
 </resources>

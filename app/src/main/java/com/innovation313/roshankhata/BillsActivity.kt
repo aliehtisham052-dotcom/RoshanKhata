@@ -4,6 +4,11 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.CheckBox
@@ -18,6 +23,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BillItem
+import com.innovation313.roshankhata.data.BillOcr
+import com.innovation313.roshankhata.data.BillScan
+import com.innovation313.roshankhata.data.ScannedBill
 import com.innovation313.roshankhata.data.BillSummary
 import com.innovation313.roshankhata.data.ExpiryWindow
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -68,10 +76,88 @@ class BillsActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_NEW_BILL_SUPPLIER = "new_bill_supplier"
+
+        private const val STATE_SCAN_PHOTO = "scan_photo"
+        private const val STATE_SCAN_SUPPLIER = "scan_supplier"
+        private const val STATE_SCAN_NUMBER = "scan_number"
+        private const val STATE_SCAN_TOTAL = "scan_total"
+        private const val STATE_SCAN_DATE = "scan_date"
+        private const val STATE_SCAN_DUE = "scan_due"
+        private const val STATE_SCAN_CASH = "scan_cash"
+        private const val STATE_SCAN_NOTE = "scan_note"
     }
 
     /** Items being collected for the bill currently being entered. */
     private val pendingItems = mutableListOf<BillItem>()
+
+    // ---------- Scan bill (1 Oct) ----------
+    //
+    // A photo of the supplier's printed bill is read on the phone (BillOcr +
+    // BillScan) and offered back to the owner to check; what they keep goes
+    // into the same form and the same pending items as typing would. Nothing
+    // from a photo is ever saved without passing through the form.
+    //
+    // The form is closed while the camera or gallery is open (another app is
+    // in front), so what was typed is held as [scanDraft] and the form is
+    // reopened from it afterwards — kept across onSaveInstanceState too,
+    // because Android may close this screen while the camera is up.
+
+    private var scanDraft: BillDraft? = null
+    private var scanPhotoPath: String? = null
+
+    private val takeBillPhoto = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { written: Boolean ->
+        val file = scanPhotoPath?.let { java.io.File(it) }
+        scanPhotoPath = null
+        val uri = if (written && file != null) {
+            runCatching {
+                androidx.core.content.FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+            }.getOrNull()
+        } else null
+        if (uri == null) {
+            file?.delete()
+            reopenFromScan()
+        } else {
+            readBillPhoto(uri, file)
+        }
+    }
+
+    private val pickBillPhoto = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        // The gallery's picture is the owner's own, never ours to delete.
+        if (uri == null) reopenFromScan() else readBillPhoto(uri, null)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        scanPhotoPath?.let { outState.putString(STATE_SCAN_PHOTO, it) }
+        scanDraft?.let { d ->
+            outState.putString(STATE_SCAN_SUPPLIER, d.supplierName)
+            outState.putString(STATE_SCAN_NUMBER, d.billNumber)
+            d.total?.let { outState.putDouble(STATE_SCAN_TOTAL, it) }
+            outState.putLong(STATE_SCAN_DATE, d.billDate)
+            d.dueDate?.let { outState.putLong(STATE_SCAN_DUE, it) }
+            outState.putBoolean(STATE_SCAN_CASH, d.paidCash)
+            outState.putString(STATE_SCAN_NOTE, d.note)
+        }
+    }
+
+    private fun restoreScanState(state: Bundle?) {
+        state ?: return
+        scanPhotoPath = state.getString(STATE_SCAN_PHOTO)
+        val supplier = state.getString(STATE_SCAN_SUPPLIER) ?: return
+        scanDraft = BillDraft(
+            supplierName = supplier,
+            billNumber = state.getString(STATE_SCAN_NUMBER),
+            total = if (state.containsKey(STATE_SCAN_TOTAL)) state.getDouble(STATE_SCAN_TOTAL) else null,
+            billDate = state.getLong(STATE_SCAN_DATE, System.currentTimeMillis()),
+            dueDate = if (state.containsKey(STATE_SCAN_DUE)) state.getLong(STATE_SCAN_DUE) else null,
+            paidCash = state.getBoolean(STATE_SCAN_CASH),
+            note = state.getString(STATE_SCAN_NOTE)
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +187,7 @@ class BillsActivity : BaseActivity() {
         if (savedInstanceState == null) {
             pendingSupplier = intent.getStringExtra(EXTRA_NEW_BILL_SUPPLIER)?.takeIf { it.isNotBlank() }
         }
+        restoreScanState(savedInstanceState)
         observe()
     }
 
@@ -170,6 +257,18 @@ class BillsActivity : BaseActivity() {
         val cbPaidCash: CheckBox = view.findViewById(R.id.cbPaidCash)
         val tvEffect: TextView = view.findViewById(R.id.tvBillLedgerEffect)
         val etNote: EditText = view.findViewById(R.id.etBillNote)
+        val btnScan: MaterialButton = view.findViewById(R.id.btnBillScan)
+        val tvPending: TextView = view.findViewById(R.id.tvBillPendingItems)
+
+        // Lines already waiting to go with this bill (from a scan, or added
+        // before a save that had to be reopened), so the owner can see them.
+        if (pendingItems.isNotEmpty()) {
+            tvPending.visibility = View.VISIBLE
+            tvPending.text = getString(
+                R.string.bill_scan_items_ready,
+                resources.getQuantityString(R.plurals.items_count, pendingItems.size, pendingItems.size)
+            )
+        }
 
         etSupplier.setAdapter(
             ArrayAdapter(
@@ -226,7 +325,7 @@ class BillsActivity : BaseActivity() {
         etSupplier.setOnItemClickListener { _, _, _, _ -> refreshEffect() }
         if (restore != null) refreshEffect()
 
-        MaterialAlertDialogBuilder(this)
+        val form = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.add_bill)
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
@@ -253,6 +352,200 @@ class BillsActivity : BaseActivity() {
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
+            .show()
+
+        btnScan.setOnClickListener {
+            val draft = BillDraft(
+                supplierName = etSupplier.text.toString().trim(),
+                billNumber = etNumber.text.toString().trim().ifEmpty { null },
+                total = Digits.parse(etTotal.text),
+                billDate = billDate,
+                dueDate = dueDate,
+                paidCash = cbPaidCash.isChecked,
+                note = etNote.text.toString().trim().ifEmpty { null }
+            )
+            form.dismiss()
+            chooseScanSource(draft)
+        }
+    }
+
+    // ---------- Scan bill ----------
+
+    private fun chooseScanSource(draft: BillDraft) {
+        scanDraft = draft
+        var chosen = false
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.bill_scan)
+            .setItems(
+                arrayOf(getString(R.string.bill_scan_camera), getString(R.string.bill_scan_gallery))
+            ) { _, which ->
+                chosen = true
+                if (which == 0) launchBillCamera()
+                else pickBillPhoto.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+            .setNegativeButton(R.string.cancel, null)
+            // Cancel, Back or a tap outside: straight back to the form as it was.
+            .setOnDismissListener { if (!chosen) reopenFromScan() }
+            .show()
+    }
+
+    private fun launchBillCamera() {
+        val file = runCatching {
+            val dir = java.io.File(cacheDir, "camera").apply { mkdirs() }
+            java.io.File(dir, "bill_scan_${System.currentTimeMillis()}.jpg")
+        }.getOrNull()
+        val uri = file?.let {
+            runCatching {
+                androidx.core.content.FileProvider.getUriForFile(this, "$packageName.fileprovider", it)
+            }.getOrNull()
+        }
+        if (file == null || uri == null) {
+            Toast.makeText(this, R.string.photo_save_failed, Toast.LENGTH_LONG).show()
+            reopenFromScan()
+            return
+        }
+        scanPhotoPath = file.absolutePath
+        try {
+            takeBillPhoto.launch(uri)
+        } catch (e: android.content.ActivityNotFoundException) {
+            scanPhotoPath = null
+            file.delete()
+            Toast.makeText(this, R.string.camera_unavailable, Toast.LENGTH_LONG).show()
+            reopenFromScan()
+        }
+    }
+
+    /** The form again, exactly as it was before the scan was started. */
+    private fun reopenFromScan(draft: BillDraft? = scanDraft) {
+        scanDraft = null
+        startNewBill(restore = draft ?: BillDraft("", null, null, System.currentTimeMillis(), null, false, null))
+    }
+
+    private fun readBillPhoto(photo: android.net.Uri, temp: java.io.File?) {
+        val reading = MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.bill_scan_reading)
+            .setCancelable(false)
+            .show()
+
+        lifecycleScope.launch {
+            val result = BillOcr.read(this@BillsActivity, photo)
+            // The camera's working file is done with once it has been read;
+            // the bill's text is all that is kept, and only in the form.
+            temp?.let { withContext(Dispatchers.IO) { it.delete() } }
+            val known = runCatching { dao.productsOnce().map { it.name } }.getOrDefault(emptyList())
+            val bill = (result as? BillOcr.Result.Read)?.let { read ->
+                withContext(Dispatchers.Default) { BillScan.parse(read.lines, known) }
+            }
+            reading.dismiss()
+
+            when {
+                result is BillOcr.Result.Unavailable -> scanProblem(R.string.bill_scan_unavailable)
+                bill == null || bill.isEmpty -> scanProblem(R.string.bill_scan_nothing)
+                else -> showScanReview(bill)
+            }
+        }
+    }
+
+    private fun scanProblem(message: Int) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.bill_scan)
+            .setMessage(message)
+            .setPositiveButton(R.string.ok, null)
+            .setOnDismissListener { reopenFromScan() }
+            .show()
+    }
+
+    /**
+     * What was read, for the owner to check before any of it reaches the
+     * form: the bill's number, date and total, every product line with a tick
+     * (all ticked), and whether the lines add up to the bill's own total.
+     */
+    private fun showScanReview(bill: ScannedBill) {
+        val dp = resources.displayMetrics.density
+        val pad = (24 * dp).toInt()
+        val column = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, (8 * dp).toInt(), pad, 0)
+        }
+        fun line(text: String, color: Int = R.color.ink, bold: Boolean = false) {
+            column.addView(TextView(this).apply {
+                this.text = text
+                textSize = 14f
+                setTextColor(getColor(color))
+                if (bold) setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setPadding(0, (3 * dp).toInt(), 0, (3 * dp).toInt())
+            })
+        }
+
+        bill.billNumber?.let { line(getString(R.string.bill_scan_number, it)) }
+        bill.billDate?.let { line(getString(R.string.bill_scan_date, Format.dateOnly(it))) }
+        bill.total?.let { line(getString(R.string.bill_scan_total, Format.money(it)), bold = true) }
+
+        val boxes = bill.items.map { item ->
+            CheckBox(this).apply {
+                isChecked = true
+                text = buildString {
+                    append(getString(
+                        R.string.bill_scan_item_line, item.name, Format.plain(item.quantity),
+                        Format.money(item.rate), Format.money(item.amount)
+                    ))
+                    item.batch?.let { append("\n").append(getString(R.string.batch_label, it)) }
+                    item.expiry?.let { append("\n").append(getString(R.string.bill_scan_expiry, Format.dateOnly(it))) }
+                }
+                setTextColor(getColor(R.color.ink))
+                setPadding(0, (6 * dp).toInt(), 0, (6 * dp).toInt())
+            }.also { column.addView(it) }
+        }
+
+        if (bill.items.isNotEmpty() && bill.total != null) {
+            val sum = bill.itemsTotal
+            if (kotlin.math.abs(sum - bill.total) < 1.0) {
+                line(getString(R.string.bill_scan_sum_matches), R.color.green_got_text, bold = true)
+            } else {
+                line(getString(R.string.bill_scan_sum_differs, Format.money(sum), Format.money(bill.total)), R.color.gold_accent, bold = true)
+            }
+        }
+        if (bill.items.isEmpty()) line(getString(R.string.bill_scan_no_items), R.color.text_muted)
+        line(getString(R.string.bill_scan_check), R.color.text_muted)
+
+        val scroll = ScrollView(this).apply {
+            addView(column, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        }
+
+        var used = false
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.bill_scan_found_title)
+            .setView(scroll)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.bill_scan_use) { _, _ ->
+                used = true
+                val draft = scanDraft ?: BillDraft("", null, null, System.currentTimeMillis(), null, false, null)
+                val kept = bill.items.filterIndexed { i, _ -> boxes[i].isChecked }
+                kept.forEach { item ->
+                    pendingItems.add(
+                        BillItem(
+                            billId = 0,
+                            productName = item.name,
+                            batchNumber = item.batch,
+                            expiryDate = item.expiry,
+                            quantity = item.quantity,
+                            unit = item.unit,
+                            rate = item.rate
+                        )
+                    )
+                }
+                // Only blanks are filled: anything the owner typed stays theirs.
+                // The bill's own total if it was read, else the ticked lines'.
+                val merged = draft.copy(
+                    billNumber = draft.billNumber ?: bill.billNumber,
+                    total = draft.total ?: bill.total ?: kept.sumOf { it.amount }.takeIf { it > 0 },
+                    billDate = bill.billDate ?: draft.billDate
+                )
+                reopenFromScan(merged)
+            }
+            .setOnDismissListener { if (!used) reopenFromScan() }
             .show()
     }
 

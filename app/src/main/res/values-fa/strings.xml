@@ -1503,4 +1503,24 @@
     <string name="bp_remove_logo">حذف لوگو</string>
     <string name="bp_logo_saved">لوگو ذخیره شد</string>
     <string name="bp_logo_save_failed">لوگو ذخیره نشد. تصویر دیگری را امتحان کنید.</string>
+
+    <!-- Scan bill (1 Oct) -->
+    <string name="bill_scan">اسکن عکس فاکتور</string>
+    <string name="bill_scan_camera">گرفتن عکس</string>
+    <string name="bill_scan_gallery">انتخاب از گالری</string>
+    <string name="bill_scan_reading">در حال خواندن فاکتور…</string>
+    <string name="bill_scan_unavailable">خواندن فاکتور هنوز روی این گوشی آماده نیست. یک دقیقه به اینترنت وصل شوید تا سرویس‌های Google Play آن را کامل کنند، سپس دوباره امتحان کنید.</string>
+    <string name="bill_scan_nothing">از این عکس چیز مفیدی خوانده نشد. فاکتور را صاف و در نور خوب قرار دهید، کل کادر را با آن پر کنید و دوباره امتحان کنید. فاکتورهای چاپی انگلیسی بهتر خوانده می‌شوند.</string>
+    <string name="bill_scan_found_title">در فاکتور پیدا شد</string>
+    <string name="bill_scan_use">استفاده از این‌ها</string>
+    <string name="bill_scan_number">شماره فاکتور: %1$s</string>
+    <string name="bill_scan_date">تاریخ: %1$s</string>
+    <string name="bill_scan_total">جمع: %1$s</string>
+    <string name="bill_scan_item_line">%1$s — %2$s × %3$s = %4$s</string>
+    <string name="bill_scan_expiry">انقضا: %1$s</string>
+    <string name="bill_scan_sum_matches">✓ جمع سطرها با جمع فاکتور برابر است</string>
+    <string name="bill_scan_sum_differs">جمع سطرها %1$s است؛ فاکتور %2$s نوشته است. ممکن است سطری جا مانده باشد — پیش از ذخیره بررسی کنید.</string>
+    <string name="bill_scan_no_items">هیچ سطر کالایی خوانده نشد؛ آن‌ها را دستی اضافه کنید.</string>
+    <string name="bill_scan_check">این را گوشی از عکس خوانده است. پیش از ذخیره هر رقم را بررسی کنید.</string>
+    <string name="bill_scan_items_ready">✓ همراه این فاکتور: %1$s</string>
 </resources>
