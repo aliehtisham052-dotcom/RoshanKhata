@@ -91,6 +91,17 @@ interface KhataDao {
     )
     fun observePartiesWithBalance(): Flow<List<PartyWithBalance>>
 
+    /**
+     * Every live ledger line, reduced to what [PaymentHabit] reads: whose,
+     * when, how much, which way. Deleted (recycle-bin) lines are left out,
+     * the same as the balance above, so the habit and the balance agree.
+     */
+    @Query(
+        "SELECT partyId, timestamp, amount, isGiven FROM transactions " +
+            "WHERE isDeleted = 0 ORDER BY partyId, timestamp"
+    )
+    fun observeLedgerPoints(): Flow<List<LedgerPoint>>
+
     // ---------- Ledger entries ----------
 
     @Insert

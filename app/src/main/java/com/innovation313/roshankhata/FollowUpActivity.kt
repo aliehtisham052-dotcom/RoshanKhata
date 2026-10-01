@@ -11,11 +11,15 @@ import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyWithBalance
+import com.innovation313.roshankhata.data.PaymentHabit
 import com.innovation313.roshankhata.ui.FollowUpAdapter
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.Reminder
 import com.innovation313.roshankhata.ui.ScreenInsets
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 /**
@@ -28,6 +32,11 @@ import kotlinx.coroutines.launch
  *
  * The list is live (the same reactive stream the home screen uses), so a
  * payment recorded while this screen is open drops the row on its own.
+ *
+ * Each row also carries the customer's own payment habit (PaymentHabit,
+ * 1 Oct): "usually pays every 30 days", and when they have fallen behind it,
+ * "paying late". Those late by their own rhythm come first, most overdue at
+ * the top; everyone else keeps the quiet-longest order below them.
  */
 class FollowUpActivity : BaseActivity() {
 
@@ -64,28 +73,42 @@ class FollowUpActivity : BaseActivity() {
 
     private fun observeDebtors() {
         lifecycleScope.launch {
-            dao.observePartiesWithBalance().collectLatest { all ->
-                // balance > 0 means they owe the shop — the only rows this
-                // screen is for. lastActivity ascending puts the account
-                // that has been quiet longest at the top; the bigger balance
-                // wins between two equally quiet ones.
-                val debtors = all.filter { Money.isPositive(it.balance) }
-                    .sortedWith(
-                        compareBy<PartyWithBalance> { it.lastActivity }
+            dao.observePartiesWithBalance()
+                .combine(dao.observeLedgerPoints()) { all, points ->
+                    // balance > 0 means they owe the shop — the only rows
+                    // this screen is for.
+                    val debtors = all.filter { Money.isPositive(it.balance) }
+                    val habits = PaymentHabit.forAll(points)
+                    // Late by their own habit first, the furthest behind at
+                    // the top. Then, as before, the account quiet longest,
+                    // the bigger balance winning between two equally quiet.
+                    val ordered = debtors.sortedWith(
+                        compareByDescending<PartyWithBalance> { habits[it.id]?.isLate == true }
+                            .thenByDescending { p ->
+                                habits[p.id]?.takeIf { it.isLate }
+                                    ?.let { it.waitingDays - it.typicalDays } ?: 0
+                            }
+                            .thenBy { it.lastActivity }
                             .thenByDescending { it.balance }
                     )
+                    ordered to habits
+                }
+                // A big book is thousands of lines; the arithmetic stays off
+                // the main thread.
+                .flowOn(Dispatchers.Default)
+                .collectLatest { (debtors, habits) ->
+                    adapter.habits = habits
+                    adapter.submitList(debtors)
 
-                adapter.submitList(debtors)
-
-                val total = debtors.sumOf { it.balance }
-                tvSummary.text =
-                    resources.getQuantityString(
-                        R.plurals.followup_summary, debtors.size,
-                        debtors.size, Format.money(total)
-                    )
-                tvSummary.visibility = if (debtors.isEmpty()) View.GONE else View.VISIBLE
-                tvEmpty.visibility = if (debtors.isEmpty()) View.VISIBLE else View.GONE
-            }
+                    val total = debtors.sumOf { it.balance }
+                    tvSummary.text =
+                        resources.getQuantityString(
+                            R.plurals.followup_summary, debtors.size,
+                            debtors.size, Format.money(total)
+                        )
+                    tvSummary.visibility = if (debtors.isEmpty()) View.GONE else View.VISIBLE
+                    tvEmpty.visibility = if (debtors.isEmpty()) View.VISIBLE else View.GONE
+                }
         }
     }
 

@@ -52,6 +52,14 @@
         <item quantity="one">Last transaction %1$d day ago</item>
         <item quantity="other">Last transaction %1$d days ago</item>
     </plurals>
+    <plurals name="followup_habit">
+        <item quantity="one">Usually pays every %1$d day</item>
+        <item quantity="other">Usually pays every %1$d days</item>
+    </plurals>
+    <plurals name="followup_habit_late">
+        <item quantity="one">Paying late — %1$d day now, usually ~%2$d</item>
+        <item quantity="other">Paying late — %1$d days now, usually ~%2$d</item>
+    </plurals>
     <string name="followup_today">Transacted today</string>
     <string name="followup_empty">No one owes you anything right now — all settled.</string>
     <string name="coach_title_followup">Follow-up</string>

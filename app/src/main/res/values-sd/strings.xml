@@ -48,6 +48,14 @@
         <item quantity="one">آخري ڏيتي ليتي %1$d ڏينهن اڳ</item>
         <item quantity="other">آخري ڏيتي ليتي %1$d ڏينهن اڳ</item>
     </plurals>
+    <plurals name="followup_habit">
+        <item quantity="one">عام طور هر %1$d ڏينهن ۾ ادائيگي</item>
+        <item quantity="other">عام طور هر %1$d ڏينهن ۾ ادائيگي</item>
+    </plurals>
+    <plurals name="followup_habit_late">
+        <item quantity="one">ادائيگي ۾ دير — هاڻي %1$d ڏينهن، عام طور ~%2$d</item>
+        <item quantity="other">ادائيگي ۾ دير — هاڻي %1$d ڏينهن، عام طور ~%2$d</item>
+    </plurals>
     <string name="followup_today">اڄ ڏيتي ليتي ٿي</string>
     <string name="followup_empty">هن وقت ڪنهن جي ذمي ڪجهه ناهي — سڀ ادا ٿيل.</string>
     <string name="coach_title_followup">وصولي</string>

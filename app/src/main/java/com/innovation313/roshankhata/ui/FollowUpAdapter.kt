@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.PartyWithBalance
+import com.innovation313.roshankhata.data.PaymentHabit
 
 /**
  * Everyone who owes the shop, as an action list rather than a balance view.
@@ -30,9 +31,17 @@ class FollowUpAdapter(
     private val onSend: (PartyWithBalance) -> Unit
 ) : ListAdapter<PartyWithBalance, FollowUpAdapter.VH>(DIFF) {
 
+    /**
+     * Each debtor's payment habit, by party id. Set just before each
+     * submitList, so a list and the habits beside it always arrive together;
+     * a party missing here has too little history and shows no habit line.
+     */
+    var habits: Map<Long, PaymentHabit.Habit> = emptyMap()
+
     class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvName: TextView = view.findViewById(R.id.tvFollowUpName)
         val tvAge: TextView = view.findViewById(R.id.tvFollowUpAge)
+        val tvHabit: TextView = view.findViewById(R.id.tvFollowUpHabit)
         val tvAmount: TextView = view.findViewById(R.id.tvFollowUpAmount)
         val tvSend: TextView = view.findViewById(R.id.tvFollowUpSend)
     }
@@ -64,6 +73,29 @@ class FollowUpAdapter(
         holder.tvAge.setTextColor(
             ContextCompat.getColor(ctx, if (overdue) R.color.red_gave_text else R.color.text_muted)
         )
+
+        // Their own rhythm: muted when on time, gold when behind it — gold,
+        // not red, because red already means "30 days quiet" on the line
+        // above and the two are different facts.
+        val habit = habits[p.id]
+        if (habit == null) {
+            holder.tvHabit.visibility = View.GONE
+        } else {
+            holder.tvHabit.visibility = View.VISIBLE
+            val res = ctx.resources
+            holder.tvHabit.text = if (habit.isLate) {
+                res.getQuantityString(
+                    R.plurals.followup_habit_late, habit.waitingDays,
+                    habit.waitingDays, habit.typicalDays
+                )
+            } else {
+                res.getQuantityString(R.plurals.followup_habit, habit.typicalDays, habit.typicalDays)
+            }
+            holder.tvHabit.setTextColor(
+                ContextCompat.getColor(ctx, if (habit.isLate) R.color.gold_accent else R.color.text_muted)
+            )
+            holder.tvHabit.setTypeface(null, if (habit.isLate) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+        }
 
         // A customer with no number cannot be messaged, and the row should
         // say so rather than opening WhatsApp to nothing.

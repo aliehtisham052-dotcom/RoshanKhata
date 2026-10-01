@@ -56,6 +56,22 @@
         <item quantity="many">آخر معاملة قبل %1$d يومًا</item>
         <item quantity="other">آخر معاملة قبل %1$d يوم</item>
     </plurals>
+    <plurals name="followup_habit">
+        <item quantity="zero">يسدد عادةً كل %1$d يوم</item>
+        <item quantity="one">يسدد عادةً كل يوم (%1$d)</item>
+        <item quantity="two">يسدد عادةً كل يومين (%1$d)</item>
+        <item quantity="few">يسدد عادةً كل %1$d أيام</item>
+        <item quantity="many">يسدد عادةً كل %1$d يومًا</item>
+        <item quantity="other">يسدد عادةً كل %1$d يوم</item>
+    </plurals>
+    <plurals name="followup_habit_late">
+        <item quantity="zero">متأخر في السداد — الآن %1$d يوم، عادةً ~%2$d</item>
+        <item quantity="one">متأخر في السداد — الآن %1$d يوم، عادةً ~%2$d</item>
+        <item quantity="two">متأخر في السداد — الآن %1$d يوم، عادةً ~%2$d</item>
+        <item quantity="few">متأخر في السداد — الآن %1$d أيام، عادةً ~%2$d</item>
+        <item quantity="many">متأخر في السداد — الآن %1$d يومًا، عادةً ~%2$d</item>
+        <item quantity="other">متأخر في السداد — الآن %1$d يوم، عادةً ~%2$d</item>
+    </plurals>
     <string name="followup_today">تمت معاملة اليوم</string>
     <string name="followup_empty">لا أحد مدين لك الآن — الكل مُسوّى.</string>
     <string name="coach_title_followup">المتابعة</string>

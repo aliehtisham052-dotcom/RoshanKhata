@@ -48,6 +48,14 @@
         <item quantity="one">Aakhri len-den %1$d din pehle</item>
         <item quantity="other">Aakhri len-den %1$d din pehle</item>
     </plurals>
+    <plurals name="followup_habit">
+        <item quantity="one">Aam tor par har %1$d din mein adaigi</item>
+        <item quantity="other">Aam tor par har %1$d din mein adaigi</item>
+    </plurals>
+    <plurals name="followup_habit_late">
+        <item quantity="one">Adaigi mein der — ab %1$d din, aam tor par ~%2$d</item>
+        <item quantity="other">Adaigi mein der — ab %1$d din, aam tor par ~%2$d</item>
+    </plurals>
     <string name="followup_today">Aaj len-den hua</string>
     <string name="followup_empty">Is waqt kisi ke zimme kuch nahi — sab settled.</string>
     <string name="coach_title_followup">Wusooli</string>
