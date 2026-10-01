@@ -1552,4 +1552,5 @@
     <string name="bill_photo_missing">هن بل جي تصوير هن فون تي موجود ناهي</string>
     <string name="pdf_insp_by_type">قسم موجب: %1$s</string>
     <string name="pdf_insp_type_not_set">قسم درج ناهي</string>
+    <string name="followup_reminded_today">اڄ کوليو ✓</string>
 </resources>

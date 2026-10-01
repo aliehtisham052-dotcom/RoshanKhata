@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.FollowUpRank
+import com.innovation313.roshankhata.data.ReminderLog
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyWithBalance
@@ -47,6 +48,14 @@ class FollowUpActivity : BaseActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
+    /** Reminders opened today (ReminderLog); re-read on return from WhatsApp. */
+    private val reminded = kotlinx.coroutines.flow.MutableStateFlow<Set<Long>>(emptySet())
+
+    override fun onResume() {
+        super.onResume()
+        reminded.value = ReminderLog.openedToday(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_followup)
@@ -76,7 +85,8 @@ class FollowUpActivity : BaseActivity() {
         lifecycleScope.launch {
             dao.observePartiesWithBalance()
                 .combine(dao.observeLedgerPoints()) { all, points -> all to points }
-                .combine(dao.observePromises()) { (all, points), promiseRows ->
+                .combine(dao.observePromises()) { (all, points), promiseRows -> Triple(all, points, promiseRows) }
+                .combine(reminded) { (all, points, promiseRows), remindedToday ->
                     // balance > 0 means they owe the shop — the only rows
                     // this screen is for.
                     val debtors = all.filter { Money.isPositive(it.balance) }
@@ -86,9 +96,9 @@ class FollowUpActivity : BaseActivity() {
                     val tz = java.util.TimeZone.getDefault()
                     // Promise due first, then late by habit, then quiet longest:
                     // see FollowUpRank.
-                    val ordered = FollowUpRank.order(debtors, habits, promises, now, tz)
-                    val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz) }
-                    FollowUpState(ordered, habits, promises, today)
+                    val ordered = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday)
+                    val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday) }
+                    FollowUpState(ordered, habits, promises, today, remindedToday)
                 }
                 // A big book is thousands of lines; the arithmetic stays off
                 // the main thread.
@@ -97,7 +107,10 @@ class FollowUpActivity : BaseActivity() {
                     val debtors = state.debtors
                     adapter.habits = state.habits
                     adapter.promises = state.promises
-                    adapter.submitList(debtors)
+                    // Rows are compared by party only, so a new mark needs a rebind.
+                    val marksChanged = adapter.remindedToday != state.remindedToday
+                    adapter.remindedToday = state.remindedToday
+                    adapter.submitList(debtors) { if (marksChanged) adapter.notifyDataSetChanged() }
 
                     val total = debtors.sumOf { it.balance }
                     val summary = resources.getQuantityString(
@@ -132,6 +145,8 @@ class FollowUpActivity : BaseActivity() {
                 promisedDate = promisedDate
             )
             Reminder.sendViaWhatsApp(this@FollowUpActivity, party.phone, message)
+            ReminderLog.record(this@FollowUpActivity, party.id)
+            reminded.value = ReminderLog.openedToday(this@FollowUpActivity)
         }
     }
 }
@@ -140,5 +155,6 @@ private class FollowUpState(
     val debtors: List<PartyWithBalance>,
     val habits: Map<Long, PaymentHabit.Habit>,
     val promises: Map<Long, Long>,
-    val today: Int
+    val today: Int,
+    val remindedToday: Set<Long>
 )

@@ -42,6 +42,9 @@ class FollowUpAdapter(
     /** Party id → earliest open promised date; set with [habits], before submitList. */
     var promises: Map<Long, Long> = emptyMap()
 
+    /** Parties whose reminder was already opened today; see ReminderLog. */
+    var remindedToday: Set<Long> = emptySet()
+
     class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvName: TextView = view.findViewById(R.id.tvFollowUpName)
         val tvAge: TextView = view.findViewById(R.id.tvFollowUpAge)
@@ -107,7 +110,11 @@ class FollowUpAdapter(
         // say so rather than opening WhatsApp to nothing.
         val hasPhone = !p.phone.isNullOrBlank()
         holder.tvSend.text = ctx.getString(
-            if (hasPhone) R.string.promo_send else R.string.no_phone_number
+            when {
+                !hasPhone -> R.string.no_phone_number
+                p.id in remindedToday -> R.string.followup_reminded_today
+                else -> R.string.promo_send
+            }
         )
         holder.tvSend.isEnabled = hasPhone
         holder.tvSend.setOnClickListener { if (hasPhone) onSend(p) }

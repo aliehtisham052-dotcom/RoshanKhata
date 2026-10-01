@@ -38,4 +38,12 @@ class FollowUpRankTest {
         assertEquals(true, FollowUpRank.remindToday(3, habits, promises, now, tz))
         assertEquals(false, FollowUpRank.remindToday(1, habits, promises, now, tz))
     }
+
+    @Test
+    fun `a customer reminded today drops to the bottom and is not counted`() {
+        val promises = mapOf(1L to now - day)
+        val list = listOf(p(1, now - 90 * day), p(2, now - 5 * day))
+        assertEquals(listOf(2L, 1L), FollowUpRank.order(list, emptyMap(), promises, now, tz, setOf(1L)).map { it.id })
+        assertEquals(false, FollowUpRank.remindToday(1, emptyMap(), promises, now, tz, setOf(1L)))
+    }
 }
