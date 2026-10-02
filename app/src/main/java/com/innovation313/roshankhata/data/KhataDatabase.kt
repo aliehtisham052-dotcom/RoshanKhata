@@ -20,7 +20,8 @@ import androidx.room.RoomDatabase
         Invoice::class,
         InvoiceItem::class,
         EntryItem::class,
-        DayClose::class
+        DayClose::class,
+        Scheme::class
     ],
     version = KHATA_DB_VERSION,
     exportSchema = true

@@ -177,6 +177,9 @@ class BillsActivity : BaseActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnTrace).setOnClickListener { showTraceDialog() }
+        findViewById<MaterialButton>(R.id.btnSchemes).setOnClickListener {
+            startActivity(android.content.Intent(this, SchemesActivity::class.java))
+        }
 
         if (savedInstanceState == null) {
             pendingSupplier = intent.getStringExtra(EXTRA_NEW_BILL_SUPPLIER)?.takeIf { it.isNotBlank() }
@@ -1134,13 +1137,15 @@ class BillsActivity : BaseActivity() {
 
     private fun showItemActions(billId: Long, item: BillItem) {
         val options = arrayOf(
-            getString(R.string.edit_item), getString(R.string.delete_item), getString(R.string.batch_buyers_action)
+            getString(R.string.edit_item), getString(R.string.delete_item),
+            getString(R.string.batch_buyers_action), getString(R.string.return_action)
         )
         MaterialAlertDialogBuilder(this)
             .setTitle(item.productName)
             .setItems(options) { _, which ->
                 when (which) {
                     2 -> com.innovation313.roshankhata.ui.BatchBuyersDialog.show(this, lifecycleScope, dao, item.id)
+                    3 -> com.innovation313.roshankhata.ui.BatchReturnDialog.show(this, lifecycleScope, dao, item.id)
                     0 -> showAddItemDialog(existing = item) { updated ->
                         AppScope.launch {
                             // The name on the line decides which product the
@@ -1294,13 +1299,23 @@ class BillsActivity : BaseActivity() {
                         }
                     }
 
-                    MaterialAlertDialogBuilder(this@BillsActivity)
+                    val dialog = MaterialAlertDialogBuilder(this@BillsActivity)
                         .setTitle(resources.getQuantityString(
                             R.plurals.trace_results, results.size, results.size
                         ))
-                        .setMessage(text)
                         .setPositiveButton(R.string.ok, null)
-                        .show()
+                    if (results.isEmpty()) {
+                        dialog.setMessage(text)
+                    } else {
+                        // Each found batch opens on: who bought it, or send it back (2 Oct).
+                        val blocks = text.split("\n\n").toTypedArray()
+                        dialog.setItems(blocks) { _, i ->
+                            com.innovation313.roshankhata.ui.BatchReturnDialog.chooser(
+                                this@BillsActivity, lifecycleScope, dao, results[i].itemId
+                            )
+                        }
+                    }
+                    dialog.show()
                 }
             }
             .show()
