@@ -1678,4 +1678,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="harvest_promise_other_date">Koi aur tareekh</string>
     <string name="harvest_promise_remove">Wada hatayein</string>
     <string name="harvest_promise_header">Wada: %1$s</string>
+    <string name="bill_similar_supplier">Yeh %1$s lagta hai, jo pehle se aap ke khate mein hai.</string>
+    <string name="bill_use_existing">%1$s istemal karein</string>
 </resources>

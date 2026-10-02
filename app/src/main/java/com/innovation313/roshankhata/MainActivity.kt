@@ -15,13 +15,9 @@ import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PaymentHabit
 import com.innovation313.roshankhata.data.KhataDatabase
-import com.innovation313.roshankhata.data.AppLock
-import com.innovation313.roshankhata.data.TextSize
-import com.innovation313.roshankhata.data.ThemeMode
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.ui.CoachMarkController
 import com.innovation313.roshankhata.ui.Format
-import com.innovation313.roshankhata.ui.ScreenPrivacyDialog
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -290,140 +286,12 @@ class MainActivity : BaseActivity() {
             when (item.itemId) {
                 R.id.nav_home -> true // already here
                 R.id.nav_more -> {
-                    showMoreSheet()
+                    com.innovation313.roshankhata.ui.MoreSheet.show(this)
                     false
                 }
                 else -> false
             }
         }
-    }
-
-    /**
-     * What is left after every real feature moved onto the grid: the things
-     * set once and then forgotten. Too few to earn tiles, too useful to drop.
-     */
-    private fun showMoreSheet() {
-        // Products & stock moved onto the grid (18 Sep 2026) — it earned a tile,
-        // not a line in a settings list. What is left here is genuinely the
-        // set-once-and-forget kind.
-        val options = arrayOf(
-            getString(R.string.app_lock),
-            getString(R.string.screen_privacy),
-            getString(R.string.duplicate_customers),
-            getString(R.string.language),
-            getString(R.string.text_size),
-            getString(R.string.theme),
-            getString(R.string.help_support),
-            getString(R.string.about_us)
-        )
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.more_title)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showAppLockSettings()
-                    1 -> ScreenPrivacyDialog.show(this)
-                    2 -> startActivity(Intent(this, DuplicateCustomersActivity::class.java))
-                    3 -> startActivity(Intent(this, LanguageActivity::class.java))
-                    4 -> showTextSizeSettings()
-                    5 -> showThemeSettings()
-                    // Reporting a problem lives inside Help now, so there is
-                    // one door marked "something is wrong" rather than two.
-                    6 -> startActivity(Intent(this, HelpActivity::class.java))
-                    7 -> startActivity(Intent(this, AboutActivity::class.java))
-                }
-            }
-            .show()
-    }
-
-    /**
-     * The owner's own text size (see [TextSize]). Home is the bottom of the
-     * back stack — every other screen is opened from it — so rebuilding Home
-     * is enough: each screen opened afterwards is built at the new size.
-     */
-    private fun showTextSizeSettings() {
-        val labels = arrayOf(
-            getString(R.string.text_size_small),
-            getString(R.string.text_size_normal),
-            getString(R.string.text_size_large),
-            getString(R.string.text_size_largest)
-        )
-        val current = TextSize.level(this)
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.text_size)
-            .setSingleChoiceItems(labels, current) { dialog, which ->
-                dialog.dismiss()
-                if (which != current) {
-                    TextSize.setLevel(this, which)
-                    recreate()
-                }
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
-
-    /**
-     * Light, dark, or the phone's own setting (see [ThemeMode]). No recreate()
-     * here: setDefaultNightMode rebuilds every open screen by itself.
-     */
-    private fun showThemeSettings() {
-        val labels = arrayOf(
-            getString(R.string.theme_light),
-            getString(R.string.theme_dark),
-            getString(R.string.theme_system)
-        )
-        val current = ThemeMode.get(this)
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.theme)
-            .setSingleChoiceItems(labels, current) { dialog, which ->
-                dialog.dismiss()
-                if (which != current) ThemeMode.set(this, which)
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
-
-    /** Mirrors the ledger screen's own dialog, so App Lock reads the same from either side. */
-    private fun showAppLockSettings() {
-        if (AppLock.noneEnrolled(this)) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.app_lock)
-                .setMessage(R.string.app_lock_no_screen_lock)
-                .setPositiveButton(R.string.ok, null)
-                .show()
-            return
-        }
-
-        if (!AppLock.isAvailable(this)) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.app_lock)
-                .setMessage(R.string.app_lock_unavailable)
-                .setPositiveButton(R.string.ok, null)
-                .show()
-            return
-        }
-
-        val enabled = AppLock.isEnabled(this)
-        val status = getString(
-            if (enabled) R.string.app_lock_enabled else R.string.app_lock_disabled
-        )
-        val message = status + "\n\n" + getString(R.string.app_lock_explain)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.app_lock)
-            .setMessage(message)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(
-                if (enabled) R.string.app_lock_turn_off else R.string.app_lock_turn_on
-            ) { _, _ ->
-                AppLock.setEnabled(this, !enabled)
-                Toast.makeText(
-                    this,
-                    if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            .show()
     }
 
     /**

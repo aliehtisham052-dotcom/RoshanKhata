@@ -23,7 +23,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppScope
-import com.innovation313.roshankhata.data.AppLock
 import com.innovation313.roshankhata.data.BackupReminder
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -42,7 +41,6 @@ import com.innovation313.roshankhata.data.VoiceEntry
 import com.innovation313.roshankhata.data.VoiceLanguage
 import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.PartyAdapter
-import com.innovation313.roshankhata.ui.ScreenPrivacyDialog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
@@ -730,56 +728,6 @@ class KhataActivity : BaseActivity() {
     }
 
     /**
-     * App Lock settings.
-     *
-     * If the phone has no screen lock at all there is nothing to authenticate
-     * against, so we say so plainly instead of offering a switch that would do
-     * nothing — a lock that only looks like a lock is worse than none.
-     */
-    private fun showAppLockSettings() {
-        if (AppLock.noneEnrolled(this)) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.app_lock)
-                .setMessage(R.string.app_lock_no_screen_lock)
-                .setPositiveButton(R.string.ok, null)
-                .show()
-            return
-        }
-
-        if (!AppLock.isAvailable(this)) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.app_lock)
-                .setMessage(R.string.app_lock_unavailable)
-                .setPositiveButton(R.string.ok, null)
-                .show()
-            return
-        }
-
-        val enabled = AppLock.isEnabled(this)
-
-        val status = getString(
-            if (enabled) R.string.app_lock_enabled else R.string.app_lock_disabled
-        )
-        val message = status + "\n\n" + getString(R.string.app_lock_explain)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.app_lock)
-            .setMessage(message)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(
-                if (enabled) R.string.app_lock_turn_off else R.string.app_lock_turn_on
-            ) { _, _ ->
-                AppLock.setEnabled(this, !enabled)
-                Toast.makeText(
-                    this,
-                    if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            .show()
-    }
-
-    /**
      * Filter, then sort. Search matches name or number — and the number match
      * strips separators from both sides, so "3001234" finds "0300-123 4567"
      * the way a person would expect it to.
@@ -1017,44 +965,13 @@ class KhataActivity : BaseActivity() {
                     false
                 }
                 R.id.nav_more -> {
-                    showMoreSheet()
+                    com.innovation313.roshankhata.ui.MoreSheet.show(this)
                     false
                 }
                 else -> false
             }
         }
     }
-
-    /** The set-once items, the same short list Home offers. */
-    private fun showMoreSheet() {
-        val options = arrayOf(
-            getString(R.string.app_lock),
-            getString(R.string.screen_privacy),
-            getString(R.string.products_stock),
-            getString(R.string.duplicate_customers),
-            getString(R.string.language),
-            getString(R.string.help_support),
-            getString(R.string.about_us)
-        )
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.more_title)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showAppLockSettings()
-                    1 -> ScreenPrivacyDialog.show(this)
-                    2 -> startActivity(Intent(this, ProductsActivity::class.java))
-                    3 -> startActivity(Intent(this, DuplicateCustomersActivity::class.java))
-                    4 -> startActivity(Intent(this, LanguageActivity::class.java))
-                    // Reporting a problem lives inside Help now, so there is
-                    // one door marked "something is wrong" rather than two.
-                    5 -> startActivity(Intent(this, HelpActivity::class.java))
-                    6 -> startActivity(Intent(this, AboutActivity::class.java))
-                }
-            }
-            .show()
-    }
-
 
     override fun onResume() {
         super.onResume()

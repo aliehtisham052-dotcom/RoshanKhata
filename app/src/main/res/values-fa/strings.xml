@@ -1706,4 +1706,6 @@
     <string name="harvest_promise_other_date">تاریخ دیگر</string>
     <string name="harvest_promise_remove">حذف قول</string>
     <string name="harvest_promise_header">قول: %1$s</string>
+    <string name="bill_similar_supplier">به نظر %1$s است که در دفتر شما هست.</string>
+    <string name="bill_use_existing">استفاده از %1$s</string>
 </resources>

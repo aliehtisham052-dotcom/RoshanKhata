@@ -44,6 +44,31 @@
           before any content appeared. Fading in place has no journey to watch.
         -->
         <item name="android:windowAnimationStyle">@style/ScreenChange</item>
+
+        <!-- Every MaterialAlertDialog: buttons that fit at the largest text size. -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.RoshanKhata.Dialog</item>
+    </style>
+
+    <!--
+      Dialog buttons (2 Oct). At the largest text size, ALL CAPS with Material's
+      wide letter spacing made two or three buttons too wide for one row, so
+      the dialog stacked them in a strip that scrolls — and the bottom one
+      (Cancel, Skip) sat half off the dialog where nobody could see it. Normal
+      case and normal spacing take far less width, so they stay side by side;
+      a label that still cannot fit wraps to two lines instead of "SA…".
+    -->
+    <style name="ThemeOverlay.RoshanKhata.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/DialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/DialogButton</item>
+    </style>
+
+    <style name="DialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
     </style>
 
     <!--
