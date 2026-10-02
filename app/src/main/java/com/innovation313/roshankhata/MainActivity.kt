@@ -487,9 +487,18 @@ class MainActivity : BaseActivity() {
             try {
                 val dao = KhataDatabase.get(this@MainActivity).khataDao()
                 dao.observePartiesWithBalance()
-                    .combine(dao.observeLedgerPoints()) { parties, points ->
+                    .combine(dao.observeLedgerPoints()) { parties, points -> parties to points }
+                    .combine(dao.observePromises()) { (parties, points), promiseRows ->
                         val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
-                        PaymentHabit.forAll(points).count { (id, habit) -> id in owing && habit.isLate }
+                        val habits = PaymentHabit.forAll(points)
+                        val promises = promiseRows.associate { it.partyId to it.due }
+                        val now = System.currentTimeMillis()
+                        val tz = java.util.TimeZone.getDefault()
+                        // A customer who named a day still ahead ("after the
+                        // harvest") is not counted late — same rule as Follow-up.
+                        habits.keys.count { id ->
+                            id in owing && com.innovation313.roshankhata.data.FollowUpRank.lateByHabit(id, habits, promises, now, tz)
+                        }
                     }
                     .flowOn(Dispatchers.Default)
                     .collectLatest { late ->

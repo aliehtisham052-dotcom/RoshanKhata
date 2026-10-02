@@ -18,6 +18,10 @@
         android:title="@string/change_party_type"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_harvest_promise"
+        android:title="@string/harvest_promise_menu"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_credit_limit"
         android:title="@string/set_credit_limit"
         app:showAsAction="never" />

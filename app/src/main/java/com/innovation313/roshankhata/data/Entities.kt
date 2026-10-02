@@ -65,7 +65,15 @@ data class Party(
      * a message after every entry would only annoy — family, a daily regular.
      * Reminders are untouched; this only silences the after-entry offer.
      */
-    val noEntryShare: Boolean = false
+    val noEntryShare: Boolean = false,
+
+    /**
+     * "Fasal bech kar dunga" (v28): the day the customer said he would pay —
+     * the end of the harvest he named. Until then Follow-up does not push
+     * him up as late; on and after it, he comes first. Cleared when his
+     * balance is settled from his own screen. Null = no such promise.
+     */
+    val harvestPromise: Long? = null
 )
 
 /**

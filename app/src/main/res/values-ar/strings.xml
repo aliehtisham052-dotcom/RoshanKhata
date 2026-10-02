@@ -1844,4 +1844,10 @@
         <item quantity="many">%d بنود فاتورة بلا سعر وغير محسوبة</item>
         <item quantity="other">%d بنود فاتورة بلا سعر وغير محسوبة</item>
     </plurals>
+    <string name="harvest_promise_menu">يدفع بعد الحصاد</string>
+    <string name="harvest_promise_title">متى سيدفع %1$s؟</string>
+    <string name="harvest_promise_option">بعد حصاد %1$s · %2$s</string>
+    <string name="harvest_promise_other_date">تاريخ آخر</string>
+    <string name="harvest_promise_remove">إزالة الوعد</string>
+    <string name="harvest_promise_header">وعد: %1$s</string>
 </resources>

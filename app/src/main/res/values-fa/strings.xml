@@ -1700,4 +1700,10 @@
         <item quantity="one">%d ردیف فاکتور نرخ ندارد و شمرده نشد</item>
         <item quantity="other">%d ردیف فاکتور نرخ ندارند و شمرده نشدند</item>
     </plurals>
+    <string name="harvest_promise_menu">پس از برداشت می‌پردازد</string>
+    <string name="harvest_promise_title">%1$s کی می‌پردازد؟</string>
+    <string name="harvest_promise_option">پس از برداشت %1$s · %2$s</string>
+    <string name="harvest_promise_other_date">تاریخ دیگر</string>
+    <string name="harvest_promise_remove">حذف قول</string>
+    <string name="harvest_promise_header">قول: %1$s</string>
 </resources>

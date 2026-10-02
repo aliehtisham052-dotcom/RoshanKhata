@@ -199,7 +199,7 @@ class FollowUpActivity : BaseActivity() {
         // Room's suspend queries run off the main thread themselves, so this
         // reads the agreed date without blocking the tap.
         lifecycleScope.launch {
-            val promisedDate = runCatching { dao.promisedDateForParty(party.id) }.getOrNull()
+            val promisedDate = runCatching { dao.reminderDateForParty(party.id) }.getOrNull()
             val message = Reminder.buildMessage(
                 this@FollowUpActivity,
                 partyName = party.name,

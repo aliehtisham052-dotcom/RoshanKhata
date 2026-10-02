@@ -147,13 +147,16 @@ class EntryItemsMigrationTest {
             // without the column, copy the rows, put the indices back.
             val partiesV23 = sqlOf("table", "parties").single()
             val partyIndices = sqlOf("index", "parties")
-            val partiesV22 = partiesV23.replace(", `noEntryShare` INTEGER NOT NULL", "")
-            assertTrue("could not strip noEntryShare from: $partiesV23", !partiesV22.contains("noEntryShare"))
+            val partiesV22 = partiesV23
+                .replace(", `noEntryShare` INTEGER NOT NULL", "")
+                .replace(", `harvestPromise` INTEGER", "")
+            assertTrue("could not strip the v23/v28 columns from: $partiesV23",
+                !partiesV22.contains("noEntryShare") && !partiesV22.contains("harvestPromise"))
             val partyCols = raw.rawQuery("PRAGMA table_info(parties)", null).use { c ->
                 buildList {
                     while (c.moveToNext()) {
                         val col = c.getString(c.getColumnIndexOrThrow("name"))
-                        if (col != "noEntryShare") add("`$col`")
+                        if (col != "noEntryShare" && col != "harvestPromise") add("`$col`")
                     }
                 }
             }.joinToString(", ")

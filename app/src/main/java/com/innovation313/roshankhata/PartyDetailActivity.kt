@@ -237,6 +237,8 @@ class PartyDetailActivity : BaseActivity() {
     private var partyPhone: String? = null
     /** Party.noEntryShare (v23): skip the after-entry WhatsApp offer. */
     private var noEntryShare: Boolean = false
+    /** Party.harvestPromise (v28): "I'll pay after the harvest" date. */
+    private var harvestPromise: Long? = null
     private var currentBalance: Double = 0.0
     private var creditLimit: Double? = null
     private var currentRows: List<EntryRow> = emptyList()
@@ -484,6 +486,7 @@ class PartyDetailActivity : BaseActivity() {
                 partyName = p.name
                 partyPhone = p.phone
                 noEntryShare = p.noEntryShare
+                harvestPromise = p.harvestPromise
                 creditLimit = p.creditLimit
                 tvPartyName.text = p.name
                 tvPartyPhone.text = p.phone.orEmpty()
@@ -2076,7 +2079,7 @@ class PartyDetailActivity : BaseActivity() {
         // gets sent — a date arriving late would change the text underneath them.
         lifecycleScope.launch {
             val promisedDate = withContext(Dispatchers.IO) {
-                runCatching { dao.promisedDateForParty(partyId) }.getOrNull()
+                runCatching { dao.reminderDateForParty(partyId) }.getOrNull()
             }
             showReminderDialog(viaWhatsApp, promisedDate)
         }
@@ -2592,12 +2595,68 @@ class PartyDetailActivity : BaseActivity() {
             val id = dao.insertEntryWithItems(entry, items)
             // Balance as it stands once this entry counts (positive = owed to me).
             val after = currentBalance + if (entry.isGiven) entry.amount else -entry.amount
+            // Paid up: the harvest promise has been kept, so it goes (v28).
+            if (harvestPromise != null && !Money.isPositive(after)) {
+                dao.setHarvestPromise(partyId, null)
+                harvestPromise = null
+                withContext(Dispatchers.Main) { if (!isFinishing && !isDestroyed) refreshSeasonRecord() }
+            }
             withContext(Dispatchers.Main) {
                 if (isFinishing || isDestroyed) return@withContext
                 offerEntryShare(entry, after)
                 // Sold at the cash (naqd) rate: ask whether the money came now.
                 if (entry.isGiven && entry.rateType == RateType.CASH) offerCashReceived(id, entry.amount)
             }
+        }
+    }
+
+    /**
+     * "Fasal bech kar dunga" (v28): the customer's own day. The next two
+     * harvest ends are offered (Kharif 30 Nov, Rabi 31 May), or any date;
+     * Follow-up then leaves him alone until that day and puts him first on
+     * it. No late fee or markup goes with it, ever.
+     */
+    private fun showHarvestPromiseDialog() {
+        val now = System.currentTimeMillis()
+        val y = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+        val ends = listOf(
+            SeasonBook.Season(SeasonBook.Crop.RABI, y - 1), SeasonBook.Season(SeasonBook.Crop.KHARIF, y),
+            SeasonBook.Season(SeasonBook.Crop.RABI, y), SeasonBook.Season(SeasonBook.Crop.KHARIF, y + 1)
+        ).map { it to SeasonBook.harvestEnd(it) }.filter { it.second > now }.sortedBy { it.second }.take(2)
+
+        val labels = ends.map { (s, at) ->
+            getString(R.string.harvest_promise_option, SeasonText.name(this, s), Format.dateOnly(at))
+        } + getString(R.string.harvest_promise_other_date) +
+            listOfNotNull(harvestPromise?.let { getString(R.string.harvest_promise_remove) })
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.harvest_promise_title, partyName))
+            .setItems(labels.toTypedArray()) { _, i ->
+                when {
+                    i < ends.size -> saveHarvestPromise(ends[i].second)
+                    i == ends.size -> {
+                        val c = java.util.Calendar.getInstance()
+                        android.app.DatePickerDialog(this, { _, yy, mm, dd ->
+                            val at = java.util.Calendar.getInstance().apply {
+                                clear(); set(yy, mm, dd, 23, 59, 59)
+                            }.timeInMillis
+                            saveHarvestPromise(at)
+                        }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH))
+                            .apply { datePicker.minDate = now }
+                            .show()
+                    }
+                    else -> saveHarvestPromise(null)
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun saveHarvestPromise(at: Long?) {
+        harvestPromise = at
+        AppScope.launch {
+            dao.setHarvestPromise(partyId, at)
+            withContext(Dispatchers.Main) { if (!isFinishing && !isDestroyed) refreshSeasonRecord() }
         }
     }
 
@@ -2609,8 +2668,11 @@ class PartyDetailActivity : BaseActivity() {
                 withContext(Dispatchers.Default) { SeasonBook.book(dao.seasonLinesOf(partyId)) }
             } else emptyList()
             if (isFinishing || isDestroyed) return@launch
-            tvSeasonRecord.text = SeasonText.record(this@PartyDetailActivity, rows)
-            tvSeasonRecord.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
+            val promise = party?.harvestPromise?.let { getString(R.string.harvest_promise_header, Format.dateOnly(it)) }
+            val text = listOfNotNull(promise, SeasonText.record(this@PartyDetailActivity, rows).takeIf { it.isNotEmpty() })
+                .joinToString("  ·  ")
+            tvSeasonRecord.text = text
+            tvSeasonRecord.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE
         }
     }
 
@@ -2950,6 +3012,10 @@ class PartyDetailActivity : BaseActivity() {
             }
             R.id.action_edit_party -> {
                 showEditPartyDialog()
+                true
+            }
+            R.id.action_harvest_promise -> {
+                showHarvestPromiseDialog()
                 true
             }
             R.id.action_credit_limit -> {

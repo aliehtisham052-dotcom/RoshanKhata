@@ -1672,4 +1672,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">%d bill line par rate nahi, shamil nahi</item>
         <item quantity="other">%d bill lines par rate nahi, shamil nahi</item>
     </plurals>
+    <string name="harvest_promise_menu">Fasal ke baad dega</string>
+    <string name="harvest_promise_title">%1$s kab dega?</string>
+    <string name="harvest_promise_option">%1$s ki katai ke baad · %2$s</string>
+    <string name="harvest_promise_other_date">Koi aur tareekh</string>
+    <string name="harvest_promise_remove">Wada hatayein</string>
+    <string name="harvest_promise_header">Wada: %1$s</string>
 </resources>
