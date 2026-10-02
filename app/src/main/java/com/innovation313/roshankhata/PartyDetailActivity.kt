@@ -2594,7 +2594,8 @@ class PartyDetailActivity : BaseActivity() {
             // lines are written in the same step.
             val id = dao.insertEntryWithItems(entry, items)
             // Balance as it stands once this entry counts (positive = owed to me).
-            val after = currentBalance + if (entry.isGiven) entry.amount else -entry.amount
+            val before = currentBalance
+            val after = before + if (entry.isGiven) entry.amount else -entry.amount
             // Paid up: the harvest promise has been kept, so it goes (v28).
             if (harvestPromise != null && !Money.isPositive(after)) {
                 dao.setHarvestPromise(partyId, null)
@@ -2603,7 +2604,11 @@ class PartyDetailActivity : BaseActivity() {
             }
             withContext(Dispatchers.Main) {
                 if (isFinishing || isDestroyed) return@withContext
-                offerEntryShare(entry, after)
+                // Paid down to nothing from owing: celebrate (it includes the
+                // card to send), instead of the plain "send this entry" bar.
+                val settledNow = !entry.isGiven && Money.isPositive(before) && !Money.isPositive(after)
+                if (settledNow) com.innovation313.roshankhata.ui.SettledCelebration.show(this@PartyDetailActivity, partyName)
+                else offerEntryShare(entry, after)
                 // Sold at the cash (naqd) rate: ask whether the money came now.
                 if (entry.isGiven && entry.rateType == RateType.CASH) offerCashReceived(id, entry.amount)
             }

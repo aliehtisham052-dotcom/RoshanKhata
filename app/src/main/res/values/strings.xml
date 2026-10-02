@@ -1732,4 +1732,9 @@ You can change this any time from this screen.</string>
     <string name="harvest_promise_header">Promised: %1$s</string>
     <string name="bill_similar_supplier">Looks like %1$s, already in your khata.</string>
     <string name="bill_use_existing">Use %1$s</string>
+    <string name="settled_title">%1$s\'s account is settled ✓</string>
+    <string name="settled_sub">%1$s · Thank you</string>
+    <string name="settled_send_card">Send a thank-you card</string>
+    <string name="settled_check_desc">Account settled</string>
+    <string name="season_back_percent">%1$d%% back</string>
 </resources>

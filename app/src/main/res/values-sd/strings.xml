@@ -1708,4 +1708,9 @@
     <string name="harvest_promise_header">واعدو: %1$s</string>
     <string name="bill_similar_supplier">هي %1$s لڳي ٿو، جيڪو اڳ ۾ ئي توهان جي کاتي ۾ آهي.</string>
     <string name="bill_use_existing">%1$s استعمال ڪريو</string>
+    <string name="settled_title">%1$s جو حساب صاف ✓</string>
+    <string name="settled_sub">%1$s · مهرباني</string>
+    <string name="settled_send_card">مبارڪ ڪارڊ موڪليو</string>
+    <string name="settled_check_desc">حساب صاف</string>
+    <string name="season_back_percent">%1$d%% واپس</string>
 </resources>

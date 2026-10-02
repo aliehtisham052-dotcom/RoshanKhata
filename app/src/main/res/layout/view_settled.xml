@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  "Hisaab saaf" (2 Oct): shown in a dialog on the shop's phone, and drawn
+  again (light theme, no buttons) as the card sent to the customer. No
+  amount anywhere: it is a thank-you, not a statement.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/settledCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/surface"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/ivSettledCheck"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:contentDescription="@string/settled_check_desc"
+        android:src="@drawable/ic_settled_check" />
+
+    <TextView
+        android:id="@+id/tvSettledTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textColor="@color/ink"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvSettledSub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:textColor="@color/text_muted"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvSettledShop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:textColor="@color/settled_green"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+</LinearLayout>

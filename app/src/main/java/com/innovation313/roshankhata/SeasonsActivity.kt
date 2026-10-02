@@ -69,6 +69,13 @@ class SeasonsActivity : BaseActivity() {
         v.findViewById<TextView>(R.id.tvSeasonGiven).text = resources.getQuantityString(
             R.plurals.season_given, s.customers, s.customers, Format.money(s.given)
         )
+        val back = if (s.given > 0) ((s.cleared / s.given) * 100).toInt().coerceIn(0, 100) else 0
+        v.findViewById<com.google.android.material.progressindicator.LinearProgressIndicator>(R.id.pbSeasonBack).apply {
+            contentDescription = getString(R.string.season_back_percent, back)
+            // Animated only when the phone allows it; otherwise set at once.
+            val animate = com.innovation313.roshankhata.ui.Motion.enabled(this@SeasonsActivity)
+            if (animate) post { setProgressCompat(back, true) } else setProgressCompat(back, false)
+        }
         v.findViewById<TextView>(R.id.tvSeasonOut).text =
             getString(R.string.season_back_out, Format.money(s.cleared), Format.money(s.outstanding))
         val d = s.medianDaysAfterHarvest

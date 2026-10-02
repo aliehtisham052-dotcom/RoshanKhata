@@ -42,6 +42,18 @@
             android:textColor="@color/ink"
             android:textSize="14sp" />
 
+        <!-- Share of the season's credit that is back (2 Oct); fills as the card appears. -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/pbSeasonBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            app:indicatorColor="@color/settled_green"
+            app:trackColor="@color/hairline"
+            app:trackCornerRadius="4dp"
+            app:trackThickness="8dp" />
+
         <TextView
             android:id="@+id/tvSeasonOut"
             android:layout_width="wrap_content"
