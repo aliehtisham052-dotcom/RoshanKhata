@@ -1713,4 +1713,6 @@
     <string name="settled_send_card">مبارڪ ڪارڊ موڪليو</string>
     <string name="settled_check_desc">حساب صاف</string>
     <string name="season_back_percent">%1$d%% واپس</string>
+    <string name="undo">واپس آڻيو</string>
+    <string name="backup_saved_flash">بيڪ اپ ٿي ويو ✓</string>
 </resources>

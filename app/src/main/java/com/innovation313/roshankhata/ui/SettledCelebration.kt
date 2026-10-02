@@ -32,17 +32,13 @@ import java.io.FileOutputStream
  */
 object SettledCelebration {
 
-    private const val PREFS = "settled_celebration"
-    private const val KEY_SHOWN = "shown"
     private const val FULL_TIMES = 5
 
     fun show(activity: Activity, partyName: String) {
-        val prefs = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val shown = prefs.getInt(KEY_SHOWN, 0)
-        prefs.edit().putInt(KEY_SHOWN, shown + 1).apply()
         val title = activity.getString(R.string.settled_title, partyName)
+        Motion.confirm(activity.findViewById(android.R.id.content))
 
-        if (shown >= FULL_TIMES) {
+        if (!Motion.firstTimes(activity, "settled", FULL_TIMES)) {
             Snackbar.make(activity.findViewById(android.R.id.content), title, 6000)
                 .setAction(R.string.settled_send_card) { shareCard(activity, partyName) }
                 .show()

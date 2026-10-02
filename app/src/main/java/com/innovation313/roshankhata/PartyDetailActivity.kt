@@ -1934,6 +1934,26 @@ class PartyDetailActivity : BaseActivity() {
             }
     }
 
+    /**
+     * "Moved to Recycle Bin · Undo" (2 Oct). The bin was always the way back;
+     * this puts it one tap away for the few seconds a slip is noticed in.
+     */
+    private fun offerUndo(entryIds: List<Long>) {
+        if (entryIds.isEmpty() || isFinishing || isDestroyed) return
+        com.google.android.material.snackbar.Snackbar
+            .make(findViewById(android.R.id.content), R.string.moved_to_bin, 6000)
+            .setAction(R.string.undo) {
+                AppScope.launch { entryIds.forEach { dao.restoreEntry(it) } }
+            }
+            .show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // An entry binned on its own screen: offer the undo here, where we land.
+        com.innovation313.roshankhata.ui.UndoDelete.take(partyId)?.let { offerUndo(it.entryIds) }
+    }
+
     /** Deleting an entry is reversible — it moves to the Recycle Bin. */
     private fun confirmDeleteEntry(entry: LedgerEntry) {
         MaterialAlertDialogBuilder(this)
@@ -1949,11 +1969,7 @@ class PartyDetailActivity : BaseActivity() {
                         dao.softDeleteEntry(entry.id)
                         if (alsoPair && pair != null) dao.softDeleteEntry(pair.id)
                     }.join()
-                    Toast.makeText(
-                        this@PartyDetailActivity,
-                        R.string.moved_to_bin,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    offerUndo(listOfNotNull(entry.id, pair?.id?.takeIf { alsoPair }))
                 }
             }
             .show()
@@ -2604,6 +2620,8 @@ class PartyDetailActivity : BaseActivity() {
             }
             withContext(Dispatchers.Main) {
                 if (isFinishing || isDestroyed) return@withContext
+                // Felt in the hand: the entry is in (2 Oct).
+                com.innovation313.roshankhata.ui.Motion.confirm(findViewById(android.R.id.content))
                 // Paid down to nothing from owing: celebrate (it includes the
                 // card to send), instead of the plain "send this entry" bar.
                 val settledNow = !entry.isGiven && Money.isPositive(before) && !Money.isPositive(after)
