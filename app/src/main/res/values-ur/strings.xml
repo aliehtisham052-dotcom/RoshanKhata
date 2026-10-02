@@ -1529,4 +1529,26 @@
     <string name="label_step_title">لیبل کی تفصیل (%2$d میں سے %1$d)</string>
     <string name="label_step_skip">چھوڑیں</string>
     <string name="label_step_save_next">محفوظ کر کے اگلا</string>
+    <string name="pay_heading">*ادائیگی کا طریقہ*</string>
+    <string name="pay_wallet_label">جاز کیش/ایزی پیسہ</string>
+    <string name="pay_bank_label">بینک</string>
+    <string name="entry_share_gave">محترم *%1$s*، %2$s کو آپ کے کھاتے میں *%3$s* ادھار لکھا گیا۔</string>
+    <string name="entry_share_got">محترم *%1$s*، %2$s کو *%3$s* وصول ہوئے۔ شکریہ۔</string>
+    <string name="entry_share_balance">اب کل بقایا: *%1$s*</string>
+    <string name="entry_share_advance">اب آپ کا ایڈوانس: *%1$s*</string>
+    <string name="entry_share_settled">آپ کا حساب اب برابر ہے۔</string>
+    <string name="entry_share_offer">یہ %1$s کو واٹس ایپ پر بھیجیں؟</string>
+    <string name="entry_share_send">بھیجیں</string>
+    <string name="party_no_entry_share">اس گاہک کو انٹری واٹس ایپ پر بھیجنے کا نہ پوچھیں</string>
+    <string name="bp_ask_share">ہر انٹری واٹس ایپ پر بھیجنے کا پوچھیں</string>
+    <string name="bp_ask_share_help">انٹری محفوظ کرنے کے بعد ایک چھوٹی پٹی گاہک کو بھیجنے کا پوچھے گی۔ بھیجیں آپ واٹس ایپ میں دبائیں گے۔</string>
+    <string name="bp_pay_reminder">یاد دہانی میں ادائیگی کی تفصیل</string>
+    <string name="bp_pay_reminder_help">ہر ادائیگی کی یاد دہانی کے نیچے آپ کا جاز کیش/ایزی پیسہ اور بینک اکاؤنٹ (انوائس سیٹنگز سے) لگ جائے گا۔</string>
+    <string name="followup_send_all">سب کو باری باری یاد دلائیں</string>
+    <string name="followup_queue_next">اگلا: %1$s (%2$s)</string>
+    <string name="followup_queue_open">واٹس ایپ کھولیں</string>
+    <string name="followup_queue_skip">چھوڑیں</string>
+    <string name="followup_queue_stop">روکیں</string>
+    <string name="followup_queue_done">مکمل — آج %1$d یاد دہانیاں کھولی گئیں</string>
+    <string name="followup_queue_title">%2$d میں سے %1$d</string>
 </resources>

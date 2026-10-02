@@ -444,6 +444,26 @@ object BusinessProfile {
     }
 
     /**
+     * After saving an entry, offer to WhatsApp it to the customer (2 Oct).
+     * On by default: it is only an offer the owner can ignore, and the
+     * confirmation is what stops "I never took that much" later.
+     */
+    fun askShareAfterEntry(context: Context): Boolean =
+        prefs(context).getBoolean("ask_share_after_entry", true)
+
+    fun setAskShareAfterEntry(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean("ask_share_after_entry", enabled).apply()
+    }
+
+    /** Put the JazzCash / bank details under a payment reminder (2 Oct). */
+    fun paymentOnReminder(context: Context): Boolean =
+        prefs(context).getBoolean("payment_on_reminder", true)
+
+    fun setPaymentOnReminder(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean("payment_on_reminder", enabled).apply()
+    }
+
+    /**
      * Set the three image "saved" flags to match what is ACTUALLY on disk right
      * now — used only by an image restore, once the QR/signature/stamp files
      * have (or have not) been written back.

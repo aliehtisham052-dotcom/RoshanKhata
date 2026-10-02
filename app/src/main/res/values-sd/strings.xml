@@ -1557,4 +1557,26 @@
     <string name="label_step_title">ليبل جو تفصيل (%2$d مان %1$d)</string>
     <string name="label_step_skip">ڇڏيو</string>
     <string name="label_step_save_next">محفوظ ڪري اڳيون</string>
+    <string name="pay_heading">*ادائگي جو طريقو*</string>
+    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_bank_label">بئنڪ</string>
+    <string name="entry_share_gave">محترم *%1$s*، %2$s تي توهان جي کاتي ۾ *%3$s* اڌار لکيو ويو.</string>
+    <string name="entry_share_got">محترم *%1$s*، %2$s تي *%3$s* وصول ٿيا. مهرباني.</string>
+    <string name="entry_share_balance">هاڻي ڪل بقايا: *%1$s*</string>
+    <string name="entry_share_advance">هاڻي توهان جو ايڊوانس: *%1$s*</string>
+    <string name="entry_share_settled">توهان جو حساب هاڻي برابر آهي.</string>
+    <string name="entry_share_offer">هي %1$s کي واٽس ايپ تي موڪليو؟</string>
+    <string name="entry_share_send">موڪليو</string>
+    <string name="party_no_entry_share">هن گراهڪ کي انٽري واٽس ايپ تي موڪلڻ جو نه پڇو</string>
+    <string name="bp_ask_share">هر انٽري واٽس ايپ تي موڪلڻ جو پڇو</string>
+    <string name="bp_ask_share_help">انٽري محفوظ ڪرڻ کان پوءِ هڪ ننڍي پٽي گراهڪ کي موڪلڻ جو پڇندي. موڪليو توهان واٽس ايپ ۾ دٻائيندا.</string>
+    <string name="bp_pay_reminder">ياد ڏياريءَ ۾ ادائگي جي تفصيل</string>
+    <string name="bp_pay_reminder_help">هر ادائگي جي ياد ڏياريءَ هيٺ توهان جو JazzCash/Easypaisa ۽ بئنڪ اڪائونٽ (انوائس سيٽنگز مان) لڳندو.</string>
+    <string name="followup_send_all">سڀني کي واري واري ياد ڏياريو</string>
+    <string name="followup_queue_next">ايندڙ: %1$s (%2$s)</string>
+    <string name="followup_queue_open">واٽس ايپ کوليو</string>
+    <string name="followup_queue_skip">ڇڏيو</string>
+    <string name="followup_queue_stop">روڪيو</string>
+    <string name="followup_queue_done">مڪمل — اڄ %1$d ياد ڏياريون کوليون ويون</string>
+    <string name="followup_queue_title">%2$d مان %1$d</string>
 </resources>

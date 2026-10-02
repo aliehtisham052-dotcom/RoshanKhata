@@ -233,6 +233,8 @@ class PartyDetailActivity : BaseActivity() {
     private var partyId: Long = 0
     private var partyName: String = ""
     private var partyPhone: String? = null
+    /** Party.noEntryShare (v23): skip the after-entry WhatsApp offer. */
+    private var noEntryShare: Boolean = false
     private var currentBalance: Double = 0.0
     private var creditLimit: Double? = null
     private var currentRows: List<EntryRow> = emptyList()
@@ -477,6 +479,7 @@ class PartyDetailActivity : BaseActivity() {
             dao.getParty(partyId)?.let { p ->
                 partyName = p.name
                 partyPhone = p.phone
+                noEntryShare = p.noEntryShare
                 creditLimit = p.creditLimit
                 tvPartyName.text = p.name
                 tvPartyPhone.text = p.phone.orEmpty()
@@ -2578,13 +2581,39 @@ class PartyDetailActivity : BaseActivity() {
             // must not be read out here, and insertEntryWithItems for why the
             // lines are written in the same step.
             val id = dao.insertEntryWithItems(entry, items)
-            // Sold at the cash (naqd) rate: ask whether the money came now.
-            if (entry.isGiven && entry.rateType == RateType.CASH) {
-                withContext(Dispatchers.Main) {
-                    if (!isFinishing && !isDestroyed) offerCashReceived(id, entry.amount)
-                }
+            // Balance as it stands once this entry counts (positive = owed to me).
+            val after = currentBalance + if (entry.isGiven) entry.amount else -entry.amount
+            withContext(Dispatchers.Main) {
+                if (isFinishing || isDestroyed) return@withContext
+                offerEntryShare(entry, after)
+                // Sold at the cash (naqd) rate: ask whether the money came now.
+                if (entry.isGiven && entry.rateType == RateType.CASH) offerCashReceived(id, entry.amount)
             }
         }
+    }
+
+    /**
+     * "Send this to Aslam on WhatsApp?" — a bar under the list after an entry
+     * is saved (2 Oct). Only an offer: ignored, it goes away by itself. Not
+     * shown with no phone, for a customer marked "don't offer", or when the
+     * owner turned it off in settings. WhatsApp opens with the text ready;
+     * the owner presses Send there.
+     */
+    private fun offerEntryShare(entry: LedgerEntry, balanceAfter: Double) {
+        if (partyPhone.isNullOrBlank() || noEntryShare || !BusinessProfile.askShareAfterEntry(this)) return
+        val message = Reminder.buildEntryMessage(
+            context = this,
+            partyName = partyName,
+            isGiven = entry.isGiven,
+            amount = entry.amount,
+            date = entry.timestamp,
+            balanceAfter = balanceAfter,
+            businessName = BusinessProfile.businessName(this)
+        )
+        com.google.android.material.snackbar.Snackbar
+            .make(findViewById(android.R.id.content), getString(R.string.entry_share_offer, partyName), 8000)
+            .setAction(R.string.entry_share_send) { Reminder.sendViaWhatsApp(this, partyPhone, message) }
+            .show()
     }
 
     /**
@@ -2705,6 +2734,9 @@ class PartyDetailActivity : BaseActivity() {
             val etPhone: EditText = view.findViewById(R.id.etEditPhone)
             val etFather: EditText = view.findViewById(R.id.etEditFatherName)
             val etVillage: EditText = view.findViewById(R.id.etEditVillage)
+            val cbNoShare: com.google.android.material.checkbox.MaterialCheckBox =
+                view.findViewById(R.id.cbNoEntryShare)
+            cbNoShare.isChecked = party.noEntryShare
 
             etName.setText(party.name)
             etPhone.setText(party.phone)
@@ -2730,7 +2762,8 @@ class PartyDetailActivity : BaseActivity() {
                         name = newName,
                         phone = typed(etPhone),
                         fatherName = typed(etFather),
-                        village = typed(etVillage)
+                        village = typed(etVillage),
+                        noEntryShare = cbNoShare.isChecked
                     )
 
                     // AppScope for the write — leaving right after Save must

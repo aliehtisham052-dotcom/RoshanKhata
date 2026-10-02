@@ -1677,4 +1677,26 @@
     <string name="label_step_title">تفاصيل الملصق (%1$d من %2$d)</string>
     <string name="label_step_skip">تخطي</string>
     <string name="label_step_save_next">حفظ والتالي</string>
+    <string name="pay_heading">*طريقة الدفع*</string>
+    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_bank_label">البنك</string>
+    <string name="entry_share_gave">عزيزي *%1$s*، في %2$s سُجّل في حسابك *%3$s* (آجل).</string>
+    <string name="entry_share_got">عزيزي *%1$s*، في %2$s تم استلام *%3$s*. شكرًا لك.</string>
+    <string name="entry_share_balance">المستحق الآن: *%1$s*</string>
+    <string name="entry_share_advance">رصيدك المقدم الآن: *%1$s*</string>
+    <string name="entry_share_settled">حسابك الآن مسوّى.</string>
+    <string name="entry_share_offer">إرسال هذا إلى %1$s عبر واتساب؟</string>
+    <string name="entry_share_send">إرسال</string>
+    <string name="party_no_entry_share">لا تعرض إرسال القيود لهذا العميل عبر واتساب</string>
+    <string name="bp_ask_share">عرض إرسال كل قيد عبر واتساب</string>
+    <string name="bp_ask_share_help">بعد حفظ القيد يظهر شريط صغير يعرض إرساله للعميل. أنت تضغط إرسال في واتساب.</string>
+    <string name="bp_pay_reminder">تفاصيل الدفع في التذكيرات</string>
+    <string name="bp_pay_reminder_help">يضيف رقم JazzCash/Easypaisa وحسابك البنكي (من إعدادات الفاتورة) أسفل كل تذكير بالدفع.</string>
+    <string name="followup_send_all">ذكّر الجميع واحدًا تلو الآخر</string>
+    <string name="followup_queue_next">التالي: %1$s (%2$s)</string>
+    <string name="followup_queue_open">افتح واتساب</string>
+    <string name="followup_queue_skip">تخطي</string>
+    <string name="followup_queue_stop">إيقاف</string>
+    <string name="followup_queue_done">تم — فُتح %1$d تذكيرًا اليوم</string>
+    <string name="followup_queue_title">%1$d من %2$d</string>
 </resources>

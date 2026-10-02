@@ -59,4 +59,12 @@
         android:importantForAutofill="no"
         android:inputType="textCapWords" />
 
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/cbNoEntryShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/party_no_entry_share"
+        android:textSize="13sp" />
+
 </LinearLayout>

@@ -554,6 +554,7 @@ object Backup {
         put("isCustomer", p.isCustomer)
         put("photoPath", p.photoPath ?: JSONObject.NULL)
         put("creditLimit", p.creditLimit ?: JSONObject.NULL)
+        put("noEntryShare", p.noEntryShare)
         put("createdAt", p.createdAt)
         put("isDeleted", p.isDeleted)
         put("deletedAt", p.deletedAt ?: JSONObject.NULL)
@@ -568,6 +569,8 @@ object Backup {
         isCustomer = o.optBoolean("isCustomer", true),
         photoPath = o.optNullableString("photoPath"),
         creditLimit = o.optNullableDouble("creditLimit"),
+        // Absent before v23: offer as usual.
+        noEntryShare = o.optBoolean("noEntryShare", false),
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")

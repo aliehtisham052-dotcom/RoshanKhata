@@ -593,6 +593,16 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
 }
 
 /**
+ * v23 (2 Oct 2026): a customer can be excluded from the "send this entry on
+ * WhatsApp?" offer. One column, defaulting to "offer as usual".
+ */
+val MIGRATION_22_23 = object : Migration(22, 23) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE parties ADD COLUMN noEntryShare INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -601,7 +611,7 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 22
+const val KHATA_DB_VERSION = 23
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -625,5 +635,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_18_19,
     MIGRATION_19_20,
     MIGRATION_20_21,
-    MIGRATION_21_22
+    MIGRATION_21_22,
+    MIGRATION_22_23
 )

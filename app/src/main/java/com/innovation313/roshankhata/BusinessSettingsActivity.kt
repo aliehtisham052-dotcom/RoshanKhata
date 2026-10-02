@@ -301,6 +301,14 @@ class BusinessSettingsActivity : BaseActivity() {
         swPhoto.setOnCheckedChangeListener { _, on ->
             BusinessProfile.setPhotoOnStatement(this, on)
         }
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.swAskShare).apply {
+            isChecked = BusinessProfile.askShareAfterEntry(this@BusinessSettingsActivity)
+            setOnCheckedChangeListener { _, on -> BusinessProfile.setAskShareAfterEntry(this@BusinessSettingsActivity, on) }
+        }
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.swPayOnReminder).apply {
+            isChecked = BusinessProfile.paymentOnReminder(this@BusinessSettingsActivity)
+            setOnCheckedChangeListener { _, on -> BusinessProfile.setPaymentOnReminder(this@BusinessSettingsActivity, on) }
+        }
 
         // The preview tracks every keystroke, so it always matches the
         // fields below it — a mistake is caught here, not on a document a
