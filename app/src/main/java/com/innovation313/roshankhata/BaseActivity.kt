@@ -18,8 +18,25 @@ import com.innovation313.roshankhata.ui.TextFit
  */
 abstract class BaseActivity : AppCompatActivity() {
 
+    /** The text size this screen was built at; see onResume. */
+    private var builtAtLevel = -1
+
     override fun attachBaseContext(newBase: Context) {
+        builtAtLevel = TextSize.level(newBase)
         super.attachBaseContext(TextSize.wrap(newBase))
+    }
+
+    /**
+     * The size can now be changed from any screen's More list (2 Oct), not
+     * only Home's. A screen left in the back stack rebuilds itself when it
+     * comes forward at a size it was not built at.
+     */
+    override fun onResume() {
+        super.onResume()
+        if (builtAtLevel >= 0 && builtAtLevel != TextSize.level(this)) {
+            builtAtLevel = TextSize.level(this)
+            recreate()
+        }
     }
 
     /** After setContentView: let fixed-height buttons grow if the text did. */

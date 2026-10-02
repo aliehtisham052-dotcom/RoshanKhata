@@ -1678,4 +1678,6 @@
     <string name="harvest_promise_other_date">کوئی اور تاریخ</string>
     <string name="harvest_promise_remove">وعدہ ہٹائیں</string>
     <string name="harvest_promise_header">وعدہ: %1$s</string>
+    <string name="bill_similar_supplier">یہ %1$s لگتا ہے، جو پہلے سے آپ کے کھاتے میں ہے۔</string>
+    <string name="bill_use_existing">%1$s استعمال کریں</string>
 </resources>

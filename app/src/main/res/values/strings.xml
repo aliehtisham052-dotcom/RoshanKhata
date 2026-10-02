@@ -1730,4 +1730,6 @@ You can change this any time from this screen.</string>
     <string name="harvest_promise_other_date">Another date</string>
     <string name="harvest_promise_remove">Remove the promise</string>
     <string name="harvest_promise_header">Promised: %1$s</string>
+    <string name="bill_similar_supplier">Looks like %1$s, already in your khata.</string>
+    <string name="bill_use_existing">Use %1$s</string>
 </resources>

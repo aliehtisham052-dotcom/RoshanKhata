@@ -474,6 +474,50 @@ object BillScan {
      * that is the name in the book. One product must not become two because a
      * supplier prints it differently.
      */
+    /**
+     * A name already in the khata that the scanned heading is PROBABLY a
+     * misreading of (2 Oct): "Suncrop Pesticides" read once as "Sincrop".
+     * Only ever offered to the owner, never applied by itself — "Shah" and
+     * "Shan" are one letter apart and can be two different men. Matched on
+     * the first word (one letter off, at least 4 letters) or the whole name
+     * (one letter in six). Null when nothing is that close, or when the
+     * heading already matches exactly (that case needs no question).
+     */
+    fun similarKnown(read: String, known: List<String>): String? {
+        val r = norm(read)
+        if (r.length < 4) return null
+        val rFirst = norm(read.trim().split(Regex("""\s+""")).first())
+        return known
+            .filter { k -> norm(k) != r }
+            .mapNotNull { k ->
+                val n = norm(k)
+                if (n.length < 4) return@mapNotNull null
+                val kFirst = norm(k.trim().split(Regex("""\s+""")).first())
+                val firstWord = if (rFirst.length >= 4 && kFirst.length >= 4) distance(rFirst, kFirst) else Int.MAX_VALUE
+                val whole = distance(r, n)
+                when {
+                    firstWord <= 1 -> k to firstWord
+                    whole <= maxOf(1, minOf(r.length, n.length) / 6) -> k to whole
+                    else -> null
+                }
+            }
+            .minByOrNull { it.second }?.first
+    }
+
+    /** Edit distance (letters added, dropped or changed). */
+    private fun distance(a: String, b: String): Int {
+        var prev = IntArray(b.length + 1) { it }
+        for (i in 1..a.length) {
+            val cur = IntArray(b.length + 1)
+            cur[0] = i
+            for (j in 1..b.length) {
+                cur[j] = minOf(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + if (a[i - 1] == b[j - 1]) 0 else 1)
+            }
+            prev = cur
+        }
+        return prev[b.length]
+    }
+
     fun knownName(read: String, known: List<String>): String {
         val r = norm(read)
         if (r.length < 4) return read

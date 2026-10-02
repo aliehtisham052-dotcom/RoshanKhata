@@ -1706,4 +1706,6 @@
     <string name="harvest_promise_other_date">ڪا ٻي تاريخ</string>
     <string name="harvest_promise_remove">واعدو هٽايو</string>
     <string name="harvest_promise_header">واعدو: %1$s</string>
+    <string name="bill_similar_supplier">هي %1$s لڳي ٿو، جيڪو اڳ ۾ ئي توهان جي کاتي ۾ آهي.</string>
+    <string name="bill_use_existing">%1$s استعمال ڪريو</string>
 </resources>

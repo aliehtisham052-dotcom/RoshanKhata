@@ -654,11 +654,25 @@ class BillsActivity : BaseActivity() {
         // supplier. Offer to add them here rather than send him off to make
         // the party first and type the whole bill again.
         if (supplier == null) {
+            // A camera misreading one letter ("Sincrop" for "Suncrop") must
+            // not quietly start a second khata for the same company. The
+            // closest existing supplier is OFFERED, never chosen for him.
+            val similar = com.innovation313.roshankhata.data.BillScan.similarKnown(
+                supplierName, parties.filter { !it.isCustomer }.map { it.name }
+            )?.let { name -> parties.firstOrNull { it.name == name } }
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.bill_new_supplier_title)
-                .setMessage(getString(R.string.bill_new_supplier_msg, supplierName))
+                .setMessage(
+                    getString(R.string.bill_new_supplier_msg, supplierName) +
+                        (similar?.let { "\n\n" + getString(R.string.bill_similar_supplier, it.name) } ?: "")
+                )
                 .setNegativeButton(R.string.back) { _, _ -> startNewBill(restore = draft) }
                 .setOnCancelListener { startNewBill(restore = draft) }
+                .apply {
+                    if (similar != null) setNeutralButton(getString(R.string.bill_use_existing, similar.name)) { _, _ ->
+                        dispatchSaveBill(similar.id, null, billNumber, total, billDate, dueDate, paidCash, note)
+                    }
+                }
                 .setPositiveButton(R.string.bill_new_supplier_yes) { _, _ ->
                     dispatchSaveBill(null, supplierName, billNumber, total, billDate, dueDate, paidCash, note)
                 }

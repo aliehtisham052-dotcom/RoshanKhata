@@ -1850,4 +1850,6 @@
     <string name="harvest_promise_other_date">تاريخ آخر</string>
     <string name="harvest_promise_remove">إزالة الوعد</string>
     <string name="harvest_promise_header">وعد: %1$s</string>
+    <string name="bill_similar_supplier">يبدو أنه %1$s، الموجود في دفترك.</string>
+    <string name="bill_use_existing">استخدم %1$s</string>
 </resources>
