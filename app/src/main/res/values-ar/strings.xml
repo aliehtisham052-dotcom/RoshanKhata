@@ -1852,4 +1852,9 @@
     <string name="harvest_promise_header">وعد: %1$s</string>
     <string name="bill_similar_supplier">يبدو أنه %1$s، الموجود في دفترك.</string>
     <string name="bill_use_existing">استخدم %1$s</string>
+    <string name="settled_title">حساب %1$s مسوّى ✓</string>
+    <string name="settled_sub">%1$s · شكرًا لك</string>
+    <string name="settled_send_card">أرسل بطاقة شكر</string>
+    <string name="settled_check_desc">الحساب مسوّى</string>
+    <string name="season_back_percent">عاد %1$d%%</string>
 </resources>

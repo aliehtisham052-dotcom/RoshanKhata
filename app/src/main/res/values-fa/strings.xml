@@ -1708,4 +1708,9 @@
     <string name="harvest_promise_header">قول: %1$s</string>
     <string name="bill_similar_supplier">به نظر %1$s است که در دفتر شما هست.</string>
     <string name="bill_use_existing">استفاده از %1$s</string>
+    <string name="settled_title">حساب %1$s تسویه شد ✓</string>
+    <string name="settled_sub">%1$s · سپاس</string>
+    <string name="settled_send_card">فرستادن کارت تشکر</string>
+    <string name="settled_check_desc">حساب تسویه شد</string>
+    <string name="season_back_percent">%1$d%% برگشته</string>
 </resources>

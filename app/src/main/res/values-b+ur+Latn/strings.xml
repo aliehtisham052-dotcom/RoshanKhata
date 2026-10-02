@@ -1680,4 +1680,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="harvest_promise_header">Wada: %1$s</string>
     <string name="bill_similar_supplier">Yeh %1$s lagta hai, jo pehle se aap ke khate mein hai.</string>
     <string name="bill_use_existing">%1$s istemal karein</string>
+    <string name="settled_title">%1$s ka hisaab saaf ✓</string>
+    <string name="settled_sub">%1$s · Shukriya</string>
+    <string name="settled_send_card">Mubarak card bhejein</string>
+    <string name="settled_check_desc">Hisaab saaf</string>
+    <string name="season_back_percent">%1$d%% wapas</string>
 </resources>

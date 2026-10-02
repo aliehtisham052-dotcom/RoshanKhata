@@ -72,4 +72,6 @@
     <color name="section_insights_text">#8FD3C0</color>
     <color name="section_bills_text">#E0C878</color>
     <color name="section_tools_text">#B5C9BC</color>
+    <!-- The "hisaab saaf" tick (2 Oct). -->
+    <color name="settled_green">#6FD6B5</color>
 </resources>

@@ -446,11 +446,27 @@ class MainActivity : BaseActivity() {
             .show()
     }
 
+    /** What each figure last showed, so a change counts from there (2 Oct). Null = not shown yet. */
+    private var shownNet: Double? = null
+    private var shownGet: Double? = null
+    private var shownGive: Double? = null
+
     private fun renderBalance() {
         val hidden = BalancePrivacy.isHidden(this)
-        tvNetBalance.text = if (hidden) BalancePrivacy.MASK else Format.money(netBalance)
-        tvTotalGet.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGet)
-        tvTotalGive.text = if (hidden) BalancePrivacy.MASK else Format.money(totalGive)
+        if (hidden) {
+            // Hidden figures never animate: a count-up would leak the size.
+            tvNetBalance.text = BalancePrivacy.MASK
+            tvTotalGet.text = BalancePrivacy.MASK
+            tvTotalGive.text = BalancePrivacy.MASK
+            shownNet = null; shownGet = null; shownGive = null
+        } else {
+            // A figure that changed counts to its new value; the first
+            // showing counts up from zero, once, as the screen opens.
+            com.innovation313.roshankhata.ui.Motion.countUp(tvNetBalance, shownNet ?: 0.0, netBalance) { Format.money(it) }
+            com.innovation313.roshankhata.ui.Motion.countUp(tvTotalGet, shownGet ?: 0.0, totalGet) { Format.money(it) }
+            com.innovation313.roshankhata.ui.Motion.countUp(tvTotalGive, shownGive ?: 0.0, totalGive) { Format.money(it) }
+            shownNet = netBalance; shownGet = totalGet; shownGive = totalGive
+        }
         ivEye.setImageResource(
             if (hidden) R.drawable.ic_eye_closed else R.drawable.ic_eye_open
         )

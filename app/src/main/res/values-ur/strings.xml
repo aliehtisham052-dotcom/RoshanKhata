@@ -1680,4 +1680,9 @@
     <string name="harvest_promise_header">وعدہ: %1$s</string>
     <string name="bill_similar_supplier">یہ %1$s لگتا ہے، جو پہلے سے آپ کے کھاتے میں ہے۔</string>
     <string name="bill_use_existing">%1$s استعمال کریں</string>
+    <string name="settled_title">%1$s کا حساب صاف ✓</string>
+    <string name="settled_sub">%1$s · شکریہ</string>
+    <string name="settled_send_card">مبارک کارڈ بھیجیں</string>
+    <string name="settled_check_desc">حساب صاف</string>
+    <string name="season_back_percent">%1$d%% واپس</string>
 </resources>
