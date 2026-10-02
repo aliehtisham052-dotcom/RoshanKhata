@@ -1603,4 +1603,34 @@ You can change this any time from this screen.</string>
     <string name="followup_queue_stop">Stop</string>
     <string name="followup_queue_done">Done — %1$d reminders opened today</string>
     <string name="followup_queue_title">%1$d of %2$d</string>
+    <string name="season_title">Fasal ka Hisaab</string>
+    <string name="season_subtitle">Credit by crop season, newest first</string>
+    <string name="season_empty">No credit to customers yet.</string>
+    <string name="season_rabi">Rabi %1$d-%2$02d</string>
+    <string name="season_kharif">Kharif %1$d</string>
+    <string name="season_harvest_rabi">Harvest: Apr–May %1$d</string>
+    <string name="season_harvest_kharif">Harvest: Oct–Nov %1$d</string>
+    <string name="season_back_out">Back %1$s · Still out %2$s</string>
+    <string name="season_pace_none">%1$d of %2$d cleared</string>
+    <string name="season_pace_before">%1$d of %2$d cleared · usually by harvest</string>
+    <string name="season_all_clear">Everyone has cleared this season.</string>
+    <string name="season_owing_title">Still owing for %1$s</string>
+    <string name="season_rec_due">%1$s: %2$s due</string>
+    <string name="season_rec_before">%1$s: cleared by harvest</string>
+    <string name="season_entry">Season: %1$s</string>
+    <string name="season_from_date">%1$s (from date)</string>
+    <string name="season_change">Change</string>
+    <string name="season_pick">Which season is this credit for?</string>
+    <plurals name="season_given">
+        <item quantity="one">%1$d customer · given %2$s</item>
+        <item quantity="other">%1$d customers · given %2$s</item>
+    </plurals>
+    <plurals name="season_pace_after">
+        <item quantity="one">%1$d of %2$d cleared · usually %3$d day after harvest</item>
+        <item quantity="other">%1$d of %2$d cleared · usually %3$d days after harvest</item>
+    </plurals>
+    <plurals name="season_rec_after">
+        <item quantity="one">%1$s: cleared %2$d day after harvest</item>
+        <item quantity="other">%1$s: cleared %2$d days after harvest</item>
+    </plurals>
 </resources>

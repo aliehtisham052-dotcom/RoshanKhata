@@ -150,6 +150,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".SeasonsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".ImportContactsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

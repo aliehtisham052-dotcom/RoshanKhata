@@ -103,14 +103,15 @@ class EntryItemsMigrationTest {
             val createV19 = createV20
                 .replace(", `rateType` TEXT", "")
                 .replace(", `pairedEntryId` INTEGER", "")
+                .replace(", `season` TEXT", "")
             assertTrue("could not strip the v20 columns from: $createV20",
-                !createV19.contains("rateType") && !createV19.contains("pairedEntryId"))
+                !createV19.contains("rateType") && !createV19.contains("pairedEntryId") && !createV19.contains("season"))
 
             val v19Columns = raw.rawQuery("PRAGMA table_info(transactions)", null).use { c ->
                 buildList {
                     while (c.moveToNext()) {
                         val col = c.getString(c.getColumnIndexOrThrow("name"))
-                        if (col != "rateType" && col != "pairedEntryId") add("`$col`")
+                        if (col != "rateType" && col != "pairedEntryId" && col != "season") add("`$col`")
                     }
                 }
             }.joinToString(", ")

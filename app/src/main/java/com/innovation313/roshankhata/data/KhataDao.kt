@@ -102,6 +102,25 @@ interface KhataDao {
     )
     fun observeLedgerPoints(): Flow<List<LedgerPoint>>
 
+    /** Fasal ka Hisaab: every live line of a live CUSTOMER (suppliers are not crop credit). */
+    @Query(
+        "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +
+            "t.isGiven AS isGiven, t.season AS seasonKey FROM transactions t " +
+            "JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1"
+    )
+    fun observeSeasonLines(): Flow<List<SeasonBook.Line>>
+
+    @Query(
+        "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +
+            "t.isGiven AS isGiven, t.season AS seasonKey FROM transactions t " +
+            "WHERE t.isDeleted = 0 AND t.partyId = :partyId"
+    )
+    suspend fun seasonLinesOf(partyId: Long): List<SeasonBook.Line>
+
+    @Query("UPDATE transactions SET season = :season WHERE id = :id")
+    suspend fun setEntrySeason(id: Long, season: String?)
+
     // ---------- Ledger entries ----------
 
     @Insert

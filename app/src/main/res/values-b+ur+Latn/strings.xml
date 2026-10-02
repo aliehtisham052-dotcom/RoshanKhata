@@ -1551,4 +1551,34 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="followup_queue_stop">Rokein</string>
     <string name="followup_queue_done">Mukammal — aaj %1$d reminders khole gaye</string>
     <string name="followup_queue_title">%2$d mein se %1$d</string>
+    <string name="season_title">Fasal ka Hisaab</string>
+    <string name="season_subtitle">Fasal ke hisaab se udhaar, nayi fasal pehle</string>
+    <string name="season_empty">Abhi kisi customer ko udhaar nahi diya gaya.</string>
+    <string name="season_rabi">Rabi %1$d-%2$02d</string>
+    <string name="season_kharif">Kharif %1$d</string>
+    <string name="season_harvest_rabi">Katai: April–May %1$d</string>
+    <string name="season_harvest_kharif">Katai: Oct–Nov %1$d</string>
+    <string name="season_back_out">Wapas %1$s · Abhi bahar %2$s</string>
+    <string name="season_pace_none">%2$d mein se %1$d clear</string>
+    <string name="season_pace_before">%2$d mein se %1$d clear · aam tor par katai tak</string>
+    <string name="season_all_clear">Is fasal ka sab ne hisaab saaf kar diya.</string>
+    <string name="season_owing_title">%1$s ka abhi baqaya</string>
+    <string name="season_rec_due">%1$s: %2$s baqaya</string>
+    <string name="season_rec_before">%1$s: katai tak clear</string>
+    <string name="season_entry">Fasal: %1$s</string>
+    <string name="season_from_date">%1$s (tareekh se)</string>
+    <string name="season_change">Badlein</string>
+    <string name="season_pick">Yeh udhaar kis fasal ka hai?</string>
+    <plurals name="season_given">
+        <item quantity="one">%1$d customer · diya %2$s</item>
+        <item quantity="other">%1$d customers · diya %2$s</item>
+    </plurals>
+    <plurals name="season_pace_after">
+        <item quantity="one">%2$d mein se %1$d clear · aam tor par katai ke %3$d din baad</item>
+        <item quantity="other">%2$d mein se %1$d clear · aam tor par katai ke %3$d din baad</item>
+    </plurals>
+    <plurals name="season_rec_after">
+        <item quantity="one">%1$s: katai ke %2$d din baad clear</item>
+        <item quantity="other">%1$s: katai ke %2$d din baad clear</item>
+    </plurals>
 </resources>

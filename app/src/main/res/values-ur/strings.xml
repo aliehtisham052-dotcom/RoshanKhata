@@ -1551,4 +1551,34 @@
     <string name="followup_queue_stop">روکیں</string>
     <string name="followup_queue_done">مکمل — آج %1$d یاد دہانیاں کھولی گئیں</string>
     <string name="followup_queue_title">%2$d میں سے %1$d</string>
+    <string name="season_title">فصل کا حساب</string>
+    <string name="season_subtitle">فصل کے لحاظ سے ادھار، نئی فصل پہلے</string>
+    <string name="season_empty">ابھی کسی گاہک کو ادھار نہیں دیا گیا۔</string>
+    <string name="season_rabi">ربیع %1$d-%2$02d</string>
+    <string name="season_kharif">خریف %1$d</string>
+    <string name="season_harvest_rabi">کٹائی: اپریل–مئی %1$d</string>
+    <string name="season_harvest_kharif">کٹائی: اکتوبر–نومبر %1$d</string>
+    <string name="season_back_out">واپس %1$s · ابھی باہر %2$s</string>
+    <string name="season_pace_none">%2$d میں سے %1$d کلیئر</string>
+    <string name="season_pace_before">%2$d میں سے %1$d کلیئر · عموماً کٹائی تک</string>
+    <string name="season_all_clear">اس فصل کا سب نے حساب صاف کر دیا۔</string>
+    <string name="season_owing_title">%1$s کا ابھی بقایا</string>
+    <string name="season_rec_due">%1$s: %2$s بقایا</string>
+    <string name="season_rec_before">%1$s: کٹائی تک کلیئر</string>
+    <string name="season_entry">فصل: %1$s</string>
+    <string name="season_from_date">%1$s (تاریخ سے)</string>
+    <string name="season_change">بدلیں</string>
+    <string name="season_pick">یہ ادھار کس فصل کا ہے؟</string>
+    <plurals name="season_given">
+        <item quantity="one">%1$d گاہک · دیا %2$s</item>
+        <item quantity="other">%1$d گاہک · دیا %2$s</item>
+    </plurals>
+    <plurals name="season_pace_after">
+        <item quantity="one">%2$d میں سے %1$d کلیئر · عموماً کٹائی کے %3$d دن بعد</item>
+        <item quantity="other">%2$d میں سے %1$d کلیئر · عموماً کٹائی کے %3$d دن بعد</item>
+    </plurals>
+    <plurals name="season_rec_after">
+        <item quantity="one">%1$s: کٹائی کے %2$d دن بعد کلیئر</item>
+        <item quantity="other">%1$s: کٹائی کے %2$d دن بعد کلیئر</item>
+    </plurals>
 </resources>
