@@ -196,6 +196,16 @@ data class BillSummary(
  * still offered rather than hidden, since the owner may know something the
  * count does not (a few units held back, a recount not yet entered).
  */
+/** One customer's purchases from one batch; see KhataDao.buyersOfBatch. */
+data class BatchBuyer(
+    val partyId: Long,
+    val partyName: String,
+    val phone: String?,
+    val quantity: Double?,
+    val unit: String?,
+    val lastAt: Long
+)
+
 data class BatchOption(
     val id: Long,
     val batchNumber: String?,

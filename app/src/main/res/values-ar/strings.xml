@@ -1741,4 +1741,23 @@
         <item quantity="many">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
         <item quantity="other">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
     </plurals>
+    <string name="batch_buyers_title">من اشترى %1$s · دفعة %2$s</string>
+    <string name="batch_buyers_action">مشترو هذه الدفعة</string>
+    <string name="batch_buyers_none">لم تُربط أي عملية بيع بهذه الدفعة بعد.</string>
+    <string name="advice_line">نصيحة: %1$s</string>
+    <string name="advice_disclaimer">نصيحة فقط، وليست ضمانًا.</string>
+    <string name="advice_write">اكتب نصيحة الرش</string>
+    <string name="advice_pick_line">أي صنف؟</string>
+    <string name="advice_title">نصيحة: %1$s</string>
+    <string name="advice_crop_hint">المحصول، مثل القطن، 3 فدان</string>
+    <string name="advice_pest_hint">الآفة أو المرض، مثل دودة اللوز</string>
+    <string name="advice_dose_hint">الجرعة، مثل 250 مل للفدان، صباحًا</string>
+    <plurals name="batch_buyers_untagged">
+        <item quantity="zero">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
+        <item quantity="one">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
+        <item quantity="two">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
+        <item quantity="few">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
+        <item quantity="many">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
+        <item quantity="other">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
+    </plurals>
 </resources>

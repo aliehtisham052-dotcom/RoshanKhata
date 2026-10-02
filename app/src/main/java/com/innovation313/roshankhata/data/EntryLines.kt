@@ -30,12 +30,16 @@ data class LineDraft(
      */
     val updateProductRate: Boolean = false,
     /** The owner ticked "also add this item to the products list". */
-    val addToProducts: Boolean = false
+    val addToProducts: Boolean = false,
+    /** Spray advice carried through an edit (v25); set on the entry screen. */
+    val crop: String? = null,
+    val pest: String? = null,
+    val dose: String? = null
 ) {
     /** The saved line, or null if nothing about goods was filled in. */
     fun toItem(): EntryItem? =
         EntryItem.ofGoods(itemName, quantity, unit, productId, billItemId, if (isBonus) null else rate)
-            ?.copy(isBonus = isBonus)
+            ?.copy(isBonus = isBonus, crop = crop, pest = pest, dose = dose)
 
     /** What this line comes to, to the paisa — null when qty or rate is missing. */
     fun total(): Double? = LineMath.lineTotal(quantity, rate, isBonus)

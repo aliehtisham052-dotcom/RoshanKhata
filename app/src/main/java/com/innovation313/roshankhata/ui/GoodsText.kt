@@ -16,6 +16,12 @@ import com.innovation313.roshankhata.data.RateType
  */
 object GoodsText {
 
+    /** "Cotton · Bollworm · 250 ml per acre" (v25), or null when none was written. */
+    fun advice(item: com.innovation313.roshankhata.data.EntryItem): String? =
+        listOfNotNull(item.crop, item.pest, item.dose)
+            .map { it.trim() }.filter { it.isNotEmpty() }
+            .takeIf { it.isNotEmpty() }?.joinToString(" · ")
+
     private fun rateLabel(context: Context, rateType: String?): String? = when (rateType) {
         RateType.CREDIT -> context.getString(R.string.rate_type_credit)
         RateType.CASH -> context.getString(R.string.rate_type_cash)
@@ -53,7 +59,8 @@ object GoodsText {
     fun receipt(context: Context, items: List<EntryItem>, rateType: String?, amount: Double): String? {
         if (items.isEmpty()) return null
         val priced = items.any { it.rate != null || it.isBonus }
-        if (items.size == 1 && !priced) return Format.goods(items)
+        val advised = items.any { advice(it) != null }
+        if (items.size == 1 && !priced && !advised) return Format.goods(items)
 
         val lines = items.mapIndexed { i, item ->
             val goods = Format.goods(item.itemName, item.quantity, item.unit).orEmpty()
@@ -65,8 +72,11 @@ object GoodsText {
                 }
                 else -> ""
             }
-            "${i + 1}. $goods$price"
+            "${i + 1}. $goods$price" +
+                (advice(item)?.let { "\n    " + context.getString(R.string.advice_line, it) }.orEmpty())
         }.toMutableList()
+        // In writing on the receipt, so it reads as what it is.
+        if (advised) lines += context.getString(R.string.advice_disclaimer)
 
         val total = LineMath.linesTotal(items)
         val summary = listOfNotNull(

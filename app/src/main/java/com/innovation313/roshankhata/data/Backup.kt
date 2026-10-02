@@ -642,6 +642,9 @@ object Backup {
         put("isBonus", i.isBonus)
         put("productId", i.productId ?: JSONObject.NULL)
         put("billItemId", i.billItemId ?: JSONObject.NULL)
+        put("crop", i.crop ?: JSONObject.NULL)
+        put("pest", i.pest ?: JSONObject.NULL)
+        put("dose", i.dose ?: JSONObject.NULL)
     }
 
     // The real id is kept, like every other table: a line's identity must
@@ -656,7 +659,11 @@ object Backup {
         rate = o.optNullableDouble("rate"),
         isBonus = o.optBoolean("isBonus", false),
         productId = o.optNullableLong("productId"),
-        billItemId = o.optNullableLong("billItemId")
+        billItemId = o.optNullableLong("billItemId"),
+        // Absent before v25: no advice recorded.
+        crop = o.optNullableString("crop"),
+        pest = o.optNullableString("pest"),
+        dose = o.optNullableString("dose")
     )
 
     private fun chequeToJson(c: Cheque) = JSONObject().apply {

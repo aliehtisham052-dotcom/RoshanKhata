@@ -1633,4 +1633,19 @@ You can change this any time from this screen.</string>
         <item quantity="one">%1$s: cleared %2$d day after harvest</item>
         <item quantity="other">%1$s: cleared %2$d days after harvest</item>
     </plurals>
+    <string name="batch_buyers_title">Who bought %1$s · batch %2$s</string>
+    <string name="batch_buyers_action">Who bought this batch</string>
+    <string name="batch_buyers_none">No sale has been tagged to this batch yet.</string>
+    <string name="advice_line">Advice: %1$s</string>
+    <string name="advice_disclaimer">Advice only, not a guarantee.</string>
+    <string name="advice_write">Write spray advice</string>
+    <string name="advice_pick_line">Which item?</string>
+    <string name="advice_title">Advice: %1$s</string>
+    <string name="advice_crop_hint">Crop, e.g. Cotton, 3 acres</string>
+    <string name="advice_pest_hint">Pest or disease, e.g. Bollworm</string>
+    <string name="advice_dose_hint">Dose, e.g. 250 ml per acre, morning</string>
+    <plurals name="batch_buyers_untagged">
+        <item quantity="one">%d sale of this product has no batch and is not listed</item>
+        <item quantity="other">%d sales of this product have no batch and are not listed</item>
+    </plurals>
 </resources>

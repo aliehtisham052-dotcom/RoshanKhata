@@ -850,6 +850,39 @@ interface KhataDao {
     suspend fun batchOptionsForProduct(productId: Long): List<BatchOption>
 
     /**
+     * Who bought from this exact batch (bill_items row), biggest buyer first
+     * (2 Oct) — for a recall, a fake batch or a crop complaint. Only live
+     * sales tagged to the batch; [untaggedSalesOfProduct] says how many were
+     * not, so the list is never mistaken for complete.
+     */
+    @Query(
+        """
+        SELECT p.id AS partyId, p.name AS partyName, p.phone AS phone,
+               SUM(ei.quantity) AS quantity, MAX(ei.unit) AS unit, MAX(t.timestamp) AS lastAt
+        FROM entry_items ei
+        JOIN transactions t ON t.id = ei.entryId
+        JOIN parties p ON p.id = t.partyId
+        WHERE ei.billItemId = :billItemId AND t.isGiven = 1 AND t.isDeleted = 0
+        GROUP BY p.id
+        ORDER BY quantity DESC
+        """
+    )
+    suspend fun buyersOfBatch(billItemId: Long): List<BatchBuyer>
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM entry_items ei
+        JOIN transactions t ON t.id = ei.entryId
+        WHERE ei.productId = :productId AND ei.billItemId IS NULL
+          AND t.isGiven = 1 AND t.isDeleted = 0
+        """
+    )
+    suspend fun untaggedSalesOfProduct(productId: Long): Int
+
+    @Query("UPDATE entry_items SET crop = :crop, pest = :pest, dose = :dose WHERE id = :id")
+    suspend fun setLineAdvice(id: Long, crop: String?, pest: String?, dose: String?)
+
+    /**
      * Every batch in the shop, of every product, with what is left of it.
      *
      * The batch-wise stock register an inspection asks for. This is

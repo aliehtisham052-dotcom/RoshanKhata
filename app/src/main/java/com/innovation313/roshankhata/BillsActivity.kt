@@ -1133,11 +1133,14 @@ class BillsActivity : BaseActivity() {
     }
 
     private fun showItemActions(billId: Long, item: BillItem) {
-        val options = arrayOf(getString(R.string.edit_item), getString(R.string.delete_item))
+        val options = arrayOf(
+            getString(R.string.edit_item), getString(R.string.delete_item), getString(R.string.batch_buyers_action)
+        )
         MaterialAlertDialogBuilder(this)
             .setTitle(item.productName)
             .setItems(options) { _, which ->
                 when (which) {
+                    2 -> com.innovation313.roshankhata.ui.BatchBuyersDialog.show(this, lifecycleScope, dao, item.id)
                     0 -> showAddItemDialog(existing = item) { updated ->
                         AppScope.launch {
                             // The name on the line decides which product the

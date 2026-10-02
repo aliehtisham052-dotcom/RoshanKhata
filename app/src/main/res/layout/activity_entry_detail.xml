@@ -262,6 +262,20 @@
                     android:textColor="@color/brand_green_text" />
             </LinearLayout>
 
+            <!-- Spray advice (2 Oct): written after the sale, printed on the receipt above. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAdvice"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:minHeight="48dp"
+                android:text="@string/advice_write"
+                android:textColor="@color/brand_green_text"
+                android:visibility="gone"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/brand_green" />
+
         </LinearLayout>
     </ScrollView>
 

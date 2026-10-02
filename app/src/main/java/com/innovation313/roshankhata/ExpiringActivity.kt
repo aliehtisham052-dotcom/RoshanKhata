@@ -39,7 +39,9 @@ class ExpiringActivity : BaseActivity() {
 
         tvEmpty = findViewById(R.id.tvNoExpiring)
 
-        adapter = ExpiringAdapter()
+        adapter = ExpiringAdapter(onOpen = { batch ->
+            com.innovation313.roshankhata.ui.BatchBuyersDialog.show(this, lifecycleScope, dao, batch.itemId)
+        })
         val rv: RecyclerView = findViewById(R.id.rvExpiring)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
