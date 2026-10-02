@@ -18,6 +18,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.CashEntry
+import com.innovation313.roshankhata.data.ReminderLog
+import com.innovation313.roshankhata.data.LineMath
+import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.DayCloseMath
+import com.innovation313.roshankhata.data.DayClose
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.CashAdapter
 import com.innovation313.roshankhata.ui.Format
@@ -64,7 +70,99 @@ class CashbookActivity : BaseActivity() {
             showDirectionChoice()
         }
 
+        findViewById<View>(R.id.btnCloseDay).setOnClickListener { showDayClose() }
+        val tvLastClose = findViewById<TextView>(R.id.tvLastClose)
+        lifecycleScope.launch {
+            dao.observeLastDayClose().collectLatest { c ->
+                tvLastClose.text = if (c == null) getString(R.string.dayclose_never) else getString(
+                    R.string.dayclose_last, Format.dateOnly(c.closedAt), Format.signedTotal(c.difference)
+                )
+            }
+        }
+
         observe()
+    }
+
+    /**
+     * Galla milan (2 Oct): what the drawer should hold since the last count —
+     * the last counted cash, plus cash in (cashbook income and khata receipts
+     * marked Cash), minus cash out (expenses and khata payments marked Cash) —
+     * against what the owner counts now. Entries with no payment method are
+     * not guessed at; the help line says so.
+     */
+    private fun showDayClose() {
+        lifecycleScope.launch {
+            val last = dao.lastDayClose()
+            val now = System.currentTimeMillis()
+            val from = last?.closedAt ?: 0L
+            val cbIn = dao.cashbookTotalBetween(true, from, now)
+            val cbOut = dao.cashbookTotalBetween(false, from, now)
+            val kIn = dao.khataCashBetween(false, from, now)
+            val kOut = dao.khataCashBetween(true, from, now)
+            val cashIn = cbIn + kIn
+            val cashOut = cbOut + kOut
+            if (isFinishing || isDestroyed) return@launch
+
+            val view = layoutInflater.inflate(R.layout.dialog_day_close, null)
+            val etOpening = view.findViewById<EditText>(R.id.etOpening)
+            val etCounted = view.findViewById<EditText>(R.id.etCounted)
+            val etNote = view.findViewById<EditText>(R.id.etCloseNote)
+            val tvBreak = view.findViewById<TextView>(R.id.tvBreakdown)
+            val tvDiff = view.findViewById<TextView>(R.id.tvDifference)
+            last?.let { etOpening.setText(Format.plain(it.counted)) }
+
+            fun refresh() {
+                val opening = Digits.parse(etOpening.text.toString()) ?: 0.0
+                val expected = DayCloseMath.expected(opening, cashIn, cashOut)
+                tvBreak.text = getString(
+                    R.string.dayclose_breakdown,
+                    Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected)
+                )
+                val counted = Digits.parse(etCounted.text.toString())
+                tvDiff.text = when {
+                    counted == null -> ""
+                    else -> {
+                        val d = DayCloseMath.difference(counted, expected)
+                        when {
+                            Money.isPositive(d) -> getString(R.string.dayclose_over, Format.money(d))
+                            Money.isPositive(-d) -> getString(R.string.dayclose_short, Format.money(-d))
+                            else -> getString(R.string.dayclose_match)
+                        }
+                    }
+                }
+            }
+            val watcher = object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun afterTextChanged(s: android.text.Editable?) = refresh()
+            }
+            etOpening.addTextChangedListener(watcher)
+            etCounted.addTextChangedListener(watcher)
+            refresh()
+
+            MaterialAlertDialogBuilder(this@CashbookActivity)
+                .setTitle(R.string.dayclose_title)
+                .setView(view)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.save) { _, _ ->
+                    val counted = Digits.parse(etCounted.text.toString())
+                    if (counted == null) {
+                        Toast.makeText(this@CashbookActivity, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
+                    val close = DayClose(
+                        day = ReminderLog.dayOf(now),
+                        opening = Digits.parse(etOpening.text.toString()) ?: 0.0,
+                        cashIn = LineMath.round(cashIn),
+                        cashOut = LineMath.round(cashOut),
+                        counted = counted,
+                        note = etNote.text.toString().trim().ifEmpty { null },
+                        closedAt = now
+                    )
+                    AppScope.launch { dao.saveDayClose(close) }
+                }
+                .show()
+        }
     }
 
     private fun observe() {

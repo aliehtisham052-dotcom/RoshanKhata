@@ -1596,4 +1596,17 @@
         <item quantity="one">اس چیز کی %d فروخت بغیر بیچ کے ہے، فہرست میں نہیں</item>
         <item quantity="other">اس چیز کی %d فروختیں بغیر بیچ کے ہیں، فہرست میں نہیں</item>
     </plurals>
+    <string name="dayclose_button">دن بند کریں</string>
+    <string name="dayclose_never">ابھی گلہ نہیں گنا گیا</string>
+    <string name="dayclose_last">پچھلی گنتی %1$s · %2$s</string>
+    <string name="dayclose_title">دن بند کریں (گلہ)</string>
+    <string name="dayclose_opening">پچھلی گنتی پر گلے میں کیش</string>
+    <string name="dayclose_counted">ابھی گنا ہوا کیش</string>
+    <string name="dayclose_note_hint">نوٹ، مثلاً چائے، مزدوری</string>
+    <string name="dayclose_help">صرف وہ کھاتہ انٹریاں گنی جاتی ہیں جن پر کیش لکھا ہو؛ بغیر طریقے والی انٹریوں کا اندازہ نہیں لگایا جاتا۔</string>
+    <string name="dayclose_breakdown">+ کیش بک آمد %1$s\n+ کھاتے سے کیش وصول %2$s\n− کیش بک خرچ %3$s\n− کھاتے سے کیش ادا %4$s\n= گلے میں ہونا چاہیے %5$s</string>
+    <string name="dayclose_over">حساب سے %1$s زیادہ</string>
+    <string name="dayclose_short">%1$s کم</string>
+    <string name="dayclose_match">گلہ حساب سے مل گیا</string>
+    <string name="dayclose_need_count">گنا ہوا کیش لکھیں</string>
 </resources>
