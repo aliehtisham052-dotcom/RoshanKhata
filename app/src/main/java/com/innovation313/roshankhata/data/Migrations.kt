@@ -639,6 +639,22 @@ val MIGRATION_25_26 = object : Migration(25, 26) {
 }
 
 /**
+ * v27 (2 Oct 2026): company schemes and their claims (C1). A new table.
+ */
+val MIGRATION_26_27 = object : Migration(26, 27) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `schemes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`name` TEXT NOT NULL, `partyId` INTEGER, `company` TEXT, `startDate` INTEGER NOT NULL, " +
+                "`endDate` INTEGER NOT NULL, `measure` TEXT NOT NULL, `unit` TEXT, `rewardKind` TEXT NOT NULL, " +
+                "`target1` REAL NOT NULL, `reward1` REAL NOT NULL, `target2` REAL, `reward2` REAL, " +
+                "`target3` REAL, `reward3` REAL, `claimedAmount` REAL, `claimedAt` INTEGER, `note` TEXT, " +
+                "`isDeleted` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL)"
+        )
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -647,7 +663,7 @@ val MIGRATION_25_26 = object : Migration(25, 26) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 26
+const val KHATA_DB_VERSION = 27
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -675,5 +691,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_22_23,
     MIGRATION_23_24,
     MIGRATION_24_25,
-    MIGRATION_25_26
+    MIGRATION_25_26,
+    MIGRATION_26_27
 )

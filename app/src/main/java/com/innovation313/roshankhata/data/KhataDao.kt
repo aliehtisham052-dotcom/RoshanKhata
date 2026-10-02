@@ -863,6 +863,7 @@ interface KhataDao {
         JOIN transactions t ON t.id = ei.entryId
         JOIN parties p ON p.id = t.partyId
         WHERE ei.billItemId = :billItemId AND t.isGiven = 1 AND t.isDeleted = 0
+          AND p.isCustomer = 1
         GROUP BY p.id
         ORDER BY quantity DESC
         """
@@ -873,11 +874,72 @@ interface KhataDao {
         """
         SELECT COUNT(*) FROM entry_items ei
         JOIN transactions t ON t.id = ei.entryId
+        JOIN parties p ON p.id = t.partyId
         WHERE ei.productId = :productId AND ei.billItemId IS NULL
-          AND t.isGiven = 1 AND t.isDeleted = 0
+          AND t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1
         """
     )
     suspend fun untaggedSalesOfProduct(productId: Long): Int
+
+    // ---------- Company schemes (v27) ----------
+
+    @Query("SELECT * FROM schemes WHERE isDeleted = 0 ORDER BY endDate DESC, id DESC")
+    fun observeSchemes(): Flow<List<Scheme>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveScheme(s: Scheme): Long
+
+    @Query("UPDATE schemes SET isDeleted = 1 WHERE id = :id")
+    suspend fun deleteScheme(id: Long)
+
+    @Query("UPDATE schemes SET claimedAmount = :amount, claimedAt = :at WHERE id = :id")
+    suspend fun setSchemeClaim(id: Long, amount: Double?, at: Long?)
+
+    /**
+     * What was bought towards a scheme: from live supplier bills dated within
+     * the scheme, from its supplier and/or of its company's products. By
+     * value it is quantity × rate (a line with no rate adds nothing — see
+     * [schemeUnpricedLines]); by quantity, the units of [unit] (or all).
+     */
+    @Query(
+        """
+        SELECT COALESCE(SUM(CASE WHEN :byValue = 1 THEN COALESCE(i.quantity * i.rate, 0) ELSE i.quantity END), 0)
+        FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        LEFT JOIN products pr ON pr.id = i.productId
+        WHERE i.isDeleted = 0 AND b.isDeleted = 0
+          AND b.billDate >= :from AND b.billDate <= :to
+          AND (:partyId IS NULL OR b.partyId = :partyId)
+          AND (:company IS NULL OR LOWER(TRIM(pr.company)) = LOWER(TRIM(:company)))
+          AND (:byValue = 1 OR :unit IS NULL OR LOWER(TRIM(i.unit)) = LOWER(TRIM(:unit)))
+        """
+    )
+    suspend fun schemePurchased(byValue: Boolean, from: Long, to: Long, partyId: Long?, company: String?, unit: String?): Double
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM bill_items i
+        JOIN supplier_bills b ON b.id = i.billId
+        LEFT JOIN products pr ON pr.id = i.productId
+        WHERE i.isDeleted = 0 AND b.isDeleted = 0 AND i.rate IS NULL
+          AND b.billDate >= :from AND b.billDate <= :to
+          AND (:partyId IS NULL OR b.partyId = :partyId)
+          AND (:company IS NULL OR LOWER(TRIM(pr.company)) = LOWER(TRIM(:company)))
+        """
+    )
+    suspend fun schemeUnpricedLines(from: Long, to: Long, partyId: Long?, company: String?): Int
+
+    @Query("SELECT * FROM parties WHERE isDeleted = 0 AND isCustomer = 0 ORDER BY name")
+    suspend fun suppliersOnce(): List<Party>
+
+    @Query("SELECT * FROM schemes ORDER BY id")
+    suspend fun allSchemesForBackup(): List<Scheme>
+
+    @Query("DELETE FROM schemes")
+    suspend fun wipeSchemes()
+
+    @Insert
+    suspend fun restoreSchemes(items: List<Scheme>)
 
     // ---------- Galla milan (v26) ----------
 
@@ -1552,7 +1614,9 @@ interface KhataDao {
         // Goods lines (v20). Additive and default empty, like the rest.
         entryItems: List<EntryItem> = emptyList(),
         // Galla milan counts (v26). Additive.
-        dayCloses: List<DayClose> = emptyList()
+        dayCloses: List<DayClose> = emptyList(),
+        // Company schemes (v27). Additive.
+        schemes: List<Scheme> = emptyList()
     ) {
         // Children before parents on the way out. invoice_items cascades off
         // invoices, so items are wiped first; wiping invoices first would fire
@@ -1574,6 +1638,7 @@ interface KhataDao {
         wipeProducts()
         wipeDismissedDuplicates()
         wipeDayCloses()
+        wipeSchemes()
 
         restoreProducts(products)
         restoreParties(parties)
@@ -1593,6 +1658,7 @@ interface KhataDao {
         // No foreign key — order does not matter for these.
         restoreDismissedDuplicates(dismissedDuplicates)
         restoreDayCloses(dayCloses)
+        restoreSchemes(schemes)
     }
 
 

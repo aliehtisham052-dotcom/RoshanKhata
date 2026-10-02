@@ -95,6 +95,21 @@ object Backup {
         root.put("cheques", JSONArray().apply {
             dao.allChequesForBackup().forEach { put(chequeToJson(it)) }
         })
+        root.put("schemes", JSONArray().apply {
+            dao.allSchemesForBackup().forEach { s ->
+                put(JSONObject().apply {
+                    put("id", s.id); put("name", s.name)
+                    put("partyId", s.partyId ?: JSONObject.NULL); put("company", s.company ?: JSONObject.NULL)
+                    put("startDate", s.startDate); put("endDate", s.endDate)
+                    put("measure", s.measure); put("unit", s.unit ?: JSONObject.NULL); put("rewardKind", s.rewardKind)
+                    put("target1", s.target1); put("reward1", s.reward1)
+                    put("target2", s.target2 ?: JSONObject.NULL); put("reward2", s.reward2 ?: JSONObject.NULL)
+                    put("target3", s.target3 ?: JSONObject.NULL); put("reward3", s.reward3 ?: JSONObject.NULL)
+                    put("claimedAmount", s.claimedAmount ?: JSONObject.NULL); put("claimedAt", s.claimedAt ?: JSONObject.NULL)
+                    put("note", s.note ?: JSONObject.NULL); put("isDeleted", s.isDeleted); put("createdAt", s.createdAt)
+                })
+            }
+        })
         root.put("dayCloses", JSONArray().apply {
             dao.allDayClosesForBackup().forEach { c ->
                 put(JSONObject().apply {
@@ -362,6 +377,26 @@ object Backup {
                 (0 until arr.length()).map { jsonToCash(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Absent before v27: no schemes.
+            val schemes = root.optJSONArray("schemes")?.let { arr ->
+                (0 until arr.length()).map { i ->
+                    val o = arr.getJSONObject(i)
+                    Scheme(
+                        id = o.getLong("id"), name = o.getString("name"),
+                        partyId = o.optNullableLong("partyId"), company = o.optNullableString("company"),
+                        startDate = o.getLong("startDate"), endDate = o.getLong("endDate"),
+                        measure = o.getString("measure"), unit = o.optNullableString("unit"),
+                        rewardKind = o.getString("rewardKind"),
+                        target1 = o.getDouble("target1"), reward1 = o.getDouble("reward1"),
+                        target2 = o.optNullableDouble("target2"), reward2 = o.optNullableDouble("reward2"),
+                        target3 = o.optNullableDouble("target3"), reward3 = o.optNullableDouble("reward3"),
+                        claimedAmount = o.optNullableDouble("claimedAmount"), claimedAt = o.optNullableLong("claimedAt"),
+                        note = o.optNullableString("note"), isDeleted = o.optBoolean("isDeleted", false),
+                        createdAt = o.optLong("createdAt", 0L)
+                    )
+                }
+            } ?: emptyList()
+
             // Absent before v26: no counts to bring back.
             val dayCloses = root.optJSONArray("dayCloses")?.let { arr ->
                 (0 until arr.length()).map { i ->
@@ -482,7 +517,8 @@ object Backup {
                 dismissedDuplicates,
                 businessName = root.optString("businessName").takeIf { it.isNotBlank() },
                 entryItems = entryItems,
-                dayCloses = dayCloses
+                dayCloses = dayCloses,
+                schemes = schemes
             )
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
@@ -511,7 +547,8 @@ object Backup {
         val businessName: String? = null,
         /** Goods lines — read from the file, or rebuilt from an older file's entries. */
         val entryItems: List<EntryItem> = emptyList(),
-        val dayCloses: List<DayClose> = emptyList()
+        val dayCloses: List<DayClose> = emptyList(),
+        val schemes: List<Scheme> = emptyList()
     )
 
     /**
@@ -562,7 +599,8 @@ object Backup {
             invoiceItems = data.invoiceItems,
             dismissedDuplicates = data.dismissedDuplicates,
             entryItems = data.entryItems,
-            dayCloses = data.dayCloses
+            dayCloses = data.dayCloses,
+            schemes = data.schemes
         )
 
         data.businessProfile?.let { restoreBusinessProfile(context, it) }

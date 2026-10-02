@@ -155,6 +155,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".SchemesActivity"
+            android:exported="false"
+            android:parentActivityName=".BillsActivity" />
+
+        <activity
             android:name=".ImportContactsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

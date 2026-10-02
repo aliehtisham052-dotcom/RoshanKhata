@@ -57,6 +57,19 @@
             android:textSize="13sp"
             app:cornerRadius="8dp"
             app:strokeColor="@color/section_bills_soft" />
+
+        <!-- C1 (2 Oct): schemes are bought towards on these very bills. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSchemes"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/schemes_title"
+            android:textColor="@color/section_bills_soft"
+            android:textSize="13sp"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/section_bills_soft" />
     </LinearLayout>
 
     <TextView
