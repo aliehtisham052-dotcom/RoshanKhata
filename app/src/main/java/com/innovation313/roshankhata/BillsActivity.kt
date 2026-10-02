@@ -869,16 +869,27 @@ class BillsActivity : BaseActivity() {
         index: Int,
         guesses: Map<Long, com.innovation313.roshankhata.data.LabelGuess.Guess> = emptyMap()
     ) {
-        if (index >= queue.size || isFinishing || isDestroyed) return
+        if (index < 0 || index >= queue.size || isFinishing || isDestroyed) return
         val next = { fillLabelDetails(queue, index + 1, guesses) }
-        ProductDetailsDialog.show(
-            activity = this,
-            product = queue[index],
-            dao = dao,
-            onSaved = next,
-            onDismissed = next,
-            guess = guesses[queue[index].id]
-        )
+        lifecycleScope.launch {
+            // Read fresh: after Back, the owner must see what he saved a
+            // moment ago, not the copy the queue was built from.
+            val product = dao.productById(queue[index].id) ?: queue[index]
+            if (isFinishing || isDestroyed) return@launch
+            ProductDetailsDialog.show(
+                activity = this@BillsActivity,
+                product = product,
+                dao = dao,
+                onSaved = next,
+                onDismissed = next,
+                guess = guesses[product.id],
+                step = ProductDetailsDialog.Step(
+                    position = index,
+                    total = queue.size,
+                    onBack = if (index > 0) ({ fillLabelDetails(queue, index - 1, guesses) }) else null
+                )
+            )
+        }
     }
 
     // ---------- Viewing / deleting ----------

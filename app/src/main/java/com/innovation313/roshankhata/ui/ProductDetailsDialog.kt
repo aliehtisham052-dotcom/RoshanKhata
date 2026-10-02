@@ -2,6 +2,8 @@ package com.innovation313.roshankhata.ui
 
 import android.app.Activity
 import android.widget.EditText
+import android.widget.TextView
+import android.view.View
 import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.R
@@ -61,7 +63,13 @@ object ProductDetailsDialog {
          * boxes only, never over a value the product already has, and saved
          * only if the owner presses Save.
          */
-        guess: com.innovation313.roshankhata.data.LabelGuess.Guess? = null
+        guess: com.innovation313.roshankhata.data.LabelGuess.Guess? = null,
+        /**
+         * Set when this form is one of several in a row (the bill screen's
+         * label queue): the title says where the owner is, the buttons read
+         * Skip / Save & next, and Back returns to the previous product.
+         */
+        step: Step? = null
     ) {
         val view = activity.layoutInflater.inflate(R.layout.dialog_edit_product, null)
         fun field(id: Int) = view.findViewById<EditText>(id)
@@ -94,15 +102,24 @@ object ProductDetailsDialog {
                 (product.formulation == null && guess.formulation != null)
             )
 
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.product_edit_details)
-            .apply { if (guessed) setMessage(R.string.label_guess_note) }
+        view.findViewById<TextView>(R.id.tvGuessNote).visibility =
+            if (guessed) View.VISIBLE else View.GONE
+
+        val lastStep = step == null || step.position == step.total - 1
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(
+                if (step == null) activity.getString(R.string.product_edit_details)
+                else activity.getString(R.string.label_step_title, step.position + 1, step.total)
+            )
             .setView(view)
-            // Cancel still advances a queue — an owner who skips one product
+            // Skip still advances a queue — an owner who skips one product
             // should reach the next, not be dropped out of the run.
-            .setNegativeButton(R.string.cancel) { _, _ -> onDismissed() }
+            .setNegativeButton(if (step != null) R.string.label_step_skip else R.string.cancel) { _, _ -> onDismissed() }
             .setOnCancelListener { onDismissed() }
-            .setPositiveButton(R.string.save) { _, _ ->
+            .apply {
+                step?.onBack?.let { back -> setNeutralButton(R.string.back) { _, _ -> back() } }
+            }
+            .setPositiveButton(if (lastStep) R.string.save else R.string.label_step_save_next) { _, _ ->
                 val newName = etName.text.toString().trim()
                 if (newName.isEmpty()) {
                     Toast.makeText(activity, R.string.enter_name, Toast.LENGTH_SHORT).show()
@@ -164,6 +181,14 @@ object ProductDetailsDialog {
                     activity.runOnUiThread { if (!activity.isFinishing) onSaved() }
                 }
             }
-            .show()
+            .create()
+        // A tap beside the form used to close it — and in the queue that
+        // silently skipped the product with everything typed lost. Only the
+        // buttons (or Back) close it now.
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
     }
+
+    /** Where this form sits in a run of several; see [show]. */
+    class Step(val position: Int, val total: Int, val onBack: (() -> Unit)?)
 }

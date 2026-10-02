@@ -96,7 +96,13 @@ object InvoiceTemplateKit {
     )
 
     /** A template's own fonts — headings/labels vs monospace for numbers and money, matching the spec's per-template font pairs. */
-    data class Fonts(val heading: Typeface, val mono: Typeface, val monoBold: Typeface)
+    data class Fonts(
+        val heading: Typeface,
+        val mono: Typeface,
+        val monoBold: Typeface,
+        /** A real bold file for the heading face, where one exists (Manrope). */
+        val headingBold: Typeface? = null
+    )
 
     /**
      * Every word printed on an invoice, in the app's language.
@@ -171,7 +177,7 @@ object InvoiceTemplateKit {
         typeface = when {
             mono && bold -> fonts.monoBold
             mono -> fonts.mono
-            bold -> Typeface.create(fonts.heading, Typeface.BOLD)
+            bold -> fonts.headingBold ?: Typeface.create(fonts.heading, Typeface.BOLD)
             italic -> Typeface.create(fonts.heading, Typeface.ITALIC)
             else -> fonts.heading
         }
@@ -184,7 +190,8 @@ object InvoiceTemplateKit {
         // fake bold explicitly emboldens regardless of what the style
         // request did. Not applied to mono, which has a real bold file
         // ([Fonts.monoBold]) — doubling up there would smear the digits.
-        if (bold && !mono) isFakeBoldText = true
+        // A real bold file needs no smearing on top.
+        if (bold && !mono && fonts.headingBold == null) isFakeBoldText = true
     }
 
     fun solid(colour: Int): Paint = Paint().apply { isAntiAlias = true; color = colour }

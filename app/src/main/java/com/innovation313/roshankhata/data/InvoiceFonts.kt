@@ -37,9 +37,22 @@ object InvoiceFonts {
         sora ?: (ResourcesCompat.getFont(context, R.font.sora_variable) ?: Typeface.DEFAULT)
             .also { sora = it }
 
+    /**
+     * Manrope as two STATIC files cut from the variable font at wght 400 and
+     * 700 (1 Oct). The variable file's default instance was wght 200
+     * (ExtraLight), so every Manrope heading printed thin, and Typeface.BOLD
+     * or fake-bold only thickened that hairline. Static files give the same
+     * weight on every Android version (minSdk 24 has no variation settings).
+     */
     fun manrope(context: Context): Typeface =
-        manrope ?: (ResourcesCompat.getFont(context, R.font.manrope_variable) ?: Typeface.DEFAULT)
+        manrope ?: (ResourcesCompat.getFont(context, R.font.manrope_regular) ?: Typeface.DEFAULT)
             .also { manrope = it }
+
+    private var manropeBold: Typeface? = null
+
+    fun manropeBold(context: Context): Typeface =
+        manropeBold ?: (ResourcesCompat.getFont(context, R.font.manrope_bold) ?: Typeface.DEFAULT_BOLD)
+            .also { manropeBold = it }
 
     fun playfairDisplay(context: Context): Typeface =
         playfairDisplay ?: (ResourcesCompat.getFont(context, R.font.playfair_display_variable) ?: Typeface.SERIF)
