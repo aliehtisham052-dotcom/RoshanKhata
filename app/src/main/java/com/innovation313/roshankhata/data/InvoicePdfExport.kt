@@ -370,6 +370,7 @@ object InvoicePdfExport {
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.manrope(context),
+            headingBold = InvoiceFonts.manropeBold(context),
             mono = InvoiceFonts.ibmPlexMono(context),
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
@@ -465,6 +466,7 @@ object InvoicePdfExport {
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.manrope(context),
+            headingBold = InvoiceFonts.manropeBold(context),
             mono = InvoiceFonts.ibmPlexMono(context),
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
@@ -725,6 +727,7 @@ object InvoicePdfExport {
         )
         val fonts = InvoiceTemplateKit.Fonts(
             heading = InvoiceFonts.manrope(context),
+            headingBold = InvoiceFonts.manropeBold(context),
             mono = InvoiceFonts.ibmPlexMono(context),
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )

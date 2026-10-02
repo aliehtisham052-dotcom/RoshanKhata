@@ -1554,4 +1554,7 @@
     <string name="pdf_insp_type_not_set">نوع ثبت نشده</string>
     <string name="followup_reminded_today">امروز باز شد ✓</string>
     <string name="entry_open_invoice">باز کردن فاکتور</string>
+    <string name="label_step_title">جزئیات برچسب (%1$d از %2$d)</string>
+    <string name="label_step_skip">رد کردن</string>
+    <string name="label_step_save_next">ذخیره و بعدی</string>
 </resources>

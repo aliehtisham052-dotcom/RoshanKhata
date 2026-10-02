@@ -23,10 +23,16 @@
   already have them, and nothing needed retranslating to fix this. The three
   short fields above keep their hints, which fit.
 -->
+<!--
+  No maxHeight here: ScrollView ignores it. The dialog itself keeps this one
+  scrolling panel between the title and the buttons — which only works while
+  it is the ONLY middle panel, so the "filled from the bill" note is a view
+  inside it (tvGuessNote), never the dialog's own message (1 Oct: with both,
+  Save and Cancel were pushed off the bottom of the screen).
+-->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:maxHeight="440dp">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,6 +42,16 @@
         android:paddingTop="8dp"
         android:paddingEnd="24dp"
         android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvGuessNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/label_guess_note"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp"
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/etProductName"

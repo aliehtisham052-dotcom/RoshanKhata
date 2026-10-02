@@ -1526,4 +1526,7 @@
     <string name="pdf_insp_type_not_set">قسم درج نہیں</string>
     <string name="followup_reminded_today">آج کھولا ✓</string>
     <string name="entry_open_invoice">انوائس کھولیں</string>
+    <string name="label_step_title">لیبل کی تفصیل (%2$d میں سے %1$d)</string>
+    <string name="label_step_skip">چھوڑیں</string>
+    <string name="label_step_save_next">محفوظ کر کے اگلا</string>
 </resources>

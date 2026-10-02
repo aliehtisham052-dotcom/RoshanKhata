@@ -1526,4 +1526,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_insp_type_not_set">Qism darj nahi</string>
     <string name="followup_reminded_today">Aaj khola ✓</string>
     <string name="entry_open_invoice">Invoice kholein</string>
+    <string name="label_step_title">Label ki tafseel (%2$d mein se %1$d)</string>
+    <string name="label_step_skip">Chhorein</string>
+    <string name="label_step_save_next">Save karke agla</string>
 </resources>

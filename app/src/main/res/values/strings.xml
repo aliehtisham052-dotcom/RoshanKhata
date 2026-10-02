@@ -1578,4 +1578,7 @@ You can change this any time from this screen.</string>
     <string name="pdf_insp_type_not_set">Type not set</string>
     <string name="followup_reminded_today">Opened today ✓</string>
     <string name="entry_open_invoice">Open invoice</string>
+    <string name="label_step_title">Label details (%1$d of %2$d)</string>
+    <string name="label_step_skip">Skip</string>
+    <string name="label_step_save_next">Save &amp; next</string>
 </resources>

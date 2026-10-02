@@ -1554,4 +1554,7 @@
     <string name="pdf_insp_type_not_set">قسم درج ناهي</string>
     <string name="followup_reminded_today">اڄ کوليو ✓</string>
     <string name="entry_open_invoice">انوائس کوليو</string>
+    <string name="label_step_title">ليبل جو تفصيل (%2$d مان %1$d)</string>
+    <string name="label_step_skip">ڇڏيو</string>
+    <string name="label_step_save_next">محفوظ ڪري اڳيون</string>
 </resources>
