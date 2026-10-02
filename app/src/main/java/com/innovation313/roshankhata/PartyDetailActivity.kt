@@ -47,6 +47,7 @@ import com.innovation313.roshankhata.data.QrTag
 import com.innovation313.roshankhata.ui.QrImage
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.SeasonBook
 import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.RateType
 import com.innovation313.roshankhata.data.RateOffer
@@ -69,6 +70,7 @@ import com.innovation313.roshankhata.ui.EntryAdapter
 import com.innovation313.roshankhata.ui.EntryRow
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.Reminder
+import com.innovation313.roshankhata.ui.SeasonText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -328,6 +330,7 @@ class PartyDetailActivity : BaseActivity() {
     private lateinit var adapter: EntryAdapter
     private lateinit var tvPartyName: TextView
     private lateinit var tvPartyIdentity: TextView
+    private lateinit var tvSeasonRecord: TextView
     private lateinit var tvPartyPhone: TextView
     private lateinit var tvPartyBalance: TextView
     private lateinit var tvBalanceHint: TextView
@@ -376,6 +379,7 @@ class PartyDetailActivity : BaseActivity() {
 
         tvPartyName = findViewById(R.id.tvPartyName)
         tvPartyIdentity = findViewById(R.id.tvPartyIdentity)
+        tvSeasonRecord = findViewById(R.id.tvSeasonRecord)
         tvPartyPhone = findViewById(R.id.tvPartyPhone)
         tvPartyBalance = findViewById(R.id.tvPartyBalance)
         tvPartyBalance.setOnClickListener { copyBalance() }
@@ -533,6 +537,7 @@ class PartyDetailActivity : BaseActivity() {
 
     private fun updateBalanceHeader(balance: Double) {
         currentBalance = balance
+        refreshSeasonRecord()
         tvPartyBalance.text = Format.customerBalance(balance)
         when {
             Money.isPositive(balance) -> {
@@ -2589,6 +2594,19 @@ class PartyDetailActivity : BaseActivity() {
                 // Sold at the cash (naqd) rate: ask whether the money came now.
                 if (entry.isGiven && entry.rateType == RateType.CASH) offerCashReceived(id, entry.amount)
             }
+        }
+    }
+
+    /** "Rabi 2025-26: cleared 12 days after harvest · Kharif 2026: Rs 4,000 due" — customers only. */
+    private fun refreshSeasonRecord() {
+        lifecycleScope.launch {
+            val party = dao.getParty(partyId)
+            val rows = if (party?.isCustomer == true) {
+                withContext(Dispatchers.Default) { SeasonBook.book(dao.seasonLinesOf(partyId)) }
+            } else emptyList()
+            if (isFinishing || isDestroyed) return@launch
+            tvSeasonRecord.text = SeasonText.record(this@PartyDetailActivity, rows)
+            tvSeasonRecord.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
         }
     }
 

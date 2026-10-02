@@ -232,6 +232,36 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Fasal ka Hisaab (2 Oct): which crop season this credit counts in.
+                 Outside the receipt card on purpose: the card is what gets shared,
+                 and the season is the shop's own bookkeeping. -->
+            <LinearLayout
+                android:id="@+id/rowSeason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvSeason"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSeason"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/season_change"
+                    android:textColor="@color/brand_green_text" />
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

@@ -244,7 +244,15 @@ data class LedgerEntry(
     val pairedEntryId: Long? = null,
 
     val isDeleted: Boolean = false,
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
+
+    /**
+     * The crop season this credit belongs to, as SeasonBook keys it
+     * ("R2026" = Rabi 2026-27, "K2026" = Kharif 2026), when the owner set it
+     * himself (v24). Null = read from the date, which is right for nearly
+     * every entry; the owner changes it only for the odd one out.
+     */
+    val season: String? = null
 )
 
 /**

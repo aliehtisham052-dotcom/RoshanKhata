@@ -597,6 +597,7 @@ object Backup {
         put("paymentMethod", e.paymentMethod ?: JSONObject.NULL)
         put("rateType", e.rateType ?: JSONObject.NULL)
         put("pairedEntryId", e.pairedEntryId ?: JSONObject.NULL)
+        put("season", e.season ?: JSONObject.NULL)
         put("isDeleted", e.isDeleted)
         put("deletedAt", e.deletedAt ?: JSONObject.NULL)
     }
@@ -624,6 +625,8 @@ object Backup {
         // Absent before format 7 — those entries never recorded either.
         rateType = o.optNullableString("rateType"),
         pairedEntryId = o.optNullableLong("pairedEntryId"),
+        // Absent before v24: season read from the date.
+        season = o.optNullableString("season"),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")
     )

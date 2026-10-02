@@ -162,7 +162,12 @@ class MainActivity : BaseActivity() {
             // Bills' own section colour because that is where its data comes
             // from — a product is born the first time its name appears on a bill.
             Feature(R.drawable.ic_feature_products, R.string.products_stock, ProductsActivity::class.java,
-                R.color.tile_bills_bg, R.color.section_bills)
+                R.color.tile_bills_bg, R.color.section_bills),
+            // Fasal ka Hisaab (2 Oct): the ninth tile fills the 3x3 grid. It
+            // borrows Plans' green — a season is a long payment plan the
+            // whole village is on.
+            Feature(R.drawable.ic_feature_season, R.string.season_title, SeasonsActivity::class.java,
+                R.color.tile_plans_bg, R.color.section_plans)
         )
 
         featureViews.clear()

@@ -1579,4 +1579,34 @@
     <string name="followup_queue_stop">روڪيو</string>
     <string name="followup_queue_done">مڪمل — اڄ %1$d ياد ڏياريون کوليون ويون</string>
     <string name="followup_queue_title">%2$d مان %1$d</string>
+    <string name="season_title">فصل جو حساب</string>
+    <string name="season_subtitle">فصل موجب اڌار، نئين فصل پهريان</string>
+    <string name="season_empty">اڃا ڪنهن گراهڪ کي اڌار ناهي ڏنو ويو.</string>
+    <string name="season_rabi">رٻيع %1$d-%2$02d</string>
+    <string name="season_kharif">خريف %1$d</string>
+    <string name="season_harvest_rabi">لاباري: اپريل–مئي %1$d</string>
+    <string name="season_harvest_kharif">لاباري: آڪٽوبر–نومبر %1$d</string>
+    <string name="season_back_out">واپس %1$s · اڃا ٻاهر %2$s</string>
+    <string name="season_pace_none">%2$d مان %1$d ڪليئر</string>
+    <string name="season_pace_before">%2$d مان %1$d ڪليئر · عام طور لاباري تائين</string>
+    <string name="season_all_clear">هن فصل جو سڀني حساب صاف ڪري ڇڏيو.</string>
+    <string name="season_owing_title">%1$s جو اڃا بقايا</string>
+    <string name="season_rec_due">%1$s: %2$s بقايا</string>
+    <string name="season_rec_before">%1$s: لاباري تائين ڪليئر</string>
+    <string name="season_entry">فصل: %1$s</string>
+    <string name="season_from_date">%1$s (تاريخ مان)</string>
+    <string name="season_change">بدلايو</string>
+    <string name="season_pick">هي اڌار ڪهڙي فصل جو آهي؟</string>
+    <plurals name="season_given">
+        <item quantity="one">%1$d گراهڪ · ڏنو %2$s</item>
+        <item quantity="other">%1$d گراهڪ · ڏنو %2$s</item>
+    </plurals>
+    <plurals name="season_pace_after">
+        <item quantity="one">%2$d مان %1$d ڪليئر · عام طور لاباري کان %3$d ڏينهن پوءِ</item>
+        <item quantity="other">%2$d مان %1$d ڪليئر · عام طور لاباري کان %3$d ڏينهن پوءِ</item>
+    </plurals>
+    <plurals name="season_rec_after">
+        <item quantity="one">%1$s: لاباري کان %2$d ڏينهن پوءِ ڪليئر</item>
+        <item quantity="other">%1$s: لاباري کان %2$d ڏينهن پوءِ ڪليئر</item>
+    </plurals>
 </resources>

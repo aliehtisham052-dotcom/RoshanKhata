@@ -1,6 +1,9 @@
 package com.innovation313.roshankhata
 
 import android.content.Intent
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.ui.SeasonText
+import com.innovation313.roshankhata.data.SeasonBook
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
@@ -85,6 +88,45 @@ class EntryDetailActivity : BaseActivity() {
         if (seenOnce) load() else seenOnce = true
     }
 
+    /**
+     * "Season: Rabi 2026-27 (from date) · Change" on a sale (2 Oct). The
+     * choice is the season by date, the one before or after it; picking the
+     * date's own clears the override so a later date change still follows.
+     */
+    private fun renderSeason(e: LedgerEntry) {
+        val row = findViewById<View>(R.id.rowSeason)
+        if (!e.isGiven || e.isDeleted) { row.visibility = View.GONE; return }
+        row.visibility = View.VISIBLE
+        val byDate = SeasonBook.seasonOf(e.timestamp)
+        val own = SeasonBook.Season.fromKey(e.season)
+        val shown = own ?: byDate
+        findViewById<TextView>(R.id.tvSeason).text = getString(
+            R.string.season_entry,
+            if (own == null) getString(R.string.season_from_date, SeasonText.name(this, shown))
+            else SeasonText.name(this, shown)
+        )
+        findViewById<MaterialButton>(R.id.btnSeason).setOnClickListener {
+            val options = listOf(byDate.previous(), byDate, byDate.next())
+            val labels = options.map {
+                if (it == byDate) getString(R.string.season_from_date, SeasonText.name(this, it))
+                else SeasonText.name(this, it)
+            }.toTypedArray()
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.season_pick)
+                .setSingleChoiceItems(labels, options.indexOf(shown)) { d, i ->
+                    val pick = options[i]
+                    lifecycleScope.launch {
+                        KhataDatabase.get(this@EntryDetailActivity).khataDao()
+                            .setEntrySeason(e.id, if (pick == byDate) null else pick.key)
+                        load()
+                    }
+                    d.dismiss()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+    }
+
     private fun load() {
         lifecycleScope.launch {
             val dao = KhataDatabase.get(this@EntryDetailActivity).khataDao()
@@ -101,6 +143,8 @@ class EntryDetailActivity : BaseActivity() {
 
     private fun render(e: LedgerEntry) {
         // A sale can become an invoice; a payment received cannot.
+        renderSeason(e)
+
         // Once invoiced, the same button opens that invoice instead of a twin.
         val btnInvoice = findViewById<MaterialButton>(R.id.btnMakeInvoice)
         btnInvoice.visibility = if (e.isGiven && !e.isDeleted) View.VISIBLE else View.GONE

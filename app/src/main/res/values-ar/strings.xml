@@ -1699,4 +1699,46 @@
     <string name="followup_queue_stop">إيقاف</string>
     <string name="followup_queue_done">تم — فُتح %1$d تذكيرًا اليوم</string>
     <string name="followup_queue_title">%1$d من %2$d</string>
+    <string name="season_title">حساب المواسم</string>
+    <string name="season_subtitle">الآجل حسب الموسم الزراعي، الأحدث أولًا</string>
+    <string name="season_empty">لا يوجد آجل للعملاء بعد.</string>
+    <string name="season_rabi">ربيع %1$d-%2$02d</string>
+    <string name="season_kharif">خريف %1$d</string>
+    <string name="season_harvest_rabi">الحصاد: أبريل–مايو %1$d</string>
+    <string name="season_harvest_kharif">الحصاد: أكتوبر–نوفمبر %1$d</string>
+    <string name="season_back_out">عاد %1$s · ما زال خارجًا %2$s</string>
+    <string name="season_pace_none">سدّد %1$d من %2$d</string>
+    <string name="season_pace_before">سدّد %1$d من %2$d · عادة قبل نهاية الحصاد</string>
+    <string name="season_all_clear">سدّد الجميع هذا الموسم.</string>
+    <string name="season_owing_title">المتبقي عن %1$s</string>
+    <string name="season_rec_due">%1$s: مستحق %2$s</string>
+    <string name="season_rec_before">%1$s: سُدّد قبل نهاية الحصاد</string>
+    <string name="season_entry">الموسم: %1$s</string>
+    <string name="season_from_date">%1$s (حسب التاريخ)</string>
+    <string name="season_change">تغيير</string>
+    <string name="season_pick">لأي موسم هذا الآجل؟</string>
+    <plurals name="season_given">
+        <item quantity="zero">%1$d عميل · أُعطي %2$s</item>
+        <item quantity="one">%1$d عميل · أُعطي %2$s</item>
+        <item quantity="two">%1$d عميل · أُعطي %2$s</item>
+        <item quantity="few">%1$d عميل · أُعطي %2$s</item>
+        <item quantity="many">%1$d عميل · أُعطي %2$s</item>
+        <item quantity="other">%1$d عميل · أُعطي %2$s</item>
+    </plurals>
+    <plurals name="season_pace_after">
+        <item quantity="zero">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
+        <item quantity="one">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
+        <item quantity="two">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
+        <item quantity="few">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
+        <item quantity="many">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
+        <item quantity="other">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
+    </plurals>
+    <plurals name="season_rec_after">
+        <item quantity="zero">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
+        <item quantity="one">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
+        <item quantity="two">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
+        <item quantity="few">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
+        <item quantity="many">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
+        <item quantity="other">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
+    </plurals>
 </resources>

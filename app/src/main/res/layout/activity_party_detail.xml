@@ -130,6 +130,17 @@
                     android:textColor="@color/gold_on_dark"
                     android:textSize="11sp"
                     android:visibility="gone" />
+
+                <!-- Fasal ka Hisaab (2 Oct): this customer's last seasons, before more credit is given. -->
+                <TextView
+                    android:id="@+id/tvSeasonRecord"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:alpha="0.9"
+                    android:textColor="@color/gold_on_dark"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 

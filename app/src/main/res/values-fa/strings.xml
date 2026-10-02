@@ -1579,4 +1579,34 @@
     <string name="followup_queue_stop">توقف</string>
     <string name="followup_queue_done">تمام — امروز %1$d یادآوری باز شد</string>
     <string name="followup_queue_title">%1$d از %2$d</string>
+    <string name="season_title">حساب فصل</string>
+    <string name="season_subtitle">نسیه بر اساس فصل کشت، جدیدترین اول</string>
+    <string name="season_empty">هنوز به مشتری نسیه داده نشده.</string>
+    <string name="season_rabi">ربیع %1$d-%2$02d</string>
+    <string name="season_kharif">خریف %1$d</string>
+    <string name="season_harvest_rabi">برداشت: آوریل–مه %1$d</string>
+    <string name="season_harvest_kharif">برداشت: اکتبر–نوامبر %1$d</string>
+    <string name="season_back_out">برگشته %1$s · هنوز بیرون %2$s</string>
+    <string name="season_pace_none">%1$d از %2$d تسویه</string>
+    <string name="season_pace_before">%1$d از %2$d تسویه · معمولاً تا پایان برداشت</string>
+    <string name="season_all_clear">همه این فصل را تسویه کرده‌اند.</string>
+    <string name="season_owing_title">بدهی مانده برای %1$s</string>
+    <string name="season_rec_due">%1$s: %2$s مانده</string>
+    <string name="season_rec_before">%1$s: تا پایان برداشت تسویه</string>
+    <string name="season_entry">فصل: %1$s</string>
+    <string name="season_from_date">%1$s (از تاریخ)</string>
+    <string name="season_change">تغییر</string>
+    <string name="season_pick">این نسیه برای کدام فصل است؟</string>
+    <plurals name="season_given">
+        <item quantity="one">%1$d مشتری · داده شده %2$s</item>
+        <item quantity="other">%1$d مشتری · داده شده %2$s</item>
+    </plurals>
+    <plurals name="season_pace_after">
+        <item quantity="one">%1$d از %2$d تسویه · معمولاً %3$d روز پس از برداشت</item>
+        <item quantity="other">%1$d از %2$d تسویه · معمولاً %3$d روز پس از برداشت</item>
+    </plurals>
+    <plurals name="season_rec_after">
+        <item quantity="one">%1$s: %2$d روز پس از برداشت تسویه</item>
+        <item quantity="other">%1$s: %2$d روز پس از برداشت تسویه</item>
+    </plurals>
 </resources>

@@ -603,6 +603,16 @@ val MIGRATION_22_23 = object : Migration(22, 23) {
 }
 
 /**
+ * v24 (2 Oct 2026): an entry can carry the crop season the owner set for it
+ * (Fasal ka Hisaab). Null for every existing row = season read from the date.
+ */
+val MIGRATION_23_24 = object : Migration(23, 24) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE transactions ADD COLUMN season TEXT")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -611,7 +621,7 @@ val MIGRATION_22_23 = object : Migration(22, 23) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 23
+const val KHATA_DB_VERSION = 24
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -636,5 +646,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_19_20,
     MIGRATION_20_21,
     MIGRATION_21_22,
-    MIGRATION_22_23
+    MIGRATION_22_23,
+    MIGRATION_23_24
 )
