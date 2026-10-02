@@ -1596,4 +1596,17 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">Is cheez ki %d sale baghair batch ke hai, list mein nahi</item>
         <item quantity="other">Is cheez ki %d sales baghair batch ke hain, list mein nahi</item>
     </plurals>
+    <string name="dayclose_button">Din band karein</string>
+    <string name="dayclose_never">Abhi galla nahi gina gaya</string>
+    <string name="dayclose_last">Pichli ginti %1$s · %2$s</string>
+    <string name="dayclose_title">Din band karein (galla)</string>
+    <string name="dayclose_opening">Pichli ginti par galle mein cash</string>
+    <string name="dayclose_counted">Abhi gina hua cash</string>
+    <string name="dayclose_note_hint">Note, maslan chai, mazdoori</string>
+    <string name="dayclose_help">Sirf woh khata entries gini jati hain jin par Cash likha ho; baghair tareeqe wali entries ka andaza nahi lagaya jata.</string>
+    <string name="dayclose_breakdown">+ Cashbook aamad %1$s\n+ Khate se cash wusool %2$s\n− Cashbook kharch %3$s\n− Khate se cash ada %4$s\n= Galle mein hona chahiye %5$s</string>
+    <string name="dayclose_over">Hisaab se %1$s zyada</string>
+    <string name="dayclose_short">%1$s kam</string>
+    <string name="dayclose_match">Galla hisaab se mil gaya</string>
+    <string name="dayclose_need_count">Gina hua cash likhein</string>
 </resources>

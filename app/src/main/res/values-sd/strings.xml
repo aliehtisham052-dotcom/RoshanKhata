@@ -1624,4 +1624,17 @@
         <item quantity="one">هن شيءِ جو %d وڪرو بيچ کان سواءِ آهي، لسٽ ۾ ناهي</item>
         <item quantity="other">هن شيءِ جا %d وڪرا بيچ کان سواءِ آهن، لسٽ ۾ ناهن</item>
     </plurals>
+    <string name="dayclose_button">ڏينهن بند ڪريو</string>
+    <string name="dayclose_never">اڃا گلو ناهي ڳڻيو ويو</string>
+    <string name="dayclose_last">پوئين ڳڻپ %1$s · %2$s</string>
+    <string name="dayclose_title">ڏينهن بند ڪريو (گلو)</string>
+    <string name="dayclose_opening">پوئين ڳڻپ تي گلي ۾ ڪيش</string>
+    <string name="dayclose_counted">هاڻي ڳڻيل ڪيش</string>
+    <string name="dayclose_note_hint">نوٽ، مثال چانهه، مزدوري</string>
+    <string name="dayclose_help">رڳو اهي کاتي جون انٽريون ڳڻيون وڃن ٿيون جن تي ڪيش لکيل هجي؛ طريقي کان سواءِ انٽرين جو اندازو نه ٿو لڳايو وڃي.</string>
+    <string name="dayclose_breakdown">+ ڪيش بُڪ آمد %1$s\n+ کاتي مان ڪيش وصول %2$s\n− ڪيش بُڪ خرچ %3$s\n− کاتي مان ڪيش ادا %4$s\n= گلي ۾ هجڻ گهرجي %5$s</string>
+    <string name="dayclose_over">حساب کان %1$s وڌيڪ</string>
+    <string name="dayclose_short">%1$s گهٽ</string>
+    <string name="dayclose_match">گلو حساب سان ملي ويو</string>
+    <string name="dayclose_need_count">ڳڻيل ڪيش لکو</string>
 </resources>

@@ -1624,4 +1624,17 @@
         <item quantity="one">%d فروش این کالا بدون بچ است و در فهرست نیست</item>
         <item quantity="other">%d فروش این کالا بدون بچ است و در فهرست نیست</item>
     </plurals>
+    <string name="dayclose_button">بستن روز</string>
+    <string name="dayclose_never">هنوز صندوق شمرده نشده</string>
+    <string name="dayclose_last">آخرین شمارش %1$s · %2$s</string>
+    <string name="dayclose_title">بستن روز (صندوق)</string>
+    <string name="dayclose_opening">نقد صندوق در آخرین شمارش</string>
+    <string name="dayclose_counted">نقد شمرده‌شده اکنون</string>
+    <string name="dayclose_note_hint">یادداشت، مثلاً چای، کارگر</string>
+    <string name="dayclose_help">فقط ثبت‌های دفتر با روش نقد شمرده می‌شوند؛ ثبت‌های بدون روش پرداخت حدس زده نمی‌شوند.</string>
+    <string name="dayclose_breakdown">+ ورودی صندوق‌دفتر %1$s\n+ نقد دریافتی از دفتر %2$s\n− خروجی صندوق‌دفتر %3$s\n− نقد پرداختی از دفتر %4$s\n= باید در صندوق باشد %5$s</string>
+    <string name="dayclose_over">%1$s بیشتر از حساب</string>
+    <string name="dayclose_short">%1$s کسری</string>
+    <string name="dayclose_match">صندوق با حساب می‌خواند</string>
+    <string name="dayclose_need_count">نقد شمرده‌شده را وارد کنید</string>
 </resources>

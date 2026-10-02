@@ -1648,4 +1648,17 @@ You can change this any time from this screen.</string>
         <item quantity="one">%d sale of this product has no batch and is not listed</item>
         <item quantity="other">%d sales of this product have no batch and are not listed</item>
     </plurals>
+    <string name="dayclose_button">Close the day</string>
+    <string name="dayclose_never">Drawer not counted yet</string>
+    <string name="dayclose_last">Last count %1$s · %2$s</string>
+    <string name="dayclose_title">Close the day (galla)</string>
+    <string name="dayclose_opening">Cash in drawer at the last count</string>
+    <string name="dayclose_counted">Cash counted now</string>
+    <string name="dayclose_note_hint">Note, e.g. tea, labour</string>
+    <string name="dayclose_help">Only khata entries marked Cash are counted; entries with no payment method are not guessed.</string>
+    <string name="dayclose_breakdown">+ Cashbook in %1$s\n+ Khata cash received %2$s\n− Cashbook out %3$s\n− Khata cash paid %4$s\n= Should be in drawer %5$s</string>
+    <string name="dayclose_over">%1$s more than the books</string>
+    <string name="dayclose_short">%1$s short</string>
+    <string name="dayclose_match">Drawer matches the books</string>
+    <string name="dayclose_need_count">Enter the counted cash</string>
 </resources>

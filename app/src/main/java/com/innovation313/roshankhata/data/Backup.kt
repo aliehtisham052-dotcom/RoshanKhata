@@ -95,6 +95,15 @@ object Backup {
         root.put("cheques", JSONArray().apply {
             dao.allChequesForBackup().forEach { put(chequeToJson(it)) }
         })
+        root.put("dayCloses", JSONArray().apply {
+            dao.allDayClosesForBackup().forEach { c ->
+                put(JSONObject().apply {
+                    put("id", c.id); put("day", c.day); put("opening", c.opening)
+                    put("cashIn", c.cashIn); put("cashOut", c.cashOut); put("counted", c.counted)
+                    put("note", c.note ?: JSONObject.NULL); put("closedAt", c.closedAt)
+                })
+            }
+        })
         root.put("cashbook", JSONArray().apply {
             dao.allCashForBackup().forEach { put(cashToJson(it)) }
         })
@@ -353,6 +362,19 @@ object Backup {
                 (0 until arr.length()).map { jsonToCash(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Absent before v26: no counts to bring back.
+            val dayCloses = root.optJSONArray("dayCloses")?.let { arr ->
+                (0 until arr.length()).map { i ->
+                    val o = arr.getJSONObject(i)
+                    DayClose(
+                        id = o.getLong("id"), day = o.getLong("day"),
+                        opening = o.getDouble("opening"), cashIn = o.getDouble("cashIn"),
+                        cashOut = o.getDouble("cashOut"), counted = o.getDouble("counted"),
+                        note = o.optNullableString("note"), closedAt = o.optLong("closedAt", 0L)
+                    )
+                }
+            } ?: emptyList()
+
             // Absent in a version-1 backup. Not an error — an old file is
             // still a valid file, and rejecting it would strand anyone who
             // backed up before this release.
@@ -459,7 +481,8 @@ object Backup {
                 bills, billItems, products, invoices, invoiceItems, businessProfile,
                 dismissedDuplicates,
                 businessName = root.optString("businessName").takeIf { it.isNotBlank() },
-                entryItems = entryItems
+                entryItems = entryItems,
+                dayCloses = dayCloses
             )
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
@@ -487,7 +510,8 @@ object Backup {
         /** Which shop's book this file says it is. Null on any pre-multi-business backup. */
         val businessName: String? = null,
         /** Goods lines — read from the file, or rebuilt from an older file's entries. */
-        val entryItems: List<EntryItem> = emptyList()
+        val entryItems: List<EntryItem> = emptyList(),
+        val dayCloses: List<DayClose> = emptyList()
     )
 
     /**
@@ -537,7 +561,8 @@ object Backup {
             invoices = data.invoices,
             invoiceItems = data.invoiceItems,
             dismissedDuplicates = data.dismissedDuplicates,
-            entryItems = data.entryItems
+            entryItems = data.entryItems,
+            dayCloses = data.dayCloses
         )
 
         data.businessProfile?.let { restoreBusinessProfile(context, it) }

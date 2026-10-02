@@ -879,6 +879,33 @@ interface KhataDao {
     )
     suspend fun untaggedSalesOfProduct(productId: Long): Int
 
+    // ---------- Galla milan (v26) ----------
+
+    @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
+    suspend fun lastDayClose(): DayClose?
+
+    @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
+    fun observeLastDayClose(): Flow<DayClose?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveDayClose(close: DayClose)
+
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND timestamp > :from AND timestamp <= :to")
+    suspend fun cashbookTotalBetween(income: Boolean, from: Long, to: Long): Double
+
+    /** Khata money that moved in CASH (only entries marked Cash; unmarked ones are not guessed). */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE isDeleted = 0 AND isGiven = :given AND paymentMethod = 'cash' AND timestamp > :from AND timestamp <= :to")
+    suspend fun khataCashBetween(given: Boolean, from: Long, to: Long): Double
+
+    @Query("SELECT * FROM day_close ORDER BY day")
+    suspend fun allDayClosesForBackup(): List<DayClose>
+
+    @Query("DELETE FROM day_close")
+    suspend fun wipeDayCloses()
+
+    @Insert
+    suspend fun restoreDayCloses(items: List<DayClose>)
+
     @Query("UPDATE entry_items SET crop = :crop, pest = :pest, dose = :dose WHERE id = :id")
     suspend fun setLineAdvice(id: Long, crop: String?, pest: String?, dose: String?)
 
@@ -1523,7 +1550,9 @@ interface KhataDao {
         // Also additive: the owner's "not a duplicate" decisions.
         dismissedDuplicates: List<DismissedDuplicate> = emptyList(),
         // Goods lines (v20). Additive and default empty, like the rest.
-        entryItems: List<EntryItem> = emptyList()
+        entryItems: List<EntryItem> = emptyList(),
+        // Galla milan counts (v26). Additive.
+        dayCloses: List<DayClose> = emptyList()
     ) {
         // Children before parents on the way out. invoice_items cascades off
         // invoices, so items are wiped first; wiping invoices first would fire
@@ -1544,6 +1573,7 @@ interface KhataDao {
         wipeParties()
         wipeProducts()
         wipeDismissedDuplicates()
+        wipeDayCloses()
 
         restoreProducts(products)
         restoreParties(parties)
@@ -1562,6 +1592,7 @@ interface KhataDao {
         restoreInvoiceItems(invoiceItems)
         // No foreign key — order does not matter for these.
         restoreDismissedDuplicates(dismissedDuplicates)
+        restoreDayCloses(dayCloses)
     }
 
 

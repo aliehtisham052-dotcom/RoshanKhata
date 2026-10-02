@@ -624,6 +624,21 @@ val MIGRATION_24_25 = object : Migration(24, 25) {
 }
 
 /**
+ * v26 (2 Oct 2026): galla milan — one closing count per day. A new table;
+ * IF NOT EXISTS so a file that somehow has it already is not refused.
+ */
+val MIGRATION_25_26 = object : Migration(25, 26) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `day_close` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`day` INTEGER NOT NULL, `opening` REAL NOT NULL, `cashIn` REAL NOT NULL, " +
+                "`cashOut` REAL NOT NULL, `counted` REAL NOT NULL, `note` TEXT, `closedAt` INTEGER NOT NULL)"
+        )
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_day_close_day` ON `day_close` (`day`)")
+    }
+}
+
+/**
  * The one place the schema version lives.
  *
  * The @Database annotation reads it and MigrationChainTest reads it, which is
@@ -632,7 +647,7 @@ val MIGRATION_24_25 = object : Migration(24, 25) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 25
+const val KHATA_DB_VERSION = 26
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -659,5 +674,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_21_22,
     MIGRATION_22_23,
     MIGRATION_23_24,
-    MIGRATION_24_25
+    MIGRATION_24_25,
+    MIGRATION_25_26
 )

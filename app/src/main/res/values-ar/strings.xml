@@ -1760,4 +1760,17 @@
         <item quantity="many">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
         <item quantity="other">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
     </plurals>
+    <string name="dayclose_button">إقفال اليوم</string>
+    <string name="dayclose_never">لم يُعد الدرج بعد</string>
+    <string name="dayclose_last">آخر عدّ %1$s · %2$s</string>
+    <string name="dayclose_title">إقفال اليوم (الدرج)</string>
+    <string name="dayclose_opening">النقد في الدرج عند آخر عدّ</string>
+    <string name="dayclose_counted">النقد المعدود الآن</string>
+    <string name="dayclose_note_hint">ملاحظة، مثل شاي، أجرة عمال</string>
+    <string name="dayclose_help">تُحسب فقط قيود الدفتر المؤشَّر عليها نقدًا؛ القيود بلا طريقة دفع لا تُخمَّن.</string>
+    <string name="dayclose_breakdown">+ وارد الصندوق %1$s\n+ نقد مستلم من الدفتر %2$s\n− منصرف الصندوق %3$s\n− نقد مدفوع من الدفتر %4$s\n= يجب أن يكون في الدرج %5$s</string>
+    <string name="dayclose_over">%1$s أكثر من الدفاتر</string>
+    <string name="dayclose_short">نقص %1$s</string>
+    <string name="dayclose_match">الدرج يطابق الدفاتر</string>
+    <string name="dayclose_need_count">أدخل النقد المعدود</string>
 </resources>
