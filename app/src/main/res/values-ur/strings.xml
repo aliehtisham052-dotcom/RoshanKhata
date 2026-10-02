@@ -1672,4 +1672,10 @@
         <item quantity="one">%d بل لائن پر ریٹ نہیں، شامل نہیں</item>
         <item quantity="other">%d بل لائنوں پر ریٹ نہیں، شامل نہیں</item>
     </plurals>
+    <string name="harvest_promise_menu">فصل کے بعد دے گا</string>
+    <string name="harvest_promise_title">%1$s کب دے گا؟</string>
+    <string name="harvest_promise_option">%1$s کی کٹائی کے بعد · %2$s</string>
+    <string name="harvest_promise_other_date">کوئی اور تاریخ</string>
+    <string name="harvest_promise_remove">وعدہ ہٹائیں</string>
+    <string name="harvest_promise_header">وعدہ: %1$s</string>
 </resources>

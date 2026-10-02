@@ -98,8 +98,11 @@ class FollowUpAdapter(
             // The customer's own date comes first: it is what the reminder quotes.
             val promiseText = promise?.let { ctx.getString(R.string.followup_promised, Format.dateOnly(it)) }
             holder.tvHabit.text = listOfNotNull(promiseText, habitText).joinToString("  ·  ")
-            val urgent = habit?.isLate == true ||
-                FollowUpRank.isDue(promise, System.currentTimeMillis(), java.util.TimeZone.getDefault())
+            val now = System.currentTimeMillis()
+            val tz = java.util.TimeZone.getDefault()
+            // A promise still ahead keeps the row calm even if the habit says late.
+            val urgent = FollowUpRank.lateByHabit(p.id, habits, promises, now, tz) ||
+                FollowUpRank.isDue(promise, now, tz)
             holder.tvHabit.setTextColor(
                 ContextCompat.getColor(ctx, if (urgent) R.color.gold_accent else R.color.text_muted)
             )

@@ -46,4 +46,17 @@ class FollowUpRankTest {
         assertEquals(listOf(2L, 1L), FollowUpRank.order(list, emptyMap(), promises, now, tz, setOf(1L)).map { it.id })
         assertEquals(false, FollowUpRank.remindToday(1, emptyMap(), promises, now, tz, setOf(1L)))
     }
+
+    @Test
+    fun `a promise still ahead keeps a habitually late customer quiet`() {
+        val habits = mapOf(1L to PaymentHabit.Habit(typicalDays = 10, waitingDays = 40, isLate = true))
+        val ahead = mapOf(1L to now + 30 * day)
+        assertEquals(false, FollowUpRank.remindToday(1, habits, ahead, now, tz))
+        assertEquals(false, FollowUpRank.lateByHabit(1, habits, ahead, now, tz))
+        // Once the day comes, he is due — and first.
+        val came = mapOf(1L to now - day)
+        assertEquals(true, FollowUpRank.remindToday(1, habits, came, now, tz))
+        val list = listOf(p(2, now - 90 * day), p(1, now))
+        assertEquals(listOf(2L, 1L), FollowUpRank.order(list, habits, ahead, now, tz).map { it.id })
+    }
 }

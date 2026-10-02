@@ -1724,4 +1724,10 @@ You can change this any time from this screen.</string>
         <item quantity="one">%d bill line has no rate and is not counted</item>
         <item quantity="other">%d bill lines have no rate and are not counted</item>
     </plurals>
+    <string name="harvest_promise_menu">Pays after the harvest</string>
+    <string name="harvest_promise_title">When will %1$s pay?</string>
+    <string name="harvest_promise_option">After the %1$s harvest · %2$s</string>
+    <string name="harvest_promise_other_date">Another date</string>
+    <string name="harvest_promise_remove">Remove the promise</string>
+    <string name="harvest_promise_header">Promised: %1$s</string>
 </resources>

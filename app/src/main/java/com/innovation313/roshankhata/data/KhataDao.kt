@@ -1550,11 +1550,26 @@ interface KhataDao {
     )
     suspend fun promisedDateForParty(partyId: Long): Long?
 
+    /**
+     * The date to quote in a reminder: a plan's next due date, else the
+     * customer's harvest promise (v28) — never a date the customer never gave.
+     */
+    suspend fun reminderDateForParty(partyId: Long): Long? =
+        promisedDateForParty(partyId) ?: getParty(partyId)?.harvestPromise
+
+    @Query("UPDATE parties SET harvestPromise = :at WHERE id = :partyId")
+    suspend fun setHarvestPromise(partyId: Long, at: Long?)
+
     /** Every party's earliest open promised date — the Follow-up list's "promise due". */
     @Query(
         """
-        SELECT partyId, MIN(nextDueDate) AS due FROM payment_plans
-        WHERE isClosed = 0 AND isDeleted = 0 AND nextDueDate IS NOT NULL
+        SELECT partyId, MIN(due) AS due FROM (
+            SELECT partyId, nextDueDate AS due FROM payment_plans
+            WHERE isClosed = 0 AND isDeleted = 0 AND nextDueDate IS NOT NULL
+            UNION ALL
+            SELECT id AS partyId, harvestPromise AS due FROM parties
+            WHERE isDeleted = 0 AND harvestPromise IS NOT NULL
+        )
         GROUP BY partyId
         """
     )

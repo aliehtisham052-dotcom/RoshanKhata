@@ -35,7 +35,24 @@ object FollowUpRank {
         tz: TimeZone,
         remindedToday: Set<Long> = emptySet()
     ): Boolean = partyId !in remindedToday &&
-        (isDue(promises[partyId], now, tz) || habits[partyId]?.isLate == true)
+        (isDue(promises[partyId], now, tz) || lateByHabit(partyId, habits, promises, now, tz))
+
+    /**
+     * Late by his own habit — unless he named a day that has not come yet
+     * (a plan or "after the harvest"). Reminding a farmer before the date he
+     * gave only spoils the relationship (2 Oct).
+     */
+    fun lateByHabit(
+        partyId: Long,
+        habits: Map<Long, PaymentHabit.Habit>,
+        promises: Map<Long, Long>,
+        now: Long,
+        tz: TimeZone
+    ): Boolean {
+        if (habits[partyId]?.isLate != true) return false
+        val promise = promises[partyId] ?: return true
+        return isDue(promise, now, tz)
+    }
 
     fun order(
         debtors: List<PartyWithBalance>,
@@ -49,9 +66,10 @@ object FollowUpRank {
         compareBy<PartyWithBalance> { it.id in remindedToday }
             .thenByDescending { isDue(promises[it.id], now, tz) }
             .thenBy { p -> promises[p.id]?.takeIf { isDue(it, now, tz) } ?: Long.MAX_VALUE }
-            .thenByDescending { habits[it.id]?.isLate == true }
+            .thenByDescending { lateByHabit(it.id, habits, promises, now, tz) }
             .thenByDescending { p ->
-                habits[p.id]?.takeIf { it.isLate }?.let { it.waitingDays - it.typicalDays } ?: 0
+                habits[p.id]?.takeIf { lateByHabit(p.id, habits, promises, now, tz) }
+                    ?.let { it.waitingDays - it.typicalDays } ?: 0
             }
             .thenBy { it.lastActivity }
             .thenByDescending { it.balance }

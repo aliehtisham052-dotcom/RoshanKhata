@@ -618,6 +618,7 @@ object Backup {
         put("photoPath", p.photoPath ?: JSONObject.NULL)
         put("creditLimit", p.creditLimit ?: JSONObject.NULL)
         put("noEntryShare", p.noEntryShare)
+        put("harvestPromise", p.harvestPromise ?: JSONObject.NULL)
         put("createdAt", p.createdAt)
         put("isDeleted", p.isDeleted)
         put("deletedAt", p.deletedAt ?: JSONObject.NULL)
@@ -634,6 +635,8 @@ object Backup {
         creditLimit = o.optNullableDouble("creditLimit"),
         // Absent before v23: offer as usual.
         noEntryShare = o.optBoolean("noEntryShare", false),
+        // Absent before v28: no harvest promise.
+        harvestPromise = o.optNullableLong("harvestPromise"),
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt")
