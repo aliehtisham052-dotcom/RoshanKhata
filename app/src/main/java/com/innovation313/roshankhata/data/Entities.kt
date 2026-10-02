@@ -58,7 +58,14 @@ data class Party(
 
     val createdAt: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false,
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
+
+    /**
+     * "Never offer to WhatsApp this customer an entry" (v23). For the ones
+     * a message after every entry would only annoy — family, a daily regular.
+     * Reminders are untouched; this only silences the after-entry offer.
+     */
+    val noEntryShare: Boolean = false
 )
 
 /**

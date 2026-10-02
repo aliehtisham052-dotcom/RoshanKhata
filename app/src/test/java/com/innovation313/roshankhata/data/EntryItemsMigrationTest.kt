@@ -141,6 +141,27 @@ class EntryItemsMigrationTest {
             raw.execSQL(invV21)
             invIndices.forEach { raw.execSQL(it) }
 
+            // v23 added parties.noEntryShare. Parties HAS rows here (Ahmad),
+            // so it is rebuilt the way transactions was: rename, recreate
+            // without the column, copy the rows, put the indices back.
+            val partiesV23 = sqlOf("table", "parties").single()
+            val partyIndices = sqlOf("index", "parties")
+            val partiesV22 = partiesV23.replace(", `noEntryShare` INTEGER NOT NULL", "")
+            assertTrue("could not strip noEntryShare from: $partiesV23", !partiesV22.contains("noEntryShare"))
+            val partyCols = raw.rawQuery("PRAGMA table_info(parties)", null).use { c ->
+                buildList {
+                    while (c.moveToNext()) {
+                        val col = c.getString(c.getColumnIndexOrThrow("name"))
+                        if (col != "noEntryShare") add("`$col`")
+                    }
+                }
+            }.joinToString(", ")
+            raw.execSQL("ALTER TABLE parties RENAME TO parties_v23")
+            raw.execSQL(partiesV22)
+            raw.execSQL("INSERT INTO parties ($partyCols) SELECT $partyCols FROM parties_v23")
+            raw.execSQL("DROP TABLE parties_v23")
+            partyIndices.forEach { raw.execSQL(it) }
+
             raw.version = 19
         }
 

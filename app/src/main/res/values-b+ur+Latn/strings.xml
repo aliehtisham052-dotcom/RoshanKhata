@@ -1529,4 +1529,26 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="label_step_title">Label ki tafseel (%2$d mein se %1$d)</string>
     <string name="label_step_skip">Chhorein</string>
     <string name="label_step_save_next">Save karke agla</string>
+    <string name="pay_heading">*Adaigi ka tareeqa*</string>
+    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_bank_label">Bank</string>
+    <string name="entry_share_gave">Muhtaram *%1$s*, %2$s ko aap ke khate mein *%3$s* udhaar likha gaya.</string>
+    <string name="entry_share_got">Muhtaram *%1$s*, %2$s ko *%3$s* wusool hue. Shukriya.</string>
+    <string name="entry_share_balance">Ab kul baqaya: *%1$s*</string>
+    <string name="entry_share_advance">Ab aap ka advance: *%1$s*</string>
+    <string name="entry_share_settled">Aap ka hisaab ab barabar hai.</string>
+    <string name="entry_share_offer">Yeh %1$s ko WhatsApp par bhejein?</string>
+    <string name="entry_share_send">Bhejein</string>
+    <string name="party_no_entry_share">Is customer ko entry WhatsApp par bhejne ka na poochein</string>
+    <string name="bp_ask_share">Har entry WhatsApp par bhejne ka poochein</string>
+    <string name="bp_ask_share_help">Entry save karne ke baad aik chhoti patti customer ko bhejne ka poochegi. Send aap WhatsApp mein dabayenge.</string>
+    <string name="bp_pay_reminder">Reminder mein payment ki tafseel</string>
+    <string name="bp_pay_reminder_help">Har payment reminder ke neeche aap ka JazzCash/Easypaisa aur bank account (Invoice settings se) lag jayega.</string>
+    <string name="followup_send_all">Sab ko baari baari yaad dilayein</string>
+    <string name="followup_queue_next">Agla: %1$s (%2$s)</string>
+    <string name="followup_queue_open">WhatsApp kholein</string>
+    <string name="followup_queue_skip">Chhorein</string>
+    <string name="followup_queue_stop">Rokein</string>
+    <string name="followup_queue_done">Mukammal — aaj %1$d reminders khole gaye</string>
+    <string name="followup_queue_title">%2$d mein se %1$d</string>
 </resources>

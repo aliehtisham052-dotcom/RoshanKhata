@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +46,7 @@ class FollowUpActivity : BaseActivity() {
 
     private lateinit var adapter: FollowUpAdapter
     private lateinit var tvSummary: TextView
+    private lateinit var btnRemindAll: com.google.android.material.button.MaterialButton
     private lateinit var tvEmpty: TextView
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -54,6 +57,58 @@ class FollowUpActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         reminded.value = ReminderLog.openedToday(this)
+        // Back from WhatsApp in the middle of "remind all": offer the next one.
+        if (queueWaiting) {
+            queueWaiting = false
+            showQueueStep()
+        }
+    }
+
+    // ---------- Remind all, one by one (2 Oct) ----------
+    // WhatsApp cannot be sent to in bulk without a paid API, and must not be:
+    // the owner reads and sends each. This only removes the hunting — each
+    // return from WhatsApp brings up the next person due.
+
+    /** The rows due today with a phone, in list order; refreshed with the list. */
+    private var dueToday: List<PartyWithBalance> = emptyList()
+    private var queue: List<PartyWithBalance> = emptyList()
+    private var queueIndex = 0
+    private var queueOpened = 0
+    private var queueWaiting = false
+
+    private fun startQueue() {
+        queue = dueToday
+        queueIndex = 0
+        queueOpened = 0
+        showQueueStep()
+    }
+
+    private fun showQueueStep() {
+        if (isFinishing || isDestroyed) return
+        if (queueIndex >= queue.size) {
+            if (queue.isNotEmpty()) {
+                Toast.makeText(this, getString(R.string.followup_queue_done, queueOpened), Toast.LENGTH_LONG).show()
+            }
+            queue = emptyList()
+            return
+        }
+        val p = queue[queueIndex]
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.followup_queue_title, queueIndex + 1, queue.size))
+            .setMessage(getString(R.string.followup_queue_next, p.name, Format.money(p.balance)))
+            .setPositiveButton(R.string.followup_queue_open) { _, _ ->
+                queueIndex++
+                queueOpened++
+                queueWaiting = true
+                sendReminder(p)
+            }
+            .setNeutralButton(R.string.followup_queue_skip) { _, _ ->
+                queueIndex++
+                showQueueStep()
+            }
+            .setNegativeButton(R.string.followup_queue_stop) { _, _ -> queue = emptyList() }
+            .setCancelable(false)
+            .show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +117,8 @@ class FollowUpActivity : BaseActivity() {
         ScreenInsets.on(this)
 
         tvSummary = findViewById(R.id.tvFollowUpSummary)
+        btnRemindAll = findViewById(R.id.btnRemindAll)
+        btnRemindAll.setOnClickListener { startQueue() }
         tvEmpty = findViewById(R.id.tvFollowUpEmpty)
 
         adapter = FollowUpAdapter(
@@ -98,7 +155,11 @@ class FollowUpActivity : BaseActivity() {
                     // see FollowUpRank.
                     val ordered = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday)
                     val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday) }
-                    FollowUpState(ordered, habits, promises, today, remindedToday)
+                    val due = ordered.filter {
+                        !it.phone.isNullOrBlank() &&
+                            FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday)
+                    }
+                    FollowUpState(ordered, habits, promises, today, remindedToday, due)
                 }
                 // A big book is thousands of lines; the arithmetic stays off
                 // the main thread.
@@ -110,6 +171,8 @@ class FollowUpActivity : BaseActivity() {
                     // Rows are compared by party only, so a new mark needs a rebind.
                     val marksChanged = adapter.remindedToday != state.remindedToday
                     adapter.remindedToday = state.remindedToday
+                    dueToday = state.dueWithPhone
+                    btnRemindAll.visibility = if (dueToday.size >= 2) View.VISIBLE else View.GONE
                     adapter.submitList(debtors) { if (marksChanged) adapter.notifyDataSetChanged() }
 
                     val total = debtors.sumOf { it.balance }
@@ -156,5 +219,6 @@ private class FollowUpState(
     val habits: Map<Long, PaymentHabit.Habit>,
     val promises: Map<Long, Long>,
     val today: Int,
-    val remindedToday: Set<Long>
+    val remindedToday: Set<Long>,
+    val dueWithPhone: List<PartyWithBalance>
 )

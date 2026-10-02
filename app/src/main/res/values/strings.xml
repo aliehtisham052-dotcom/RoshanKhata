@@ -1581,4 +1581,26 @@ You can change this any time from this screen.</string>
     <string name="label_step_title">Label details (%1$d of %2$d)</string>
     <string name="label_step_skip">Skip</string>
     <string name="label_step_save_next">Save &amp; next</string>
+    <string name="pay_heading">*How to pay*</string>
+    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_bank_label">Bank</string>
+    <string name="entry_share_gave">Dear *%1$s*, on %2$s *%3$s* was written to your account (credit).</string>
+    <string name="entry_share_got">Dear *%1$s*, on %2$s *%3$s* was received. Thank you.</string>
+    <string name="entry_share_balance">Total due now: *%1$s*</string>
+    <string name="entry_share_advance">Your advance now: *%1$s*</string>
+    <string name="entry_share_settled">Your account is now settled.</string>
+    <string name="entry_share_offer">Send this to %1$s on WhatsApp?</string>
+    <string name="entry_share_send">Send</string>
+    <string name="party_no_entry_share">Don\'t offer to WhatsApp entries to this customer</string>
+    <string name="bp_ask_share">Offer to send each entry on WhatsApp</string>
+    <string name="bp_ask_share_help">After you save an entry, a small bar offers to send it to the customer. You press Send in WhatsApp.</string>
+    <string name="bp_pay_reminder">Payment details on reminders</string>
+    <string name="bp_pay_reminder_help">Adds your JazzCash/Easypaisa and bank account (from Invoice settings) under every payment reminder.</string>
+    <string name="followup_send_all">Remind all, one by one</string>
+    <string name="followup_queue_next">Next: %1$s (%2$s)</string>
+    <string name="followup_queue_open">Open WhatsApp</string>
+    <string name="followup_queue_skip">Skip</string>
+    <string name="followup_queue_stop">Stop</string>
+    <string name="followup_queue_done">Done — %1$d reminders opened today</string>
+    <string name="followup_queue_title">%1$d of %2$d</string>
 </resources>

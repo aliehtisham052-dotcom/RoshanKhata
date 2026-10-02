@@ -1557,4 +1557,26 @@
     <string name="label_step_title">جزئیات برچسب (%1$d از %2$d)</string>
     <string name="label_step_skip">رد کردن</string>
     <string name="label_step_save_next">ذخیره و بعدی</string>
+    <string name="pay_heading">*روش پرداخت*</string>
+    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_bank_label">بانک</string>
+    <string name="entry_share_gave">%1$s گرامی، در %2$s مبلغ *%3$s* به حساب شما (نسیه) ثبت شد.</string>
+    <string name="entry_share_got">%1$s گرامی، در %2$s مبلغ *%3$s* دریافت شد. سپاس.</string>
+    <string name="entry_share_balance">مانده اکنون: *%1$s*</string>
+    <string name="entry_share_advance">پیش‌پرداخت شما اکنون: *%1$s*</string>
+    <string name="entry_share_settled">حساب شما اکنون تسویه است.</string>
+    <string name="entry_share_offer">این را در واتس‌اپ برای %1$s بفرستید؟</string>
+    <string name="entry_share_send">ارسال</string>
+    <string name="party_no_entry_share">ارسال ثبت‌ها در واتس‌اپ را برای این مشتری پیشنهاد نده</string>
+    <string name="bp_ask_share">پیشنهاد ارسال هر ثبت در واتس‌اپ</string>
+    <string name="bp_ask_share_help">پس از ذخیره ثبت، نوار کوچکی ارسال آن به مشتری را پیشنهاد می‌دهد. ارسال را شما در واتس‌اپ می‌زنید.</string>
+    <string name="bp_pay_reminder">جزئیات پرداخت در یادآوری</string>
+    <string name="bp_pay_reminder_help">شماره JazzCash/Easypaisa و حساب بانکی شما (از تنظیمات فاکتور) زیر هر یادآوری پرداخت می‌آید.</string>
+    <string name="followup_send_all">یادآوری به همه، یکی‌یکی</string>
+    <string name="followup_queue_next">بعدی: %1$s (%2$s)</string>
+    <string name="followup_queue_open">باز کردن واتس‌اپ</string>
+    <string name="followup_queue_skip">رد کردن</string>
+    <string name="followup_queue_stop">توقف</string>
+    <string name="followup_queue_done">تمام — امروز %1$d یادآوری باز شد</string>
+    <string name="followup_queue_title">%1$d از %2$d</string>
 </resources>

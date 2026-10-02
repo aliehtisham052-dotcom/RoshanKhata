@@ -6,7 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.PaymentDetails
 
 /**
  * Payment reminders.
@@ -79,7 +81,50 @@ object Reminder {
             context.getString(R.string.reminder_i_owe, partyName, amount)
         }
 
-        return (if (forSms) toPlainText(body) else body) + from
+        // How to pay, only on a reminder that asks for money (2 Oct).
+        val pay = if (Money.isPositive(balance)) paymentBlock(context) else ""
+        return (if (forSms) toPlainText(body) else body) + pay + from
+    }
+
+    /** "\n\nPayment:\nJazzCash/Easypaisa: …" — empty when nothing is set or it is switched off. */
+    fun paymentBlock(context: Context): String {
+        if (!BusinessProfile.paymentOnReminder(context)) return ""
+        val lines = PaymentDetails.lines(
+            jazzCash = BusinessProfile.bankJazzCash(context),
+            bankName = BusinessProfile.bankName(context),
+            accountTitle = BusinessProfile.bankAccountTitle(context),
+            iban = BusinessProfile.bankIban(context),
+            walletLabel = context.getString(R.string.pay_wallet_label),
+            bankLabel = context.getString(R.string.pay_bank_label)
+        )
+        if (lines.isEmpty()) return ""
+        return "\n\n" + context.getString(R.string.pay_heading) + "\n" + lines.joinToString("\n")
+    }
+
+    /**
+     * The after-entry confirmation (2 Oct): what was written, on which day,
+     * and where the account stands now, so both sides hold the same figure.
+     */
+    fun buildEntryMessage(
+        context: Context,
+        partyName: String,
+        isGiven: Boolean,
+        amount: Double,
+        date: Long,
+        balanceAfter: Double,
+        businessName: String?
+    ): String {
+        val line = context.getString(
+            if (isGiven) R.string.entry_share_gave else R.string.entry_share_got,
+            partyName, Format.dateOnly(date), Format.money(amount)
+        )
+        val standing = when {
+            Money.isPositive(balanceAfter) -> context.getString(R.string.entry_share_balance, Format.money(balanceAfter))
+            Money.isPositive(-balanceAfter) -> context.getString(R.string.entry_share_advance, Format.money(-balanceAfter))
+            else -> context.getString(R.string.entry_share_settled)
+        }
+        val from = if (businessName.isNullOrBlank()) "" else "\n\n— $businessName"
+        return line + "\n" + standing + from
     }
 
     /**

@@ -41,6 +41,20 @@
             android:textColor="@color/white"
             android:textSize="13sp"
             android:textStyle="bold" />
+
+        <!-- One by one through today's list (2 Oct): shown only when someone is due. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRemindAll"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp"
+            android:text="@string/followup_send_all"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/white" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
