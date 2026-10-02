@@ -1609,4 +1609,19 @@
         <item quantity="one">%1$s: %2$d روز پس از برداشت تسویه</item>
         <item quantity="other">%1$s: %2$d روز پس از برداشت تسویه</item>
     </plurals>
+    <string name="batch_buyers_title">چه کسی %1$s خرید · بچ %2$s</string>
+    <string name="batch_buyers_action">خریداران این بچ</string>
+    <string name="batch_buyers_none">هنوز هیچ فروشی به این بچ وصل نشده.</string>
+    <string name="advice_line">توصیه: %1$s</string>
+    <string name="advice_disclaimer">فقط توصیه، نه ضمانت.</string>
+    <string name="advice_write">نوشتن توصیه سم‌پاشی</string>
+    <string name="advice_pick_line">کدام قلم؟</string>
+    <string name="advice_title">توصیه: %1$s</string>
+    <string name="advice_crop_hint">محصول، مثلاً پنبه، 3 جریب</string>
+    <string name="advice_pest_hint">آفت یا بیماری، مثلاً کرم غوزه</string>
+    <string name="advice_dose_hint">دوز، مثلاً 250 میلی‌لیتر در جریب، صبح</string>
+    <plurals name="batch_buyers_untagged">
+        <item quantity="one">%d فروش این کالا بدون بچ است و در فهرست نیست</item>
+        <item quantity="other">%d فروش این کالا بدون بچ است و در فهرست نیست</item>
+    </plurals>
 </resources>

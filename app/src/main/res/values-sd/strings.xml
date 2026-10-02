@@ -1609,4 +1609,19 @@
         <item quantity="one">%1$s: لاباري کان %2$d ڏينهن پوءِ ڪليئر</item>
         <item quantity="other">%1$s: لاباري کان %2$d ڏينهن پوءِ ڪليئر</item>
     </plurals>
+    <string name="batch_buyers_title">%1$s ڪنهن خريد ڪيو · بيچ %2$s</string>
+    <string name="batch_buyers_action">هن بيچ جا خريدار</string>
+    <string name="batch_buyers_none">اڃا ڪو وڪرو هن بيچ سان ناهي جوڙيو ويو.</string>
+    <string name="advice_line">صلاح: %1$s</string>
+    <string name="advice_disclaimer">رڳو صلاح، ضمانت ناهي.</string>
+    <string name="advice_write">دوا جي صلاح لکو</string>
+    <string name="advice_pick_line">ڪهڙي شيءِ؟</string>
+    <string name="advice_title">صلاح: %1$s</string>
+    <string name="advice_crop_hint">فصل، مثال ڪپهه، 3 ايڪڙ</string>
+    <string name="advice_pest_hint">ڪيڙو يا بيماري، مثال سنڍي</string>
+    <string name="advice_dose_hint">دوز، مثال 250 ملي ليٽر في ايڪڙ، صبح</string>
+    <plurals name="batch_buyers_untagged">
+        <item quantity="one">هن شيءِ جو %d وڪرو بيچ کان سواءِ آهي، لسٽ ۾ ناهي</item>
+        <item quantity="other">هن شيءِ جا %d وڪرا بيچ کان سواءِ آهن، لسٽ ۾ ناهن</item>
+    </plurals>
 </resources>

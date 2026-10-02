@@ -127,6 +127,44 @@ class EntryDetailActivity : BaseActivity() {
         }
     }
 
+    /** "Write spray advice" on a sale with goods lines (v25). */
+    private fun renderAdvice(e: LedgerEntry) {
+        val btn = findViewById<MaterialButton>(R.id.btnAdvice)
+        val goods = items.filter { !it.itemName.isNullOrBlank() }
+        if (!e.isGiven || e.isDeleted || goods.isEmpty()) { btn.visibility = View.GONE; return }
+        btn.visibility = View.VISIBLE
+        btn.setOnClickListener {
+            if (goods.size == 1) { editAdvice(goods[0]); return@setOnClickListener }
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.advice_pick_line)
+                .setItems(goods.map { it.itemName.orEmpty() }.toTypedArray()) { _, i -> editAdvice(goods[i]) }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+    }
+
+    private fun editAdvice(item: EntryItem) {
+        val view = layoutInflater.inflate(R.layout.dialog_line_advice, null)
+        val etCrop = view.findViewById<EditText>(R.id.etAdviceCrop).apply { setText(item.crop) }
+        val etPest = view.findViewById<EditText>(R.id.etAdvicePest).apply { setText(item.pest) }
+        val etDose = view.findViewById<EditText>(R.id.etAdviceDose).apply { setText(item.dose) }
+        fun typed(et: EditText) = et.text.toString().trim().ifEmpty { null }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.advice_title, item.itemName.orEmpty()))
+            .setView(view)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.save) { _, _ ->
+                AppScope.launch {
+                    KhataDatabase.get(this@EntryDetailActivity).khataDao()
+                        .setLineAdvice(item.id, typed(etCrop), typed(etPest), typed(etDose))
+                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) load()
+                    }
+                }
+            }
+            .show()
+    }
+
     private fun load() {
         lifecycleScope.launch {
             val dao = KhataDatabase.get(this@EntryDetailActivity).khataDao()
@@ -144,6 +182,7 @@ class EntryDetailActivity : BaseActivity() {
     private fun render(e: LedgerEntry) {
         // A sale can become an invoice; a payment received cannot.
         renderSeason(e)
+        renderAdvice(e)
 
         // Once invoiced, the same button opens that invoice instead of a twin.
         val btnInvoice = findViewById<MaterialButton>(R.id.btnMakeInvoice)
@@ -434,7 +473,12 @@ class EntryDetailActivity : BaseActivity() {
                             productId = matchedProductId,
                             billItemId = selectedBatch?.id,
                             rate = line?.rate
-                        )?.copy(isBonus = line?.isBonus ?: false)
+                        )?.copy(
+                            isBonus = line?.isBonus ?: false,
+                            // The line's spray advice (v25) is not on this
+                            // small form; it must survive the edit.
+                            crop = line?.crop, pest = line?.pest, dose = line?.dose
+                        )
                     )
                 }
                 // AppScope, not lifecycleScope — see AppScope's own comment.

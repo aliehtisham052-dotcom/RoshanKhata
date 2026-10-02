@@ -1581,4 +1581,19 @@
         <item quantity="one">%1$s: کٹائی کے %2$d دن بعد کلیئر</item>
         <item quantity="other">%1$s: کٹائی کے %2$d دن بعد کلیئر</item>
     </plurals>
+    <string name="batch_buyers_title">%1$s کس نے خریدا · بیچ %2$s</string>
+    <string name="batch_buyers_action">اس بیچ کے خریدار</string>
+    <string name="batch_buyers_none">ابھی کوئی فروخت اس بیچ سے نہیں جوڑی گئی۔</string>
+    <string name="advice_line">مشورہ: %1$s</string>
+    <string name="advice_disclaimer">صرف مشورہ، ضمانت نہیں۔</string>
+    <string name="advice_write">دوا کا مشورہ لکھیں</string>
+    <string name="advice_pick_line">کون سی چیز؟</string>
+    <string name="advice_title">مشورہ: %1$s</string>
+    <string name="advice_crop_hint">فصل، مثلاً کپاس، 3 ایکڑ</string>
+    <string name="advice_pest_hint">کیڑا یا بیماری، مثلاً سنڈی</string>
+    <string name="advice_dose_hint">خوراک، مثلاً 250 ملی لیٹر فی ایکڑ، صبح</string>
+    <plurals name="batch_buyers_untagged">
+        <item quantity="one">اس چیز کی %d فروخت بغیر بیچ کے ہے، فہرست میں نہیں</item>
+        <item quantity="other">اس چیز کی %d فروختیں بغیر بیچ کے ہیں، فہرست میں نہیں</item>
+    </plurals>
 </resources>

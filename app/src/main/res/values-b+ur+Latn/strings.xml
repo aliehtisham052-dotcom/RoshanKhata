@@ -1581,4 +1581,19 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">%1$s: katai ke %2$d din baad clear</item>
         <item quantity="other">%1$s: katai ke %2$d din baad clear</item>
     </plurals>
+    <string name="batch_buyers_title">%1$s kis ne khareeda · batch %2$s</string>
+    <string name="batch_buyers_action">Is batch ke kharidar</string>
+    <string name="batch_buyers_none">Abhi koi sale is batch se nahi jori gayi.</string>
+    <string name="advice_line">Mashwara: %1$s</string>
+    <string name="advice_disclaimer">Sirf mashwara, guarantee nahi.</string>
+    <string name="advice_write">Dawa ka mashwara likhein</string>
+    <string name="advice_pick_line">Kaunsi cheez?</string>
+    <string name="advice_title">Mashwara: %1$s</string>
+    <string name="advice_crop_hint">Fasal, maslan Kapas, 3 acre</string>
+    <string name="advice_pest_hint">Keera ya beemari, maslan Sundi</string>
+    <string name="advice_dose_hint">Dose, maslan 250 ml fi acre, subah</string>
+    <plurals name="batch_buyers_untagged">
+        <item quantity="one">Is cheez ki %d sale baghair batch ke hai, list mein nahi</item>
+        <item quantity="other">Is cheez ki %d sales baghair batch ke hain, list mein nahi</item>
+    </plurals>
 </resources>

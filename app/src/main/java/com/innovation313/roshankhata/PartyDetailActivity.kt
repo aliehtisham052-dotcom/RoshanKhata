@@ -1564,7 +1564,11 @@ class PartyDetailActivity : BaseActivity() {
                     productId = it.productId,
                     billItemId = it.billItemId,
                     rateEdited = true,
-                    isBonus = it.isBonus
+                    isBonus = it.isBonus,
+                    // Advice written on the entry screen survives an edit.
+                    crop = it.crop,
+                    pest = it.pest,
+                    dose = it.dose
                 )
             })
             // Saved at exactly its items' total: keeps following them. Saved

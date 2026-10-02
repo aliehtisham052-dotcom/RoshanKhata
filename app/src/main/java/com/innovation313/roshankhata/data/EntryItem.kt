@@ -75,7 +75,17 @@ data class EntryItem(
     /** A free bag from a company scheme: leaves the shelf, costs nothing. */
     val isBonus: Boolean = false,
     val productId: Long? = null,
-    val billItemId: Long? = null
+    val billItemId: Long? = null,
+
+    /**
+     * The dealer's advice with this line (v25): the crop, the pest or
+     * disease, and the dose as he told it ("250 ml per acre, morning").
+     * Free text, all optional; printed on the receipt so the farmer has it in
+     * writing — and the shop has a record if a crop is lost later.
+     */
+    val crop: String? = null,
+    val pest: String? = null,
+    val dose: String? = null
 ) {
     companion object {
         /**

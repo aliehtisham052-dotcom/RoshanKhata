@@ -9,7 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.ExpiringBatch
 
-class ExpiringAdapter : RecyclerView.Adapter<ExpiringAdapter.VH>() {
+class ExpiringAdapter(
+    /** Tap on a batch: who bought from it (2 Oct). */
+    private val onOpen: (ExpiringBatch) -> Unit = {}
+) : RecyclerView.Adapter<ExpiringAdapter.VH>() {
 
     private var items: List<ExpiringBatch> = emptyList()
 
@@ -36,6 +39,7 @@ class ExpiringAdapter : RecyclerView.Adapter<ExpiringAdapter.VH>() {
     override fun onBindViewHolder(holder: VH, position: Int) {
         val e = items[position]
         val ctx = holder.itemView.context
+        holder.itemView.setOnClickListener { onOpen(e) }
 
         holder.tvProduct.text = e.productName
         holder.tvQty.text = Format.qty(e.quantity, e.unit)
