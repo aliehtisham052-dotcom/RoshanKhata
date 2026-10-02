@@ -1857,4 +1857,6 @@
     <string name="settled_send_card">أرسل بطاقة شكر</string>
     <string name="settled_check_desc">الحساب مسوّى</string>
     <string name="season_back_percent">عاد %1$d%%</string>
+    <string name="undo">تراجع</string>
+    <string name="backup_saved_flash">تم النسخ الاحتياطي ✓</string>
 </resources>

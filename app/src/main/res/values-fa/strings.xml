@@ -1713,4 +1713,6 @@
     <string name="settled_send_card">فرستادن کارت تشکر</string>
     <string name="settled_check_desc">حساب تسویه شد</string>
     <string name="season_back_percent">%1$d%% برگشته</string>
+    <string name="undo">بازگردانی</string>
+    <string name="backup_saved_flash">پشتیبان گرفته شد ✓</string>
 </resources>

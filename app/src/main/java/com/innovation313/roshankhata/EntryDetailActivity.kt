@@ -552,14 +552,16 @@ class EntryDetailActivity : BaseActivity() {
                                 lifecycleScope.launch {
                                     dao.softDeleteEntry(entryId)
                                     dao.softDeleteEntry(pair.id)
-                                    Toast.makeText(this@EntryDetailActivity, R.string.entry_deleted, Toast.LENGTH_SHORT).show()
+                                    entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
+                                        com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId, pair.id)) }
                                     finish()
                                 }
                             }
                             .setNegativeButton(R.string.delete_pair_one) { _, _ ->
                                 lifecycleScope.launch {
                                     dao.softDeleteEntry(entryId)
-                                    Toast.makeText(this@EntryDetailActivity, R.string.entry_deleted, Toast.LENGTH_SHORT).show()
+                                    entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
+                                        com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId)) }
                                     finish()
                                 }
                             }
@@ -567,7 +569,8 @@ class EntryDetailActivity : BaseActivity() {
                         return@launch
                     }
                     dao.softDeleteEntry(entryId)
-                    Toast.makeText(this@EntryDetailActivity, R.string.entry_deleted, Toast.LENGTH_SHORT).show()
+                    entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
+                        com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId)) }
                     finish()
                 }
             }

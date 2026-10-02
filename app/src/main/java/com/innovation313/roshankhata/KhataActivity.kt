@@ -1077,8 +1077,13 @@ class KhataActivity : BaseActivity() {
      * Quiet while it is fresh, gold and bold at a week or never: a warning
      * that always looks the same stops being read.
      */
+    /** The backup time last painted; a newer one flashes "Backed up ✓" (2 Oct). */
+    private var paintedBackupAt: Long? = null
+
     private fun paintSummary() {
         val last = BackupReminder.lastBackupAt(this)
+        val justBackedUp = paintedBackupAt != null && last > (paintedBackupAt ?: 0L)
+        paintedBackupAt = last
         val ageDays = if (last == 0L) -1L
         else (System.currentTimeMillis() - last) / (24L * 60 * 60 * 1000)
 
@@ -1099,7 +1104,13 @@ class KhataActivity : BaseActivity() {
         }
         val stale = ageDays < 0 || ageDays >= 7
 
-        tvBackupAge.text = text
+        if (justBackedUp) {
+            // Like an editor's "Saved": the moment the books became safe,
+            // then back to the usual "Backed up 10:42".
+            com.innovation313.roshankhata.ui.Motion.flashSaved(tvBackupAge, getString(R.string.backup_saved_flash)) {
+                tvBackupAge.text = text
+            }
+        } else tvBackupAge.text = text
         tvBackupAge.setTextColor(
             ContextCompat.getColor(
                 this,

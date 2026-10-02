@@ -1685,4 +1685,6 @@
     <string name="settled_send_card">مبارک کارڈ بھیجیں</string>
     <string name="settled_check_desc">حساب صاف</string>
     <string name="season_back_percent">%1$d%% واپس</string>
+    <string name="undo">واپس لائیں</string>
+    <string name="backup_saved_flash">بیک اپ ہو گیا ✓</string>
 </resources>

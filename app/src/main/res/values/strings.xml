@@ -1737,4 +1737,6 @@ You can change this any time from this screen.</string>
     <string name="settled_send_card">Send a thank-you card</string>
     <string name="settled_check_desc">Account settled</string>
     <string name="season_back_percent">%1$d%% back</string>
+    <string name="undo">Undo</string>
+    <string name="backup_saved_flash">Backed up ✓</string>
 </resources>

@@ -1685,4 +1685,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="settled_send_card">Mubarak card bhejein</string>
     <string name="settled_check_desc">Hisaab saaf</string>
     <string name="season_back_percent">%1$d%% wapas</string>
+    <string name="undo">Wapas layein</string>
+    <string name="backup_saved_flash">Backup ho gaya ✓</string>
 </resources>
