@@ -831,6 +831,7 @@ class PartyDetailActivity : BaseActivity() {
         val btnTotalFill: MaterialButton = view.findViewById(R.id.btnRateSuggestion)
         val rateSection: View = view.findViewById(R.id.rateSection)
         val cgRateType: ChipGroup = view.findViewById(R.id.cgRateType)
+        val cbPaidNow: MaterialCheckBox = view.findViewById(R.id.cbPaidNow)
         val tvRateNote: TextView = view.findViewById(R.id.tvRateNote)
         val etRate: EditText = view.findViewById(R.id.etRate)
         val linesContainer: LinearLayout = view.findViewById(R.id.linesContainer)
@@ -888,6 +889,13 @@ class PartyDetailActivity : BaseActivity() {
             if (cgRateType.checkedChipId == R.id.chipRateCash) RateType.CASH else RateType.CREDIT
 
         fun isSale(): Boolean = isGiven && partyIsCustomer
+
+        /** "Money received now" — a new sale at the cash rate only; unticked by default. */
+        fun syncPaidNow() {
+            val show = editing == null && isSale() && chosenRateType() == RateType.CASH
+            cbPaidNow.visibility = if (show) View.VISIBLE else View.GONE
+            if (!show) cbPaidNow.isChecked = false
+        }
 
         // Goods coming BACK from a customer ("I got" with items): returned at
         // the price they went out at, and put back on the shelf. On a
@@ -1175,7 +1183,9 @@ class PartyDetailActivity : BaseActivity() {
             }
         }
 
+        syncPaidNow()
         cgRateType.setOnCheckedStateChangeListener { _, _ ->
+            syncPaidNow()
             val type = chosenRateType()
             for (i in lines.indices) lines[i] = lines[i].repriced(type, partyIsCustomer)
             renderLines()
@@ -1802,7 +1812,7 @@ class PartyDetailActivity : BaseActivity() {
 
             // Warn BEFORE writing, not after — a warning that arrives once
             // the entry is already in the ledger is just an accusation.
-            checkTwinThenSave(entry, items)
+            checkTwinThenSave(entry, items, paidNow = cbPaidNow.isChecked)
             return true
         }
 
@@ -2593,7 +2603,7 @@ class PartyDetailActivity : BaseActivity() {
      * customer the same amount twice in a day; the question is cheap to ask
      * once and the answer is his.
      */
-    private fun checkTwinThenSave(entry: LedgerEntry, items: List<EntryItem>) {
+    private fun checkTwinThenSave(entry: LedgerEntry, items: List<EntryItem>, paidNow: Boolean = false) {
         lifecycleScope.launch {
             val day = java.util.Calendar.getInstance().apply {
                 timeInMillis = entry.timestamp
@@ -2610,7 +2620,7 @@ class PartyDetailActivity : BaseActivity() {
             }
 
             if (twin == null) {
-                afterTwinCheck(entry, items)
+                afterTwinCheck(entry, items, paidNow)
                 return@launch
             }
 
@@ -2625,35 +2635,45 @@ class PartyDetailActivity : BaseActivity() {
                     )
                 )
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.twin_entry_add) { _, _ -> afterTwinCheck(entry, items) }
+                .setPositiveButton(R.string.twin_entry_add) { _, _ -> afterTwinCheck(entry, items, paidNow) }
                 .show()
         }
     }
 
     /** The credit-limit gate, which used to sit inline in the save button. */
-    private fun afterTwinCheck(entry: LedgerEntry, items: List<EntryItem>) {
+    private fun afterTwinCheck(entry: LedgerEntry, items: List<EntryItem>, paidNow: Boolean) {
         val limit = creditLimit
         val projected = currentBalance + (if (entry.isGiven) entry.amount else -entry.amount)
 
         if (entry.isGiven && limit != null && limit > 0 &&
             projected > limit && currentBalance <= limit
         ) {
-            warnOverLimit(entry, items, limit, projected)
+            warnOverLimit(entry, items, limit, projected, paidNow)
         } else {
-            saveEntry(entry, items)
+            saveEntry(entry, items, paidNow)
         }
     }
 
-    private fun saveEntry(entry: LedgerEntry, items: List<EntryItem>) {
+    /**
+     * @param paidNow the form's "money received now" box (a cash-rate sale
+     *   only). Ticked, the matching cash "I got" is written right after the
+     *   sale, and an Undo bar takes it back.
+     */
+    private fun saveEntry(entry: LedgerEntry, items: List<EntryItem>, paidNow: Boolean = false) {
         AppScope.launch {
             // Numbering, the entry and its goods lines all happen inside the
             // DAO's own transaction — see insertEntryNumbered for why the count
             // must not be read out here, and insertEntryWithItems for why the
             // lines are written in the same step.
             val id = dao.insertEntryWithItems(entry, items)
+            // Ticked on the form: the money came with the goods. Its cash
+            // "I got" is written straight after, paired with the sale.
+            val gotId = if (paidNow && entry.isGiven && entry.rateType == RateType.CASH)
+                dao.recordCashForSale(id) else null
             // Balance as it stands once this entry counts (positive = owed to me).
             val before = currentBalance
-            val after = before + if (entry.isGiven) entry.amount else -entry.amount
+            val after = if (gotId != null) before
+                else before + if (entry.isGiven) entry.amount else -entry.amount
             // Paid up: the harvest promise has been kept, so it goes (v28).
             if (harvestPromise != null && !Money.isPositive(after)) {
                 dao.setHarvestPromise(partyId, null)
@@ -2667,10 +2687,13 @@ class PartyDetailActivity : BaseActivity() {
                 // Paid down to nothing from owing: celebrate (it includes the
                 // card to send), instead of the plain "send this entry" bar.
                 val settledNow = !entry.isGiven && Money.isPositive(before) && !Money.isPositive(after)
-                if (settledNow) com.innovation313.roshankhata.ui.SettledCelebration.show(this@PartyDetailActivity, partyName)
-                else offerEntryShare(entry, after)
-                // Sold at the cash (naqd) rate: ask whether the money came now.
-                if (entry.isGiven && entry.rateType == RateType.CASH) offerCashReceived(id, entry.amount)
+                when {
+                    settledNow -> com.innovation313.roshankhata.ui.SettledCelebration.show(this@PartyDetailActivity, partyName)
+                    // Paid on the spot: nothing is owed, so no "udhar written"
+                    // message to send — instead, a way back if the box was ticked by mistake.
+                    gotId != null -> offerUndoCash(id, gotId, entry.amount)
+                    else -> offerEntryShare(entry, after)
+                }
             }
         }
     }
@@ -2767,19 +2790,15 @@ class PartyDetailActivity : BaseActivity() {
     }
 
     /**
-     * "Was Rs 17,800 received just now?" — after a sale at the cash rate. Yes
-     * records the matching "I got" in cash, paired with the sale, so the pair
-     * nets to nothing and each can find the other. No writes nothing: the
-     * ledger never records money the owner has not said arrived.
+     * After a cash-rate sale saved with "money received now" ticked: says so,
+     * and Undo takes the cash "I got" back out, leaving the sale on udhar.
+     * Replaces the old "Was it received?" pop-up (3 Oct 2026), whose "Yes"
+     * was too easy to hit by accident straight after Save.
      */
-    private fun offerCashReceived(saleId: Long, amount: Double) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.cash_received_offer, Format.money(amount)))
-            .setMessage(R.string.cash_received_help)
-            .setPositiveButton(R.string.cash_received_yes) { _, _ ->
-                AppScope.launch { dao.recordCashForSale(saleId) }
-            }
-            .setNegativeButton(R.string.cash_received_no, null)
+    private fun offerUndoCash(saleId: Long, gotId: Long, amount: Double) {
+        com.google.android.material.snackbar.Snackbar
+            .make(findViewById(android.R.id.content), getString(R.string.cash_paid_recorded, Format.money(amount)), 8000)
+            .setAction(R.string.undo) { AppScope.launch { dao.undoCashForSale(saleId, gotId) } }
             .show()
     }
 
@@ -2788,7 +2807,13 @@ class PartyDetailActivity : BaseActivity() {
      * own risk better than a number in a database does — so we tell them
      * plainly what this entry will do, and let them decide.
      */
-    private fun warnOverLimit(entry: LedgerEntry, items: List<EntryItem>, limit: Double, projected: Double) {
+    private fun warnOverLimit(
+        entry: LedgerEntry,
+        items: List<EntryItem>,
+        limit: Double,
+        projected: Double,
+        paidNow: Boolean
+    ) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.limit_warning_title)
             .setMessage(
@@ -2802,7 +2827,7 @@ class PartyDetailActivity : BaseActivity() {
                 )
             )
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.proceed_anyway) { _, _ -> saveEntry(entry, items) }
+            .setPositiveButton(R.string.proceed_anyway) { _, _ -> saveEntry(entry, items, paidNow) }
             .show()
     }
 

@@ -1241,10 +1241,6 @@
     <string name="update_product_rate">%2$s %1$s را هم %3$s کن</string>
     <string name="add_to_products">%1$s را به فهرست کالاها هم اضافه کن</string>
     <string name="supplier_bill_button">ثبت فاکتور تأمین‌کننده (کالا، سری، انقضا)</string>
-    <string name="cash_received_offer">آیا %1$s همین حالا دریافت شد؟</string>
-    <string name="cash_received_help">«بله» یک «گرفتم» نقدی به همین مبلغ، پیوسته به این فروش، ثبت می‌کند. در غیر این صورت چیزی نوشته نمی‌شود.</string>
-    <string name="cash_received_yes">بله، دریافت شد</string>
-    <string name="cash_received_no">هنوز نه</string>
     <string name="delete_pair_title">نیمه دیگرش هم حذف شود؟</string>
     <string name="delete_pair_message">این ثبت نیمی از یک فروش نقدی است (%1$s). حذف فقط یک نیمه، مانده را اشتباه می‌کند.</string>
     <string name="delete_pair_both">هر دو حذف شوند</string>
@@ -1752,4 +1748,6 @@
     <string name="viewer_banner">👁 گوشی فقط‌مشاهده · دفتر مالک تا %1$s · برای نسخهٔ تازه بزنید</string>
     <string name="viewer_menu">گوشی دستیار (فقط مشاهده)</string>
     <string name="viewer_unknown_time">زمان نامعلوم</string>
+    <string name="cash_paid_now">پول همین حالا نقد رسید («دریافت کردم» را هم بنویس)</string>
+    <string name="cash_paid_recorded">%1$s نقد دریافت شد. فروش و پرداخت هر دو ثبت شد.</string>
 </resources>

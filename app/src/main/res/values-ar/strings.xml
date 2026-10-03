@@ -1345,10 +1345,6 @@
     <string name="update_product_rate">اجعل %2$s لـ %1$s أيضًا %3$s</string>
     <string name="add_to_products">أضف %1$s إلى قائمة المنتجات أيضًا</string>
     <string name="supplier_bill_button">سجّل فاتورة مورّد (أصناف، دفعة، انتهاء)</string>
-    <string name="cash_received_offer">هل استُلم %1$s الآن؟</string>
-    <string name="cash_received_help">«نعم» يسجّل قيدًا نقديًا «استلمت» بالمبلغ نفسه مرتبطًا بهذا البيع. لا يُكتب شيء غير ذلك.</string>
-    <string name="cash_received_yes">نعم، استُلم</string>
-    <string name="cash_received_no">ليس بعد</string>
     <string name="delete_pair_title">هل تحذف الجزء الآخر أيضًا؟</string>
     <string name="delete_pair_message">هذا القيد نصف عملية بيع نقدية (%1$s). حذف نصف واحد فقط يجعل الرصيد خاطئًا.</string>
     <string name="delete_pair_both">احذف الاثنين</string>
@@ -1896,4 +1892,6 @@
     <string name="viewer_banner">👁 هاتف للعرض فقط · دفتر المالك حتى %1$s · اضغط لنسخة جديدة</string>
     <string name="viewer_menu">هاتف المساعد (عرض فقط)</string>
     <string name="viewer_unknown_time">الوقت غير معروف</string>
+    <string name="cash_paid_now">استُلم المبلغ نقدًا الآن (سجّل «استلمتُ» أيضًا)</string>
+    <string name="cash_paid_recorded">استُلم %1$s نقدًا. سُجّل البيع والدفع معًا.</string>
 </resources>

@@ -680,6 +680,22 @@
                 android:textColor="@color/text_muted"
                 android:textSize="12sp"
                 android:visibility="gone" />
+
+            <!--
+              Cash rate is a PRICE, not a payment (3 Oct 2026). Goods often go
+              on udhar at the cash rate, so whether the money came now is asked
+              here, on the form, unticked — never in a pop-up after Save, where
+              the finger still pressing Save used to land on "Yes". Shown only
+              for a new sale at the cash rate.
+            -->
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cbPaidNow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/cash_paid_now"
+                android:textSize="14sp"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!--

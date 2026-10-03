@@ -1915,6 +1915,19 @@ interface KhataDao {
     suspend fun setPairedEntry(id: Long, other: Long?)
 
     /**
+     * Undo for "money received now" (3 Oct 2026): the cash "I got" written a
+     * moment ago goes for good — not into the Recycle Bin, where restoring it
+     * would bring back half a pair — and the sale stands alone again, on udhar.
+     * One transaction: never the "I got" gone with the sale still pointing at it.
+     */
+    @Transaction
+    suspend fun undoCashForSale(saleId: Long, gotId: Long) {
+        softDeleteEntry(gotId)
+        purgeEntry(gotId)
+        setPairedEntry(saleId, null)
+    }
+
+    /**
      * A cash sale's money arrived on the spot: an "I got", in cash, for the
      * same amount and moment (one millisecond later, so it lists after the
      * sale), each entry pointing at the other. Written only when the owner

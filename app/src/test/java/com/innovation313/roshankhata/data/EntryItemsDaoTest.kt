@@ -331,4 +331,20 @@ class EntryItemsDaoTest {
         // Never paired twice.
         assertEquals(null, dao.recordCashForSale(sale))
     }
+
+    @Test
+    fun undoingTheCashLeavesTheSaleOnUdharAndNothingInTheBin() = runBlocking {
+        // "Money received now" ticked by mistake, then Undo (3 Oct 2026).
+        val ahmad = dao.insertParty(Party(name = "Ahmad"))
+        val sale = dao.insertEntryWithItems(visit(ahmad, 652.80).copy(rateType = RateType.CASH), threeLines)
+        val got = dao.recordCashForSale(sale)!!
+
+        dao.undoCashForSale(sale, got)
+
+        assertEquals("the I got is gone for good, not binned", null, dao.getEntry(got))
+        assertEquals("the sale stands alone again", null, dao.getEntry(sale)!!.pairedEntryId)
+        assertEquals(652.80, dao.partiesWithBalanceOnce().single { it.id == ahmad }.balance, 0.001)
+        // And the sale can still be paid in cash later, the normal way.
+        assertTrue(dao.recordCashForSale(sale) != null)
+    }
 }

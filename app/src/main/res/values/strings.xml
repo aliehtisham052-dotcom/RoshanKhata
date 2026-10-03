@@ -1256,10 +1256,6 @@ You can change this any time from this screen.</string>
     <string name="update_product_rate">Also set %1$s\'s %2$s to %3$s</string>
     <string name="add_to_products">Also add %1$s to the products list</string>
     <string name="supplier_bill_button">Record a supplier bill (items, batch, expiry)</string>
-    <string name="cash_received_offer">Was %1$s received just now?</string>
-    <string name="cash_received_help">Yes records an \"I got\" in cash for the same amount, linked to this sale. Nothing is written otherwise.</string>
-    <string name="cash_received_yes">Yes, received</string>
-    <string name="cash_received_no">Not yet</string>
     <string name="delete_pair_title">Delete its other half too?</string>
     <string name="delete_pair_message">This entry is one half of a cash sale (%1$s). Deleting only one half leaves the balance wrong.</string>
     <string name="delete_pair_both">Delete both</string>
@@ -1776,4 +1772,6 @@ You can change this any time from this screen.</string>
     <string name="viewer_banner">👁 Read-only phone · owner\'s book as of %1$s · tap for a fresh copy</string>
     <string name="viewer_menu">Helper\'s phone (view only)</string>
     <string name="viewer_unknown_time">time not known</string>
+    <string name="cash_paid_now">Money received now, in cash (also write the \"I got\")</string>
+    <string name="cash_paid_recorded">%1$s received in cash. Sale and payment both written.</string>
 </resources>
