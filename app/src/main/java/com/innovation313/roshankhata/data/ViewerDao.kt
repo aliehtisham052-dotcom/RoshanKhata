@@ -108,6 +108,7 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun insertEntryWithItems(entry: LedgerEntry, items: List<EntryItem>): Long = refused()
     override suspend fun updateEntryWithItems(entry: LedgerEntry, items: List<EntryItem>): Unit = refused()
     override suspend fun setPairedEntry(id: Long, other: Long?): Unit = refused()
+    override suspend fun undoCashForSale(saleId: Long, gotId: Long): Unit = refused()
     override suspend fun recordCashForSale(saleId: Long): Long? = refused()
     override suspend fun insertSupplierBill(entry: LedgerEntry?, bill: SupplierBill, items: List<BillItem>): List<Product> = refused()
     override suspend fun updateEntry(entry: LedgerEntry): Unit = refused()
