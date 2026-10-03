@@ -206,6 +206,13 @@ object DriveBackup {
      */
     suspend fun backup(context: Context, accountName: String, json: String): Result<Long> =
         withContext(Dispatchers.IO) {
+            // A read-only phone never uploads. Its copy is always older than
+            // the owner's book, and uploading it would overwrite the owner's
+            // newest backup. Checked here, at the one door to Drive, rather
+            // than trusting every button and timer to remember.
+            if (ViewerMode.isOn(context)) {
+                return@withContext Result.failure(ViewerMode.ReadOnlyPhone())
+            }
             try {
                 val drive = driveFor(context, accountName)
 
@@ -283,6 +290,7 @@ object DriveBackup {
         dao: KhataDao,
         minIntervalMs: Long = 20L * 60 * 60 * 1000 // ~a day, with slack so a daily run isn't skipped by minutes
     ): AutoResult = withContext(Dispatchers.IO) {
+        if (ViewerMode.isOn(context)) return@withContext AutoResult.Skipped
         if (!autoBackup(context)) return@withContext AutoResult.Skipped
 
         val account = DriveAuth.accountName(context) ?: return@withContext AutoResult.Skipped
@@ -349,6 +357,9 @@ object DriveBackup {
      */
     suspend fun backupImages(context: Context, accountName: String, zip: File?): Result<Boolean> =
         withContext(Dispatchers.IO) {
+            if (ViewerMode.isOn(context)) {
+                return@withContext Result.failure(ViewerMode.ReadOnlyPhone())
+            }
             if (zip == null || !zip.exists()) return@withContext Result.success(false)
             try {
                 val drive = driveFor(context, accountName)
@@ -509,6 +520,37 @@ object DriveBackup {
                 null
             }
         }
+
+    /**
+     * The owner's backup for one business, by that business's id — for a
+     * read-only phone's refresh. Looked up by NAME each time, not by a file id
+     * remembered from last time, so a backup the owner deleted and made again
+     * is still found. Null (inside a success) when there is no such backup.
+     *
+     * @return the backup's text and when Drive last saw it change.
+     */
+    suspend fun readForBusiness(
+        context: Context,
+        accountName: String,
+        businessId: Long
+    ): Result<Pair<String, Long>?> = withContext(Dispatchers.IO) {
+        try {
+            val drive = driveFor(context, accountName)
+            val name = "RoshanKhata_Backup${Businesses.suffixFor(businessId)}.txt"
+            val file = drive.files().list()
+                .setSpaces(APP_DATA_FOLDER)
+                .setQ("name = '$name'")
+                .setFields("files(id, modifiedTime)")
+                .execute()
+                .files?.firstOrNull()
+                ?: return@withContext Result.success(null)
+            val out = ByteArrayOutputStream()
+            drive.files().get(file.id).executeMediaAndDownloadTo(out)
+            Result.success(out.toString("UTF-8") to (file.modifiedTime?.value ?: 0L))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     private fun findBackupId(context: Context, drive: Drive): String? {
         val result = drive.files().list()

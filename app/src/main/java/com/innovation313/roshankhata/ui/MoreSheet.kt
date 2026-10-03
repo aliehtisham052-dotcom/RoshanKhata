@@ -23,11 +23,16 @@ import com.innovation313.roshankhata.data.ThemeMode
 object MoreSheet {
 
     fun show(activity: Activity) {
-        val items = listOf<Pair<Int, () -> Unit>>(
+        val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(activity)
+        val items = listOfNotNull<Pair<Int, () -> Unit>>(
             R.string.app_lock to { appLock(activity) },
             R.string.screen_privacy to { ScreenPrivacyDialog.show(activity) },
             R.string.products_stock to { activity.startActivity(Intent(activity, ProductsActivity::class.java)) },
-            R.string.duplicate_customers to { activity.startActivity(Intent(activity, DuplicateCustomersActivity::class.java)) },
+            // Merging customers rewrites the book; a read-only phone has no book to rewrite.
+            if (viewer) null else R.string.duplicate_customers to { activity.startActivity(Intent(activity, DuplicateCustomersActivity::class.java)) },
+            // The helper's phone: the owner sends a copy from here, and a helper's
+            // phone becomes read-only (or stops being) from here too.
+            R.string.viewer_menu to { activity.startActivity(Intent(activity, com.innovation313.roshankhata.ViewerActivity::class.java)) },
             R.string.language to { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
             R.string.text_size to { textSize(activity) },
             R.string.theme to { theme(activity) },

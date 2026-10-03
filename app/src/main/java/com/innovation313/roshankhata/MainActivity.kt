@@ -166,9 +166,15 @@ class MainActivity : BaseActivity() {
                 R.color.tile_plans_bg, R.color.section_plans)
         )
 
+        // A read-only phone shows no tile for a screen it may not open.
+        val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+        fun shown(list: List<Feature>) =
+            if (!viewer) list
+            else list.filterNot { com.innovation313.roshankhata.data.ViewerMode.ownerOnly(it.destination) }
+
         featureViews.clear()
-        fillGrid(findViewById(R.id.gridDaily), daily)
-        fillGrid(findViewById(R.id.gridBusiness), business)
+        fillGrid(findViewById(R.id.gridDaily), shown(daily))
+        fillGrid(findViewById(R.id.gridBusiness), shown(business))
         equalizeTileHeights()
     }
 
@@ -326,6 +332,25 @@ class MainActivity : BaseActivity() {
         super.onResume()
         // Returning from another screen, the bar must point at Home again.
         findViewById<BottomNavigationView>(R.id.bottomNav)?.selectedItemId = R.id.nav_home
+        showViewerNote()
+    }
+
+    /** On a helper's read-only phone: whose copy, how old, tap for a fresh one. */
+    private fun showViewerNote() {
+        val note = findViewById<TextView>(R.id.tvHomeViewer) ?: return
+        val viewer = com.innovation313.roshankhata.data.ViewerMode
+        if (!viewer.isOn(this)) {
+            note.visibility = View.GONE
+            return
+        }
+        val at = viewer.dataAt(this)
+        note.text = getString(
+            R.string.viewer_banner,
+            if (at > 0L) com.innovation313.roshankhata.ui.Format.dateTime(at)
+            else getString(R.string.viewer_unknown_time)
+        )
+        note.visibility = View.VISIBLE
+        note.setOnClickListener { startActivity(Intent(this, ViewerActivity::class.java)) }
     }
 
     /**

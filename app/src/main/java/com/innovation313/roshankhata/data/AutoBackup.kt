@@ -95,6 +95,8 @@ object AutoBackup {
 
         override suspend fun doWork(): Result {
             val ctx = applicationContext
+            // Never from a read-only phone; see DriveBackup.backup.
+            if (ViewerMode.isOn(ctx)) return Result.success()
             return try {
                 // Every gate that matters is already inside autoBackupIfDue —
                 // switched on, Drive connected, data worth protecting, enough

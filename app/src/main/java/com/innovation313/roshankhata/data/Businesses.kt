@@ -83,6 +83,10 @@ object Businesses {
 
     /** The open business. Falls back to Business 1 if the stored id is gone. */
     fun active(context: Context): Business {
+        // A read-only phone has exactly one book open, the owner's copy, in a
+        // file of its own. Its own businesses (if it had any) stay untouched
+        // and come back the moment it stops being a viewer.
+        if (ViewerMode.isOn(context)) return ViewerMode.business
         val id = prefs(context).getLong(KEY_ACTIVE, 1L)
         val all = list(context)
         return all.firstOrNull { it.id == id } ?: all.first()
