@@ -28,7 +28,29 @@ import androidx.room.RoomDatabase
 )
 abstract class KhataDatabase : RoomDatabase() {
 
-    abstract fun khataDao(): KhataDao
+    /**
+     * The real DAO, as Room built it. Only two kinds of caller use this name
+     * directly: [khataDao] below, and [ViewerSync], whose whole job is the
+     * one write a read-only phone's copy ever receives (replacing it whole).
+     */
+    abstract fun ledgerDao(): KhataDao
+
+    /**
+     * True when this instance is the read-only copy on a helper's phone
+     * ([ViewerMode]). Set once, by [get], before the instance is handed out.
+     */
+    @Volatile
+    internal var viewerCopy: Boolean = false
+
+    private val viewerDao: KhataDao by lazy { ViewerDao(ledgerDao()) }
+
+    /**
+     * What every screen uses. On a read-only phone it is a [ViewerDao]: reads
+     * pass through, every write refuses — so a button nobody remembered to
+     * hide still cannot change a row. On every other phone, and in every
+     * test, it is simply Room's own DAO.
+     */
+    fun khataDao(): KhataDao = if (viewerCopy) viewerDao else ledgerDao()
 
     companion object {
         @Volatile
@@ -78,6 +100,7 @@ abstract class KhataDatabase : RoomDatabase() {
                     .addMigrations(*ALL_MIGRATIONS)
                     .build()
                     .also {
+                        it.viewerCopy = file == ViewerMode.VIEWER_FILE
                         INSTANCE = it
                         INSTANCE_FILE = file
                     }

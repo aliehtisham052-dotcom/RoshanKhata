@@ -1,8 +1,11 @@
 package com.innovation313.roshankhata
 
 import android.content.Context
+import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.innovation313.roshankhata.data.TextSize
+import com.innovation313.roshankhata.data.ViewerMode
 import com.innovation313.roshankhata.ui.TextFit
 
 /**
@@ -20,6 +23,19 @@ abstract class BaseActivity : AppCompatActivity() {
 
     /** The text size this screen was built at; see onResume. */
     private var builtAtLevel = -1
+
+    /**
+     * On a read-only phone (see [ViewerMode]) a screen that exists only to
+     * change the book or its backups does not open at all. Finishing here
+     * means it is never shown; the DAO would refuse its writes anyway.
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (ViewerMode.isOn(this) && ViewerMode.ownerOnly(javaClass)) {
+            Toast.makeText(this, R.string.viewer_refused, Toast.LENGTH_LONG).show()
+            finish()
+        }
+    }
 
     override fun attachBaseContext(newBase: Context) {
         builtAtLevel = TextSize.level(newBase)
@@ -43,5 +59,6 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onContentChanged() {
         super.onContentChanged()
         TextFit.relax(findViewById(android.R.id.content))
+        ViewerMode.lockWriteButtons(this)
     }
 }

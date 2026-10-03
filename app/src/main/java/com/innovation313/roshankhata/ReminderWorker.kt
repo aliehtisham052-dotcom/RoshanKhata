@@ -40,6 +40,9 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         val ctx = applicationContext
+        // A helper's read-only phone holds a copy, not the book. Reminders
+        // are the owner's to send, from the phone that keeps the book.
+        if (com.innovation313.roshankhata.data.ViewerMode.isOn(ctx)) return Result.success()
         if (!NotificationManagerCompat.from(ctx).areNotificationsEnabled()) {
             // The owner said no (or hasn't said yes yet). Respect it silently.
             return Result.success()

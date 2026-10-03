@@ -368,6 +368,7 @@ class EveryScreenOpensTest(
             open<BusinessCardActivity>("Business card"),
             open<SnapshotsActivity>("Snapshots"),
             open<BackupActivity>("Backup"),
+            open<ViewerActivity>("Helper's phone"),
             open<ImageCropActivity>("Image crop (no picture)"),
             open<AboutActivity>("About"),
             open<HelpActivity>("Help"),
