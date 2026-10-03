@@ -1242,6 +1242,7 @@
     <string name="entry_preview_line">ابھی %1$s  ←  اس اندراج کے بعد %2$s</string>
     <string name="entry_bill_chip">بل تصویر</string>
     <string name="entry_bill_chip_done">✓ بل</string>
+    <string name="bill_chip_photo_only">صرف تصویر لگائیں</string>
 
     <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
     <string name="pdf_label_invoice">انوائس</string>

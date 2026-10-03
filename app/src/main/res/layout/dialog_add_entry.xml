@@ -380,11 +380,25 @@
               again. "I did not record how" is a real answer and must stay
               reachable, or the first tap becomes permanent.
             -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/cgPaymentMethod"
+            <!--
+              One line that slides sideways (2 Oct): wrapped onto two lines the
+              four chips cost a whole row of the space above the keypad, and at
+              a large text size "Online" was cut in half. Sideways, every chip
+              stays whole at any text size and the row costs one line.
+            -->
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:fillViewport="false"
+                android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgPaymentMethod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
                 app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
@@ -419,23 +433,10 @@
                     android:layout_height="wrap_content"
                     android:text="@string/payment_method_online" />
             </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
 
-            <!-- "Scan payment slip": a payment app's screenshot or a bank slip, read into this "I got" entry (1 Oct). New entries only. -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnScanPayment"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:textColor="@color/brand_green_text"
-                app:strokeColor="@color/editor_field_stroke"
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/payment_scan"
-                android:textAllCaps="false"
-                android:visibility="gone"
-                app:icon="@drawable/ic_camera"
-                app:iconGravity="textStart"
-                app:iconTint="@color/brand_green_text"
-                app:cornerRadius="8dp" />
+            <!-- "Scan payment slip" (1 Oct) moved up to the card's "Bill photo"
+                 chip on 2 Oct: down here it was pushed below the keypad. -->
         </LinearLayout>
             </LinearLayout>
 
