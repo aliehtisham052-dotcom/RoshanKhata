@@ -91,4 +91,18 @@
             android:text="@string/supplier" />
     </RadioGroup>
 
+    <!--
+      The same box as "Edit details" (2 Oct), so a customer who must not be
+      offered WhatsApp can be set from the first day. Customers only: the
+      offer is never made to a supplier, so the box hides when Supplier is
+      chosen.
+    -->
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/cbAddNoEntryShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/party_no_entry_share"
+        android:textSize="13sp" />
+
 </LinearLayout>

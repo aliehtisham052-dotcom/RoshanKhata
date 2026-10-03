@@ -1270,6 +1270,7 @@
     <string name="entry_preview_line">اکنون %1$s  ←  پس از این %2$s</string>
     <string name="entry_bill_chip">عکس فاکتور</string>
     <string name="entry_bill_chip_done">✓ فاکتور</string>
+    <string name="bill_chip_photo_only">فقط عکس را پیوست کن</string>
 
     <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
     <string name="pdf_label_invoice">فاکتور</string>

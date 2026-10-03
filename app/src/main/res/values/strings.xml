@@ -1287,6 +1287,7 @@ You can change this any time from this screen.</string>
     <string name="entry_preview_line">Now %1$s  →  after this %2$s</string>
     <string name="entry_bill_chip">Bill photo</string>
     <string name="entry_bill_chip_done">✓ Bill</string>
+    <string name="bill_chip_photo_only">Attach photo only</string>
     <string name="currency_rs" translatable="false">Rs</string>
 
     <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->

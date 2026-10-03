@@ -1374,6 +1374,7 @@
     <string name="entry_preview_line">الآن %1$s  ←  بعد هذا القيد %2$s</string>
     <string name="entry_bill_chip">صورة الفاتورة</string>
     <string name="entry_bill_chip_done">✓ الفاتورة</string>
+    <string name="bill_chip_photo_only">إرفاق الصورة فقط</string>
 
     <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
     <string name="pdf_label_invoice">فاتورة</string>

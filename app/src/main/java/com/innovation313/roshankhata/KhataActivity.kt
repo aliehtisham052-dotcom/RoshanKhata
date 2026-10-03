@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -397,6 +399,10 @@ class KhataActivity : BaseActivity() {
         val etVillage: EditText = view.findViewById(R.id.etVillage)
         val rbCustomer: RadioButton = view.findViewById(R.id.rbCustomer)
         val tvWarning: TextView = view.findViewById(R.id.tvAddPartyDuplicateWarning)
+        val cbNoShare: CheckBox = view.findViewById(R.id.cbAddNoEntryShare)
+        view.findViewById<RadioGroup>(R.id.rgType).setOnCheckedChangeListener { _, checkedId ->
+            cbNoShare.visibility = if (checkedId == R.id.rbCustomer) View.VISIBLE else View.GONE
+        }
 
         // The book, loaded once when the dialog opens rather than re-queried
         // on every keystroke — nothing in it changes while this dialog is up,
@@ -454,6 +460,7 @@ class KhataActivity : BaseActivity() {
                 // below — a View's own field is not something to reach across
                 // to from a background dispatcher.
                 val isCustomer = rbCustomer.isChecked
+                val noEntryShare = isCustomer && cbNoShare.isChecked
 
                 lifecycleScope.launch {
                     // A match on the number or the name is worth raising, but
@@ -487,7 +494,8 @@ class KhataActivity : BaseActivity() {
                                     phone = phone,
                                     fatherName = fatherName,
                                     village = village,
-                                    isCustomer = isCustomer
+                                    isCustomer = isCustomer,
+                                    noEntryShare = noEntryShare
                                 )
                             )
                         }
@@ -505,7 +513,8 @@ class KhataActivity : BaseActivity() {
                                     phone = phone,
                                     fatherName = fatherName,
                                     village = village,
-                                    isCustomer = isCustomer
+                                    isCustomer = isCustomer,
+                                    noEntryShare = noEntryShare
                                 )
                                 )
                             }

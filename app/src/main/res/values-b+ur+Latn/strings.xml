@@ -1242,6 +1242,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="entry_preview_line">Abhi %1$s  →  is entry ke baad %2$s</string>
     <string name="entry_bill_chip">Bill tasveer</string>
     <string name="entry_bill_chip_done">✓ Bill</string>
+    <string name="bill_chip_photo_only">Sirf tasveer lagayein</string>
 
     <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
     <string name="pdf_label_invoice">INVOICE</string>

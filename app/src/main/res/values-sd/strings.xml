@@ -1270,6 +1270,7 @@
     <string name="entry_preview_line">هاڻي %1$s  ←  هن داخلا کان پوءِ %2$s</string>
     <string name="entry_bill_chip">بل تصوير</string>
     <string name="entry_bill_chip_done">✓ بل</string>
+    <string name="bill_chip_photo_only">رڳو تصوير لڳايو</string>
 
     <!-- Words printed on an invoice PDF — in the app's language, never mixed. -->
     <string name="pdf_label_invoice">انوائس</string>

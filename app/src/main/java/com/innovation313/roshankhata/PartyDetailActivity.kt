@@ -237,6 +237,12 @@ class PartyDetailActivity : BaseActivity() {
     private var partyPhone: String? = null
     /** Party.noEntryShare (v23): skip the after-entry WhatsApp offer. */
     private var noEntryShare: Boolean = false
+    /**
+     * Party.isCustomer. The after-entry offer's words ("written to your
+     * account as udhar") are a shop speaking to its customer; a supplier is
+     * never offered it (2 Oct).
+     */
+    private var partyIsCustomerAccount: Boolean = false
     /** Party.harvestPromise (v28): "I'll pay after the harvest" date. */
     private var harvestPromise: Long? = null
     private var currentBalance: Double = 0.0
@@ -486,6 +492,7 @@ class PartyDetailActivity : BaseActivity() {
                 partyName = p.name
                 partyPhone = p.phone
                 noEntryShare = p.noEntryShare
+                partyIsCustomerAccount = p.isCustomer
                 harvestPromise = p.harvestPromise
                 creditLimit = p.creditLimit
                 tvPartyName.text = p.name
@@ -617,7 +624,9 @@ class PartyDetailActivity : BaseActivity() {
 
         billButton = view.findViewById(R.id.btnAddBill)
         billButton?.setText(R.string.entry_bill_chip)
-        billButton?.setOnClickListener {
+        // Photo only. The chip itself is wired further down, once the two
+        // scans it can also offer exist (see "One chip, two ways in").
+        fun pickPhotoOnly() {
             // A bill is more often photographed at the counter than found in
             // the gallery afterwards, so the camera is offered first here too.
             // No privacy note: a bill is a receipt, not somebody's face.
@@ -636,6 +645,7 @@ class PartyDetailActivity : BaseActivity() {
                 onRemove = null
             )
         }
+        billButton?.setOnClickListener { pickPhotoOnly() }
         // An entry's bill photo is managed on its own screen; editing here
         // keeps whatever it has.
         if (editing != null) billButton?.visibility = View.GONE
@@ -1359,10 +1369,11 @@ class PartyDetailActivity : BaseActivity() {
         // chip re-prices it), matched to a product where the name is one.
         // The bill's picture becomes this entry's bill photo, and its number
         // goes into an empty note. All of it stays editable until Save.
-        btnScanBill.setOnClickListener {
+        fun startBillScan() {
             scanForPayment = false
             scanFlow.chooseSource()
         }
+        btnScanBill.setOnClickListener { startBillScan() }
         onScanUsed = { bill, kept, photo ->
             if (photo != null) {
                 BillPhoto.delete(pendingBillPhoto)
@@ -1387,6 +1398,11 @@ class PartyDetailActivity : BaseActivity() {
                 lines.addAll(drafts)
                 renderLines()
                 refreshRateSuggestion()
+                // Started from the card's chip, the lines land in the details
+                // step, out of sight — open it so the owner sees what was read.
+                if (view.findViewById<View>(R.id.stepTwo).visibility != View.VISIBLE) {
+                    view.findViewById<View>(R.id.btnMoreDetails).performClick()
+                }
             }
         }
 
@@ -1501,11 +1517,37 @@ class PartyDetailActivity : BaseActivity() {
         //  - the slip's picture: this entry's bill photo.
         // How it was paid is left to the owner: a screenshot does not say
         // for certain whether it was a bank or a wallet.
-        val btnScanPayment: MaterialButton = view.findViewById(R.id.btnScanPayment)
-        btnScanPayment.visibility = if (!isGiven && editing == null) View.VISIBLE else View.GONE
-        btnScanPayment.setOnClickListener {
+        fun startPaymentScan() {
             scanForPayment = true
             scanFlow.chooseSource(R.string.payment_scan)
+        }
+
+        // ---- One chip, two ways in (2 Oct) ----
+        // "Scan payment slip" used to sit under the payment chips, and with
+        // the keypad and Save pinned at the bottom it was pushed out of sight.
+        // The card's "Bill photo" chip is always on screen, and a scan keeps
+        // its picture as the entry's bill photo anyway — so the chip offers
+        // both: scan and fill (a payment slip on "I got", a bill on a sale),
+        // or the photo alone. Where no scan applies (a supplier's "I gave",
+        // or editing) it goes straight to the photo, as before.
+        billButton?.setOnClickListener {
+            val scan: (() -> Unit)? = when {
+                editing != null -> null
+                !isGiven -> ({ startPaymentScan() })
+                isSale() -> ({ startBillScan() })
+                else -> null
+            }
+            if (scan == null) {
+                pickPhotoOnly()
+                return@setOnClickListener
+            }
+            val scanLabel = getString(if (isGiven) R.string.bill_scan else R.string.payment_scan)
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.entry_bill_chip)
+                .setItems(arrayOf(scanLabel, getString(R.string.bill_chip_photo_only))) { _, which ->
+                    if (which == 0) scan() else pickPhotoOnly()
+                }
+                .show()
         }
         onPaymentScanUsed = { payment, photo ->
             payment.amount?.let {
@@ -2707,7 +2749,8 @@ class PartyDetailActivity : BaseActivity() {
      * the owner presses Send there.
      */
     private fun offerEntryShare(entry: LedgerEntry, balanceAfter: Double) {
-        if (partyPhone.isNullOrBlank() || noEntryShare || !BusinessProfile.askShareAfterEntry(this)) return
+        if (!partyIsCustomerAccount || partyPhone.isNullOrBlank() || noEntryShare ||
+            !BusinessProfile.askShareAfterEntry(this)) return
         val message = Reminder.buildEntryMessage(
             context = this,
             partyName = partyName,
@@ -2802,6 +2845,7 @@ class PartyDetailActivity : BaseActivity() {
                     AppScope.launch {
                         dao.updateParty(party.copy(isCustomer = nowCustomer))
                         withContext(Dispatchers.Main) {
+                            partyIsCustomerAccount = nowCustomer
                             if (!isFinishing && !isDestroyed) {
                                 Toast.makeText(
                                     this@PartyDetailActivity,
@@ -2844,6 +2888,8 @@ class PartyDetailActivity : BaseActivity() {
             val cbNoShare: com.google.android.material.checkbox.MaterialCheckBox =
                 view.findViewById(R.id.cbNoEntryShare)
             cbNoShare.isChecked = party.noEntryShare
+            // The offer is never made to a supplier, so neither is the box.
+            cbNoShare.visibility = if (party.isCustomer) View.VISIBLE else View.GONE
 
             etName.setText(party.name)
             etPhone.setText(party.phone)
