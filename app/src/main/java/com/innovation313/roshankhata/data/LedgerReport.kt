@@ -40,8 +40,8 @@ object LedgerReport {
     private const val WARN_BG = 0xFFFFF6E0.toInt()
     private const val WARN_FG = 0xFF5C4A16.toInt()
 
-    private val dateFmt = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.ENGLISH)
-    private val entryDateFmt = SimpleDateFormat("dd MMM, HH:mm", Locale.ENGLISH)
+    private val dateFmt get() = DateWords.formatter("dd MMM yyyy, HH:mm")
+    private val entryDateFmt get() = DateWords.formatter("dd MMM, HH:mm")
     private val fileFmt = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
     /**
@@ -222,7 +222,14 @@ object LedgerReport {
                 if (index % 2 == 1) canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + rowH, zebra)
 
                 val baseline = y + 14f
-                PdfRtl.drawText(canvas, entryDateFmt.format(Date(e.timestamp)), xDate, baseline, muted)
+                // The month is in the app's language now, and some are wider
+                // than "Oct" (Sindhi "سيپٽمبر"). A date is never cut short:
+                // one too wide for its column is drawn a little smaller.
+                val dateText = entryDateFmt.format(Date(e.timestamp))
+                val dateRoom = xParty - xDate - 6f
+                val datePaint = if (muted.measureText(dateText) <= dateRoom) muted
+                else Paint(muted).apply { textSize = textSize * dateRoom / measureText(dateText) }
+                PdfRtl.drawText(canvas, dateText, xDate, baseline, datePaint)
                 PdfRtl.drawText(canvas, clip(e.partyName, body, partyMaxW), xParty, baseline, body)
 
                 // The amount sits in exactly one of the two columns.

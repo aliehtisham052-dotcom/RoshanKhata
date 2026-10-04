@@ -93,7 +93,7 @@ object InspectorReport {
     private const val OK_BG = 0xFFE6F2EA.toInt()
 
     private val timeFmt = SimpleDateFormat("HH:mm", Locale.ENGLISH)
-    private val dayFmt = SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH)
+    private val dayFmt get() = DateWords.formatter("dd MMM yyyy")
     private val fileFmt = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
     private const val DAY_MS = 24L * 60 * 60 * 1000
@@ -339,7 +339,14 @@ object InspectorReport {
 
     /** What one table cell holds: text (null prints a dash), a coloured chip, or a tick. */
     private sealed class Cell {
-        class Text(val text: String?, val paint: Paint) : Cell()
+        /**
+         * [whole]: this text must never lose its end. A date is the case: its
+         * month is now written in the app's language, and "سيپٽمبر" is wider
+         * than "Sep". Where a name too long for its column is cut with an
+         * ellipsis, a date is drawn smaller until all of it fits, because a
+         * date with its year cut off is a wrong date on an inspection paper.
+         */
+        class Text(val text: String?, val paint: Paint, val whole: Boolean = false) : Cell()
         class Chip(val text: String, val fg: Int, val bg: Int) : Cell()
         object Tick : Cell()
     }
@@ -610,8 +617,12 @@ object InspectorReport {
                 }
                 when (val cell = cells[i]) {
                     is Cell.Text -> {
-                        val p = if (cell.text.isNullOrBlank()) dash else cell.paint
-                        val t = clip(cell.text?.takeIf { it.isNotBlank() } ?: "\u2014", p, inner)
+                        var p = if (cell.text.isNullOrBlank()) dash else cell.paint
+                        val full = cell.text?.takeIf { it.isNotBlank() } ?: "\u2014"
+                        if (cell.whole && p.measureText(full) > inner) {
+                            p = Paint(p).apply { textSize = textSize * inner / measureText(full) }
+                        }
+                        val t = clip(full, p, inner)
                         PdfRtl.drawText(canvas, t, xFor(p.measureText(t)), baseline, p)
                     }
                     is Cell.Chip -> {
@@ -839,8 +850,8 @@ object InspectorReport {
                     Cell.Text(b.batchNumber, body),
                     Cell.Text(b.partyName, body),
                     Cell.Text(b.billNumber, body),
-                    Cell.Text(dayFmt.format(Date(b.billDate)), body),
-                    Cell.Text(exp?.let { dayFmt.format(Date(it)) }, if (isExpired || isSoon) bodyBold else body),
+                    Cell.Text(dayFmt.format(Date(b.billDate)), body, whole = true),
+                    Cell.Text(exp?.let { dayFmt.format(Date(it)) }, if (isExpired || isSoon) bodyBold else body, whole = true),
                     status,
                     Cell.Text(Format.qty(b.remaining, b.unit), bodyBold)
                 ), shaded = index % 2 == 1)

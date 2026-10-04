@@ -97,15 +97,13 @@ object Insights {
      * of drawing it.
      */
     private suspend fun lastTwelveMonths(dao: KhataDao): List<MonthSale> {
-        val shortFmt = SimpleDateFormat("MMM", Locale.ENGLISH)
-        val fullFmt = SimpleDateFormat("MMM yyyy", Locale.ENGLISH)
 
         return (11 downTo 0).map { monthsAgo ->
             val from = monthStart(monthsAgo)
             val to = if (monthsAgo == 0) nextMonthStart() else monthStart(monthsAgo - 1)
             MonthSale(
-                shortLabel = shortFmt.format(Date(from)),
-                fullLabel = fullFmt.format(Date(from)),
+                shortLabel = DateWords.format("MMM", from),
+                fullLabel = DateWords.format("MMM yyyy", from),
                 total = dao.salesTotalBetween(from, to)
             )
         }

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.DateWords
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -215,7 +216,7 @@ class InspectorReportActivity : BaseActivity() {
 
     private inner class Adapter : RecyclerView.Adapter<Adapter.VH>() {
 
-        private val dayFmt = SimpleDateFormat("d MMM yyyy", Locale.ENGLISH)
+        private val dayFmt get() = DateWords.formatter("d MMM yyyy")
         private var items: List<InspectorBatch> = emptyList()
         private var window = 60
 

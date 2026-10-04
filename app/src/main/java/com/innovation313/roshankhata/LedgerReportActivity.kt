@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.DateWords
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -66,7 +67,7 @@ class LedgerReportActivity : BaseActivity() {
 
     private var entries: List<EntryWithParty> = emptyList()
 
-    private val buttonDateFmt = SimpleDateFormat("d MMM yyyy", Locale.ENGLISH)
+    private val buttonDateFmt get() = DateWords.formatter("d MMM yyyy")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -331,7 +332,7 @@ class LedgerReportActivity : BaseActivity() {
 
     private inner class Adapter : RecyclerView.Adapter<Adapter.VH>() {
 
-        private val dateFmt = SimpleDateFormat("d MMM yyyy, h:mm a", Locale.ENGLISH)
+        private val dateFmt get() = DateWords.formatter("d MMM yyyy, h:mm a")
         private var items: List<EntryWithParty> = emptyList()
 
         fun submit(list: List<EntryWithParty>) {

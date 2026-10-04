@@ -46,9 +46,9 @@ object RegisterReport {
     private const val WARN_BG = 0xFFFFF6E0.toInt()
     private const val WARN_FG = 0xFF5C4A16.toInt()
 
-    private val dateFmt = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.ENGLISH)
-    private val dayFmt = SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH)
-    private val rowDayFmt = SimpleDateFormat("dd MMM", Locale.ENGLISH)
+    private val dateFmt get() = DateWords.formatter("dd MMM yyyy, HH:mm")
+    private val dayFmt get() = DateWords.formatter("dd MMM yyyy")
+    private val rowDayFmt get() = DateWords.formatter("dd MMM")
     private val fileFmt = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
     data class ReportData(

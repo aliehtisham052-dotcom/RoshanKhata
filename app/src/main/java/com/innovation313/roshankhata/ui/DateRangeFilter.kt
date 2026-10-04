@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.DateWords
 import android.app.Activity
 import android.app.DatePickerDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -66,7 +67,7 @@ object DateRangeFilter {
         if (range.labelRes != R.string.range_custom) {
             activity.getString(range.labelRes)
         } else {
-            val fmt = SimpleDateFormat("d MMM", Digits.latinIn())
+            val fmt = DateWords.formatter("d MMM")
             "${fmt.format(Date(range.from))} – ${fmt.format(Date(range.to))}"
         }
 

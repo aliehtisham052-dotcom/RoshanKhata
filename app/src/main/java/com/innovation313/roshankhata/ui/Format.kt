@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.EntryItem
@@ -13,8 +14,8 @@ import com.innovation313.roshankhata.data.Currency
 
 object Format {
 
-    private val dateTimeFmt = SimpleDateFormat("d MMM yyyy, h:mm a", Locale.ENGLISH)
-    private val dateOnlyFmt = SimpleDateFormat("d MMM yyyy", Locale.ENGLISH)
+    private val dateTimeFmt get() = DateWords.formatter("d MMM yyyy, h:mm a")
+    private val dateOnlyFmt get() = DateWords.formatter("d MMM yyyy")
 
     /**
      * Seal a figure that must read left-to-right — a phone number above

@@ -40,7 +40,7 @@ object BusinessReport {
     private const val WARN_BG = 0xFFFFF6E0.toInt()
     private const val WARN_FG = 0xFF5C4A16.toInt()
 
-    private val dateFmt = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.ENGLISH)
+    private val dateFmt get() = DateWords.formatter("dd MMM yyyy, HH:mm")
     private val fileFmt = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
     data class ReportData(
