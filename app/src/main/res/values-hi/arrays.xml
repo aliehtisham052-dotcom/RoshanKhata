@@ -10,11 +10,7 @@
       working in Hindi was offered "Cash Sale" and "Rent" in English;
       scripts/check_strings.py now checks arrays as well as strings.
 
-      The units list is deliberately NOT translated: the unit is saved with
-      every goods line, and the app groups a product's lines and finds its
-      last rate by item AND unit (KhataDao product stats, PartyDetailActivity
-      stock and last-rate lookup). "kg" on one entry and a translated word on
-      the next would split one product in two and lose its last rate.
+      Units of measure are not in this file: see data/UnitWords.kt.
     -->
     <string-array name="cash_categories">
         <item>नकद बिक्री</item>

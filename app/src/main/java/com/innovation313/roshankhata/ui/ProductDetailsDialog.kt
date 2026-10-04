@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.UnitWords
 import android.app.Activity
 import android.widget.EditText
 import android.widget.TextView
@@ -76,7 +77,7 @@ object ProductDetailsDialog {
 
         val etName = field(R.id.etProductName).apply { setText(product.name) }
         val etCompany = field(R.id.etProductCompany).apply { setText(product.company ?: guess?.company) }
-        val etUnit = field(R.id.etProductUnit).apply { setText(product.defaultUnit ?: guess?.unit) }
+        val etUnit = field(R.id.etProductUnit).apply { setText(UnitWords.label(product.defaultUnit ?: guess?.unit)) }
         val etType = field(R.id.etProductType).apply { setText(product.productType ?: guess?.type) }
         val etTechnical = field(R.id.etTechnicalName).apply { setText(product.technicalName) }
         val etFormulation = field(R.id.etFormulation).apply { setText(product.formulation ?: guess?.formulation) }
@@ -141,7 +142,7 @@ object ProductDetailsDialog {
                     // a value the owner typed before today and never asked
                     // to lose.
                     category = product.category,
-                    defaultUnit = typed(etUnit),
+                    defaultUnit = UnitWords.canonical(etUnit.text.toString()),
                     productType = typed(etType),
                     technicalName = typed(etTechnical),
                     formulation = typed(etFormulation),

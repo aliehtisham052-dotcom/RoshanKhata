@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.UnitWords
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -326,7 +327,7 @@ fun List<com.innovation313.roshankhata.data.Product>.asSuggestions(): List<Smart
     map { p ->
         val parts = listOfNotNull(
             p.company?.takeIf { it.isNotBlank() },
-            p.defaultUnit?.takeIf { it.isNotBlank() }
+            p.defaultUnit?.takeIf { it.isNotBlank() }?.let { UnitWords.label(it) }
         )
         SmartSuggest.Item(
             value = p.name,

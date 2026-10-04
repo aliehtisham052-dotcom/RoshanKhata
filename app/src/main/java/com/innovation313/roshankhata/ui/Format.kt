@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Money
@@ -186,7 +187,8 @@ object Format {
 
         val qtyPart = quantity?.let { q ->
             val n = if (q % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, q) else "%,.2f".format(Digits.FIGURES, q)
-            val u = unit?.trim().orEmpty()
+            // The unit in the app's language; what is saved is its key.
+            val u = UnitWords.label(unit)
             if (u.isEmpty()) n else "$n $u"
         }
 
@@ -211,7 +213,7 @@ object Format {
     fun qty(quantity: Double, unit: String?): String {
         val n = if (quantity % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, quantity)
         else "%,.2f".format(Digits.FIGURES, quantity)
-        val u = unit?.trim().orEmpty()
+        val u = UnitWords.label(unit)
         return if (u.isEmpty()) n else "$n $u"
     }
 }

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.UnitWords
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
@@ -523,7 +524,7 @@ class InvoiceEditorActivity : BaseActivity() {
         if (existing != null) {
             row.name.setText(existing.itemName, false)
             row.qty.setText(Format.plain(existing.quantity))
-            row.unit.setText(existing.unit.orEmpty())
+            row.unit.setText(UnitWords.label(existing.unit))
             row.rate.setText(Format.plain(existing.rate))
         }
         v.findViewById<ImageView>(R.id.btnRemoveRow).setOnClickListener {
@@ -566,7 +567,7 @@ class InvoiceEditorActivity : BaseActivity() {
             r.totalLine.visibility = View.GONE
             return
         }
-        val unit = r.unit.text.toString().trim().ifEmpty { null }
+        val unit = UnitWords.canonical(r.unit.text.toString())
         val line = InvoiceItem(invoiceId = 0, itemName = "", quantity = qty, unit = unit, rate = rate)
         r.calc.text = "${Format.qty(qty, unit)} \u00D7 ${Format.plain(rate)}"
         r.total.text = Format.money(line.lineTotal)
@@ -597,7 +598,7 @@ class InvoiceEditorActivity : BaseActivity() {
             invoiceId = 0,
             itemName = name,
             quantity = qty,
-            unit = r.unit.text.toString().trim().ifEmpty { null },
+            unit = UnitWords.canonical(r.unit.text.toString()),
             rate = rate
         )
     }
