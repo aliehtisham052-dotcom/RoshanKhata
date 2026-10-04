@@ -185,7 +185,7 @@
 
     <string name="nisab_section">نصاب</string>
     <string name="nisab_help">نصاب در اینجا بر پایه معیار نقره (۶۱۲٫۳۶ گرم) تنظیم شده — دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود. قیمت امروز هر گرم نقره را وارد کنید.</string>
-    <string name="silver_price_hint">قیمت هر گرم نقره (Rs)</string>
+    <string name="silver_price_hint">قیمت هر گرم نقره</string>
     <string name="nisab_value">نصاب = %1$s</string>
     <string name="nisab_enter_price">برای محاسبه نصاب، قیمت را وارد کنید</string>
     <string name="nisab_needed_first">ابتدا قیمت را وارد کنید</string>
@@ -194,7 +194,7 @@
 
     <string name="cash_stock_section">نقد و کالا</string>
     <string name="cash_stock_help">پول نقد، موجودی بانک و ارزش کالای تجاری. روشن خاتا این‌ها را نمی‌بیند؛ خودتان وارد کنید.</string>
-    <string name="cash_stock_hint">نقد + ارزش کالا (Rs)</string>
+    <string name="cash_stock_hint">نقد + ارزش کالا</string>
 
     <string name="from_your_ledger">از دفتر شما</string>
     <string name="certain_receivables">طلب‌هایی که انتظار وصول دارید: %1$s</string>
@@ -411,7 +411,7 @@
     <string name="credit_limit">سقف نسیه</string>
     <string name="set_credit_limit">تعیین سقف نسیه</string>
     <string name="credit_limit_help">بیشترین مبلغی که حاضرید این مشتری بدهکارتان باشد. روشن خاتا پیش از عبور از آن هشدار می‌دهد. برای بی‌سقف، خالی بگذارید.</string>
-    <string name="credit_limit_hint">سقف (روپیه)</string>
+    <string name="credit_limit_hint">سقف</string>
     <string name="credit_limit_advisory">این یک هشدار است، نه مانع. کسب‌وکار خودتان است — همیشه می‌توانید ادامه دهید.</string>
     <string name="credit_limit_current">اکنون %1$s به شما بدهکار است</string>
     <string name="credit_limit_none">سقفی تعیین نشده</string>
@@ -489,8 +489,8 @@
     <string name="add_plan">افزودن برنامه</string>
     <string name="no_plans">هنوز برنامه پرداختی نیست.\n\nوقتی مشتری قرار است مبلغی را قسطی تسویه کند — بعد از برداشت محصول یا طی چند ماه — از این‌ها استفاده کنید.</string>
     <string name="plan_dialog_help">برای تسویه بدهی فعلی این طرف‌حساب توافقی تنظیم کنید. این چیزی به مانده‌اش اضافه نمی‌کند — فقط ثبت می‌کند چه مبلغی و چه زمانی قرار است بپردازد.</string>
-    <string name="plan_total_hint">کل مبلغ تسویه (Rs)</string>
-    <string name="plan_installment_hint">هر قسط (روپیه)</string>
+    <string name="plan_total_hint">کل مبلغ تسویه</string>
+    <string name="plan_installment_hint">هر قسط</string>
     <string name="plan_pick_next_due">پرداخت بعدی (اختیاری)</string>
     <string name="plan_owes_now">اکنون %1$s بدهکار است</string>
     <string name="plan_owes_nothing">این طرف‌حساب اکنون بدهی ندارد</string>
@@ -616,7 +616,7 @@
     <string name="no_bills">هنوز فاکتوری ثبت نشده است.\n\nخریدهای خود را ثبت کنید — با شماره بچ و تاریخ انقضا. همین‌هاست که بازرس می‌پرسد و همین است که جلوی فاسد شدن کالا روی قفسه را می‌گیرد.</string>
 
     <string name="bill_number_hint">شماره فاکتور</string>
-    <string name="bill_total_hint">جمع فاکتور (Rs)</string>
+    <string name="bill_total_hint">جمع فاکتور</string>
     <string name="bill_supplier_hint">نام تأمین‌کننده</string>
     <string name="bill_date">تاریخ فاکتور</string>
     <string name="bill_due_date">سررسید پرداخت (اختیاری)</string>
@@ -633,7 +633,7 @@
     <string name="expiry_why">روشن خاتا ۶۰ روز پیش از انقضا هشدار می‌دهد — به‌قدری زود که بتوانید بفروشید، تخفیف بدهید یا تا وقتی تأمین‌کننده هنوز پس می‌گیرد، برگردانید.</string>
     <string name="pick_expiry">انتخاب تاریخ انقضا</string>
     <string name="pick_bill_date">انتخاب تاریخ فاکتور</string>
-    <string name="rate_hint">قیمت هر واحد (Rs)</string>
+    <string name="rate_hint">قیمت هر واحد</string>
     <string name="qty_hint">مقدار</string>
     <string name="item_added">قلم اضافه شد</string>
     <string name="no_items_yet">هنوز قلمی اضافه نشده</string>
@@ -668,7 +668,7 @@
     <string name="invoice_discount_hint">تخفیف % (اختیاری)</string>
     <string name="invoice_tax_hint">مالیات % (اختیاری)</string>
     <string name="invoice_item_name_hint">نام قلم</string>
-    <string name="invoice_item_rate_hint">قیمت (Rs)</string>
+    <string name="invoice_item_rate_hint">قیمت</string>
     <string name="invoice_row_unit_hint">واحد</string>
     <string name="invoice_item_invalid">نام قلم، مقدار و قیمت معتبر وارد کنید.</string>
     <string name="invoice_customer_required">ابتدا نام مشتری را وارد کنید.</string>
@@ -865,7 +865,7 @@
     <string name="insights_monthly_none">در ۱۲ ماه گذشته فروشی ثبت نشده است.</string>
     <string name="nisab_silver">نقره</string>
     <string name="nisab_gold">طلا</string>
-    <string name="gold_price_hint">قیمت هر گرم طلا (Rs)</string>
+    <string name="gold_price_hint">قیمت هر گرم طلا</string>
     <string name="nisab_silver_note">نصاب نقره: ۶۱۲٫۳۶ گرم (۵۲٫۵ توله) نقره. این آستانه پایین‌تر است، پس زکات بر افراد بیشتری واجب می‌شود \u2014 دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود.</string>
     <string name="nisab_gold_note">نصاب طلا: ۸۷٫۴۸ گرم (۷٫۵ توله) طلا. این آستانه بالاتر است، پس زکات بر افراد کمتری واجب می‌شود. اینکه کدام معیار بر شما صدق می‌کند را از عالم بپرسید.</string>
     <string name="per_tola">هر تولہ</string>
@@ -899,7 +899,7 @@
     </plurals>
     <string name="copy_balance_owed">%1$s: %2$s باقی است (طلب شما)</string>
     <string name="copy_balance_i_owe">%1$s: %2$s (بدهی شما)</string>
-    <string name="copy_balance_settled">%1$s: تسویه (Rs 0)</string>
+    <string name="copy_balance_settled">%1$s: تسویه (%2$s)</string>
     <string name="copied">کپی شد</string>
     <string name="receipt_title">رسید</string>
     <string name="payment_receipt">رسید پرداخت</string>
@@ -1470,6 +1470,10 @@
     <string name="bp_section_docs">فاکتور و صورت‌حساب</string>
     <string name="bp_strn">شمارهٔ مالیات بر فروش (STRN)</string>
     <string name="bp_strn_help">فقط اگر ثبت‌نام شده‌اید. خالی = چاپ نمی‌شود.</string>
+    <string name="bp_currency">واحد پول</string>
+    <string name="bp_currency_help">نشانه‌ای که کنار مبلغ می‌آید، مثل Rs یا $. مبالغ تبدیل نمی‌شوند.</string>
+    <string name="currency_custom">دیگر (خودتان بنویسید)…</string>
+    <string name="currency_custom_hint">نشانه، حداکثر ۵ نویسه</string>
     <string name="bp_paid_help">در کادر پرداخت فاکتور نمایش داده می‌شود. ردیف‌های خالی حذف می‌شوند.</string>
     <string name="bp_qr">QR پرداخت</string>
     <string name="bp_qr_help">QR ایزی‌پیسه / جازکش شما، برای صورت‌حساب‌ها.</string>
@@ -1651,7 +1655,7 @@
     <string name="scheme_from">از %1$s</string>
     <string name="scheme_to">تا %1$s</string>
     <string name="scheme_measure">شمارش بر اساس</string>
-    <string name="scheme_by_value">ارزش (روپیه)</string>
+    <string name="scheme_by_value">ارزش</string>
     <string name="scheme_by_qty">مقدار</string>
     <string name="scheme_unit_hint">واحد، مثلاً کیسه (خالی = همه)</string>
     <string name="scheme_reward">پاداش</string>

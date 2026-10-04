@@ -182,7 +182,7 @@
 
     <string name="nisab_section">Nisab</string>
     <string name="nisab_help">Yahan nisab chandi ke miyaar (612.36 gram) par rakha gaya hai — ye mauqif aam tor par ghareebon ke haq mein zyada mohtat samjha jata hai. Aaj ki chandi ki fi gram qeemat likhein.</string>
-    <string name="silver_price_hint">Chandi ki qeemat fi gram (Rs)</string>
+    <string name="silver_price_hint">Chandi ki qeemat fi gram</string>
     <string name="nisab_value">Nisab = %1$s</string>
     <string name="nisab_enter_price">Nisab maloom karne ke liye qeemat likhein</string>
     <string name="nisab_needed_first">Pehle qeemat likhein</string>
@@ -191,7 +191,7 @@
 
     <string name="cash_stock_section">Naqdi aur maal</string>
     <string name="cash_stock_help">Haath mein naqdi, bank balance, aur tijarati maal ki qeemat. Roshan Khata inhe nahi dekh sakta, is liye khud likhein.</string>
-    <string name="cash_stock_hint">Naqdi + maal ki qeemat (Rs)</string>
+    <string name="cash_stock_hint">Naqdi + maal ki qeemat</string>
 
     <string name="from_your_ledger">Aap ke khate se</string>
     <string name="certain_receivables">Wasooli jin ki umeed hai: %1$s</string>
@@ -397,7 +397,7 @@
     <string name="credit_limit">Udhaar ki hadd</string>
     <string name="set_credit_limit">Udhaar ki hadd muqarrar karein</string>
     <string name="credit_limit_help">Zyada se zyada jitna udhaar aap is party ko dena chahte hain. Hadd se barhne wali entry se pehle Roshan Khata aap ko khabardar karega. Hadd na ho to khali chhor dein.</string>
-    <string name="credit_limit_hint">Hadd (Rs)</string>
+    <string name="credit_limit_hint">Hadd</string>
     <string name="credit_limit_advisory">Ye sirf intebah hai, rukawat nahi. Karobar aap ka hai — aap hamesha aage barh sakte hain.</string>
     <string name="credit_limit_current">Is waqt aap ke %1$s wajib hain</string>
     <string name="credit_limit_none">Koi hadd muqarrar nahi</string>
@@ -471,8 +471,8 @@
     <string name="add_plan">Mansooba Shamil Karein</string>
     <string name="no_plans">Abhi koi adaigi mansooba nahi.\n\nYe us waqt kaam aate hain jab gahak raqam qiston mein ada karega — fasal ke baad, ya chand mahinon mein.</string>
     <string name="plan_dialog_help">Jo is party ke zimme pehle se hai usey ada karne ka bandobast banayen. Is se un ke balance mein izafa nahi hota — sirf ye darj hota hai ke unhon ne kitna aur kab dena mana hai.</string>
-    <string name="plan_total_hint">Kul ada karni raqam (Rs)</string>
-    <string name="plan_installment_hint">Har qist (Rs)</string>
+    <string name="plan_total_hint">Kul ada karni raqam</string>
+    <string name="plan_installment_hint">Har qist</string>
     <string name="plan_pick_next_due">Agli adaigi ki tareekh (ikhtiyari)</string>
     <string name="plan_owes_now">Un ke zimme is waqt %1$s hain</string>
     <string name="plan_owes_nothing">Is party ke zimme abhi kuch nahi</string>
@@ -595,7 +595,7 @@
     <string name="no_bills">Abhi koi supplier bill nahi.\n\nJo khareedein usey darj karein — batch number aur expiry ke saath. Yehi inspector poochta hai, aur yehi maal ko shelf par kharab hone se bachata hai.</string>
 
     <string name="bill_number_hint">Bill number</string>
-    <string name="bill_total_hint">Kul bill (Rs)</string>
+    <string name="bill_total_hint">Kul bill</string>
     <string name="bill_supplier_hint">Supplier ka naam</string>
     <string name="bill_date">Bill ki tareekh</string>
     <string name="bill_due_date">Adaigi ki tareekh (ikhtiyari)</string>
@@ -612,7 +612,7 @@
     <string name="expiry_why">Roshan Khata expiry se 60 din pehle khabardar karega — itna pehle ke maal bech sakein, riayat de sakein, ya wapas kar sakein jab tak supplier le le.</string>
     <string name="pick_expiry">Expiry tareekh chunein</string>
     <string name="pick_bill_date">Bill ki tareekh chunein</string>
-    <string name="rate_hint">Fi ikai rate (Rs)</string>
+    <string name="rate_hint">Fi ikai rate</string>
     <string name="qty_hint">Miqdaar</string>
     <string name="item_added">Cheez shamil ho gayi</string>
     <string name="no_items_yet">Abhi koi cheez shamil nahi</string>
@@ -647,7 +647,7 @@
     <string name="invoice_discount_hint">Discount % (ikhtiyari)</string>
     <string name="invoice_tax_hint">Tax % (ikhtiyari)</string>
     <string name="invoice_item_name_hint">Cheez ka naam</string>
-    <string name="invoice_item_rate_hint">Rate (Rs)</string>
+    <string name="invoice_item_rate_hint">Rate</string>
     <string name="invoice_row_unit_hint">Unit</string>
     <string name="invoice_item_invalid">Durust cheez ka naam, miqdaar aur rate darj karein.</string>
     <string name="invoice_customer_required">Pehle gahak ka naam darj karein.</string>
@@ -837,7 +837,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="insights_monthly_none">Pichhle 12 mahinon mein koi farokht darj nahi.</string>
     <string name="nisab_silver">Chandi</string>
     <string name="nisab_gold">Sona</string>
-    <string name="gold_price_hint">Sone ki qeemat fi gram (Rs)</string>
+    <string name="gold_price_hint">Sone ki qeemat fi gram</string>
     <string name="nisab_silver_note">Chandi ka nisab: 612.36 gram (52.5 tola) chandi. Ye kam hadd hai, is liye zyada logon par Zakat aati hai \u2014 ye mauqif aam tor par ghareebon ke haq mein zyada mohtat samjha jata hai.</string>
     <string name="nisab_gold_note">Sone ka nisab: 87.48 gram (7.5 tola) sona. Ye oonchi hadd hai, is liye kam logon par Zakat aati hai. Kaun sa miyaar aap par lagoo hai, aalim se tasdeeq karein.</string>
     <string name="per_tola">Fi tola</string>
@@ -871,7 +871,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     </plurals>
     <string name="copy_balance_owed">%1$s: %2$s baqi hain (aap ko milenge)</string>
     <string name="copy_balance_i_owe">%1$s: %2$s (aap ko dene hain)</string>
-    <string name="copy_balance_settled">%1$s: hisaab barabar (Rs 0)</string>
+    <string name="copy_balance_settled">%1$s: hisaab barabar (%2$s)</string>
     <string name="copied">Copy ho gaya</string>
     <string name="receipt_title">Raseed</string>
     <string name="payment_receipt">Adaigi ki Raseed</string>
@@ -1442,6 +1442,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bp_section_docs">Invoice aur statement</string>
     <string name="bp_strn">Sales tax number (STRN)</string>
     <string name="bp_strn_help">Sirf registered hon to. Khali = nahi chhapega.</string>
+    <string name="bp_currency">Currency</string>
+    <string name="bp_currency_help">Raqam ke saath likha nishaan, jaise Rs ya $. Raqam tabdeel nahi hoti.</string>
+    <string name="currency_custom">Koi aur (khud likhein)…</string>
+    <string name="currency_custom_hint">Nishaan, zyada se zyada 5 harf</string>
     <string name="bp_paid_help">Invoice ke payment box mein aata hai. Khali line nahi chhapti.</string>
     <string name="bp_qr">Payment QR</string>
     <string name="bp_qr_help">Aap ka EasyPaisa / JazzCash QR, statement ke liye.</string>
@@ -1623,12 +1627,12 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="scheme_from">From %1$s</string>
     <string name="scheme_to">Tak %1$s</string>
     <string name="scheme_measure">Kis hisaab se</string>
-    <string name="scheme_by_value">Qeemat (Rs)</string>
+    <string name="scheme_by_value">Qeemat</string>
     <string name="scheme_by_qty">Miqdar</string>
     <string name="scheme_unit_hint">Unit, maslan bori (khali = sab)</string>
     <string name="scheme_reward">Inaam</string>
     <string name="scheme_reward_percent">% rebate</string>
-    <string name="scheme_reward_amount">Muqarrar Rs</string>
+    <string name="scheme_reward_amount">Muqarrar raqam</string>
     <string name="scheme_reward_units">Muft units</string>
     <string name="scheme_slabs">Slab: target → inaam (3 tak)</string>
     <string name="scheme_target_hint">Target</string>

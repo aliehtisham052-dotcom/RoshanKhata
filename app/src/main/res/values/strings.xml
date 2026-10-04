@@ -189,7 +189,7 @@
 
     <string name="nisab_section">Nisab</string>
     <string name="nisab_help">Nisab is set here against the silver standard (612.36 g), the position generally taken as more careful toward the rights of the poor. Enter today\'s silver price per gram.</string>
-    <string name="silver_price_hint">Silver price per gram (Rs)</string>
+    <string name="silver_price_hint">Silver price per gram</string>
     <string name="nisab_value">Nisab = %1$s</string>
     <string name="nisab_enter_price">Enter the price to calculate nisab</string>
     <string name="nisab_needed_first">Enter the price first</string>
@@ -198,7 +198,7 @@
 
     <string name="cash_stock_section">Cash &amp; stock</string>
     <string name="cash_stock_help">Cash in hand, bank balances, and the value of trade stock. Roshan Khata cannot see these, so enter them yourself.</string>
-    <string name="cash_stock_hint">Cash + stock value (Rs)</string>
+    <string name="cash_stock_hint">Cash + stock value</string>
 
     <string name="from_your_ledger">From your ledger</string>
     <string name="certain_receivables">Receivables you expect to collect: %1$s</string>
@@ -418,7 +418,7 @@
     <string name="credit_limit">Credit limit</string>
     <string name="set_credit_limit">Set credit limit</string>
     <string name="credit_limit_help">The most you are willing to let this party owe you. Roshan Khata will warn you before an entry takes them past it. Leave blank for no limit.</string>
-    <string name="credit_limit_hint">Limit (Rs)</string>
+    <string name="credit_limit_hint">Limit</string>
     <string name="credit_limit_advisory">This is a warning, not a block. It is your business — you can always proceed anyway.</string>
     <string name="credit_limit_current">Currently owes you %1$s</string>
     <string name="credit_limit_none">No limit set</string>
@@ -496,8 +496,8 @@
     <string name="add_plan">Add Plan</string>
     <string name="no_plans">No payment plans yet.\n\nUse these when a customer will clear an amount in instalments — after the harvest, or across a few months.</string>
     <string name="plan_dialog_help">Set up an arrangement for clearing what this party already owes. This does not add to their balance — it only records what they have agreed to pay, and when.</string>
-    <string name="plan_total_hint">Total to be paid off (Rs)</string>
-    <string name="plan_installment_hint">Each instalment (Rs)</string>
+    <string name="plan_total_hint">Total to be paid off</string>
+    <string name="plan_installment_hint">Each instalment</string>
     <string name="plan_pick_next_due">Next payment due (optional)</string>
     <string name="plan_owes_now">They currently owe %1$s</string>
     <string name="plan_owes_nothing">This party owes nothing right now</string>
@@ -624,7 +624,7 @@
     <string name="no_bills">No supplier bills yet.\n\nRecord what you buy in — with batch numbers and expiry dates. Those are what an inspector asks for, and what saves you from stock going bad on the shelf.</string>
 
     <string name="bill_number_hint">Bill number</string>
-    <string name="bill_total_hint">Bill total (Rs)</string>
+    <string name="bill_total_hint">Bill total</string>
     <string name="bill_supplier_hint">Supplier name</string>
     <string name="bill_date">Bill date</string>
     <string name="bill_due_date">Payment due (optional)</string>
@@ -641,7 +641,7 @@
     <string name="expiry_why">Roshan Khata will warn you 60 days before this expires — early enough to sell it, discount it, or return it while the supplier will still take it.</string>
     <string name="pick_expiry">Pick expiry date</string>
     <string name="pick_bill_date">Pick bill date</string>
-    <string name="rate_hint">Rate per unit (Rs)</string>
+    <string name="rate_hint">Rate per unit</string>
     <string name="qty_hint">Quantity</string>
     <string name="item_added">Item added</string>
     <string name="no_items_yet">No items added yet</string>
@@ -677,7 +677,7 @@
     <string name="invoice_tax_hint">Tax % (optional)</string>
     <string name="nav_invoice">Invoice</string>
     <string name="invoice_item_name_hint">Item name</string>
-    <string name="invoice_item_rate_hint">Rate (Rs)</string>
+    <string name="invoice_item_rate_hint">Rate</string>
     <string name="invoice_row_unit_hint">Unit</string>
     <string name="invoice_item_invalid">Enter a valid item name, quantity and rate.</string>
     <string name="invoice_customer_required">Enter the customer name first.</string>
@@ -878,7 +878,7 @@ You can change this any time from this screen.</string>
     <string name="insights_monthly_none">No sales recorded in the last 12 months.</string>
     <string name="nisab_silver">Silver</string>
     <string name="nisab_gold">Gold</string>
-    <string name="gold_price_hint">Gold price per gram (Rs)</string>
+    <string name="gold_price_hint">Gold price per gram</string>
     <string name="nisab_silver_note">Silver nisab: 612.36 g (52.5 tola) of silver. This is the lower threshold, so more people owe Zakat \u2014 the position generally taken as more careful toward the rights of the poor.</string>
     <string name="nisab_gold_note">Gold nisab: 87.48 g (7.5 tola) of gold. This is the higher threshold, so fewer people owe Zakat. Confirm which standard applies to you with a scholar.</string>
     <string name="per_tola">Per tola</string>
@@ -912,7 +912,7 @@ You can change this any time from this screen.</string>
     </plurals>
     <string name="copy_balance_owed">%1$s: %2$s outstanding (you will get)</string>
     <string name="copy_balance_i_owe">%1$s: %2$s (you will give)</string>
-    <string name="copy_balance_settled">%1$s: settled (Rs 0)</string>
+    <string name="copy_balance_settled">%1$s: settled (%2$s)</string>
     <string name="copied">Copied</string>
     <string name="receipt_title">Receipt</string>
     <string name="payment_receipt">Payment Receipt</string>
@@ -1494,6 +1494,10 @@ You can change this any time from this screen.</string>
     <string name="bp_section_docs">Invoice &amp; statement</string>
     <string name="bp_strn">Sales tax no. (STRN)</string>
     <string name="bp_strn_help">Only if registered. Blank = not printed.</string>
+    <string name="bp_currency">Currency</string>
+    <string name="bp_currency_help">The sign your figures wear, e.g. Rs or $. Amounts are not converted.</string>
+    <string name="currency_custom">Other (type a sign)…</string>
+    <string name="currency_custom_hint">Sign, up to 5 characters</string>
     <string name="bp_paid_help">Shown in the payment box on your invoice. Blank rows are left off.</string>
     <string name="bp_qr">Payment QR</string>
     <string name="bp_qr_help">Your EasyPaisa / JazzCash QR, for statements.</string>
@@ -1675,12 +1679,12 @@ You can change this any time from this screen.</string>
     <string name="scheme_from">From %1$s</string>
     <string name="scheme_to">To %1$s</string>
     <string name="scheme_measure">Counted by</string>
-    <string name="scheme_by_value">Value (Rs)</string>
+    <string name="scheme_by_value">Value</string>
     <string name="scheme_by_qty">Quantity</string>
     <string name="scheme_unit_hint">Unit counted, e.g. bag (blank = all)</string>
     <string name="scheme_reward">Reward</string>
     <string name="scheme_reward_percent">% rebate</string>
-    <string name="scheme_reward_amount">Fixed Rs</string>
+    <string name="scheme_reward_amount">Fixed amount</string>
     <string name="scheme_reward_units">Free units</string>
     <string name="scheme_slabs">Slabs: target → reward (up to 3)</string>
     <string name="scheme_target_hint">Target</string>

@@ -38,6 +38,7 @@ class RoshanKhataApp : Application() {
     override fun onCreate() {
         super.onCreate()
         com.innovation313.roshankhata.data.ViewerMode.init(this)
+        com.innovation313.roshankhata.data.Currency.refresh(this)
         CrashLog.install(this)
         // Before any screen is built, so the first frame is already in the
         // owner's chosen theme.

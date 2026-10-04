@@ -9,6 +9,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
 import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.Currency
 
 object Format {
 
@@ -61,10 +62,12 @@ object Format {
 
     fun money(value: Double): String {
         val rounded = abs(value)
+        // The sign is the shop's own choice (Profile → Currency); see [Currency].
+        val sign = Currency.symbol
         return if (rounded % 1.0 == 0.0) {
-            "Rs %,.0f".format(Digits.FIGURES, rounded)
+            "$sign %,.0f".format(Digits.FIGURES, rounded)
         } else {
-            "Rs %,.2f".format(Digits.FIGURES, rounded)
+            "$sign %,.2f".format(Digits.FIGURES, rounded)
         }
     }
 

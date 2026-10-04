@@ -182,7 +182,7 @@
 
     <string name="nisab_section">نصاب</string>
     <string name="nisab_help">یہاں نصاب چاندی کے معیار (612.36 گرام) پر رکھا گیا ہے — یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔ آج کی چاندی کی فی گرام قیمت لکھیں۔</string>
-    <string name="silver_price_hint">چاندی کی قیمت فی گرام (روپے)</string>
+    <string name="silver_price_hint">چاندی کی قیمت فی گرام</string>
     <string name="nisab_value">نصاب = %1$s</string>
     <string name="nisab_enter_price">نصاب معلوم کرنے کے لیے قیمت لکھیں</string>
     <string name="nisab_needed_first">پہلے قیمت لکھیں</string>
@@ -191,7 +191,7 @@
 
     <string name="cash_stock_section">نقدی اور مال</string>
     <string name="cash_stock_help">ہاتھ میں نقدی، بینک بیلنس، اور تجارتی مال کی قیمت۔ روشن کھاتہ انہیں نہیں دیکھ سکتا، اس لیے خود لکھیں۔</string>
-    <string name="cash_stock_hint">نقدی + مال کی قیمت (روپے)</string>
+    <string name="cash_stock_hint">نقدی + مال کی قیمت</string>
 
     <string name="from_your_ledger">آپ کے کھاتے سے</string>
     <string name="certain_receivables">وصولی جن کی امید ہے: %1$s</string>
@@ -397,7 +397,7 @@
     <string name="credit_limit">ادھار کی حد</string>
     <string name="set_credit_limit">ادھار کی حد مقرر کریں</string>
     <string name="credit_limit_help">زیادہ سے زیادہ جتنا ادھار آپ اس گاہک کو دینا چاہتے ہیں۔ حد سے بڑھنے والے اندراج سے پہلے روشن کھاتہ خبردار کرے گا۔ حد نہ ہو تو خالی چھوڑ دیں۔</string>
-    <string name="credit_limit_hint">حد (روپے)</string>
+    <string name="credit_limit_hint">حد</string>
     <string name="credit_limit_advisory">یہ صرف انتباہ ہے، رکاوٹ نہیں۔ کاروبار آپ کا ہے — آپ ہمیشہ آگے بڑھ سکتے ہیں۔</string>
     <string name="credit_limit_current">اس وقت آپ کے %1$s واجب ہیں</string>
     <string name="credit_limit_none">کوئی حد مقرر نہیں</string>
@@ -471,8 +471,8 @@
     <string name="add_plan">منصوبہ شامل کریں</string>
     <string name="no_plans">ابھی کوئی ادائیگی منصوبہ نہیں۔\n\nیہ اس وقت کام آتے ہیں جب گاہک رقم قسطوں میں ادا کرے گا — فصل کے بعد، یا چند مہینوں میں۔</string>
     <string name="plan_dialog_help">جو اس پارٹی کے ذمے پہلے سے ہے اسے ادا کرنے کا بندوبست بنائیں۔ اس سے ان کے بیلنس میں اضافہ نہیں ہوتا — صرف یہ درج ہوتا ہے کہ انہوں نے کتنا اور کب دینا مانا ہے۔</string>
-    <string name="plan_total_hint">کل ادا کرنی رقم (روپے)</string>
-    <string name="plan_installment_hint">ہر قسط (روپے)</string>
+    <string name="plan_total_hint">کل ادا کرنی رقم</string>
+    <string name="plan_installment_hint">ہر قسط</string>
     <string name="plan_pick_next_due">اگلی ادائیگی کی تاریخ (اختیاری)</string>
     <string name="plan_owes_now">ان کے ذمے اس وقت %1$s ہیں</string>
     <string name="plan_owes_nothing">اس پارٹی کے ذمے ابھی کچھ نہیں</string>
@@ -595,7 +595,7 @@
     <string name="no_bills">ابھی کوئی سپلائر بل نہیں۔\n\nجو خریدیں اسے درج کریں — بیچ نمبر اور ایکسپائری کے ساتھ۔ یہی انسپکٹر پوچھتا ہے، اور یہی مال کو شیلف پر خراب ہونے سے بچاتا ہے۔</string>
 
     <string name="bill_number_hint">بل نمبر</string>
-    <string name="bill_total_hint">کل بل (روپے)</string>
+    <string name="bill_total_hint">کل بل</string>
     <string name="bill_supplier_hint">سپلائر کا نام</string>
     <string name="bill_date">بل کی تاریخ</string>
     <string name="bill_due_date">ادائیگی کی تاریخ (اختیاری)</string>
@@ -612,7 +612,7 @@
     <string name="expiry_why">روشن کھاتہ ایکسپائری سے 60 دن پہلے خبردار کرے گا — اتنا پہلے کہ مال بیچ سکیں، رعایت دے سکیں، یا واپس کر سکیں جب تک سپلائر لے لے۔</string>
     <string name="pick_expiry">ایکسپائری تاریخ چنیں</string>
     <string name="pick_bill_date">بل کی تاریخ چنیں</string>
-    <string name="rate_hint">فی اکائی ریٹ (روپے)</string>
+    <string name="rate_hint">فی اکائی ریٹ</string>
     <string name="qty_hint">مقدار</string>
     <string name="item_added">چیز شامل ہو گئی</string>
     <string name="no_items_yet">ابھی کوئی چیز شامل نہیں</string>
@@ -647,7 +647,7 @@
     <string name="invoice_discount_hint">ڈسکاؤنٹ % (اختیاری)</string>
     <string name="invoice_tax_hint">ٹیکس % (اختیاری)</string>
     <string name="invoice_item_name_hint">چیز کا نام</string>
-    <string name="invoice_item_rate_hint">ریٹ (روپے)</string>
+    <string name="invoice_item_rate_hint">ریٹ</string>
     <string name="invoice_row_unit_hint">اکائی</string>
     <string name="invoice_item_invalid">درست چیز کا نام، مقدار اور ریٹ درج کریں۔</string>
     <string name="invoice_customer_required">پہلے گاہک کا نام درج کریں۔</string>
@@ -837,7 +837,7 @@
     <string name="insights_monthly_none">پچھلے 12 مہینوں میں کوئی فروخت درج نہیں۔</string>
     <string name="nisab_silver">چاندی</string>
     <string name="nisab_gold">سونا</string>
-    <string name="gold_price_hint">سونے کی قیمت فی گرام (روپے)</string>
+    <string name="gold_price_hint">سونے کی قیمت فی گرام</string>
     <string name="nisab_silver_note">چاندی کا نصاب: 612.36 گرام (52.5 تولہ) چاندی۔ یہ کم حد ہے، اس لیے زیادہ لوگوں پر زکوٰۃ آتی ہے \u2014 یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔</string>
     <string name="nisab_gold_note">سونے کا نصاب: 87.48 گرام (7.5 تولہ) سونا۔ یہ اونچی حد ہے، اس لیے کم لوگوں پر زکوٰۃ آتی ہے۔ کون سا معیار آپ پر لاگو ہے، عالم سے تصدیق کریں۔</string>
     <string name="per_tola">فی تولہ</string>
@@ -871,7 +871,7 @@
     </plurals>
     <string name="copy_balance_owed">%1$s: %2$s باقی ہیں (آپ کو ملیں گے)</string>
     <string name="copy_balance_i_owe">%1$s: %2$s (آپ کو دینے ہیں)</string>
-    <string name="copy_balance_settled">%1$s: حساب برابر (0 روپے)</string>
+    <string name="copy_balance_settled">%1$s: حساب برابر (%2$s)</string>
     <string name="copied">کاپی ہو گیا</string>
     <string name="receipt_title">رسید</string>
     <string name="payment_receipt">ادائیگی کی رسید</string>
@@ -1442,6 +1442,10 @@
     <string name="bp_section_docs">انوائس اور اسٹیٹمنٹ</string>
     <string name="bp_strn">سیلز ٹیکس نمبر (STRN)</string>
     <string name="bp_strn_help">صرف رجسٹرڈ ہونے پر۔ خالی = نہیں چھپے گا۔</string>
+    <string name="bp_currency">کرنسی</string>
+    <string name="bp_currency_help">رقم کے ساتھ لکھا نشان، جیسے Rs یا $۔ رقم تبدیل نہیں ہوتی۔</string>
+    <string name="currency_custom">کوئی اور (خود لکھیں)…</string>
+    <string name="currency_custom_hint">نشان، زیادہ سے زیادہ 5 حروف</string>
     <string name="bp_paid_help">انوائس کے ادائیگی والے خانے میں آتا ہے۔ خالی لائن نہیں چھپتی۔</string>
     <string name="bp_qr">پیمنٹ QR</string>
     <string name="bp_qr_help">آپ کا ایزی پیسہ / جاز کیش QR، اسٹیٹمنٹ کے لیے۔</string>
@@ -1623,12 +1627,12 @@
     <string name="scheme_from">از %1$s</string>
     <string name="scheme_to">تا %1$s</string>
     <string name="scheme_measure">کس حساب سے</string>
-    <string name="scheme_by_value">قیمت (روپے)</string>
+    <string name="scheme_by_value">قیمت</string>
     <string name="scheme_by_qty">مقدار</string>
     <string name="scheme_unit_hint">گنا جانے والا یونٹ، مثلاً بوری (خالی = سب)</string>
     <string name="scheme_reward">انعام</string>
     <string name="scheme_reward_percent">% ریبیٹ</string>
-    <string name="scheme_reward_amount">مقررہ روپے</string>
+    <string name="scheme_reward_amount">مقررہ رقم</string>
     <string name="scheme_reward_units">مفت یونٹ</string>
     <string name="scheme_slabs">سلیب: ٹارگٹ ← انعام (3 تک)</string>
     <string name="scheme_target_hint">ٹارگٹ</string>

@@ -2121,7 +2121,7 @@ class PartyDetailActivity : BaseActivity() {
         val line = when {
             currentBalance > 0 -> getString(R.string.copy_balance_owed, partyName, Format.money(currentBalance))
             currentBalance < 0 -> getString(R.string.copy_balance_i_owe, partyName, Format.money(-currentBalance))
-            else -> getString(R.string.copy_balance_settled, partyName)
+            else -> getString(R.string.copy_balance_settled, partyName, Format.money(0.0))
         }
         val clip = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         clip.setPrimaryClip(android.content.ClipData.newPlainText("balance", line))

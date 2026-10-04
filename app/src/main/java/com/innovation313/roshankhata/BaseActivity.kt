@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.innovation313.roshankhata.data.TextSize
+import com.innovation313.roshankhata.data.Currency
 import com.innovation313.roshankhata.data.ViewerMode
 import com.innovation313.roshankhata.ui.TextFit
 
@@ -49,6 +50,9 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     override fun onResume() {
         super.onResume()
+        // The shop may have been switched, restored or loaded since this
+        // screen last showed; figures must wear its sign (see Currency).
+        Currency.refresh(this)
         if (builtAtLevel >= 0 && builtAtLevel != TextSize.level(this)) {
             builtAtLevel = TextSize.level(this)
             recreate()

@@ -49,7 +49,7 @@ object InvoicePdfExport {
      * the totals), reusing [Format.money]'s rounding rule rather than a
      * second one that could drift from it.
      */
-    private fun numberOnly(value: Double): String = Format.money(value).removePrefix("Rs ")
+    private fun numberOnly(value: Double): String = Format.money(value).removePrefix(Currency.symbol).trim()
 
     /**
      * Draws [bmp] centred inside [box], scaled to fit without stretching —
