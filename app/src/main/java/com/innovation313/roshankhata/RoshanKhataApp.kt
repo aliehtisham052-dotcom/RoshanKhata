@@ -98,11 +98,17 @@ class RoshanKhataApp : Application() {
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
             runCatching { ScreenSecurity.hideFromRecents(activity) }
             runCatching { ScreenSecurity.applyTo(activity) }
+            runCatching { ScreenSecurity.plainCard(activity) }
         }
 
-        /** Again here, so flipping the switch takes effect without a restart. */
+        /**
+         * Again here, so flipping the switch takes effect without a restart,
+         * and so a screen that set its own bar colours in onCreate still
+         * leaves a plain card in the switcher (see ScreenSecurity.plainCard).
+         */
         override fun onActivityResumed(activity: Activity) {
             runCatching { ScreenSecurity.applyTo(activity) }
+            runCatching { ScreenSecurity.plainCard(activity) }
         }
 
         override fun onActivityStarted(activity: Activity) {}
