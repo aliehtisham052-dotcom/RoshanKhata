@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A language button that is NOT in the artwork. lang_screen.webp was drawn with
+  six buttons; the seventh language (Bahasa Indonesia, 4 Oct) has no drawn
+  button to lay a touch area over, so this draws one to match: the same cream
+  face (sampled from the picture, lighter at the top) and the same thin gold
+  edge, as a full pill, with the same green ripple as bg_lang_hotspot.
+
+  Fixed colours on purpose: the artwork is the same by day and by night, so
+  this button must be too.
+
+  The face is a plain shape directly under the ripple, not a selector: the
+  on-device contrast check (ContrastCheck) reads the colour behind a label
+  from the shape, and cannot see through a selector. The "marked" ring is
+  therefore its own drawable, bg_lang_button_ring, laid on as the foreground.
+-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#3300663A">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:endColor="#EAE2CC"
+                android:startColor="#F8F4E9" />
+            <stroke android:width="1.5dp" android:color="#D0A84F" />
+            <corners android:radius="100dp" />
+        </shape>
+    </item>
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFFFF" />
+            <corners android:radius="100dp" />
+        </shape>
+    </item>
+</ripple>

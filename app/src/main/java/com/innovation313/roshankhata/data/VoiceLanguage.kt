@@ -52,10 +52,21 @@ object VoiceLanguage {
         "ur-latn" to listOf("ur-PK", "ur-IN"),
         "ar" to listOf("ar-SA", "ar-AE", "ar-EG"),
         "fa" to listOf("fa-IR"),
-        "sd" to listOf("sd-PK", "sd-IN")
+        "sd" to listOf("sd-PK", "sd-IN"),
+        "id" to listOf("id-ID")
     )
 
-    private fun key(tag: String) = tag.lowercase().replace('_', '-')
+    /**
+     * Tags arrive in whatever case and separator the phone feels like — and
+     * Indonesian arrives under two codes. "id" is the real one; "in" is the
+     * retired code Android's Locale still hands back on many versions (and
+     * the name of the app's own values-in folder). Both mean one language, so
+     * both are read as "id" here.
+     */
+    private fun key(tag: String): String {
+        val k = tag.lowercase().replace('_', '-')
+        return if (k == "in" || k.startsWith("in-")) "id" + k.substring(2) else k
+    }
 
     /** App languages whose recogniser answers in Arabic script. */
     private val ARABIC_SCRIPT = setOf("ur", "ur-latn", "ar", "fa", "sd")

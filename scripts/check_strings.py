@@ -28,12 +28,14 @@ from pathlib import Path
 
 RES = Path(__file__).resolve().parent.parent / "app" / "src" / "main" / "res"
 DEFAULT = RES / "values" / "strings.xml"
-LOCALES = ["values-b+ur+Latn", "values-ur", "values-sd", "values-fa", "values-ar"]
+LOCALES = ["values-b+ur+Latn", "values-ur", "values-sd", "values-fa", "values-ar", "values-in"]
 
 PLACEHOLDER = re.compile(r"%\d+\$[sd]")
 
 # The cardinal plural forms each language actually uses (Unicode CLDR).
 # Urdu, Roman Urdu, Sindhi and Persian split at one; Arabic does not.
+# Indonesian (values-in, Android's legacy code for "id") has no plural
+# inflection at all: one form, "other", for every count.
 QUANTITIES = {
     "values": {"one", "other"},
     "values-b+ur+Latn": {"one", "other"},
@@ -41,6 +43,7 @@ QUANTITIES = {
     "values-sd": {"one", "other"},
     "values-fa": {"one", "other"},
     "values-ar": {"zero", "one", "two", "few", "many", "other"},
+    "values-in": {"other"},
 }
 
 

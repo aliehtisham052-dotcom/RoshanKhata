@@ -92,10 +92,35 @@ class VoiceLanguageTest {
 
     /** Every language on the language screen must be mapped. */
     @Test
-    fun `all six app languages are covered`() {
-        for (tag in listOf("en", "ur-Latn", "ur", "sd", "fa", "ar")) {
+    fun `every app language is covered`() {
+        for (tag in listOf("en", "ur-Latn", "ur", "sd", "fa", "ar", "id")) {
             assertTrue("$tag has no speech tag", VoiceLanguage.preferred(tag).isNotEmpty())
         }
+    }
+
+    /**
+     * Indonesian goes by two codes: "id", and the retired "in" that Android's
+     * Locale still answers with on many versions. Either one, from the app or
+     * from the phone's own list, must end at the Indonesian recogniser.
+     */
+    @Test
+    fun `indonesian listens in indonesian under either code`() {
+        assertEquals("id-ID", VoiceLanguage.choose("id", null).tag)
+        assertEquals("id-ID", VoiceLanguage.choose("in", null).tag)
+
+        val oldPhone = VoiceLanguage.choose("id", listOf("en-US", "in_ID"))
+        assertEquals("id-ID", oldPhone.tag)
+        assertTrue(oldPhone.exact)
+
+        val newPhone = VoiceLanguage.choose("in", listOf("en-US", "id-ID"))
+        assertEquals("id-ID", newPhone.tag)
+        assertTrue(newPhone.exact)
+    }
+
+    /** No Indonesian on the phone: fall back and say so, like any other. */
+    @Test
+    fun `indonesian missing from the phone is admitted`() {
+        assertFalse(VoiceLanguage.choose("id", phone).exact)
     }
 
     // --------------------------------------------- the book decides, not the menu
@@ -114,6 +139,15 @@ class VoiceLanguageTest {
         assertEquals("en", VoiceLanguage.forBook("ur-Latn", latinBook))
         assertEquals("en", VoiceLanguage.forBook("ar", latinBook))
         assertEquals("en", VoiceLanguage.forBook("sd", latinBook))
+    }
+
+    /**
+     * Indonesian is written in Latin letters already, so a Latin book says
+     * nothing against it: the owner's own language stands.
+     */
+    @Test
+    fun `a Latin book leaves Indonesian alone`() {
+        assertEquals("id", VoiceLanguage.forBook("id", latinBook))
     }
 
     /** And the same rule the other way, which is the half that proves it. */

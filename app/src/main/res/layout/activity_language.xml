@@ -3,7 +3,11 @@
   The language picker, drawn as one piece of artwork with real buttons on it.
 
   The picture (lang_screen.webp, 1024 x 1536) carries the logo, the heading and
-  the six drawn buttons. It is shown WHOLE: the stage below keeps the picture's
+  the six drawn buttons. A seventh language (Bahasa Indonesia, 4 Oct) has no
+  drawn button, so it is a real one (bg_lang_button), placed in the clear band
+  between the second row and the book: x 290-734, y 1036-1138, measured from
+  the picture like the rest. Its label is sized from the stage in code, so it
+  keeps the drawn names' proportion on every screen. It is shown WHOLE: the stage below keeps the picture's
   own shape and sits centred in whatever screen there is, so the artwork is
   never cropped and the touch areas can never drift off the buttons they sit on.
   Every touch area is placed as a percentage of the stage, measured from the
@@ -33,6 +37,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_lang_root">
@@ -71,6 +76,10 @@
     <androidx.constraintlayout.widget.Guideline android:id="@+id/gH2b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.6595" />
     <androidx.constraintlayout.widget.Guideline android:id="@+id/gH3a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.4115" />
     <androidx.constraintlayout.widget.Guideline android:id="@+id/gH3b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.4492" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV4a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.2832" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV4b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.7168" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH4a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.6745" />
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH4b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.7409" />
 
     <View
         android:id="@+id/langEnglish"
@@ -144,6 +153,34 @@
         app:layout_constraintEnd_toEndOf="@id/gV3b"
         app:layout_constraintStart_toStartOf="@id/gV3a"
         app:layout_constraintTop_toTopOf="@id/gH2a" />
+
+    <!-- The seventh language: a real button, since the artwork has six. A
+         language is named in itself, so the label is not a string resource
+         (the six drawn names are not either). Dark green and cream are fixed,
+         like the picture. textSize here is only a starting value;
+         LanguageActivity sets it from the stage's height. -->
+    <TextView
+        android:id="@+id/langIndonesian"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_lang_button"
+        android:clickable="true"
+        android:contentDescription="Bahasa Indonesia"
+        android:elevation="2dp"
+        android:focusable="true"
+        android:foreground="@drawable/bg_lang_button_ring"
+        android:fontFamily="@font/google_sans_medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:text="Bahasa Indonesia"
+        android:textColor="#0B3D20"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/gH4b"
+        app:layout_constraintEnd_toEndOf="@id/gV4b"
+        app:layout_constraintStart_toStartOf="@id/gV4a"
+        app:layout_constraintTop_toTopOf="@id/gH4a"
+        tools:ignore="HardcodedText" />
 
         <!-- The app's own line, in the app's current language. -->
         <TextView
