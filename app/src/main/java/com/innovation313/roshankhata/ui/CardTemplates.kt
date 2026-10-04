@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.ui
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.DashPathEffect
@@ -66,7 +67,9 @@ object CardTemplates {
          * Typed into the customer's WhatsApp when they scan the QR, so the shop
          * knows the chat came from its card. Blank = the chat opens empty.
          */
-        val qrMessage: String = ""
+        val qrMessage: String = "",
+        /** The shop's logo from its Profile, or null for none (see [CardLogo]). */
+        val logo: Bitmap? = null
     )
 
     /** One design: a name for the picker, and how to draw it. */
@@ -75,8 +78,19 @@ object CardTemplates {
         val labelRes: Int,
         /** A soft band of light crosses this card in the preview. */
         val shine: Boolean = false,
-        val draw: (Canvas, CardData, Int, Int, Float) -> Unit
-    )
+        /** The design itself, without the logo. */
+        private val body: (Canvas, CardData, Int, Int, Float) -> Unit
+    ) {
+        /** The card, and the shop's logo in a free spot on it when there is one. */
+        fun draw(c: Canvas, d: CardData, w: Int, h: Int, t: Float) {
+            body(c, d, w, h, t)
+            val logo = d.logo ?: return
+            CardLogo.draw(c, id, body, d, logo, w, h)
+        }
+
+        /** Where text, QR and shapes land on this card (for the logo and its tests). */
+        internal fun layout(d: CardData, w: Int, h: Int): CardLogo.Layout = CardLogo.layout(body, d, w, h)
+    }
 
     const val W = 1200
     const val H = 700
@@ -491,6 +505,9 @@ object CardTemplates {
         val code = cell * m.width
         val off = (size - code) / 2
         c.drawRoundRect(RectF(x, y, x + size, y + size), size * 0.04f, size * 0.04f, fill(WHITE))
+        val rec = c as? CardLogo.Recorder
+        rec?.markQr(RectF(x, y, x + size, y + size))
+        rec?.muted = true
         val p = fill(dark)
         for (yy in 0 until m.height) for (xx in 0 until m.width) {
             if (m.get(xx, yy)) {
@@ -499,6 +516,7 @@ object CardTemplates {
                 c.drawRect(l, t, l + cell, t + cell, p)
             }
         }
+        rec?.muted = false
         return true
     }
 
@@ -1155,30 +1173,30 @@ object CardTemplates {
      * that was removed) falls back to the first card.
      */
     val all: List<Template> = listOf(
-        Template(101, R.string.biz_tpl_editorial, draw = ::editorial),
-        Template(102, R.string.biz_tpl_seal, shine = true, draw = ::seal),
-        Template(103, R.string.biz_tpl_swiss, draw = ::swiss),
-        Template(104, R.string.biz_tpl_glass, shine = true, draw = ::glass),
-        Template(105, R.string.biz_tpl_band, draw = ::band),
-        Template(106, R.string.biz_tpl_naqsh, shine = true, draw = ::naqsh),
-        Template(107, R.string.biz_tpl_brutal, draw = ::brutal),
-        Template(108, R.string.biz_tpl_ticket, draw = ::ticket),
-        Template(109, R.string.biz_tpl_mesh, shine = true, draw = ::mesh),
-        Template(110, R.string.biz_tpl_field, draw = ::fieldCard),
-        Template(111, R.string.biz_tpl_medical, draw = ::medical),
-        Template(112, R.string.biz_tpl_mobile, draw = ::mobile),
-        Template(113, R.string.biz_tpl_tailor, draw = ::tailor),
-        Template(114, R.string.biz_tpl_hardware, draw = ::hardware),
-        Template(115, R.string.biz_tpl_dairy, draw = ::dairy),
-        Template(116, R.string.biz_tpl_kiryana, draw = ::kiryana),
-        Template(117, R.string.biz_tpl_auto, draw = ::auto),
-        Template(118, R.string.biz_tpl_furniture, draw = ::furniture),
-        Template(119, R.string.biz_tpl_salon, draw = ::salon),
-        Template(120, R.string.biz_tpl_solar, draw = ::solar),
-        Template(9, R.string.biz_tpl_slate, shine = true, draw = ::dusk),
-        Template(11, R.string.biz_tpl_stamp, draw = ::blade),
-        Template(8, R.string.biz_tpl_arch, draw = ::waveCard),
-        Template(10, R.string.biz_tpl_olive, draw = ::envelope)
+        Template(101, R.string.biz_tpl_editorial, body = ::editorial),
+        Template(102, R.string.biz_tpl_seal, shine = true, body = ::seal),
+        Template(103, R.string.biz_tpl_swiss, body = ::swiss),
+        Template(104, R.string.biz_tpl_glass, shine = true, body = ::glass),
+        Template(105, R.string.biz_tpl_band, body = ::band),
+        Template(106, R.string.biz_tpl_naqsh, shine = true, body = ::naqsh),
+        Template(107, R.string.biz_tpl_brutal, body = ::brutal),
+        Template(108, R.string.biz_tpl_ticket, body = ::ticket),
+        Template(109, R.string.biz_tpl_mesh, shine = true, body = ::mesh),
+        Template(110, R.string.biz_tpl_field, body = ::fieldCard),
+        Template(111, R.string.biz_tpl_medical, body = ::medical),
+        Template(112, R.string.biz_tpl_mobile, body = ::mobile),
+        Template(113, R.string.biz_tpl_tailor, body = ::tailor),
+        Template(114, R.string.biz_tpl_hardware, body = ::hardware),
+        Template(115, R.string.biz_tpl_dairy, body = ::dairy),
+        Template(116, R.string.biz_tpl_kiryana, body = ::kiryana),
+        Template(117, R.string.biz_tpl_auto, body = ::auto),
+        Template(118, R.string.biz_tpl_furniture, body = ::furniture),
+        Template(119, R.string.biz_tpl_salon, body = ::salon),
+        Template(120, R.string.biz_tpl_solar, body = ::solar),
+        Template(9, R.string.biz_tpl_slate, shine = true, body = ::dusk),
+        Template(11, R.string.biz_tpl_stamp, body = ::blade),
+        Template(8, R.string.biz_tpl_arch, body = ::waveCard),
+        Template(10, R.string.biz_tpl_olive, body = ::envelope)
     )
 
     fun byId(id: Int): Template = all.firstOrNull { it.id == id } ?: all.first()

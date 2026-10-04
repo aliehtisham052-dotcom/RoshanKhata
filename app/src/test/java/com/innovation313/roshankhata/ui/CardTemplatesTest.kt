@@ -64,7 +64,9 @@ class CardTemplatesTest {
         val bmp = Bitmap.createBitmap(CardTemplates.W, CardTemplates.H, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmp)
         for (tpl in CardTemplates.all) {
-            for (d in listOf(full, bare, urdu, full.copy(qrMessage = "السلام علیکم، آپ کا کارڈ دیکھ کر آیا ہوں"))) {
+            val logo = Bitmap.createBitmap(120, 80, Bitmap.Config.ARGB_8888)
+            for (d in listOf(full, bare, urdu, full.copy(qrMessage = "السلام علیکم، آپ کا کارڈ دیکھ کر آیا ہوں"),
+                full.copy(logo = logo), urdu.copy(logo = logo), bare.copy(logo = logo))) {
                 for (phase in floatArrayOf(-1f, 0f, 0.25f, 0.5f, 0.99f)) {
                     try {
                         tpl.draw(canvas, d, CardTemplates.W, CardTemplates.H, phase)
