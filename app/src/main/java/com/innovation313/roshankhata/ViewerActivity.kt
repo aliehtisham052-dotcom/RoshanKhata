@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Backup
+import com.innovation313.roshankhata.data.BackupImages
 import com.innovation313.roshankhata.data.DriveAuth
 import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -23,6 +24,7 @@ import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.InputStream
 
 /**
  * The helper's phone (3 Oct 2026). See [ViewerMode] for why it is safe.
@@ -121,13 +123,49 @@ class ViewerActivity : BaseActivity() {
 
     // ---------- Owner's side: send today's copy ----------
 
+    /**
+     * With customer photos in the book the owner chooses: the copy with its
+     * pictures (heavier, and the size is said), or the balances alone (the
+     * small file this button always sent). With no photos there is nothing
+     * to choose, and it sends at once as before.
+     */
     private fun sendCopy() {
+        setBusy(true)
+        lifecycleScope.launch {
+            val bytes = withContext(Dispatchers.IO) {
+                runCatching {
+                    BackupImages.copyImageBytes(
+                        this@ViewerActivity, KhataDatabase.get(this@ViewerActivity).khataDao()
+                    )
+                }.getOrDefault(0L)
+            }
+            setBusy(false)
+            if (bytes <= 0L) {
+                shareCopy(withPhotos = false)
+                return@launch
+            }
+            val size = android.text.format.Formatter.formatShortFileSize(this@ViewerActivity, bytes)
+            val choices = arrayOf(
+                getString(R.string.viewer_send_with_photos, size),
+                getString(R.string.viewer_send_without_photos)
+            )
+            MaterialAlertDialogBuilder(this@ViewerActivity)
+                .setTitle(R.string.viewer_send_file)
+                .setItems(choices) { _, which -> shareCopy(withPhotos = which == 0) }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+    }
+
+    private fun shareCopy(withPhotos: Boolean) {
         setBusy(true)
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
                 runCatching {
-                    val json = Backup.export(this@ViewerActivity, KhataDatabase.get(this@ViewerActivity).khataDao())
-                    Backup.writeToCache(this@ViewerActivity, json)
+                    val dao = KhataDatabase.get(this@ViewerActivity).khataDao()
+                    val json = Backup.export(this@ViewerActivity, dao)
+                    if (withPhotos) BackupImages.packCopy(this@ViewerActivity, dao, json)
+                    else Backup.writeToCache(this@ViewerActivity, json)
                 }.getOrNull()
             }
             setBusy(false)
@@ -136,9 +174,11 @@ class ViewerActivity : BaseActivity() {
                 return@launch
             }
             val uri = FileProvider.getUriForFile(this@ViewerActivity, "$packageName.fileprovider", file)
-            // text/plain: WhatsApp refuses an unknown type (see BackupActivity).
+            // The text alone goes as text/plain: WhatsApp refuses an unknown
+            // type (see BackupActivity). With photos it is a zip, a type every
+            // messenger sends as a document.
             val share = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
+                type = if (withPhotos) "application/zip" else "text/plain"
                 putExtra(Intent.EXTRA_STREAM, uri)
                 putExtra(Intent.EXTRA_SUBJECT, file.name)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -158,20 +198,29 @@ class ViewerActivity : BaseActivity() {
             .show()
     }
 
+    /**
+     * The owner's file is either the text alone or the zip that also carries
+     * photos ([BackupImages.packCopy]); both open here. Only the text is read
+     * into memory. The photos are streamed out of the file afterwards.
+     */
     private fun loadFromFile(uri: Uri) {
         setBusy(true)
         lifecycleScope.launch {
-            val text = withContext(Dispatchers.IO) {
-                runCatching {
-                    contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-                }.getOrNull()
+            val open: () -> InputStream? = { contentResolver.openInputStream(uri) }
+            val copy = withContext(Dispatchers.IO) {
+                runCatching { BackupImages.readCopy(open) }.getOrNull()
             }
-            if (text == null) {
+            if (copy == null) {
                 setBusy(false)
                 Toast.makeText(this@ViewerActivity, R.string.viewer_load_failed, Toast.LENGTH_LONG).show()
                 return@launch
             }
-            finishLoad(ViewerSync.load(this@ViewerActivity, text, ViewerMode.SOURCE_FILE, null, 1L))
+            finishLoad(
+                ViewerSync.load(
+                    this@ViewerActivity, copy.text, ViewerMode.SOURCE_FILE, null, 1L,
+                    images = if (copy.hasImages) open else null
+                )
+            )
         }
     }
 
@@ -256,8 +305,18 @@ class ViewerActivity : BaseActivity() {
                 ).show()
                 return@launch
             }
+            // The owner's photos, when his Drive backup carries them (his own
+            // "include images" switch). None there, or a failed download, is
+            // not a failed load: the book still opens, without pictures.
+            val photos: ByteArray? =
+                DriveBackup.readImagesForBusiness(this@ViewerActivity, account, businessId).getOrNull()
+            val photoStream: (() -> InputStream?)? =
+                if (photos != null) { { photos.inputStream() } } else null
             finishLoad(
-                ViewerSync.load(this@ViewerActivity, pair.first, ViewerMode.SOURCE_DRIVE, account, businessId)
+                ViewerSync.load(
+                    this@ViewerActivity, pair.first, ViewerMode.SOURCE_DRIVE, account, businessId,
+                    images = photoStream
+                )
             )
         }
     }
@@ -279,6 +338,10 @@ class ViewerActivity : BaseActivity() {
         when (outcome) {
             is ViewerSync.Outcome.Loaded -> {
                 Toast.makeText(this, R.string.viewer_loaded, Toast.LENGTH_LONG).show()
+                restart()
+            }
+            is ViewerSync.Outcome.LoadedWithoutPhotos -> {
+                Toast.makeText(this, R.string.viewer_loaded_no_photos, Toast.LENGTH_LONG).show()
                 restart()
             }
             is ViewerSync.Outcome.Rejected ->

@@ -1733,6 +1733,15 @@
     <string name="viewer_banner">👁 Ponsel hanya-lihat · buku pemilik per %1$s · ketuk untuk salinan baru</string>
     <string name="viewer_menu">Ponsel pembantu (hanya lihat)</string>
     <string name="viewer_unknown_time">waktu tidak diketahui</string>
+    <string name="viewer_send_with_photos">Dengan foto (%1$s)</string>
+    <string name="viewer_send_without_photos">Hanya saldo (file kecil)</string>
+    <string name="viewer_loaded_no_photos">Buku pemilik dimuat, tetapi fotonya tidak dapat dibuka. Ponsel ini sekarang hanya-lihat.</string>
+    <string name="drive_other_phone_title">Ponsel lain mencadangkan toko ini</string>
+    <string name="drive_other_phone_body">Cadangan di Drive dibuat pada %1$s, dan bukan dari ponsel ini. Jika Anda melanjutkan, buku di ponsel ini akan menggantikannya, dan apa pun yang hanya dicatat di ponsel lain tidak akan ada lagi di cadangan.\n\nSatu toko sebaiknya dicatat di satu ponsel. Jika catatan terbaru ada di ponsel lain, batalkan dan cadangkan dari ponsel itu.</string>
+    <string name="drive_other_phone_body_named">Cadangan di Drive dibuat dari ponsel lain (%1$s) pada %2$s. Jika Anda melanjutkan, buku di ponsel ini akan menggantikannya, dan apa pun yang hanya dicatat di ponsel lain tidak akan ada lagi di cadangan.\n\nSatu toko sebaiknya dicatat di satu ponsel. Jika catatan terbaru ada di ponsel lain, batalkan dan cadangkan dari ponsel itu.</string>
+    <string name="drive_other_phone_replace">Pakai buku ponsel ini</string>
+    <string name="notif_backup_other_phone_title">Pencadangan dihentikan</string>
+    <string name="notif_backup_other_phone_body">Ponsel lain terakhir mencadangkan toko ini. Buka Cadangan dan pilih buku ponsel mana yang dipakai.</string>
     <string name="cash_paid_now">Uang diterima sekarang, tunai (catat juga \"Saya Terima\")</string>
     <string name="cash_paid_recorded">%1$s diterima tunai. Penjualan dan pembayaran keduanya dicatat.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->

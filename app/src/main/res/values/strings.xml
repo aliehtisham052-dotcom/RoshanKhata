@@ -1784,6 +1784,15 @@ You can change this any time from this screen.</string>
     <string name="viewer_banner">👁 Read-only phone · owner\'s book as of %1$s · tap for a fresh copy</string>
     <string name="viewer_menu">Helper\'s phone (view only)</string>
     <string name="viewer_unknown_time">time not known</string>
+    <string name="viewer_send_with_photos">With photos (%1$s)</string>
+    <string name="viewer_send_without_photos">Balances only (small file)</string>
+    <string name="viewer_loaded_no_photos">Owner\'s book loaded, but its photos could not be opened. This phone is now read-only.</string>
+    <string name="drive_other_phone_title">Another phone backed up this shop</string>
+    <string name="drive_other_phone_body">The backup on Drive was made on %1$s, and not from this phone. If you continue, this phone\'s book replaces it, and anything entered only on the other phone will no longer be in the backup.\n\nOne shop should be written on one phone. If the other phone has the newer entries, cancel and back up from that phone.</string>
+    <string name="drive_other_phone_body_named">The backup on Drive was made from another phone (%1$s) on %2$s. If you continue, this phone\'s book replaces it, and anything entered only on the other phone will no longer be in the backup.\n\nOne shop should be written on one phone. If the other phone has the newer entries, cancel and back up from that phone.</string>
+    <string name="drive_other_phone_replace">Keep this phone\'s book</string>
+    <string name="notif_backup_other_phone_title">Backup stopped</string>
+    <string name="notif_backup_other_phone_body">Another phone backed up this shop last. Open Backup and choose which phone\'s book to keep.</string>
     <string name="cash_paid_now">Money received now, in cash (also write the \"I got\")</string>
     <string name="cash_paid_recorded">%1$s received in cash. Sale and payment both written.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->

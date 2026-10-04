@@ -1732,6 +1732,15 @@
     <string name="viewer_banner">👁 صرف دیکھنے والا فون · مالک کا کھاتہ %1$s تک · تازہ کاپی کے لیے دبائیں</string>
     <string name="viewer_menu">مددگار کا فون (صرف دیکھنا)</string>
     <string name="viewer_unknown_time">وقت معلوم نہیں</string>
+    <string name="viewer_send_with_photos">تصویروں کے ساتھ (%1$s)</string>
+    <string name="viewer_send_without_photos">صرف حساب (چھوٹی فائل)</string>
+    <string name="viewer_loaded_no_photos">مالک کا کھاتہ لوڈ ہو گیا، لیکن تصویریں نہیں کھل سکیں۔ اب یہ فون صرف دیکھنے والا ہے۔</string>
+    <string name="drive_other_phone_title">اس دکان کا بیک اپ دوسرے فون سے ہوا ہے</string>
+    <string name="drive_other_phone_body">ڈرائیو پر موجود بیک اپ %1$s کو بنا تھا، اور اس فون سے نہیں بنا۔ اگر آگے بڑھیں تو اس فون کا کھاتہ اس کی جگہ لے لے گا، اور جو اندراج صرف دوسرے فون پر ہوئے ہیں وہ بیک اپ میں نہیں رہیں گے۔\n\nایک دکان کا کھاتہ ایک ہی فون پر لکھا جائے۔ اگر نئے اندراج دوسرے فون پر ہیں تو منسوخ کریں اور اسی فون سے بیک اپ لیں۔</string>
+    <string name="drive_other_phone_body_named">ڈرائیو پر موجود بیک اپ دوسرے فون (%1$s) سے %2$s کو بنا تھا۔ اگر آگے بڑھیں تو اس فون کا کھاتہ اس کی جگہ لے لے گا، اور جو اندراج صرف دوسرے فون پر ہوئے ہیں وہ بیک اپ میں نہیں رہیں گے۔\n\nایک دکان کا کھاتہ ایک ہی فون پر لکھا جائے۔ اگر نئے اندراج دوسرے فون پر ہیں تو منسوخ کریں اور اسی فون سے بیک اپ لیں۔</string>
+    <string name="drive_other_phone_replace">اس فون کا کھاتہ رکھیں</string>
+    <string name="notif_backup_other_phone_title">بیک اپ رک گیا</string>
+    <string name="notif_backup_other_phone_body">اس دکان کا آخری بیک اپ دوسرے فون سے ہوا ہے۔ بیک اپ کھول کر فیصلہ کریں کہ کس فون کا کھاتہ رکھنا ہے۔</string>
     <string name="cash_paid_now">پیسے ابھی نقد مل گئے («میں نے لیا» بھی لکھیں)</string>
     <string name="cash_paid_recorded">%1$s نقد مل گئے۔ فروخت اور وصولی دونوں لکھ دی گئیں۔</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->

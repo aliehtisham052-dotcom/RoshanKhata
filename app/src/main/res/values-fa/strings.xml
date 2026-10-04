@@ -1760,6 +1760,15 @@
     <string name="viewer_banner">👁 گوشی فقط‌مشاهده · دفتر مالک تا %1$s · برای نسخهٔ تازه بزنید</string>
     <string name="viewer_menu">گوشی دستیار (فقط مشاهده)</string>
     <string name="viewer_unknown_time">زمان نامعلوم</string>
+    <string name="viewer_send_with_photos">با عکس‌ها (%1$s)</string>
+    <string name="viewer_send_without_photos">فقط حساب‌ها (فایل کوچک)</string>
+    <string name="viewer_loaded_no_photos">دفتر مالک بارگیری شد، اما عکس‌ها باز نشدند. این گوشی اکنون فقط‌مشاهده است.</string>
+    <string name="drive_other_phone_title">گوشی دیگری از این مغازه پشتیبان گرفته است</string>
+    <string name="drive_other_phone_body">پشتیبانِ موجود در درایو در %1$s ساخته شده و از این گوشی نیست. اگر ادامه دهید، دفتر این گوشی جای آن را می‌گیرد و هرچه فقط در گوشی دیگر ثبت شده دیگر در پشتیبان نخواهد بود.\n\nدفتر یک مغازه باید فقط روی یک گوشی نوشته شود. اگر ثبت‌های جدیدتر در گوشی دیگر است، انصراف دهید و از همان گوشی پشتیبان بگیرید.</string>
+    <string name="drive_other_phone_body_named">پشتیبانِ موجود در درایو از گوشی دیگری (%1$s) در %2$s ساخته شده است. اگر ادامه دهید، دفتر این گوشی جای آن را می‌گیرد و هرچه فقط در گوشی دیگر ثبت شده دیگر در پشتیبان نخواهد بود.\n\nدفتر یک مغازه باید فقط روی یک گوشی نوشته شود. اگر ثبت‌های جدیدتر در گوشی دیگر است، انصراف دهید و از همان گوشی پشتیبان بگیرید.</string>
+    <string name="drive_other_phone_replace">دفتر این گوشی بماند</string>
+    <string name="notif_backup_other_phone_title">پشتیبان‌گیری متوقف شد</string>
+    <string name="notif_backup_other_phone_body">آخرین پشتیبان این مغازه از گوشی دیگری گرفته شده است. صفحهٔ پشتیبان را باز کنید و انتخاب کنید دفتر کدام گوشی بماند.</string>
     <string name="cash_paid_now">پول همین حالا نقد رسید («دریافت کردم» را هم بنویس)</string>
     <string name="cash_paid_recorded">%1$s نقد دریافت شد. فروش و پرداخت هر دو ثبت شد.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->

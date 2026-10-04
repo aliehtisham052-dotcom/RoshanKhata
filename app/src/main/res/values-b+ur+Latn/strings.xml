@@ -1732,6 +1732,15 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="viewer_banner">👁 Sirf dekhne wala phone · malik ka khata %1$s tak · taaza copy ke liye dabayein</string>
     <string name="viewer_menu">Madadgar ka phone (sirf dekhna)</string>
     <string name="viewer_unknown_time">waqt maloom nahi</string>
+    <string name="viewer_send_with_photos">Tasveeron ke saath (%1$s)</string>
+    <string name="viewer_send_without_photos">Sirf hisaab (chhoti file)</string>
+    <string name="viewer_loaded_no_photos">Malik ka khata load ho gaya, lekin tasveerein nahi khul sakin. Ab ye phone sirf dekhne wala hai.</string>
+    <string name="drive_other_phone_title">Is dukaan ka backup doosre phone se hua hai</string>
+    <string name="drive_other_phone_body">Drive par mojood backup %1$s ko bana tha, aur is phone se nahi bana. Agar aage barhein to is phone ka khata us ki jagah le lega, aur jo entries sirf doosre phone par hui hain woh backup mein nahi rahengi.\n\nAik dukaan ka khata aik hi phone par likha jaye. Agar nayi entries doosre phone par hain to mansookh karein aur usi phone se backup lein.</string>
+    <string name="drive_other_phone_body_named">Drive par mojood backup doosre phone (%1$s) se %2$s ko bana tha. Agar aage barhein to is phone ka khata us ki jagah le lega, aur jo entries sirf doosre phone par hui hain woh backup mein nahi rahengi.\n\nAik dukaan ka khata aik hi phone par likha jaye. Agar nayi entries doosre phone par hain to mansookh karein aur usi phone se backup lein.</string>
+    <string name="drive_other_phone_replace">Is phone ka khata rakhein</string>
+    <string name="notif_backup_other_phone_title">Backup ruk gaya</string>
+    <string name="notif_backup_other_phone_body">Is dukaan ka aakhri backup doosre phone se hua hai. Backup khol kar faisla karein ke kis phone ka khata rakhna hai.</string>
     <string name="cash_paid_now">Paise abhi naqd mil gaye (\"I got\" bhi likhein)</string>
     <string name="cash_paid_recorded">%1$s naqd mil gaye. Sale aur wusooli dono likh di gayin.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
