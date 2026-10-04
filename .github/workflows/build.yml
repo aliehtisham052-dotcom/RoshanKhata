@@ -116,9 +116,14 @@ jobs:
           # install once Play's own versionCode has moved past it. A
           # timestamp is always higher than any manually-incremented Play
           # number, so this build always wins that comparison.
+          #
+          # -PsideBySide=true gives it its own package (".dev") and the name
+          # "Roshan Khata TEST": Play re-signs the published app with Google's
+          # key, so a build signed with ours can never install OVER it. As a
+          # separate app it sits beside the real one and leaves its books alone.
           DEV_VERSION_CODE=$(date +%s)
           echo "Dev build versionCode override: $DEV_VERSION_CODE"
-          gradle assembleDebug -PversionCodeOverride=$DEV_VERSION_CODE --no-daemon --stacktrace 2>&1 | tee /tmp/build_output.txt
+          gradle assembleDebug -PversionCodeOverride=$DEV_VERSION_CODE -PsideBySide=true --no-daemon --stacktrace 2>&1 | tee /tmp/build_output.txt
           EXIT=${PIPESTATUS[0]}
           exit $EXIT
 
@@ -166,6 +171,8 @@ jobs:
             **Built:** ${{ github.event.head_commit.timestamp }}
 
             Tap `RoshanKhata-latest.apk` below to download and install.
+            It installs as a separate app, "Roshan Khata TEST", beside the
+            Play Store app, and does not touch the real app's data.
             You may need to allow installs from unknown sources.
           files: out/RoshanKhata-latest.apk
           make_latest: true

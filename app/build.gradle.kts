@@ -18,6 +18,16 @@ ksp {
 // the source versionCode.
 val versionCodeOverride = (project.findProperty("versionCodeOverride") as String?)?.toIntOrNull()
 
+// The same private dev APK can also be built as a SEPARATE app, passed in as
+// -PsideBySide=true (build.yml does). Play re-signs the published app with
+// Google's own key, and Android refuses to install a package over one signed
+// by a different key -- so on a phone that has Roshan Khata from Play, the
+// dev APK could not be installed at all without first removing the real app
+// and its books. With its own package (".dev") and its own name on the
+// launcher it sits beside the Play app and never touches its data. aab.yml
+// never passes this property: what Play receives keeps the one true package.
+val sideBySide = (project.findProperty("sideBySide") as String?) == "true"
+
 android {
     namespace = "com.innovation313.roshankhata"
     // Compiled against Android 16, still behaving like Android 14.
@@ -49,6 +59,9 @@ android {
         // versionName is what the owner reads in About/Help.
         versionCode = 2
         versionName = "1.1.0"
+        // The launcher name. The app's own translated name everywhere,
+        // except the side-by-side dev build, which says what it is (below).
+        manifestPlaceholders["appLabel"] = "@string/app_name"
     }
 
     signingConfigs {
@@ -126,6 +139,13 @@ android {
             // update.
             if (System.getenv("RELEASE_STORE_FILE") != null) {
                 signingConfig = signingConfigs.getByName("release")
+            }
+            // See sideBySide above. Only the package the phone sees changes;
+            // the namespace (R, BuildConfig, every class) stays as it is, and
+            // the FileProvider authority already follows ${applicationId}.
+            if (sideBySide) {
+                applicationIdSuffix = ".dev"
+                manifestPlaceholders["appLabel"] = "Roshan Khata TEST"
             }
         }
     }

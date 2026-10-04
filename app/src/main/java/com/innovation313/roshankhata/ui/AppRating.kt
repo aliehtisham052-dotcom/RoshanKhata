@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.innovation313.roshankhata.data.PdfBranding
 
 /**
  * Asking for a Play rating, the only way Play actually allows.
@@ -55,7 +56,8 @@ object AppRating {
 
     /** The Play listing: the Play app if it is installed, the browser if not. */
     fun openStoreListing(activity: Activity) {
-        val packageName = activity.packageName
+        // The real listing, also from the side-by-side dev build (see PdfBranding).
+        val packageName = PdfBranding.STORE_PACKAGE
         val playApp = Intent(
             Intent.ACTION_VIEW,
             Uri.parse("market://details?id=$packageName")

@@ -181,9 +181,17 @@ object PdfBranding {
     private const val BRAND_GREEN = 0xFF094C2E.toInt()
     private const val SOFT = 0xFF4B5B52.toInt()
 
+    /**
+     * The package Play knows the app by. Written out rather than read from the
+     * running app: the side-by-side dev build carries a ".dev" package of its
+     * own, and a statement printed from it must still point at the real listing.
+     */
+    const val STORE_PACKAGE = "com.innovation313.roshankhata"
+
     /** The app's Play listing. One place, so every document points at the same address. */
+    @Suppress("UNUSED_PARAMETER")
     fun storeUrl(context: Context): String =
-        "https://play.google.com/store/apps/details?id=${context.packageName}"
+        "https://play.google.com/store/apps/details?id=$STORE_PACKAGE"
 
     // Links wait here, keyed by the document they belong to, until the file is
     // written: a link can only be added to a PDF that exists. Weak, so a
