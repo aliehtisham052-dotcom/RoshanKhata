@@ -30,6 +30,7 @@ object BusinessProfile {
     private const val KEY_BANK_JAZZCASH = "bank_jazzcash"
     private const val KEY_TERMS = "terms_and_conditions"
     private const val KEY_STRN = "strn_ntn"
+    private const val KEY_CURRENCY = "currency"
     private const val KEY_QR_SAVED = "payment_qr_saved"
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
     private const val KEY_STAMP_SAVED = "stamp_saved"
@@ -189,6 +190,16 @@ object BusinessProfile {
 
     fun setStrn(context: Context, value: String?) {
         prefs(context).edit().putString(KEY_STRN, value?.trim().orEmpty()).apply()
+    }
+
+    // ---------- Currency sign (4 Oct 2026) ----------
+
+    /** The sign this shop's figures wear. Never blank: unset = [Currency.DEFAULT]. */
+    fun currency(context: Context): String =
+        Currency.clean(prefs(context).getString(KEY_CURRENCY, null))
+
+    fun setCurrency(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_CURRENCY, Currency.clean(value)).apply()
     }
 
     // ---------- Payment QR ----------

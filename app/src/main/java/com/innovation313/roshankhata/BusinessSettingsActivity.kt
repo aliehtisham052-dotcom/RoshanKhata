@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.Currency
 import com.innovation313.roshankhata.data.ProfileChecks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -69,6 +70,7 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var etBankJazzCash: EditText
     private lateinit var etInvoiceTerms: EditText
     private lateinit var etStrn: EditText
+    private lateinit var btnCurrency: MaterialButton
     private lateinit var tvUnsaved: TextView
     private lateinit var btnPickQr: MaterialButton
     private lateinit var btnPickStamp: MaterialButton
@@ -199,6 +201,7 @@ class BusinessSettingsActivity : BaseActivity() {
         etBankJazzCash = findViewById(R.id.etBankJazzCash)
         etInvoiceTerms = findViewById(R.id.etInvoiceTerms)
         etStrn = findViewById(R.id.etStrn)
+        btnCurrency = findViewById(R.id.btnCurrency)
         tvUnsaved = findViewById(R.id.tvUnsaved)
         btnPickQr = findViewById(R.id.btnPickQr)
         btnPickStamp = findViewById(R.id.btnPickStamp)
@@ -226,6 +229,8 @@ class BusinessSettingsActivity : BaseActivity() {
         etBankJazzCash.setText(BusinessProfile.bankJazzCash(this).orEmpty())
         etInvoiceTerms.setText(BusinessProfile.termsAndConditions(this).orEmpty())
         etStrn.setText(BusinessProfile.strn(this).orEmpty())
+        renderCurrency()
+        btnCurrency.setOnClickListener { chooseCurrency() }
 
         btnPickQr.setOnClickListener {
             pickImage.launch(
@@ -586,5 +591,60 @@ class BusinessSettingsActivity : BaseActivity() {
                 tvPreviewQrPlaceholder.visibility = View.VISIBLE
             }
         }
+    }
+
+    // ---------- Currency sign (4 Oct 2026) ----------
+
+    private fun renderCurrency() {
+        btnCurrency.text = Currency.label(BusinessProfile.currency(this))
+    }
+
+    /**
+     * Saved the moment it is chosen (like the statement-photo switch), not
+     * with the text fields: a sign is a setting, and the owner should see
+     * the whole app change at once. Figures are not converted — see [Currency].
+     */
+    private fun chooseCurrency() {
+        val current = BusinessProfile.currency(this)
+        val labels = Currency.CHOICES.map { (sign, code) -> "$sign — $code" } +
+            getString(R.string.currency_custom)
+        val checked = Currency.CHOICES.indexOfFirst { it.first == current }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.bp_currency)
+            .setSingleChoiceItems(labels.toTypedArray(), checked) { dialog, which ->
+                dialog.dismiss()
+                if (which < Currency.CHOICES.size) {
+                    Currency.set(this, Currency.CHOICES[which].first)
+                    renderCurrency()
+                } else {
+                    typeCurrency(current)
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun typeCurrency(current: String) {
+        val input = EditText(this).apply {
+            setText(current)
+            hint = getString(R.string.currency_custom_hint)
+            filters = arrayOf(android.text.InputFilter.LengthFilter(Currency.MAX_LENGTH))
+            setSingleLine()
+            setSelection(text.length)
+        }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val box = android.widget.FrameLayout(this).apply {
+            setPadding(pad, pad / 2, pad, 0)
+            addView(input)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.currency_custom)
+            .setView(box)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.ok) { _, _ ->
+                Currency.set(this, input.text.toString())
+                renderCurrency()
+            }
+            .show()
     }
 }

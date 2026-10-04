@@ -20,6 +20,7 @@ import androidx.work.WorkerParameters
 import com.innovation313.roshankhata.data.BackupReminder
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.ChequeStatus
+import com.innovation313.roshankhata.data.Currency
 import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -40,6 +41,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         val ctx = applicationContext
+        Currency.refresh(ctx) // notifications print money; wear the shop's sign
         // A helper's read-only phone holds a copy, not the book. Reminders
         // are the owner's to send, from the phone that keeps the book.
         if (com.innovation313.roshankhata.data.ViewerMode.isOn(ctx)) return Result.success()

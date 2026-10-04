@@ -565,6 +565,8 @@ object Backup {
         val termsAndConditions: String?,
         val strn: String?,
         val photoOnStatement: Boolean,
+        /** Absent in every backup made before 4 Oct 2026 → Rs, as those books printed. */
+        val currency: String? = null,
         /** Added 30 Sep 2026. A file from before it has no key and restores as blank. */
         val businessPhone: String? = null
     )
@@ -1039,6 +1041,7 @@ object Backup {
         put("bankJazzCash", BusinessProfile.bankJazzCash(context) ?: JSONObject.NULL)
         put("termsAndConditions", BusinessProfile.termsAndConditions(context) ?: JSONObject.NULL)
         put("strn", BusinessProfile.strn(context) ?: JSONObject.NULL)
+        put("currency", BusinessProfile.currency(context))
         put("photoOnStatement", BusinessProfile.photoOnStatement(context))
     }
 
@@ -1051,6 +1054,7 @@ object Backup {
         bankJazzCash = o.optNullableString("bankJazzCash"),
         termsAndConditions = o.optNullableString("termsAndConditions"),
         strn = o.optNullableString("strn"),
+        currency = o.optNullableString("currency"),
         photoOnStatement = o.optBoolean("photoOnStatement", false),
         businessPhone = o.optNullableString("businessPhone")
     )
@@ -1070,6 +1074,7 @@ object Backup {
         BusinessProfile.setBankJazzCash(context, p.bankJazzCash)
         BusinessProfile.setTermsAndConditions(context, p.termsAndConditions)
         BusinessProfile.setStrn(context, p.strn)
+        BusinessProfile.setCurrency(context, p.currency)
         BusinessProfile.setPhotoOnStatement(context, p.photoOnStatement)
     }
 

@@ -578,7 +578,7 @@ object InvoiceTemplateKit {
         return y + sigH + 16f
     }
 
-    private fun numberOnlyMoney(value: Double): String = Format.money(value).removePrefix("Rs ")
+    private fun numberOnlyMoney(value: Double): String = Format.money(value).removePrefix(Currency.symbol).trim()
 
     /** Draws [bmp] centred inside [box], scaled to fit without stretching. */
     fun drawBitmapFit(c: Canvas, bmp: Bitmap, box: RectF) {

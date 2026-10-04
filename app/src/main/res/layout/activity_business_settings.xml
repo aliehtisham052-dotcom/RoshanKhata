@@ -327,6 +327,38 @@
                         style="@style/ProfileFieldInput"
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Currency sign (4 Oct 2026): a choice, so a button, not a text field -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bp_currency"
+                            android:textAppearance="?attr/textAppearanceSubtitle2" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bp_currency_help"
+                            android:textAppearance="?attr/textAppearanceCaption" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCurrency"
+                        style="@style/ProfileSmallButton" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- ===== Getting paid ===== -->

@@ -210,7 +210,7 @@
 
     <string name="nisab_section">النصاب</string>
     <string name="nisab_help">النصاب هنا على معيار الفضة (612.36 غرامًا)، وهو الرأي الأحوط لحق الفقراء غالبًا. أدخل سعر غرام الفضة اليوم.</string>
-    <string name="silver_price_hint">سعر غرام الفضة (Rs)</string>
+    <string name="silver_price_hint">سعر غرام الفضة</string>
     <string name="nisab_value">النصاب = %1$s</string>
     <string name="nisab_enter_price">أدخل السعر لحساب النصاب</string>
     <string name="nisab_needed_first">أدخل السعر أولاً</string>
@@ -219,7 +219,7 @@
 
     <string name="cash_stock_section">النقد والبضاعة</string>
     <string name="cash_stock_help">النقد في اليد وأرصدة البنوك وقيمة بضاعة التجارة. لا يراها روشن كهاتا، فأدخلها بنفسك.</string>
-    <string name="cash_stock_hint">النقد + قيمة البضاعة (Rs)</string>
+    <string name="cash_stock_hint">النقد + قيمة البضاعة</string>
 
     <string name="from_your_ledger">من دفترك</string>
     <string name="certain_receivables">مستحقات تتوقع تحصيلها: %1$s</string>
@@ -441,7 +441,7 @@
     <string name="credit_limit">حد الائتمان</string>
     <string name="set_credit_limit">تعيين حد الائتمان</string>
     <string name="credit_limit_help">أقصى ما تسمح لهذا العميل بأن يدين لك به. سينبهك روشن كهاتا قبل أن يتجاوزه قيد. اتركه فارغاً لبلا حد.</string>
-    <string name="credit_limit_hint">الحد (روبية)</string>
+    <string name="credit_limit_hint">الحد</string>
     <string name="credit_limit_advisory">هذا تحذير لا منع. النشاط نشاطك — يمكنك المتابعة دائمًا.</string>
     <string name="credit_limit_current">عليه لك حاليًا %1$s</string>
     <string name="credit_limit_none">لا حد معين</string>
@@ -515,8 +515,8 @@
     <string name="add_plan">إضافة خطة</string>
     <string name="no_plans">لا خطط سداد بعد.\n\nاستخدمها حين يسدد العميل مبلغًا على أقساط — بعد الحصاد أو عبر بضعة أشهر.</string>
     <string name="plan_dialog_help">رتّب سداد ما على هذا الطرف أصلًا. لا يزيد هذا رصيده — يسجل فقط ما اتفق على دفعه ومتى.</string>
-    <string name="plan_total_hint">إجمالي المطلوب سداده (Rs)</string>
-    <string name="plan_installment_hint">كل قسط (روبية)</string>
+    <string name="plan_total_hint">إجمالي المطلوب سداده</string>
+    <string name="plan_installment_hint">كل قسط</string>
     <string name="plan_pick_next_due">موعد الدفعة القادمة (اختياري)</string>
     <string name="plan_owes_now">عليه حاليًا %1$s</string>
     <string name="plan_owes_nothing">لا شيء على هذا الطرف الآن</string>
@@ -655,7 +655,7 @@
     <string name="no_bills">لا فواتير مورّدين بعد.\n\nسجّل ما تشتريه — بأرقام الدُفعات وتواريخ الانتهاء. هذا ما يسأل عنه المفتش، وما ينقذك من فساد البضاعة على الرف.</string>
 
     <string name="bill_number_hint">رقم الفاتورة</string>
-    <string name="bill_total_hint">إجمالي الفاتورة (Rs)</string>
+    <string name="bill_total_hint">إجمالي الفاتورة</string>
     <string name="bill_supplier_hint">اسم المورّد</string>
     <string name="bill_date">تاريخ الفاتورة</string>
     <string name="bill_due_date">استحقاق الدفع (اختياري)</string>
@@ -672,7 +672,7 @@
     <string name="expiry_why">سيحذرك روشن كهاتا قبل الانتهاء بـ60 يومًا — وقت يكفي لبيعها أو تخفيضها أو إرجاعها والمورّد ما زال يقبلها.</string>
     <string name="pick_expiry">اختر تاريخ الانتهاء</string>
     <string name="pick_bill_date">اختر تاريخ الفاتورة</string>
-    <string name="rate_hint">سعر الوحدة (Rs)</string>
+    <string name="rate_hint">سعر الوحدة</string>
     <string name="qty_hint">الكمية</string>
     <string name="item_added">أُضيف الصنف</string>
     <string name="no_items_yet">لا أصناف مضافة بعد</string>
@@ -711,7 +711,7 @@
     <string name="invoice_discount_hint">الخصم % (اختياري)</string>
     <string name="invoice_tax_hint">الضريبة % (اختياري)</string>
     <string name="invoice_item_name_hint">اسم الصنف</string>
-    <string name="invoice_item_rate_hint">السعر (Rs)</string>
+    <string name="invoice_item_rate_hint">السعر</string>
     <string name="invoice_row_unit_hint">الوحدة</string>
     <string name="invoice_item_invalid">أدخل اسم صنف ومقدارًا وسعرًا صحيحين.</string>
     <string name="invoice_customer_required">أدخل اسم العميل أولاً.</string>
@@ -913,7 +913,7 @@
     <string name="insights_monthly_none">لا توجد مبيعات مسجَّلة في آخر 12 شهرًا.</string>
     <string name="nisab_silver">الفضة</string>
     <string name="nisab_gold">الذهب</string>
-    <string name="gold_price_hint">سعر غرام الذهب (Rs)</string>
+    <string name="gold_price_hint">سعر غرام الذهب</string>
     <string name="nisab_silver_note">نصاب الفضة: 612.36 غرامًا (52.5 تولة). هذا الحد الأدنى، فتجب الزكاة على أكثر الناس \u2014 وهو الرأي الأحوط لحق الفقراء غالبًا.</string>
     <string name="nisab_gold_note">نصاب الذهب: 87.48 غرامًا (7.5 تولة). هذا الحد الأعلى، فتجب الزكاة على أقل الناس. تأكد أي معيار يلزمك عند عالم.</string>
     <string name="per_tola">للتولة</string>
@@ -959,7 +959,7 @@
     </plurals>
     <string name="copy_balance_owed">%1$s: %2$s مستحق (لك)</string>
     <string name="copy_balance_i_owe">%1$s: %2$s (عليك)</string>
-    <string name="copy_balance_settled">%1$s: مسدد (Rs 0)</string>
+    <string name="copy_balance_settled">%1$s: مسدد (%2$s)</string>
     <string name="copied">نُسخ</string>
     <string name="receipt_title">إيصال</string>
     <string name="payment_receipt">إيصال دفع</string>
@@ -1582,6 +1582,10 @@
     <string name="bp_section_docs">الفاتورة والكشف</string>
     <string name="bp_strn">رقم ضريبة المبيعات (STRN)</string>
     <string name="bp_strn_help">فقط إن كنت مسجلًا. فارغ = لا يُطبع.</string>
+    <string name="bp_currency">العملة</string>
+    <string name="bp_currency_help">الرمز الذي يظهر مع المبالغ، مثل Rs أو $. لا يتم تحويل المبالغ.</string>
+    <string name="currency_custom">أخرى (اكتب رمزًا)…</string>
+    <string name="currency_custom_hint">الرمز، حتى 5 أحرف</string>
     <string name="bp_paid_help">يظهر في خانة الدفع بالفاتورة. الأسطر الفارغة لا تُطبع.</string>
     <string name="bp_qr">رمز QR للدفع</string>
     <string name="bp_qr_help">رمز QR لإيزي بيسه / جاز كاش، للكشوف.</string>
@@ -1787,7 +1791,7 @@
     <string name="scheme_from">من %1$s</string>
     <string name="scheme_to">إلى %1$s</string>
     <string name="scheme_measure">يُحسب حسب</string>
-    <string name="scheme_by_value">القيمة (روبية)</string>
+    <string name="scheme_by_value">القيمة</string>
     <string name="scheme_by_qty">الكمية</string>
     <string name="scheme_unit_hint">الوحدة، مثل كيس (فارغ = الكل)</string>
     <string name="scheme_reward">المكافأة</string>
