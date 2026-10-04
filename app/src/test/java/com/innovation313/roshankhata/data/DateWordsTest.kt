@@ -53,7 +53,20 @@ class DateWordsTest {
     fun `arabic and persian write their own before and after noon`() {
         assertEquals("5:05 م", DateWords.format("h:mm a", moment, Locale.forLanguageTag("ar")))
         assertEquals("5:05 ب.ظ.", DateWords.format("h:mm a", moment, Locale.forLanguageTag("fa")))
-        assertEquals("5:05 PM", DateWords.format("h:mm a", moment, Locale.forLanguageTag("hi")))
+    }
+
+    @Test
+    fun `urdu, sindhi, hindi and bengali write theirs too, with no English letters`() {
+        assertEquals("5:05 بعد دوپہر", DateWords.format("h:mm a", moment, Locale.forLanguageTag("ur")))
+        assertEquals("5:05 منجهند", DateWords.format("h:mm a", moment, Locale.forLanguageTag("sd")))
+        assertEquals("5:05 अपराह्न", DateWords.format("h:mm a", moment, Locale.forLanguageTag("hi")))
+        assertEquals("5:05 অপরাহ্ণ", DateWords.format("h:mm a", moment, Locale.forLanguageTag("bn")))
+    }
+
+    @Test
+    fun `roman urdu and indonesian keep AM and PM, which are their own letters`() {
+        assertEquals("5:05 PM", DateWords.format("h:mm a", moment, Locale.forLanguageTag("ur-Latn")))
+        assertEquals("5:05 PM", DateWords.format("h:mm a", moment, Locale.forLanguageTag("id")))
     }
 
     @Test

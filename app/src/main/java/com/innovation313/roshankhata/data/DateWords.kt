@@ -70,7 +70,17 @@ object DateWords {
     /** Before noon / after noon, where the language writes its own. */
     private val AM_PM: Map<String, Array<String>> = mapOf(
         "ar" to arrayOf("ص", "م"),
-        "fa" to arrayOf("ق.ظ.", "ب.ظ.")
+        "fa" to arrayOf("ق.ظ.", "ب.ظ."),
+        // "AM" and "PM" are English letters on an Urdu, Sindhi, Hindi or
+        // Bengali line. These are each language's own formal pair, "before
+        // noon" and "after noon". Indonesian is left with AM/PM: it has no
+        // pair of its own in use (it writes the 24-hour clock), and those
+        // are Latin letters on a Latin-letter screen. Roman Urdu reads the
+        // English table throughout.
+        "ur" to arrayOf("قبل دوپہر", "بعد دوپہر"),
+        "sd" to arrayOf("صبح", "منجهند"),
+        "hi" to arrayOf("पूर्वाह्न", "अपराह्न"),
+        "bn" to arrayOf("পূর্বাহ্ণ", "অপরাহ্ণ")
     )
 
     /**

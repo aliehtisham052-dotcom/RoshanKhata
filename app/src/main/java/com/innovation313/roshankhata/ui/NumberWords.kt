@@ -34,16 +34,18 @@ import com.innovation313.roshankhata.data.Currency
  * currency the shop uses. Rupiah figures run long (a small invoice is
  * millions), so it goes up to the trillions. See [inWordsIndonesian].
  *
+ * Persian (4 Oct 2026) is regular as well and is composed the same way,
+ * with its own groups (hezar, milyun, milyard) and "و" between every part.
+ * See [inWordsPersian].
+ *
  * HONEST LIMIT, and the reason [rupeesInWords] falls back rather than
- * guessing: Sindhi, Persian and Arabic are not implemented. Sindhi's 1-99
- * names are irregular the same way Urdu's are and I could not write them
- * with enough confidence; Arabic number-word grammar carries gender
- * agreement and dual forms that are easy to get subtly wrong; Persian uses
- * a different grouping (hezār/milyun) than the crore/lakh structure here.
- * A wrong number spelled out on a financial document is worse than a
- * correct one in a second language, so those three print the English
- * words. Adding any of them properly is a real task, not a translation of
- * this table.
+ * guessing: Sindhi and Arabic are not implemented. Sindhi's 1-99 names are
+ * irregular the same way Urdu's are and I could not write them with enough
+ * confidence; Arabic number-word grammar carries gender agreement and dual
+ * forms that are easy to get subtly wrong. A wrong number spelled out on a
+ * financial document is worse than a correct one in a second language, so
+ * those two print the English words. Adding either properly needs a native
+ * reader to check the table, not a translation of this one.
  */
 object NumberWords {
 
@@ -126,6 +128,7 @@ object NumberWords {
             "hi" -> rupeesInWordsHindi(amount)
             "bn" -> inWordsBengali(amount, "রুপি")
             "id" -> inWordsIndonesian(amount, "rupee")
+            "fa" -> inWordsPersian(amount, "روپیه")
             else -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Rupees") { englishBelow100(it) }
         }
 
@@ -151,6 +154,17 @@ object NumberWords {
                     "Rp" -> "rupiah"
                     "Rs", "₹" -> "rupee"
                     "৳" -> "taka"
+                    else -> Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign
+                }
+            )
+        }
+        // Persian likewise, in its own words and groups for any currency.
+        if (context.getString(R.string.number_words_language) == "fa") {
+            return inWordsPersian(
+                amount,
+                when (sign) {
+                    "Rs", "₹" -> "روپیه"
+                    "৳" -> "تاکا"
                     else -> Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign
                 }
             )
@@ -240,6 +254,58 @@ object NumberWords {
 
         val words = parts.joinToString(" ")
         return words.replaceFirstChar { it.uppercase() } + " " + unitWord
+    }
+
+    private val persianOnes = arrayOf(
+        "صفر", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه", "ده",
+        "یازده", "دوازده", "سیزده", "چهارده", "پانزده", "شانزده", "هفده", "هجده", "نوزده"
+    )
+    private val persianTens = arrayOf(
+        "", "", "بیست", "سی", "چهل", "پنجاه", "شصت", "هفتاد", "هشتاد", "نود"
+    )
+    private val persianHundreds = arrayOf(
+        "", "صد", "دویست", "سیصد", "چهارصد", "پانصد", "ششصد", "هفتصد", "هشتصد", "نهصد"
+    )
+
+    /**
+     * Persian wording, ending in [unitWord]: "دو میلیون و پانصد هزار روپیه".
+     * Public so it can be tested without a Context.
+     *
+     * 0-19 are names of their own, the tens and the hundreds each have one
+     * word, and every part is joined to the next with "و" (and), inside a
+     * group and between groups. One thousand is "هزار" alone; one million and
+     * one billion take "یک". Whole units only and never negative, like every
+     * other language here; capped at 999 milyard.
+     */
+    fun inWordsPersian(amount: Double, unitWord: String): String {
+        var n = amount.toLong().coerceAtLeast(0)
+        if (n == 0L) return "${persianOnes[0]} $unitWord"
+
+        fun below1000(v: Int): String {
+            val parts = mutableListOf<String>()
+            val h = v / 100
+            val r = v % 100
+            if (h > 0) parts.add(persianHundreds[h])
+            if (r in 1..19) {
+                parts.add(persianOnes[r])
+            } else if (r >= 20) {
+                parts.add(persianTens[r / 10])
+                if (r % 10 > 0) parts.add(persianOnes[r % 10])
+            }
+            return parts.joinToString(" و ")
+        }
+
+        val parts = mutableListOf<String>()
+        val milyard = (n / 1_000_000_000).coerceAtMost(999).toInt(); n %= 1_000_000_000
+        val milyun = (n / 1_000_000).toInt(); n %= 1_000_000
+        val hezar = (n / 1_000).toInt(); n %= 1_000
+
+        if (milyard > 0) parts.add("${below1000(milyard)} میلیارد")
+        if (milyun > 0) parts.add("${below1000(milyun)} میلیون")
+        if (hezar == 1) parts.add("هزار") else if (hezar > 1) parts.add("${below1000(hezar)} هزار")
+        if (n > 0) parts.add(below1000(n.toInt()))
+
+        return parts.joinToString(" و ") + " " + unitWord
     }
 
     /** Hindi wording; public so the table can be tested without a Context. */

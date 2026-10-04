@@ -522,7 +522,7 @@
     <string name="erase_all_button">سارا ڈیٹا مٹائیں</string>
     <string name="erase_all_title">سب کچھ مٹا دیں؟</string>
     <string name="erase_all_body">اس فون پر ہر کاروبار — تمام گاہک، اندراجات، چیک، کیش بک، رسیدیں، تصاویر اور ترتیبات — ہمیشہ کے لیے مٹ جائیں گے۔ ایپ بالکل نئی انسٹال جیسی خالی ہو جائے گی۔\n\nآپ کی اپنی گوگل ڈرائیو پر موجود بیک اپ کو ہاتھ نہیں لگایا جائے گا — وہ بعد میں بھی بحال ہو سکتے ہیں۔\n\nاگر یقین نہیں تو پہلے بیک اپ لیں۔ یہ واپس نہیں ہو سکتا۔</string>
-    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_keyword">حذف</string>
     <string name="erase_all_done">سارا ڈیٹا مٹ گیا۔</string>
     <string name="db_broken_title">کھاتہ کھل نہیں رہا</string>
     <string name="db_broken_body">اس فون پر کھاتے کی فائل خراب ہو گئی ہے۔ آپ کی روزانہ کاپیاں محفوظ ہیں — ایپ پچھلے سات دنوں کی ایک ایک کاپی رکھتی ہے، اور کسی کاپی پر واپس جانے سے آج کی فائل کو اُس وقت تک ہاتھ نہیں لگتا جب تک صحت مند کاپی کی تصدیق نہ ہو جائے۔</string>
@@ -1121,6 +1121,9 @@
     <string name="compliance_section">انسپیکشن محکمے کی تفصیلات</string>
     <string name="compliance_explain">صرف اُس وقت درکار جب معائنے میں پوچھا جائے۔ فیڈ یا بیج کے لیے خالی چھوڑ دیں۔</string>
     <string name="product_type_hint">قسم — پیسٹیسائیڈ، کھاد، بیج</string>
+    <string name="product_type_pesticide">پیسٹیسائیڈ</string>
+    <string name="product_type_fertilizer">کھاد</string>
+    <string name="product_type_seed">بیج</string>
     <string name="technical_name_hint">مؤثر جزو، مثلاً Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">فارمولیشن — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">رجسٹریشن نمبر (DRAP)</string>

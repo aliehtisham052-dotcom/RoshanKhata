@@ -78,7 +78,15 @@ object ProductDetailsDialog {
         val etName = field(R.id.etProductName).apply { setText(product.name) }
         val etCompany = field(R.id.etProductCompany).apply { setText(product.company ?: guess?.company) }
         val etUnit = field(R.id.etProductUnit).apply { setText(UnitWords.label(product.defaultUnit ?: guess?.unit)) }
-        val etType = field(R.id.etProductType).apply { setText(product.productType ?: guess?.type) }
+        // The guessed kind in the app's language, like the field's own hint.
+        // LabelGuess keeps its three kinds in English for its own reasoning.
+        val guessedType = when (guess?.type) {
+            "Pesticide" -> activity.getString(R.string.product_type_pesticide)
+            "Fertilizer" -> activity.getString(R.string.product_type_fertilizer)
+            "Seed" -> activity.getString(R.string.product_type_seed)
+            else -> guess?.type
+        }
+        val etType = field(R.id.etProductType).apply { setText(product.productType ?: guessedType) }
         val etTechnical = field(R.id.etTechnicalName).apply { setText(product.technicalName) }
         val etFormulation = field(R.id.etFormulation).apply { setText(product.formulation ?: guess?.formulation) }
         val etRegistration =
