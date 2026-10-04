@@ -1911,4 +1911,7 @@
     <string name="biz_card_email_hint">البريد الإلكتروني (اختياري)</string>
     <string name="biz_card_web_hint">الموقع أو فيسبوك/إنستغرام (اختياري)</string>
     <string name="biz_card_tagline_hint">سطر مميز، مثل: توصيل للمنزل (اختياري)</string>
+    <string name="biz_card_qr_message_hint">رسالة واتساب عند مسح رمز QR (اختياري)</string>
+    <string name="biz_card_qr_message_default">السلام عليكم</string>
+    <string name="biz_card_print_pdf">PDF جاهز للطباعة (3.5 × 2 إنش)</string>
 </resources>

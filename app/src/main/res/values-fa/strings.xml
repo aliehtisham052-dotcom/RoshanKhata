@@ -1767,4 +1767,7 @@
     <string name="biz_card_email_hint">ایمیل (اختیاری)</string>
     <string name="biz_card_web_hint">وب‌سایت یا فیسبوک/اینستاگرام (اختیاری)</string>
     <string name="biz_card_tagline_hint">یک خط ویژه، مثلاً: ارسال به خانه (اختیاری)</string>
+    <string name="biz_card_qr_message_hint">پیام واتس‌اپ هنگام اسکن QR (اختیاری)</string>
+    <string name="biz_card_qr_message_default">سلام</string>
+    <string name="biz_card_print_pdf">PDF آمادهٔ چاپ (3.5 × 2 اینچ)</string>
 </resources>

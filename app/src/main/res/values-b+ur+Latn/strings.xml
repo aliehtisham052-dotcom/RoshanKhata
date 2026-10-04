@@ -1739,4 +1739,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="biz_card_email_hint">Email (ikhtiyari)</string>
     <string name="biz_card_web_hint">Website ya Facebook/Instagram (ikhtiyari)</string>
     <string name="biz_card_tagline_hint">Aik khaas line, misal: Ghar tak delivery (ikhtiyari)</string>
+    <string name="biz_card_qr_message_hint">QR scan par WhatsApp paigham (ikhtiyari)</string>
+    <string name="biz_card_qr_message_default">Salam, aap ka card dekh kar aaya hoon</string>
+    <string name="biz_card_print_pdf">Print ke liye PDF (3.5 × 2 inch)</string>
 </resources>

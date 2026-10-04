@@ -42,6 +42,7 @@ class BusinessCardActivity : BaseActivity() {
     private lateinit var etEmail: EditText
     private lateinit var etWeb: EditText
     private lateinit var etTagline: EditText
+    private lateinit var etQrMessage: EditText
     private lateinit var markSwitch: com.google.android.material.switchmaterial.SwitchMaterial
     private lateinit var tplButtons: List<Button>
 
@@ -65,6 +66,7 @@ class BusinessCardActivity : BaseActivity() {
         etEmail = findViewById(R.id.etEmail)
         etWeb = findViewById(R.id.etWeb)
         etTagline = findViewById(R.id.etTagline)
+        etQrMessage = findViewById(R.id.etQrMessage)
 
         markSwitch = findViewById(R.id.switchCardWatermark)
 
@@ -82,6 +84,8 @@ class BusinessCardActivity : BaseActivity() {
         etEmail.setText(prefs.getString(KEY_EMAIL, ""))
         etWeb.setText(prefs.getString(KEY_WEB, ""))
         etTagline.setText(prefs.getString(KEY_TAGLINE, ""))
+        // Pre-filled until the owner changes it; an emptied box stays empty.
+        etQrMessage.setText(prefs.getString(KEY_QR_MESSAGE, getString(R.string.biz_card_qr_message_default)))
         // A design that was removed (ids 0-7) resolves to the first card, and the
         // picker highlights that card rather than nothing.
         template = CardTemplates.byId(prefs.getInt(KEY_TEMPLATE, TPL_DEFAULT)).id
@@ -98,7 +102,7 @@ class BusinessCardActivity : BaseActivity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) = render()
         }
-        listOf(etBizName, etType, etOwner, etPhone, etAddress, etWhatsapp, etEmail, etWeb, etTagline)
+        listOf(etBizName, etType, etOwner, etPhone, etAddress, etWhatsapp, etEmail, etWeb, etTagline, etQrMessage)
             .forEach { it.addTextChangedListener(watcher) }
 
         findViewById<Button>(R.id.btnShareCard).apply {
@@ -106,6 +110,7 @@ class BusinessCardActivity : BaseActivity() {
             setTextColor(Color.WHITE)
             setOnClickListener { shareCard() }
         }
+        findViewById<Button>(R.id.btnCardPdf).setOnClickListener { sharePdf() }
 
         refreshTemplateButtons()
         render()
@@ -168,7 +173,8 @@ class BusinessCardActivity : BaseActivity() {
         whatsapp = etWhatsapp.text.toString().trim(),
         email = etEmail.text.toString().trim(),
         web = etWeb.text.toString().trim(),
-        tagline = etTagline.text.toString().trim()
+        tagline = etTagline.text.toString().trim(),
+        qrMessage = etQrMessage.text.toString().trim()
     )
 
     /** The still card that is shared: every moving part at rest. */
@@ -207,6 +213,28 @@ class BusinessCardActivity : BaseActivity() {
         }
     }
 
+    /** The card as a print-ready PDF (3.5 x 2 in + bleed), for a print shop. */
+    private fun sharePdf() {
+        if (etBizName.text.toString().isBlank()) {
+            Toast.makeText(this, R.string.biz_card_enter_name, Toast.LENGTH_SHORT).show()
+            return
+        }
+        save()
+        try {
+            val file = com.innovation313.roshankhata.data.CardPdf.write(
+                this, CardTemplates.byId(template), cardData()
+            )
+            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }, getString(R.string.biz_card_print_pdf)))
+        } catch (e: Exception) {
+            Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun save() {
         BusinessProfile.setBusinessName(this, etBizName.text.toString())
         getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE).edit()
@@ -218,6 +246,7 @@ class BusinessCardActivity : BaseActivity() {
             .putString(KEY_EMAIL, etEmail.text.toString().trim())
             .putString(KEY_WEB, etWeb.text.toString().trim())
             .putString(KEY_TAGLINE, etTagline.text.toString().trim())
+            .putString(KEY_QR_MESSAGE, etQrMessage.text.toString().trim())
             .putInt(KEY_TEMPLATE, template)
             .apply()
     }
@@ -248,6 +277,7 @@ class BusinessCardActivity : BaseActivity() {
         private const val KEY_EMAIL = "email"
         private const val KEY_WEB = "web"
         private const val KEY_TAGLINE = "tagline"
+        private const val KEY_QR_MESSAGE = "qr_message"
         private const val KEY_TEMPLATE = "template"
         private const val KEY_MARK = "show_mark"
 

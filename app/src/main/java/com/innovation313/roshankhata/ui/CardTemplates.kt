@@ -61,7 +61,12 @@ object CardTemplates {
         val email: String = "",
         val web: String = "",
         /** One short line the shop wants seen: "24/7", "Ghar tak delivery". */
-        val tagline: String = ""
+        val tagline: String = "",
+        /**
+         * Typed into the customer's WhatsApp when they scan the QR, so the shop
+         * knows the chat came from its card. Blank = the chat opens empty.
+         */
+        val qrMessage: String = ""
     )
 
     /** One design: a name for the picker, and how to draw it. */
@@ -447,7 +452,11 @@ object CardTemplates {
         if (n.startsWith("00")) n = n.drop(2)
         if (n.startsWith("0")) n = "92" + n.drop(1)
         if (n.length < 11 || n.length > 15) return null
-        return "https://wa.me/$n"
+        val msg = d.qrMessage.trim()
+        // wa.me takes a pre-filled message as ?text= (URL-encoded, spaces as %20).
+        val text = if (msg.isEmpty()) "" else
+            "?text=" + java.net.URLEncoder.encode(msg, "UTF-8").replace("+", "%20")
+        return "https://wa.me/$n$text"
     }
 
     private fun matrix(payload: String): BitMatrix? = qrCache.getOrPut(payload) {
@@ -464,22 +473,37 @@ object CardTemplates {
         }
     }
 
-    /** A real, scannable QR on a white tile. Draws nothing without a usable number. */
+    /**
+     * A real, scannable QR on a white tile of [size] pixels.
+     *
+     * Sized to print (4 Oct 2026, from print-shop and QR guidance): the card is
+     * 3.5 inches across, so a 370 px tile is about 1.08 inch, of which the code
+     * itself is 0.8 inch or more — the 2 cm floor print guides give for a
+     * business card. Around the code sits a quiet zone four modules wide, the
+     * blank border a camera needs to find the code; the first version left two,
+     * enough on a screen and not on paper. Whole-pixel modules keep the edges
+     * sharp. Draws nothing without a usable number.
+     */
     private fun qr(c: Canvas, d: CardData, x: Float, y: Float, size: Float, dark: Int = INK): Boolean {
         val m = qrPayload(d)?.let { matrix(it) } ?: return false
-        val pad = size * 0.07f
-        c.drawRoundRect(RectF(x, y, x + size, y + size), size * 0.05f, size * 0.05f, fill(WHITE))
-        val cell = (size - pad * 2) / m.width
+        val modules = m.width + 8
+        val cell = kotlin.math.floor(size / modules).coerceAtLeast(1f)
+        val code = cell * m.width
+        val off = (size - code) / 2
+        c.drawRoundRect(RectF(x, y, x + size, y + size), size * 0.04f, size * 0.04f, fill(WHITE))
         val p = fill(dark)
         for (yy in 0 until m.height) for (xx in 0 until m.width) {
             if (m.get(xx, yy)) {
-                val l = x + pad + xx * cell
-                val t = y + pad + yy * cell
-                c.drawRect(l, t, l + cell + 0.5f, t + cell + 0.5f, p)
+                val l = x + off + xx * cell
+                val t = y + off + yy * cell
+                c.drawRect(l, t, l + cell, t + cell, p)
             }
         }
         return true
     }
+
+    /** Outer tile size for a print-safe QR (see [qr]). */
+    private const val QR_TILE = 370f
 
     // ======================================================================
     // The general ten
@@ -492,8 +516,8 @@ object CardTemplates {
         val b = title(c, d.name, 70f, 64f, 820f, 76f, INK, serif = true)
         caps(c, d.type, 72f, b + 30f, 820f, Color.parseColor("#993C1D"))
         c.drawRect(72f, b + 50f, 72f + 90f, b + 57f, fill(clay))
-        val hasQr = qr(c, d, w - 70f - 160f, h - 70f - 160f, 160f)
-        val maxW = if (hasQr) 820f else 1060f
+        val hasQr = qr(c, d, w - 70f - QR_TILE, h - 60f - QR_TILE, QR_TILE)
+        val maxW = if (hasQr) w - 70f - QR_TILE - 40f - 72f else 1060f
         info(c, d, 72f, infoTopFor(d, h - 60f), maxW, INK, clay, bottom = h - 40f)
         val r = 14f + 10f * (if (live(t)) wave(t) else 0f)
         c.drawCircle(w - 80f, 80f, 14f, fill(clay))
@@ -559,8 +583,9 @@ object CardTemplates {
             val p = paint(24f, Color.parseColor("#5F5E5A"), align = Paint.Align.RIGHT)
             c.drawText(ellipsise(d.type, p, 400f), w - 70f, ry, p); ry += 38f
         }
-        ry = rowList(c, list, w - 70f, ry, 420f, Color.parseColor("#5F5E5A"), red, size = 24f, gap = 38f, align = Paint.Align.RIGHT, bottom = 470f)
-        qr(c, d, w - 70f - 120f, min(ry, 470f), 120f)
+        // The number is this card's hero, so it carries no QR: a code big
+        // enough to print would leave the contact column no room.
+        rowList(c, list, w - 70f, ry, 420f, Color.parseColor("#5F5E5A"), red, size = 24f, gap = 38f, align = Paint.Align.RIGHT, bottom = h - 120f)
         c.drawRect(70f, h - 92f, w - 70f, h - 89f, fill(INK))
         val op = paint(28f, INK)
         c.drawText(ellipsise(d.owner, op, 700f), 70f, h - 46f, op)
@@ -611,8 +636,8 @@ object CardTemplates {
             val op = paint(52f, INK, bold = true)
             c.drawText(ellipsise(d.owner, op, bandL - 120f), 70f, y, op); y += 64f
         }
-        val hasQr = qr(c, d, bandL - 40f - 140f, h - 60f - 140f, 140f)
-        rowList(c, rows(d), 70f, y + 10f, bandL - 120f - (if (hasQr) 160f else 0f), INK, amber, bottom = h - 40f)
+        val hasQr = qr(c, d, bandL - 40f - QR_TILE, h - 60f - QR_TILE, QR_TILE)
+        rowList(c, rows(d), 70f, y + 10f, bandL - 120f - (if (hasQr) QR_TILE + 40f else 0f), INK, amber, bottom = h - 40f)
         pill(c, d.tagline, 70f, 22f, INK, amber, size = 20f)
         watermark(c, d, bandL - 30f, 40f, onDark = false)
     }
@@ -674,20 +699,20 @@ object CardTemplates {
         c.drawRect(r, fill(Color.parseColor("#FFF9EC")))
         val dash = stroke(brown, 3f).apply { pathEffect = DashPathEffect(floatArrayOf(14f, 10f), 0f) }
         c.drawRect(r, dash)
-        val stubX = w - 250f
+        val stubX = w - 40f - 420f
         c.drawLine(stubX, r.top + 30f, stubX, r.bottom - 30f, dash)
         c.drawCircle(stubX, r.top, 26f, fill(Color.parseColor("#F1EFE8")))
         c.drawCircle(stubX, r.bottom, 26f, fill(Color.parseColor("#F1EFE8")))
         caps(c, d.type, 90f, 116f, stubX - 140f, brown)
         val b = title(c, d.name, 90f, 140f, stubX - 140f, 62f, deep, serif = true)
         info(c, d, 90f, max(b + 60f, infoTopFor(d, r.bottom - 40f)), stubX - 140f, deep, Color.parseColor("#BA7517"), bottom = r.bottom - 26f)
-        val hasQr = qr(c, d, stubX + 45f, r.top + 70f, 120f, deep)
+        val hasQr = qr(c, d, stubX + 25f, r.top + 40f, QR_TILE, deep)
         if (d.tagline.isNotEmpty()) {
-            c.save()
-            c.rotate(90f, stubX + 105f, r.top + (if (hasQr) 360f else 260f))
-            c.drawText(ellipsise(d.tagline, paint(22f, brown, bold = true, align = Paint.Align.CENTER), 260f),
-                stubX + 105f, r.top + (if (hasQr) 368f else 268f), paint(22f, brown, bold = true, align = Paint.Align.CENTER))
-            c.restore()
+            val tp = paint(24f, brown, bold = true, align = Paint.Align.CENTER)
+            val top = if (hasQr) r.top + 40f + QR_TILE + 50f else r.centerY()
+            wrap(d.tagline, tp, 360f, 2).forEachIndexed { i, line ->
+                c.drawText(line, stubX + 210f, top + i * 32f, tp)
+            }
         }
         watermark(c, d, stubX - 30f, r.bottom - 14f, onDark = false)
     }
