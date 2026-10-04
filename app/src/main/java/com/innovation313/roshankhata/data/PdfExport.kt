@@ -214,7 +214,7 @@ object PdfExport {
             // the date column to learn what period they are looking at.
             // Right-aligned in the band, stopping short of the corner logo.
             if (rows.isNotEmpty()) {
-                val fmt = java.text.SimpleDateFormat("d MMM yyyy", java.util.Locale.ENGLISH)
+                val fmt = DateWords.formatter("d MMM yyyy")
                 val from = fmt.format(java.util.Date(rows.minOf { it.entry.timestamp }))
                 val till = fmt.format(java.util.Date(rows.maxOf { it.entry.timestamp }))
                 val period = if (from == till) from else "$from \u2013 $till"

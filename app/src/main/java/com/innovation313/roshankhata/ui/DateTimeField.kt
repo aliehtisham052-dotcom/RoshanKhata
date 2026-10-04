@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.DateWords
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -23,10 +24,10 @@ import com.innovation313.roshankhata.data.Digits
  */
 object DateTimeField {
 
-    private val format = SimpleDateFormat("dd MMM yyyy, hh:mm a", Digits.latinIn())
+    private val format get() = DateWords.formatter("dd MMM yyyy, hh:mm a")
 
     /** Chip-sized label ("21 Sep") for tight rows; the time is still picked. */
-    private val compactFormat = SimpleDateFormat("d MMM", Digits.latinIn())
+    private val compactFormat get() = DateWords.formatter("d MMM")
 
     /**
      * Wire [button] to pick a date and then a time, starting from [initial].

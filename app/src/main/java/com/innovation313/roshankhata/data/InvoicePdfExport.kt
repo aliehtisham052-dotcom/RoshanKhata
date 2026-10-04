@@ -42,7 +42,7 @@ object InvoicePdfExport {
     private const val PAGE_H_A4 = 842
     private const val MARGIN = 40f
 
-    private val timeFmt = SimpleDateFormat("h:mm a", Locale.ENGLISH)
+    private val timeFmt get() = DateWords.formatter("h:mm a")
 
     /**
      * A money figure with thousand separators but no "Rs" — the mockups'
