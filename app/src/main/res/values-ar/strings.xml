@@ -566,7 +566,7 @@
     <string name="erase_all_button">مسح كل البيانات</string>
     <string name="erase_all_title">مسح كل شيء؟</string>
     <string name="erase_all_body">كل الأنشطة التجارية على هذا الهاتف — جميع العملاء والقيود والشيكات ودفتر النقد والفواتير والصور والإعدادات — ستُمسح نهائيًا. سيصبح التطبيق فارغًا كتثبيت جديد.\n\nالنسخ الاحتياطية على درايف الخاص بك لن تُمَس ويمكن استعادتها لاحقًا.\n\nإن لم تكن متأكدًا فخذ نسخة احتياطية أولًا. لا يمكن التراجع.</string>
-    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_keyword">مسح</string>
     <string name="erase_all_done">تم مسح كل البيانات.</string>
     <string name="db_broken_title">الدفتر لا يفتح</string>
     <string name="db_broken_body">تضرر ملف الدفتر على هذا الهاتف. نسخك اليومية سليمة — يحتفظ التطبيق بنسخة عن كل يوم من الأيام السبعة الماضية، والرجوع إلى نسخة لا يمس ملف اليوم حتى يتم التأكد من سلامتها.</string>
@@ -1241,6 +1241,9 @@
     <string name="compliance_section">بيانات جهة التفتيش</string>
     <string name="compliance_explain">مطلوبة فقط إن سُئل عنها في التفتيش. اتركها فارغة للأعلاف أو البذور.</string>
     <string name="product_type_hint">النوع — مبيد، سماد، بذور</string>
+    <string name="product_type_pesticide">مبيد</string>
+    <string name="product_type_fertilizer">سماد</string>
+    <string name="product_type_seed">بذور</string>
     <string name="technical_name_hint">المادة الفعالة، مثل Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">التركيبة — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">رقم التسجيل (DRAP)</string>

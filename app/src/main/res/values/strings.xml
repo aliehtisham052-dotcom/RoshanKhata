@@ -1162,6 +1162,9 @@ You can change this any time from this screen.</string>
     <string name="compliance_section">Inspection department details</string>
     <string name="compliance_explain">Only needed if an inspection may ask for them. Leave blank for feed or seed.</string>
     <string name="product_type_hint">Type — pesticide, fertilizer, seed</string>
+    <string name="product_type_pesticide">Pesticide</string>
+    <string name="product_type_fertilizer">Fertilizer</string>
+    <string name="product_type_seed">Seed</string>
     <string name="technical_name_hint">Active ingredient, e.g. Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">Formulation — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">Registration number (DRAP)</string>

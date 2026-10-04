@@ -549,7 +549,7 @@
     <string name="erase_all_button">সব ডেটা মুছুন</string>
     <string name="erase_all_title">সবকিছু মুছে ফেলবেন?</string>
     <string name="erase_all_body">এই ফোনের প্রতিটি ব্যবসা — সব গ্রাহক, এন্ট্রি, চেক, ক্যাশবুক, ইনভয়েস, ছবি ও সেটিংস — স্থায়ীভাবে মুছে যাবে। অ্যাপ নতুন ইনস্টলের মতো খালি হয়ে যাবে।\n\nআপনার নিজের Google Drive-এর ব্যাকআপে হাত দেওয়া হয় না, পরে রিস্টোর করা যাবে।\n\nনিশ্চিত না হলে আগে ব্যাকআপ নিন। এটি আর ফেরানো যাবে না।</string>
-    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_keyword">মুছুন</string>
     <string name="erase_all_done">সব ডেটা মুছে ফেলা হয়েছে।</string>
     <string name="db_broken_title">খাতা খুলছে না</string>
     <string name="db_broken_body">এই ফোনে খাতার ফাইলটি কোনো কারণে নষ্ট হয়েছে। আপনার দৈনিক কপিগুলো নিরাপদ — অ্যাপ গত সাত দিনের প্রতিদিনের একটি করে কপি রাখে, আর কোনো কপিতে ফিরে গেলে ভালো কপি নিশ্চিত না হওয়া পর্যন্ত আজকের ফাইলে হাত দেওয়া হয় না।</string>
@@ -1155,6 +1155,9 @@
     <string name="compliance_section">পরিদর্শন বিভাগের তথ্য</string>
     <string name="compliance_explain">পরিদর্শনে চাওয়া হতে পারে এমন হলেই দরকার। ফিড বা বীজের জন্য ফাঁকা রাখুন।</string>
     <string name="product_type_hint">ধরন — কীটনাশক, সার, বীজ</string>
+    <string name="product_type_pesticide">কীটনাশক</string>
+    <string name="product_type_fertilizer">সার</string>
+    <string name="product_type_seed">বীজ</string>
     <string name="technical_name_hint">সক্রিয় উপাদান, যেমন Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">ফর্মুলেশন — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">রেজিস্ট্রেশন নম্বর (DRAP)</string>

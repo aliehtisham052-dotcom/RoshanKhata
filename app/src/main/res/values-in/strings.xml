@@ -1125,6 +1125,9 @@
     <string name="compliance_section">Data untuk dinas pengawas</string>
     <string name="compliance_explain">Hanya diperlukan jika pemeriksaan mungkin memintanya. Kosongkan untuk pakan atau benih.</string>
     <string name="product_type_hint">Jenis — pestisida, pupuk, benih</string>
+    <string name="product_type_pesticide">Pestisida</string>
+    <string name="product_type_fertilizer">Pupuk</string>
+    <string name="product_type_seed">Benih</string>
     <string name="technical_name_hint">Bahan aktif, mis. Klorpirifos 40% EC</string>
     <string name="formulation_hint">Formulasi — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">Nomor pendaftaran produk</string>

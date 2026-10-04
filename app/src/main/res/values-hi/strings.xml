@@ -549,7 +549,7 @@
     <string name="erase_all_button">सारा डेटा मिटाएँ</string>
     <string name="erase_all_title">सब कुछ मिटा दें?</string>
     <string name="erase_all_body">इस फ़ोन का हर बिज़नेस — सभी ग्राहक, एंट्रियाँ, चेक, कैशबुक, इनवॉइस, फ़ोटो और सेटिंग्स — हमेशा के लिए मिट जाएगा। ऐप नए इंस्टॉल जैसा खाली हो जाएगा।\n\nआपकी अपनी Google Drive के बैकअप को छुआ नहीं जाता और वे बाद में रीस्टोर हो सकते हैं।\n\nपक्का न हो तो पहले बैकअप लें। इसे वापस नहीं किया जा सकता।</string>
-    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_keyword">मिटाओ</string>
     <string name="erase_all_done">सारा डेटा मिट गया।</string>
     <string name="db_broken_title">खाता नहीं खुल रहा</string>
     <string name="db_broken_body">इस फ़ोन में खाते की फ़ाइल को किसी चीज़ ने नुकसान पहुँचाया है। आपकी रोज़ की कॉपियाँ सुरक्षित हैं — ऐप पिछले सात दिनों की एक-एक कॉपी रखता है, और किसी कॉपी पर लौटने से आज की फ़ाइल तब तक नहीं छुई जाती जब तक सही कॉपी पक्की न हो जाए।</string>
@@ -1155,6 +1155,9 @@
     <string name="compliance_section">जाँच विभाग का ब्योरा</string>
     <string name="compliance_explain">तभी ज़रूरी है जब जाँच में माँगा जा सकता हो। फ़ीड या बीज के लिए खाली छोड़ें।</string>
     <string name="product_type_hint">प्रकार — कीटनाशक, खाद, बीज</string>
+    <string name="product_type_pesticide">कीटनाशक</string>
+    <string name="product_type_fertilizer">खाद</string>
+    <string name="product_type_seed">बीज</string>
     <string name="technical_name_hint">सक्रिय तत्व, जैसे Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">फ़ॉर्मूलेशन — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">रजिस्ट्रेशन नंबर (DRAP)</string>

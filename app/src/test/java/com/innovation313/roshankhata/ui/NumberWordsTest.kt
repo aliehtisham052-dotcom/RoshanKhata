@@ -6,6 +6,27 @@ import org.junit.Test
 class NumberWordsTest {
 
     @Test
+    fun `persian words, joined with and, in hezar, milyun and milyard`() {
+        assertEquals("صفر روپیه", NumberWords.inWordsPersian(0.0, "روپیه"))
+        assertEquals("هفت روپیه", NumberWords.inWordsPersian(7.0, "روپیه"))
+        assertEquals("نوزده روپیه", NumberWords.inWordsPersian(19.0, "روپیه"))
+        assertEquals("بیست و یک روپیه", NumberWords.inWordsPersian(21.0, "روپیه"))
+        assertEquals("صد روپیه", NumberWords.inWordsPersian(100.0, "روپیه"))
+        assertEquals("صد و پانزده روپیه", NumberWords.inWordsPersian(115.0, "روپیه"))
+        assertEquals("هزار روپیه", NumberWords.inWordsPersian(1000.0, "روپیه"))
+        assertEquals("هزار و یک روپیه", NumberWords.inWordsPersian(1001.0, "روپیه"))
+        assertEquals("دو هزار و پانصد روپیه", NumberWords.inWordsPersian(2500.0, "روپیه"))
+        assertEquals("بیست و یک هزار و پانصد روپیه", NumberWords.inWordsPersian(21500.0, "روپیه"))
+        assertEquals("صد هزار روپیه", NumberWords.inWordsPersian(100000.0, "روپیه"))
+        assertEquals("یک میلیون روپیه", NumberWords.inWordsPersian(1000000.0, "روپیه"))
+        assertEquals("دو میلیون و پانصد هزار روپیه", NumberWords.inWordsPersian(2500000.0, "روپیه"))
+        assertEquals("یک میلیون و دویست و سی و چهار هزار و پانصد و شصت و هفت روپیه", NumberWords.inWordsPersian(1234567.0, "روپیه"))
+        assertEquals("یک میلیارد روپیه", NumberWords.inWordsPersian(1000000000.0, "روپیه"))
+        assertEquals("پنج هزار و دویست USD", NumberWords.inWordsPersian(5200.9, "USD"))
+        assertEquals("صفر روپیه", NumberWords.inWordsPersian(-5.0, "روپیه"))
+    }
+
+    @Test
     fun `indonesian words, the se- forms and the regular ones`() {
         assertEquals("Nol rupiah", NumberWords.inWordsIndonesian(0.0, "rupiah"))
         assertEquals("Sepuluh rupiah", NumberWords.inWordsIndonesian(10.0, "rupiah"))

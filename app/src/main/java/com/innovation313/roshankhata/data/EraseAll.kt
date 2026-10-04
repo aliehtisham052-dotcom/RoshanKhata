@@ -24,6 +24,34 @@ import java.io.File
  */
 object EraseAll {
 
+    /** Accepted in every language; see [confirms]. */
+    const val UNIVERSAL_KEYWORD = "ERASE"
+
+    /**
+     * Has the owner typed the word that confirms the erase?
+     *
+     * [keyword] is the word the dialog shows, in the app's language
+     * (erase_all_keyword). It is compared forgivingly, because it is typed
+     * on whatever keyboard the phone has: spaces around it, letter case,
+     * the invisible joiners some keyboards insert, and composed versus
+     * decomposed letters do not matter.
+     *
+     * The English word is accepted in every language as well. A phone set to
+     * Urdu or Hindi may have only an English keyboard, and a word that cannot
+     * be typed would leave its owner unable to erase his own data.
+     */
+    fun confirms(typed: String?, keyword: String): Boolean {
+        val entered = fold(typed.orEmpty())
+        if (entered.isEmpty()) return false
+        return entered == fold(keyword) || entered == fold(UNIVERSAL_KEYWORD)
+    }
+
+    private fun fold(text: String): String =
+        java.text.Normalizer.normalize(text, java.text.Normalizer.Form.NFC)
+            .filter { it != '\u200C' && it != '\u200D' && it != '\u200E' && it != '\u200F' }
+            .trim()
+            .lowercase(java.util.Locale.ROOT)
+
     /**
      * Must be called off the main thread. The caller restarts the app
      * immediately afterwards — every screen above this one was showing data

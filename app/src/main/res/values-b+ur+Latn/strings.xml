@@ -522,7 +522,7 @@
     <string name="erase_all_button">Sara data mitayein</string>
     <string name="erase_all_title">Sab kuch mita dein?</string>
     <string name="erase_all_body">Is phone par har business — tamam customers, entries, cheque, cashbook, invoices, photos aur settings — hamesha ke liye mit jayenge. App bilkul nayi install jaisi khali ho jayegi.\n\nAap ki apni Google Drive par mojood backups ko HATH NAHI lagaya jayega — wo baad mein bhi bahal ho sakte hain.\n\nAgar yaqeen nahi, pehle backup lein. Ye wapas nahi ho sakta.</string>
-    <string name="erase_all_keyword">ERASE</string>
+    <string name="erase_all_keyword">MITAO</string>
     <string name="erase_all_done">Sara data mit gaya.</string>
     <string name="db_broken_title">Khata khul nahi raha</string>
     <string name="db_broken_body">Is phone par khatay ki file kharab ho gayi hai. Aap ki daily copies mehfooz hain — app pichle saat dinon ki ek ek copy rakhti hai, aur kisi copy par wapas jane se aaj ki file ko us waqt tak haath nahi lagta jab tak sehatmand copy tasdeeq na ho jaye.</string>
@@ -1121,6 +1121,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="compliance_section">Inspection mehkme ki tafseelat</string>
     <string name="compliance_explain">Sirf us waqt darkaar jab muaine mein poocha jaye. Feed ya beej ke liye khali chhod dein.</string>
     <string name="product_type_hint">Qisam — pesticide, khaad, beej</string>
+    <string name="product_type_pesticide">Pesticide</string>
+    <string name="product_type_fertilizer">Khaad</string>
+    <string name="product_type_seed">Beej</string>
     <string name="technical_name_hint">Moassir juzu, maslan Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">Formulation — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">Registration number (DRAP)</string>
