@@ -286,7 +286,7 @@
     <string name="invoice_bank_name_hint">بینک کا نام</string>
     <string name="invoice_bank_title_hint">اکاؤنٹ ٹائٹل</string>
     <string name="invoice_bank_iban_hint">IBAN / اکاؤنٹ نمبر</string>
-    <string name="invoice_bank_jazzcash_hint">جاز کیش / ایزی پیسہ نمبر</string>
+    <string name="invoice_bank_jazzcash_hint">موبائل والٹ نمبر (جاز کیش، ایزی پیسہ، UPI…)</string>
 
     <string name="payment_qr">پیمنٹ QR کوڈ</string>
     <string name="no_qr_yet">ابھی کوئی پیمنٹ QR محفوظ نہیں۔</string>
@@ -295,7 +295,7 @@
     <string name="qr_save_failed">یہ تصویر محفوظ نہیں ہو سکی۔ دوسری چنیں۔</string>
     <string name="qr_removed">پیمنٹ QR ہٹا دیا گیا</string>
     <string name="qr_confirm_title">کیا یہ درست کوڈ ہے؟</string>
-    <string name="qr_confirm_message">اوپر کوڈ دیکھیں اور تصدیق کریں کہ یہ آپ ہی کا ایزی پیسہ یا جاز کیش اکاؤنٹ ہے۔ اگر نہیں، تو آپ کے گاہکوں کی ادائیگیاں کسی اور کو پہنچیں گی۔</string>
+    <string name="qr_confirm_message">اوپر کوڈ دیکھیں اور تصدیق کریں کہ یہ آپ ہی کا پیمنٹ اکاؤنٹ (ایزی پیسہ، جاز کیش، UPI…) ہے۔ اگر نہیں، تو آپ کے گاہکوں کی ادائیگیاں کسی اور کو پہنچیں گی۔</string>
     <string name="qr_confirm_yes">جی، یہ میرا ہے</string>
     <string name="profile_saved">محفوظ ہو گیا</string>
     <string name="attach_qr_to_reminder">پیمنٹ QR ساتھ لگائیں</string>
@@ -607,7 +607,7 @@
     <string name="add_item">چیز شامل کریں</string>
     <string name="product_name_hint">مصنوعات کا نام</string>
     <string name="batch_number_hint">بیچ نمبر</string>
-    <string name="batch_why">ڈبے پر لکھا بیچ نمبر درج کریں۔ اگر کبھی نمونے پر سوال ہو، یا محکمہ زراعت پوچھے، تو یہی ریکارڈ بتاتا ہے مال کہاں سے آیا۔ بعد میں یہ دوبارہ نہیں بن سکتا۔</string>
+    <string name="batch_why">ڈبے پر لکھا بیچ نمبر درج کریں۔ اگر کبھی نمونے پر سوال ہو، یا انسپیکشن محکمہ پوچھے، تو یہی ریکارڈ بتاتا ہے مال کہاں سے آیا۔ بعد میں یہ دوبارہ نہیں بن سکتا۔</string>
     <string name="expiry_date">ایکسپائری تاریخ</string>
     <string name="expiry_why">روشن کھاتہ ایکسپائری سے 60 دن پہلے خبردار کرے گا — اتنا پہلے کہ مال بیچ سکیں، رعایت دے سکیں، یا واپس کر سکیں جب تک سپلائر لے لے۔</string>
     <string name="pick_expiry">ایکسپائری تاریخ چنیں</string>
@@ -1118,7 +1118,7 @@
     <string name="company_optional">کمپنی / برانڈ (اختیاری)</string>
     <string name="category_optional">قسم (اختیاری)</string>
     <string name="unit_optional">یونٹ — بوتل، کلو، بوری (اختیاری)</string>
-    <string name="compliance_section">محکمہ زراعت کی تفصیلات</string>
+    <string name="compliance_section">انسپیکشن محکمے کی تفصیلات</string>
     <string name="compliance_explain">صرف اُس وقت درکار جب معائنے میں پوچھا جائے۔ فیڈ یا بیج کے لیے خالی چھوڑ دیں۔</string>
     <string name="product_type_hint">قسم — پیسٹیسائیڈ، کھاد، بیج</string>
     <string name="technical_name_hint">مؤثر جزو، مثلاً Chlorpyrifos 40% EC</string>
@@ -1440,7 +1440,7 @@
     <string name="bp_section_paid">ادائیگی وصول کرنا</string>
     <string name="bp_section_seals">مہر اور دستخط</string>
     <string name="bp_section_docs">انوائس اور اسٹیٹمنٹ</string>
-    <string name="bp_strn">سیلز ٹیکس نمبر (STRN)</string>
+    <string name="bp_strn">ٹیکس نمبر (STRN / GST / VAT)</string>
     <string name="bp_strn_help">صرف رجسٹرڈ ہونے پر۔ خالی = نہیں چھپے گا۔</string>
     <string name="bp_currency">کرنسی</string>
     <string name="bp_currency_help">رقم کے ساتھ لکھا نشان، جیسے Rs یا $۔ رقم تبدیل نہیں ہوتی۔</string>
@@ -1462,7 +1462,7 @@
     <string name="trade_general">عام دکان</string>
     <string name="bp_paid_help">انوائس کے ادائیگی والے خانے میں آتا ہے۔ خالی لائن نہیں چھپتی۔</string>
     <string name="bp_qr">پیمنٹ QR</string>
-    <string name="bp_qr_help">آپ کا ایزی پیسہ / جاز کیش QR، اسٹیٹمنٹ کے لیے۔</string>
+    <string name="bp_qr_help">آپ کا پیمنٹ QR (ایزی پیسہ، جاز کیش، UPI…)، اسٹیٹمنٹ کے لیے۔</string>
     <string name="bp_add">شامل کریں</string>
     <string name="bp_change">بدلیں</string>
     <string name="bp_seals_help">سادہ سفید کاغذ پر تصویر لیں — ایپ خود کاٹ دیتی ہے۔</string>
@@ -1470,8 +1470,8 @@
     <string name="bp_photo">اسٹیٹمنٹ پر گاہک کی تصویر</string>
     <string name="bp_photo_help">پہلے سے بند — اسٹیٹمنٹ آگے بھیجی جا سکتی ہے۔</string>
     <string name="bp_unsaved">تبدیلیاں محفوظ نہیں ہوئیں</string>
-    <string name="bp_iban_bad">IBAN کے 24 حروف ہوتے ہیں اور یہ PK سے شروع ہوتا ہے۔</string>
-    <string name="bp_mobile_bad">موبائل نمبر 11 ہندسوں کا ہوتا ہے، جیسے 03001234567۔</string>
+    <string name="bp_iban_bad">یہ IBAN جیسا نہیں لگتا، مثلاً PK36 SCBL 0000 0011 2345 6702۔</string>
+    <string name="bp_mobile_bad">یہ موبائل نمبر جیسا نہیں لگتا، مثلاً 03001234567۔</string>
     <string name="bp_leave_title">محفوظ کیے بغیر نکلیں؟</string>
     <string name="bp_leave_msg">اس اسکرین پر آپ کی تبدیلیاں ضائع ہو جائیں گی۔</string>
     <string name="bp_leave_discard">چھوڑ دیں</string>
@@ -1539,7 +1539,7 @@
     <string name="label_step_skip">چھوڑیں</string>
     <string name="label_step_save_next">محفوظ کر کے اگلا</string>
     <string name="pay_heading">*ادائیگی کا طریقہ*</string>
-    <string name="pay_wallet_label">جاز کیش/ایزی پیسہ</string>
+    <string name="pay_wallet_label">موبائل والٹ</string>
     <string name="pay_bank_label">بینک</string>
     <string name="entry_share_gave">محترم *%1$s*، %2$s کو آپ کے کھاتے میں *%3$s* ادھار لکھا گیا۔</string>
     <string name="entry_share_got">محترم *%1$s*، %2$s کو *%3$s* وصول ہوئے۔ شکریہ۔</string>
@@ -1552,7 +1552,7 @@
     <string name="bp_ask_share">ہر انٹری واٹس ایپ پر بھیجنے کا پوچھیں</string>
     <string name="bp_ask_share_help">انٹری محفوظ کرنے کے بعد ایک چھوٹی پٹی گاہک کو بھیجنے کا پوچھے گی۔ بھیجیں آپ واٹس ایپ میں دبائیں گے۔</string>
     <string name="bp_pay_reminder">یاد دہانی میں ادائیگی کی تفصیل</string>
-    <string name="bp_pay_reminder_help">ہر ادائیگی کی یاد دہانی کے نیچے آپ کا جاز کیش/ایزی پیسہ اور بینک اکاؤنٹ (انوائس سیٹنگز سے) لگ جائے گا۔</string>
+    <string name="bp_pay_reminder_help">ہر ادائیگی کی یاد دہانی کے نیچے آپ کا موبائل والٹ اور بینک اکاؤنٹ (انوائس سیٹنگز سے) لگ جائے گا۔</string>
     <string name="followup_send_all">سب کو باری باری یاد دلائیں</string>
     <string name="followup_queue_next">اگلا: %1$s (%2$s)</string>
     <string name="followup_queue_open">واٹس ایپ کھولیں</string>

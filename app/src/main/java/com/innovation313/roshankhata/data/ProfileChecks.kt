@@ -21,9 +21,11 @@ object ProfileChecks {
      * "IBAN / account number") and is left alone. Spaces are ignored, since
      * IBANs are usually written in groups of four.
      */
-    fun ibanLooksWrong(raw: String): Boolean {
+    fun ibanLooksWrong(raw: String, pakistani: Boolean = true): Boolean {
         val t = raw.replace(" ", "").replace("-", "").uppercase(Locale.ROOT)
         if (t.isEmpty() || t.none { it.isLetter() }) return false
+        // Another country's shop (4 Oct 2026): any IBAN shape — country, check digits, 11-30 more.
+        if (!pakistani) return !Regex("^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$").matches(t)
         return !Regex("^PK[0-9]{2}[A-Z0-9]{20}$").matches(t)
     }
 
@@ -32,9 +34,11 @@ object ProfileChecks {
      * starting 03, also written +92 3.. or 92 3.. — all three are accepted.
      * Spaces and dashes are ignored.
      */
-    fun mobileLooksWrong(raw: String): Boolean {
+    fun mobileLooksWrong(raw: String, pakistani: Boolean = true): Boolean {
         val t = raw.filter { !it.isWhitespace() && it != '-' }
         if (t.isEmpty()) return false
+        // Another country's shop (4 Oct 2026): 7 to 15 digits, an optional leading +.
+        if (!pakistani) return !Regex("^\\+?[0-9]{7,15}$").matches(t)
         val local = when {
             t.startsWith("+92") -> "0" + t.drop(3)
             t.startsWith("0092") -> "0" + t.drop(4)

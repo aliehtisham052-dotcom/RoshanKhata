@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.ui
 
 import android.content.Context
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.Currency
 
 /**
  * Whole rupees, spelled out — in the language the app is actually running
@@ -87,6 +88,47 @@ object NumberWords {
             "ur-Latn" -> spell(amount, romanUrduOnes, "Crore", "Lakh", "Hazar", "Sou", "Rupay") { romanUrduOnes[it] }
             else -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Rupees") { englishBelow100(it) }
         }
+
+    /**
+     * The invoice's "amount in words" for whatever sign the shop chose (4 Oct 2026).
+     *
+     * Rs, ₹ and ৳ are counted the South Asian way (lakh, crore) in the app's
+     * language, as before. Any other sign is spelled in English with the
+     * Western groups (thousand, million) and ends with the currency's own
+     * code — "Five Thousand Two Hundred AED" — because "Lakh Dirham" is not
+     * how anyone in a Gulf shop reads a figure, and the Urdu/Sindhi tables
+     * only know rupees.
+     */
+    fun amountInWords(context: Context, amount: Double): String {
+        val sign = Currency.symbol
+        return when (sign) {
+            "Rs", "₹" -> rupeesInWords(context, amount)
+            "৳" -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Taka") { englishBelow100(it) }
+            else -> spellWestern(amount, Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign)
+        }
+    }
+
+    /** Thousand / million / billion groups, English only; capped the same way as [spell]. */
+    fun spellWestern(amount: Double, unitWord: String): String {
+        var n = amount.toLong().coerceAtLeast(0)
+        if (n == 0L) return "${englishOnes[0]} $unitWord"
+        val parts = mutableListOf<String>()
+        val billion = (n / 1_000_000_000).coerceAtMost(999); n %= 1_000_000_000
+        val million = n / 1_000_000; n %= 1_000_000
+        val thousand = n / 1_000; n %= 1_000
+        fun below1000(v: Long): String {
+            val h = (v / 100).toInt(); val r = (v % 100).toInt()
+            return listOfNotNull(
+                if (h > 0) "${englishOnes[h]} Hundred" else null,
+                if (r > 0) englishBelow100(r) else null
+            ).joinToString(" ")
+        }
+        if (billion > 0) parts.add("${below1000(billion)} Billion")
+        if (million > 0) parts.add("${below1000(million)} Million")
+        if (thousand > 0) parts.add("${below1000(thousand)} Thousand")
+        if (n > 0) parts.add(below1000(n))
+        return parts.joinToString(" ") + " " + unitWord
+    }
 
     /** Kept for the unit tests, which assert the Roman Urdu wording specifically. */
     fun rupeesInWordsRomanUrdu(amount: Double): String =

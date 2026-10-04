@@ -296,7 +296,7 @@
     <string name="invoice_bank_name_hint">بئنڪ جو نالو</string>
     <string name="invoice_bank_title_hint">اڪائونٽ ٽائيٽل</string>
     <string name="invoice_bank_iban_hint">IBAN / اڪائونٽ نمبر</string>
-    <string name="invoice_bank_jazzcash_hint">جاز ڪيش / ايزي پيسا نمبر</string>
+    <string name="invoice_bank_jazzcash_hint">موبائل والٽ نمبر (جاز ڪيش، ايزي پيسا، UPI…)</string>
 
     <string name="payment_qr">ادائيگي جو QR ڪوڊ</string>
     <string name="no_qr_yet">اڃا ڪو ادائيگي QR محفوظ ناهي.</string>
@@ -305,7 +305,7 @@
     <string name="qr_save_failed">اها تصوير محفوظ نه ٿي سگهي. مهرباني ڪري ٻي چونڊيو.</string>
     <string name="qr_removed">ادائيگي QR هٽايو ويو</string>
     <string name="qr_confirm_title">ڇا اهو ئي صحيح ڪوڊ آهي؟</string>
-    <string name="qr_confirm_message">مٿيون ڪوڊ ڏسو ۽ تصديق ڪريو ته اهو توهان جو پنهنجو ايزي پئسا يا جاز ڪيش کاتو آهي. جيڪڏهن ناهي ته گراهڪن جون ادائيگيون ڪنهن ٻئي وٽ پهچنديون.</string>
+    <string name="qr_confirm_message">مٿيون ڪوڊ ڏسو ۽ تصديق ڪريو ته اهو توهان جو پنهنجو پيمينٽ کاتو (ايزي پئسا، جاز ڪيش، UPI…) آهي. جيڪڏهن ناهي ته گراهڪن جون ادائيگيون ڪنهن ٻئي وٽ پهچنديون.</string>
     <string name="qr_confirm_yes">ها، اهو منهنجو آهي</string>
     <string name="profile_saved">محفوظ ٿيو</string>
     <string name="attach_qr_to_reminder">ادائيگي QR ڳنڍيو</string>
@@ -628,7 +628,7 @@
     <string name="add_item">شيءِ شامل ڪريو</string>
     <string name="product_name_hint">پراڊڪٽ جو نالو</string>
     <string name="batch_number_hint">بيچ نمبر</string>
-    <string name="batch_why">دٻي تي لکيل بيچ نمبر لکو. جيڪڏهن ڪڏهن ڪو نمونو سواليه ٿيو، يا زرعي کاتو پڇيو، ته اهو ئي رڪارڊ ڏيکاريندو ته مال ڪٿان آيو. پوءِ اهو ٻيهر ٺاهي نٿو سگهجي.</string>
+    <string name="batch_why">دٻي تي لکيل بيچ نمبر لکو. جيڪڏهن ڪڏهن ڪو نمونو سواليه ٿيو، يا انسپيڪشن کاتو پڇيو، ته اهو ئي رڪارڊ ڏيکاريندو ته مال ڪٿان آيو. پوءِ اهو ٻيهر ٺاهي نٿو سگهجي.</string>
     <string name="expiry_date">ختم ٿيڻ جي تاريخ</string>
     <string name="expiry_why">روشن کاتو ختم ٿيڻ کان ۶۰ ڏينهن اڳ خبردار ڪندو — ايترو اڳ جو وڪڻي سگهو، گهٽ اگهه تي ڏئي سگهو، يا جيستائين سپلائر واپس وٺي، موٽائي سگهو.</string>
     <string name="pick_expiry">ختم ٿيڻ جي تاريخ چونڊيو</string>
@@ -1146,7 +1146,7 @@
     <string name="company_optional">ڪمپني / برانڊ (اختياري)</string>
     <string name="category_optional">قسم (اختياري)</string>
     <string name="unit_optional">يونٽ — بوتل، ڪلو، ٻوري (اختياري)</string>
-    <string name="compliance_section">زراعت کاتي جون تفصيلون</string>
+    <string name="compliance_section">انسپيڪشن کاتي جون تفصيلون</string>
     <string name="compliance_explain">رڳو تڏهن گهربل جڏهن معائني ۾ پڇيو وڃي. فيڊ يا ٻج لاءِ خالي ڇڏيو.</string>
     <string name="product_type_hint">قسم — پيسٽيسائيڊ، ڀاڻ، ٻج</string>
     <string name="technical_name_hint">مؤثر جزو، مثال Chlorpyrifos 40% EC</string>
@@ -1468,7 +1468,7 @@
     <string name="bp_section_paid">ادائگي وصول ڪرڻ</string>
     <string name="bp_section_seals">مهر ۽ صحيح</string>
     <string name="bp_section_docs">انوائس ۽ اسٽيٽمينٽ</string>
-    <string name="bp_strn">سيلز ٽيڪس نمبر (STRN)</string>
+    <string name="bp_strn">ٽيڪس نمبر (STRN / GST / VAT)</string>
     <string name="bp_strn_help">رڳو رجسٽرڊ هجڻ تي. خالي = نه ڇپبو.</string>
     <string name="bp_currency">ڪرنسي</string>
     <string name="bp_currency_help">رقم سان لکيل نشان، جيئن Rs يا $. رقم تبديل نه ٿيندي.</string>
@@ -1490,7 +1490,7 @@
     <string name="trade_general">عام دڪان</string>
     <string name="bp_paid_help">انوائس جي ادائگي واري خاني ۾ اچي ٿو. خالي لائين نه ڇپبي.</string>
     <string name="bp_qr">ادائگي QR</string>
-    <string name="bp_qr_help">توهان جو ايزي پيسا / جاز ڪيش QR، اسٽيٽمينٽ لاءِ.</string>
+    <string name="bp_qr_help">توهان جو پيمينٽ QR (ايزي پيسا، جاز ڪيش، UPI…)، اسٽيٽمينٽ لاءِ.</string>
     <string name="bp_add">شامل ڪريو</string>
     <string name="bp_change">مٽايو</string>
     <string name="bp_seals_help">سادي اڇي ڪاغذ تي تصوير وٺو — ايپ پاڻ ڪٽي ٿي.</string>
@@ -1498,8 +1498,8 @@
     <string name="bp_photo">اسٽيٽمينٽ تي گراهڪ جي تصوير</string>
     <string name="bp_photo_help">اڳ ۾ بند — اسٽيٽمينٽ اڳتي موڪلي سگهجي ٿي.</string>
     <string name="bp_unsaved">تبديليون محفوظ نه ٿيون</string>
-    <string name="bp_iban_bad">IBAN ۾ 24 اکر هوندا آهن ۽ اهو PK سان شروع ٿيندو آهي.</string>
-    <string name="bp_mobile_bad">موبائل نمبر 11 انگن جو هوندو آهي، جيئن 03001234567.</string>
+    <string name="bp_iban_bad">هي IBAN جهڙو نٿو لڳي، مثال PK36 SCBL 0000 0011 2345 6702.</string>
+    <string name="bp_mobile_bad">هي موبائل نمبر جهڙو نٿو لڳي، مثال 03001234567.</string>
     <string name="bp_leave_title">محفوظ ڪرڻ کان سواءِ نڪرو؟</string>
     <string name="bp_leave_msg">هن اسڪرين تي توهان جون تبديليون ضايع ٿي وينديون.</string>
     <string name="bp_leave_discard">ڇڏي ڏيو</string>
@@ -1567,7 +1567,7 @@
     <string name="label_step_skip">ڇڏيو</string>
     <string name="label_step_save_next">محفوظ ڪري اڳيون</string>
     <string name="pay_heading">*ادائگي جو طريقو*</string>
-    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_wallet_label">موبائل والٽ</string>
     <string name="pay_bank_label">بئنڪ</string>
     <string name="entry_share_gave">محترم *%1$s*، %2$s تي توهان جي کاتي ۾ *%3$s* اڌار لکيو ويو.</string>
     <string name="entry_share_got">محترم *%1$s*، %2$s تي *%3$s* وصول ٿيا. مهرباني.</string>
@@ -1580,7 +1580,7 @@
     <string name="bp_ask_share">هر انٽري واٽس ايپ تي موڪلڻ جو پڇو</string>
     <string name="bp_ask_share_help">انٽري محفوظ ڪرڻ کان پوءِ هڪ ننڍي پٽي گراهڪ کي موڪلڻ جو پڇندي. موڪليو توهان واٽس ايپ ۾ دٻائيندا.</string>
     <string name="bp_pay_reminder">ياد ڏياريءَ ۾ ادائگي جي تفصيل</string>
-    <string name="bp_pay_reminder_help">هر ادائگي جي ياد ڏياريءَ هيٺ توهان جو JazzCash/Easypaisa ۽ بئنڪ اڪائونٽ (انوائس سيٽنگز مان) لڳندو.</string>
+    <string name="bp_pay_reminder_help">هر ادائگي جي ياد ڏياريءَ هيٺ توهان جو موبائل والٽ ۽ بئنڪ اڪائونٽ (انوائس سيٽنگز مان) لڳندو.</string>
     <string name="followup_send_all">سڀني کي واري واري ياد ڏياريو</string>
     <string name="followup_queue_next">ايندڙ: %1$s (%2$s)</string>
     <string name="followup_queue_open">واٽس ايپ کوليو</string>

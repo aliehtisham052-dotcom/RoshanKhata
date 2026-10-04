@@ -73,6 +73,9 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var etStrn: EditText
     private lateinit var btnCurrency: MaterialButton
     private lateinit var btnTrade: MaterialButton
+
+    /** A shop that counts in rupees gets the Pakistani IBAN/mobile checks; any other, a general shape check. */
+    private val pakistaniRules: Boolean get() = BusinessProfile.currency(this) == Currency.DEFAULT
     private lateinit var tvUnsaved: TextView
     private lateinit var btnPickQr: MaterialButton
     private lateinit var btnPickStamp: MaterialButton
@@ -343,10 +346,10 @@ class BusinessSettingsActivity : BaseActivity() {
         val tilIban = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankIban)
         val tilWallet = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankJazzCash)
         fun checkIban() {
-            tilIban.error = if (ProfileChecks.ibanLooksWrong(etBankIban.text.toString())) getString(R.string.bp_iban_bad) else null
+            tilIban.error = if (ProfileChecks.ibanLooksWrong(etBankIban.text.toString(), pakistaniRules)) getString(R.string.bp_iban_bad) else null
         }
         fun checkWallet() {
-            tilWallet.error = if (ProfileChecks.mobileLooksWrong(etBankJazzCash.text.toString())) getString(R.string.bp_mobile_bad) else null
+            tilWallet.error = if (ProfileChecks.mobileLooksWrong(etBankJazzCash.text.toString(), pakistaniRules)) getString(R.string.bp_mobile_bad) else null
         }
         etBankIban.setOnFocusChangeListener { _, has -> if (!has) checkIban() }
         etBankJazzCash.setOnFocusChangeListener { _, has -> if (!has) checkWallet() }

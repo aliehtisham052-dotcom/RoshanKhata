@@ -303,7 +303,7 @@
     <string name="invoice_bank_name_hint">Bank name</string>
     <string name="invoice_bank_title_hint">Account title</string>
     <string name="invoice_bank_iban_hint">IBAN / account number</string>
-    <string name="invoice_bank_jazzcash_hint">JazzCash / EasyPaisa number</string>
+    <string name="invoice_bank_jazzcash_hint">Mobile wallet number (JazzCash, EasyPaisa, UPI…)</string>
 
     <string name="payment_qr">Payment QR code</string>
     <string name="no_qr_yet">No payment QR saved yet.</string>
@@ -312,7 +312,7 @@
     <string name="qr_save_failed">That image could not be saved. Please pick another.</string>
     <string name="qr_removed">Payment QR removed</string>
     <string name="qr_confirm_title">Is this the right code?</string>
-    <string name="qr_confirm_message">Look at the code above and confirm it is your own EasyPaisa or JazzCash account. If it is not, your customers\' payments will reach someone else.</string>
+    <string name="qr_confirm_message">Look at the code above and confirm it is your own payment account (EasyPaisa, JazzCash, UPI…). If it is not, your customers\' payments will reach someone else.</string>
     <string name="qr_confirm_yes">Yes, it is mine</string>
     <string name="profile_saved">Saved</string>
     <string name="attach_qr_to_reminder">Attach payment QR</string>
@@ -636,7 +636,7 @@
     <string name="add_item">Add item</string>
     <string name="product_name_hint">Product name</string>
     <string name="batch_number_hint">Batch number</string>
-    <string name="batch_why">Write the batch number from the container. If a sample is ever questioned, or the Agriculture Department asks, this is the record that shows exactly where the stock came from. It cannot be reconstructed later.</string>
+    <string name="batch_why">Write the batch number from the container. If a sample is ever questioned, or the inspection department asks, this is the record that shows exactly where the stock came from. It cannot be reconstructed later.</string>
     <string name="expiry_date">Expiry date</string>
     <string name="expiry_why">Roshan Khata will warn you 60 days before this expires — early enough to sell it, discount it, or return it while the supplier will still take it.</string>
     <string name="pick_expiry">Pick expiry date</string>
@@ -1159,7 +1159,7 @@ You can change this any time from this screen.</string>
     <string name="company_optional">Company / brand (optional)</string>
     <string name="category_optional">Category (optional)</string>
     <string name="unit_optional">Unit — bottle, kg, bag (optional)</string>
-    <string name="compliance_section">Agriculture Department details</string>
+    <string name="compliance_section">Inspection department details</string>
     <string name="compliance_explain">Only needed if an inspection may ask for them. Leave blank for feed or seed.</string>
     <string name="product_type_hint">Type — pesticide, fertilizer, seed</string>
     <string name="technical_name_hint">Active ingredient, e.g. Chlorpyrifos 40% EC</string>
@@ -1492,7 +1492,7 @@ You can change this any time from this screen.</string>
     <string name="bp_section_paid">Getting paid</string>
     <string name="bp_section_seals">Stamp &amp; signature</string>
     <string name="bp_section_docs">Invoice &amp; statement</string>
-    <string name="bp_strn">Sales tax no. (STRN)</string>
+    <string name="bp_strn">Tax number (STRN / GST / VAT)</string>
     <string name="bp_strn_help">Only if registered. Blank = not printed.</string>
     <string name="bp_currency">Currency</string>
     <string name="bp_currency_help">The sign your figures wear, e.g. Rs or $. Amounts are not converted.</string>
@@ -1514,7 +1514,7 @@ You can change this any time from this screen.</string>
     <string name="trade_general">General shop</string>
     <string name="bp_paid_help">Shown in the payment box on your invoice. Blank rows are left off.</string>
     <string name="bp_qr">Payment QR</string>
-    <string name="bp_qr_help">Your EasyPaisa / JazzCash QR, for statements.</string>
+    <string name="bp_qr_help">Your payment QR (EasyPaisa, JazzCash, UPI…), for statements.</string>
     <string name="bp_add">Add</string>
     <string name="bp_change">Change</string>
     <string name="bp_seals_help">Photo on plain white paper — the app crops it for you.</string>
@@ -1522,8 +1522,8 @@ You can change this any time from this screen.</string>
     <string name="bp_photo">Customer photo on statements</string>
     <string name="bp_photo_help">Off by default — a statement can be forwarded.</string>
     <string name="bp_unsaved">Unsaved changes</string>
-    <string name="bp_iban_bad">An IBAN is 24 characters and starts with PK.</string>
-    <string name="bp_mobile_bad">A mobile number has 11 digits, like 03001234567.</string>
+    <string name="bp_iban_bad">This does not look like an IBAN, e.g. PK36 SCBL 0000 0011 2345 6702.</string>
+    <string name="bp_mobile_bad">This does not look like a mobile number, e.g. 03001234567.</string>
     <string name="bp_leave_title">Leave without saving?</string>
     <string name="bp_leave_msg">Your changes on this screen will be lost.</string>
     <string name="bp_leave_discard">Discard</string>
@@ -1591,7 +1591,7 @@ You can change this any time from this screen.</string>
     <string name="label_step_skip">Skip</string>
     <string name="label_step_save_next">Save &amp; next</string>
     <string name="pay_heading">*How to pay*</string>
-    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_wallet_label">Mobile wallet</string>
     <string name="pay_bank_label">Bank</string>
     <string name="entry_share_gave">Dear *%1$s*, on %2$s *%3$s* was written to your account (credit).</string>
     <string name="entry_share_got">Dear *%1$s*, on %2$s *%3$s* was received. Thank you.</string>
@@ -1604,7 +1604,7 @@ You can change this any time from this screen.</string>
     <string name="bp_ask_share">Offer to send each entry on WhatsApp</string>
     <string name="bp_ask_share_help">After you save an entry, a small bar offers to send it to the customer. You press Send in WhatsApp.</string>
     <string name="bp_pay_reminder">Payment details on reminders</string>
-    <string name="bp_pay_reminder_help">Adds your JazzCash/Easypaisa and bank account (from Invoice settings) under every payment reminder.</string>
+    <string name="bp_pay_reminder_help">Adds your mobile wallet and bank account (from Invoice settings) under every payment reminder.</string>
     <string name="followup_send_all">Remind all, one by one</string>
     <string name="followup_queue_next">Next: %1$s (%2$s)</string>
     <string name="followup_queue_open">Open WhatsApp</string>
