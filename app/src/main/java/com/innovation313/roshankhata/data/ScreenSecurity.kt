@@ -1,8 +1,11 @@
 package com.innovation313.roshankhata.data
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
+import android.util.TypedValue
 import android.view.WindowManager
 
 /**
@@ -37,6 +40,9 @@ import android.view.WindowManager
  *
  * So the leak that has no cost is closed for everyone, and the protection that
  * has a cost is offered, explained, and left to the owner.
+ *
+ * What the switcher shows INSTEAD of the screen is this file's business too:
+ * see [plainCard].
  */
 object ScreenSecurity {
 
@@ -73,6 +79,52 @@ object ScreenSecurity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             activity.setRecentsScreenshotEnabled(false)
         }
+    }
+
+    /**
+     * The card the switcher shows in place of this screen: one plain page.
+     *
+     * With the thumbnail switched off ([hideFromRecents]) the system does not
+     * leave the card empty. It draws a stand-in from what the app's theme
+     * says about itself: the page colour, and across the top a strip in the
+     * theme's STATUS BAR colour. This app's status bar is the dark green of
+     * its section header, so every other app in the switcher showed a clean
+     * white card and this one a white card with a green band along its top
+     * edge, which reads as a fault (the owner's report, 4 Oct).
+     *
+     * So the system is told, for the card only, that the two bars are the
+     * page's own colour: white by day, the dark page by night, the same as
+     * the rest of the stand-in. The real status bar on the screen is not
+     * touched; this is the task's description of itself, not the window.
+     *
+     * Android 13 and later, like the stand-in itself. Called as each screen
+     * is created and again as it resumes: a screen that sets its own bar
+     * colours in onCreate (the language and welcome screens) resets this
+     * description when it does, and the resume puts it back before the
+     * switcher can ask for the card.
+     */
+    fun plainCard(activity: Activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // The colour the stand-in's page is filled with: the theme's own
+            // background, which is where the system takes it from too.
+            val page = opaqueThemeColor(activity, android.R.attr.colorBackground) ?: return
+            val description = ActivityManager.TaskDescription.Builder()
+                .setStatusBarColor(page)
+                .setNavigationBarColor(page)
+            // Setting a description replaces its primary colour as well, and
+            // an unset one would wipe what the theme gave. Hand it back as is.
+            opaqueThemeColor(activity, android.R.attr.colorPrimary)
+                ?.let { description.setPrimaryColor(it) }
+            activity.setTaskDescription(description.build())
+        }
+    }
+
+    /** A colour attribute of the screen's theme, or null unless it is a solid colour. */
+    private fun opaqueThemeColor(activity: Activity, attr: Int): Int? {
+        val value = TypedValue()
+        if (!activity.theme.resolveAttribute(attr, value, true)) return null
+        if (value.type < TypedValue.TYPE_FIRST_COLOR_INT || value.type > TypedValue.TYPE_LAST_COLOR_INT) return null
+        return value.data.takeIf { Color.alpha(it) == 0xFF }
     }
 
     /**
