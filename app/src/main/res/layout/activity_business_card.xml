@@ -117,6 +117,19 @@
             android:minHeight="48dp"
             android:textSize="15sp" />
 
+        <!-- Typed into the customer's WhatsApp when they scan the card's QR.
+             Capped at 40 characters: a longer message makes a denser code. -->
+        <EditText
+            android:id="@+id/etQrMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="@string/biz_card_qr_message_hint"
+            android:inputType="textCapSentences"
+            android:maxLength="40"
+            android:minHeight="48dp"
+            android:textSize="15sp" />
+
         <EditText
             android:id="@+id/etEmail"
             android:textDirection="ltr"
@@ -191,9 +204,20 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="14dp"
-            android:layout_marginBottom="24dp"
             android:textAllCaps="false"
             android:text="@string/biz_card_share"
+            android:textSize="16sp" />
+
+        <!-- Print-ready PDF: 3.5 x 2 inch card with 0.125 inch bleed (see CardPdf). -->
+        <Button
+            android:id="@+id/btnCardPdf"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:textAllCaps="false"
+            android:text="@string/biz_card_print_pdf"
             android:textSize="16sp" />
 
     </LinearLayout>

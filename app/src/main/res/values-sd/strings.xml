@@ -1767,4 +1767,7 @@
     <string name="biz_card_email_hint">اي ميل (اختياري)</string>
     <string name="biz_card_web_hint">ويب سائيٽ يا فيس بڪ/انسٽاگرام (اختياري)</string>
     <string name="biz_card_tagline_hint">هڪ خاص لائين، مثال: گهر تائين ڊليوري (اختياري)</string>
+    <string name="biz_card_qr_message_hint">QR اسڪين تي واٽس ايپ پيغام (اختياري)</string>
+    <string name="biz_card_qr_message_default">السلام عليڪم</string>
+    <string name="biz_card_print_pdf">ڇپائي لاءِ PDF (3.5 × 2 انچ)</string>
 </resources>

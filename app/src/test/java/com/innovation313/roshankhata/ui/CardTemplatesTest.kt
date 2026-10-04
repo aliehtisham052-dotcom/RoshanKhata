@@ -64,7 +64,7 @@ class CardTemplatesTest {
         val bmp = Bitmap.createBitmap(CardTemplates.W, CardTemplates.H, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmp)
         for (tpl in CardTemplates.all) {
-            for (d in listOf(full, bare, urdu)) {
+            for (d in listOf(full, bare, urdu, full.copy(qrMessage = "السلام علیکم، آپ کا کارڈ دیکھ کر آیا ہوں"))) {
                 for (phase in floatArrayOf(-1f, 0f, 0.25f, 0.5f, 0.99f)) {
                     try {
                         tpl.draw(canvas, d, CardTemplates.W, CardTemplates.H, phase)
@@ -91,6 +91,15 @@ class CardTemplatesTest {
         // No usable number: no QR at all rather than a code that opens nothing.
         assertNull(CardTemplates.qrPayload(bare))
         assertNull(CardTemplates.qrPayload(bare.copy(phone = "1234")))
+        // A pre-filled message rides along, URL-encoded with %20 for spaces.
+        assertEquals(
+            "https://wa.me/923001234567?text=Salam%2C%20card%20se%20aaya%20hoon",
+            CardTemplates.qrPayload(bare.copy(phone = "0300 1234567", qrMessage = "Salam, card se aaya hoon"))
+        )
+        assertEquals(
+            "https://wa.me/923001234567",
+            CardTemplates.qrPayload(bare.copy(phone = "0300 1234567", qrMessage = "   "))
+        )
         assertNotNull(CardTemplates.qrPayload(urdu))
         assertTrue(CardTemplates.qrPayload(urdu)!!.startsWith("https://wa.me/92"))
     }
