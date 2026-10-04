@@ -9,6 +9,7 @@ on:
   push:
     paths:
       - 'app/src/main/res/values*/strings.xml'
+      - 'app/src/main/res/values*/arrays.xml'
       - 'scripts/check_strings.py'
       - '.github/workflows/strings.yml'
       # Dark-mode colour guard: any layout, drawable, colour or theme change.
@@ -24,6 +25,7 @@ on:
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
+      - 'app/src/main/res/values*/arrays.xml'
       - 'scripts/check_strings.py'
       - '.github/workflows/strings.yml'
       # Dark-mode colour guard: any layout, drawable, colour or theme change.

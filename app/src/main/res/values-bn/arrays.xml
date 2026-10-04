@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Bengali starting suggestions for the Cashbook category, same order as
+      values/arrays.xml. Display text only: the owner's chosen words are
+      what is saved, and nothing in the app reads a category back as a key,
+      so a translation here cannot break any total.
+
+      This file was missing when the language was added (4 Oct), so a shop
+      working in Bengali was offered "Cash Sale" and "Rent" in English;
+      scripts/check_strings.py now checks arrays as well as strings.
+
+      The units list is deliberately NOT translated: the unit is saved with
+      every goods line, and the app groups a product's lines and finds its
+      last rate by item AND unit (KhataDao product stats, PartyDetailActivity
+      stock and last-rate lookup). "kg" on one entry and a translated word on
+      the next would split one product in two and lose its last rate.
+    -->
+    <string-array name="cash_categories">
+        <item>নগদ বিক্রি</item>
+        <item>ভাড়া</item>
+        <item>বিদ্যুৎ</item>
+        <item>মজুরি</item>
+        <item>জ্বালানি</item>
+        <item>পরিবহন</item>
+        <item>মেরামত</item>
+        <item>চা / নাশতা</item>
+        <item>স্টেশনারি</item>
+        <item>দান / সদকা</item>
+        <item>ব্যক্তিগত উত্তোলন</item>
+        <item>অন্যান্য</item>
+    </string-array>
+</resources>

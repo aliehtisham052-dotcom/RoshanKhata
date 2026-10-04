@@ -6,6 +6,36 @@ import org.junit.Test
 class NumberWordsTest {
 
     @Test
+    fun `indonesian words, the se- forms and the regular ones`() {
+        assertEquals("Nol rupiah", NumberWords.inWordsIndonesian(0.0, "rupiah"))
+        assertEquals("Sepuluh rupiah", NumberWords.inWordsIndonesian(10.0, "rupiah"))
+        assertEquals("Sebelas rupiah", NumberWords.inWordsIndonesian(11.0, "rupiah"))
+        assertEquals("Sembilan belas rupiah", NumberWords.inWordsIndonesian(19.0, "rupiah"))
+        assertEquals("Dua puluh satu rupiah", NumberWords.inWordsIndonesian(21.0, "rupiah"))
+        assertEquals("Seratus sebelas rupiah", NumberWords.inWordsIndonesian(111.0, "rupiah"))
+        assertEquals("Seribu seratus rupiah", NumberWords.inWordsIndonesian(1100.0, "rupiah"))
+        assertEquals("Dua puluh satu ribu lima ratus rupiah", NumberWords.inWordsIndonesian(21500.0, "rupiah"))
+    }
+
+    @Test
+    fun `indonesian counts in ribu, juta and miliar, never lakh and crore`() {
+        assertEquals("Seratus ribu rupiah", NumberWords.inWordsIndonesian(100000.0, "rupiah"))
+        assertEquals("Satu juta rupiah", NumberWords.inWordsIndonesian(1000000.0, "rupiah"))
+        assertEquals("Dua juta lima ratus ribu rupiah", NumberWords.inWordsIndonesian(2500000.0, "rupiah"))
+        assertEquals(
+            "Satu juta dua ratus tiga puluh empat ribu lima ratus enam puluh tujuh rupiah",
+            NumberWords.inWordsIndonesian(1234567.0, "rupiah")
+        )
+        assertEquals("Satu miliar rupiah", NumberWords.inWordsIndonesian(1000000000.0, "rupiah"))
+    }
+
+    @Test
+    fun `indonesian drops the fraction, treats a negative as zero, and names any unit`() {
+        assertEquals("Lima ribu dua ratus USD", NumberWords.inWordsIndonesian(5200.9, "USD"))
+        assertEquals("Nol rupiah", NumberWords.inWordsIndonesian(-5.0, "rupiah"))
+    }
+
+    @Test
     fun `hindi words, lakh and crore, irregular tens`() {
         assertEquals("शून्य रुपये", NumberWords.rupeesInWordsHindi(0.0))
         assertEquals("उन्नीस हज़ार दो सौ पचासी रुपये", NumberWords.rupeesInWordsHindi(19285.0))

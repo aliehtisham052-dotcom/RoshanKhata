@@ -3,6 +3,7 @@ package com.innovation313.roshankhata.data
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
+import com.innovation313.roshankhata.R
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,7 +35,19 @@ object CsvExport {
         return try {
             val sb = StringBuilder()
             sb.append('\uFEFF') // BOM — see the header comment.
-            row(sb, listOf("Date", "Name", "Note", "I Gave", "I Got"))
+            // The column names in the app's language, like every other word the
+            // owner reads; a spreadsheet takes any heading. The figures and
+            // dates below stay as a spreadsheet needs them.
+            row(
+                sb,
+                listOf(
+                    context.getString(R.string.date_label),
+                    context.getString(R.string.name),
+                    context.getString(R.string.note_label),
+                    context.getString(R.string.i_gave),
+                    context.getString(R.string.i_got)
+                )
+            )
             // Oldest first, the order a book is read and a spreadsheet is
             // summed — the screen's newest-first is for glancing, not for
             // working.
