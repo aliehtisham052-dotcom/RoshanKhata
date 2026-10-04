@@ -718,16 +718,29 @@ class BackupActivity : BaseActivity() {
         }
     }
 
-    private fun driveBackup() {
+    /**
+     * @param replaceOtherPhone the owner has just been shown that another
+     *   phone backed up this shop last, and chose to replace that backup.
+     */
+    private fun driveBackup(replaceOtherPhone: Boolean = false) {
         val name = DriveAuth.accountName(this) ?: return
         Toast.makeText(this, R.string.drive_backing_up, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
             val json = withContext(Dispatchers.IO) { Backup.export(this@BackupActivity, dao) }
-            val result = DriveBackup.backup(this@BackupActivity, name, json)
+            val result = DriveBackup.backup(this@BackupActivity, name, json, force = replaceOtherPhone)
 
             if (result.isFailure) {
-                Toast.makeText(this@BackupActivity, R.string.drive_backup_failed, Toast.LENGTH_LONG).show()
+                val cause = result.exceptionOrNull()
+                if (cause is DriveBackup.OtherPhoneBackup) {
+                    // Nothing was uploaded. Two phones writing one backup
+                    // file is how a day's entries vanish from Drive, so this
+                    // is the owner's decision, made knowing when and where
+                    // the backup on Drive came from.
+                    confirmReplaceOtherPhone(cause)
+                } else {
+                    Toast.makeText(this@BackupActivity, R.string.drive_backup_failed, Toast.LENGTH_LONG).show()
+                }
                 return@launch
             }
 
@@ -761,6 +774,21 @@ class BackupActivity : BaseActivity() {
             Toast.makeText(this@BackupActivity, R.string.drive_backup_done, Toast.LENGTH_LONG).show()
             refreshDriveUi()
         }
+    }
+
+    private fun confirmReplaceOtherPhone(conflict: DriveBackup.OtherPhoneBackup) {
+        val time = if (conflict.at > 0L) Format.dateTime(conflict.at) else getString(R.string.viewer_unknown_time)
+        val device = conflict.device
+        val body = if (device.isNullOrBlank()) getString(R.string.drive_other_phone_body, time)
+        else getString(R.string.drive_other_phone_body_named, device, time)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.drive_other_phone_title)
+            .setMessage(body)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.drive_other_phone_replace) { _, _ ->
+                driveBackup(replaceOtherPhone = true)
+            }
+            .show()
     }
 
     /**
@@ -869,6 +897,9 @@ class BackupActivity : BaseActivity() {
                 }
 
                 BackupReminder.recordBackup(this@BackupActivity)
+                // This phone now stands on that backup: its next upload is a
+                // continuation of it, not a stranger's file to be asked about.
+                DriveBackup.rememberSeen(this@BackupActivity, biz.modifiedAt)
                 done += label
             }
 

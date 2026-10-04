@@ -66,6 +66,103 @@ object DriveBackup {
     private const val KEY_AUTO_BACKUP = "drive_auto_backup"
     private const val KEY_LAST_SIG = "drive_last_backup_signature"
 
+    // ---------- Two phones, one backup file ----------
+    //
+    // A shop's backup is ONE file on Drive, replaced on every upload. That is
+    // safe while one phone writes it. The day the same book is being written
+    // on two phones — the owner restored it on a second phone and kept using
+    // the first, or a helper's phone was made a normal one and restored the
+    // owner's backup — each upload silently replaces the other phone's, and
+    // whichever entries were made on the phone that uploaded first are gone
+    // from Drive without a word. Nothing on either phone looks wrong until
+    // the day a restore is needed.
+    //
+    // So before replacing the file, this phone checks that the file is still
+    // the one IT last put there (or last restored from). If another phone has
+    // written it since, the upload stops and the owner is asked: the backup
+    // screen says when and from which phone, and replaces it only on a yes.
+    // An automatic backup never answers for him — it stops and says so once.
+    //
+    // What travels: a random id made on this phone for this purpose alone,
+    // and the phone's model name, stored as private properties of the
+    // owner's own backup file on his own Drive. Nothing is sent anywhere else.
+    private const val KEY_SEEN_AT = "drive_seen_modified"
+    private const val KEY_CONFLICT_TOLD = "drive_conflict_told"
+    private const val KEY_DEVICE = "drive_device_id"
+    private const val PROP_DEVICE = "device"
+    private const val PROP_DEVICE_NAME = "deviceName"
+
+    /** The upload was stopped: another phone wrote this shop's backup last. */
+    class OtherPhoneBackup(val at: Long, val device: String?) :
+        IllegalStateException("Another phone backed up this shop last")
+
+    /**
+     * Has the backup on Drive been written by some other phone since this
+     * one last saw it? Pure, so the rule itself is tested (TwoPhoneGuardTest).
+     *
+     *  - This phone has seen the file before ([seenAt] > 0): it is someone
+     *    else's exactly when it has changed since. This is the strong test,
+     *    and it also catches a phone running an older version of the app,
+     *    which replaces the content without leaving its mark.
+     *  - Never seen, but the file carries a mark: it is ours only if the
+     *    mark is this phone's.
+     *  - Never seen and unmarked (written before this check existed): a
+     *    phone that has backed up before is taken to be its author, so
+     *    nobody updating the app is stopped over his own backup; a phone
+     *    that never has is looking at somebody else's file.
+     */
+    internal fun writtenElsewhere(
+        seenAt: Long,
+        remoteAt: Long,
+        remoteDevice: String?,
+        myDevice: String,
+        backedUpBefore: Boolean
+    ): Boolean = when {
+        seenAt > 0L -> remoteAt != seenAt
+        remoteDevice != null -> remoteDevice != myDevice
+        else -> !backedUpBefore
+    }
+
+    private fun deviceId(context: Context): String {
+        val p = prefs(context)
+        p.getString(KEY_DEVICE, null)?.let { return it }
+        val made = java.util.UUID.randomUUID().toString()
+        p.edit().putString(KEY_DEVICE, made).commit()
+        return made
+    }
+
+    /** "samsung SM-A125F", cut to fit a Drive property (124 bytes with its key). */
+    private fun deviceName(): String =
+        listOf(android.os.Build.MANUFACTURER, android.os.Build.MODEL)
+            .filter { !it.isNullOrBlank() }
+            .joinToString(" ")
+            .take(40)
+
+    private fun seenAt(context: Context): Long =
+        prefs(context).getLong(key(context, KEY_SEEN_AT), 0L)
+
+    /**
+     * Note the state of this shop's backup file that this phone now stands
+     * on: after its own upload, and after restoring the open shop from Drive
+     * (the restore screen calls this). The next upload compares against it.
+     */
+    fun rememberSeen(context: Context, modifiedAt: Long) {
+        if (modifiedAt <= 0L) return
+        prefs(context).edit().putLong(key(context, KEY_SEEN_AT), modifiedAt).apply()
+    }
+
+    /**
+     * True the first time an automatic backup is stopped by a given backup
+     * from another phone, false on every later run that meets the same one —
+     * so the owner is told once per occurrence, not every day.
+     */
+    fun firstNoticeOf(context: Context, conflict: OtherPhoneBackup): Boolean {
+        val k = key(context, KEY_CONFLICT_TOLD)
+        if (prefs(context).getLong(k, 0L) == conflict.at) return false
+        prefs(context).edit().putLong(k, conflict.at).apply()
+        return true
+    }
+
     /**
      * Per-business Drive file names and preference keys.
      *
@@ -122,6 +219,8 @@ object DriveBackup {
             .remove(KEY_BACKUP_IMAGES + suffix)
             .remove(KEY_AUTO_BACKUP + suffix)
             .remove(KEY_LAST_SIG + suffix)
+            .remove(KEY_SEEN_AT + suffix)
+            .remove(KEY_CONFLICT_TOLD + suffix)
             .apply()
     }
 
@@ -202,9 +301,19 @@ object DriveBackup {
      * Upload the current ledger as the single backup file, replacing any
      * previous one — safely.
      *
+     * Unless [force] is set, it first makes sure the file on Drive is still
+     * the one this phone knows; if another phone has written it since, nothing
+     * is uploaded and the failure is an [OtherPhoneBackup] (see "Two phones"
+     * above). [force] is the owner's own "replace it" from the backup screen.
+     *
      * @return the time the backup completed, for the owner to see.
      */
-    suspend fun backup(context: Context, accountName: String, json: String): Result<Long> =
+    suspend fun backup(
+        context: Context,
+        accountName: String,
+        json: String,
+        force: Boolean = false
+    ): Result<Long> =
         withContext(Dispatchers.IO) {
             // A read-only phone never uploads. Its copy is always older than
             // the owner's book, and uploading it would overwrite the owner's
@@ -216,31 +325,61 @@ object DriveBackup {
             try {
                 val drive = driveFor(context, accountName)
 
-                val existingId = findBackupId(context, drive)
+                val existing = findBackup(context, drive)
+                val existingId = existing?.id
+                val mine = deviceId(context)
+
+                if (existing != null && !force) {
+                    val remoteAt = existing.modifiedTime?.value ?: 0L
+                    val remoteDevice = existing.appProperties?.get(PROP_DEVICE)
+                    if (writtenElsewhere(
+                            seenAt = seenAt(context),
+                            remoteAt = remoteAt,
+                            remoteDevice = remoteDevice,
+                            myDevice = mine,
+                            backedUpBefore = BackupReminder.lastBackupAt(context) > 0L
+                        )
+                    ) {
+                        // Name the other phone only when the mark is really
+                        // another phone's; an unmarked or own-marked file is
+                        // reported without a name rather than a wrong one.
+                        val who = existing.appProperties?.get(PROP_DEVICE_NAME)
+                            ?.takeIf { remoteDevice != null && remoteDevice != mine }
+                        return@withContext Result.failure(OtherPhoneBackup(remoteAt, who))
+                    }
+                }
+
+                val stamp = mapOf(PROP_DEVICE to mine, PROP_DEVICE_NAME to deviceName())
 
                 val metadata = DriveFile().apply {
                     name = backupName(context)
                     // Only set parents when CREATING; Drive rejects a parent
                     // change on update.
                     if (existingId == null) parents = listOf(APP_DATA_FOLDER)
+                    appProperties = stamp
                 }
 
                 val content = ByteArrayContent("text/plain", json.toByteArray())
 
-                if (existingId == null) {
+                val saved = if (existingId == null) {
                     // First backup: straightforward create.
                     drive.files().create(metadata, content)
-                        .setFields("id")
+                        .setFields("id, modifiedTime")
                         .execute()
                 } else {
                     // Update the existing file's CONTENT in place. Drive keeps
                     // the same file id and swaps the bytes atomically on its
                     // side — the owner's "one file" stays one file, and there is
                     // no window where it is empty or missing.
-                    drive.files().update(existingId, DriveFile(), content)
-                        .setFields("id")
+                    // The mark is the only metadata sent: whose upload this
+                    // is, for the check above on the next phone that comes.
+                    drive.files().update(existingId, DriveFile().apply { appProperties = stamp }, content)
+                        .setFields("id, modifiedTime")
                         .execute()
                 }
+                // What this phone now stands on. Drive's own clock, read back
+                // from the upload itself — never this phone's.
+                rememberSeen(context, saved.modifiedTime?.value ?: 0L)
 
                 Result.success(System.currentTimeMillis())
             } catch (e: Exception) {
@@ -260,6 +399,11 @@ object DriveBackup {
         object Skipped : AutoResult()
         /** A backup was uploaded just now. */
         object BackedUp : AutoResult()
+        /**
+         * Stopped, nothing uploaded: another phone wrote this shop's backup
+         * last, and replacing it is the owner's decision, not a timer's.
+         */
+        data class OtherPhone(val conflict: OtherPhoneBackup) : AutoResult()
         /** A backup was due but failed — the worker should notify and retry. */
         data class Failed(val cause: Throwable?) : AutoResult()
     }
@@ -310,7 +454,11 @@ object DriveBackup {
         // All conditions met — take the backup.
         val json = Backup.export(context, dao)
         val result = backup(context, account, json)
-        if (result.isFailure) return@withContext AutoResult.Failed(result.exceptionOrNull())
+        if (result.isFailure) {
+            val cause = result.exceptionOrNull()
+            return@withContext if (cause is OtherPhoneBackup) AutoResult.OtherPhone(cause)
+            else AutoResult.Failed(cause)
+        }
 
         // Images ride along only if the owner asked for them. An image failure
         // does not fail the text backup that already succeeded.
@@ -551,6 +699,43 @@ object DriveBackup {
             Result.failure(e)
         }
     }
+
+    /**
+     * The owner's photo archive for one business, by that business's id — for
+     * a read-only phone, beside [readForBusiness]. Null (inside a success)
+     * when the owner's backup carries no photos.
+     */
+    suspend fun readImagesForBusiness(
+        context: Context,
+        accountName: String,
+        businessId: Long
+    ): Result<ByteArray?> = withContext(Dispatchers.IO) {
+        try {
+            val drive = driveFor(context, accountName)
+            val name = "RoshanKhata_Images${Businesses.suffixFor(businessId)}.zip"
+            val file = drive.files().list()
+                .setSpaces(APP_DATA_FOLDER)
+                .setQ("name = '$name'")
+                .setFields("files(id)")
+                .execute()
+                .files?.firstOrNull()
+                ?: return@withContext Result.success(null)
+            val out = ByteArrayOutputStream()
+            drive.files().get(file.id).executeMediaAndDownloadTo(out)
+            Result.success(out.toByteArray())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /** This shop's backup file with what the two-phone check needs, or null. */
+    private fun findBackup(context: Context, drive: Drive): DriveFile? =
+        drive.files().list()
+            .setSpaces(APP_DATA_FOLDER)
+            .setQ("name = '${backupName(context)}'")
+            .setFields("files(id, modifiedTime, appProperties)")
+            .execute()
+            .files?.firstOrNull()
 
     private fun findBackupId(context: Context, drive: Drive): String? {
         val result = drive.files().list()

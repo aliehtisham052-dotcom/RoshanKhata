@@ -1760,6 +1760,15 @@
     <string name="viewer_banner">👁 رڳو ڏسڻ وارو فون · مالڪ جو کاتو %1$s تائين · تازي ڪاپي لاءِ دٻايو</string>
     <string name="viewer_menu">مددگار جو فون (رڳو ڏسڻ)</string>
     <string name="viewer_unknown_time">وقت معلوم ناهي</string>
+    <string name="viewer_send_with_photos">تصويرن سان (%1$s)</string>
+    <string name="viewer_send_without_photos">رڳو حساب (ننڍي فائل)</string>
+    <string name="viewer_loaded_no_photos">مالڪ جو کاتو لوڊ ٿي ويو، پر تصويرون نه کلي سگهيون. هاڻي هي فون رڳو ڏسڻ وارو آهي.</string>
+    <string name="drive_other_phone_title">هن دڪان جو بيڪ اپ ٻئي فون تان ٿيو آهي</string>
+    <string name="drive_other_phone_body">ڊرائيو تي موجود بيڪ اپ %1$s تي ٺهيو هو، ۽ هن فون تان نه ٺهيو. جيڪڏهن اڳتي وڌندا ته هن فون جو کاتو ان جي جاءِ وٺندو، ۽ جيڪي داخلائون رڳو ٻئي فون تي ٿيون آهن اهي بيڪ اپ ۾ نه رهنديون.\n\nهڪ دڪان جو کاتو هڪ ئي فون تي لکيو وڃي. جيڪڏهن نيون داخلائون ٻئي فون تي آهن ته منسوخ ڪريو ۽ ان ئي فون تان بيڪ اپ وٺو.</string>
+    <string name="drive_other_phone_body_named">ڊرائيو تي موجود بيڪ اپ ٻئي فون (%1$s) تان %2$s تي ٺهيو هو. جيڪڏهن اڳتي وڌندا ته هن فون جو کاتو ان جي جاءِ وٺندو، ۽ جيڪي داخلائون رڳو ٻئي فون تي ٿيون آهن اهي بيڪ اپ ۾ نه رهنديون.\n\nهڪ دڪان جو کاتو هڪ ئي فون تي لکيو وڃي. جيڪڏهن نيون داخلائون ٻئي فون تي آهن ته منسوخ ڪريو ۽ ان ئي فون تان بيڪ اپ وٺو.</string>
+    <string name="drive_other_phone_replace">هن فون جو کاتو رکو</string>
+    <string name="notif_backup_other_phone_title">بيڪ اپ رڪجي ويو</string>
+    <string name="notif_backup_other_phone_body">هن دڪان جو آخري بيڪ اپ ٻئي فون تان ٿيو آهي. بيڪ اپ کولي فيصلو ڪريو ته ڪهڙي فون جو کاتو رکڻو آهي.</string>
     <string name="cash_paid_now">پئسا هينئر نقد ملي ويا («مون ورتو» به لکو)</string>
     <string name="cash_paid_recorded">%1$s نقد ملي ويا. وڪرو ۽ وصولي ٻئي لکيا ويا.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->

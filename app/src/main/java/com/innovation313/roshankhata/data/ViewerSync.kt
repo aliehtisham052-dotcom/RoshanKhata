@@ -4,6 +4,7 @@ import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.io.InputStream
 
 /**
  * Loading the owner's book onto a viewer phone — the first time, and on every
@@ -17,11 +18,18 @@ import org.json.JSONObject
  *  3. If that fails on a phone that was not a viewer before, the role is
  *     turned off again and the half-made file removed — the phone is back
  *     exactly as it was, its own book untouched throughout.
+ *  4. Photos last, and only once the book itself is in: the pictures held
+ *     from the previous copy are removed (they are filed by customer number,
+ *     and would otherwise sit on the wrong customer), then this copy's own
+ *     are unpacked — if it brought any. A photo that fails to unpack never
+ *     fails the load: the balances are what a helper came for.
  */
 object ViewerSync {
 
     sealed class Outcome {
         object Loaded : Outcome()
+        /** The book loaded, but the photos sent with it could not be unpacked. */
+        object LoadedWithoutPhotos : Outcome()
         /** The text was not a Roshan Khata backup, or was from a newer app. */
         data class Rejected(val reason: String) : Outcome()
         data class Failed(val cause: Throwable) : Outcome()
@@ -32,7 +40,8 @@ object ViewerSync {
         text: String,
         source: String,
         account: String?,
-        driveBusinessId: Long
+        driveBusinessId: Long,
+        images: (() -> InputStream?)? = null
     ): Outcome = withContext(Dispatchers.IO) {
         val ctx = context.applicationContext
         val (result, data) = Backup.parseText(text)
@@ -56,7 +65,17 @@ object ViewerSync {
                 shopName = data.businessName ?: data.businessProfile?.businessName,
                 dataAt = exportedAt(text)
             )
-            Outcome.Loaded
+            val photosOk = try {
+                BackupImages.clearViewerImages(ctx)
+                val stream = images?.invoke()
+                if (stream != null) BackupImages.restore(ctx, dao, stream)
+                true
+            } catch (e: Exception) {
+                android.util.Log.e("Viewer", "photos failed", e)
+                false
+            }
+            PartyPhoto.dropCaches()
+            if (photosOk) Outcome.Loaded else Outcome.LoadedWithoutPhotos
         } catch (e: Exception) {
             if (!wasViewer) ViewerMode.leave(ctx)
             Outcome.Failed(e)

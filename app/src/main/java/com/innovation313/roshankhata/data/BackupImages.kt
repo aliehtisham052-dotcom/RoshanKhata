@@ -3,6 +3,10 @@ package com.innovation313.roshankhata.data
 import android.content.Context
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
@@ -12,9 +16,10 @@ import java.util.zip.ZipOutputStream
  * deliberately leaves out because they are heavy and personal.
  *
  * This packs every image the app keeps into ONE zip, and unpacks it back into
- * place on restore. It is only ever reached from a Drive backup with the
- * owner's "include images" switch on; the local text file never carries any of
- * this, by the owner's own instruction.
+ * place on restore. It is reached from a Drive backup with the owner's
+ * "include images" switch on, and from a copy the owner chooses to send to a
+ * helper's phone WITH photos ([packCopy]). The local text backup file never
+ * carries any of this, by the owner's own instruction.
  *
  * WHAT IS PACKED, and where it lives on disk:
  *   party_photos/party_<id>.jpg   — a customer's recognition thumbnail
@@ -38,6 +43,9 @@ object BackupImages {
     private const val ROOT_SIGNATURE = "signature.png"
     private const val ROOT_STAMP = "stamp.png"
     private const val ROOT_LOGO = "logo.png"
+
+    /** The book itself inside a helper's copy; see [packCopy]. */
+    internal const val COPY_TEXT = "backup.txt"
 
     /**
      * Pack every image into a zip in the cache directory, or return null if
@@ -70,6 +78,147 @@ object BackupImages {
             null
         }
     }
+
+    // ---------- A helper's copy: the book and its photos in one file ----------
+    //
+    // A helper's phone used to receive the text alone, so every customer was
+    // a pair of initials and no bill could be shown at the counter. The copy
+    // the owner sends can now carry the pictures too: ONE zip, the book as
+    // [COPY_TEXT] and the images under the same names as the Drive archive.
+    //
+    // Two images never travel in it: the owner's SIGNATURE and the shop's
+    // STAMP. A helper is given the book to read and payments to chase; the
+    // marks that make a paper the owner's own stay on the owner's phone. A
+    // read-only phone also refuses them from a Drive archive (see [targetFor]).
+
+    /** How heavy the photos would make a helper's copy. 0 = there are none. */
+    suspend fun copyImageBytes(context: Context, dao: KhataDao): Long =
+        collectFiles(context, dao).filter { helperMayHold(it.first) }.sumOf { it.second.length() }
+
+    /**
+     * The owner's book and its photos as one file to send, or null if it
+     * could not be written (a half-made copy is deleted, never sent).
+     *
+     * Written under cache/backups, the folder the FileProvider already shares
+     * from. Older copies are cleared first: with photos these are large, and
+     * yesterday's has no reader.
+     */
+    suspend fun packCopy(context: Context, dao: KhataDao, json: String): File? {
+        val dir = File(context.cacheDir, "backups").apply { mkdirs() }
+        dir.listFiles()?.filter { it.name.startsWith(COPY_PREFIX) }?.forEach { it.delete() }
+        val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.US).format(Date())
+        val zip = File(dir, "$COPY_PREFIX$stamp.zip")
+        return try {
+            val sources = collectFiles(context, dao).filter { helperMayHold(it.first) }
+            ZipOutputStream(FileOutputStream(zip).buffered()).use { out ->
+                out.putNextEntry(ZipEntry(COPY_TEXT))
+                out.write(json.toByteArray(Charsets.UTF_8))
+                out.closeEntry()
+                for ((entryName, file) in sources) {
+                    out.putNextEntry(ZipEntry(entryName))
+                    file.inputStream().buffered().use { it.copyTo(out) }
+                    out.closeEntry()
+                }
+            }
+            zip
+        } catch (e: Exception) {
+            zip.delete()
+            null
+        }
+    }
+
+    private const val COPY_PREFIX = "RoshanKhata_Copy_"
+
+    /** What a helper's phone received: the book, and whether photos came with it. */
+    class CopyFile(val text: String, val hasImages: Boolean)
+
+    /**
+     * Read a file the owner sent, whichever kind it is: the plain text backup
+     * (as before, and as every older version of the app sends), or the zip
+     * made by [packCopy]. The file is opened more than once — first to see
+     * which kind it is, then to read it — so [open] must give a fresh stream
+     * each time. Null when it cannot be read or holds no book.
+     *
+     * Only the text is held in memory. The photos stay in the file and are
+     * streamed out later by [restore], so a large copy cannot exhaust a
+     * small phone.
+     */
+    fun readCopy(open: () -> InputStream?): CopyFile? {
+        val head = ByteArray(4)
+        val got = open()?.use { input ->
+            var n = 0
+            while (n < head.size) {
+                val r = input.read(head, n, head.size - n)
+                if (r < 0) break
+                n += r
+            }
+            n
+        } ?: return null
+        val isZip = got == 4 && head[0] == 'P'.code.toByte() && head[1] == 'K'.code.toByte() &&
+            head[2] == 3.toByte() && head[3] == 4.toByte()
+        if (!isZip) {
+            val text = open()?.bufferedReader(Charsets.UTF_8)?.use { it.readText() } ?: return null
+            return CopyFile(text, false)
+        }
+        var text: String? = null
+        var images = false
+        val stream = open() ?: return null
+        ZipInputStream(stream.buffered()).use { zin ->
+            var entry: ZipEntry? = zin.nextEntry
+            while (entry != null) {
+                if (!entry.isDirectory) {
+                    // readBytes() stops at the end of THIS entry, not the file.
+                    if (entry.name == COPY_TEXT) text = zin.readBytes().toString(Charsets.UTF_8)
+                    else images = true
+                }
+                zin.closeEntry()
+                entry = zin.nextEntry
+            }
+        }
+        return text?.let { CopyFile(it, images) }
+    }
+
+    /** The owner's signature and stamp stay on the owner's phone. */
+    private fun helperMayHold(entryName: String): Boolean =
+        entryName != ROOT_SIGNATURE && entryName != ROOT_STAMP
+
+    /**
+     * Remove every picture a read-only phone holds of the owner's book,
+     * before a fresh copy is unpacked. No-op on a normal phone.
+     *
+     * Photos are filed by customer NUMBER, so a picture left behind from an
+     * earlier copy — or from another shop's book — would sit on whichever
+     * customer now carries that number: a stranger's face on a man's account.
+     * A copy that arrives without photos therefore shows none, which is true.
+     */
+    fun clearViewerImages(context: Context) {
+        if (!ViewerMode.isOn(context)) return
+        PartyPhoto.folder(context).listFiles()?.forEach { it.delete() }
+        billsDir(context).deleteRecursively()
+        listOf(
+            BusinessProfile.qrFile(context), BusinessProfile.signatureFile(context),
+            BusinessProfile.stampFile(context), BusinessProfile.logoFile(context)
+        ).forEach { it.delete() }
+        BusinessProfile.setImageFlagsFromDisk(context)
+        PartyPhoto.dropCaches()
+    }
+
+    /**
+     * Where bill photos live for the book that is open.
+     *
+     * Every real business shares one folder (their paths are rows in each
+     * shop's own database). A read-only phone's copy gets a folder of its
+     * own, inside the viewer's "biz" folder: the owner's bill photos must
+     * never land among this phone's own — a same-named file would be written
+     * over — and [ViewerMode.leave] removes that folder whole, so nothing of
+     * the owner's stays behind when the phone stops being a viewer.
+     */
+    private fun billsDir(context: Context): File =
+        if (ViewerMode.isOn(context)) {
+            File(File(context.filesDir, "biz" + Businesses.suffixFor(ViewerMode.VIEWER_ID)), BILLS_DIR)
+        } else {
+            File(context.filesDir, BILLS_DIR)
+        }
 
     /**
      * Every image that belongs to the ACTIVE business, paired with the
@@ -140,10 +289,18 @@ object BackupImages {
      *
      * @return the number of image files written back.
      */
-    suspend fun restore(context: Context, dao: KhataDao, zipBytes: ByteArray): Int {
+    suspend fun restore(context: Context, dao: KhataDao, zipBytes: ByteArray): Int =
+        restore(context, dao, zipBytes.inputStream())
+
+    /**
+     * The same, straight from a stream — for a helper's copy, whose photos
+     * are read out of the file the owner sent without ever being held in
+     * memory whole. Closes [input].
+     */
+    suspend fun restore(context: Context, dao: KhataDao, input: InputStream): Int {
         var written = 0
 
-        ZipInputStream(zipBytes.inputStream().buffered()).use { zin ->
+        ZipInputStream(input.buffered()).use { zin ->
             var entry: ZipEntry? = zin.nextEntry
             while (entry != null) {
                 val name = entry.name
@@ -178,7 +335,7 @@ object BackupImages {
      * is no guessing which entry a file belongs to, the name already says.
      */
     private suspend fun remapBillPhotoPaths(context: Context, dao: KhataDao) {
-        val billsDir = File(context.filesDir, BILLS_DIR)
+        val billsDir = billsDir(context)
         for (row in dao.entriesWithBillPhoto()) {
             val oldPath = row.billPhotoPath ?: continue
             val fileName = oldPath.substringAfterLast('/')
@@ -202,7 +359,10 @@ object BackupImages {
         name.startsWith("$PARTY_DIR/") ->
             File(PartyPhoto.folder(context), name.removePrefix("$PARTY_DIR/"))
         name.startsWith("$BILLS_DIR/") ->
-            File(File(context.filesDir, BILLS_DIR), name.removePrefix("$BILLS_DIR/"))
+            File(billsDir(context), name.removePrefix("$BILLS_DIR/"))
+        // A read-only phone never holds the owner's signature or stamp, even
+        // when the archive (the owner's own Drive backup) carries them.
+        !helperMayHold(name) && ViewerMode.isOn(context) -> null
         name == ROOT_QR -> BusinessProfile.qrFile(context)
         name == ROOT_SIGNATURE -> BusinessProfile.signatureFile(context)
         name == ROOT_STAMP -> BusinessProfile.stampFile(context)

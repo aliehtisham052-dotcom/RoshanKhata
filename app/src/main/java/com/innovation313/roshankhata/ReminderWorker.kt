@@ -60,7 +60,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // interrupting the owner, and a due-but-failed backup also asks the
         // system to retry with backoff.
         var autoBackupFailed = false
-        when (DriveBackup.autoBackupIfDue(ctx, dao)) {
+        when (val auto = DriveBackup.autoBackupIfDue(ctx, dao)) {
             is DriveBackup.AutoResult.Failed -> {
                 autoBackupFailed = true
                 notify(
@@ -68,6 +68,22 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
                     ctx.getString(R.string.notif_backup_failed_title),
                     ctx.getString(R.string.notif_backup_failed_body)
                 )
+            }
+            is DriveBackup.AutoResult.OtherPhone -> {
+                // Not a failure to retry: another phone wrote this shop's
+                // backup last, and only the owner may replace it. Said once
+                // per occurrence; the backup screen explains and asks.
+                if (DriveBackup.firstNoticeOf(ctx, auto.conflict)) {
+                    notify(
+                        ctx, ID_BACKUP, BackupActivity::class.java,
+                        ctx.getString(R.string.notif_backup_other_phone_title),
+                        ctx.getString(R.string.notif_backup_other_phone_body)
+                    )
+                    // Same notification slot as the weekly backup nudge below:
+                    // this run has said the more important thing, so the
+                    // nudge must not replace it.
+                    autoBackupFailed = true
+                }
             }
             else -> Unit // Skipped or BackedUp — stay silent.
         }

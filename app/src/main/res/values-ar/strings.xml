@@ -1904,6 +1904,15 @@
     <string name="viewer_banner">👁 هاتف للعرض فقط · دفتر المالك حتى %1$s · اضغط لنسخة جديدة</string>
     <string name="viewer_menu">هاتف المساعد (عرض فقط)</string>
     <string name="viewer_unknown_time">الوقت غير معروف</string>
+    <string name="viewer_send_with_photos">مع الصور (%1$s)</string>
+    <string name="viewer_send_without_photos">الحسابات فقط (ملف صغير)</string>
+    <string name="viewer_loaded_no_photos">تم تحميل دفتر المالك، لكن تعذّر فتح الصور. هذا الهاتف الآن للعرض فقط.</string>
+    <string name="drive_other_phone_title">هاتف آخر نسخ هذا المتجر احتياطيًا</string>
+    <string name="drive_other_phone_body">النسخة الموجودة على درايف أُنشئت في %1$s، وليست من هذا الهاتف. إذا تابعت، سيحلّ دفتر هذا الهاتف محلّها، وكل ما أُدخل على الهاتف الآخر فقط لن يبقى في النسخة الاحتياطية.\n\nدفتر المتجر الواحد يُكتب على هاتف واحد. إذا كانت الإدخالات الأحدث على الهاتف الآخر، ألغِ وانسخ احتياطيًا من ذلك الهاتف.</string>
+    <string name="drive_other_phone_body_named">النسخة الموجودة على درايف أُنشئت من هاتف آخر (%1$s) في %2$s. إذا تابعت، سيحلّ دفتر هذا الهاتف محلّها، وكل ما أُدخل على الهاتف الآخر فقط لن يبقى في النسخة الاحتياطية.\n\nدفتر المتجر الواحد يُكتب على هاتف واحد. إذا كانت الإدخالات الأحدث على الهاتف الآخر، ألغِ وانسخ احتياطيًا من ذلك الهاتف.</string>
+    <string name="drive_other_phone_replace">أبقِ دفتر هذا الهاتف</string>
+    <string name="notif_backup_other_phone_title">توقّف النسخ الاحتياطي</string>
+    <string name="notif_backup_other_phone_body">آخر نسخة احتياطية لهذا المتجر جاءت من هاتف آخر. افتح النسخ الاحتياطي واختر دفتر أي هاتف يبقى.</string>
     <string name="cash_paid_now">استُلم المبلغ نقدًا الآن (سجّل «استلمتُ» أيضًا)</string>
     <string name="cash_paid_recorded">استُلم %1$s نقدًا. سُجّل البيع والدفع معًا.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
