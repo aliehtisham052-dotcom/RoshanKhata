@@ -23,10 +23,10 @@ import kotlin.math.abs
 
 /**
  * The first screen a new user sees: pick your language, in your own script.
- * Drawn as artwork with real touch areas on the six buttons it shows; see
- * activity_language.xml for how they are kept on those buttons. The languages
- * added after the artwork (Hindi, Bengali, Indonesian) are real buttons in a
- * row under the six.
+ * Drawn as artwork with nine real buttons on it, all one size, in a 3 x 3
+ * grid; see activity_language.xml for how they are kept in place on the
+ * picture. (The picture once carried six drawn buttons, with the later
+ * languages as smaller real ones under them; they were made one size, 4 Oct.)
  *
  * The choice is applied through AppCompat's per-app locales (persisted by the
  * autoStoreLocales holder in the manifest, and by the OS itself on Android 13+),
@@ -52,12 +52,14 @@ class LanguageActivity : BaseActivity() {
         private const val KEY_CHOSEN = "chosen"
         private const val STATE_MARKED = "marked"
         /**
-         * The real buttons' label size as a share of the stage's height. The
-         * drawn names are about 40 of the picture's 1536 pixels; these three
-         * buttons are narrower than the drawn ones (the clear band they sit
-         * in is), so their names are set at 30 to fit "Indonesia" with room.
+         * Label sizes as a share of the stage's height (the picture is 1536
+         * high, a button 100 by 232). Names in Latin letters are set at 32:
+         * "Roman Urdu", the longest, is then 185 wide in its 232. The Arabic,
+         * Devanagari and Bengali names are short and their letters small at
+         * the same size, so they are set at 40 to carry the same weight.
          */
-        private const val LABEL_OF_STAGE = 30f / 1536f
+        private const val LATIN_OF_STAGE = 32f / 1536f
+        private const val NATIVE_OF_STAGE = 40f / 1536f
         /** True once the user has picked a language on first run. */
         fun isChosen(context: Context): Boolean =
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -81,9 +83,8 @@ class LanguageActivity : BaseActivity() {
             isAppearanceLightNavigationBars = false
         }
 
-        // Language tag per touch area. English clears to the default (base
-        // values/). The areas sit over the buttons drawn in the artwork, so
-        // they are plain Views: there is no button of their own to style.
+        // Language tag per button. English clears to the default (base
+        // values/).
         val choices = mapOf(
             R.id.langEnglish to "en",
             R.id.langRomanUrdu to "ur-Latn",
@@ -96,24 +97,35 @@ class LanguageActivity : BaseActivity() {
             R.id.langIndonesian to "id"
         )
 
-        // These buttons are real, not drawn, so their labels do not scale
-        // with the picture by themselves. Size them from the stage, in pixels
-        // (the drawn names ignore the text-size setting, and so must these).
-        // Their boxes are fixed by guidelines, so resizing the text cannot
-        // move the stage and call this again.
-        val realButtons = listOf(R.id.langHindi, R.id.langBengali, R.id.langIndonesian)
-            .map { findViewById<TextView>(it) }
+        // The buttons are placed on the picture, so their labels must scale
+        // with the picture too. Size them from the stage, in pixels (the
+        // picture ignores the phone's text-size setting, and so must these,
+        // or a large setting would push a name out of its button). Their
+        // boxes are fixed by guidelines, so resizing the text cannot move the
+        // stage and call this again.
+        val latin = setOf(R.id.langEnglish, R.id.langRomanUrdu, R.id.langIndonesian)
+        val labels = choices.keys.map { id ->
+            findViewById<TextView>(id) to (if (id in latin) LATIN_OF_STAGE else NATIVE_OF_STAGE)
+        }
+        // The four names in Arabic letters are drawn in one hand, Naskh, as
+        // the picture had them, whichever language the app is in. Left to the
+        // app's own language they change with it: under Urdu the phone picks
+        // its tall Nastaliq for all four, Sindhi and Arabic included.
+        val naskh = Locale.forLanguageTag("ar")
+        for (id in listOf(R.id.langUrdu, R.id.langSindhi, R.id.langPersian, R.id.langArabic)) {
+            findViewById<TextView>(id).textLocale = naskh
+        }
         findViewById<View>(R.id.langStage)
             .addOnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
-                val px = (bottom - top) * LABEL_OF_STAGE
-                for (label in realButtons) {
+                for ((label, share) in labels) {
+                    val px = (bottom - top) * share
                     if (px > 0f && abs(label.textSize - px) > 0.5f) {
                         label.post { label.setTextSize(TypedValue.COMPLEX_UNIT_PX, px) }
                     }
                 }
             }
 
-        hotspots = choices
+        languages = choices
         continueBtn = findViewById(R.id.btnLangContinue)
 
         for ((id, tag) in choices) {
@@ -151,7 +163,7 @@ class LanguageActivity : BaseActivity() {
         mark(restored ?: if (isChosen(this)) currentTag() else null)
     }
 
-    private lateinit var hotspots: Map<Int, String>
+    private lateinit var languages: Map<Int, String>
     private lateinit var continueBtn: MaterialButton
     private var marked: String? = null
 
@@ -163,7 +175,7 @@ class LanguageActivity : BaseActivity() {
     /** Marks [tag] (or clears the mark) without applying anything. */
     private fun mark(tag: String?) {
         marked = tag
-        for ((id, t) in hotspots) findViewById<View>(id).isSelected = t == tag
+        for ((id, t) in languages) findViewById<View>(id).isSelected = t == tag
         continueBtn.isEnabled = tag != null
         // The label reads in the marked language: someone choosing Arabic
         // should be able to read the button that confirms it.
@@ -185,8 +197,8 @@ class LanguageActivity : BaseActivity() {
         // Locale still answers "in" for Indonesian on many Android versions;
         // the picker's tag is the BCP-47 "id".
         val language = Locale.forLanguageTag(first).language.let { if (it == "in") "id" else it }
-        return hotspots.values.firstOrNull { it.equals(first, ignoreCase = true) }
-            ?: hotspots.values.firstOrNull { it == language }
+        return languages.values.firstOrNull { it.equals(first, ignoreCase = true) }
+            ?: languages.values.firstOrNull { it == language }
             ?: "en"
     }
 

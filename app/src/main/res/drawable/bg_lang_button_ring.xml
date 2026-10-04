@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The "marked" ring for the real language button (bg_lang_button), drawn over
-  it as the view's foreground: the same bright gold ring the six drawn buttons
-  get from bg_lang_hotspot when one is marked but not yet applied. Nothing is
-  drawn otherwise.
+  The "marked" ring for a language button (bg_lang_button), drawn over it as
+  the view's foreground: a bright gold ring on the language that is marked but
+  not yet applied. Nothing is drawn otherwise.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true">

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  A language button that is NOT in the artwork. lang_screen.webp was drawn with
-  six buttons; the seventh language (Bahasa Indonesia, 4 Oct) has no drawn
-  button to lay a touch area over, so this draws one to match: the same cream
-  face (sampled from the picture, lighter at the top) and the same thin gold
-  edge, as a full pill, with the same green ripple as bg_lang_hotspot.
+  A language button on the language screen. lang_screen.webp once carried six
+  drawn buttons; they were painted out (4 Oct) and all nine languages now use
+  this one: the cream face the drawn buttons had (sampled from the picture,
+  lighter at the top) and the same thin gold edge, as a full pill, with a
+  green ripple for the press.
 
   Fixed colours on purpose: the artwork is the same by day and by night, so
   this button must be too.
