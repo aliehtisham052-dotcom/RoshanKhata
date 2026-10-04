@@ -24,15 +24,16 @@ import kotlin.math.abs
 /**
  * The first screen a new user sees: pick your language, in your own script.
  * Drawn as artwork with real touch areas on the six buttons it shows; see
- * activity_language.xml for how they are kept on those buttons. The seventh
- * language, Bahasa Indonesia, came after the artwork and is a real button
- * placed under the six.
+ * activity_language.xml for how they are kept on those buttons. The languages
+ * added after the artwork (Hindi, Bengali, Indonesian) are real buttons in a
+ * row under the six.
  *
  * The choice is applied through AppCompat's per-app locales (persisted by the
  * autoStoreLocales holder in the manifest, and by the OS itself on Android 13+),
  * so every screen simply reads its strings from the right values-xx file.
  * Roman Urdu rides on the BCP-47 tag ur-Latn (values-b+ur+Latn). Indonesian
  * is the tag "id", whose strings Android keeps in values-in (its old code).
+ * Hindi is "hi" (values-hi) and Bengali "bn" (values-bn).
  *
  * Shown once on first run; afterwards the app goes straight to the gate. It can
  * be reopened any time from More → Language.
@@ -51,10 +52,12 @@ class LanguageActivity : BaseActivity() {
         private const val KEY_CHOSEN = "chosen"
         private const val STATE_MARKED = "marked"
         /**
-         * The Indonesian label's size as a share of the stage's height: the
-         * drawn names are about 40 of the picture's 1536 pixels.
+         * The real buttons' label size as a share of the stage's height. The
+         * drawn names are about 40 of the picture's 1536 pixels; these three
+         * buttons are narrower than the drawn ones (the clear band they sit
+         * in is), so their names are set at 30 to fit "Indonesia" with room.
          */
-        private const val LABEL_OF_STAGE = 40f / 1536f
+        private const val LABEL_OF_STAGE = 30f / 1536f
         /** True once the user has picked a language on first run. */
         fun isChosen(context: Context): Boolean =
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -88,20 +91,25 @@ class LanguageActivity : BaseActivity() {
             R.id.langSindhi to "sd",
             R.id.langPersian to "fa",
             R.id.langArabic to "ar",
+            R.id.langHindi to "hi",
+            R.id.langBengali to "bn",
             R.id.langIndonesian to "id"
         )
 
-        // The Indonesian button is real, not drawn, so its label does not
-        // scale with the picture by itself. Size it from the stage, in pixels
-        // (the drawn names ignore the text-size setting, and so must this).
-        // Its box is fixed by guidelines, so resizing the text cannot move
-        // the stage and call this again.
-        val indonesian = findViewById<TextView>(R.id.langIndonesian)
+        // These buttons are real, not drawn, so their labels do not scale
+        // with the picture by themselves. Size them from the stage, in pixels
+        // (the drawn names ignore the text-size setting, and so must these).
+        // Their boxes are fixed by guidelines, so resizing the text cannot
+        // move the stage and call this again.
+        val realButtons = listOf(R.id.langHindi, R.id.langBengali, R.id.langIndonesian)
+            .map { findViewById<TextView>(it) }
         findViewById<View>(R.id.langStage)
             .addOnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
                 val px = (bottom - top) * LABEL_OF_STAGE
-                if (px > 0f && abs(indonesian.textSize - px) > 0.5f) {
-                    indonesian.post { indonesian.setTextSize(TypedValue.COMPLEX_UNIT_PX, px) }
+                for (label in realButtons) {
+                    if (px > 0f && abs(label.textSize - px) > 0.5f) {
+                        label.post { label.setTextSize(TypedValue.COMPLEX_UNIT_PX, px) }
+                    }
                 }
             }
 

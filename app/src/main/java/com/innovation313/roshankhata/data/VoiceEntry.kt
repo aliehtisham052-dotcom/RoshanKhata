@@ -26,13 +26,18 @@ object VoiceEntry {
     private val GAVE = listOf(
         "diye", "diya", "di", "dee", "dena", "dene", "de diye", "de dia",
         "دیے", "دیا", "دی", "دیں", "دینا", "دیئے",
-        "gave", "give", "given", "paid", "pay", "lent"
+        "gave", "give", "given", "paid", "pay", "lent",
+        // Hindi and Bengali, as their recognisers write them.
+        "दिए", "दिये", "दिया", "दी", "दीं", "देना", "दे दिए", "दे दिया",
+        "দিলাম", "দিয়েছি", "দিল", "দিলো", "দিয়েছে", "দেওয়া"
     )
     private val GOT = listOf(
         "liye", "liya", "li", "mile", "mila", "mili", "wapis", "wasool",
         "aaye", "aya",
         "لیے", "لیا", "لی", "لیں", "ملے", "ملا", "ملی", "واپس", "وصول", "آئے",
         "got", "received", "took", "taken", "collected", "returned", "repaid",
+        "लिए", "लिये", "लिया", "ली", "लीं", "मिले", "मिला", "मिली", "वापस", "वसूल", "आए", "आया",
+        "পেলাম", "পেয়েছি", "নিলাম", "নিয়েছি", "ফেরত", "জমা",
         // Deliberately here as well as in GAVE. "Gave back" and "paid back"
         // read as both directions at once, so the sentence is reported as
         // unclear and the owner is asked — which is the honest answer, since
@@ -40,12 +45,19 @@ object VoiceEntry {
         "gave back", "paid back"
     )
 
-    /** Urdu and Arabic-Indic digits, so ٥٠٠٠ and ۵۰۰۰ read as 5000. */
+    /**
+     * Urdu and Arabic-Indic digits, so ٥٠٠٠ and ۵۰۰۰ read as 5000 — and the
+     * Hindi (५०००) and Bengali (৫০০০) ones, for the same reason.
+     */
     private val EASTERN_DIGITS = mapOf(
         '٠' to '0', '١' to '1', '٢' to '2', '٣' to '3', '٤' to '4',
         '٥' to '5', '٦' to '6', '٧' to '7', '٨' to '8', '٩' to '9',
         '۰' to '0', '۱' to '1', '۲' to '2', '۳' to '3', '۴' to '4',
-        '۵' to '5', '۶' to '6', '۷' to '7', '۸' to '8', '۹' to '9'
+        '۵' to '5', '۶' to '6', '۷' to '7', '۸' to '8', '۹' to '9',
+        '०' to '0', '१' to '1', '२' to '2', '३' to '3', '४' to '4',
+        '५' to '5', '६' to '6', '७' to '7', '८' to '8', '९' to '9',
+        '০' to '0', '১' to '1', '২' to '2', '৩' to '3', '৪' to '4',
+        '৫' to '5', '৬' to '6', '৭' to '7', '৮' to '8', '৯' to '9'
     )
 
     /** Spoken numbers, in the forms a shopkeeper actually uses. */
@@ -181,6 +193,10 @@ object VoiceEntry {
         "میں", "مین", "نے", "کو", "کا", "کی", "کے", "سے", "پر", "کہ",
         "ہے", "ہیں", "ہوں", "ہوا", "ہوئے", "تھا", "تھی", "تھے",
         "اور", "بھی", "تو", "یہ", "وہ", "روپے", "روپیہ",
+        // Hindi and Bengali grammar, for the same reason.
+        "मैं", "मैंने", "ने", "को", "का", "की", "के", "से", "पर", "कि", "है", "हैं",
+        "और", "भी", "तो", "यह", "वह", "रुपये", "रुपए", "रुपया",
+        "আমি", "কে", "থেকে", "কাছ", "এর", "ও", "এবং", "টাকা",
         "main", "mein", "ne", "ko", "ka", "ki", "ke", "se", "par", "keh",
         // The same pronouns as one word, which is how they are actually
         // transcribed. "Main ne" was covered; "Maine" was not, and that is

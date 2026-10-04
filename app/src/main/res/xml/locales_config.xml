@@ -16,4 +16,7 @@
     <!-- Indonesian. "id" is the BCP-47 tag; its strings live in values-in,
          the folder name Android has always used for it. -->
     <locale android:name="id" />
+    <!-- Hindi and Bengali (4 Oct): values-hi and values-bn. -->
+    <locale android:name="hi" />
+    <locale android:name="bn" />
 </locale-config>

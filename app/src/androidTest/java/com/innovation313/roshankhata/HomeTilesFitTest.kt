@@ -138,7 +138,7 @@ class HomeTilesFitTest(
         @JvmStatic
         @Parameterized.Parameters(name = "{2}")
         fun cases(): List<Array<Any>> =
-            listOf("en", "ur", "ar", "fa", "sd", "ur-Latn", "id").flatMap { lang ->
+            listOf("en", "ur", "ar", "fa", "sd", "ur-Latn", "id", "hi", "bn").flatMap { lang ->
                 listOf(
                     arrayOf<Any>(lang, TextSize.NORMAL, "$lang @ normal"),
                     arrayOf<Any>(lang, TextSize.LARGEST, "$lang @ largest")
