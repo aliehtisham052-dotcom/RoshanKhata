@@ -1,6 +1,5 @@
 package com.innovation313.roshankhata.data
 
-import androidx.appcompat.app.AppCompatDelegate
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -88,9 +87,13 @@ object DateWords {
         }
     }
 
-    /** The app's own language where one was chosen, otherwise the phone's. */
-    private fun appLocale(): Locale =
-        runCatching { AppCompatDelegate.getApplicationLocales()[0] }.getOrNull() ?: Locale.getDefault()
+    /**
+     * The app's language. The app's chosen language IS the default locale
+     * (AppCompat and, from Android 13, the system both set it; [Digits]
+     * relies on the same fact), and reading it costs nothing, which matters
+     * here: a ledger PDF formats a date on every row.
+     */
+    internal fun appLocale(): Locale = Locale.getDefault()
 
     /** The twelve month names for [locale], as the app prints them. */
     fun months(locale: Locale = appLocale()): Array<String> = MONTHS[keyOf(locale)] ?: ENGLISH

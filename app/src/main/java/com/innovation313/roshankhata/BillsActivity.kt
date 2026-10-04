@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.UnitWords
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -399,7 +400,7 @@ class BillsActivity : BaseActivity() {
                     } else {
                         append(Format.plain(item.quantity))
                     }
-                    item.unit?.let { append(" ").append(it) }
+                    item.unit?.let { append(" ").append(UnitWords.label(it)) }
                     item.batchNumber?.let { append("\n").append(getString(R.string.batch_label, it)) }
                     item.expiryDate?.let { append("\n").append(getString(R.string.bill_scan_expiry, Format.dateOnly(it))) }
                 }
@@ -549,7 +550,7 @@ class BillsActivity : BaseActivity() {
             ArrayAdapter(
                 this,
                 android.R.layout.simple_dropdown_item_1line,
-                resources.getStringArray(R.array.units)
+                UnitWords.choices()
             )
         )
 
@@ -571,7 +572,7 @@ class BillsActivity : BaseActivity() {
             etProduct.setText(existing.productName, false)
             etBatch.setText(existing.batchNumber ?: "")
             etQty.setText(Format.plain(existing.quantity))
-            etUnit.setText(existing.unit ?: "", false)
+            etUnit.setText(UnitWords.label(existing.unit), false)
             etRate.setText(existing.rate?.let { Format.plain(it) } ?: "")
             expiry?.let { btnExpiry.text = getString(R.string.bill_scan_expiry, Format.dateOnly(it)) }
         }
@@ -613,7 +614,7 @@ class BillsActivity : BaseActivity() {
                         batchNumber = etBatch.text.toString().trim().ifEmpty { null },
                         expiryDate = expiry,
                         quantity = qty,
-                        unit = etUnit.text.toString().trim().ifEmpty { null },
+                        unit = UnitWords.canonical(etUnit.text.toString()),
                         rate = Digits.parse(etRate.text)
                     )
                 )

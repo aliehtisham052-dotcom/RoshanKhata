@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.UnitWords
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
@@ -210,7 +211,7 @@ class SchemesActivity : BaseActivity() {
                 etName.setText(s.name)
                 etCompany.setText(s.company)
                 rgMeasure.check(if (s.measure == SchemeMath.BY_QTY) R.id.rbQty else R.id.rbValue)
-                etUnit.setText(s.unit)
+                etUnit.setText(UnitWords.label(s.unit))
                 rgReward.check(when (s.rewardKind) {
                     SchemeMath.AMOUNT -> R.id.rbAmount
                     SchemeMath.UNITS -> R.id.rbUnits
@@ -262,7 +263,7 @@ class SchemesActivity : BaseActivity() {
                                 startDate = start,
                                 endDate = end,
                                 measure = if (byQty) SchemeMath.BY_QTY else SchemeMath.BY_VALUE,
-                                unit = if (byQty) etUnit.text.toString().trim().ifEmpty { null } else null,
+                                unit = if (byQty) UnitWords.canonical(etUnit.text.toString()) else null,
                                 rewardKind = when (rgReward.checkedRadioButtonId) {
                                     R.id.rbAmount -> SchemeMath.AMOUNT
                                     R.id.rbUnits -> SchemeMath.UNITS

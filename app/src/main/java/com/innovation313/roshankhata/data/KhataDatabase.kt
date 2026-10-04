@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [
@@ -98,6 +99,16 @@ abstract class KhataDatabase : RoomDatabase() {
                     // shopkeeper who has lost a year of records and has no idea
                     // why. Loud failure is the kinder failure.
                     .addMigrations(*ALL_MIGRATIONS)
+                    // Units typed by hand as one of the app's own words for
+                    // a unit become that unit's saved key (see UnitWords).
+                    // Data only, no schema: a few UPDATEs that match nothing
+                    // in a book already in order, and can never stop it
+                    // opening.
+                    .addCallback(object : RoomDatabase.Callback() {
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            UnitWords.normalizeStored(db)
+                        }
+                    })
                     .build()
                     .also {
                         it.viewerCopy = file == ViewerMode.VIEWER_FILE

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.UnitWords
 import android.content.Intent
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.ui.SeasonText
@@ -324,9 +325,9 @@ class EntryDetailActivity : BaseActivity() {
         etItemName.setText(line?.itemName.orEmpty(), false)
         etQuantity.setText(line?.quantity?.let { Format.plain(it) } ?: "")
         etUnit.setAdapter(
-            ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, resources.getStringArray(R.array.units))
+            ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, UnitWords.choices())
         )
-        etUnit.setText(line?.unit.orEmpty(), false)
+        etUnit.setText(UnitWords.label(line?.unit), false)
         if (!canEditGoods) {
             etItemName.visibility = View.GONE
             (etQuantity.parent as? View)?.visibility = View.GONE
@@ -472,7 +473,7 @@ class EntryDetailActivity : BaseActivity() {
                         EntryItem.ofGoods(
                             itemName = etItemName.text.toString().trim().ifEmpty { null },
                             quantity = Digits.parse(etQuantity.text),
-                            unit = etUnit.text.toString().trim().ifEmpty { null },
+                            unit = UnitWords.canonical(etUnit.text.toString()),
                             productId = matchedProductId,
                             billItemId = selectedBatch?.id,
                             rate = line?.rate

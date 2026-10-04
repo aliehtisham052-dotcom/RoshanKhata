@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.asSuggestions
@@ -793,7 +794,7 @@ class PartyDetailActivity : BaseActivity() {
             ArrayAdapter(
                 this,
                 android.R.layout.simple_dropdown_item_1line,
-                resources.getStringArray(R.array.units)
+                UnitWords.choices()
             )
         )
         val btnBatch: MaterialButton = view.findViewById(R.id.btnBatch)
@@ -920,7 +921,7 @@ class PartyDetailActivity : BaseActivity() {
             return LineDraft(
                 itemName = name,
                 quantity = qty,
-                unit = etUnit.text.toString().trim().ifEmpty { null },
+                unit = UnitWords.canonical(etUnit.text.toString()),
                 rate = if (goodsListAllowed()) Digits.parse(etRate.text) else null,
                 productId = matchedProductId,
                 billItemId = selectedBatch?.id,
@@ -1032,7 +1033,7 @@ class PartyDetailActivity : BaseActivity() {
                     cashPrice = product.salePrice,
                     productUnit = product.defaultUnit,
                     rateType = chosenRateType(),
-                    typedUnit = etUnit.text.toString()
+                    typedUnit = UnitWords.canonical(etUnit.text.toString()).orEmpty()
                 )
             }
             // The chips stay while any listed item can still be re-priced by them.
@@ -1052,7 +1053,7 @@ class PartyDetailActivity : BaseActivity() {
             // takes the price this customer was last charged, when it was
             // per the same unit (else nothing — never a guess).
             if (fill && goodsListAllowed() && !rateWasTyped()) {
-                val typedUnit = etUnit.text.toString().trim()
+                val typedUnit = UnitWords.canonical(etUnit.text.toString()).orEmpty()
                 val offered = when {
                     isSale() -> (result as? RateOffer.Result.Offer)?.rate
                     isReturn() -> lastSale?.takeIf {
@@ -1077,13 +1078,13 @@ class PartyDetailActivity : BaseActivity() {
                     )
                 )
                 is RateOffer.Result.UnitMismatch ->
-                    note(getString(R.string.rate_unit_mismatch, result.productUnit, result.typedUnit))
+                    note(getString(R.string.rate_unit_mismatch, UnitWords.label(result.productUnit), UnitWords.label(result.typedUnit)))
                 else -> Unit
             }
 
             // What this customer paid last time, same product, same rate
             // type and unit — so a bargain is made knowing the history.
-            val typedUnit = etUnit.text.toString().trim()
+            val typedUnit = UnitWords.canonical(etUnit.text.toString()).orEmpty()
             val sameUnit = { r: LastRate -> typedUnit.isEmpty() || r.unit == null || r.unit.equals(typedUnit, ignoreCase = true) }
             val last = if (isSale()) {
                 (if (chosenRateType() == RateType.CASH) lastCash else lastCredit)?.takeIf(sameUnit)
@@ -1314,7 +1315,7 @@ class PartyDetailActivity : BaseActivity() {
                 // what he typed; filter=false keeps the dropdown shut.
                 val productUnit = product?.defaultUnit?.trim()
                 if (!productUnit.isNullOrEmpty() && etUnit.text.toString().isBlank()) {
-                    etUnit.setText(productUnit, false)
+                    etUnit.setText(UnitWords.label(productUnit), false)
                 }
                 refreshRateSuggestion()
                 if (options.isEmpty()) {
@@ -1357,7 +1358,7 @@ class PartyDetailActivity : BaseActivity() {
             editingIndex = i
             etItemName.setText(d.itemName.orEmpty(), false)
             etQuantity.setText(d.quantity?.let { Format.plain(it) } ?: "")
-            etUnit.setText(d.unit.orEmpty(), false)
+            etUnit.setText(UnitWords.label(d.unit), false)
             // The Free option was retired (30 Sep 2026): an old free line comes
             // back as a plain one with no rate, for the owner to price or remove.
             etRate.setText(if (d.isBonus) "" else d.rate?.let { Calc.trim(it) } ?: "")
@@ -2288,7 +2289,7 @@ class PartyDetailActivity : BaseActivity() {
                 // "urea" must find the visit where urea was the third item.
                 val haystack = (
                     listOfNotNull(e.note, e.entryNumber, Format.money(e.amount)) +
-                        row.items.flatMap { listOfNotNull(it.itemName, it.unit) }
+                        row.items.flatMap { listOfNotNull(it.itemName, it.unit, it.unit?.let { u -> UnitWords.label(u) }) }
                     ).joinToString(" ").lowercase()
 
                 haystack.contains(query)
