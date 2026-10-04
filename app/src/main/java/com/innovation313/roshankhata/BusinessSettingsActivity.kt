@@ -15,6 +15,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.Currency
+import com.innovation313.roshankhata.data.Trade
 import com.innovation313.roshankhata.data.ProfileChecks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,6 +72,7 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var etInvoiceTerms: EditText
     private lateinit var etStrn: EditText
     private lateinit var btnCurrency: MaterialButton
+    private lateinit var btnTrade: MaterialButton
     private lateinit var tvUnsaved: TextView
     private lateinit var btnPickQr: MaterialButton
     private lateinit var btnPickStamp: MaterialButton
@@ -202,6 +204,7 @@ class BusinessSettingsActivity : BaseActivity() {
         etInvoiceTerms = findViewById(R.id.etInvoiceTerms)
         etStrn = findViewById(R.id.etStrn)
         btnCurrency = findViewById(R.id.btnCurrency)
+        btnTrade = findViewById(R.id.btnTrade)
         tvUnsaved = findViewById(R.id.tvUnsaved)
         btnPickQr = findViewById(R.id.btnPickQr)
         btnPickStamp = findViewById(R.id.btnPickStamp)
@@ -231,6 +234,8 @@ class BusinessSettingsActivity : BaseActivity() {
         etStrn.setText(BusinessProfile.strn(this).orEmpty())
         renderCurrency()
         btnCurrency.setOnClickListener { chooseCurrency() }
+        renderTrade()
+        btnTrade.setOnClickListener { chooseTrade() }
 
         btnPickQr.setOnClickListener {
             pickImage.launch(
@@ -591,6 +596,28 @@ class BusinessSettingsActivity : BaseActivity() {
                 tvPreviewQrPlaceholder.visibility = View.VISIBLE
             }
         }
+    }
+
+    // ---------- Trade / shoba (4 Oct 2026) ----------
+
+    private fun renderTrade() {
+        btnTrade.text = Trade.current(this).label(this)
+    }
+
+    /** Saved the moment it is chosen, like the currency: a setting, not a text field. */
+    private fun chooseTrade() {
+        val trades = Trade.entries
+        val labels = trades.map { it.label(this) }.toTypedArray()
+        val checked = trades.indexOf(Trade.current(this))
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.bp_trade)
+            .setSingleChoiceItems(labels, checked) { dialog, which ->
+                dialog.dismiss()
+                BusinessProfile.setTrade(this, trades[which])
+                renderTrade()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     // ---------- Currency sign (4 Oct 2026) ----------
