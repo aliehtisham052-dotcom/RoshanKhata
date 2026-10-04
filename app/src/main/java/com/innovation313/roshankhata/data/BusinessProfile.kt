@@ -31,6 +31,7 @@ object BusinessProfile {
     private const val KEY_TERMS = "terms_and_conditions"
     private const val KEY_STRN = "strn_ntn"
     private const val KEY_CURRENCY = "currency"
+    private const val KEY_TRADE = "trade"
     private const val KEY_QR_SAVED = "payment_qr_saved"
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
     private const val KEY_STAMP_SAVED = "stamp_saved"
@@ -200,6 +201,16 @@ object BusinessProfile {
 
     fun setCurrency(context: Context, value: String?) {
         prefs(context).edit().putString(KEY_CURRENCY, Currency.clean(value)).apply()
+    }
+
+    // ---------- Trade / shoba (4 Oct 2026) ----------
+
+    /** The stored trade name, or null when never chosen (= [Trade.DEFAULT]). */
+    fun trade(context: Context): String? =
+        prefs(context).getString(KEY_TRADE, null)?.takeIf { it.isNotBlank() }
+
+    fun setTrade(context: Context, trade: Trade) {
+        prefs(context).edit().putString(KEY_TRADE, trade.name).apply()
     }
 
     // ---------- Payment QR ----------
