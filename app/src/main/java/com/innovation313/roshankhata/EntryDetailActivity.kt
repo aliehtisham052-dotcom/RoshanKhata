@@ -4,6 +4,7 @@ import android.content.Intent
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.ui.SeasonText
 import com.innovation313.roshankhata.data.SeasonBook
+import com.innovation313.roshankhata.data.TradeFeatures
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
@@ -95,7 +96,7 @@ class EntryDetailActivity : BaseActivity() {
      */
     private fun renderSeason(e: LedgerEntry) {
         val row = findViewById<View>(R.id.rowSeason)
-        if (!e.isGiven || e.isDeleted) { row.visibility = View.GONE; return }
+        if (!e.isGiven || e.isDeleted || !TradeFeatures.seasons(this)) { row.visibility = View.GONE; return }
         row.visibility = View.VISIBLE
         val byDate = SeasonBook.seasonOf(e.timestamp)
         val own = SeasonBook.Season.fromKey(e.season)
@@ -131,7 +132,9 @@ class EntryDetailActivity : BaseActivity() {
     private fun renderAdvice(e: LedgerEntry) {
         val btn = findViewById<MaterialButton>(R.id.btnAdvice)
         val goods = items.filter { !it.itemName.isNullOrBlank() }
-        if (!e.isGiven || e.isDeleted || goods.isEmpty()) { btn.visibility = View.GONE; return }
+        if (!e.isGiven || e.isDeleted || goods.isEmpty() || !TradeFeatures.sprayAdvice(this)) {
+            btn.visibility = View.GONE; return
+        }
         btn.visibility = View.VISIBLE
         btn.setOnClickListener {
             if (goods.size == 1) { editAdvice(goods[0]); return@setOnClickListener }
