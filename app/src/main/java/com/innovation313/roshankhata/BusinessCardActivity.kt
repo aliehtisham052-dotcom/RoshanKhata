@@ -44,6 +44,11 @@ class BusinessCardActivity : BaseActivity() {
     private lateinit var etTagline: EditText
     private lateinit var etQrMessage: EditText
     private lateinit var markSwitch: com.google.android.material.switchmaterial.SwitchMaterial
+    private lateinit var logoSwitch: com.google.android.material.switchmaterial.SwitchMaterial
+    private lateinit var logoHint: android.widget.TextView
+
+    /** The shop's logo from its Profile; null when it has none. Reloaded on return. */
+    private var logo: Bitmap? = null
     private lateinit var tplButtons: List<Button>
 
     private var template = TPL_DEFAULT
@@ -69,6 +74,8 @@ class BusinessCardActivity : BaseActivity() {
         etQrMessage = findViewById(R.id.etQrMessage)
 
         markSwitch = findViewById(R.id.switchCardWatermark)
+        logoSwitch = findViewById(R.id.switchCardLogo)
+        logoHint = findViewById(R.id.tvCardLogoHint)
 
         buildTemplateRow()
 
@@ -97,6 +104,18 @@ class BusinessCardActivity : BaseActivity() {
             render()
         }
 
+        // On unless the owner has said otherwise; only offered when a logo exists.
+        logoSwitch.isChecked = prefs.getBoolean(KEY_LOGO, true)
+        logoSwitch.setOnCheckedChangeListener { _, on ->
+            getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE)
+                .edit().putBoolean(KEY_LOGO, on).apply()
+            render()
+        }
+        // No logo yet: point to where one is added (Profile), rather than a dead switch.
+        logoHint.setOnClickListener {
+            startActivity(Intent(this, BusinessSettingsActivity::class.java))
+        }
+
         val watcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -113,7 +132,27 @@ class BusinessCardActivity : BaseActivity() {
         findViewById<Button>(R.id.btnCardPdf).setOnClickListener { sharePdf() }
 
         refreshTemplateButtons()
+        loadLogo()
         render()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // The owner may have just added or changed the logo in Profile.
+        if (::preview.isInitialized) {
+            loadLogo()
+            render()
+        }
+    }
+
+    /** Read the Profile logo, and show the switch or the "add one" hint accordingly. */
+    private fun loadLogo() {
+        logo = BusinessProfile.loadLogo(this)
+        val has = logo != null
+        logoSwitch.visibility = if (has) android.view.View.VISIBLE else android.view.View.GONE
+        logoHint.visibility = if (has) android.view.View.GONE else android.view.View.VISIBLE
+        // A read-only phone cannot open Profile, so it is not offered the way there.
+        com.innovation313.roshankhata.data.ViewerMode.hide(this, logoHint)
     }
 
     /**
@@ -174,7 +213,8 @@ class BusinessCardActivity : BaseActivity() {
         email = etEmail.text.toString().trim(),
         web = etWeb.text.toString().trim(),
         tagline = etTagline.text.toString().trim(),
-        qrMessage = etQrMessage.text.toString().trim()
+        qrMessage = etQrMessage.text.toString().trim(),
+        logo = if (logoSwitch.isChecked) logo else null
     )
 
     /** The still card that is shared: every moving part at rest. */
@@ -280,6 +320,7 @@ class BusinessCardActivity : BaseActivity() {
         private const val KEY_QR_MESSAGE = "qr_message"
         private const val KEY_TEMPLATE = "template"
         private const val KEY_MARK = "show_mark"
+        private const val KEY_LOGO = "show_logo"
 
         private val INK = Color.parseColor("#1A1A18")
         private val BRAND_GREEN = Color.parseColor("#1B5E3A")

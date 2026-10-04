@@ -183,6 +183,27 @@
           who wants nothing else on it should not have to crop the image or
           look for another app to get that.
         -->
+        <!-- The shop's logo from its Profile, placed by CardLogo in a free spot. -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchCardLogo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:minHeight="48dp"
+            android:text="@string/biz_card_show_logo"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvCardLogoHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:gravity="center_vertical"
+            android:text="@string/biz_card_logo_none"
+            android:textColor="@color/brand_green_text"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchCardWatermark"
             android:layout_width="match_parent"
