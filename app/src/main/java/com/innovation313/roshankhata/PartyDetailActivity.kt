@@ -48,6 +48,7 @@ import com.innovation313.roshankhata.ui.QrImage
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.SeasonBook
+import com.innovation313.roshankhata.data.TradeFeatures
 import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.RateType
 import com.innovation313.roshankhata.data.RateOffer
@@ -2752,11 +2753,12 @@ class PartyDetailActivity : BaseActivity() {
     private fun refreshSeasonRecord() {
         lifecycleScope.launch {
             val party = dao.getParty(partyId)
-            val rows = if (party?.isCustomer == true) {
+            val rows = if (party?.isCustomer == true && TradeFeatures.seasons(this@PartyDetailActivity)) {
                 withContext(Dispatchers.Default) { SeasonBook.book(dao.seasonLinesOf(partyId)) }
             } else emptyList()
             if (isFinishing || isDestroyed) return@launch
-            val promise = party?.harvestPromise?.let { getString(R.string.harvest_promise_header, Format.dateOnly(it)) }
+            val promise = party?.harvestPromise?.takeIf { TradeFeatures.seasons(this@PartyDetailActivity) }
+                ?.let { getString(R.string.harvest_promise_header, Format.dateOnly(it)) }
             val text = listOfNotNull(promise, SeasonText.record(this@PartyDetailActivity, rows).takeIf { it.isNotEmpty() })
                 .joinToString("  ·  ")
             tvSeasonRecord.text = text
@@ -3084,6 +3086,8 @@ class PartyDetailActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_party_detail, menu)
+        // "After the harvest" is an agri customer's promise (4 Oct).
+        menu.findItem(R.id.action_harvest_promise)?.isVisible = TradeFeatures.seasons(this)
         return true
     }
 

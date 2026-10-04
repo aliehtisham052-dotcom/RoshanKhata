@@ -164,7 +164,11 @@ class MainActivity : BaseActivity() {
             // whole village is on.
             Feature(R.drawable.ic_feature_season, R.string.season_title, SeasonsActivity::class.java,
                 R.color.tile_plans_bg, R.color.section_plans)
-        )
+        ).filter {
+            // Seasons are an agri shop's; another trade's grid ends at Products (4 Oct).
+            it.destination != SeasonsActivity::class.java ||
+                com.innovation313.roshankhata.data.TradeFeatures.seasons(this)
+        }
 
         // A read-only phone shows no tile for a screen it may not open.
         val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(this)
