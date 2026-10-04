@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.data
 
 import android.content.Context
+import com.innovation313.roshankhata.R
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -1134,7 +1135,7 @@ object InvoicePdfExport {
             BusinessProfile.bankName(context)?.let { labels.bank to it },
             BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
             BusinessProfile.bankIban(context)?.let { "IBAN" to it },
-            BusinessProfile.bankJazzCash(context)?.let { (if (Currency.symbol == Currency.DEFAULT) "JazzCash" else "Wallet") to it }
+            BusinessProfile.bankJazzCash(context)?.let { (if (Currency.symbol == Currency.DEFAULT) "JazzCash" else context.getString(R.string.pay_wallet_label)) to it }
         )
         val qr = BusinessProfile.loadQr(context)
         if (bank.isNotEmpty() || qr != null) {

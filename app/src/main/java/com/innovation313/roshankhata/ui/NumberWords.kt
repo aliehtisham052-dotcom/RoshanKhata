@@ -28,6 +28,12 @@ import com.innovation313.roshankhata.data.Currency
  *
  * Hindi and Bengali have their own tables too (added 4 Oct 2026).
  *
+ * Indonesian (4 Oct 2026) is fully regular, so it is composed, not looked
+ * up, and it counts the way Indonesia does: ribu, juta, miliar, triliun
+ * (thousand, million, billion, trillion), never lakh and crore, whichever
+ * currency the shop uses. Rupiah figures run long (a small invoice is
+ * millions), so it goes up to the trillions. See [inWordsIndonesian].
+ *
  * HONEST LIMIT, and the reason [rupeesInWords] falls back rather than
  * guessing: Sindhi, Persian and Arabic are not implemented. Sindhi's 1-99
  * names are irregular the same way Urdu's are and I could not write them
@@ -119,6 +125,7 @@ object NumberWords {
             "ur-Latn" -> spell(amount, romanUrduOnes, "Crore", "Lakh", "Hazar", "Sou", "Rupay") { romanUrduOnes[it] }
             "hi" -> rupeesInWordsHindi(amount)
             "bn" -> inWordsBengali(amount, "রুপি")
+            "id" -> inWordsIndonesian(amount, "rupee")
             else -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Rupees") { englishBelow100(it) }
         }
 
@@ -134,6 +141,20 @@ object NumberWords {
      */
     fun amountInWords(context: Context, amount: Double): String {
         val sign = Currency.symbol
+        // Indonesian reads every currency the same way, in its own words:
+        // "rupiah" for Rp, "taka" for the taka sign, and the currency's code
+        // for the rest ("lima ribu dua ratus USD"), as the English line does.
+        if (context.getString(R.string.number_words_language) == "id") {
+            return inWordsIndonesian(
+                amount,
+                when (sign) {
+                    "Rp" -> "rupiah"
+                    "Rs", "₹" -> "rupee"
+                    "৳" -> "taka"
+                    else -> Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign
+                }
+            )
+        }
         return when (sign) {
             "Rs", "₹" -> rupeesInWords(context, amount)
             "৳" ->
@@ -163,6 +184,62 @@ object NumberWords {
         if (thousand > 0) parts.add("${below1000(thousand)} Thousand")
         if (n > 0) parts.add(below1000(n))
         return parts.joinToString(" ") + " " + unitWord
+    }
+
+    private val indonesianOnes = arrayOf(
+        "nol", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"
+    )
+
+    /**
+     * Indonesian wording, ending in [unitWord]: "Dua juta lima ratus ribu
+     * rupiah". Public so it can be tested without a Context.
+     *
+     * The rules, all of them: 10 sepuluh, 11 sebelas, 12-19 "<digit> belas",
+     * tens "<digit> puluh", hundreds "<digit> ratus", and ONE of a ten, a
+     * hundred or a thousand takes the prefix se- (sepuluh, seratus, seribu)
+     * instead of "satu". From a million up it is "satu juta", "satu miliar",
+     * "satu triliun". Written as a sentence, so only the first letter is
+     * capital. Whole units only and never negative, like every other
+     * language here; capped at 999 triliun rather than failing on a figure
+     * no shop's invoice reaches.
+     */
+    fun inWordsIndonesian(amount: Double, unitWord: String): String {
+        var n = amount.toLong().coerceAtLeast(0)
+        if (n == 0L) return "Nol $unitWord"
+
+        fun below1000(v: Int): String {
+            val parts = mutableListOf<String>()
+            val h = v / 100
+            val r = v % 100
+            if (h == 1) parts.add("seratus") else if (h > 1) parts.add("${indonesianOnes[h]} ratus")
+            when {
+                r == 0 -> Unit
+                r < 10 -> parts.add(indonesianOnes[r])
+                r == 10 -> parts.add("sepuluh")
+                r == 11 -> parts.add("sebelas")
+                r < 20 -> parts.add("${indonesianOnes[r - 10]} belas")
+                else -> {
+                    parts.add("${indonesianOnes[r / 10]} puluh")
+                    if (r % 10 > 0) parts.add(indonesianOnes[r % 10])
+                }
+            }
+            return parts.joinToString(" ")
+        }
+
+        val parts = mutableListOf<String>()
+        val triliun = (n / 1_000_000_000_000).coerceAtMost(999).toInt(); n %= 1_000_000_000_000
+        val miliar = (n / 1_000_000_000).toInt(); n %= 1_000_000_000
+        val juta = (n / 1_000_000).toInt(); n %= 1_000_000
+        val ribu = (n / 1_000).toInt(); n %= 1_000
+
+        if (triliun > 0) parts.add("${below1000(triliun)} triliun")
+        if (miliar > 0) parts.add("${below1000(miliar)} miliar")
+        if (juta > 0) parts.add("${below1000(juta)} juta")
+        if (ribu == 1) parts.add("seribu") else if (ribu > 1) parts.add("${below1000(ribu)} ribu")
+        if (n > 0) parts.add(below1000(n.toInt()))
+
+        val words = parts.joinToString(" ")
+        return words.replaceFirstChar { it.uppercase() } + " " + unitWord
     }
 
     /** Hindi wording; public so the table can be tested without a Context. */

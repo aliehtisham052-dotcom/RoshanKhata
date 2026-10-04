@@ -675,7 +675,7 @@
     <string name="invoice_share_pdf">Bagikan sebagai PDF</string>
     <string name="invoice_send_whatsapp">Kirim lewat WhatsApp</string>
     <string name="invoice_template_teal">Teal Corporate — faktur usaha lengkap</string>
-    <string name="number_words_language" translatable="false">en</string>
+    <string name="number_words_language" translatable="false">id</string>
     <string name="invoice_swipe_designs">Geser untuk melihat desain lain — %1$d dari %2$d</string>
     <string name="invoice_template_black_gold">Black &amp; Gold — premium, untuk toko perhiasan</string>
     <string name="invoice_template_gradient">Modern Gradient — cerah, untuk salon</string>

@@ -135,6 +135,39 @@ def main() -> int:
                     f"{folder}: PLACEHOLDER MISMATCH {key}: default {want} vs {got}"
                 )
 
+    # --- string-arrays (values*/arrays.xml) ---
+    # Suggestion lists live in arrays.xml, which nothing above reads. Three
+    # languages were added (Indonesian, Hindi, Bengali, 4 Oct) with every
+    # string translated and no arrays.xml at all, so their Cashbook offered
+    # "Cash Sale" and "Rent" in English. The rule: an array that ANY locale
+    # translates must be in EVERY locale, with the default's number of items.
+    # An array no locale translates (units, kept as saved keys on purpose) is
+    # left alone.
+    def arrays(path):
+        if not path.exists():
+            return {}
+        return {
+            el.get("name"): len(el.findall("item"))
+            for el in ET.parse(path).getroot()
+            if el.tag == "string-array"
+        }
+
+    default_arrays = arrays(RES / "values" / "arrays.xml")
+    per_locale = {folder: arrays(RES / folder / "arrays.xml") for folder in LOCALES}
+    translated = {name for found in per_locale.values() for name in found}
+    for name in sorted(translated):
+        if name not in default_arrays:
+            failures.append(f"arrays: <string-array name=\"{name}\"> has no default in values/arrays.xml")
+            continue
+        for folder in LOCALES:
+            count = per_locale[folder].get(name)
+            if count is None:
+                failures.append(f"{folder}: MISSING <string-array name=\"{name}\">")
+            elif count != default_arrays[name]:
+                failures.append(
+                    f"{folder}: <string-array name=\"{name}\"> has {count} items, default has {default_arrays[name]}"
+                )
+
     # --- plurals ---
     # A form may use FEWER placeholders than the default, never more or
     # different. Arabic's "one" and "two" name the count in the word itself

@@ -448,7 +448,7 @@ object InvoiceTemplateKit {
             BusinessProfile.bankName(context)?.let { labels.bank to it },
             BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
             BusinessProfile.bankIban(context)?.let { "IBAN" to it },
-            BusinessProfile.bankJazzCash(context)?.let { (if (Currency.symbol == Currency.DEFAULT) "JazzCash" else "Wallet") to it }
+            BusinessProfile.bankJazzCash(context)?.let { (if (Currency.symbol == Currency.DEFAULT) "JazzCash" else context.getString(R.string.pay_wallet_label)) to it }
         )
 
         val totalsW = 220f
