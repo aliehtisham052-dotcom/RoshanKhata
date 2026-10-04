@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
-      - name: String parity across 6 locales
+      - name: String parity across 7 locales
         run: python3 scripts/check_strings.py
       - name: Dark-mode colours keep one job (text or fill)
         run: python3 scripts/check_dark_colours.py
