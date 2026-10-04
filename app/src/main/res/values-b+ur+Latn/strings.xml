@@ -937,9 +937,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="biz_card_type_hint">Aap kya bechte hain</string>
     <string name="biz_card_address_hint">Pata / shehar (ikhtiyari)</string>
     <string name="biz_card_template">Design</string>
-    <string name="biz_tpl_classic">Lakeer</string>
-    <string name="biz_tpl_gold">Frame</string>
-    <string name="biz_tpl_green">Ribbon</string>
     <string name="biz_card_share">Card share karein</string>
     <string name="biz_card_note">Card aap ke phone par banta hai aur tasveer ke tor par share hota hai. Kuch bhi upload nahi hota.</string>
     <string name="biz_card_show_mark">Card par “Roshan Khata” dikhayein</string>
@@ -995,11 +992,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="range_yesterday">Kal</string>
     <string name="range_this_week">Is hafte</string>
     <string name="range_this_month">Is mahine</string>
-    <string name="biz_tpl_corner">Tirchha</string>
-    <string name="biz_tpl_spine">Do Hisse</string>
-    <string name="biz_tpl_split">Morr</string>
-    <string name="biz_tpl_monogram">Mehraab</string>
-    <string name="biz_tpl_ledger">Teh</string>
     <string name="biz_tpl_arch">Lehar</string>
     <string name="biz_tpl_slate">Shaam</string>
     <string name="biz_tpl_olive">Lifafa</string>
@@ -1722,4 +1714,29 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="viewer_unknown_time">waqt maloom nahi</string>
     <string name="cash_paid_now">Paise abhi naqd mil gaye (\"I got\" bhi likhein)</string>
     <string name="cash_paid_recorded">%1$s naqd mil gaye. Sale aur wusooli dono likh di gayin.</string>
+    <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
+    <string name="biz_tpl_editorial">Akhbari</string>
+    <string name="biz_tpl_seal">Mohar</string>
+    <string name="biz_tpl_swiss">Swiss</string>
+    <string name="biz_tpl_glass">Sheesha</string>
+    <string name="biz_tpl_band">Patti</string>
+    <string name="biz_tpl_naqsh">Naqsh</string>
+    <string name="biz_tpl_brutal">Bebaak</string>
+    <string name="biz_tpl_ticket">Tikat</string>
+    <string name="biz_tpl_mesh">Rang</string>
+    <string name="biz_tpl_field">Khet</string>
+    <string name="biz_tpl_medical">Medical</string>
+    <string name="biz_tpl_mobile">Mobile</string>
+    <string name="biz_tpl_tailor">Darzi</string>
+    <string name="biz_tpl_hardware">Hardware</string>
+    <string name="biz_tpl_dairy">Dairy</string>
+    <string name="biz_tpl_kiryana">Kiryana</string>
+    <string name="biz_tpl_auto">Auto</string>
+    <string name="biz_tpl_furniture">Furniture</string>
+    <string name="biz_tpl_salon">Salon</string>
+    <string name="biz_tpl_solar">Solar</string>
+    <string name="biz_card_whatsapp_hint">WhatsApp (agar phone se alag ho)</string>
+    <string name="biz_card_email_hint">Email (ikhtiyari)</string>
+    <string name="biz_card_web_hint">Website ya Facebook/Instagram (ikhtiyari)</string>
+    <string name="biz_card_tagline_hint">Aik khaas line, misal: Ghar tak delivery (ikhtiyari)</string>
 </resources>

@@ -937,9 +937,6 @@
     <string name="biz_card_type_hint">آپ کیا بیچتے ہیں</string>
     <string name="biz_card_address_hint">پتہ / شہر (اختیاری)</string>
     <string name="biz_card_template">ڈیزائن</string>
-    <string name="biz_tpl_classic">لکیر</string>
-    <string name="biz_tpl_gold">فریم</string>
-    <string name="biz_tpl_green">ربن</string>
     <string name="biz_card_share">کارڈ شیئر کریں</string>
     <string name="biz_card_note">کارڈ آپ کے فون پر بنتا ہے اور تصویر کے طور پر شیئر ہوتا ہے۔ کچھ بھی اپ لوڈ نہیں ہوتا۔</string>
     <string name="biz_card_show_mark">کارڈ پر “روشن کھاتہ” دکھائیں</string>
@@ -995,11 +992,6 @@
     <string name="range_yesterday">کل</string>
     <string name="range_this_week">اس ہفتے</string>
     <string name="range_this_month">اس مہینے</string>
-    <string name="biz_tpl_corner">ترچھا</string>
-    <string name="biz_tpl_spine">دو حصے</string>
-    <string name="biz_tpl_split">موڑ</string>
-    <string name="biz_tpl_monogram">محراب</string>
-    <string name="biz_tpl_ledger">تہ</string>
     <string name="biz_tpl_arch">لہر</string>
     <string name="biz_tpl_slate">شام</string>
     <string name="biz_tpl_olive">لفافہ</string>
@@ -1722,4 +1714,29 @@
     <string name="viewer_unknown_time">وقت معلوم نہیں</string>
     <string name="cash_paid_now">پیسے ابھی نقد مل گئے («میں نے لیا» بھی لکھیں)</string>
     <string name="cash_paid_recorded">%1$s نقد مل گئے۔ فروخت اور وصولی دونوں لکھ دی گئیں۔</string>
+    <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
+    <string name="biz_tpl_editorial">اخباری</string>
+    <string name="biz_tpl_seal">مہر</string>
+    <string name="biz_tpl_swiss">سوئس</string>
+    <string name="biz_tpl_glass">شیشہ</string>
+    <string name="biz_tpl_band">پٹی</string>
+    <string name="biz_tpl_naqsh">نقش</string>
+    <string name="biz_tpl_brutal">بےباک</string>
+    <string name="biz_tpl_ticket">ٹکٹ</string>
+    <string name="biz_tpl_mesh">رنگ</string>
+    <string name="biz_tpl_field">کھیت</string>
+    <string name="biz_tpl_medical">میڈیکل</string>
+    <string name="biz_tpl_mobile">موبائل</string>
+    <string name="biz_tpl_tailor">درزی</string>
+    <string name="biz_tpl_hardware">ہارڈویئر</string>
+    <string name="biz_tpl_dairy">ڈیری</string>
+    <string name="biz_tpl_kiryana">کریانہ</string>
+    <string name="biz_tpl_auto">آٹو</string>
+    <string name="biz_tpl_furniture">فرنیچر</string>
+    <string name="biz_tpl_salon">سیلون</string>
+    <string name="biz_tpl_solar">سولر</string>
+    <string name="biz_card_whatsapp_hint">واٹس ایپ (اگر فون سے الگ ہو)</string>
+    <string name="biz_card_email_hint">ای میل (اختیاری)</string>
+    <string name="biz_card_web_hint">ویب سائٹ یا فیس بک/انسٹاگرام (اختیاری)</string>
+    <string name="biz_card_tagline_hint">ایک خاص لائن، مثلاً: گھر تک ڈیلیوری (اختیاری)</string>
 </resources>

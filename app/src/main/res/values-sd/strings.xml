@@ -965,9 +965,6 @@
     <string name="biz_card_type_hint">توهان ڇا وڪڻو ٿا</string>
     <string name="biz_card_address_hint">پتو / شهر (اختياري)</string>
     <string name="biz_card_template">ڊيزائن</string>
-    <string name="biz_tpl_classic">ليڪ</string>
-    <string name="biz_tpl_gold">فريم</string>
-    <string name="biz_tpl_green">ربن</string>
     <string name="biz_card_share">ڪارڊ شيئر ڪريو</string>
     <string name="biz_card_note">ڪارڊ توهان جي فون تي ٺهي ٿو ۽ تصوير طور شيئر ٿئي ٿو. ڪجهه به اپلوڊ نٿو ٿئي.</string>
     <string name="biz_card_show_mark">ڪارڊ تي “روشن کاتو” ڏيکاريو</string>
@@ -1023,11 +1020,6 @@
     <string name="range_yesterday">ڪالهه</string>
     <string name="range_this_week">هن هفتي</string>
     <string name="range_this_month">هن مهيني</string>
-    <string name="biz_tpl_corner">ترڇو</string>
-    <string name="biz_tpl_spine">ورهايل</string>
-    <string name="biz_tpl_split">موڙ</string>
-    <string name="biz_tpl_monogram">محراب</string>
-    <string name="biz_tpl_ledger">موڙيل</string>
     <string name="biz_tpl_arch">لهر</string>
     <string name="biz_tpl_slate">شام</string>
     <string name="biz_tpl_olive">لفافو</string>
@@ -1750,4 +1742,29 @@
     <string name="viewer_unknown_time">وقت معلوم ناهي</string>
     <string name="cash_paid_now">پئسا هينئر نقد ملي ويا («مون ورتو» به لکو)</string>
     <string name="cash_paid_recorded">%1$s نقد ملي ويا. وڪرو ۽ وصولي ٻئي لکيا ويا.</string>
+    <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
+    <string name="biz_tpl_editorial">اخباري</string>
+    <string name="biz_tpl_seal">مهر</string>
+    <string name="biz_tpl_swiss">سوئس</string>
+    <string name="biz_tpl_glass">شيشو</string>
+    <string name="biz_tpl_band">پٽي</string>
+    <string name="biz_tpl_naqsh">نقش</string>
+    <string name="biz_tpl_brutal">بيباڪ</string>
+    <string name="biz_tpl_ticket">ٽڪيٽ</string>
+    <string name="biz_tpl_mesh">رنگ</string>
+    <string name="biz_tpl_field">پوک</string>
+    <string name="biz_tpl_medical">ميڊيڪل</string>
+    <string name="biz_tpl_mobile">موبائل</string>
+    <string name="biz_tpl_tailor">درزي</string>
+    <string name="biz_tpl_hardware">هارڊويئر</string>
+    <string name="biz_tpl_dairy">ڊيري</string>
+    <string name="biz_tpl_kiryana">ڪرياني</string>
+    <string name="biz_tpl_auto">آٽو</string>
+    <string name="biz_tpl_furniture">فرنيچر</string>
+    <string name="biz_tpl_salon">سيلون</string>
+    <string name="biz_tpl_solar">سولر</string>
+    <string name="biz_card_whatsapp_hint">واٽس ايپ (جيڪڏهن فون کان الڳ هجي)</string>
+    <string name="biz_card_email_hint">اي ميل (اختياري)</string>
+    <string name="biz_card_web_hint">ويب سائيٽ يا فيس بڪ/انسٽاگرام (اختياري)</string>
+    <string name="biz_card_tagline_hint">هڪ خاص لائين، مثال: گهر تائين ڊليوري (اختياري)</string>
 </resources>

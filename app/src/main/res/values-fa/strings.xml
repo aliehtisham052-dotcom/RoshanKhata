@@ -965,9 +965,6 @@
     <string name="biz_card_type_hint">چه می‌فروشید</string>
     <string name="biz_card_address_hint">نشانی / شهر (اختیاری)</string>
     <string name="biz_card_template">طرح</string>
-    <string name="biz_tpl_classic">خط</string>
-    <string name="biz_tpl_gold">قاب</string>
-    <string name="biz_tpl_green">روبان</string>
     <string name="biz_card_share">اشتراک کارت</string>
     <string name="biz_card_note">کارت روی گوشی شما ساخته و به‌صورت تصویر به اشتراک گذاشته می‌شود. چیزی بارگذاری نمی‌شود.</string>
     <string name="biz_card_show_mark">نمایش «روشن کھاتہ» روی کارت</string>
@@ -1023,11 +1020,6 @@
     <string name="range_yesterday">دیروز</string>
     <string name="range_this_week">این هفته</string>
     <string name="range_this_month">این ماه</string>
-    <string name="biz_tpl_corner">مورب</string>
-    <string name="biz_tpl_spine">دوبخشی</string>
-    <string name="biz_tpl_split">منحنی</string>
-    <string name="biz_tpl_monogram">قوس</string>
-    <string name="biz_tpl_ledger">تاشده</string>
     <string name="biz_tpl_arch">موج</string>
     <string name="biz_tpl_slate">غروب</string>
     <string name="biz_tpl_olive">پاکت</string>
@@ -1750,4 +1742,29 @@
     <string name="viewer_unknown_time">زمان نامعلوم</string>
     <string name="cash_paid_now">پول همین حالا نقد رسید («دریافت کردم» را هم بنویس)</string>
     <string name="cash_paid_recorded">%1$s نقد دریافت شد. فروش و پرداخت هر دو ثبت شد.</string>
+    <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
+    <string name="biz_tpl_editorial">سردبیری</string>
+    <string name="biz_tpl_seal">مهر</string>
+    <string name="biz_tpl_swiss">سوئیسی</string>
+    <string name="biz_tpl_glass">شیشه</string>
+    <string name="biz_tpl_band">نوار</string>
+    <string name="biz_tpl_naqsh">نقش</string>
+    <string name="biz_tpl_brutal">جسور</string>
+    <string name="biz_tpl_ticket">بلیت</string>
+    <string name="biz_tpl_mesh">مه</string>
+    <string name="biz_tpl_field">کشتزار</string>
+    <string name="biz_tpl_medical">داروخانه</string>
+    <string name="biz_tpl_mobile">موبایل</string>
+    <string name="biz_tpl_tailor">خیاطی</string>
+    <string name="biz_tpl_hardware">ابزار</string>
+    <string name="biz_tpl_dairy">لبنیات</string>
+    <string name="biz_tpl_kiryana">خواربار</string>
+    <string name="biz_tpl_auto">خودرو</string>
+    <string name="biz_tpl_furniture">مبلمان</string>
+    <string name="biz_tpl_salon">سالن</string>
+    <string name="biz_tpl_solar">خورشیدی</string>
+    <string name="biz_card_whatsapp_hint">واتس‌اپ (اگر با تلفن فرق دارد)</string>
+    <string name="biz_card_email_hint">ایمیل (اختیاری)</string>
+    <string name="biz_card_web_hint">وب‌سایت یا فیسبوک/اینستاگرام (اختیاری)</string>
+    <string name="biz_card_tagline_hint">یک خط ویژه، مثلاً: ارسال به خانه (اختیاری)</string>
 </resources>

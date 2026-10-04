@@ -978,9 +978,6 @@ You can change this any time from this screen.</string>
     <string name="biz_card_type_hint">What you sell</string>
     <string name="biz_card_address_hint">Address / city (optional)</string>
     <string name="biz_card_template">Design</string>
-    <string name="biz_tpl_classic">Line</string>
-    <string name="biz_tpl_gold">Frame</string>
-    <string name="biz_tpl_green">Ribbon</string>
     <string name="biz_card_share">Share card</string>
     <string name="biz_card_note">The card is drawn on your phone and shared as an image. Nothing is uploaded.</string>
     <string name="biz_card_show_mark">Show “Roshan Khata” on the card</string>
@@ -1036,11 +1033,6 @@ You can change this any time from this screen.</string>
     <string name="range_yesterday">Yesterday</string>
     <string name="range_this_week">This week</string>
     <string name="range_this_month">This month</string>
-    <string name="biz_tpl_corner">Diagonal</string>
-    <string name="biz_tpl_spine">Split</string>
-    <string name="biz_tpl_split">Curve</string>
-    <string name="biz_tpl_monogram">Arc</string>
-    <string name="biz_tpl_ledger">Fold</string>
     <string name="biz_tpl_arch">Wave</string>
     <string name="biz_tpl_slate">Dusk</string>
     <string name="biz_tpl_olive">Envelope</string>
@@ -1774,4 +1766,29 @@ You can change this any time from this screen.</string>
     <string name="viewer_unknown_time">time not known</string>
     <string name="cash_paid_now">Money received now, in cash (also write the \"I got\")</string>
     <string name="cash_paid_recorded">%1$s received in cash. Sale and payment both written.</string>
+    <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
+    <string name="biz_tpl_editorial">Editorial</string>
+    <string name="biz_tpl_seal">Seal</string>
+    <string name="biz_tpl_swiss">Swiss</string>
+    <string name="biz_tpl_glass">Glass</string>
+    <string name="biz_tpl_band">Band</string>
+    <string name="biz_tpl_naqsh">Naqsh</string>
+    <string name="biz_tpl_brutal">Bold</string>
+    <string name="biz_tpl_ticket">Ticket</string>
+    <string name="biz_tpl_mesh">Mesh</string>
+    <string name="biz_tpl_field">Field</string>
+    <string name="biz_tpl_medical">Medical</string>
+    <string name="biz_tpl_mobile">Mobile</string>
+    <string name="biz_tpl_tailor">Tailor</string>
+    <string name="biz_tpl_hardware">Hardware</string>
+    <string name="biz_tpl_dairy">Dairy</string>
+    <string name="biz_tpl_kiryana">Kiryana</string>
+    <string name="biz_tpl_auto">Auto</string>
+    <string name="biz_tpl_furniture">Furniture</string>
+    <string name="biz_tpl_salon">Salon</string>
+    <string name="biz_tpl_solar">Solar</string>
+    <string name="biz_card_whatsapp_hint">WhatsApp (if different from phone)</string>
+    <string name="biz_card_email_hint">Email (optional)</string>
+    <string name="biz_card_web_hint">Website or Facebook/Instagram (optional)</string>
+    <string name="biz_card_tagline_hint">One line to stand out, e.g. Home delivery (optional)</string>
 </resources>
