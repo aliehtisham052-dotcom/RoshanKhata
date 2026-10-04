@@ -10,11 +10,11 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.ui.CardPreviewView
 import com.innovation313.roshankhata.ui.CardTemplates
 import java.io.File
 import java.io.FileOutputStream
@@ -32,12 +32,16 @@ import java.io.FileOutputStream
  */
 class BusinessCardActivity : BaseActivity() {
 
-    private lateinit var preview: ImageView
+    private lateinit var preview: CardPreviewView
     private lateinit var etBizName: EditText
     private lateinit var etType: EditText
     private lateinit var etOwner: EditText
     private lateinit var etPhone: EditText
     private lateinit var etAddress: EditText
+    private lateinit var etWhatsapp: EditText
+    private lateinit var etEmail: EditText
+    private lateinit var etWeb: EditText
+    private lateinit var etTagline: EditText
     private lateinit var markSwitch: com.google.android.material.switchmaterial.SwitchMaterial
     private lateinit var tplButtons: List<Button>
 
@@ -46,6 +50,7 @@ class BusinessCardActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_business_card)
+        CardTemplates.init(this)
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
@@ -56,6 +61,10 @@ class BusinessCardActivity : BaseActivity() {
         etOwner = findViewById(R.id.etOwner)
         etPhone = findViewById(R.id.etPhone)
         etAddress = findViewById(R.id.etAddress)
+        etWhatsapp = findViewById(R.id.etWhatsapp)
+        etEmail = findViewById(R.id.etEmail)
+        etWeb = findViewById(R.id.etWeb)
+        etTagline = findViewById(R.id.etTagline)
 
         markSwitch = findViewById(R.id.switchCardWatermark)
 
@@ -69,7 +78,13 @@ class BusinessCardActivity : BaseActivity() {
         etOwner.setText(prefs.getString(KEY_OWNER, ""))
         etPhone.setText(prefs.getString(KEY_PHONE, ""))
         etAddress.setText(prefs.getString(KEY_ADDRESS, ""))
-        template = prefs.getInt(KEY_TEMPLATE, TPL_DEFAULT)
+        etWhatsapp.setText(prefs.getString(KEY_WHATSAPP, ""))
+        etEmail.setText(prefs.getString(KEY_EMAIL, ""))
+        etWeb.setText(prefs.getString(KEY_WEB, ""))
+        etTagline.setText(prefs.getString(KEY_TAGLINE, ""))
+        // A design that was removed (ids 0-7) resolves to the first card, and the
+        // picker highlights that card rather than nothing.
+        template = CardTemplates.byId(prefs.getInt(KEY_TEMPLATE, TPL_DEFAULT)).id
         // On unless the owner has said otherwise.
         markSwitch.isChecked = prefs.getBoolean(KEY_MARK, true)
         markSwitch.setOnCheckedChangeListener { _, on ->
@@ -83,7 +98,7 @@ class BusinessCardActivity : BaseActivity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) = render()
         }
-        listOf(etBizName, etType, etOwner, etPhone, etAddress)
+        listOf(etBizName, etType, etOwner, etPhone, etAddress, etWhatsapp, etEmail, etWeb, etTagline)
             .forEach { it.addTextChangedListener(watcher) }
 
         findViewById<Button>(R.id.btnShareCard).apply {
@@ -139,28 +154,34 @@ class BusinessCardActivity : BaseActivity() {
 
     // ---------- Drawing ----------
 
+    private fun cardData() = CardTemplates.CardData(
+        name = etBizName.text.toString().trim()
+            .ifEmpty { getString(R.string.biz_card_name_hint) },
+        type = etType.text.toString().trim(),
+        owner = etOwner.text.toString().trim(),
+        phone = etPhone.text.toString().trim(),
+        address = etAddress.text.toString().trim(),
+        // Empty when the owner has switched the mark off — CardTemplates
+        // draws nothing for an empty footer, so no template needs to know
+        // about the setting.
+        footer = if (markSwitch.isChecked) getString(R.string.made_with_app) else "",
+        whatsapp = etWhatsapp.text.toString().trim(),
+        email = etEmail.text.toString().trim(),
+        web = etWeb.text.toString().trim(),
+        tagline = etTagline.text.toString().trim()
+    )
+
+    /** The still card that is shared: every moving part at rest. */
     private fun drawCard(): Bitmap {
         val bmp = Bitmap.createBitmap(CardTemplates.W, CardTemplates.H, Bitmap.Config.ARGB_8888)
-        val data = CardTemplates.CardData(
-            name = etBizName.text.toString().trim()
-                .ifEmpty { getString(R.string.biz_card_name_hint) },
-            type = etType.text.toString().trim(),
-            owner = etOwner.text.toString().trim(),
-            phone = etPhone.text.toString().trim(),
-            address = etAddress.text.toString().trim(),
-            // Empty when the owner has switched the mark off — CardTemplates
-            // draws nothing for an empty footer, so no template needs to know
-            // about the setting.
-            footer = if (markSwitch.isChecked) getString(R.string.made_with_app) else ""
-        )
         CardTemplates.byId(template).draw(
-            Canvas(bmp), data, CardTemplates.W, CardTemplates.H
+            Canvas(bmp), cardData(), CardTemplates.W, CardTemplates.H, -1f
         )
         return bmp
     }
 
     private fun render() {
-        preview.setImageBitmap(drawCard())
+        preview.show(CardTemplates.byId(template), cardData())
     }
 
     // ---------- Share ----------
@@ -193,6 +214,10 @@ class BusinessCardActivity : BaseActivity() {
             .putString(KEY_OWNER, etOwner.text.toString().trim())
             .putString(KEY_PHONE, etPhone.text.toString().trim())
             .putString(KEY_ADDRESS, etAddress.text.toString().trim())
+            .putString(KEY_WHATSAPP, etWhatsapp.text.toString().trim())
+            .putString(KEY_EMAIL, etEmail.text.toString().trim())
+            .putString(KEY_WEB, etWeb.text.toString().trim())
+            .putString(KEY_TAGLINE, etTagline.text.toString().trim())
             .putInt(KEY_TEMPLATE, template)
             .apply()
     }
@@ -211,13 +236,18 @@ class BusinessCardActivity : BaseActivity() {
          * screen for the first time should find the strongest design already
          * selected, not have to hunt for it past eleven others.
          */
-        private const val TPL_DEFAULT = 3
+        /** Editorial. An id saved from a removed design also lands here. */
+        private const val TPL_DEFAULT = 101
 
         private const val PREFS = "biz_card"
         private const val KEY_TYPE = "type"
         private const val KEY_OWNER = "owner"
         private const val KEY_PHONE = "phone"
         private const val KEY_ADDRESS = "address"
+        private const val KEY_WHATSAPP = "whatsapp"
+        private const val KEY_EMAIL = "email"
+        private const val KEY_WEB = "web"
+        private const val KEY_TAGLINE = "tagline"
         private const val KEY_TEMPLATE = "template"
         private const val KEY_MARK = "show_mark"
 

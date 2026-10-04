@@ -1037,9 +1037,6 @@
     <string name="biz_card_type_hint">ماذا تبيع</string>
     <string name="biz_card_address_hint">العنوان / المدينة (اختياري)</string>
     <string name="biz_card_template">التصميم</string>
-    <string name="biz_tpl_classic">خط</string>
-    <string name="biz_tpl_gold">إطار</string>
-    <string name="biz_tpl_green">شريط</string>
     <string name="biz_card_share">مشاركة البطاقة</string>
     <string name="biz_card_note">تُرسم البطاقة على هاتفك وتُشارَك كصورة. لا يُرفع أي شيء.</string>
     <string name="biz_card_show_mark">إظهار “روشن كھاتہ” على البطاقة</string>
@@ -1095,11 +1092,6 @@
     <string name="range_yesterday">أمس</string>
     <string name="range_this_week">هذا الأسبوع</string>
     <string name="range_this_month">هذا الشهر</string>
-    <string name="biz_tpl_corner">قطري</string>
-    <string name="biz_tpl_spine">منقسم</string>
-    <string name="biz_tpl_split">منحنى</string>
-    <string name="biz_tpl_monogram">قوس</string>
-    <string name="biz_tpl_ledger">طية</string>
     <string name="biz_tpl_arch">موجة</string>
     <string name="biz_tpl_slate">غسق</string>
     <string name="biz_tpl_olive">ظرف</string>
@@ -1894,4 +1886,29 @@
     <string name="viewer_unknown_time">الوقت غير معروف</string>
     <string name="cash_paid_now">استُلم المبلغ نقدًا الآن (سجّل «استلمتُ» أيضًا)</string>
     <string name="cash_paid_recorded">استُلم %1$s نقدًا. سُجّل البيع والدفع معًا.</string>
+    <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
+    <string name="biz_tpl_editorial">تحريري</string>
+    <string name="biz_tpl_seal">ختم</string>
+    <string name="biz_tpl_swiss">سويسري</string>
+    <string name="biz_tpl_glass">زجاج</string>
+    <string name="biz_tpl_band">شريط</string>
+    <string name="biz_tpl_naqsh">نقش</string>
+    <string name="biz_tpl_brutal">جريء</string>
+    <string name="biz_tpl_ticket">تذكرة</string>
+    <string name="biz_tpl_mesh">ضباب</string>
+    <string name="biz_tpl_field">حقل</string>
+    <string name="biz_tpl_medical">صيدلية</string>
+    <string name="biz_tpl_mobile">هواتف</string>
+    <string name="biz_tpl_tailor">خياط</string>
+    <string name="biz_tpl_hardware">عُدد</string>
+    <string name="biz_tpl_dairy">ألبان</string>
+    <string name="biz_tpl_kiryana">بقالة</string>
+    <string name="biz_tpl_auto">سيارات</string>
+    <string name="biz_tpl_furniture">أثاث</string>
+    <string name="biz_tpl_salon">صالون</string>
+    <string name="biz_tpl_solar">طاقة شمسية</string>
+    <string name="biz_card_whatsapp_hint">واتساب (إن كان مختلفًا عن الهاتف)</string>
+    <string name="biz_card_email_hint">البريد الإلكتروني (اختياري)</string>
+    <string name="biz_card_web_hint">الموقع أو فيسبوك/إنستغرام (اختياري)</string>
+    <string name="biz_card_tagline_hint">سطر مميز، مثل: توصيل للمنزل (اختياري)</string>
 </resources>

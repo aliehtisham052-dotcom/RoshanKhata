@@ -28,12 +28,11 @@
             android:textSize="14sp" />
 
         <!-- Live preview of the card, redrawn on every keystroke -->
-        <ImageView
+        <com.innovation313.roshankhata.ui.CardPreviewView
             android:id="@+id/ivCardPreview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:adjustViewBounds="true"
             android:contentDescription="@string/biz_card" />
 
         <TextView
@@ -46,7 +45,7 @@
             android:textStyle="bold" />
 
 <!--
-          Twelve designs, so the row scrolls rather than squeezing them onto
+          Twenty-four designs, so the row scrolls rather than squeezing them onto
           one line. Filled in code, one chip per template, so adding a
           thirteenth is a line in CardTemplates and nothing here.
         -->
@@ -105,6 +104,43 @@
             android:minHeight="48dp"
             android:textSize="15sp" />
 
+
+        <EditText
+            android:id="@+id/etWhatsapp"
+            android:textDirection="ltr"
+            android:textAlignment="viewStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="@string/biz_card_whatsapp_hint"
+            android:inputType="phone"
+            android:minHeight="48dp"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:textDirection="ltr"
+            android:textAlignment="viewStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="@string/biz_card_email_hint"
+            android:inputType="textEmailAddress"
+            android:minHeight="48dp"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/etWeb"
+            android:textDirection="ltr"
+            android:textAlignment="viewStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="@string/biz_card_web_hint"
+            android:inputType="textUri"
+            android:minHeight="48dp"
+            android:textSize="15sp" />
+
         <EditText
             android:id="@+id/etAddress"
             android:layout_width="match_parent"
@@ -112,6 +148,16 @@
             android:layout_marginTop="6dp"
             android:hint="@string/biz_card_address_hint"
             android:inputType="textPostalAddress"
+            android:minHeight="48dp"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/etTagline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="@string/biz_card_tagline_hint"
+            android:inputType="textCapSentences"
             android:minHeight="48dp"
             android:textSize="15sp" />
 
