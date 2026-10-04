@@ -93,7 +93,7 @@ class VoiceLanguageTest {
     /** Every language on the language screen must be mapped. */
     @Test
     fun `every app language is covered`() {
-        for (tag in listOf("en", "ur-Latn", "ur", "sd", "fa", "ar", "id")) {
+        for (tag in listOf("en", "ur-Latn", "ur", "sd", "fa", "ar", "id", "hi", "bn")) {
             assertTrue("$tag has no speech tag", VoiceLanguage.preferred(tag).isNotEmpty())
         }
     }
@@ -139,6 +139,35 @@ class VoiceLanguageTest {
         assertEquals("en", VoiceLanguage.forBook("ur-Latn", latinBook))
         assertEquals("en", VoiceLanguage.forBook("ar", latinBook))
         assertEquals("en", VoiceLanguage.forBook("sd", latinBook))
+    }
+
+    /** Hindi and Bengali listen in their own languages; Bengali in either country. */
+    @Test
+    fun `hindi and bengali have their own recognisers`() {
+        assertEquals("hi-IN", VoiceLanguage.choose("hi", null).tag)
+        assertEquals("bn-BD", VoiceLanguage.choose("bn", null).tag)
+
+        val indianPhone = VoiceLanguage.choose("bn", listOf("en-IN", "bn-IN"))
+        assertEquals("bn-IN", indianPhone.tag)
+        assertTrue(indianPhone.exact)
+
+        assertFalse(VoiceLanguage.choose("bn", phone).exact)
+    }
+
+    /** The same rule as Urdu, with their own letters: the book's script decides. */
+    @Test
+    fun `hindi and bengali follow the script the book is kept in`() {
+        val hindiBook = (1..40).map { "रमेश कुमार $it" }
+        val bengaliBook = (1..40).map { "রহিম উদ্দিন $it" }
+
+        assertEquals("en", VoiceLanguage.forBook("hi", latinBook))
+        assertEquals("en", VoiceLanguage.forBook("bn", latinBook))
+        assertEquals("hi", VoiceLanguage.forBook("hi", hindiBook))
+        assertEquals("bn", VoiceLanguage.forBook("bn", bengaliBook))
+        assertEquals("hi", VoiceLanguage.forBook("en", hindiBook))
+        assertEquals("bn", VoiceLanguage.forBook("en", bengaliBook))
+        // Untouched: an Urdu book under an English menu is still heard in Urdu.
+        assertEquals("ur", VoiceLanguage.forBook("en", urduBook))
     }
 
     /**

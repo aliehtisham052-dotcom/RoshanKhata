@@ -28,7 +28,8 @@ from pathlib import Path
 
 RES = Path(__file__).resolve().parent.parent / "app" / "src" / "main" / "res"
 DEFAULT = RES / "values" / "strings.xml"
-LOCALES = ["values-b+ur+Latn", "values-ur", "values-sd", "values-fa", "values-ar", "values-in"]
+LOCALES = ["values-b+ur+Latn", "values-ur", "values-sd", "values-fa", "values-ar", "values-in",
+           "values-hi", "values-bn"]
 
 PLACEHOLDER = re.compile(r"%\d+\$[sd]")
 
@@ -44,6 +45,9 @@ QUANTITIES = {
     "values-fa": {"one", "other"},
     "values-ar": {"zero", "one", "two", "few", "many", "other"},
     "values-in": {"other"},
+    # Hindi and Bengali: "one" covers 0 and 1, "other" the rest.
+    "values-hi": {"one", "other"},
+    "values-bn": {"one", "other"},
 }
 
 

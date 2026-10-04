@@ -6,6 +6,22 @@ import org.junit.Test
 class NumberWordsTest {
 
     @Test
+    fun `hindi words, lakh and crore, irregular tens`() {
+        assertEquals("शून्य रुपये", NumberWords.rupeesInWordsHindi(0.0))
+        assertEquals("उन्नीस हज़ार दो सौ पचासी रुपये", NumberWords.rupeesInWordsHindi(19285.0))
+        assertEquals("एक करोड़ पाँच लाख रुपये", NumberWords.rupeesInWordsHindi(10500000.0))
+        assertEquals("निन्यानवे रुपये", NumberWords.rupeesInWordsHindi(99.0))
+    }
+
+    @Test
+    fun `bengali words, in taka and in rupees`() {
+        assertEquals("শূন্য টাকা", NumberWords.inWordsBengali(0.0, "টাকা"))
+        assertEquals("উনিশ হাজার দুই শত পঁচাশি টাকা", NumberWords.inWordsBengali(19285.0, "টাকা"))
+        assertEquals("এক কোটি পাঁচ লক্ষ রুপি", NumberWords.inWordsBengali(10500000.0, "রুপি"))
+        assertEquals("নিরানব্বই টাকা", NumberWords.inWordsBengali(99.0, "টাকা"))
+    }
+
+    @Test
     fun `zero`() {
         assertEquals("Sifar Rupay", NumberWords.rupeesInWordsRomanUrdu(0.0))
     }

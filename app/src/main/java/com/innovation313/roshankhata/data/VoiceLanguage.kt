@@ -53,7 +53,9 @@ object VoiceLanguage {
         "ar" to listOf("ar-SA", "ar-AE", "ar-EG"),
         "fa" to listOf("fa-IR"),
         "sd" to listOf("sd-PK", "sd-IN"),
-        "id" to listOf("id-ID")
+        "id" to listOf("id-ID"),
+        "hi" to listOf("hi-IN"),
+        "bn" to listOf("bn-BD", "bn-IN")
     )
 
     /**
@@ -79,6 +81,28 @@ object VoiceLanguage {
 
     /** Arabic, Urdu, Persian and Sindhi letters all live in this block. */
     private fun isArabicScript(c: Char) = c in '\u0600'..'\u06FF'
+
+    /** Hindi's letters (Devanagari), and Bengali's. */
+    private fun isDevanagari(c: Char) = c in '\u0900'..'\u097F'
+    private fun isBengali(c: Char) = c in '\u0980'..'\u09FF'
+
+    /**
+     * The share of names written in one script, of those written in that
+     * script or in Latin — the same measure as [arabicShare], for the
+     * languages added later. Null when no name says anything either way.
+     */
+    private fun scriptShare(names: List<String>, inScript: (Char) -> Boolean): Double? {
+        var own = 0
+        var counted = 0
+        for (name in names) {
+            val hasOwn = name.any(inScript)
+            val hasLatin = name.any { it in 'a'..'z' || it in 'A'..'Z' }
+            if (!hasOwn && !hasLatin) continue
+            counted++
+            if (hasOwn) own++
+        }
+        return if (counted == 0) null else own.toDouble() / counted
+    }
 
     /**
      * The share of names written in Arabic script, of those written in any
@@ -124,8 +148,26 @@ object VoiceLanguage {
      */
     fun forBook(appTag: String, names: List<String>): String {
         if (names.size < ENOUGH_NAMES) return appTag
-        val share = arabicShare(names) ?: return appTag
         val k = key(appTag)
+
+        // Hindi and Bengali follow the same rule with their own letters: the
+        // recogniser answers in Devanagari or Bengali script, so a book kept
+        // in Latin letters is better heard in English.
+        if (k == "hi" || k == "bn") {
+            val own = (
+                if (k == "hi") scriptShare(names) { isDevanagari(it) }
+                else scriptShare(names) { isBengali(it) }
+                ) ?: return appTag
+            return if (own <= HARDLY) "en" else appTag
+        }
+        // And an English menu over a book written in one of them is heard in
+        // that book's language.
+        if (k == "en") {
+            if ((scriptShare(names) { isDevanagari(it) } ?: 0.0) >= MOSTLY) return "hi"
+            if ((scriptShare(names) { isBengali(it) } ?: 0.0) >= MOSTLY) return "bn"
+        }
+
+        val share = arabicShare(names) ?: return appTag
         return when {
             k == "en" && share >= MOSTLY -> "ur"
             k in ARABIC_SCRIPT && share <= HARDLY -> "en"
