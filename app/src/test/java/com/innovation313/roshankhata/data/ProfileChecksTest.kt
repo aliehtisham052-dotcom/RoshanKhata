@@ -38,4 +38,16 @@ class ProfileChecksTest {
         assertEquals("R", ProfileChecks.initials("roshan"))
         assertEquals("AB", ProfileChecks.initials("  al   bhatti  and sons "))
     }
+    @Test
+    fun otherCountriesGetTheGeneralShapeChecks() {
+        // A UK or Gulf IBAN is fine outside the Pakistani rule, a 7-15 digit mobile too.
+        assertFalse(ProfileChecks.ibanLooksWrong("GB29 NWBK 6016 1331 9268 19", pakistani = false))
+        assertFalse(ProfileChecks.ibanLooksWrong("AE07 0331 2345 6789 0123 456", pakistani = false))
+        assertTrue(ProfileChecks.ibanLooksWrong("GB29 NWBK", pakistani = false))
+        assertFalse(ProfileChecks.mobileLooksWrong("+971501234567", pakistani = false))
+        assertFalse(ProfileChecks.mobileLooksWrong("9876543210", pakistani = false))
+        assertTrue(ProfileChecks.mobileLooksWrong("12345", pakistani = false))
+        // The Pakistani rule is unchanged for a rupee shop.
+        assertTrue(ProfileChecks.ibanLooksWrong("GB29 NWBK 6016 1331 9268 19"))
+    }
 }

@@ -1128,13 +1128,13 @@ object InvoicePdfExport {
         // Wrapped by hand, not left to overflow the receipt's own width —
         // the words for a large total are routinely longer than 226pt fits
         // on one line, unlike every other value on this narrow page.
-        y = wrapMonoText(context, c, NumberWords.rupeesInWords(context, totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
+        y = wrapMonoText(context, c, NumberWords.amountInWords(context, totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
 
         val bank = listOfNotNull(
             BusinessProfile.bankName(context)?.let { labels.bank to it },
             BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
             BusinessProfile.bankIban(context)?.let { "IBAN" to it },
-            BusinessProfile.bankJazzCash(context)?.let { "JazzCash" to it }
+            BusinessProfile.bankJazzCash(context)?.let { (if (Currency.symbol == Currency.DEFAULT) "JazzCash" else "Wallet") to it }
         )
         val qr = BusinessProfile.loadQr(context)
         if (bank.isNotEmpty() || qr != null) {

@@ -296,7 +296,7 @@
     <string name="invoice_bank_name_hint">نام بانک</string>
     <string name="invoice_bank_title_hint">عنوان حساب</string>
     <string name="invoice_bank_iban_hint">شماره شبا / حساب</string>
-    <string name="invoice_bank_jazzcash_hint">شماره جاز کش / ایزی پیسا</string>
+    <string name="invoice_bank_jazzcash_hint">شماره کیف پول موبایل (JazzCash، EasyPaisa، UPI…)</string>
 
     <string name="payment_qr">کد QR پرداخت</string>
     <string name="no_qr_yet">هنوز QR پرداختی ذخیره نشده است.</string>
@@ -305,7 +305,7 @@
     <string name="qr_save_failed">آن تصویر ذخیره نشد. لطفاً تصویر دیگری انتخاب کنید.</string>
     <string name="qr_removed">QR پرداخت حذف شد</string>
     <string name="qr_confirm_title">آیا این همان کد درست است؟</string>
-    <string name="qr_confirm_message">کد بالا را ببینید و تأیید کنید که حساب ایزی‌پیسه یا جاز کش خود شماست. اگر نباشد، پرداخت مشتریان به شخص دیگری می‌رسد.</string>
+    <string name="qr_confirm_message">کد بالا را ببینید و تأیید کنید که حساب پرداخت خود شماست (EasyPaisa، JazzCash، UPI…). اگر نباشد، پرداخت مشتریان به شخص دیگری می‌رسد.</string>
     <string name="qr_confirm_yes">بله، مال من است</string>
     <string name="profile_saved">ذخیره شد</string>
     <string name="attach_qr_to_reminder">پیوست QR پرداخت</string>
@@ -628,7 +628,7 @@
     <string name="add_item">افزودن قلم</string>
     <string name="product_name_hint">نام محصول</string>
     <string name="batch_number_hint">شماره بچ</string>
-    <string name="batch_why">شماره بچ روی ظرف را بنویسید. اگر روزی نمونه‌ای زیر سؤال رفت یا اداره کشاورزی پرسید، همین رکورد نشان می‌دهد کالا دقیقاً از کجا آمده. بعداً نمی‌شود آن را بازسازی کرد.</string>
+    <string name="batch_why">شماره بچ روی ظرف را بنویسید. اگر روزی نمونه‌ای زیر سؤال رفت یا اداره بازرسی پرسید، همین رکورد نشان می‌دهد کالا دقیقاً از کجا آمده. بعداً نمی‌شود آن را بازسازی کرد.</string>
     <string name="expiry_date">تاریخ انقضا</string>
     <string name="expiry_why">روشن خاتا ۶۰ روز پیش از انقضا هشدار می‌دهد — به‌قدری زود که بتوانید بفروشید، تخفیف بدهید یا تا وقتی تأمین‌کننده هنوز پس می‌گیرد، برگردانید.</string>
     <string name="pick_expiry">انتخاب تاریخ انقضا</string>
@@ -1146,7 +1146,7 @@
     <string name="company_optional">شرکت / برند (اختیاری)</string>
     <string name="category_optional">دسته (اختیاری)</string>
     <string name="unit_optional">واحد — بطری، کیلو، کیسه (اختیاری)</string>
-    <string name="compliance_section">مشخصات اداره کشاورزی</string>
+    <string name="compliance_section">مشخصات اداره بازرسی</string>
     <string name="compliance_explain">فقط اگر در بازرسی پرسیده شود لازم است. برای خوراک یا بذر خالی بگذارید.</string>
     <string name="product_type_hint">نوع — آفت‌کش، کود، بذر</string>
     <string name="technical_name_hint">ماده مؤثر، مثلاً Chlorpyrifos 40% EC</string>
@@ -1468,7 +1468,7 @@
     <string name="bp_section_paid">دریافت وجه</string>
     <string name="bp_section_seals">مهر و امضا</string>
     <string name="bp_section_docs">فاکتور و صورت‌حساب</string>
-    <string name="bp_strn">شمارهٔ مالیات بر فروش (STRN)</string>
+    <string name="bp_strn">شماره مالیاتی (STRN / GST / VAT)</string>
     <string name="bp_strn_help">فقط اگر ثبت‌نام شده‌اید. خالی = چاپ نمی‌شود.</string>
     <string name="bp_currency">واحد پول</string>
     <string name="bp_currency_help">نشانه‌ای که کنار مبلغ می‌آید، مثل Rs یا $. مبالغ تبدیل نمی‌شوند.</string>
@@ -1490,7 +1490,7 @@
     <string name="trade_general">فروشگاه عمومی</string>
     <string name="bp_paid_help">در کادر پرداخت فاکتور نمایش داده می‌شود. ردیف‌های خالی حذف می‌شوند.</string>
     <string name="bp_qr">QR پرداخت</string>
-    <string name="bp_qr_help">QR ایزی‌پیسه / جازکش شما، برای صورت‌حساب‌ها.</string>
+    <string name="bp_qr_help">QR پرداخت شما (EasyPaisa، JazzCash، UPI…)، برای صورت‌حساب‌ها.</string>
     <string name="bp_add">افزودن</string>
     <string name="bp_change">تغییر</string>
     <string name="bp_seals_help">روی کاغذ سفید ساده عکس بگیرید — برنامه خودش برش می‌دهد.</string>
@@ -1498,8 +1498,8 @@
     <string name="bp_photo">عکس مشتری روی صورت‌حساب</string>
     <string name="bp_photo_help">به‌طور پیش‌فرض خاموش — صورت‌حساب ممکن است بازارسال شود.</string>
     <string name="bp_unsaved">تغییرات ذخیره نشده</string>
-    <string name="bp_iban_bad">IBAN دارای 24 نویسه است و با PK شروع می‌شود.</string>
-    <string name="bp_mobile_bad">شمارهٔ موبایل 11 رقمی است، مثل 03001234567.</string>
+    <string name="bp_iban_bad">این شبیه IBAN نیست، مثلاً PK36 SCBL 0000 0011 2345 6702.</string>
+    <string name="bp_mobile_bad">این شبیه شماره موبایل نیست، مثلاً 03001234567.</string>
     <string name="bp_leave_title">بدون ذخیره خارج می‌شوید؟</string>
     <string name="bp_leave_msg">تغییرات شما در این صفحه از بین می‌رود.</string>
     <string name="bp_leave_discard">رها کردن</string>
@@ -1567,7 +1567,7 @@
     <string name="label_step_skip">رد کردن</string>
     <string name="label_step_save_next">ذخیره و بعدی</string>
     <string name="pay_heading">*روش پرداخت*</string>
-    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_wallet_label">کیف پول موبایل</string>
     <string name="pay_bank_label">بانک</string>
     <string name="entry_share_gave">%1$s گرامی، در %2$s مبلغ *%3$s* به حساب شما (نسیه) ثبت شد.</string>
     <string name="entry_share_got">%1$s گرامی، در %2$s مبلغ *%3$s* دریافت شد. سپاس.</string>
@@ -1580,7 +1580,7 @@
     <string name="bp_ask_share">پیشنهاد ارسال هر ثبت در واتس‌اپ</string>
     <string name="bp_ask_share_help">پس از ذخیره ثبت، نوار کوچکی ارسال آن به مشتری را پیشنهاد می‌دهد. ارسال را شما در واتس‌اپ می‌زنید.</string>
     <string name="bp_pay_reminder">جزئیات پرداخت در یادآوری</string>
-    <string name="bp_pay_reminder_help">شماره JazzCash/Easypaisa و حساب بانکی شما (از تنظیمات فاکتور) زیر هر یادآوری پرداخت می‌آید.</string>
+    <string name="bp_pay_reminder_help">کیف پول موبایل و حساب بانکی شما (از تنظیمات فاکتور) زیر هر یادآوری پرداخت می‌آید.</string>
     <string name="followup_send_all">یادآوری به همه، یکی‌یکی</string>
     <string name="followup_queue_next">بعدی: %1$s (%2$s)</string>
     <string name="followup_queue_open">باز کردن واتس‌اپ</string>

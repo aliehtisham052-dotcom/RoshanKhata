@@ -81,4 +81,12 @@ class NumberWordsTest {
         assertEquals("Zero Rupees", NumberWords.rupeesInWordsEnglish(0.0))
         assertEquals("Zero Rupees", NumberWords.rupeesInWordsEnglish(-500.0))
     }
+    @Test
+    fun westernGroupsForOtherCurrencies() {
+        assertEquals("Five Thousand Two Hundred AED", NumberWords.spellWestern(5200.0, "AED"))
+        assertEquals("One Million Two Hundred Thirty-Four Thousand Five Hundred Sixty-Seven USD",
+            NumberWords.spellWestern(1234567.0, "USD"))
+        assertEquals("Zero EUR", NumberWords.spellWestern(0.0, "EUR"))
+        assertEquals("Ninety-Nine SAR", NumberWords.spellWestern(99.9, "SAR"))
+    }
 }

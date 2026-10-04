@@ -448,7 +448,7 @@ object InvoiceTemplateKit {
             BusinessProfile.bankName(context)?.let { labels.bank to it },
             BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
             BusinessProfile.bankIban(context)?.let { "IBAN" to it },
-            BusinessProfile.bankJazzCash(context)?.let { "JazzCash" to it }
+            BusinessProfile.bankJazzCash(context)?.let { (if (Currency.symbol == Currency.DEFAULT) "JazzCash" else "Wallet") to it }
         )
 
         val totalsW = 220f
@@ -521,7 +521,7 @@ object InvoiceTemplateKit {
     fun drawAmountInWords(c: Canvas, context: Context, palette: Palette, fonts: Fonts, left: Float, right: Float, y: Float, grandTotal: Double): Float {
         c.drawRoundRect(RectF(left, y, right, y + 34f), 7f, 7f, solid(palette.boxFill))
         PdfRtl.drawText(c, Labels(context).amountInWords, left + 12f, y + 13f, paint(fonts, 8.5f, palette.primary, bold = true))
-        PdfRtl.drawText(c, NumberWords.rupeesInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10.5f, palette.ink, italic = true))
+        PdfRtl.drawText(c, NumberWords.amountInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10.5f, palette.ink, italic = true))
         return y + 50f
     }
 

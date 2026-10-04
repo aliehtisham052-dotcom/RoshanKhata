@@ -283,7 +283,7 @@ class InvoicesActivity : BaseActivity() {
                     append(getString(R.string.invoice_balance_due_line, Format.money(totals.balanceDue)))
                 }
                 append("\n")
-                append(NumberWords.rupeesInWords(this@InvoicesActivity, totals.grandTotal))
+                append(NumberWords.amountInWords(this@InvoicesActivity, totals.grandTotal))
             }
 
             MaterialAlertDialogBuilder(this@InvoicesActivity)

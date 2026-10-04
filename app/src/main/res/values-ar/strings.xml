@@ -318,7 +318,7 @@
     <string name="invoice_bank_name_hint">اسم البنك</string>
     <string name="invoice_bank_title_hint">اسم صاحب الحساب</string>
     <string name="invoice_bank_iban_hint">رقم الآيبان / الحساب</string>
-    <string name="invoice_bank_jazzcash_hint">رقم جاز كاش / إيزي بيسا</string>
+    <string name="invoice_bank_jazzcash_hint">رقم المحفظة الإلكترونية (JazzCash، EasyPaisa، UPI…)</string>
 
     <string name="payment_qr">رمز QR للدفع</string>
     <string name="no_qr_yet">لا رمز دفع محفوظ بعد.</string>
@@ -327,7 +327,7 @@
     <string name="qr_save_failed">تعذر حفظ هذه الصورة. اختر أخرى.</string>
     <string name="qr_removed">أُزيل رمز الدفع</string>
     <string name="qr_confirm_title">هل هذا هو الرمز الصحيح؟</string>
-    <string name="qr_confirm_message">انظر إلى الرمز أعلاه وأكّد أنه حسابك أنت في EasyPaisa أو JazzCash. وإلا وصلت مدفوعات عملائك إلى شخص آخر.</string>
+    <string name="qr_confirm_message">انظر إلى الرمز أعلاه وأكّد أنه حساب الدفع الخاص بك (EasyPaisa، JazzCash، UPI…). وإلا وصلت مدفوعات عملائك إلى شخص آخر.</string>
     <string name="qr_confirm_yes">نعم، هو حسابي</string>
     <string name="profile_saved">تم الحفظ</string>
     <string name="attach_qr_to_reminder">إرفاق رمز الدفع</string>
@@ -667,7 +667,7 @@
     <string name="add_item">إضافة صنف</string>
     <string name="product_name_hint">اسم المنتج</string>
     <string name="batch_number_hint">رقم الدُفعة</string>
-    <string name="batch_why">اكتب رقم الدُفعة من العبوة. إن شُكك في عينة يومًا أو سألت وزارة الزراعة، فهذا السجل يثبت من أين أتت البضاعة. لا يمكن إعادة بنائه لاحقًا.</string>
+    <string name="batch_why">اكتب رقم الدُفعة من العبوة. إن شُكك في عينة يومًا أو سألت جهة التفتيش، فهذا السجل يثبت من أين أتت البضاعة. لا يمكن إعادة بنائه لاحقًا.</string>
     <string name="expiry_date">تاريخ الانتهاء</string>
     <string name="expiry_why">سيحذرك روشن كهاتا قبل الانتهاء بـ60 يومًا — وقت يكفي لبيعها أو تخفيضها أو إرجاعها والمورّد ما زال يقبلها.</string>
     <string name="pick_expiry">اختر تاريخ الانتهاء</string>
@@ -1238,7 +1238,7 @@
     <string name="company_optional">الشركة / العلامة (اختياري)</string>
     <string name="category_optional">الفئة (اختياري)</string>
     <string name="unit_optional">الوحدة — زجاجة، كجم، كيس (اختياري)</string>
-    <string name="compliance_section">بيانات دائرة الزراعة</string>
+    <string name="compliance_section">بيانات جهة التفتيش</string>
     <string name="compliance_explain">مطلوبة فقط إن سُئل عنها في التفتيش. اتركها فارغة للأعلاف أو البذور.</string>
     <string name="product_type_hint">النوع — مبيد، سماد، بذور</string>
     <string name="technical_name_hint">المادة الفعالة، مثل Chlorpyrifos 40% EC</string>
@@ -1580,7 +1580,7 @@
     <string name="bp_section_paid">استلام المدفوعات</string>
     <string name="bp_section_seals">الختم والتوقيع</string>
     <string name="bp_section_docs">الفاتورة والكشف</string>
-    <string name="bp_strn">رقم ضريبة المبيعات (STRN)</string>
+    <string name="bp_strn">الرقم الضريبي (STRN / GST / VAT)</string>
     <string name="bp_strn_help">فقط إن كنت مسجلًا. فارغ = لا يُطبع.</string>
     <string name="bp_currency">العملة</string>
     <string name="bp_currency_help">الرمز الذي يظهر مع المبالغ، مثل Rs أو $. لا يتم تحويل المبالغ.</string>
@@ -1602,7 +1602,7 @@
     <string name="trade_general">متجر عام</string>
     <string name="bp_paid_help">يظهر في خانة الدفع بالفاتورة. الأسطر الفارغة لا تُطبع.</string>
     <string name="bp_qr">رمز QR للدفع</string>
-    <string name="bp_qr_help">رمز QR لإيزي بيسه / جاز كاش، للكشوف.</string>
+    <string name="bp_qr_help">رمز QR للدفع (EasyPaisa، JazzCash، UPI…)، للكشوف.</string>
     <string name="bp_add">إضافة</string>
     <string name="bp_change">تغيير</string>
     <string name="bp_seals_help">صوّرها على ورق أبيض عادي — يقصّها التطبيق تلقائيًا.</string>
@@ -1610,8 +1610,8 @@
     <string name="bp_photo">صورة العميل على الكشوف</string>
     <string name="bp_photo_help">مُطفأ افتراضيًا — قد يُعاد توجيه الكشف.</string>
     <string name="bp_unsaved">تغييرات غير محفوظة</string>
-    <string name="bp_iban_bad">يتكون IBAN من 24 حرفًا ويبدأ بـ PK.</string>
-    <string name="bp_mobile_bad">رقم الجوال 11 رقمًا، مثل 03001234567.</string>
+    <string name="bp_iban_bad">هذا لا يبدو IBAN، مثال PK36 SCBL 0000 0011 2345 6702.</string>
+    <string name="bp_mobile_bad">هذا لا يبدو رقم جوال، مثال 03001234567.</string>
     <string name="bp_leave_title">المغادرة دون حفظ؟</string>
     <string name="bp_leave_msg">ستضيع تغييراتك في هذه الشاشة.</string>
     <string name="bp_leave_discard">تجاهل</string>
@@ -1687,7 +1687,7 @@
     <string name="label_step_skip">تخطي</string>
     <string name="label_step_save_next">حفظ والتالي</string>
     <string name="pay_heading">*طريقة الدفع*</string>
-    <string name="pay_wallet_label">JazzCash/Easypaisa</string>
+    <string name="pay_wallet_label">محفظة إلكترونية</string>
     <string name="pay_bank_label">البنك</string>
     <string name="entry_share_gave">عزيزي *%1$s*، في %2$s سُجّل في حسابك *%3$s* (آجل).</string>
     <string name="entry_share_got">عزيزي *%1$s*، في %2$s تم استلام *%3$s*. شكرًا لك.</string>
@@ -1700,7 +1700,7 @@
     <string name="bp_ask_share">عرض إرسال كل قيد عبر واتساب</string>
     <string name="bp_ask_share_help">بعد حفظ القيد يظهر شريط صغير يعرض إرساله للعميل. أنت تضغط إرسال في واتساب.</string>
     <string name="bp_pay_reminder">تفاصيل الدفع في التذكيرات</string>
-    <string name="bp_pay_reminder_help">يضيف رقم JazzCash/Easypaisa وحسابك البنكي (من إعدادات الفاتورة) أسفل كل تذكير بالدفع.</string>
+    <string name="bp_pay_reminder_help">يضيف محفظتك الإلكترونية وحسابك البنكي (من إعدادات الفاتورة) أسفل كل تذكير بالدفع.</string>
     <string name="followup_send_all">ذكّر الجميع واحدًا تلو الآخر</string>
     <string name="followup_queue_next">التالي: %1$s (%2$s)</string>
     <string name="followup_queue_open">افتح واتساب</string>
