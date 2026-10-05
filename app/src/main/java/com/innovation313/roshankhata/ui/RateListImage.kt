@@ -85,9 +85,9 @@ object RateListImage {
     )
 
     /** One column: its edge on the page and how its text lines up. */
-    private class Col(val x: Float, val width: Int, val align: Layout.Alignment)
+    internal class Col(val x: Float, val width: Int, val align: Layout.Alignment)
 
-    private class RowLayout(
+    internal class RowLayout(
         val name: StaticLayout,
         val company: StaticLayout?,
         val unit: StaticLayout?,
