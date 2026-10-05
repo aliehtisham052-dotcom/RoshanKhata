@@ -1141,6 +1141,18 @@
     <string name="registration_number_hint">Nomor pendaftaran produk</string>
     <string name="product_who_bought">Siapa yang membeli ini</string>
     <string name="product_edit_details">Ubah detail</string>
+    <string name="rate_list_title">Daftar harga</string>
+    <string name="rate_list_subtitle">Harga jual Anda sebagai gambar untuk WhatsApp</string>
+    <string name="rate_list_heading_hint">Judul pada gambar</string>
+    <string name="rate_list_heading_default">Harga minggu ini</string>
+    <string name="rate_list_columns">Harga pada daftar</string>
+    <string name="rate_list_show_mark">Tampilkan “Roshan Khata” di daftar</string>
+    <string name="rate_list_col_product">Produk</string>
+    <string name="rate_list_col_unit">Satuan</string>
+    <string name="rate_list_unpriced">Produk tanpa harga tidak masuk daftar: %1$s. Untuk menambah harga, buka Produk &amp; stok, ketuk produknya, lalu pilih Ubah detail.</string>
+    <string name="rate_list_summary">Produk: %1$s \u00b7 Gambar: %2$s</string>
+    <string name="rate_list_none">Belum ada produk yang punya harga. Buka Produk &amp; stok, ketuk sebuah produk, pilih Ubah detail, lalu isi harga tunai atau harga kredit.</string>
+    <string name="rate_list_purchase_note">Harga beli tidak pernah dimasukkan ke daftar ini.</string>
     <string name="product_name_taken">“%1$s” sudah memakai nama itu.</string>
     <!-- Asked right after a supplier bill is saved, while the label is still in hand. -->
     <string name="label_details_title">Detail label</string>

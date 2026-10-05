@@ -1178,6 +1178,19 @@ You can change this any time from this screen.</string>
     <string name="registration_number_hint">Registration number (DRAP)</string>
     <string name="product_who_bought">Who bought this</string>
     <string name="product_edit_details">Edit details</string>
+    <string name="rate_list_title">Rate list</string>
+    <string name="rate_list_subtitle">Your selling prices as a picture for WhatsApp</string>
+    <string name="rate_list_heading_hint">Heading on the picture</string>
+    <string name="rate_list_heading_default">This week\'s rates</string>
+    <string name="rate_list_columns">Prices on the list</string>
+    <string name="rate_list_show_mark">Show “Roshan Khata” on the list</string>
+    <string name="rate_list_col_product">Product</string>
+    <string name="rate_list_col_unit">Unit</string>
+    <string name="rate_list_unpriced">Products with no price are left off: %1$s. To add one, open Products &amp; stock, tap the product and choose Edit details.</string>
+    <string name="rate_list_summary">Products: %1$s \u00b7 Pictures: %2$s</string>
+    <string name="rate_list_none">No product has a price yet. Open Products &amp; stock, tap a product, choose Edit details and add a cash or credit price.</string>
+    <string name="rate_list_purchase_note">Purchase prices never go on this list.</string>
+    <string name="rate_list_page" translatable="false">%1$s / %2$s</string>
     <string name="product_name_taken">“%1$s” already uses that name.</string>
     <!-- Asked right after a supplier bill is saved, while the label is still in hand. -->
     <string name="label_details_title">Label details</string>
