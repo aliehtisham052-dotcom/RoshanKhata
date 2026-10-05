@@ -120,6 +120,12 @@
             android:parentActivityName=".ProductsActivity" />
 
         <activity
+            android:name=".RateListActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".ProductsActivity" />
+
+        <activity
             android:name=".PartyDetailActivity"
             android:exported="false"
             android:parentActivityName=".KhataActivity" />

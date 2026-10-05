@@ -346,6 +346,7 @@ class EveryScreenOpensTest(
             open<PlansActivity>("Payment plans"),
             open<BillsActivity>("Supplier bills"),
             open<ProductsActivity>("Products"),
+            open<RateListActivity>("Rate list"),
             open<ProductCustomersActivity>("Product customers") {
                 putExtra(ProductCustomersActivity.EXTRA_PRODUCT_ID, it.productId)
                 putExtra(ProductCustomersActivity.EXTRA_PRODUCT_NAME, "Test Spray")

@@ -11,27 +11,55 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/section_bills"
-        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/products_stock"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/products_stock"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/products_subtitle"
+                android:textColor="@color/section_bills_soft"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!--
+          The rate list is sent from the products it lists. A labelled button,
+          not a bare icon: "send my prices" is not something a share glyph in a
+          corner says on its own. Outlined in white on the band, so it reads
+          the same at night (white is not repainted in values-night).
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRateList"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/products_subtitle"
-            android:textColor="@color/section_bills_soft"
-            android:textSize="12sp" />
+            android:layout_marginStart="12dp"
+            android:maxWidth="180dp"
+            android:minHeight="48dp"
+            android:text="@string/rate_list_title"
+            android:textColor="@color/white"
+            app:icon="@drawable/ic_share"
+            app:iconTint="@color/white"
+            app:strokeColor="@color/white" />
     </LinearLayout>
 
     <!-- The app's own limit, admitted rather than hidden -->

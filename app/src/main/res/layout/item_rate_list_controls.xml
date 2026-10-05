@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The rate list's settings, scrolled with the products as the list's first item. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="4dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/ProfileField"
+        android:hint="@string/rate_list_heading_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etRateHeading"
+            style="@style/ProfileFieldInput"
+            android:inputType="textCapSentences"
+            android:maxLength="80" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/companyScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipCompanies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/rate_list_columns"
+        android:textColor="@color/ink"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbRateCash"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="48dp"
+            android:text="@string/sale_price_hint"
+            android:textColor="@color/ink"
+            android:textSize="14sp" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbRateCredit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="48dp"
+            android:text="@string/credit_price_hint"
+            android:textColor="@color/ink"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchRateMark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="@string/rate_list_show_mark"
+        android:textColor="@color/ink"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/rate_list_purchase_note"
+        android:textColor="@color/ink_soft"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvRateUnpriced"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/note_bg"
+        android:padding="10dp"
+        android:textColor="@color/note_text"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRateSelectAll"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/select_all" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRateClear"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/clear_all" />
+    </LinearLayout>
+</LinearLayout>

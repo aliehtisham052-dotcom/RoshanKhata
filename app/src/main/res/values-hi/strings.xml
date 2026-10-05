@@ -1171,6 +1171,18 @@
     <string name="registration_number_hint">रजिस्ट्रेशन नंबर (DRAP)</string>
     <string name="product_who_bought">यह किसने खरीदा</string>
     <string name="product_edit_details">जानकारी बदलें</string>
+    <string name="rate_list_title">भाव सूची</string>
+    <string name="rate_list_subtitle">आपके बिक्री भाव, WhatsApp के लिए तस्वीर में</string>
+    <string name="rate_list_heading_hint">तस्वीर पर शीर्षक</string>
+    <string name="rate_list_heading_default">इस हफ़्ते के भाव</string>
+    <string name="rate_list_columns">सूची पर कौन-से भाव</string>
+    <string name="rate_list_show_mark">सूची पर “रोशन खाता” दिखाएँ</string>
+    <string name="rate_list_col_product">प्रोडक्ट</string>
+    <string name="rate_list_col_unit">इकाई</string>
+    <string name="rate_list_unpriced">जिन प्रोडक्ट का भाव नहीं है, वे सूची में नहीं: %1$s। भाव जोड़ने के लिए प्रोडक्ट और स्टॉक खोलें, प्रोडक्ट पर टैप करें और जानकारी बदलें चुनें।</string>
+    <string name="rate_list_summary">प्रोडक्ट: %1$s \u00b7 तस्वीरें: %2$s</string>
+    <string name="rate_list_none">अभी किसी प्रोडक्ट का भाव नहीं है। प्रोडक्ट और स्टॉक खोलें, किसी प्रोडक्ट पर टैप करें, जानकारी बदलें चुनें और नकद या उधार भाव लिखें।</string>
+    <string name="rate_list_purchase_note">ख़रीद का दाम इस सूची पर कभी नहीं आता।</string>
     <string name="product_name_taken">“%1$s” पहले से यही नाम इस्तेमाल करता है।</string>
     <!-- Asked right after a supplier bill is saved, while the label is still in hand. -->
     <string name="label_details_title">लेबल का ब्योरा</string>

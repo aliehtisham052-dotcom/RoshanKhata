@@ -69,6 +69,11 @@ class ProductsActivity : BaseActivity() {
         findViewById<View>(R.id.btnRegisterReport).setOnClickListener {
             startActivity(Intent(this, RegisterReportActivity::class.java))
         }
+        // The shop's selling prices as pictures for WhatsApp. Read-only, so it
+        // opens on the helper's phone as well; every trade has prices to send.
+        findViewById<View>(R.id.btnRateList).setOnClickListener {
+            startActivity(Intent(this, RateListActivity::class.java))
+        }
         // An inspector visits agri and medical shops; the others keep the list only (4 Oct).
         if (!com.innovation313.roshankhata.data.TradeFeatures.inspectorReports(this)) {
             findViewById<View>(R.id.btnInspectorReport).visibility = View.GONE

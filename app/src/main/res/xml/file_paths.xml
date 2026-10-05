@@ -26,6 +26,10 @@
     <cache-path
         name="cards"
         path="cards/" />
+    <!-- The rate list's pictures (RateListActivity), one PNG per page. -->
+    <cache-path
+        name="ratelists"
+        path="ratelists/" />
     <!--
       Where the camera writes. The camera app cannot hand a photo back through
       an app's private storage, so it is given a content:// URI pointing here
