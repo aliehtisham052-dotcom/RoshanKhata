@@ -1183,6 +1183,27 @@
     <string name="rate_list_summary">পণ্য: %1$s \u00b7 ছবি: %2$s</string>
     <string name="rate_list_none">এখনো কোনো পণ্যের দর নেই। পণ্য ও স্টক খুলুন, একটি পণ্যে ট্যাপ করুন, তথ্য সম্পাদনা বেছে নিন এবং নগদ বা বাকির দর লিখুন।</string>
     <string name="rate_list_purchase_note">কেনা দাম এই তালিকায় কখনো আসে না।</string>
+    <string name="poster_title">পোস্টার ও স্ট্যাটাস</string>
+    <string name="poster_subtitle">WhatsApp স্ট্যাটাসের জন্য ছবি, আপনার দোকানের নামসহ</string>
+    <string name="poster_heading_hint">বড় লাইন</string>
+    <string name="poster_message_hint">বার্তা</string>
+    <string name="poster_show_logo">পোস্টারে দোকানের লোগো</string>
+    <string name="poster_show_mark">পোস্টারে “রোশন খাতা” দেখান</string>
+    <string name="poster_custom">নিজের কথা</string>
+    <string name="poster_new_stock">নতুন মাল এসেছে!</string>
+    <string name="poster_eid_fitr">ঈদুল ফিতর মোবারক</string>
+    <string name="poster_eid_adha">ঈদুল আযহা মোবারক</string>
+    <string name="poster_ramazan">রমজান মোবারক</string>
+    <string name="poster_closed">আজ দোকান বন্ধ</string>
+    <string name="poster_hours">দোকানের সময়</string>
+    <string name="poster_thanks">ধন্যবাদ!</string>
+    <string name="poster_new_stock_msg">নতুন মাল এসে গেছে। আজই চলে আসুন।</string>
+    <string name="poster_eid_fitr_msg">আমাদের সবার পক্ষ থেকে আপনাকে ও আপনার পরিবারকে ঈদ মোবারক।</string>
+    <string name="poster_eid_adha_msg">আপনাকে ও আপনার পরিবারকে ঈদ মোবারক। আল্লাহ আপনার কোরবানি কবুল করুন।</string>
+    <string name="poster_ramazan_msg">আল্লাহ এই রমজান আপনার ঘরে শান্তি ও বরকত আনুন।</string>
+    <string name="poster_closed_msg">কাল থেকে দোকান যথারীতি খোলা থাকবে।</string>
+    <string name="poster_hours_msg">প্রতিদিন সকাল 9টা থেকে রাত 9টা পর্যন্ত খোলা।</string>
+    <string name="poster_thanks_msg">আপনার আস্থার জন্য ধন্যবাদ। আবার সেবা করার অপেক্ষায় রইলাম।</string>
     <string name="product_name_taken">“%1$s” আগে থেকেই এই নাম ব্যবহার করছে।</string>
     <!-- Asked right after a supplier bill is saved, while the label is still in hand. -->
     <string name="label_details_title">লেবেলের তথ্য</string>

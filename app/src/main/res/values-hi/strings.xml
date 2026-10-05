@@ -1183,6 +1183,27 @@
     <string name="rate_list_summary">प्रोडक्ट: %1$s \u00b7 तस्वीरें: %2$s</string>
     <string name="rate_list_none">अभी किसी प्रोडक्ट का भाव नहीं है। प्रोडक्ट और स्टॉक खोलें, किसी प्रोडक्ट पर टैप करें, जानकारी बदलें चुनें और नकद या उधार भाव लिखें।</string>
     <string name="rate_list_purchase_note">ख़रीद का दाम इस सूची पर कभी नहीं आता।</string>
+    <string name="poster_title">पोस्टर और स्टेटस</string>
+    <string name="poster_subtitle">WhatsApp स्टेटस के लिए तस्वीर, आपकी दुकान के नाम के साथ</string>
+    <string name="poster_heading_hint">बड़ी लाइन</string>
+    <string name="poster_message_hint">संदेश</string>
+    <string name="poster_show_logo">पोस्टर पर दुकान का लोगो</string>
+    <string name="poster_show_mark">पोस्टर पर “रोशन खाता” दिखाएँ</string>
+    <string name="poster_custom">अपने शब्द</string>
+    <string name="poster_new_stock">नया माल आ गया!</string>
+    <string name="poster_eid_fitr">ईद-उल-फ़ित्र मुबारक</string>
+    <string name="poster_eid_adha">ईद-उल-अज़हा मुबारक</string>
+    <string name="poster_ramazan">रमज़ान मुबारक</string>
+    <string name="poster_closed">आज दुकान बंद है</string>
+    <string name="poster_hours">दुकान का समय</string>
+    <string name="poster_thanks">शुक्रिया!</string>
+    <string name="poster_new_stock_msg">ताज़ा माल आ चुका है। आज ही पधारें।</string>
+    <string name="poster_eid_fitr_msg">आपको और आपके परिवार को हम सबकी ओर से ईद मुबारक।</string>
+    <string name="poster_eid_adha_msg">आपको और आपके परिवार को ईद मुबारक। अल्लाह आपकी क़ुर्बानी क़बूल करे।</string>
+    <string name="poster_ramazan_msg">अल्लाह यह रमज़ान आपके घर के लिए अमन और बरकत लाए।</string>
+    <string name="poster_closed_msg">कल से दुकान रोज़ की तरह खुलेगी।</string>
+    <string name="poster_hours_msg">रोज़ सुबह 9 से रात 9 बजे तक खुली है।</string>
+    <string name="poster_thanks_msg">आपके भरोसे का शुक्रिया। फिर से सेवा का इंतज़ार रहेगा।</string>
     <string name="product_name_taken">“%1$s” पहले से यही नाम इस्तेमाल करता है।</string>
     <!-- Asked right after a supplier bill is saved, while the label is still in hand. -->
     <string name="label_details_title">लेबल का ब्योरा</string>

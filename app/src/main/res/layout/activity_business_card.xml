@@ -28,6 +28,17 @@
             android:textColor="@color/ink_soft"
             android:textSize="14sp" />
 
+        <!-- The same shop on a Status poster: new stock, Eid, closed today... -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOpenPoster"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minHeight="48dp"
+            android:text="@string/poster_title"
+            app:icon="@drawable/ic_share" />
+
         <!-- Live preview of the card, redrawn on every keystroke -->
         <com.innovation313.roshankhata.ui.CardPreviewView
             android:id="@+id/ivCardPreview"

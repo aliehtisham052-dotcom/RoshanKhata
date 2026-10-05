@@ -120,6 +120,12 @@
             android:parentActivityName=".ProductsActivity" />
 
         <activity
+            android:name=".PosterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".BusinessCardActivity" />
+
+        <activity
             android:name=".RateListActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"
