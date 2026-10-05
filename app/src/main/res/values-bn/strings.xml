@@ -877,6 +877,24 @@
     <string name="insights_profit_top">সবচেয়ে বেশি লাভ</string>
     <string name="insights_profit_top_none">এই মাসে কেনা দাম জানা আছে এমন কোনো পণ্য বিক্রি হয়নি।</string>
     <string name="insights_profit_note">লাভ = পরিমাণ \u00d7 (বিক্রি দর \u2212 কেনা দর)। যেখানে ব্যাচ বাছাই করা হয়েছে সেখানে সেটির দাম, নইলে বিক্রির তারিখ পর্যন্ত কেনার গড়। যেসব লাইনের একক আলাদা সেগুলো বাদ।</string>
+    <string name="vq_ask">বলে জিজ্ঞাসা করুন</string>
+    <string name="vq_prompt">আপনার দোকান নিয়ে জিজ্ঞাসা করুন</string>
+    <string name="vq_heard">শোনা গেছে: “%1$s”</string>
+    <string name="vq_understood">আমি এটা বুঝেছি: %1$s</string>
+    <string name="vq_not_understood">এই প্রশ্নটি এখনো আমি জানি না। আপনি জিজ্ঞাসা করতে পারেন: সবচেয়ে বেশি বাকি কার, মোট কত পাওনা, মোট কত দেনা, আজকের বিক্রি, এই মাসের বিক্রি, এই মাসের লাভ, কোন মালের মেয়াদ শেষ হচ্ছে, কে টাকা দেয়নি।</string>
+    <string name="vq_who_owes_most">সবচেয়ে বেশি বাকি কার</string>
+    <string name="vq_to_get">মোট পাওনা</string>
+    <string name="vq_to_give">মোট দেনা</string>
+    <string name="vq_sales_today">আজকের বিক্রি</string>
+    <string name="vq_sales_month">এই মাসের বিক্রি</string>
+    <string name="vq_profit_month">এই মাসের লাভ</string>
+    <string name="vq_expiring">শিগগির মেয়াদ শেষ হওয়া মাল</string>
+    <string name="vq_not_paid">কে টাকা দেয়নি</string>
+    <string name="vq_open">খুলুন</string>
+    <string name="vq_nobody">এখন কারও কাছে আপনার বাকি নেই।</string>
+    <string name="vq_no_recognizer">এই ফোনে কণ্ঠস্বর চেনার অ্যাপ নেই।</string>
+    <string name="vq_not_paid_body">ফলো-আপ তালিকায় যাদের কাছ থেকে আগে আদায় করতে হবে তারা সবার ওপরে।</string>
+    <string name="vq_expiring_body">মেয়াদ শেষ হওয়া স্টকের পর্দায় সবার আগে যা ফুরোবে তা দেখায়।</string>
     <string name="nisab_silver">রুপা</string>
     <string name="nisab_gold">সোনা</string>
     <string name="gold_price_hint">সোনার দাম প্রতি গ্রাম</string>

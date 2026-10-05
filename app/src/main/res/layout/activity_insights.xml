@@ -176,6 +176,20 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
+                <!-- Ask by voice (5 Oct): eight fixed questions, answers only read. -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAskVoice"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:minHeight="52dp"
+                    android:text="@string/vq_ask"
+                    android:textColor="@color/ink_soft"
+                    app:icon="@drawable/ic_mic"
+                    app:iconTint="@color/ink_soft"
+                    app:strokeColor="@color/page_line" />
+
                 <!-- Profit card: sale rate minus purchase rate, per line, on the phone -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"

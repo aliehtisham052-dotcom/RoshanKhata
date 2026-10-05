@@ -858,6 +858,24 @@
     <string name="insights_profit_top">Laba Tertinggi</string>
     <string name="insights_profit_top_none">Bulan ini tidak ada produk dengan harga beli yang diketahui yang terjual.</string>
     <string name="insights_profit_note">Laba = jumlah \u00d7 (harga jual \u2212 harga beli). Jika batch dipilih, harga batch itu; jika tidak, rata-rata pembelian sampai tanggal penjualan. Baris dengan satuan berbeda tidak dihitung.</string>
+    <string name="vq_ask">Tanya dengan suara</string>
+    <string name="vq_prompt">Tanyakan tentang toko Anda</string>
+    <string name="vq_heard">Terdengar: “%1$s”</string>
+    <string name="vq_understood">Saya menangkap: %1$s</string>
+    <string name="vq_not_understood">Saya belum mengenal pertanyaan itu. Anda bisa bertanya: siapa piutang paling besar, total yang harus diterima, total yang harus dibayar, penjualan hari ini, penjualan bulan ini, laba bulan ini, apa yang hampir kedaluwarsa, siapa yang belum bayar.</string>
+    <string name="vq_who_owes_most">Piutang terbesar</string>
+    <string name="vq_to_get">Total yang harus diterima</string>
+    <string name="vq_to_give">Total yang harus dibayar</string>
+    <string name="vq_sales_today">Penjualan hari ini</string>
+    <string name="vq_sales_month">Penjualan bulan ini</string>
+    <string name="vq_profit_month">Laba bulan ini</string>
+    <string name="vq_expiring">Stok yang hampir kedaluwarsa</string>
+    <string name="vq_not_paid">Siapa yang belum bayar</string>
+    <string name="vq_open">Buka</string>
+    <string name="vq_nobody">Saat ini tidak ada yang berutang kepada Anda.</string>
+    <string name="vq_no_recognizer">Ponsel ini tidak punya aplikasi pengenal suara.</string>
+    <string name="vq_not_paid_body">Daftar tindak lanjut menaruh pelanggan yang harus ditagih lebih dulu di paling atas.</string>
+    <string name="vq_expiring_body">Layar stok kedaluwarsa menampilkan yang paling cepat habis.</string>
     <string name="nisab_silver">Perak</string>
     <string name="nisab_gold">Emas</string>
     <string name="gold_price_hint">Harga emas per gram</string>

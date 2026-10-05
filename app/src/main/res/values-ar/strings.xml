@@ -919,6 +919,24 @@
     <string name="insights_profit_top">الأعلى ربحًا</string>
     <string name="insights_profit_top_none">لم يُبع هذا الشهر منتج بسعر شراء معروف.</string>
     <string name="insights_profit_note">الربح = الكمية \u00d7 (سعر البيع \u2212 سعر الشراء). عند اختيار دفعة يُؤخذ سعرها، وإلا متوسط المشتريات حتى تاريخ البيع. السطور المختلفة الوحدات تُستبعد.</string>
+    <string name="vq_ask">اسأل بصوتك</string>
+    <string name="vq_prompt">اسأل عن متجرك</string>
+    <string name="vq_heard">سُمع: “%1$s”</string>
+    <string name="vq_understood">فهمتُ: %1$s</string>
+    <string name="vq_not_understood">لا أعرف هذا السؤال بعد. يمكنك أن تسأل: من عليه أكثر دين، كم لي إجمالًا، كم عليّ إجمالًا، مبيعات اليوم، مبيعات هذا الشهر، ربح هذا الشهر، ما الذي قارب انتهاء صلاحيته، من لم يدفع.</string>
+    <string name="vq_who_owes_most">من عليه أكثر دين</string>
+    <string name="vq_to_get">إجمالي ما لي</string>
+    <string name="vq_to_give">إجمالي ما عليّ</string>
+    <string name="vq_sales_today">مبيعات اليوم</string>
+    <string name="vq_sales_month">مبيعات هذا الشهر</string>
+    <string name="vq_profit_month">ربح هذا الشهر</string>
+    <string name="vq_expiring">بضاعة قاربت انتهاء صلاحيتها</string>
+    <string name="vq_not_paid">من لم يدفع</string>
+    <string name="vq_open">فتح</string>
+    <string name="vq_nobody">لا أحد مدين لك الآن.</string>
+    <string name="vq_no_recognizer">لا يوجد في هذا الهاتف تطبيق للتعرّف على الكلام.</string>
+    <string name="vq_not_paid_body">قائمة المتابعة تضع في أعلاها العملاء الذين يجب التحصيل منهم أولًا.</string>
+    <string name="vq_expiring_body">شاشة البضاعة القريبة من انتهاء الصلاحية تعرض ما ينتهي أولًا.</string>
     <string name="nisab_silver">الفضة</string>
     <string name="nisab_gold">الذهب</string>
     <string name="gold_price_hint">سعر غرام الذهب</string>

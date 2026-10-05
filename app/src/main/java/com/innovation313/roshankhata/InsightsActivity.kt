@@ -13,6 +13,7 @@ import com.innovation313.roshankhata.data.ProductStat
 import com.innovation313.roshankhata.data.Insights
 import com.innovation313.roshankhata.data.MonthSale
 import com.innovation313.roshankhata.data.Profit
+import com.innovation313.roshankhata.data.VoiceQuestion
 import com.innovation313.roshankhata.data.SaleInsights
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +35,7 @@ class InsightsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_insights)
+        findViewById<View>(R.id.btnAskVoice).setOnClickListener { askByVoice() }
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
@@ -190,6 +192,101 @@ class InsightsActivity : BaseActivity() {
             spacer.layoutParams = slp
 
             list.addView(row)
+        }
+    }
+
+    // ---------- Ask by voice (5 Oct) ----------
+    //
+    // The phone's own recogniser listens (RecognizerIntent, as voice entry
+    // does), so this app needs no microphone permission and never holds the
+    // audio. Eight fixed questions (VoiceQuestion); the answer box always
+    // says what was understood, and every answer only reads the ledger.
+
+    private val askVoice = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val heard = result.data
+            ?.getStringArrayListExtra(android.speech.RecognizerIntent.EXTRA_RESULTS)
+            ?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
+        if (heard.isEmpty()) return@registerForActivityResult
+        val hit = com.innovation313.roshankhata.data.VoiceQuestion.classify(heard)
+        if (hit == null) {
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.vq_heard, heard.first()))
+                .setMessage(R.string.vq_not_understood)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        } else {
+            answer(hit.first, hit.second)
+        }
+    }
+
+    private fun askByVoice() {
+        val tag = com.innovation313.roshankhata.data.VoiceLanguage
+            .preferred(java.util.Locale.getDefault().toLanguageTag()).firstOrNull()
+        val intent = android.content.Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            tag?.let { putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, it) }
+            putExtra(android.speech.RecognizerIntent.EXTRA_MAX_RESULTS, 5)
+            putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, getString(R.string.vq_prompt))
+        }
+        try {
+            askVoice.launch(intent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            android.widget.Toast.makeText(this, R.string.vq_no_recognizer, android.widget.Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun answer(heard: String, kind: com.innovation313.roshankhata.data.VoiceQuestion.Kind) {
+        lifecycleScope.launch {
+            val (label, body, open) = withContext(Dispatchers.IO) { compute(kind) }
+            val box = com.google.android.material.dialog.MaterialAlertDialogBuilder(this@InsightsActivity)
+                .setTitle(getString(R.string.vq_understood, label))
+                .setMessage(getString(R.string.vq_heard, heard) + "\n\n" + body)
+                .setPositiveButton(android.R.string.ok, null)
+            if (open != null) box.setNeutralButton(R.string.vq_open) { _, _ ->
+                startActivity(android.content.Intent(this@InsightsActivity, open))
+            }
+            box.show()
+        }
+    }
+
+    /** "To get" and "to give" are separate sums over separate people, never netted. */
+    private suspend fun compute(kind: com.innovation313.roshankhata.data.VoiceQuestion.Kind): Triple<String, String, Class<*>?> {
+        fun money(v: Double) = (if (v < 0) "\u2212" else "") + Format.ltr(Format.money(v))
+        val c = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0); set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
+        }
+        val dayStart = c.timeInMillis
+        val dayEnd = (c.clone() as java.util.Calendar).apply { add(java.util.Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+        c.set(java.util.Calendar.DAY_OF_MONTH, 1)
+        val monthStart = c.timeInMillis
+        val monthEnd = (c.clone() as java.util.Calendar).apply { add(java.util.Calendar.MONTH, 1) }.timeInMillis
+        return when (kind) {
+            VoiceQuestion.Kind.PROFIT_MONTH -> {
+                val r = Profit.thisMonth(dao)
+                Triple(getString(R.string.vq_profit_month),
+                    if (r.isEmpty) getString(R.string.insights_profit_none)
+                    else money(r.grossProfit) + (r.coveragePercent?.let { "\n" + getString(R.string.insights_profit_coverage, it) } ?: ""),
+                    null)
+            }
+            VoiceQuestion.Kind.SALES_TODAY -> Triple(getString(R.string.vq_sales_today), money(dao.salesTotalBetween(dayStart, dayEnd)), null)
+            VoiceQuestion.Kind.SALES_MONTH -> Triple(getString(R.string.vq_sales_month), money(dao.salesTotalBetween(monthStart, monthEnd)), null)
+            VoiceQuestion.Kind.TO_GET -> Triple(getString(R.string.vq_to_get),
+                money(dao.partiesWithBalanceOnce().filter { it.balance > 0 }.sumOf { it.balance }), null)
+            VoiceQuestion.Kind.TO_GIVE -> Triple(getString(R.string.vq_to_give),
+                money(dao.partiesWithBalanceOnce().filter { it.balance < 0 }.sumOf { -it.balance }), null)
+            VoiceQuestion.Kind.WHO_OWES_MOST -> {
+                val top = dao.partiesWithBalanceOnce().filter { it.balance > 0 }.sortedByDescending { it.balance }.take(5)
+                Triple(getString(R.string.vq_who_owes_most),
+                    if (top.isEmpty()) getString(R.string.vq_nobody)
+                    else top.mapIndexed { i, p -> "${i + 1}. ${p.name} \u2014 ${money(p.balance)}" }.joinToString("\n"),
+                    null)
+            }
+            VoiceQuestion.Kind.NOT_PAID -> Triple(getString(R.string.vq_not_paid), getString(R.string.vq_not_paid_body), FollowUpActivity::class.java)
+            VoiceQuestion.Kind.EXPIRING -> Triple(getString(R.string.vq_expiring), getString(R.string.vq_expiring_body), ExpiringActivity::class.java)
         }
     }
 
