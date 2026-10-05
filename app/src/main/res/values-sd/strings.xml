@@ -1516,6 +1516,11 @@
     <string name="bp_strn_help">رڳو رجسٽرڊ هجڻ تي. خالي = نه ڇپبو.</string>
     <string name="bp_currency">ڪرنسي</string>
     <string name="bp_currency_help">رقم سان لکيل نشان، جيئن Rs يا $. رقم تبديل نه ٿيندي.</string>
+    <string name="bp_calendar">تقويم</string>
+    <string name="bp_calendar_help">لسٽن، بلن ۽ پي ڊي ايف ۾ تاريخ ڪيئن ڏيکارجي. هجري تاريخ حساب سان نڪري ٿي، چنڊ ڏسي نه، تنهن ڪري توهان جي علائقي کان هڪ ڏينهن جو فرق ٿي سگهي ٿو. محفوظ ٿيل تاريخون نه بدلجن.</string>
+    <string name="calendar_gregorian">عيسوي</string>
+    <string name="calendar_hijri">هجري (اندازو)</string>
+    <string name="calendar_jalali">شمسي هجري</string>
     <string name="currency_custom">ڪو ٻيو (پاڻ لکو)…</string>
     <string name="currency_custom_hint">نشان، وڌ ۾ وڌ 5 اکر</string>
     <string name="bp_trade">دڪان جو شعبو</string>

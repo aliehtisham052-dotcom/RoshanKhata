@@ -1628,6 +1628,11 @@
     <string name="bp_strn_help">فقط إن كنت مسجلًا. فارغ = لا يُطبع.</string>
     <string name="bp_currency">العملة</string>
     <string name="bp_currency_help">الرمز الذي يظهر مع المبالغ، مثل Rs أو $. لا يتم تحويل المبالغ.</string>
+    <string name="bp_calendar">التقويم</string>
+    <string name="bp_calendar_help">كيف تظهر التواريخ في القوائم والفواتير وملفات بي دي إف. التاريخ الهجري محسوب لا مرئي، فقد يختلف يومًا عن رؤية الهلال في بلدك. التواريخ المحفوظة لا تتغير.</string>
+    <string name="calendar_gregorian">ميلادي</string>
+    <string name="calendar_hijri">هجري (تقديري)</string>
+    <string name="calendar_jalali">هجري شمسي</string>
     <string name="currency_custom">أخرى (اكتب رمزًا)…</string>
     <string name="currency_custom_hint">الرمز، حتى 5 أحرف</string>
     <string name="bp_trade">نوع المتجر</string>

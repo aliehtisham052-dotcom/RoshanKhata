@@ -124,7 +124,29 @@ object DateWords {
      */
     fun formatter(pattern: String, locale: Locale = appLocale()): SimpleDateFormat {
         val key = keyOf(locale)
-        return cache.get()!!.getOrPut("$key|$pattern") {
+        val kind = ShopCalendar.current
+        // The shop's calendar (5 Oct) applies to dates that name a DAY. A
+        // pattern with no day ("MMM", "MMM yyyy", "h:mm a") labels a Gregorian
+        // bucket — a month of the sales chart — or a time, and a Hijri name on
+        // a Gregorian month would be a wrong label, so those stay as they are.
+        if (kind != ShopCalendar.Kind.GREGORIAN && hasDay(pattern)) {
+            return cache.get()!!.getOrPut("$key|$pattern|${kind.key}") {
+                CalendarDateFormat(pattern, gregorian(pattern, key), kind, ShopCalendar.monthNames(kind, key))
+            }
+        }
+        return cache.get()!!.getOrPut("$key|$pattern") { gregorian(pattern, key) }
+    }
+
+    /** True when [pattern] has a day-of-month letter outside quotes. */
+    internal fun hasDay(pattern: String): Boolean {
+        var quoted = false
+        for (c in pattern) {
+            if (c == '\'') quoted = !quoted else if (!quoted && c == 'd') return true
+        }
+        return false
+    }
+
+    private fun gregorian(pattern: String, key: String): SimpleDateFormat =
             SimpleDateFormat(pattern, Locale.ENGLISH).apply {
                 val names = MONTHS[key]
                 val amPm = AM_PM[key]
@@ -141,8 +163,6 @@ object DateWords {
                     }
                 }
             }
-        }
-    }
 
     fun format(pattern: String, millis: Long, locale: Locale = appLocale()): String =
         formatter(pattern, locale).format(Date(millis))

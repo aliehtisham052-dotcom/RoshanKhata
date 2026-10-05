@@ -1516,6 +1516,11 @@
     <string name="bp_strn_help">فقط اگر ثبت‌نام شده‌اید. خالی = چاپ نمی‌شود.</string>
     <string name="bp_currency">واحد پول</string>
     <string name="bp_currency_help">نشانه‌ای که کنار مبلغ می‌آید، مثل Rs یا $. مبالغ تبدیل نمی‌شوند.</string>
+    <string name="bp_calendar">تقویم</string>
+    <string name="bp_calendar_help">تاریخ‌ها در فهرست‌ها، فاکتورها و پی‌دی‌اف چگونه نمایش داده شوند. تاریخ قمری محاسبه می‌شود، نه با رؤیت ماه، پس ممکن است با محل شما یک روز فرق داشته باشد. تاریخ‌های ذخیره‌شده تغییر نمی‌کنند.</string>
+    <string name="calendar_gregorian">میلادی</string>
+    <string name="calendar_hijri">قمری (تقریبی)</string>
+    <string name="calendar_jalali">خورشیدی</string>
     <string name="currency_custom">دیگر (خودتان بنویسید)…</string>
     <string name="currency_custom_hint">نشانه، حداکثر ۵ نویسه</string>
     <string name="bp_trade">نوع فروشگاه</string>

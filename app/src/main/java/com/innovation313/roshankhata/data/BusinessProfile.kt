@@ -203,6 +203,17 @@ object BusinessProfile {
         prefs(context).edit().putString(KEY_CURRENCY, Currency.clean(value)).apply()
     }
 
+    // ---------- Calendar (5 Oct 2026): display only, see ShopCalendar ----------
+
+    private const val KEY_CALENDAR = "calendar"
+
+    fun calendar(context: Context): ShopCalendar.Kind =
+        ShopCalendar.Kind.of(prefs(context).getString(KEY_CALENDAR, null))
+
+    fun setCalendar(context: Context, kind: ShopCalendar.Kind) {
+        prefs(context).edit().putString(KEY_CALENDAR, kind.key).apply()
+    }
+
     // ---------- Trade / shoba (4 Oct 2026) ----------
 
     /** The stored trade name, or null when never chosen (= [Trade.DEFAULT]). */

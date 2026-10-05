@@ -53,6 +53,7 @@ abstract class BaseActivity : AppCompatActivity() {
         // The shop may have been switched, restored or loaded since this
         // screen last showed; figures must wear its sign (see Currency).
         Currency.refresh(this)
+        com.innovation313.roshankhata.data.ShopCalendar.refresh(this)
         if (builtAtLevel >= 0 && builtAtLevel != TextSize.level(this)) {
             builtAtLevel = TextSize.level(this)
             recreate()

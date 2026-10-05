@@ -42,6 +42,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
     override suspend fun doWork(): Result {
         val ctx = applicationContext
         Currency.refresh(ctx) // notifications print money; wear the shop's sign
+        com.innovation313.roshankhata.data.ShopCalendar.refresh(ctx)
         // A helper's read-only phone holds a copy, not the book. Reminders
         // are the owner's to send, from the phone that keeps the book.
         if (com.innovation313.roshankhata.data.ViewerMode.isOn(ctx)) return Result.success()

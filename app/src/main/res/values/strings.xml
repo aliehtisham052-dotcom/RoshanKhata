@@ -1541,6 +1541,11 @@ You can change this any time from this screen.</string>
     <string name="bp_strn_help">Only if registered. Blank = not printed.</string>
     <string name="bp_currency">Currency</string>
     <string name="bp_currency_help">The sign your figures wear, e.g. Rs or $. Amounts are not converted.</string>
+    <string name="bp_calendar">Calendar</string>
+    <string name="bp_calendar_help">How dates are shown in lists, bills and PDFs. Hijri is worked out, not sighted, so it can be a day off from the moon where you are. Saved dates never change.</string>
+    <string name="calendar_gregorian">Gregorian</string>
+    <string name="calendar_hijri">Hijri (estimate)</string>
+    <string name="calendar_jalali">Solar Hijri</string>
     <string name="currency_custom">Other (type a sign)…</string>
     <string name="currency_custom_hint">Sign, up to 5 characters</string>
     <string name="bp_trade">Shop type</string>

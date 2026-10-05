@@ -1532,6 +1532,11 @@
     <string name="bp_strn_help">নিবন্ধিত হলে তবেই। ফাঁকা = ছাপা হবে না।</string>
     <string name="bp_currency">মুদ্রা</string>
     <string name="bp_currency_help">আপনার অঙ্কের সঙ্গে যে চিহ্ন বসে, যেমন Rs বা $। অঙ্ক রূপান্তর করা হয় না।</string>
+    <string name="bp_calendar">ক্যালেন্ডার</string>
+    <string name="bp_calendar_help">তালিকা, বিল ও পিডিএফে তারিখ কীভাবে দেখাবে। হিজরি তারিখ হিসাব করে বের করা, চাঁদ দেখে নয়, তাই আপনার এলাকা থেকে এক দিন পার্থক্য হতে পারে। সংরক্ষিত তারিখ বদলায় না।</string>
+    <string name="calendar_gregorian">খ্রিস্টীয়</string>
+    <string name="calendar_hijri">হিজরি (আনুমানিক)</string>
+    <string name="calendar_jalali">সৌর হিজরি</string>
     <string name="currency_custom">অন্য (চিহ্ন লিখুন)…</string>
     <string name="currency_custom_hint">চিহ্ন, সর্বোচ্চ ৫ অক্ষর</string>
     <string name="bp_trade">দোকানের ধরন</string>

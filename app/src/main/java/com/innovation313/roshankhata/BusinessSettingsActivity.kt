@@ -237,6 +237,8 @@ class BusinessSettingsActivity : BaseActivity() {
         etStrn.setText(BusinessProfile.strn(this).orEmpty())
         renderCurrency()
         btnCurrency.setOnClickListener { chooseCurrency() }
+        renderCalendar()
+        findViewById<View>(R.id.btnCalendar).setOnClickListener { chooseCalendar() }
         renderTrade()
         btnTrade.setOnClickListener { chooseTrade() }
 
@@ -624,6 +626,31 @@ class BusinessSettingsActivity : BaseActivity() {
     }
 
     // ---------- Currency sign (4 Oct 2026) ----------
+
+    private fun calendarLabel(kind: com.innovation313.roshankhata.data.ShopCalendar.Kind): String = getString(when (kind) {
+        com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN -> R.string.calendar_gregorian
+        com.innovation313.roshankhata.data.ShopCalendar.Kind.HIJRI -> R.string.calendar_hijri
+        com.innovation313.roshankhata.data.ShopCalendar.Kind.JALALI -> R.string.calendar_jalali
+    })
+
+    private fun renderCalendar() {
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCalendar).text =
+            calendarLabel(BusinessProfile.calendar(this))
+    }
+
+    private fun chooseCalendar() {
+        val kinds = com.innovation313.roshankhata.data.ShopCalendar.Kind.values()
+        val current = BusinessProfile.calendar(this)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.bp_calendar)
+            .setSingleChoiceItems(kinds.map { calendarLabel(it) }.toTypedArray(), kinds.indexOf(current)) { dialog, which ->
+                dialog.dismiss()
+                com.innovation313.roshankhata.data.ShopCalendar.set(this, kinds[which])
+                renderCalendar()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
 
     private fun renderCurrency() {
         btnCurrency.text = Currency.label(BusinessProfile.currency(this))

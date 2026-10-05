@@ -1497,6 +1497,11 @@
     <string name="bp_strn_help">Hanya jika terdaftar. Kosong = tidak dicetak.</string>
     <string name="bp_currency">Mata uang</string>
     <string name="bp_currency_help">Tanda yang dipakai angka Anda, mis. Rp atau $. Jumlah tidak dikonversi.</string>
+    <string name="bp_calendar">Kalender</string>
+    <string name="bp_calendar_help">Cara tanggal ditampilkan di daftar, nota, dan PDF. Tanggal Hijriah dihitung, bukan berdasarkan rukyat, jadi bisa berbeda satu hari dengan tempat Anda. Tanggal yang tersimpan tidak berubah.</string>
+    <string name="calendar_gregorian">Masehi</string>
+    <string name="calendar_hijri">Hijriah (perkiraan)</string>
+    <string name="calendar_jalali">Hijriah Syamsiah</string>
     <string name="currency_custom">Lainnya (ketik tanda)…</string>
     <string name="currency_custom_hint">Tanda, maksimal 5 karakter</string>
     <string name="bp_trade">Jenis toko</string>
