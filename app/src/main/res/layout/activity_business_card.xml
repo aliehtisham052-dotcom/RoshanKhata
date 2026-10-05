@@ -28,7 +28,11 @@
             android:textColor="@color/ink_soft"
             android:textSize="14sp" />
 
-        <!-- The same shop on a Status poster: new stock, Eid, closed today... -->
+        <!--
+          The same shop on a Status poster: new stock, Eid, closed today...
+          Stroke and text as Products' outlined button: Material's default
+          outline measured 1.3:1 on the dark page (EveryLayoutReadableInDarkTest, 5 Oct).
+        -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOpenPoster"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -37,7 +41,10 @@
             android:layout_marginTop="10dp"
             android:minHeight="48dp"
             android:text="@string/poster_title"
-            app:icon="@drawable/ic_share" />
+            android:textColor="@color/ink_soft"
+            app:icon="@drawable/ic_share"
+            app:iconTint="@color/ink_soft"
+            app:strokeColor="@color/page_line" />
 
         <!-- Live preview of the card, redrawn on every keystroke -->
         <com.innovation313.roshankhata.ui.CardPreviewView
