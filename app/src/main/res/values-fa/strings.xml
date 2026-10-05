@@ -871,6 +871,24 @@
     <string name="insights_profit_top">بیشترین سود</string>
     <string name="insights_profit_top_none">این ماه محصولی با قیمت خرید مشخص فروخته نشده.</string>
     <string name="insights_profit_note">سود = مقدار \u00d7 (نرخ فروش \u2212 نرخ خرید). جایی که بچ انتخاب شده، قیمت همان بچ؛ وگرنه میانگین خریدها تا تاریخ فروش. ردیف‌هایی که واحدشان فرق دارد کنار گذاشته می‌شوند.</string>
+    <string name="vq_ask">پرسیدن با صدا</string>
+    <string name="vq_prompt">درباره فروشگاهتان بپرسید</string>
+    <string name="vq_heard">شنیده شد: «%1$s»</string>
+    <string name="vq_understood">این را فهمیدم: %1$s</string>
+    <string name="vq_not_understood">این پرسش را هنوز نمی‌دانم. می‌توانید بپرسید: بیشترین طلب از کیست، جمع طلب، جمع بدهی، فروش امروز، فروش این ماه، سود این ماه، چه کالایی رو به انقضاست، چه کسی پرداخت نکرده.</string>
+    <string name="vq_who_owes_most">بیشترین طلب از کیست</string>
+    <string name="vq_to_get">جمع طلب</string>
+    <string name="vq_to_give">جمع بدهی</string>
+    <string name="vq_sales_today">فروش امروز</string>
+    <string name="vq_sales_month">فروش این ماه</string>
+    <string name="vq_profit_month">سود این ماه</string>
+    <string name="vq_expiring">کالای نزدیک به انقضا</string>
+    <string name="vq_not_paid">چه کسی پرداخت نکرده</string>
+    <string name="vq_open">باز کردن</string>
+    <string name="vq_nobody">اکنون کسی به شما بدهکار نیست.</string>
+    <string name="vq_no_recognizer">این گوشی برنامه تشخیص گفتار ندارد.</string>
+    <string name="vq_not_paid_body">فهرست پیگیری مشتریانی را که باید زودتر وصول کنید بالاتر نشان می‌دهد.</string>
+    <string name="vq_expiring_body">صفحه کالای رو به انقضا آنچه زودتر تمام می‌شود را نشان می‌دهد.</string>
     <string name="nisab_silver">نقره</string>
     <string name="nisab_gold">طلا</string>
     <string name="gold_price_hint">قیمت هر گرم طلا</string>

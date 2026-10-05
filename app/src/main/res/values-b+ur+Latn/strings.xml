@@ -843,6 +843,24 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="insights_profit_top">Sab Se Zyada Munafa</string>
     <string name="insights_profit_top_none">Is mahine koi aisi cheez nahi biki jis ki khareed qeemat maloom ho.</string>
     <string name="insights_profit_note">Munafa = miqdaar \u00d7 (farokht rate \u2212 khareed rate). Jahan batch chuna gaya wahan usi ki qeemat, warna farokht ki tareekh tak ki khareed ki ausat. Jin lines ki units alag hain woh shamil nahi.</string>
+    <string name="vq_ask">Bol kar poochein</string>
+    <string name="vq_prompt">Apni dukaan ke baare mein poochein</string>
+    <string name="vq_heard">Suna: “%1$s”</string>
+    <string name="vq_understood">Maine ye samjha: %1$s</string>
+    <string name="vq_not_understood">Ye sawal abhi mujhe nahi aata. Aap pooch sakte hain: sab se zyada baqaya kis ka, kul kitna lena hai, kul kitna dena hai, aaj ki bikri, is mahine ki bikri, is mahine ka munafa, kya expire hone wala hai, kis ne paisa nahi diya.</string>
+    <string name="vq_who_owes_most">Sab se zyada baqaya kis ka</string>
+    <string name="vq_to_get">Kul lena</string>
+    <string name="vq_to_give">Kul dena</string>
+    <string name="vq_sales_today">Aaj ki bikri</string>
+    <string name="vq_sales_month">Is mahine ki bikri</string>
+    <string name="vq_profit_month">Is mahine ka munafa</string>
+    <string name="vq_expiring">Jald expire hone wala maal</string>
+    <string name="vq_not_paid">Kis ne paisa nahi diya</string>
+    <string name="vq_open">Kholein</string>
+    <string name="vq_nobody">Abhi kisi par aap ka baqaya nahi.</string>
+    <string name="vq_no_recognizer">Is phone mein awaaz pehchanne wali app nahi.</string>
+    <string name="vq_not_paid_body">Follow-up list mein woh grahak sab se upar hain jin se pehle wusooli karni hai.</string>
+    <string name="vq_expiring_body">Expiring stock screen par woh maal hai jo sab se pehle khatam hoga.</string>
     <string name="nisab_silver">Chandi</string>
     <string name="nisab_gold">Sona</string>
     <string name="gold_price_hint">Sone ki qeemat fi gram</string>

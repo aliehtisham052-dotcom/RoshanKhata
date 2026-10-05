@@ -877,6 +877,24 @@
     <string name="insights_profit_top">सबसे ज़्यादा मुनाफ़ा</string>
     <string name="insights_profit_top_none">इस महीने ऐसा कोई प्रोडक्ट नहीं बिका जिसका ख़रीद दाम पता हो।</string>
     <string name="insights_profit_note">मुनाफ़ा = मात्रा \u00d7 (बिक्री रेट \u2212 ख़रीद रेट)। जहाँ बैच चुना गया वहाँ उसी का दाम, वरना बिक्री की तारीख़ तक की ख़रीद का औसत। जिन लाइनों की यूनिट अलग हैं वे शामिल नहीं।</string>
+    <string name="vq_ask">बोलकर पूछें</string>
+    <string name="vq_prompt">अपनी दुकान के बारे में पूछें</string>
+    <string name="vq_heard">सुना: “%1$s”</string>
+    <string name="vq_understood">मैंने यह समझा: %1$s</string>
+    <string name="vq_not_understood">यह सवाल अभी मुझे नहीं आता। आप पूछ सकते हैं: सबसे ज़्यादा बकाया किसका, कुल कितना लेना है, कुल कितना देना है, आज की बिक्री, इस महीने की बिक्री, इस महीने का मुनाफ़ा, क्या एक्सपायर होने वाला है, किसने पैसे नहीं दिए।</string>
+    <string name="vq_who_owes_most">सबसे ज़्यादा बकाया किसका</string>
+    <string name="vq_to_get">कुल लेना</string>
+    <string name="vq_to_give">कुल देना</string>
+    <string name="vq_sales_today">आज की बिक्री</string>
+    <string name="vq_sales_month">इस महीने की बिक्री</string>
+    <string name="vq_profit_month">इस महीने का मुनाफ़ा</string>
+    <string name="vq_expiring">जल्द एक्सपायर होने वाला माल</string>
+    <string name="vq_not_paid">किसने पैसे नहीं दिए</string>
+    <string name="vq_open">खोलें</string>
+    <string name="vq_nobody">अभी किसी पर आपका बकाया नहीं।</string>
+    <string name="vq_no_recognizer">इस फ़ोन में आवाज़ पहचानने वाला ऐप नहीं है।</string>
+    <string name="vq_not_paid_body">फ़ॉलो-अप सूची में वे ग्राहक सबसे ऊपर हैं जिनसे पहले वसूली करनी है।</string>
+    <string name="vq_expiring_body">एक्सपायर होने वाले स्टॉक की स्क्रीन पर वह माल है जो सबसे पहले ख़त्म होगा।</string>
     <string name="nisab_silver">चाँदी</string>
     <string name="nisab_gold">सोना</string>
     <string name="gold_price_hint">सोने का भाव प्रति ग्राम</string>

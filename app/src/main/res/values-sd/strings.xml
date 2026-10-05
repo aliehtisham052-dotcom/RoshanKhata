@@ -871,6 +871,24 @@
     <string name="insights_profit_top">سڀ کان وڌيڪ نفعو</string>
     <string name="insights_profit_top_none">هن مهيني ڪا اهڙي شيءِ نه وڪامي جنهن جي خريد قيمت معلوم هجي.</string>
     <string name="insights_profit_note">نفعو = مقدار \u00d7 (وڪري جو اگهه \u2212 خريد جو اگهه). جتي بيچ چونڊيو ويو اتي ان جي قيمت، نه ته وڪري جي تاريخ تائين خريد جي سراسري. جن سٽن جا يونٽ الڳ آهن اهي شامل ناهن.</string>
+    <string name="vq_ask">آواز سان پڇو</string>
+    <string name="vq_prompt">پنهنجي دڪان بابت پڇو</string>
+    <string name="vq_heard">ٻڌو: “%1$s”</string>
+    <string name="vq_understood">مون هي سمجهيو: %1$s</string>
+    <string name="vq_not_understood">اهو سوال اڃا مون کي نٿو اچي. توهان پڇي سگهو ٿا: سڀ کان وڌيڪ بقايا ڪنهن جو، ڪل ڪيترا وٺڻا آهن، ڪل ڪيترا ڏيڻا آهن، اڄ جو وڪرو، هن مهيني جو وڪرو، هن مهيني جو نفعو، ڪهڙو مال ختم ٿيڻ وارو آهي، ڪنهن پئسا نه ڏنا.</string>
+    <string name="vq_who_owes_most">سڀ کان وڌيڪ بقايا ڪنهن جو</string>
+    <string name="vq_to_get">ڪل وٺڻا</string>
+    <string name="vq_to_give">ڪل ڏيڻا</string>
+    <string name="vq_sales_today">اڄ جو وڪرو</string>
+    <string name="vq_sales_month">هن مهيني جو وڪرو</string>
+    <string name="vq_profit_month">هن مهيني جو نفعو</string>
+    <string name="vq_expiring">جلد ختم ٿيندڙ مال</string>
+    <string name="vq_not_paid">ڪنهن پئسا نه ڏنا</string>
+    <string name="vq_open">کوليو</string>
+    <string name="vq_nobody">هن وقت ڪنهن تي توهان جو بقايا ناهي.</string>
+    <string name="vq_no_recognizer">هن فون ۾ آواز سڃاڻڻ واري ايپ ناهي.</string>
+    <string name="vq_not_paid_body">فالو اپ لسٽ ۾ اهي گراهڪ مٿي آهن جن کان پهرين وصولي ڪرڻي آهي.</string>
+    <string name="vq_expiring_body">ختم ٿيندڙ اسٽاڪ واري اسڪرين تي اهو مال آهي جيڪو سڀ کان پهرين ختم ٿيندو.</string>
     <string name="nisab_silver">چاندي</string>
     <string name="nisab_gold">سون</string>
     <string name="gold_price_hint">سون جي في گرام قيمت</string>

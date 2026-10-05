@@ -843,6 +843,24 @@
     <string name="insights_profit_top">سب سے زیادہ منافع</string>
     <string name="insights_profit_top_none">اس مہینے کوئی ایسی چیز نہیں بکی جس کی خرید قیمت معلوم ہو۔</string>
     <string name="insights_profit_note">منافع = مقدار \u00d7 (فروخت ریٹ \u2212 خرید ریٹ)۔ جہاں بیچ چنا گیا وہاں اسی کی قیمت، ورنہ فروخت کی تاریخ تک کی خرید کی اوسط۔ جن سطروں کی اکائیاں الگ ہیں وہ شامل نہیں۔</string>
+    <string name="vq_ask">آواز سے پوچھیں</string>
+    <string name="vq_prompt">اپنی دکان کے بارے میں پوچھیں</string>
+    <string name="vq_heard">سنا: “%1$s”</string>
+    <string name="vq_understood">میں نے یہ سمجھا: %1$s</string>
+    <string name="vq_not_understood">یہ سوال ابھی مجھے نہیں آتا۔ آپ پوچھ سکتے ہیں: سب سے زیادہ بقایا کس کا، کل کتنا لینا ہے، کل کتنا دینا ہے، آج کی بکری، اس مہینے کی بکری، اس مہینے کا منافع، کس مال کی میعاد ختم ہونے والی ہے، کس نے پیسے نہیں دیے۔</string>
+    <string name="vq_who_owes_most">سب سے زیادہ بقایا کس کا</string>
+    <string name="vq_to_get">کل لینا</string>
+    <string name="vq_to_give">کل دینا</string>
+    <string name="vq_sales_today">آج کی بکری</string>
+    <string name="vq_sales_month">اس مہینے کی بکری</string>
+    <string name="vq_profit_month">اس مہینے کا منافع</string>
+    <string name="vq_expiring">جلد میعاد ختم ہونے والا مال</string>
+    <string name="vq_not_paid">کس نے پیسے نہیں دیے</string>
+    <string name="vq_open">کھولیں</string>
+    <string name="vq_nobody">ابھی کسی پر آپ کا بقایا نہیں۔</string>
+    <string name="vq_no_recognizer">اس فون میں آواز پہچاننے والی ایپ نہیں۔</string>
+    <string name="vq_not_paid_body">فالو اپ فہرست میں وہ گاہک سب سے اوپر ہیں جن سے پہلے وصولی کرنی ہے۔</string>
+    <string name="vq_expiring_body">میعاد ختم ہونے والے اسٹاک کی اسکرین پر وہ مال ہے جو سب سے پہلے ختم ہوگا۔</string>
     <string name="nisab_silver">چاندی</string>
     <string name="nisab_gold">سونا</string>
     <string name="gold_price_hint">سونے کی قیمت فی گرام</string>

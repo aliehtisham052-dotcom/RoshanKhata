@@ -884,6 +884,24 @@ You can change this any time from this screen.</string>
     <string name="insights_profit_top">Top profit</string>
     <string name="insights_profit_top_none">No product with a known purchase price sold this month.</string>
     <string name="insights_profit_note">Profit = quantity \u00d7 (sale rate \u2212 purchase rate). The price of the chosen batch where one was picked, otherwise the average of purchases up to the sale date. Lines whose units differ are left out.</string>
+    <string name="vq_ask">Ask by voice</string>
+    <string name="vq_prompt">Ask about your shop</string>
+    <string name="vq_heard">Heard: “%1$s”</string>
+    <string name="vq_understood">I understood: %1$s</string>
+    <string name="vq_not_understood">That is not a question I know yet. You can ask: who owes the most, how much I have to get, how much I have to give, today\'s sale, this month\'s sale, this month\'s profit, what is expiring, who has not paid.</string>
+    <string name="vq_who_owes_most">Who owes the most</string>
+    <string name="vq_to_get">Total I have to get</string>
+    <string name="vq_to_give">Total I have to give</string>
+    <string name="vq_sales_today">Today\'s sale</string>
+    <string name="vq_sales_month">This month\'s sale</string>
+    <string name="vq_profit_month">This month\'s profit</string>
+    <string name="vq_expiring">Stock expiring soon</string>
+    <string name="vq_not_paid">Who has not paid</string>
+    <string name="vq_open">Open</string>
+    <string name="vq_nobody">Nobody owes you anything right now.</string>
+    <string name="vq_no_recognizer">This phone has no speech recognition app.</string>
+    <string name="vq_not_paid_body">The Follow-up list puts the customers to chase first at the top.</string>
+    <string name="vq_expiring_body">The Expiring stock screen lists what runs out soonest.</string>
     <string name="nisab_silver">Silver</string>
     <string name="nisab_gold">Gold</string>
     <string name="gold_price_hint">Gold price per gram</string>
