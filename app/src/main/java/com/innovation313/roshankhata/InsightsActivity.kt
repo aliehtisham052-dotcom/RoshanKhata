@@ -205,6 +205,7 @@ class InsightsActivity : BaseActivity() {
     private val askVoice = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        com.innovation313.roshankhata.ui.Motion.stopPulse(findViewById(R.id.btnAskVoice))
         val heard = result.data
             ?.getStringArrayListExtra(android.speech.RecognizerIntent.EXTRA_RESULTS)
             ?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
@@ -232,8 +233,10 @@ class InsightsActivity : BaseActivity() {
             putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, getString(R.string.vq_prompt))
         }
         try {
+            com.innovation313.roshankhata.ui.Motion.pulse(findViewById(R.id.btnAskVoice))
             askVoice.launch(intent)
         } catch (e: android.content.ActivityNotFoundException) {
+            com.innovation313.roshankhata.ui.Motion.stopPulse(findViewById(R.id.btnAskVoice))
             android.widget.Toast.makeText(this, R.string.vq_no_recognizer, android.widget.Toast.LENGTH_LONG).show()
         }
     }

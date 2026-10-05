@@ -1183,6 +1183,7 @@ class KhataActivity : BaseActivity() {
     private val listen = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        com.innovation313.roshankhata.ui.Motion.stopPulse(findViewById(R.id.btnVoiceEntry))
         // Every candidate, not just the winner. The app still acts on the
         // first — that behaviour is unchanged — but the rest are what tell us
         // whether a missed entry was misheard or merely mis-chosen, and until
@@ -1308,8 +1309,10 @@ class KhataActivity : BaseActivity() {
         }
 
         try {
+            com.innovation313.roshankhata.ui.Motion.pulse(findViewById(R.id.btnVoiceEntry))
             listen.launch(intent)
         } catch (e: android.content.ActivityNotFoundException) {
+            com.innovation313.roshankhata.ui.Motion.stopPulse(findViewById(R.id.btnVoiceEntry))
             // Some phones ship without a recogniser at all. Say so rather than
             // leaving a button that does nothing.
             Toast.makeText(this, R.string.voice_unavailable, Toast.LENGTH_LONG).show()

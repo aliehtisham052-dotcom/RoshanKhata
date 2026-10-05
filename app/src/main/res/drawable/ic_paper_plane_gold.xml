@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Golden paper plane (5 Oct): the reminder flying off to WhatsApp. Two tones for depth. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#FFE9B949" android:pathData="M4,22 L44,4 L30,44 L22,28 Z" />
+    <path android:fillColor="#FFB8860B" android:pathData="M22,28 L44,4 L26,34 Z" />
+    <path android:fillColor="#FF9A6F08" android:pathData="M22,28 L26,34 L24,40 Z" />
+</vector>
