@@ -131,6 +131,7 @@ class KhataActivity : BaseActivity() {
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        com.innovation313.roshankhata.ui.RowToScreen.send(this)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_khata)
@@ -172,6 +173,11 @@ class KhataActivity : BaseActivity() {
             startActivity(Intent(this, BackupActivity::class.java))
         }
         tvEmpty = findViewById(R.id.tvEmpty)
+        // A slow phone shows placeholder rows rather than a blank page; a fast
+        // one never sees them (only if the book is not in after 150 ms).
+        findViewById<View>(R.id.shimmerParties).postDelayed({
+            if (!bookLoaded && !isFinishing) findViewById<View>(R.id.shimmerParties).visibility = View.VISIBLE
+        }, 150)
 
         val rv: RecyclerView = findViewById(R.id.rvParties)
         adapter = PartyAdapter(
@@ -321,6 +327,7 @@ class KhataActivity : BaseActivity() {
                 // printed, and the microphone must not read anything into
                 // that — see startListening().
                 bookLoaded = true
+                findViewById<View>(R.id.shimmerParties).visibility = View.GONE
 
                 // The two box totals: everything owed TO the shop (positive
                 // balances, money to collect) and everything the shop owes OUT
@@ -1155,10 +1162,12 @@ class KhataActivity : BaseActivity() {
      * there.
      */
     private fun openParty(party: PartyWithBalance) {
-        startActivity(
-            Intent(this, PartyDetailActivity::class.java)
-                .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
-        )
+        val intent = Intent(this, PartyDetailActivity::class.java)
+            .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
+        // The row on screen, if this customer has one, grows into the ledger.
+        val row = shownParties.indexOfFirst { it.id == party.id }
+            .takeIf { it >= 0 }?.let { findViewById<RecyclerView>(R.id.rvParties).findViewHolderForAdapterPosition(it)?.itemView }
+        com.innovation313.roshankhata.ui.RowToScreen.start(this, intent, row)
     }
 
     // ---------- speaking an entry ----------
