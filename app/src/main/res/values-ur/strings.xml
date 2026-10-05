@@ -907,6 +907,15 @@
     <string name="delete_entry_message">یہ اندراج کھاتے سے ہٹا دیا جائے گا۔</string>
     <string name="entry_deleted">اندراج حذف ہو گیا</string>
     <string name="share_failed">شیئر کرنے کے لیے تصویر نہیں بن سکی</string>
+    <string name="print_receipt">رسید پرنٹ کریں</string>
+    <string name="print_choose">پرنٹر چنیں</string>
+    <string name="print_no_printer">کوئی جوڑا ہوا پرنٹر نہیں۔ پہلے فون کی بلوٹوتھ ترتیبات میں اپنا رسید پرنٹر جوڑیں، پھر دوبارہ پرنٹ دبائیں۔</string>
+    <string name="print_bluetooth_off">بلوٹوتھ بند ہے۔ اسے آن کر کے دوبارہ پرنٹ دبائیں۔</string>
+    <string name="print_no_bluetooth">اس فون میں بلوٹوتھ نہیں۔</string>
+    <string name="print_permission">پرنٹر تک پہنچنے کے لیے قریبی آلات کی اجازت چاہیے۔</string>
+    <string name="print_sending">پرنٹر کو بھیجا جا رہا ہے…</string>
+    <string name="print_done">پرنٹ ہو گیا</string>
+    <string name="print_failed">پرنٹر سے رابطہ نہیں ہوا۔ کیا وہ آن ہے، جوڑا ہوا ہے اور اس میں کاغذ ہے؟</string>
     <string name="invalid_amount">درست رقم لکھیں</string>
     <string name="saved">محفوظ ہو گیا</string>
     <string name="select_language">اپنی زبان چنیں</string>

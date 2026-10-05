@@ -935,6 +935,15 @@
     <string name="delete_entry_message">هيءَ داخلا کاتي مان هٽي ويندي.</string>
     <string name="entry_deleted">داخلا هٽي وئي</string>
     <string name="share_failed">شيئر ڪرڻ لاءِ تصوير نه ٺهي سگهي</string>
+    <string name="print_receipt">رسيد پرنٽ ڪريو</string>
+    <string name="print_choose">پرنٽر چونڊيو</string>
+    <string name="print_no_printer">ڪو به جڙيل پرنٽر ناهي. پهريان فون جي بلوٽوٿ سيٽنگن ۾ پنهنجو رسيد پرنٽر جوڙيو، پوءِ ٻيهر پرنٽ دٻايو.</string>
+    <string name="print_bluetooth_off">بلوٽوٿ بند آهي. ان کي آن ڪري ٻيهر پرنٽ دٻايو.</string>
+    <string name="print_no_bluetooth">هن فون ۾ بلوٽوٿ ناهي.</string>
+    <string name="print_permission">پرنٽر تائين پهچڻ لاءِ ويجهن ڊوائيسن جي اجازت گهرجي.</string>
+    <string name="print_sending">پرنٽر ڏانهن موڪليو پيو وڃي…</string>
+    <string name="print_done">پرنٽ ٿي ويو</string>
+    <string name="print_failed">پرنٽر سان رابطو نه ٿيو. ڇا اهو آن آهي، جڙيل آهي ۽ ان ۾ ڪاغذ آهي؟</string>
     <string name="invalid_amount">صحيح رقم لکو</string>
     <string name="saved">محفوظ ٿيو</string>
     <string name="select_language">پنهنجي ٻولي چونڊيو</string>

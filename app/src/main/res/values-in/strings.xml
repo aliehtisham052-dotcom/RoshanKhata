@@ -919,6 +919,15 @@
     <string name="delete_entry_message">Catatan ini akan dihapus dari buku.</string>
     <string name="entry_deleted">Catatan dihapus</string>
     <string name="share_failed">Gambar untuk dibagikan tidak dapat dibuat</string>
+    <string name="print_receipt">Cetak struk</string>
+    <string name="print_choose">Pilih printer</string>
+    <string name="print_no_printer">Belum ada printer yang dipasangkan. Pasangkan printer struk Bluetooth di pengaturan Bluetooth ponsel dulu, lalu ketuk Cetak lagi.</string>
+    <string name="print_bluetooth_off">Bluetooth mati. Nyalakan lalu ketuk Cetak lagi.</string>
+    <string name="print_no_bluetooth">Ponsel ini tidak punya Bluetooth.</string>
+    <string name="print_permission">Mencetak memerlukan izin Perangkat sekitar untuk menjangkau printer Anda.</string>
+    <string name="print_sending">Mengirim ke printer…</string>
+    <string name="print_done">Sudah dicetak</string>
+    <string name="print_failed">Printer tidak terjangkau. Apakah menyala, sudah dipasangkan, dan berisi kertas?</string>
     <string name="invalid_amount">Masukkan jumlah yang benar</string>
     <string name="saved">Tersimpan</string>
     <string name="select_language">Pilih bahasa Anda</string>

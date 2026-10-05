@@ -941,6 +941,15 @@
     <string name="delete_entry_message">यह एंट्री खाते से हट जाएगी।</string>
     <string name="entry_deleted">एंट्री मिटा दी</string>
     <string name="share_failed">शेयर करने के लिए तस्वीर नहीं बन सकी</string>
+    <string name="print_receipt">रसीद प्रिंट करें</string>
+    <string name="print_choose">प्रिंटर चुनें</string>
+    <string name="print_no_printer">कोई जुड़ा हुआ प्रिंटर नहीं। पहले फ़ोन की ब्लूटूथ सेटिंग में अपना रसीद प्रिंटर जोड़ें, फिर दोबारा प्रिंट दबाएँ।</string>
+    <string name="print_bluetooth_off">ब्लूटूथ बंद है। इसे चालू करके दोबारा प्रिंट दबाएँ।</string>
+    <string name="print_no_bluetooth">इस फ़ोन में ब्लूटूथ नहीं है।</string>
+    <string name="print_permission">प्रिंटर तक पहुँचने के लिए आस-पास के डिवाइस की अनुमति चाहिए।</string>
+    <string name="print_sending">प्रिंटर को भेजा जा रहा है…</string>
+    <string name="print_done">प्रिंट हो गया</string>
+    <string name="print_failed">प्रिंटर से संपर्क नहीं हुआ। क्या वह चालू है, जुड़ा है और उसमें काग़ज़ है?</string>
     <string name="invalid_amount">सही रकम लिखें</string>
     <string name="saved">सेव हो गया</string>
     <string name="select_language">अपनी भाषा चुनें</string>
