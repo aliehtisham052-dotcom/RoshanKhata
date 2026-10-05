@@ -1190,6 +1190,27 @@ You can change this any time from this screen.</string>
     <string name="rate_list_summary">Products: %1$s \u00b7 Pictures: %2$s</string>
     <string name="rate_list_none">No product has a price yet. Open Products &amp; stock, tap a product, choose Edit details and add a cash or credit price.</string>
     <string name="rate_list_purchase_note">Purchase prices never go on this list.</string>
+    <string name="poster_title">Poster &amp; Status</string>
+    <string name="poster_subtitle">A picture for WhatsApp Status, with your shop\'s name on it</string>
+    <string name="poster_heading_hint">Big line</string>
+    <string name="poster_message_hint">Message</string>
+    <string name="poster_show_logo">Shop logo on the poster</string>
+    <string name="poster_show_mark">Show “Roshan Khata” on the poster</string>
+    <string name="poster_custom">Your own words</string>
+    <string name="poster_new_stock">New stock has arrived!</string>
+    <string name="poster_eid_fitr">Eid ul-Fitr Mubarak</string>
+    <string name="poster_eid_adha">Eid ul-Adha Mubarak</string>
+    <string name="poster_ramazan">Ramazan Mubarak</string>
+    <string name="poster_closed">The shop is closed today</string>
+    <string name="poster_hours">Shop timings</string>
+    <string name="poster_thanks">Thank you!</string>
+    <string name="poster_new_stock_msg">Fresh stock is in. Come and see it today.</string>
+    <string name="poster_eid_fitr_msg">Eid greetings to you and your family from all of us.</string>
+    <string name="poster_eid_adha_msg">Eid greetings to you and your family. May your sacrifice be accepted.</string>
+    <string name="poster_ramazan_msg">May this Ramazan bring peace and blessings to your home.</string>
+    <string name="poster_closed_msg">We open again tomorrow at the usual time.</string>
+    <string name="poster_hours_msg">Open every day, 9 in the morning to 9 at night.</string>
+    <string name="poster_thanks_msg">Thank you for your trust. We look forward to serving you again.</string>
     <string name="rate_list_page" translatable="false">%1$s / %2$s</string>
     <string name="product_name_taken">“%1$s” already uses that name.</string>
     <!-- Asked right after a supplier bill is saved, while the label is still in hand. -->

@@ -74,6 +74,9 @@ class BusinessCardActivity : BaseActivity() {
         etQrMessage = findViewById(R.id.etQrMessage)
 
         markSwitch = findViewById(R.id.switchCardWatermark)
+        findViewById<android.view.View>(R.id.btnOpenPoster).setOnClickListener {
+            startActivity(android.content.Intent(this, PosterActivity::class.java))
+        }
         logoSwitch = findViewById(R.id.switchCardLogo)
         logoHint = findViewById(R.id.tvCardLogoHint)
 

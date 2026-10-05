@@ -1153,6 +1153,27 @@
     <string name="rate_list_summary">Produk: %1$s \u00b7 Gambar: %2$s</string>
     <string name="rate_list_none">Belum ada produk yang punya harga. Buka Produk &amp; stok, ketuk sebuah produk, pilih Ubah detail, lalu isi harga tunai atau harga kredit.</string>
     <string name="rate_list_purchase_note">Harga beli tidak pernah dimasukkan ke daftar ini.</string>
+    <string name="poster_title">Poster &amp; Status</string>
+    <string name="poster_subtitle">Gambar untuk Status WhatsApp, dengan nama toko Anda</string>
+    <string name="poster_heading_hint">Baris besar</string>
+    <string name="poster_message_hint">Pesan</string>
+    <string name="poster_show_logo">Logo toko di poster</string>
+    <string name="poster_show_mark">Tampilkan “Roshan Khata” di poster</string>
+    <string name="poster_custom">Kata-kata Anda sendiri</string>
+    <string name="poster_new_stock">Stok baru telah tiba!</string>
+    <string name="poster_eid_fitr">Selamat Hari Raya Idulfitri</string>
+    <string name="poster_eid_adha">Selamat Hari Raya Iduladha</string>
+    <string name="poster_ramazan">Marhaban ya Ramadan</string>
+    <string name="poster_closed">Toko tutup hari ini</string>
+    <string name="poster_hours">Jam buka toko</string>
+    <string name="poster_thanks">Terima kasih!</string>
+    <string name="poster_new_stock_msg">Stok segar sudah datang. Mampir hari ini.</string>
+    <string name="poster_eid_fitr_msg">Selamat Idulfitri untuk Anda dan keluarga dari kami semua. Mohon maaf lahir dan batin.</string>
+    <string name="poster_eid_adha_msg">Selamat Iduladha untuk Anda dan keluarga. Semoga kurban Anda diterima.</string>
+    <string name="poster_ramazan_msg">Semoga Ramadan ini membawa kedamaian dan berkah bagi rumah Anda.</string>
+    <string name="poster_closed_msg">Kami buka kembali besok seperti biasa.</string>
+    <string name="poster_hours_msg">Buka setiap hari, pukul 9 pagi sampai 9 malam.</string>
+    <string name="poster_thanks_msg">Terima kasih atas kepercayaan Anda. Kami siap melayani Anda lagi.</string>
     <string name="product_name_taken">“%1$s” sudah memakai nama itu.</string>
     <!-- Asked right after a supplier bill is saved, while the label is still in hand. -->
     <string name="label_details_title">Detail label</string>
