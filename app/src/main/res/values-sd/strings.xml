@@ -863,6 +863,14 @@
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">ڪنهن به ٿنڀ تي دٻايو ته ان مهيني جو ڪل وڪرو نظر ايندو.</string>
     <string name="insights_monthly_none">گذريل 12 مهينن ۾ ڪو وڪرو درج ناهي.</string>
+    <string name="insights_profit_title">نفعو \u00b7 هي مهينو</string>
+    <string name="insights_profit_after_expenses">خرچن کان پوءِ: %1$s (خرچ %2$s)</string>
+    <string name="insights_profit_last_month">گذريل مهينو: %1$s</string>
+    <string name="insights_profit_coverage">هن مهيني جي %1$d%% وڪري مان ڪڍيو ويو. باقي ۾ پراڊڪٽ جو نالو يا خريد جي قيمت ناهي.</string>
+    <string name="insights_profit_none">اڃا نفعو نه ڪڍي سگهيو. هر وڪري ۾ پراڊڪٽ جو نالو لکو ۽ سپلائر جي بل ۾ خريد جي قيمت.</string>
+    <string name="insights_profit_top">سڀ کان وڌيڪ نفعو</string>
+    <string name="insights_profit_top_none">هن مهيني ڪا اهڙي شيءِ نه وڪامي جنهن جي خريد قيمت معلوم هجي.</string>
+    <string name="insights_profit_note">نفعو = مقدار \u00d7 (وڪري جو اگهه \u2212 خريد جو اگهه). جتي بيچ چونڊيو ويو اتي ان جي قيمت، نه ته وڪري جي تاريخ تائين خريد جي سراسري. جن سٽن جا يونٽ الڳ آهن اهي شامل ناهن.</string>
     <string name="nisab_silver">چاندي</string>
     <string name="nisab_gold">سون</string>
     <string name="gold_price_hint">سون جي في گرام قيمت</string>

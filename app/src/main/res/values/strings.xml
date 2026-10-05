@@ -876,6 +876,14 @@ You can change this any time from this screen.</string>
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">Tap any bar to see that month\'s total.</string>
     <string name="insights_monthly_none">No sales recorded in the last 12 months.</string>
+    <string name="insights_profit_title">Profit \u00b7 This month</string>
+    <string name="insights_profit_after_expenses">After expenses: %1$s (expenses %2$s)</string>
+    <string name="insights_profit_last_month">Last month: %1$s</string>
+    <string name="insights_profit_coverage">Worked out from %1$d%% of the sales this month. The rest has no product name or no purchase price.</string>
+    <string name="insights_profit_none">No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.</string>
+    <string name="insights_profit_top">Top profit</string>
+    <string name="insights_profit_top_none">No product with a known purchase price sold this month.</string>
+    <string name="insights_profit_note">Profit = quantity \u00d7 (sale rate \u2212 purchase rate). The price of the chosen batch where one was picked, otherwise the average of purchases up to the sale date. Lines whose units differ are left out.</string>
     <string name="nisab_silver">Silver</string>
     <string name="nisab_gold">Gold</string>
     <string name="gold_price_hint">Gold price per gram</string>

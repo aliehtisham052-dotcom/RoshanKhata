@@ -835,6 +835,14 @@
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">کسی ستون کو دبائیں تو اُس مہینے کی کل فروخت نظر آئے گی۔</string>
     <string name="insights_monthly_none">پچھلے 12 مہینوں میں کوئی فروخت درج نہیں۔</string>
+    <string name="insights_profit_title">منافع \u00b7 اس مہینے</string>
+    <string name="insights_profit_after_expenses">اخراجات کے بعد: %1$s (اخراجات %2$s)</string>
+    <string name="insights_profit_last_month">پچھلا مہینہ: %1$s</string>
+    <string name="insights_profit_coverage">اس مہینے کی %1$d%% فروخت سے نکالا گیا۔ باقی میں مصنوعات کا نام یا خرید کی قیمت نہیں۔</string>
+    <string name="insights_profit_none">ابھی منافع نہیں نکل سکا۔ ہر فروخت میں مصنوعات کا نام لکھیں اور سپلائر کے بل میں خرید کی قیمت۔</string>
+    <string name="insights_profit_top">سب سے زیادہ منافع</string>
+    <string name="insights_profit_top_none">اس مہینے کوئی ایسی چیز نہیں بکی جس کی خرید قیمت معلوم ہو۔</string>
+    <string name="insights_profit_note">منافع = مقدار \u00d7 (فروخت ریٹ \u2212 خرید ریٹ)۔ جہاں بیچ چنا گیا وہاں اسی کی قیمت، ورنہ فروخت کی تاریخ تک کی خرید کی اوسط۔ جن سطروں کی اکائیاں الگ ہیں وہ شامل نہیں۔</string>
     <string name="nisab_silver">چاندی</string>
     <string name="nisab_gold">سونا</string>
     <string name="gold_price_hint">سونے کی قیمت فی گرام</string>

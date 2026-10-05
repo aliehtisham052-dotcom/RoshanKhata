@@ -869,6 +869,14 @@
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">किसी भी पट्टी को छूकर उस महीने का जोड़ देखें।</string>
     <string name="insights_monthly_none">पिछले 12 महीनों में कोई बिक्री दर्ज नहीं।</string>
+    <string name="insights_profit_title">मुनाफ़ा \u00b7 इस महीने</string>
+    <string name="insights_profit_after_expenses">खर्चों के बाद: %1$s (खर्चे %2$s)</string>
+    <string name="insights_profit_last_month">पिछला महीना: %1$s</string>
+    <string name="insights_profit_coverage">इस महीने की %1$d%% बिक्री से निकाला गया। बाक़ी में प्रोडक्ट का नाम या ख़रीद का दाम नहीं।</string>
+    <string name="insights_profit_none">अभी मुनाफ़ा नहीं निकल सका। हर बिक्री में प्रोडक्ट का नाम लिखें और सप्लायर के बिल में ख़रीद का दाम।</string>
+    <string name="insights_profit_top">सबसे ज़्यादा मुनाफ़ा</string>
+    <string name="insights_profit_top_none">इस महीने ऐसा कोई प्रोडक्ट नहीं बिका जिसका ख़रीद दाम पता हो।</string>
+    <string name="insights_profit_note">मुनाफ़ा = मात्रा \u00d7 (बिक्री रेट \u2212 ख़रीद रेट)। जहाँ बैच चुना गया वहाँ उसी का दाम, वरना बिक्री की तारीख़ तक की ख़रीद का औसत। जिन लाइनों की यूनिट अलग हैं वे शामिल नहीं।</string>
     <string name="nisab_silver">चाँदी</string>
     <string name="nisab_gold">सोना</string>
     <string name="gold_price_hint">सोने का भाव प्रति ग्राम</string>

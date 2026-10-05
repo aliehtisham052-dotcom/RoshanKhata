@@ -1718,6 +1718,34 @@ interface KhataDao {
            "GROUP BY ei.itemName, ei.unit ORDER BY qty DESC LIMIT :limit")
     suspend fun topProductsBetween(from: Long, to: Long, limit: Int): List<ProductStat>
 
+    // ---------- Profit (read-only; the arithmetic lives in [Profit]) ----------
+    //
+    // Two halves read apart and married in Kotlin, as [Stock] does: one joined
+    // query over sales and bills would multiply rows and count a product on
+    // three bills three times. Both filters repeat the sale rule above
+    // (customer party, not deleted); the sale side also keeps isGiven = 0 lines
+    // with a quantity, because those are goods coming back, and a return
+    // reverses the profit the sale made.
+
+    /** Every sale and return line in [from, to), with what [Profit] needs to cost it. */
+    @Query("SELECT ei.productId AS productId, ei.itemName AS itemName, ei.quantity AS quantity, " +
+           "ei.unit AS unit, ei.rate AS rate, ei.isBonus AS isBonus, ei.billItemId AS billItemId, " +
+           "t.timestamp AS timestamp, t.isGiven AS isGiven " +
+           "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+           "JOIN parties p ON p.id = t.partyId " +
+           "WHERE t.isDeleted = 0 AND p.isCustomer = 1 " +
+           "AND t.timestamp >= :from AND t.timestamp < :to " +
+           "AND ei.quantity IS NOT NULL ORDER BY t.timestamp")
+    suspend fun profitSaleLinesBetween(from: Long, to: Long): List<Profit.SaleLine>
+
+    /** Every priced supplier-bill line dated before [to] — the costs on hand by then. */
+    @Query("SELECT bi.id AS id, bi.productId AS productId, bi.quantity AS quantity, bi.unit AS unit, " +
+           "bi.rate AS rate, b.billDate AS billDate " +
+           "FROM bill_items bi JOIN supplier_bills b ON b.id = bi.billId " +
+           "WHERE bi.isDeleted = 0 AND b.isDeleted = 0 AND bi.rate IS NOT NULL " +
+           "AND b.billDate < :to")
+    suspend fun profitPurchaseLinesBefore(to: Long): List<Profit.PurchaseLine>
+
     /** Top customers by total purchases in a period. */
     @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
            "FROM transactions t JOIN parties p ON p.id = t.partyId " +

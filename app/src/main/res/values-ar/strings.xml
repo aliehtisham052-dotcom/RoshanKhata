@@ -911,6 +911,14 @@
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">اضغط على أي عمود لعرض إجمالي ذلك الشهر.</string>
     <string name="insights_monthly_none">لا توجد مبيعات مسجَّلة في آخر 12 شهرًا.</string>
+    <string name="insights_profit_title">الربح \u00b7 هذا الشهر</string>
+    <string name="insights_profit_after_expenses">بعد المصاريف: %1$s (المصاريف %2$s)</string>
+    <string name="insights_profit_last_month">الشهر الماضي: %1$s</string>
+    <string name="insights_profit_coverage">محسوب من %1$d%% من مبيعات هذا الشهر. الباقي بلا اسم منتج أو بلا سعر شراء.</string>
+    <string name="insights_profit_none">لا رقم ربح بعد. اكتب اسم المنتج في كل بيع وسعر الشراء في فاتورة المورّد.</string>
+    <string name="insights_profit_top">الأعلى ربحًا</string>
+    <string name="insights_profit_top_none">لم يُبع هذا الشهر منتج بسعر شراء معروف.</string>
+    <string name="insights_profit_note">الربح = الكمية \u00d7 (سعر البيع \u2212 سعر الشراء). عند اختيار دفعة يُؤخذ سعرها، وإلا متوسط المشتريات حتى تاريخ البيع. السطور المختلفة الوحدات تُستبعد.</string>
     <string name="nisab_silver">الفضة</string>
     <string name="nisab_gold">الذهب</string>
     <string name="gold_price_hint">سعر غرام الذهب</string>
