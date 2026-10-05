@@ -60,24 +60,67 @@ object Motion {
     }.getOrDefault(true)
 
     /**
-     * A figure counting from [from] to [to] (Material: ~300 ms for a small
-     * change; a little longer here because a number has to be read).
+     * The change to a figure, shown BESIDE it (5 Oct): "+Rs 5,000" rises
+     * over the number, holds a second and is gone. The figure itself is set
+     * straight to its new value by the caller — the owner asked that a figure
+     * never count its way there (the old countUp showed amounts that were
+     * never true for half a second). Drawn in the window's overlay, so it
+     * moves nothing and catches no touch.
      */
-    fun countUp(view: TextView, from: Double, to: Double, format: (Double) -> String) {
-        (view.getTag(view.id) as? ValueAnimator)?.cancel()
-        if (!enabled(view.context) || from == to) {
-            view.text = format(to)
-            return
-        }
-        val anim = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 600
-            interpolator = DecelerateInterpolator()
-            addUpdateListener { a ->
-                val f = a.animatedValue as Float
-                view.text = format(if (f >= 1f) to else from + (to - from) * f)
-            }
-        }
-        view.setTag(view.id, anim)
-        anim.start()
+    fun delta(anchor: TextView, label: String) {
+        if (!enabled(anchor.context) || !anchor.isLaidOut) return
+        val root = anchor.rootView as? android.view.ViewGroup ?: return
+        val chip = android.view.LayoutInflater.from(anchor.context)
+            .inflate(com.innovation313.roshankhata.R.layout.view_delta_chip, root, false) as TextView
+        chip.text = label
+        val unspecified = android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED)
+        chip.measure(unspecified, unspecified)
+        val a = IntArray(2).also { anchor.getLocationInWindow(it) }
+        val o = IntArray(2).also { root.getLocationInWindow(it) }
+        val layout = anchor.layout
+        val textMid = if (layout != null && layout.lineCount > 0)
+            anchor.paddingLeft + (layout.getLineLeft(0) + layout.getLineRight(0)) / 2f else anchor.width / 2f
+        val left = (a[0] - o[0] + textMid - chip.measuredWidth / 2f).toInt()
+            .coerceIn(0, (root.width - chip.measuredWidth).coerceAtLeast(0))
+        val top = (a[1] - o[1] - chip.measuredHeight - 2 * anchor.resources.displayMetrics.density).toInt()
+        chip.layout(left, top, left + chip.measuredWidth, top + chip.measuredHeight)
+        val rise = 10 * anchor.resources.displayMetrics.density
+        root.overlay.add(chip)
+        chip.alpha = 0f
+        chip.translationY = rise
+        chip.animate().alpha(1f).translationY(0f).setDuration(240)
+            .setInterpolator(DecelerateInterpolator())
+            .withEndAction {
+                chip.animate().alpha(0f).translationY(-rise).setStartDelay(1000).setDuration(320)
+                    .withEndAction { root.overlay.remove(chip) }.start()
+            }.start()
+    }
+
+    /**
+     * An entry is saved (5 Oct): a green disc pops up in the middle of the
+     * screen, a white tick draws itself, and it fades — about 1.1 s, over
+     * everything, touching nothing, so the owner can carry on at once. Felt
+     * as well (see [confirm]). Not shown with animations off.
+     */
+    fun savedTick(activity: android.app.Activity) {
+        val root = activity.findViewById<android.view.ViewGroup>(android.R.id.content) ?: return
+        if (!enabled(activity) || !root.isLaidOut) return
+        val tick = android.view.LayoutInflater.from(activity)
+            .inflate(com.innovation313.roshankhata.R.layout.view_save_tick, root, false) as android.widget.ImageView
+        val size = (104 * activity.resources.displayMetrics.density).toInt()
+        val left = (root.width - size) / 2
+        val top = (root.height * 0.42f - size / 2f).toInt()
+        tick.layout(left, top, left + size, top + size)
+        root.overlay.add(tick)
+        tick.alpha = 0f
+        tick.scaleX = 0.6f
+        tick.scaleY = 0.6f
+        tick.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(260)
+            .setInterpolator(android.view.animation.OvershootInterpolator(1.6f))
+            .withStartAction { (tick.drawable as? android.graphics.drawable.Animatable)?.start() }
+            .withEndAction {
+                tick.animate().alpha(0f).scaleX(0.9f).scaleY(0.9f).setStartDelay(560).setDuration(240)
+                    .withEndAction { root.overlay.remove(tick) }.start()
+            }.start()
     }
 }

@@ -656,6 +656,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/selectionBar" />
 
+    <!-- Placeholder rows while the ledger loads (ShimmerRows, 5 Oct). -->
+    <com.innovation313.roshankhata.ui.ShimmerRows
+        android:id="@+id/shimmerParties"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:importantForAccessibility="no"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/selectionBar" />
+
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="0dp"

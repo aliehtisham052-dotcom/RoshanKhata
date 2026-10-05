@@ -349,6 +349,10 @@ class PartyDetailActivity : BaseActivity() {
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Opened from a customer row, the row grows into this screen (5 Oct,
+        // Material container transform). Opened any other way (search, QR,
+        // a reminder) the shared element is simply absent and nothing changes.
+        com.innovation313.roshankhata.ui.RowToScreen.receive(this)
         super.onCreate(savedInstanceState)
 
         // A capture that was in flight when this screen was destroyed. The
@@ -2693,8 +2697,14 @@ class PartyDetailActivity : BaseActivity() {
                     settledNow -> com.innovation313.roshankhata.ui.SettledCelebration.show(this@PartyDetailActivity, partyName)
                     // Paid on the spot: nothing is owed, so no "udhar written"
                     // message to send — instead, a way back if the box was ticked by mistake.
-                    gotId != null -> offerUndoCash(id, gotId, entry.amount)
-                    else -> offerEntryShare(entry, after)
+                    gotId != null -> {
+                        com.innovation313.roshankhata.ui.Motion.savedTick(this@PartyDetailActivity)
+                        offerUndoCash(id, gotId, entry.amount)
+                    }
+                    else -> {
+                        com.innovation313.roshankhata.ui.Motion.savedTick(this@PartyDetailActivity)
+                        offerEntryShare(entry, after)
+                    }
                 }
             }
         }

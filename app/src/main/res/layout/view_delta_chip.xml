@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Overlay for Motion.delta: the change to a Home figure, risen and gone in under 1.5 s. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_delta_chip"
+    android:importantForAccessibility="no"
+    android:paddingStart="10dp"
+    android:paddingTop="3dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="3dp"
+    android:textColor="@color/white"
+    android:textSize="13sp"
+    android:textStyle="bold" />

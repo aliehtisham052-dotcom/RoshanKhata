@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Overlay for Motion.savedTick: drawn over the screen, never takes a touch. -->
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="104dp"
+    android:layout_height="104dp"
+    android:background="@drawable/bg_save_tick"
+    android:importantForAccessibility="no"
+    android:padding="28dp"
+    android:src="@drawable/avd_save_check" />

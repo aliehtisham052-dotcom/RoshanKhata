@@ -483,17 +483,29 @@ class MainActivity : BaseActivity() {
     private fun renderBalance() {
         val hidden = BalancePrivacy.isHidden(this)
         if (hidden) {
-            // Hidden figures never animate: a count-up would leak the size.
+            // Hidden figures never animate: a change chip would leak the size.
             tvNetBalance.text = BalancePrivacy.MASK
             tvTotalGet.text = BalancePrivacy.MASK
             tvTotalGive.text = BalancePrivacy.MASK
             shownNet = null; shownGet = null; shownGive = null
         } else {
-            // A figure that changed counts to its new value; the first
-            // showing counts up from zero, once, as the screen opens.
-            com.innovation313.roshankhata.ui.Motion.countUp(tvNetBalance, shownNet ?: 0.0, netBalance) { Format.money(it) }
-            com.innovation313.roshankhata.ui.Motion.countUp(tvTotalGet, shownGet ?: 0.0, totalGet) { Format.money(it) }
-            com.innovation313.roshankhata.ui.Motion.countUp(tvTotalGive, shownGive ?: 0.0, totalGive) { Format.money(it) }
+            // Figures go straight to their value (5 Oct, the owner's call: a
+            // count-up showed amounts that were never true). What CHANGED since
+            // the last showing rises beside "to get" and "to give" as a chip —
+            // each on its own figure, never a net across different people.
+            val prevGet = shownGet
+            val prevGive = shownGive
+            tvNetBalance.text = Format.money(netBalance)
+            tvTotalGet.text = Format.money(totalGet)
+            tvTotalGive.text = Format.money(totalGive)
+            fun chip(view: android.widget.TextView, before: Double?, now: Double) {
+                val change = if (before == null) 0.0 else now - before
+                if (com.innovation313.roshankhata.data.Money.isZero(change)) return
+                val sign = if (change > 0) "+" else "\u2212"
+                view.post { com.innovation313.roshankhata.ui.Motion.delta(view, sign + Format.ltr(Format.money(change))) }
+            }
+            chip(tvTotalGet, prevGet, totalGet)
+            chip(tvTotalGive, prevGive, totalGive)
             shownNet = netBalance; shownGet = totalGet; shownGive = totalGive
         }
         ivEye.setImageResource(

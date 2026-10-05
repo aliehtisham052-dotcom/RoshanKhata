@@ -74,4 +74,7 @@
     <color name="section_tools_text">#B5C9BC</color>
     <!-- The "hisaab saaf" tick (2 Oct). -->
     <color name="settled_green">#6FD6B5</color>
+    <!-- Loading placeholders (ShimmerRows, 5 Oct) -->
+    <color name="shimmer_base">#262B28</color>
+    <color name="shimmer_highlight">#39413C</color>
 </resources>
