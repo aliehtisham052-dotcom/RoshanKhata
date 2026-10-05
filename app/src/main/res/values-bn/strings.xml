@@ -869,6 +869,14 @@
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">যেকোনো বারে ট্যাপ করে সেই মাসের মোট দেখুন।</string>
     <string name="insights_monthly_none">গত ১২ মাসে কোনো বিক্রি লেখা হয়নি।</string>
+    <string name="insights_profit_title">লাভ \u00b7 এই মাসে</string>
+    <string name="insights_profit_after_expenses">খরচের পরে: %1$s (খরচ %2$s)</string>
+    <string name="insights_profit_last_month">গত মাস: %1$s</string>
+    <string name="insights_profit_coverage">এই মাসের %1$d%% বিক্রি থেকে হিসাব করা হয়েছে। বাকিতে পণ্যের নাম বা কেনা দাম নেই।</string>
+    <string name="insights_profit_none">এখনো লাভের হিসাব হয়নি। প্রতিটি বিক্রিতে পণ্যের নাম লিখুন এবং সরবরাহকারীর বিলে কেনা দাম।</string>
+    <string name="insights_profit_top">সবচেয়ে বেশি লাভ</string>
+    <string name="insights_profit_top_none">এই মাসে কেনা দাম জানা আছে এমন কোনো পণ্য বিক্রি হয়নি।</string>
+    <string name="insights_profit_note">লাভ = পরিমাণ \u00d7 (বিক্রি দর \u2212 কেনা দর)। যেখানে ব্যাচ বাছাই করা হয়েছে সেখানে সেটির দাম, নইলে বিক্রির তারিখ পর্যন্ত কেনার গড়। যেসব লাইনের একক আলাদা সেগুলো বাদ।</string>
     <string name="nisab_silver">রুপা</string>
     <string name="nisab_gold">সোনা</string>
     <string name="gold_price_hint">সোনার দাম প্রতি গ্রাম</string>

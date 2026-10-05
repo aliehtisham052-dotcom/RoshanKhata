@@ -863,6 +863,14 @@
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">روی هر ستون بزنید تا مجموع همان ماه نمایش داده شود.</string>
     <string name="insights_monthly_none">در ۱۲ ماه گذشته فروشی ثبت نشده است.</string>
+    <string name="insights_profit_title">سود \u00b7 این ماه</string>
+    <string name="insights_profit_after_expenses">پس از هزینه‌ها: %1$s (هزینه‌ها %2$s)</string>
+    <string name="insights_profit_last_month">ماه گذشته: %1$s</string>
+    <string name="insights_profit_coverage">از %1$d%% فروش این ماه محاسبه شده. بقیه نام محصول یا قیمت خرید ندارند.</string>
+    <string name="insights_profit_none">هنوز سودی محاسبه نشده. در هر فروش نام محصول را بنویسید و در فاکتور تأمین‌کننده قیمت خرید را.</string>
+    <string name="insights_profit_top">بیشترین سود</string>
+    <string name="insights_profit_top_none">این ماه محصولی با قیمت خرید مشخص فروخته نشده.</string>
+    <string name="insights_profit_note">سود = مقدار \u00d7 (نرخ فروش \u2212 نرخ خرید). جایی که بچ انتخاب شده، قیمت همان بچ؛ وگرنه میانگین خریدها تا تاریخ فروش. ردیف‌هایی که واحدشان فرق دارد کنار گذاشته می‌شوند.</string>
     <string name="nisab_silver">نقره</string>
     <string name="nisab_gold">طلا</string>
     <string name="gold_price_hint">قیمت هر گرم طلا</string>

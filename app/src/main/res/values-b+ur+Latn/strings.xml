@@ -835,6 +835,14 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">Kisi bhi sutoon ko dabain to us mahine ki kul farokht nazar aayegi.</string>
     <string name="insights_monthly_none">Pichhle 12 mahinon mein koi farokht darj nahi.</string>
+    <string name="insights_profit_title">Munafa \u00b7 Is mahine</string>
+    <string name="insights_profit_after_expenses">Kharchon ke baad: %1$s (kharche %2$s)</string>
+    <string name="insights_profit_last_month">Pichla mahina: %1$s</string>
+    <string name="insights_profit_coverage">Is mahine ki %1$d%% farokht se nikala gaya. Baqi mein product ka naam ya khareed ki qeemat nahi.</string>
+    <string name="insights_profit_none">Abhi munafa nahi nikal saka. Har farokht mein product ka naam likhein aur supplier ke bill mein khareed ki qeemat.</string>
+    <string name="insights_profit_top">Sab Se Zyada Munafa</string>
+    <string name="insights_profit_top_none">Is mahine koi aisi cheez nahi biki jis ki khareed qeemat maloom ho.</string>
+    <string name="insights_profit_note">Munafa = miqdaar \u00d7 (farokht rate \u2212 khareed rate). Jahan batch chuna gaya wahan usi ki qeemat, warna farokht ki tareekh tak ki khareed ki ausat. Jin lines ki units alag hain woh shamil nahi.</string>
     <string name="nisab_silver">Chandi</string>
     <string name="nisab_gold">Sona</string>
     <string name="gold_price_hint">Sone ki qeemat fi gram</string>

@@ -12,6 +12,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.ProductStat
 import com.innovation313.roshankhata.data.Insights
 import com.innovation313.roshankhata.data.MonthSale
+import com.innovation313.roshankhata.data.Profit
 import com.innovation313.roshankhata.data.SaleInsights
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +44,11 @@ class InsightsActivity : BaseActivity() {
         lifecycleScope.launch {
             val data = withContext(Dispatchers.IO) { Insights.thisMonth(dao) }
             render(data)
+            // Profit reads the same tables twice more (sale lines, bill lines);
+            // it comes after the sale figures so the first screenful is not
+            // held up by it.
+            val profit = withContext(Dispatchers.IO) { Profit.thisMonth(dao) to Profit.lastMonth(dao) }
+            renderProfit(profit.first, profit.second)
         }
     }
 
@@ -183,6 +189,76 @@ class InsightsActivity : BaseActivity() {
             slp.weight = (1f - (p.qty / max).toFloat()).coerceAtLeast(0f)
             spacer.layoutParams = slp
 
+            list.addView(row)
+        }
+    }
+
+    /**
+     * Profit — sale rate minus purchase rate, line by line (see [Profit]).
+     *
+     * A loss is written with a minus sign in red, not hidden behind [Format.money]'s
+     * absolute value. When nothing could be costed the card says why, in words,
+     * instead of showing a zero the owner might take for "no profit".
+     */
+    private fun renderProfit(now: Profit.ProfitReport, last: Profit.ProfitReport) {
+        val figure = findViewById<TextView>(R.id.tvProfit)
+        val net = findViewById<TextView>(R.id.tvProfitNet)
+        val lastMonth = findViewById<TextView>(R.id.tvProfitLastMonth)
+        val coverage = findViewById<TextView>(R.id.tvProfitCoverage)
+
+        fun signed(value: Double): String =
+            if (value < 0) "\u2212" + Format.money(value) else Format.money(value)
+
+        if (now.isEmpty) {
+            figure.text = "\u2014"
+            figure.setTextColor(ContextCompat.getColor(this, R.color.text_muted))
+            net.visibility = View.GONE
+            coverage.text = getString(R.string.insights_profit_none)
+        } else {
+            figure.text = signed(now.grossProfit)
+            figure.setTextColor(ContextCompat.getColor(this,
+                if (now.grossProfit < 0) R.color.bal_owed_to_me else R.color.bal_i_owe))
+            net.visibility = View.VISIBLE
+            net.text = getString(R.string.insights_profit_after_expenses,
+                signed(now.netAfterExpenses), Format.money(now.expenses))
+            val pct = now.coveragePercent
+            coverage.text = if (pct == null) getString(R.string.insights_profit_none)
+                else getString(R.string.insights_profit_coverage, pct)
+        }
+
+        if (last.isEmpty) {
+            lastMonth.visibility = View.GONE
+        } else {
+            lastMonth.visibility = View.VISIBLE
+            lastMonth.text = getString(R.string.insights_profit_last_month, signed(last.grossProfit))
+        }
+
+        val list = findViewById<LinearLayout>(R.id.profitList)
+        val empty = findViewById<TextView>(R.id.tvNoProfitProducts)
+        list.removeAllViews()
+        val top = now.products.filter { it.profit > 0.0 }.take(5)
+        if (top.isEmpty()) {
+            empty.visibility = View.VISIBLE
+            return
+        }
+        empty.visibility = View.GONE
+        val max = top.first().profit.coerceAtLeast(1.0)
+        top.forEachIndexed { i, p ->
+            val row = layoutInflater.inflate(R.layout.item_insight_product, list, false)
+            com.innovation313.roshankhata.ui.TextFit.relax(row)
+            row.findViewById<TextView>(R.id.tvRank).text = (i + 1).toString()
+            row.findViewById<TextView>(R.id.tvProductName).text = p.name
+            row.findViewById<TextView>(R.id.tvProductQty).text = Format.money(p.profit)
+
+            val share = (p.profit / max).toFloat().coerceIn(0f, 1f)
+            val bar = row.findViewById<View>(R.id.bar)
+            val lp = bar.layoutParams as LinearLayout.LayoutParams
+            lp.weight = share
+            bar.layoutParams = lp
+            val spacer = row.findViewById<View>(R.id.barSpacer)
+            val slp = spacer.layoutParams as LinearLayout.LayoutParams
+            slp.weight = 1f - share
+            spacer.layoutParams = slp
             list.addView(row)
         }
     }

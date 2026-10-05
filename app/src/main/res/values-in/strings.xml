@@ -850,6 +850,14 @@
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">Ketuk batang mana pun untuk melihat total bulan itu.</string>
     <string name="insights_monthly_none">Tidak ada penjualan tercatat dalam 12 bulan terakhir.</string>
+    <string name="insights_profit_title">Laba \u00b7 Bulan ini</string>
+    <string name="insights_profit_after_expenses">Setelah pengeluaran: %1$s (pengeluaran %2$s)</string>
+    <string name="insights_profit_last_month">Bulan lalu: %1$s</string>
+    <string name="insights_profit_coverage">Dihitung dari %1$d%% penjualan bulan ini. Sisanya tanpa nama produk atau tanpa harga beli.</string>
+    <string name="insights_profit_none">Belum ada angka laba. Tulis nama produk pada setiap penjualan dan harga beli pada nota pemasok.</string>
+    <string name="insights_profit_top">Laba Tertinggi</string>
+    <string name="insights_profit_top_none">Bulan ini tidak ada produk dengan harga beli yang diketahui yang terjual.</string>
+    <string name="insights_profit_note">Laba = jumlah \u00d7 (harga jual \u2212 harga beli). Jika batch dipilih, harga batch itu; jika tidak, rata-rata pembelian sampai tanggal penjualan. Baris dengan satuan berbeda tidak dihitung.</string>
     <string name="nisab_silver">Perak</string>
     <string name="nisab_gold">Emas</string>
     <string name="gold_price_hint">Harga emas per gram</string>
