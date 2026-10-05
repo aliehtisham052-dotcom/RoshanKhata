@@ -1532,6 +1532,11 @@
     <string name="bp_strn_help">सिर्फ़ रजिस्टर्ड हों तो। खाली = नहीं छपेगा।</string>
     <string name="bp_currency">मुद्रा</string>
     <string name="bp_currency_help">आपकी रकमों के साथ लगने वाला निशान, जैसे Rs या $। रकमें बदली नहीं जातीं।</string>
+    <string name="bp_calendar">कैलेंडर</string>
+    <string name="bp_calendar_help">सूचियों, बिलों और पीडीएफ़ में तारीख़ कैसे दिखे। हिजरी तारीख़ हिसाब से निकलती है, चाँद देखकर नहीं, इसलिए आपकी जगह से एक दिन का फ़र्क़ हो सकता है। सहेजी गई तारीख़ें नहीं बदलतीं।</string>
+    <string name="calendar_gregorian">ईसवी</string>
+    <string name="calendar_hijri">हिजरी (अंदाज़ा)</string>
+    <string name="calendar_jalali">शम्सी हिजरी</string>
     <string name="currency_custom">दूसरा (निशान लिखें)…</string>
     <string name="currency_custom_hint">निशान, ज़्यादा से ज़्यादा 5 अक्षर</string>
     <string name="bp_trade">दुकान का प्रकार</string>

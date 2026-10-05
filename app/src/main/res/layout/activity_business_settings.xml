@@ -391,6 +391,38 @@
                         android:id="@+id/btnCurrency"
                         style="@style/ProfileSmallButton" />
                 </LinearLayout>
+
+                <!-- Calendar (5 Oct): how dates print; what is saved never changes. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bp_calendar"
+                            android:textAppearance="?attr/textAppearanceSubtitle2" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bp_calendar_help"
+                            android:textAppearance="?attr/textAppearanceCaption" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCalendar"
+                        style="@style/ProfileSmallButton" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- ===== Getting paid ===== -->

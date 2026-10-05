@@ -1488,6 +1488,11 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bp_strn_help">Sirf registered hon to. Khali = nahi chhapega.</string>
     <string name="bp_currency">Currency</string>
     <string name="bp_currency_help">Raqam ke saath likha nishaan, jaise Rs ya $. Raqam tabdeel nahi hoti.</string>
+    <string name="bp_calendar">Taqweem</string>
+    <string name="bp_calendar_help">Lists, bills aur PDF mein tareekh kis tarah dikhe. Hijri tareekh hisaab se nikalti hai, chand dekh kar nahi, is liye aap ke ilaqe se aik din ka farq ho sakta hai. Mehfooz tareekhein nahi badaltin.</string>
+    <string name="calendar_gregorian">Eeswi</string>
+    <string name="calendar_hijri">Hijri (andaza)</string>
+    <string name="calendar_jalali">Shamsi Hijri</string>
     <string name="currency_custom">Koi aur (khud likhein)…</string>
     <string name="currency_custom_hint">Nishaan, zyada se zyada 5 harf</string>
     <string name="bp_trade">Dukaan ka shoba</string>
