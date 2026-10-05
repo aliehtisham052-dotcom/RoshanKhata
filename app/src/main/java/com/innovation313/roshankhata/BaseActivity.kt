@@ -22,6 +22,15 @@ import com.innovation313.roshankhata.ui.TextFit
  */
 abstract class BaseActivity : AppCompatActivity() {
 
+    /** The last finger-down, for the paper plane's starting point (ui/Motion, 5 Oct). */
+    override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
+        if (ev.actionMasked == android.view.MotionEvent.ACTION_DOWN) {
+            com.innovation313.roshankhata.ui.Motion.lastTap = ev.rawX to ev.rawY
+            com.innovation313.roshankhata.ui.Motion.lastTapAt = System.currentTimeMillis()
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     /** The text size this screen was built at; see onResume. */
     private var builtAtLevel = -1
 

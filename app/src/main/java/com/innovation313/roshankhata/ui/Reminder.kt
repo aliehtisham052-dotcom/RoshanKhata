@@ -143,11 +143,19 @@ object Reminder {
         }
 
         val uri = Uri.parse("https://wa.me/$number?text=${Uri.encode(message)}")
-        try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, uri))
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(context, R.string.whatsapp_not_installed, Toast.LENGTH_LONG).show()
+        // The golden plane takes the message out (5 Oct); WhatsApp opens as it leaves.
+        fly(context) {
+            try {
+                context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(context, R.string.whatsapp_not_installed, Toast.LENGTH_LONG).show()
+            }
         }
+    }
+
+    private fun fly(context: Context, then: () -> Unit) {
+        val activity = context as? android.app.Activity
+        if (activity == null) then() else Motion.paperPlane(activity, then)
     }
 
     /** Opens the SMS app with the message ready. The user presses send. */
@@ -161,10 +169,12 @@ object Reminder {
         val intent = Intent(Intent.ACTION_SENDTO, uri).apply {
             putExtra("sms_body", message)
         }
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(context, R.string.no_sms_app, Toast.LENGTH_LONG).show()
+        fly(context) {
+            try {
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(context, R.string.no_sms_app, Toast.LENGTH_LONG).show()
+            }
         }
     }
 }
