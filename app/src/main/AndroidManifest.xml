@@ -3,6 +3,18 @@
 
     <!-- Cloud backup to the user's own Google Drive -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--
+      Receipt printer (5 Oct): talk to a printer the owner already paired in the
+      phone's Bluetooth settings. No scanning, so no location and no SCAN
+      permission. Bluetooth is not required to install the app.
+    -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!--

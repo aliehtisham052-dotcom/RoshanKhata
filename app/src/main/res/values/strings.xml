@@ -948,6 +948,15 @@ You can change this any time from this screen.</string>
     <string name="delete_entry_message">This entry will be removed from the ledger.</string>
     <string name="entry_deleted">Entry deleted</string>
     <string name="share_failed">Could not create the image to share</string>
+    <string name="print_receipt">Print receipt</string>
+    <string name="print_choose">Choose printer</string>
+    <string name="print_no_printer">No paired printer. Pair your Bluetooth receipt printer in the phone\'s Bluetooth settings first, then tap Print again.</string>
+    <string name="print_bluetooth_off">Bluetooth is off. Turn it on and tap Print again.</string>
+    <string name="print_no_bluetooth">This phone has no Bluetooth.</string>
+    <string name="print_permission">Printing needs the Nearby devices permission, to reach your printer.</string>
+    <string name="print_sending">Sending to the printer…</string>
+    <string name="print_done">Printed</string>
+    <string name="print_failed">Could not reach the printer. Is it on, paired, and loaded with paper?</string>
     <string name="invalid_amount">Enter a valid amount</string>
     <string name="saved">Saved</string>
     <string name="select_language">Select your language</string>

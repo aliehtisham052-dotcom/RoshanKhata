@@ -935,6 +935,15 @@
     <string name="delete_entry_message">این ثبت از دفتر حذف می‌شود.</string>
     <string name="entry_deleted">ثبت حذف شد</string>
     <string name="share_failed">تصویر برای هم‌رسانی ساخته نشد</string>
+    <string name="print_receipt">چاپ رسید</string>
+    <string name="print_choose">انتخاب چاپگر</string>
+    <string name="print_no_printer">چاپگر جفت‌شده‌ای نیست. اول چاپگر رسید بلوتوثی را در تنظیمات بلوتوث گوشی جفت کنید، سپس دوباره چاپ را بزنید.</string>
+    <string name="print_bluetooth_off">بلوتوث خاموش است. روشنش کنید و دوباره چاپ را بزنید.</string>
+    <string name="print_no_bluetooth">این گوشی بلوتوث ندارد.</string>
+    <string name="print_permission">برای رسیدن به چاپگر، اجازه «دستگاه‌های اطراف» لازم است.</string>
+    <string name="print_sending">در حال فرستادن به چاپگر…</string>
+    <string name="print_done">چاپ شد</string>
+    <string name="print_failed">به چاپگر وصل نشد. آیا روشن، جفت‌شده و دارای کاغذ است؟</string>
     <string name="invalid_amount">مبلغ معتبری وارد کنید</string>
     <string name="saved">ذخیره شد</string>
     <string name="select_language">زبان خود را انتخاب کنید</string>

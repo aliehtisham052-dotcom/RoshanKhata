@@ -941,6 +941,15 @@
     <string name="delete_entry_message">এই এন্ট্রি খাতা থেকে সরে যাবে।</string>
     <string name="entry_deleted">এন্ট্রি মুছে ফেলা হয়েছে</string>
     <string name="share_failed">শেয়ার করার ছবি তৈরি করা যায়নি</string>
+    <string name="print_receipt">রসিদ প্রিন্ট করুন</string>
+    <string name="print_choose">প্রিন্টার বেছে নিন</string>
+    <string name="print_no_printer">কোনো যুক্ত প্রিন্টার নেই। আগে ফোনের ব্লুটুথ সেটিংসে আপনার রসিদ প্রিন্টার যুক্ত করুন, তারপর আবার প্রিন্ট চাপুন।</string>
+    <string name="print_bluetooth_off">ব্লুটুথ বন্ধ। চালু করে আবার প্রিন্ট চাপুন।</string>
+    <string name="print_no_bluetooth">এই ফোনে ব্লুটুথ নেই।</string>
+    <string name="print_permission">প্রিন্টারে পৌঁছাতে কাছাকাছি ডিভাইসের অনুমতি লাগবে।</string>
+    <string name="print_sending">প্রিন্টারে পাঠানো হচ্ছে…</string>
+    <string name="print_done">প্রিন্ট হয়েছে</string>
+    <string name="print_failed">প্রিন্টারে যোগাযোগ হয়নি। এটি চালু, যুক্ত এবং কাগজ ভরা আছে তো?</string>
     <string name="invalid_amount">সঠিক অঙ্ক লিখুন</string>
     <string name="saved">সেভ হয়েছে</string>
     <string name="select_language">আপনার ভাষা বেছে নিন</string>

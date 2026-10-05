@@ -76,6 +76,7 @@ class EntryDetailActivity : BaseActivity() {
         findViewById<ImageButton>(R.id.btnDelete).setOnClickListener { confirmDelete() }
         findViewById<MaterialButton>(R.id.btnEdit).setOnClickListener { showEditDialog() }
         findViewById<MaterialButton>(R.id.btnShare).setOnClickListener { shareReceipt() }
+        findViewById<MaterialButton>(R.id.btnPrint).setOnClickListener { printReceipt() }
 
         load()
     }
@@ -580,6 +581,84 @@ class EntryDetailActivity : BaseActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    // ---------- Print (5 Oct): the receipt card on a paired Bluetooth printer ----------
+
+    private val askConnect = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) choosePrinter()
+        else Toast.makeText(this, R.string.print_permission, Toast.LENGTH_LONG).show()
+    }
+
+    private fun printReceipt() {
+        if (android.os.Build.VERSION.SDK_INT >= 31 &&
+            checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) !=
+            android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            askConnect.launch(android.Manifest.permission.BLUETOOTH_CONNECT)
+            return
+        }
+        choosePrinter()
+    }
+
+    /** Pick from the printers the phone has paired; the last one used is ticked. */
+    private fun choosePrinter() {
+        val adapter = com.innovation313.roshankhata.ui.ReceiptPrinter.adapter(this)
+        if (adapter == null) {
+            Toast.makeText(this, R.string.print_no_bluetooth, Toast.LENGTH_LONG).show(); return
+        }
+        if (!adapter.isEnabled) {
+            Toast.makeText(this, R.string.print_bluetooth_off, Toast.LENGTH_LONG).show(); return
+        }
+        val devices = com.innovation313.roshankhata.ui.ReceiptPrinter.paired(this)
+        if (devices.isEmpty()) {
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setMessage(R.string.print_no_printer)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+            return
+        }
+        val prefs = getSharedPreferences("printer", MODE_PRIVATE)
+        val last = devices.indexOfFirst { it.address == prefs.getString("address", null) }
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.print_choose)
+            .setSingleChoiceItems(devices.map { com.innovation313.roshankhata.ui.ReceiptPrinter.label(it) }.toTypedArray(), last) { d, which ->
+                d.dismiss()
+                prefs.edit().putString("address", devices[which].address).apply()
+                sendToPrinter(devices[which])
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun sendToPrinter(device: android.bluetooth.BluetoothDevice) {
+        val card = findViewById<View>(R.id.receiptCard)
+        val picture = try {
+            Bitmap.createBitmap(card.width, card.height, Bitmap.Config.ARGB_8888).also { card.draw(Canvas(it)) }
+        } catch (e: Exception) {
+            Toast.makeText(this, R.string.print_failed, Toast.LENGTH_LONG).show(); return
+        }
+        val button = findViewById<MaterialButton>(R.id.btnPrint)
+        button.isEnabled = false
+        Toast.makeText(this, R.string.print_sending, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val ok = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                try {
+                    com.innovation313.roshankhata.ui.ReceiptPrinter.send(
+                        device, com.innovation313.roshankhata.ui.ReceiptPrinter.bytes(picture))
+                    true
+                } catch (e: Exception) {
+                    false
+                } finally {
+                    picture.recycle()
+                }
+            }
+            button.isEnabled = true
+            Toast.makeText(this@EntryDetailActivity,
+                if (ok) R.string.print_done else R.string.print_failed, Toast.LENGTH_LONG).show()
+        }
     }
 
     /** Render the receipt card to an image and offer it to the share sheet. */

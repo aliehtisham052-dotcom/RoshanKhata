@@ -907,6 +907,15 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="delete_entry_message">Ye entry khate se hata di jayegi.</string>
     <string name="entry_deleted">Entry delete ho gayi</string>
     <string name="share_failed">Share karne ke liye tasveer nahi ban saki</string>
+    <string name="print_receipt">Raseed print karein</string>
+    <string name="print_choose">Printer chunein</string>
+    <string name="print_no_printer">Koi paired printer nahi. Pehle phone ki Bluetooth settings mein apna raseed printer pair karein, phir dobara Print dabayen.</string>
+    <string name="print_bluetooth_off">Bluetooth band hai. Isay on karke dobara Print dabayen.</string>
+    <string name="print_no_bluetooth">Is phone mein Bluetooth nahi.</string>
+    <string name="print_permission">Printer tak pahunchne ke liye Nearby devices ki ijazat chahiye.</string>
+    <string name="print_sending">Printer ko bheja ja raha hai…</string>
+    <string name="print_done">Print ho gaya</string>
+    <string name="print_failed">Printer se rabta nahi hua. Kya woh on hai, paired hai aur us mein kaghaz hai?</string>
     <string name="invalid_amount">Durust raqam likhein</string>
     <string name="saved">Mehfooz ho gaya</string>
     <string name="select_language">Apni zaban chunein</string>
