@@ -84,6 +84,10 @@ class RateListActivity : BaseActivity() {
         ScreenInsets.on(this)
 
         val rv = findViewById<RecyclerView>(R.id.rvRateList)
+        // The layout manager first: inflating against a RecyclerView asks it
+        // for layout params, and one with no manager throws (caught by
+        // EveryScreenOpensTest on 5 Oct before it reached a phone).
+        rv.layoutManager = LinearLayoutManager(this)
         controls = LayoutInflater.from(this).inflate(R.layout.item_rate_list_controls, rv, false)
         heading = controls.findViewById(R.id.etRateHeading)
         cbCash = controls.findViewById(R.id.cbRateCash)
@@ -92,7 +96,6 @@ class RateListActivity : BaseActivity() {
         summary = findViewById(R.id.tvRateListSummary)
         share = findViewById(R.id.btnShareRateList)
 
-        rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = ConcatAdapter(OneView(controls), productAdapter)
 
         restore()
