@@ -949,7 +949,7 @@ interface KhataDao {
     @Insert
     suspend fun insertStaff(staff: Staff): Long
 
-    @androidx.room.Update
+    @Update
     suspend fun updateStaff(staff: Staff)
 
     @Query("SELECT * FROM staff_attendance WHERE day >= :from AND day < :to")
