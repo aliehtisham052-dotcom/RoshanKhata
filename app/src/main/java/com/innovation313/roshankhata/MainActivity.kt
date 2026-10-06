@@ -185,6 +185,7 @@ class MainActivity : BaseActivity() {
                 this, drawer, findViewById(R.id.drawerContent),
                 shown(daily).map(::entry), shown(business).map(::entry))
             findViewById<View>(R.id.btnDrawer).setOnClickListener { drawer.openDrawer(androidx.core.view.GravityCompat.START) }
+            findViewById<View>(R.id.btnAlerts).setOnClickListener { startActivity(Intent(this, AlertsActivity::class.java)) }
             onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(false) {
                 override fun handleOnBackPressed() = drawer.closeDrawers()
             }.also { cb ->
@@ -339,6 +340,16 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        // The bell's count, from the ledger on this phone (HomeAlerts).
+        lifecycleScope.launch {
+            val n = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                try { com.innovation313.roshankhata.data.HomeAlerts.compute(this@MainActivity, dao) { Format.money(it) }.size } catch (e: Exception) { 0 }
+            }
+            findViewById<TextView>(R.id.tvAlertBadge)?.apply {
+                visibility = if (n > 0) View.VISIBLE else View.GONE
+                text = if (n > 9) "9+" else n.toString()
+            }
+        }
         // Returning from another screen, the bar must point at Home again.
         showViewerNote()
     }

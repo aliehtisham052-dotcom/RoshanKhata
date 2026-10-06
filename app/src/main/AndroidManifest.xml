@@ -156,6 +156,11 @@
             android:parentActivityName=".BillsActivity" />
 
         <activity
+            android:name=".AlertsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".CashFlowActivity"
             android:exported="false"
             android:parentActivityName=".InsightsActivity" />

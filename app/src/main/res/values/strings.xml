@@ -941,6 +941,18 @@ You can change this any time from this screen.</string>
     <string name="home_slide_rates">Your prices as a picture for WhatsApp</string>
     <string name="home_slide_cheaper">Compare what each supplier charged</string>
     <string name="home_slide_poster">A picture for your WhatsApp Status</string>
+    <string name="na_title">Notifications</string>
+    <string name="na_subtitle">What needs a look today, from your own ledger</string>
+    <string name="na_none">Nothing needs a look today.</string>
+    <string name="na_cheque_in">Cheque to receive today</string>
+    <string name="na_cheque_out">Cheque to pay today</string>
+    <string name="na_plan_due">Instalment due today</string>
+    <string name="na_plan_late">Instalment overdue</string>
+    <string name="na_bill_due">Supplier bill due %1$s</string>
+    <string name="na_expiring">Stock expiring within 30 days: %1$s batches</string>
+    <string name="na_backup">Last backup %1$s days ago</string>
+    <string name="na_backup_never">No backup yet</string>
+    <string name="na_gap">Cash flow: the week of %1$s is short by %2$s</string>
     <string name="cf_week" translatable="false">%1$s – %2$s</string>
     <string name="staff_title">Staff &amp; salary</string>
     <string name="staff_subtitle">Attendance, advances and salary of the people who work here</string>
