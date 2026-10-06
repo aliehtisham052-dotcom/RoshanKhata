@@ -122,47 +122,47 @@ class MainActivity : BaseActivity() {
      */
     private fun buildFeatureGrid() {
         val daily = listOf(
-            Feature(R.drawable.ic_nav_khata, R.string.nav_khata, KhataActivity::class.java,
+            Feature(R.drawable.ic_tile_khata, R.string.nav_khata, KhataActivity::class.java,
                 R.color.tile_khata_bg, R.color.section_khata),
-            Feature(R.drawable.ic_nav_cashbook, R.string.nav_cashbook, CashbookActivity::class.java,
+            Feature(R.drawable.ic_tile_cashbook, R.string.nav_cashbook, CashbookActivity::class.java,
                 R.color.tile_cashbook_bg, R.color.section_cashbook),
-            Feature(R.drawable.ic_nav_cheques, R.string.nav_cheques, ChequesActivity::class.java,
+            Feature(R.drawable.ic_tile_cheques, R.string.nav_cheques, ChequesActivity::class.java,
                 R.color.tile_cheques_bg, R.color.section_cheques),
-            Feature(R.drawable.ic_feature_bills, R.string.supplier_bills, BillsActivity::class.java,
+            Feature(R.drawable.ic_tile_bills, R.string.supplier_bills, BillsActivity::class.java,
                 R.color.tile_bills_bg, R.color.section_bills),
-            Feature(R.drawable.ic_nav_plans, R.string.nav_plans, PlansActivity::class.java,
+            Feature(R.drawable.ic_tile_plans, R.string.nav_plans, PlansActivity::class.java,
                 R.color.tile_plans_bg, R.color.section_plans),
-            Feature(R.drawable.ic_feature_stock, R.string.expiring_stock, ExpiringActivity::class.java,
+            Feature(R.drawable.ic_tile_expiring, R.string.expiring_stock, ExpiringActivity::class.java,
                 R.color.tile_stock_bg, R.color.tile_stock_fg),
-            Feature(R.drawable.ic_feature_calc, R.string.calculator, CalculatorActivity::class.java,
+            Feature(R.drawable.ic_tile_calc, R.string.calculator, CalculatorActivity::class.java,
                 R.color.tile_calc_bg, R.color.tile_calc_fg)
         )
         val business = listOf(
-            Feature(R.drawable.ic_feature_insights, R.string.insights_title, InsightsActivity::class.java,
+            Feature(R.drawable.ic_tile_insights, R.string.insights_title, InsightsActivity::class.java,
                 R.color.tile_insights_bg, R.color.tile_insights_fg),
-            Feature(R.drawable.ic_feature_followup, R.string.followup_title, FollowUpActivity::class.java,
+            Feature(R.drawable.ic_tile_followup, R.string.followup_title, FollowUpActivity::class.java,
                 R.color.tile_followup_bg, R.color.tile_followup_fg),
-            Feature(R.drawable.ic_feature_zakat, R.string.zakat_calculator, ZakatActivity::class.java,
+            Feature(R.drawable.ic_tile_zakat, R.string.zakat_calculator, ZakatActivity::class.java,
                 R.color.tile_zakat_bg, R.color.gold_accent),
-            Feature(R.drawable.ic_feature_card, R.string.biz_card, BusinessCardActivity::class.java,
+            Feature(R.drawable.ic_tile_card, R.string.biz_card, BusinessCardActivity::class.java,
                 R.color.tile_card_bg, R.color.tile_card_fg),
-            Feature(R.drawable.ic_feature_settings, R.string.business_settings, BusinessSettingsActivity::class.java,
+            Feature(R.drawable.ic_tile_settings, R.string.business_settings, BusinessSettingsActivity::class.java,
                 R.color.tile_settings_bg, R.color.tile_settings_fg),
-            Feature(R.drawable.ic_feature_lock, R.string.recycle_bin, RecycleBinActivity::class.java,
+            Feature(R.drawable.ic_tile_bin, R.string.recycle_bin, RecycleBinActivity::class.java,
                 R.color.tile_bin_bg, R.color.tile_bin_fg),
-            Feature(R.drawable.ic_feature_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
+            Feature(R.drawable.ic_tile_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
                 R.color.tile_invoice_bg, R.color.tile_invoice_fg),
             // Moved off the More sheet 18 Sep 2026: once Inspector Mode gave this
             // screen its own registers (stock, batches, expiry, compliance), it
             // stopped being a settings-style afterthought. It keeps Supplier
             // Bills' own section colour because that is where its data comes
             // from — a product is born the first time its name appears on a bill.
-            Feature(R.drawable.ic_feature_products, R.string.products_stock, ProductsActivity::class.java,
+            Feature(R.drawable.ic_tile_products, R.string.products_stock, ProductsActivity::class.java,
                 R.color.tile_bills_bg, R.color.section_bills),
             // Fasal ka Hisaab (2 Oct): the ninth tile fills the 3x3 grid. It
             // borrows Plans' green — a season is a long payment plan the
             // whole village is on.
-            Feature(R.drawable.ic_feature_season, R.string.season_title, SeasonsActivity::class.java,
+            Feature(R.drawable.ic_tile_season, R.string.season_title, SeasonsActivity::class.java,
                 R.color.tile_plans_bg, R.color.section_plans)
         ).filter {
             // Seasons are an agri shop's; another trade's grid ends at Products (4 Oct).
@@ -279,10 +279,12 @@ class MainActivity : BaseActivity() {
         // with the header's bright gold for the icon — the owner's choice, to
         // match the Khata tools. The icon set is drawn white, so it is tinted
         // here rather than thirteen files being redrawn.
-        tile.findViewById<ImageView>(R.id.ivFeatureIcon).apply {
-            setImageResource(feature.iconRes)
-            setColorFilter(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.gold_on_dark))
-        }
+        // Two-tone icon in its own colours (6 Oct) on a rounded square in the
+        // tile's tint — no colour filter, the drawable carries day and night.
+        tile.findViewById<ImageView>(R.id.ivFeatureIcon).setImageResource(feature.iconRes)
+        tile.findViewById<android.widget.FrameLayout>(R.id.featureIconDisc).backgroundTintList =
+            android.content.res.ColorStateList.valueOf(
+                androidx.core.content.ContextCompat.getColor(this@MainActivity, feature.tintRes))
         tile.findViewById<TextView>(R.id.tvFeatureLabel).setText(feature.labelRes)
         tile.setOnClickListener { startActivity(Intent(this, feature.destination)) }
         featureViews[feature.labelRes] = tile

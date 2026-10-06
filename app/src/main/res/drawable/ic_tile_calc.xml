@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home tile icon (6 Oct): two tones of one hue, day and night colours in values/colors.xml. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="26dp"
+    android:height="26dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="@color/fi_teal_a" android:pathData="M6,2h12a2,2 0 0 1 2,2v16a2,2 0 0 1 -2,2H6a2,2 0 0 1 -2,-2V4a2,2 0 0 1 2,-2z" />
+    <path android:fillColor="@color/fi_teal_b" android:pathData="M7,5h10v4H7z M7,11h3v3H7z M11,11h3v3h-3z M15,11h3v3h-3z M7,16h3v3H7z M11,16h3v3h-3z M15,16h3v3h-3z" />
+</vector>
