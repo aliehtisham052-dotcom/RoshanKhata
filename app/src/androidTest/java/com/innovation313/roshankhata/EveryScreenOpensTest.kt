@@ -342,6 +342,7 @@ class EveryScreenOpensTest(
             open<RegisterReportActivity>("Register report"),
             open<InsightsActivity>("Insights"),
             open<CashFlowActivity>("Cash flow"),
+            open<AlertsActivity>("Alerts"),
             open<SupplierRatesActivity>("Purchase rates"),
             open<CashbookActivity>("Cashbook"),
             open<ChequesActivity>("Cheques"),
