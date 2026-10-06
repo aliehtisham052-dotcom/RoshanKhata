@@ -82,9 +82,16 @@ class EveryLayoutReadableInDarkTest {
                     }
                     fillBlanks(holder)
                     content.addView(holder, ViewGroup.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT))
+                    // A DrawerLayout (Home, 6 Oct) refuses anything but an exact
+                    // size; it gets the screen's height, everything else wraps.
+                    val exactHeight = (0 until holder.childCount).any {
+                        holder.getChildAt(it) is androidx.drawerlayout.widget.DrawerLayout
+                    }
                     holder.measure(
                         View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                        if (exactHeight)
+                            View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+                        else View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                     )
                     holder.layout(0, 0, holder.measuredWidth, holder.measuredHeight)
 
