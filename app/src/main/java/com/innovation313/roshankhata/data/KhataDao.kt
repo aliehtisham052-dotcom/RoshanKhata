@@ -1823,6 +1823,14 @@ interface KhataDao {
            "WHERE isDeleted = 0 AND harvestPromise IS NOT NULL")
     suspend fun cashFlowHarvestsOnce(): List<CashFlow.Harvest>
 
+    /** Every priced supplier-bill line, with its supplier, for SupplierRates (read-only). */
+    @Query("SELECT bi.productId AS productId, COALESCE(pr.name, bi.productName) AS productName, bi.unit AS unit, " +
+           "bi.rate AS rate, b.billDate AS billDate, b.id AS billId, b.partyId AS supplierId, p.name AS supplierName " +
+           "FROM bill_items bi JOIN supplier_bills b ON b.id = bi.billId JOIN parties p ON p.id = b.partyId " +
+           "LEFT JOIN products pr ON pr.id = bi.productId " +
+           "WHERE bi.isDeleted = 0 AND b.isDeleted = 0 AND p.isDeleted = 0 AND bi.rate IS NOT NULL AND bi.rate > 0")
+    suspend fun supplierRateLinesOnce(): List<SupplierRates.Line>
+
     /** Top customers by total purchases in a period. */
     @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
            "FROM transactions t JOIN parties p ON p.id = t.partyId " +

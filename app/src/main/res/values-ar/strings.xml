@@ -961,6 +961,17 @@
     <string name="cf_empty">لا تواريخ بعد. تأتي التواريخ من خطط الأقساط والشيكات وفواتير الموردين ذات تاريخ الاستحقاق.</string>
     <string name="cf_note">يُحسب فقط ما له تاريخ: خطط الأقساط والشيكات المعلقة وفواتير الموردين ذات تاريخ الاستحقاق. الوعد ليس مالًا في اليد، فلا يُعتمد على الوعود المنقوضة، والفواتير المتأخرة مستحقة الآن.</string>
     <string name="cf_undated">فواتير موردين بلا تاريخ استحقاق، لم تُحسب: %1$s</string>
+    <string name="sr_open">أين الأرخص؟ أسعار الشراء</string>
+    <string name="sr_title">أسعار الشراء</string>
+    <string name="sr_subtitle">السعر الذي طلبه كل مورّد لكل منتج</string>
+    <string name="sr_watch">يحتاج إلى نظر</string>
+    <string name="sr_last">الأخير: %1$s · %2$s · %3$s</string>
+    <string name="sr_up">أغلى بـ %1$s من الفاتورة السابقة (%2$s)</string>
+    <string name="sr_down">أرخص بـ %1$s من الفاتورة السابقة (%2$s)</string>
+    <string name="sr_cheaper">أرخص مؤخرًا لدى %1$s: %2$s (%3$s)</string>
+    <string name="sr_none">لا توجد فواتير موردين بأسعار بعد. اكتب السعر على كل سطر في فاتورة المورّد ليظهر هنا.</string>
+    <string name="sr_note">تُقارن الأسعار ضمن الوحدة نفسها فقط، ولا يُحسب العرض الأرخص إلا من آخر 6 أشهر.</string>
+    <string name="sr_nothing_to_watch">لا شيء يحتاج إلى نظر: لم يغلُ شيء، ولم يكن مورّد آخر أرخص مؤخرًا.</string>
     <string name="staff_title">الموظفون والرواتب</string>
     <string name="staff_subtitle">حضور العاملين وسُلفهم ورواتبهم</string>
     <string name="staff_prev_month">الشهر السابق</string>

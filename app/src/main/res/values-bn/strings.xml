@@ -919,6 +919,17 @@
     <string name="cf_empty">এখনো কোনো তারিখ নেই। তারিখ আসে কিস্তির পরিকল্পনা, চেক ও নির্ধারিত তারিখসহ সরবরাহকারীর বিল থেকে।</string>
     <string name="cf_note">শুধু তারিখ আছে এমন হিসাব গোনা হয়: কিস্তির পরিকল্পনা, অপেক্ষমাণ চেক ও নির্ধারিত তারিখসহ সরবরাহকারীর বিল। প্রতিশ্রুতি হাতের টাকা নয়, তাই ভাঙা প্রতিশ্রুতি গোনা হয় না; দেরি হওয়া বিল এখনই দিতে হবে।</string>
     <string name="cf_undated">নির্ধারিত তারিখ ছাড়া সরবরাহকারীর বিল, গোনা হয়নি: %1$s</string>
+    <string name="sr_open">কোথায় সস্তা? কেনার দর</string>
+    <string name="sr_title">কেনার দর</string>
+    <string name="sr_subtitle">প্রতিটি সরবরাহকারী প্রতিটি পণ্য কোন দরে দিয়েছে</string>
+    <string name="sr_watch">দেখা দরকার</string>
+    <string name="sr_last">শেষ: %1$s · %2$s · %3$s</string>
+    <string name="sr_up">আগের বিলের চেয়ে %1$s বেশি (%2$s)</string>
+    <string name="sr_down">আগের বিলের চেয়ে %1$s কম (%2$s)</string>
+    <string name="sr_cheaper">সম্প্রতি %1$s-এর কাছে সস্তা: %2$s (%3$s)</string>
+    <string name="sr_none">এখনো দরসহ সরবরাহকারীর বিল নেই। সরবরাহকারীর বিলের প্রতিটি লাইনে দর লিখুন, এখানে দেখা যাবে।</string>
+    <string name="sr_note">দর শুধু একই এককে তুলনা হয়, আর সস্তা দর শুধু গত ৬ মাসের হলে গোনা হয়।</string>
+    <string name="sr_nothing_to_watch">কিছু দেখার দরকার নেই: কিছুই দামি হয়নি, আর অন্য কোনো সরবরাহকারী সম্প্রতি সস্তা ছিল না।</string>
     <string name="staff_title">কর্মী ও বেতন</string>
     <string name="staff_subtitle">যারা এখানে কাজ করেন তাদের হাজিরা, অগ্রিম ও বেতন</string>
     <string name="staff_prev_month">আগের মাস</string>

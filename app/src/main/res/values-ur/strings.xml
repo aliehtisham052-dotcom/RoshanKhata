@@ -885,6 +885,17 @@
     <string name="cf_empty">ابھی کوئی تاریخ نہیں۔ تاریخیں قسطوں کے پلان، چیک اور ڈیو ڈیٹ والے سپلائر بلوں سے آتی ہیں۔</string>
     <string name="cf_note">صرف وہ گنا جاتا ہے جس کی تاریخ ہو: قسطوں کے پلان، زیرِ التوا چیک اور ڈیو ڈیٹ والے سپلائر بل۔ وعدہ ہاتھ کا پیسہ نہیں، اس لیے ٹوٹے وعدے نہیں گنے جاتے؛ لیٹ بل ابھی دینے ہیں۔</string>
     <string name="cf_undated">بغیر ڈیو ڈیٹ کے سپلائر بل، گنے نہیں گئے: %1$s</string>
+    <string name="sr_open">سستا کہاں؟ خرید کے ریٹ</string>
+    <string name="sr_title">خرید کے ریٹ</string>
+    <string name="sr_subtitle">ہر سپلائر نے ہر چیز کس ریٹ پر دی</string>
+    <string name="sr_watch">توجہ دیں</string>
+    <string name="sr_last">آخری: %1$s · %2$s · %3$s</string>
+    <string name="sr_up">پچھلے بل سے %1$s مہنگا (%2$s)</string>
+    <string name="sr_down">پچھلے بل سے %1$s سستا (%2$s)</string>
+    <string name="sr_cheaper">حال ہی میں %1$s سے سستا ملا: %2$s (%3$s)</string>
+    <string name="sr_none">ابھی ریٹ والے سپلائر بل نہیں۔ سپلائر بل کی ہر لائن پر ریٹ لکھیں، یہاں نظر آئے گا۔</string>
+    <string name="sr_note">ریٹ صرف ایک ہی اکائی میں ملائے جاتے ہیں، اور سستا ریٹ صرف پچھلے 6 مہینوں کا گنا جاتا ہے۔</string>
+    <string name="sr_nothing_to_watch">کچھ دیکھنے کی ضرورت نہیں: کوئی چیز مہنگی نہیں ہوئی، اور کسی اور سپلائر سے سستا نہیں ملا۔</string>
     <string name="staff_title">اسٹاف اور تنخواہ</string>
     <string name="staff_subtitle">کام کرنے والوں کی حاضری، ایڈوانس اور تنخواہ</string>
     <string name="staff_prev_month">پچھلا مہینہ</string>

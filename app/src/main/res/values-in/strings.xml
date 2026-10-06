@@ -900,6 +900,17 @@
     <string name="cf_empty">Belum ada tanggal. Tanggal berasal dari rencana cicilan, cek, dan nota pemasok yang punya jatuh tempo.</string>
     <string name="cf_note">Hanya yang bertanggal yang dihitung: rencana cicilan, cek tertunda, dan nota pemasok dengan jatuh tempo. Janji bukan uang di tangan, jadi janji yang sudah dilanggar tidak diandalkan; nota terlambat harus dibayar sekarang.</string>
     <string name="cf_undated">Nota pemasok tanpa jatuh tempo, tidak dihitung: %1$s</string>
+    <string name="sr_open">Di mana lebih murah? Harga beli</string>
+    <string name="sr_title">Harga beli</string>
+    <string name="sr_subtitle">Harga yang diberikan tiap pemasok, per produk</string>
+    <string name="sr_watch">Perlu dilihat</string>
+    <string name="sr_last">Terakhir: %1$s · %2$s · %3$s</string>
+    <string name="sr_up">Naik %1$s dari nota sebelumnya (%2$s)</string>
+    <string name="sr_down">Turun %1$s dari nota sebelumnya (%2$s)</string>
+    <string name="sr_cheaper">Belakangan lebih murah dari %1$s: %2$s (%3$s)</string>
+    <string name="sr_none">Belum ada nota pemasok berharga. Tulis harga di tiap baris nota pemasok, nanti muncul di sini.</string>
+    <string name="sr_note">Harga hanya dibandingkan dalam satuan yang sama, dan tawaran lebih murah hanya dihitung dari 6 bulan terakhir.</string>
+    <string name="sr_nothing_to_watch">Tidak ada yang perlu dilihat: tidak ada yang naik, dan tidak ada pemasok lain yang lebih murah belakangan ini.</string>
     <string name="staff_title">Karyawan &amp; gaji</string>
     <string name="staff_subtitle">Kehadiran, kasbon, dan gaji orang yang bekerja di sini</string>
     <string name="staff_prev_month">Bulan sebelumnya</string>
