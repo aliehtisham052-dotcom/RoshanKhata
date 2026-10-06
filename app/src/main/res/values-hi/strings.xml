@@ -930,6 +930,10 @@
     <string name="sr_none">अभी रेट वाले सप्लायर बिल नहीं। सप्लायर बिल की हर लाइन पर रेट लिखें, यहाँ दिखेगा।</string>
     <string name="sr_note">रेट सिर्फ़ एक ही इकाई में मिलाए जाते हैं, और सस्ता रेट सिर्फ़ पिछले 6 महीनों का गिना जाता है।</string>
     <string name="sr_nothing_to_watch">कुछ देखने की ज़रूरत नहीं: कोई चीज़ महँगी नहीं हुई, और किसी और सप्लायर से सस्ता नहीं मिला।</string>
+    <string name="home_slide_cf">अगले 30 दिन में क्या आएगा, क्या जाएगा</string>
+    <string name="home_slide_rates">आपके भाव WhatsApp के लिए तस्वीर में</string>
+    <string name="home_slide_cheaper">हर सप्लायर का रेट मिलाएँ</string>
+    <string name="home_slide_poster">WhatsApp स्टेटस के लिए तस्वीर</string>
     <string name="staff_title">स्टाफ़ और तनख़्वाह</string>
     <string name="staff_subtitle">काम करने वालों की हाज़िरी, एडवांस और तनख़्वाह</string>
     <string name="staff_prev_month">पिछला महीना</string>

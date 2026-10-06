@@ -924,6 +924,10 @@
     <string name="sr_none">هنوز فاکتور تأمین‌کننده با نرخ نیست. روی هر ردیف فاکتور نرخ را بنویسید تا اینجا دیده شود.</string>
     <string name="sr_note">نرخ‌ها فقط در یک واحد مقایسه می‌شوند و پیشنهاد ارزان‌تر فقط از ۶ ماه اخیر شمرده می‌شود.</string>
     <string name="sr_nothing_to_watch">چیزی نیاز به توجه ندارد: کالایی گران‌تر نشده و تأمین‌کننده دیگری اخیراً ارزان‌تر نبوده.</string>
+    <string name="home_slide_cf">در ۳۰ روز آینده چه می‌آید و چه می‌رود</string>
+    <string name="home_slide_rates">قیمت‌های شما به‌صورت تصویر برای واتساپ</string>
+    <string name="home_slide_cheaper">نرخ هر تأمین‌کننده را مقایسه کنید</string>
+    <string name="home_slide_poster">تصویری برای وضعیت واتساپ</string>
     <string name="staff_title">کارکنان و حقوق</string>
     <string name="staff_subtitle">حضور، مساعده و حقوق کسانی که اینجا کار می‌کنند</string>
     <string name="staff_prev_month">ماه قبل</string>

@@ -972,6 +972,10 @@
     <string name="sr_none">لا توجد فواتير موردين بأسعار بعد. اكتب السعر على كل سطر في فاتورة المورّد ليظهر هنا.</string>
     <string name="sr_note">تُقارن الأسعار ضمن الوحدة نفسها فقط، ولا يُحسب العرض الأرخص إلا من آخر 6 أشهر.</string>
     <string name="sr_nothing_to_watch">لا شيء يحتاج إلى نظر: لم يغلُ شيء، ولم يكن مورّد آخر أرخص مؤخرًا.</string>
+    <string name="home_slide_cf">ما يدخل وما يخرج خلال 30 يومًا</string>
+    <string name="home_slide_rates">أسعارك صورةً لواتساب</string>
+    <string name="home_slide_cheaper">قارن ما طلبه كل مورّد</string>
+    <string name="home_slide_poster">صورة لحالة واتساب</string>
     <string name="staff_title">الموظفون والرواتب</string>
     <string name="staff_subtitle">حضور العاملين وسُلفهم ورواتبهم</string>
     <string name="staff_prev_month">الشهر السابق</string>

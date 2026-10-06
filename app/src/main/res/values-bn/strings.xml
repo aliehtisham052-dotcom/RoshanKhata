@@ -930,6 +930,10 @@
     <string name="sr_none">এখনো দরসহ সরবরাহকারীর বিল নেই। সরবরাহকারীর বিলের প্রতিটি লাইনে দর লিখুন, এখানে দেখা যাবে।</string>
     <string name="sr_note">দর শুধু একই এককে তুলনা হয়, আর সস্তা দর শুধু গত ৬ মাসের হলে গোনা হয়।</string>
     <string name="sr_nothing_to_watch">কিছু দেখার দরকার নেই: কিছুই দামি হয়নি, আর অন্য কোনো সরবরাহকারী সম্প্রতি সস্তা ছিল না।</string>
+    <string name="home_slide_cf">আগামী ৩০ দিনে কী আসবে, কী যাবে</string>
+    <string name="home_slide_rates">আপনার দর WhatsApp-এর জন্য ছবিতে</string>
+    <string name="home_slide_cheaper">প্রতিটি সরবরাহকারীর দর মেলান</string>
+    <string name="home_slide_poster">WhatsApp স্ট্যাটাসের জন্য ছবি</string>
     <string name="staff_title">কর্মী ও বেতন</string>
     <string name="staff_subtitle">যারা এখানে কাজ করেন তাদের হাজিরা, অগ্রিম ও বেতন</string>
     <string name="staff_prev_month">আগের মাস</string>

@@ -911,6 +911,10 @@
     <string name="sr_none">Belum ada nota pemasok berharga. Tulis harga di tiap baris nota pemasok, nanti muncul di sini.</string>
     <string name="sr_note">Harga hanya dibandingkan dalam satuan yang sama, dan tawaran lebih murah hanya dihitung dari 6 bulan terakhir.</string>
     <string name="sr_nothing_to_watch">Tidak ada yang perlu dilihat: tidak ada yang naik, dan tidak ada pemasok lain yang lebih murah belakangan ini.</string>
+    <string name="home_slide_cf">Yang masuk dan keluar dalam 30 hari ke depan</string>
+    <string name="home_slide_rates">Harga Anda sebagai gambar untuk WhatsApp</string>
+    <string name="home_slide_cheaper">Bandingkan harga tiap pemasok</string>
+    <string name="home_slide_poster">Gambar untuk Status WhatsApp</string>
     <string name="staff_title">Karyawan &amp; gaji</string>
     <string name="staff_subtitle">Kehadiran, kasbon, dan gaji orang yang bekerja di sini</string>
     <string name="staff_prev_month">Bulan sebelumnya</string>

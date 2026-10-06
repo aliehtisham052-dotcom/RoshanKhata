@@ -937,6 +937,10 @@ You can change this any time from this screen.</string>
     <string name="sr_none">No priced supplier bills yet. Write the rate on each line of a supplier bill and it shows up here.</string>
     <string name="sr_note">Rates are compared only within the same unit, and an offer counts only if it is from the last 6 months.</string>
     <string name="sr_nothing_to_watch">Nothing needs a look: nothing got dearer, and no other supplier was cheaper lately.</string>
+    <string name="home_slide_cf">What comes in and goes out over the next 30 days</string>
+    <string name="home_slide_rates">Your prices as a picture for WhatsApp</string>
+    <string name="home_slide_cheaper">Compare what each supplier charged</string>
+    <string name="home_slide_poster">A picture for your WhatsApp Status</string>
     <string name="cf_week" translatable="false">%1$s – %2$s</string>
     <string name="staff_title">Staff &amp; salary</string>
     <string name="staff_subtitle">Attendance, advances and salary of the people who work here</string>
