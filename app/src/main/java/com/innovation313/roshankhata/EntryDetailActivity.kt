@@ -77,6 +77,12 @@ class EntryDetailActivity : BaseActivity() {
         findViewById<MaterialButton>(R.id.btnEdit).setOnClickListener { showEditDialog() }
         findViewById<MaterialButton>(R.id.btnShare).setOnClickListener { shareReceipt() }
         findViewById<MaterialButton>(R.id.btnPrint).setOnClickListener { printReceipt() }
+        // The customer's signature (6 Oct). A helper's phone shows it but cannot take one.
+        findViewById<MaterialButton>(R.id.btnSignature).apply {
+            visibility = if (com.innovation313.roshankhata.data.ViewerMode.isOn(this@EntryDetailActivity)) View.GONE else View.VISIBLE
+            setOnClickListener { takeSignature() }
+        }
+        showSignature()
 
         load()
     }
@@ -581,6 +587,68 @@ class EntryDetailActivity : BaseActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    // ---------- Signature (6 Oct) ----------
+
+    private fun showSignature() {
+        lifecycleScope.launch {
+            val sig = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                com.innovation313.roshankhata.data.EntrySignature.load(this@EntryDetailActivity, entryId)
+            }
+            findViewById<View>(R.id.blockSignature).visibility = if (sig != null) View.VISIBLE else View.GONE
+            findViewById<android.widget.ImageView>(R.id.ivSignature).setImageBitmap(sig)
+            findViewById<MaterialButton>(R.id.btnSignature).setText(if (sig != null) R.string.sig_retake else R.string.sig_take)
+        }
+    }
+
+    private fun takeSignature() {
+        val dp = resources.displayMetrics.density
+        val pad = com.innovation313.roshankhata.ui.SignaturePad(this)
+        val hint = android.widget.TextView(this).apply {
+            setText(R.string.sig_hint)
+            setTextColor(androidx.core.content.ContextCompat.getColor(this@EntryDetailActivity, R.color.ink_soft))
+            textSize = 13f
+        }
+        val clear = MaterialButton(this, null, androidx.appcompat.R.attr.borderlessButtonStyle).apply {
+            setText(R.string.sig_clear)
+            setOnClickListener { pad.clear() }
+        }
+        val box = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding((20 * dp).toInt(), (8 * dp).toInt(), (20 * dp).toInt(), 0)
+            addView(hint)
+            addView(pad, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, (220 * dp).toInt()).apply { topMargin = (8 * dp).toInt() })
+            addView(clear)
+        }
+        val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.sig_title)
+            .setView(box)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.save, null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                if (!pad.hasInk) {
+                    Toast.makeText(this, R.string.sig_empty, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val bmp = pad.toBitmap()
+                lifecycleScope.launch {
+                    val ok = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        runCatching { com.innovation313.roshankhata.data.EntrySignature.save(this@EntryDetailActivity, entryId, bmp) }.isSuccess
+                    }
+                    if (ok) {
+                        com.innovation313.roshankhata.ui.Motion.savedTick(this@EntryDetailActivity)
+                        dialog.dismiss()
+                        showSignature()
+                    } else {
+                        Toast.makeText(this@EntryDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        dialog.show()
     }
 
     // ---------- Print (5 Oct): the receipt card on a paired Bluetooth printer ----------

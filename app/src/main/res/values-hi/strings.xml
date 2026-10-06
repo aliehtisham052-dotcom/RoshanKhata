@@ -1024,6 +1024,13 @@
     <string name="print_sending">प्रिंटर को भेजा जा रहा है…</string>
     <string name="print_done">प्रिंट हो गया</string>
     <string name="print_failed">प्रिंटर से संपर्क नहीं हुआ। क्या वह चालू है, जुड़ा है और उसमें काग़ज़ है?</string>
+    <string name="sig_take">ग्राहक के दस्तख़त लें</string>
+    <string name="sig_retake">दस्तख़त बदलें</string>
+    <string name="sig_title">यहाँ दस्तख़त करें</string>
+    <string name="sig_hint">ग्राहक उँगली से दस्तख़त करे। ये सिर्फ़ इस फ़ोन और आपके बैकअप में रहेंगे।</string>
+    <string name="sig_clear">मिटाएँ</string>
+    <string name="sig_empty">पहले दस्तख़त करें</string>
+    <string name="sig_label">ग्राहक के दस्तख़त</string>
     <string name="invalid_amount">सही रकम लिखें</string>
     <string name="saved">सेव हो गया</string>
     <string name="select_language">अपनी भाषा चुनें</string>

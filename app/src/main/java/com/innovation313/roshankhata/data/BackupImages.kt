@@ -195,6 +195,7 @@ object BackupImages {
         if (!ViewerMode.isOn(context)) return
         PartyPhoto.folder(context).listFiles()?.forEach { it.delete() }
         billsDir(context).deleteRecursively()
+        EntrySignature.folder(context).listFiles()?.forEach { it.delete() }
         listOf(
             BusinessProfile.qrFile(context), BusinessProfile.signatureFile(context),
             BusinessProfile.stampFile(context), BusinessProfile.logoFile(context)
@@ -253,6 +254,11 @@ object BackupImages {
         File(context.filesDir, BILLS_DIR).listFiles()
             ?.filter { it.isFile && it.name in ownBills }
             ?.forEach { out += "$BILLS_DIR/${it.name}" to it }
+
+        // Customers' signatures on entries (6 Oct), one folder per shop.
+        EntrySignature.folder(context).listFiles()
+            ?.filter { it.isFile && it.name.endsWith(".png") }
+            ?.forEach { out += "${EntrySignature.DIR}/${it.name}" to it }
 
         val roots = listOf(
             ROOT_QR to BusinessProfile.qrFile(context),
@@ -360,6 +366,8 @@ object BackupImages {
             File(PartyPhoto.folder(context), name.removePrefix("$PARTY_DIR/"))
         name.startsWith("$BILLS_DIR/") ->
             File(billsDir(context), name.removePrefix("$BILLS_DIR/"))
+        name.startsWith("${EntrySignature.DIR}/") ->
+            File(EntrySignature.folder(context), name.removePrefix("${EntrySignature.DIR}/"))
         // A read-only phone never holds the owner's signature or stamp, even
         // when the archive (the owner's own Drive backup) carries them.
         !helperMayHold(name) && ViewerMode.isOn(context) -> null

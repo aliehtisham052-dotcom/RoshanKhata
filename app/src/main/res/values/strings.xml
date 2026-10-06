@@ -1032,6 +1032,13 @@ You can change this any time from this screen.</string>
     <string name="print_sending">Sending to the printer…</string>
     <string name="print_done">Printed</string>
     <string name="print_failed">Could not reach the printer. Is it on, paired, and loaded with paper?</string>
+    <string name="sig_take">Take customer\'s signature</string>
+    <string name="sig_retake">Change signature</string>
+    <string name="sig_title">Sign here</string>
+    <string name="sig_hint">The customer signs with a finger. Kept on this phone and in your backup only.</string>
+    <string name="sig_clear">Clear</string>
+    <string name="sig_empty">Please sign first</string>
+    <string name="sig_label">Customer\'s signature</string>
     <string name="invalid_amount">Enter a valid amount</string>
     <string name="saved">Saved</string>
     <string name="select_language">Select your language</string>
