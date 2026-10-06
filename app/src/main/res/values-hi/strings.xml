@@ -919,6 +919,17 @@
     <string name="cf_empty">अभी कोई तारीख़ नहीं। तारीख़ें क़िस्तों के प्लान, चेक और ड्यू डेट वाले सप्लायर बिलों से आती हैं।</string>
     <string name="cf_note">सिर्फ़ वही गिना जाता है जिसकी तारीख़ हो: क़िस्तों के प्लान, बाक़ी चेक और ड्यू डेट वाले सप्लायर बिल। वादा हाथ का पैसा नहीं, इसलिए टूटे वादे नहीं गिने जाते; लेट बिल अभी देने हैं।</string>
     <string name="cf_undated">बिना ड्यू डेट के सप्लायर बिल, गिने नहीं गए: %1$s</string>
+    <string name="sr_open">सस्ता कहाँ? ख़रीद के रेट</string>
+    <string name="sr_title">ख़रीद के रेट</string>
+    <string name="sr_subtitle">हर सप्लायर ने हर चीज़ किस रेट पर दी</string>
+    <string name="sr_watch">ध्यान दें</string>
+    <string name="sr_last">आख़िरी: %1$s · %2$s · %3$s</string>
+    <string name="sr_up">पिछले बिल से %1$s महँगा (%2$s)</string>
+    <string name="sr_down">पिछले बिल से %1$s सस्ता (%2$s)</string>
+    <string name="sr_cheaper">हाल ही में %1$s से सस्ता मिला: %2$s (%3$s)</string>
+    <string name="sr_none">अभी रेट वाले सप्लायर बिल नहीं। सप्लायर बिल की हर लाइन पर रेट लिखें, यहाँ दिखेगा।</string>
+    <string name="sr_note">रेट सिर्फ़ एक ही इकाई में मिलाए जाते हैं, और सस्ता रेट सिर्फ़ पिछले 6 महीनों का गिना जाता है।</string>
+    <string name="sr_nothing_to_watch">कुछ देखने की ज़रूरत नहीं: कोई चीज़ महँगी नहीं हुई, और किसी और सप्लायर से सस्ता नहीं मिला।</string>
     <string name="staff_title">स्टाफ़ और तनख़्वाह</string>
     <string name="staff_subtitle">काम करने वालों की हाज़िरी, एडवांस और तनख़्वाह</string>
     <string name="staff_prev_month">पिछला महीना</string>

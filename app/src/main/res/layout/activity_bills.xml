@@ -58,6 +58,19 @@
             app:cornerRadius="8dp"
             app:strokeColor="@color/section_bills_soft" />
 
+        <!-- "Where is it cheaper?" (6 Oct): purchase rates by product and supplier. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSupplierRates"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/sr_open"
+            android:textColor="@color/section_bills_soft"
+            android:textSize="13sp"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/section_bills_soft" />
+
         <!-- C1 (2 Oct): schemes are bought towards on these very bills. -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSchemes"

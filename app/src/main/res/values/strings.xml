@@ -926,6 +926,17 @@ You can change this any time from this screen.</string>
     <string name="cf_empty">No dates yet. They come from instalment plans, cheques and supplier bills with a due date.</string>
     <string name="cf_note">Only what has a date is counted: instalment plans, pending cheques and supplier bills with a due date. A promise is not money in hand, so promises already broken are not counted on; late bills are due now.</string>
     <string name="cf_undated">Supplier bills without a due date, not counted: %1$s</string>
+    <string name="sr_open">Where is it cheaper? Purchase rates</string>
+    <string name="sr_title">Purchase rates</string>
+    <string name="sr_subtitle">What each supplier charged you, product by product</string>
+    <string name="sr_watch">Needs a look</string>
+    <string name="sr_last">Last: %1$s · %2$s · %3$s</string>
+    <string name="sr_up">Up %1$s on the bill before (%2$s)</string>
+    <string name="sr_down">Down %1$s on the bill before (%2$s)</string>
+    <string name="sr_cheaper">Cheaper lately from %1$s: %2$s (%3$s)</string>
+    <string name="sr_none">No priced supplier bills yet. Write the rate on each line of a supplier bill and it shows up here.</string>
+    <string name="sr_note">Rates are compared only within the same unit, and an offer counts only if it is from the last 6 months.</string>
+    <string name="sr_nothing_to_watch">Nothing needs a look: nothing got dearer, and no other supplier was cheaper lately.</string>
     <string name="cf_week" translatable="false">%1$s – %2$s</string>
     <string name="staff_title">Staff &amp; salary</string>
     <string name="staff_subtitle">Attendance, advances and salary of the people who work here</string>

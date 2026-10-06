@@ -151,6 +151,11 @@
             android:parentActivityName=".BusinessCardActivity" />
 
         <activity
+            android:name=".SupplierRatesActivity"
+            android:exported="false"
+            android:parentActivityName=".BillsActivity" />
+
+        <activity
             android:name=".CashFlowActivity"
             android:exported="false"
             android:parentActivityName=".InsightsActivity" />

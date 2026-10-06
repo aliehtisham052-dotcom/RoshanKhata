@@ -163,6 +163,9 @@ class BillsActivity : BaseActivity() {
 
         tvEmpty = findViewById(R.id.tvNoBills)
         btnExpiring = findViewById(R.id.btnExpiring)
+        findViewById<android.view.View>(R.id.btnSupplierRates).setOnClickListener {
+            startActivity(android.content.Intent(this, SupplierRatesActivity::class.java))
+        }
 
         adapter = BillAdapter { bill -> showBillActions(bill) }
         val rv: RecyclerView = findViewById(R.id.rvBills)

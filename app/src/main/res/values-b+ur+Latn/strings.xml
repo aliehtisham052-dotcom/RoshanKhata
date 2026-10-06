@@ -885,6 +885,17 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="cf_empty">Abhi koi tareekh nahi. Tareekhein qiston ke plan, cheque aur due date wale supplier bills se aati hain.</string>
     <string name="cf_note">Sirf woh gina jata hai jis ki tareekh ho: qiston ke plan, pending cheque aur due date wale supplier bills. Waada haath ka paisa nahi, is liye toote waade nahi gine jate; late bill abhi dene hain.</string>
     <string name="cf_undated">Bina due date ke supplier bills, gine nahi gaye: %1$s</string>
+    <string name="sr_open">Sasta kahan? Khareed ke rate</string>
+    <string name="sr_title">Khareed ke rate</string>
+    <string name="sr_subtitle">Har supplier ne har cheez kis rate par di</string>
+    <string name="sr_watch">Dhyan dein</string>
+    <string name="sr_last">Aakhri: %1$s · %2$s · %3$s</string>
+    <string name="sr_up">Pichhle bill se %1$s mehenga (%2$s)</string>
+    <string name="sr_down">Pichhle bill se %1$s sasta (%2$s)</string>
+    <string name="sr_cheaper">Haal hi mein %1$s se sasta mila: %2$s (%3$s)</string>
+    <string name="sr_none">Abhi rate wale supplier bills nahi. Supplier bill ki har line par rate likhein, yahan nazar aayega.</string>
+    <string name="sr_note">Rate sirf aik hi ikai mein milaye jate hain, aur sasta rate sirf pichhle 6 mahine ka gina jata hai.</string>
+    <string name="sr_nothing_to_watch">Kuch dekhne ki zaroorat nahi: koi cheez mehengi nahi hui, aur kisi aur supplier se sasta nahi mila.</string>
     <string name="staff_title">Staff aur tankhwah</string>
     <string name="staff_subtitle">Kaam karne walon ki hazri, advance aur tankhwah</string>
     <string name="staff_prev_month">Pichla mahina</string>

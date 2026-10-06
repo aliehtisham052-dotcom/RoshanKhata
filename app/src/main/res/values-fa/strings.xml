@@ -913,6 +913,17 @@
     <string name="cf_empty">هنوز تاریخی نیست. تاریخ‌ها از طرح‌های قسطی، چک‌ها و فاکتورهای دارای سررسید می‌آیند.</string>
     <string name="cf_note">فقط آنچه تاریخ دارد شمرده می‌شود: طرح‌های قسطی، چک‌های در انتظار و فاکتورهای دارای سررسید. وعده پول نقد نیست؛ وعده‌های شکسته حساب نمی‌شوند و فاکتورهای عقب‌افتاده همین حالا باید پرداخت شوند.</string>
     <string name="cf_undated">فاکتورهای بدون سررسید، شمرده نشد: %1$s</string>
+    <string name="sr_open">کجا ارزان‌تر است؟ نرخ‌های خرید</string>
+    <string name="sr_title">نرخ‌های خرید</string>
+    <string name="sr_subtitle">هر تأمین‌کننده هر کالا را به چه نرخی داده</string>
+    <string name="sr_watch">نیاز به توجه</string>
+    <string name="sr_last">آخرین: %1$s · %2$s · %3$s</string>
+    <string name="sr_up">%1$s گران‌تر از فاکتور قبلی (%2$s)</string>
+    <string name="sr_down">%1$s ارزان‌تر از فاکتور قبلی (%2$s)</string>
+    <string name="sr_cheaper">اخیراً از %1$s ارزان‌تر: %2$s (%3$s)</string>
+    <string name="sr_none">هنوز فاکتور تأمین‌کننده با نرخ نیست. روی هر ردیف فاکتور نرخ را بنویسید تا اینجا دیده شود.</string>
+    <string name="sr_note">نرخ‌ها فقط در یک واحد مقایسه می‌شوند و پیشنهاد ارزان‌تر فقط از ۶ ماه اخیر شمرده می‌شود.</string>
+    <string name="sr_nothing_to_watch">چیزی نیاز به توجه ندارد: کالایی گران‌تر نشده و تأمین‌کننده دیگری اخیراً ارزان‌تر نبوده.</string>
     <string name="staff_title">کارکنان و حقوق</string>
     <string name="staff_subtitle">حضور، مساعده و حقوق کسانی که اینجا کار می‌کنند</string>
     <string name="staff_prev_month">ماه قبل</string>
