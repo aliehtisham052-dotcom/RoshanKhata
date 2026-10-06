@@ -256,6 +256,7 @@
     <string name="already_added">Added</string>
     <string name="loading_contacts">Loading contacts\u2026</string>
     <string name="no_contacts_found">No contacts found on this phone.</string>
+    <string name="contacts_picker_missing">This phone has no contact picker. Add the customer by hand instead.</string>
     <string name="no_matching_contacts">No contacts match your search.</string>
     <string name="continue_action">Continue</string>
     <string name="contacts_permission_title">Access your contacts?</string>

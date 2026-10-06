@@ -242,6 +242,7 @@
     <string name="already_added">Shamil hai</string>
     <string name="loading_contacts">Contacts load ho rahe hain\u2026</string>
     <string name="no_contacts_found">Is phone par koi contact nahi mila.</string>
+    <string name="contacts_picker_missing">Is phone mein contacts chunne wala system nahi. Grahak haath se shamil karein.</string>
     <string name="no_matching_contacts">Aap ki talash se koi contact nahi milta.</string>
     <string name="continue_action">Jari Rakhein</string>
     <string name="contacts_permission_title">Aap ke contacts tak rasai?</string>

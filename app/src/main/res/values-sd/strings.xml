@@ -249,6 +249,7 @@
     <string name="already_added">شامل ٿيل</string>
     <string name="loading_contacts">رابطا لوڊ ٿي رهيا آهن\u2026</string>
     <string name="no_contacts_found">هن فون تي ڪي به رابطا نه مليا.</string>
+    <string name="contacts_picker_missing">هن فون ۾ رابطا چونڊڻ وارو نظام ناهي. گراهڪ هٿ سان شامل ڪريو.</string>
     <string name="no_matching_contacts">توهان جي ڳولا سان ڪو رابطو نٿو ملي.</string>
     <string name="continue_action">اڳتي هلو</string>
     <string name="contacts_permission_title">توهان جي رابطن تائين رسائي؟</string>

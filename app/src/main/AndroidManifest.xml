@@ -24,7 +24,14 @@
       or stored; only the ones deliberately chosen are saved. The app works
       fully without this permission — parties can always be added by hand.
     -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!--
+      Contacts import, Android 16 and older only (5 Oct 2026). On Android 17
+      the system Contact Picker hands over just the contacts the owner picks,
+      with no permission at all — Play's Contacts Permissions policy.
+    -->
+    <uses-permission
+        android:name="android.permission.READ_CONTACTS"
+        android:maxSdkVersion="36" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--

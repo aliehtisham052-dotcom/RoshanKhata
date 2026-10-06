@@ -249,6 +249,7 @@
     <string name="already_added">اضافه شده</string>
     <string name="loading_contacts">در حال بارگیری مخاطبین\u2026</string>
     <string name="no_contacts_found">مخاطبی روی این گوشی یافت نشد.</string>
+    <string name="contacts_picker_missing">این گوشی انتخاب‌گر مخاطب ندارد. مشتری را دستی اضافه کنید.</string>
     <string name="no_matching_contacts">مخاطبی با جستجوی شما مطابقت ندارد.</string>
     <string name="continue_action">ادامه</string>
     <string name="contacts_permission_title">دسترسی به مخاطبین؟</string>
