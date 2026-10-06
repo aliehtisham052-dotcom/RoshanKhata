@@ -228,6 +228,11 @@
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
     <string name="reminder_they_owe_by_date">*পেমেন্ট রিমাইন্ডার*\n\nজনাব *%1$s*,\n\nবকেয়া: *%2$s*\nনির্ধারিত তারিখ: *%3$s*\n\nঅনুগ্রহ করে নির্ধারিত তারিখের মধ্যে পরিশোধ করুন।\n\nধন্যবাদ।</string>
+    <string name="reminder_step_gentle">নরম</string>
+    <string name="reminder_step_plain">স্পষ্ট</string>
+    <string name="reminder_step_serious">গুরুতর</string>
+    <string name="reminder_step2">*দ্বিতীয় স্মরণ*\n\nপ্রিয় *%1$s*,\n\nবাকি: *%2$s*\nপ্রথম স্মরণ: %3$s\n\nএটি আমাদের দ্বিতীয় স্মরণ। অনুগ্রহ করে এই সপ্তাহে টাকা পরিশোধ করুন।\n\nধন্যবাদ।</string>
+    <string name="reminder_step3">*পরিশোধ বাকি*\n\nপ্রিয় *%1$s*,\n\nবাকি: *%2$s*\n\nকয়েকবার মনে করানোর পরও টাকা বাকি আছে। অনুগ্রহ করে পরিশোধ করুন, অথবা পরিশোধের তারিখ জানান যাতে হিসাব মিটে যায়।\n\nআপনার সহযোগিতার জন্য ধন্যবাদ।</string>
     <string name="reminder_i_owe">*পেমেন্ট নোট*\n\nজনাব *%1$s*,\n\nআপনার কাছে আমাদের দেনা: *%2$s*\n\nআমরা শিগগিরই পরিশোধ করব। আপনার হিসাব আমাদের সঙ্গে না মিললে অনুগ্রহ করে জানান।\n\nধন্যবাদ।</string>
     <string name="send_reminder">রিমাইন্ডার পাঠান</string>
     <string name="open_whatsapp">WhatsApp খুলুন</string>

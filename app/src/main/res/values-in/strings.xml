@@ -221,6 +221,11 @@
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
     <string name="reminder_they_owe_by_date">*Pengingat Pembayaran*\n\nYth. *%1$s*,\n\nSisa tagihan: *%2$s*\nTanggal yang disepakati: *%3$s*\n\nMohon dilunasi sebelum tanggal yang disepakati.\n\nTerima kasih.</string>
+    <string name="reminder_step_gentle">Halus</string>
+    <string name="reminder_step_plain">Jelas</string>
+    <string name="reminder_step_serious">Serius</string>
+    <string name="reminder_step2">*Pengingat Kedua*\n\nYth. *%1$s*,\n\nTagihan: *%2$s*\nPengingat pertama: %3$s\n\nIni pengingat kedua kami. Mohon lunasi tagihan minggu ini.\n\nTerima kasih.</string>
+    <string name="reminder_step3">*Pembayaran Tertunda*\n\nYth. *%1$s*,\n\nTagihan: *%2$s*\n\nKami sudah beberapa kali mengingatkan dan tagihan masih belum dibayar. Mohon dibayar, atau beri tahu tanggal pembayarannya agar hisab bisa diselesaikan.\n\nTerima kasih atas pengertiannya.</string>
     <string name="reminder_i_owe">*Catatan Pembayaran*\n\nYth. *%1$s*,\n\nUtang kami kepada Anda: *%2$s*\n\nKami akan segera melunasinya. Jika catatan Anda berbeda dengan catatan kami, mohon beri tahu kami.\n\nTerima kasih.</string>
     <string name="send_reminder">Kirim Pengingat</string>
     <string name="open_whatsapp">Buka WhatsApp</string>

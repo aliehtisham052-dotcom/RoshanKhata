@@ -61,12 +61,20 @@ object Reminder {
         balance: Double,
         businessName: String?,
         promisedDate: Long? = null,
-        forSms: Boolean = false
+        forSms: Boolean = false,
+        /** ReminderLadder step (6 Oct): 1 gentle (the message as before), 2 plain, 3 serious. */
+        step: Int = com.innovation313.roshankhata.data.ReminderLadder.GENTLE,
+        /** When this chase's first reminder went, for step 2's "first sent on". */
+        firstSentAt: Long? = null
     ): String {
         val amount = Format.money(balance)
         val from = if (businessName.isNullOrBlank()) "" else "\n\n— $businessName"
 
-        val body = if (Money.isPositive(balance)) {
+        val body = if (Money.isPositive(balance) && step >= com.innovation313.roshankhata.data.ReminderLadder.SERIOUS) {
+            context.getString(R.string.reminder_step3, partyName, amount)
+        } else if (Money.isPositive(balance) && step == com.innovation313.roshankhata.data.ReminderLadder.PLAIN) {
+            context.getString(R.string.reminder_step2, partyName, amount, Format.dateOnly(firstSentAt ?: System.currentTimeMillis()))
+        } else if (Money.isPositive(balance)) {
             // They owe me.
             if (promisedDate != null) {
                 context.getString(

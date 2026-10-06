@@ -228,6 +228,11 @@
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
     <string name="reminder_they_owe_by_date">*भुगतान रिमाइंडर*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\nतय तारीख़: *%3$s*\n\nकृपया तय तारीख़ तक चुका दें।\n\nधन्यवाद।</string>
+    <string name="reminder_step_gentle">नरम</string>
+    <string name="reminder_step_plain">साफ़</string>
+    <string name="reminder_step_serious">गंभीर</string>
+    <string name="reminder_step2">*दूसरी याद दिलाई*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\nपहली याद दिलाई: %3$s\n\nयह हमारी दूसरी याद दिलाई है। कृपया इस हफ़्ते रक़म चुका दें।\n\nशुक्रिया।</string>
+    <string name="reminder_step3">*भुगतान बाक़ी है*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\n\nकई बार याद दिलाने के बाद भी रक़म बाक़ी है। कृपया भुगतान करें, या भुगतान की तारीख़ बता दें ताकि हिसाब साफ़ हो सके।\n\nआपके सहयोग का शुक्रिया।</string>
     <string name="reminder_i_owe">*भुगतान नोट*\n\nआदरणीय *%1$s*,\n\nहमें आपको देना है: *%2$s*\n\nहम जल्द चुका देंगे। अगर आपका हिसाब हमारे हिसाब से अलग हो तो कृपया बताएँ।\n\nधन्यवाद।</string>
     <string name="send_reminder">रिमाइंडर भेजें</string>
     <string name="open_whatsapp">WhatsApp खोलें</string>
