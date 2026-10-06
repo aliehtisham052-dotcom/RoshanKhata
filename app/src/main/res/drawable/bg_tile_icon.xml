@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The rounded square behind a Home tile's icon; tinted per tile in createTile. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/tile_khata_bg" />
+    <corners android:radius="13dp" />
+</shape>

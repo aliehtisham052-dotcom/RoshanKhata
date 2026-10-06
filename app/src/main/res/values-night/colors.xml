@@ -77,4 +77,21 @@
     <!-- Loading placeholders (ShimmerRows, 5 Oct) -->
     <color name="shimmer_base">#262B28</color>
     <color name="shimmer_highlight">#39413C</color>
+    <!-- Home tile icon tones (6 Oct): a = soft, b = deep -->
+    <color name="fi_green_a">#4F8F68</color>
+    <color name="fi_green_b">#D4EEDF</color>
+    <color name="fi_gold_a">#C9A23B</color>
+    <color name="fi_gold_b">#FFE8A8</color>
+    <color name="fi_blue_a">#4F8BCC</color>
+    <color name="fi_blue_b">#D3E6F8</color>
+    <color name="fi_orange_a">#D08650</color>
+    <color name="fi_orange_b">#FAD9BF</color>
+    <color name="fi_violet_a">#8378D1</color>
+    <color name="fi_violet_b">#DFDAF8</color>
+    <color name="fi_red_a">#D16565</color>
+    <color name="fi_red_b">#F9D2D2</color>
+    <color name="fi_teal_a">#4DAE94</color>
+    <color name="fi_teal_b">#D2F1E7</color>
+    <color name="fi_pink_a">#D2688F</color>
+    <color name="fi_pink_b">#F9D6E3</color>
 </resources>

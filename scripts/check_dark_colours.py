@@ -49,7 +49,10 @@ for f in glob.glob(f"{RES}/layout/*.xml") + glob.glob(f"{RES}/drawable*/*.xml"):
     t = open(f, encoding="utf-8").read()
     for a, kind_src, c in re.findall(r'([\w:]+)="@(color)/(\w+)"', t):
         where = f"{f.split('/')[-1]} {a}"
-        kind = "text" if a in TEXT else "fill" if (a in FILL or (a == "android:color" and "/drawable" in f)) else None
+        # fi_* are the two tones of a Home tile icon (6 Oct): glyph colours
+        # drawn on a tinted square, so they are judged as icons, not fills.
+        glyph = a == "android:fillColor" and c.startswith("fi_")
+        kind = "text" if (a in TEXT or glyph) else "fill" if (a in FILL or (a == "android:color" and "/drawable" in f)) else None
         if not kind:
             continue
         for col in (csl[c] if c in csl else [c]):

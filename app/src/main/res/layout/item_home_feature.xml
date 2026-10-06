@@ -20,10 +20,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="@color/brand_green"
+    app:cardBackgroundColor="@color/surface"
     app:cardCornerRadius="18dp"
-    app:cardElevation="2dp"
-    app:strokeColor="@color/welcome_note_stroke"
+    app:cardElevation="1dp"
+    app:strokeColor="@color/page_line"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -37,13 +37,14 @@
 
         <FrameLayout
             android:id="@+id/featureIconDisc"
-            android:layout_width="24dp"
-            android:layout_height="24dp">
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_tile_icon">
 
             <ImageView
                 android:id="@+id/ivFeatureIcon"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:layout_gravity="center"
                 android:contentDescription="@null"
                 tools:src="@drawable/ic_nav_khata" />
@@ -69,8 +70,8 @@
             android:lineSpacingExtra="1dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:textColor="@color/white"
-            android:textSize="10sp"
+            android:textColor="@color/ink"
+            android:textSize="11sp"
             android:textStyle="bold"
             tools:text="Khata" />
     </LinearLayout>
