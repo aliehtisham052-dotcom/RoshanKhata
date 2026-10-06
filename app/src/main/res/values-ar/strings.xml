@@ -1078,6 +1078,13 @@
     <string name="print_sending">جارٍ الإرسال إلى الطابعة…</string>
     <string name="print_done">تمت الطباعة</string>
     <string name="print_failed">تعذّر الوصول إلى الطابعة. هل هي مشغّلة ومقترنة وفيها ورق؟</string>
+    <string name="sig_take">أخذ توقيع العميل</string>
+    <string name="sig_retake">تغيير التوقيع</string>
+    <string name="sig_title">وقّع هنا</string>
+    <string name="sig_hint">يوقّع العميل بإصبعه. يبقى على هذا الهاتف وفي نسختك الاحتياطية فقط.</string>
+    <string name="sig_clear">مسح</string>
+    <string name="sig_empty">وقّع أولًا</string>
+    <string name="sig_label">توقيع العميل</string>
     <string name="invalid_amount">أدخل مبلغًا صحيحًا</string>
     <string name="saved">تم الحفظ</string>
     <string name="select_language">اختر لغتك</string>

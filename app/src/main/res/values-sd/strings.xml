@@ -1018,6 +1018,13 @@
     <string name="print_sending">پرنٽر ڏانهن موڪليو پيو وڃي…</string>
     <string name="print_done">پرنٽ ٿي ويو</string>
     <string name="print_failed">پرنٽر سان رابطو نه ٿيو. ڇا اهو آن آهي، جڙيل آهي ۽ ان ۾ ڪاغذ آهي؟</string>
+    <string name="sig_take">گراهڪ جي صحيح وٺو</string>
+    <string name="sig_retake">صحيح بدلايو</string>
+    <string name="sig_title">هتي صحيح ڪريو</string>
+    <string name="sig_hint">گراهڪ آڱر سان صحيح ڪري. اها رڳو هن فون ۽ توهان جي بيڪ اپ ۾ رهندي.</string>
+    <string name="sig_clear">ميٽيو</string>
+    <string name="sig_empty">پهريان صحيح ڪريو</string>
+    <string name="sig_label">گراهڪ جي صحيح</string>
     <string name="invalid_amount">صحيح رقم لکو</string>
     <string name="saved">محفوظ ٿيو</string>
     <string name="select_language">پنهنجي ٻولي چونڊيو</string>

@@ -194,6 +194,34 @@
                       and it is the thing the owner scrolls to when a customer
                       disputes one.
                     -->
+                    <!-- The customer's signature (6 Oct): part of the card, so the
+                         shared picture and the printed receipt carry it. -->
+                    <LinearLayout
+                        android:id="@+id/blockSignature"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sig_label"
+                            android:textColor="@color/ink_soft"
+                            android:textSize="12sp" />
+
+                        <ImageView
+                            android:id="@+id/ivSignature"
+                            android:layout_width="match_parent"
+                            android:layout_height="90dp"
+                            android:layout_marginTop="4dp"
+                            android:adjustViewBounds="true"
+                            android:background="@color/white"
+                            android:contentDescription="@string/sig_label"
+                            android:scaleType="fitStart" />
+                    </LinearLayout>
+
                     <LinearLayout
                         android:id="@+id/blockBillPhoto"
                         android:layout_width="match_parent"
@@ -231,6 +259,17 @@
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSignature"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:minHeight="48dp"
+                android:text="@string/sig_take"
+                android:textColor="@color/ink_soft"
+                app:strokeColor="@color/page_line" />
 
             <!-- Fasal ka Hisaab (2 Oct): which crop season this credit counts in.
                  Outside the receipt card on purpose: the card is what gets shared,

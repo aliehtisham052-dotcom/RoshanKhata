@@ -990,6 +990,13 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="print_sending">Printer ko bheja ja raha hai…</string>
     <string name="print_done">Print ho gaya</string>
     <string name="print_failed">Printer se rabta nahi hua. Kya woh on hai, paired hai aur us mein kaghaz hai?</string>
+    <string name="sig_take">Grahak ke dastakhat lein</string>
+    <string name="sig_retake">Dastakhat badlein</string>
+    <string name="sig_title">Yahan dastakhat karein</string>
+    <string name="sig_hint">Grahak ungli se dastakhat kare. Ye sirf is phone aur aap ke backup mein rahenge.</string>
+    <string name="sig_clear">Mitayen</string>
+    <string name="sig_empty">Pehle dastakhat karein</string>
+    <string name="sig_label">Grahak ke dastakhat</string>
     <string name="invalid_amount">Durust raqam likhein</string>
     <string name="saved">Mehfooz ho gaya</string>
     <string name="select_language">Apni zaban chunein</string>

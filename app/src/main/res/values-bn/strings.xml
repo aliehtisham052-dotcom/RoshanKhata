@@ -1024,6 +1024,13 @@
     <string name="print_sending">প্রিন্টারে পাঠানো হচ্ছে…</string>
     <string name="print_done">প্রিন্ট হয়েছে</string>
     <string name="print_failed">প্রিন্টারে যোগাযোগ হয়নি। এটি চালু, যুক্ত এবং কাগজ ভরা আছে তো?</string>
+    <string name="sig_take">গ্রাহকের স্বাক্ষর নিন</string>
+    <string name="sig_retake">স্বাক্ষর বদলান</string>
+    <string name="sig_title">এখানে স্বাক্ষর করুন</string>
+    <string name="sig_hint">গ্রাহক আঙুল দিয়ে স্বাক্ষর করবেন। এটি শুধু এই ফোন ও আপনার ব্যাকআপে থাকবে।</string>
+    <string name="sig_clear">মুছুন</string>
+    <string name="sig_empty">আগে স্বাক্ষর করুন</string>
+    <string name="sig_label">গ্রাহকের স্বাক্ষর</string>
     <string name="invalid_amount">সঠিক অঙ্ক লিখুন</string>
     <string name="saved">সেভ হয়েছে</string>
     <string name="select_language">আপনার ভাষা বেছে নিন</string>

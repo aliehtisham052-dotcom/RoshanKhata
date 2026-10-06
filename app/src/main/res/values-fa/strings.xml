@@ -1018,6 +1018,13 @@
     <string name="print_sending">در حال فرستادن به چاپگر…</string>
     <string name="print_done">چاپ شد</string>
     <string name="print_failed">به چاپگر وصل نشد. آیا روشن، جفت‌شده و دارای کاغذ است؟</string>
+    <string name="sig_take">گرفتن امضای مشتری</string>
+    <string name="sig_retake">تغییر امضا</string>
+    <string name="sig_title">اینجا امضا کنید</string>
+    <string name="sig_hint">مشتری با انگشت امضا می‌کند. فقط روی این گوشی و در پشتیبان شما می‌ماند.</string>
+    <string name="sig_clear">پاک کردن</string>
+    <string name="sig_empty">اول امضا کنید</string>
+    <string name="sig_label">امضای مشتری</string>
     <string name="invalid_amount">مبلغ معتبری وارد کنید</string>
     <string name="saved">ذخیره شد</string>
     <string name="select_language">زبان خود را انتخاب کنید</string>

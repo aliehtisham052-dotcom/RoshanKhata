@@ -990,6 +990,13 @@
     <string name="print_sending">پرنٹر کو بھیجا جا رہا ہے…</string>
     <string name="print_done">پرنٹ ہو گیا</string>
     <string name="print_failed">پرنٹر سے رابطہ نہیں ہوا۔ کیا وہ آن ہے، جوڑا ہوا ہے اور اس میں کاغذ ہے؟</string>
+    <string name="sig_take">گاہک کے دستخط لیں</string>
+    <string name="sig_retake">دستخط بدلیں</string>
+    <string name="sig_title">یہاں دستخط کریں</string>
+    <string name="sig_hint">گاہک انگلی سے دستخط کرے۔ یہ صرف اس فون اور آپ کے بیک اپ میں رہیں گے۔</string>
+    <string name="sig_clear">مٹائیں</string>
+    <string name="sig_empty">پہلے دستخط کریں</string>
+    <string name="sig_label">گاہک کے دستخط</string>
     <string name="invalid_amount">درست رقم لکھیں</string>
     <string name="saved">محفوظ ہو گیا</string>
     <string name="select_language">اپنی زبان چنیں</string>

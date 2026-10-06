@@ -1002,6 +1002,13 @@
     <string name="print_sending">Mengirim ke printer…</string>
     <string name="print_done">Sudah dicetak</string>
     <string name="print_failed">Printer tidak terjangkau. Apakah menyala, sudah dipasangkan, dan berisi kertas?</string>
+    <string name="sig_take">Ambil tanda tangan pelanggan</string>
+    <string name="sig_retake">Ganti tanda tangan</string>
+    <string name="sig_title">Tanda tangan di sini</string>
+    <string name="sig_hint">Pelanggan menandatangani dengan jari. Hanya disimpan di ponsel ini dan cadangan Anda.</string>
+    <string name="sig_clear">Hapus</string>
+    <string name="sig_empty">Tanda tangani dulu</string>
+    <string name="sig_label">Tanda tangan pelanggan</string>
     <string name="invalid_amount">Masukkan jumlah yang benar</string>
     <string name="saved">Tersimpan</string>
     <string name="select_language">Pilih bahasa Anda</string>
