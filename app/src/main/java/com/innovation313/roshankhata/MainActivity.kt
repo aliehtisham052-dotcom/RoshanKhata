@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.Money
@@ -92,7 +91,6 @@ class MainActivity : BaseActivity() {
 
         buildFeatureGrid()
         sizeGridTail()
-        setupBottomNav()
         maybeShowCoachMarks()
 
         builtInLocale = com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
@@ -178,6 +176,24 @@ class MainActivity : BaseActivity() {
 
         featureViews.clear()
         com.innovation313.roshankhata.ui.HomeSlides.attach(findViewById(R.id.homeSlides), findViewById(R.id.homeSlideDots))
+        run {
+            val drawer = findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)
+            fun entry(f: Feature) = com.innovation313.roshankhata.ui.HomeDrawer.Entry(f.iconRes, f.tintRes, f.labelRes) {
+                startActivity(Intent(this, f.destination))
+            }
+            com.innovation313.roshankhata.ui.HomeDrawer.fill(
+                this, drawer, findViewById(R.id.drawerContent),
+                shown(daily).map(::entry), shown(business).map(::entry))
+            findViewById<View>(R.id.btnDrawer).setOnClickListener { drawer.openDrawer(androidx.core.view.GravityCompat.START) }
+            onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(false) {
+                override fun handleOnBackPressed() = drawer.closeDrawers()
+            }.also { cb ->
+                drawer.addDrawerListener(object : androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener() {
+                    override fun onDrawerOpened(drawerView: View) { cb.isEnabled = true }
+                    override fun onDrawerClosed(drawerView: View) { cb.isEnabled = false }
+                })
+            })
+        }
         fillGrid(findViewById(R.id.gridDaily), shown(daily))
         fillGrid(findViewById(R.id.gridBusiness), shown(business))
         equalizeTileHeights()
@@ -292,20 +308,6 @@ class MainActivity : BaseActivity() {
         return tile
     }
 
-    private fun setupBottomNav() {
-        val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        nav.selectedItemId = R.id.nav_home
-        nav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> true // already here
-                R.id.nav_more -> {
-                    com.innovation313.roshankhata.ui.MoreSheet.show(this)
-                    false
-                }
-                else -> false
-            }
-        }
-    }
 
     /**
      * The figures are re-read every time this screen comes forward, not once
@@ -338,7 +340,6 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         // Returning from another screen, the bar must point at Home again.
-        findViewById<BottomNavigationView>(R.id.bottomNav)?.selectedItemId = R.id.nav_home
         showViewerNote()
     }
 
