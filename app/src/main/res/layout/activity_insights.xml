@@ -190,6 +190,20 @@
                     app:iconTint="@color/ink_soft"
                     app:strokeColor="@color/page_line" />
 
+                <!-- Cash flow (6 Oct): opens the money-in / money-out outlook. -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCashFlow"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:minHeight="52dp"
+                    android:text="@string/cf_open"
+                    android:textColor="@color/ink_soft"
+                    app:icon="@drawable/ic_list_all"
+                    app:iconTint="@color/ink_soft"
+                    app:strokeColor="@color/page_line" />
+
                 <!-- Profit card: sale rate minus purchase rate, per line, on the phone -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
