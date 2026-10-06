@@ -274,6 +274,7 @@
     <string name="already_added">مضاف</string>
     <string name="loading_contacts">جارٍ تحميل جهات الاتصال\u2026</string>
     <string name="no_contacts_found">لا جهات اتصال على هذا الهاتف.</string>
+    <string name="contacts_picker_missing">لا يوجد في هذا الهاتف منتقي جهات اتصال. أضف العميل يدويًا.</string>
     <string name="no_matching_contacts">لا جهات اتصال تطابق بحثك.</string>
     <string name="continue_action">متابعة</string>
     <string name="contacts_permission_title">الوصول إلى جهات اتصالك؟</string>

@@ -242,6 +242,7 @@
     <string name="already_added">شامل ہے</string>
     <string name="loading_contacts">رابطے لوڈ ہو رہے ہیں\u2026</string>
     <string name="no_contacts_found">اس فون پر کوئی رابطہ نہیں ملا۔</string>
+    <string name="contacts_picker_missing">اس فون میں رابطے چننے والا نظام نہیں۔ گاہک ہاتھ سے شامل کریں۔</string>
     <string name="no_matching_contacts">آپ کی تلاش سے کوئی رابطہ نہیں ملتا۔</string>
     <string name="continue_action">جاری رکھیں</string>
     <string name="contacts_permission_title">آپ کے رابطوں تک رسائی؟</string>

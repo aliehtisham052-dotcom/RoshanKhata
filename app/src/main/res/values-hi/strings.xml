@@ -256,6 +256,7 @@
     <string name="already_added">जुड़ गया</string>
     <string name="loading_contacts">कॉन्टैक्ट लोड हो रहे हैं\u2026</string>
     <string name="no_contacts_found">इस फ़ोन में कोई कॉन्टैक्ट नहीं मिला।</string>
+    <string name="contacts_picker_missing">इस फ़ोन में संपर्क चुनने वाला सिस्टम नहीं है। ग्राहक हाथ से जोड़ें।</string>
     <string name="no_matching_contacts">आपकी खोज से कोई कॉन्टैक्ट नहीं मिला।</string>
     <string name="continue_action">जारी रखें</string>
     <string name="contacts_permission_title">कॉन्टैक्ट देखने की अनुमति दें?</string>

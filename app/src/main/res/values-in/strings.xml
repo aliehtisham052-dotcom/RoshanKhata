@@ -248,6 +248,7 @@
     <string name="already_added">Sudah ada</string>
     <string name="loading_contacts">Memuat kontak\u2026</string>
     <string name="no_contacts_found">Tidak ada kontak di ponsel ini.</string>
+    <string name="contacts_picker_missing">Ponsel ini tidak punya pemilih kontak. Tambahkan pelanggan secara manual.</string>
     <string name="no_matching_contacts">Tidak ada kontak yang cocok dengan pencarian Anda.</string>
     <string name="continue_action">Lanjutkan</string>
     <string name="contacts_permission_title">Izinkan akses ke kontak?</string>

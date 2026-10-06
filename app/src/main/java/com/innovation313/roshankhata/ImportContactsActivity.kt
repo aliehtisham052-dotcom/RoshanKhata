@@ -3,6 +3,8 @@ package com.innovation313.roshankhata
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Build
+import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -94,8 +96,68 @@ class ImportContactsActivity : BaseActivity() {
         ensurePermission()
     }
 
+    // ---------- Android 17+: the system Contact Picker (5 Oct 2026) ----------
+    //
+    // Play's Contacts Permissions policy (in force 27 Jan 2027 for apps that
+    // target Android 17) asks apps that do not need the whole address book to
+    // use the system picker instead. On Android 17 the owner picks the
+    // customers in the phone's own list (up to 100 at a time, the picker's
+    // ceiling) and the app reads only those — READ_CONTACTS is not even
+    // declared there (manifest: maxSdkVersion 36). Older phones keep the
+    // full list below, because the picker exists only on Android 17.
+    // Constants are written out because this app compiles against API 36;
+    // their values are from developer.android.com's
+    // ContactsPickerSessionContract reference.
+
+    private val pickContacts = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val session = result.data?.data
+        if (result.resultCode != RESULT_OK || session == null) {
+            finish()
+            return@registerForActivityResult
+        }
+        showStatus(getString(R.string.loading_contacts))
+        lifecycleScope.launch {
+            val existing = dao.existingPhones()
+            val binned = dao.binnedPhones()
+            val picked = withContext(Dispatchers.IO) {
+                try {
+                    Contacts.fromPicker(this@ImportContactsActivity, session, existing, binned)
+                } catch (e: Exception) {
+                    emptyList()
+                }
+            }
+            allContacts = picked
+            // What the owner just chose is what he wants: ticked already.
+            picked.filter { !it.alreadyAdded && !it.inRecycleBin }.forEach { selected.add(it.phone) }
+            updateSelectedCount()
+            if (picked.isEmpty()) showStatus(getString(R.string.no_contacts_found)) else { hideStatus(); applyFilter() }
+        }
+    }
+
+    private fun openSystemPicker() {
+        val intent = Intent("android.provider.action.PICK_CONTACTS")
+            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            .putExtra("android.provider.extra.PICK_CONTACTS_SELECTION_LIMIT", 100)
+            .putExtra("android.provider.extra.PICK_CONTACTS_MATCH_ALL_DATA_FIELDS", false)
+            .putStringArrayListExtra(
+                "android.provider.extra.PICK_CONTACTS_REQUESTED_DATA_FIELDS",
+                arrayListOf(android.provider.ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+            )
+        try {
+            pickContacts.launch(intent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            showStatus(getString(R.string.contacts_picker_missing))
+        }
+    }
+
     /** Explain before asking. A bare system prompt with no reason is not fair to the user. */
     private fun ensurePermission() {
+        if (Build.VERSION.SDK_INT >= 37) { // Android 17
+            openSystemPicker()
+            return
+        }
         val granted = ContextCompat.checkSelfPermission(
             this, Manifest.permission.READ_CONTACTS
         ) == PackageManager.PERMISSION_GRANTED

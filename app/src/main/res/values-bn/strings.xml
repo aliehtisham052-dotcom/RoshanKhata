@@ -256,6 +256,7 @@
     <string name="already_added">যোগ হয়েছে</string>
     <string name="loading_contacts">কন্টাক্ট লোড হচ্ছে\u2026</string>
     <string name="no_contacts_found">এই ফোনে কোনো কন্টাক্ট পাওয়া যায়নি।</string>
+    <string name="contacts_picker_missing">এই ফোনে পরিচিতি বাছাইয়ের ব্যবস্থা নেই। গ্রাহক হাতে যোগ করুন।</string>
     <string name="no_matching_contacts">আপনার খোঁজে কোনো কন্টাক্ট মেলেনি।</string>
     <string name="continue_action">এগিয়ে যান</string>
     <string name="contacts_permission_title">কন্টাক্ট দেখার অনুমতি দেবেন?</string>
