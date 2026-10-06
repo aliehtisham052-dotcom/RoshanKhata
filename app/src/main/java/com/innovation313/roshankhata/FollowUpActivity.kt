@@ -200,15 +200,20 @@ class FollowUpActivity : BaseActivity() {
         // reads the agreed date without blocking the tap.
         lifecycleScope.launch {
             val promisedDate = runCatching { dao.reminderDateForParty(party.id) }.getOrNull()
+            // The ladder (6 Oct) picks how firm this one is: gentle, plain, serious.
+            val state = com.innovation313.roshankhata.data.ReminderLadder.state(this@FollowUpActivity, party.id)
             val message = Reminder.buildMessage(
                 this@FollowUpActivity,
                 partyName = party.name,
                 balance = party.balance,
                 businessName = BusinessProfile.businessName(this@FollowUpActivity),
-                promisedDate = promisedDate
+                promisedDate = promisedDate,
+                step = com.innovation313.roshankhata.data.ReminderLadder.step(state, party.balance, System.currentTimeMillis()),
+                firstSentAt = state?.firstAt
             )
             Reminder.sendViaWhatsApp(this@FollowUpActivity, party.phone, message)
             ReminderLog.record(this@FollowUpActivity, party.id)
+            com.innovation313.roshankhata.data.ReminderLadder.record(this@FollowUpActivity, party.id, party.balance)
             reminded.value = ReminderLog.openedToday(this@FollowUpActivity)
         }
     }

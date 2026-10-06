@@ -221,6 +221,11 @@
     <string name="reminder_preview_help">پیش از ارسال آن را بخوانید. همه‌چیز اینجا قابل ویرایش است — روشن خاتا آن را به واتساپ یا برنامه پیامک می‌سپارد و ارسال را خودتان می‌زنید.</string>
     <string name="reminder_they_owe">*یادآوری پرداخت*\n\nجناب *%1$s*،\n\nمبلغ بدهی: *%2$s*\n\nلطفاً در اولین فرصت پرداخت را ترتیب دهید.\n\nسپاسگزاریم.</string>
     <string name="reminder_they_owe_by_date">*یادآوری پرداخت*\n\nجناب *%1$s*،\n\nمبلغ بدهی: *%2$s*\nتاریخ توافق‌شده: *%3$s*\n\nلطفاً تا تاریخ توافق‌شده پرداخت کنید.\n\nسپاسگزاریم.</string>
+    <string name="reminder_step_gentle">ملایم</string>
+    <string name="reminder_step_plain">روشن</string>
+    <string name="reminder_step_serious">جدی</string>
+    <string name="reminder_step2">*یادآوری دوم*\n\n*%1$s* گرامی،\n\nمبلغ باقی‌مانده: *%2$s*\nیادآوری اول: %3$s\n\nاین دومین یادآوری ماست. لطفاً این هفته مبلغ را پرداخت کنید.\n\nسپاسگزاریم.</string>
+    <string name="reminder_step3">*پرداخت معوق*\n\n*%1$s* گرامی،\n\nمبلغ باقی‌مانده: *%2$s*\n\nچند بار یادآوری کرده‌ایم و مبلغ هنوز باقی است. لطفاً پرداخت کنید یا تاریخ پرداخت را بگویید تا حساب تسویه شود.\n\nاز همکاری شما سپاسگزاریم.</string>
     <string name="reminder_i_owe">*اطلاع حساب*\n\nجناب *%1$s*،\n\nبدهی ما به شما: *%2$s*\n\nان‌شاءالله به‌زودی می‌پردازیم. اگر حساب شما با ما متفاوت است خبر دهید.\n\nسپاسگزاریم.</string>
     <string name="send_reminder">ارسال یادآوری</string>
     <string name="open_whatsapp">باز کردن واتساپ</string>

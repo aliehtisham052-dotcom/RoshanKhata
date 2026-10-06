@@ -221,6 +221,11 @@
     <string name="reminder_preview_help">موڪلڻ کان اڳ پڙهي وٺو. هتي سڀ ڪجهه بدلائي سگهو ٿا — روشن کاتو اهو واٽس ايپ يا SMS ايپ کي ڏيندو، ۽ موڪلڻ جو بٽڻ توهان پاڻ دٻائيندا.</string>
     <string name="reminder_they_owe">*ادائيگي جي ياد ڏياري*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\n\nمهرباني ڪري جلد کان جلد ادائيگي جو بندوبست ڪريو.\n\nمهرباني.</string>
     <string name="reminder_they_owe_by_date">*ادائيگي جي ياد ڏياري*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\nطئي ٿيل تاريخ: *%3$s*\n\nمهرباني ڪري طئي ٿيل تاريخ تائين ادا ڪري ڇڏيو.\n\nمهرباني.</string>
+    <string name="reminder_step_gentle">نرم</string>
+    <string name="reminder_step_plain">صاف</string>
+    <string name="reminder_step_serious">سنجيده</string>
+    <string name="reminder_step2">*ٻي ياد ڏياريندڙ*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\nپهرين ياد ڏياريندڙ: %3$s\n\nهي اسان جي ٻي ياد ڏياريندڙ آهي. مهرباني ڪري هن هفتي رقم ادا ڪريو.\n\nمهرباني.</string>
+    <string name="reminder_step3">*ادائگي باقي آهي*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\n\nڪيترائي ڀيرا ياد ڏيارڻ کان پوءِ به رقم باقي آهي. مهرباني ڪري ادا ڪريو، يا ادائگي جي تاريخ ٻڌايو ته جيئن حساب صاف ٿئي.\n\nتوهان جي تعاون جي مهرباني.</string>
     <string name="reminder_i_owe">*کاتي جي اطلاع*\n\nمحترم *%1$s*،\n\nاسان تي توهان جو: *%2$s*\n\nانشاءالله جلد ادا ڪنداسين. جيڪڏهن توهان جو حساب اسان کان مختلف هجي ته ٻڌايو.\n\nمهرباني.</string>
     <string name="send_reminder">ياد ڏياريو</string>
     <string name="open_whatsapp">واٽس ايپ کوليو</string>

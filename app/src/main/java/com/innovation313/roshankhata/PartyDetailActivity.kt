@@ -2162,19 +2162,51 @@ class PartyDetailActivity : BaseActivity() {
     private fun showReminderDialog(viaWhatsApp: Boolean, promisedDate: Long?) {
         val view = layoutInflater.inflate(R.layout.dialog_reminder_preview, null)
         val etMessage: EditText = view.findViewById(R.id.etMessage)
-        etMessage.setText(
-            Reminder.buildMessage(
-                context = this,
-                partyName = partyName,
-                balance = currentBalance,
-                businessName = BusinessProfile.businessName(this),
-                promisedDate = promisedDate,
-                // The preview must be what actually gets sent: SMS shows no
-                // bold, so the owner should not be reading asterisks here
-                // and wondering what the customer will see.
-                forSms = !viaWhatsApp
+        // The ladder (6 Oct): the app picks the next step, the owner can change it.
+        val ladder = com.innovation313.roshankhata.data.ReminderLadder
+        val state = ladder.state(this, partyId)
+        fun fill(step: Int) {
+            etMessage.setText(
+                Reminder.buildMessage(
+                    context = this,
+                    partyName = partyName,
+                    balance = currentBalance,
+                    businessName = BusinessProfile.businessName(this),
+                    promisedDate = promisedDate,
+                    // The preview must be what actually gets sent: SMS shows no
+                    // bold, so the owner should not be reading asterisks here
+                    // and wondering what the customer will see.
+                    forSms = !viaWhatsApp,
+                    step = step,
+                    firstSentAt = state?.firstAt
+                )
             )
-        )
+            etMessage.setSelection(etMessage.text?.length ?: 0)
+        }
+        if (com.innovation313.roshankhata.data.Money.isPositive(currentBalance)) {
+            val group = com.google.android.material.chip.ChipGroup(this).apply {
+                isSingleSelection = true
+                isSelectionRequired = true
+            }
+            val labels = listOf(R.string.reminder_step_gentle, R.string.reminder_step_plain, R.string.reminder_step_serious)
+            val suggested = ladder.step(state, currentBalance, System.currentTimeMillis())
+            labels.forEachIndexed { i, label ->
+                val chip = layoutInflater.inflate(R.layout.item_rate_list_chip, group, false) as com.google.android.material.chip.Chip
+                chip.id = View.generateViewId()
+                chip.text = getString(label)
+                chip.tag = i + 1
+                chip.isChecked = i + 1 == suggested
+                group.addView(chip)
+            }
+            group.setOnCheckedStateChangeListener { g, ids ->
+                val c = ids.firstOrNull()?.let { g.findViewById<com.google.android.material.chip.Chip>(it) } ?: return@setOnCheckedStateChangeListener
+                fill(c.tag as Int)
+            }
+            (view as android.view.ViewGroup).addView(group, 0)
+            fill(suggested)
+        } else {
+            fill(ladder.GENTLE)
+        }
 
         // Park the cursor past the last character. setText leaves it at
         // position 0 — sitting inside the amount, where one accidental key
@@ -2189,6 +2221,9 @@ class PartyDetailActivity : BaseActivity() {
                 if (viaWhatsApp) R.string.open_whatsapp else R.string.open_sms
             ) { _, _ ->
                 val message = etMessage.text.toString()
+                if (com.innovation313.roshankhata.data.Money.isPositive(currentBalance)) {
+                    ladder.record(this, partyId, currentBalance)
+                }
                 if (viaWhatsApp) {
                     Reminder.sendViaWhatsApp(this, partyPhone, message)
                 } else {

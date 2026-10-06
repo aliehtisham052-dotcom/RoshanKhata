@@ -228,6 +228,11 @@
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
     <string name="reminder_they_owe_by_date">*Payment Reminder*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\nAgreed date: *%3$s*\n\nKindly clear it by the agreed date.\n\nThank you.</string>
+    <string name="reminder_step_gentle">Gentle</string>
+    <string name="reminder_step_plain">Plain</string>
+    <string name="reminder_step_serious">Serious</string>
+    <string name="reminder_step2">*Second Reminder*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\nFirst reminder sent: %3$s\n\nThis is our second reminder. Kindly clear the amount this week.\n\nThank you.</string>
+    <string name="reminder_step3">*Payment Pending*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\n\nWe have reminded you several times and the amount is still due. Kindly pay, or tell us the date you will pay, so we can settle the account.\n\nThank you for your understanding.</string>
     <string name="reminder_i_owe">*Payment Note*\n\nDear *%1$s*,\n\nWe owe you: *%2$s*\n\nWe will settle it soon. If your records differ from ours, please let us know.\n\nThank you.</string>
     <string name="send_reminder">Send Reminder</string>
     <string name="open_whatsapp">Open WhatsApp</string>
