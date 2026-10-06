@@ -23,8 +23,17 @@ import com.innovation313.roshankhata.data.ThemeMode
 object MoreSheet {
 
     fun show(activity: Activity) {
+        val items = entries(activity)
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.more_title)
+            .setItems(items.map { activity.getString(it.first) }.toTypedArray()) { _, which -> items[which].second() }
+            .show()
+    }
+
+    /** The settings and doors, in order; the Home drawer lists the same (6 Oct). */
+    fun entries(activity: Activity): List<Pair<Int, () -> Unit>> {
         val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(activity)
-        val items = listOfNotNull<Pair<Int, () -> Unit>>(
+        return listOfNotNull<Pair<Int, () -> Unit>>(
             R.string.app_lock to { appLock(activity) },
             R.string.screen_privacy to { ScreenPrivacyDialog.show(activity) },
             R.string.products_stock to { activity.startActivity(Intent(activity, ProductsActivity::class.java)) },
@@ -40,10 +49,6 @@ object MoreSheet {
             R.string.help_support to { activity.startActivity(Intent(activity, HelpActivity::class.java)) },
             R.string.about_us to { activity.startActivity(Intent(activity, AboutActivity::class.java)) }
         )
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.more_title)
-            .setItems(items.map { activity.getString(it.first) }.toTypedArray()) { _, which -> items[which].second() }
-            .show()
     }
 
     /**
