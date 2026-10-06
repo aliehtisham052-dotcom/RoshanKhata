@@ -1809,6 +1809,20 @@ interface KhataDao {
            "AND b.billDate < :to")
     suspend fun profitPurchaseLinesBefore(to: Long): List<Profit.PurchaseLine>
 
+    // ---------- Cash flow (6 Oct; read-only, arithmetic in [CashFlow]) ----------
+
+    /** Credit bills, live suppliers only. What is still owed comes from the ledger (see CashFlow). */
+    @Query("SELECT b.partyId AS partyId, p.name AS partyName, b.totalAmount AS totalAmount, b.billDate AS billDate, " +
+           "b.dueDate AS dueDate, b.isPaidInFull AS isPaidInFull " +
+           "FROM supplier_bills b JOIN parties p ON p.id = b.partyId " +
+           "WHERE b.isDeleted = 0 AND p.isDeleted = 0 AND b.isPaidInFull = 0")
+    suspend fun cashFlowBillsOnce(): List<CashFlow.Bill>
+
+    /** Parties who named a harvest to pay after (agri shops). */
+    @Query("SELECT id AS partyId, name AS name, harvestPromise AS at, 0.0 AS balance FROM parties " +
+           "WHERE isDeleted = 0 AND harvestPromise IS NOT NULL")
+    suspend fun cashFlowHarvestsOnce(): List<CashFlow.Harvest>
+
     /** Top customers by total purchases in a period. */
     @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
            "FROM transactions t JOIN parties p ON p.id = t.partyId " +

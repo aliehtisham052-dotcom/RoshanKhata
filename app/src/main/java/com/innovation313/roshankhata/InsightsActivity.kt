@@ -36,6 +36,7 @@ class InsightsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_insights)
         findViewById<View>(R.id.btnAskVoice).setOnClickListener { askByVoice() }
+        findViewById<View>(R.id.btnCashFlow).setOnClickListener { startActivity(android.content.Intent(this, CashFlowActivity::class.java)) }
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)

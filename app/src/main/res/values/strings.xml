@@ -903,6 +903,25 @@ You can change this any time from this screen.</string>
     <string name="vq_no_recognizer">This phone has no speech recognition app.</string>
     <string name="vq_not_paid_body">The Follow-up list puts the customers to chase first at the top.</string>
     <string name="vq_expiring_body">The Expiring stock screen lists what runs out soonest.</string>
+    <string name="cf_open">Cash flow: money coming in and going out</string>
+    <string name="cf_title">Cash flow</string>
+    <string name="cf_subtitle">Money promised to come in, and money due to go out</string>
+    <string name="cf_days">%1$s days</string>
+    <string name="cf_in">Coming in</string>
+    <string name="cf_out">Going out</string>
+    <string name="cf_gap">Week of %1$s: %2$s more is due to go out than is promised in by then.</string>
+    <string name="cf_no_gap">In this period, the money promised in covers what is due to go out.</string>
+    <string name="cf_overdue">Date already passed</string>
+    <string name="cf_ahead">Coming up</string>
+    <string name="cf_kind_plan">Instalment</string>
+    <string name="cf_kind_cheque_in">Cheque to receive</string>
+    <string name="cf_kind_harvest">After harvest</string>
+    <string name="cf_kind_bill">Supplier bill</string>
+    <string name="cf_kind_cheque_out">Cheque to pay</string>
+    <string name="cf_empty">No dates yet. They come from instalment plans, cheques and supplier bills with a due date.</string>
+    <string name="cf_note">Only what has a date is counted: instalment plans, pending cheques and supplier bills with a due date. A promise is not money in hand, so promises already broken are not counted on; late bills are due now.</string>
+    <string name="cf_undated">Supplier bills without a due date, not counted: %1$s</string>
+    <string name="cf_week" translatable="false">%1$s – %2$s</string>
     <string name="staff_title">Staff &amp; salary</string>
     <string name="staff_subtitle">Attendance, advances and salary of the people who work here</string>
     <string name="staff_prev_month">Previous month</string>
