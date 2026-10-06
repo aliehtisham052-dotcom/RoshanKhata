@@ -177,6 +177,7 @@ class MainActivity : BaseActivity() {
             else list.filterNot { com.innovation313.roshankhata.data.ViewerMode.ownerOnly(it.destination) }
 
         featureViews.clear()
+        com.innovation313.roshankhata.ui.HomeSlides.attach(findViewById(R.id.homeSlides), findViewById(R.id.homeSlideDots))
         fillGrid(findViewById(R.id.gridDaily), shown(daily))
         fillGrid(findViewById(R.id.gridBusiness), shown(business))
         equalizeTileHeights()

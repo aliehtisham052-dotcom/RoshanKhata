@@ -896,6 +896,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="sr_none">Abhi rate wale supplier bills nahi. Supplier bill ki har line par rate likhein, yahan nazar aayega.</string>
     <string name="sr_note">Rate sirf aik hi ikai mein milaye jate hain, aur sasta rate sirf pichhle 6 mahine ka gina jata hai.</string>
     <string name="sr_nothing_to_watch">Kuch dekhne ki zaroorat nahi: koi cheez mehengi nahi hui, aur kisi aur supplier se sasta nahi mila.</string>
+    <string name="home_slide_cf">Agle 30 din mein kya aayega, kya jayega</string>
+    <string name="home_slide_rates">Apni qeematein WhatsApp par tasveer mein</string>
+    <string name="home_slide_cheaper">Har supplier ka rate milayein</string>
+    <string name="home_slide_poster">WhatsApp Status ke liye tasveer</string>
     <string name="staff_title">Staff aur tankhwah</string>
     <string name="staff_subtitle">Kaam karne walon ki hazri, advance aur tankhwah</string>
     <string name="staff_prev_month">Pichla mahina</string>

@@ -322,6 +322,21 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
+            <!-- The feature slider (6 Oct): four cards that turn on their own; HomeSlides. -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/homeSlides"
+                android:layout_width="match_parent"
+                android:layout_height="92dp"
+                android:layout_marginBottom="6dp" />
+
+            <LinearLayout
+                android:id="@+id/homeSlideDots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"
+                android:orientation="horizontal" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

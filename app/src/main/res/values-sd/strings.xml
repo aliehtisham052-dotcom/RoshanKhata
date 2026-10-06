@@ -924,6 +924,10 @@
     <string name="sr_none">اڃا ريٽ وارا سپلائر بل ناهن. سپلائر بل جي هر لائن تي ريٽ لکو، هتي نظر ايندو.</string>
     <string name="sr_note">ريٽ رڳو هڪ ئي ماپ ۾ ڀيٽيا وڃن ٿا، ۽ سستو ريٽ رڳو پوئين 6 مهينن جو ڳڻيو وڃي ٿو.</string>
     <string name="sr_nothing_to_watch">ڪجهه ڏسڻ جي ضرورت ناهي: ڪا شيءِ مهانگي نه ٿي، ۽ ڪنهن ٻئي سپلائر کان سستو نه مليو.</string>
+    <string name="home_slide_cf">ايندڙ 30 ڏينهن ۾ ڇا ايندو، ڇا ويندو</string>
+    <string name="home_slide_rates">پنهنجون قيمتون واٽس ايپ تي تصوير ۾</string>
+    <string name="home_slide_cheaper">هر سپلائر جو ريٽ ڀيٽيو</string>
+    <string name="home_slide_poster">واٽس ايپ اسٽيٽس لاءِ تصوير</string>
     <string name="staff_title">اسٽاف ۽ پگهار</string>
     <string name="staff_subtitle">ڪم ڪندڙن جي حاضري، ايڊوانس ۽ پگهار</string>
     <string name="staff_prev_month">گذريل مهينو</string>

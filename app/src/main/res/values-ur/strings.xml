@@ -896,6 +896,10 @@
     <string name="sr_none">ابھی ریٹ والے سپلائر بل نہیں۔ سپلائر بل کی ہر لائن پر ریٹ لکھیں، یہاں نظر آئے گا۔</string>
     <string name="sr_note">ریٹ صرف ایک ہی اکائی میں ملائے جاتے ہیں، اور سستا ریٹ صرف پچھلے 6 مہینوں کا گنا جاتا ہے۔</string>
     <string name="sr_nothing_to_watch">کچھ دیکھنے کی ضرورت نہیں: کوئی چیز مہنگی نہیں ہوئی، اور کسی اور سپلائر سے سستا نہیں ملا۔</string>
+    <string name="home_slide_cf">اگلے 30 دن میں کیا آئے گا، کیا جائے گا</string>
+    <string name="home_slide_rates">اپنی قیمتیں واٹس ایپ پر تصویر میں</string>
+    <string name="home_slide_cheaper">ہر سپلائر کا ریٹ ملائیں</string>
+    <string name="home_slide_poster">واٹس ایپ اسٹیٹس کے لیے تصویر</string>
     <string name="staff_title">اسٹاف اور تنخواہ</string>
     <string name="staff_subtitle">کام کرنے والوں کی حاضری، ایڈوانس اور تنخواہ</string>
     <string name="staff_prev_month">پچھلا مہینہ</string>
