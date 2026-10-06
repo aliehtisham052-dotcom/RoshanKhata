@@ -941,6 +941,59 @@ interface KhataDao {
     @Insert
     suspend fun restoreSchemes(items: List<Scheme>)
 
+    // ---------- Staff (v29) ----------
+
+    @Query("SELECT * FROM staff WHERE isActive = 1 ORDER BY name")
+    fun observeStaff(): Flow<List<Staff>>
+
+    @Insert
+    suspend fun insertStaff(staff: Staff): Long
+
+    @androidx.room.Update
+    suspend fun updateStaff(staff: Staff)
+
+    @Query("SELECT * FROM staff_attendance WHERE day >= :from AND day < :to")
+    fun observeAttendanceBetween(from: Long, to: Long): Flow<List<StaffAttendance>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun markAttendance(mark: StaffAttendance)
+
+    @Query("DELETE FROM staff_attendance WHERE staffId = :staffId AND day = :day")
+    suspend fun clearAttendance(staffId: Long, day: Long)
+
+    @Query("SELECT * FROM staff_payments WHERE isDeleted = 0 AND timestamp >= :from AND timestamp < :to ORDER BY timestamp")
+    fun observeStaffPaymentsBetween(from: Long, to: Long): Flow<List<StaffPayment>>
+
+    @Insert
+    suspend fun insertStaffPayment(payment: StaffPayment): Long
+
+    @Query("SELECT * FROM staff ORDER BY id")
+    suspend fun allStaffForBackup(): List<Staff>
+
+    @Query("SELECT * FROM staff_attendance ORDER BY id")
+    suspend fun allAttendanceForBackup(): List<StaffAttendance>
+
+    @Query("SELECT * FROM staff_payments ORDER BY id")
+    suspend fun allStaffPaymentsForBackup(): List<StaffPayment>
+
+    @Query("DELETE FROM staff")
+    suspend fun wipeStaff()
+
+    @Query("DELETE FROM staff_attendance")
+    suspend fun wipeAttendance()
+
+    @Query("DELETE FROM staff_payments")
+    suspend fun wipeStaffPayments()
+
+    @Insert
+    suspend fun restoreStaff(items: List<Staff>)
+
+    @Insert
+    suspend fun restoreAttendance(items: List<StaffAttendance>)
+
+    @Insert
+    suspend fun restoreStaffPayments(items: List<StaffPayment>)
+
     // ---------- Galla milan (v26) ----------
 
     @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
@@ -1631,7 +1684,11 @@ interface KhataDao {
         // Galla milan counts (v26). Additive.
         dayCloses: List<DayClose> = emptyList(),
         // Company schemes (v27). Additive.
-        schemes: List<Scheme> = emptyList()
+        schemes: List<Scheme> = emptyList(),
+        // Staff (v29). Additive.
+        staff: List<Staff> = emptyList(),
+        attendance: List<StaffAttendance> = emptyList(),
+        staffPayments: List<StaffPayment> = emptyList()
     ) {
         // Children before parents on the way out. invoice_items cascades off
         // invoices, so items are wiped first; wiping invoices first would fire
@@ -1654,6 +1711,9 @@ interface KhataDao {
         wipeDismissedDuplicates()
         wipeDayCloses()
         wipeSchemes()
+        wipeStaff()
+        wipeAttendance()
+        wipeStaffPayments()
 
         restoreProducts(products)
         restoreParties(parties)
@@ -1674,6 +1734,9 @@ interface KhataDao {
         restoreDismissedDuplicates(dismissedDuplicates)
         restoreDayCloses(dayCloses)
         restoreSchemes(schemes)
+        restoreStaff(staff)
+        restoreAttendance(attendance)
+        restoreStaffPayments(staffPayments)
     }
 
 

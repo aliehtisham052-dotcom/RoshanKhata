@@ -33,6 +33,20 @@
             android:textColor="@color/section_cashbook_soft"
             android:textSize="12sp" />
 
+        <!-- Staff (v29): wages belong next to the cash they are paid from. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStaff"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="44dp"
+            android:text="@string/staff_title"
+            android:textColor="@color/white"
+            app:icon="@drawable/ic_nav_khata"
+            app:iconTint="@color/white"
+            app:strokeColor="@color/white" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
