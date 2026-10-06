@@ -95,6 +95,28 @@ object Backup {
         root.put("cheques", JSONArray().apply {
             dao.allChequesForBackup().forEach { put(chequeToJson(it)) }
         })
+        // Staff (v29): who works here, the days marked, and what was handed over.
+        root.put("staff", JSONArray().apply {
+            dao.allStaffForBackup().forEach { st ->
+                put(JSONObject().apply {
+                    put("id", st.id); put("name", st.name); put("phone", st.phone ?: JSONObject.NULL)
+                    put("monthlySalary", st.monthlySalary); put("isActive", st.isActive); put("createdAt", st.createdAt)
+                })
+            }
+        })
+        root.put("staffAttendance", JSONArray().apply {
+            dao.allAttendanceForBackup().forEach { m ->
+                put(JSONObject().apply { put("id", m.id); put("staffId", m.staffId); put("day", m.day); put("status", m.status) })
+            }
+        })
+        root.put("staffPayments", JSONArray().apply {
+            dao.allStaffPaymentsForBackup().forEach { sp ->
+                put(JSONObject().apply {
+                    put("id", sp.id); put("staffId", sp.staffId); put("amount", sp.amount); put("kind", sp.kind)
+                    put("timestamp", sp.timestamp); put("note", sp.note ?: JSONObject.NULL); put("isDeleted", sp.isDeleted)
+                })
+            }
+        })
         root.put("schemes", JSONArray().apply {
             dao.allSchemesForBackup().forEach { s ->
                 put(JSONObject().apply {
@@ -377,6 +399,30 @@ object Backup {
                 (0 until arr.length()).map { jsonToCash(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Absent before v29: no staff.
+            val staff = root.optJSONArray("staff")?.let { arr ->
+                (0 until arr.length()).map { i ->
+                    val o = arr.getJSONObject(i)
+                    Staff(id = o.getLong("id"), name = o.getString("name"), phone = o.optNullableString("phone"),
+                        monthlySalary = o.getDouble("monthlySalary"), isActive = o.optBoolean("isActive", true),
+                        createdAt = o.optLong("createdAt", 0L))
+                }
+            } ?: emptyList()
+            val attendance = root.optJSONArray("staffAttendance")?.let { arr ->
+                (0 until arr.length()).map { i ->
+                    val o = arr.getJSONObject(i)
+                    StaffAttendance(id = o.getLong("id"), staffId = o.getLong("staffId"), day = o.getLong("day"), status = o.getInt("status"))
+                }
+            } ?: emptyList()
+            val staffPayments = root.optJSONArray("staffPayments")?.let { arr ->
+                (0 until arr.length()).map { i ->
+                    val o = arr.getJSONObject(i)
+                    StaffPayment(id = o.getLong("id"), staffId = o.getLong("staffId"), amount = o.getDouble("amount"),
+                        kind = o.getInt("kind"), timestamp = o.getLong("timestamp"), note = o.optNullableString("note"),
+                        isDeleted = o.optBoolean("isDeleted", false))
+                }
+            } ?: emptyList()
+
             // Absent before v27: no schemes.
             val schemes = root.optJSONArray("schemes")?.let { arr ->
                 (0 until arr.length()).map { i ->
@@ -518,7 +564,10 @@ object Backup {
                 businessName = root.optString("businessName").takeIf { it.isNotBlank() },
                 entryItems = entryItems,
                 dayCloses = dayCloses,
-                schemes = schemes
+                schemes = schemes,
+                staff = staff,
+                attendance = attendance,
+                staffPayments = staffPayments
             )
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read as a backup.") to null
@@ -548,7 +597,10 @@ object Backup {
         /** Goods lines — read from the file, or rebuilt from an older file's entries. */
         val entryItems: List<EntryItem> = emptyList(),
         val dayCloses: List<DayClose> = emptyList(),
-        val schemes: List<Scheme> = emptyList()
+        val schemes: List<Scheme> = emptyList(),
+        val staff: List<Staff> = emptyList(),
+        val attendance: List<StaffAttendance> = emptyList(),
+        val staffPayments: List<StaffPayment> = emptyList()
     )
 
     /**
@@ -606,7 +658,10 @@ object Backup {
             dismissedDuplicates = data.dismissedDuplicates,
             entryItems = data.entryItems,
             dayCloses = data.dayCloses,
-            schemes = data.schemes
+            schemes = data.schemes,
+            staff = data.staff,
+            attendance = data.attendance,
+            staffPayments = data.staffPayments
         )
 
         data.businessProfile?.let { restoreBusinessProfile(context, it) }

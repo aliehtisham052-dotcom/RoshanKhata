@@ -139,6 +139,12 @@
             android:parentActivityName=".ProductsActivity" />
 
         <activity
+            android:name=".StaffActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".CashbookActivity" />
+
+        <activity
             android:name=".PosterActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"

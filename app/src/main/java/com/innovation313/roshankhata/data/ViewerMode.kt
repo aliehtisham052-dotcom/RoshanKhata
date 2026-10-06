@@ -157,7 +157,9 @@ object ViewerMode {
         "DuplicateCustomersActivity",
         "RecycleBinActivity",
         "SnapshotsActivity",
-        "ImageCropActivity"
+        "ImageCropActivity",
+        // Salaries are private: a helper may be on the list himself.
+        "StaffActivity"
     )
 
     fun ownerOnly(screen: Class<*>): Boolean = screen.simpleName in OWNER_ONLY

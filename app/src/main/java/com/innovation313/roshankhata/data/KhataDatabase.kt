@@ -22,7 +22,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         InvoiceItem::class,
         EntryItem::class,
         DayClose::class,
-        Scheme::class
+        Scheme::class,
+        Staff::class,
+        StaffAttendance::class,
+        StaffPayment::class
     ],
     version = KHATA_DB_VERSION,
     exportSchema = true

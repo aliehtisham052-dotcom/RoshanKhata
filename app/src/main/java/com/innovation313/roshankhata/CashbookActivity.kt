@@ -52,6 +52,12 @@ class CashbookActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cashbook)
+        // Owner only, like the screen itself: a helper's phone shows no staff list.
+        findViewById<android.view.View>(R.id.btnStaff).apply {
+            visibility = if (com.innovation313.roshankhata.data.ViewerMode.isOn(this@CashbookActivity))
+                android.view.View.GONE else android.view.View.VISIBLE
+            setOnClickListener { startActivity(android.content.Intent(this@CashbookActivity, StaffActivity::class.java)) }
+        }
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)

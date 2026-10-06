@@ -672,7 +672,23 @@ val MIGRATION_27_28 = object : Migration(27, 28) {
  * update that reaches a phone without its migration crashes that phone on
  * open; this makes such an update impossible to build green.
  */
-const val KHATA_DB_VERSION = 28
+/**
+ * v29 (6 Oct 2026): staff, their attendance and their payments. Three new
+ * tables, nothing existing touched. The SQL is Room's own create statements
+ * for the Staff entities; StaffMigrationOnDeviceTest holds them to that,
+ * column by column, against the tables Room builds itself.
+ */
+val MIGRATION_28_29 = object : Migration(28, 29) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("CREATE TABLE IF NOT EXISTS `staff` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `phone` TEXT, `monthlySalary` REAL NOT NULL, `isActive` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL)")
+        db.execSQL("CREATE TABLE IF NOT EXISTS `staff_attendance` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `staffId` INTEGER NOT NULL, `day` INTEGER NOT NULL, `status` INTEGER NOT NULL)")
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_staff_attendance_staffId_day` ON `staff_attendance` (`staffId`, `day`)")
+        db.execSQL("CREATE TABLE IF NOT EXISTS `staff_payments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `staffId` INTEGER NOT NULL, `amount` REAL NOT NULL, `kind` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `note` TEXT, `isDeleted` INTEGER NOT NULL)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_staff_payments_staffId` ON `staff_payments` (`staffId`)")
+    }
+}
+
+const val KHATA_DB_VERSION = 29
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -702,5 +718,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_24_25,
     MIGRATION_25_26,
     MIGRATION_26_27,
-    MIGRATION_27_28
+    MIGRATION_27_28,
+    MIGRATION_28_29
 )
