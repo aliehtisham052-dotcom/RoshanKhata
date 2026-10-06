@@ -342,8 +342,13 @@ class MainActivity : BaseActivity() {
         super.onResume()
         // The bell's count, from the ledger on this phone (HomeAlerts).
         lifecycleScope.launch {
-            val n = withContext(kotlinx.coroutines.Dispatchers.IO) {
-                try { com.innovation313.roshankhata.data.HomeAlerts.compute(this@MainActivity, dao) { Format.money(it) }.size } catch (e: Exception) { 0 }
+            val n = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                try {
+                    com.innovation313.roshankhata.data.HomeAlerts.compute(
+                        this@MainActivity,
+                        com.innovation313.roshankhata.data.KhataDatabase.get(this@MainActivity).khataDao()
+                    ) { Format.money(it) }.size
+                } catch (e: Exception) { 0 }
             }
             findViewById<TextView>(R.id.tvAlertBadge)?.apply {
                 visibility = if (n > 0) View.VISIBLE else View.GONE
