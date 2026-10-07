@@ -102,6 +102,34 @@ interface KhataDao {
     )
     fun observeLedgerPoints(): Flow<List<LedgerPoint>>
 
+    /**
+     * The same lines, for the customers who OWE something only (P3 of the
+     * scaling work, 7 Oct 2026).
+     *
+     * Home's "paying late" count and the Follow-up screen read every live
+     * line of the whole book, then threw away every customer who owed
+     * nothing — on the owner's book that is 1,203 of 1,205 customers, and on
+     * a wholesaler's it is 300,000 rows into memory on every Home and after
+     * every entry, for a count that only ever concerns the owing few. The
+     * HAVING keeps the SUM rule of observePartiesWithBalance (deleted lines
+     * out) and the same epsilon Money.isPositive uses, so "owes" means the
+     * same here as on the list.
+     */
+    @Query(
+        """
+        SELECT t.partyId, t.timestamp, t.amount, t.isGiven FROM transactions t
+        WHERE t.isDeleted = 0 AND t.partyId IN (
+            SELECT p.id FROM parties p
+            JOIN transactions x ON x.partyId = p.id AND x.isDeleted = 0
+            WHERE p.isDeleted = 0
+            GROUP BY p.id
+            HAVING SUM(CASE WHEN x.isGiven = 1 THEN x.amount ELSE -x.amount END) >= 0.005
+        )
+        ORDER BY t.partyId, t.timestamp
+        """
+    )
+    fun observeOwingLedgerPoints(): Flow<List<LedgerPoint>>
+
     /** Fasal ka Hisaab: every live line of a live CUSTOMER (suppliers are not crop credit). */
     @Query(
         "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +

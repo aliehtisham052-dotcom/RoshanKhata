@@ -529,7 +529,7 @@ class MainActivity : BaseActivity() {
             try {
                 val dao = KhataDatabase.get(this@MainActivity).khataDao()
                 dao.observePartiesWithBalance()
-                    .combine(dao.observeLedgerPoints()) { parties, points -> parties to points }
+                    .combine(dao.observeOwingLedgerPoints()) { parties, points -> parties to points }
                     .combine(dao.observePromises()) { (parties, points), promiseRows ->
                         val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
                         val habits = PaymentHabit.forAll(points)
