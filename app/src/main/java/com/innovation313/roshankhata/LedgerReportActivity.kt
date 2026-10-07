@@ -94,6 +94,14 @@ class LedgerReportActivity : BaseActivity() {
             applyRange()
         }
 
+        // Opens on the last 30 days, not the whole book (P5, 7 Oct). Both
+        // dates empty meant every line ever written, read, joined to its
+        // party and laid out as rows before the screen showed anything — on
+        // a wholesaler's book that is 300,000 rows for a report nobody asked
+        // for. The "whole book" button still gives all of it on purpose.
+        if (startMs == null && endMs == null) {
+            startMs = System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000
+        }
         btnPreview = findViewById(R.id.btnLrPreview)
         btnDownload = findViewById(R.id.btnLrDownload)
         btnShare = findViewById(R.id.btnLrShare)

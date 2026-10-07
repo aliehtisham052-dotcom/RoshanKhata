@@ -112,8 +112,28 @@ class BigBookPerfTest {
         }
     }
 
+    /**
+     * A backup of the whole big book: the one job that has to hold every
+     * line at once. Timed, and watched for the heap — an OutOfMemoryError
+     * here is the finding, not a flaky test.
+     */
+    @Test
+    fun backupOfTheWholeBookCompletes() {
+        val dao = KhataDatabase.get(context).khataDao()
+        val rt = Runtime.getRuntime()
+        val before = rt.totalMemory() - rt.freeMemory()
+        val t = SystemClock.elapsedRealtime()
+        val json = runBlocking { com.innovation313.roshankhata.data.Backup.export(context, dao) }
+        val ms = SystemClock.elapsedRealtime() - t
+        val after = rt.totalMemory() - rt.freeMemory()
+        val report = "backup of ${BigBook.CUSTOMERS} customers: ${json.length / 1024 / 1024} MB of JSON in $ms ms, heap ${before / 1048576} -> ${after / 1048576} MB of ${rt.maxMemory() / 1048576} (budget $BACKUP_BUDGET_MS)"
+        Log.i(TAG, report)
+        assertTrue(report, ms <= BACKUP_BUDGET_MS)
+    }
+
     companion object {
         const val TAG = "BigBookPerf"
+        const val BACKUP_BUDGET_MS = 60_000L
         const val OPEN_BUDGET_MS = 2_000L
         const val KEY_BUDGET_MS = 50L
         const val DETAIL_BUDGET_MS = 1_500L
