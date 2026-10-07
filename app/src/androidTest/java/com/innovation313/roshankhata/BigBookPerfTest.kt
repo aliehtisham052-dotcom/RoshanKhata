@@ -123,10 +123,11 @@ class BigBookPerfTest {
         val rt = Runtime.getRuntime()
         val before = rt.totalMemory() - rt.freeMemory()
         val t = SystemClock.elapsedRealtime()
-        val json = runBlocking { com.innovation313.roshankhata.data.Backup.export(context, dao) }
+        val file = runBlocking { com.innovation313.roshankhata.data.Backup.exportToCache(context, dao) }
         val ms = SystemClock.elapsedRealtime() - t
         val after = rt.totalMemory() - rt.freeMemory()
-        val report = "backup of ${BigBook.CUSTOMERS} customers: ${json.length / 1024 / 1024} MB of JSON in $ms ms, heap ${before / 1048576} -> ${after / 1048576} MB of ${rt.maxMemory() / 1048576} (budget $BACKUP_BUDGET_MS)"
+        val report = "backup of ${BigBook.CUSTOMERS} customers: ${file.length() / 1024 / 1024} MB file in $ms ms, heap ${before / 1048576} -> ${after / 1048576} MB of ${rt.maxMemory() / 1048576} (budget $BACKUP_BUDGET_MS)"
+        file.delete()
         Log.i(TAG, report)
         assertTrue(report, ms <= BACKUP_BUDGET_MS)
     }

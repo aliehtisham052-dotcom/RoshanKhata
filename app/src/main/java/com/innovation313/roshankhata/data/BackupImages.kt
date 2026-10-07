@@ -103,7 +103,14 @@ object BackupImages {
      * from. Older copies are cleared first: with photos these are large, and
      * yesterday's has no reader.
      */
-    suspend fun packCopy(context: Context, dao: KhataDao, json: String): File? {
+    /** [packCopy], from the streamed backup file (P6). */
+    suspend fun packCopy(context: Context, dao: KhataDao, json: File): File? =
+        packCopyFrom(context, dao) { out -> json.inputStream().buffered().use { it.copyTo(out) } }
+
+    suspend fun packCopy(context: Context, dao: KhataDao, json: String): File? =
+        packCopyFrom(context, dao) { out -> out.write(json.toByteArray(Charsets.UTF_8)) }
+
+    private suspend fun packCopyFrom(context: Context, dao: KhataDao, writeText: (java.io.OutputStream) -> Unit): File? {
         val dir = File(context.cacheDir, "backups").apply { mkdirs() }
         dir.listFiles()?.filter { it.name.startsWith(COPY_PREFIX) }?.forEach { it.delete() }
         val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.US).format(Date())
@@ -112,7 +119,7 @@ object BackupImages {
             val sources = collectFiles(context, dao).filter { helperMayHold(it.first) }
             ZipOutputStream(FileOutputStream(zip).buffered()).use { out ->
                 out.putNextEntry(ZipEntry(COPY_TEXT))
-                out.write(json.toByteArray(Charsets.UTF_8))
+                writeText(out)
                 out.closeEntry()
                 for ((entryName, file) in sources) {
                     out.putNextEntry(ZipEntry(entryName))

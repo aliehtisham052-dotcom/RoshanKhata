@@ -153,11 +153,11 @@ class BackupActivity : BaseActivity() {
 
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
-                val json = Backup.export(this@BackupActivity, dao)
-
-                val downloadPath = Backup.saveToDownloads(this@BackupActivity, json)
-                Backup.writeInternalCopy(this@BackupActivity, json)
-                val shareFile = Backup.writeToCache(this@BackupActivity, json)
+                // Streamed to one cache file, then copied (P6, 7 Oct): the
+                // book is never held in memory as a string, however big.
+                val shareFile = try { Backup.exportToCache(this@BackupActivity, dao) } catch (e: Exception) { null }
+                val downloadPath = shareFile?.let { Backup.saveToDownloads(this@BackupActivity, it) }
+                shareFile?.let { Backup.writeInternalCopy(this@BackupActivity, it) }
 
                 Pair(downloadPath, shareFile)
             }
@@ -735,8 +735,8 @@ class BackupActivity : BaseActivity() {
         Toast.makeText(this, R.string.drive_backing_up, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
-            val json = withContext(Dispatchers.IO) { Backup.export(this@BackupActivity, dao) }
-            val result = DriveBackup.backup(this@BackupActivity, name, json, force = replaceOtherPhone)
+            val file = withContext(Dispatchers.IO) { Backup.exportToCache(this@BackupActivity, dao) }
+            val result = DriveBackup.backup(this@BackupActivity, name, file, force = replaceOtherPhone)
 
             if (result.isFailure) {
                 val cause = result.exceptionOrNull()
