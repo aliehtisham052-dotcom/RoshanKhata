@@ -437,7 +437,11 @@ class MainActivity : BaseActivity() {
         alerts.groupBy { it.kind }.forEach { (kind, list) ->
             val c = look[kind] ?: return@forEach
             chips.addView(TextView(this).apply {
-                text = getString(R.string.today_chip, getString(c.label), Format.ltr(list.size.toString()))
+                // "Cheques · 2" when there are two; a single item is just its
+                // name — "Backup · 1" read as a count of nothing (the owner's
+                // note, 7 Oct).
+                text = if (list.size > 1) getString(R.string.today_chip, getString(c.label), Format.ltr(list.size.toString()))
+                    else getString(c.label)
                 textSize = 11f
                 setTypeface(null, android.graphics.Typeface.BOLD)
                 setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, c.fg))
