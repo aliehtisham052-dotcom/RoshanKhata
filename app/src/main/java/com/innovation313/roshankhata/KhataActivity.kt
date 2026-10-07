@@ -324,6 +324,13 @@ class KhataActivity : BaseActivity() {
     private fun observeData() {
         lifecycleScope.launch {
             dao.observePartiesWithBalance().collectLatest { list ->
+                // The search keys for this book, folded once, off the main
+                // thread (P1, 7 Oct) — see NameSearch.Key.
+                searchKeys = withContext(Dispatchers.Default) {
+                    HashMap<Long, NameSearch.Key>(list.size * 2).also { m ->
+                        for (p in list) m[p.id] = NameSearch.Key(p.name, p.phone)
+                    }
+                }
                 allParties = list
 
                 // The book has arrived at least once. Until it has, this list
@@ -343,9 +350,18 @@ class KhataActivity : BaseActivity() {
                 // paisa off zero, and the three plain comparisons would put
                 // that customer in a total AND leave them out of the settled
                 // count, while the screen printed Rs 0 either way.
-                totalGet = list.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-                totalGive = list.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
-                totalSettled = list.count { Money.isZero(it.balance) }
+                val sums = withContext(Dispatchers.Default) {
+                    var get = 0.0; var give = 0.0; var settled = 0
+                    for (p in list) when {
+                        Money.isPositive(p.balance) -> get += p.balance
+                        Money.isNegative(p.balance) -> give -= p.balance
+                        Money.isZero(p.balance) -> settled++
+                    }
+                    Triple(get, give, settled)
+                }
+                totalGet = sums.first
+                totalGive = sums.second
+                totalSettled = sums.third
                 renderTotals()
                 renderPartySummary(list)
                 render()
@@ -755,13 +771,52 @@ class KhataActivity : BaseActivity() {
     /** The last query rendered, so the list jumps to the top only when the typing changed. */
     private var lastQuery = ""
 
-    private fun render() {
-        val query = etSearch.text.toString().trim().lowercase()
+    /** Every live customer's name, prepared for search once per book (P1). */
+    private var searchKeys: Map<Long, NameSearch.Key> = emptyMap()
 
-        val filtered = if (query.isEmpty()) {
+    /** The render in flight; a new keystroke cancels the last one's work. */
+    private var renderJob: kotlinx.coroutines.Job? = null
+
+    /**
+     * Filtering, ranking and sorting the book happen OFF the main thread (P1
+     * of the scaling work, 7 Oct). On the owner's 1,205 customers this took a
+     * few milliseconds a keystroke; on ten thousand it held the keyboard.
+     * The main thread now only hands the list to the adapter.
+     */
+    private fun render() {
+        val q = NameSearch.Query(etSearch.text.toString())
+        val book = allParties
+        val keys = searchKeys
+        val range = dateRange
+        val side = sideFilter
+        val type = typeFilter
+        val sort = sortMode
+        renderJob?.cancel()
+        renderJob = lifecycleScope.launch {
+            val sorted = withContext(Dispatchers.Default) {
+                rank(book, keys, q, range, side, type, sort)
+            }
+            show(sorted, q.text)
+        }
+    }
+
+    private fun rank(
+        allParties: List<PartyWithBalance>,
+        keys: Map<Long, NameSearch.Key>,
+        q: NameSearch.Query,
+        dateRange: DateRangeFilter.Range,
+        sideFilter: SideFilter,
+        typeFilter: TypeFilter,
+        sortMode: SortMode
+    ): List<PartyWithBalance> {
+        val query = q.text
+        val filtered = if (q.isEmpty) {
             allParties
         } else {
-            allParties.filter { NameSearch.matches(it.name, it.phone, query) }
+            allParties.filter { p ->
+                val k = keys[p.id]
+                if (k != null) NameSearch.matches(k, q) else NameSearch.matches(p.name, p.phone, query)
+            }
         }
 
         // Days first. A customer belongs in the window if their last dealing
@@ -795,10 +850,15 @@ class KhataActivity : BaseActivity() {
             TypeFilter.SUPPLIERS -> bySide.filter { !it.isCustomer }
         }
 
-        val sorted = if (query.isNotEmpty()) {
+        return if (query.isNotEmpty()) {
             // While searching, the chosen sort steps aside for relevance —
             // by the same rule the contacts screen uses.
-            NameSearch.sort(byType, query) { it.name }
+            byType.sortedWith(
+                compareBy<PartyWithBalance> { p ->
+                    val k = keys[p.id]
+                    if (k != null) NameSearch.rank(k, q) else NameSearch.rank(p.name, query)
+                }.thenBy { keys[it.id]?.lower ?: it.name.lowercase() }
+            )
         } else when (sortMode) {
             SortMode.NAME_AZ -> byType.sortedBy { it.name.lowercase() }
             SortMode.NAME_ZA -> byType.sortedByDescending { it.name.lowercase() }
@@ -808,7 +868,10 @@ class KhataActivity : BaseActivity() {
             SortMode.I_OWE_MOST -> byType.sortedBy { it.balance }
             SortMode.RECENT -> byType.sortedByDescending { it.lastActivity }
         }
+    }
 
+    /** The ranked list, back on the main thread. */
+    private fun show(sorted: List<PartyWithBalance>, query: String) {
         shownParties = sorted
         // A typed search starts at the top (7 Oct). submitList keeps whatever
         // scroll the list had, so the best match — now ranked first — could

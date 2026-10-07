@@ -13,6 +13,57 @@ object NameSearch {
     private val SEPARATORS = charArrayOf(' ', '(', ')', '-', '.', ',', '/', '\'', '"')
 
     /**
+     * A name prepared for typing against, once, instead of on every keystroke
+     * (P1 of the scaling work, 7 Oct 2026).
+     *
+     * [matches] and [rank] fold the stored name and cut it into words every
+     * time they are asked. On a book of a thousand that is a few milliseconds
+     * a keystroke; on ten thousand it is the keyboard waiting. A Key does the
+     * folding and the cutting when the book arrives, and the two string
+     * methods above become lookups.
+     */
+    class Key(name: String, phone: String?) {
+        val lower: String = name.lowercase()
+        val words: List<String> = lower.split(*SEPARATORS)
+        val folded: String = fold(lower)
+        val foldedWords: List<String> = words.mapNotNull { fold(it).takeIf { f -> f.isNotEmpty() } }
+        val digits: String = phone?.filter { it.isDigit() } ?: ""
+    }
+
+    /** What was typed, prepared once per keystroke rather than once per name. */
+    class Query(raw: String) {
+        val text: String = raw.trim().lowercase()
+        val folded: String = fold(text)
+        val digits: String = text.filter { it.isDigit() }
+        val isEmpty: Boolean get() = text.isEmpty()
+    }
+
+    /** [matches], against a prepared name. The same answer, keystroke after keystroke, without re-folding. */
+    fun matches(key: Key, q: Query): Boolean {
+        if (q.isEmpty) return true
+        if (key.lower.contains(q.text)) return true
+        if (q.folded.length >= MIN_OVERLAP && key.folded.contains(q.folded)) return true
+        if (q.folded.length >= MIN_TYPO_LEN && key.foldedWords.any { withinOneEdit(q.folded, it) }) return true
+        if (q.digits.isEmpty()) return false
+        return key.digits.contains(q.digits)
+    }
+
+    /** [rank], against a prepared name. */
+    fun rank(key: Key, q: Query): Int {
+        if (key.lower.startsWith(q.text)) return 0
+        if (key.words.any { it.startsWith(q.text) }) return 1
+        val useFold = q.folded.length >= MIN_OVERLAP
+        if (useFold) {
+            if (key.folded.startsWith(q.folded)) return 2
+            if (key.foldedWords.any { it.startsWith(q.folded) }) return 3
+        }
+        if (key.lower.contains(q.text)) return 4
+        if (useFold && key.folded.contains(q.folded)) return 5
+        if (q.folded.length >= MIN_TYPO_LEN && key.foldedWords.any { withinOneEdit(q.folded, it) }) return 6
+        return 7
+    }
+
+    /**
      * How well a name answers what was typed. Lower is better.
      *
      * 0 — the name begins with it: "ali" finds "Ali Raza".
