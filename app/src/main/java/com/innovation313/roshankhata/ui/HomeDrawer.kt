@@ -47,12 +47,16 @@ object HomeDrawer {
         content.addView(v)
     }
 
-    fun fill(activity: Activity, drawer: DrawerLayout, content: LinearLayout, daily: List<Entry>, business: List<Entry>) {
+    fun fill(activity: Activity, drawer: DrawerLayout, content: LinearLayout, daily: List<Entry>, business: List<Entry>, tools: List<Entry>) {
         content.removeAllViews()
         heading(activity, content, R.string.home_section_daily)
         daily.forEach { row(activity, content, drawer, it) }
         heading(activity, content, R.string.home_section_business)
         business.forEach { row(activity, content, drawer, it) }
+        // The slider's four doors (cash flow, rate list, supplier rates,
+        // poster), so each has a fixed place as well as a turning card.
+        heading(activity, content, R.string.home_section_tools)
+        tools.forEach { row(activity, content, drawer, it) }
         content.addView(View(activity).apply {
             layoutParams = LinearLayout.LayoutParams(1, (24 * activity.resources.displayMetrics.density).toInt())
         })

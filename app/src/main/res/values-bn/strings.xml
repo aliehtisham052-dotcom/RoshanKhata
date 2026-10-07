@@ -947,6 +947,16 @@
     <string name="na_bill_due">সরবরাহকারীর বিল %1$s তারিখে</string>
     <string name="na_expiring">৩০ দিনে মেয়াদ শেষ হওয়া মাল: %1$s ব্যাচ</string>
     <string name="na_backup">শেষ ব্যাকআপ %1$s দিন আগে</string>
+    <string name="na_tag_today">আজ</string>
+    <string name="na_tag_late">দেরি</string>
+    <string name="na_tag_failed">ব্যর্থ</string>
+    <string name="na_tag_days">%1$s দিন</string>
+    <string name="na_backup_sub">আপনার খাতার একটি কপি নিরাপদ রাখুন</string>
+    <string name="na_backup_failed_sub">স্বয়ংক্রিয় ব্যাকআপ সংরক্ষণ করা যায়নি — ব্যাকআপ খুলে আবার চেষ্টা করুন</string>
+    <string name="na_backup_other_phone_sub">এই দোকানের ব্যাকআপ শেষবার অন্য ফোন সংরক্ষণ করেছে — ব্যাকআপ খুলে সিদ্ধান্ত নিন</string>
+    <string name="na_updated">রোশন খাতা %1$s-এ আপডেট হয়েছে</string>
+    <string name="na_updated_sub">দেখুন নতুন কী আছে</string>
+    <string name="home_section_tools">সরঞ্জাম</string>
     <string name="na_backup_never">এখনো ব্যাকআপ হয়নি</string>
     <string name="na_gap">ক্যাশ ফ্লো: %1$s-এর সপ্তাহে %2$s কম</string>
     <string name="staff_title">কর্মী ও বেতন</string>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The red dot on the Khata header's backup button, ringed in the header green so it reads as sitting on the button. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <solid android:color="#E24B4A" />
+    <stroke android:width="2dp" android:color="@color/home_header_mid" />
+</shape>

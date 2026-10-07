@@ -45,7 +45,10 @@ object ScreenInsets {
         val root = activity.findViewById<ViewGroup>(android.R.id.content)
             ?.getChildAt(0) ?: return
         val header: View? = activity.findViewById(R.id.header)
-        val ownBottomBar: View? = activity.findViewById(R.id.bottomNav)
+        // No screen has a bottom bar of its own since 7 Oct (the Khata screen's
+        // Home/More bar went into the header's ⋮), so the root always takes
+        // the navigation-bar inset as bottom padding.
+        val ownBottomBar: View? = null
 
         // Start/end, never left/right. A layout's padding is written as start
         // and end so it mirrors in Arabic, Farsi, Sindhi and Urdu. Reading it

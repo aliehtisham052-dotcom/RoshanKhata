@@ -954,6 +954,16 @@ You can change this any time from this screen.</string>
     <string name="na_bill_due">Supplier bill due %1$s</string>
     <string name="na_expiring">Stock expiring within 30 days: %1$s batches</string>
     <string name="na_backup">Last backup %1$s days ago</string>
+    <string name="na_tag_today">Today</string>
+    <string name="na_tag_late">Late</string>
+    <string name="na_tag_failed">Failed</string>
+    <string name="na_tag_days">%1$s days</string>
+    <string name="na_backup_sub">Keep a copy of your books safe</string>
+    <string name="na_backup_failed_sub">The automatic backup could not be saved — open Backup to try again</string>
+    <string name="na_backup_other_phone_sub">Another phone saved this shop’s backup last — open Backup to decide</string>
+    <string name="na_updated">Roshan Khata updated to %1$s</string>
+    <string name="na_updated_sub">See what is new</string>
+    <string name="home_section_tools">Tools</string>
     <string name="na_backup_never">No backup yet</string>
     <string name="na_gap">Cash flow: the week of %1$s is short by %2$s</string>
     <string name="cf_week" translatable="false">%1$s – %2$s</string>

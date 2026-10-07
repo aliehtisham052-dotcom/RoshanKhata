@@ -913,6 +913,16 @@
     <string name="na_bill_due">سپلائر کا بل %1$s کو ڈیو</string>
     <string name="na_expiring">30 دن میں ایکسپائر ہونے والا مال: %1$s بیچ</string>
     <string name="na_backup">آخری بیک اپ %1$s دن پہلے</string>
+    <string name="na_tag_today">آج</string>
+    <string name="na_tag_late">تاخیر</string>
+    <string name="na_tag_failed">ناکام</string>
+    <string name="na_tag_days">%1$s دن</string>
+    <string name="na_backup_sub">اپنے کھاتوں کی نقل محفوظ رکھیں</string>
+    <string name="na_backup_failed_sub">خودکار بیک اپ محفوظ نہ ہو سکا — بیک اپ کھول کر دوبارہ کوشش کریں</string>
+    <string name="na_backup_other_phone_sub">اس دکان کا بیک اپ آخری بار دوسرے فون نے محفوظ کیا — بیک اپ کھول کر فیصلہ کریں</string>
+    <string name="na_updated">روشن کھاتہ %1$s پر اپ ڈیٹ ہو گیا</string>
+    <string name="na_updated_sub">دیکھیں کیا نیا ہے</string>
+    <string name="home_section_tools">اوزار</string>
     <string name="na_backup_never">ابھی تک بیک اپ نہیں ہوا</string>
     <string name="na_gap">کیش فلو: %1$s والے ہفتے میں %2$s کی کمی</string>
     <string name="staff_title">اسٹاف اور تنخواہ</string>

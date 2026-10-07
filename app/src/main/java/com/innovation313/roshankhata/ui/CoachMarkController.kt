@@ -236,15 +236,8 @@ class CoachMarkController(
         down.translationX = x
     }
 
-    /**
-     * Height of whatever sits pinned to the bottom of the screen behind the
-     * scrim — the navigation bar on both screens that run this tour. Zero if
-     * there is nothing there.
-     */
-    private fun bottomBarHeight(): Int {
-        val bar = activity.findViewById<View>(R.id.bottomNav) ?: return 0
-        return if (bar.isShown) bar.height else 0
-    }
+    /** Height of whatever sits pinned to the bottom of the screen behind the scrim. */
+    private fun bottomBarHeight(): Int = 0 // no screen has a bottom bar since 7 Oct
 
     /**
      * Scroll the nearest scrolling ancestor so [target] sits in view, then run

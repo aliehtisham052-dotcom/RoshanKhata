@@ -947,6 +947,16 @@
     <string name="na_bill_due">सप्लायर का बिल %1$s को ड्यू</string>
     <string name="na_expiring">30 दिन में एक्सपायर होने वाला माल: %1$s बैच</string>
     <string name="na_backup">आख़िरी बैकअप %1$s दिन पहले</string>
+    <string name="na_tag_today">आज</string>
+    <string name="na_tag_late">देर</string>
+    <string name="na_tag_failed">विफल</string>
+    <string name="na_tag_days">%1$s दिन</string>
+    <string name="na_backup_sub">अपने खातों की कॉपी सुरक्षित रखें</string>
+    <string name="na_backup_failed_sub">स्वचालित बैकअप सेव नहीं हो सका — बैकअप खोलकर फिर कोशिश करें</string>
+    <string name="na_backup_other_phone_sub">इस दुकान का बैकअप पिछली बार दूसरे फ़ोन ने सेव किया — बैकअप खोलकर तय करें</string>
+    <string name="na_updated">रोशन खाता %1$s पर अपडेट हो गया</string>
+    <string name="na_updated_sub">देखें क्या नया है</string>
+    <string name="home_section_tools">औज़ार</string>
     <string name="na_backup_never">अभी तक बैकअप नहीं हुआ</string>
     <string name="na_gap">कैश फ़्लो: %1$s वाले हफ़्ते में %2$s की कमी</string>
     <string name="staff_title">स्टाफ़ और तनख़्वाह</string>

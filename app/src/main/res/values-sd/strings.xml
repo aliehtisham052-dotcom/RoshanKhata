@@ -941,6 +941,16 @@
     <string name="na_bill_due">سپلائر جو بل %1$s تي ڊيو</string>
     <string name="na_expiring">30 ڏينهن ۾ ختم ٿيندڙ مال: %1$s بيچ</string>
     <string name="na_backup">آخري بيڪ اپ %1$s ڏينهن اڳ</string>
+    <string name="na_tag_today">اڄ</string>
+    <string name="na_tag_late">دير</string>
+    <string name="na_tag_failed">ناڪام</string>
+    <string name="na_tag_days">%1$s ڏينهن</string>
+    <string name="na_backup_sub">پنهنجي کاتن جي ڪاپي محفوظ رکو</string>
+    <string name="na_backup_failed_sub">خودڪار بيڪ اپ محفوظ نه ٿي سگهيو — بيڪ اپ کولي ٻيهر ڪوشش ڪريو</string>
+    <string name="na_backup_other_phone_sub">هن دڪان جو بيڪ اپ آخري ڀيرو ٻئي فون محفوظ ڪيو — بيڪ اپ کولي فيصلو ڪريو</string>
+    <string name="na_updated">روشن کاتو %1$s تي اپڊيٽ ٿي ويو</string>
+    <string name="na_updated_sub">ڏسو ڇا نئون آهي</string>
+    <string name="home_section_tools">اوزار</string>
     <string name="na_backup_never">اڃا تائين بيڪ اپ نه ٿيو</string>
     <string name="na_gap">ڪيش فلو: %1$s واري هفتي ۾ %2$s جي کوٽ</string>
     <string name="staff_title">اسٽاف ۽ پگهار</string>

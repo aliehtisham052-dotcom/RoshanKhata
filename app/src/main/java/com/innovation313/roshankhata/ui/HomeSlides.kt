@@ -57,6 +57,11 @@ object HomeSlides {
     }
 
     /** Wire [pager] and its [dots]; call once from the Home screen's onCreate. */
+    /** The same four doors as drawer rows (7 Oct), so a slide that has turned past is never the only way in. */
+    fun drawerEntries(activity: android.app.Activity): List<HomeDrawer.Entry> = slides.map { s ->
+        HomeDrawer.Entry(s.icon, s.tint, s.title) { activity.startActivity(android.content.Intent(activity, s.open)) }
+    }
+
     fun attach(pager: ViewPager2, dots: LinearLayout) {
         val ctx = pager.context
         pager.adapter = Adapter(ctx)
