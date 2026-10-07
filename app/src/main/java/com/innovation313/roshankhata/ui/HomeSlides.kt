@@ -71,12 +71,32 @@ object HomeSlides {
         }
     }
 
-    /** Wire [pager]; call once from the Home screen's onCreate. No dots (7 Oct): the banners loop, and a row of dots read as "how many more?". */
-    fun attach(pager: ViewPager2) {
+    /** Wire [pager] and its [dots]; call once from the Home screen's onCreate. The banners loop; the dots say which of the four is up. */
+    fun attach(pager: ViewPager2, dots: android.widget.LinearLayout) {
         val ctx = pager.context
         pager.adapter = Adapter(ctx)
         pager.offscreenPageLimit = 1
         pager.setCurrentItem(slides.size * (LOOP / 2), false)
+
+        val dp = ctx.resources.displayMetrics.density
+        dots.removeAllViews()
+        repeat(slides.size) {
+            dots.addView(View(ctx).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams((5 * dp).toInt(), (5 * dp).toInt()).also { lp ->
+                    lp.marginStart = (2 * dp).toInt(); lp.marginEnd = (2 * dp).toInt()
+                }
+                background = ContextCompat.getDrawable(ctx, R.drawable.bg_slide_dot)
+            })
+        }
+        fun mark(active: Int) {
+            for (i in 0 until dots.childCount) {
+                val d = dots.getChildAt(i)
+                val on = i == active
+                d.layoutParams = (d.layoutParams as android.widget.LinearLayout.LayoutParams).also { lp -> lp.width = ((if (on) 14 else 5) * dp).toInt() }
+                d.alpha = if (on) 1f else 0.35f
+            }
+        }
+        mark(0)
 
         val turn = object : Runnable {
             override fun run() {
@@ -87,6 +107,7 @@ object HomeSlides {
         }
         val auto = Motion.enabled(ctx)
         pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) = mark(position % slides.size)
             override fun onPageScrollStateChanged(state: Int) {
                 if (!auto) return
                 pager.removeCallbacks(turn)
