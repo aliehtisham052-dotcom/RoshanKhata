@@ -610,6 +610,10 @@
     <string name="filter_account_all">Sab</string>
     <string name="more_reports">Reports aur Zakat</string>
     <string name="more_settings">Settings</string>
+    <string name="settings_group_security">Hifazat</string>
+    <string name="settings_group_data">Data</string>
+    <string name="settings_group_display">Display</string>
+    <string name="settings_group_help">Madad</string>
     <string name="more_data">Aap ka data</string>
 
     <string name="more_options">Mazeed</string>

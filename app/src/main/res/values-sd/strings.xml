@@ -630,6 +630,10 @@
     <string name="filter_account_all">سڀ</string>
     <string name="more_reports">رپورٽون ۽ زڪوات</string>
     <string name="more_settings">سيٽنگون</string>
+    <string name="settings_group_security">حفاظت</string>
+    <string name="settings_group_data">ڊيٽا</string>
+    <string name="settings_group_display">ڊسپلي</string>
+    <string name="settings_group_help">مدد</string>
     <string name="more_data">توهان جي ڊيٽا</string>
 
     <string name="more_options">وڌيڪ</string>

@@ -22,69 +22,121 @@ import com.innovation313.roshankhata.data.ThemeMode
  */
 object MoreSheet {
 
-    /** One door of the More list: its icon (a Home-tile duotone), the disc's tint, its name, and what it opens. */
-    class Entry(val icon: Int, val tint: Int, val label: Int, val open: () -> Unit)
+    /** One door of the More list: its icon (a Home-tile duotone), the disc's tint, its name, the group it sits in on the sheet, and what it opens. */
+    class Entry(val icon: Int, val tint: Int, val label: Int, val group: Int, val open: () -> Unit)
 
-    /** The settings and doors, in order; the ⋮ menu on Home and Khata lists the same (7 Oct). */
+    /** The settings and doors, in order; Home's gear and the Khata screen's ⋮ list the same (7 Oct). */
     fun entries(activity: Activity): List<Entry> {
         val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(activity)
-        fun e(icon: Int, tint: Int, label: Int, open: () -> Unit) = Entry(icon, tint, label, open)
+        fun e(icon: Int, tint: Int, label: Int, group: Int, open: () -> Unit) = Entry(icon, tint, label, group, open)
+        val security = R.string.settings_group_security
+        val data = R.string.settings_group_data
+        val display = R.string.settings_group_display
+        val help = R.string.settings_group_help
         return listOfNotNull(
-            e(R.drawable.ic_menu_lock, R.color.tile_bills_bg, R.string.app_lock) { appLock(activity) },
-            e(R.drawable.ic_menu_privacy, R.color.tile_cheques_bg, R.string.screen_privacy) { ScreenPrivacyDialog.show(activity) },
+            e(R.drawable.ic_menu_lock, R.color.tile_bills_bg, R.string.app_lock, security) { appLock(activity) },
+            e(R.drawable.ic_menu_privacy, R.color.tile_cheques_bg, R.string.screen_privacy, security) { ScreenPrivacyDialog.show(activity) },
             // Products & stock is a Home tile and a drawer row; a third door
             // here was the one duplicate the owner pointed at (7 Oct).
             // Merging customers rewrites the book; a read-only phone has no book to rewrite.
-            if (viewer) null else e(R.drawable.ic_menu_duplicate, R.color.tile_card_bg, R.string.duplicate_customers) { activity.startActivity(Intent(activity, DuplicateCustomersActivity::class.java)) },
+            if (viewer) null else e(R.drawable.ic_menu_duplicate, R.color.tile_card_bg, R.string.duplicate_customers, data) { activity.startActivity(Intent(activity, DuplicateCustomersActivity::class.java)) },
             // The helper's phone: the owner sends a copy from here, and a helper's
             // phone becomes read-only (or stops being) from here too.
-            e(R.drawable.ic_menu_viewer, R.color.tile_insights_bg, R.string.viewer_menu) { activity.startActivity(Intent(activity, com.innovation313.roshankhata.ViewerActivity::class.java)) },
-            e(R.drawable.ic_menu_language, R.color.tile_khata_bg, R.string.language) { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
-            e(R.drawable.ic_menu_textsize, R.color.tile_invoice_bg, R.string.text_size) { textSize(activity) },
-            e(R.drawable.ic_menu_theme, R.color.tile_card_bg, R.string.theme) { theme(activity) },
+            e(R.drawable.ic_menu_viewer, R.color.tile_insights_bg, R.string.viewer_menu, data) { activity.startActivity(Intent(activity, com.innovation313.roshankhata.ViewerActivity::class.java)) },
+            e(R.drawable.ic_menu_language, R.color.tile_khata_bg, R.string.language, display) { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
+            e(R.drawable.ic_menu_textsize, R.color.tile_invoice_bg, R.string.text_size, display) { textSize(activity) },
+            e(R.drawable.ic_menu_theme, R.color.tile_card_bg, R.string.theme, display) { theme(activity) },
             // Reporting a problem lives inside Help, one door for "something is wrong".
-            e(R.drawable.ic_menu_help, R.color.tile_insights_bg, R.string.help_support) { activity.startActivity(Intent(activity, HelpActivity::class.java)) },
-            e(R.drawable.ic_menu_about, R.color.tile_cheques_bg, R.string.about_us) { activity.startActivity(Intent(activity, AboutActivity::class.java)) }
+            e(R.drawable.ic_menu_help, R.color.tile_insights_bg, R.string.help_support, help) { activity.startActivity(Intent(activity, HelpActivity::class.java)) },
+            e(R.drawable.ic_menu_about, R.color.tile_cheques_bg, R.string.about_us, help) { activity.startActivity(Intent(activity, AboutActivity::class.java)) }
         )
     }
 
     /**
-     * The ⋮ menu (7 Oct): the same list as a popup under the three dots in
-     * the header, each row an icon disc and a name, like the drawer's rows.
-     * [homeFirst] puts a "Home" row at the top — the Khata screen's way home
-     * once its bottom bar is gone.
+     * The Settings sheet (7 Oct): Home's gear and the Khata screen's ⋮ both
+     * open this bottom sheet — the one list above, grouped under Security,
+     * Data, Display and Help, each group a paper card of rows with a
+     * hairline between them. It replaces the ⋮ popup, ten rows in one
+     * unbroken column. [homeFirst] shows a Home pill in the title row — the
+     * Khata screen's way home once its bottom bar is gone — rather than a
+     * "Home" row sitting among the settings.
      */
     fun showMenu(activity: Activity, anchor: android.view.View, homeFirst: Boolean = false) {
-        val items = ArrayList<Entry>()
-        if (homeFirst) items.add(Entry(R.drawable.ic_menu_home, R.color.tile_khata_bg, R.string.nav_home) {
-            activity.startActivity(
-                Intent(activity, com.innovation313.roshankhata.MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            )
-        })
-        items.addAll(entries(activity))
+        val sheet = com.google.android.material.bottomsheet.BottomSheetDialog(activity)
+        val view = android.view.LayoutInflater.from(activity).inflate(R.layout.sheet_settings, null)
         val dp = activity.resources.displayMetrics.density
-        val popup = androidx.appcompat.widget.ListPopupWindow(activity)
-        popup.anchorView = anchor
-        popup.width = (236 * dp).toInt()
-        popup.isModal = true
-        popup.setBackgroundDrawable(androidx.core.content.ContextCompat.getDrawable(activity, R.drawable.bg_more_menu))
-        popup.setAdapter(object : android.widget.BaseAdapter() {
-            override fun getCount() = items.size
-            override fun getItem(i: Int) = items[i]
-            override fun getItemId(i: Int) = i.toLong()
-            override fun getView(i: Int, convert: android.view.View?, parent: android.view.ViewGroup): android.view.View {
-                val v = convert ?: android.view.LayoutInflater.from(activity).inflate(R.layout.item_more_row, parent, false)
-                val e = items[i]
-                v.findViewById<android.widget.ImageView>(R.id.ivMoreIcon).setImageResource(e.icon)
-                v.findViewById<android.widget.FrameLayout>(R.id.moreIconDisc).backgroundTintList =
-                    android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(activity, e.tint))
-                v.findViewById<android.widget.TextView>(R.id.tvMoreLabel).setText(e.label)
-                return v
+        val inflater = android.view.LayoutInflater.from(activity)
+
+        val btnHome = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSheetHome)
+        if (homeFirst) {
+            btnHome.visibility = android.view.View.VISIBLE
+            btnHome.setOnClickListener {
+                sheet.dismiss()
+                activity.startActivity(
+                    Intent(activity, com.innovation313.roshankhata.MainActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                )
             }
-        })
-        popup.setOnItemClickListener { _, _, i, _ -> popup.dismiss(); items[i].open() }
-        popup.show()
+        }
+
+        val groups = view.findViewById<android.widget.LinearLayout>(R.id.settingsGroups)
+        // Groups in the order the entries name them; an entry's group is the
+        // card it lands in, so a group with no entry (a viewer's phone has no
+        // Duplicate customers, but still has Helper's phone) still appears.
+        val order = ArrayList<Int>()
+        val byGroup = LinkedHashMap<Int, ArrayList<Entry>>()
+        for (e in entries(activity)) {
+            if (e.group !in byGroup) { byGroup[e.group] = ArrayList(); order.add(e.group) }
+            byGroup[e.group]!!.add(e)
+        }
+        for (g in order) {
+            val label = android.widget.TextView(activity).apply {
+                setText(g)
+                isAllCaps = true
+                letterSpacing = 0.08f
+                textSize = 11f
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setTextColor(androidx.core.content.ContextCompat.getColor(activity, R.color.text_muted))
+                setPadding((6 * dp).toInt(), (14 * dp).toInt(), (6 * dp).toInt(), (6 * dp).toInt())
+            }
+            groups.addView(label)
+            val card = android.widget.LinearLayout(activity).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                background = androidx.core.content.ContextCompat.getDrawable(activity, R.drawable.bg_party_card)
+                clipToOutline = true
+            }
+            val rows = byGroup[g]!!
+            rows.forEachIndexed { i, e ->
+                val row = inflater.inflate(R.layout.item_more_row, card, false)
+                row.findViewById<android.widget.ImageView>(R.id.ivMoreIcon).setImageResource(e.icon)
+                row.findViewById<android.widget.FrameLayout>(R.id.moreIconDisc).backgroundTintList =
+                    android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(activity, e.tint))
+                row.findViewById<android.widget.TextView>(R.id.tvMoreLabel).setText(e.label)
+                row.findViewById<android.view.View>(R.id.ivMoreChevron).visibility = android.view.View.VISIBLE
+                row.minimumHeight = (52 * dp).toInt()
+                row.setOnClickListener { sheet.dismiss(); e.open() }
+                card.addView(row)
+                if (i < rows.size - 1) {
+                    val line = android.view.View(activity).apply {
+                        setBackgroundColor(androidx.core.content.ContextCompat.getColor(activity, R.color.page_line))
+                    }
+                    val lp = android.widget.LinearLayout.LayoutParams(
+                        android.widget.LinearLayout.LayoutParams.MATCH_PARENT, (1 * dp).toInt().coerceAtLeast(1)
+                    )
+                    lp.marginStart = (60 * dp).toInt()
+                    card.addView(line, lp)
+                }
+            }
+            groups.addView(card)
+        }
+
+        TextFit.relax(view)
+        sheet.setContentView(view)
+        // Open at full height: the four cards are the whole point, and a
+        // half-open sheet showing one and a half of them reads as broken.
+        sheet.behavior.skipCollapsed = true
+        sheet.behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        sheet.show()
     }
 
     /**

@@ -619,6 +619,10 @@
     <string name="filter_account_all">Semua</string>
     <string name="more_reports">Laporan &amp; Zakat</string>
     <string name="more_settings">Pengaturan</string>
+    <string name="settings_group_security">Keamanan</string>
+    <string name="settings_group_data">Data</string>
+    <string name="settings_group_display">Tampilan</string>
+    <string name="settings_group_help">Bantuan</string>
     <string name="more_data">Data Anda</string>
 
     <string name="more_options">Lainnya</string>

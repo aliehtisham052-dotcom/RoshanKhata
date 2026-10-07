@@ -670,6 +670,10 @@
     <string name="filter_account_all">الكل</string>
     <string name="more_reports">التقارير والزكاة</string>
     <string name="more_settings">الإعدادات</string>
+    <string name="settings_group_security">الأمان</string>
+    <string name="settings_group_data">البيانات</string>
+    <string name="settings_group_display">العرض</string>
+    <string name="settings_group_help">المساعدة</string>
     <string name="more_data">بياناتك</string>
 
     <string name="more_options">المزيد</string>

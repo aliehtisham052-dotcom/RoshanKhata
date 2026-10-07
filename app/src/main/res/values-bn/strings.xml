@@ -634,6 +634,10 @@
     <string name="filter_account_all">সব</string>
     <string name="more_reports">রিপোর্ট ও যাকাত</string>
     <string name="more_settings">সেটিংস</string>
+    <string name="settings_group_security">নিরাপত্তা</string>
+    <string name="settings_group_data">ডেটা</string>
+    <string name="settings_group_display">ডিসপ্লে</string>
+    <string name="settings_group_help">সহায়তা</string>
     <string name="more_data">আপনার ডেটা</string>
 
     <string name="more_options">আরও</string>

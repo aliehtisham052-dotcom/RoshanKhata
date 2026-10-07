@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- One row of the ⋮ More menu (7 Oct): a tinted icon disc and the door's name, like a drawer row but tighter. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
@@ -32,4 +33,17 @@
         android:layout_weight="1"
         android:textColor="@color/ink"
         android:textSize="14sp" />
+
+    <!-- A chevron on the Settings sheet's rows (7 Oct): each row opens a
+         screen or a dialog, and the sheet's paper cards read as lists of
+         doors with it. Hidden by default — the drawer's rows don't use it. -->
+    <ImageView
+        android:id="@+id/ivMoreChevron"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="8dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_chevron_right"
+        android:visibility="gone"
+        app:tint="@color/text_muted" />
 </LinearLayout>

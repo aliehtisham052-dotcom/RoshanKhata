@@ -634,6 +634,10 @@
     <string name="filter_account_all">सभी</string>
     <string name="more_reports">रिपोर्ट और ज़कात</string>
     <string name="more_settings">सेटिंग्स</string>
+    <string name="settings_group_security">सुरक्षा</string>
+    <string name="settings_group_data">डेटा</string>
+    <string name="settings_group_display">डिस्प्ले</string>
+    <string name="settings_group_help">सहायता</string>
     <string name="more_data">आपका डेटा</string>
 
     <string name="more_options">और</string>
