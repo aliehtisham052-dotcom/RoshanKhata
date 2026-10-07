@@ -696,7 +696,7 @@ class MainActivity : BaseActivity() {
         // than one who never sees the tutorial.
         root.post {
             try {
-                CoachMarkController(this, root, steps).start()
+                CoachMarkController(this, root, steps, onFinished = { sizeGridTail() }).start()
             } catch (e: Exception) {
                 android.util.Log.e("Home", "walkthrough failed", e)
                 CoachMarkController.markRun(this)
@@ -737,6 +737,18 @@ class MainActivity : BaseActivity() {
         val scroll = findViewById<View>(R.id.featureScroll) ?: return
         scroll.post {
             val params = tail.layoutParams
+            // The room is the tour's alone (7 Oct). It was left in place after
+            // the tour had run, so every Home ever since scrolled on past the
+            // version line into most of a screen of nothing. Once the tour is
+            // done — on this launch or any earlier one — the grid ends where
+            // the grid ends.
+            if (CoachMarkController.hasRun(this)) {
+                if (params.height != 0) {
+                    params.height = 0
+                    tail.layoutParams = params
+                }
+                return@post
+            }
             // Nearly a full viewport. At 0.55 the last row could only rise to
             // about the middle of the screen, so the walkthrough card — which
             // sits below its tile — had to climb over the tile to fit, hiding

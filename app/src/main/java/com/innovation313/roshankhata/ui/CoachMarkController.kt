@@ -38,7 +38,10 @@ import com.innovation313.roshankhata.R
 class CoachMarkController(
     private val activity: Activity,
     private val root: ViewGroup,
-    private val steps: List<Step>
+    private val steps: List<Step>,
+    /** Run once the tour ends — however it ends — so the screen can take back
+     *  the scrolling room it lent the tour (Home's grid tail, 7 Oct). */
+    private val onFinished: (() -> Unit)? = null
 ) {
 
     /** One stop on the tour: the view to spotlight, and the strings beside it. */
@@ -304,6 +307,7 @@ class CoachMarkController(
         tip = null
         overlay = null
         markRun(activity)
+        onFinished?.invoke()
     }
 
     companion object {
