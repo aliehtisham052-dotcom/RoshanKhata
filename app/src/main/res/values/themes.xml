@@ -97,6 +97,14 @@
         <item name="android:textColorSecondary">@color/white</item>
     </style>
 
+    <!-- The same toolbar on the light (P2) header: deep-green back arrow and
+         ⋮ instead of white, which vanished on pale mint. -->
+    <style name="ToolbarHeaderLight" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+        <item name="colorControlNormal">@color/header_light_ink</item>
+        <item name="android:textColorPrimary">@color/header_light_ink</item>
+        <item name="android:textColorSecondary">@color/header_light_ink</item>
+    </style>
+
     <!--
       The system splash — the frame Android 12+ shows on its own, before our
       SplashActivity even loads. Left unstyled, it falls back to the launcher

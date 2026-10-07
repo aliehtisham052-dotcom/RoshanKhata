@@ -6,15 +6,21 @@
     android:layout_height="match_parent"
     android:background="@color/page_bg">
 
+    <!--
+      The light header (P2, 7 Oct): the same pale-mint band as Home and the
+      Khata list, deep-green ink, paper tiles. This screen was the last one
+      still wearing the brand-green block with gold outlines, so a tap from
+      the Khata list landed in a different app.
+    -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/section_khata"
+        android:background="@drawable/bg_header_light"
         android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="4dp"
-        android:paddingBottom="10dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,8 +30,8 @@
             android:id="@+id/detailToolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginStart="-16dp"
-            app:theme="@style/ToolbarInk"
+            android:layout_marginStart="-14dp"
+            app:theme="@style/ToolbarHeaderLight"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
         <!--
@@ -37,14 +43,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <FrameLayout
                 android:id="@+id/flAvatar"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginEnd="12dp">
 
                 <TextView
@@ -54,7 +59,7 @@
                     android:background="@drawable/bg_avatar_circle"
                     android:gravity="center"
                     android:textColor="@color/ink_soft"
-                    android:textSize="15sp"
+                    android:textSize="17sp"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -73,8 +78,8 @@
                 -->
                 <ImageView
                     android:id="@+id/ivAvatarCameraBadge"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_gravity="bottom|end"
                     android:background="@drawable/bg_avatar_camera"
                     android:contentDescription="@null"
@@ -93,8 +98,10 @@
                     android:id="@+id/tvPartyName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textColor="@color/header_light_ink"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <!-- The handset is a compound drawable, so it hides with the number. -->
@@ -107,18 +114,15 @@
                     android:layout_marginTop="2dp"
                     android:drawableStart="@drawable/ic_phone_small"
                     android:drawablePadding="5dp"
-                    android:drawableTint="@color/gold_on_dark"
+                    android:drawableTint="@color/header_light_ink_soft"
                     android:gravity="center_vertical"
-                    android:textColor="@color/gold_on_dark"
-                    android:textSize="12sp"
+                    android:textColor="@color/header_light_ink_soft"
+                    android:textSize="13sp"
                     android:visibility="gone" />
 
                 <!--
                   Father's name and village on ONE line, smaller and dimmer than the
-                  number above it. The header already carries a name, a number, a
-                  balance, four buttons and a search box; two more full lines would
-                  push the balance — the thing the owner opened this screen for — down
-                  the screen. Gone entirely when neither is known, so a customer
+                  number above it. Gone entirely when neither is known, so a customer
                   entered before these fields existed sees the screen unchanged.
                 -->
                 <TextView
@@ -126,273 +130,392 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:alpha="0.75"
-                    android:textColor="@color/gold_on_dark"
+                    android:textColor="@color/header_light_ink_soft"
                     android:textSize="11sp"
                     android:visibility="gone" />
 
-                <!-- Fasal ka Hisaab (2 Oct): this customer's last seasons, before more credit is given. -->
+                <!-- Fasal ka Hisaab (2 Oct): this customer's last seasons, before
+                     more credit is given — a gold chip now, the Today-strip's
+                     shape in the Bills tile's hue. -->
                 <TextView
                     android:id="@+id/tvSeasonRecord"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:alpha="0.9"
-                    android:textColor="@color/gold_on_dark"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_season_chip"
+                    android:paddingStart="9dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="9dp"
+                    android:paddingBottom="2dp"
+                    android:textColor="@color/fi_gold_b"
                     android:textSize="11sp"
+                    android:textStyle="bold"
                     android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvPartyBalance"
-            android:layout_width="wrap_content"
+        <!--
+          The balance as the same paper card Home and the Khata list use for
+          "I have to get": an arrow chip in the direction's tint, the figure
+          in the direction's colour, the hint muted. The chip's fill, glyph
+          and the figure's colour are swapped in updateBalanceHeader.
+        -->
+        <LinearLayout
+            android:id="@+id/balanceCard"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/gold_accent"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_ledger_summary"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/tvBalanceHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/gold_on_dark"
-            android:textSize="11sp" />
+            <ImageView
+                android:id="@+id/ivBalanceChip"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:background="@drawable/bg_home_chip_get"
+                android:importantForAccessibility="no"
+                android:padding="9dp"
+                android:src="@drawable/ic_arrow_got"
+                app:tint="@color/bal_owed_to_me" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvPartyBalance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@color/bal_owed_to_me"
+                    android:textSize="21sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvBalanceHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
 
         <!--
-          The four actions as icon tiles — Call, WhatsApp, SMS, Statement —
-          drawn in the same language as the Khata screen's tool buttons and
-          header buttons: gold icon and gold outline, here on an 8% white
-          wash (header_tile_fill) because this header IS brand green and a
-          brand-green fill would vanish into it. Gold measures 4.68:1 on the
-          wash. Labels auto-size down to 7sp so the longest locale
-          ("صورت‌حساب", "STATEMENT") never wraps or clips. marginEnd 12dp
-          plus the header's 4dp end padding gives the same 16dp inset as the
-          start; before, Statement ran to the screen edge.
+          The four actions — Call, WhatsApp, SMS, Statement — as the Home
+          tiles: a paper card, the glyph on a tinted square in a hue of its
+          own (green, green, blue, orange: the tile_*_bg / fi_*_b pairs of
+          colors.xml, repainted together at night), the label in ink below.
+          They were gold-outlined buttons on the green block.
 
-          baselineAligned=false, match_parent height, 46dp minimum: the row
-          lines the four up by their EDGES, not by their text. Left at the
-          default, LinearLayout lined up the text baselines, and a Latin
-          label ("SMS") sits on a different baseline from an Arabic-script
-          one, so SMS rode up and the other three were pushed down and cut
-          off at the bottom of the row. Now all four share the tallest one's
-          height: 46dp as designed, taller only when a script or a larger
-          text size needs it.
+          baselineAligned=false, match_parent height, so the row lines the
+          four up by their EDGES, not by their text: a Latin label ("SMS")
+          sits on a different baseline from an Arabic-script one. Labels
+          auto-size down to 7sp so the longest locale never wraps or clips.
         -->
         <LinearLayout
             android:id="@+id/reminderBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginTop="10dp"
             android:baselineAligned="false"
             android:orientation="horizontal"
             android:weightSum="4">
 
-            <com.google.android.material.button.MaterialButton
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnCall"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:minHeight="46dp"
                 android:layout_weight="1"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:letterSpacing="0.02"
-                android:maxLines="1"
-                android:minWidth="0dp"
-                android:paddingStart="2dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="2dp"
-                android:paddingBottom="4dp"
-                android:text="@string/call"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="9sp"
-                android:textStyle="bold"
-                app:autoSizeMaxTextSize="9sp"
-                app:autoSizeMinTextSize="6.5sp"
-                app:autoSizeStepGranularity="0.5sp"
-                app:autoSizeTextType="uniform"
-                app:backgroundTint="@color/header_tile_fill"
-                app:cornerRadius="10dp"
-                app:icon="@drawable/ic_action_call"
-                app:iconGravity="top"
-                app:iconPadding="2dp"
-                app:iconSize="18dp"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark"
-                app:strokeWidth="1.5dp" />
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/page_line"
+                app:strokeWidth="1dp">
 
-            <com.google.android.material.button.MaterialButton
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="7dp">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_tile_icon"
+                        android:backgroundTint="@color/tile_khata_bg"
+                        android:importantForAccessibility="no"
+                        android:padding="7dp"
+                        android:src="@drawable/ic_action_call"
+                        app:tint="@color/fi_green_b" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:text="@string/call"
+                        android:textColor="@color/ink"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        app:autoSizeMaxTextSize="10sp"
+                        app:autoSizeMinTextSize="7sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnWhatsApp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:minHeight="46dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:letterSpacing="0.02"
-                android:maxLines="1"
-                android:minWidth="0dp"
-                android:paddingStart="2dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="2dp"
-                android:paddingBottom="4dp"
-                android:text="@string/remind_whatsapp"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="9sp"
-                android:textStyle="bold"
-                app:autoSizeMaxTextSize="9sp"
-                app:autoSizeMinTextSize="6.5sp"
-                app:autoSizeStepGranularity="0.5sp"
-                app:autoSizeTextType="uniform"
-                app:backgroundTint="@color/header_tile_fill"
-                app:cornerRadius="10dp"
-                app:icon="@drawable/ic_action_whatsapp"
-                app:iconGravity="top"
-                app:iconPadding="2dp"
-                app:iconSize="18dp"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark"
-                app:strokeWidth="1.5dp" />
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/page_line"
+                app:strokeWidth="1dp">
 
-            <com.google.android.material.button.MaterialButton
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="7dp">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_tile_icon"
+                        android:backgroundTint="@color/tile_followup_bg"
+                        android:importantForAccessibility="no"
+                        android:padding="7dp"
+                        android:src="@drawable/ic_action_whatsapp"
+                        app:tint="@color/fi_teal_b" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:text="@string/remind_whatsapp"
+                        android:textColor="@color/ink"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        app:autoSizeMaxTextSize="10sp"
+                        app:autoSizeMinTextSize="7sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnSms"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:minHeight="46dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:letterSpacing="0.02"
-                android:maxLines="1"
-                android:minWidth="0dp"
-                android:paddingStart="2dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="2dp"
-                android:paddingBottom="4dp"
-                android:text="@string/remind_sms"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="9sp"
-                android:textStyle="bold"
-                app:autoSizeMaxTextSize="9sp"
-                app:autoSizeMinTextSize="6.5sp"
-                app:autoSizeStepGranularity="0.5sp"
-                app:autoSizeTextType="uniform"
-                app:backgroundTint="@color/header_tile_fill"
-                app:cornerRadius="10dp"
-                app:icon="@drawable/ic_action_sms"
-                app:iconGravity="top"
-                app:iconPadding="2dp"
-                app:iconSize="18dp"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark"
-                app:strokeWidth="1.5dp" />
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/page_line"
+                app:strokeWidth="1dp">
 
-            <com.google.android.material.button.MaterialButton
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="7dp">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_tile_icon"
+                        android:backgroundTint="@color/tile_insights_bg"
+                        android:importantForAccessibility="no"
+                        android:padding="7dp"
+                        android:src="@drawable/ic_action_sms"
+                        app:tint="@color/fi_blue_b" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:text="@string/remind_sms"
+                        android:textColor="@color/ink"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        app:autoSizeMaxTextSize="10sp"
+                        app:autoSizeMinTextSize="7sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnPdf"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:minHeight="46dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:letterSpacing="0.02"
-                android:maxLines="1"
-                android:minWidth="0dp"
-                android:paddingStart="2dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="2dp"
-                android:paddingBottom="4dp"
-                android:text="@string/statement_pdf"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="9sp"
-                android:textStyle="bold"
-                app:autoSizeMaxTextSize="9sp"
-                app:autoSizeMinTextSize="6.5sp"
-                app:autoSizeStepGranularity="0.5sp"
-                app:autoSizeTextType="uniform"
-                app:backgroundTint="@color/header_tile_fill"
-                app:cornerRadius="10dp"
-                app:icon="@drawable/ic_pdf_doc"
-                app:iconGravity="top"
-                app:iconPadding="2dp"
-                app:iconSize="18dp"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark"
-                app:strokeWidth="1.5dp" />
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/page_line"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="7dp">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_tile_icon"
+                        android:backgroundTint="@color/tile_stock_bg"
+                        android:importantForAccessibility="no"
+                        android:padding="7dp"
+                        android:src="@drawable/ic_pdf_doc"
+                        app:tint="@color/fi_orange_b" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:text="@string/statement_pdf"
+                        android:textColor="@color/ink"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        app:autoSizeMaxTextSize="10sp"
+                        app:autoSizeMinTextSize="7sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
+        <!--
+          Search, date range, sort: the Khata list's search row — the same
+          field, the filter as a violet tile and the sort as a blue one, the
+          two hues those tools wear on the list. The range button keeps its
+          word ("All", "This month"...) because the code writes the chosen
+          range into it; the sort tile is its glyph alone, named for TalkBack.
+        -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/etSearchEntries"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="44dp"
                 android:layout_weight="1"
-                android:background="@color/surface"
+                android:background="@drawable/bg_search_field"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/text_muted"
                 android:hint="@string/search_entries"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:maxLines="1"
-                android:padding="8dp"
-                android:textSize="13sp" />
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/text_muted"
+                android:textSize="14sp" />
 
-            <!--
-              Which stretch of days to show. Beside the sort because both
-              narrow the same list, and a shopkeeper reaching for one is often
-              reaching for the other.
-            -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFilterEntryDate"
-                android:minWidth="0dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_marginStart="8dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:maxLines="1"
+                android:minWidth="0dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="10dp"
                 android:text="@string/range_all"
-                android:textColor="@color/gold_on_dark"
+                android:textColor="@color/fi_violet_b"
                 android:textSize="11sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/gold_on_dark" />
+                android:textStyle="bold"
+                app:backgroundTint="@color/tile_card_bg"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_filter_sliders"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="18dp"
+                app:iconTint="@color/fi_violet_b"
+                app:strokeWidth="0dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSortEntries"
-                android:minWidth="0dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_marginStart="8dp"
-                android:text="@string/sort"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="11sp"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/gold_on_dark" />
+                android:layout_width="50dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="6dp"
+                android:contentDescription="@string/sort"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:backgroundTint="@color/tile_insights_bg"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_sort_arrows"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="@color/fi_blue_b"
+                app:strokeWidth="0dp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -401,6 +524,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
+        android:paddingTop="6dp"
         android:paddingBottom="8dp"
         app:layout_constraintBottom_toTopOf="@id/bottomBarContainer"
         app:layout_constraintEnd_toEndOf="parent"

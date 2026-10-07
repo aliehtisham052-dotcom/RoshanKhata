@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The season line on the customer header (7 Oct): a small pill in the Bills
+  tile's gold tint, so "Rabi 2026-27: Rs 200 due" reads as a tag beside the
+  name rather than one more grey line. fi_gold_b on tile_bills_bg clears
+  4.5:1; values-night repaints the pair together.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/tile_bills_bg" />
+    <corners android:radius="20dp" />
+</shape>
