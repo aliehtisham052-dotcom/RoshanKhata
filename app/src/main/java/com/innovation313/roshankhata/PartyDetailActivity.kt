@@ -87,6 +87,9 @@ import com.innovation313.roshankhata.data.Digits
 class PartyDetailActivity : BaseActivity() {
 
     companion object {
+        /** How many of the newest lines the customer screen draws before the whole ledger has loaded. */
+        const val FIRST_PAGE = 150
+
         const val EXTRA_PARTY_ID = "party_id"
 
         /**
@@ -532,6 +535,26 @@ class PartyDetailActivity : BaseActivity() {
 
     private fun observeEntries() {
         lifecycleScope.launch {
+            // First paint (P4, 7 Oct): the newest FIRST_PAGE lines with the
+            // balance they each left, worked out from the top — the total
+            // from SQL, each line's amount taken back off it going down — so
+            // nothing older has to be read to show them. The full ledger
+            // replaces this a moment later, below; until then the search box
+            // and the statement see only these rows, which is why the rows
+            // are swapped, never merged.
+            val total = dao.liveBalance(partyId)
+            val first = dao.latestEntriesWithItems(partyId, FIRST_PAGE)
+            if (first.isNotEmpty()) {
+                var running = total
+                allRows = first.map { ew ->
+                    val e = ew.entry
+                    val row = EntryRow(e, running, ew.orderedItems())
+                    running -= if (e.isGiven) e.amount else -e.amount
+                    row
+                }
+                updateBalanceHeader(total)
+                renderEntries()
+            }
             // Entries arrive newest-first. Running balance must be computed
             // oldest-first, then mapped back so each row shows the balance
             // as it stood right after that entry.
