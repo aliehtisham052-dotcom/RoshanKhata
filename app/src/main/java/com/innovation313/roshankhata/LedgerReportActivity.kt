@@ -204,7 +204,10 @@ class LedgerReportActivity : BaseActivity() {
         // family, unmistakably not a button; as an ACTION it returns to a
         // plain white row like its two neighbours above.
         btnRangeAll.backgroundTintList =
-            android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.brand_green else R.color.white))
+            // surface, not white: white stays white at night and ink turns
+            // light, so the action read 1.2:1 in dark mode once the report
+            // began opening on 30 days (P5) and this was the face it showed.
+            android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.brand_green else R.color.surface))
         btnRangeAll.iconTint =
             android.content.res.ColorStateList.valueOf(colour(if (whole) R.color.white else R.color.text_muted))
         btnRangeAll.setTextColor(colour(if (whole) R.color.white else R.color.ink))

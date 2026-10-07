@@ -131,7 +131,7 @@
                 app:iconPadding="0dp"
                 app:iconSize="22dp"
                 app:iconTint="@color/header_light_ink"
-                app:strokeColor="@color/header_light_line" />
+                app:strokeColor="@color/header_light_button_line" />
 
                 <View
                     android:id="@+id/backupDot"
@@ -162,7 +162,7 @@
                 app:iconPadding="0dp"
                 app:iconSize="22dp"
                 app:iconTint="@color/header_light_ink"
-                app:strokeColor="@color/header_light_line" />
+                app:strokeColor="@color/header_light_button_line" />
 
             <!-- The ⋮ menu (7 Oct): Home first, then every setting — the same
                  list as Home's ⋮. It replaces the bottom Home/More bar. -->
