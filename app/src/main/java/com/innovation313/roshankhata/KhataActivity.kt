@@ -949,17 +949,11 @@ class KhataActivity : BaseActivity() {
             .show()
     }
 
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         // Balance hidden or shown on Home while this screen sat in the back
         // stack: follow it now, since this screen has no eye of its own.
         renderPrivacy()
-        // Nothing to re-select here: Khata has no item in the bar, and
-        // assigning selectedItemId would fire the listener and finish this
-        // screen the moment it came back to the front.
 
         // The business name is re-read here, not just in onCreate. Editing it
         // happens one tap away in Profile, and coming back from Profile
