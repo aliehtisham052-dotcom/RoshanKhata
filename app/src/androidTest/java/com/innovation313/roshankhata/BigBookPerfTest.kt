@@ -24,7 +24,8 @@ import org.junit.runner.RunWith
  * The app against a wholesaler's book: 10,000 customers, 300,000 lines
  * (P0 of the scaling work, 7 Oct 2026).
  *
- * Three stopwatches, each a thing the owner feels:
+ * Three stopwatches, each a thing the owner feels (the customer opened is
+ * the seeded one with 5,000 lines, the hard case):
  *  - the Khata list opening until its first row is drawn;
  *  - one keystroke in its search box, measured ON the main thread, because
  *    that is the thread the keyboard waits for;
@@ -105,8 +106,9 @@ class BigBookPerfTest {
             .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, id)
         ActivityScenario.launch<Activity>(intent).use { scenario ->
             val open = waitForRows(scenario, R.id.rvEntries, 30_000)
-            Log.i(TAG, "customer screen: first line after $open ms")
-            assertTrue("customer screen took $open ms to show a line (budget $DETAIL_BUDGET_MS)", open in 0..DETAIL_BUDGET_MS)
+            val report = "customer screen (${BigBook.HEAVY_ENTRIES} lines): first line after $open ms (budget $DETAIL_BUDGET_MS)"
+            Log.i(TAG, report)
+            assertTrue(report, open in 0..DETAIL_BUDGET_MS)
         }
     }
 

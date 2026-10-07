@@ -2118,6 +2118,22 @@ interface KhataDao {
     fun observeEntriesWithItems(partyId: Long): Flow<List<EntryWithItems>>
 
     /**
+     * The newest [limit] of them, once — the customer screen's first paint
+     * (P4 of the scaling work, 7 Oct 2026). A customer with years of lines
+     * used to wait for every one of them, and every one's goods, before a
+     * single row showed; this hands the screen enough to draw while the
+     * full ledger follows behind it. Reads the (partyId, isDeleted,
+     * timestamp) index straight down from the top.
+     */
+    @Transaction
+    @Query("SELECT * FROM transactions WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC LIMIT :limit")
+    suspend fun latestEntriesWithItems(partyId: Long, limit: Int): List<EntryWithItems>
+
+    /** One live party's live balance, the list's own SUM, for the first paint above. */
+    @Query("SELECT COALESCE(SUM(CASE WHEN isGiven = 1 THEN amount ELSE -amount END), 0) FROM transactions WHERE partyId = :partyId AND isDeleted = 0")
+    suspend fun liveBalance(partyId: Long): Double
+
+    /**
      * A new supplier bill, as ONE all-or-nothing write.
      *
      * A credit bill is three things: the debt (a ledger entry, [entry]; null

@@ -25,6 +25,8 @@ import kotlin.random.Random
 object BigBook {
     const val CUSTOMERS = 10_000
     const val ENTRIES_EACH = 30
+    /** The first seeded customer's lines: one account with years of dealings, the customer screen's hard case. */
+    const val HEAVY_ENTRIES = 5_000
     const val MARK = " (bb)" // a thin space and a tag the owner never types
 
     private val FIRST = listOf(
@@ -72,10 +74,11 @@ object BigBook {
             }
             val ids = dao.insertParties(parties)
             val entries = ArrayList<LedgerEntry>(ids.size * entriesEach)
-            for (id in ids) {
+            for ((k, id) in ids.withIndex()) {
                 var t = now - rnd.nextLong(0, 700 * day)
-                repeat(entriesEach) {
-                    t += rnd.nextLong(day / 4, 20 * day)
+                val lines = if (start == 0 && k == 0) HEAVY_ENTRIES else entriesEach
+                repeat(lines) {
+                    t += if (lines > entriesEach) rnd.nextLong(1, 4 * 60 * 60 * 1000) else rnd.nextLong(day / 4, 20 * day)
                     entryNo++
                     entries.add(
                         LedgerEntry(
