@@ -85,6 +85,7 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Saldo bersih</string>
+    <string name="home_switch_business">Ganti usaha</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">PDF laporan buku</string>
     <string name="ledger_report_generating">Menyusun laporan buku…</string>

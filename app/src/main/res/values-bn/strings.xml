@@ -89,6 +89,7 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">নিট ব্যালেন্স</string>
+    <string name="home_switch_business">ব্যবসা পরিবর্তন করুন</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">খাতা রিপোর্ট PDF</string>
     <string name="ledger_report_generating">খাতা রিপোর্ট তৈরি হচ্ছে…</string>

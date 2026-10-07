@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The two summary cards on the Home header: 8% white glass, soft gold edge. -->
+<!--
+  The two summary cards on the Home header (7 Oct): a paper card on the green,
+  the way the feature tiles are paper on the page, with the arrow chip and
+  the figure carrying the colour. Was 8% glass with white figures.
+-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/header_tile_fill" />
+    <solid android:color="@color/surface" />
     <stroke android:width="1dp" android:color="@color/home_summary_stroke" />
     <corners android:radius="12dp" />
 </shape>

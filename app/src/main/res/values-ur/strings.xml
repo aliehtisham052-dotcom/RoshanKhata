@@ -85,6 +85,7 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">کل بیلنس</string>
+    <string name="home_switch_business">کاروبار بدلیں</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">لیجر رپورٹ PDF</string>
     <string name="ledger_report_generating">لیجر رپورٹ بن رہی ہے…</string>

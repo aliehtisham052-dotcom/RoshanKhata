@@ -2426,6 +2426,9 @@ class PartyDetailActivity : BaseActivity() {
             ivAvatar.visibility = View.GONE
             tvInitials.visibility = View.VISIBLE
             tvInitials.text = initialsOf(partyName)
+            // The same hue the list gave this name, so the customer is
+            // recognisably the same disc on both screens (7 Oct).
+            com.innovation313.roshankhata.ui.AvatarHue.paint(tvInitials, partyName)
         }
     }
 
