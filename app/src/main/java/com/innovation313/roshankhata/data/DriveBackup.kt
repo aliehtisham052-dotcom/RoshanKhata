@@ -311,7 +311,7 @@ object DriveBackup {
     suspend fun backup(
         context: Context,
         accountName: String,
-        json: String,
+        file: File,
         force: Boolean = false
     ): Result<Long> =
         withContext(Dispatchers.IO) {
@@ -359,7 +359,9 @@ object DriveBackup {
                     appProperties = stamp
                 }
 
-                val content = ByteArrayContent("text/plain", json.toByteArray())
+                // Uploaded from the streamed file (P6, 7 Oct), never as one
+                // byte array of the whole book.
+                val content = com.google.api.client.http.FileContent("text/plain", file)
 
                 val saved = if (existingId == null) {
                     // First backup: straightforward create.
@@ -452,8 +454,8 @@ object DriveBackup {
         if (signature == lastSignature(context)) return@withContext AutoResult.Skipped
 
         // All conditions met — take the backup.
-        val json = Backup.export(context, dao)
-        val result = backup(context, account, json)
+        val file = Backup.exportToCache(context, dao)
+        val result = backup(context, account, file)
         if (result.isFailure) {
             val cause = result.exceptionOrNull()
             return@withContext if (cause is OtherPhoneBackup) AutoResult.OtherPhone(cause)

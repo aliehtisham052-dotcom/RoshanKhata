@@ -163,9 +163,9 @@ class ViewerActivity : BaseActivity() {
             val file = withContext(Dispatchers.IO) {
                 runCatching {
                     val dao = KhataDatabase.get(this@ViewerActivity).khataDao()
-                    val json = Backup.export(this@ViewerActivity, dao)
+                    val json = Backup.exportToCache(this@ViewerActivity, dao)
                     if (withPhotos) BackupImages.packCopy(this@ViewerActivity, dao, json)
-                    else Backup.writeToCache(this@ViewerActivity, json)
+                    else json
                 }.getOrNull()
             }
             setBusy(false)

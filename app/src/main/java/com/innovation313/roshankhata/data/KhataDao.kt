@@ -529,6 +529,21 @@ interface KhataDao {
     @Query("SELECT * FROM transactions")
     suspend fun allEntriesForBackup(): List<LedgerEntry>
 
+    /**
+     * The three tables that grow with the shop, a page at a time for the
+     * streaming backup (P6, 7 Oct 2026): keyset pages (id > last, by id) so
+     * page five costs the same as page one. Everything, soft-deleted rows
+     * included, exactly as the whole-table reads above.
+     */
+    @Query("SELECT * FROM parties WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun partiesPageForBackup(after: Long, limit: Int): List<Party>
+
+    @Query("SELECT * FROM transactions WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun entriesPageForBackup(after: Long, limit: Int): List<LedgerEntry>
+
+    @Query("SELECT * FROM entry_items WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun entryItemsPageForBackup(after: Long, limit: Int): List<EntryItem>
+
     @Query("SELECT * FROM cheques")
     suspend fun allChequesForBackup(): List<Cheque>
 

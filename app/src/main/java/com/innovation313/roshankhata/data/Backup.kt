@@ -69,6 +69,60 @@ object Backup {
     // stamp) are deliberately NOT here: those are the separate opt-in image
     // backup, kept out of the routine text file so it stays small.
     suspend fun export(context: Context, dao: KhataDao): String {
+        val w = java.io.StringWriter()
+        exportTo(context, dao, w)
+        return w.toString()
+    }
+
+    /** Rows per page while streaming the big tables. */
+    private const val PAGE = 2_000
+
+    /**
+     * The backup, written straight to [out] (P6, 7 Oct 2026). The small
+     * tables and the profile are built as one JSONObject as they always were;
+     * the three big ones are read in pages of [PAGE] by id and written one
+     * record at a time, so the memory a backup needs no longer grows with the
+     * book. The document is the same the owner's old backups are: an object
+     * whose keys are the tables, restore reads it with the same parser.
+     */
+    suspend fun exportTo(context: Context, dao: KhataDao, out: java.io.Writer) {
+        val small = exportSmall(context, dao).toString(2)
+        // The small document ends in "\n}" — drop that brace and add the
+        // three streamed tables before closing the object ourselves.
+        out.write(small.trimEnd().removeSuffix("}").trimEnd())
+        suspend fun <T> table(name: String, page: suspend (Long, Int) -> List<T>, id: (T) -> Long, json: (T) -> JSONObject) {
+            out.write(",\n  \"$name\": [")
+            var after = 0L
+            var first = true
+            while (true) {
+                val rows = page(after, PAGE)
+                if (rows.isEmpty()) break
+                for (r in rows) {
+                    out.write(if (first) "\n    " else ",\n    ")
+                    first = false
+                    out.write(json(r).toString())
+                }
+                after = id(rows.last())
+                if (rows.size < PAGE) break
+            }
+            out.write(if (first) "]" else "\n  ]")
+        }
+        table("parties", dao::partiesPageForBackup, { it.id }, ::partyToJson)
+        table("entries", dao::entriesPageForBackup, { it.id }, ::entryToJson)
+        table("entryItems", dao::entryItemsPageForBackup, { it.id }, ::entryItemToJson)
+        out.write("\n}")
+        out.flush()
+    }
+
+    /** The backup to a file, buffered, for the paths that hand a file on (Downloads, Drive, the helper's copy). */
+    suspend fun exportToFile(context: Context, dao: KhataDao, file: File): File {
+        file.parentFile?.mkdirs()
+        java.io.BufferedWriter(java.io.OutputStreamWriter(java.io.FileOutputStream(file), Charsets.UTF_8), 64 * 1024)
+            .use { exportTo(context, dao, it) }
+        return file
+    }
+
+    private suspend fun exportSmall(context: Context, dao: KhataDao): JSONObject {
         val root = JSONObject()
         root.put("format", "RoshanKhata")
         root.put("version", FORMAT_VERSION)
@@ -83,15 +137,12 @@ object Backup {
         // Everything, soft-deleted rows included — the Recycle Bin is the
         // owner's data too, and a backup that quietly dropped it would be
         // throwing away something they can still get back.
-        root.put("parties", JSONArray().apply {
-            dao.allPartiesForBackup().forEach { put(partyToJson(it)) }
-        })
-        root.put("entries", JSONArray().apply {
-            dao.allEntriesForBackup().forEach { put(entryToJson(it)) }
-        })
-        root.put("entryItems", JSONArray().apply {
-            dao.allEntryItemsForBackup().forEach { put(entryItemToJson(it)) }
-        })
+        // parties, entries and entryItems — the three tables that grow with
+        // the shop — are NOT built here. exportTo streams them a page at a
+        // time straight into the output (P6, 7 Oct 2026): held as a
+        // JSONArray tree, 300,000 lines was several hundred megabytes and
+        // the backup died of memory before it wrote a byte. The file that
+        // comes out is the same document; restore reads it as before.
         root.put("cheques", JSONArray().apply {
             dao.allChequesForBackup().forEach { put(chequeToJson(it)) }
         })
@@ -177,7 +228,7 @@ object Backup {
         // back with the images, in Part B, or they stay false and honest.
         root.put("businessProfile", businessProfileToJson(context))
 
-        return root.toString(2)
+        return root
     }
 
     /**
@@ -252,6 +303,60 @@ object Backup {
      * still offer its own most recent backup. This is filesDir, not cacheDir —
      * the system does not clear it behind the owner's back.
      */
+    /** The streamed backup's cache file (P6): the one copy every other path copies from. */
+    suspend fun exportToCache(context: Context, dao: KhataDao): File {
+        val dir = File(context.cacheDir, "backups").apply { mkdirs() }
+        return exportToFile(context, dao, File(dir, suggestedFileName()))
+    }
+
+    /** [saveToDownloads], from a file — streamed, never held as one string. */
+    fun saveToDownloads(context: Context, source: File): String? {
+        val name = suggestedFileName()
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val values = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, name)
+                    put(MediaStore.Downloads.MIME_TYPE, "text/plain")
+                    put(MediaStore.Downloads.IS_PENDING, 1)
+                }
+                val resolver = context.contentResolver
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: return null
+                resolver.openOutputStream(uri)?.use { out ->
+                    source.inputStream().buffered().use { it.copyTo(out) }
+                } ?: return null
+                values.clear()
+                values.put(MediaStore.Downloads.IS_PENDING, 0)
+                resolver.update(uri, values, null, null)
+                "Downloads/$name"
+            } else {
+                @Suppress("DEPRECATION")
+                val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                dir.mkdirs()
+                val file = File(dir, name)
+                source.copyTo(file, overwrite = true)
+                file.absolutePath
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** [writeInternalCopy], from a file. */
+    fun writeInternalCopy(context: Context, source: File): File? {
+        return try {
+            val dir = File(context.filesDir, "backups").apply { mkdirs() }
+            val file = File(dir, suggestedFileName())
+            source.copyTo(file, overwrite = true)
+            dir.listFiles()
+                ?.sortedByDescending { it.lastModified() }
+                ?.drop(5)
+                ?.forEach { it.delete() }
+            file
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun writeInternalCopy(context: Context, json: String): File? {
         return try {
             val dir = File(context.filesDir, "backups").apply { mkdirs() }
