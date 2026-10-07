@@ -388,6 +388,14 @@ class PartyDetailActivity : BaseActivity() {
         intent.getLongExtra(EXTRA_EDIT_ENTRY_ID, 0L).takeIf { it > 0L }?.let { openEditor(it) }
 
         setSupportActionBar(findViewById<Toolbar>(R.id.detailToolbar))
+        // The light header (P2, 7 Oct), as on Home and the Khata list: a
+        // light status bar by day, dark by night.
+        run {
+            val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+            window.statusBarColor = ContextCompat.getColor(this, R.color.header_light_top)
+            androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !night
+        }
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -437,7 +445,7 @@ class PartyDetailActivity : BaseActivity() {
         findViewById<MaterialButton>(R.id.btnGave).setOnClickListener { showAddEntryDialog(true) }
         findViewById<MaterialButton>(R.id.btnGot).setOnClickListener { showAddEntryDialog(false) }
 
-        findViewById<MaterialButton>(R.id.btnCall).setOnClickListener {
+        findViewById<View>(R.id.btnCall).setOnClickListener {
             if (partyPhone.isNullOrBlank()) {
                 Toast.makeText(this, R.string.no_phone_number, Toast.LENGTH_SHORT).show()
             } else {
@@ -451,13 +459,13 @@ class PartyDetailActivity : BaseActivity() {
                 }
             }
         }
-        findViewById<MaterialButton>(R.id.btnWhatsApp).setOnClickListener {
+        findViewById<View>(R.id.btnWhatsApp).setOnClickListener {
             showReminderPreview(viaWhatsApp = true)
         }
-        findViewById<MaterialButton>(R.id.btnSms).setOnClickListener {
+        findViewById<View>(R.id.btnSms).setOnClickListener {
             showReminderPreview(viaWhatsApp = false)
         }
-        findViewById<MaterialButton>(R.id.btnPdf).setOnClickListener {
+        findViewById<View>(R.id.btnPdf).setOnClickListener {
             exportStatement()
         }
 
@@ -555,20 +563,33 @@ class PartyDetailActivity : BaseActivity() {
         currentBalance = balance
         refreshSeasonRecord()
         tvPartyBalance.text = Format.customerBalance(balance)
+        // The paper balance card (7 Oct): the figure, the chip's fill and its
+        // glyph all follow the direction — the Khata list's "I have to get"
+        // and "I have to give" cards; settled is a mint chip with a tick.
+        val chip = findViewById<android.widget.ImageView>(R.id.ivBalanceChip)
+        val colour: Int
         when {
             Money.isPositive(balance) -> {
-                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me_on_dark))
+                colour = ContextCompat.getColor(this, R.color.bal_owed_to_me)
+                chip.setBackgroundResource(R.drawable.bg_home_chip_get)
+                chip.setImageResource(R.drawable.ic_arrow_got)
                 tvBalanceHint.setText(R.string.you_will_get)
             }
             Money.isNegative(balance) -> {
-                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe_on_dark))
+                colour = ContextCompat.getColor(this, R.color.bal_i_owe)
+                chip.setBackgroundResource(R.drawable.bg_home_chip_give)
+                chip.setImageResource(R.drawable.ic_arrow_gave)
                 tvBalanceHint.setText(R.string.you_will_give)
             }
             else -> {
-                tvPartyBalance.setTextColor(ContextCompat.getColor(this, R.color.white))
+                colour = ContextCompat.getColor(this, R.color.header_light_ink)
+                chip.setBackgroundResource(R.drawable.bg_today_chip)
+                chip.setImageResource(R.drawable.ic_check_plain)
                 tvBalanceHint.setText(R.string.settled)
             }
         }
+        tvPartyBalance.setTextColor(colour)
+        chip.imageTintList = android.content.res.ColorStateList.valueOf(colour)
     }
 
     // Arriving again with an entry to edit, while this customer's screen is
