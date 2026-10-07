@@ -141,7 +141,7 @@ class FollowUpActivity : BaseActivity() {
     private fun observeDebtors() {
         lifecycleScope.launch {
             dao.observePartiesWithBalance()
-                .combine(dao.observeLedgerPoints()) { all, points -> all to points }
+                .combine(dao.observeOwingLedgerPoints()) { all, points -> all to points }
                 .combine(dao.observePromises()) { (all, points), promiseRows -> Triple(all, points, promiseRows) }
                 .combine(reminded) { (all, points, promiseRows), remindedToday ->
                     // balance > 0 means they owe the shop — the only rows
