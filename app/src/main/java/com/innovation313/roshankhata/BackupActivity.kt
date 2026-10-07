@@ -886,11 +886,11 @@ class BackupActivity : BaseActivity() {
                 Businesses.ensure(this@BackupActivity, biz.id, biz.name)
                 Businesses.switchTo(this@BackupActivity, biz.id)
 
-                val text = DriveBackup.restoreById(this@BackupActivity, account, biz.backupFileId)
+                val file = DriveBackup.restoreByIdToFile(this@BackupActivity, account, biz.backupFileId)
                     .getOrNull()
-                if (text == null) { failed += label; continue }
+                if (file == null) { failed += label; continue }
 
-                val (result, data) = withContext(Dispatchers.IO) { Backup.parseText(text) }
+                val (result, data) = withContext(Dispatchers.IO) { Backup.parseFile(file).also { file.delete() } }
                 if (result !is Backup.ImportResult.Ok || data == null) { failed += label; continue }
 
                 val liveDao = KhataDatabase.get(this@BackupActivity).khataDao()
