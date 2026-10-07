@@ -752,6 +752,9 @@ class KhataActivity : BaseActivity() {
      * strips separators from both sides, so "3001234" finds "0300-123 4567"
      * the way a person would expect it to.
      */
+    /** The last query rendered, so the list jumps to the top only when the typing changed. */
+    private var lastQuery = ""
+
     private fun render() {
         val query = etSearch.text.toString().trim().lowercase()
 
@@ -807,7 +810,14 @@ class KhataActivity : BaseActivity() {
         }
 
         shownParties = sorted
-        adapter.submitList(sorted)
+        // A typed search starts at the top (7 Oct). submitList keeps whatever
+        // scroll the list had, so the best match — now ranked first — could
+        // sit above the viewport while the owner read the third-best.
+        val scrollUp = query.isNotEmpty() && query != lastQuery
+        lastQuery = query
+        adapter.submitList(sorted) {
+            if (scrollUp) findViewById<RecyclerView>(R.id.rvParties).scrollToPosition(0)
+        }
         renderFilterState()
 
         tvEmpty.visibility = when {

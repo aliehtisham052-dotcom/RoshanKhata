@@ -18,18 +18,37 @@ object NameSearch {
      * 0 — the name begins with it: "ali" finds "Ali Raza".
      * 1 — a word in the name begins with it: "ali" finds "Muhammad Ali",
      *     which is how half the names in a Pakistani ledger are recalled.
-     * 2 — it appears mid-word: "ali" inside "Wali". A real match, and last,
+     * 2 — the name begins with it once both are folded: "bila" finds
+     *     "Billa College", "bhati" finds "Bhatti Trader".
+     * 3 — a folded word begins with it: "bila" finds "Awais Billa Ramky".
+     * 4 — it appears mid-word: "ali" inside "Wali". A real match, and low,
      *     because it is almost never the one meant.
-     * 3 — the name does not match; the number did.
+     * 5 — it appears mid-word once folded.
+     * 6 — one slip of the finger from a word: "bila" and "Bill".
+     * 7 — the name does not match; the number did.
+     *
+     * The folded and typo rungs are new (7 Oct). matches() has forgiven
+     * spelling for months, but rank() still judged the raw letters alone, so
+     * every name reached by folding or a typo tied at the bottom and fell
+     * into alphabetical order: "bila" put Awais Billa Ramky above Billa
+     * College and Bill between them, because A comes before B. The name the
+     * owner is plainly typing now sits first.
      */
     fun rank(name: String, query: String): Int {
         val n = name.lowercase()
-        return when {
-            n.startsWith(query) -> 0
-            n.split(*SEPARATORS).any { it.startsWith(query) } -> 1
-            n.contains(query) -> 2
-            else -> 3
+        if (n.startsWith(query)) return 0
+        val words = n.split(*SEPARATORS)
+        if (words.any { it.startsWith(query) }) return 1
+        val typed = fold(query)
+        val folded = if (typed.length >= MIN_OVERLAP) fold(n) else ""
+        if (folded.isNotEmpty()) {
+            if (folded.startsWith(typed)) return 2
+            if (foldedWords(name).any { it.startsWith(typed) }) return 3
         }
+        if (n.contains(query)) return 4
+        if (folded.isNotEmpty() && folded.contains(typed)) return 5
+        if (typed.length >= MIN_TYPO_LEN && foldedWords(name).any { withinOneEdit(typed, it) }) return 6
+        return 7
     }
 
     /**

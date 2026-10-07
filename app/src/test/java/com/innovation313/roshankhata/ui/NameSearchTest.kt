@@ -365,4 +365,29 @@ class NameSearchTest {
         assertFalse(NameSearch.withinOneEdit("aslam", "aslamxy"))
         assertFalse(NameSearch.withinOneEdit("hello", "world"))
     }
+
+    /**
+     * The owner's own screenshot (7 Oct): "bila" typed against Awais Billa
+     * Ramky, Bill and Billa College came back in that order — alphabetical,
+     * because none of the three matched the raw letters and all three tied
+     * at the bottom. The name being typed belongs first.
+     */
+    @Test
+    fun `a typed name reached by folding outranks a typo and a mid-name hit`() {
+        val shown = listOf("Awais Billa Ramky", "Bill", "Billa College", "Abu Bilal")
+        val sorted = NameSearch.sort(shown, "bila") { it }
+        assertEquals("Billa College", sorted[0])
+        assertEquals("Awais Billa Ramky", sorted[1])
+        assertEquals("Bill", sorted.last())
+        // Exact letters still beat a fold: "bilal" typed in full.
+        assertEquals("Abu Bilal", NameSearch.sort(shown, "bilal") { it }.first())
+    }
+
+    @Test
+    fun `typed rank keeps its old order for exact spellings`() {
+        assertEquals(0, NameSearch.rank("Ali Raza", "ali"))
+        assertEquals(1, NameSearch.rank("Muhammad Ali", "ali"))
+        assertEquals(4, NameSearch.rank("Wali", "ali"))
+        assertEquals(7, NameSearch.rank("Zafar", "ali"))
+    }
 }
