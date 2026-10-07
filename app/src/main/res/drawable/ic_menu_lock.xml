@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- More-menu icon (7 Oct): two tones of one hue, like the Home tiles; day and night colours in colors.xml. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="@color/fi_gold_a" android:pathData="M12,3a4,4 0 0 1 4,4v3h-2V7a2,2 0 0 0 -4,0v3H8V7a4,4 0 0 1 4,-4z" />
+    <path android:fillColor="@color/fi_gold_b" android:pathData="M6,10h12a1,1 0 0 1 1,1v9a1,1 0 0 1 -1,1H6a1,1 0 0 1 -1,-1v-9a1,1 0 0 1 1,-1z M12,13.5a1.5,1.5 0 0 0 -0.75,2.8V18h1.5v-1.7A1.5,1.5 0 0 0 12,13.5z" />
+</vector>

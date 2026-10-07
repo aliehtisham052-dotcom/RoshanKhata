@@ -86,6 +86,8 @@
 
     <string name="net_balance">Kul balance</string>
     <string name="home_switch_business">Karobar badlein</string>
+    <string name="drawer_active_business">Khula karobar</string>
+    <string name="drawer_active_business_n">Khula karobar · %2$s mein se %1$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">Ledger report PDF</string>
     <string name="ledger_report_generating">Ledger report ban rahi hai…</string>

@@ -18,37 +18,81 @@ import com.innovation313.roshankhata.data.ThemeMode
  * The one "More" list (2 Oct). Home and the Khata screen each had their own
  * copy, and the two drifted: Home lost Products & stock, Khata never got
  * Text size or Theme. Both now open this, so a setting can never again be
- * reachable from one bar and missing from the other.
+ * reachable from one bar and missing from the other. Since 7 Oct it is the
+ * ⋮ menu beside the bell (showMenu); the drawer keeps only the features.
  */
 object MoreSheet {
+
+    /** One door of the More list: its icon (a Home-tile duotone), the disc's tint, its name, and what it opens. */
+    class Entry(val icon: Int, val tint: Int, val label: Int, val open: () -> Unit)
 
     fun show(activity: Activity) {
         val items = entries(activity)
         MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.more_title)
-            .setItems(items.map { activity.getString(it.first) }.toTypedArray()) { _, which -> items[which].second() }
+            .setItems(items.map { activity.getString(it.label) }.toTypedArray()) { _, which -> items[which].open() }
             .show()
     }
 
-    /** The settings and doors, in order; the Home drawer lists the same (6 Oct). */
-    fun entries(activity: Activity): List<Pair<Int, () -> Unit>> {
+    /** The settings and doors, in order; the ⋮ menu on Home and Khata lists the same (7 Oct). */
+    fun entries(activity: Activity): List<Entry> {
         val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(activity)
-        return listOfNotNull<Pair<Int, () -> Unit>>(
-            R.string.app_lock to { appLock(activity) },
-            R.string.screen_privacy to { ScreenPrivacyDialog.show(activity) },
-            R.string.products_stock to { activity.startActivity(Intent(activity, ProductsActivity::class.java)) },
+        fun e(icon: Int, tint: Int, label: Int, open: () -> Unit) = Entry(icon, tint, label, open)
+        return listOfNotNull(
+            e(R.drawable.ic_menu_lock, R.color.tile_bills_bg, R.string.app_lock) { appLock(activity) },
+            e(R.drawable.ic_menu_privacy, R.color.tile_cheques_bg, R.string.screen_privacy) { ScreenPrivacyDialog.show(activity) },
+            e(R.drawable.ic_tile_products, R.color.tile_stock_bg, R.string.products_stock) { activity.startActivity(Intent(activity, ProductsActivity::class.java)) },
             // Merging customers rewrites the book; a read-only phone has no book to rewrite.
-            if (viewer) null else R.string.duplicate_customers to { activity.startActivity(Intent(activity, DuplicateCustomersActivity::class.java)) },
+            if (viewer) null else e(R.drawable.ic_menu_duplicate, R.color.tile_card_bg, R.string.duplicate_customers) { activity.startActivity(Intent(activity, DuplicateCustomersActivity::class.java)) },
             // The helper's phone: the owner sends a copy from here, and a helper's
             // phone becomes read-only (or stops being) from here too.
-            R.string.viewer_menu to { activity.startActivity(Intent(activity, com.innovation313.roshankhata.ViewerActivity::class.java)) },
-            R.string.language to { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
-            R.string.text_size to { textSize(activity) },
-            R.string.theme to { theme(activity) },
+            e(R.drawable.ic_menu_viewer, R.color.tile_insights_bg, R.string.viewer_menu) { activity.startActivity(Intent(activity, com.innovation313.roshankhata.ViewerActivity::class.java)) },
+            e(R.drawable.ic_menu_language, R.color.tile_khata_bg, R.string.language) { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
+            e(R.drawable.ic_menu_textsize, R.color.tile_invoice_bg, R.string.text_size) { textSize(activity) },
+            e(R.drawable.ic_menu_theme, R.color.tile_card_bg, R.string.theme) { theme(activity) },
             // Reporting a problem lives inside Help, one door for "something is wrong".
-            R.string.help_support to { activity.startActivity(Intent(activity, HelpActivity::class.java)) },
-            R.string.about_us to { activity.startActivity(Intent(activity, AboutActivity::class.java)) }
+            e(R.drawable.ic_menu_help, R.color.tile_insights_bg, R.string.help_support) { activity.startActivity(Intent(activity, HelpActivity::class.java)) },
+            e(R.drawable.ic_menu_about, R.color.tile_cheques_bg, R.string.about_us) { activity.startActivity(Intent(activity, AboutActivity::class.java)) }
         )
+    }
+
+    /**
+     * The ⋮ menu (7 Oct): the same list as a popup under the three dots in
+     * the header, each row an icon disc and a name, like the drawer's rows.
+     * [homeFirst] puts a "Home" row at the top — the Khata screen's way home
+     * once its bottom bar is gone.
+     */
+    fun showMenu(activity: Activity, anchor: android.view.View, homeFirst: Boolean = false) {
+        val items = ArrayList<Entry>()
+        if (homeFirst) items.add(Entry(R.drawable.ic_menu_home, R.color.tile_khata_bg, R.string.nav_home) {
+            activity.startActivity(
+                Intent(activity, com.innovation313.roshankhata.MainActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
+        })
+        items.addAll(entries(activity))
+        val dp = activity.resources.displayMetrics.density
+        val popup = androidx.appcompat.widget.ListPopupWindow(activity)
+        popup.anchorView = anchor
+        popup.width = (236 * dp).toInt()
+        popup.isModal = true
+        popup.setBackgroundDrawable(androidx.core.content.ContextCompat.getDrawable(activity, R.drawable.bg_more_menu))
+        popup.setAdapter(object : android.widget.BaseAdapter() {
+            override fun getCount() = items.size
+            override fun getItem(i: Int) = items[i]
+            override fun getItemId(i: Int) = i.toLong()
+            override fun getView(i: Int, convert: android.view.View?, parent: android.view.ViewGroup): android.view.View {
+                val v = convert ?: android.view.LayoutInflater.from(activity).inflate(R.layout.item_more_row, parent, false)
+                val e = items[i]
+                v.findViewById<android.widget.ImageView>(R.id.ivMoreIcon).setImageResource(e.icon)
+                v.findViewById<android.widget.FrameLayout>(R.id.moreIconDisc).backgroundTintList =
+                    android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(activity, e.tint))
+                v.findViewById<android.widget.TextView>(R.id.tvMoreLabel).setText(e.label)
+                return v
+            }
+        })
+        popup.setOnItemClickListener { _, _, i, _ -> popup.dismiss(); items[i].open() }
+        popup.show()
     }
 
     /**

@@ -90,6 +90,8 @@
 
     <string name="net_balance">Net balance</string>
     <string name="home_switch_business">Switch business</string>
+    <string name="drawer_active_business">Active business</string>
+    <string name="drawer_active_business_n">Active business · %1$s of %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">Ledger report PDF</string>
     <string name="ledger_report_generating">Building the ledger report…</string>

@@ -86,6 +86,8 @@
 
     <string name="net_balance">مانده خالص</string>
     <string name="home_switch_business">تغییر کسب‌وکار</string>
+    <string name="drawer_active_business">کسب‌وکار فعال</string>
+    <string name="drawer_active_business_n">کسب‌وکار فعال · %1$s از %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">گزارش دفتر کل PDF</string>
     <string name="ledger_report_generating">گزارش دفتر کل در حال ساخت است…</string>

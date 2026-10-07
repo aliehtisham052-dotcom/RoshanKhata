@@ -90,6 +90,8 @@
 
     <string name="net_balance">कुल बैलेंस</string>
     <string name="home_switch_business">व्यवसाय बदलें</string>
+    <string name="drawer_active_business">सक्रिय व्यवसाय</string>
+    <string name="drawer_active_business_n">सक्रिय व्यवसाय · %2$s में से %1$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">खाता रिपोर्ट PDF</string>
     <string name="ledger_report_generating">खाता रिपोर्ट बन रही है…</string>

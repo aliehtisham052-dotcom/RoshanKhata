@@ -86,6 +86,8 @@
 
     <string name="net_balance">خالص بيلنس</string>
     <string name="home_switch_business">ڪاروبار بدلايو</string>
+    <string name="drawer_active_business">کليل ڪاروبار</string>
+    <string name="drawer_active_business_n">کليل ڪاروبار · %2$s مان %1$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">ليجر رپورٽ PDF</string>
     <string name="ledger_report_generating">ليجر رپورٽ ٺهي رهي آهي…</string>
