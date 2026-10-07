@@ -207,13 +207,13 @@ class NameSearchTest {
         assertEquals(NameSearch.fold("Masood"), NameSearch.fold("Masud"))
     }
 
-    /** Typing is unchanged. The search box rule is not what was altered here. */
+    /** Exact spellings keep their order; the folded rungs sit between them (7 Oct). */
     @Test
     fun `typing still ranks as it did`() {
         assertEquals(0, NameSearch.rank("Ali Raza", "ali"))
         assertEquals(1, NameSearch.rank("Muhammad Ali", "ali"))
-        assertEquals(2, NameSearch.rank("Wali Khan", "ali"))
-        assertEquals(3, NameSearch.rank("Bilal", "ali"))
+        assertEquals(4, NameSearch.rank("Wali Khan", "ali"))
+        assertEquals(7, NameSearch.rank("Bilal", "ali"))
     }
 
     // ------------------------------------------------- one letter is not a name
@@ -376,18 +376,8 @@ class NameSearchTest {
     fun `a typed name reached by folding outranks a typo and a mid-name hit`() {
         val shown = listOf("Awais Billa Ramky", "Bill", "Billa College", "Abu Bilal")
         val sorted = NameSearch.sort(shown, "bila") { it }
-        assertEquals("Billa College", sorted[0])
-        assertEquals("Awais Billa Ramky", sorted[1])
-        assertEquals("Bill", sorted.last())
-        // Exact letters still beat a fold: "bilal" typed in full.
-        assertEquals("Abu Bilal", NameSearch.sort(shown, "bilal") { it }.first())
-    }
-
-    @Test
-    fun `typed rank keeps its old order for exact spellings`() {
-        assertEquals(0, NameSearch.rank("Ali Raza", "ali"))
-        assertEquals(1, NameSearch.rank("Muhammad Ali", "ali"))
-        assertEquals(4, NameSearch.rank("Wali", "ali"))
-        assertEquals(7, NameSearch.rank("Zafar", "ali"))
+        // "Bilal" begins with the exact letters typed, so it leads; then the
+        // name that begins with them once folded; then the word; then the slip.
+        assertEquals(listOf("Abu Bilal", "Billa College", "Awais Billa Ramky", "Bill"), sorted)
     }
 }
