@@ -1,27 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Home header only. Diagonal brand-green gradient, two gold arcs in the top
-  end corner, and a 2dp gold rule along the bottom edge.
+  The green header of the Khata screen (Home and Notifications moved to the
+  light header, bg_header_light, 7 Oct). Smoothed the same day: one soft
+  top-to-bottom gradient and the gold rule; the diagonal three-stop sweep
+  and the gold rings read as rough on the phone.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <gradient
-                android:angle="315"
-                android:startColor="@color/home_header_start"
-                android:centerColor="@color/home_header_mid"
-                android:endColor="@color/home_header_end"
-                android:type="linear" />
+            <gradient android:angle="270" android:startColor="@color/home_header_start" android:endColor="@color/home_header_mid" android:type="linear" />
         </shape>
     </item>
-    <item
-        android:drawable="@drawable/home_header_sweep"
-        android:gravity="top|end" />
-    <item
-        android:height="2dp"
-        android:gravity="bottom|fill_horizontal">
-        <shape android:shape="rectangle">
-            <solid android:color="@color/gold_on_dark" />
-        </shape>
+    <item android:height="2dp" android:gravity="bottom|fill_horizontal">
+        <shape android:shape="rectangle"><solid android:color="@color/gold_on_dark" /></shape>
     </item>
 </layer-list>

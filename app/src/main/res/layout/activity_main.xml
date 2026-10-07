@@ -37,7 +37,7 @@
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_home_header"
+        android:background="@drawable/bg_header_light"
         android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
@@ -60,7 +60,8 @@
                 android:layout_marginEnd="6dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/more_title"
-                android:src="@drawable/ic_menu_lines" />
+                android:src="@drawable/ic_menu_lines"
+                app:tint="@color/header_light_ink" />
 
             <FrameLayout
                 android:layout_width="38dp"
@@ -95,7 +96,7 @@
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:text="@string/app_name"
-                android:textColor="@color/white"
+                android:textColor="@color/header_light_ink"
                 android:textSize="19sp"
                 android:textStyle="bold" />
 
@@ -112,7 +113,8 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_bell" />
+                    android:src="@drawable/ic_bell"
+                    app:tint="@color/header_light_ink" />
 
                 <TextView
                     android:id="@+id/tvAlertBadge"
@@ -138,7 +140,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/more_title"
                 android:src="@drawable/ic_feature_settings"
-                app:tint="@color/white" />
+                app:tint="@color/header_light_ink" />
         </LinearLayout>
 
         <!--
@@ -221,7 +223,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
-                android:background="@drawable/bg_home_balance_card"
+                android:background="@drawable/bg_home_backup_card"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -235,7 +237,7 @@
                     android:layout_height="14dp"
                     android:importantForAccessibility="no"
                     android:src="@drawable/ic_feature_backup"
-                    app:tint="@color/header_on_dark" />
+                    app:tint="@color/backup_ink" />
 
                 <TextView
                     android:id="@+id/tvHomeBackupAge"
@@ -245,8 +247,9 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:maxWidth="84dp"
-                    android:textColor="@color/header_on_dark"
+                    android:textColor="@color/backup_ink"
                     android:textSize="10sp"
+                    android:textStyle="bold"
                     tools:text="Backed up 10:42" />
             </LinearLayout>
         </LinearLayout>

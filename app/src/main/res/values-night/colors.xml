@@ -95,4 +95,11 @@
     <color name="fi_pink_a">#D2688F</color>
     <color name="fi_pink_b">#F9D6E3</color>
     <color name="slide_dot">#73FFFFFF</color>
+    <color name="header_light_top">#17201B</color>
+    <color name="header_light_bottom">#121513</color>
+    <color name="header_light_line">#2A3430</color>
+    <color name="header_light_ink">#D4EEDF</color>
+    <color name="header_light_ink_soft">#9FC4AE</color>
+    <color name="home_balance_solid">#1F3528</color>
+    <color name="backup_ink">#FFE8A8</color>
 </resources>
