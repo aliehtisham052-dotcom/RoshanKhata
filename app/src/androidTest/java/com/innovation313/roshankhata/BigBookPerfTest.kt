@@ -87,7 +87,11 @@ class BigBookPerfTest {
                 Log.i(TAG, "search '$q': $ms ms on the main thread")
                 ms
             }
-            assertTrue("a search keystroke held the main thread $worst ms (budget $KEY_BUDGET_MS)", worst <= KEY_BUDGET_MS)
+            // Every figure in the message: a failing run then reports the whole
+            // picture through the CI annotation, not only the one line that broke.
+            val report = "Khata list first row $open ms (budget $OPEN_BUDGET_MS); worst search keystroke $worst ms on the main thread (budget $KEY_BUDGET_MS)"
+            Log.i(TAG, report)
+            assertTrue(report, worst <= KEY_BUDGET_MS)
         }
     }
 
