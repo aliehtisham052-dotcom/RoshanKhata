@@ -202,29 +202,48 @@ class ImportContactsActivity : BaseActivity() {
         }
     }
 
+    /** Every contact's name prepared for search once, the way the Khata list does (P5, 7 Oct). */
+    private var contactKeys: Map<String, NameSearch.Key> = emptyMap()
+    private var filterJob: kotlinx.coroutines.Job? = null
+
+    /**
+     * Same rule as the ledger's search, from the same place: a name that
+     * begins with what was typed first, then a name with a word that does,
+     * then a match buried mid-word. That last rank is why "ali" used to
+     * return three men called Wali and nothing else.
+     *
+     * Off the main thread since 7 Oct (P5): a phone book of several thousand
+     * folded on every keystroke held the keyboard, the same way the Khata
+     * list did before P1.
+     */
     private fun applyFilter() {
-        val query = etSearch.text.toString().trim().lowercase()
+        val q = NameSearch.Query(etSearch.text.toString())
+        val all = allContacts
+        if (contactKeys.size != all.size) {
+            contactKeys = all.associate { it.phone to NameSearch.Key(it.name, it.phone) }
+        }
+        val keys = contactKeys
+        filterJob?.cancel()
+        filterJob = lifecycleScope.launch {
+            val filtered = withContext(Dispatchers.Default) {
+                all.filter { c -> keys[c.phone]?.let { NameSearch.matches(it, q) } ?: NameSearch.matches(c.name, c.phone, q.text) }
+                    .let { list ->
+                        if (q.isEmpty) list
+                        else list.sortedWith(
+                            compareBy<PhoneContact> { c -> keys[c.phone]?.let { NameSearch.rank(it, q) } ?: NameSearch.rank(c.name, q.text) }
+                                .thenBy { it.name.lowercase() }
+                        )
+                    }
+            }
+            visible = filtered
+            adapter.submit(filtered, selected)
+            refreshSelectAllLabel()
 
-        // Same rule as the ledger's search, from the same place: a name that
-        // begins with what was typed first, then a name with a word that
-        // does, then a match buried mid-word.
-        //
-        // That last rank is why "ali" used to return three men called Wali
-        // and nothing else — every one of them was a real match, and every
-        // one was the wrong answer.
-        val filtered = NameSearch.sort(
-            allContacts.filter { NameSearch.matches(it.name, it.phone, query) },
-            query
-        ) { it.name }
-
-        visible = filtered
-        adapter.submit(filtered, selected)
-        refreshSelectAllLabel()
-
-        if (filtered.isEmpty() && allContacts.isNotEmpty()) {
-            showStatus(getString(R.string.no_matching_contacts))
-        } else {
-            hideStatus()
+            if (filtered.isEmpty() && all.isNotEmpty()) {
+                showStatus(getString(R.string.no_matching_contacts))
+            } else {
+                hideStatus()
+            }
         }
     }
 
