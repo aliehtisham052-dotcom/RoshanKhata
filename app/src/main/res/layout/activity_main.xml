@@ -63,31 +63,20 @@
                 android:src="@drawable/ic_menu_lines"
                 app:tint="@color/header_light_ink" />
 
-            <FrameLayout
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:background="@drawable/bg_home_logo_tile"
-                android:padding="3dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:importantForAccessibility="no"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/logo_on_green" />
-            </FrameLayout>
 
             <!--
               The shop's own name as the title (7 Oct, the owner's call): the
-              screen is about their shop, and the app's name is on the logo
-              beside it, in the drawer and in About. One line, so the header
-              stays short. Tap: the business switcher.
+              screen is about their shop; the app's name and logo are in the
+              drawer's header and in About (the logo tile that sat here took
+              the name's room at a large text size, for no purpose the owner
+              could see). One line, shrinking to 13sp before it would ever be
+              cut. Tap: the business switcher.
             -->
             <TextView
                 android:id="@+id/tvHomeTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="4dp"
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/home_switch_business"
@@ -98,7 +87,11 @@
                 android:text="@string/app_name"
                 android:textColor="@color/header_light_ink"
                 android:textSize="19sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:autoSizeMaxTextSize="19sp"
+                app:autoSizeMinTextSize="13sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform" />
 
             <!-- The bell (6 Oct): today's alerts, counted on the phone. -->
             <FrameLayout
