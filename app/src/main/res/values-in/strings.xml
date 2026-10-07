@@ -928,6 +928,16 @@
     <string name="na_bill_due">Nota pemasok jatuh tempo %1$s</string>
     <string name="na_expiring">Stok kedaluwarsa dalam 30 hari: %1$s batch</string>
     <string name="na_backup">Cadangan terakhir %1$s hari lalu</string>
+    <string name="na_tag_today">Hari ini</string>
+    <string name="na_tag_late">Terlambat</string>
+    <string name="na_tag_failed">Gagal</string>
+    <string name="na_tag_days">%1$s hari</string>
+    <string name="na_backup_sub">Simpan salinan buku Anda dengan aman</string>
+    <string name="na_backup_failed_sub">Cadangan otomatis gagal disimpan — buka Cadangan untuk mencoba lagi</string>
+    <string name="na_backup_other_phone_sub">Ponsel lain terakhir menyimpan cadangan toko ini — buka Cadangan untuk memutuskan</string>
+    <string name="na_updated">Roshan Khata diperbarui ke %1$s</string>
+    <string name="na_updated_sub">Lihat yang baru</string>
+    <string name="home_section_tools">Alat</string>
     <string name="na_backup_never">Belum ada cadangan</string>
     <string name="na_gap">Arus kas: minggu %1$s kurang %2$s</string>
     <string name="staff_title">Karyawan &amp; gaji</string>

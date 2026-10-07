@@ -913,6 +913,16 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="na_bill_due">Supplier ka bill %1$s ko due</string>
     <string name="na_expiring">30 din mein expire hone wala maal: %1$s batch</string>
     <string name="na_backup">Aakhri backup %1$s din pehle</string>
+    <string name="na_tag_today">Aaj</string>
+    <string name="na_tag_late">Late</string>
+    <string name="na_tag_failed">Nakaam</string>
+    <string name="na_tag_days">%1$s din</string>
+    <string name="na_backup_sub">Apne khaton ki copy mehfooz rakhein</string>
+    <string name="na_backup_failed_sub">Khudkar backup save na ho saka — Backup khol kar dobara koshish karein</string>
+    <string name="na_backup_other_phone_sub">Is dukaan ka backup aakhri baar doosre phone ne save kiya — Backup khol kar faisla karein</string>
+    <string name="na_updated">Roshan Khata %1$s par update ho gaya</string>
+    <string name="na_updated_sub">Dekhein kya naya hai</string>
+    <string name="home_section_tools">Auzaar</string>
     <string name="na_backup_never">Abhi tak backup nahi hua</string>
     <string name="na_gap">Cash flow: %1$s wale hafte mein %2$s ki kami</string>
     <string name="staff_title">Staff aur tankhwah</string>

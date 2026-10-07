@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The small red tag on a bell row ("Today", "Late", "Failed"). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#E24B4A" />
+    <corners android:radius="6dp" />
+</shape>

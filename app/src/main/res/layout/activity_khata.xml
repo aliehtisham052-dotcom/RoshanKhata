@@ -76,12 +76,19 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
+                <!-- The summary line (7 Oct): how many accounts, how many
+                     settled — moved up from the tools row, where it fought
+                     three buttons for width. The name above it is still the
+                     tap that opens the business switcher. -->
                 <TextView
+                    android:id="@+id/tvPartySummary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/tap_to_change_business"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textColor="@color/header_on_dark"
-                    android:textSize="10sp" />
+                    android:textSize="11sp"
+                    tools:text="1205 customers · 1204 settled" />
             </LinearLayout>
 
             <!--
@@ -90,12 +97,19 @@
               time of the last backup. The "Backup due" text used to sit on the
               summary line below; it reads better as this quiet header icon.
             -->
+            <!-- The red dot (7 Oct) is the whole backup message on this
+                 screen: there when the backup is a week old or has never
+                 been taken, gone when it is fresh. The words live on Home. -->
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnHeaderBackup"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="38dp"
                 android:layout_height="38dp"
-                android:layout_marginEnd="8dp"
                 android:contentDescription="@string/backup_now"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -110,6 +124,17 @@
                 app:iconSize="22dp"
                 app:iconTint="@color/white"
                 app:strokeColor="@color/home_summary_stroke" />
+
+                <View
+                    android:id="@+id/backupDot"
+                    android:layout_width="11dp"
+                    android:layout_height="11dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="-2dp"
+                    android:layout_marginEnd="-2dp"
+                    android:background="@drawable/bg_backup_dot"
+                    android:visibility="gone" />
+            </FrameLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnHeaderSettings"
@@ -130,6 +155,18 @@
                 app:iconSize="22dp"
                 app:iconTint="@color/white"
                 app:strokeColor="@color/home_summary_stroke" />
+
+            <!-- The ⋮ menu (7 Oct): Home first, then every setting — the same
+                 list as Home's ⋮. It replaces the bottom Home/More bar. -->
+            <ImageButton
+                android:id="@+id/btnMore"
+                android:layout_width="34dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="2dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/more_title"
+                android:src="@drawable/ic_more_vert"
+                app:tint="@color/white" />
         </LinearLayout>
 
         <!--
@@ -152,38 +189,6 @@
           hide the amounts would have opened another screen instead. Negative
           start margin so the glyph still lines up with the text above it.
         -->
-        <LinearLayout
-            android:id="@+id/balanceRow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingEnd="10dp">
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-
-            <!--
-              The backup age, beside the money it protects. Wrap-content, not
-              weight: it takes only the width its words need, so the rest of
-              the row is not one large button that opens Backup.
-            -->
-            <TextView
-                android:id="@+id/tvBackupAge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:ellipsize="end"
-                android:gravity="end"
-                android:maxLines="1"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:textColor="@color/header_on_dark"
-                android:textSize="11sp" />
-        </LinearLayout>
 
         <!--
           The boxes that lead the header, the way a shopkeeper actually
@@ -453,14 +458,10 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvPartySummary"
+            <Space
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/text_muted"
-                android:textSize="11sp"
-                tools:text="1163 customers · 12 settled · Backup due" />
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
             <!-- Sort is an icon now, the same size as PDF and QR beside it, so
                  the three sit exactly under the mic and filter above. Its name
@@ -618,22 +619,10 @@
     </LinearLayout>
 
     <!--
-      The main sections, out in the open. They were buried in an overflow menu
-      before, which in practice meant most shopkeepers would never have
-      discovered that a Cashbook or a Cheque register existed at all.
+      No bottom bar since 7 Oct. It held Home and More; Home is the phone's
+      Back (and the first row of the header's ⋮), More is that ⋮ itself.
+      The list gets the 56dp back and the Add Party button stands clear.
     -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/surface"
-        app:itemIconTint="@color/nav_item_colour"
-        app:itemTextColor="@color/nav_item_colour"
-        app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_home_nav" />
 
     <!--
       The selection bar, shown only while customers are being picked.
@@ -697,7 +686,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingBottom="88dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/selectionBar" />
@@ -709,7 +698,7 @@
         android:layout_height="0dp"
         android:importantForAccessibility="no"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/selectionBar" />
@@ -739,7 +728,7 @@
         android:text="@string/add_party"
         android:textColor="@color/white"
         app:backgroundTint="@color/button_dark"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -989,6 +989,16 @@
     <string name="na_bill_due">فاتورة مورّد تستحق %1$s</string>
     <string name="na_expiring">بضاعة تنتهي خلال 30 يومًا: %1$s دفعة</string>
     <string name="na_backup">آخر نسخة احتياطية قبل %1$s يومًا</string>
+    <string name="na_tag_today">اليوم</string>
+    <string name="na_tag_late">متأخر</string>
+    <string name="na_tag_failed">فشل</string>
+    <string name="na_tag_days">%1$s يوم</string>
+    <string name="na_backup_sub">احتفظ بنسخة آمنة من دفاترك</string>
+    <string name="na_backup_failed_sub">تعذّر حفظ النسخ الاحتياطي التلقائي — افتح النسخ الاحتياطي وحاول مجددًا</string>
+    <string name="na_backup_other_phone_sub">هاتف آخر حفظ آخر نسخة احتياطية لهذا المتجر — افتح النسخ الاحتياطي لتقرر</string>
+    <string name="na_updated">تم تحديث روشن كهاتا إلى %1$s</string>
+    <string name="na_updated_sub">اطّلع على الجديد</string>
+    <string name="home_section_tools">أدوات</string>
     <string name="na_backup_never">لا نسخة احتياطية بعد</string>
     <string name="na_gap">التدفق النقدي: أسبوع %1$s ينقصه %2$s</string>
     <string name="staff_title">الموظفون والرواتب</string>

@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -121,7 +120,7 @@ class KhataActivity : BaseActivity() {
     private lateinit var tvTotalGet: TextView
     private lateinit var tvTotalGive: TextView
     private lateinit var tvPartySummary: TextView
-    private lateinit var tvBackupAge: TextView
+    private lateinit var backupDot: View
     private var totalGet = 0.0
     private var totalGive = 0.0
     private var totalSettled = 0
@@ -166,10 +165,10 @@ class KhataActivity : BaseActivity() {
         tvTotalGet = findViewById(R.id.tvTotalGet)
         tvTotalGive = findViewById(R.id.tvTotalGive)
         tvPartySummary = findViewById(R.id.tvPartySummary)
-        tvBackupAge = findViewById(R.id.tvBackupAge)
-        // The figure is a question; the answer is one tap away.
-        tvBackupAge.setOnClickListener {
-            startActivity(Intent(this, BackupActivity::class.java))
+        backupDot = findViewById(R.id.backupDot)
+        // The ⋮ menu (7 Oct): Home first, then the settings; it replaced the bottom bar.
+        findViewById<View>(R.id.btnMore).setOnClickListener {
+            com.innovation313.roshankhata.ui.MoreSheet.showMenu(this, it, homeFirst = true)
         }
         tvEmpty = findViewById(R.id.tvEmpty)
         // A slow phone shows placeholder rows rather than a blank page; a fast
@@ -296,7 +295,6 @@ class KhataActivity : BaseActivity() {
         // The totals still follow that choice (same BalancePrivacy setting).
         renderPrivacy()
 
-        setupBottomNav()
 
         observeData()
 
@@ -951,40 +949,6 @@ class KhataActivity : BaseActivity() {
             .show()
     }
 
-    /**
-     * The main sections, visible instead of buried.
-     *
-     * They lived in an overflow menu until now, which in practice meant most
-     * shopkeepers would never have discovered that a Cashbook or a Cheque
-     * register existed at all. A feature nobody can find may as well not have
-     * been built.
-     */
-    private fun setupBottomNav() {
-        val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
-
-        // Khata has no item of its own in the bar — it is one of the twelve
-        // cards on Home. Home stays lit while its ledger is open.
-        //
-        // Selected BEFORE the listener is attached. Setting selectedItemId
-        // fires the listener exactly as a tap would, and the Home branch
-        // finishes this screen: with the listener already in place, opening
-        // the ledger closed it again on the spot.
-        nav.selectedItemId = R.id.nav_home
-
-        nav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    // Home is below this screen in the stack — finish rather
-                    // than stacking a second copy of it on top.
-                    finish()
-                    false
-                }
-                R.id.nav_more -> {
-                    com.innovation313.roshankhata.ui.MoreSheet.show(this)
-                    false
-                }
-                else -> false
-            }
         }
     }
 
@@ -1096,31 +1060,21 @@ class KhataActivity : BaseActivity() {
     private var paintedBackupAt: Long? = null
 
     private fun paintSummary() {
-        // The wording lives in BackupAge (shared with the Home header, 7 Oct).
+        // The words live on the Home header (BackupAge). Here the whole
+        // message is a red dot on the backup button: there when the backup
+        // is a week old or has never been taken, gone when it is fresh. A
+        // backup just taken flashes "Backed up ✓" on the summary line once.
         val line = com.innovation313.roshankhata.data.BackupAge.line(this)
         val last = line.at
         val justBackedUp = paintedBackupAt != null && last > (paintedBackupAt ?: 0L)
         paintedBackupAt = last
-        val text = line.text
-        val stale = line.stale
-
+        backupDot.visibility = if (line.stale) View.VISIBLE else View.GONE
         if (justBackedUp) {
-            // Like an editor's "Saved": the moment the books became safe,
-            // then back to the usual "Backed up 10:42".
-            com.innovation313.roshankhata.ui.Motion.flashSaved(tvBackupAge, getString(R.string.backup_saved_flash)) {
-                tvBackupAge.text = text
+            val before = tvPartySummary.text
+            com.innovation313.roshankhata.ui.Motion.flashSaved(tvPartySummary, getString(R.string.backup_saved_flash)) {
+                tvPartySummary.text = before
             }
-        } else tvBackupAge.text = text
-        tvBackupAge.setTextColor(
-            ContextCompat.getColor(
-                this,
-                if (stale) R.color.gold_on_dark else R.color.header_on_dark
-            )
-        )
-        tvBackupAge.setTypeface(
-            null,
-            if (stale) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL
-        )
+        }
     }
 
     private fun renderTotals() {

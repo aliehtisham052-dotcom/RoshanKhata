@@ -941,6 +941,16 @@
     <string name="na_bill_due">فاکتور تأمین‌کننده سررسید %1$s</string>
     <string name="na_expiring">کالای رو به انقضا تا ۳۰ روز: %1$s بچ</string>
     <string name="na_backup">آخرین پشتیبان %1$s روز پیش</string>
+    <string name="na_tag_today">امروز</string>
+    <string name="na_tag_late">دیرکرد</string>
+    <string name="na_tag_failed">ناموفق</string>
+    <string name="na_tag_days">%1$s روز</string>
+    <string name="na_backup_sub">نسخه‌ای از دفترهای خود را ایمن نگه دارید</string>
+    <string name="na_backup_failed_sub">پشتیبان‌گیری خودکار ذخیره نشد — پشتیبان را باز کنید و دوباره تلاش کنید</string>
+    <string name="na_backup_other_phone_sub">آخرین پشتیبان این فروشگاه را گوشی دیگری ذخیره کرده — پشتیبان را باز کنید و تصمیم بگیرید</string>
+    <string name="na_updated">روشن کھاتہ به %1$s به‌روز شد</string>
+    <string name="na_updated_sub">ببینید چه چیزی تازه است</string>
+    <string name="home_section_tools">ابزارها</string>
     <string name="na_backup_never">هنوز پشتیبانی گرفته نشده</string>
     <string name="na_gap">جریان نقدی: هفته %1$s به اندازه %2$s کم می‌آورد</string>
     <string name="staff_title">کارکنان و حقوق</string>

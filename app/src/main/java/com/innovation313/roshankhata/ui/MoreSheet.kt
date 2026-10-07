@@ -8,7 +8,6 @@ import com.innovation313.roshankhata.AboutActivity
 import com.innovation313.roshankhata.DuplicateCustomersActivity
 import com.innovation313.roshankhata.HelpActivity
 import com.innovation313.roshankhata.LanguageActivity
-import com.innovation313.roshankhata.ProductsActivity
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.AppLock
 import com.innovation313.roshankhata.data.TextSize
@@ -26,14 +25,6 @@ object MoreSheet {
     /** One door of the More list: its icon (a Home-tile duotone), the disc's tint, its name, and what it opens. */
     class Entry(val icon: Int, val tint: Int, val label: Int, val open: () -> Unit)
 
-    fun show(activity: Activity) {
-        val items = entries(activity)
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.more_title)
-            .setItems(items.map { activity.getString(it.label) }.toTypedArray()) { _, which -> items[which].open() }
-            .show()
-    }
-
     /** The settings and doors, in order; the ⋮ menu on Home and Khata lists the same (7 Oct). */
     fun entries(activity: Activity): List<Entry> {
         val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(activity)
@@ -41,7 +32,8 @@ object MoreSheet {
         return listOfNotNull(
             e(R.drawable.ic_menu_lock, R.color.tile_bills_bg, R.string.app_lock) { appLock(activity) },
             e(R.drawable.ic_menu_privacy, R.color.tile_cheques_bg, R.string.screen_privacy) { ScreenPrivacyDialog.show(activity) },
-            e(R.drawable.ic_tile_products, R.color.tile_stock_bg, R.string.products_stock) { activity.startActivity(Intent(activity, ProductsActivity::class.java)) },
+            // Products & stock is a Home tile and a drawer row; a third door
+            // here was the one duplicate the owner pointed at (7 Oct).
             // Merging customers rewrites the book; a read-only phone has no book to rewrite.
             if (viewer) null else e(R.drawable.ic_menu_duplicate, R.color.tile_card_bg, R.string.duplicate_customers) { activity.startActivity(Intent(activity, DuplicateCustomersActivity::class.java)) },
             // The helper's phone: the owner sends a copy from here, and a helper's

@@ -183,7 +183,8 @@ class MainActivity : BaseActivity() {
             }
             com.innovation313.roshankhata.ui.HomeDrawer.fill(
                 this, drawer, findViewById(R.id.drawerContent),
-                shown(daily).map(::entry), shown(business).map(::entry))
+                shown(daily).map(::entry), shown(business).map(::entry),
+                com.innovation313.roshankhata.ui.HomeSlides.drawerEntries(this))
             findViewById<View>(R.id.btnDrawer).setOnClickListener { drawer.openDrawer(androidx.core.view.GravityCompat.START) }
             findViewById<View>(R.id.btnAlerts).setOnClickListener { startActivity(Intent(this, AlertsActivity::class.java)) }
             // The quiet line under the summary cards (7 Oct): backup age opens
@@ -716,6 +717,7 @@ class MainActivity : BaseActivity() {
 
         /** The only screens EXTRA_OPEN may name: the ones reminders open. */
         private val OPENABLE = listOf(
+            AlertsActivity::class.java,
             BackupActivity::class.java,
             ChequesActivity::class.java,
             PlansActivity::class.java,

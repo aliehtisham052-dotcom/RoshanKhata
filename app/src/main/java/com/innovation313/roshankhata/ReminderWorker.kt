@@ -23,6 +23,7 @@ import com.innovation313.roshankhata.data.ChequeStatus
 import com.innovation313.roshankhata.data.Currency
 import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.KhataDao
+import com.innovation313.roshankhata.data.AlertNotes
 import com.innovation313.roshankhata.data.KhataDatabase
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -64,8 +65,9 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         when (val auto = DriveBackup.autoBackupIfDue(ctx, dao)) {
             is DriveBackup.AutoResult.Failed -> {
                 autoBackupFailed = true
+                AlertNotes.backupFailed(ctx)
                 notify(
-                    ctx, ID_BACKUP, BackupActivity::class.java,
+                    ctx, ID_BACKUP, AlertsActivity::class.java,
                     ctx.getString(R.string.notif_backup_failed_title),
                     ctx.getString(R.string.notif_backup_failed_body)
                 )
@@ -75,8 +77,9 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
                 // backup last, and only the owner may replace it. Said once
                 // per occurrence; the backup screen explains and asks.
                 if (DriveBackup.firstNoticeOf(ctx, auto.conflict)) {
+                    AlertNotes.otherPhone(ctx)
                     notify(
-                        ctx, ID_BACKUP, BackupActivity::class.java,
+                        ctx, ID_BACKUP, AlertsActivity::class.java,
                         ctx.getString(R.string.notif_backup_other_phone_title),
                         ctx.getString(R.string.notif_backup_other_phone_body)
                     )
@@ -99,17 +102,17 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // so each notification lands on the list it is about.
         val here = countDue(dao, endOfToday, expiryWindow)
         if (here.cheques > 0) notify(
-            ctx, ID_CHEQUES, ChequesActivity::class.java,
+            ctx, ID_CHEQUES, AlertsActivity::class.java,
             ctx.getString(R.string.notif_cheques_title),
             ctx.resources.getQuantityString(R.plurals.notif_cheques_body, here.cheques, here.cheques)
         )
         if (here.plans > 0) notify(
-            ctx, ID_PLANS, PlansActivity::class.java,
+            ctx, ID_PLANS, AlertsActivity::class.java,
             ctx.getString(R.string.notif_plans_title),
             ctx.resources.getQuantityString(R.plurals.notif_plans_body, here.plans, here.plans)
         )
         if (here.expiring > 0) notify(
-            ctx, ID_EXPIRY, ExpiringActivity::class.java,
+            ctx, ID_EXPIRY, AlertsActivity::class.java,
             ctx.getString(R.string.notif_expiry_title),
             ctx.resources.getQuantityString(R.plurals.notif_expiry_body, here.expiring, here.expiring)
         )
@@ -181,7 +184,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             // The open shop keeps the fuller rule, because its book can
             // actually be counted here.
             if (BackupReminder.isReminderDue(ctx, hasData)) notify(
-                ctx, ID_BACKUP, BackupActivity::class.java,
+                ctx, ID_BACKUP, AlertsActivity::class.java,
                 ctx.getString(R.string.notif_backup_title),
                 backupBody(ctx, businesses, openId)
             )
