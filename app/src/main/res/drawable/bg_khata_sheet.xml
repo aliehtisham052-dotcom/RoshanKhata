@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The Khata sheet (khataCard): plain white, square, edge to edge, a 2dp gold
-  rule along its top where the header's green ends (7 Oct, the same rule the
-  Home header carries), and one hairline along its bottom so it reads apart
+  The Khata sheet (khataCard): plain white, square, edge to edge, a 2dp
+  mint hairline along its top where the light header ends (7 Oct), and one
+  hairline along its bottom so it reads apart
   from the cream page and the party cards below. No corners and no side
   stroke.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/page_line" />
-    <item android:bottom="1dp" android:drawable="@color/gold_on_dark" />
+    <item android:bottom="1dp" android:drawable="@color/header_light_line" />
     <item android:top="2dp" android:bottom="1dp" android:drawable="@color/surface" />
 </layer-list>

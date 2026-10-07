@@ -133,6 +133,13 @@ class KhataActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_khata)
+        // The light header (P2, 7 Oct): a light status bar by day, dark by night.
+        run {
+            val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+            window.statusBarColor = ContextCompat.getColor(this, R.color.header_light_top)
+            androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !night
+        }
         onBackPressedDispatcher.addCallback(this, selectionBack)
 
         // The day's ledger snapshot, off the main thread, at most once a day.
