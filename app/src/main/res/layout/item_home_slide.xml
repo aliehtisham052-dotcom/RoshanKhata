@@ -4,6 +4,10 @@
   feature's own hue — its illustration on a white tile over two faint discs
   at the start, a two-line headline and a white pill button at the end. The
   whole banner opens the feature. No photographs of people anywhere.
+
+  At a large text size (7 Oct) the headline shrinks to fit its two lines
+  (auto-size, 12.5sp down to 9sp) rather than being cut with "…", and the
+  pill is capped so it cannot push the words off the banner.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -62,6 +66,10 @@
             android:textColor="@color/white"
             android:textSize="12.5sp"
             android:textStyle="bold"
+            app:autoSizeMaxTextSize="12.5sp"
+            app:autoSizeMinTextSize="9sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
             tools:text="What comes in and goes out over the next 30 days" />
 
         <TextView
@@ -70,7 +78,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
             android:background="@drawable/bg_banner_cta"
+            android:ellipsize="end"
             android:maxLines="1"
+            android:maxWidth="132dp"
             android:paddingStart="11dp"
             android:paddingTop="5dp"
             android:paddingEnd="9dp"
