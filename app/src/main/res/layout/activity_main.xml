@@ -152,18 +152,14 @@
           Hidden by default (the owner's call): the figure shows as dots
           until the eye is tapped, so a customer at the counter sees nothing.
         -->
+        <!-- Two boxes, not one (7 Oct, the owner's call): the balance and the backup are different things. -->
         <LinearLayout
-            android:id="@+id/balanceCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@drawable/bg_home_balance_card"
+            android:baselineAligned="false"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingTop="7dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="7dp">
+            android:orientation="horizontal">
 
             <!-- Tappable: the eye says this can be hidden without anyone explaining it. -->
             <LinearLayout
@@ -171,8 +167,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:orientation="vertical">
+                android:background="@drawable/bg_home_balance_card"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="vertical"
+                android:paddingStart="12dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="7dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -218,13 +219,15 @@
             <LinearLayout
                 android:id="@+id/homeBackupTap"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_home_balance_card"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="8dp"
+                android:paddingStart="10dp"
                 android:paddingTop="6dp"
-                android:paddingEnd="2dp"
+                android:paddingEnd="10dp"
                 android:paddingBottom="6dp">
 
                 <ImageView
@@ -241,7 +244,7 @@
                     android:layout_marginStart="5dp"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:maxWidth="96dp"
+                    android:maxWidth="84dp"
                     android:textColor="@color/header_on_dark"
                     android:textSize="10sp"
                     tools:text="Backed up 10:42" />
@@ -337,8 +340,16 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/homeSlides"
                 android:layout_width="match_parent"
-                android:layout_height="96dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_height="68dp" />
+
+            <!-- Four small dots under the banner (7 Oct): the owner wanted to see how many there are. -->
+            <LinearLayout
+                android:id="@+id/homeSlideDots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:orientation="horizontal" />
 
             <!--
               Today (7 Oct): the bell's items as chips on one line — "Cheques · 2",

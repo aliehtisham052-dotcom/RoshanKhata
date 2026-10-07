@@ -179,7 +179,7 @@ class MainActivity : BaseActivity() {
             else list.filterNot { com.innovation313.roshankhata.data.ViewerMode.ownerOnly(it.destination) }
 
         featureViews.clear()
-        com.innovation313.roshankhata.ui.HomeSlides.attach(findViewById(R.id.homeSlides))
+        com.innovation313.roshankhata.ui.HomeSlides.attach(findViewById(R.id.homeSlides), findViewById(R.id.homeSlideDots))
         run {
             val drawer = findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)
             fun entry(f: Feature) = com.innovation313.roshankhata.ui.HomeDrawer.Entry(f.iconRes, f.tintRes, f.labelRes) {

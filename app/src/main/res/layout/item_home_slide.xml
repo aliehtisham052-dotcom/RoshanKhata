@@ -23,72 +23,61 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <!-- Compact (7 Oct): 68dp tall, the owner's call; the big poster was taking the screen. -->
         <FrameLayout
-            android:layout_width="128dp"
+            android:layout_width="64dp"
             android:layout_height="match_parent">
 
             <View
-                android:layout_width="170dp"
-                android:layout_height="170dp"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="-40dp"
-                android:background="@drawable/bg_banner_disc" />
-
-            <View
-                android:layout_width="104dp"
-                android:layout_height="104dp"
-                android:layout_gravity="center"
+                android:layout_marginStart="-30dp"
                 android:background="@drawable/bg_banner_disc" />
 
             <FrameLayout
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_banner_tile"
-                android:elevation="3dp">
+                android:elevation="2dp">
 
                 <ImageView
                     android:id="@+id/ivSlideIcon"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:contentDescription="@null" />
             </FrameLayout>
         </FrameLayout>
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvSlideSub"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingEnd="14dp">
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingEnd="8dp"
+            android:textColor="@color/white"
+            android:textSize="12.5sp"
+            android:textStyle="bold"
+            tools:text="What comes in and goes out over the next 30 days" />
 
-            <TextView
-                android:id="@+id/tvSlideSub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                tools:text="What comes in and goes out over the next 30 days" />
-
-            <TextView
-                android:id="@+id/tvSlideTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_banner_cta"
-                android:maxLines="1"
-                android:paddingStart="14dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="6dp"
-                android:textColor="@color/fi_blue_b"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                tools:text="Cash flow  →" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvSlideTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_banner_cta"
+            android:maxLines="1"
+            android:paddingStart="11dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="9dp"
+            android:paddingBottom="5dp"
+            android:textColor="@color/fi_blue_b"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="Cash flow  →" />
     </LinearLayout>
 </FrameLayout>
