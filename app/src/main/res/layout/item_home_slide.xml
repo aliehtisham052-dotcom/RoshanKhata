@@ -88,6 +88,10 @@
             android:textColor="@color/fi_blue_b"
             android:textSize="11sp"
             android:textStyle="bold"
+            app:autoSizeMaxTextSize="11sp"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
             tools:text="Cash flow  →" />
     </LinearLayout>
 </FrameLayout>
