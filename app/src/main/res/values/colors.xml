@@ -274,6 +274,8 @@
          a touch stronger than the 28% pair they replace, so the ornament reads
          on a phone and not only on a monitor). -->
     <color name="home_header_sweep">#61FFDA6B</color>
+    <!-- The dots under the Home banner (7 Oct): brand green by day, soft white by night. -->
+    <color name="slide_dot">#1B5E3A</color>
     <!-- The faint lift behind the net balance (7 Oct): 10% white, frosted. -->
     <color name="home_balance_fill">#1AFFFFFF</color>
     <!-- Outline of the two summary cards on the header (55% gold). -->
