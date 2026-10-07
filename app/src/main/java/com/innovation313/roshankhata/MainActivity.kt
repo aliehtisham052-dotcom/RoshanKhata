@@ -408,17 +408,17 @@ class MainActivity : BaseActivity() {
         val strip = findViewById<View>(R.id.todayStrip) ?: return
         val chips = findViewById<LinearLayout>(R.id.todayChips)
         while (chips.childCount > 1) chips.removeViewAt(chips.childCount - 1)
-        val K = com.innovation313.roshankhata.data.HomeAlerts.Kind
         data class Chip(val label: Int, val bg: Int, val fg: Int)
+        // An enum is not a value: its constants must be named in full.
         val look = mapOf(
-            K.CHEQUE to Chip(R.string.nav_cheques, R.color.tile_cheques_bg, R.color.fi_teal_b),
-            K.PLAN to Chip(R.string.na_tag_late, R.color.tile_bills_bg, R.color.fi_gold_b),
-            K.BILL to Chip(R.string.tile_bills, R.color.tile_stock_bg, R.color.fi_orange_b),
-            K.EXPIRING to Chip(R.string.tile_expiry, R.color.tile_bin_bg, R.color.fi_red_b),
-            K.BACKUP to Chip(R.string.today_backup, R.color.tile_backup_bg, R.color.fi_teal_b),
-            K.BACKUP_FAILED to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
-            K.BACKUP_OTHER_PHONE to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
-            K.CASHFLOW to Chip(R.string.today_gap, R.color.tile_insights_bg, R.color.fi_blue_b)
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.CHEQUE to Chip(R.string.nav_cheques, R.color.tile_cheques_bg, R.color.fi_teal_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.PLAN to Chip(R.string.na_tag_late, R.color.tile_bills_bg, R.color.fi_gold_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.BILL to Chip(R.string.tile_bills, R.color.tile_stock_bg, R.color.fi_orange_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.EXPIRING to Chip(R.string.tile_expiry, R.color.tile_bin_bg, R.color.fi_red_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP to Chip(R.string.today_backup, R.color.tile_backup_bg, R.color.fi_teal_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP_FAILED to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP_OTHER_PHONE to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.CASHFLOW to Chip(R.string.today_gap, R.color.tile_insights_bg, R.color.fi_blue_b)
         )
         val d = resources.displayMetrics.density
         alerts.groupBy { it.kind }.forEach { (kind, list) ->
