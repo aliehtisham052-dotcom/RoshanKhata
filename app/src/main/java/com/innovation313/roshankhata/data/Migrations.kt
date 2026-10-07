@@ -688,7 +688,20 @@ val MIGRATION_28_29 = object : Migration(28, 29) {
     }
 }
 
-const val KHATA_DB_VERSION = 29
+/**
+ * P2 of the scaling work (7 Oct 2026): two covering indexes. Nothing is
+ * rewritten; a book of 300,000 lines simply stops being scanned for every
+ * balance and every customer screen. The names are the ones Room derives
+ * from the @Index declarations in Entities.kt, which it checks at open.
+ */
+val MIGRATION_29_30 = object : Migration(29, 30) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_parties_isDeleted_name` ON `parties` (`isDeleted`, `name`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_transactions_partyId_isDeleted_timestamp` ON `transactions` (`partyId`, `isDeleted`, `timestamp`)")
+    }
+}
+
+const val KHATA_DB_VERSION = 30
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -719,5 +732,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_25_26,
     MIGRATION_26_27,
     MIGRATION_27_28,
-    MIGRATION_28_29
+    MIGRATION_28_29,
+    MIGRATION_29_30
 )

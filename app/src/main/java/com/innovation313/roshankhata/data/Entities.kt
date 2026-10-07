@@ -10,7 +10,9 @@ import androidx.room.PrimaryKey
 /** A customer or supplier. */
 @Entity(
     tableName = "parties",
-    indices = [Index(value = ["qrToken"], unique = true)]
+    // (isDeleted, name): the Khata list reads every live party in name
+    // order; with this the walk is the index, not a scan and a sort (P2, 7 Oct).
+    indices = [Index(value = ["qrToken"], unique = true), Index(value = ["isDeleted", "name"])]
 )
 data class Party(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -134,7 +136,11 @@ object PaymentMethod {
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("partyId"), Index("productId"), Index("billItemId")]
+    // (partyId, isDeleted, timestamp): a customer's live lines in order, and
+    // the balance SUM per party, each read straight off the index (P2, 7 Oct).
+    // The single partyId index stays: Room expects every declared index to
+    // exist, and dropping it would be a migration of its own for no gain.
+    indices = [Index("partyId"), Index("productId"), Index("billItemId"), Index(value = ["partyId", "isDeleted", "timestamp"])]
 )
 data class LedgerEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
