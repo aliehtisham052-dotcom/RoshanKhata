@@ -86,6 +86,23 @@
 
     <string name="net_balance">Saldo bersih</string>
     <string name="home_switch_business">Ganti usaha</string>
+    <string name="home_sec_daily">Setiap hari</string>
+    <string name="home_sec_business">Usaha</string>
+    <string name="home_see_all">Lihat semua ›</string>
+    <string name="home_today">Hari ini</string>
+    <string name="tile_bills">Tagihan</string>
+    <string name="tile_expiry">Kedaluwarsa</string>
+    <string name="tile_card">Kartu</string>
+    <string name="tile_settings">Setelan</string>
+    <string name="tile_bin">Sampah</string>
+    <string name="tile_products">Barang</string>
+    <string name="tile_zakat">Zakat</string>
+    <string name="tile_insights">Wawasan</string>
+    <string name="tile_seasons">Musim</string>
+    <string name="tile_rates">Harga</string>
+    <string name="today_backup">Cadangan</string>
+    <string name="today_gap">Kas kurang</string>
+    <string name="today_chip">%1$s · %2$s</string>
     <string name="drawer_active_business">Usaha aktif</string>
     <string name="drawer_active_business_n">Usaha aktif · %1$s dari %2$s</string>
     <string name="ledger_pdf_button">PDF</string>

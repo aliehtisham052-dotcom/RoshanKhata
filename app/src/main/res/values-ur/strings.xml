@@ -86,6 +86,23 @@
 
     <string name="net_balance">کل بیلنس</string>
     <string name="home_switch_business">کاروبار بدلیں</string>
+    <string name="home_sec_daily">ہر روز</string>
+    <string name="home_sec_business">کاروبار</string>
+    <string name="home_see_all">سب دیکھیں ›</string>
+    <string name="home_today">آج</string>
+    <string name="tile_bills">بل</string>
+    <string name="tile_expiry">ایکسپائری</string>
+    <string name="tile_card">کارڈ</string>
+    <string name="tile_settings">ترتیبات</string>
+    <string name="tile_bin">ردی</string>
+    <string name="tile_products">مال</string>
+    <string name="tile_zakat">زکوٰۃ</string>
+    <string name="tile_insights">جائزہ</string>
+    <string name="tile_seasons">فصل</string>
+    <string name="tile_rates">ریٹ</string>
+    <string name="today_backup">بیک اپ</string>
+    <string name="today_gap">نقدی کمی</string>
+    <string name="today_chip">%1$s · %2$s</string>
     <string name="drawer_active_business">کھلا کاروبار</string>
     <string name="drawer_active_business_n">کھلا کاروبار · %2$s میں سے %1$s</string>
     <string name="ledger_pdf_button">PDF</string>

@@ -102,6 +102,23 @@
 
     <string name="net_balance">الرصيد الصافي</string>
     <string name="home_switch_business">تبديل النشاط التجاري</string>
+    <string name="home_sec_daily">كل يوم</string>
+    <string name="home_sec_business">النشاط</string>
+    <string name="home_see_all">عرض الكل ›</string>
+    <string name="home_today">اليوم</string>
+    <string name="tile_bills">الفواتير</string>
+    <string name="tile_expiry">الانتهاء</string>
+    <string name="tile_card">البطاقة</string>
+    <string name="tile_settings">الإعدادات</string>
+    <string name="tile_bin">المهملات</string>
+    <string name="tile_products">البضائع</string>
+    <string name="tile_zakat">الزكاة</string>
+    <string name="tile_insights">التحليل</string>
+    <string name="tile_seasons">الموسم</string>
+    <string name="tile_rates">الأسعار</string>
+    <string name="today_backup">النسخ</string>
+    <string name="today_gap">عجز نقدي</string>
+    <string name="today_chip">%1$s · %2$s</string>
     <string name="drawer_active_business">النشاط التجاري الحالي</string>
     <string name="drawer_active_business_n">النشاط التجاري الحالي · %1$s من %2$s</string>
     <string name="ledger_pdf_button">PDF</string>

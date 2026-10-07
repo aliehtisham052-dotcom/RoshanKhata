@@ -137,7 +137,7 @@
                 android:layout_height="44dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/more_title"
-                android:src="@drawable/ic_more_vert"
+                android:src="@drawable/ic_feature_settings"
                 app:tint="@color/white" />
         </LinearLayout>
 
@@ -337,19 +337,59 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/homeSlides"
                 android:layout_width="match_parent"
-                android:layout_height="124dp"
+                android:layout_height="96dp"
                 android:layout_marginBottom="4dp" />
 
+            <!--
+              Today (7 Oct): the bell's items as chips on one line — "Cheques · 2",
+              "Late · 1", "Bills · 1" — so the day's work is in view without a
+              tap. Tap: Notifications. Gone when there is nothing today.
+            -->
+            <HorizontalScrollView
+                android:id="@+id/todayStrip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_today_strip"
+                android:scrollbars="none"
+                android:visibility="gone"
+                tools:visibility="visible">
 
+                <LinearLayout
+                    android:id="@+id/todayChips"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="10dp"
+                    android:paddingTop="7dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="7dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:letterSpacing="0.1"
+                        android:text="@string/home_today"
+                        android:textAllCaps="true"
+                        android:textColor="@color/brand_green_text"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+
+            <!-- Section headings (7 Oct): bold ink, not spaced grey caps; Business carries "See all" (the drawer). -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginBottom="8dp"
-                android:letterSpacing="0.12"
-                android:text="@string/home_section_daily"
-                android:textColor="@color/text_muted"
-                android:textSize="11sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="6dp"
+                android:text="@string/home_sec_daily"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -358,23 +398,72 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginBottom="8dp"
-                android:letterSpacing="0.12"
-                android:text="@string/home_section_business"
-                android:textColor="@color/text_muted"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/home_sec_business"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSeeAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/home_see_all"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/gridBusiness"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="6dp"
+                android:text="@string/home_section_tools"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/gridTools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <!-- A quiet last line: the app, its version, the brand. -->
+            <TextView
+                android:id="@+id/tvHomeFooter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:textColor="@color/text_faint"
+                android:textSize="10sp"
+                tools:text="Roshan Khata 1.9 · Innovation-313" />
 
             <!--
               Room beneath the last row so the walkthrough can scroll it to the
