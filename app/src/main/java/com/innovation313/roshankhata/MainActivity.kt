@@ -115,6 +115,9 @@ class MainActivity : BaseActivity() {
      * the first came back null, which is what crashed Home on open.
      */
     private fun buildFeatureGrid() {
+        // Every day (7 Oct): the six a shopkeeper opens daily, in full-size
+        // tiles. Everything else is a smaller tile in Business or Tools, four
+        // to a row, so the screen is not a wall of sixteen equal buttons.
         val daily = listOf(
             Feature(R.drawable.ic_tile_khata, R.string.nav_khata, KhataActivity::class.java,
                 R.color.tile_khata_bg, R.color.section_khata),
@@ -122,47 +125,52 @@ class MainActivity : BaseActivity() {
                 R.color.tile_cashbook_bg, R.color.section_cashbook),
             Feature(R.drawable.ic_tile_cheques, R.string.nav_cheques, ChequesActivity::class.java,
                 R.color.tile_cheques_bg, R.color.section_cheques),
-            Feature(R.drawable.ic_tile_bills, R.string.supplier_bills, BillsActivity::class.java,
+            Feature(R.drawable.ic_tile_bills, R.string.tile_bills, BillsActivity::class.java,
                 R.color.tile_bills_bg, R.color.section_bills),
             Feature(R.drawable.ic_tile_plans, R.string.nav_plans, PlansActivity::class.java,
                 R.color.tile_plans_bg, R.color.section_plans),
-            Feature(R.drawable.ic_tile_expiring, R.string.expiring_stock, ExpiringActivity::class.java,
-                R.color.tile_stock_bg, R.color.tile_stock_fg),
-            Feature(R.drawable.ic_tile_calc, R.string.calculator, CalculatorActivity::class.java,
-                R.color.tile_calc_bg, R.color.tile_calc_fg)
+            Feature(R.drawable.ic_tile_expiring, R.string.tile_expiry, ExpiringActivity::class.java,
+                R.color.tile_stock_bg, R.color.tile_stock_fg)
         )
         val business = listOf(
-            Feature(R.drawable.ic_tile_insights, R.string.insights_title, InsightsActivity::class.java,
+            // A product is born the first time its name appears on a bill, so
+            // Products keeps Supplier Bills' colour.
+            Feature(R.drawable.ic_tile_products, R.string.tile_products, ProductsActivity::class.java,
+                R.color.tile_bills_bg, R.color.section_bills),
+            Feature(R.drawable.ic_tile_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
+                R.color.tile_invoice_bg, R.color.tile_invoice_fg),
+            Feature(R.drawable.ic_tile_insights, R.string.tile_insights, InsightsActivity::class.java,
                 R.color.tile_insights_bg, R.color.tile_insights_fg),
             Feature(R.drawable.ic_tile_followup, R.string.followup_title, FollowUpActivity::class.java,
                 R.color.tile_followup_bg, R.color.tile_followup_fg),
-            Feature(R.drawable.ic_tile_zakat, R.string.zakat_calculator, ZakatActivity::class.java,
-                R.color.tile_zakat_bg, R.color.gold_accent),
-            Feature(R.drawable.ic_tile_card, R.string.biz_card, BusinessCardActivity::class.java,
+            Feature(R.drawable.ic_tile_card, R.string.tile_card, BusinessCardActivity::class.java,
                 R.color.tile_card_bg, R.color.tile_card_fg),
-            Feature(R.drawable.ic_tile_settings, R.string.business_settings, BusinessSettingsActivity::class.java,
-                R.color.tile_settings_bg, R.color.tile_settings_fg),
-            Feature(R.drawable.ic_tile_bin, R.string.recycle_bin, RecycleBinActivity::class.java,
-                R.color.tile_bin_bg, R.color.tile_bin_fg),
-            Feature(R.drawable.ic_tile_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
-                R.color.tile_invoice_bg, R.color.tile_invoice_fg),
-            // Moved off the More sheet 18 Sep 2026: once Inspector Mode gave this
-            // screen its own registers (stock, batches, expiry, compliance), it
-            // stopped being a settings-style afterthought. It keeps Supplier
-            // Bills' own section colour because that is where its data comes
-            // from — a product is born the first time its name appears on a bill.
-            Feature(R.drawable.ic_tile_products, R.string.products_stock, ProductsActivity::class.java,
-                R.color.tile_bills_bg, R.color.section_bills),
-            // Fasal ka Hisaab (2 Oct): the ninth tile fills the 3x3 grid. It
-            // borrows Plans' green — a season is a long payment plan the
-            // whole village is on.
-            Feature(R.drawable.ic_tile_season, R.string.season_title, SeasonsActivity::class.java,
-                R.color.tile_plans_bg, R.color.section_plans)
+            // Seasons are an agri shop's; another trade's grid goes without (4 Oct).
+            Feature(R.drawable.ic_tile_season, R.string.tile_seasons, SeasonsActivity::class.java,
+                R.color.tile_plans_bg, R.color.section_plans),
+            Feature(R.drawable.ic_tile_zakat, R.string.tile_zakat, ZakatActivity::class.java,
+                R.color.tile_zakat_bg, R.color.gold_accent),
+            Feature(R.drawable.ic_tile_settings, R.string.tile_settings, BusinessSettingsActivity::class.java,
+                R.color.tile_settings_bg, R.color.tile_settings_fg)
         ).filter {
-            // Seasons are an agri shop's; another trade's grid ends at Products (4 Oct).
             it.destination != SeasonsActivity::class.java ||
                 com.innovation313.roshankhata.data.TradeFeatures.seasons(this)
         }
+        // Tools: the calculator, the four doors the banners turn through, the bin.
+        val tools = listOf(
+            Feature(R.drawable.ic_tile_calc, R.string.calculator, CalculatorActivity::class.java,
+                R.color.tile_calc_bg, R.color.tile_calc_fg),
+            Feature(R.drawable.ic_tile_insights, R.string.cf_title, CashFlowActivity::class.java,
+                R.color.tile_insights_bg, R.color.tile_insights_fg),
+            Feature(R.drawable.ic_tile_products, R.string.rate_list_title, RateListActivity::class.java,
+                R.color.tile_plans_bg, R.color.section_plans),
+            Feature(R.drawable.ic_tile_bills, R.string.tile_rates, SupplierRatesActivity::class.java,
+                R.color.tile_bills_bg, R.color.section_bills),
+            Feature(R.drawable.ic_tile_card, R.string.poster_title, PosterActivity::class.java,
+                R.color.tile_card_bg, R.color.tile_card_fg),
+            Feature(R.drawable.ic_tile_bin, R.string.tile_bin, RecycleBinActivity::class.java,
+                R.color.tile_bin_bg, R.color.tile_bin_fg)
+        )
 
         // A read-only phone shows no tile for a screen it may not open.
         val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(this)
@@ -179,8 +187,11 @@ class MainActivity : BaseActivity() {
             }
             com.innovation313.roshankhata.ui.HomeDrawer.fill(
                 this, drawer, findViewById(R.id.drawerContent),
-                shown(daily).map(::entry), shown(business).map(::entry),
-                com.innovation313.roshankhata.ui.HomeSlides.drawerEntries(this))
+                shown(daily).map(::entry), shown(business).map(::entry), shown(tools).map(::entry))
+            findViewById<View>(R.id.tvSeeAll).setOnClickListener { drawer.openDrawer(androidx.core.view.GravityCompat.START) }
+            findViewById<View>(R.id.todayStrip).setOnClickListener { startActivity(Intent(this, AlertsActivity::class.java)) }
+            findViewById<TextView>(R.id.tvHomeFooter).text =
+                getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME + " \u00b7 " + getString(R.string.app_tagline)
             findViewById<View>(R.id.btnDrawer).setOnClickListener { drawer.openDrawer(androidx.core.view.GravityCompat.START) }
             findViewById<View>(R.id.btnAlerts).setOnClickListener { startActivity(Intent(this, AlertsActivity::class.java)) }
             // The quiet line under the summary cards (7 Oct): backup age opens
@@ -203,8 +214,9 @@ class MainActivity : BaseActivity() {
                 })
             })
         }
-        fillGrid(findViewById(R.id.gridDaily), shown(daily))
-        fillGrid(findViewById(R.id.gridBusiness), shown(business))
+        fillGrid(findViewById(R.id.gridDaily), shown(daily), 3, compact = false)
+        fillGrid(findViewById(R.id.gridBusiness), shown(business), 4, compact = true)
+        fillGrid(findViewById(R.id.gridTools), shown(tools), 4, compact = true)
         equalizeTileHeights()
     }
 
@@ -220,28 +232,32 @@ class MainActivity : BaseActivity() {
      * 72dp minimum, so the screen is exactly as it was before.
      */
     private fun equalizeTileHeights() {
-        val tiles = featureViews.values.toList()
-        if (tiles.isEmpty()) return
+        // Two sizes of tile since 7 Oct (full in Every day, compact in
+        // Business and Tools): each size is evened out among its own kind.
+        val groups = featureViews.values.groupBy { it.getTag(R.id.tile_compact) == true }.values
+        if (groups.isEmpty()) return
         val anchor = findViewById<View>(R.id.gridDaily)
         anchor.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 anchor.viewTreeObserver.removeOnPreDrawListener(this)
-                val tallest = tiles.maxOf { it.height }
-                if (tallest <= 0) return true
-                val uneven = tiles.filter { it.layoutParams.height != tallest }
-                if (uneven.isEmpty()) return true
-                uneven.forEach { tile ->
-                    tile.layoutParams = tile.layoutParams.apply { height = tallest }
+                var changed = false
+                groups.forEach { tiles ->
+                    val tallest = tiles.maxOf { it.height }
+                    if (tallest <= 0) return@forEach
+                    tiles.filter { it.layoutParams.height != tallest }.forEach { tile ->
+                        tile.layoutParams = tile.layoutParams.apply { height = tallest }
+                        changed = true
+                    }
                 }
                 // Skip this frame; the next layout pass draws the even grid.
-                return false
+                return !changed
             }
         })
     }
 
-    private fun fillGrid(container: LinearLayout, features: List<Feature>) {
+    private fun fillGrid(container: LinearLayout, features: List<Feature>, columns: Int, compact: Boolean) {
         container.removeAllViews()
-        features.chunked(COLUMNS).forEach { rowFeatures ->
+        features.chunked(columns).forEach { rowFeatures ->
             val row = LinearLayout(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -249,7 +265,7 @@ class MainActivity : BaseActivity() {
                 )
                 orientation = LinearLayout.HORIZONTAL
             }
-            rowFeatures.forEach { feature -> row.addView(createTile(feature)) }
+            rowFeatures.forEach { feature -> row.addView(createTile(feature, compact)) }
 
             // Pad a short last row with empty weight, so three tiles and two
             // tiles come out the same width instead of the pair stretching.
@@ -261,7 +277,7 @@ class MainActivity : BaseActivity() {
             // shifted out of line with them (seen on the Calculator tile, and
             // on the last two business tiles in right-to-left languages).
             val gap = (TILE_GAP_DP * resources.displayMetrics.density).toInt()
-            repeat(COLUMNS - rowFeatures.size) {
+            repeat(columns - rowFeatures.size) {
                 row.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f).apply {
                     marginStart = gap
                     marginEnd = gap
@@ -271,8 +287,9 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun createTile(feature: Feature): View {
+    private fun createTile(feature: Feature, compact: Boolean): View {
         val tile = layoutInflater.inflate(R.layout.item_home_feature, null)
+        tile.setTag(R.id.tile_compact, compact)
 
         // Inflating against a null parent throws away every layout_* attribute
         // in the file — the margin and the height included — and replacing
@@ -290,7 +307,19 @@ class MainActivity : BaseActivity() {
         // Each tile now measures its own content; equalizeTileHeights() then
         // gives every tile the tallest one's height, so the grid stays even.
         val gap = (TILE_GAP_DP * resources.displayMetrics.density).toInt()
-        tile.minimumHeight = (TILE_HEIGHT_DP * resources.displayMetrics.density).toInt()
+        tile.minimumHeight = ((if (compact) TILE_HEIGHT_COMPACT_DP else TILE_HEIGHT_DP) * resources.displayMetrics.density).toInt()
+        if (compact) {
+            // Business / Tools tiles: four to a row, a smaller disc and glyph, a smaller label.
+            val d = resources.displayMetrics.density
+            tile.findViewById<android.widget.FrameLayout>(R.id.featureIconDisc).layoutParams =
+                tile.findViewById<android.widget.FrameLayout>(R.id.featureIconDisc).layoutParams.apply { width = (38 * d).toInt(); height = (38 * d).toInt() }
+            tile.findViewById<ImageView>(R.id.ivFeatureIcon).layoutParams =
+                tile.findViewById<ImageView>(R.id.ivFeatureIcon).layoutParams.apply { width = (22 * d).toInt(); height = (22 * d).toInt() }
+            tile.findViewById<TextView>(R.id.tvFeatureLabel).apply {
+                textSize = 10f
+                setPadding((4 * d).toInt(), paddingTop, (4 * d).toInt(), paddingBottom)
+            }
+        }
         tile.layoutParams = LinearLayout.LayoutParams(
             0,
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -350,22 +379,63 @@ class MainActivity : BaseActivity() {
         super.onResume()
         // The bell's count, from the ledger on this phone (HomeAlerts).
         lifecycleScope.launch {
-            val n = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            val alerts = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
                 try {
                     com.innovation313.roshankhata.data.HomeAlerts.compute(
                         this@MainActivity,
                         com.innovation313.roshankhata.data.KhataDatabase.get(this@MainActivity).khataDao()
-                    ) { Format.money(it) }.size
-                } catch (e: Exception) { 0 }
+                    ) { Format.money(it) }
+                } catch (e: Exception) { emptyList() }
             }
+            val n = alerts.size
             findViewById<TextView>(R.id.tvAlertBadge)?.apply {
                 visibility = if (n > 0) View.VISIBLE else View.GONE
                 text = if (n > 9) "9+" else n.toString()
             }
+            paintToday(alerts)
         }
         paintHeaderLine()
         // Returning from another screen, the bar must point at Home again.
         showViewerNote()
+    }
+
+    /**
+     * The Today strip (7 Oct): one chip per kind of alert, with its count —
+     * "Cheques · 2", "Late · 1" — the bell's list at a glance. The "updated"
+     * notice is not today's work and stays in the bell alone.
+     */
+    private fun paintToday(alerts: List<com.innovation313.roshankhata.data.HomeAlerts.Alert>) {
+        val strip = findViewById<View>(R.id.todayStrip) ?: return
+        val chips = findViewById<LinearLayout>(R.id.todayChips)
+        while (chips.childCount > 1) chips.removeViewAt(chips.childCount - 1)
+        val K = com.innovation313.roshankhata.data.HomeAlerts.Kind
+        data class Chip(val label: Int, val bg: Int, val fg: Int)
+        val look = mapOf(
+            K.CHEQUE to Chip(R.string.nav_cheques, R.color.tile_cheques_bg, R.color.fi_teal_b),
+            K.PLAN to Chip(R.string.na_tag_late, R.color.tile_bills_bg, R.color.fi_gold_b),
+            K.BILL to Chip(R.string.tile_bills, R.color.tile_stock_bg, R.color.fi_orange_b),
+            K.EXPIRING to Chip(R.string.tile_expiry, R.color.tile_bin_bg, R.color.fi_red_b),
+            K.BACKUP to Chip(R.string.today_backup, R.color.tile_backup_bg, R.color.fi_teal_b),
+            K.BACKUP_FAILED to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
+            K.BACKUP_OTHER_PHONE to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
+            K.CASHFLOW to Chip(R.string.today_gap, R.color.tile_insights_bg, R.color.fi_blue_b)
+        )
+        val d = resources.displayMetrics.density
+        alerts.groupBy { it.kind }.forEach { (kind, list) ->
+            val c = look[kind] ?: return@forEach
+            chips.addView(TextView(this).apply {
+                text = getString(R.string.today_chip, getString(c.label), Format.ltr(list.size.toString()))
+                textSize = 11f
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, c.fg))
+                background = androidx.core.content.ContextCompat.getDrawable(this@MainActivity, R.drawable.bg_today_chip)
+                backgroundTintList = android.content.res.ColorStateList.valueOf(
+                    androidx.core.content.ContextCompat.getColor(this@MainActivity, c.bg))
+                setPadding((8 * d).toInt(), (3 * d).toInt(), (8 * d).toInt(), (3 * d).toInt())
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginEnd = (6 * d).toInt() }
+            })
+        }
+        strip.visibility = if (chips.childCount > 1) View.VISIBLE else View.GONE
     }
 
     /**
@@ -587,18 +657,18 @@ class MainActivity : BaseActivity() {
             tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
             tileStep(R.string.nav_cashbook, R.string.coach_title_nav_cashbook, R.string.coach_desc_nav_cashbook),
             tileStep(R.string.nav_cheques, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques),
-            tileStep(R.string.supplier_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
+            tileStep(R.string.tile_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
             tileStep(R.string.nav_plans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
-            tileStep(R.string.expiring_stock, R.string.coach_title_stock, R.string.coach_desc_stock),
+            tileStep(R.string.tile_expiry, R.string.coach_title_stock, R.string.coach_desc_stock),
             tileStep(R.string.calculator, R.string.coach_title_calc, R.string.coach_desc_calc),
-            tileStep(R.string.insights_title, R.string.coach_title_insights, R.string.coach_desc_insights),
+            tileStep(R.string.tile_insights, R.string.coach_title_insights, R.string.coach_desc_insights),
             tileStep(R.string.followup_title, R.string.coach_title_followup, R.string.coach_desc_followup),
-            tileStep(R.string.zakat_calculator, R.string.coach_title_zakat, R.string.coach_desc_zakat),
-            tileStep(R.string.biz_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
-            tileStep(R.string.business_settings, R.string.coach_title_settings, R.string.coach_desc_settings),
-            tileStep(R.string.recycle_bin, R.string.coach_title_applock, R.string.coach_desc_applock),
+            tileStep(R.string.tile_zakat, R.string.coach_title_zakat, R.string.coach_desc_zakat),
+            tileStep(R.string.tile_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
+            tileStep(R.string.tile_settings, R.string.coach_title_settings, R.string.coach_desc_settings),
+            tileStep(R.string.tile_bin, R.string.coach_title_applock, R.string.coach_desc_applock),
             tileStep(R.string.nav_invoice, R.string.coach_title_invoice, R.string.coach_desc_invoice),
-            tileStep(R.string.products_stock, R.string.coach_title_products, R.string.coach_desc_products)
+            tileStep(R.string.tile_products, R.string.coach_title_products, R.string.coach_desc_products)
         )
 
         if (steps.isEmpty()) return
@@ -663,7 +733,7 @@ class MainActivity : BaseActivity() {
 
     companion object {
         /** Tiles per row in the feature grid. */
-        private const val COLUMNS = 3
+        private const val TILE_HEIGHT_COMPACT_DP = 62f
 
         /** Tile height, in dp. Set here because the layout file's value is
          *  discarded when a tile is inflated against a null parent. */

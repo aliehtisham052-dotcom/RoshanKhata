@@ -90,6 +90,23 @@
 
     <string name="net_balance">कुल बैलेंस</string>
     <string name="home_switch_business">व्यवसाय बदलें</string>
+    <string name="home_sec_daily">हर रोज़</string>
+    <string name="home_sec_business">व्यवसाय</string>
+    <string name="home_see_all">सब देखें ›</string>
+    <string name="home_today">आज</string>
+    <string name="tile_bills">बिल</string>
+    <string name="tile_expiry">एक्सपायरी</string>
+    <string name="tile_card">कार्ड</string>
+    <string name="tile_settings">सेटिंग</string>
+    <string name="tile_bin">रद्दी</string>
+    <string name="tile_products">माल</string>
+    <string name="tile_zakat">ज़कात</string>
+    <string name="tile_insights">जायज़ा</string>
+    <string name="tile_seasons">फ़सल</string>
+    <string name="tile_rates">रेट</string>
+    <string name="today_backup">बैकअप</string>
+    <string name="today_gap">नक़दी कमी</string>
+    <string name="today_chip">%1$s · %2$s</string>
     <string name="drawer_active_business">सक्रिय व्यवसाय</string>
     <string name="drawer_active_business_n">सक्रिय व्यवसाय · %2$s में से %1$s</string>
     <string name="ledger_pdf_button">PDF</string>

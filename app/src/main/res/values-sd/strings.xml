@@ -86,6 +86,23 @@
 
     <string name="net_balance">خالص بيلنس</string>
     <string name="home_switch_business">ڪاروبار بدلايو</string>
+    <string name="home_sec_daily">هر روز</string>
+    <string name="home_sec_business">ڪاروبار</string>
+    <string name="home_see_all">سڀ ڏسو ›</string>
+    <string name="home_today">اڄ</string>
+    <string name="tile_bills">بل</string>
+    <string name="tile_expiry">ايڪسپائري</string>
+    <string name="tile_card">ڪارڊ</string>
+    <string name="tile_settings">سيٽنگ</string>
+    <string name="tile_bin">ردي</string>
+    <string name="tile_products">مال</string>
+    <string name="tile_zakat">زڪوات</string>
+    <string name="tile_insights">جائزو</string>
+    <string name="tile_seasons">فصل</string>
+    <string name="tile_rates">اگهه</string>
+    <string name="today_backup">بيڪ اپ</string>
+    <string name="today_gap">نقدي کوٽ</string>
+    <string name="today_chip">%1$s · %2$s</string>
     <string name="drawer_active_business">کليل ڪاروبار</string>
     <string name="drawer_active_business_n">کليل ڪاروبار · %2$s مان %1$s</string>
     <string name="ledger_pdf_button">PDF</string>

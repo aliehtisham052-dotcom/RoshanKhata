@@ -90,6 +90,23 @@
 
     <string name="net_balance">নিট ব্যালেন্স</string>
     <string name="home_switch_business">ব্যবসা পরিবর্তন করুন</string>
+    <string name="home_sec_daily">প্রতিদিন</string>
+    <string name="home_sec_business">ব্যবসা</string>
+    <string name="home_see_all">সব দেখুন ›</string>
+    <string name="home_today">আজ</string>
+    <string name="tile_bills">বিল</string>
+    <string name="tile_expiry">মেয়াদ</string>
+    <string name="tile_card">কার্ড</string>
+    <string name="tile_settings">সেটিংস</string>
+    <string name="tile_bin">ঝুড়ি</string>
+    <string name="tile_products">পণ্য</string>
+    <string name="tile_zakat">যাকাত</string>
+    <string name="tile_insights">বিশ্লেষণ</string>
+    <string name="tile_seasons">মৌসুম</string>
+    <string name="tile_rates">দর</string>
+    <string name="today_backup">ব্যাকআপ</string>
+    <string name="today_gap">নগদ ঘাটতি</string>
+    <string name="today_chip">%1$s · %2$s</string>
     <string name="drawer_active_business">সক্রিয় ব্যবসা</string>
     <string name="drawer_active_business_n">সক্রিয় ব্যবসা · %2$s-এর মধ্যে %1$s</string>
     <string name="ledger_pdf_button">PDF</string>

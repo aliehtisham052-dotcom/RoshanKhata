@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tag on a Home tile: true for the compact (four-a-row) size. -->
+    <item name="tile_compact" type="id" />
+</resources>

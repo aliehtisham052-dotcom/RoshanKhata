@@ -86,6 +86,23 @@
 
     <string name="net_balance">Kul balance</string>
     <string name="home_switch_business">Karobar badlein</string>
+    <string name="home_sec_daily">Har roz</string>
+    <string name="home_sec_business">Karobar</string>
+    <string name="home_see_all">Sab dekhein ›</string>
+    <string name="home_today">Aaj</string>
+    <string name="tile_bills">Bill</string>
+    <string name="tile_expiry">Expiry</string>
+    <string name="tile_card">Card</string>
+    <string name="tile_settings">Settings</string>
+    <string name="tile_bin">Raddi</string>
+    <string name="tile_products">Maal</string>
+    <string name="tile_zakat">Zakat</string>
+    <string name="tile_insights">Insights</string>
+    <string name="tile_seasons">Fasal</string>
+    <string name="tile_rates">Rates</string>
+    <string name="today_backup">Backup</string>
+    <string name="today_gap">Cash kami</string>
+    <string name="today_chip">%1$s · %2$s</string>
     <string name="drawer_active_business">Khula karobar</string>
     <string name="drawer_active_business_n">Khula karobar · %2$s mein se %1$s</string>
     <string name="ledger_pdf_button">PDF</string>

@@ -86,6 +86,23 @@
 
     <string name="net_balance">مانده خالص</string>
     <string name="home_switch_business">تغییر کسب‌وکار</string>
+    <string name="home_sec_daily">هر روز</string>
+    <string name="home_sec_business">کسب‌وکار</string>
+    <string name="home_see_all">همه ›</string>
+    <string name="home_today">امروز</string>
+    <string name="tile_bills">صورت‌حساب</string>
+    <string name="tile_expiry">انقضا</string>
+    <string name="tile_card">کارت</string>
+    <string name="tile_settings">تنظیمات</string>
+    <string name="tile_bin">سطل</string>
+    <string name="tile_products">کالا</string>
+    <string name="tile_zakat">زکات</string>
+    <string name="tile_insights">تحلیل</string>
+    <string name="tile_seasons">فصل</string>
+    <string name="tile_rates">نرخ</string>
+    <string name="today_backup">پشتیبان</string>
+    <string name="today_gap">کمبود نقد</string>
+    <string name="today_chip">%1$s · %2$s</string>
     <string name="drawer_active_business">کسب‌وکار فعال</string>
     <string name="drawer_active_business_n">کسب‌وکار فعال · %1$s از %2$s</string>
     <string name="ledger_pdf_button">PDF</string>

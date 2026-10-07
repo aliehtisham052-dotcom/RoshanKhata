@@ -24,7 +24,7 @@ import com.innovation313.roshankhata.SupplierRatesActivity
  */
 object HomeSlides {
 
-    private const val TURN_MS = 5000L
+    private const val TURN_MS = 3000L
 
     /** Loop: the pager holds a very long run of the four banners and starts in the middle, so there is always a next and a previous. */
     private const val LOOP = 4000
@@ -69,11 +69,6 @@ object HomeSlides {
                 android.content.res.Configuration.UI_MODE_NIGHT_NO
             return ContextCompat.getColor(ctx.createConfigurationContext(conf), res)
         }
-    }
-
-    /** The same four doors as drawer rows (7 Oct), so a slide that has turned past is never the only way in. */
-    fun drawerEntries(activity: android.app.Activity): List<HomeDrawer.Entry> = slides.map { s ->
-        HomeDrawer.Entry(s.icon, s.tint, s.title) { activity.startActivity(android.content.Intent(activity, s.open)) }
     }
 
     /** Wire [pager]; call once from the Home screen's onCreate. No dots (7 Oct): the banners loop, and a row of dots read as "how many more?". */

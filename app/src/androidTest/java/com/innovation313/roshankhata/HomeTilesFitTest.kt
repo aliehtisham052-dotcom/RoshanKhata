@@ -77,17 +77,20 @@ class HomeTilesFitTest(
                 assertTrue("no Home tiles found", labels.size >= 10)
 
                 val problems = mutableListOf<String>()
-                val heights = mutableSetOf<Int>()
-                val widths = mutableSetOf<Int>()
-                val columnEdges = mutableSetOf<Int>()
+                // Two sizes of tile since 7 Oct: full (three a row, Every
+                // day) and compact (four a row, Business and Tools). Each
+                // size is judged among its own kind.
+                data class Slot(val compact: Boolean, val height: Int, val width: Int, val left: Int)
+                val slots = mutableListOf<Slot>()
                 for (label in labels) {
                     val text = label.text.toString()
                     val layout = label.layout
                     if (layout == null) { problems += "'$text': not laid out"; continue }
                     val tile = label.parent.parent as View
-                    heights += tile.height
-                    widths += tile.width
-                    columnEdges += IntArray(2).also { tile.getLocationOnScreen(it) }[0]
+                    slots += Slot(
+                        tile.getTag(R.id.tile_compact) == true, tile.height, tile.width,
+                        IntArray(2).also { tile.getLocationOnScreen(it) }[0]
+                    )
 
                     // 1. The last visible line ends inside the label itself.
                     val shown = minOf(layout.lineCount, 2)
@@ -113,17 +116,23 @@ class HomeTilesFitTest(
                 }
 
                 assertTrue("[$language, level $level] ${problems.joinToString("; ")}", problems.isEmpty())
-                assertEquals("[$language, level $level] tiles of different heights: $heights", 1, heights.size)
-                // One width, to the pixel. LinearLayout shares out the pixels left
-                // over when the row width does not divide by three, so on a real
-                // screen one tile can be a single pixel wider (316 vs 317px on the
-                // CI emulator). Invisible; the slot was wrong by 2 x TILE_GAP_DP.
-                assertTrue(
-                    "[$language, level $level] tiles of different widths: $widths",
-                    widths.max() - widths.min() <= 1
-                )
-                // Three columns means exactly three left edges across every row.
-                assertEquals("[$language, level $level] tiles off the column lines: $columnEdges", 3, columnEdges.size)
+                slots.groupBy { it.compact }.forEach { (compact, group) ->
+                    val kind = if (compact) "compact" else "full"
+                    val heights = group.map { it.height }.toSet()
+                    val widths = group.map { it.width }
+                    val columnEdges = group.map { it.left }.toSet()
+                    assertEquals("[$language, level $level] $kind tiles of different heights: $heights", 1, heights.size)
+                    // One width, to the pixel. LinearLayout shares out the pixels left
+                    // over when the row width does not divide evenly, so on a real
+                    // screen one tile can be a single pixel wider. Invisible; the
+                    // slot was wrong by 2 x TILE_GAP_DP.
+                    assertTrue(
+                        "[$language, level $level] $kind tiles of different widths: $widths",
+                        widths.max() - widths.min() <= 1
+                    )
+                    // Three (full) or four (compact) columns means exactly that many left edges across every row.
+                    assertEquals("[$language, level $level] $kind tiles off the column lines: $columnEdges", if (compact) 4 else 3, columnEdges.size)
+                }
             }
         }
     }
