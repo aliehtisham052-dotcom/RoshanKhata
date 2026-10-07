@@ -94,4 +94,5 @@
     <color name="fi_teal_b">#D2F1E7</color>
     <color name="fi_pink_a">#D2688F</color>
     <color name="fi_pink_b">#F9D6E3</color>
+    <color name="slide_dot">#73FFFFFF</color>
 </resources>
