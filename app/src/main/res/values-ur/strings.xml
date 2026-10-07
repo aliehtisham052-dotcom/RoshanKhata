@@ -610,6 +610,10 @@
     <string name="filter_account_all">سب</string>
     <string name="more_reports">رپورٹس اور زکوٰۃ</string>
     <string name="more_settings">ترتیبات</string>
+    <string name="settings_group_security">حفاظت</string>
+    <string name="settings_group_data">ڈیٹا</string>
+    <string name="settings_group_display">ڈسپلے</string>
+    <string name="settings_group_help">مدد</string>
     <string name="more_data">آپ کا ڈیٹا</string>
 
     <string name="more_options">مزید</string>

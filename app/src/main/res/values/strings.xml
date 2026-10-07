@@ -638,6 +638,11 @@
     <string name="filter_account_all">All</string>
     <string name="more_reports">Reports &amp; Zakat</string>
     <string name="more_settings">Settings</string>
+    <!-- The Settings sheet's four group labels (7 Oct). -->
+    <string name="settings_group_security">Security</string>
+    <string name="settings_group_data">Data</string>
+    <string name="settings_group_display">Display</string>
+    <string name="settings_group_help">Help</string>
     <string name="more_data">Your data</string>
 
     <string name="more_options">More</string>

@@ -630,6 +630,10 @@
     <string name="filter_account_all">همه</string>
     <string name="more_reports">گزارش‌ها و زکات</string>
     <string name="more_settings">تنظیمات</string>
+    <string name="settings_group_security">امنیت</string>
+    <string name="settings_group_data">داده‌ها</string>
+    <string name="settings_group_display">نمایش</string>
+    <string name="settings_group_help">راهنما</string>
     <string name="more_data">داده‌های شما</string>
 
     <string name="more_options">بیشتر</string>
