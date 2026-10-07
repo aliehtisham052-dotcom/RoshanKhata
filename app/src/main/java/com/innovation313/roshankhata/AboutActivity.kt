@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import android.widget.TextView
 import android.widget.Toast
@@ -24,7 +25,7 @@ class AboutActivity : BaseActivity() {
     private fun bigBook(seed: Boolean) {
         val toast = android.widget.Toast.makeText(this, if (seed) "Seeding…" else "Removing…", android.widget.Toast.LENGTH_SHORT)
         toast.show()
-        androidx.lifecycle.lifecycleScope.launch {
+        lifecycleScope.launch {
             val started = android.os.SystemClock.elapsedRealtime()
             val n = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
                 if (seed) com.innovation313.roshankhata.data.BigBook.seed(this@AboutActivity)
