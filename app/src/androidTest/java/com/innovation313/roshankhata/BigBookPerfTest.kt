@@ -132,8 +132,32 @@ class BigBookPerfTest {
         assertTrue(report, ms <= BACKUP_BUDGET_MS)
     }
 
+    /**
+     * The same backup read back and restored — the other half of the job
+     * that must hold every line (P7). The file is parsed as a stream and the
+     * rows put back; before P7 this was JSONObject(text) and died first.
+     */
+    @Test
+    fun restoreOfTheWholeBookCompletes() {
+        val dao = KhataDatabase.get(context).khataDao()
+        val file = runBlocking { com.innovation313.roshankhata.data.Backup.exportToCache(context, dao) }
+        val rt = Runtime.getRuntime()
+        val t = SystemClock.elapsedRealtime()
+        val (result, data) = com.innovation313.roshankhata.data.Backup.parseFile(file)
+        val parsedMs = SystemClock.elapsedRealtime() - t
+        val heap = (rt.totalMemory() - rt.freeMemory()) / 1048576
+        assertTrue("parse failed: $result", result is com.innovation313.roshankhata.data.Backup.ImportResult.Ok && data != null)
+        runBlocking { com.innovation313.roshankhata.data.Backup.restore(context, dao, data!!) }
+        val ms = SystemClock.elapsedRealtime() - t
+        file.delete()
+        val report = "restore of ${BigBook.CUSTOMERS} customers: parsed in $parsedMs ms (heap $heap MB of ${rt.maxMemory() / 1048576}), restored in $ms ms (budget $RESTORE_BUDGET_MS)"
+        Log.i(TAG, report)
+        assertTrue(report, ms <= RESTORE_BUDGET_MS)
+    }
+
     companion object {
         const val TAG = "BigBookPerf"
+        const val RESTORE_BUDGET_MS = 120_000L
         const val BACKUP_BUDGET_MS = 60_000L
         const val OPEN_BUDGET_MS = 2_000L
         const val KEY_BUDGET_MS = 50L

@@ -635,6 +635,29 @@ object DriveBackup {
     }
 
     /**
+     * The same download, streamed to a cache file (P7, 7 Oct) for the owner's
+     * restore, which then reads it as a stream too: a wholesaler's backup never
+     * sits in memory as one string on its way back into the book.
+     */
+    suspend fun restoreByIdToFile(
+        context: Context,
+        accountName: String,
+        fileId: String
+    ): Result<File> = withContext(Dispatchers.IO) {
+        try {
+            val drive = driveFor(context, accountName)
+            val dir = File(context.cacheDir, "restore").apply { mkdirs() }
+            val file = File(dir, "drive-$fileId.txt")
+            file.outputStream().buffered(64 * 1024).use { out ->
+                drive.files().get(fileId).executeMediaAndDownloadTo(out)
+            }
+            Result.success(file)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
      * Download the image archive's bytes, or null if none exists yet (the owner
      * never turned images on, or this is an older cloud backup with text only).
      * A missing images file is not an error — the text restore still stands on

@@ -401,7 +401,7 @@ object Backup {
     /** Read a backup the app saved itself. */
     fun parseFile(file: File): Pair<ImportResult, ParsedBackup?> {
         return try {
-            parseText(file.readText())
+            file.inputStream().buffered(64 * 1024).use { parseStream(it) }
         } catch (e: Exception) {
             ImportResult.Failed("The file could not be read.") to null
         }
@@ -431,15 +431,15 @@ object Backup {
      * was rubbish afterwards would destroy the owner's books to import nothing.
      */
     fun parse(context: Context, uri: Uri): Pair<ImportResult, ParsedBackup?> {
-        val text = try {
+        // Streamed straight off the Uri (P7, 7 Oct): a backup the size of a
+        // wholesaler's book is never held as one string.
+        return try {
             context.contentResolver.openInputStream(uri)
-                ?.bufferedReader()
-                ?.use { it.readText() }
+                ?.buffered(64 * 1024)
+                ?.use { parseStream(it) }
         } catch (e: Exception) {
             null
-        } ?: return ImportResult.Failed("Could not read the file.") to null
-
-        return parseText(text)
+        } ?: (ImportResult.Failed("Could not read the file.") to null)
     }
 
     /**
@@ -461,9 +461,90 @@ object Backup {
         null
     }
 
-    fun parseText(text: String): Pair<ImportResult, ParsedBackup?> {
+    fun parseText(text: String): Pair<ImportResult, ParsedBackup?> =
+        parseStream(text.byteInputStream(Charsets.UTF_8))
+
+    /**
+     * The backup, read as a stream (P7 of the scaling work, 7 Oct 2026).
+     *
+     * Restore used to be JSONObject(text): the whole file as a string, then
+     * the whole file again as a tree of JSONObjects, before a single row was
+     * built — several hundred megabytes for a book of 300,000 lines, the same
+     * death the export died before P6. Now a JsonReader walks the document
+     * once. The three tables that grow with the shop (parties, entries,
+     * entryItems) are turned into rows one object at a time; everything else
+     * — small by nature — is gathered into one JSONObject and handed to the
+     * same code that has always read it, so nothing about what a backup
+     * means has changed. The row converters are the old ones.
+     */
+    fun parseStream(input: java.io.InputStream): Pair<ImportResult, ParsedBackup?> {
         return try {
-            val root = JSONObject(text)
+            val rest = JSONObject()
+            val parties = ArrayList<Party>()
+            val entries = ArrayList<LedgerEntry>()
+            val entryItems = ArrayList<EntryItem>()
+            var hadEntryItems = false
+            android.util.JsonReader(java.io.InputStreamReader(input, Charsets.UTF_8)).use { r ->
+                r.isLenient = true
+                r.beginObject()
+                while (r.hasNext()) {
+                    when (val key = r.nextName()) {
+                        "parties" -> readRows(r) { parties += jsonToParty(it) }
+                        "entries" -> readRows(r) { entries += jsonToEntry(it) }
+                        "entryItems" -> { hadEntryItems = true; readRows(r) { entryItems += jsonToEntryItem(it) } }
+                        else -> rest.put(key, readValue(r))
+                    }
+                }
+                r.endObject()
+            }
+            parseRoot(rest, parties, entries, if (hadEntryItems) entryItems else null)
+        } catch (e: Exception) {
+            ImportResult.Failed("The file could not be read: ${e.message}") to null
+        }
+    }
+
+    /** An array of objects, each handed to [row] as it is read; a null array is nothing. */
+    private fun readRows(r: android.util.JsonReader, row: (JSONObject) -> Unit) {
+        if (r.peek() == android.util.JsonToken.NULL) { r.nextNull(); return }
+        r.beginArray()
+        while (r.hasNext()) row(readValue(r) as JSONObject)
+        r.endArray()
+    }
+
+    /** One JSON value off the reader as the org.json type the old parser expects. */
+    private fun readValue(r: android.util.JsonReader): Any = when (r.peek()) {
+        android.util.JsonToken.BEGIN_OBJECT -> {
+            val o = JSONObject()
+            r.beginObject()
+            while (r.hasNext()) o.put(r.nextName(), readValue(r))
+            r.endObject()
+            o
+        }
+        android.util.JsonToken.BEGIN_ARRAY -> {
+            val a = JSONArray()
+            r.beginArray()
+            while (r.hasNext()) a.put(readValue(r))
+            r.endArray()
+            a
+        }
+        android.util.JsonToken.STRING -> r.nextString()
+        android.util.JsonToken.NUMBER -> {
+            val n = r.nextString()
+            if (n.any { it == '.' || it == 'e' || it == 'E' }) n.toDouble() else (n.toLongOrNull() ?: n.toDouble())
+        }
+        android.util.JsonToken.BOOLEAN -> r.nextBoolean()
+        android.util.JsonToken.NULL -> { r.nextNull(); JSONObject.NULL }
+        else -> throw IllegalStateException("unexpected token ${r.peek()}")
+    }
+
+    /** The old parser, given the three big tables already read. [entryItems] null = the key was absent (a backup from before goods lines). */
+    private fun parseRoot(
+        root: JSONObject,
+        parties: List<Party>,
+        entries: List<LedgerEntry>,
+        entryItems: List<EntryItem>?
+    ): Pair<ImportResult, ParsedBackup?> {
+        return try {
 
             if (root.optString("format") != "RoshanKhata") {
                 return ImportResult.Failed(
@@ -479,22 +560,10 @@ object Backup {
                 ) to null
             }
 
-            val parties = root.optJSONArray("parties")?.let { arr ->
-                (0 until arr.length()).map { jsonToParty(arr.getJSONObject(it)) }
-            } ?: emptyList()
-
-            val entries = root.optJSONArray("entries")?.let { arr ->
-                (0 until arr.length()).map { jsonToEntry(arr.getJSONObject(it)) }
-            } ?: emptyList()
-
-            // Goods lines. A version-7 file carries them; an older file does
-            // not, and its goods still sit on the entries themselves — so they
-            // are rebuilt from there by the one shared rule. The presence of
-            // the key decides, not the version number: a v7 file with no goods
-            // at all carries an empty array and must restore with no lines.
-            val entryItems = root.optJSONArray("entryItems")?.let { arr ->
-                (0 until arr.length()).map { jsonToEntryItem(arr.getJSONObject(it)) }
-            } ?: entries.mapNotNull { EntryItem.fromLegacy(it) }
+            // parties, entries and entryItems were read off the stream already
+            // (parseStream); a backup from before goods lines has no entryItems
+            // key and its lines are rebuilt from the entries by the shared rule.
+            val entryItems = entryItems ?: entries.mapNotNull { EntryItem.fromLegacy(it) }
 
             val cheques = root.optJSONArray("cheques")?.let { arr ->
                 (0 until arr.length()).map { jsonToCheque(arr.getJSONObject(it)) }
