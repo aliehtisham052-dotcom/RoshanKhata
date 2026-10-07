@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A banner's pill button: white, the feature's own colour for its label (set in code). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFFFFFFF" />
+    <corners android:radius="20dp" />
+</shape>
