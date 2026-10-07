@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_home_header"
+        android:background="@drawable/bg_header_light"
         android:orientation="vertical"
         android:padding="16dp">
 
@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/na_title"
-            android:textColor="@color/white"
+            android:textColor="@color/header_light_ink"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="@string/na_subtitle"
-            android:textColor="@color/gold_on_dark"
+            android:textColor="@color/header_light_ink_soft"
             android:textSize="12sp" />
     </LinearLayout>
 

@@ -62,6 +62,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        lightHeaderBars()
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
@@ -400,6 +401,18 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * The light header (P2, 7 Oct) needs a light status bar with dark icons by
+     * day, and the reverse by night; the theme's green bar belongs to the
+     * green-headed screens.
+     */
+    private fun lightHeaderBars() {
+        val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.header_light_top)
+        androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !night
+    }
+
+    /**
      * The Today strip (7 Oct): one chip per kind of alert, with its count —
      * "Cheques · 2", "Late · 1" — the bell's list at a glance. The "updated"
      * notice is not today's work and stays in the bell alone.
@@ -448,8 +461,8 @@ class MainActivity : BaseActivity() {
         val line = com.innovation313.roshankhata.data.BackupAge.line(this)
         findViewById<TextView>(R.id.tvHomeBackupAge)?.apply {
             text = line.text
-            setTextColor(androidx.core.content.ContextCompat.getColor(
-                this@MainActivity, if (line.stale) R.color.gold_on_dark else R.color.header_on_dark))
+            // On the light header the words are the deep gold whether stale
+            // or fresh; stale is bold, fresh is not.
             setTypeface(null, if (line.stale) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
         }
         // The drawer's business card: the open shop's name, and its place

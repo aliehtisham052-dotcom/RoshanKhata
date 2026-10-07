@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The frosted card behind the net balance on the Home header (7 Oct): 10% white, soft gold edge. -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="@color/home_balance_fill" />
-    <stroke android:width="1dp" android:color="@color/home_summary_stroke" />
+<!-- The net balance card on the light Home header (P2, 7 Oct): solid deep green, gold label and white figure on it. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/home_balance_solid" />
     <corners android:radius="14dp" />
 </shape>

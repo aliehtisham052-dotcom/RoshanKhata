@@ -33,6 +33,11 @@ class AlertsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_alerts)
         ScreenInsets.on(this)
+        // The light header: a light status bar by day (see MainActivity.lightHeaderBars).
+        val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        window.statusBarColor = ContextCompat.getColor(this, R.color.header_light_top)
+        androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !night
     }
 
     override fun onResume() {

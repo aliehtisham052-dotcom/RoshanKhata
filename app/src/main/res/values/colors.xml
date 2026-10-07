@@ -267,13 +267,28 @@
       right, finished with a gold rule underneath. Home and the Khata screen
       (7 Oct) use these; the settings / add-entry headers keep bg_header_gradient.
     -->
-    <color name="home_header_start">#1F6A43</color>
-    <color name="home_header_mid">#164D32</color>
+    <color name="home_header_start">#176A45</color>
+    <color name="home_header_mid">#124F34</color>
     <color name="home_header_end">#0F3D26</color>
     <!-- The gold rings in the header's top corner (7 Oct: 38% gold, three rings,
          a touch stronger than the 28% pair they replace, so the ornament reads
          on a phone and not only on a monitor). -->
     <color name="home_header_sweep">#61FFDA6B</color>
+    <!--
+      The light header (7 Oct, option P2, the owner's pick): Home and
+      Notifications wear a pale mint that settles into the page colour, with
+      deep green type and icons, so the header and the pastel tiles are one
+      family. The balance sits on a solid deep-green card (gold label, white
+      figure); the backup state on a paper card in the deep gold. The Khata
+      screen keeps its green header, smoothed (one soft gradient, no rings).
+    -->
+    <color name="header_light_top">#E6F1EA</color>
+    <color name="header_light_bottom">#F2F4EF</color>
+    <color name="header_light_line">#D3E1D7</color>
+    <color name="header_light_ink">#0F4A33</color>
+    <color name="header_light_ink_soft">#3E6B55</color>
+    <color name="home_balance_solid">#0F4A33</color>
+    <color name="backup_ink">#8E6508</color>
     <!-- The dots under the Home banner (7 Oct): brand green by day, soft white by night. -->
     <color name="slide_dot">#1B5E3A</color>
     <!-- The faint lift behind the net balance (7 Oct): 10% white, frosted. -->
