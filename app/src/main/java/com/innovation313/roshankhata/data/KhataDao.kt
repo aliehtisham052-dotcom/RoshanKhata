@@ -549,6 +549,24 @@ interface KhataDao {
     @Insert
     suspend fun restoreEntries(items: List<LedgerEntry>)
 
+    /** The seeded big book's lines (see [BigBook]): every line of a customer whose name carries the mark. */
+    @Query("DELETE FROM transactions WHERE partyId IN (SELECT id FROM parties WHERE name LIKE :namePattern)")
+    suspend fun purgeSeededEntries(namePattern: String)
+
+    /** The seeded big book's customers. */
+    @Query("DELETE FROM parties WHERE name LIKE :namePattern")
+    suspend fun purgeSeededParties(namePattern: String)
+
+    /** One seeded customer's id, for the perf test to open; 0 when none is seeded. */
+    @Query("SELECT COALESCE(MIN(id), 0) FROM parties WHERE name LIKE :namePattern")
+    suspend fun seededPartyId(namePattern: String): Long
+
+    @Transaction
+    suspend fun purgeSeeded(namePattern: String) {
+        purgeSeededEntries(namePattern)
+        purgeSeededParties(namePattern)
+    }
+
     @Insert
     suspend fun restoreCheques(items: List<Cheque>)
 
