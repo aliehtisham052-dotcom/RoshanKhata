@@ -1,75 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One card of the Home slider (6 Oct): a feature worth a look, tap to open. -->
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  One banner of the Home slider (7 Oct): a full-colour poster in the
+  feature's own hue — its illustration on a white tile over two faint discs
+  at the start, a two-line headline and a white pill button at the end. The
+  whole banner opens the feature. No photographs of people anywhere.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginStart="6dp"
-    android:layout_marginEnd="6dp"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="@color/surface"
-    app:cardCornerRadius="18dp"
-    app:cardElevation="1dp"
-    app:strokeColor="@color/page_line"
-    app:strokeWidth="1dp">
+    android:layout_marginEnd="6dp">
 
     <LinearLayout
         android:id="@+id/slideRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/bg_banner_blue"
+        android:clipToOutline="true"
+        android:foreground="?attr/selectableItemBackground"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="14dp"
-        android:paddingEnd="12dp">
+        android:orientation="horizontal">
 
         <FrameLayout
-            android:id="@+id/slideIconDisc"
-            android:layout_width="54dp"
-            android:layout_height="54dp"
-            android:background="@drawable/bg_tile_icon">
+            android:layout_width="128dp"
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/ivSlideIcon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+            <View
+                android:layout_width="170dp"
+                android:layout_height="170dp"
                 android:layout_gravity="center"
-                android:contentDescription="@null" />
+                android:layout_marginStart="-40dp"
+                android:background="@drawable/bg_banner_disc" />
+
+            <View
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_banner_disc" />
+
+            <FrameLayout
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_banner_tile"
+                android:elevation="3dp">
+
+                <ImageView
+                    android:id="@+id/ivSlideIcon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null" />
+            </FrameLayout>
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvSlideTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textColor="@color/ink"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+            android:orientation="vertical"
+            android:paddingEnd="14dp">
 
             <TextView
                 android:id="@+id/tvSlideSub"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:maxLines="2"
                 android:ellipsize="end"
-                android:textColor="@color/ink_soft"
-                android:textSize="12sp" />
-        </LinearLayout>
+                android:maxLines="2"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="What comes in and goes out over the next 30 days" />
 
-        <ImageView
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_chevron_right"
-            app:tint="@color/ink_soft" />
+            <TextView
+                android:id="@+id/tvSlideTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_banner_cta"
+                android:maxLines="1"
+                android:paddingStart="14dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/fi_blue_b"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Cash flow  →" />
+        </LinearLayout>
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</FrameLayout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A Home banner's violet ground (7 Oct): a fixed poster gradient, the same by day and night, white type on it. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:angle="0" android:startColor="#4B3FA3" android:endColor="#7A6ED1" android:type="linear" />
+    <corners android:radius="16dp" />
+</shape>

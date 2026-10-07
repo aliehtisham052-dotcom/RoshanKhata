@@ -27,7 +27,9 @@ object BalancePrivacy {
 
     fun isHidden(context: Context): Boolean =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getBoolean(KEY_HIDDEN, false)
+            // Hidden until the owner opens it (7 Oct, the owner's call): a
+            // customer at the counter sees dots, not the shop's position.
+            .getBoolean(KEY_HIDDEN, true)
 
     fun setHidden(context: Context, hidden: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

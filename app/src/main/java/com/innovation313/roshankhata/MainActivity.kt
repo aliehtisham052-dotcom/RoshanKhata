@@ -35,10 +35,8 @@ import kotlinx.coroutines.launch
 class MainActivity : BaseActivity() {
 
     private lateinit var tvNetBalance: TextView
-    private lateinit var tvTotalGet: TextView
     private lateinit var tvHomeLate: TextView
     private var lateJob: kotlinx.coroutines.Job? = null
-    private lateinit var tvTotalGive: TextView
     private lateinit var ivEye: ImageView
 
     private var netBalance = 0.0
@@ -76,12 +74,10 @@ class MainActivity : BaseActivity() {
         }
 
         tvNetBalance = findViewById(R.id.tvNetBalance)
-        tvTotalGet = findViewById(R.id.tvTotalGet)
         tvHomeLate = findViewById(R.id.tvHomeLate)
         tvHomeLate.setOnClickListener {
             startActivity(android.content.Intent(this, FollowUpActivity::class.java))
         }
-        tvTotalGive = findViewById(R.id.tvTotalGive)
         ivEye = findViewById(R.id.ivEye)
 
         findViewById<View>(R.id.balanceRow).setOnClickListener {
@@ -175,7 +171,7 @@ class MainActivity : BaseActivity() {
             else list.filterNot { com.innovation313.roshankhata.data.ViewerMode.ownerOnly(it.destination) }
 
         featureViews.clear()
-        com.innovation313.roshankhata.ui.HomeSlides.attach(findViewById(R.id.homeSlides), findViewById(R.id.homeSlideDots))
+        com.innovation313.roshankhata.ui.HomeSlides.attach(findViewById(R.id.homeSlides))
         run {
             val drawer = findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)
             fun entry(f: Feature) = com.innovation313.roshankhata.ui.HomeDrawer.Entry(f.iconRes, f.tintRes, f.labelRes) {
@@ -196,6 +192,8 @@ class MainActivity : BaseActivity() {
                 drawer.closeDrawers()
                 startActivity(Intent(this, BusinessSwitchActivity::class.java))
             }
+            // The title is the shop's name (7 Oct); tapping it switches shops too.
+            findViewById<View>(R.id.tvHomeTitle).setOnClickListener { startActivity(Intent(this, BusinessSwitchActivity::class.java)) }
             onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(false) {
                 override fun handleOnBackPressed() = drawer.closeDrawers()
             }.also { cb ->
@@ -387,8 +385,9 @@ class MainActivity : BaseActivity() {
         // The drawer's business card: the open shop's name, and its place
         // among the books when there is more than one.
         val saved = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@MainActivity)
-        findViewById<TextView>(R.id.tvDrawerBusiness)?.text =
-            if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
+        val shop = if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
+        findViewById<TextView>(R.id.tvHomeTitle)?.text = shop
+        findViewById<TextView>(R.id.tvDrawerBusiness)?.text = shop
         findViewById<TextView>(R.id.tvDrawerBusinessSub)?.apply {
             val all = Businesses.list(this@MainActivity)
             val at = all.indexOfFirst { it.id == Businesses.active(this@MainActivity).id } + 1
@@ -544,27 +543,15 @@ class MainActivity : BaseActivity() {
         if (hidden) {
             // Hidden figures never animate: a change chip would leak the size.
             tvNetBalance.text = BalancePrivacy.MASK
-            tvTotalGet.text = BalancePrivacy.MASK
-            tvTotalGive.text = BalancePrivacy.MASK
             shownNet = null; shownGet = null; shownGive = null
         } else {
             // Figures go straight to their value (5 Oct, the owner's call: a
             // count-up showed amounts that were never true). What CHANGED since
             // the last showing rises beside "to get" and "to give" as a chip —
             // each on its own figure, never a net across different people.
-            val prevGet = shownGet
-            val prevGive = shownGive
+            // The two halves (to get / to give) and their change chips moved
+            // to the Khata screen with the cards (7 Oct); Home shows the net.
             tvNetBalance.text = Format.money(netBalance)
-            tvTotalGet.text = Format.money(totalGet)
-            tvTotalGive.text = Format.money(totalGive)
-            fun chip(view: android.widget.TextView, before: Double?, now: Double) {
-                val change = if (before == null) 0.0 else now - before
-                if (com.innovation313.roshankhata.data.Money.isZero(change)) return
-                val sign = if (change > 0) "+" else "\u2212"
-                view.post { com.innovation313.roshankhata.ui.Motion.delta(view, sign + Format.ltr(Format.money(change))) }
-            }
-            chip(tvTotalGet, prevGet, totalGet)
-            chip(tvTotalGive, prevGive, totalGive)
             shownNet = netBalance; shownGet = totalGet; shownGive = totalGive
         }
         ivEye.setImageResource(
@@ -584,9 +571,8 @@ class MainActivity : BaseActivity() {
             .getChildAt(0) as? android.view.ViewGroup ?: return
 
         val steps = listOfNotNull(
-            // The header first, in three short steps — the net figure, then
-            // each of its two halves — and then every tile. One card and one
-            // count ("4 / 18") for the whole tour.
+            // The header first — the net figure — and then every tile. One
+            // card and one count for the whole tour.
             findViewById<View>(R.id.balanceRow)?.let { row ->
                 CoachMarkController.Step(
                     target = row,
@@ -595,24 +581,6 @@ class MainActivity : BaseActivity() {
                     cornerRadiusDp = 12f,
                     // Tight. "NET BALANCE" sits directly above this row, and a
                     // wider ring lights the caption along with the figure.
-                    paddingDp = 3f
-                )
-            },
-            findViewById<View>(R.id.homeCardGet)?.let { card ->
-                CoachMarkController.Step(
-                    target = card,
-                    titleRes = R.string.i_have_to_get,
-                    descRes = R.string.coach_desc_get,
-                    cornerRadiusDp = 14f,
-                    paddingDp = 3f
-                )
-            },
-            findViewById<View>(R.id.homeCardGive)?.let { card ->
-                CoachMarkController.Step(
-                    target = card,
-                    titleRes = R.string.i_have_to_give,
-                    descRes = R.string.coach_desc_give,
-                    cornerRadiusDp = 14f,
                     paddingDp = 3f
                 )
             },
