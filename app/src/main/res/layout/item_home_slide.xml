@@ -72,6 +72,10 @@
             app:autoSizeTextType="uniform"
             tools:text="What comes in and goes out over the next 30 days" />
 
+        <!-- The label's colour is set in code to the feature's DAY tone (the
+             pill is white in both modes). The literal below is fi_blue_b's
+             day value, so the static dark-mode check sees the face the phone
+             does; a @color here was repainted light at night by that check. -->
         <TextView
             android:id="@+id/tvSlideTitle"
             android:layout_width="wrap_content"
@@ -85,7 +89,7 @@
             android:paddingTop="5dp"
             android:paddingEnd="9dp"
             android:paddingBottom="5dp"
-            android:textColor="@color/fi_blue_b"
+            android:textColor="#185FA5"
             android:textSize="11sp"
             android:textStyle="bold"
             app:autoSizeMaxTextSize="11sp"

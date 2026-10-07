@@ -285,6 +285,10 @@
     <color name="header_light_top">#E6F1EA</color>
     <color name="header_light_bottom">#F2F4EF</color>
     <color name="header_light_line">#D3E1D7</color>
+    <!-- The border of the paper buttons on the light header (backup, profile).
+         Its own colour, not header_light_line: a hairline may be faint at
+         night, a control's edge may not (3.9:1 on the night header). -->
+    <color name="header_light_button_line">#D3E1D7</color>
     <color name="header_light_ink">#0F4A33</color>
     <color name="header_light_ink_soft">#3E6B55</color>
     <color name="home_balance_solid">#0F4A33</color>
