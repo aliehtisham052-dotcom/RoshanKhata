@@ -186,6 +186,10 @@ class MainActivity : BaseActivity() {
                 shown(daily).map(::entry), shown(business).map(::entry))
             findViewById<View>(R.id.btnDrawer).setOnClickListener { drawer.openDrawer(androidx.core.view.GravityCompat.START) }
             findViewById<View>(R.id.btnAlerts).setOnClickListener { startActivity(Intent(this, AlertsActivity::class.java)) }
+            // The quiet line under the summary cards (7 Oct): backup age opens
+            // Backup, the open business's name opens the switcher.
+            findViewById<View>(R.id.homeBackupTap).setOnClickListener { startActivity(Intent(this, BackupActivity::class.java)) }
+            findViewById<View>(R.id.homeSwitchTap).setOnClickListener { startActivity(Intent(this, BusinessSwitchActivity::class.java)) }
             onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(false) {
                 override fun handleOnBackPressed() = drawer.closeDrawers()
             }.also { cb ->
@@ -355,8 +359,28 @@ class MainActivity : BaseActivity() {
                 text = if (n > 9) "9+" else n.toString()
             }
         }
+        paintHeaderLine()
         // Returning from another screen, the bar must point at Home again.
         showViewerNote()
+    }
+
+    /**
+     * The backup age and the open business, under the summary cards (7 Oct).
+     * Painted on every resume: a backup taken one screen away, or a business
+     * switched, must show the moment Home is back, not after a restart.
+     */
+    private fun paintHeaderLine() {
+        val line = com.innovation313.roshankhata.data.BackupAge.line(this)
+        findViewById<TextView>(R.id.tvHomeBackupAge)?.apply {
+            text = line.text
+            setTextColor(androidx.core.content.ContextCompat.getColor(
+                this@MainActivity, if (line.stale) R.color.gold_on_dark else R.color.header_on_dark))
+            setTypeface(null, if (line.stale) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+        }
+        findViewById<TextView>(R.id.tvHomeBusiness)?.apply {
+            val saved = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@MainActivity)
+            text = if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
+        }
     }
 
     /** On a helper's read-only phone: whose copy, how old, tap for a fresh one. */

@@ -11,7 +11,7 @@
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_home_header"
         android:clipToPadding="false"
         android:orientation="vertical"
         android:paddingStart="14dp"
@@ -42,11 +42,11 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginEnd="10dp"
-                android:background="@drawable/bg_business_logo"
+                android:background="@drawable/bg_ledger_store"
                 android:contentDescription="@string/business_name"
-                android:padding="9dp"
+                android:padding="8dp"
                 android:src="@drawable/ic_storefront"
-                app:tint="@color/gold_on_dark" />
+                app:tint="@color/brand_green_dark" />
 
             <!--
               The name is tappable again — and this time the tap has a job of
@@ -103,12 +103,13 @@
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
                 app:cornerRadius="10dp"
+                app:backgroundTint="@color/header_tile_fill"
                 app:icon="@drawable/ic_feature_backup"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="22dp"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark" />
+                app:iconTint="@color/white"
+                app:strokeColor="@color/home_summary_stroke" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnHeaderSettings"
@@ -122,12 +123,13 @@
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
                 app:cornerRadius="10dp"
+                app:backgroundTint="@color/header_tile_fill"
                 app:icon="@drawable/ic_profile_card"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="22dp"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark" />
+                app:iconTint="@color/white"
+                app:strokeColor="@color/home_summary_stroke" />
         </LinearLayout>
 
         <!--
@@ -209,10 +211,13 @@
           has clipToPadding="false" so the sheet is drawn into that padding.
           The inner 12dp side padding puts the totals, search and tools on
           the same line as the party cards below (item_party: 12dp margins),
-          so both screen edges read as one column. The five tools are drawn like
-          the header's own backup and profile buttons: brand-green fill with
-          the bright header gold for icon and outline (about 5.7:1). That
-          gold straight on white would be 1.36:1 and all but vanish.
+          so both screen edges read as one column. The five tools (7 Oct) are
+          drawn like the Home tiles: a pale square in a hue of its own — mic
+          green, filter violet, sort blue, PDF orange, QR gold — with the
+          deep tone of that hue for the glyph, the tile_*_bg / fi_*_b pairs
+          of colors.xml, which values-night repaints together. They were
+          brand-green squares with gold glyphs, the one hard block on a soft
+          sheet.
 
           The card must open OUTSIDE the totals row. Opened inside it (as it
           once was), the two weighted boxes got zero width, the search and
@@ -246,31 +251,50 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="5dp"
-                android:background="@drawable/bg_summary_get"
+                android:background="@drawable/bg_ledger_summary"
                 android:clickable="true"
                 android:focusable="true"
-                android:orientation="vertical"
-                android:paddingStart="12dp"
-                android:paddingTop="7dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="7dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp">
 
-                <TextView
-                    android:id="@+id/tvTotalGet"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/bal_owed_to_me"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="Rs 7,520" />
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_home_chip_get"
+                    android:importantForAccessibility="no"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_arrow_got"
+                    app:tint="@color/bal_owed_to_me" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/i_have_to_get"
-                    android:textColor="@color/bal_owed_to_me"
-                    android:textSize="11sp" />
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTotalGet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:textColor="@color/bal_owed_to_me"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        tools:text="Rs 7,520" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:text="@string/i_have_to_get"
+                        android:textColor="@color/text_muted"
+                        android:textSize="10sp" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -279,31 +303,50 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="5dp"
-                android:background="@drawable/bg_summary_give"
+                android:background="@drawable/bg_ledger_summary"
                 android:clickable="true"
                 android:focusable="true"
-                android:orientation="vertical"
-                android:paddingStart="12dp"
-                android:paddingTop="7dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="7dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp">
 
-                <TextView
-                    android:id="@+id/tvTotalGive"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/bal_i_owe"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="Rs 167,665" />
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_home_chip_give"
+                    android:importantForAccessibility="no"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_arrow_gave"
+                    app:tint="@color/bal_i_owe" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/i_have_to_give"
-                    android:textColor="@color/bal_i_owe"
-                    android:textSize="11sp" />
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTotalGive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:textColor="@color/bal_i_owe"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        tools:text="Rs 167,665" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:text="@string/i_have_to_give"
+                        android:textColor="@color/text_muted"
+                        android:textSize="10sp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -324,6 +367,9 @@
                 android:layout_height="44dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_search_field"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/text_muted"
                 android:hint="@string/search_parties"
                 android:importantForAutofill="no"
                 android:inputType="text"
@@ -360,9 +406,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:backgroundTint="@color/brand_green"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark" />
+                app:backgroundTint="@color/tile_khata_bg"
+                app:iconTint="@color/fi_green_b"
+                app:strokeWidth="0dp" />
 
             <!--
               Open the filter sheet: Account (all / clear / to-get / to-give)
@@ -387,9 +433,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:backgroundTint="@color/brand_green"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark" />
+                app:backgroundTint="@color/tile_card_bg"
+                app:iconTint="@color/fi_violet_b"
+                app:strokeWidth="0dp" />
         </LinearLayout>
 
         <!--
@@ -436,9 +482,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24dp"
-                app:backgroundTint="@color/brand_green"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark" />
+                app:backgroundTint="@color/tile_insights_bg"
+                app:iconTint="@color/fi_blue_b"
+                app:strokeWidth="0dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLedgerPdf"
@@ -457,9 +503,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:backgroundTint="@color/brand_green"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark" />
+                app:backgroundTint="@color/tile_stock_bg"
+                app:iconTint="@color/fi_orange_b"
+                app:strokeWidth="0dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnScanQr"
@@ -478,9 +524,9 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="26dp"
-                app:backgroundTint="@color/brand_green"
-                app:iconTint="@color/gold_on_dark"
-                app:strokeColor="@color/gold_on_dark" />
+                app:backgroundTint="@color/tile_bills_bg"
+                app:iconTint="@color/fi_gold_b"
+                app:strokeWidth="0dp" />
         </LinearLayout>
 
         <!--

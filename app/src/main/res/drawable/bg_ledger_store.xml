@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The shop's icon on the Khata header (7 Oct): a solid gold tile, the deep green glyph on it. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/gold_on_dark" />
+    <corners android:radius="11dp" />
+</shape>

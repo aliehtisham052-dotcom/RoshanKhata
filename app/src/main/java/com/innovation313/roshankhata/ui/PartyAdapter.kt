@@ -96,6 +96,7 @@ class PartyAdapter(
         holder.ivAvatar.visibility = View.GONE
         holder.tvInitials.visibility = View.VISIBLE
         holder.tvInitials.text = initialsOf(item.name)
+        AvatarHue.paint(holder.tvInitials, item.name)
         val inMemory = PartyPhoto.cached(item.id)
         if (inMemory != null) {
             showPhoto(inMemory)

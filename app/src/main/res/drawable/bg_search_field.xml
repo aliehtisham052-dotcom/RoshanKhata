@@ -5,5 +5,5 @@
     <stroke
         android:width="1dp"
         android:color="@color/page_line" />
-    <corners android:radius="8dp" />
+    <corners android:radius="12dp" />
 </shape>

@@ -264,14 +264,18 @@
     <!--
       Home header (redesign, 23 Sep). A diagonal of the brand green, a little
       lighter at the top-left where the title sits and deeper at the bottom
-      right, finished with a gold rule underneath. Only Home uses these; the
-      Khata / settings / add-entry headers keep bg_header_gradient.
+      right, finished with a gold rule underneath. Home and the Khata screen
+      (7 Oct) use these; the settings / add-entry headers keep bg_header_gradient.
     -->
-    <color name="home_header_start">#1F6A42</color>
-    <color name="home_header_mid">#154D30</color>
-    <color name="home_header_end">#0B301D</color>
-    <!-- The faint gold circles in the header's top corner (28% gold). -->
-    <color name="home_header_sweep">#47FFDA6B</color>
+    <color name="home_header_start">#1F6A43</color>
+    <color name="home_header_mid">#164D32</color>
+    <color name="home_header_end">#0F3D26</color>
+    <!-- The gold rings in the header's top corner (7 Oct: 38% gold, three rings,
+         a touch stronger than the 28% pair they replace, so the ornament reads
+         on a phone and not only on a monitor). -->
+    <color name="home_header_sweep">#61FFDA6B</color>
+    <!-- The faint lift behind the net balance (7 Oct): 10% white, frosted. -->
+    <color name="home_balance_fill">#1AFFFFFF</color>
     <!-- Outline of the two summary cards on the header (55% gold). -->
     <color name="home_summary_stroke">#8CFFDA6B</color>
     <!-- The eye button's round backing (12% white). -->

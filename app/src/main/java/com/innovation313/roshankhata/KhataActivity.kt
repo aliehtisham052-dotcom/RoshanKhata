@@ -25,7 +25,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.innovation313.roshankhata.data.AppScope
-import com.innovation313.roshankhata.data.BackupReminder
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
@@ -1097,28 +1096,13 @@ class KhataActivity : BaseActivity() {
     private var paintedBackupAt: Long? = null
 
     private fun paintSummary() {
-        val last = BackupReminder.lastBackupAt(this)
+        // The wording lives in BackupAge (shared with the Home header, 7 Oct).
+        val line = com.innovation313.roshankhata.data.BackupAge.line(this)
+        val last = line.at
         val justBackedUp = paintedBackupAt != null && last > (paintedBackupAt ?: 0L)
         paintedBackupAt = last
-        val ageDays = if (last == 0L) -1L
-        else (System.currentTimeMillis() - last) / (24L * 60 * 60 * 1000)
-
-        val text = when {
-            ageDays < 0 -> getString(R.string.summary_backup_never)
-            ageDays == 0L -> getString(
-                R.string.summary_backup_time,
-                // The phone's own 12/24-hour pattern, with 0-9 digits.
-                android.text.format.DateFormat.getTimeFormat(this).let { f ->
-                    (f as? java.text.SimpleDateFormat)
-                        ?.let { java.text.SimpleDateFormat(it.toPattern(), Digits.latinIn()) } ?: f
-                }.format(java.util.Date(last))
-            )
-            ageDays == 1L -> getString(R.string.summary_backup_yesterday)
-            else -> resources.getQuantityString(
-                R.plurals.summary_backup_days, ageDays.toInt(), ageDays.toInt()
-            )
-        }
-        val stale = ageDays < 0 || ageDays >= 7
+        val text = line.text
+        val stale = line.stale
 
         if (justBackedUp) {
             // Like an editor's "Saved": the moment the books became safe,

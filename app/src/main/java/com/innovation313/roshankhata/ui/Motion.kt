@@ -136,8 +136,13 @@ object Motion {
         stopPulse(button)
         if (!enabled(button.context) || !button.isLaidOut) return
         val root = button.rootView as? android.view.ViewGroup ?: return
-        val color = (button as? com.google.android.material.button.MaterialButton)
-            ?.backgroundTintList?.defaultColor?.takeIf { android.graphics.Color.alpha(it) > 0 }
+        // The rings take the glyph's colour, not the fill's (7 Oct): the mic
+        // sits on a pale green square now, and rings in that pale green were
+        // invisible on the white sheet. The glyph is the dark tone of the
+        // same hue by day and the light tone by night, so it shows on either.
+        val mb = button as? com.google.android.material.button.MaterialButton
+        val color = mb?.iconTint?.defaultColor?.takeIf { android.graphics.Color.alpha(it) > 0 }
+            ?: mb?.backgroundTintList?.defaultColor?.takeIf { android.graphics.Color.alpha(it) > 0 }
             ?: androidx.core.content.ContextCompat.getColor(button.context, com.innovation313.roshankhata.R.color.brand_green)
         val span = (maxOf(button.width, button.height) * 2.2f).toInt()
         val rings = PulseRings(button.context, color, maxOf(button.width, button.height) / 2f * 0.9f)
