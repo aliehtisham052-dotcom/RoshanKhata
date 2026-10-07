@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import kotlinx.coroutines.launch
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.appbar.MaterialToolbar
@@ -20,6 +21,24 @@ import com.innovation313.roshankhata.data.ProblemReport
  */
 class AboutActivity : BaseActivity() {
 
+    private fun bigBook(seed: Boolean) {
+        val toast = android.widget.Toast.makeText(this, if (seed) "Seeding…" else "Removing…", android.widget.Toast.LENGTH_SHORT)
+        toast.show()
+        androidx.lifecycle.lifecycleScope.launch {
+            val started = android.os.SystemClock.elapsedRealtime()
+            val n = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                if (seed) com.innovation313.roshankhata.data.BigBook.seed(this@AboutActivity)
+                else { com.innovation313.roshankhata.data.BigBook.clear(this@AboutActivity); 0 }
+            }
+            val secs = (android.os.SystemClock.elapsedRealtime() - started) / 1000
+            android.widget.Toast.makeText(
+                this@AboutActivity,
+                if (seed) "Seeded $n customers in ${secs}s" else "Seeded book removed in ${secs}s",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
@@ -29,8 +48,27 @@ class AboutActivity : BaseActivity() {
 
         findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
 
-        findViewById<TextView>(R.id.tvVersion).text =
-            getString(R.string.about_version, BuildConfig.VERSION_NAME)
+        val tvVersion = findViewById<TextView>(R.id.tvVersion)
+        tvVersion.text = getString(R.string.about_version, BuildConfig.VERSION_NAME)
+        // A debug build's door to the big book (P0, 7 Oct): seven taps on the
+        // version line write ten thousand seeded customers, so the app can be
+        // felt at that size on a real phone; seven more take them out. A Play
+        // build has no such door — the taps do nothing there.
+        if (BuildConfig.DEBUG) {
+            var taps = 0
+            tvVersion.setOnClickListener {
+                taps++
+                if (taps < 7) return@setOnClickListener
+                taps = 0
+                com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                    .setTitle("Big book (debug)")
+                    .setMessage("Seed ${com.innovation313.roshankhata.data.BigBook.CUSTOMERS} customers x ${com.innovation313.roshankhata.data.BigBook.ENTRIES_EACH} entries, or remove the seeded ones?")
+                    .setPositiveButton("Seed") { _, _ -> bigBook(seed = true) }
+                    .setNegativeButton("Remove") { _, _ -> bigBook(seed = false) }
+                    .setNeutralButton(R.string.cancel, null)
+                    .show()
+            }
+        }
         findViewById<TextView>(R.id.tvContact).text = ProblemReport.SUPPORT_EMAIL
 
         findViewById<MaterialButton>(R.id.btnPrivacyPolicy).setOnClickListener {
