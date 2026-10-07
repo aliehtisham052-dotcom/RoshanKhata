@@ -15,10 +15,11 @@ import com.innovation313.roshankhata.R
 
 /**
  * The Home drawer (6 Oct): the three-line menu. Every feature of the grid,
- * in the grid's own sections, and below them everything the old "More"
- * sheet held (lock, privacy, language, text size, theme, help, about), so
- * nothing is reachable from one place and missing from another. Opens from
- * the reading side: the right in Urdu, Sindhi, Persian and Arabic.
+ * in the grid's own sections, with the open business's card in its header.
+ * The settings (lock, privacy, language, text size, theme, help, about)
+ * lived at its foot until 7 Oct; they are the ⋮ menu beside the bell now
+ * (MoreSheet.showMenu), so the drawer is features and nothing else. Opens
+ * from the reading side: the right in Urdu, Sindhi, Persian and Arabic.
  */
 object HomeDrawer {
 
@@ -52,10 +53,6 @@ object HomeDrawer {
         daily.forEach { row(activity, content, drawer, it) }
         heading(activity, content, R.string.home_section_business)
         business.forEach { row(activity, content, drawer, it) }
-        heading(activity, content, R.string.more_title)
-        MoreSheet.entries(activity).forEach { (label, open) ->
-            row(activity, content, drawer, Entry(R.drawable.ic_tile_settings, R.color.tile_settings_bg, label, open))
-        }
         content.addView(View(activity).apply {
             layoutParams = LinearLayout.LayoutParams(1, (24 * activity.resources.displayMetrics.density).toInt())
         })

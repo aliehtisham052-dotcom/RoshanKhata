@@ -189,7 +189,12 @@ class MainActivity : BaseActivity() {
             // The quiet line under the summary cards (7 Oct): backup age opens
             // Backup, the open business's name opens the switcher.
             findViewById<View>(R.id.homeBackupTap).setOnClickListener { startActivity(Intent(this, BackupActivity::class.java)) }
-            findViewById<View>(R.id.homeSwitchTap).setOnClickListener { startActivity(Intent(this, BusinessSwitchActivity::class.java)) }
+            // The ⋮ menu beside the bell, and the business card in the drawer (7 Oct).
+            findViewById<View>(R.id.btnMore).setOnClickListener { com.innovation313.roshankhata.ui.MoreSheet.showMenu(this, it) }
+            findViewById<View>(R.id.drawerBusinessTap).setOnClickListener {
+                drawer.closeDrawers()
+                startActivity(Intent(this, BusinessSwitchActivity::class.java))
+            }
             onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(false) {
                 override fun handleOnBackPressed() = drawer.closeDrawers()
             }.also { cb ->
@@ -365,9 +370,10 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     * The backup age and the open business, under the summary cards (7 Oct).
-     * Painted on every resume: a backup taken one screen away, or a business
-     * switched, must show the moment Home is back, not after a restart.
+     * The backup age under the summary cards, and the drawer's business card
+     * (7 Oct). Painted on every resume: a backup taken one screen away, or a
+     * business switched, must show the moment Home is back, not after a
+     * restart.
      */
     private fun paintHeaderLine() {
         val line = com.innovation313.roshankhata.data.BackupAge.line(this)
@@ -377,9 +383,17 @@ class MainActivity : BaseActivity() {
                 this@MainActivity, if (line.stale) R.color.gold_on_dark else R.color.header_on_dark))
             setTypeface(null, if (line.stale) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
         }
-        findViewById<TextView>(R.id.tvHomeBusiness)?.apply {
-            val saved = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@MainActivity)
-            text = if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
+        // The drawer's business card: the open shop's name, and its place
+        // among the books when there is more than one.
+        val saved = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@MainActivity)
+        findViewById<TextView>(R.id.tvDrawerBusiness)?.text =
+            if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
+        findViewById<TextView>(R.id.tvDrawerBusinessSub)?.apply {
+            val all = Businesses.list(this@MainActivity)
+            val at = all.indexOfFirst { it.id == Businesses.active(this@MainActivity).id } + 1
+            text = if (all.size > 1 && at > 0)
+                getString(R.string.drawer_active_business_n, Format.ltr(at.toString()), Format.ltr(all.size.toString()))
+            else getString(R.string.drawer_active_business)
         }
     }
 

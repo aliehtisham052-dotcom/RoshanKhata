@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The ⋮ menu's sheet: a paper card with soft corners. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/surface" />
+    <corners android:radius="14dp" />
+    <padding android:top="6dp" android:bottom="6dp" />
+</shape>
