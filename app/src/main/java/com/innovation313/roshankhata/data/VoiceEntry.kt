@@ -242,8 +242,16 @@ object VoiceEntry {
     )
 
     /** Split on anything that is not a letter or a digit, in either script. */
+    /**
+     * Words, with their vowel signs. \p{M} matters: Hindi and Bengali write
+     * most vowels as combining marks (दिए is द + ि + ए), and splitting on
+     * anything but \p{L} cut every such word in two - "दिए" became "दि" and
+     * "ए" - so the Hindi and Bengali verbs, there since 4 Oct, never matched,
+     * and a name like राम kept only its consonants. Found by the 9 Oct test
+     * for those languages.
+     */
     private fun tokenise(text: String): List<String> =
-        text.split(Regex("[^\\p{L}\\p{Nd}]+")).filter { it.isNotBlank() }
+        text.split(Regex("[^\\p{L}\\p{M}\\p{Nd}]+")).filter { it.isNotBlank() }
 
     /** Grammar, figures and verbs — everything a name is not. */
     /**

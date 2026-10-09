@@ -430,7 +430,15 @@ object NameSearch {
         'ع' to "a", 'غ' to "gh", 'ف' to "f", 'ق' to "q", 'ک' to "k", 'ك' to "k",
         'گ' to "g", 'ل' to "l", 'م' to "m", 'ن' to "n", 'ں' to "n", 'و' to "u",
         'ہ' to "h", 'ھ' to "h", 'ة' to "h", 'ء' to "", 'ی' to "i", 'ي' to "i",
-        'ے' to "e", 'أ' to "a", 'إ' to "a", 'ؤ' to "u", 'ئ' to "i"
+        'ے' to "e", 'أ' to "a", 'إ' to "a", 'ؤ' to "u", 'ئ' to "i",
+        // Arabic, Persian and Sindhi letters (9 Oct audit). The plain heh
+        // (ه), used by all three, was missing, so "احمد" folded without its
+        // h; Sindhi's own letters (ڪ ٽ ڏ ڻ ...) were dropped outright, so a
+        // Sindhi-written name never met the same name typed in Urdu or Latin.
+        'ه' to "h", 'ى' to "a", 'ڪ' to "k", 'ٻ' to "b", 'ڀ' to "bh", 'ٽ' to "t",
+        'ٿ' to "th", 'ڊ' to "d", 'ڌ' to "dh", 'ڏ' to "d", 'ڍ' to "dh", 'ڙ' to "r",
+        'ڻ' to "n", 'ڳ' to "g", 'ڱ' to "ng", 'ڄ' to "j", 'ڃ' to "n", 'ڇ' to "ch",
+        'ڦ' to "ph"
     )
 
     /** Sounds a Pakistani ear treats as the same when spelling a name. */

@@ -69,7 +69,7 @@ object Format {
      */
     fun initials(name: String): String {
         fun pick(text: String): String? {
-            val words = text.split(Regex("[^\\p{L}\\p{N}]+"))
+            val words = text.split(Regex("[^\\p{L}\\p{M}\\p{N}]+"))
                 .map { w -> w.filter { it.isLetter() } }
                 .filter { it.isNotEmpty() }
             if (words.isEmpty()) return null
