@@ -2306,4 +2306,5 @@
         <item>বোতল</item>
         <item>বাক্স</item>
     </string-array>
+    <string name="trade_pick_title">এটি কীসের দোকান?</string>
 </resources>

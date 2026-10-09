@@ -2434,4 +2434,5 @@
         <item>زجاجة</item>
         <item>صندوق</item>
     </string-array>
+    <string name="trade_pick_title">ما نوع هذا المتجر؟</string>
 </resources>

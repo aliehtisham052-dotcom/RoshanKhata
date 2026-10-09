@@ -2306,4 +2306,5 @@
         <item>बोतल</item>
         <item>डिब्बा</item>
     </string-array>
+    <string name="trade_pick_title">यह किस चीज़ की दुकान है?</string>
 </resources>

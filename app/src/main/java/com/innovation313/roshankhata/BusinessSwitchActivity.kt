@@ -68,10 +68,17 @@ class BusinessSwitchActivity : BaseActivity() {
             .setPositiveButton(R.string.save) { _, _ ->
                 val name = et.text.toString().trim()
                 if (name.isEmpty()) return@setPositiveButton
-                val fresh = Businesses.create(this, name)
-                // Created to be used: open it straight away. The restart
-                // below is also what makes the new empty book visibly real.
-                switchAndRestart(fresh.id)
+                // The new book's trade, asked before it exists (9 Oct): a
+                // second shop is often a different trade from the first, and
+                // every hint, unit and feature reads it. Nothing is created
+                // until it is chosen.
+                com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = false) { trade ->
+                    val fresh = Businesses.create(this, name)
+                    com.innovation313.roshankhata.data.BusinessProfile.setTradeOf(this, fresh.id, trade)
+                    // Created to be used: open it straight away. The restart
+                    // below is also what makes the new empty book visibly real.
+                    switchAndRestart(fresh.id)
+                }
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

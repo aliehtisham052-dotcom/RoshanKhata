@@ -188,8 +188,25 @@ class WelcomeActivity : BaseActivity() {
         if (connected) showConnectedAndProceed() else markSeenAndProceed()
     }
 
-    /** Record that the welcome has been shown, then go to the ledger. */
+    /**
+     * Record that the welcome has been shown, then go to the ledger - after
+     * asking the shop's trade, on a book that has never had one (9 Oct).
+     * The welcome is a first-run-only screen, so an existing owner is never
+     * asked; a backup restored later brings its own trade with it.
+     */
     private fun markSeenAndProceed() {
+        if (com.innovation313.roshankhata.data.BusinessProfile.trade(this) == null) {
+            com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = true) {
+                com.innovation313.roshankhata.data.BusinessProfile.setTrade(this, it)
+                proceed()
+            }
+            return
+        }
+        proceed()
+    }
+
+    private fun proceed() {
+        if (isFinishing || isDestroyed) return
         getSharedPreferences(PREFS, MODE_PRIVATE)
             .edit().putBoolean(KEY_SEEN, true).apply()
         startActivity(
