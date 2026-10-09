@@ -72,4 +72,45 @@ class SeasonBookTest {
         assertEquals(2, s.clearedCustomers)
         assertEquals(20, s.medianDaysAfterHarvest)
     }
+
+    /**
+     * The Seasons screen reads only its two seasons, carrying each customer's
+     * earlier balance in (9 Oct). For every season it shows, the figures must
+     * be exactly what reading the whole book gives - checked over a few
+     * hundred random histories, advances and over-payments included.
+     */
+    @Test
+    fun `reading the window with the balance carried in equals reading the whole book`() {
+        val rnd = java.util.Random(313)
+        repeat(300) { round ->
+            val lines = (1..rnd.nextInt(40) + 1).map {
+                val y = 2023 + rnd.nextInt(4)
+                Line(
+                    partyId = (1 + rnd.nextInt(4)).toLong(),
+                    timestamp = at(y, 1 + rnd.nextInt(12), 1 + rnd.nextInt(28)),
+                    amount = (1 + rnd.nextInt(200)) * 50.0,
+                    isGiven = rnd.nextInt(5) < 3
+                )
+            }
+            val now = at(2026, 1 + rnd.nextInt(12), 15)
+            val first = SeasonBook.window(now, tz)
+            val since = SeasonBook.seasonStart(first, tz)
+
+            val whole = SeasonBook.book(lines, tz).filter { it.season >= first }
+            val carried = lines.filter { it.timestamp < since }.groupBy { it.partyId }
+                .mapValues { (_, l) -> l.sumOf { if (it.isGiven) it.amount else -it.amount } }
+            val windowed = SeasonBook.book(lines.filter { it.timestamp >= since }, tz, carried)
+                .filter { it.season >= first }
+
+            fun key(r: SeasonBook.PartySeason) = r.partyId to r.season
+            assertEquals("round $round", whole.associateBy(::key), windowed.associateBy(::key))
+        }
+    }
+
+    @Test
+    fun `the window is this season and the one before it`() {
+        assertEquals(Season(Crop.KHARIF, 2026), SeasonBook.window(at(2026, 11, 5), tz)) // Rabi 26 now
+        assertEquals(Season(Crop.RABI, 2025), SeasonBook.window(at(2026, 6, 5), tz))    // Kharif 26 now
+        assertEquals(at(2026, 4, 1) - 12 * 3600_000L, SeasonBook.seasonStart(Season(Crop.KHARIF, 2026), tz))
+    }
 }

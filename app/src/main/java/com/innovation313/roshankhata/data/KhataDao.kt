@@ -130,14 +130,28 @@ interface KhataDao {
     )
     fun observeOwingLedgerPoints(): Flow<List<LedgerPoint>>
 
-    /** Fasal ka Hisaab: every live line of a live CUSTOMER (suppliers are not crop credit). */
+    /**
+     * Fasal ka Hisaab: the live lines of live CUSTOMERS (suppliers are not
+     * crop credit) from [since] on - the Seasons screen reads its window
+     * only (9 Oct), with [observeSeasonCarriedIn] for what came before.
+     */
     @Query(
         "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +
             "t.isGiven AS isGiven, t.season AS seasonKey FROM transactions t " +
             "JOIN parties p ON p.id = t.partyId " +
-            "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1"
+            "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.timestamp >= :since"
     )
-    fun observeSeasonLines(): Flow<List<SeasonBook.Line>>
+    fun observeSeasonLinesSince(since: Long): Flow<List<SeasonBook.Line>>
+
+    /** Each customer's balance on [since]: what the window carries in from before it. */
+    @Query(
+        "SELECT t.partyId AS partyId, " +
+            "SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END) AS net FROM transactions t " +
+            "JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.amount > 0 " +
+            "AND t.timestamp < :since GROUP BY t.partyId"
+    )
+    fun observeSeasonCarriedIn(since: Long): Flow<List<SeasonBook.Carried>>
 
     @Query(
         "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +

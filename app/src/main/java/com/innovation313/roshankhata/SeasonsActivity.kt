@@ -49,9 +49,18 @@ class SeasonsActivity : BaseActivity() {
         val empty = findViewById<TextView>(R.id.tvSeasonEmpty)
 
         lifecycleScope.launch {
-            dao.observeSeasonLines()
-                .combine(dao.observePartiesWithBalance().map { all -> all.associate { it.id to it.name } }) { lines, names ->
-                    val rows = SeasonBook.book(lines)
+            // The current season and the one before it (9 Oct, the owner's
+            // choice): only their lines are read, with each customer's
+            // balance on the first day carried in, so the figures are the
+            // same as reading the whole book and a long book costs nothing.
+            val first = SeasonBook.window(System.currentTimeMillis())
+            val since = SeasonBook.seasonStart(first)
+            dao.observeSeasonLinesSince(since)
+                .combine(dao.observeSeasonCarriedIn(since)) { lines, carried ->
+                    SeasonBook.book(lines, carriedIn = carried.associate { it.partyId to it.net })
+                        .filter { it.season >= first }
+                }
+                .combine(dao.observePartiesWithBalance().map { all -> all.associate { it.id to it.name } }) { rows, names ->
                     Shown(SeasonBook.summaries(rows), rows, names)
                 }
                 .flowOn(Dispatchers.Default)
