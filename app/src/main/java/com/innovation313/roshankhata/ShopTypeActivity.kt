@@ -14,10 +14,10 @@ import com.innovation313.roshankhata.ui.TradePicker
  * this question. The backup offer moved to the moment it means something:
  * Home asks once, after the first customer is written (MainActivity).
  *
- * A screen of its own rather than a dialog over the language screen,
- * because choosing a language recreates that screen in the new language and
- * would take a dialog with it. The page itself is the trade picker; this
- * activity only holds it, and builds it again after a rotation.
+ * A screen of its own, with the trade picker page as its content rather
+ * than a dialog shown over an empty window: a dialog opened from onCreate
+ * left a blank sheet on screen for a moment after the language was chosen.
+ * Back does nothing here - a new book must have a trade.
  */
 class ShopTypeActivity : BaseActivity() {
 
@@ -28,10 +28,16 @@ class ShopTypeActivity : BaseActivity() {
             proceed()
             return
         }
-        TradePicker.show(this, null, required = true, step = 2) {
+        // The picker page as this screen's own content, in its first frame.
+        setContentView(R.layout.dialog_trade_picker)
+        TradePicker.bindActivity(this, findViewById(R.id.tradeRoot), step = 2) {
             BusinessProfile.setTrade(this, it)
             proceed()
         }
+        // Required step: Back does not return to a half-done language screen.
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = Unit
+        })
     }
 
     private fun proceed() {
