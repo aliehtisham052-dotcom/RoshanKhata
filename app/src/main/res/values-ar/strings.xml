@@ -2482,7 +2482,8 @@
     <string name="help_replay_tour">اعرض جولة الشاشة الرئيسية مرة أخرى</string>
     <string name="backup_offer_open">إعداد النسخ الاحتياطي</string>
     <string name="coach_title_business">الأعمال</string>
-    <string name="coach_desc_business">المنتجات والمخزون، الفواتير، التحليلات، متابعة المتأخرين، بطاقة عملك، المواسم والزكاة — بلمسة واحدة لكل منها.</string>
+    <string name="coach_desc_business">المنتجات والمخزون، الفواتير، قائمة الأسعار وأسعار الشراء، التحليلات، التدفق النقدي ومتابعة المتأخرين — الجانب التجاري للمحل.</string>
     <string name="coach_title_tools">الأدوات</string>
-    <string name="coach_desc_tools">آلة حاسبة، توقعات التدفق النقدي، قوائم الأسعار، ملصق لحالة واتساب، وسلة المحذوفات لأي شيء حُذف بالخطأ.</string>
+    <string name="coach_desc_tools">آلة حاسبة، الزكاة، بطاقة عملك، ملصق لحالة واتساب، نسخ احتياطي إلى Google Drive، وسلة المحذوفات لأي شيء حُذف بالخطأ.</string>
+    <string name="tile_backup">النسخ الاحتياطي</string>
 </resources>

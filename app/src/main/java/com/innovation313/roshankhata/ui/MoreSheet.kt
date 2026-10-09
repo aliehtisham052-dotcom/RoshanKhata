@@ -33,7 +33,17 @@ object MoreSheet {
         val data = R.string.settings_group_data
         val display = R.string.settings_group_display
         val help = R.string.settings_group_help
+        val shop = R.string.home_sec_business
         return listOfNotNull(
+            // The shop's own settings - name, logo, QR, signature, shop type,
+            // currency (9 Oct). Until now a Home tile beside a gear that opened
+            // this sheet, so "Settings" was in two places meaning two things;
+            // it is now the first row of the one settings sheet. A read-only
+            // phone cannot change the shop.
+            if (viewer && com.innovation313.roshankhata.data.ViewerMode.ownerOnly(com.innovation313.roshankhata.BusinessSettingsActivity::class.java)) null
+            else e(R.drawable.ic_tile_settings, R.color.tile_settings_bg, R.string.business_profile, shop) {
+                activity.startActivity(Intent(activity, com.innovation313.roshankhata.BusinessSettingsActivity::class.java))
+            },
             e(R.drawable.ic_menu_lock, R.color.tile_bills_bg, R.string.app_lock, security) { appLock(activity) },
             e(R.drawable.ic_menu_privacy, R.color.tile_cheques_bg, R.string.screen_privacy, security) { ScreenPrivacyDialog.show(activity) },
             // Products & stock is a Home tile and a drawer row; a third door

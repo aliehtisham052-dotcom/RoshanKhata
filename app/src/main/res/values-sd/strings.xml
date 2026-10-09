@@ -2338,7 +2338,8 @@
     <string name="help_replay_tour">هوم جو تعارف ٻيهر ڏيکاريو</string>
     <string name="backup_offer_open">بيڪ اپ سيٽ ڪريو</string>
     <string name="coach_title_business">ڪاروبار</string>
-    <string name="coach_desc_business">پراڊڪٽس ۽ اسٽاڪ، انوائس، انسائٽس، دير ڪندڙن جو فالو اپ، توهان جو بزنس ڪارڊ، سيزن ۽ زڪوٰات — هر هڪ هڪ ٽيپ تي.</string>
+    <string name="coach_desc_business">پراڊڪٽس ۽ اسٽاڪ، انوائس، ريٽ لسٽ ۽ خريد جا ريٽ، انسائٽس، ڪيش فلو ۽ دير ڪندڙن جو فالو اپ — دڪان جو ڪاروباري حصو.</string>
     <string name="coach_title_tools">ٽولز</string>
-    <string name="coach_desc_tools">ڪيلڪيوليٽر، ڪيش فلو جو اندازو، ريٽ لسٽ، واٽس ايپ اسٽيٽس لاءِ پوسٽر، ۽ غلطيءَ سان ڊليٽ ٿيل شين لاءِ بن.</string>
+    <string name="coach_desc_tools">ڪيلڪيوليٽر، زڪوٰات، توهان جو بزنس ڪارڊ، واٽس ايپ اسٽيٽس لاءِ پوسٽر، گوگل ڊرائيو تي بيڪ اپ، ۽ غلطيءَ سان ڊليٽ ٿيل شين لاءِ بن.</string>
+    <string name="tile_backup">بيڪ اپ</string>
 </resources>
