@@ -29,7 +29,14 @@ object VoiceEntry {
         "gave", "give", "given", "paid", "pay", "lent",
         // Hindi and Bengali, as their recognisers write them.
         "दिए", "दिये", "दिया", "दी", "दीं", "देना", "दे दिए", "दे दिया",
-        "দিলাম", "দিয়েছি", "দিল", "দিলো", "দিয়েছে", "দেওয়া"
+        "দিলাম", "দিয়েছি", "দিল", "দিলো", "দিয়েছে", "দেওয়া",
+        // Arabic, Persian, Sindhi and Indonesian (9 Oct audit): the app speaks
+        // them, so the microphone must hear their "gave" too. "bayar" is
+        // here for the reason "paid" is: the shop paid.
+        "أعطيت", "اعطيت", "أعطينا", "دفعت", "سلمت", "سلّمت", "أقرضت",
+        "دادم", "دادیم", "داده", "پرداختم", "قرض دادم",
+        "ڏنا", "ڏنو", "ڏني", "ڏنيون", "ڏنم", "ڏيڻا",
+        "kasih", "beri", "memberi", "berikan", "bayar", "membayar", "pinjamkan", "meminjamkan"
     )
     private val GOT = listOf(
         "liye", "liya", "li", "mile", "mila", "mili", "wapis", "wasool",
@@ -38,6 +45,10 @@ object VoiceEntry {
         "got", "received", "took", "taken", "collected", "returned", "repaid",
         "लिए", "लिये", "लिया", "ली", "लीं", "मिले", "मिला", "मिली", "वापस", "वसूल", "आए", "आया",
         "পেলাম", "পেয়েছি", "নিলাম", "নিয়েছি", "ফেরত", "জমা",
+        "استلمت", "أخذت", "اخذت", "قبضت", "تسلمت", "حصلت", "وصلني",
+        "گرفتم", "گرفتیم", "گرفته", "دریافت", "دریافت کردم",
+        "ورتا", "ورتو", "ورتي", "ورتم", "مليا", "مليو", "ملي",
+        "terima", "menerima", "diterima", "dapat", "mendapat", "ambil", "mengambil",
         // Deliberately here as well as in GAVE. "Gave back" and "paid back"
         // read as both directions at once, so the sentence is reported as
         // unclear and the owner is asked — which is the honest answer, since
@@ -197,6 +208,11 @@ object VoiceEntry {
         "मैं", "मैंने", "ने", "को", "का", "की", "के", "से", "पर", "कि", "है", "हैं",
         "और", "भी", "तो", "यह", "वह", "रुपये", "रुपए", "रुपया",
         "আমি", "কে", "থেকে", "কাছ", "এর", "ও", "এবং", "টাকা",
+        // Arabic, Persian, Sindhi and Indonesian grammar (9 Oct audit).
+        "أنا", "انا", "إلى", "الى", "على", "عن", "و", "روبية", "ريال", "درهم",
+        "من", "به", "از", "را", "که", "تومان", "روپیه",
+        "مون", "کي", "کان", "جو", "جي", "۽", "آهي", "آهن", "رپيا",
+        "saya", "aku", "kepada", "dari", "untuk", "dan", "sudah", "telah", "rupiah",
         "main", "mein", "ne", "ko", "ka", "ki", "ke", "se", "par", "keh",
         // The same pronouns as one word, which is how they are actually
         // transcribed. "Main ne" was covered; "Maine" was not, and that is
