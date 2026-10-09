@@ -2354,7 +2354,8 @@
     <string name="help_replay_tour">होम का परिचय फिर से दिखाएँ</string>
     <string name="backup_offer_open">बैकअप सेट करें</string>
     <string name="coach_title_business">बिज़नेस</string>
-    <string name="coach_desc_business">प्रोडक्ट्स और स्टॉक, इनवॉइस, इनसाइट्स, देर करने वालों का फ़ॉलो-अप, आपका बिज़नेस कार्ड, सीज़न और ज़कात — हर एक एक टैप पर।</string>
+    <string name="coach_desc_business">प्रोडक्ट्स और स्टॉक, इनवॉइस, भाव सूची और ख़रीद के रेट, इनसाइट्स, कैश फ़्लो और देर करने वालों का फ़ॉलो-अप — दुकान का बिज़नेस वाला हिस्सा।</string>
     <string name="coach_title_tools">टूल्स</string>
-    <string name="coach_desc_tools">कैलकुलेटर, कैश-फ़्लो का अंदाज़ा, रेट लिस्ट, व्हाट्सऐप स्टेटस के लिए पोस्टर, और ग़लती से डिलीट हुई चीज़ों के लिए बिन।</string>
+    <string name="coach_desc_tools">कैलकुलेटर, ज़कात, आपका बिज़नेस कार्ड, व्हाट्सऐप स्टेटस के लिए पोस्टर, Google Drive पर बैकअप, और ग़लती से डिलीट हुई चीज़ों के लिए बिन।</string>
+    <string name="tile_backup">बैकअप</string>
 </resources>

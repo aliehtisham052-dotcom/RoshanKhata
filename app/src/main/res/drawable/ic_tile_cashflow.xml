@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home tile icon (9 Oct), two tones of one hue like the rest; blue, the family of Insights. Cash flow: money in (up) and out (down). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="26dp"
+    android:height="26dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="@color/fi_blue_a" android:pathData="M8,2.5l5.5,6h-3.6V20H6.1V8.5H2.5z" />
+    <path android:fillColor="@color/fi_blue_b" android:pathData="M16,21.5l-5.5,-6h3.6V4h3.8v11.5h3.6z" />
+</vector>

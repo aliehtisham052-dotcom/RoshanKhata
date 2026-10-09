@@ -2338,7 +2338,8 @@
     <string name="help_replay_tour">نمایش دوباره معرفی صفحه اصلی</string>
     <string name="backup_offer_open">راه‌اندازی پشتیبان‌گیری</string>
     <string name="coach_title_business">کسب‌وکار</string>
-    <string name="coach_desc_business">محصولات و موجودی، فاکتورها، تحلیل‌ها، پیگیری بدهکاران دیرکرده، کارت ویزیت، فصل‌ها و زکات — هر کدام با یک لمس.</string>
+    <string name="coach_desc_business">محصولات و موجودی، فاکتورها، فهرست قیمت و نرخ‌های خرید، تحلیل‌ها، جریان نقدی و پیگیری بدهکاران دیرکرده — بخش تجاری مغازه.</string>
     <string name="coach_title_tools">ابزارها</string>
-    <string name="coach_desc_tools">ماشین‌حساب، چشم‌انداز جریان نقدی، لیست قیمت‌ها، پوستر برای استوری واتساپ، و سطل بازیابی برای هر چیزی که اشتباهی حذف شد.</string>
+    <string name="coach_desc_tools">ماشین‌حساب، زکات، کارت ویزیت شما، پوستر برای استوری واتساپ، پشتیبان‌گیری در Google Drive، و سطل بازیابی برای هر چیزی که اشتباهی حذف شد.</string>
+    <string name="tile_backup">پشتیبان‌گیری</string>
 </resources>

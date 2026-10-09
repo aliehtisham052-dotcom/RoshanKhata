@@ -33,10 +33,10 @@ object HomeSlides {
     private class Slide(val icon: Int, val tint: Int, val title: Int, val sub: Int, val open: Class<*>, val ground: Int, val label: Int)
 
     private val slides = listOf(
-        Slide(R.drawable.ic_tile_insights, R.color.tile_insights_bg, R.string.cf_title, R.string.home_slide_cf, CashFlowActivity::class.java, R.drawable.bg_banner_blue, R.color.fi_blue_b),
-        Slide(R.drawable.ic_tile_products, R.color.tile_plans_bg, R.string.rate_list_title, R.string.home_slide_rates, RateListActivity::class.java, R.drawable.bg_banner_green, R.color.fi_green_b),
-        Slide(R.drawable.ic_tile_bills, R.color.tile_bills_bg, R.string.sr_title, R.string.home_slide_cheaper, SupplierRatesActivity::class.java, R.drawable.bg_banner_gold, R.color.fi_gold_b),
-        Slide(R.drawable.ic_tile_card, R.color.tile_card_bg, R.string.poster_title, R.string.home_slide_poster, PosterActivity::class.java, R.drawable.bg_banner_violet, R.color.fi_violet_b)
+        Slide(R.drawable.ic_tile_cashflow, R.color.tile_insights_bg, R.string.cf_title, R.string.home_slide_cf, CashFlowActivity::class.java, R.drawable.bg_banner_blue, R.color.fi_blue_b),
+        Slide(R.drawable.ic_tile_price_list, R.color.tile_calc_bg, R.string.rate_list_title, R.string.home_slide_rates, RateListActivity::class.java, R.drawable.bg_banner_green, R.color.fi_green_b),
+        Slide(R.drawable.ic_tile_supplier_rates, R.color.tile_zakat_bg, R.string.sr_title, R.string.home_slide_cheaper, SupplierRatesActivity::class.java, R.drawable.bg_banner_gold, R.color.fi_gold_b),
+        Slide(R.drawable.ic_tile_poster, R.color.tile_plans_bg, R.string.poster_title, R.string.home_slide_poster, PosterActivity::class.java, R.drawable.bg_banner_violet, R.color.fi_violet_b)
     )
 
     private class Holder(v: View) : RecyclerView.ViewHolder(v)

@@ -2310,7 +2310,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="help_replay_tour">Home ka taaruf dobara dikhayein</string>
     <string name="backup_offer_open">Backup set karein</string>
     <string name="coach_title_business">Karobar</string>
-    <string name="coach_desc_business">Products aur stock, invoice, insights, dair karne walon ka follow-up, aap ka business card, seasons aur Zakat — har ek ek tap par.</string>
+    <string name="coach_desc_business">Products aur stock, invoice, rate list aur khareed ke rate, insights, cash flow aur dair karne walon ka follow-up — dukaan ka karobari hissa.</string>
     <string name="coach_title_tools">Tools</string>
-    <string name="coach_desc_tools">Calculator, cash-flow ka andaza, rate list, WhatsApp status ke liye poster, aur ghalti se delete hone wali cheezon ke liye bin.</string>
+    <string name="coach_desc_tools">Calculator, Zakat, aap ka business card, WhatsApp status ke liye poster, Google Drive par backup, aur ghalti se delete hone wali cheezon ke liye bin.</string>
+    <string name="tile_backup">Backup</string>
 </resources>

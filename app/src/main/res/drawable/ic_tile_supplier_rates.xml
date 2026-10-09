@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home tile icon (9 Oct), two tones of one hue like the rest. Purchase rates: the supplier's truck - what the shop pays. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="26dp"
+    android:height="26dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="@color/fi_gold_a" android:pathData="M2,5h12v11H2z" />
+    <path android:fillColor="@color/fi_gold_b" android:pathData="M14,8.5h4.2l3.3,4V16H14z M6,15a2.5,2.5 0 1 0 0,5a2.5,2.5 0 0 0 0,-5z M17.5,15a2.5,2.5 0 1 0 0,5a2.5,2.5 0 0 0 0,-5z" />
+</vector>

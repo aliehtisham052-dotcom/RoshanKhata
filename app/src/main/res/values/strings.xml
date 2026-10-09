@@ -1331,7 +1331,7 @@ You can change this any time from this screen.</string>
     <string name="registration_number_hint">Pesticide registration number</string>
     <string name="product_who_bought">Who bought this</string>
     <string name="product_edit_details">Edit details</string>
-    <string name="rate_list_title">Rate list</string>
+    <string name="rate_list_title">Price list</string>
     <string name="rate_list_subtitle">Your selling prices as a picture for WhatsApp</string>
     <string name="rate_list_heading_hint">Heading on the picture</string>
     <string name="rate_list_heading_default">This week\'s rates</string>
@@ -2445,7 +2445,8 @@ You can change this any time from this screen.</string>
     <string name="help_replay_tour">Show the Home tour again</string>
     <string name="backup_offer_open">Set up backup</string>
     <string name="coach_title_business">Business</string>
-    <string name="coach_desc_business">Products and stock, invoices, insights, follow-up on late payers, your business card, seasons and Zakat — one tap each.</string>
+    <string name="coach_desc_business">Products and stock, invoices, your price list and purchase rates, insights, cash flow and follow-up on late payers — the business side of the shop.</string>
     <string name="coach_title_tools">Tools</string>
-    <string name="coach_desc_tools">A calculator, cash-flow outlook, rate lists, a poster for WhatsApp status, and the bin for anything deleted by mistake.</string>
+    <string name="coach_desc_tools">A calculator, Zakat, your business card, a poster for WhatsApp status, backup to your Google Drive, and the bin for anything deleted by mistake.</string>
+    <string name="tile_backup">Backup</string>
 </resources>

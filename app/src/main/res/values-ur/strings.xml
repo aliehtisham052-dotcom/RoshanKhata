@@ -2310,7 +2310,8 @@
     <string name="help_replay_tour">ہوم کا تعارف دوبارہ دکھائیں</string>
     <string name="backup_offer_open">بیک اپ سیٹ کریں</string>
     <string name="coach_title_business">کاروبار</string>
-    <string name="coach_desc_business">پروڈکٹس اور اسٹاک، انوائس، انسائٹس، تاخیر والوں کا فالو اپ، آپ کا بزنس کارڈ، سیزن اور زکوٰۃ — ہر ایک ایک ٹیپ پر۔</string>
+    <string name="coach_desc_business">پروڈکٹس اور اسٹاک، انوائس، ریٹ لسٹ اور خرید کے ریٹ، انسائٹس، کیش فلو اور تاخیر والوں کا فالو اپ — دکان کا کاروباری حصہ۔</string>
     <string name="coach_title_tools">ٹولز</string>
-    <string name="coach_desc_tools">کیلکولیٹر، کیش فلو کا اندازہ، ریٹ لسٹ، واٹس ایپ اسٹیٹس کے لیے پوسٹر، اور غلطی سے ڈیلیٹ ہونے والی چیزوں کے لیے بن۔</string>
+    <string name="coach_desc_tools">کیلکولیٹر، زکوٰۃ، آپ کا بزنس کارڈ، واٹس ایپ اسٹیٹس کے لیے پوسٹر، گوگل ڈرائیو پر بیک اپ، اور غلطی سے ڈیلیٹ ہونے والی چیزوں کے لیے بن۔</string>
+    <string name="tile_backup">بیک اپ</string>
 </resources>

@@ -2311,7 +2311,8 @@
     <string name="help_replay_tour">Tampilkan lagi tur Beranda</string>
     <string name="backup_offer_open">Atur cadangan</string>
     <string name="coach_title_business">Bisnis</string>
-    <string name="coach_desc_business">Produk dan stok, faktur, wawasan, tindak lanjut pembayar telat, kartu nama Anda, musim, dan zakat — masing-masing satu ketukan.</string>
+    <string name="coach_desc_business">Produk dan stok, faktur, daftar harga dan harga beli, wawasan, arus kas, dan tindak lanjut pembayar telat — sisi bisnis toko.</string>
     <string name="coach_title_tools">Alat</string>
-    <string name="coach_desc_tools">Kalkulator, prospek arus kas, daftar harga, poster untuk status WhatsApp, dan tempat sampah untuk apa pun yang terhapus tak sengaja.</string>
+    <string name="coach_desc_tools">Kalkulator, zakat, kartu nama Anda, poster untuk status WhatsApp, cadangan ke Google Drive, dan tempat sampah untuk apa pun yang terhapus tak sengaja.</string>
+    <string name="tile_backup">Cadangan</string>
 </resources>
