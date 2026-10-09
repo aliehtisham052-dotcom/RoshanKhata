@@ -58,6 +58,34 @@ object SeasonBook {
         }
     }
 
+    /** First moment of a season: 1 October (Rabi) / 1 April (Kharif). */
+    fun seasonStart(s: Season, tz: TimeZone = TimeZone.getDefault()): Long =
+        Calendar.getInstance(tz).apply {
+            clear()
+            if (s.crop == Crop.RABI) set(s.year, Calendar.OCTOBER, 1, 0, 0, 0)
+            else set(s.year, Calendar.APRIL, 1, 0, 0, 0)
+        }.timeInMillis
+
+    /**
+     * The seasons the Seasons screen shows (9 Oct, the owner's decision):
+     * the one running now and the one before it. [windowStart] is where the
+     * screen starts reading; everything earlier reaches it only as each
+     * customer's balance on that day ([book]'s carriedIn).
+     */
+    const val SHOWN_SEASONS = 2
+
+    fun window(now: Long, tz: TimeZone = TimeZone.getDefault()): Season {
+        var s = seasonOf(now, tz)
+        repeat(SHOWN_SEASONS - 1) { s = s.previous() }
+        return s
+    }
+
+    /** A customer's net balance before a date: what they owed (+) or had paid ahead (-). */
+    data class Carried(val partyId: Long, val net: Double)
+
+    /** Stands in front of the queue for everything owed from before the window. */
+    private val BEFORE = Season(Crop.RABI, Int.MIN_VALUE)
+
     /** End of the harvest window: 31 May (Rabi) / 30 Nov (Kharif), end of day. */
     fun harvestEnd(s: Season, tz: TimeZone = TimeZone.getDefault()): Long {
         val c = Calendar.getInstance(tz).apply {
@@ -90,7 +118,20 @@ object SeasonBook {
         val outstanding: Double get() = given - cleared
     }
 
-    fun book(lines: List<Line>, tz: TimeZone = TimeZone.getDefault()): List<PartySeason> {
+    /**
+     * [carriedIn] lets the book start part-way through a customer's history
+     * without changing a single figure. Payments settle the oldest credit
+     * first, so at any moment a customer has either open credit (and no
+     * advance) or an advance (and no open credit), never both - the whole
+     * past is therefore exactly their net balance on that day. A positive
+     * balance goes to the front of the queue as one chunk from "before",
+     * a negative one becomes the advance; "before" is never reported.
+     */
+    fun book(
+        lines: List<Line>,
+        tz: TimeZone = TimeZone.getDefault(),
+        carriedIn: Map<Long, Double> = emptyMap()
+    ): List<PartySeason> {
         val out = mutableListOf<PartySeason>()
         for ((partyId, own) in lines.groupBy { it.partyId }) {
             // Same moment: the credit is on the books before the payment.
@@ -101,6 +142,8 @@ object SeasonBook {
             val cleared = HashMap<Season, Long>()
             val lastPaid = HashMap<Season, Long>()
             var advance = 0L // paid before there was anything to pay
+            val carried = Math.round((carriedIn[partyId] ?: 0.0) * 100)
+            if (carried > 0) open.addLast(Chunk(BEFORE, carried)) else advance = -carried
 
             fun settle(season: Season, paisa: Long, at: Long) {
                 cleared[season] = (cleared[season] ?: 0L) + paisa
@@ -131,6 +174,7 @@ object SeasonBook {
             }
             val stillOpen = open.map { it.season }.toSet()
             for ((s, g) in given) {
+                if (s == BEFORE) continue
                 val c = cleared[s] ?: 0L
                 out += PartySeason(
                     partyId = partyId,
