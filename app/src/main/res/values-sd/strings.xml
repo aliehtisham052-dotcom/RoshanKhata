@@ -2335,8 +2335,10 @@
     <string name="trade_pick_later">پوءِ پروفائل مان بدلائي سگهو ٿا</string>
     <string name="trade_card_selected">چونڊيل</string>
     <string name="onboard_step">مرحلو %1$s مان %2$s</string>
-    <string name="coach_title_all">سڀ فيچر</string>
-    <string name="coach_desc_all">پراڊڪٽس، انوائس، زڪوٰات، ڪارڊ ۽ باقي سڀ هيٺ آهن. \"سڀ ڏسو\" يا مٿي ☰ مينيو ۾ هر فيچر موجود آهي.</string>
     <string name="help_replay_tour">هوم جو تعارف ٻيهر ڏيکاريو</string>
     <string name="backup_offer_open">بيڪ اپ سيٽ ڪريو</string>
+    <string name="coach_title_business">ڪاروبار</string>
+    <string name="coach_desc_business">پراڊڪٽس ۽ اسٽاڪ، انوائس، انسائٽس، دير ڪندڙن جو فالو اپ، توهان جو بزنس ڪارڊ، سيزن ۽ زڪوٰات — هر هڪ هڪ ٽيپ تي.</string>
+    <string name="coach_title_tools">ٽولز</string>
+    <string name="coach_desc_tools">ڪيلڪيوليٽر، ڪيش فلو جو اندازو، ريٽ لسٽ، واٽس ايپ اسٽيٽس لاءِ پوسٽر، ۽ غلطيءَ سان ڊليٽ ٿيل شين لاءِ بن.</string>
 </resources>

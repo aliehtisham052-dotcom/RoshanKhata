@@ -2308,8 +2308,10 @@
     <string name="trade_pick_later">Bisa diubah nanti di Profil</string>
     <string name="trade_card_selected">Dipilih</string>
     <string name="onboard_step">Langkah %1$s dari %2$s</string>
-    <string name="coach_title_all">Semua fitur</string>
-    <string name="coach_desc_all">Produk, Faktur, Zakat, Kartu, dan lainnya ada di bawah. \"Lihat semua\" atau menu ☰ di atas memuat semuanya.</string>
     <string name="help_replay_tour">Tampilkan lagi tur Beranda</string>
     <string name="backup_offer_open">Atur cadangan</string>
+    <string name="coach_title_business">Bisnis</string>
+    <string name="coach_desc_business">Produk dan stok, faktur, wawasan, tindak lanjut pembayar telat, kartu nama Anda, musim, dan zakat — masing-masing satu ketukan.</string>
+    <string name="coach_title_tools">Alat</string>
+    <string name="coach_desc_tools">Kalkulator, prospek arus kas, daftar harga, poster untuk status WhatsApp, dan tempat sampah untuk apa pun yang terhapus tak sengaja.</string>
 </resources>

@@ -2351,8 +2351,10 @@
     <string name="trade_pick_later">পরে প্রোফাইল থেকে বদলাতে পারবেন</string>
     <string name="trade_card_selected">নির্বাচিত</string>
     <string name="onboard_step">ধাপ %1$s / %2$s</string>
-    <string name="coach_title_all">সব ফিচার</string>
-    <string name="coach_desc_all">প্রোডাক্ট, ইনভয়েস, যাকাত, কার্ড আর বাকি সব নিচে আছে। \"সব দেখুন\" বা উপরের ☰ মেনুতে প্রতিটি ফিচার পাবেন।</string>
     <string name="help_replay_tour">হোমের পরিচিতি আবার দেখান</string>
     <string name="backup_offer_open">ব্যাকআপ চালু করুন</string>
+    <string name="coach_title_business">ব্যবসা</string>
+    <string name="coach_desc_business">প্রোডাক্ট ও স্টক, ইনভয়েস, ইনসাইট, দেরিতে দেওয়াদের ফলো-আপ, আপনার বিজনেস কার্ড, মৌসুম ও যাকাত — প্রতিটি এক ট্যাপে।</string>
+    <string name="coach_title_tools">টুলস</string>
+    <string name="coach_desc_tools">ক্যালকুলেটর, ক্যাশ-ফ্লো পূর্বাভাস, রেট তালিকা, হোয়াটসঅ্যাপ স্ট্যাটাসের পোস্টার, আর ভুলে মুছে ফেলা জিনিসের জন্য বিন।</string>
 </resources>

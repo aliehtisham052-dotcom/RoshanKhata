@@ -2351,8 +2351,10 @@
     <string name="trade_pick_later">बाद में प्रोफ़ाइल से बदल सकते हैं</string>
     <string name="trade_card_selected">चुना गया</string>
     <string name="onboard_step">चरण %1$s / %2$s</string>
-    <string name="coach_title_all">सारे फ़ीचर</string>
-    <string name="coach_desc_all">प्रोडक्ट्स, इनवॉइस, ज़कात, कार्ड और बाकी सब नीचे हैं। \"सब देखें\" या ऊपर ☰ मेनू में हर फ़ीचर है।</string>
     <string name="help_replay_tour">होम का परिचय फिर से दिखाएँ</string>
     <string name="backup_offer_open">बैकअप सेट करें</string>
+    <string name="coach_title_business">बिज़नेस</string>
+    <string name="coach_desc_business">प्रोडक्ट्स और स्टॉक, इनवॉइस, इनसाइट्स, देर करने वालों का फ़ॉलो-अप, आपका बिज़नेस कार्ड, सीज़न और ज़कात — हर एक एक टैप पर।</string>
+    <string name="coach_title_tools">टूल्स</string>
+    <string name="coach_desc_tools">कैलकुलेटर, कैश-फ़्लो का अंदाज़ा, रेट लिस्ट, व्हाट्सऐप स्टेटस के लिए पोस्टर, और ग़लती से डिलीट हुई चीज़ों के लिए बिन।</string>
 </resources>

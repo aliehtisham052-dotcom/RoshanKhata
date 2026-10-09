@@ -2442,8 +2442,10 @@ You can change this any time from this screen.</string>
     <string name="trade_pick_later">You can change this later in Profile</string>
     <string name="trade_card_selected">Selected</string>
     <string name="onboard_step">Step %1$s of %2$s</string>
-    <string name="coach_title_all">Every feature</string>
-    <string name="coach_desc_all">Products, Invoice, Zakat, Card and the rest are below. See all, or the ☰ menu at the top, lists every one of them.</string>
     <string name="help_replay_tour">Show the Home tour again</string>
     <string name="backup_offer_open">Set up backup</string>
+    <string name="coach_title_business">Business</string>
+    <string name="coach_desc_business">Products and stock, invoices, insights, follow-up on late payers, your business card, seasons and Zakat — one tap each.</string>
+    <string name="coach_title_tools">Tools</string>
+    <string name="coach_desc_tools">A calculator, cash-flow outlook, rate lists, a poster for WhatsApp status, and the bin for anything deleted by mistake.</string>
 </resources>

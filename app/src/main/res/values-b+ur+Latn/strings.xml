@@ -2307,8 +2307,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="trade_pick_later">Baad mein Profile se badal sakte hain</string>
     <string name="trade_card_selected">Muntakhib</string>
     <string name="onboard_step">Marhala %1$s / %2$s</string>
-    <string name="coach_title_all">Tamam features</string>
-    <string name="coach_desc_all">Products, Invoice, Zakat, Card aur baqi sab neeche hain. \"Sab dekhein\" ya upar ☰ menu mein har feature maujood hai.</string>
     <string name="help_replay_tour">Home ka taaruf dobara dikhayein</string>
     <string name="backup_offer_open">Backup set karein</string>
+    <string name="coach_title_business">Karobar</string>
+    <string name="coach_desc_business">Products aur stock, invoice, insights, dair karne walon ka follow-up, aap ka business card, seasons aur Zakat — har ek ek tap par.</string>
+    <string name="coach_title_tools">Tools</string>
+    <string name="coach_desc_tools">Calculator, cash-flow ka andaza, rate list, WhatsApp status ke liye poster, aur ghalti se delete hone wali cheezon ke liye bin.</string>
 </resources>
