@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.TradeVocab
 import com.innovation313.roshankhata.data.UnitWords
 import android.app.Activity
 import android.widget.EditText
@@ -86,7 +87,15 @@ object ProductDetailsDialog {
             "Seed" -> activity.getString(R.string.product_type_seed)
             else -> guess?.type
         }
-        val etType = field(R.id.etProductType).apply { setText(product.productType ?: guessedType) }
+        val etType = view.findViewById<android.widget.AutoCompleteTextView>(R.id.etProductType).apply {
+            setText(product.productType ?: guessedType)
+            // The trade's own types (9 Oct): a dairy is offered Milk, Packaged,
+            // Feed; a pharmacy Tablet, Syrup, Injection. Typed words still save.
+            setAdapter(android.widget.ArrayAdapter(activity, android.R.layout.simple_dropdown_item_1line, TradeVocab.types(activity)))
+            setOnClickListener { if (text.isNullOrBlank()) showDropDown() }
+        }
+        view.findViewById<android.widget.TextView>(R.id.tvProductTypeLabel).text = TradeVocab.typeHint(activity)
+        etUnit.hint = TradeVocab.unitOptionalHint(activity)
         val etTechnical = field(R.id.etTechnicalName).apply { setText(product.technicalName) }
         val etFormulation = field(R.id.etFormulation).apply { setText(product.formulation ?: guess?.formulation) }
         val etRegistration =

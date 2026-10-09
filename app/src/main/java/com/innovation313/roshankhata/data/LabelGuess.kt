@@ -44,11 +44,16 @@ object LabelGuess {
     /** Pack size: "800 ML", "1L", "25KG", "90 GM". */
     private val PACK = Regex("""(\d+(?:\.\d+)?)\s*(ml|ltr|litre|liter|l|kg|kgs|gm|gms|g)\b""", RegexOption.IGNORE_CASE)
 
-    fun of(productName: String, billUnit: String?, supplier: String?): Guess {
+    fun of(productName: String, billUnit: String?, supplier: String?, trade: Trade = Trade.DEFAULT): Guess {
         val name = productName.trim()
-        val formulation = FORMULATION.find(name)?.value?.uppercase(Locale.ROOT)
+        // The formulation codes (EC, SC, WP…) and the three kinds are an
+        // agri dealer's reading of a label (9 Oct). On any other trade they
+        // are left blank: a kiryana's "SC" is a brand, not a suspension
+        // concentrate, and a wrong kind on the register is worse than none.
+        val agri = trade == Trade.AGRI
+        val formulation = if (agri) FORMULATION.find(name)?.value?.uppercase(Locale.ROOT) else null
 
-        val type = when {
+        val type = if (!agri) null else when {
             SEED.containsMatchIn(name) -> "Seed"
             formulation != null || PESTICIDE.containsMatchIn(name) -> "Pesticide"
             FERTILIZER.containsMatchIn(name) -> "Fertilizer"

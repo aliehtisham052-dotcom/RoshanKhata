@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.data.UnitWords
+import com.innovation313.roshankhata.data.TradeVocab
 import android.content.Intent
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.ui.SeasonText
@@ -32,6 +33,7 @@ import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.asSuggestions
+import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.DateTimeField
 import com.innovation313.roshankhata.ui.Format
@@ -312,8 +314,10 @@ class EntryDetailActivity : BaseActivity() {
         val etAmount = view.findViewById<EditText>(R.id.etEditAmount)
         val etNote = view.findViewById<EditText>(R.id.etEditNote)
         val etItemName = view.findViewById<AutoCompleteTextView>(R.id.etEditItemName)
+        etItemName.hint = TradeVocab.itemHint(this)
         val etQuantity = view.findViewById<EditText>(R.id.etEditQuantity)
         val etUnit = view.findViewById<AutoCompleteTextView>(R.id.etEditUnit)
+        etUnit.hint = TradeVocab.unitHint(this)
         val btnBatch = view.findViewById<MaterialButton>(R.id.btnEditBatch)
 
         etAmount.setText(Format.plain(e.amount))
@@ -332,7 +336,7 @@ class EntryDetailActivity : BaseActivity() {
         etItemName.setText(line?.itemName.orEmpty(), false)
         etQuantity.setText(line?.quantity?.let { Format.plain(it) } ?: "")
         etUnit.setAdapter(
-            ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, UnitWords.choices())
+            ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, UnitWords.choices(this))
         )
         etUnit.setText(UnitWords.label(line?.unit), false)
         if (!canEditGoods) {
@@ -434,7 +438,7 @@ class EntryDetailActivity : BaseActivity() {
         // The same product list Add Entry offers, so correcting a name reaches
         // the same products as writing it did. Read once as the dialog opens.
         lifecycleScope.launch {
-            SmartSuggest.attach(etItemName, dao.productsOnce().asSuggestions())
+            SmartSuggest.attach(etItemName, dao.productsOnce().withStarters(this@EntryDetailActivity))
         }
 
         // Tapping a suggestion finishes the name, so the batch lookup runs

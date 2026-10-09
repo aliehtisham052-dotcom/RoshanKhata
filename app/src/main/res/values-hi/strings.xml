@@ -2015,4 +2015,295 @@
     <string name="biz_card_qr_message_hint">QR स्कैन होने पर WhatsApp संदेश (ज़रूरी नहीं)</string>
     <string name="biz_card_qr_message_default">नमस्ते, मैंने आपका कार्ड देखा</string>
     <string name="biz_card_print_pdf">छापने के लिए तैयार PDF (3.5 × 2 इंच)</string>
+    <string name="vocab_suggested">आपकी दुकान के लिए सुझाव</string>
+    <string name="vocab_item_hint">आइटम (%1$s…)</string>
+    <string name="vocab_unit_hint">इकाई (%1$s…)</string>
+    <string name="vocab_type_hint">प्रकार — %1$s</string>
+    <string name="vocab_goods_help">अगर इस एंट्री के साथ माल भी गया — %1$s — तो यहाँ दर्ज करें। सादी नकद एंट्री के लिए खाली छोड़ें।</string>
+    <string name="vocab_unit_optional">इकाई — %1$s (वैकल्पिक)</string>
+    <string-array name="vocab_agri_items">
+        <item>यूरिया</item>
+        <item>फ़ीड</item>
+        <item>बीज</item>
+    </string-array>
+    <string-array name="vocab_agri_types">
+        <item>कीटनाशक</item>
+        <item>खाद</item>
+        <item>बीज</item>
+        <item>फ़ीड</item>
+    </string-array>
+    <string-array name="vocab_agri_starters">
+        <item>यूरिया</item>
+        <item>डीएपी</item>
+        <item>एनपीके</item>
+        <item>पोटाश</item>
+        <item>गेहूं का बीज</item>
+        <item>धान का बीज</item>
+        <item>कपास का बीज</item>
+        <item>पशु आहार</item>
+        <item>वांडा</item>
+        <item>सल्फर</item>
+        <item>ज़िंक</item>
+    </string-array>
+    <string-array name="vocab_medical_items">
+        <item>पैनाडोल</item>
+        <item>सिरप</item>
+        <item>ड्रिप</item>
+    </string-array>
+    <string-array name="vocab_medical_types">
+        <item>टैबलेट</item>
+        <item>सिरप</item>
+        <item>इंजेक्शन</item>
+        <item>सर्जिकल</item>
+    </string-array>
+    <string-array name="vocab_medical_starters">
+        <item>पैनाडोल</item>
+        <item>ब्रूफेन</item>
+        <item>ऑगमेंटिन</item>
+        <item>फ्लैजिल</item>
+        <item>खांसी का सिरप</item>
+        <item>ओआरएस</item>
+        <item>ड्रिप</item>
+        <item>सिरिंज</item>
+        <item>पट्टी</item>
+        <item>विटामिन सी</item>
+        <item>इंसुलिन</item>
+    </string-array>
+    <string-array name="vocab_mobile_items">
+        <item>चार्जर</item>
+        <item>हैंडफ्री</item>
+        <item>कवर</item>
+    </string-array>
+    <string-array name="vocab_mobile_types">
+        <item>एक्सेसरी</item>
+        <item>हैंडसेट</item>
+        <item>रिपेयर</item>
+        <item>कार्ड</item>
+    </string-array>
+    <string-array name="vocab_mobile_starters">
+        <item>चार्जर</item>
+        <item>हैंडफ्री</item>
+        <item>बैक कवर</item>
+        <item>स्क्रीन प्रोटेक्टर</item>
+        <item>डेटा केबल</item>
+        <item>बैटरी</item>
+        <item>मेमोरी कार्ड</item>
+        <item>पावर बैंक</item>
+        <item>रिचार्ज</item>
+        <item>सिम</item>
+        <item>डिस्प्ले</item>
+    </string-array>
+    <string-array name="vocab_kiryana_items">
+        <item>आटा</item>
+        <item>चीनी</item>
+        <item>घी</item>
+    </string-array>
+    <string-array name="vocab_kiryana_types">
+        <item>राशन</item>
+        <item>पैक्ड</item>
+        <item>घरेलू</item>
+        <item>ताज़ा</item>
+    </string-array>
+    <string-array name="vocab_kiryana_starters">
+        <item>आटा</item>
+        <item>चीनी</item>
+        <item>चावल</item>
+        <item>चना दाल</item>
+        <item>मसूर दाल</item>
+        <item>खाना पकाने का तेल</item>
+        <item>घी</item>
+        <item>चाय</item>
+        <item>साबुन</item>
+        <item>वाशिंग पाउडर</item>
+        <item>नमक</item>
+        <item>मसाले</item>
+    </string-array>
+    <string-array name="vocab_hardware_items">
+        <item>सीमेंट</item>
+        <item>पाइप</item>
+        <item>पेंट</item>
+    </string-array>
+    <string-array name="vocab_hardware_types">
+        <item>निर्माण</item>
+        <item>प्लंबिंग</item>
+        <item>बिजली</item>
+        <item>औज़ार</item>
+    </string-array>
+    <string-array name="vocab_hardware_starters">
+        <item>सीमेंट</item>
+        <item>सरिया</item>
+        <item>रेत</item>
+        <item>ईंटें</item>
+        <item>पीवीसी पाइप</item>
+        <item>पेंट</item>
+        <item>कील</item>
+        <item>पेंच</item>
+        <item>तार</item>
+        <item>स्विच</item>
+        <item>नल</item>
+        <item>कब्ज़ा</item>
+    </string-array>
+    <string-array name="vocab_dairy_items">
+        <item>दूध</item>
+        <item>दही</item>
+        <item>घी</item>
+    </string-array>
+    <string-array name="vocab_dairy_types">
+        <item>दूध</item>
+        <item>पैक्ड</item>
+        <item>फ़ीड</item>
+        <item>मिठाई</item>
+    </string-array>
+    <string-array name="vocab_dairy_starters">
+        <item>दूध</item>
+        <item>दही</item>
+        <item>मक्खन</item>
+        <item>घी</item>
+        <item>क्रीम</item>
+        <item>पनीर</item>
+        <item>लस्सी</item>
+        <item>खोया</item>
+        <item>वांडा</item>
+        <item>चोकर</item>
+        <item>अंडे</item>
+    </string-array>
+    <string-array name="vocab_tailor_items">
+        <item>सूट</item>
+        <item>सलवार</item>
+        <item>अस्तर</item>
+    </string-array>
+    <string-array name="vocab_tailor_types">
+        <item>सिलाई</item>
+        <item>कपड़ा</item>
+        <item>मरम्मत</item>
+        <item>सामान</item>
+    </string-array>
+    <string-array name="vocab_tailor_starters">
+        <item>जेंट्स सूट</item>
+        <item>लेडीज़ सूट</item>
+        <item>सलवार कमीज़</item>
+        <item>वास्कट</item>
+        <item>पैंट शर्ट</item>
+        <item>यूनिफ़ॉर्म</item>
+        <item>अस्तर</item>
+        <item>बटन</item>
+        <item>ज़िप</item>
+        <item>धागा</item>
+        <item>मरम्मत</item>
+    </string-array>
+    <string-array name="vocab_auto_items">
+        <item>ऑयल</item>
+        <item>फ़िल्टर</item>
+        <item>टायर</item>
+    </string-array>
+    <string-array name="vocab_auto_types">
+        <item>इंजन</item>
+        <item>बॉडी</item>
+        <item>बिजली</item>
+        <item>सर्विस</item>
+    </string-array>
+    <string-array name="vocab_auto_starters">
+        <item>इंजन ऑयल</item>
+        <item>ऑयल फ़िल्टर</item>
+        <item>एयर फ़िल्टर</item>
+        <item>ब्रेक पैड</item>
+        <item>टायर</item>
+        <item>ट्यूब</item>
+        <item>बैटरी</item>
+        <item>स्पार्क प्लग</item>
+        <item>क्लच प्लेट</item>
+        <item>चेन</item>
+        <item>बल्ब</item>
+        <item>सर्विस</item>
+    </string-array>
+    <string-array name="vocab_furniture_items">
+        <item>बेड</item>
+        <item>सोफ़ा</item>
+        <item>मेज़</item>
+    </string-array>
+    <string-array name="vocab_furniture_types">
+        <item>बेडरूम</item>
+        <item>ड्राइंग रूम</item>
+        <item>ऑफ़िस</item>
+        <item>मरम्मत</item>
+    </string-array>
+    <string-array name="vocab_furniture_starters">
+        <item>डबल बेड</item>
+        <item>सिंगल बेड</item>
+        <item>सोफ़ा सेट</item>
+        <item>डाइनिंग टेबल</item>
+        <item>कुर्सियां</item>
+        <item>अलमारी</item>
+        <item>ड्रेसिंग टेबल</item>
+        <item>गद्दा</item>
+        <item>ऑफ़िस चेयर</item>
+        <item>स्टडी टेबल</item>
+        <item>पॉलिश</item>
+    </string-array>
+    <string-array name="vocab_salon_items">
+        <item>हेयर कट</item>
+        <item>शेव</item>
+        <item>फ़ेशियल</item>
+    </string-array>
+    <string-array name="vocab_salon_types">
+        <item>सर्विस</item>
+        <item>प्रोडक्ट</item>
+        <item>पैकेज</item>
+    </string-array>
+    <string-array name="vocab_salon_starters">
+        <item>हेयर कट</item>
+        <item>शेव</item>
+        <item>दाढ़ी ट्रिम</item>
+        <item>फ़ेशियल</item>
+        <item>हेयर कलर</item>
+        <item>मसाज</item>
+        <item>शैम्पू</item>
+        <item>हेयर जेल</item>
+        <item>वैक्स</item>
+        <item>ब्राइडल पैकेज</item>
+        <item>बच्चों की कटिंग</item>
+    </string-array>
+    <string-array name="vocab_solar_items">
+        <item>पैनल</item>
+        <item>इन्वर्टर</item>
+        <item>बैटरी</item>
+    </string-array>
+    <string-array name="vocab_solar_types">
+        <item>सोलर</item>
+        <item>बिजली</item>
+        <item>वायरिंग</item>
+        <item>इंस्टॉलेशन</item>
+    </string-array>
+    <string-array name="vocab_solar_starters">
+        <item>सोलर पैनल</item>
+        <item>इन्वर्टर</item>
+        <item>बैटरी</item>
+        <item>चार्ज कंट्रोलर</item>
+        <item>डीसी केबल</item>
+        <item>ब्रेकर</item>
+        <item>स्टैंड</item>
+        <item>पंखा</item>
+        <item>एलईडी बल्ब</item>
+        <item>वाटर पंप</item>
+        <item>इंस्टॉलेशन</item>
+    </string-array>
+    <string-array name="vocab_general_items">
+        <item>सामान</item>
+        <item>पैकेट</item>
+        <item>बोतल</item>
+    </string-array>
+    <string-array name="vocab_general_types">
+        <item>सामान</item>
+        <item>सर्विस</item>
+        <item>अन्य</item>
+    </string-array>
+    <string-array name="vocab_general_starters">
+        <item>सामान</item>
+        <item>सर्विस</item>
+        <item>डिलीवरी</item>
+        <item>मरम्मत</item>
+        <item>पैकेट</item>
+        <item>बोतल</item>
+        <item>डिब्बा</item>
+    </string-array>
 </resources>

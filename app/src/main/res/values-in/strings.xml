@@ -1972,4 +1972,295 @@
     <string name="biz_card_qr_message_hint">Pesan WhatsApp saat QR dipindai (opsional)</string>
     <string name="biz_card_qr_message_default">Assalamualaikum, saya melihat kartu nama Anda</string>
     <string name="biz_card_print_pdf">PDF siap cetak (3,5 × 2 in)</string>
+    <string name="vocab_suggested">Disarankan untuk toko Anda</string>
+    <string name="vocab_item_hint">Barang (%1$s…)</string>
+    <string name="vocab_unit_hint">Satuan (%1$s…)</string>
+    <string name="vocab_type_hint">Jenis — %1$s</string>
+    <string name="vocab_goods_help">Jika ada barang yang keluar dengan catatan ini — %1$s — catat di sini. Kosongkan untuk catatan tunai biasa.</string>
+    <string name="vocab_unit_optional">Satuan — %1$s (opsional)</string>
+    <string-array name="vocab_agri_items">
+        <item>Urea</item>
+        <item>Pakan</item>
+        <item>Benih</item>
+    </string-array>
+    <string-array name="vocab_agri_types">
+        <item>Pestisida</item>
+        <item>Pupuk</item>
+        <item>Benih</item>
+        <item>Pakan</item>
+    </string-array>
+    <string-array name="vocab_agri_starters">
+        <item>Urea</item>
+        <item>DAP</item>
+        <item>NPK</item>
+        <item>Kalium</item>
+        <item>Benih gandum</item>
+        <item>Benih padi</item>
+        <item>Benih kapas</item>
+        <item>Pakan ternak</item>
+        <item>Konsentrat</item>
+        <item>Belerang</item>
+        <item>Seng</item>
+    </string-array>
+    <string-array name="vocab_medical_items">
+        <item>Paracetamol</item>
+        <item>Sirup</item>
+        <item>Infus</item>
+    </string-array>
+    <string-array name="vocab_medical_types">
+        <item>Tablet</item>
+        <item>Sirup</item>
+        <item>Suntikan</item>
+        <item>Bedah</item>
+    </string-array>
+    <string-array name="vocab_medical_starters">
+        <item>Paracetamol</item>
+        <item>Ibuprofen</item>
+        <item>Amoxicillin</item>
+        <item>Metronidazole</item>
+        <item>Sirup batuk</item>
+        <item>Oralit</item>
+        <item>Infus</item>
+        <item>Jarum suntik</item>
+        <item>Perban</item>
+        <item>Vitamin C</item>
+        <item>Insulin</item>
+    </string-array>
+    <string-array name="vocab_mobile_items">
+        <item>Charger</item>
+        <item>Headset</item>
+        <item>Casing</item>
+    </string-array>
+    <string-array name="vocab_mobile_types">
+        <item>Aksesori</item>
+        <item>Handset</item>
+        <item>Servis</item>
+        <item>Kartu</item>
+    </string-array>
+    <string-array name="vocab_mobile_starters">
+        <item>Charger</item>
+        <item>Headset</item>
+        <item>Casing</item>
+        <item>Pelindung layar</item>
+        <item>Kabel data</item>
+        <item>Baterai</item>
+        <item>Kartu memori</item>
+        <item>Power bank</item>
+        <item>Pulsa</item>
+        <item>SIM</item>
+        <item>Layar</item>
+    </string-array>
+    <string-array name="vocab_kiryana_items">
+        <item>Tepung</item>
+        <item>Gula</item>
+        <item>Minyak</item>
+    </string-array>
+    <string-array name="vocab_kiryana_types">
+        <item>Sembako</item>
+        <item>Kemasan</item>
+        <item>Rumah tangga</item>
+        <item>Segar</item>
+    </string-array>
+    <string-array name="vocab_kiryana_starters">
+        <item>Tepung</item>
+        <item>Gula</item>
+        <item>Beras</item>
+        <item>Kacang</item>
+        <item>Lentil</item>
+        <item>Minyak goreng</item>
+        <item>Mentega</item>
+        <item>Teh</item>
+        <item>Sabun</item>
+        <item>Deterjen</item>
+        <item>Garam</item>
+        <item>Bumbu</item>
+    </string-array>
+    <string-array name="vocab_hardware_items">
+        <item>Semen</item>
+        <item>Pipa</item>
+        <item>Cat</item>
+    </string-array>
+    <string-array name="vocab_hardware_types">
+        <item>Bangunan</item>
+        <item>Pipa</item>
+        <item>Listrik</item>
+        <item>Alat</item>
+    </string-array>
+    <string-array name="vocab_hardware_starters">
+        <item>Semen</item>
+        <item>Besi beton</item>
+        <item>Pasir</item>
+        <item>Bata</item>
+        <item>Pipa PVC</item>
+        <item>Cat</item>
+        <item>Paku</item>
+        <item>Sekrup</item>
+        <item>Kabel</item>
+        <item>Saklar</item>
+        <item>Keran</item>
+        <item>Engsel</item>
+    </string-array>
+    <string-array name="vocab_dairy_items">
+        <item>Susu</item>
+        <item>Yogurt</item>
+        <item>Mentega</item>
+    </string-array>
+    <string-array name="vocab_dairy_types">
+        <item>Susu</item>
+        <item>Kemasan</item>
+        <item>Pakan</item>
+        <item>Manisan</item>
+    </string-array>
+    <string-array name="vocab_dairy_starters">
+        <item>Susu</item>
+        <item>Yogurt</item>
+        <item>Mentega</item>
+        <item>Minyak samin</item>
+        <item>Krim</item>
+        <item>Keju</item>
+        <item>Lassi</item>
+        <item>Khoya</item>
+        <item>Konsentrat</item>
+        <item>Dedak</item>
+        <item>Telur</item>
+    </string-array>
+    <string-array name="vocab_tailor_items">
+        <item>Jas</item>
+        <item>Celana</item>
+        <item>Lapisan</item>
+    </string-array>
+    <string-array name="vocab_tailor_types">
+        <item>Jahit</item>
+        <item>Kain</item>
+        <item>Permak</item>
+        <item>Aksesori</item>
+    </string-array>
+    <string-array name="vocab_tailor_starters">
+        <item>Jas pria</item>
+        <item>Baju wanita</item>
+        <item>Baju kurung</item>
+        <item>Rompi</item>
+        <item>Kemeja celana</item>
+        <item>Seragam</item>
+        <item>Kain lapisan</item>
+        <item>Kancing</item>
+        <item>Ritsleting</item>
+        <item>Benang</item>
+        <item>Permak</item>
+    </string-array>
+    <string-array name="vocab_auto_items">
+        <item>Oli</item>
+        <item>Filter</item>
+        <item>Ban</item>
+    </string-array>
+    <string-array name="vocab_auto_types">
+        <item>Mesin</item>
+        <item>Bodi</item>
+        <item>Listrik</item>
+        <item>Servis</item>
+    </string-array>
+    <string-array name="vocab_auto_starters">
+        <item>Oli mesin</item>
+        <item>Filter oli</item>
+        <item>Filter udara</item>
+        <item>Kampas rem</item>
+        <item>Ban</item>
+        <item>Ban dalam</item>
+        <item>Aki</item>
+        <item>Busi</item>
+        <item>Plat kopling</item>
+        <item>Rantai</item>
+        <item>Lampu</item>
+        <item>Servis</item>
+    </string-array>
+    <string-array name="vocab_furniture_items">
+        <item>Ranjang</item>
+        <item>Sofa</item>
+        <item>Meja</item>
+    </string-array>
+    <string-array name="vocab_furniture_types">
+        <item>Kamar tidur</item>
+        <item>Ruang tamu</item>
+        <item>Kantor</item>
+        <item>Perbaikan</item>
+    </string-array>
+    <string-array name="vocab_furniture_starters">
+        <item>Ranjang double</item>
+        <item>Ranjang single</item>
+        <item>Set sofa</item>
+        <item>Meja makan</item>
+        <item>Kursi</item>
+        <item>Lemari</item>
+        <item>Meja rias</item>
+        <item>Kasur</item>
+        <item>Kursi kantor</item>
+        <item>Meja belajar</item>
+        <item>Pelitur</item>
+    </string-array>
+    <string-array name="vocab_salon_items">
+        <item>Potong rambut</item>
+        <item>Cukur</item>
+        <item>Facial</item>
+    </string-array>
+    <string-array name="vocab_salon_types">
+        <item>Layanan</item>
+        <item>Produk</item>
+        <item>Paket</item>
+    </string-array>
+    <string-array name="vocab_salon_starters">
+        <item>Potong rambut</item>
+        <item>Cukur</item>
+        <item>Rapikan jenggot</item>
+        <item>Facial</item>
+        <item>Warna rambut</item>
+        <item>Pijat</item>
+        <item>Sampo</item>
+        <item>Gel rambut</item>
+        <item>Wax</item>
+        <item>Paket pengantin</item>
+        <item>Potong rambut anak</item>
+    </string-array>
+    <string-array name="vocab_solar_items">
+        <item>Panel</item>
+        <item>Inverter</item>
+        <item>Baterai</item>
+    </string-array>
+    <string-array name="vocab_solar_types">
+        <item>Surya</item>
+        <item>Listrik</item>
+        <item>Kabel</item>
+        <item>Pemasangan</item>
+    </string-array>
+    <string-array name="vocab_solar_starters">
+        <item>Panel surya</item>
+        <item>Inverter</item>
+        <item>Baterai</item>
+        <item>Charge controller</item>
+        <item>Kabel DC</item>
+        <item>MCB</item>
+        <item>Dudukan</item>
+        <item>Kipas</item>
+        <item>Lampu LED</item>
+        <item>Pompa air</item>
+        <item>Pemasangan</item>
+    </string-array>
+    <string-array name="vocab_general_items">
+        <item>Barang</item>
+        <item>Bungkus</item>
+        <item>Botol</item>
+    </string-array>
+    <string-array name="vocab_general_types">
+        <item>Barang</item>
+        <item>Layanan</item>
+        <item>Lainnya</item>
+    </string-array>
+    <string-array name="vocab_general_starters">
+        <item>Barang</item>
+        <item>Layanan</item>
+        <item>Pengiriman</item>
+        <item>Perbaikan</item>
+        <item>Bungkus</item>
+        <item>Botol</item>
+        <item>Kotak</item>
+    </string-array>
 </resources>

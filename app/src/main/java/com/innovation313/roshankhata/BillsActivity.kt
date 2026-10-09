@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.data.UnitWords
+import com.innovation313.roshankhata.data.TradeVocab
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -32,6 +33,7 @@ import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.SupplierBill
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.asSuggestions
+import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.BillAdapter
 import com.innovation313.roshankhata.ui.BillScanFlow
 import com.innovation313.roshankhata.ui.Format
@@ -547,13 +549,14 @@ class BillsActivity : BaseActivity() {
         val btnExpiry: MaterialButton = view.findViewById(R.id.btnExpiry)
         val etQty: EditText = view.findViewById(R.id.etItemQty)
         val etUnit: AutoCompleteTextView = view.findViewById(R.id.etItemUnit)
+        etUnit.hint = TradeVocab.unitHint(this)
         val etRate: EditText = view.findViewById(R.id.etItemRate)
 
         etUnit.setAdapter(
             ArrayAdapter(
                 this,
                 android.R.layout.simple_dropdown_item_1line,
-                UnitWords.choices()
+                UnitWords.choices(this)
             )
         )
 
@@ -563,7 +566,7 @@ class BillsActivity : BaseActivity() {
         // spelled a second way here creates a second product that the sale
         // side will never find.
         lifecycleScope.launch {
-            SmartSuggest.attach(etProduct, dao.productsOnce().asSuggestions())
+            SmartSuggest.attach(etProduct, dao.productsOnce().withStarters(this@BillsActivity))
         }
 
         var expiry: Long? = existing?.expiryDate
@@ -822,7 +825,8 @@ class BillsActivity : BaseActivity() {
                             com.innovation313.roshankhata.data.ProductName.key(it.productName) == product.nameKey
                         }
                         product.id to com.innovation313.roshankhata.data.LabelGuess.of(
-                            product.name, line?.unit, supplierLabel
+                            product.name, line?.unit, supplierLabel,
+                            com.innovation313.roshankhata.data.Trade.current(this@BillsActivity)
                         )
                     }
                     offerLabelDetails(createdProducts.distinctBy { it.id }, guesses)

@@ -2026,4 +2026,375 @@ You can change this any time from this screen.</string>
     <string name="biz_card_qr_message_hint">WhatsApp message when the QR is scanned (optional)</string>
     <string name="biz_card_qr_message_default">Assalam o Alaikum, I saw your card</string>
     <string name="biz_card_print_pdf">Print-ready PDF (3.5 × 2 in)</string>
+
+    <!-- The trade vocabulary (9 Oct 2026): what each kind of shop calls its goods, in
+         the app's own language. Hints, unit lists, product types and a new book's first
+         suggestions all read these through TradeVocab; nothing about a trade is written
+         into code or into a hint any more. The units are UnitWords keys, shown in the
+         user's language by UnitWords itself. -->
+    <string name="vocab_suggested">Suggested for your shop</string>
+    <string name="vocab_item_hint">Item (%1$s…)</string>
+    <string name="vocab_unit_hint">Unit (%1$s…)</string>
+    <string name="vocab_type_hint">Type — %1$s</string>
+    <string name="vocab_goods_help">If stock moved with this entry — %1$s — record it here. Leave blank for a plain cash entry.</string>
+    <string name="vocab_unit_optional">Unit — %1$s (optional)</string>
+    <string-array name="vocab_agri_items">
+        <item>Urea</item>
+        <item>Feed</item>
+        <item>Seed</item>
+    </string-array>
+    <string-array name="vocab_agri_types">
+        <item>Pesticide</item>
+        <item>Fertilizer</item>
+        <item>Seed</item>
+        <item>Feed</item>
+    </string-array>
+    <string-array name="vocab_agri_starters">
+        <item>Urea</item>
+        <item>DAP</item>
+        <item>NPK</item>
+        <item>Potash</item>
+        <item>Wheat seed</item>
+        <item>Rice seed</item>
+        <item>Cotton seed</item>
+        <item>Cattle feed</item>
+        <item>Wanda</item>
+        <item>Sulphur</item>
+        <item>Zinc</item>
+    </string-array>
+    <string-array name="vocab_medical_items">
+        <item>Panadol</item>
+        <item>Syrup</item>
+        <item>Drip</item>
+    </string-array>
+    <string-array name="vocab_medical_types">
+        <item>Tablet</item>
+        <item>Syrup</item>
+        <item>Injection</item>
+        <item>Surgical</item>
+    </string-array>
+    <string-array name="vocab_medical_starters">
+        <item>Panadol</item>
+        <item>Brufen</item>
+        <item>Augmentin</item>
+        <item>Flagyl</item>
+        <item>Cough syrup</item>
+        <item>ORS</item>
+        <item>Drip</item>
+        <item>Syringe</item>
+        <item>Bandage</item>
+        <item>Vitamin C</item>
+        <item>Insulin</item>
+    </string-array>
+    <string-array name="vocab_mobile_items">
+        <item>Charger</item>
+        <item>Handsfree</item>
+        <item>Cover</item>
+    </string-array>
+    <string-array name="vocab_mobile_types">
+        <item>Accessory</item>
+        <item>Handset</item>
+        <item>Repair</item>
+        <item>Card</item>
+    </string-array>
+    <string-array name="vocab_mobile_starters">
+        <item>Charger</item>
+        <item>Handsfree</item>
+        <item>Back cover</item>
+        <item>Screen protector</item>
+        <item>Data cable</item>
+        <item>Battery</item>
+        <item>Memory card</item>
+        <item>Power bank</item>
+        <item>Easyload</item>
+        <item>SIM</item>
+        <item>Display</item>
+    </string-array>
+    <string-array name="vocab_kiryana_items">
+        <item>Flour</item>
+        <item>Sugar</item>
+        <item>Ghee</item>
+    </string-array>
+    <string-array name="vocab_kiryana_types">
+        <item>Grocery</item>
+        <item>Packaged</item>
+        <item>Household</item>
+        <item>Fresh</item>
+    </string-array>
+    <string-array name="vocab_kiryana_starters">
+        <item>Flour</item>
+        <item>Sugar</item>
+        <item>Rice</item>
+        <item>Daal chana</item>
+        <item>Daal masoor</item>
+        <item>Cooking oil</item>
+        <item>Ghee</item>
+        <item>Tea</item>
+        <item>Soap</item>
+        <item>Washing powder</item>
+        <item>Salt</item>
+        <item>Spices</item>
+    </string-array>
+    <string-array name="vocab_hardware_items">
+        <item>Cement</item>
+        <item>Pipe</item>
+        <item>Paint</item>
+    </string-array>
+    <string-array name="vocab_hardware_types">
+        <item>Building</item>
+        <item>Plumbing</item>
+        <item>Electrical</item>
+        <item>Tools</item>
+    </string-array>
+    <string-array name="vocab_hardware_starters">
+        <item>Cement</item>
+        <item>Steel bar</item>
+        <item>Sand</item>
+        <item>Bricks</item>
+        <item>PVC pipe</item>
+        <item>Paint</item>
+        <item>Nails</item>
+        <item>Screws</item>
+        <item>Wire</item>
+        <item>Switch</item>
+        <item>Tap</item>
+        <item>Hinge</item>
+    </string-array>
+    <string-array name="vocab_dairy_items">
+        <item>Milk</item>
+        <item>Yogurt</item>
+        <item>Ghee</item>
+    </string-array>
+    <string-array name="vocab_dairy_types">
+        <item>Milk</item>
+        <item>Packaged</item>
+        <item>Feed</item>
+        <item>Sweets</item>
+    </string-array>
+    <string-array name="vocab_dairy_starters">
+        <item>Milk</item>
+        <item>Yogurt</item>
+        <item>Butter</item>
+        <item>Ghee</item>
+        <item>Cream</item>
+        <item>Cheese</item>
+        <item>Lassi</item>
+        <item>Khoya</item>
+        <item>Wanda</item>
+        <item>Chokar</item>
+        <item>Eggs</item>
+    </string-array>
+    <string-array name="vocab_tailor_items">
+        <item>Suit</item>
+        <item>Shalwar</item>
+        <item>Lining</item>
+    </string-array>
+    <string-array name="vocab_tailor_types">
+        <item>Stitching</item>
+        <item>Cloth</item>
+        <item>Alteration</item>
+        <item>Accessory</item>
+    </string-array>
+    <string-array name="vocab_tailor_starters">
+        <item>Gents suit</item>
+        <item>Ladies suit</item>
+        <item>Shalwar kameez</item>
+        <item>Waistcoat</item>
+        <item>Pant shirt</item>
+        <item>Uniform</item>
+        <item>Lining cloth</item>
+        <item>Buttons</item>
+        <item>Zip</item>
+        <item>Thread</item>
+        <item>Alteration</item>
+    </string-array>
+    <string-array name="vocab_auto_items">
+        <item>Oil</item>
+        <item>Filter</item>
+        <item>Tyre</item>
+    </string-array>
+    <string-array name="vocab_auto_types">
+        <item>Engine</item>
+        <item>Body</item>
+        <item>Electrical</item>
+        <item>Service</item>
+    </string-array>
+    <string-array name="vocab_auto_starters">
+        <item>Engine oil</item>
+        <item>Oil filter</item>
+        <item>Air filter</item>
+        <item>Brake pads</item>
+        <item>Tyre</item>
+        <item>Tube</item>
+        <item>Battery</item>
+        <item>Spark plug</item>
+        <item>Clutch plate</item>
+        <item>Chain</item>
+        <item>Bulb</item>
+        <item>Service</item>
+    </string-array>
+    <string-array name="vocab_furniture_items">
+        <item>Bed</item>
+        <item>Sofa</item>
+        <item>Table</item>
+    </string-array>
+    <string-array name="vocab_furniture_types">
+        <item>Bedroom</item>
+        <item>Living</item>
+        <item>Office</item>
+        <item>Repair</item>
+    </string-array>
+    <string-array name="vocab_furniture_starters">
+        <item>Double bed</item>
+        <item>Single bed</item>
+        <item>Sofa set</item>
+        <item>Dining table</item>
+        <item>Chairs</item>
+        <item>Wardrobe</item>
+        <item>Dressing table</item>
+        <item>Mattress</item>
+        <item>Office chair</item>
+        <item>Study table</item>
+        <item>Polish</item>
+    </string-array>
+    <string-array name="vocab_salon_items">
+        <item>Haircut</item>
+        <item>Shave</item>
+        <item>Facial</item>
+    </string-array>
+    <string-array name="vocab_salon_types">
+        <item>Service</item>
+        <item>Product</item>
+        <item>Package</item>
+    </string-array>
+    <string-array name="vocab_salon_starters">
+        <item>Haircut</item>
+        <item>Shave</item>
+        <item>Beard trim</item>
+        <item>Facial</item>
+        <item>Hair colour</item>
+        <item>Massage</item>
+        <item>Shampoo</item>
+        <item>Hair gel</item>
+        <item>Wax</item>
+        <item>Bridal package</item>
+        <item>Kids haircut</item>
+    </string-array>
+    <string-array name="vocab_solar_items">
+        <item>Panel</item>
+        <item>Inverter</item>
+        <item>Battery</item>
+    </string-array>
+    <string-array name="vocab_solar_types">
+        <item>Solar</item>
+        <item>Electrical</item>
+        <item>Wiring</item>
+        <item>Installation</item>
+    </string-array>
+    <string-array name="vocab_solar_starters">
+        <item>Solar panel</item>
+        <item>Inverter</item>
+        <item>Battery</item>
+        <item>Charge controller</item>
+        <item>DC cable</item>
+        <item>Breaker</item>
+        <item>Stand</item>
+        <item>Fan</item>
+        <item>LED bulb</item>
+        <item>Water pump</item>
+        <item>Installation</item>
+    </string-array>
+    <string-array name="vocab_general_items">
+        <item>Item</item>
+        <item>Packet</item>
+        <item>Bottle</item>
+    </string-array>
+    <string-array name="vocab_general_types">
+        <item>Goods</item>
+        <item>Service</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="vocab_general_starters">
+        <item>Item</item>
+        <item>Service</item>
+        <item>Delivery</item>
+        <item>Repair</item>
+        <item>Packet</item>
+        <item>Bottle</item>
+        <item>Box</item>
+    </string-array>
+    <string-array name="vocab_agri_units" translatable="false">
+        <item>bag</item>
+        <item>kg</item>
+        <item>litre</item>
+        <item>ml</item>
+        <item>packet</item>
+        <item>bottle</item>
+    </string-array>
+    <string-array name="vocab_medical_units" translatable="false">
+        <item>packet</item>
+        <item>bottle</item>
+        <item>piece</item>
+        <item>box</item>
+        <item>ml</item>
+    </string-array>
+    <string-array name="vocab_mobile_units" translatable="false">
+        <item>piece</item>
+        <item>box</item>
+        <item>packet</item>
+    </string-array>
+    <string-array name="vocab_kiryana_units" translatable="false">
+        <item>kg</item>
+        <item>packet</item>
+        <item>piece</item>
+        <item>bottle</item>
+        <item>litre</item>
+        <item>box</item>
+    </string-array>
+    <string-array name="vocab_hardware_units" translatable="false">
+        <item>piece</item>
+        <item>kg</item>
+        <item>packet</item>
+        <item>box</item>
+        <item>litre</item>
+    </string-array>
+    <string-array name="vocab_dairy_units" translatable="false">
+        <item>litre</item>
+        <item>kg</item>
+        <item>packet</item>
+        <item>piece</item>
+    </string-array>
+    <string-array name="vocab_tailor_units" translatable="false">
+        <item>piece</item>
+        <item>packet</item>
+    </string-array>
+    <string-array name="vocab_auto_units" translatable="false">
+        <item>piece</item>
+        <item>litre</item>
+        <item>box</item>
+        <item>packet</item>
+    </string-array>
+    <string-array name="vocab_furniture_units" translatable="false">
+        <item>piece</item>
+        <item>box</item>
+    </string-array>
+    <string-array name="vocab_salon_units" translatable="false">
+        <item>piece</item>
+        <item>bottle</item>
+        <item>packet</item>
+        <item>ml</item>
+    </string-array>
+    <string-array name="vocab_solar_units" translatable="false">
+        <item>piece</item>
+        <item>box</item>
+        <item>packet</item>
+    </string-array>
+    <string-array name="vocab_general_units" translatable="false">
+        <item>piece</item>
+        <item>kg</item>
+        <item>packet</item>
+        <item>bottle</item>
+        <item>box</item>
+        <item>litre</item>
+    </string-array>
 </resources>

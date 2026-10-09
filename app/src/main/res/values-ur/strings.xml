@@ -1971,4 +1971,295 @@
     <string name="biz_card_qr_message_hint">QR اسکین پر واٹس ایپ پیغام (اختیاری)</string>
     <string name="biz_card_qr_message_default">السلام علیکم</string>
     <string name="biz_card_print_pdf">پرنٹ کے لیے PDF (3.5 × 2 انچ)</string>
+    <string name="vocab_suggested">آپ کی دکان کے لیے تجویز</string>
+    <string name="vocab_item_hint">شے (%1$s…)</string>
+    <string name="vocab_unit_hint">اکائی (%1$s…)</string>
+    <string name="vocab_type_hint">قسم — %1$s</string>
+    <string name="vocab_goods_help">اگر اس اندراج کے ساتھ مال بھی گیا — %1$s — تو یہاں درج کریں۔ سادہ نقد اندراج کے لیے خالی چھوڑیں۔</string>
+    <string name="vocab_unit_optional">یونٹ — %1$s (اختیاری)</string>
+    <string-array name="vocab_agri_items">
+        <item>یوریا</item>
+        <item>فیڈ</item>
+        <item>بیج</item>
+    </string-array>
+    <string-array name="vocab_agri_types">
+        <item>پیسٹیسائیڈ</item>
+        <item>کھاد</item>
+        <item>بیج</item>
+        <item>فیڈ</item>
+    </string-array>
+    <string-array name="vocab_agri_starters">
+        <item>یوریا</item>
+        <item>ڈی اے پی</item>
+        <item>این پی کے</item>
+        <item>پوٹاش</item>
+        <item>گندم کا بیج</item>
+        <item>چاول کا بیج</item>
+        <item>کپاس کا بیج</item>
+        <item>مویشی فیڈ</item>
+        <item>ونڈا</item>
+        <item>سلفر</item>
+        <item>زنک</item>
+    </string-array>
+    <string-array name="vocab_medical_items">
+        <item>پیناڈول</item>
+        <item>شربت</item>
+        <item>ڈرپ</item>
+    </string-array>
+    <string-array name="vocab_medical_types">
+        <item>گولی</item>
+        <item>شربت</item>
+        <item>انجکشن</item>
+        <item>سرجیکل</item>
+    </string-array>
+    <string-array name="vocab_medical_starters">
+        <item>پیناڈول</item>
+        <item>بروفن</item>
+        <item>آگمنٹن</item>
+        <item>فلیجل</item>
+        <item>کھانسی کا شربت</item>
+        <item>او آر ایس</item>
+        <item>ڈرپ</item>
+        <item>سرنج</item>
+        <item>پٹی</item>
+        <item>وٹامن سی</item>
+        <item>انسولین</item>
+    </string-array>
+    <string-array name="vocab_mobile_items">
+        <item>چارجر</item>
+        <item>ہینڈ فری</item>
+        <item>کور</item>
+    </string-array>
+    <string-array name="vocab_mobile_types">
+        <item>ایکسیسری</item>
+        <item>ہینڈ سیٹ</item>
+        <item>مرمت</item>
+        <item>کارڈ</item>
+    </string-array>
+    <string-array name="vocab_mobile_starters">
+        <item>چارجر</item>
+        <item>ہینڈ فری</item>
+        <item>بیک کور</item>
+        <item>اسکرین پروٹیکٹر</item>
+        <item>ڈیٹا کیبل</item>
+        <item>بیٹری</item>
+        <item>میموری کارڈ</item>
+        <item>پاور بینک</item>
+        <item>ایزی لوڈ</item>
+        <item>سم</item>
+        <item>ڈسپلے</item>
+    </string-array>
+    <string-array name="vocab_kiryana_items">
+        <item>آٹا</item>
+        <item>چینی</item>
+        <item>گھی</item>
+    </string-array>
+    <string-array name="vocab_kiryana_types">
+        <item>راشن</item>
+        <item>پیکڈ</item>
+        <item>گھریلو</item>
+        <item>تازہ</item>
+    </string-array>
+    <string-array name="vocab_kiryana_starters">
+        <item>آٹا</item>
+        <item>چینی</item>
+        <item>چاول</item>
+        <item>دال چنا</item>
+        <item>دال مسور</item>
+        <item>کوکنگ آئل</item>
+        <item>گھی</item>
+        <item>چائے</item>
+        <item>صابن</item>
+        <item>واشنگ پاؤڈر</item>
+        <item>نمک</item>
+        <item>مصالحے</item>
+    </string-array>
+    <string-array name="vocab_hardware_items">
+        <item>سیمنٹ</item>
+        <item>پائپ</item>
+        <item>پینٹ</item>
+    </string-array>
+    <string-array name="vocab_hardware_types">
+        <item>تعمیرات</item>
+        <item>پلمبنگ</item>
+        <item>بجلی</item>
+        <item>اوزار</item>
+    </string-array>
+    <string-array name="vocab_hardware_starters">
+        <item>سیمنٹ</item>
+        <item>سریا</item>
+        <item>ریت</item>
+        <item>اینٹیں</item>
+        <item>پی وی سی پائپ</item>
+        <item>پینٹ</item>
+        <item>کیل</item>
+        <item>پیچ</item>
+        <item>تار</item>
+        <item>سوئچ</item>
+        <item>ٹونٹی</item>
+        <item>قبضہ</item>
+    </string-array>
+    <string-array name="vocab_dairy_items">
+        <item>دودھ</item>
+        <item>دہی</item>
+        <item>گھی</item>
+    </string-array>
+    <string-array name="vocab_dairy_types">
+        <item>دودھ</item>
+        <item>پیکڈ</item>
+        <item>فیڈ</item>
+        <item>مٹھائی</item>
+    </string-array>
+    <string-array name="vocab_dairy_starters">
+        <item>دودھ</item>
+        <item>دہی</item>
+        <item>مکھن</item>
+        <item>گھی</item>
+        <item>کریم</item>
+        <item>پنیر</item>
+        <item>لسی</item>
+        <item>کھویا</item>
+        <item>ونڈا</item>
+        <item>چوکر</item>
+        <item>انڈے</item>
+    </string-array>
+    <string-array name="vocab_tailor_items">
+        <item>سوٹ</item>
+        <item>شلوار</item>
+        <item>استر</item>
+    </string-array>
+    <string-array name="vocab_tailor_types">
+        <item>سلائی</item>
+        <item>کپڑا</item>
+        <item>مرمت</item>
+        <item>لوازمات</item>
+    </string-array>
+    <string-array name="vocab_tailor_starters">
+        <item>جینٹس سوٹ</item>
+        <item>لیڈیز سوٹ</item>
+        <item>شلوار قمیض</item>
+        <item>واسکٹ</item>
+        <item>پینٹ شرٹ</item>
+        <item>یونیفارم</item>
+        <item>استر</item>
+        <item>بٹن</item>
+        <item>زپ</item>
+        <item>دھاگا</item>
+        <item>مرمت</item>
+    </string-array>
+    <string-array name="vocab_auto_items">
+        <item>آئل</item>
+        <item>فلٹر</item>
+        <item>ٹائر</item>
+    </string-array>
+    <string-array name="vocab_auto_types">
+        <item>انجن</item>
+        <item>باڈی</item>
+        <item>بجلی</item>
+        <item>سروس</item>
+    </string-array>
+    <string-array name="vocab_auto_starters">
+        <item>انجن آئل</item>
+        <item>آئل فلٹر</item>
+        <item>ایئر فلٹر</item>
+        <item>بریک پیڈ</item>
+        <item>ٹائر</item>
+        <item>ٹیوب</item>
+        <item>بیٹری</item>
+        <item>پلگ</item>
+        <item>کلچ پلیٹ</item>
+        <item>چین</item>
+        <item>بلب</item>
+        <item>سروس</item>
+    </string-array>
+    <string-array name="vocab_furniture_items">
+        <item>بیڈ</item>
+        <item>صوفہ</item>
+        <item>میز</item>
+    </string-array>
+    <string-array name="vocab_furniture_types">
+        <item>بیڈ روم</item>
+        <item>ڈرائنگ روم</item>
+        <item>دفتر</item>
+        <item>مرمت</item>
+    </string-array>
+    <string-array name="vocab_furniture_starters">
+        <item>ڈبل بیڈ</item>
+        <item>سنگل بیڈ</item>
+        <item>صوفہ سیٹ</item>
+        <item>ڈائننگ ٹیبل</item>
+        <item>کرسیاں</item>
+        <item>الماری</item>
+        <item>ڈریسنگ ٹیبل</item>
+        <item>گدا</item>
+        <item>دفتری کرسی</item>
+        <item>اسٹڈی ٹیبل</item>
+        <item>پالش</item>
+    </string-array>
+    <string-array name="vocab_salon_items">
+        <item>بال کٹوائی</item>
+        <item>شیو</item>
+        <item>فیشل</item>
+    </string-array>
+    <string-array name="vocab_salon_types">
+        <item>سروس</item>
+        <item>پروڈکٹ</item>
+        <item>پیکج</item>
+    </string-array>
+    <string-array name="vocab_salon_starters">
+        <item>بال کٹوائی</item>
+        <item>شیو</item>
+        <item>داڑھی ٹرم</item>
+        <item>فیشل</item>
+        <item>ہیئر کلر</item>
+        <item>مساج</item>
+        <item>شیمپو</item>
+        <item>ہیئر جیل</item>
+        <item>ویکس</item>
+        <item>برائیڈل پیکج</item>
+        <item>بچوں کی کٹنگ</item>
+    </string-array>
+    <string-array name="vocab_solar_items">
+        <item>پینل</item>
+        <item>انورٹر</item>
+        <item>بیٹری</item>
+    </string-array>
+    <string-array name="vocab_solar_types">
+        <item>سولر</item>
+        <item>بجلی</item>
+        <item>وائرنگ</item>
+        <item>تنصیب</item>
+    </string-array>
+    <string-array name="vocab_solar_starters">
+        <item>سولر پینل</item>
+        <item>انورٹر</item>
+        <item>بیٹری</item>
+        <item>چارج کنٹرولر</item>
+        <item>ڈی سی کیبل</item>
+        <item>بریکر</item>
+        <item>اسٹینڈ</item>
+        <item>پنکھا</item>
+        <item>ایل ای ڈی بلب</item>
+        <item>واٹر پمپ</item>
+        <item>تنصیب</item>
+    </string-array>
+    <string-array name="vocab_general_items">
+        <item>چیز</item>
+        <item>پیکٹ</item>
+        <item>بوتل</item>
+    </string-array>
+    <string-array name="vocab_general_types">
+        <item>سامان</item>
+        <item>سروس</item>
+        <item>دیگر</item>
+    </string-array>
+    <string-array name="vocab_general_starters">
+        <item>چیز</item>
+        <item>سروس</item>
+        <item>ڈیلیوری</item>
+        <item>مرمت</item>
+        <item>پیکٹ</item>
+        <item>بوتل</item>
+        <item>ڈبہ</item>
+    </string-array>
 </resources>

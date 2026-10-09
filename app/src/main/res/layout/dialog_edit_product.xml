@@ -160,6 +160,7 @@
             android:textSize="12sp" />
 
         <TextView
+            android:id="@+id/tvProductTypeLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -168,10 +169,13 @@
             android:textColor="@color/ink_soft"
             android:textSize="12sp" />
 
-        <EditText
+        <!-- An AutoCompleteTextView (9 Oct): the trade's own types drop down,
+             and the owner may still type a type of his own. -->
+        <AutoCompleteTextView
             android:id="@+id/etProductType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:completionThreshold="1"
             android:importantForAutofill="no"
             android:inputType="textCapWords" />
 

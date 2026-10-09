@@ -1999,4 +1999,295 @@
     <string name="biz_card_qr_message_hint">QR اسڪين تي واٽس ايپ پيغام (اختياري)</string>
     <string name="biz_card_qr_message_default">السلام عليڪم</string>
     <string name="biz_card_print_pdf">ڇپائي لاءِ PDF (3.5 × 2 انچ)</string>
+    <string name="vocab_suggested">توهان جي دڪان لاءِ تجويز</string>
+    <string name="vocab_item_hint">شيءِ (%1$s…)</string>
+    <string name="vocab_unit_hint">يونٽ (%1$s…)</string>
+    <string name="vocab_type_hint">قسم — %1$s</string>
+    <string name="vocab_goods_help">جيڪڏهن هن داخلا سان مال به ويو — %1$s — ته هتي لکو. سادي نقد داخلا لاءِ خالي ڇڏيو.</string>
+    <string name="vocab_unit_optional">يونٽ — %1$s (اختياري)</string>
+    <string-array name="vocab_agri_items">
+        <item>يوريا</item>
+        <item>فيڊ</item>
+        <item>ٻج</item>
+    </string-array>
+    <string-array name="vocab_agri_types">
+        <item>پيسٽيسائيڊ</item>
+        <item>ڀاڻ</item>
+        <item>ٻج</item>
+        <item>فيڊ</item>
+    </string-array>
+    <string-array name="vocab_agri_starters">
+        <item>يوريا</item>
+        <item>ڊي اي پي</item>
+        <item>اين پي ڪي</item>
+        <item>پوٽاش</item>
+        <item>ڪڻڪ جو ٻج</item>
+        <item>چانورن جو ٻج</item>
+        <item>ڪپهه جو ٻج</item>
+        <item>ڍورن جو فيڊ</item>
+        <item>ونڊا</item>
+        <item>سلفر</item>
+        <item>زنڪ</item>
+    </string-array>
+    <string-array name="vocab_medical_items">
+        <item>پيناڊول</item>
+        <item>شربت</item>
+        <item>ڊرپ</item>
+    </string-array>
+    <string-array name="vocab_medical_types">
+        <item>گولي</item>
+        <item>شربت</item>
+        <item>انجيڪشن</item>
+        <item>سرجيڪل</item>
+    </string-array>
+    <string-array name="vocab_medical_starters">
+        <item>پيناڊول</item>
+        <item>بروفن</item>
+        <item>آگمنٽن</item>
+        <item>فليجل</item>
+        <item>کنگهه جو شربت</item>
+        <item>او آر ايس</item>
+        <item>ڊرپ</item>
+        <item>سرنج</item>
+        <item>پٽي</item>
+        <item>وٽامن سي</item>
+        <item>انسولين</item>
+    </string-array>
+    <string-array name="vocab_mobile_items">
+        <item>چارجر</item>
+        <item>هينڊ فري</item>
+        <item>ڪور</item>
+    </string-array>
+    <string-array name="vocab_mobile_types">
+        <item>ايڪسيسري</item>
+        <item>هينڊ سيٽ</item>
+        <item>مرمت</item>
+        <item>ڪارڊ</item>
+    </string-array>
+    <string-array name="vocab_mobile_starters">
+        <item>چارجر</item>
+        <item>هينڊ فري</item>
+        <item>بيڪ ڪور</item>
+        <item>اسڪرين پروٽيڪٽر</item>
+        <item>ڊيٽا ڪيبل</item>
+        <item>بيٽري</item>
+        <item>ميموري ڪارڊ</item>
+        <item>پاور بئنڪ</item>
+        <item>ايزي لوڊ</item>
+        <item>سم</item>
+        <item>ڊسپلي</item>
+    </string-array>
+    <string-array name="vocab_kiryana_items">
+        <item>اٽو</item>
+        <item>کنڊ</item>
+        <item>گيهه</item>
+    </string-array>
+    <string-array name="vocab_kiryana_types">
+        <item>راشن</item>
+        <item>پيڪڊ</item>
+        <item>گهريلو</item>
+        <item>تازو</item>
+    </string-array>
+    <string-array name="vocab_kiryana_starters">
+        <item>اٽو</item>
+        <item>کنڊ</item>
+        <item>چانور</item>
+        <item>دال چڻا</item>
+        <item>دال مسور</item>
+        <item>ڪوڪنگ آئل</item>
+        <item>گيهه</item>
+        <item>چانهه</item>
+        <item>صابڻ</item>
+        <item>واشنگ پائوڊر</item>
+        <item>لوڻ</item>
+        <item>مصالحا</item>
+    </string-array>
+    <string-array name="vocab_hardware_items">
+        <item>سيمينٽ</item>
+        <item>پائيپ</item>
+        <item>پينٽ</item>
+    </string-array>
+    <string-array name="vocab_hardware_types">
+        <item>تعميرات</item>
+        <item>پلمبنگ</item>
+        <item>بجلي</item>
+        <item>اوزار</item>
+    </string-array>
+    <string-array name="vocab_hardware_starters">
+        <item>سيمينٽ</item>
+        <item>سريو</item>
+        <item>واري</item>
+        <item>سرون</item>
+        <item>پي وي سي پائيپ</item>
+        <item>پينٽ</item>
+        <item>ڪوڪا</item>
+        <item>پيچ</item>
+        <item>تار</item>
+        <item>سوئچ</item>
+        <item>ٽونٽي</item>
+        <item>قبضو</item>
+    </string-array>
+    <string-array name="vocab_dairy_items">
+        <item>کير</item>
+        <item>ڏهي</item>
+        <item>گيهه</item>
+    </string-array>
+    <string-array name="vocab_dairy_types">
+        <item>کير</item>
+        <item>پيڪڊ</item>
+        <item>فيڊ</item>
+        <item>مٺائي</item>
+    </string-array>
+    <string-array name="vocab_dairy_starters">
+        <item>کير</item>
+        <item>ڏهي</item>
+        <item>مکڻ</item>
+        <item>گيهه</item>
+        <item>ڪريم</item>
+        <item>پنير</item>
+        <item>لسي</item>
+        <item>کويو</item>
+        <item>ونڊا</item>
+        <item>ڇوڪر</item>
+        <item>آنا</item>
+    </string-array>
+    <string-array name="vocab_tailor_items">
+        <item>سوٽ</item>
+        <item>شلوار</item>
+        <item>استر</item>
+    </string-array>
+    <string-array name="vocab_tailor_types">
+        <item>سلائي</item>
+        <item>ڪپڙو</item>
+        <item>مرمت</item>
+        <item>لوازمات</item>
+    </string-array>
+    <string-array name="vocab_tailor_starters">
+        <item>جينٽس سوٽ</item>
+        <item>ليڊيز سوٽ</item>
+        <item>شلوار قميص</item>
+        <item>واسڪوٽ</item>
+        <item>پينٽ شرٽ</item>
+        <item>يونيفارم</item>
+        <item>استر</item>
+        <item>بٽڻ</item>
+        <item>زپ</item>
+        <item>ڌاڳو</item>
+        <item>مرمت</item>
+    </string-array>
+    <string-array name="vocab_auto_items">
+        <item>آئل</item>
+        <item>فلٽر</item>
+        <item>ٽائر</item>
+    </string-array>
+    <string-array name="vocab_auto_types">
+        <item>انجڻ</item>
+        <item>باڊي</item>
+        <item>بجلي</item>
+        <item>سروس</item>
+    </string-array>
+    <string-array name="vocab_auto_starters">
+        <item>انجڻ آئل</item>
+        <item>آئل فلٽر</item>
+        <item>ايئر فلٽر</item>
+        <item>بريڪ پيڊ</item>
+        <item>ٽائر</item>
+        <item>ٽيوب</item>
+        <item>بيٽري</item>
+        <item>پلگ</item>
+        <item>ڪلچ پليٽ</item>
+        <item>چين</item>
+        <item>بلب</item>
+        <item>سروس</item>
+    </string-array>
+    <string-array name="vocab_furniture_items">
+        <item>بيڊ</item>
+        <item>صوفو</item>
+        <item>ميز</item>
+    </string-array>
+    <string-array name="vocab_furniture_types">
+        <item>بيڊ روم</item>
+        <item>ڊرائنگ روم</item>
+        <item>آفيس</item>
+        <item>مرمت</item>
+    </string-array>
+    <string-array name="vocab_furniture_starters">
+        <item>ڊبل بيڊ</item>
+        <item>سنگل بيڊ</item>
+        <item>صوفا سيٽ</item>
+        <item>ڊائننگ ٽيبل</item>
+        <item>ڪرسيون</item>
+        <item>الماري</item>
+        <item>ڊريسنگ ٽيبل</item>
+        <item>گدو</item>
+        <item>آفيس ڪرسي</item>
+        <item>اسٽڊي ٽيبل</item>
+        <item>پالش</item>
+    </string-array>
+    <string-array name="vocab_salon_items">
+        <item>وار ڪٽائي</item>
+        <item>شيو</item>
+        <item>فيشل</item>
+    </string-array>
+    <string-array name="vocab_salon_types">
+        <item>سروس</item>
+        <item>پروڊڪٽ</item>
+        <item>پيڪيج</item>
+    </string-array>
+    <string-array name="vocab_salon_starters">
+        <item>وار ڪٽائي</item>
+        <item>شيو</item>
+        <item>ڏاڙهي ٽرم</item>
+        <item>فيشل</item>
+        <item>هيئر ڪلر</item>
+        <item>مساج</item>
+        <item>شيمپو</item>
+        <item>هيئر جيل</item>
+        <item>ويڪس</item>
+        <item>برائيڊل پيڪيج</item>
+        <item>ٻارن جي ڪٽنگ</item>
+    </string-array>
+    <string-array name="vocab_solar_items">
+        <item>پينل</item>
+        <item>انورٽر</item>
+        <item>بيٽري</item>
+    </string-array>
+    <string-array name="vocab_solar_types">
+        <item>سولر</item>
+        <item>بجلي</item>
+        <item>وائرنگ</item>
+        <item>تنصيب</item>
+    </string-array>
+    <string-array name="vocab_solar_starters">
+        <item>سولر پينل</item>
+        <item>انورٽر</item>
+        <item>بيٽري</item>
+        <item>چارج ڪنٽرولر</item>
+        <item>ڊي سي ڪيبل</item>
+        <item>بريڪر</item>
+        <item>اسٽينڊ</item>
+        <item>پکو</item>
+        <item>ايل اي ڊي بلب</item>
+        <item>واٽر پمپ</item>
+        <item>تنصيب</item>
+    </string-array>
+    <string-array name="vocab_general_items">
+        <item>شيءِ</item>
+        <item>پيڪيٽ</item>
+        <item>بوتل</item>
+    </string-array>
+    <string-array name="vocab_general_types">
+        <item>سامان</item>
+        <item>سروس</item>
+        <item>ٻيو</item>
+    </string-array>
+    <string-array name="vocab_general_starters">
+        <item>شيءِ</item>
+        <item>سروس</item>
+        <item>ڊليوري</item>
+        <item>مرمت</item>
+        <item>پيڪيٽ</item>
+        <item>بوتل</item>
+        <item>دٻو</item>
+    </string-array>
 </resources>
