@@ -96,6 +96,19 @@ object ProductDetailsDialog {
         }
         view.findViewById<android.widget.TextView>(R.id.tvProductTypeLabel).text = TradeVocab.typeHint(activity)
         etUnit.hint = TradeVocab.unitOptionalHint(activity)
+        // The inspection details belong to the trades an inspector visits
+        // (9 Oct): hidden for any other, in the medical trade's own words for
+        // a pharmacy. Hidden fields still hold what was saved, so a trade
+        // switch never erases them.
+        val trade = com.innovation313.roshankhata.data.Trade.current(activity)
+        view.findViewById<View>(R.id.complianceGroup).visibility =
+            if (com.innovation313.roshankhata.data.TradeFeatures.inspectorReports(activity)) View.VISIBLE else View.GONE
+        if (trade == com.innovation313.roshankhata.data.Trade.MEDICAL) {
+            view.findViewById<android.widget.TextView>(R.id.tvComplianceExplain).setText(R.string.compliance_explain_medical)
+            view.findViewById<android.widget.TextView>(R.id.tvTechnicalLabel).setText(R.string.technical_name_hint_medical)
+            view.findViewById<android.widget.TextView>(R.id.tvFormulationLabel).setText(R.string.formulation_hint_medical)
+            view.findViewById<android.widget.TextView>(R.id.tvRegistrationLabel).setText(R.string.registration_number_hint_medical)
+        }
         val etTechnical = field(R.id.etTechnicalName).apply { setText(product.technicalName) }
         val etFormulation = field(R.id.etFormulation).apply { setText(product.formulation ?: guess?.formulation) }
         val etRegistration =

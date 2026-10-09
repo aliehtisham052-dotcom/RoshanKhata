@@ -136,34 +136,15 @@
             android:textColor="@color/ink_soft"
             android:textSize="11sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="18dp"
-            android:background="@color/divider_grey" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="@string/compliance_section"
-            android:textColor="@color/brand_green_text"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/compliance_explain"
-            android:textColor="@color/ink_soft"
-            android:textSize="12sp" />
-
+        <!-- The product type is every trade's (its list is the trade's own).
+             The inspection details below are only for the trades an
+             inspector visits - agriculture and medical - and
+             ProductDetailsDialog hides the whole group for any other (9 Oct). -->
         <TextView
             android:id="@+id/tvProductTypeLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="14dp"
             android:labelFor="@+id/etProductType"
             android:text="@string/product_type_hint"
             android:textColor="@color/ink_soft"
@@ -179,53 +160,89 @@
             android:importantForAutofill="no"
             android:inputType="textCapWords" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:labelFor="@+id/etTechnicalName"
-            android:text="@string/technical_name_hint"
-            android:textColor="@color/ink_soft"
-            android:textSize="12sp" />
 
-        <EditText
-            android:id="@+id/etTechnicalName"
+        <LinearLayout
+            android:id="@+id/complianceGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:importantForAutofill="no"
-            android:inputType="text" />
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:labelFor="@+id/etFormulation"
-            android:text="@string/formulation_hint"
-            android:textColor="@color/ink_soft"
-            android:textSize="12sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="18dp"
+                android:background="@color/divider_grey" />
 
-        <EditText
-            android:id="@+id/etFormulation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:importantForAutofill="no"
-            android:inputType="textCapCharacters" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/compliance_section"
+                android:textColor="@color/brand_green_text"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:labelFor="@+id/etRegistrationNumber"
-            android:text="@string/registration_number_hint"
-            android:textColor="@color/ink_soft"
-            android:textSize="12sp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:id="@+id/tvComplianceExplain"
+                android:text="@string/compliance_explain"
+                android:textColor="@color/ink_soft"
+                android:textSize="12sp" />
 
-        <EditText
-            android:id="@+id/etRegistrationNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:importantForAutofill="no"
-            android:inputType="text" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:id="@+id/tvTechnicalLabel"
+                android:labelFor="@+id/etTechnicalName"
+                android:text="@string/technical_name_hint"
+                android:textColor="@color/ink_soft"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/etTechnicalName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:id="@+id/tvFormulationLabel"
+                android:labelFor="@+id/etFormulation"
+                android:text="@string/formulation_hint"
+                android:textColor="@color/ink_soft"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/etFormulation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="textCapCharacters" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:id="@+id/tvRegistrationLabel"
+                android:labelFor="@+id/etRegistrationNumber"
+                android:text="@string/registration_number_hint"
+                android:textColor="@color/ink_soft"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/etRegistrationNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

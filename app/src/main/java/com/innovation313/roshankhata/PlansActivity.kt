@@ -59,6 +59,9 @@ class PlansActivity : BaseActivity() {
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
         tvEmpty = findViewById(R.id.tvNoPlans)
+        // "After the harvest" is an agri shop's instalment; others read the
+        // same help without it (9 Oct).
+        if (!com.innovation313.roshankhata.data.TradeFeatures.seasons(this)) tvEmpty.setText(R.string.no_plans_general)
 
         adapter = PlanAdapter { plan -> showPlanActions(plan) }
         val rv: RecyclerView = findViewById(R.id.rvPlans)

@@ -1289,7 +1289,7 @@
     <string name="product_type_seed">Benih</string>
     <string name="technical_name_hint">Bahan aktif, mis. Klorpirifos 40% EC</string>
     <string name="formulation_hint">Formulasi — EC, WP, SC, GR, SL, WG</string>
-    <string name="registration_number_hint">Nomor pendaftaran produk</string>
+    <string name="registration_number_hint">Nomor pendaftaran pestisida</string>
     <string name="product_who_bought">Siapa yang membeli ini</string>
     <string name="product_edit_details">Ubah detail</string>
     <string name="rate_list_title">Daftar harga</string>
@@ -2264,4 +2264,10 @@
         <item>Kotak</item>
     </string-array>
     <string name="trade_pick_title">Toko ini jenis apa?</string>
+    <string name="registration_number_hint_medical">Nomor izin edar obat</string>
+    <string name="technical_name_hint_medical">Nama generik, mis. Paracetamol 500 mg</string>
+    <string name="formulation_hint_medical">Bentuk — tablet, kapsul, sirup, injeksi</string>
+    <string name="compliance_explain_medical">Hanya perlu jika pemeriksa obat mungkin memintanya.</string>
+    <string name="scheme_name_hint_general">Nama, mis. Promo Lebaran 2026</string>
+    <string name="no_plans_general">Belum ada rencana cicilan.\n\nGunakan ini saat pelanggan akan melunasi suatu jumlah dengan mencicil selama beberapa bulan.</string>
 </resources>

@@ -1285,7 +1285,7 @@
     <string name="product_type_seed">بیج</string>
     <string name="technical_name_hint">مؤثر جزو، مثلاً Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">فارمولیشن — EC, WP, SC, GR, SL, WG</string>
-    <string name="registration_number_hint">رجسٹریشن نمبر (DRAP)</string>
+    <string name="registration_number_hint">پیسٹی سائیڈ رجسٹریشن نمبر</string>
     <string name="product_who_bought">کس کس نے خریدا</string>
     <string name="product_edit_details">تفصیلات میں ترمیم</string>
     <string name="rate_list_title">ریٹ لسٹ</string>
@@ -2263,4 +2263,10 @@
         <item>ڈبہ</item>
     </string-array>
     <string name="trade_pick_title">یہ کس چیز کی دکان ہے؟</string>
+    <string name="registration_number_hint_medical">دوا کا رجسٹریشن نمبر</string>
+    <string name="technical_name_hint_medical">جنرک نام (سالٹ)، مثلاً Paracetamol 500 mg</string>
+    <string name="formulation_hint_medical">شکل — گولی، کیپسول، شربت، ٹیکہ</string>
+    <string name="compliance_explain_medical">صرف اُس وقت درکار جب ڈرگ انسپکٹر پوچھ سکتا ہو۔</string>
+    <string name="scheme_name_hint_general">نام، مثلاً عید آفر 2026</string>
+    <string name="no_plans_general">ابھی کوئی ادائیگی منصوبہ نہیں۔\n\nیہ اس وقت کام آتے ہیں جب گاہک رقم چند مہینوں میں قسطوں میں ادا کرے گا۔</string>
 </resources>
