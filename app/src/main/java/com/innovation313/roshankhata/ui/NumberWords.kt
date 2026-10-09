@@ -129,6 +129,7 @@ object NumberWords {
             "bn" -> inWordsBengali(amount, "রুপি")
             "id" -> inWordsIndonesian(amount, "rupee")
             "fa" -> inWordsPersian(amount, "روپیه")
+            "ar" -> inWordsArabic(amount, "روبية")
             else -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Rupees") { englishBelow100(it) }
         }
 
@@ -154,6 +155,18 @@ object NumberWords {
                     "Rp" -> "rupiah"
                     "Rs", "₹" -> "rupee"
                     "৳" -> "taka"
+                    else -> Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign
+                }
+            )
+        }
+        // Arabic (9 Oct audit) in its own words and Western groups for any
+        // currency, as Persian below; it printed English before.
+        if (context.getString(R.string.number_words_language) == "ar") {
+            return inWordsArabic(
+                amount,
+                when (sign) {
+                    "Rs", "₹" -> "روبية"
+                    "৳" -> "تاكا"
                     else -> Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign
                 }
             )
@@ -277,6 +290,67 @@ object NumberWords {
      * one billion take "یک". Whole units only and never negative, like every
      * other language here; capped at 999 milyard.
      */
+    /**
+     * Arabic (9 Oct audit), read the way a figure is read aloud: ones before
+     * tens joined by "و" (واحد وعشرون), hundreds as one word (ثلاثمائة), and
+     * the thousand and million counted with the plural after 3-10 (خمسة
+     * آلاف), the accusative singular after 11-99 (خمسة عشر ألفًا) and the
+     * dual for two (ألفان, مليونان). The number is read in its counting
+     * form and the currency follows it, as on a printed receipt; full
+     * agreement with the noun would change by currency, and a receipt does
+     * not do it either. Not yet checked by a native speaker.
+     */
+    fun inWordsArabic(amount: Double, unitWord: String): String {
+        var n = amount.toLong().coerceAtLeast(0)
+        if (n == 0L) return "صفر $unitWord"
+
+        fun below1000(v: Int): String {
+            val parts = mutableListOf<String>()
+            val h = v / 100
+            val r = v % 100
+            if (h > 0) parts.add(arabicHundreds[h])
+            when {
+                r == 0 -> Unit
+                r < 20 -> parts.add(arabicOnes[r])
+                r % 10 == 0 -> parts.add(arabicTens[r / 10])
+                else -> parts.add(arabicOnes[r % 10] + " و" + arabicTens[r / 10])
+            }
+            return parts.joinToString(" و")
+        }
+
+        fun group(count: Int, one: String, two: String, plural: String, accusative: String): String = when {
+            count == 1 -> one
+            count == 2 -> two
+            count % 100 in 3..10 -> "${below1000(count)} $plural"
+            count % 100 in 11..99 -> "${below1000(count)} $accusative"
+            else -> "${below1000(count)} $one"
+        }
+
+        val parts = mutableListOf<String>()
+        val milyar = (n / 1_000_000_000).coerceAtMost(999).toInt(); n %= 1_000_000_000
+        val milyun = (n / 1_000_000).toInt(); n %= 1_000_000
+        val alf = (n / 1_000).toInt(); n %= 1_000
+
+        if (milyar > 0) parts.add(group(milyar, "مليار", "ملياران", "مليارات", "مليارًا"))
+        if (milyun > 0) parts.add(group(milyun, "مليون", "مليونان", "ملايين", "مليونًا"))
+        if (alf > 0) parts.add(group(alf, "ألف", "ألفان", "آلاف", "ألفًا"))
+        if (n > 0) parts.add(below1000(n.toInt()))
+
+        return parts.joinToString(" و") + " " + unitWord
+    }
+
+    private val arabicOnes = arrayOf(
+        "صفر", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة", "عشرة",
+        "أحد عشر", "اثنا عشر", "ثلاثة عشر", "أربعة عشر", "خمسة عشر", "ستة عشر", "سبعة عشر",
+        "ثمانية عشر", "تسعة عشر"
+    )
+    private val arabicTens = arrayOf(
+        "", "عشرة", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"
+    )
+    private val arabicHundreds = arrayOf(
+        "", "مائة", "مائتان", "ثلاثمائة", "أربعمائة", "خمسمائة", "ستمائة", "سبعمائة", "ثمانمائة", "تسعمائة"
+    )
+
     fun inWordsPersian(amount: Double, unitWord: String): String {
         var n = amount.toLong().coerceAtLeast(0)
         if (n == 0L) return "${persianOnes[0]} $unitWord"

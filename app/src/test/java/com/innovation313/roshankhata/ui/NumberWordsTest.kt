@@ -156,4 +156,19 @@ class NumberWordsTest {
         assertEquals("Zero EUR", NumberWords.spellWestern(0.0, "EUR"))
         assertEquals("Ninety-Nine SAR", NumberWords.spellWestern(99.9, "SAR"))
     }
+
+    @Test
+    fun `arabic reads ones before tens and counts thousands by their number`() {
+        assertEquals("صفر روبية", NumberWords.inWordsArabic(0.0, "روبية"))
+        assertEquals("سبعة روبية", NumberWords.inWordsArabic(7.0, "روبية"))
+        assertEquals("خمسة عشر روبية", NumberWords.inWordsArabic(15.0, "روبية"))
+        assertEquals("واحد وعشرون روبية", NumberWords.inWordsArabic(21.0, "روبية"))
+        assertEquals("مائة وخمسون روبية", NumberWords.inWordsArabic(150.0, "روبية"))
+        assertEquals("ألف روبية", NumberWords.inWordsArabic(1000.0, "روبية"))
+        assertEquals("ألفان روبية", NumberWords.inWordsArabic(2000.0, "روبية"))
+        assertEquals("خمسة آلاف ومائتان روبية", NumberWords.inWordsArabic(5200.0, "روبية"))
+        assertEquals("خمسة عشر ألفًا روبية", NumberWords.inWordsArabic(15000.0, "روبية"))
+        assertEquals("مائة ألف روبية", NumberWords.inWordsArabic(100000.0, "روبية"))
+        assertEquals("مليونان وثلاثة آلاف روبية", NumberWords.inWordsArabic(2003000.0, "روبية"))
+    }
 }

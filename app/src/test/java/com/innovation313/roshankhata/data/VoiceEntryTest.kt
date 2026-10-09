@@ -420,4 +420,50 @@ class VoiceEntryTest {
         assertEquals(5000.0, p.amount!!, 0.0)
         assertNull(VoiceEntry.parse("پنج هزار", emptyList(), "ur-PK").amount?.takeIf { it == 5000.0 })
     }
+
+    // ------------------------------------------- the other app languages (9 Oct)
+
+    /**
+     * The app speaks nine languages; the microphone heard "gave" and "got" in
+     * five. Each case is a sentence as that language's recogniser writes it,
+     * with the customer's name in the shop's own spelling.
+     */
+    private fun direction(spoken: String, name: String, given: Boolean, amount: Double = 5000.0, lang: String? = null) {
+        val p = VoiceEntry.parse(spoken, listOf(name, "Moon"), lang)
+        assertEquals(spoken, name, p.partyName)
+        assertEquals(spoken, amount, p.amount!!, 0.0)
+        assertEquals(spoken, given, p.isGiven)
+    }
+
+    @Test
+    fun `arabic gave and got`() {
+        direction("أعطيت أحمد 5000", "أحمد", true)
+        direction("استلمت من أحمد 5000", "أحمد", false)
+    }
+
+    @Test
+    fun `persian gave and got`() {
+        direction("به احمد 5000 دادم", "احمد", true, lang = "fa")
+        direction("از احمد 5000 گرفتم", "احمد", false, lang = "fa")
+    }
+
+    @Test
+    fun `sindhi gave and got`() {
+        direction("مون احمد کي 5000 ڏنا", "احمد", true)
+        direction("مون احمد کان 5000 ورتا", "احمد", false)
+    }
+
+    @Test
+    fun `indonesian gave and got`() {
+        direction("saya kasih Budi 5000", "Budi", true)
+        direction("terima dari Budi 5000", "Budi", false)
+    }
+
+    @Test
+    fun `hindi and bengali gave and got`() {
+        direction("मैंने राम को 5000 दिए", "राम", true)
+        direction("राम से 5000 मिले", "राम", false)
+        direction("আমি রহিম কে 5000 দিলাম", "রহিম", true)
+        direction("রহিম থেকে 5000 পেলাম", "রহিম", false)
+    }
 }
