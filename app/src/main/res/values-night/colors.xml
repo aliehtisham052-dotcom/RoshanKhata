@@ -103,4 +103,30 @@
     <color name="header_light_ink_soft">#9FC4AE</color>
     <color name="home_balance_solid">#1F3528</color>
     <color name="backup_ink">#FFE8A8</color>
+
+    <!-- Trade picker, dark: deep chip, light glyph. -->
+    <color name="trade_agri_bg">#1F3528</color>
+    <color name="trade_agri_fg">#8FD3A8</color>
+    <color name="trade_medical_bg">#1E2A3A</color>
+    <color name="trade_medical_fg">#9CC0EA</color>
+    <color name="trade_mobile_bg">#232A31</color>
+    <color name="trade_mobile_fg">#B4C3D3</color>
+    <color name="trade_kiryana_bg">#33291A</color>
+    <color name="trade_kiryana_fg">#E3C47A</color>
+    <color name="trade_hardware_bg">#2A2A27</color>
+    <color name="trade_hardware_fg">#CFCFC8</color>
+    <color name="trade_dairy_bg">#1A3034</color>
+    <color name="trade_dairy_fg">#8ED0DA</color>
+    <color name="trade_tailor_bg">#2A2636</color>
+    <color name="trade_tailor_fg">#C7BCE6</color>
+    <color name="trade_auto_bg">#36261D</color>
+    <color name="trade_auto_fg">#E8B28F</color>
+    <color name="trade_furniture_bg">#302A1C</color>
+    <color name="trade_furniture_fg">#DCC28A</color>
+    <color name="trade_salon_bg">#36222B</color>
+    <color name="trade_salon_fg">#EBA9C4</color>
+    <color name="trade_solar_bg">#352C14</color>
+    <color name="trade_solar_fg">#F0CF6E</color>
+    <color name="trade_general_bg">#25301F</color>
+    <color name="trade_general_fg">#B3D49C</color>
 </resources>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One trade on the picker: icon chip, short name, what such a shop sells.
+     Heights wrap so a larger text size grows the card instead of cutting it. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tradeCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@drawable/bg_trade_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:minHeight="104dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp">
+
+        <ImageView
+            android:id="@+id/ivTradeIcon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_trade_chip"
+            android:importantForAccessibility="no"
+            android:padding="7dp"
+            tools:src="@drawable/ic_trade_agri" />
+
+        <TextView
+            android:id="@+id/tvTradeName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="Agriculture" />
+
+        <TextView
+            android:id="@+id/tvTradeExample"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAlignment="viewStart"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            tools:text="Pesticides · seeds · feed" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivTradeCheck"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:background="@drawable/bg_trade_check"
+        android:importantForAccessibility="no"
+        android:padding="4dp"
+        android:src="@drawable/ic_check_plain"
+        android:visibility="gone"
+        app:tint="@color/white" />
+</FrameLayout>

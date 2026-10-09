@@ -2397,7 +2397,7 @@ You can change this any time from this screen.</string>
         <item>box</item>
         <item>litre</item>
     </string-array>
-    <string name="trade_pick_title">What kind of shop is this?</string>
+    <string name="trade_pick_title">What does your shop sell?</string>
     <string name="registration_number_hint_medical">Drug registration number</string>
     <string name="technical_name_hint_medical">Generic name (salt), e.g. Paracetamol 500 mg</string>
     <string name="formulation_hint_medical">Form — tablet, capsule, syrup, injection</string>
@@ -2412,4 +2412,33 @@ You can change this any time from this screen.</string>
     <string name="tax_number_label">Tax No.</string>
     <string name="drive_signin_details">These details are what fixes it (Google Cloud → Credentials → Android client):</string>
     <string name="copy_details">Copy</string>
+    <string name="trade_name_agri">Agriculture</string>
+    <string name="trade_eg_agri">Pesticides · seeds · feed</string>
+    <string name="trade_name_medical">Medical store</string>
+    <string name="trade_eg_medical">Medicines · syrups</string>
+    <string name="trade_name_mobile">Mobile shop</string>
+    <string name="trade_eg_mobile">Phones · accessories</string>
+    <string name="trade_name_kiryana">Grocery</string>
+    <string name="trade_eg_kiryana">Flour · sugar · oil</string>
+    <string name="trade_name_hardware">Hardware</string>
+    <string name="trade_eg_hardware">Paint · pipes · tools</string>
+    <string name="trade_name_dairy">Dairy</string>
+    <string name="trade_eg_dairy">Milk · yogurt</string>
+    <string name="trade_name_tailor">Tailor</string>
+    <string name="trade_eg_tailor">Stitching · alterations</string>
+    <string name="trade_name_auto">Auto parts</string>
+    <string name="trade_eg_auto">Parts · oil · tyres</string>
+    <string name="trade_name_furniture">Furniture</string>
+    <string name="trade_eg_furniture">Sofas · beds · tables</string>
+    <string name="trade_name_salon">Salon</string>
+    <string name="trade_eg_salon">Haircuts · shaves</string>
+    <string name="trade_name_solar">Solar &amp; electric</string>
+    <string name="trade_eg_solar">Panels · wiring</string>
+    <string name="trade_name_general">General shop</string>
+    <string name="trade_eg_general">Anything else</string>
+    <string name="trade_kicker_new">New shop</string>
+    <string name="trade_kicker_change">Shop type</string>
+    <string name="trade_pick_explain">Roshan Khata will set its examples, units and special features to suit your shop.</string>
+    <string name="trade_pick_later">You can change this later in Profile</string>
+    <string name="trade_card_selected">Selected</string>
 </resources>
