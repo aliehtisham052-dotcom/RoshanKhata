@@ -391,4 +391,6 @@
     <color name="trade_solar_fg">#765A10</color>
     <color name="trade_general_bg">#E7EFE0</color>
     <color name="trade_general_fg">#3F6032</color>
+    <!-- The ring round a chosen trade card: a line, not text or a fill. -->
+    <color name="trade_card_ring">#1B5E3A</color>
 </resources>
