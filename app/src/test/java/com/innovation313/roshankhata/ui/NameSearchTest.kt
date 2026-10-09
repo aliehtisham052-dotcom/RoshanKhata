@@ -380,4 +380,12 @@ class NameSearchTest {
         // name that begins with them once folded; then the word; then the slip.
         assertEquals(listOf("Abu Bilal", "Billa College", "Awais Billa Ramky", "Bill"), sorted)
     }
+
+    /** 9 Oct audit: Sindhi letters and the Arabic/Persian heh used to be dropped. */
+    @Test
+    fun `a name written in Sindhi or Persian meets the same name in Urdu`() {
+        assertEquals(NameSearch.fold("کریم"), NameSearch.fold("ڪريم"))
+        assertEquals(NameSearch.fold("مہر"), NameSearch.fold("مهر"))
+        assertEquals(NameSearch.fold("ٽيپو"), NameSearch.fold("ٹیپو"))
+    }
 }
