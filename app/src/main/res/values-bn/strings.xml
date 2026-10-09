@@ -1319,7 +1319,7 @@
     <string name="product_type_seed">বীজ</string>
     <string name="technical_name_hint">সক্রিয় উপাদান, যেমন Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">ফর্মুলেশন — EC, WP, SC, GR, SL, WG</string>
-    <string name="registration_number_hint">রেজিস্ট্রেশন নম্বর (DRAP)</string>
+    <string name="registration_number_hint">কীটনাশক নিবন্ধন নম্বর</string>
     <string name="product_who_bought">এটি কে কিনেছে</string>
     <string name="product_edit_details">তথ্য সম্পাদনা</string>
     <string name="rate_list_title">দরের তালিকা</string>
@@ -2307,4 +2307,10 @@
         <item>বাক্স</item>
     </string-array>
     <string name="trade_pick_title">এটি কীসের দোকান?</string>
+    <string name="registration_number_hint_medical">ওষুধের নিবন্ধন নম্বর</string>
+    <string name="technical_name_hint_medical">জেনেরিক নাম, যেমন Paracetamol 500 mg</string>
+    <string name="formulation_hint_medical">ধরন — ট্যাবলেট, ক্যাপসুল, সিরাপ, ইনজেকশন</string>
+    <string name="compliance_explain_medical">শুধু তখনই দরকার যখন ড্রাগ ইন্সপেক্টর চাইতে পারেন।</string>
+    <string name="scheme_name_hint_general">নাম, যেমন উৎসব অফার 2026</string>
+    <string name="no_plans_general">এখনো কোনো পেমেন্ট প্ল্যান নেই।\n\nগ্রাহক কোনো অঙ্ক কয়েক মাসে কিস্তিতে শোধ করলে এগুলো ব্যবহার করুন।</string>
 </resources>

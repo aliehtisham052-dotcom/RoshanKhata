@@ -1405,7 +1405,7 @@
     <string name="product_type_seed">بذور</string>
     <string name="technical_name_hint">المادة الفعالة، مثل Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">التركيبة — EC, WP, SC, GR, SL, WG</string>
-    <string name="registration_number_hint">رقم التسجيل (DRAP)</string>
+    <string name="registration_number_hint">رقم تسجيل المبيد</string>
     <string name="product_who_bought">من اشترى هذا</string>
     <string name="product_edit_details">تعديل البيانات</string>
     <string name="rate_list_title">قائمة الأسعار</string>
@@ -2435,4 +2435,10 @@
         <item>صندوق</item>
     </string-array>
     <string name="trade_pick_title">ما نوع هذا المتجر؟</string>
+    <string name="registration_number_hint_medical">رقم تسجيل الدواء</string>
+    <string name="technical_name_hint_medical">الاسم العلمي، مثل Paracetamol 500 mg</string>
+    <string name="formulation_hint_medical">الشكل — أقراص، كبسولات، شراب، حقن</string>
+    <string name="compliance_explain_medical">مطلوبة فقط إذا قد يطلبها مفتش الأدوية.</string>
+    <string name="scheme_name_hint_general">الاسم، مثل عرض العيد 2026</string>
+    <string name="no_plans_general">لا خطط سداد بعد.\n\nاستخدمها حين يسدد العميل مبلغًا على أقساط عبر بضعة أشهر.</string>
 </resources>

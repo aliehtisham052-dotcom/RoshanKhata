@@ -1285,7 +1285,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="product_type_seed">Beej</string>
     <string name="technical_name_hint">Moassir juzu, maslan Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">Formulation — EC, WP, SC, GR, SL, WG</string>
-    <string name="registration_number_hint">Registration number (DRAP)</string>
+    <string name="registration_number_hint">Pesticide registration number</string>
     <string name="product_who_bought">Kis kis ne khareeda</string>
     <string name="product_edit_details">Tafseelat mein tarmeem</string>
     <string name="rate_list_title">Rate List</string>
@@ -2263,4 +2263,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item>Dabba</item>
     </string-array>
     <string name="trade_pick_title">Ye kis cheez ki dukaan hai?</string>
+    <string name="registration_number_hint_medical">Dawa ka registration number</string>
+    <string name="technical_name_hint_medical">Generic naam (salt), maslan Paracetamol 500 mg</string>
+    <string name="formulation_hint_medical">Shakal — goli, capsule, sharbat, teeka</string>
+    <string name="compliance_explain_medical">Sirf tab zaroori jab drug inspector pooch sakta ho.</string>
+    <string name="scheme_name_hint_general">Naam, maslan Eid offer 2026</string>
+    <string name="no_plans_general">Abhi koi adaigi mansooba nahi.\n\nYe us waqt kaam aate hain jab gahak raqam chand mahinon mein qiston mein ada karega.</string>
 </resources>

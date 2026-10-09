@@ -1313,7 +1313,7 @@
     <string name="product_type_seed">ٻج</string>
     <string name="technical_name_hint">مؤثر جزو، مثال Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">فارموليشن — EC, WP, SC, GR, SL, WG</string>
-    <string name="registration_number_hint">رجسٽريشن نمبر (DRAP)</string>
+    <string name="registration_number_hint">زرعي دوا جو رجسٽريشن نمبر</string>
     <string name="product_who_bought">ڪنهن ڪنهن ورتو</string>
     <string name="product_edit_details">تفصيلن ۾ ترميم</string>
     <string name="rate_list_title">ريٽ لسٽ</string>
@@ -2291,4 +2291,10 @@
         <item>دٻو</item>
     </string-array>
     <string name="trade_pick_title">هي ڪهڙي شيءِ جو دڪان آهي؟</string>
+    <string name="registration_number_hint_medical">دوا جو رجسٽريشن نمبر</string>
+    <string name="technical_name_hint_medical">جنرڪ نالو (سالٽ)، مثال Paracetamol 500 mg</string>
+    <string name="formulation_hint_medical">شڪل — گولي، ڪيپسول، شربت، انجيڪشن</string>
+    <string name="compliance_explain_medical">رڳو تڏهن گهربل جڏهن ڊرگ انسپيڪٽر پڇي سگهي.</string>
+    <string name="scheme_name_hint_general">نالو، مثال عيد آفر 2026</string>
+    <string name="no_plans_general">اڃا ڪا ادائيگي رٿا ناهي.\n\nجڏهن گراهڪ ڪا رقم ڪجهه مهينن ۾ قسطن ۾ لاهيندو، تڏهن اهي استعمال ڪريو.</string>
 </resources>
