@@ -575,8 +575,8 @@
     <string name="business_rename_hint">برای باز کردن بزنید · برای تغییر نام نگه دارید</string>
     <string name="restore_business_mismatch">این پشتیبان متعلق به %1$s است، اما اکنون %2$s باز است. بازیابی، داده‌های کسب‌وکار باز را با آن پشتیبان جایگزین می‌کند.</string>
     <string name="contact_in_recycle_bin">در سطل بازیافت</string>
-    <string name="restore_no_images">سوابق شما بازگشت، اما این پشتیبان تصویری همراه نداشت، بنابراین عکس‌ها، عکس صورتحساب‌ها و کیوآر بازیابی نشدند. برای نگه‌داشتن تصاویر در پشتیبان‌های بعدی، پیش از پشتیبان‌گیری Include images را روشن کنید.</string>
-    <string name="restore_file_no_images">سوابق شما بازگشت. پشتیبان فایلی تنها سوابق را می‌برد و هرگز تصاویر را شامل نمی‌شود. برای حفظ عکس‌ها نیز، Include images را روشن کنید و در گوگل درایو پشتیبان بگیرید.</string>
+    <string name="restore_no_images">سوابق شما بازگشت، اما این پشتیبان تصویری همراه نداشت، بنابراین عکس‌ها، عکس صورتحساب‌ها و کیوآر بازیابی نشدند. برای نگه‌داشتن تصاویر در پشتیبان‌های بعدی، پیش از پشتیبان‌گیری «تصاویر را هم شامل کن» را روشن کنید.</string>
+    <string name="restore_file_no_images">سوابق شما بازگشت. پشتیبان فایلی تنها سوابق را می‌برد و هرگز تصاویر را شامل نمی‌شود. برای حفظ عکس‌ها نیز، «تصاویر را هم شامل کن» را روشن کنید و در گوگل درایو پشتیبان بگیرید.</string>
     <string name="drive_looking">در حال جست‌وجو در درایو…</string>
     <plurals name="drive_found_businesses">
         <item quantity="one">%1$d کسب‌وکار در درایو پیدا شد</item>
@@ -2297,4 +2297,10 @@
     <string name="compliance_explain_medical">فقط وقتی لازم است که بازرس دارو ممکن است بپرسد.</string>
     <string name="scheme_name_hint_general">نام، مثلاً پیشنهاد عید 2026</string>
     <string name="no_plans_general">هنوز برنامه پرداختی نیست.\n\nوقتی مشتری قرار است مبلغی را طی چند ماه قسطی تسویه کند، از این‌ها استفاده کنید.</string>
+    <string name="bill_entry_note">فاکتور %1$s</string>
+    <string name="backup_err_unreadable">فایل به‌عنوان پشتیبان خوانده نشد.</string>
+    <string name="backup_err_not_ours">این فایل پشتیبان روشن خاتا نیست.</string>
+    <string name="backup_err_too_new">این پشتیبان با نسخهٔ جدیدتر روشن خاتا ساخته شده است. اول برنامه را به‌روز کنید.</string>
+    <string name="backup_err_incomplete">این پشتیبان ناقص است. ردیف‌هایی که مشتری‌شان در فایل نیست: %1$d.</string>
+    <string name="tax_number_label">شماره مالیاتی</string>
 </resources>

@@ -2313,4 +2313,10 @@
     <string name="compliance_explain_medical">केवल तभी ज़रूरी जब ड्रग इंस्पेक्टर पूछ सकता हो।</string>
     <string name="scheme_name_hint_general">नाम, जैसे त्योहार ऑफ़र 2026</string>
     <string name="no_plans_general">अभी कोई भुगतान प्लान नहीं।\n\nजब ग्राहक रकम कुछ महीनों में किस्तों में चुकाए, तब इन्हें इस्तेमाल करें।</string>
+    <string name="bill_entry_note">बिल %1$s</string>
+    <string name="backup_err_unreadable">फ़ाइल बैकअप के रूप में पढ़ी नहीं जा सकी।</string>
+    <string name="backup_err_not_ours">यह रोशन खाता की बैकअप फ़ाइल नहीं है।</string>
+    <string name="backup_err_too_new">यह बैकअप रोशन खाता के नए संस्करण से बना है। पहले ऐप अपडेट करें।</string>
+    <string name="backup_err_incomplete">यह बैकअप अधूरा है। ऐसी एंट्री जिनका ग्राहक फ़ाइल में नहीं: %1$d।</string>
+    <string name="tax_number_label">कर संख्या</string>
 </resources>

@@ -383,7 +383,7 @@ class BusinessSettingsActivity : BaseActivity() {
         val details = listOfNotNull(
             etBusinessAddress.text.toString().trim().ifEmpty { null },
             etBusinessPhone.text.toString().trim().ifEmpty { null },
-            etStrn.text.toString().trim().ifEmpty { null }?.let { "STRN $it" }
+            etStrn.text.toString().trim().ifEmpty { null }?.let { "${BusinessProfile.taxLabel(this)} $it" }
         ).joinToString(" \u00B7 ")
         tvPreviewDetails.text = details
         tvPreviewDetails.visibility = if (details.isEmpty()) View.GONE else View.VISIBLE

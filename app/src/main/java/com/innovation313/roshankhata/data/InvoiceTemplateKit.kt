@@ -259,7 +259,7 @@ object InvoiceTemplateKit {
         // STRN and the shop's phone share one line, so a phone never needs a
         // slot of its own in a header whose lines are already placed.
         val contact = listOfNotNull(
-            strn?.let { "STRN: $it" },
+            strn?.let { "${BusinessProfile.taxLabel(context)}: $it" },
             BusinessProfile.businessPhone(context)
         ).joinToString("  \u00B7  ").ifEmpty { null }
 

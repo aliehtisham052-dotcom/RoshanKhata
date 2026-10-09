@@ -2404,4 +2404,10 @@ You can change this any time from this screen.</string>
     <string name="compliance_explain_medical">Only needed if a drug inspector may ask for them.</string>
     <string name="scheme_name_hint_general">Name, e.g. Eid offer 2026</string>
     <string name="no_plans_general">No payment plans yet.\n\nUse these when a customer will clear an amount in instalments across a few months.</string>
+    <string name="bill_entry_note">Bill %1$s</string>
+    <string name="backup_err_unreadable">The file could not be read as a backup.</string>
+    <string name="backup_err_not_ours">This is not a Roshan Khata backup file.</string>
+    <string name="backup_err_too_new">This backup was made by a newer version of Roshan Khata. Please update the app first.</string>
+    <string name="backup_err_incomplete">This backup is incomplete. Entries whose customer is missing from the file: %1$d.</string>
+    <string name="tax_number_label">Tax No.</string>
 </resources>

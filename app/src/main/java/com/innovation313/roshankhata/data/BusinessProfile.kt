@@ -193,6 +193,16 @@ object BusinessProfile {
         prefs(context).edit().putString(KEY_STRN, value?.trim().orEmpty()).apply()
     }
 
+    /**
+     * The label printed before the tax number (9 Oct). "STRN" is Pakistan's
+     * sales-tax registration, and every rupee shop keeps exactly the label it
+     * always printed; a shop in any other currency reads its own language's
+     * "Tax No." (Indonesian: NPWP) rather than a Pakistani acronym.
+     */
+    fun taxLabel(context: Context): String =
+        if (currency(context) == Currency.DEFAULT) "STRN"
+        else context.getString(com.innovation313.roshankhata.R.string.tax_number_label)
+
     // ---------- Currency sign (4 Oct 2026) ----------
 
     /** The sign this shop's figures wear. Never blank: unset = [Currency.DEFAULT]. */

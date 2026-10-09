@@ -242,7 +242,7 @@ class BackupActivity : BaseActivity() {
             is Backup.ImportResult.Failed -> {
                 MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.restore_from_file)
-                    .setMessage(getString(R.string.restore_failed, result.reason))
+                    .setMessage(getString(R.string.restore_failed, result.reason(this)))
                     .setPositiveButton(R.string.ok, null)
                     .show()
             }

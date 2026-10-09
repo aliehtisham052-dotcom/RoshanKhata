@@ -2269,4 +2269,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="compliance_explain_medical">Sirf tab zaroori jab drug inspector pooch sakta ho.</string>
     <string name="scheme_name_hint_general">Naam, maslan Eid offer 2026</string>
     <string name="no_plans_general">Abhi koi adaigi mansooba nahi.\n\nYe us waqt kaam aate hain jab gahak raqam chand mahinon mein qiston mein ada karega.</string>
+    <string name="bill_entry_note">Bill %1$s</string>
+    <string name="backup_err_unreadable">File backup ke taur par parhi nahi ja saki.</string>
+    <string name="backup_err_not_ours">Ye Roshan Khata ki backup file nahi hai.</string>
+    <string name="backup_err_too_new">Ye backup Roshan Khata ke naye version se bana hai. Pehle app update karein.</string>
+    <string name="backup_err_incomplete">Ye backup namukammal hai. Aise entries jin ka gahak file mein nahi: %1$d.</string>
+    <string name="tax_number_label">Tax No.</string>
 </resources>

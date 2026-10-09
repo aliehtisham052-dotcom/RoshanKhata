@@ -575,8 +575,8 @@
     <string name="business_rename_hint">کولڻ لاءِ دٻايو · نالو بدلائڻ لاءِ دير تائين دٻايو</string>
     <string name="restore_business_mismatch">هي بيڪ اپ %1$s جو آهي، پر هن وقت %2$s کليل آهي. بحال ڪرڻ سان کليل ڪاروبار جو ڊيٽا اُن بيڪ اپ سان بدلجي ويندو.</string>
     <string name="contact_in_recycle_bin">ري سائيڪل بن ۾</string>
-    <string name="restore_no_images">توهان جو رڪارڊ واپس اچي ويو، پر هن بيڪ اپ سان تصويرون نه هيون، ان ڪري فوٽو، بل جون تصويرون ۽ ڪيو آر بحال نه ٿيا. ايندڙ بيڪ اپ ۾ تصويرون رکڻ لاءِ بيڪ اپ کان اڳ Include images آن ڪريو.</string>
-    <string name="restore_file_no_images">توهان جو رڪارڊ واپس اچي ويو. فائل بيڪ اپ رڳو رڪارڊ کڻي ٿو — ان ۾ تصويرون ڪڏهن به شامل نه ٿينديون آهن. تصويرون به محفوظ رکڻ لاءِ Include images آن ڪري گوگل ڊرائيو تي بيڪ اپ ڪريو.</string>
+    <string name="restore_no_images">توهان جو رڪارڊ واپس اچي ويو، پر هن بيڪ اپ سان تصويرون نه هيون، ان ڪري فوٽو، بل جون تصويرون ۽ ڪيو آر بحال نه ٿيا. ايندڙ بيڪ اپ ۾ تصويرون رکڻ لاءِ بيڪ اپ کان اڳ «تصويرون پڻ شامل ڪريو» آن ڪريو.</string>
+    <string name="restore_file_no_images">توهان جو رڪارڊ واپس اچي ويو. فائل بيڪ اپ رڳو رڪارڊ کڻي ٿو — ان ۾ تصويرون ڪڏهن به شامل نه ٿينديون آهن. تصويرون به محفوظ رکڻ لاءِ «تصويرون پڻ شامل ڪريو» آن ڪري گوگل ڊرائيو تي بيڪ اپ ڪريو.</string>
     <string name="drive_looking">ڊرائيو تي ڏسي رهيا آهيون…</string>
     <plurals name="drive_found_businesses">
         <item quantity="one">ڊرائيو تي %1$d ڪاروبار مليو</item>
@@ -2297,4 +2297,10 @@
     <string name="compliance_explain_medical">رڳو تڏهن گهربل جڏهن ڊرگ انسپيڪٽر پڇي سگهي.</string>
     <string name="scheme_name_hint_general">نالو، مثال عيد آفر 2026</string>
     <string name="no_plans_general">اڃا ڪا ادائيگي رٿا ناهي.\n\nجڏهن گراهڪ ڪا رقم ڪجهه مهينن ۾ قسطن ۾ لاهيندو، تڏهن اهي استعمال ڪريو.</string>
+    <string name="bill_entry_note">بل %1$s</string>
+    <string name="backup_err_unreadable">فائل بيڪ اپ طور پڙهي نه سگهجي.</string>
+    <string name="backup_err_not_ours">هي روشن کاتي جي بيڪ اپ فائل ناهي.</string>
+    <string name="backup_err_too_new">هي بيڪ اپ روشن کاتي جي نئين ورزن سان ٺهيل آهي. پهريان ايپ اپڊيٽ ڪريو.</string>
+    <string name="backup_err_incomplete">هي بيڪ اپ اڻپورو آهي. اهڙيون داخلائون جن جو گراهڪ فائل ۾ ناهي: %1$d.</string>
+    <string name="tax_number_label">ٽيڪس نمبر</string>
 </resources>
