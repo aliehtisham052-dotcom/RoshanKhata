@@ -64,8 +64,10 @@ object HomeAlerts {
             context.getString(R.string.na_backup_other_phone_sub))
         else if (failedAt > last) out += Alert(Kind.BACKUP_FAILED, context.getString(R.string.notif_backup_failed_title),
             context.getString(R.string.na_backup_failed_sub), context.getString(R.string.na_tag_failed))
-        else if (last == 0L) out += Alert(Kind.BACKUP, context.getString(R.string.na_backup_never),
-            context.getString(R.string.na_backup_sub))
+        // "Never backed up" waits for a first customer (9 Oct): on a new, empty
+        // book it lit the bell with a 1 before the owner had written anything.
+        else if (last == 0L) { if (parties.isNotEmpty()) out += Alert(Kind.BACKUP, context.getString(R.string.na_backup_never),
+            context.getString(R.string.na_backup_sub)) }
         else {
             val days = ((System.currentTimeMillis() - last) / DAY).toInt()
             if (days >= 7) out += Alert(Kind.BACKUP, context.getString(R.string.na_backup, days.toString()),

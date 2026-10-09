@@ -13,7 +13,7 @@
     <string name="coach_skip">Skip</string>
     <string name="coach_next">Next</string>
     <string name="coach_done">Got it</string>
-    <string name="coach_desc_balance">Everything your customers owe you, minus everything you owe. Tap the eye to hide it when someone is looking.</string>
+    <string name="coach_desc_balance">Everything your customers owe you, minus everything you owe. It starts hidden as dots: tap the eye to see it, and again to hide it.</string>
     <string name="coach_desc_get">The total your customers still have to pay you.</string>
     <string name="coach_desc_give">The total you still have to pay your suppliers and others.</string>
     <string name="coach_title_search">Find a Customer</string>
@@ -2441,4 +2441,8 @@ You can change this any time from this screen.</string>
     <string name="trade_pick_explain">Roshan Khata will set its examples, units and special features to suit your shop.</string>
     <string name="trade_pick_later">You can change this later in Profile</string>
     <string name="trade_card_selected">Selected</string>
+    <string name="onboard_step">Step %1$s of %2$s</string>
+    <string name="coach_title_all">Every feature</string>
+    <string name="coach_desc_all">Products, Invoice, Zakat, Card and the rest are below. See all, or the ☰ menu at the top, lists every one of them.</string>
+    <string name="help_replay_tour">Show the Home tour again</string>
 </resources>

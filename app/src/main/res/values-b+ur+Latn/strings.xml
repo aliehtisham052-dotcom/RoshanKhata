@@ -9,7 +9,7 @@
     <string name="coach_skip">Skip Karein</string>
     <string name="coach_next">Agla</string>
     <string name="coach_done">Samajh Gaya</string>
-    <string name="coach_desc_balance">Customers ka tamam baqaya, minus jo aap ne dena hai. Koi dekh raha ho to aankh daba kar raqam chhupa lein.</string>
+    <string name="coach_desc_balance">Customers ka tamam baqaya, minus jo aap ne dena hai. Shuru mein yeh nuqton mein chhupa hota hai: dekhne ke liye aankh dabayein, chhupane ke liye dobara.</string>
     <string name="coach_desc_get">Kul raqam jo customers ne abhi aap ko deni hai.</string>
     <string name="coach_desc_give">Kul raqam jo aap ne abhi suppliers aur doosron ko deni hai.</string>
     <string name="coach_title_search">Customer Talash Karein</string>
@@ -2306,4 +2306,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="trade_pick_explain">Roshan Khata misalein, unit aur khaas features aap ki dukaan ke mutabiq kar dega.</string>
     <string name="trade_pick_later">Baad mein Profile se badal sakte hain</string>
     <string name="trade_card_selected">Muntakhib</string>
+    <string name="onboard_step">Marhala %1$s / %2$s</string>
+    <string name="coach_title_all">Tamam features</string>
+    <string name="coach_desc_all">Products, Invoice, Zakat, Card aur baqi sab neeche hain. \"Sab dekhein\" ya upar ☰ menu mein har feature maujood hai.</string>
+    <string name="help_replay_tour">Home ka taaruf dobara dikhayein</string>
 </resources>

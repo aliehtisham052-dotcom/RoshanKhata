@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatDelegate
@@ -22,7 +21,7 @@ import java.util.Locale
 /**
  * The first screen a new user sees: pick your language, in your own script.
  * The splash's own painting fills the top of the screen, anchored by its
- * tagline ([placeArtwork]); under it a paper panel carries the heading, nine
+ * tagline ([com.innovation313.roshankhata.ui.SplashArt]); under it a paper panel carries the heading, nine
  * real buttons of one size in a 3 x 3 grid, and Continue - see
  * activity_language.xml. (Until 9 Oct this was a second, dark-green painting
  * with the buttons placed on it by guidelines; the two first screens now
@@ -51,10 +50,6 @@ class LanguageActivity : BaseActivity() {
         private const val PREFS = "language"
         private const val KEY_CHOSEN = "chosen"
         private const val STATE_MARKED = "marked"
-        /** splash_art.webp: its size, and how far down it the tagline ends. */
-        private const val ART_W = 887f
-        private const val ART_H = 1774f
-        private const val TAGLINE_OF_ART = 0.62f
         /**
          * Clear space between the tagline and the panel's heading, in dp:
          * more than the 40dp fade at the region's foot, so the tagline sits
@@ -107,9 +102,11 @@ class LanguageActivity : BaseActivity() {
             findViewById<TextView>(id).textLocale = naskh
         }
 
-        val art = findViewById<ImageView>(R.id.ivLangArt)
-        art.addOnLayoutChangeListener { v, l, t, r, b, ol, ot, or_, ob ->
-            if (r - l != or_ - ol || b - t != ob - ot) placeArtwork(v as ImageView)
+        com.innovation313.roshankhata.ui.SplashArt.anchor(findViewById(R.id.ivLangArt), TAGLINE_GAP_DP)
+        // Step 1 of 3 on first run only; from More this is a setting, not a step.
+        if (!isChosen(this)) {
+            com.innovation313.roshankhata.ui.StepDots.show(
+                findViewById(R.id.langStepDots), findViewById(R.id.tvLangStep), 1)
         }
 
         languages = choices
@@ -148,31 +145,6 @@ class LanguageActivity : BaseActivity() {
         // the app stands now.
         val restored = savedInstanceState?.getString(STATE_MARKED)
         mark(restored ?: if (isChosen(this)) currentTag() else null)
-    }
-
-    /**
-     * Scale and place the painting so that its tagline ends [TAGLINE_GAP_DP]
-     * above the bottom of the artwork region, whatever the region's shape.
-     *
-     * The painting is never narrower than the region. When the region is
-     * tall, it is scaled up until the tagline reaches the line, which crops
-     * its sides a little; when the region is short, the width sets the scale
-     * and the top of the painting (the gold arc) is cropped instead. Either
-     * way the words are whole and the panel never climbs over them, which
-     * is what the first HTML mock-up got wrong on the owner's phone.
-     */
-    private fun placeArtwork(view: ImageView) {
-        val w = view.width.toFloat()
-        val h = view.height.toFloat()
-        if (w <= 0f || h <= 0f) return
-        val gap = TAGLINE_GAP_DP * resources.displayMetrics.density
-        val scale = maxOf(w / ART_W, (h - gap) / (TAGLINE_OF_ART * ART_H))
-        val drawnW = ART_W * scale
-        val drawnH = ART_H * scale
-        val matrix = android.graphics.Matrix()
-        matrix.setScale(scale, scale)
-        matrix.postTranslate((w - drawnW) / 2f, (h - gap) - TAGLINE_OF_ART * drawnH)
-        view.imageMatrix = matrix
     }
 
     private lateinit var languages: Map<Int, String>

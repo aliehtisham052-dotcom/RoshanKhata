@@ -38,16 +38,29 @@ class WelcomeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
-        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
-        // The screen is deep green top to bottom now (bg_welcome), like the
-        // language screen: transparent bars with light icons over it.
+        // Step 2 of 3, drawn like step 1 (9 Oct): the splash painting under
+        // the status bar, the panel under the navigation bar, dark icons on
+        // both because both are light.
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        @Suppress("DEPRECATION")
         window.statusBarColor = android.graphics.Color.TRANSPARENT
+        @Suppress("DEPRECATION")
         window.navigationBarColor = android.graphics.Color.TRANSPARENT
         if (android.os.Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
         androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).apply {
-            isAppearanceLightStatusBars = false
-            isAppearanceLightNavigationBars = false
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+        com.innovation313.roshankhata.ui.SplashArt.anchor(findViewById(R.id.ivWelcomeArt), TAGLINE_GAP_DP)
+        com.innovation313.roshankhata.ui.StepDots.show(
+            findViewById(R.id.welcomeStepDots), findViewById(R.id.tvWelcomeStep), 2)
+        val panel = findViewById<android.view.View>(R.id.welcomePanel)
+        val basePad = panel.paddingBottom
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(panel) { v, insets ->
+            val nav = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars()).bottom
+            v.setPaddingRelative(v.paddingStart, v.paddingTop, v.paddingEnd, basePad + nav)
+            insets
         }
 
         findViewById<MaterialButton>(R.id.btnWelcomeConnect).apply {
@@ -65,28 +78,40 @@ class WelcomeActivity : BaseActivity() {
     /**
      * The same two-step connect the backup screen uses: Sign in with Google to
      * learn the account (and show its email later), then authorize the Drive
-     * appdata folder. Whatever the outcome, the welcome has been seen — the
-     * owner is never brought back to it — so both success and decline proceed
-     * to the ledger; only the connection state differs.
+     * appdata folder. A connection, or the owner declining the Drive
+     * permission, moves on; a sign-in that did not happen keeps him on this
+     * step to try again or choose Maybe later.
      */
     private fun connectDrive() {
         lifecycleScope.launch {
+            var reason: String? = null
+            var ownerClosed = false
             val email = try {
                 DriveAuth.signIn(this@WelcomeActivity)
+            } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
+                android.util.Log.e("DriveSignIn", "signIn cancelled (Welcome)", e)
+                ownerClosed = com.innovation313.roshankhata.ui.SignInProblem.isOwnerDismissal(e.errorMessage?.toString())
+                reason = "${e.type.substringAfterLast('.')}: ${e.errorMessage}"
+                null
             } catch (e: Exception) {
-                // Never swallow the real reason a sign-in fails -- kept in
-                // Logcat so a future failure is diagnosable, not a mystery
-                // toast again.
                 android.util.Log.e("DriveSignIn", "signIn failed (Welcome)", e)
+                reason = (e as? androidx.credentials.exceptions.GetCredentialException)
+                    ?.let { "${it.type.substringAfterLast('.')}: ${it.errorMessage}" }
+                    ?: "${e.javaClass.simpleName}: ${e.message}"
                 null
             }
 
+            // Not connected: stay on this step (9 Oct). It used to toast and
+            // move on, so an owner who closed the account sheet by mistake
+            // lost the screen for good. Now he can try again or tap Maybe
+            // later; a real fault shows its reason with the package and
+            // SHA-1, the same dialog the backup screen uses.
             if (email == null) {
-                // Dismissed the account sheet. Not connected — but the welcome
-                // is done; let them into the app, they can connect later from
-                // the backup screen.
-                Toast.makeText(this@WelcomeActivity, R.string.drive_signin_failed, Toast.LENGTH_LONG).show()
-                markSeenAndProceed()
+                if (ownerClosed || reason == null) {
+                    Toast.makeText(this@WelcomeActivity, R.string.drive_signin_failed, Toast.LENGTH_LONG).show()
+                } else {
+                    com.innovation313.roshankhata.ui.SignInProblem.show(this@WelcomeActivity, reason)
+                }
                 return@launch
             }
 
@@ -196,7 +221,7 @@ class WelcomeActivity : BaseActivity() {
      */
     private fun markSeenAndProceed() {
         if (com.innovation313.roshankhata.data.BusinessProfile.trade(this) == null) {
-            com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = true) {
+            com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = true, step = 3) {
                 com.innovation313.roshankhata.data.BusinessProfile.setTrade(this, it)
                 proceed()
             }
@@ -218,6 +243,8 @@ class WelcomeActivity : BaseActivity() {
     }
 
     companion object {
+        /** The tagline's clear space above the panel, as on the language screen. */
+        private const val TAGLINE_GAP_DP = 52f
         private const val PREFS = "welcome"
         private const val KEY_SEEN = "welcome_seen"
 

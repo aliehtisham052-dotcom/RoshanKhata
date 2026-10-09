@@ -47,6 +47,16 @@ class HelpActivity : BaseActivity() {
         findViewById<MaterialButton>(R.id.btnReportProblem).setOnClickListener {
             startActivity(Intent(this, ReportProblemActivity::class.java))
         }
+        findViewById<MaterialButton>(R.id.btnReplayTour).setOnClickListener {
+            com.innovation313.roshankhata.ui.CoachMarkController.reset(this)
+            // Back to the one Home there is, which runs the tour as it opens.
+            startActivity(
+                android.content.Intent(this, MainActivity::class.java)
+                    .putExtra(MainActivity.EXTRA_UNLOCKED, true)
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+            finish()
+        }
         findViewById<MaterialButton>(R.id.btnRateApp).setOnClickListener {
             com.innovation313.roshankhata.ui.AppRating.launch(this)
         }

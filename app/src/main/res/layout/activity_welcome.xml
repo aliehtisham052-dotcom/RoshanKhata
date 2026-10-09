@@ -1,181 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The story scrolls; the choice does not. The Google button and "Maybe later"
-  sit pinned below the scrolling part, so both are on screen in every
-  language and on every phone. Urdu's Nastaliq lines stand taller than
-  English ones, and with everything in one ScrollView "Maybe later" was
-  pushed below the fold in Urdu: there, but invisible until scrolled to.
+  Step 2 of 3 (9 Oct): backup, on the same painting as the language screen.
+
+  Until now this screen was deep green with a second, differently drawn
+  logo, between two light screens: the first run went light - dark - light,
+  and the owner said the screens did not read as one app. It is now built
+  exactly like the language screen: the splash painting at the top, placed
+  by its tagline (SplashArt), fading into the paper, and under it a panel
+  sized by its content - the step, the promise, a quiet note, and the two
+  choices. The Google button keeps Google's own Light styling.
+
+  Fixed colours by day and by night, like the painting itself.
 -->
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/bg_welcome">
+    android:background="#F7F6F2">
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    android:fillViewport="true">
+    <FrameLayout
+        android:id="@+id/welcomeStage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipChildren="true"
+        app:layout_constraintBottom_toTopOf="@id/welcomePanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivWelcomeArt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="matrix"
+            android:src="@drawable/splash_art" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_lang_fade" />
+    </FrameLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/welcomePanel"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:paddingStart="28dp"
-        android:paddingEnd="28dp"
-        android:paddingTop="48dp"
-        android:paddingBottom="16dp">
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="420dp">
 
-        <!--
-          The logo on green (cut from the old dark language painting, edges
-          faded to transparent). The language screen itself moved to the
-          splash's light painting on 9 Oct; this welcome keeps its green.
-          logo_full stays as it is: the lock screen and splash icon use it.
-        -->
-        <ImageView
-            android:layout_width="236dp"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/app_name"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logo_on_green"
-            android:layout_marginTop="16dp" />
-
-        <!-- Gold rule with a diamond, as under the logo on the language screen. -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:importantForAccessibility="noHideDescendants">
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <View
-                android:layout_width="90dp"
-                android:layout_height="1dp"
-                android:background="@color/brand_gold" />
+            <LinearLayout
+                android:id="@+id/welcomeStepDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layoutDirection="ltr"
+                android:orientation="horizontal" />
 
-            <View
-                android:layout_width="9dp"
-                android:layout_height="9dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:background="@color/gold_on_dark"
-                android:rotation="45" />
-
-            <View
-                android:layout_width="90dp"
-                android:layout_height="1dp"
-                android:background="@color/brand_gold" />
+            <TextView
+                android:id="@+id/tvWelcomeStep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:letterSpacing="0.06"
+                android:textColor="#8A6A15"
+                android:textSize="11.5sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
             android:text="@string/welcome_title"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:textColor="#0F4A33"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:lineSpacingExtra="2dp"
             android:text="@string/welcome_body"
-            android:textColor="@color/header_on_dark"
-            android:textSize="15sp"
-            android:lineSpacingExtra="4dp"
-            android:gravity="center" />
+            android:textColor="#3E6B55"
+            android:textSize="13.5sp" />
 
-        <!-- The note as a quiet gold-edged card rather than grey small print. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_welcome_note"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_welcome_card"
             android:orientation="horizontal"
-            android:paddingStart="14dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="14dp"
-            android:paddingBottom="12dp">
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp">
 
             <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_marginTop="1dp"
-                android:contentDescription="@null"
+                android:importantForAccessibility="no"
                 android:src="@drawable/ic_shield_check"
-                app:tint="@color/gold_on_dark" />
+                app:tint="#8A6A15" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_weight="1"
-                android:layout_marginStart="12dp"
+                android:lineSpacingExtra="2dp"
                 android:text="@string/welcome_note"
-                android:textColor="@color/header_on_dark"
-                android:textSize="13sp"
-                android:lineSpacingExtra="3dp" />
+                android:textAlignment="viewStart"
+                android:textColor="#3E6B55"
+                android:textSize="12.5sp" />
         </LinearLayout>
 
-    </LinearLayout>
-
-</ScrollView>
-
-    <!-- Pinned below the scroll: always on screen. -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="28dp"
-        android:paddingEnd="28dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="20dp">
-
         <!--
-          Shown only after a Google account actually connects. It sits on THIS
-          screen, above the buttons, because the ledger's first-run walkthrough
-          opens over anything shown after this activity finishes — a toast there
-          is covered before the owner can read it.
+          Shown only after a Google account actually connects, on THIS screen:
+          anything shown after it finishes is covered by the next step.
         -->
         <LinearLayout
             android:id="@+id/welcomeSignedIn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_welcome_signed"
             android:gravity="center_vertical"
-            android:background="@drawable/bg_signin_confirm"
+            android:orientation="horizontal"
             android:paddingStart="16dp"
+            android:paddingTop="12dp"
             android:paddingEnd="16dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
+            android:paddingBottom="12dp"
             android:visibility="gone">
 
             <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:src="@drawable/ic_check_circle"
-                android:contentDescription="@null" />
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_check_circle" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:layout_marginStart="14dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/welcome_signed_in_title"
-                    android:textColor="@color/brand_green_text"
-                    android:textSize="16sp"
+                    android:textAlignment="viewStart"
+                    android:textColor="#1B5E3A"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -183,26 +178,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:textColor="@color/ink_soft"
+                    android:textAlignment="viewStart"
+                    android:textColor="#3E6B55"
+                    android:textDirection="ltr"
                     android:textSize="13sp" />
-
             </LinearLayout>
-
         </LinearLayout>
 
         <!--
           Google's Light "Sign in with Google" pill, per their branding
-          guidelines (required for app verification): white fill, 1dp
-          #747775 stroke, #1F1F1F Google Sans Medium, the standard-colour G on
-          white, sentence case. Their 40px button is scaled to 52dp keeping the
-          proportions — G 20px -> 26dp, padding 12 / 10 -> 16 / 13dp. The
-          colours are Google's, not the app's: do not restyle this button.
-          Labels auto-size so the longest locale stays on one line.
+          guidelines: white fill, 1dp #747775 stroke, #1F1F1F Google Sans
+          Medium, the standard-colour G, sentence case. Do not restyle.
         -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnWelcomeConnect"
             android:layout_width="match_parent"
             android:layout_height="52dp"
+            android:layout_marginTop="16dp"
             android:fontFamily="@font/google_sans_medium"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -221,10 +213,10 @@
             app:backgroundTint="@color/white"
             app:cornerRadius="26dp"
             app:icon="@drawable/ic_google_g"
-            app:iconTint="@null"
             app:iconGravity="textStart"
             app:iconPadding="13dp"
             app:iconSize="26dp"
+            app:iconTint="@null"
             app:strokeColor="@color/google_btn_stroke"
             app:strokeWidth="1dp" />
 
@@ -233,13 +225,12 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:text="@string/welcome_skip"
-            android:textColor="@color/gold_on_dark"
+            android:textAllCaps="false"
+            android:textColor="#1B5E3A"
             android:textSize="15sp"
             android:textStyle="bold"
-            app:rippleColor="@color/welcome_note_stroke" />
-
+            app:rippleColor="#331B5E3A" />
     </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,7 @@
     <string name="coach_skip">رد کردن</string>
     <string name="coach_next">بعدی</string>
     <string name="coach_done">متوجه شدم</string>
-    <string name="coach_desc_balance">همه طلب شما از مشتریان، منهای همه بدهی شما. اگر کسی نگاه می‌کند، روی چشم بزنید تا مبلغ پنهان شود.</string>
+    <string name="coach_desc_balance">همه طلب شما از مشتریان، منهای همه بدهی شما. در ابتدا با نقطه پنهان است: برای دیدن روی چشم بزنید و برای پنهان کردن دوباره.</string>
     <string name="coach_desc_get">جمع مبلغی که مشتریان هنوز باید به شما بپردازند.</string>
     <string name="coach_desc_give">جمع مبلغی که شما هنوز باید به تأمین‌کنندگان و دیگران بپردازید.</string>
     <string name="coach_title_search">جستجوی مشتری</string>
@@ -2334,4 +2334,8 @@
     <string name="trade_pick_explain">روشن خاتا مثال‌ها، واحدها و امکانات ویژه را مطابق مغازه شما تنظیم می‌کند.</string>
     <string name="trade_pick_later">بعداً می‌توانید از نمایه تغییرش دهید</string>
     <string name="trade_card_selected">انتخاب‌شده</string>
+    <string name="onboard_step">مرحله %1$s از %2$s</string>
+    <string name="coach_title_all">همه امکانات</string>
+    <string name="coach_desc_all">محصولات، فاکتور، زکات، کارت و بقیه پایین‌تر هستند. «همه» یا منوی ☰ در بالا همه را فهرست می‌کند.</string>
+    <string name="help_replay_tour">نمایش دوباره معرفی صفحه اصلی</string>
 </resources>

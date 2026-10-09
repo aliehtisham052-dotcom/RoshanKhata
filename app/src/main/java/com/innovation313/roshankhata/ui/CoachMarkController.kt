@@ -325,6 +325,12 @@ class CoachMarkController(
         fun hasRun(context: Context): Boolean =
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_RUN, false)
 
+        /** Help -> "Show the Home tour again": the next Home runs it once more. */
+        fun reset(context: Context) {
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putBoolean(KEY_RUN, false).apply()
+        }
+
         fun markRun(context: Context) {
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putBoolean(KEY_RUN, true).apply()

@@ -658,9 +658,14 @@ class MainActivity : BaseActivity() {
         val root = findViewById<android.view.ViewGroup>(android.R.id.content)
             .getChildAt(0) as? android.view.ViewGroup ?: return
 
+        // Six steps, top to bottom, never back up (9 Oct). The tour had sixteen,
+        // one per tile, and jumped from the daily row to Calculator at the
+        // foot of Tools, back up to Insights, down to the Bin and up again to
+        // Invoice - the screen scrolled to and fro and nobody reached the end.
+        // A new owner needs the figure, where his backup stands, the three
+        // books he will open daily, and where everything else lives; the rest
+        // he finds through "See all", which the last step points at.
         val steps = listOfNotNull(
-            // The header first — the net figure — and then every tile. One
-            // card and one count for the whole tour.
             findViewById<View>(R.id.balanceRow)?.let { row ->
                 CoachMarkController.Step(
                     target = row,
@@ -672,21 +677,27 @@ class MainActivity : BaseActivity() {
                     paddingDp = 3f
                 )
             },
+            findViewById<View>(R.id.homeBackupTap)?.takeIf { it.visibility == View.VISIBLE }?.let { chip ->
+                CoachMarkController.Step(
+                    target = chip,
+                    titleRes = R.string.coach_title_backup,
+                    descRes = R.string.coach_desc_backup,
+                    cornerRadiusDp = 12f,
+                    paddingDp = 3f
+                )
+            },
             tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
             tileStep(R.string.nav_cashbook, R.string.coach_title_nav_cashbook, R.string.coach_desc_nav_cashbook),
-            tileStep(R.string.nav_cheques, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques),
             tileStep(R.string.tile_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
-            tileStep(R.string.nav_plans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
-            tileStep(R.string.tile_expiry, R.string.coach_title_stock, R.string.coach_desc_stock),
-            tileStep(R.string.calculator, R.string.coach_title_calc, R.string.coach_desc_calc),
-            tileStep(R.string.tile_insights, R.string.coach_title_insights, R.string.coach_desc_insights),
-            tileStep(R.string.followup_title, R.string.coach_title_followup, R.string.coach_desc_followup),
-            tileStep(R.string.tile_zakat, R.string.coach_title_zakat, R.string.coach_desc_zakat),
-            tileStep(R.string.tile_card, R.string.coach_title_bizcard, R.string.coach_desc_bizcard),
-            tileStep(R.string.tile_settings, R.string.coach_title_settings, R.string.coach_desc_settings),
-            tileStep(R.string.tile_bin, R.string.coach_title_applock, R.string.coach_desc_applock),
-            tileStep(R.string.nav_invoice, R.string.coach_title_invoice, R.string.coach_desc_invoice),
-            tileStep(R.string.tile_products, R.string.coach_title_products, R.string.coach_desc_products)
+            findViewById<View>(R.id.tvSeeAll)?.let { all ->
+                CoachMarkController.Step(
+                    target = all,
+                    titleRes = R.string.coach_title_all,
+                    descRes = R.string.coach_desc_all,
+                    cornerRadiusDp = 10f,
+                    paddingDp = 6f
+                )
+            }
         )
 
         if (steps.isEmpty()) return
@@ -695,14 +706,17 @@ class MainActivity : BaseActivity() {
         // device we have not seen, mark it done and carry on — a shopkeeper
         // locked out of their own ledger by a broken tutorial is far worse
         // than one who never sees the tutorial.
-        root.post {
+        // A moment on Home first (9 Oct): straight after the shop-type page the
+        // dim fell before the owner had seen the screen it was explaining.
+        root.postDelayed({
+            if (isFinishing || isDestroyed) return@postDelayed
             try {
                 CoachMarkController(this, root, steps, onFinished = { sizeGridTail() }).start()
             } catch (e: Exception) {
                 android.util.Log.e("Home", "walkthrough failed", e)
                 CoachMarkController.markRun(this)
             }
-        }
+        }, TOUR_DELAY_MS)
     }
 
     private fun tileStep(labelRes: Int, titleRes: Int, descRes: Int): CoachMarkController.Step? =
@@ -729,39 +743,28 @@ class MainActivity : BaseActivity() {
         }
 
     /**
-     * Leave a screenful of room under the last row so the walkthrough can
-     * scroll any tile — including the bottom ones — to the top, where there is
-     * space for its card underneath.
+     * No extra room under the grid (9 Oct).
+     *
+     * The sixteen-step tour needed most of a screen of empty space below the
+     * last row, so it could lift a Tools tile to the top with its card
+     * beneath; during the tour the owner could scroll into that blank page.
+     * The tour now ends at "See all", in the upper half of Home, and its card
+     * fits below or above it without any scrolling room. The spacer is kept
+     * at zero rather than deleted so an older layout id stays valid.
      */
     private fun sizeGridTail() {
         val tail = findViewById<View>(R.id.gridTailSpace) ?: return
-        val scroll = findViewById<View>(R.id.featureScroll) ?: return
-        scroll.post {
-            val params = tail.layoutParams
-            // The room is the tour's alone (7 Oct). It was left in place after
-            // the tour had run, so every Home ever since scrolled on past the
-            // version line into most of a screen of nothing. Once the tour is
-            // done — on this launch or any earlier one — the grid ends where
-            // the grid ends.
-            if (CoachMarkController.hasRun(this)) {
-                if (params.height != 0) {
-                    params.height = 0
-                    tail.layoutParams = params
-                }
-                return@post
-            }
-            // Nearly a full viewport. At 0.55 the last row could only rise to
-            // about the middle of the screen, so the walkthrough card — which
-            // sits below its tile — had to climb over the tile to fit, hiding
-            // the very thing the step was pointing at. With room to scroll the
-            // whole way, the row reaches the top and the card has the rest of
-            // the screen beneath it.
-            params.height = (scroll.height * 0.9f).toInt().coerceAtLeast(0)
+        val params = tail.layoutParams
+        if (params.height != 0) {
+            params.height = 0
             tail.layoutParams = params
         }
     }
 
     companion object {
+        /** How long Home is seen before the first-run tour dims it. */
+        private const val TOUR_DELAY_MS = 600L
+
         /** Tiles per row in the feature grid. */
         private const val TILE_HEIGHT_COMPACT_DP = 62f
 

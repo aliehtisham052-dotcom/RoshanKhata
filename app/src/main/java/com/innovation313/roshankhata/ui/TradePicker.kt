@@ -45,6 +45,8 @@ object TradePicker {
         activity: Activity,
         current: Trade?,
         required: Boolean,
+        /** Which first-run step this is (3 of 3), or null anywhere else. */
+        step: Int? = null,
         onPicked: (Trade) -> Unit
     ) {
         val dialog = Dialog(activity, R.style.Theme_RoshanKhata)
@@ -53,9 +55,12 @@ object TradePicker {
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog.setCancelable(!required)
 
-        root.findViewById<TextView>(R.id.tvTradeKicker).setText(
-            if (current == null) R.string.trade_kicker_new else R.string.trade_kicker_change
-        )
+        val kicker = root.findViewById<TextView>(R.id.tvTradeKicker)
+        if (step != null) {
+            StepDots.show(root.findViewById(R.id.tradeStepDots), kicker, step)
+        } else {
+            kicker.setText(if (current == null) R.string.trade_kicker_new else R.string.trade_kicker_change)
+        }
         val close = root.findViewById<View>(R.id.btnTradeClose)
         close.visibility = if (required) View.GONE else View.VISIBLE
         close.setOnClickListener { dialog.dismiss() }
