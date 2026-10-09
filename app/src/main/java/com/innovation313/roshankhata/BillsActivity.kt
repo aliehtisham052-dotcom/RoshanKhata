@@ -779,7 +779,7 @@ class BillsActivity : BaseActivity() {
                     partyId = partyId,
                     amount = total,
                     isGiven = false,
-                    note = billNumber?.let { "Bill $it" } ?: note,
+                    note = billNumber?.let { getString(R.string.bill_entry_note, it) } ?: note,
                     entryNumber = "",
                     billPhotoPath = photoForThisBill
                 ),
@@ -1092,7 +1092,7 @@ class BillsActivity : BaseActivity() {
                     dao.updateEntry(
                         entry.copy(
                             amount = total,
-                            note = billNumber?.let { "Bill $it" } ?: note
+                            note = billNumber?.let { getString(R.string.bill_entry_note, it) } ?: note
                         )
                     )
                 }

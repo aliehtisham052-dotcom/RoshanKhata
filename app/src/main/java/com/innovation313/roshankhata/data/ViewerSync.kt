@@ -46,7 +46,7 @@ object ViewerSync {
         val ctx = context.applicationContext
         val (result, data) = Backup.parseText(text)
         if (result is Backup.ImportResult.Failed || data == null) {
-            val reason = (result as? Backup.ImportResult.Failed)?.reason ?: ""
+            val reason = (result as? Backup.ImportResult.Failed)?.reason(ctx) ?: ""
             return@withContext Outcome.Rejected(reason)
         }
 

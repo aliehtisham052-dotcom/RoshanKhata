@@ -2270,4 +2270,10 @@
     <string name="compliance_explain_medical">Hanya perlu jika pemeriksa obat mungkin memintanya.</string>
     <string name="scheme_name_hint_general">Nama, mis. Promo Lebaran 2026</string>
     <string name="no_plans_general">Belum ada rencana cicilan.\n\nGunakan ini saat pelanggan akan melunasi suatu jumlah dengan mencicil selama beberapa bulan.</string>
+    <string name="bill_entry_note">Tagihan %1$s</string>
+    <string name="backup_err_unreadable">File tidak dapat dibaca sebagai cadangan.</string>
+    <string name="backup_err_not_ours">Ini bukan file cadangan Roshan Khata.</string>
+    <string name="backup_err_too_new">Cadangan ini dibuat oleh versi Roshan Khata yang lebih baru. Perbarui aplikasi dulu.</string>
+    <string name="backup_err_incomplete">Cadangan ini tidak lengkap. Entri yang pelanggannya tidak ada di file: %1$d.</string>
+    <string name="tax_number_label">NPWP</string>
 </resources>

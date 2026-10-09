@@ -2313,4 +2313,10 @@
     <string name="compliance_explain_medical">শুধু তখনই দরকার যখন ড্রাগ ইন্সপেক্টর চাইতে পারেন।</string>
     <string name="scheme_name_hint_general">নাম, যেমন উৎসব অফার 2026</string>
     <string name="no_plans_general">এখনো কোনো পেমেন্ট প্ল্যান নেই।\n\nগ্রাহক কোনো অঙ্ক কয়েক মাসে কিস্তিতে শোধ করলে এগুলো ব্যবহার করুন।</string>
+    <string name="bill_entry_note">বিল %1$s</string>
+    <string name="backup_err_unreadable">ফাইলটি ব্যাকআপ হিসেবে পড়া যায়নি।</string>
+    <string name="backup_err_not_ours">এটি রোশন খাতার ব্যাকআপ ফাইল নয়।</string>
+    <string name="backup_err_too_new">এই ব্যাকআপ রোশন খাতার নতুন সংস্করণে তৈরি। আগে অ্যাপ আপডেট করুন।</string>
+    <string name="backup_err_incomplete">এই ব্যাকআপ অসম্পূর্ণ। যেসব এন্ট্রির গ্রাহক ফাইলে নেই: %1$d।</string>
+    <string name="tax_number_label">কর নম্বর</string>
 </resources>

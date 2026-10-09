@@ -1043,7 +1043,7 @@ object InvoicePdfExport {
         }
         BusinessProfile.strn(context)?.let {
             y += 11f
-            PdfRtl.drawText(c, "STRN: $it", cx, y, shopSub)
+            PdfRtl.drawText(c, "${BusinessProfile.taxLabel(context)}: $it", cx, y, shopSub)
         }
         BusinessProfile.businessPhone(context)?.let {
             y += 11f

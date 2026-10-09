@@ -403,7 +403,7 @@ object Backup {
         return try {
             file.inputStream().buffered(64 * 1024).use { parseStream(it) }
         } catch (e: Exception) {
-            ImportResult.Failed("The file could not be read.") to null
+            ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
         }
     }
 
@@ -420,7 +420,26 @@ object Backup {
             val invoices: Int = 0
         ) : ImportResult()
 
-        data class Failed(val reason: String) : ImportResult()
+        /**
+         * Why a file was refused, as a kind rather than a sentence (9 Oct):
+         * the parsers run without a Context, and an English sentence made
+         * here reached the owner inside an Urdu dialog. [reason] words it in
+         * the app's language where the dialog is built; [detail] is the
+         * exception's own text, kept for diagnosis.
+         */
+        data class Failed(val why: Why, val count: Int = 0, val detail: String? = null) : ImportResult() {
+            fun reason(context: android.content.Context): String {
+                val text = when (why) {
+                    Why.UNREADABLE -> context.getString(com.innovation313.roshankhata.R.string.backup_err_unreadable)
+                    Why.NOT_OURS -> context.getString(com.innovation313.roshankhata.R.string.backup_err_not_ours)
+                    Why.TOO_NEW -> context.getString(com.innovation313.roshankhata.R.string.backup_err_too_new)
+                    Why.INCOMPLETE -> Digits.string(context.resources, com.innovation313.roshankhata.R.string.backup_err_incomplete, count)
+                }
+                return if (detail.isNullOrBlank()) text else "$text\n($detail)"
+            }
+        }
+
+        enum class Why { UNREADABLE, NOT_OURS, TOO_NEW, INCOMPLETE }
     }
 
     /**
@@ -439,7 +458,7 @@ object Backup {
                 ?.use { parseStream(it) }
         } catch (e: Exception) {
             null
-        } ?: (ImportResult.Failed("Could not read the file.") to null)
+        } ?: (ImportResult.Failed(ImportResult.Why.UNREADABLE) to null)
     }
 
     /**
@@ -499,7 +518,7 @@ object Backup {
             }
             parseRoot(rest, parties, entries, if (hadEntryItems) entryItems else null)
         } catch (e: Exception) {
-            ImportResult.Failed("The file could not be read: ${e.message}") to null
+            ImportResult.Failed(ImportResult.Why.UNREADABLE, detail = e.message) to null
         }
     }
 
@@ -547,17 +566,12 @@ object Backup {
         return try {
 
             if (root.optString("format") != "RoshanKhata") {
-                return ImportResult.Failed(
-                    "This is not a Roshan Khata backup file."
-                ) to null
+                return ImportResult.Failed(ImportResult.Why.NOT_OURS) to null
             }
 
             val version = root.optInt("version", -1)
             if (version > FORMAT_VERSION) {
-                return ImportResult.Failed(
-                    "This backup was made by a newer version of Roshan Khata. " +
-                        "Please update the app first."
-                ) to null
+                return ImportResult.Failed(ImportResult.Why.TOO_NEW) to null
             }
 
             // parties, entries and entryItems were read off the stream already
@@ -717,10 +731,7 @@ object Backup {
                 invoiceItems.count { it.invoiceId !in invoiceIds }
 
             if (orphans > 0) {
-                return ImportResult.Failed(
-                    "This backup is incomplete — $orphans entries refer to " +
-                        "customers that are missing from the file."
-                ) to null
+                return ImportResult.Failed(ImportResult.Why.INCOMPLETE, count = orphans) to null
             }
 
             ImportResult.Ok(
@@ -744,7 +755,7 @@ object Backup {
                 staffPayments = staffPayments
             )
         } catch (e: Exception) {
-            ImportResult.Failed("The file could not be read as a backup.") to null
+            ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
         }
     }
 

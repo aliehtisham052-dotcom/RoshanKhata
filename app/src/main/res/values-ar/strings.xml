@@ -599,8 +599,8 @@
     <string name="business_rename_hint">اضغط للفتح · اضغط مطولاً لإعادة التسمية</string>
     <string name="restore_business_mismatch">هذه النسخة الاحتياطية تخص %1$s، لكن النشاط المفتوح الآن هو %2$s. الاستعادة ستستبدل بيانات النشاط المفتوح بتلك النسخة.</string>
     <string name="contact_in_recycle_bin">في سلة المحذوفات</string>
-    <string name="restore_no_images">عادت سجلاتك، لكن هذه النسخة الاحتياطية لم تكن معها صور، لذلك لم تُستعد الصور وصور الفواتير ورمز الاستجابة. للاحتفاظ بالصور في النسخ القادمة، فعّل Include images قبل النسخ الاحتياطي.</string>
-    <string name="restore_file_no_images">عادت سجلاتك. النسخة الاحتياطية بملف تحمل السجلات فقط ولا تتضمن الصور أبدًا. للاحتفاظ بالصور أيضًا، فعّل Include images وانسخ احتياطيًا إلى جوجل درايف.</string>
+    <string name="restore_no_images">عادت سجلاتك، لكن هذه النسخة الاحتياطية لم تكن معها صور، لذلك لم تُستعد الصور وصور الفواتير ورمز الاستجابة. للاحتفاظ بالصور في النسخ القادمة، فعّل «تضمين الصور» قبل النسخ الاحتياطي.</string>
+    <string name="restore_file_no_images">عادت سجلاتك. النسخة الاحتياطية بملف تحمل السجلات فقط ولا تتضمن الصور أبدًا. للاحتفاظ بالصور أيضًا، فعّل «تضمين الصور» وانسخ احتياطيًا إلى جوجل درايف.</string>
     <string name="drive_looking">جارٍ البحث في درايف…</string>
     <plurals name="drive_found_businesses">
         <item quantity="zero">تم العثور على %1$d نشاط تجاري في درايف</item>
@@ -2441,4 +2441,10 @@
     <string name="compliance_explain_medical">مطلوبة فقط إذا قد يطلبها مفتش الأدوية.</string>
     <string name="scheme_name_hint_general">الاسم، مثل عرض العيد 2026</string>
     <string name="no_plans_general">لا خطط سداد بعد.\n\nاستخدمها حين يسدد العميل مبلغًا على أقساط عبر بضعة أشهر.</string>
+    <string name="bill_entry_note">فاتورة %1$s</string>
+    <string name="backup_err_unreadable">تعذّرت قراءة الملف كنسخة احتياطية.</string>
+    <string name="backup_err_not_ours">هذا ليس ملف نسخة احتياطية من روشن كهاتا.</string>
+    <string name="backup_err_too_new">أُنشئت هذه النسخة بإصدار أحدث من روشن كهاتا. حدّث التطبيق أولًا.</string>
+    <string name="backup_err_incomplete">هذه النسخة غير مكتملة. قيود عميلها غير موجود في الملف: %1$d.</string>
+    <string name="tax_number_label">الرقم الضريبي</string>
 </resources>
