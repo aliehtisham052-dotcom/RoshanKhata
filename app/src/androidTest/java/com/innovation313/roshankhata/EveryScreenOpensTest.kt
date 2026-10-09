@@ -321,7 +321,7 @@ class EveryScreenOpensTest(
         }
 
         private fun baseScreens(): List<Array<Any>> = listOf(
-            open<WelcomeActivity>("Welcome"),
+            open<ShopTypeActivity>("Shop type"),
             open<MainActivity>("Home") { putExtra(MainActivity.EXTRA_UNLOCKED, true) },
             open<KhataActivity>("Khata list"),
             open<PartyDetailActivity>("Customer khata") {

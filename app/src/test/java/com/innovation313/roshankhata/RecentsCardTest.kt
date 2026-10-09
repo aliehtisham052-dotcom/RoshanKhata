@@ -42,7 +42,7 @@ class RecentsCardTest {
 
     @Test
     fun theCardHasNoGreenStripAlongItsTop() {
-        ActivityScenario.launch(GateActivity::class.java).use { scenario ->
+        ActivityScenario.launch(LanguageActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
                 val green = ContextCompat.getColor(activity, R.color.section_khata)
                 val told = described(activity)
@@ -64,7 +64,7 @@ class RecentsCardTest {
 
     @Test
     fun aScreenThatSetsItsOwnBarColoursStillLeavesAPlainCardOnceResumed() {
-        ActivityScenario.launch(GateActivity::class.java).use { scenario ->
+        ActivityScenario.launch(LanguageActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
                 // What the language and welcome screens do in onCreate; the
                 // window passes it on, and the description loses its colour.
@@ -80,7 +80,7 @@ class RecentsCardTest {
 
     @Test
     fun thePrimaryColourTheThemeGaveIsKept() {
-        ActivityScenario.launch(GateActivity::class.java).use { scenario ->
+        ActivityScenario.launch(LanguageActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
                 val value = TypedValue()
                 activity.theme.resolveAttribute(android.R.attr.colorPrimary, value, true)

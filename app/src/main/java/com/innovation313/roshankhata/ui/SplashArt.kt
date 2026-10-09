@@ -4,12 +4,10 @@ import android.graphics.Matrix
 import android.widget.ImageView
 
 /**
- * The splash painting placed at the top of a first-run screen (9 Oct).
- *
- * The language screen and the welcome screen show the same picture the
- * splash does, so the first screens read as one picture with a panel that
- * changes under it. Each screen's panel is a different height, so the
- * painting is placed by its TAGLINE, not by its top: scaled and moved so
+ * The brand painting at the top of the language screen (9 Oct): the one
+ * place a new owner sees the full artwork, after the system splash's logo.
+ * The panel under it changes height with the language and text size, so
+ * the painting is placed by its TAGLINE, not by its top: scaled and moved so
  * that "Har Hisaab Roshan" ends [gapDp] above the bottom of the region on
  * every screen. The painting is never narrower than the region; on a short
  * region the width sets the scale and the top (the gold arc) is cropped,

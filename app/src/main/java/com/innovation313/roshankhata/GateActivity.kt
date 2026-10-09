@@ -2,8 +2,7 @@ package com.innovation313.roshankhata
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.innovation313.roshankhata.data.AppLock
 
 /**
@@ -20,34 +19,16 @@ import com.innovation313.roshankhata.data.AppLock
 class GateActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // The one splash (9 Oct): Android's own, in the app's green with the
+        // logo (Theme.RoshanKhata.Splash), held while this screen decides
+        // where to go and handed straight to the next. This screen used to
+        // draw a painting of its own after it and hold it 0.5-1.2 s, so every
+        // launch showed two splashes - and on a first run the language and
+        // welcome screens showed the same painting again.
+        val splash = installSplashScreen()
+        splash.setKeepOnScreenCondition { true }
         super.onCreate(savedInstanceState)
-
-        // With App Lock on, the lock screen carries the same logo and tagline
-        // while it waits for a fingerprint — so holding the splash here first
-        // played that mark twice in a row, which reads as the app starting
-        // over. Hand straight to the lock and let it be the branded beat.
-        val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
-        if (locked && LanguageActivity.isChosen(this)) {
-            route()
-            return
-        }
-
-        // The branded beat comes first, always — before the language picker on
-        // a first run and before the ledger on every one after. It used to be
-        // skipped entirely on the very first launch, which meant a new owner
-        // met the language list before they had seen the app's own name.
-        setContentView(R.layout.activity_gate)
-
-        // Edge-to-edge, the mechanism proven on the Home screen.
-        com.innovation313.roshankhata.ui.ScreenInsets.on(this)
-
-        // Long enough to read on the first launch, brief on the rest. Someone
-        // opening the app for the tenth time today wants their ledger, not the
-        // logo they already know.
-        val firstRun = !LanguageActivity.isChosen(this)
-        val hold = if (firstRun) SPLASH_FIRST_MS else SPLASH_MS
-
-        Handler(Looper.getMainLooper()).postDelayed({ route() }, hold)
+        route()
     }
 
     private fun route() {
@@ -77,17 +58,5 @@ class GateActivity : BaseActivity() {
                 .putExtra(MainActivity.EXTRA_OPEN, intent.getStringExtra(MainActivity.EXTRA_OPEN))
         )
         finish()
-    }
-
-    companion object {
-        /**
-         * The first launch. 1.2s until 9 Oct; the language screen now shows
-         * the same painting, so the splash only has to settle before the
-         * panel rises under it - a longer hold read as the app stalling.
-         */
-        private const val SPLASH_FIRST_MS = 700L
-
-        /** Every launch after: enough to see, not enough to wait through. */
-        private const val SPLASH_MS = 500L
     }
 }

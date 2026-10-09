@@ -103,7 +103,7 @@ class LanguageActivity : BaseActivity() {
         }
 
         com.innovation313.roshankhata.ui.SplashArt.anchor(findViewById(R.id.ivLangArt), TAGLINE_GAP_DP)
-        // Step 1 of 3 on first run only; from More this is a setting, not a step.
+        // Step 1 of 2 on first run only; from More this is a setting, not a step.
         if (!isChosen(this)) {
             com.innovation313.roshankhata.ui.StepDots.show(
                 findViewById(R.id.langStepDots), findViewById(R.id.tvLangStep), 1)
@@ -202,12 +202,11 @@ class LanguageActivity : BaseActivity() {
             return
         }
 
-        // First run: the one-time welcome, which offers to connect a Google
-        // account for backup before the ledger opens. Not back through the
-        // gate — the owner has just watched the splash, and the welcome sends
-        // them on to the ledger itself once seen (or skipped).
+        // First run: step 2, the shop type, then the ledger. (Until 9 Oct a
+        // Google backup page came first; that offer now waits for the first
+        // customer, on Home.)
         startActivity(
-            Intent(this, WelcomeActivity::class.java)
+            Intent(this, ShopTypeActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         )
         finish()

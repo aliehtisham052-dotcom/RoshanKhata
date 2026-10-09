@@ -2482,4 +2482,5 @@
     <string name="coach_title_all">كل الميزات</string>
     <string name="coach_desc_all">المنتجات والفواتير والزكاة والبطاقة وغيرها في الأسفل. \"عرض الكل\" أو قائمة ☰ في الأعلى تجمعها كلها.</string>
     <string name="help_replay_tour">اعرض جولة الشاشة الرئيسية مرة أخرى</string>
+    <string name="backup_offer_open">إعداد النسخ الاحتياطي</string>
 </resources>

@@ -111,7 +111,7 @@
 
             <!--
               Google's Light sign-in pill, the same one the welcome screen
-              uses (see activity_welcome.xml): white fill, 1dp #747775 stroke,
+              uses: white fill, 1dp #747775 stroke,
               Google Sans Medium, the standard-colour G, "Continue with
               Google". Google's colours, not the app's: do not restyle.
             -->
