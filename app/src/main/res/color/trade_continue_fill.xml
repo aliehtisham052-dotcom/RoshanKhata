@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Trade picker's Continue: brand green once a trade is chosen; until then a
+     plain hairline grey that reads as "not yet" in light and dark alike
+     (a disabled Material button would fade its own colours to nothing). -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false" android:color="@color/page_line" />
+    <item android:color="@color/brand_green" />
+</selector>

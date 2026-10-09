@@ -365,4 +365,30 @@
     <color name="fi_teal_b">#0F6E56</color>
     <color name="fi_pink_a">#F0A9C3</color>
     <color name="fi_pink_b">#993556</color>
+
+    <!-- Trade picker (9 Oct): one tint per trade for the icon chip, in the family of the Home tiles. Each fg clears 4.5:1 on its bg. -->
+    <color name="trade_agri_bg">#E3EFE6</color>
+    <color name="trade_agri_fg">#1B5E3A</color>
+    <color name="trade_medical_bg">#E6EDF6</color>
+    <color name="trade_medical_fg">#2F5A8C</color>
+    <color name="trade_mobile_bg">#E8ECF1</color>
+    <color name="trade_mobile_fg">#34495E</color>
+    <color name="trade_kiryana_bg">#F4EDD9</color>
+    <color name="trade_kiryana_fg">#7A5A10</color>
+    <color name="trade_hardware_bg">#ECECE8</color>
+    <color name="trade_hardware_fg">#4A4A45</color>
+    <color name="trade_dairy_bg">#E2EFF1</color>
+    <color name="trade_dairy_fg">#1D5C66</color>
+    <color name="trade_tailor_bg">#ECE9F3</color>
+    <color name="trade_tailor_fg">#514476</color>
+    <color name="trade_auto_bg">#F5E9E2</color>
+    <color name="trade_auto_fg">#8A4B2A</color>
+    <color name="trade_furniture_bg">#F1ECDF</color>
+    <color name="trade_furniture_fg">#6B5320</color>
+    <color name="trade_salon_bg">#F6E5EC</color>
+    <color name="trade_salon_fg">#8C3F5E</color>
+    <color name="trade_solar_bg">#FBF0D3</color>
+    <color name="trade_solar_fg">#765A10</color>
+    <color name="trade_general_bg">#E7EFE0</color>
+    <color name="trade_general_fg">#3F6032</color>
 </resources>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  "What does your shop sell?" - the trade picker as its own page (9 Oct).
+  It replaced a bare radio list that read like a system dialog at the one
+  moment the app first asks the owner about his business. A light header
+  says why it asks; twelve cards, each with its icon and what such a shop
+  sells, so the owner recognises his own trade rather than reading a list;
+  the choice is confirmed with Continue, so a stray tap does not decide it.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tradeRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/tradeHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_header_light"
+        android:orientation="vertical"
+        android:paddingStart="22dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="18dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTradeKicker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:letterSpacing="0.1"
+                android:textAlignment="viewStart"
+                android:textAllCaps="true"
+                android:textColor="@color/gold_accent"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnTradeClose"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cancel"
+                android:src="@drawable/ic_close"
+                app:tint="@color/header_light_ink" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTradeTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="10dp"
+            android:text="@string/trade_pick_title"
+            android:textAlignment="viewStart"
+            android:textColor="@color/header_light_ink"
+            android:textSize="23sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="10dp"
+            android:lineSpacingExtra="2dp"
+            android:text="@string/trade_pick_explain"
+            android:textAlignment="viewStart"
+            android:textColor="@color/header_light_ink_soft"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTrades"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingStart="11dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="11dp"
+        android:paddingBottom="10dp" />
+
+    <LinearLayout
+        android:id="@+id/tradeFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="14dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/trade_pick_later"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTradeContinue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="54dp"
+            android:enabled="false"
+            android:text="@string/continue_action"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/trade_continue_fill"
+            app:cornerRadius="14dp"
+            android:textColor="@color/trade_continue_text" />
+    </LinearLayout>
+</LinearLayout>
