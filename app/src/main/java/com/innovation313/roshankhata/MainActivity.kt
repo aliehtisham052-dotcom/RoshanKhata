@@ -758,24 +758,16 @@ class MainActivity : BaseActivity() {
 
     private fun tileStep(labelRes: Int, titleRes: Int, descRes: Int): CoachMarkController.Step? =
         featureViews[labelRes]?.let { tile ->
-            // The whole tile, icon and label together. Highlighting the icon
-            // alone left its own name outside the lit area, which read as
-            // pointing at half a thing.
+            // The whole tile, icon and label together, with a hair of air
+            // round it so the gold ring sits just outside the card's own
+            // edge rather than on it (the tile's corner is 18dp; 22dp at
+            // 4dp out keeps the two curves concentric).
             CoachMarkController.Step(
                 target = tile,
                 titleRes = titleRes,
                 descRes = descRes,
-                // The tile's own 18dp corner (item_home_feature). The old
-                // default rounded fully, which fitted the pill tiles but would
-                // leave ~8dp of each corner of a rounded-rect tile under the
-                // dim.
-                cornerRadiusDp = 18f,
-                //
-                // No padding either. The default 10dp ringed an oval that is
-                // already most of a third of the screen wide, which pushed the
-                // left column's spotlight off the edge. Lit at its own size,
-                // the hole is the tile.
-                paddingDp = 0f
+                cornerRadiusDp = 22f,
+                paddingDp = 4f
             )
         }
 
