@@ -54,7 +54,37 @@ object TradePicker {
         dialog.setContentView(root)
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog.setCancelable(!required)
+        bind(activity, dialog.window, root, current, required, step,
+            onClose = { dialog.dismiss() },
+            onPicked = { dialog.dismiss(); onPicked(it) })
+        dialog.show()
+    }
 
+    /**
+     * The same page as an Activity's own content (ShopTypeActivity, first
+     * run): drawn in that window's first frame, so no blank sheet shows
+     * between the language screen and this one - which is what a dialog
+     * opened from onCreate left on screen for a moment (9 Oct).
+     */
+    fun bindActivity(
+        activity: Activity,
+        root: View,
+        step: Int,
+        onPicked: (Trade) -> Unit
+    ) {
+        bind(activity, activity.window, root, null, true, step, onClose = {}, onPicked = onPicked)
+    }
+
+    private fun bind(
+        activity: Activity,
+        window: android.view.Window?,
+        root: View,
+        current: Trade?,
+        required: Boolean,
+        step: Int?,
+        onClose: () -> Unit,
+        onPicked: (Trade) -> Unit
+    ) {
         val kicker = root.findViewById<TextView>(R.id.tvTradeKicker)
         if (step != null) {
             StepDots.show(root.findViewById(R.id.tradeStepDots), kicker, step)
@@ -63,7 +93,7 @@ object TradePicker {
         }
         val close = root.findViewById<View>(R.id.btnTradeClose)
         close.visibility = if (required) View.GONE else View.VISIBLE
-        close.setOnClickListener { dialog.dismiss() }
+        close.setOnClickListener { onClose() }
 
         val go = root.findViewById<MaterialButton>(R.id.btnTradeContinue)
         if (current != null) go.setText(R.string.save)
@@ -84,13 +114,11 @@ object TradePicker {
 
         go.setOnClickListener {
             val picked = chosen ?: return@setOnClickListener
-            dialog.dismiss()
             onPicked(picked)
         }
 
-        fitBars(dialog, root, activity)
+        if (window != null) fitBars(window, root, activity)
         TextFit.relax(root)
-        dialog.show()
     }
 
     /**
@@ -99,8 +127,7 @@ object TradePicker {
      * own padding and the footer takes the gesture bar - added to the
      * designed padding, never replacing it (the lesson in [ScreenInsets]).
      */
-    private fun fitBars(dialog: Dialog, root: View, activity: Activity) {
-        val window = dialog.window ?: return
+    private fun fitBars(window: android.view.Window, root: View, activity: Activity) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         // Below Android 15 the theme paints the status bar the Khata green;
         // the light header has to show through it instead. (Deprecated from
