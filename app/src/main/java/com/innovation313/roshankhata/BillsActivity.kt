@@ -220,7 +220,7 @@ class BillsActivity : BaseActivity() {
             dao.observeExpiringCount(cutoff).collectLatest { count ->
                 if (count > 0) {
                     btnExpiring.visibility = View.VISIBLE
-                    btnExpiring.text = getString(R.string.expiring_badge, count)
+                    btnExpiring.text = Digits.string(resources, R.string.expiring_badge, count)
                 } else {
                     btnExpiring.visibility = View.GONE
                 }
@@ -380,7 +380,7 @@ class BillsActivity : BaseActivity() {
         val notes = buildList {
             if (pendingItems.isNotEmpty()) add(getString(
                 R.string.bill_scan_items_ready,
-                resources.getQuantityString(R.plurals.items_count, pendingItems.size, pendingItems.size)
+                Digits.quantity(resources, R.plurals.items_count, pendingItems.size, pendingItems.size)
             ))
             if (scanKeptPhoto != null) add(getString(R.string.bill_scan_photo_kept))
             if (pendingItems.isNotEmpty()) add(getString(R.string.bill_items_tap_hint))
@@ -522,7 +522,7 @@ class BillsActivity : BaseActivity() {
 
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.item_added)
-                .setMessage(resources.getQuantityString(
+                .setMessage(Digits.quantity(resources, 
                     R.plurals.items_count, pendingItems.size, pendingItems.size
                 ))
                 .setNeutralButton(R.string.add_item) { _, _ ->
@@ -1322,7 +1322,7 @@ class BillsActivity : BaseActivity() {
                     }
 
                     val dialog = MaterialAlertDialogBuilder(this@BillsActivity)
-                        .setTitle(resources.getQuantityString(
+                        .setTitle(Digits.quantity(resources, 
                             R.plurals.trace_results, results.size, results.size
                         ))
                         .setPositiveButton(R.string.ok, null)

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -60,7 +62,7 @@ class InsightsActivity : BaseActivity() {
         findViewById<TextView>(R.id.tvTodayReceived).text = Format.money(data.todayReceived)
         findViewById<TextView>(R.id.tvTodayGiven).text = Format.money(data.todayGiven)
         findViewById<TextView>(R.id.tvTodayCount).text =
-            resources.getQuantityString(R.plurals.entries_today, data.todayCount, data.todayCount)
+            Digits.quantity(resources, R.plurals.entries_today, data.todayCount, data.todayCount)
 
         findViewById<TextView>(R.id.tvTotalSale).text = Format.money(data.thisMonthTotal)
 
@@ -73,11 +75,11 @@ class InsightsActivity : BaseActivity() {
                 trend.setTextColor(ContextCompat.getColor(this, R.color.text_muted))
             }
             pct >= 0 -> {
-                trend.text = getString(R.string.insights_up, pct, Format.money(data.lastMonthTotal))
+                trend.text = Digits.string(resources, R.string.insights_up, pct, Format.money(data.lastMonthTotal))
                 trend.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe))
             }
             else -> {
-                trend.text = getString(R.string.insights_down, -pct, Format.money(data.lastMonthTotal))
+                trend.text = Digits.string(resources, R.string.insights_down, -pct, Format.money(data.lastMonthTotal))
                 trend.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me))
             }
         }
@@ -273,7 +275,7 @@ class InsightsActivity : BaseActivity() {
                 val r = Profit.thisMonth(dao)
                 Triple(getString(R.string.vq_profit_month),
                     if (r.isEmpty) getString(R.string.insights_profit_none)
-                    else money(r.grossProfit) + (r.coveragePercent?.let { "\n" + getString(R.string.insights_profit_coverage, it) } ?: ""),
+                    else money(r.grossProfit) + (r.coveragePercent?.let { "\n" + Digits.string(resources, R.string.insights_profit_coverage, it) } ?: ""),
                     null)
             }
             VoiceQuestion.Kind.SALES_TODAY -> Triple(getString(R.string.vq_sales_today), money(dao.salesTotalBetween(dayStart, dayEnd)), null)
@@ -324,7 +326,7 @@ class InsightsActivity : BaseActivity() {
                 signed(now.netAfterExpenses), Format.money(now.expenses))
             val pct = now.coveragePercent
             coverage.text = if (pct == null) getString(R.string.insights_profit_none)
-                else getString(R.string.insights_profit_coverage, pct)
+                else Digits.string(resources, R.string.insights_profit_coverage, pct)
         }
 
         if (last.isEmpty) {

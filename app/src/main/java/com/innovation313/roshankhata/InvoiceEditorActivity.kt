@@ -586,7 +586,7 @@ class InvoiceEditorActivity : BaseActivity() {
         val items = validItems()
         val d = draft()
         val totals = InvoiceMath.totals(items, d.discountPercent, d.taxPercent, d.additionalChargeAmount, d.receivedAmount)
-        tvItemsCount.text = getString(R.string.invoice_editor_item_count, items.size)
+        tvItemsCount.text = Digits.string(resources, R.string.invoice_editor_item_count, items.size)
         tvItemsTotal.text = getString(R.string.invoice_editor_total, Format.money(totals.grandTotal))
     }
 
@@ -715,7 +715,7 @@ class InvoiceEditorActivity : BaseActivity() {
 
     private fun showTemplatePosition(position: Int) {
         tvTemplateCaption.setText(templateNameRes.getOrElse(position) { templateNameRes.first() })
-        tvSwipeHint.text = getString(R.string.invoice_swipe_designs, position + 1, templateIds.size)
+        tvSwipeHint.text = Digits.string(resources, R.string.invoice_swipe_designs, position + 1, templateIds.size)
         val active = androidx.core.content.ContextCompat.getColor(this, R.color.brand_green)
         val inactive = androidx.core.content.ContextCompat.getColor(this, R.color.text_muted)
         for (i in 0 until templateDots.childCount) {

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import com.innovation313.roshankhata.ui.Calc
 
 import android.app.DatePickerDialog
@@ -98,10 +100,10 @@ class ChequesActivity : BaseActivity() {
 
                     tvDueSummary.text = when {
                         all.isEmpty() -> getString(R.string.due_summary_empty)
-                        dueCount > 0 -> resources.getQuantityString(
+                        dueCount > 0 -> Digits.quantity(resources, 
                             R.plurals.due_summary, dueCount, dueCount
                         )
-                        pending > 0 -> getString(R.string.due_summary_pending, pending)
+                        pending > 0 -> Digits.string(resources, R.string.due_summary_pending, pending)
                         else -> getString(R.string.due_summary_all_settled)
                     }
                 }

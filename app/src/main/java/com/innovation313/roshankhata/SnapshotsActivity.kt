@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -132,7 +134,7 @@ class SnapshotsActivity : BaseActivity() {
         override fun onBindViewHolder(holder: VH, position: Int) {
             val s = items[position]
             holder.date.text = Format.dateOnly(s.takenOn)
-            holder.size.text = getString(R.string.snapshot_size_kb, s.bytes / 1024)
+            holder.size.text = Digits.string(resources, R.string.snapshot_size_kb, s.bytes / 1024)
             holder.itemView.setOnClickListener { confirm(s) }
         }
     }

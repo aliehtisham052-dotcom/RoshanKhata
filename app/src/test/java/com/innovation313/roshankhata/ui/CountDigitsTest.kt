@@ -60,4 +60,28 @@ class CountDigitsTest {
         assertTrue(Digits.quantity(localised("bn").resources, R.plurals.customer_count, 1205, 1205).contains("গ্রাহক"))
         assertTrue(Digits.quantity(localised("sd").resources, R.plurals.customer_count, 1205, 1205).contains("گراهڪ"))
     }
+
+    /**
+     * The guard for the next screen someone writes (9 Oct audit: 93 calls in
+     * 34 files printed counts in the language's own digits). A count goes
+     * through Digits.quantity / Digits.string; getQuantityString, and
+     * getString with a %d string, format with the language's own digits.
+     */
+    @Test
+    fun `no screen formats a count with the language's own digits`() {
+        val strings = java.io.File("src/main/res/values/strings.xml").readText()
+        val countKeys = Regex("<string name=\"([^\"]+)\"[^>]*>[^<]*%(?:\\d+\\$)?[,0-9.]*[df]")
+            .findAll(strings).map { it.groupValues[1] }.toSet()
+        val bad = mutableListOf<String>()
+        java.io.File("src/main/java").walkTopDown().filter { it.extension == "kt" && it.name != "Digits.kt" }.forEach { f ->
+            f.readLines().forEachIndexed { i, line ->
+                val code = line.substringBefore("//")
+                if ("getQuantityString(" in code) bad += "${f.name}:${i + 1} getQuantityString"
+                Regex("getString\\(\\s*R\\.string\\.(\\w+)\\s*,").findAll(code).forEach {
+                    if (it.groupValues[1] in countKeys) bad += "${f.name}:${i + 1} getString(${it.groupValues[1]})"
+                }
+            }
+        }
+        assertTrue("Counts printed with native digits:\n" + bad.joinToString("\n"), bad.isEmpty())
+    }
 }

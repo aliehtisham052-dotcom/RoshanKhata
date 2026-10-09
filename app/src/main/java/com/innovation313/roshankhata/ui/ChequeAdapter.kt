@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,8 +69,8 @@ class ChequeAdapter(
             holder.tvDue.visibility = View.VISIBLE
             holder.tvDue.text = when {
                 days == 0L -> ctx.getString(R.string.due_today)
-                days > 0 -> ctx.resources.getQuantityString(R.plurals.due_in_days, days.toInt(), days.toInt())
-                else -> ctx.resources.getQuantityString(
+                days > 0 -> Digits.quantity(ctx.resources, R.plurals.due_in_days, days.toInt(), days.toInt())
+                else -> Digits.quantity(ctx.resources, 
                     R.plurals.overdue_by_days, (-days).toInt(), (-days).toInt()
                 )
             }

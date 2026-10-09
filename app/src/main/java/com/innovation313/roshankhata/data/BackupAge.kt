@@ -36,7 +36,7 @@ object BackupAge {
                 }.format(java.util.Date(last))
             )
             ageDays == 1L -> context.getString(R.string.summary_backup_yesterday)
-            else -> context.resources.getQuantityString(
+            else -> Digits.quantity(context.resources, 
                 R.plurals.summary_backup_days, ageDays.toInt(), ageDays.toInt()
             )
         }

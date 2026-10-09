@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -81,7 +83,7 @@ class BackupActivity : BaseActivity() {
         if (businesses.size > 1) {
             val open = Businesses.active(this)
             val shop = Businesses.displayName(this, open)
-                ?: getString(R.string.business_numbered, open.id)
+                ?: Digits.string(resources, R.string.business_numbered, open.id)
             findViewById<android.widget.TextView>(R.id.tvBackupBusiness).apply {
                 text = getString(R.string.backup_for_business, shop)
                 visibility = android.view.View.VISIBLE
@@ -263,8 +265,7 @@ class BackupActivity : BaseActivity() {
         data: Backup.ParsedBackup,
         driveAccount: String? = null
     ) {
-        val body = getString(
-            R.string.restore_warning_message,
+        val body = Digits.string(resources, R.string.restore_warning_message,
             counts.parties,
             counts.entries,
             counts.cheques,
@@ -359,7 +360,7 @@ class BackupActivity : BaseActivity() {
             if (deletedParties > 0 || imagesNote != null) {
                 val body = listOfNotNull(
                     if (deletedParties > 0)
-                        getString(R.string.restore_done_with_bin, deletedParties) else null,
+                        Digits.string(resources, R.string.restore_done_with_bin, deletedParties) else null,
                     imagesNote
                 ).joinToString("\n\n")
                 MaterialAlertDialogBuilder(this@BackupActivity)
@@ -489,8 +490,7 @@ class BackupActivity : BaseActivity() {
 
     private fun showSavedBackups(files: List<File>) {
         val labels = files.map { f ->
-            getString(
-                R.string.backup_saved_at,
+            Digits.string(resources, R.string.backup_saved_at,
                 Format.dateTime(f.lastModified()),
                 (f.length() / 1024).coerceAtLeast(1)
             )
@@ -832,12 +832,12 @@ class BackupActivity : BaseActivity() {
             }
 
             val labels = found.map { biz ->
-                val shop = biz.name ?: getString(R.string.business_numbered, biz.id)
+                val shop = biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id)
                 "$shop — ${Format.dateOnly(biz.modifiedAt)}"
             }.toTypedArray()
 
             MaterialAlertDialogBuilder(this@BackupActivity)
-                .setTitle(resources.getQuantityString(
+                .setTitle(Digits.quantity(resources, 
                     R.plurals.drive_found_businesses, found.size, found.size
                 ))
                 .setItems(labels) { _, which -> confirmRestoreAll(account, listOf(found[which])) }
@@ -851,7 +851,7 @@ class BackupActivity : BaseActivity() {
 
     private fun confirmRestoreAll(account: String, businesses: List<DriveBackup.DriveBusiness>) {
         val names = businesses.joinToString("\n") { biz ->
-            "• " + (biz.name ?: getString(R.string.business_numbered, biz.id))
+            "• " + (biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id))
         }
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.restore_warning_title)
@@ -881,7 +881,7 @@ class BackupActivity : BaseActivity() {
             val failed = mutableListOf<String>()
 
             for (biz in businesses) {
-                val label = biz.name ?: getString(R.string.business_numbered, biz.id)
+                val label = biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id)
 
                 Businesses.ensure(this@BackupActivity, biz.id, biz.name)
                 Businesses.switchTo(this@BackupActivity, biz.id)

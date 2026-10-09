@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -152,8 +154,7 @@ class BusinessSwitchActivity : BaseActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_business_delete, null)
         val tvSummary: TextView = view.findViewById(R.id.tvDeleteSummary)
         val etConfirm: EditText = view.findViewById(R.id.etDeleteConfirmName)
-        tvSummary.text = getString(
-            R.string.business_delete_confirm_body,
+        tvSummary.text = Digits.string(resources, R.string.business_delete_confirm_body,
             summary.partyCount,
             Format.money(summary.netBalance)
         )

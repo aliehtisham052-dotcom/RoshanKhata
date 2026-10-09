@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -220,7 +222,7 @@ class ProductsActivity : BaseActivity() {
                     Toast.makeText(
                         this@ProductsActivity,
                         if (linked == 0) getString(R.string.link_goods_none)
-                        else resources.getQuantityString(R.plurals.link_goods_done, linked, linked),
+                        else Digits.quantity(resources, R.plurals.link_goods_done, linked, linked),
                         Toast.LENGTH_LONG
                     ).show()
                     refresh()

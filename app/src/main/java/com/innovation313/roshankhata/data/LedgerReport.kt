@@ -273,8 +273,7 @@ object LedgerReport {
             footerX += size + 6f
         }
         PdfRtl.drawText(canvas,
-            context.getString(
-                R.string.pdf_rep_footer_page,
+            Digits.string(context.resources, R.string.pdf_rep_footer_page,
                 context.getString(R.string.app_name),
                 pageNo
             ),

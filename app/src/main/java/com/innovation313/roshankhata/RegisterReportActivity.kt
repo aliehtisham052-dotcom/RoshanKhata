@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -97,12 +99,12 @@ class RegisterReportActivity : BaseActivity() {
 
     private fun render(d: RegisterReport.ReportData) {
         tvSummary.text = buildString {
-            append(getString(R.string.register_summary_sales, d.sales.size, Format.money(d.salesTotal)))
+            append(Digits.string(resources, R.string.register_summary_sales, d.sales.size, Format.money(d.salesTotal)))
             append("\n")
-            append(getString(R.string.register_summary_purchases, d.purchases.size, Format.money(d.purchaseTotal)))
+            append(Digits.string(resources, R.string.register_summary_purchases, d.purchases.size, Format.money(d.purchaseTotal)))
             if (d.purchasesMissingRate > 0) {
                 append("\n")
-                append(resources.getQuantityString(
+                append(Digits.quantity(resources, 
                         R.plurals.register_missing_rate,
                         d.purchasesMissingRate, d.purchasesMissingRate
                     ))

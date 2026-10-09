@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +53,7 @@ class InvoiceAdapter(
         holder.tvMeta.text = buildString {
             append(Format.dateOnly(inv.invoiceDate))
             append(" · ")
-            append(ctx.resources.getQuantityString(R.plurals.items_count, inv.itemCount, inv.itemCount))
+            append(Digits.quantity(ctx.resources, R.plurals.items_count, inv.itemCount, inv.itemCount))
         }
 
         holder.itemView.setOnClickListener { onOpen(inv) }
