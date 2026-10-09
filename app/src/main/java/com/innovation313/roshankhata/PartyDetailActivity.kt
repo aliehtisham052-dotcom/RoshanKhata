@@ -1,9 +1,11 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.data.UnitWords
+import com.innovation313.roshankhata.data.TradeVocab
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.asSuggestions
+import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.DateRangeFilter
 import com.innovation313.roshankhata.ui.DateTimeField
 import com.innovation313.roshankhata.ui.fillDialogHeight
@@ -815,8 +817,13 @@ class PartyDetailActivity : BaseActivity() {
 
         val etNote: EditText = view.findViewById(R.id.etNote)
         val etItemName: AutoCompleteTextView = view.findViewById(R.id.etItemName)
+        // The trade's own words in the hints (9 Oct): a dairy reads
+        // "Item (Milk, Yogurt, Ghee…)", not a pesticide dealer's examples.
+        etItemName.hint = TradeVocab.itemHint(this)
+        view.findViewById<android.widget.TextView>(R.id.tvGoodsHelp)?.text = TradeVocab.goodsHelp(this)
         val etQuantity: EditText = view.findViewById(R.id.etQuantity)
         val etUnit: AutoCompleteTextView = view.findViewById(R.id.etUnit)
+        etUnit.hint = TradeVocab.unitHint(this)
 
         // The products this shop actually deals in, offered as the name is
         // typed. Read once as the dialog opens rather than on every keystroke
@@ -832,7 +839,7 @@ class PartyDetailActivity : BaseActivity() {
             // Three rows, not the default eight: this list opens over Quantity,
             // Unit and the rest of the form, and eight two-line rows fill the
             // screen below the field.
-            SmartSuggest.attach(etItemName, products.asSuggestions(), maxRows = 3)
+            SmartSuggest.attach(etItemName, products.withStarters(this@PartyDetailActivity), maxRows = 3)
         }
         val cbQarzeHasna: MaterialCheckBox = view.findViewById(R.id.cbQarzeHasna)
 
@@ -842,7 +849,7 @@ class PartyDetailActivity : BaseActivity() {
             ArrayAdapter(
                 this,
                 android.R.layout.simple_dropdown_item_1line,
-                UnitWords.choices()
+                UnitWords.choices(this)
             )
         )
         val btnBatch: MaterialButton = view.findViewById(R.id.btnBatch)

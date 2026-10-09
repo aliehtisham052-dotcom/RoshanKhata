@@ -2143,4 +2143,295 @@
     <string name="biz_card_qr_message_hint">رسالة واتساب عند مسح رمز QR (اختياري)</string>
     <string name="biz_card_qr_message_default">السلام عليكم</string>
     <string name="biz_card_print_pdf">PDF جاهز للطباعة (3.5 × 2 إنش)</string>
+    <string name="vocab_suggested">مقترح لمتجرك</string>
+    <string name="vocab_item_hint">الصنف (%1$s…)</string>
+    <string name="vocab_unit_hint">الوحدة (%1$s…)</string>
+    <string name="vocab_type_hint">النوع — %1$s</string>
+    <string name="vocab_goods_help">إذا خرجت بضاعة مع هذا القيد — %1$s — سجّلها هنا. اتركه فارغًا لقيد نقدي عادي.</string>
+    <string name="vocab_unit_optional">الوحدة — %1$s (اختياري)</string>
+    <string-array name="vocab_agri_items">
+        <item>يوريا</item>
+        <item>علف</item>
+        <item>بذور</item>
+    </string-array>
+    <string-array name="vocab_agri_types">
+        <item>مبيد</item>
+        <item>سماد</item>
+        <item>بذور</item>
+        <item>علف</item>
+    </string-array>
+    <string-array name="vocab_agri_starters">
+        <item>يوريا</item>
+        <item>داب</item>
+        <item>إن بي كي</item>
+        <item>بوتاس</item>
+        <item>بذور قمح</item>
+        <item>بذور أرز</item>
+        <item>بذور قطن</item>
+        <item>علف ماشية</item>
+        <item>مركّز</item>
+        <item>كبريت</item>
+        <item>زنك</item>
+    </string-array>
+    <string-array name="vocab_medical_items">
+        <item>بنادول</item>
+        <item>شراب</item>
+        <item>محلول</item>
+    </string-array>
+    <string-array name="vocab_medical_types">
+        <item>أقراص</item>
+        <item>شراب</item>
+        <item>حقنة</item>
+        <item>جراحي</item>
+    </string-array>
+    <string-array name="vocab_medical_starters">
+        <item>بنادول</item>
+        <item>بروفين</item>
+        <item>أوجمنتين</item>
+        <item>فلاجيل</item>
+        <item>شراب سعال</item>
+        <item>أملاح الإماهة</item>
+        <item>محلول وريدي</item>
+        <item>حقنة</item>
+        <item>ضمادة</item>
+        <item>فيتامين سي</item>
+        <item>إنسولين</item>
+    </string-array>
+    <string-array name="vocab_mobile_items">
+        <item>شاحن</item>
+        <item>سماعة</item>
+        <item>غطاء</item>
+    </string-array>
+    <string-array name="vocab_mobile_types">
+        <item>إكسسوار</item>
+        <item>هاتف</item>
+        <item>صيانة</item>
+        <item>بطاقة</item>
+    </string-array>
+    <string-array name="vocab_mobile_starters">
+        <item>شاحن</item>
+        <item>سماعة</item>
+        <item>غطاء خلفي</item>
+        <item>واقي شاشة</item>
+        <item>كابل بيانات</item>
+        <item>بطارية</item>
+        <item>بطاقة ذاكرة</item>
+        <item>باور بانك</item>
+        <item>رصيد</item>
+        <item>شريحة</item>
+        <item>شاشة</item>
+    </string-array>
+    <string-array name="vocab_kiryana_items">
+        <item>دقيق</item>
+        <item>سكر</item>
+        <item>سمن</item>
+    </string-array>
+    <string-array name="vocab_kiryana_types">
+        <item>بقالة</item>
+        <item>معلّب</item>
+        <item>منزلي</item>
+        <item>طازج</item>
+    </string-array>
+    <string-array name="vocab_kiryana_starters">
+        <item>دقيق</item>
+        <item>سكر</item>
+        <item>أرز</item>
+        <item>حمص</item>
+        <item>عدس</item>
+        <item>زيت طبخ</item>
+        <item>سمن</item>
+        <item>شاي</item>
+        <item>صابون</item>
+        <item>مسحوق غسيل</item>
+        <item>ملح</item>
+        <item>بهارات</item>
+    </string-array>
+    <string-array name="vocab_hardware_items">
+        <item>إسمنت</item>
+        <item>أنبوب</item>
+        <item>دهان</item>
+    </string-array>
+    <string-array name="vocab_hardware_types">
+        <item>بناء</item>
+        <item>سباكة</item>
+        <item>كهرباء</item>
+        <item>عدد</item>
+    </string-array>
+    <string-array name="vocab_hardware_starters">
+        <item>إسمنت</item>
+        <item>حديد تسليح</item>
+        <item>رمل</item>
+        <item>طوب</item>
+        <item>أنبوب PVC</item>
+        <item>دهان</item>
+        <item>مسامير</item>
+        <item>براغي</item>
+        <item>سلك</item>
+        <item>مفتاح</item>
+        <item>صنبور</item>
+        <item>مفصلة</item>
+    </string-array>
+    <string-array name="vocab_dairy_items">
+        <item>حليب</item>
+        <item>لبن</item>
+        <item>سمن</item>
+    </string-array>
+    <string-array name="vocab_dairy_types">
+        <item>حليب</item>
+        <item>معلّب</item>
+        <item>علف</item>
+        <item>حلويات</item>
+    </string-array>
+    <string-array name="vocab_dairy_starters">
+        <item>حليب</item>
+        <item>لبن</item>
+        <item>زبدة</item>
+        <item>سمن</item>
+        <item>قشطة</item>
+        <item>جبن</item>
+        <item>لبن مخيض</item>
+        <item>خويا</item>
+        <item>مركّز</item>
+        <item>نخالة</item>
+        <item>بيض</item>
+    </string-array>
+    <string-array name="vocab_tailor_items">
+        <item>بدلة</item>
+        <item>سروال</item>
+        <item>بطانة</item>
+    </string-array>
+    <string-array name="vocab_tailor_types">
+        <item>خياطة</item>
+        <item>قماش</item>
+        <item>تعديل</item>
+        <item>إكسسوار</item>
+    </string-array>
+    <string-array name="vocab_tailor_starters">
+        <item>بدلة رجالي</item>
+        <item>فستان</item>
+        <item>قميص وسروال</item>
+        <item>صديري</item>
+        <item>بنطال وقميص</item>
+        <item>زي موحد</item>
+        <item>قماش بطانة</item>
+        <item>أزرار</item>
+        <item>سحّاب</item>
+        <item>خيط</item>
+        <item>تعديل</item>
+    </string-array>
+    <string-array name="vocab_auto_items">
+        <item>زيت</item>
+        <item>فلتر</item>
+        <item>إطار</item>
+    </string-array>
+    <string-array name="vocab_auto_types">
+        <item>محرك</item>
+        <item>هيكل</item>
+        <item>كهرباء</item>
+        <item>خدمة</item>
+    </string-array>
+    <string-array name="vocab_auto_starters">
+        <item>زيت محرك</item>
+        <item>فلتر زيت</item>
+        <item>فلتر هواء</item>
+        <item>فحمات فرامل</item>
+        <item>إطار</item>
+        <item>أنبوب داخلي</item>
+        <item>بطارية</item>
+        <item>شمعة إشعال</item>
+        <item>صفيحة قابض</item>
+        <item>سلسلة</item>
+        <item>لمبة</item>
+        <item>خدمة</item>
+    </string-array>
+    <string-array name="vocab_furniture_items">
+        <item>سرير</item>
+        <item>كنبة</item>
+        <item>طاولة</item>
+    </string-array>
+    <string-array name="vocab_furniture_types">
+        <item>غرفة نوم</item>
+        <item>صالة</item>
+        <item>مكتب</item>
+        <item>إصلاح</item>
+    </string-array>
+    <string-array name="vocab_furniture_starters">
+        <item>سرير مزدوج</item>
+        <item>سرير مفرد</item>
+        <item>طقم كنب</item>
+        <item>طاولة طعام</item>
+        <item>كراسي</item>
+        <item>خزانة</item>
+        <item>تسريحة</item>
+        <item>مرتبة</item>
+        <item>كرسي مكتب</item>
+        <item>طاولة دراسة</item>
+        <item>تلميع</item>
+    </string-array>
+    <string-array name="vocab_salon_items">
+        <item>قص شعر</item>
+        <item>حلاقة</item>
+        <item>تنظيف بشرة</item>
+    </string-array>
+    <string-array name="vocab_salon_types">
+        <item>خدمة</item>
+        <item>منتج</item>
+        <item>باقة</item>
+    </string-array>
+    <string-array name="vocab_salon_starters">
+        <item>قص شعر</item>
+        <item>حلاقة</item>
+        <item>تشذيب لحية</item>
+        <item>تنظيف بشرة</item>
+        <item>صبغة شعر</item>
+        <item>مساج</item>
+        <item>شامبو</item>
+        <item>جل شعر</item>
+        <item>شمع</item>
+        <item>باقة عروس</item>
+        <item>قص شعر أطفال</item>
+    </string-array>
+    <string-array name="vocab_solar_items">
+        <item>لوح</item>
+        <item>عاكس</item>
+        <item>بطارية</item>
+    </string-array>
+    <string-array name="vocab_solar_types">
+        <item>طاقة شمسية</item>
+        <item>كهرباء</item>
+        <item>تمديدات</item>
+        <item>تركيب</item>
+    </string-array>
+    <string-array name="vocab_solar_starters">
+        <item>لوح شمسي</item>
+        <item>عاكس</item>
+        <item>بطارية</item>
+        <item>منظم شحن</item>
+        <item>كابل DC</item>
+        <item>قاطع</item>
+        <item>حامل</item>
+        <item>مروحة</item>
+        <item>لمبة LED</item>
+        <item>مضخة ماء</item>
+        <item>تركيب</item>
+    </string-array>
+    <string-array name="vocab_general_items">
+        <item>صنف</item>
+        <item>عبوة</item>
+        <item>زجاجة</item>
+    </string-array>
+    <string-array name="vocab_general_types">
+        <item>بضاعة</item>
+        <item>خدمة</item>
+        <item>أخرى</item>
+    </string-array>
+    <string-array name="vocab_general_starters">
+        <item>صنف</item>
+        <item>خدمة</item>
+        <item>توصيل</item>
+        <item>إصلاح</item>
+        <item>عبوة</item>
+        <item>زجاجة</item>
+        <item>صندوق</item>
+    </string-array>
 </resources>

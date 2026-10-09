@@ -32,6 +32,7 @@ import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.asSuggestions
+import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.TemplatePagerAdapter
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.BillScanFlow
@@ -323,7 +324,7 @@ class InvoiceEditorActivity : BaseActivity() {
         // The products, once, for every row's name box — including the rows
         // that were on screen before this read came back.
         lifecycleScope.launch {
-            productSuggestions = dao.productsOnce().asSuggestions()
+            productSuggestions = dao.productsOnce().withStarters(this@InvoiceEditorActivity)
             rows.forEach { offerProducts(it) }
         }
 

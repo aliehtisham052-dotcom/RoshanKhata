@@ -334,3 +334,26 @@ fun List<com.innovation313.roshankhata.data.Product>.asSuggestions(): List<Smart
             subtitle = parts.takeIf { it.isNotEmpty() }?.joinToString(" · ")
         )
     }
+
+/**
+ * The shop's products as suggestions, and — while the shop has fewer than
+ * [STARTER_UNTIL] of its own — the trade's starter goods after them
+ * (9 Oct 2026). A new dairy's first entry form offers Milk, Yogurt, Ghee in
+ * the owner's language rather than an empty list; a book that has grown its
+ * own products no longer sees them. A starter that is already a product
+ * (by the same name rule products use) is not offered twice. Choosing a
+ * starter saves the typed name like any other, nothing special is written.
+ */
+fun List<com.innovation313.roshankhata.data.Product>.withStarters(context: Context): List<SmartSuggest.Item> {
+    val own = asSuggestions()
+    if (size >= STARTER_UNTIL) return own
+    val have = map { com.innovation313.roshankhata.data.ProductName.key(it.name) }.toHashSet()
+    val label = context.getString(com.innovation313.roshankhata.R.string.vocab_suggested)
+    val starters = com.innovation313.roshankhata.data.TradeVocab.starters(context)
+        .filter { com.innovation313.roshankhata.data.ProductName.key(it) !in have }
+        .map { SmartSuggest.Item(value = it, subtitle = label) }
+    return own + starters
+}
+
+/** Below this many products of its own, a book is still offered the trade's starters. */
+const val STARTER_UNTIL = 5

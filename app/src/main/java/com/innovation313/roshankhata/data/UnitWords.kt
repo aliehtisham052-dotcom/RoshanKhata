@@ -98,6 +98,22 @@ object UnitWords {
     fun choices(locale: Locale = DateWords.appLocale()): List<String> =
         KEYS.map { label(it, locale) }
 
+    /** A key's word in the app's language, for [TradeVocab]. */
+    fun label(context: android.content.Context, key: String): String = label(key, DateWords.appLocale())
+
+    /**
+     * The list the owner picks from, the active trade's own units first (9 Oct
+     * 2026): a dairy sees litre, kg, packet at the top and bag, maund, seer
+     * below, where before every shop was handed a pesticide dealer's order.
+     * Every unit is still offered — a trade's list is an order, not a fence —
+     * and what is saved is the same key as ever.
+     */
+    fun choices(context: android.content.Context): List<String> {
+        val locale = DateWords.appLocale()
+        val lead = TradeVocab.unitKeys(context)
+        return (lead + KEYS.filter { it !in lead }).map { label(it, locale) }
+    }
+
     /**
      * What to SAVE or COMPARE for a unit the owner typed or picked: the key
      * when the text is a key or any language's word for one, otherwise the

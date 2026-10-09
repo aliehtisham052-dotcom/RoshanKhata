@@ -2015,4 +2015,295 @@
     <string name="biz_card_qr_message_hint">QR স্ক্যান করলে WhatsApp বার্তা (ঐচ্ছিক)</string>
     <string name="biz_card_qr_message_default">আসসালামু আলাইকুম, আপনার কার্ড দেখেছি</string>
     <string name="biz_card_print_pdf">ছাপার জন্য তৈরি PDF (3.5 × 2 ইঞ্চি)</string>
+    <string name="vocab_suggested">আপনার দোকানের জন্য প্রস্তাবিত</string>
+    <string name="vocab_item_hint">পণ্য (%1$s…)</string>
+    <string name="vocab_unit_hint">একক (%1$s…)</string>
+    <string name="vocab_type_hint">ধরন — %1$s</string>
+    <string name="vocab_goods_help">এই এন্ট্রির সাথে মাল গেলে — %1$s — এখানে লিখুন। সাধারণ নগদ এন্ট্রির জন্য খালি রাখুন।</string>
+    <string name="vocab_unit_optional">একক — %1$s (ঐচ্ছিক)</string>
+    <string-array name="vocab_agri_items">
+        <item>ইউরিয়া</item>
+        <item>ফিড</item>
+        <item>বীজ</item>
+    </string-array>
+    <string-array name="vocab_agri_types">
+        <item>কীটনাশক</item>
+        <item>সার</item>
+        <item>বীজ</item>
+        <item>ফিড</item>
+    </string-array>
+    <string-array name="vocab_agri_starters">
+        <item>ইউরিয়া</item>
+        <item>ডিএপি</item>
+        <item>এনপিকে</item>
+        <item>পটাশ</item>
+        <item>গমের বীজ</item>
+        <item>ধানের বীজ</item>
+        <item>তুলার বীজ</item>
+        <item>গবাদি পশুর খাদ্য</item>
+        <item>ভান্ডা</item>
+        <item>সালফার</item>
+        <item>জিঙ্ক</item>
+    </string-array>
+    <string-array name="vocab_medical_items">
+        <item>প্যানাডল</item>
+        <item>সিরাপ</item>
+        <item>স্যালাইন</item>
+    </string-array>
+    <string-array name="vocab_medical_types">
+        <item>ট্যাবলেট</item>
+        <item>সিরাপ</item>
+        <item>ইনজেকশন</item>
+        <item>সার্জিক্যাল</item>
+    </string-array>
+    <string-array name="vocab_medical_starters">
+        <item>প্যানাডল</item>
+        <item>ব্রুফেন</item>
+        <item>অগমেন্টিন</item>
+        <item>ফ্ল্যাজিল</item>
+        <item>কাশির সিরাপ</item>
+        <item>ওআরএস</item>
+        <item>স্যালাইন</item>
+        <item>সিরিঞ্জ</item>
+        <item>ব্যান্ডেজ</item>
+        <item>ভিটামিন সি</item>
+        <item>ইনসুলিন</item>
+    </string-array>
+    <string-array name="vocab_mobile_items">
+        <item>চার্জার</item>
+        <item>হ্যান্ডসফ্রি</item>
+        <item>কভার</item>
+    </string-array>
+    <string-array name="vocab_mobile_types">
+        <item>এক্সেসরি</item>
+        <item>হ্যান্ডসেট</item>
+        <item>মেরামত</item>
+        <item>কার্ড</item>
+    </string-array>
+    <string-array name="vocab_mobile_starters">
+        <item>চার্জার</item>
+        <item>হ্যান্ডসফ্রি</item>
+        <item>ব্যাক কভার</item>
+        <item>স্ক্রিন প্রটেক্টর</item>
+        <item>ডেটা কেবল</item>
+        <item>ব্যাটারি</item>
+        <item>মেমোরি কার্ড</item>
+        <item>পাওয়ার ব্যাংক</item>
+        <item>রিচার্জ</item>
+        <item>সিম</item>
+        <item>ডিসপ্লে</item>
+    </string-array>
+    <string-array name="vocab_kiryana_items">
+        <item>আটা</item>
+        <item>চিনি</item>
+        <item>ঘি</item>
+    </string-array>
+    <string-array name="vocab_kiryana_types">
+        <item>মুদি</item>
+        <item>প্যাকেটজাত</item>
+        <item>গৃহস্থালি</item>
+        <item>তাজা</item>
+    </string-array>
+    <string-array name="vocab_kiryana_starters">
+        <item>আটা</item>
+        <item>চিনি</item>
+        <item>চাল</item>
+        <item>ছোলার ডাল</item>
+        <item>মসুর ডাল</item>
+        <item>রান্নার তেল</item>
+        <item>ঘি</item>
+        <item>চা</item>
+        <item>সাবান</item>
+        <item>ওয়াশিং পাউডার</item>
+        <item>লবণ</item>
+        <item>মসলা</item>
+    </string-array>
+    <string-array name="vocab_hardware_items">
+        <item>সিমেন্ট</item>
+        <item>পাইপ</item>
+        <item>রং</item>
+    </string-array>
+    <string-array name="vocab_hardware_types">
+        <item>নির্মাণ</item>
+        <item>প্লাম্বিং</item>
+        <item>বৈদ্যুতিক</item>
+        <item>যন্ত্রপাতি</item>
+    </string-array>
+    <string-array name="vocab_hardware_starters">
+        <item>সিমেন্ট</item>
+        <item>রড</item>
+        <item>বালি</item>
+        <item>ইট</item>
+        <item>পিভিসি পাইপ</item>
+        <item>রং</item>
+        <item>পেরেক</item>
+        <item>স্ক্রু</item>
+        <item>তার</item>
+        <item>সুইচ</item>
+        <item>কল</item>
+        <item>কবজা</item>
+    </string-array>
+    <string-array name="vocab_dairy_items">
+        <item>দুধ</item>
+        <item>দই</item>
+        <item>ঘি</item>
+    </string-array>
+    <string-array name="vocab_dairy_types">
+        <item>দুধ</item>
+        <item>প্যাকেটজাত</item>
+        <item>ফিড</item>
+        <item>মিষ্টি</item>
+    </string-array>
+    <string-array name="vocab_dairy_starters">
+        <item>দুধ</item>
+        <item>দই</item>
+        <item>মাখন</item>
+        <item>ঘি</item>
+        <item>ক্রিম</item>
+        <item>পনির</item>
+        <item>লাচ্ছি</item>
+        <item>খোয়া</item>
+        <item>ভান্ডা</item>
+        <item>ভুসি</item>
+        <item>ডিম</item>
+    </string-array>
+    <string-array name="vocab_tailor_items">
+        <item>স্যুট</item>
+        <item>সালোয়ার</item>
+        <item>আস্তর</item>
+    </string-array>
+    <string-array name="vocab_tailor_types">
+        <item>সেলাই</item>
+        <item>কাপড়</item>
+        <item>মেরামত</item>
+        <item>সরঞ্জাম</item>
+    </string-array>
+    <string-array name="vocab_tailor_starters">
+        <item>জেন্টস স্যুট</item>
+        <item>লেডিস স্যুট</item>
+        <item>সালোয়ার কামিজ</item>
+        <item>ওয়েস্টকোট</item>
+        <item>প্যান্ট শার্ট</item>
+        <item>ইউনিফর্ম</item>
+        <item>আস্তর</item>
+        <item>বোতাম</item>
+        <item>জিপ</item>
+        <item>সুতা</item>
+        <item>মেরামত</item>
+    </string-array>
+    <string-array name="vocab_auto_items">
+        <item>তেল</item>
+        <item>ফিল্টার</item>
+        <item>টায়ার</item>
+    </string-array>
+    <string-array name="vocab_auto_types">
+        <item>ইঞ্জিন</item>
+        <item>বডি</item>
+        <item>বৈদ্যুতিক</item>
+        <item>সার্ভিস</item>
+    </string-array>
+    <string-array name="vocab_auto_starters">
+        <item>ইঞ্জিন অয়েল</item>
+        <item>অয়েল ফিল্টার</item>
+        <item>এয়ার ফিল্টার</item>
+        <item>ব্রেক প্যাড</item>
+        <item>টায়ার</item>
+        <item>টিউব</item>
+        <item>ব্যাটারি</item>
+        <item>স্পার্ক প্লাগ</item>
+        <item>ক্লাচ প্লেট</item>
+        <item>চেইন</item>
+        <item>বাল্ব</item>
+        <item>সার্ভিস</item>
+    </string-array>
+    <string-array name="vocab_furniture_items">
+        <item>খাট</item>
+        <item>সোফা</item>
+        <item>টেবিল</item>
+    </string-array>
+    <string-array name="vocab_furniture_types">
+        <item>শোবার ঘর</item>
+        <item>বসার ঘর</item>
+        <item>অফিস</item>
+        <item>মেরামত</item>
+    </string-array>
+    <string-array name="vocab_furniture_starters">
+        <item>ডাবল খাট</item>
+        <item>সিঙ্গেল খাট</item>
+        <item>সোফা সেট</item>
+        <item>ডাইনিং টেবিল</item>
+        <item>চেয়ার</item>
+        <item>আলমারি</item>
+        <item>ড্রেসিং টেবিল</item>
+        <item>ম্যাট্রেস</item>
+        <item>অফিস চেয়ার</item>
+        <item>স্টাডি টেবিল</item>
+        <item>পালিশ</item>
+    </string-array>
+    <string-array name="vocab_salon_items">
+        <item>চুল কাটা</item>
+        <item>শেভ</item>
+        <item>ফেসিয়াল</item>
+    </string-array>
+    <string-array name="vocab_salon_types">
+        <item>সার্ভিস</item>
+        <item>পণ্য</item>
+        <item>প্যাকেজ</item>
+    </string-array>
+    <string-array name="vocab_salon_starters">
+        <item>চুল কাটা</item>
+        <item>শেভ</item>
+        <item>দাড়ি ছাঁটা</item>
+        <item>ফেসিয়াল</item>
+        <item>চুলের রং</item>
+        <item>ম্যাসাজ</item>
+        <item>শ্যাম্পু</item>
+        <item>হেয়ার জেল</item>
+        <item>ওয়াক্স</item>
+        <item>ব্রাইডাল প্যাকেজ</item>
+        <item>শিশুদের চুল কাটা</item>
+    </string-array>
+    <string-array name="vocab_solar_items">
+        <item>প্যানেল</item>
+        <item>ইনভার্টার</item>
+        <item>ব্যাটারি</item>
+    </string-array>
+    <string-array name="vocab_solar_types">
+        <item>সোলার</item>
+        <item>বৈদ্যুতিক</item>
+        <item>ওয়্যারিং</item>
+        <item>ইনস্টলেশন</item>
+    </string-array>
+    <string-array name="vocab_solar_starters">
+        <item>সোলার প্যানেল</item>
+        <item>ইনভার্টার</item>
+        <item>ব্যাটারি</item>
+        <item>চার্জ কন্ট্রোলার</item>
+        <item>ডিসি কেবল</item>
+        <item>ব্রেকার</item>
+        <item>স্ট্যান্ড</item>
+        <item>ফ্যান</item>
+        <item>এলইডি বাল্ব</item>
+        <item>ওয়াটার পাম্প</item>
+        <item>ইনস্টলেশন</item>
+    </string-array>
+    <string-array name="vocab_general_items">
+        <item>পণ্য</item>
+        <item>প্যাকেট</item>
+        <item>বোতল</item>
+    </string-array>
+    <string-array name="vocab_general_types">
+        <item>পণ্য</item>
+        <item>সার্ভিস</item>
+        <item>অন্যান্য</item>
+    </string-array>
+    <string-array name="vocab_general_starters">
+        <item>পণ্য</item>
+        <item>সার্ভিস</item>
+        <item>ডেলিভারি</item>
+        <item>মেরামত</item>
+        <item>প্যাকেট</item>
+        <item>বোতল</item>
+        <item>বাক্স</item>
+    </string-array>
 </resources>

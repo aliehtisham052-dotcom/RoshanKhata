@@ -1999,4 +1999,295 @@
     <string name="biz_card_qr_message_hint">پیام واتس‌اپ هنگام اسکن QR (اختیاری)</string>
     <string name="biz_card_qr_message_default">سلام</string>
     <string name="biz_card_print_pdf">PDF آمادهٔ چاپ (3.5 × 2 اینچ)</string>
+    <string name="vocab_suggested">پیشنهاد برای فروشگاه شما</string>
+    <string name="vocab_item_hint">کالا (%1$s…)</string>
+    <string name="vocab_unit_hint">واحد (%1$s…)</string>
+    <string name="vocab_type_hint">نوع — %1$s</string>
+    <string name="vocab_goods_help">اگر با این ثبت کالایی خارج شد — %1$s — اینجا ثبت کنید. برای ثبت نقدی ساده خالی بگذارید.</string>
+    <string name="vocab_unit_optional">واحد — %1$s (اختیاری)</string>
+    <string-array name="vocab_agri_items">
+        <item>اوره</item>
+        <item>خوراک دام</item>
+        <item>بذر</item>
+    </string-array>
+    <string-array name="vocab_agri_types">
+        <item>آفت‌کش</item>
+        <item>کود</item>
+        <item>بذر</item>
+        <item>خوراک دام</item>
+    </string-array>
+    <string-array name="vocab_agri_starters">
+        <item>اوره</item>
+        <item>دی‌ای‌پی</item>
+        <item>ان‌پی‌کا</item>
+        <item>پتاس</item>
+        <item>بذر گندم</item>
+        <item>بذر برنج</item>
+        <item>بذر پنبه</item>
+        <item>خوراک دام</item>
+        <item>کنسانتره</item>
+        <item>گوگرد</item>
+        <item>روی</item>
+    </string-array>
+    <string-array name="vocab_medical_items">
+        <item>پانادول</item>
+        <item>شربت</item>
+        <item>سرم</item>
+    </string-array>
+    <string-array name="vocab_medical_types">
+        <item>قرص</item>
+        <item>شربت</item>
+        <item>آمپول</item>
+        <item>جراحی</item>
+    </string-array>
+    <string-array name="vocab_medical_starters">
+        <item>پانادول</item>
+        <item>بروفن</item>
+        <item>آگمنتین</item>
+        <item>فلاژیل</item>
+        <item>شربت سرفه</item>
+        <item>او آر اس</item>
+        <item>سرم</item>
+        <item>سرنگ</item>
+        <item>باند</item>
+        <item>ویتامین ث</item>
+        <item>انسولین</item>
+    </string-array>
+    <string-array name="vocab_mobile_items">
+        <item>شارژر</item>
+        <item>هندزفری</item>
+        <item>قاب</item>
+    </string-array>
+    <string-array name="vocab_mobile_types">
+        <item>لوازم جانبی</item>
+        <item>گوشی</item>
+        <item>تعمیر</item>
+        <item>کارت</item>
+    </string-array>
+    <string-array name="vocab_mobile_starters">
+        <item>شارژر</item>
+        <item>هندزفری</item>
+        <item>قاب</item>
+        <item>محافظ صفحه</item>
+        <item>کابل دیتا</item>
+        <item>باتری</item>
+        <item>کارت حافظه</item>
+        <item>پاوربانک</item>
+        <item>شارژ</item>
+        <item>سیم‌کارت</item>
+        <item>صفحه نمایش</item>
+    </string-array>
+    <string-array name="vocab_kiryana_items">
+        <item>آرد</item>
+        <item>شکر</item>
+        <item>روغن</item>
+    </string-array>
+    <string-array name="vocab_kiryana_types">
+        <item>خواربار</item>
+        <item>بسته‌بندی</item>
+        <item>خانگی</item>
+        <item>تازه</item>
+    </string-array>
+    <string-array name="vocab_kiryana_starters">
+        <item>آرد</item>
+        <item>شکر</item>
+        <item>برنج</item>
+        <item>نخود</item>
+        <item>عدس</item>
+        <item>روغن</item>
+        <item>کره</item>
+        <item>چای</item>
+        <item>صابون</item>
+        <item>پودر لباسشویی</item>
+        <item>نمک</item>
+        <item>ادویه</item>
+    </string-array>
+    <string-array name="vocab_hardware_items">
+        <item>سیمان</item>
+        <item>لوله</item>
+        <item>رنگ</item>
+    </string-array>
+    <string-array name="vocab_hardware_types">
+        <item>ساختمانی</item>
+        <item>لوله‌کشی</item>
+        <item>برقی</item>
+        <item>ابزار</item>
+    </string-array>
+    <string-array name="vocab_hardware_starters">
+        <item>سیمان</item>
+        <item>میلگرد</item>
+        <item>ماسه</item>
+        <item>آجر</item>
+        <item>لوله PVC</item>
+        <item>رنگ</item>
+        <item>میخ</item>
+        <item>پیچ</item>
+        <item>سیم</item>
+        <item>کلید</item>
+        <item>شیر</item>
+        <item>لولا</item>
+    </string-array>
+    <string-array name="vocab_dairy_items">
+        <item>شیر</item>
+        <item>ماست</item>
+        <item>کره</item>
+    </string-array>
+    <string-array name="vocab_dairy_types">
+        <item>شیر</item>
+        <item>بسته‌بندی</item>
+        <item>خوراک دام</item>
+        <item>شیرینی</item>
+    </string-array>
+    <string-array name="vocab_dairy_starters">
+        <item>شیر</item>
+        <item>ماست</item>
+        <item>کره</item>
+        <item>روغن حیوانی</item>
+        <item>خامه</item>
+        <item>پنیر</item>
+        <item>دوغ</item>
+        <item>خویا</item>
+        <item>کنسانتره</item>
+        <item>سبوس</item>
+        <item>تخم‌مرغ</item>
+    </string-array>
+    <string-array name="vocab_tailor_items">
+        <item>کت و شلوار</item>
+        <item>شلوار</item>
+        <item>آستر</item>
+    </string-array>
+    <string-array name="vocab_tailor_types">
+        <item>دوخت</item>
+        <item>پارچه</item>
+        <item>تعمیر</item>
+        <item>لوازم</item>
+    </string-array>
+    <string-array name="vocab_tailor_starters">
+        <item>کت و شلوار مردانه</item>
+        <item>لباس زنانه</item>
+        <item>پیراهن و شلوار</item>
+        <item>جلیقه</item>
+        <item>پیراهن</item>
+        <item>یونیفرم</item>
+        <item>پارچه آستر</item>
+        <item>دکمه</item>
+        <item>زیپ</item>
+        <item>نخ</item>
+        <item>تعمیر</item>
+    </string-array>
+    <string-array name="vocab_auto_items">
+        <item>روغن</item>
+        <item>فیلتر</item>
+        <item>لاستیک</item>
+    </string-array>
+    <string-array name="vocab_auto_types">
+        <item>موتور</item>
+        <item>بدنه</item>
+        <item>برقی</item>
+        <item>سرویس</item>
+    </string-array>
+    <string-array name="vocab_auto_starters">
+        <item>روغن موتور</item>
+        <item>فیلتر روغن</item>
+        <item>فیلتر هوا</item>
+        <item>لنت ترمز</item>
+        <item>لاستیک</item>
+        <item>تیوب</item>
+        <item>باتری</item>
+        <item>شمع</item>
+        <item>صفحه کلاچ</item>
+        <item>زنجیر</item>
+        <item>لامپ</item>
+        <item>سرویس</item>
+    </string-array>
+    <string-array name="vocab_furniture_items">
+        <item>تخت</item>
+        <item>مبل</item>
+        <item>میز</item>
+    </string-array>
+    <string-array name="vocab_furniture_types">
+        <item>اتاق خواب</item>
+        <item>پذیرایی</item>
+        <item>اداری</item>
+        <item>تعمیر</item>
+    </string-array>
+    <string-array name="vocab_furniture_starters">
+        <item>تخت دونفره</item>
+        <item>تخت یک‌نفره</item>
+        <item>مبلمان</item>
+        <item>میز ناهارخوری</item>
+        <item>صندلی</item>
+        <item>کمد</item>
+        <item>میز آرایش</item>
+        <item>تشک</item>
+        <item>صندلی اداری</item>
+        <item>میز تحریر</item>
+        <item>پولیش</item>
+    </string-array>
+    <string-array name="vocab_salon_items">
+        <item>اصلاح مو</item>
+        <item>اصلاح صورت</item>
+        <item>فیشال</item>
+    </string-array>
+    <string-array name="vocab_salon_types">
+        <item>خدمات</item>
+        <item>محصول</item>
+        <item>پکیج</item>
+    </string-array>
+    <string-array name="vocab_salon_starters">
+        <item>اصلاح مو</item>
+        <item>اصلاح صورت</item>
+        <item>اصلاح ریش</item>
+        <item>فیشال</item>
+        <item>رنگ مو</item>
+        <item>ماساژ</item>
+        <item>شامپو</item>
+        <item>ژل مو</item>
+        <item>واکس</item>
+        <item>پکیج عروس</item>
+        <item>اصلاح مو کودک</item>
+    </string-array>
+    <string-array name="vocab_solar_items">
+        <item>پنل</item>
+        <item>اینورتر</item>
+        <item>باتری</item>
+    </string-array>
+    <string-array name="vocab_solar_types">
+        <item>خورشیدی</item>
+        <item>برقی</item>
+        <item>سیم‌کشی</item>
+        <item>نصب</item>
+    </string-array>
+    <string-array name="vocab_solar_starters">
+        <item>پنل خورشیدی</item>
+        <item>اینورتر</item>
+        <item>باتری</item>
+        <item>شارژ کنترلر</item>
+        <item>کابل DC</item>
+        <item>فیوز</item>
+        <item>پایه</item>
+        <item>پنکه</item>
+        <item>لامپ LED</item>
+        <item>پمپ آب</item>
+        <item>نصب</item>
+    </string-array>
+    <string-array name="vocab_general_items">
+        <item>کالا</item>
+        <item>بسته</item>
+        <item>بطری</item>
+    </string-array>
+    <string-array name="vocab_general_types">
+        <item>کالا</item>
+        <item>خدمات</item>
+        <item>سایر</item>
+    </string-array>
+    <string-array name="vocab_general_starters">
+        <item>کالا</item>
+        <item>خدمات</item>
+        <item>تحویل</item>
+        <item>تعمیر</item>
+        <item>بسته</item>
+        <item>بطری</item>
+        <item>جعبه</item>
+    </string-array>
 </resources>
