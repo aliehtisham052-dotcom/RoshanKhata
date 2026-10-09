@@ -177,7 +177,7 @@ class SchemesActivity : BaseActivity() {
             val etName = view.findViewById<EditText>(R.id.etSchemeName)
             // A company's crop-season scheme is an agri shop's example; any
             // other trade is shown a festival offer instead (9 Oct).
-            if (com.innovation313.roshankhata.data.Trade.current(this) != com.innovation313.roshankhata.data.Trade.AGRI) {
+            if (com.innovation313.roshankhata.data.Trade.current(this@SchemesActivity) != com.innovation313.roshankhata.data.Trade.AGRI) {
                 etName.setHint(R.string.scheme_name_hint_general)
             }
             val btnSupplier = view.findViewById<MaterialButton>(R.id.btnSchemeSupplier)
