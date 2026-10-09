@@ -55,8 +55,12 @@ class LanguageActivity : BaseActivity() {
         private const val ART_W = 887f
         private const val ART_H = 1774f
         private const val TAGLINE_OF_ART = 0.62f
-        /** Clear space between the tagline and the panel's heading, in dp. */
-        private const val TAGLINE_GAP_DP = 10f
+        /**
+         * Clear space between the tagline and the panel's heading, in dp:
+         * more than the 40dp fade at the region's foot, so the tagline sits
+         * on the painting's own light and never in the fade.
+         */
+        private const val TAGLINE_GAP_DP = 52f
         /** True once the user has picked a language on first run. */
         fun isChosen(context: Context): Boolean =
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
