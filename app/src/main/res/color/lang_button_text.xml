@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A language name: the header's green ink on paper, white on the marked green. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:color="#FFFFFF" />
+    <item android:color="#0F4A33" />
+</selector>

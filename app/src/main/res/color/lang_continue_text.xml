@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Continue's label: white on the green; the header's green ink, dimmed, on
+     the faint fill until a language is marked. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_enabled="false" android:color="#99DCE6DF" />
-    <item android:color="@color/brand_green_dark" />
+    <item android:state_enabled="false" android:color="#8A0F4A33" />
+    <item android:color="#FFFFFF" />
 </selector>

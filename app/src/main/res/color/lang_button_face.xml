@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The face of a language button: paper-white, brand green once marked. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:color="#1B5E3A" />
+    <item android:color="#FFFFFF" />
+</selector>

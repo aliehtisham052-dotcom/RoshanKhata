@@ -1,45 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The language picker: one piece of artwork with nine real buttons on it.
+  The language picker (9 Oct): the splash's own artwork, continued.
 
-  The picture (lang_screen.webp, 1024 x 1536) carries the logo, the heading,
-  the wall, the plant and the book. It used to carry six drawn buttons as well,
-  and the three languages added later (Hindi, Bengali, Indonesian) were smaller
-  real buttons squeezed into the band under them, so the screen showed two
-  sizes of button. The six were painted out of the picture (4 Oct) and all nine
-  are now real buttons (bg_lang_button) of ONE size, in a 3 x 3 grid.
+  Two regions, stacked. The artwork region (langStage) takes whatever height
+  is left above the panel and shows splash_art.webp - the same painting the
+  splash shows, so the first two screens are one picture - anchored by its
+  TAGLINE: LanguageActivity scales and places the image so that "Har Hisaab
+  Roshan" ends a fixed distance above the panel on every screen, cropping the
+  top of the painting on a short screen rather than ever letting the panel
+  climb over the words. The last 64dp of the region fade into the page paper
+  (bg_lang_fade) so the heading has clean ground.
 
-  Every button is 232 x 100 of the picture's pixels: columns x 142-374 /
-  396-628 / 650-882 (centred on the picture's middle, 512), rows y 708-808 /
-  828-928 / 948-1048. The grid ends at 1048 on purpose: a leaf of the plant
-  reaches x 169 from y 1050, and the lamp on the right begins at y 1064, so
-  below that line a button would sit on top of them. Placed as percentages of
-  the stage, measured from the picture, like everything else here.
+  The panel (langPanel) is sized by its own content: the heading and note in
+  the app's current language, nine real buttons of one size in a 3 x 3 grid
+  (bg_lang_button, the paper card the rest of the app is made of; marked, the
+  pill turns brand green with a gold ring), Continue, and the maker's line.
+  Being real views in a LinearLayout, the buttons take every language, every
+  text size and every screen without being placed by hand.
 
-  It is shown WHOLE: the stage below keeps the picture's own shape and sits
-  centred in whatever screen there is, so the artwork is never cropped and the
-  buttons keep their places on it. Their labels are sized from the stage in
-  code, so they keep their proportion on every screen.
+  The grid is forced left-to-right: it is a fixed arrangement, in the order
+  the picker has always had, and under Urdu, Arabic, Sindhi or Persian a
+  mirrored grid would move every language to the other side of the screen
+  from one visit to the next. The heading and note read in their own
+  language's direction (textDirection).
 
-  The line under the heading (y 632-690) is real text, not part of the picture.
-  The artwork arrived with an English line printed there; it was painted out,
-  because a drawn line cannot be translated. This one is the app's own string,
-  in the language the app is currently showing.
+  Ids are the ones LanguageActivity has always bound. Choosing is two steps
+  (1 Oct): a tap only marks a button and Continue applies the choice; the
+  panel's bottom padding takes the navigation bar's height in code.
 
-  The stage is forced left-to-right. The grid is a fixed arrangement, in the
-  order the drawn buttons had: under Urdu, Arabic, Sindhi or Persian the app
-  runs right-to-left and ConstraintLayout would mirror start/end and the
-  guidelines, moving every language to the other side of the screen from one
-  visit to the next. The note line still reads in its own language's direction
-  (textDirection).
-
-  Ids are the ones LanguageActivity has always bound.
-
-  Choosing is two steps (1 Oct): a tap only marks a button (gold ring,
-  bg_lang_button_ring) and the choice is applied by the Continue button below
-  the artwork, which sits under the stage; the stage fits whole in the space
-  above it. The button's bottom margin takes the navigation bar's height in
-  code.
+  Fixed colours by day and by night, like the painting itself.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -47,294 +36,358 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_lang_root">
+    android:background="#F7F6F2">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:id="@+id/langStage"
-        android:layoutDirection="ltr"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/btnLangContinue"
-        app:layout_constraintDimensionRatio="1024:1536"
+        android:clipChildren="true"
+        app:layout_constraintBottom_toTopOf="@id/langPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Placed by LanguageActivity.placeArtwork: scaleType matrix. -->
         <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:id="@+id/ivLangArt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:importantForAccessibility="no"
-            android:scaleType="fitXY"
-            android:src="@drawable/lang_screen"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:scaleType="matrix"
+            android:src="@drawable/splash_art" />
 
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV1a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.1387" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV1b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.3652" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV2a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.3867" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV2b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.6133" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV3a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.6348" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gV3b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.8613" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH1a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.4609" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH1b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.5260" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH2a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.5391" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH2b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.6042" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH3a" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.6172" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gH3b" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.6823" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gNoteL" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.1035" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gNoteR" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" app:layout_constraintGuide_percent="0.8994" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gNoteT" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.4115" />
-    <androidx.constraintlayout.widget.Guideline android:id="@+id/gNoteB" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.4492" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_lang_fade" />
+    </FrameLayout>
 
-    <!-- Nine real buttons, one size. A language is named in itself, so the
-         labels are not string resources. Dark green and cream are fixed, like
-         the picture, by day and by night. textSize here is only a starting
-         value; LanguageActivity sets it from the stage's height. The label
-         font has Latin letters only, so Android draws the other names with
-         the phone's own Arabic, Devanagari and Bengali fonts. -->
-    <TextView
-        android:id="@+id/langEnglish"
+    <LinearLayout
+        android:id="@+id/langPanel"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="English"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="English"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH1b"
-        app:layout_constraintEnd_toEndOf="@id/gV1b"
-        app:layout_constraintStart_toStartOf="@id/gV1a"
-        app:layout_constraintTop_toTopOf="@id/gH1a"
-        tools:ignore="HardcodedText" />
-    <TextView
-        android:id="@+id/langRomanUrdu"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="Roman Urdu"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="Roman Urdu"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH1b"
-        app:layout_constraintEnd_toEndOf="@id/gV2b"
-        app:layout_constraintStart_toStartOf="@id/gV2a"
-        app:layout_constraintTop_toTopOf="@id/gH1a"
-        tools:ignore="HardcodedText" />
-    <TextView
-        android:id="@+id/langUrdu"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="اردو"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="اردو"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH1b"
-        app:layout_constraintEnd_toEndOf="@id/gV3b"
-        app:layout_constraintStart_toStartOf="@id/gV3a"
-        app:layout_constraintTop_toTopOf="@id/gH1a"
-        tools:ignore="HardcodedText" />
-    <TextView
-        android:id="@+id/langSindhi"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="سنڌي"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="سنڌي"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH2b"
-        app:layout_constraintEnd_toEndOf="@id/gV1b"
-        app:layout_constraintStart_toStartOf="@id/gV1a"
-        app:layout_constraintTop_toTopOf="@id/gH2a"
-        tools:ignore="HardcodedText" />
-    <TextView
-        android:id="@+id/langPersian"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="فارسی"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="فارسی"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH2b"
-        app:layout_constraintEnd_toEndOf="@id/gV2b"
-        app:layout_constraintStart_toStartOf="@id/gV2a"
-        app:layout_constraintTop_toTopOf="@id/gH2a"
-        tools:ignore="HardcodedText" />
-    <TextView
-        android:id="@+id/langArabic"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="العربية"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="العربية"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH2b"
-        app:layout_constraintEnd_toEndOf="@id/gV3b"
-        app:layout_constraintStart_toStartOf="@id/gV3a"
-        app:layout_constraintTop_toTopOf="@id/gH2a"
-        tools:ignore="HardcodedText" />
-    <TextView
-        android:id="@+id/langHindi"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="हिन्दी"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="हिन्दी"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH3b"
-        app:layout_constraintEnd_toEndOf="@id/gV1b"
-        app:layout_constraintStart_toStartOf="@id/gV1a"
-        app:layout_constraintTop_toTopOf="@id/gH3a"
-        tools:ignore="HardcodedText" />
-    <TextView
-        android:id="@+id/langBengali"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="বাংলা"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="বাংলা"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH3b"
-        app:layout_constraintEnd_toEndOf="@id/gV2b"
-        app:layout_constraintStart_toStartOf="@id/gV2a"
-        app:layout_constraintTop_toTopOf="@id/gH3a"
-        tools:ignore="HardcodedText" />
-    <TextView
-        android:id="@+id/langIndonesian"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_lang_button"
-        android:clickable="true"
-        android:contentDescription="Indonesia"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:foreground="@drawable/bg_lang_button_ring"
-        android:fontFamily="@font/google_sans_medium"
-        android:gravity="center"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:text="Indonesia"
-        android:textColor="#0B3D20"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/gH3b"
-        app:layout_constraintEnd_toEndOf="@id/gV3b"
-        app:layout_constraintStart_toStartOf="@id/gV3a"
-        app:layout_constraintTop_toTopOf="@id/gH3a"
-        tools:ignore="HardcodedText" />
+        android:layout_height="wrap_content"
+        android:layoutDirection="ltr"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="420dp">
+
+        <TextView
+            android:id="@+id/tvLangTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:text="@string/select_language"
+            android:textColor="#0F4A33"
+            android:textDirection="locale"
+            android:textSize="19sp"
+            android:textStyle="bold" />
 
         <!-- The app's own line, in the app's current language. -->
         <TextView
             android:id="@+id/tvLangNote"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="12dp"
             android:gravity="center"
-            android:textDirection="locale"
+            android:maxLines="2"
             android:text="@string/language_change_note"
-            android:textColor="#DCE6DF"
-            android:textSize="13sp"
+            android:textColor="#3E6B55"
+            android:textDirection="locale"
+            android:textSize="12.5sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/langEnglish"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="English"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="English"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
             app:autoSizeMaxTextSize="14sp"
             app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
             app:autoSizeTextType="uniform"
-            app:layout_constraintBottom_toBottomOf="@id/gNoteB"
-            app:layout_constraintEnd_toEndOf="@id/gNoteR"
-            app:layout_constraintStart_toStartOf="@id/gNoteL"
-            app:layout_constraintTop_toTopOf="@id/gNoteT" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/langRomanUrdu"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="Roman Urdu"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="Roman Urdu"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/langUrdu"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="اردو"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="اردو"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/langSindhi"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="سنڌي"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="سنڌي"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/langPersian"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="فارسی"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="فارسی"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/langArabic"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="العربية"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="العربية"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/langHindi"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="हिन्दी"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="हिन्दी"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/langBengali"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="বাংলা"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="বাংলা"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/langIndonesian"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/bg_lang_button"
+            android:clickable="true"
+            android:contentDescription="Indonesia"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:foreground="@drawable/bg_lang_button_ring"
+            android:fontFamily="@font/google_sans_medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="Indonesia"
+            android:textColor="@color/lang_button_text"
+            android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
 
-    <!-- Applies the marked language. Disabled until one is marked; its label
-         is drawn in the marked language (LanguageActivity.mark). -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLangContinue"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="20dp"
-        android:enabled="false"
-        android:fontFamily="@font/google_sans_medium"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:letterSpacing="0"
-        android:maxLines="1"
-        android:text="@string/continue_action"
-        android:textAllCaps="false"
-        android:textColor="@color/lang_continue_text"
-        android:textSize="17sp"
-        app:backgroundTint="@color/lang_continue_fill"
-        app:cornerRadius="26dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_max="360dp" />
+        <!-- Applies the marked language. Disabled until one is marked; its label
+             is drawn in the marked language (LanguageActivity.mark). -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLangContinue"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:enabled="false"
+            android:fontFamily="@font/google_sans_medium"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="0.01"
+            android:maxLines="1"
+            android:text="@string/continue_action"
+            android:textAllCaps="false"
+            android:textColor="@color/lang_continue_text"
+            android:textSize="15.5sp"
+            app:backgroundTint="@color/lang_continue_fill"
+            app:cornerRadius="15dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:letterSpacing="0.04"
+            android:text="@string/powered_by"
+            android:textColor="#3E6B55"
+            android:textSize="10.5sp" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

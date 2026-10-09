@@ -6,9 +6,8 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatDelegate
@@ -19,14 +18,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.button.MaterialButton
 import java.util.Locale
-import kotlin.math.abs
 
 /**
  * The first screen a new user sees: pick your language, in your own script.
- * Drawn as artwork with nine real buttons on it, all one size, in a 3 x 3
- * grid; see activity_language.xml for how they are kept in place on the
- * picture. (The picture once carried six drawn buttons, with the later
- * languages as smaller real ones under them; they were made one size, 4 Oct.)
+ * The splash's own painting fills the top of the screen, anchored by its
+ * tagline ([placeArtwork]); under it a paper panel carries the heading, nine
+ * real buttons of one size in a 3 x 3 grid, and Continue - see
+ * activity_language.xml. (Until 9 Oct this was a second, dark-green painting
+ * with the buttons placed on it by guidelines; the two first screens now
+ * share one picture and the picker looks like the rest of the app.)
  *
  * The choice is applied through AppCompat's per-app locales (persisted by the
  * autoStoreLocales holder in the manifest, and by the OS itself on Android 13+),
@@ -51,15 +51,12 @@ class LanguageActivity : BaseActivity() {
         private const val PREFS = "language"
         private const val KEY_CHOSEN = "chosen"
         private const val STATE_MARKED = "marked"
-        /**
-         * Label sizes as a share of the stage's height (the picture is 1536
-         * high, a button 100 by 232). Names in Latin letters are set at 32:
-         * "Roman Urdu", the longest, is then 185 wide in its 232. The Arabic,
-         * Devanagari and Bengali names are short and their letters small at
-         * the same size, so they are set at 40 to carry the same weight.
-         */
-        private const val LATIN_OF_STAGE = 32f / 1536f
-        private const val NATIVE_OF_STAGE = 40f / 1536f
+        /** splash_art.webp: its size, and how far down it the tagline ends. */
+        private const val ART_W = 887f
+        private const val ART_H = 1774f
+        private const val TAGLINE_OF_ART = 0.62f
+        /** Clear space between the tagline and the panel's heading, in dp. */
+        private const val TAGLINE_GAP_DP = 10f
         /** True once the user has picked a language on first run. */
         fun isChosen(context: Context): Boolean =
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -70,17 +67,17 @@ class LanguageActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_language)
 
-        // Edge to edge with NO padding, unlike the other screens: the artwork
-        // is the whole screen and runs under both bars. The artwork is deep
-        // green top to bottom, so light icons on both bars, with the system's
-        // grey scrim off so the footer is not cut by a bar.
+        // Edge to edge with NO padding, unlike the other screens: the painting
+        // runs under the status bar and the panel under the navigation bar.
+        // Both are light, so dark icons on both bars, with the system's grey
+        // scrim off so the panel is not cut by a bar.
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
         window.navigationBarColor = Color.TRANSPARENT
         if (Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
         WindowInsetsControllerCompat(window, window.decorView).apply {
-            isAppearanceLightStatusBars = false
-            isAppearanceLightNavigationBars = false
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
         }
 
         // Language tag per button. English clears to the default (base
@@ -97,33 +94,19 @@ class LanguageActivity : BaseActivity() {
             R.id.langIndonesian to "id"
         )
 
-        // The buttons are placed on the picture, so their labels must scale
-        // with the picture too. Size them from the stage, in pixels (the
-        // picture ignores the phone's text-size setting, and so must these,
-        // or a large setting would push a name out of its button). Their
-        // boxes are fixed by guidelines, so resizing the text cannot move the
-        // stage and call this again.
-        val latin = setOf(R.id.langEnglish, R.id.langRomanUrdu, R.id.langIndonesian)
-        val labels = choices.keys.map { id ->
-            findViewById<TextView>(id) to (if (id in latin) LATIN_OF_STAGE else NATIVE_OF_STAGE)
-        }
-        // The four names in Arabic letters are drawn in one hand, Naskh, as
-        // the picture had them, whichever language the app is in. Left to the
-        // app's own language they change with it: under Urdu the phone picks
-        // its tall Nastaliq for all four, Sindhi and Arabic included.
+        // The four names in Arabic letters are drawn in one hand, Naskh,
+        // whichever language the app is in. Left to the app's own language
+        // they change with it: under Urdu the phone picks its tall Nastaliq
+        // for all four, Sindhi and Arabic included.
         val naskh = Locale.forLanguageTag("ar")
         for (id in listOf(R.id.langUrdu, R.id.langSindhi, R.id.langPersian, R.id.langArabic)) {
             findViewById<TextView>(id).textLocale = naskh
         }
-        findViewById<View>(R.id.langStage)
-            .addOnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
-                for ((label, share) in labels) {
-                    val px = (bottom - top) * share
-                    if (px > 0f && abs(label.textSize - px) > 0.5f) {
-                        label.post { label.setTextSize(TypedValue.COMPLEX_UNIT_PX, px) }
-                    }
-                }
-            }
+
+        val art = findViewById<ImageView>(R.id.ivLangArt)
+        art.addOnLayoutChangeListener { v, l, t, r, b, ol, ot, or_, ob ->
+            if (r - l != or_ - ol || b - t != ob - ot) placeArtwork(v as ImageView)
+        }
 
         languages = choices
         continueBtn = findViewById(R.id.btnLangContinue)
@@ -133,13 +116,13 @@ class LanguageActivity : BaseActivity() {
         }
         continueBtn.setOnClickListener { marked?.let { choose(it) } }
 
-        // The screen runs under the navigation bar, so lift Continue clear of
-        // it by the bar's own height on top of its 20dp.
-        val baseMargin = (20 * resources.displayMetrics.density).toInt()
-        ViewCompat.setOnApplyWindowInsetsListener(continueBtn) { v, insets ->
+        // The screen runs under the navigation bar, so the panel's bottom
+        // padding takes the bar's own height on top of its 16dp.
+        val panel = findViewById<View>(R.id.langPanel)
+        val basePad = panel.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(panel) { v, insets ->
             val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            (v.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin = baseMargin + nav
-            v.requestLayout()
+            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, basePad + nav)
             insets
         }
 
@@ -161,6 +144,31 @@ class LanguageActivity : BaseActivity() {
         // the app stands now.
         val restored = savedInstanceState?.getString(STATE_MARKED)
         mark(restored ?: if (isChosen(this)) currentTag() else null)
+    }
+
+    /**
+     * Scale and place the painting so that its tagline ends [TAGLINE_GAP_DP]
+     * above the bottom of the artwork region, whatever the region's shape.
+     *
+     * The painting is never narrower than the region. When the region is
+     * tall, it is scaled up until the tagline reaches the line, which crops
+     * its sides a little; when the region is short, the width sets the scale
+     * and the top of the painting (the gold arc) is cropped instead. Either
+     * way the words are whole and the panel never climbs over them, which
+     * is what the first HTML mock-up got wrong on the owner's phone.
+     */
+    private fun placeArtwork(view: ImageView) {
+        val w = view.width.toFloat()
+        val h = view.height.toFloat()
+        if (w <= 0f || h <= 0f) return
+        val gap = TAGLINE_GAP_DP * resources.displayMetrics.density
+        val scale = maxOf(w / ART_W, (h - gap) / (TAGLINE_OF_ART * ART_H))
+        val drawnW = ART_W * scale
+        val drawnH = ART_H * scale
+        val matrix = android.graphics.Matrix()
+        matrix.setScale(scale, scale)
+        matrix.postTranslate((w - drawnW) / 2f, (h - gap) - TAGLINE_OF_ART * drawnH)
+        view.imageMatrix = matrix
     }
 
     private lateinit var languages: Map<Int, String>
