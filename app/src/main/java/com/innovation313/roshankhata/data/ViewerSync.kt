@@ -3,7 +3,6 @@ package com.innovation313.roshankhata.data
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.io.InputStream
 
 /**
@@ -82,9 +81,28 @@ object ViewerSync {
         }
     }
 
-    /** When the owner made this backup, from the file itself. 0 if absent. */
+    /**
+     * When the owner made this backup, from the file itself. 0 if absent.
+     *
+     * Read by walking the top-level keys and skipping every value that is not
+     * "exportedAt" (9 Oct). It used to be JSONObject(text): a SECOND whole
+     * tree of the owner's book, built after Backup.parseText had already
+     * streamed it - the very tree the P6/P7 scaling work removed from backup
+     * and restore, which at 300,000 lines is what ran out of memory.
+     */
     internal fun exportedAt(text: String): Long = try {
-        JSONObject(text).optLong("exportedAt", 0L)
+        android.util.JsonReader(java.io.StringReader(text)).use { r ->
+            var at = 0L
+            r.beginObject()
+            while (r.hasNext()) {
+                if (r.nextName() == "exportedAt" && r.peek() == android.util.JsonToken.NUMBER) {
+                    at = r.nextLong()
+                    break
+                }
+                r.skipValue()
+            }
+            at
+        }
     } catch (e: Exception) {
         0L
     }

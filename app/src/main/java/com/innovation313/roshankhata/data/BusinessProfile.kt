@@ -203,6 +203,15 @@ object BusinessProfile {
         if (currency(context) == Currency.DEFAULT) "STRN"
         else context.getString(com.innovation313.roshankhata.R.string.tax_number_label)
 
+    /**
+     * The register and inspector reports' tax line. A rupee shop keeps the
+     * report's own "NTN/STRN: …" wording ([pakistanRes]); any other currency
+     * prints its language's tax-number label instead of Pakistan's two.
+     */
+    fun taxLine(context: Context, number: String, pakistanRes: Int): String =
+        if (currency(context) == Currency.DEFAULT) context.getString(pakistanRes, number)
+        else context.getString(com.innovation313.roshankhata.R.string.tax_number_label) + ": " + number
+
     // ---------- Currency sign (4 Oct 2026) ----------
 
     /** The sign this shop's figures wear. Never blank: unset = [Currency.DEFAULT]. */

@@ -537,7 +537,7 @@ object InspectorReport {
                 lineY += 12f
             }
             d.strn?.takeIf { it.isNotBlank() }?.let {
-                PdfRtl.drawText(canvas, clip(context.getString(R.string.pdf_insp_ntn, it), bandSmall, textW), textX, lineY, bandSmall)
+                PdfRtl.drawText(canvas, clip(BusinessProfile.taxLine(context, it, R.string.pdf_insp_ntn), bandSmall, textW), textX, lineY, bandSmall)
             }
             return 105f
         }
