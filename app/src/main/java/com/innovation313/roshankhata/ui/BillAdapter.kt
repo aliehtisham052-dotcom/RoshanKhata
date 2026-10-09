@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +51,7 @@ class BillAdapter(
             append(Format.dateOnly(b.billDate))
             if (b.itemCount > 0) {
                 append(" · ")
-                append(ctx.resources.getQuantityString(R.plurals.items_count, b.itemCount, b.itemCount))
+                append(Digits.quantity(ctx.resources, R.plurals.items_count, b.itemCount, b.itemCount))
             }
         }
 

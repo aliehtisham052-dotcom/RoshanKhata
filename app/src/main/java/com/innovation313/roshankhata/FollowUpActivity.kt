@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -87,14 +89,14 @@ class FollowUpActivity : BaseActivity() {
         if (isFinishing || isDestroyed) return
         if (queueIndex >= queue.size) {
             if (queue.isNotEmpty()) {
-                Toast.makeText(this, getString(R.string.followup_queue_done, queueOpened), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, Digits.string(resources, R.string.followup_queue_done, queueOpened), Toast.LENGTH_LONG).show()
             }
             queue = emptyList()
             return
         }
         val p = queue[queueIndex]
         MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.followup_queue_title, queueIndex + 1, queue.size))
+            .setTitle(Digits.string(resources, R.string.followup_queue_title, queueIndex + 1, queue.size))
             .setMessage(getString(R.string.followup_queue_next, p.name, Format.money(p.balance)))
             .setPositiveButton(R.string.followup_queue_open) { _, _ ->
                 queueIndex++
@@ -176,13 +178,13 @@ class FollowUpActivity : BaseActivity() {
                     adapter.submitList(debtors) { if (marksChanged) adapter.notifyDataSetChanged() }
 
                     val total = debtors.sumOf { it.balance }
-                    val summary = resources.getQuantityString(
+                    val summary = Digits.quantity(resources, 
                         R.plurals.followup_summary, debtors.size,
                         debtors.size, Format.money(total)
                     )
                     // The one number the owner opens this screen for.
                     tvSummary.text = if (state.today > 0) {
-                        summary + "\n" + resources.getQuantityString(R.plurals.followup_today, state.today, state.today)
+                        summary + "\n" + Digits.quantity(resources, R.plurals.followup_today, state.today, state.today)
                     } else summary
                     tvSummary.visibility = if (debtors.isEmpty()) View.GONE else View.VISIBLE
                     tvEmpty.visibility = if (debtors.isEmpty()) View.VISIBLE else View.GONE

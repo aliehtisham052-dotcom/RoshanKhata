@@ -252,7 +252,7 @@ object PdfExport {
                         R.string.pdf_stmt_period,
                         Format.dateOnly(rows.first().entry.timestamp),
                         Format.dateOnly(rows.last().entry.timestamp)
-                    ) + "  ·  " + context.resources.getQuantityString(
+                    ) + "  ·  " + Digits.quantity(context.resources, 
                         R.plurals.pdf_stmt_entries, rows.size, rows.size
                     )
                 } else {
@@ -265,7 +265,7 @@ object PdfExport {
                         textAlign = Paint.Align.RIGHT
                     }
                     PdfRtl.drawText(c,
-                        context.getString(R.string.pdf_stmt_page, pageNo, totalPages),
+                        Digits.string(context.resources, R.string.pdf_stmt_page, pageNo, totalPages),
                         PAGE_W - MARGIN, yy, pageLabel
                     )
                 }

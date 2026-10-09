@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -66,12 +68,12 @@ class SeasonsActivity : BaseActivity() {
         val v = layoutInflater.inflate(R.layout.item_season, parent, false)
         v.findViewById<TextView>(R.id.tvSeasonName).text = SeasonText.name(this, s.season)
         v.findViewById<TextView>(R.id.tvSeasonHarvest).text = SeasonText.harvest(this, s.season)
-        v.findViewById<TextView>(R.id.tvSeasonGiven).text = resources.getQuantityString(
+        v.findViewById<TextView>(R.id.tvSeasonGiven).text = Digits.quantity(resources, 
             R.plurals.season_given, s.customers, s.customers, Format.money(s.given)
         )
         val back = if (s.given > 0) ((s.cleared / s.given) * 100).toInt().coerceIn(0, 100) else 0
         v.findViewById<com.google.android.material.progressindicator.LinearProgressIndicator>(R.id.pbSeasonBack).apply {
-            contentDescription = getString(R.string.season_back_percent, back)
+            contentDescription = Digits.string(resources, R.string.season_back_percent, back)
             // Animated only when the phone allows it; otherwise set at once.
             val animate = com.innovation313.roshankhata.ui.Motion.enabled(this@SeasonsActivity)
             if (animate) post { setProgressCompat(back, true) } else setProgressCompat(back, false)
@@ -80,9 +82,9 @@ class SeasonsActivity : BaseActivity() {
             getString(R.string.season_back_out, Format.money(s.cleared), Format.money(s.outstanding))
         val d = s.medianDaysAfterHarvest
         v.findViewById<TextView>(R.id.tvSeasonPace).text = when {
-            d == null -> getString(R.string.season_pace_none, s.clearedCustomers, s.customers)
-            d > 0 -> resources.getQuantityString(R.plurals.season_pace_after, d, s.clearedCustomers, s.customers, d)
-            else -> getString(R.string.season_pace_before, s.clearedCustomers, s.customers)
+            d == null -> Digits.string(resources, R.string.season_pace_none, s.clearedCustomers, s.customers)
+            d > 0 -> Digits.quantity(resources, R.plurals.season_pace_after, d, s.clearedCustomers, s.customers, d)
+            else -> Digits.string(resources, R.string.season_pace_before, s.clearedCustomers, s.customers)
         }
         v.setOnClickListener { showOwing(s.season, shown) }
         return v

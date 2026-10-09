@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +77,7 @@ class FollowUpAdapter(
         holder.tvAge.text = if (days <= 0) {
             ctx.getString(R.string.followup_today)
         } else {
-            ctx.resources.getQuantityString(R.plurals.followup_last_ago, days, days)
+            Digits.quantity(ctx.resources, R.plurals.followup_last_ago, days, days)
         }
         holder.tvAge.setTextColor(
             ContextCompat.getColor(ctx, if (overdue) R.color.red_gave_text else R.color.text_muted)
@@ -92,8 +94,8 @@ class FollowUpAdapter(
             holder.tvHabit.visibility = View.VISIBLE
             val res = ctx.resources
             val habitText = habit?.let {
-                if (it.isLate) res.getQuantityString(R.plurals.followup_habit_late, it.waitingDays, it.waitingDays, it.typicalDays)
-                else res.getQuantityString(R.plurals.followup_habit, it.typicalDays, it.typicalDays)
+                if (it.isLate) Digits.quantity(res, R.plurals.followup_habit_late, it.waitingDays, it.waitingDays, it.typicalDays)
+                else Digits.quantity(res, R.plurals.followup_habit, it.typicalDays, it.typicalDays)
             }
             // The customer's own date comes first: it is what the reminder quotes.
             val promiseText = promise?.let { ctx.getString(R.string.followup_promised, Format.dateOnly(it)) }

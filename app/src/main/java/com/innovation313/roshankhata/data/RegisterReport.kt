@@ -332,7 +332,7 @@ object RegisterReport {
             if (d.purchasesMissingRate > 0) {
                 y += 12f
                 PdfRtl.drawText(canvas,
-                    context.getString(R.string.pdf_reg_missing_rate, d.purchasesMissingRate),
+                    Digits.string(context.resources, R.string.pdf_reg_missing_rate, d.purchasesMissingRate),
                     MARGIN + 4f, y, muted
                 )
                 y += 6f
@@ -371,7 +371,7 @@ object RegisterReport {
             footerX += size + 6f
         }
         PdfRtl.drawText(canvas,
-            context.getString(R.string.pdf_reg_footer, appName, dateFmt.format(Date()), pageNo),
+            Digits.string(context.resources, R.string.pdf_reg_footer, appName, dateFmt.format(Date()), pageNo),
             footerX, y, muted
         )
 

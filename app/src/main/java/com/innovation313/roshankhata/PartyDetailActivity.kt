@@ -2150,7 +2150,7 @@ class PartyDetailActivity : BaseActivity() {
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_entry_title)
-            .setMessage(resources.getQuantityString(
+            .setMessage(Digits.quantity(resources, 
                 R.plurals.delete_selected_entries_confirm, ids.size, ids.size
             ))
             .setNegativeButton(R.string.cancel, null)

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +77,7 @@ class BinAdapter(
                     append(ctx.getString(R.string.bin_party_note))
                     append(" · ")
                     append(
-                        ctx.resources.getQuantityString(
+                        Digits.quantity(ctx.resources, 
                             R.plurals.bin_party_entries, item.entryCount, item.entryCount
                         )
                     )

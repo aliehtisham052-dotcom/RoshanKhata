@@ -140,7 +140,7 @@ object ProductDetailsDialog {
         val dialog = MaterialAlertDialogBuilder(activity)
             .setTitle(
                 if (step == null) activity.getString(R.string.product_edit_details)
-                else activity.getString(R.string.label_step_title, step.position + 1, step.total)
+                else Digits.string(activity.resources, R.string.label_step_title, step.position + 1, step.total)
             )
             .setView(view)
             // Skip still advances a queue — an owner who skips one product

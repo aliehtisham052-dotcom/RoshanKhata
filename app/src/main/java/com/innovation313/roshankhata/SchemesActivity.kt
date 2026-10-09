@@ -71,7 +71,7 @@ class SchemesActivity : BaseActivity() {
                 empty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
                 val now = System.currentTimeMillis()
                 val due = rows.count { SchemeMath.status(it.scheme, it.progress, now) == SchemeMath.Status.CLAIM_DUE }
-                summary.text = if (due > 0) resources.getQuantityString(R.plurals.schemes_claims_due, due, due)
+                summary.text = if (due > 0) Digits.quantity(resources, R.plurals.schemes_claims_due, due, due)
                 else getString(R.string.schemes_subtitle)
                 rows.forEach { list.addView(card(list, it, now)) }
             }
@@ -99,7 +99,7 @@ class SchemesActivity : BaseActivity() {
         v.findViewById<TextView>(R.id.tvSchemeBought).text = buildString {
             append(getString(R.string.scheme_bought, amountText(s, p.purchased)))
             // A bill line with no rate adds nothing to a value scheme: say so.
-            if (r.unpriced > 0) append("\n").append(resources.getQuantityString(R.plurals.scheme_unpriced, r.unpriced, r.unpriced))
+            if (r.unpriced > 0) append("\n").append(Digits.quantity(resources, R.plurals.scheme_unpriced, r.unpriced, r.unpriced))
         }
         v.findViewById<TextView>(R.id.tvSchemeNext).text = p.next?.let {
             getString(R.string.scheme_next, amountText(s, it.target), rewardText(s, it), amountText(s, p.toNext ?: 0.0))

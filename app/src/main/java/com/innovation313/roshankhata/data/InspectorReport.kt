@@ -558,9 +558,9 @@ object InspectorReport {
                 footerX += size + 6f
             }
             val label = if (totalPages != null) {
-                context.getString(R.string.pdf_insp_footer_of, businessName, pageNo, totalPages)
+                Digits.string(context.resources, R.string.pdf_insp_footer_of, businessName, pageNo, totalPages)
             } else {
-                context.getString(R.string.pdf_insp_footer, businessName, pageNo)
+                Digits.string(context.resources, R.string.pdf_insp_footer, businessName, pageNo)
             }
             PdfRtl.drawText(canvas, label, footerX, fy, footerText)
         }
@@ -702,7 +702,7 @@ object InspectorReport {
             card(context.getString(R.string.pdf_insp_sum_products), d.stock.size, null),
             card(context.getString(R.string.pdf_insp_sum_batches), d.batches.size, null),
             card(context.getString(R.string.pdf_insp_sum_expired), d.expired.size, redTone),
-            card(context.getString(R.string.pdf_insp_sum_expiring, d.windowDays), d.expiringSoon.size, amberTone),
+            card(Digits.string(context.resources, R.string.pdf_insp_sum_expiring, d.windowDays), d.expiringSoon.size, amberTone),
             card(context.getString(R.string.pdf_insp_sum_no_expiry), d.noExpiryCount, amberTone),
             card(context.getString(R.string.pdf_insp_sum_incomplete), d.incompleteProducts.size, amberTone)
         )
@@ -806,7 +806,7 @@ object InspectorReport {
         startSection(if (d.batches.isEmpty()) 36f else 82f)
         val n2 = ++sectionNo
         val s2 = context.getString(R.string.pdf_insp_sec_batch_expiry)
-        heading(s2, context.getString(R.string.pdf_insp_batch_expiry_note, d.windowDays), n2)
+        heading(s2, Digits.string(context.resources, R.string.pdf_insp_batch_expiry_note, d.windowDays), n2)
 
         if (d.batches.isEmpty()) {
             PdfRtl.drawText(canvas, context.getString(R.string.pdf_insp_no_batches), MARGIN, y + 4f, muted)
@@ -837,11 +837,11 @@ object InspectorReport {
                 val isSoon = b.itemId in soonIds
                 val status: Cell = when {
                     isExpired -> Cell.Chip(
-                        b.daysLeft?.let { context.getString(R.string.pdf_insp_expired_ago, -it) }
+                        b.daysLeft?.let { Digits.string(context.resources, R.string.pdf_insp_expired_ago, -it) }
                             ?: context.getString(R.string.pdf_insp_expired),
                         RED_FG, RED_BG
                     )
-                    isSoon -> Cell.Chip(context.getString(R.string.pdf_insp_days_left, b.daysLeft ?: 0), AMBER_FG, AMBER_BG)
+                    isSoon -> Cell.Chip(Digits.string(context.resources, R.string.pdf_insp_days_left, b.daysLeft ?: 0), AMBER_FG, AMBER_BG)
                     exp == null -> Cell.Text(null, body)
                     else -> Cell.Chip(context.getString(R.string.pdf_insp_status_ok), OK_FG, OK_BG)
                 }
@@ -889,7 +889,7 @@ object InspectorReport {
                 val nameX = MARGIN + cellPad + groupTag.measureText(tag) + 10f
                 val namePaint = if (company == noCompany) Paint(groupName).apply { color = AMBER_FG } else groupName
                 PdfRtl.drawText(canvas, clip(company, namePaint, 420f), nameX, y + 13.5f, namePaint)
-                val count = context.resources.getQuantityString(R.plurals.pdf_insp_products, list.size, list.size)
+                val count = Digits.quantity(context.resources, R.plurals.pdf_insp_products, list.size, list.size)
                 PdfRtl.drawText(canvas, count, right - cellPad - note.measureText(count), y + 13.5f, note)
                 y += 20f
 
@@ -943,12 +943,12 @@ object InspectorReport {
                     mark(c.technical),
                     mark(c.formulation),
                     mark(c.registration),
-                    Cell.Text(context.getString(R.string.pdf_insp_missing_of, c.missing, 4), bodyBold)
+                    Cell.Text(Digits.string(context.resources, R.string.pdf_insp_missing_of, c.missing, 4), bodyBold)
                 ), shaded = index % 2 == 1)
             }
             if (d.labelChecks.size > 40) {
                 PdfRtl.drawText(canvas,
-                    context.getString(R.string.pdf_insp_and_more, d.labelChecks.size - 40),
+                    Digits.string(context.resources, R.string.pdf_insp_and_more, d.labelChecks.size - 40),
                     MARGIN + cellPad, y + 13f, muted
                 )
                 y += 16f

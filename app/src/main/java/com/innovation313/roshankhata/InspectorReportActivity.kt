@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import com.innovation313.roshankhata.data.DateWords
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -158,9 +160,9 @@ class InspectorReportActivity : BaseActivity() {
         val gaps = d.incompleteProducts.size
         val noExpiry = d.noExpiryCount
         val notes = buildList {
-            if (gaps > 0) add(resources.getQuantityString(R.plurals.inspector_gap_labels, gaps, gaps))
+            if (gaps > 0) add(Digits.quantity(resources, R.plurals.inspector_gap_labels, gaps, gaps))
             if (noExpiry > 0) add(
-                resources.getQuantityString(
+                Digits.quantity(resources, 
                     R.plurals.inspector_gap_expiry, noExpiry, noExpiry
                 )
             )

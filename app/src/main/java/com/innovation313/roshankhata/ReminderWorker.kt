@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -104,17 +106,17 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         if (here.cheques > 0) notify(
             ctx, ID_CHEQUES, AlertsActivity::class.java,
             ctx.getString(R.string.notif_cheques_title),
-            ctx.resources.getQuantityString(R.plurals.notif_cheques_body, here.cheques, here.cheques)
+            Digits.quantity(ctx.resources, R.plurals.notif_cheques_body, here.cheques, here.cheques)
         )
         if (here.plans > 0) notify(
             ctx, ID_PLANS, AlertsActivity::class.java,
             ctx.getString(R.string.notif_plans_title),
-            ctx.resources.getQuantityString(R.plurals.notif_plans_body, here.plans, here.plans)
+            Digits.quantity(ctx.resources, R.plurals.notif_plans_body, here.plans, here.plans)
         )
         if (here.expiring > 0) notify(
             ctx, ID_EXPIRY, AlertsActivity::class.java,
             ctx.getString(R.string.notif_expiry_title),
-            ctx.resources.getQuantityString(R.plurals.notif_expiry_body, here.expiring, here.expiring)
+            Digits.quantity(ctx.resources, R.plurals.notif_expiry_body, here.expiring, here.expiring)
         )
 
         // EVERY OTHER SHOP. Until now the sweep saw only the open one, so a
@@ -147,25 +149,25 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             if (due == null) continue
 
             val shop = Businesses.displayName(ctx, biz)
-                ?: ctx.getString(R.string.business_numbered, biz.id)
+                ?: Digits.string(ctx.resources, R.string.business_numbered, biz.id)
             if (due.cheques > 0) notify(
                 ctx, ID_CHEQUES_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
                 ctx.getString(R.string.notif_cheques_title),
-                ctx.resources.getQuantityString(
+                Digits.quantity(ctx.resources, 
                     R.plurals.notif_cheques_body_named, due.cheques, shop, due.cheques
                 )
             )
             if (due.plans > 0) notify(
                 ctx, ID_PLANS_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
                 ctx.getString(R.string.notif_plans_title),
-                ctx.resources.getQuantityString(
+                Digits.quantity(ctx.resources, 
                     R.plurals.notif_plans_body_named, due.plans, shop, due.plans
                 )
             )
             if (due.expiring > 0) notify(
                 ctx, ID_EXPIRY_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
                 ctx.getString(R.string.notif_expiry_title),
-                ctx.resources.getQuantityString(
+                Digits.quantity(ctx.resources, 
                     R.plurals.notif_expiry_body_named, due.expiring, shop, due.expiring
                 )
             )
@@ -199,7 +201,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
                 if (biz.id == openId) continue
                 if (!BackupReminder.isLapsedBackup(ctx, biz.id)) continue
                 val shop = Businesses.displayName(ctx, biz)
-                    ?: ctx.getString(R.string.business_numbered, biz.id)
+                    ?: Digits.string(ctx.resources, R.string.business_numbered, biz.id)
                 notify(
                     ctx, ID_BACKUP_BUSINESS + biz.id.toInt(), BackupActivity::class.java,
                     ctx.getString(R.string.notif_backup_title),
@@ -256,7 +258,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         if (businesses.size <= 1) return ctx.getString(R.string.notif_backup_body)
         val shop = businesses.firstOrNull { it.id == openId }
             ?.let { Businesses.displayName(ctx, it) }
-            ?: ctx.getString(R.string.business_numbered, openId)
+            ?: Digits.string(ctx.resources, R.string.business_numbered, openId)
         return ctx.getString(R.string.notif_backup_body_named, shop)
     }
 

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,7 +52,7 @@ class ExpiringAdapter(
         val days = e.daysLeft
         when {
             e.hasExpired -> {
-                holder.tvDays.text = ctx.resources.getQuantityString(R.plurals.expired_days, -days, -days)
+                holder.tvDays.text = Digits.quantity(ctx.resources, R.plurals.expired_days, -days, -days)
                 holder.tvDays.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave_text))
             }
             days == 0 -> {
@@ -58,7 +60,7 @@ class ExpiringAdapter(
                 holder.tvDays.setTextColor(ContextCompat.getColor(ctx, R.color.red_gave_text))
             }
             else -> {
-                holder.tvDays.text = ctx.resources.getQuantityString(R.plurals.expires_days, days, days)
+                holder.tvDays.text = Digits.quantity(ctx.resources, R.plurals.expires_days, days, days)
                 holder.tvDays.setTextColor(
                     ContextCompat.getColor(
                         ctx,

@@ -340,7 +340,7 @@ object BusinessReport {
 
                 val days = e.daysLeft
                 val txt = if (e.hasExpired) context.getString(R.string.pdf_biz_expired)
-                    else context.getString(R.string.pdf_biz_days_left, days)
+                    else Digits.string(context.resources, R.string.pdf_biz_days_left, days)
                 val paint = if (e.hasExpired || days <= 14) red else body
                 val w = paint.measureText(txt)
                 PdfRtl.drawText(canvas, txt, PAGE_W - MARGIN - w, y, paint)
@@ -360,7 +360,7 @@ object BusinessReport {
         PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
         y = PAGE_H - 34f
         PdfRtl.drawText(canvas,
-            context.getString(R.string.pdf_rep_footer_page, appName, pageNo),
+            Digits.string(context.resources, R.string.pdf_rep_footer_page, appName, pageNo),
             MARGIN,
             y,
             muted

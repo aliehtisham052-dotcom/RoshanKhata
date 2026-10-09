@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -280,7 +282,7 @@ class ViewerActivity : BaseActivity() {
                 found.size == 1 -> loadFromDrive(account, found[0].id)
                 else -> {
                     val labels = found.map {
-                        it.name ?: getString(R.string.viewer_business_number, it.id)
+                        it.name ?: Digits.string(resources, R.string.viewer_business_number, it.id)
                     }.toTypedArray()
                     MaterialAlertDialogBuilder(this@ViewerActivity)
                         .setTitle(R.string.viewer_pick_business)

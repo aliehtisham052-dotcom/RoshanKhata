@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -282,7 +284,7 @@ class ImportContactsActivity : BaseActivity() {
     }
 
     private fun updateSelectedCount() {
-        tvSelectedCount.text = getString(R.string.selected_count, selected.size)
+        tvSelectedCount.text = Digits.string(resources, R.string.selected_count, selected.size)
         btnImport.isEnabled = selected.isNotEmpty()
     }
 
@@ -305,7 +307,7 @@ class ImportContactsActivity : BaseActivity() {
 
         val view = layoutInflater.inflate(R.layout.dialog_import_contact_type, null)
         view.findViewById<TextView>(R.id.tvImportTypeMessage).text =
-            resources.getQuantityString(
+            Digits.quantity(resources, 
                 R.plurals.import_as_message, toImport.size, toImport.size
             )
         val rbCustomer: RadioButton = view.findViewById(R.id.rbImportCustomer)
@@ -330,7 +332,7 @@ class ImportContactsActivity : BaseActivity() {
                         if (!isFinishing && !isDestroyed) {
                             Toast.makeText(
                                 this@ImportContactsActivity,
-                                resources.getQuantityString(
+                                Digits.quantity(resources, 
                                     R.plurals.imported_count, toImport.size, toImport.size
                                 ),
                                 Toast.LENGTH_SHORT

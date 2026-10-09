@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.content.Context
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.EntryItem
@@ -42,7 +44,7 @@ object GoodsText {
                 .ifEmpty { null }
         }
         val tail = listOfNotNull(
-            if (items.size > 1) context.getString(R.string.entry_items_count, items.size) else null,
+            if (items.size > 1) Digits.string(context.resources, R.string.entry_items_count, items.size) else null,
             rateLabel(context, rateType)
         ).joinToString(" · ")
         return listOfNotNull(body, tail.ifEmpty { null }).joinToString("\n").ifEmpty { null }

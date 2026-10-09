@@ -677,7 +677,7 @@ class KhataActivity : BaseActivity() {
         selectionBack.isEnabled = picking
         selectionBar.visibility = if (picking) View.VISIBLE else View.GONE
         if (picking) {
-            tvSelectedCount.text = getString(R.string.selected_count, selectedIds.size)
+            tvSelectedCount.text = Digits.string(resources, R.string.selected_count, selectedIds.size)
             val visible = shownParties.map { it.id }
             btnSelectAll.setText(
                 if (visible.isNotEmpty() && selectedIds.containsAll(visible)) R.string.clear_all
@@ -728,13 +728,13 @@ class KhataActivity : BaseActivity() {
         val owing = picked.count { Money.isNotZero(it.balance) }
 
         val message = buildString {
-            append(resources.getQuantityString(
+            append(Digits.quantity(resources, 
                 R.plurals.delete_parties_confirm, picked.size, picked.size
             ))
             if (owing > 0) {
                 append("\n\n")
                 append(
-                    resources.getQuantityString(
+                    Digits.quantity(resources, 
                         R.plurals.delete_parties_owing,
                         owing,
                         owing,
@@ -746,7 +746,7 @@ class KhataActivity : BaseActivity() {
         }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(resources.getQuantityString(R.plurals.delete_parties_title, picked.size, picked.size))
+            .setTitle(Digits.quantity(resources, R.plurals.delete_parties_title, picked.size, picked.size))
             .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.Digits
+
 import android.app.Activity
 import android.content.Intent
 import androidx.lifecycle.LifecycleCoroutineScope
@@ -28,7 +30,7 @@ object BatchBuyersDialog {
             val batch = item.batchNumber?.takeIf { it.isNotBlank() } ?: "—"
             val title = activity.getString(R.string.batch_buyers_title, item.productName, batch)
             val note = if (untagged > 0)
-                activity.resources.getQuantityString(R.plurals.batch_buyers_untagged, untagged, untagged)
+                Digits.quantity(activity.resources, R.plurals.batch_buyers_untagged, untagged, untagged)
             else null
 
             val builder = MaterialAlertDialogBuilder(activity).setTitle(title)
