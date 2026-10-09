@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Where the splash artwork meets the language panel: the painting settles
-     into the page paper over the last 64dp, so the heading has clean ground. -->
+     into the page paper over the last 40dp, so the heading has clean ground. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
     <gradient
         android:angle="270"
