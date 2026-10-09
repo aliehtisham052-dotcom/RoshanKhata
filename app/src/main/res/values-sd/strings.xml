@@ -2303,4 +2303,6 @@
     <string name="backup_err_too_new">هي بيڪ اپ روشن کاتي جي نئين ورزن سان ٺهيل آهي. پهريان ايپ اپڊيٽ ڪريو.</string>
     <string name="backup_err_incomplete">هي بيڪ اپ اڻپورو آهي. اهڙيون داخلائون جن جو گراهڪ فائل ۾ ناهي: %1$d.</string>
     <string name="tax_number_label">ٽيڪس نمبر</string>
+    <string name="drive_signin_details">ان کي ٺيڪ ڪرڻ لاءِ اهي تفصيل گهربل آهن (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">ڪاپي ڪريو</string>
 </resources>

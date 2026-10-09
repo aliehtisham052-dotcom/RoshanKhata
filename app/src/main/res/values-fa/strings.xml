@@ -2303,4 +2303,6 @@
     <string name="backup_err_too_new">این پشتیبان با نسخهٔ جدیدتر روشن خاتا ساخته شده است. اول برنامه را به‌روز کنید.</string>
     <string name="backup_err_incomplete">این پشتیبان ناقص است. ردیف‌هایی که مشتری‌شان در فایل نیست: %1$d.</string>
     <string name="tax_number_label">شماره مالیاتی</string>
+    <string name="drive_signin_details">برای رفع آن همین جزئیات لازم است (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">کپی</string>
 </resources>

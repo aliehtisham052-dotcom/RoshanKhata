@@ -2275,4 +2275,6 @@
     <string name="backup_err_too_new">یہ بیک اپ روشن کھاتہ کے نئے ورژن سے بنا ہے۔ پہلے ایپ اپ ڈیٹ کریں۔</string>
     <string name="backup_err_incomplete">یہ بیک اپ نامکمل ہے۔ ایسے اندراج جن کا گاہک فائل میں نہیں: %1$d۔</string>
     <string name="tax_number_label">ٹیکس نمبر</string>
+    <string name="drive_signin_details">اسے ٹھیک کرنے کے لیے یہی تفصیل درکار ہے (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">کاپی کریں</string>
 </resources>

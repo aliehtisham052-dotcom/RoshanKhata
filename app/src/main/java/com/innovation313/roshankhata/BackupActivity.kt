@@ -543,9 +543,16 @@ class BackupActivity : BaseActivity() {
             // was Google refusing the package name, and the owner has no
             // Logcat. A sheet the owner simply closed stays a plain toast.
             var reason: String? = null
+            var ownerClosed = false
             val email = try {
                 DriveAuth.signIn(this@BackupActivity)
             } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
+                // A sheet Google closed by itself (a build it does not know)
+                // also arrives as a "cancellation"; only the owner's own
+                // dismissal is silent (9 Oct).
+                android.util.Log.e("DriveSignIn", "signIn cancelled (Backup)", e)
+                ownerClosed = com.innovation313.roshankhata.ui.SignInProblem.isOwnerDismissal(e.errorMessage?.toString())
+                reason = "${e.type.substringAfterLast('.')}: ${e.errorMessage}"
                 null
             } catch (e: Exception) {
                 android.util.Log.e("DriveSignIn", "signIn failed (Backup)", e)
@@ -558,9 +565,11 @@ class BackupActivity : BaseActivity() {
             if (email == null) {
                 // Dismissed the account sheet, or nothing came back. Nothing is
                 // connected; say so plainly rather than proceeding half-way.
-                val text = getString(R.string.drive_signin_failed) +
-                    (reason?.let { "\n$it" } ?: "")
-                Toast.makeText(this@BackupActivity, text, Toast.LENGTH_LONG).show()
+                if (ownerClosed || reason == null) {
+                    Toast.makeText(this@BackupActivity, R.string.drive_signin_failed, Toast.LENGTH_LONG).show()
+                } else {
+                    com.innovation313.roshankhata.ui.SignInProblem.show(this@BackupActivity, reason)
+                }
                 return@launch
             }
 
@@ -592,9 +601,7 @@ class BackupActivity : BaseActivity() {
             }
             .addOnFailureListener { e ->
                 android.util.Log.e("DriveSignIn", "authorize failed (Backup)", e)
-                val text = getString(R.string.drive_signin_failed) +
-                    "\n${e.javaClass.simpleName}: ${e.message}"
-                Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+                com.innovation313.roshankhata.ui.SignInProblem.show(this, "${e.javaClass.simpleName}: ${e.message}")
             }
     }
 

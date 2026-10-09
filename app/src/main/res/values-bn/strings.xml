@@ -2319,4 +2319,6 @@
     <string name="backup_err_too_new">এই ব্যাকআপ রোশন খাতার নতুন সংস্করণে তৈরি। আগে অ্যাপ আপডেট করুন।</string>
     <string name="backup_err_incomplete">এই ব্যাকআপ অসম্পূর্ণ। যেসব এন্ট্রির গ্রাহক ফাইলে নেই: %1$d।</string>
     <string name="tax_number_label">কর নম্বর</string>
+    <string name="drive_signin_details">এটি ঠিক করতে এই তথ্যগুলো লাগবে (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">কপি করুন</string>
 </resources>

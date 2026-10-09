@@ -2447,4 +2447,6 @@
     <string name="backup_err_too_new">أُنشئت هذه النسخة بإصدار أحدث من روشن كهاتا. حدّث التطبيق أولًا.</string>
     <string name="backup_err_incomplete">هذه النسخة غير مكتملة. قيود عميلها غير موجود في الملف: %1$d.</string>
     <string name="tax_number_label">الرقم الضريبي</string>
+    <string name="drive_signin_details">هذه التفاصيل هي ما يلزم لإصلاح ذلك (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">نسخ</string>
 </resources>
