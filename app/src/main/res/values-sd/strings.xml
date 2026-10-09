@@ -237,7 +237,7 @@
 
     <!-- Reminders -->
     <string name="remind_whatsapp">واٽس ايپ</string>
-    <string name="remind_sms">SMS</string>
+    <string name="remind_sms">ايس ايم ايس</string>
     <string name="reminder_preview_help">موڪلڻ کان اڳ پڙهي وٺو. هتي سڀ ڪجهه بدلائي سگهو ٿا — روشن کاتو اهو واٽس ايپ يا SMS ايپ کي ڏيندو، ۽ موڪلڻ جو بٽڻ توهان پاڻ دٻائيندا.</string>
     <string name="reminder_they_owe">*ادائيگي جي ياد ڏياري*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\n\nمهرباني ڪري جلد کان جلد ادائيگي جو بندوبست ڪريو.\n\nمهرباني.</string>
     <string name="reminder_they_owe_by_date">*ادائيگي جي ياد ڏياري*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\nطئي ٿيل تاريخ: *%3$s*\n\nمهرباني ڪري طئي ٿيل تاريخ تائين ادا ڪري ڇڏيو.\n\nمهرباني.</string>

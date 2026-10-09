@@ -124,6 +124,23 @@ object DateWords {
      */
     fun formatter(pattern: String, locale: Locale = appLocale()): SimpleDateFormat {
         val key = keyOf(locale)
+        return formatterFor(localPunctuation(pattern, key), key)
+    }
+
+    /**
+     * Arabic-script languages write their own comma, "،" (U+060C). Every
+     * pattern in the app separates date from time with ", ", which on the
+     * owner's Urdu and Sindhi screens read "7 اکتوبر 2026, 1:15" — a Latin
+     * comma inside an Urdu line. The separator is swapped here, once, so
+     * the list, the customer screen, the date picker and every report agree.
+     * Roman Urdu keys as "en" and keeps the Latin comma.
+     */
+    internal fun localPunctuation(pattern: String, key: String): String =
+        if (key in ARABIC_COMMA) pattern.replace(", ", "\u060C ") else pattern
+
+    private val ARABIC_COMMA = setOf("ur", "sd", "ar", "fa")
+
+    private fun formatterFor(pattern: String, key: String): SimpleDateFormat {
         val kind = ShopCalendar.current
         // The shop's calendar (5 Oct) applies to dates that name a DAY. A
         // pattern with no day ("MMM", "MMM yyyy", "h:mm a") labels a Gregorian
