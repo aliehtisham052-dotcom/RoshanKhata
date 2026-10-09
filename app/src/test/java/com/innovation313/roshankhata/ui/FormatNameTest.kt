@@ -18,9 +18,11 @@ import java.util.Locale
 @RunWith(AndroidJUnit4::class)
 class FormatNameTest {
 
-    // What BidiFormatter may open and close a left-to-right run with.
-    private val opens = setOf('\u200E', '\u202A', '\u2066')   // LRM, LRE, LRI
-    private val closes = setOf('\u200E', '\u202C', '\u2069')  // LRM, PDF, PDI
+    // BidiFormatter embeds the run as LRE … PDF (or LRI … PDI), and on a
+    // right-to-left screen adds a right-to-left mark on either side so the
+    // "+" is not pulled across the boundary. The embedding is what matters.
+    private val number = "+923487239466"
+    private val embedded = listOf("\u202A$number\u202C", "\u2066$number\u2069")
 
     private fun under(tag: String, block: () -> Unit) {
         val saved = Locale.getDefault()
@@ -31,17 +33,14 @@ class FormatNameTest {
     @Test
     fun `a number-only name is wrapped left-to-right on a right-to-left screen`() {
         for (tag in listOf("ur", "ar", "sd", "fa")) under(tag) {
-            val out = Format.name("+923487239466")
-            assertTrue("$tag: expected a bidi wrap, got '$out'", out != "+923487239466")
-            assertTrue("$tag: '$out' does not open LTR", out.first() in opens)
-            assertTrue("$tag: '$out' does not close", out.last() in closes)
-            assertTrue(out.contains("+923487239466"))
+            val out = Format.name(number)
+            assertTrue("$tag: expected an LTR embedding, got '$out'", embedded.any { it in out })
         }
     }
 
     @Test
     fun `on an English screen a number-only name needs no wrap and gets none`() {
-        under("en") { assertEquals("+923487239466", Format.name("+923487239466")) }
+        under("en") { assertEquals(number, Format.name(number)) }
     }
 
     @Test
