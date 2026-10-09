@@ -146,11 +146,20 @@ strong — no data is collected), feature graphic, signed AAB.
 Use dummy data for store screenshots. Real customer names and numbers must not
 appear in a public listing.
 
-**Google Drive backup** is written and hidden behind `DriveFeature.ENABLED`.
-It waits on Google's OAuth verification for the Drive app-data scope, which
-needs a homepage, domain ownership proved in Search Console, and a video of
-the consent flow. The scope is sensitive rather than restricted, so no paid
-security audit applies. Once verified, flip the constant — nothing else.
+**Google Drive backup** asks for one Drive scope, `drive.appdata`, which
+Google classes as **non-sensitive** (checked 9 Oct 2026 on Google's "Choose
+Google Drive API scopes" page): no sensitive-scope verification, no 100-user
+cap, no security audit. Basic brand verification (homepage, privacy policy,
+domain ownership) is still worth doing so the consent screen shows the app's
+name and logo. Do not add a sensitive Drive scope without re-checking this.
+
+Sign-in needs an **Android OAuth client per package + SHA-1 pair** in the
+`roshan-khata` Cloud project, beside the Web client the app passes as
+serverClientId. The CI test APK is `com.innovation313.roshankhata.dev`
+(client added 9 Oct); the Play build is `com.innovation313.roshankhata`
+signed by Play's app-signing key, whose SHA-1 is in Play Console. A missing
+pair shows as "cannot sign in"; the Backup screen's sign-in dialog prints the
+running build's package and SHA-1 for exactly this.
 
 **Data import from other ledger apps** is agreed but unbuilt. Balance-only
 first: name, phone, current balance as one opening entry.
