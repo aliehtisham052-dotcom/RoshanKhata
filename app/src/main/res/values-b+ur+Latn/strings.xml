@@ -2275,4 +2275,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="backup_err_too_new">Ye backup Roshan Khata ke naye version se bana hai. Pehle app update karein.</string>
     <string name="backup_err_incomplete">Ye backup namukammal hai. Aise entries jin ka gahak file mein nahi: %1$d.</string>
     <string name="tax_number_label">Tax No.</string>
+    <string name="drive_signin_details">Isay theek karne ke liye yehi tafseel chahiye (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">Copy karein</string>
 </resources>

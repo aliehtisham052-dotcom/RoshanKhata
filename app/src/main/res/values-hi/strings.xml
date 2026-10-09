@@ -2319,4 +2319,6 @@
     <string name="backup_err_too_new">यह बैकअप रोशन खाता के नए संस्करण से बना है। पहले ऐप अपडेट करें।</string>
     <string name="backup_err_incomplete">यह बैकअप अधूरा है। ऐसी एंट्री जिनका ग्राहक फ़ाइल में नहीं: %1$d।</string>
     <string name="tax_number_label">कर संख्या</string>
+    <string name="drive_signin_details">इसे ठीक करने के लिए यही जानकारी चाहिए (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">कॉपी करें</string>
 </resources>

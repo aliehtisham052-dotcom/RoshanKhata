@@ -2276,4 +2276,6 @@
     <string name="backup_err_too_new">Cadangan ini dibuat oleh versi Roshan Khata yang lebih baru. Perbarui aplikasi dulu.</string>
     <string name="backup_err_incomplete">Cadangan ini tidak lengkap. Entri yang pelanggannya tidak ada di file: %1$d.</string>
     <string name="tax_number_label">NPWP</string>
+    <string name="drive_signin_details">Detail ini yang dibutuhkan untuk memperbaikinya (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">Salin</string>
 </resources>

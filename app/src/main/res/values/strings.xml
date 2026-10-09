@@ -2410,4 +2410,6 @@ You can change this any time from this screen.</string>
     <string name="backup_err_too_new">This backup was made by a newer version of Roshan Khata. Please update the app first.</string>
     <string name="backup_err_incomplete">This backup is incomplete. Entries whose customer is missing from the file: %1$d.</string>
     <string name="tax_number_label">Tax No.</string>
+    <string name="drive_signin_details">These details are what fixes it (Google Cloud → Credentials → Android client):</string>
+    <string name="copy_details">Copy</string>
 </resources>
