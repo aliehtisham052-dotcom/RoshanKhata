@@ -96,6 +96,7 @@
 
                 <TextView
                     android:id="@+id/tvPartyName"
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -127,6 +128,7 @@
                 -->
                 <TextView
                     android:id="@+id/tvPartyIdentity"
+                    android:textAlignment="viewStart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -578,6 +580,10 @@
                 android:insetBottom="0dp"
                 android:letterSpacing="0.04"
                 android:maxLines="1"
+                app:autoSizeMaxTextSize="14sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform"
                 android:text="@string/i_gave"
                 android:textColor="@color/white"
                 android:textSize="14sp"
@@ -600,6 +606,10 @@
                 android:insetBottom="0dp"
                 android:letterSpacing="0.04"
                 android:maxLines="1"
+                app:autoSizeMaxTextSize="14sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform"
                 android:text="@string/i_got"
                 android:textColor="@color/white"
                 android:textSize="14sp"

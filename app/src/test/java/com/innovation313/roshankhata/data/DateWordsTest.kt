@@ -83,4 +83,17 @@ class DateWordsTest {
             assertTrue(tag, months.all { it.isNotBlank() })
         }
     }
+
+    @Test
+    fun `arabic-script languages separate date and time with their own comma`() {
+        for (tag in listOf("ur", "sd", "fa", "ar")) {
+            val out = DateWords.format("d MMM yyyy, h:mm a", moment, Locale.forLanguageTag(tag))
+            assertTrue("$tag: '$out'", out.contains("2026\u060C "))
+            assertTrue("$tag kept a Latin comma: '$out'", !out.contains(","))
+        }
+        for (tag in listOf("en", "ur-Latn", "hi", "bn", "id")) {
+            val out = DateWords.format("d MMM yyyy, h:mm a", moment, Locale.forLanguageTag(tag))
+            assertTrue("$tag: '$out'", out.contains("2026, "))
+        }
+    }
 }

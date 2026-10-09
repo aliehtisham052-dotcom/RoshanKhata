@@ -38,21 +38,24 @@
 
         <TextView
             android:id="@+id/tvDateTime"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:textAlignment="viewStart"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tvNote"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:textAlignment="viewStart"
             android:layout_height="wrap_content"
             android:textColor="@color/text_grey"
             android:textSize="13sp" />
 
         <TextView
             android:id="@+id/tvGoods"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:textAlignment="viewStart"
             android:layout_height="wrap_content"
             android:textColor="@color/brand_green_text"
             android:textSize="12sp"
@@ -60,7 +63,8 @@
 
         <TextView
             android:id="@+id/tvEntryNumber"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:textAlignment="viewStart"
             android:layout_height="wrap_content"
             android:textColor="@color/text_muted"
             android:textSize="11sp" />
