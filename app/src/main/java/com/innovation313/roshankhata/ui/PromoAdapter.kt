@@ -38,7 +38,7 @@ class PromoAdapter(
         val p = getItem(position)
         val ctx = holder.itemView.context
 
-        holder.tvName.text = p.name
+        holder.tvName.text = Format.name(p.name)
         holder.tvWhen.text = if (p.lastActivity > 0) {
             ctx.getString(R.string.promo_last_bought, Format.dateOnly(p.lastActivity))
         } else {

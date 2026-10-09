@@ -1026,7 +1026,7 @@
     <string name="unit_gram">ग्राम</string>
     <string name="metal_silver">चाँदी</string>
     <string name="metal_gold">सोना</string>
-    <string name="last_transacted">आख़िरी लेन-देन %1$s</string>
+    <string name="last_transacted">अंतिम लेन-देन %1$s</string>
     <plurals name="summary_with_overdue">
         <item quantity="one">%1$s \u00b7 %2$d को रिमाइंडर चाहिए</item>
         <item quantity="other">%1$s \u00b7 %2$d को रिमाइंडर चाहिए</item>

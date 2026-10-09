@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Businesses
+import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PaymentHabit
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -546,7 +547,7 @@ class MainActivity : BaseActivity() {
                     .collectLatest { late ->
                         tvHomeLate.visibility = if (late > 0) View.VISIBLE else View.GONE
                         if (late > 0) {
-                            tvHomeLate.text = resources.getQuantityString(R.plurals.home_paying_late, late, late)
+                            tvHomeLate.text = Digits.quantity(resources, R.plurals.home_paying_late, late, late)
                         }
                     }
             } catch (e: kotlinx.coroutines.CancellationException) {

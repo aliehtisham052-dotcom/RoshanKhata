@@ -1032,8 +1032,8 @@
         <item quantity="other">%1$s \u00b7 %2$d জনকে রিমাইন্ডার দরকার</item>
     </plurals>
     <plurals name="customer_count">
-        <item quantity="one">%d জন গ্রাহক</item>
-        <item quantity="other">%d জন গ্রাহক</item>
+        <item quantity="one">%d গ্রাহক</item>
+        <item quantity="other">%d গ্রাহক</item>
     </plurals>
     <string name="call">কল করুন</string>
     <string name="no_dialer">ফোন ডায়ালার পাওয়া যায়নি</string>

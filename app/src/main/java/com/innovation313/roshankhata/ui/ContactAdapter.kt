@@ -58,7 +58,7 @@ class ContactAdapter(
         val row = getItem(position)
         val c = row.contact
 
-        holder.tvName.text = c.name
+        holder.tvName.text = Format.name(c.name)
         holder.tvPhone.text = c.phone
 
         if (c.alreadyAdded || c.inRecycleBin) {

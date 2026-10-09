@@ -71,7 +71,7 @@ class PartyAdapter(
                 android.content.res.ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.row_selected))
             else null
 
-        holder.tvName.text = item.name
+        holder.tvName.text = Format.name(item.name)
 
         // Photo if we have one, initials if not. A list of blank grey circles
         // helps nobody; initials at least tell the eye who is who.

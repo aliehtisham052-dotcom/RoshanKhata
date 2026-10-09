@@ -1077,10 +1077,12 @@ class KhataActivity : BaseActivity() {
         val cutoff = System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000
         val overdue = list.count { Money.isPositive(it.balance) && it.lastActivity in 1 until cutoff }
 
-        val countText = resources.getQuantityString(R.plurals.customer_count, count, count)
+        // Counts go through Digits, not getQuantityString, so that Bengali,
+        // Sindhi and Persian read 1205 in the same 0-9 the amounts use.
+        val countText = Digits.quantity(resources, R.plurals.customer_count, count, count)
         val withCount = if (overdue > 0) {
-            resources.getQuantityString(
-                R.plurals.summary_with_overdue, overdue, countText, overdue
+            Digits.quantity(
+                resources, R.plurals.summary_with_overdue, overdue, countText, overdue
             )
         } else {
             countText
@@ -1096,7 +1098,7 @@ class KhataActivity : BaseActivity() {
             count > 0 && totalSettled >= count ->
                 withCount + "  ·  " + getString(R.string.all_settled)
             else ->
-                withCount + "  ·  " + getString(R.string.settled_count, totalSettled)
+                withCount + "  ·  " + Digits.string(resources, R.string.settled_count, totalSettled)
         }
 
         // Backup rides here again, and the reversal is deliberate. It was
