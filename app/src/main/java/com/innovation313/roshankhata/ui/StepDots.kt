@@ -7,9 +7,9 @@ import android.widget.TextView
 import com.innovation313.roshankhata.R
 
 /**
- * "Step 2 of 3" and three dots, on each first-run screen (9 Oct).
+ * "Step 1 of 2" and its dots, on each first-run screen (9 Oct).
  *
- * Language, backup and shop type are one setup in three steps. Without a
+ * Language and shop type are one setup in two steps. Without a
  * marker each looked like a separate interruption, and the owner could not
  * tell how many more were coming. The current step is a short green bar,
  * the others small dots - the pattern every onboarding uses.
@@ -19,7 +19,7 @@ import com.innovation313.roshankhata.R
  */
 object StepDots {
 
-    const val TOTAL = 3
+    const val TOTAL = 2
 
     fun show(dots: LinearLayout, label: TextView?, step: Int) {
         val d = dots.resources.displayMetrics.density

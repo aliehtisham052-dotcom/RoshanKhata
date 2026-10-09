@@ -45,7 +45,7 @@ object TradePicker {
         activity: Activity,
         current: Trade?,
         required: Boolean,
-        /** Which first-run step this is (3 of 3), or null anywhere else. */
+        /** Which first-run step this is (2 of 2), or null anywhere else. */
         step: Int? = null,
         onPicked: (Trade) -> Unit
     ) {

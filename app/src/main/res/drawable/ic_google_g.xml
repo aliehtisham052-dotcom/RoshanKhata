@@ -3,7 +3,7 @@
   The standard-colour Google "G" for the Sign in with Google button — the same
   four paths and colours as Google's own button asset. Branding guidelines:
   never recolour, tint, restyle or reshape it, and show it only on the white
-  Light button. WelcomeActivity clears MaterialButton's icon tint so the
+  Light button. The Backup screen clears MaterialButton's icon tint so the
   button's text colour cannot turn it monochrome.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"

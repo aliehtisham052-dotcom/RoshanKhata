@@ -2354,4 +2354,5 @@
     <string name="coach_title_all">সব ফিচার</string>
     <string name="coach_desc_all">প্রোডাক্ট, ইনভয়েস, যাকাত, কার্ড আর বাকি সব নিচে আছে। \"সব দেখুন\" বা উপরের ☰ মেনুতে প্রতিটি ফিচার পাবেন।</string>
     <string name="help_replay_tour">হোমের পরিচিতি আবার দেখান</string>
+    <string name="backup_offer_open">ব্যাকআপ চালু করুন</string>
 </resources>

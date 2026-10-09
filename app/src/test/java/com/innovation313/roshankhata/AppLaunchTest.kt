@@ -3,7 +3,7 @@ package com.innovation313.roshankhata
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -32,11 +32,14 @@ class AppLaunchTest {
 
     @Test
     fun theLauncherScreenOpensWithoutCrashing() {
+        // Since 9 Oct the gate routes in onCreate, behind the system splash,
+        // and finishes: DESTROYED-after-routing is the normal end, RESUMED is
+        // fine too. A crash never gets here - it throws out of launch().
         ActivityScenario.launch(GateActivity::class.java).use { scenario ->
-            assertEquals(
-                "GateActivity did not reach RESUMED — the app failed to start",
-                Lifecycle.State.RESUMED,
-                scenario.state
+            assertTrue(
+                "GateActivity is in ${scenario.state} - the app failed to start",
+                scenario.state == Lifecycle.State.RESUMED ||
+                    scenario.state == Lifecycle.State.DESTROYED
             )
         }
     }

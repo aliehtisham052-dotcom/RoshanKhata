@@ -395,10 +395,47 @@ class MainActivity : BaseActivity() {
                 text = if (n > 9) "9+" else n.toString()
             }
             paintToday(alerts)
+            maybeOfferBackup()
         }
         paintHeaderLine()
         // Returning from another screen, the bar must point at Home again.
         showViewerNote()
+    }
+
+    /**
+     * The backup offer, once, when it means something (9 Oct).
+     *
+     * It used to be a page of the first run, before the owner had written a
+     * single line: a Google sign-in for an empty book, one screen more
+     * between him and his ledger. It is asked here instead, the first time
+     * Home comes back with a customer in the book, no backup ever taken and
+     * no Google account connected - after the tour, never over it. Either
+     * answer ends it; the Home chip and the bell still say "Never backed up"
+     * until a backup runs.
+     */
+    private suspend fun maybeOfferBackup() {
+        val prefs = getSharedPreferences(OFFER_PREFS, MODE_PRIVATE)
+        if (prefs.getBoolean(KEY_BACKUP_OFFERED, false)) return
+        if (!CoachMarkController.hasRun(this)) return
+        if (com.innovation313.roshankhata.data.ViewerMode.isOn(this)) return
+        if (com.innovation313.roshankhata.data.DriveAuth.isConnected(this)) return
+        if (com.innovation313.roshankhata.data.BackupReminder.lastBackupAt(this) != 0L) return
+        val hasCustomer = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                com.innovation313.roshankhata.data.KhataDatabase.get(this@MainActivity)
+                    .khataDao().partiesWithBalanceOnce().isNotEmpty()
+            } catch (e: Exception) { false }
+        }
+        if (!hasCustomer || isFinishing || isDestroyed) return
+        prefs.edit().putBoolean(KEY_BACKUP_OFFERED, true).apply()
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.welcome_title)
+            .setMessage(R.string.welcome_body)
+            .setPositiveButton(R.string.backup_offer_open) { _, _ ->
+                startActivity(Intent(this, BackupActivity::class.java))
+            }
+            .setNegativeButton(R.string.welcome_skip, null)
+            .show()
     }
 
     /**
@@ -762,6 +799,10 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
+        /** Home asks once to set up backup (maybeOfferBackup). */
+        private const val OFFER_PREFS = "home_offers"
+        private const val KEY_BACKUP_OFFERED = "backup_offered"
+
         /** How long Home is seen before the first-run tour dims it. */
         private const val TOUR_DELAY_MS = 600L
 

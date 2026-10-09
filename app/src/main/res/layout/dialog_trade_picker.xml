@@ -32,7 +32,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- Step 3 of 3 on first run (WelcomeActivity); otherwise gone. -->
+            <!-- Step 2 of 2 on first run (ShopTypeActivity); otherwise gone. -->
             <LinearLayout
                 android:id="@+id/tradeStepDots"
                 android:layout_width="wrap_content"

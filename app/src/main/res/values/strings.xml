@@ -2445,4 +2445,5 @@ You can change this any time from this screen.</string>
     <string name="coach_title_all">Every feature</string>
     <string name="coach_desc_all">Products, Invoice, Zakat, Card and the rest are below. See all, or the ☰ menu at the top, lists every one of them.</string>
     <string name="help_replay_tour">Show the Home tour again</string>
+    <string name="backup_offer_open">Set up backup</string>
 </resources>

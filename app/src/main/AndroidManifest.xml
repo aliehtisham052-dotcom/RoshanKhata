@@ -93,7 +93,7 @@
             android:theme="@style/Theme.RoshanKhata" />
 
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".ShopTypeActivity"
             android:exported="false"
             android:theme="@style/Theme.RoshanKhata" />
 
@@ -101,7 +101,7 @@
             android:name=".GateActivity"
             android:exported="true"
             android:noHistory="true"
-            android:theme="@style/Theme.RoshanKhata">
+            android:theme="@style/Theme.RoshanKhata.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
