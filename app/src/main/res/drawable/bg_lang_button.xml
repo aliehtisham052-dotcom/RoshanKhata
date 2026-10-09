@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  A language button on the language screen. lang_screen.webp once carried six
-  drawn buttons; they were painted out (4 Oct) and all nine languages now use
-  this one: the cream face the drawn buttons had (sampled from the picture,
-  lighter at the top) and the same thin gold edge, as a full pill, with a
-  green ripple for the press.
+  A language button on the language screen (9 Oct): a paper-white pill with
+  the app's own hairline, the same card the Home and Khata screens are made
+  of, over the splash artwork. Marked, the pill itself turns brand green
+  (lang_button_face / lang_button_edge are state lists, so the one shape
+  carries both states and the on-device contrast check reads the colour the
+  label really sits on). The gold ring of the mark is bg_lang_button_ring,
+  laid on as the foreground.
 
   Fixed colours on purpose: the artwork is the same by day and by night, so
   this button must be too.
-
-  The face is a plain shape directly under the ripple, not a selector: the
-  on-device contrast check (ContrastCheck) reads the colour behind a label
-  from the shape, and cannot see through a selector. The "marked" ring is
-  therefore its own drawable, bg_lang_button_ring, laid on as the foreground.
 -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#3300663A">
+    android:color="#2E1B5E3A">
     <item>
         <shape android:shape="rectangle">
-            <gradient
-                android:angle="270"
-                android:endColor="#EAE2CC"
-                android:startColor="#F8F4E9" />
-            <stroke android:width="1.5dp" android:color="#D0A84F" />
+            <solid android:color="@color/lang_button_face" />
+            <stroke android:width="1dp" android:color="@color/lang_button_edge" />
             <corners android:radius="100dp" />
         </shape>
     </item>

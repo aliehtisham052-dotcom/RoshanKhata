@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   The "marked" ring for a language button (bg_lang_button), drawn over it as
-  the view's foreground: a bright gold ring on the language that is marked but
-  not yet applied. Nothing is drawn otherwise.
+  the view's foreground: a gold ring standing a hair outside the green pill,
+  on the language that is marked but not yet applied. Nothing otherwise.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true">
         <shape android:shape="rectangle">
             <solid android:color="#00000000" />
-            <stroke android:width="3dp" android:color="@color/gold_on_dark" />
+            <stroke android:width="2.5dp" android:color="@color/brand_gold" />
             <corners android:radius="100dp" />
         </shape>
     </item>

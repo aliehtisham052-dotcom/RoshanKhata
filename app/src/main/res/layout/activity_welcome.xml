@@ -31,10 +31,10 @@
         android:paddingBottom="16dp">
 
         <!--
-          The logo as it appears on the language screen (cut from
-          lang_screen.webp, edges faded to transparent), on the same green, so
-          the three first-run screens read as one. logo_full stays as it is:
-          the lock screen and splash icon still use it.
+          The logo on green (cut from the old dark language painting, edges
+          faded to transparent). The language screen itself moved to the
+          splash's light painting on 9 Oct; this welcome keeps its green.
+          logo_full stays as it is: the lock screen and splash icon use it.
         -->
         <ImageView
             android:layout_width="236dp"
