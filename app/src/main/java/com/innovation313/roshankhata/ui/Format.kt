@@ -42,6 +42,23 @@ object Format {
         androidx.core.text.BidiFormatter.getInstance().unicodeWrap(text)
 
     /**
+     * A party's name on its own line — the list row, the customer screen,
+     * the follow-up and promotion lists.
+     *
+     * Most names carry letters, and letters settle their own direction, so
+     * they are returned untouched. A name that is nothing but a number — a
+     * contact saved as "+923001234567", which the ? avatar marks — has no
+     * letter to say which way it runs, and on an Urdu, Sindhi or Arabic
+     * screen the paragraph's own direction takes over: the "+" is pushed to
+     * the end and the owner reads "923001234567+". (The phone line under it
+     * was already right, because its TextView is pinned LTR; the name's
+     * cannot be, or every Urdu name would sit on the wrong side.) So a name
+     * without a letter is wrapped LTR the way [ltr] wraps a figure.
+     */
+    fun name(text: String): String =
+        if (text.any { it.isLetter() }) text else ltr(text)
+
+    /**
      * One or two letters for a customer's avatar — the only copy of this
      * rule, used by the list and by the party screen alike.
      *

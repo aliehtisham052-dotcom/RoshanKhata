@@ -88,4 +88,22 @@ object Digits {
      */
     fun parse(text: CharSequence?): Double? =
         text?.toString()?.trim()?.let { toLatin(it) }?.toDoubleOrNull()
+
+    /**
+     * A counted string ("%d customers") with its figure in 0-9.
+     *
+     * Resources.getQuantityString formats with the resources' own locale,
+     * and on Bengali, Sindhi and Persian that locale writes its own digits:
+     * the owner's Bengali header read "১২০৫ জন গ্রাহক" over amounts that read
+     * "Rs 4,598" — two numbering systems a thumb apart. The quantity still
+     * picks the plural form; only the formatting is done here, with
+     * [FIGURES], so a count reads in the same digits as the money beside it.
+     * Takes the same arguments as getQuantityString(id, quantity, args...).
+     */
+    fun quantity(res: android.content.res.Resources, id: Int, quantity: Int, vararg args: Any): String =
+        res.getQuantityText(id, quantity).toString().format(FIGURES, *args)
+
+    /** [quantity]'s twin for a plain string with a figure in it. */
+    fun string(res: android.content.res.Resources, id: Int, vararg args: Any): String =
+        res.getText(id).toString().format(FIGURES, *args)
 }

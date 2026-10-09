@@ -63,7 +63,7 @@ class FollowUpAdapter(
         val p = getItem(position)
         val ctx = holder.itemView.context
 
-        holder.tvName.text = p.name
+        holder.tvName.text = Format.name(p.name)
         holder.tvAmount.text = Format.money(p.balance)
 
         // Whole days since the last entry — the age of the silence, which is

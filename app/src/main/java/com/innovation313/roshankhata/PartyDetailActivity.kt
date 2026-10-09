@@ -514,7 +514,7 @@ class PartyDetailActivity : BaseActivity() {
                 partyIsCustomerAccount = p.isCustomer
                 harvestPromise = p.harvestPromise
                 creditLimit = p.creditLimit
-                tvPartyName.text = p.name
+                tvPartyName.text = Format.name(p.name)
                 tvPartyPhone.text = p.phone.orEmpty()
                 tvPartyPhone.visibility = if (p.phone.isNullOrBlank()) View.GONE else View.VISIBLE
 

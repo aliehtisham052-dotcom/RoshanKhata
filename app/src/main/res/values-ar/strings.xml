@@ -149,8 +149,8 @@
     <string name="i_gave">أعطيت</string>
     <string name="i_got">استلمت</string>
 
-    <string name="you_will_get">لك</string>
-    <string name="you_will_give">عليك</string>
+    <string name="you_will_get">مستحق لك</string>
+    <string name="you_will_give">مستحق عليك</string>
     <string name="settled">الحساب مسدد</string>
     <string name="settled_count">%1$d مُسوّى</string>
     <string name="all_settled">الكل مُسوّى</string>
