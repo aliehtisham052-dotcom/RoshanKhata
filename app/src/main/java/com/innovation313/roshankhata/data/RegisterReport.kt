@@ -138,7 +138,7 @@ object RegisterReport {
                 d.businessAddress?.let { append(it) }
                 d.strn?.let {
                     if (isNotEmpty()) append(" \u00B7 ")
-                    append(context.getString(R.string.pdf_reg_ntn, it))
+                    append(BusinessProfile.taxLine(context, it, R.string.pdf_reg_ntn))
                 }
             }
             if (identity.isNotEmpty()) PdfRtl.drawText(canvas, identity, MARGIN, 60f, tagline)
