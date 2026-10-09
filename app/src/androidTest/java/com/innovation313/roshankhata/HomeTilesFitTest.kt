@@ -77,10 +77,11 @@ class HomeTilesFitTest(
                 assertTrue("no Home tiles found", labels.size >= 10)
 
                 val problems = mutableListOf<String>()
-                // Two sizes of tile since 7 Oct: full (three a row, Every
-                // day) and compact (four a row, Business and Tools). Each
-                // size is judged among its own kind.
-                data class Slot(val compact: Boolean, val height: Int, val width: Int, val left: Int)
+                // Two sizes of tile since 7 Oct: full (Every day) and compact
+                // (Business and Tools). Heights are evened out among each
+                // size; widths and column lines belong to each grid, since
+                // 9 Oct Tools runs three to a row and Business four.
+                data class Slot(val compact: Boolean, val height: Int, val width: Int, val left: Int, val grid: Int)
                 val slots = mutableListOf<Slot>()
                 for (label in labels) {
                     val text = label.text.toString()
@@ -89,7 +90,9 @@ class HomeTilesFitTest(
                     val tile = label.parent.parent as View
                     slots += Slot(
                         tile.getTag(R.id.tile_compact) == true, tile.height, tile.width,
-                        IntArray(2).also { tile.getLocationOnScreen(it) }[0]
+                        IntArray(2).also { tile.getLocationOnScreen(it) }[0],
+                        // tile -> its row -> the grid the row is in
+                        ((tile.parent as View).parent as View).id
                     )
 
                     // 1. The last visible line ends inside the label itself.
@@ -119,19 +122,23 @@ class HomeTilesFitTest(
                 slots.groupBy { it.compact }.forEach { (compact, group) ->
                     val kind = if (compact) "compact" else "full"
                     val heights = group.map { it.height }.toSet()
+                    assertEquals("[$language, level $level] $kind tiles of different heights: $heights", 1, heights.size)
+                }
+                val columns = mapOf(R.id.gridDaily to 3, R.id.gridBusiness to 4, R.id.gridTools to 3)
+                slots.groupBy { it.grid }.forEach { (grid, group) ->
+                    val name = activity.resources.getResourceEntryName(grid)
                     val widths = group.map { it.width }
                     val columnEdges = group.map { it.left }.toSet()
-                    assertEquals("[$language, level $level] $kind tiles of different heights: $heights", 1, heights.size)
                     // One width, to the pixel. LinearLayout shares out the pixels left
                     // over when the row width does not divide evenly, so on a real
                     // screen one tile can be a single pixel wider. Invisible; the
                     // slot was wrong by 2 x TILE_GAP_DP.
                     assertTrue(
-                        "[$language, level $level] $kind tiles of different widths: $widths",
+                        "[$language, level $level] $name tiles of different widths: $widths",
                         widths.max() - widths.min() <= 1
                     )
-                    // Three (full) or four (compact) columns means exactly that many left edges across every row.
-                    assertEquals("[$language, level $level] $kind tiles off the column lines: $columnEdges", if (compact) 4 else 3, columnEdges.size)
+                    // N columns means exactly N left edges across every row of that grid.
+                    assertEquals("[$language, level $level] $name tiles off the column lines: $columnEdges", columns[grid], columnEdges.size)
                 }
             }
         }
