@@ -73,7 +73,7 @@ class CoachMarkOverlay(context: Context) : View(context) {
 
     private val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 2f * context.resources.displayMetrics.density
+        strokeWidth = 2.5f * context.resources.displayMetrics.density
     }
 
     init {
