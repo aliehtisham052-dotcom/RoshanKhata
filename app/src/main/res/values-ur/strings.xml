@@ -2307,8 +2307,10 @@
     <string name="trade_pick_later">بعد میں پروفائل سے بدل سکتے ہیں</string>
     <string name="trade_card_selected">منتخب</string>
     <string name="onboard_step">مرحلہ %1$s از %2$s</string>
-    <string name="coach_title_all">تمام فیچر</string>
-    <string name="coach_desc_all">پروڈکٹس، انوائس، زکوٰۃ، کارڈ اور باقی سب نیچے ہیں۔ \"سب دیکھیں\" یا اوپر ☰ مینو میں ہر فیچر موجود ہے۔</string>
     <string name="help_replay_tour">ہوم کا تعارف دوبارہ دکھائیں</string>
     <string name="backup_offer_open">بیک اپ سیٹ کریں</string>
+    <string name="coach_title_business">کاروبار</string>
+    <string name="coach_desc_business">پروڈکٹس اور اسٹاک، انوائس، انسائٹس، تاخیر والوں کا فالو اپ، آپ کا بزنس کارڈ، سیزن اور زکوٰۃ — ہر ایک ایک ٹیپ پر۔</string>
+    <string name="coach_title_tools">ٹولز</string>
+    <string name="coach_desc_tools">کیلکولیٹر، کیش فلو کا اندازہ، ریٹ لسٹ، واٹس ایپ اسٹیٹس کے لیے پوسٹر، اور غلطی سے ڈیلیٹ ہونے والی چیزوں کے لیے بن۔</string>
 </resources>

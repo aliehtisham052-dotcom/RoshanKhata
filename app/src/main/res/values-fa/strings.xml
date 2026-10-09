@@ -2335,8 +2335,10 @@
     <string name="trade_pick_later">بعداً می‌توانید از نمایه تغییرش دهید</string>
     <string name="trade_card_selected">انتخاب‌شده</string>
     <string name="onboard_step">مرحله %1$s از %2$s</string>
-    <string name="coach_title_all">همه امکانات</string>
-    <string name="coach_desc_all">محصولات، فاکتور، زکات، کارت و بقیه پایین‌تر هستند. «همه» یا منوی ☰ در بالا همه را فهرست می‌کند.</string>
     <string name="help_replay_tour">نمایش دوباره معرفی صفحه اصلی</string>
     <string name="backup_offer_open">راه‌اندازی پشتیبان‌گیری</string>
+    <string name="coach_title_business">کسب‌وکار</string>
+    <string name="coach_desc_business">محصولات و موجودی، فاکتورها، تحلیل‌ها، پیگیری بدهکاران دیرکرده، کارت ویزیت، فصل‌ها و زکات — هر کدام با یک لمس.</string>
+    <string name="coach_title_tools">ابزارها</string>
+    <string name="coach_desc_tools">ماشین‌حساب، چشم‌انداز جریان نقدی، لیست قیمت‌ها، پوستر برای استوری واتساپ، و سطل بازیابی برای هر چیزی که اشتباهی حذف شد.</string>
 </resources>

@@ -695,13 +695,12 @@ class MainActivity : BaseActivity() {
         val root = findViewById<android.view.ViewGroup>(android.R.id.content)
             .getChildAt(0) as? android.view.ViewGroup ?: return
 
-        // Six steps, top to bottom, never back up (9 Oct). The tour had sixteen,
-        // one per tile, and jumped from the daily row to Calculator at the
-        // foot of Tools, back up to Insights, down to the Bin and up again to
-        // Invoice - the screen scrolled to and fro and nobody reached the end.
-        // A new owner needs the figure, where his backup stands, the three
-        // books he will open daily, and where everything else lives; the rest
-        // he finds through "See all", which the last step points at.
+        // Ten steps in screen order, never back up (9 Oct): the figure, the
+        // backup, each of the six daily tiles, then Business and Tools as a
+        // section each. The sixteen-step tour had jumped between the grids;
+        // a six-step cut then skipped Plans and Expiry for a "See all" step
+        // the owner found meaningless. Every tile on screen is now either
+        // lit on its own or named in its section's step.
         val steps = listOfNotNull(
             findViewById<View>(R.id.balanceRow)?.let { row ->
                 CoachMarkController.Step(
@@ -726,14 +725,18 @@ class MainActivity : BaseActivity() {
             tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
             tileStep(R.string.nav_cashbook, R.string.coach_title_nav_cashbook, R.string.coach_desc_nav_cashbook),
             tileStep(R.string.tile_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
-            findViewById<View>(R.id.tvSeeAll)?.let { all ->
-                CoachMarkController.Step(
-                    target = all,
-                    titleRes = R.string.coach_title_all,
-                    descRes = R.string.coach_desc_all,
-                    cornerRadiusDp = 10f,
-                    paddingDp = 6f
-                )
+            tileStep(R.string.nav_plans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
+            tileStep(R.string.tile_expiry, R.string.coach_title_stock, R.string.coach_desc_stock),
+            // The two smaller sections as one step each: the owner is told
+            // what lives there, not walked through eight tiles he has not
+            // needed yet.
+            findViewById<View>(R.id.gridBusiness)?.let { grid ->
+                CoachMarkController.Step(grid, R.string.coach_title_business, R.string.coach_desc_business,
+                    cornerRadiusDp = 22f, paddingDp = 4f)
+            },
+            findViewById<View>(R.id.gridTools)?.let { grid ->
+                CoachMarkController.Step(grid, R.string.coach_title_tools, R.string.coach_desc_tools,
+                    cornerRadiusDp = 22f, paddingDp = 4f)
             }
         )
 
