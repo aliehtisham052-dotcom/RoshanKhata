@@ -224,6 +224,11 @@ object BusinessProfile {
         prefs(context).edit().putString(KEY_TRADE, trade.name).apply()
     }
 
+    /** A business's trade by id - for a book being created, before it is open. */
+    fun setTradeOf(context: Context, businessId: Long, trade: Trade) {
+        prefsOf(context, businessId).edit().putString(KEY_TRADE, trade.name).apply()
+    }
+
     // ---------- Payment QR ----------
 
     fun qrFile(context: Context): File =

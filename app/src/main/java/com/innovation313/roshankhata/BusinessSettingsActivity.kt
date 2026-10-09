@@ -611,18 +611,10 @@ class BusinessSettingsActivity : BaseActivity() {
 
     /** Saved the moment it is chosen, like the currency: a setting, not a text field. */
     private fun chooseTrade() {
-        val trades = Trade.entries
-        val labels = trades.map { it.label(this) }.toTypedArray()
-        val checked = trades.indexOf(Trade.current(this))
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.bp_trade)
-            .setSingleChoiceItems(labels, checked) { dialog, which ->
-                dialog.dismiss()
-                BusinessProfile.setTrade(this, trades[which])
-                renderTrade()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        com.innovation313.roshankhata.ui.TradePicker.show(this, Trade.current(this), required = false) {
+            BusinessProfile.setTrade(this, it)
+            renderTrade()
+        }
     }
 
     // ---------- Currency sign (4 Oct 2026) ----------

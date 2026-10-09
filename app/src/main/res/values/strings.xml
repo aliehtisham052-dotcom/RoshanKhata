@@ -2397,4 +2397,5 @@ You can change this any time from this screen.</string>
         <item>box</item>
         <item>litre</item>
     </string-array>
+    <string name="trade_pick_title">What kind of shop is this?</string>
 </resources>

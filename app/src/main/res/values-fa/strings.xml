@@ -2290,4 +2290,5 @@
         <item>بطری</item>
         <item>جعبه</item>
     </string-array>
+    <string name="trade_pick_title">این مغازه چه نوعی است؟</string>
 </resources>
