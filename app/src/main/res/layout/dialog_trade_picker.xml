@@ -32,6 +32,16 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!-- Step 3 of 3 on first run (WelcomeActivity); otherwise gone. -->
+            <LinearLayout
+                android:id="@+id/tradeStepDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layoutDirection="ltr"
+                android:orientation="horizontal"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/tvTradeKicker"
                 android:layout_width="0dp"

@@ -9,7 +9,7 @@
     <string name="coach_skip">نظر انداز کریں</string>
     <string name="coach_next">اگلا</string>
     <string name="coach_done">سمجھ گیا</string>
-    <string name="coach_desc_balance">گاہکوں کا کل بقایا، منفی جو آپ نے دینا ہے۔ کوئی دیکھ رہا ہو تو آنکھ دبا کر رقم چھپا لیں۔</string>
+    <string name="coach_desc_balance">گاہکوں کا کل بقایا، منفی جو آپ نے دینا ہے۔ شروع میں یہ نقطوں میں چھپا ہوتا ہے: دیکھنے کے لیے آنکھ دبائیں، چھپانے کے لیے دوبارہ۔</string>
     <string name="coach_desc_get">کل رقم جو گاہکوں نے ابھی آپ کو دینی ہے۔</string>
     <string name="coach_desc_give">کل رقم جو آپ نے ابھی سپلائرز اور دوسروں کو دینی ہے۔</string>
     <string name="coach_title_search">گاہک تلاش کریں</string>
@@ -2306,4 +2306,8 @@
     <string name="trade_pick_explain">روشن کھاتہ مثالیں، یونٹ اور خاص فیچر آپ کی دکان کے مطابق کر دے گا۔</string>
     <string name="trade_pick_later">بعد میں پروفائل سے بدل سکتے ہیں</string>
     <string name="trade_card_selected">منتخب</string>
+    <string name="onboard_step">مرحلہ %1$s از %2$s</string>
+    <string name="coach_title_all">تمام فیچر</string>
+    <string name="coach_desc_all">پروڈکٹس، انوائس، زکوٰۃ، کارڈ اور باقی سب نیچے ہیں۔ \"سب دیکھیں\" یا اوپر ☰ مینو میں ہر فیچر موجود ہے۔</string>
+    <string name="help_replay_tour">ہوم کا تعارف دوبارہ دکھائیں</string>
 </resources>

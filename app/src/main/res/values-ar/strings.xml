@@ -9,7 +9,7 @@
     <string name="coach_skip">تخطي</string>
     <string name="coach_next">التالي</string>
     <string name="coach_done">فهمت</string>
-    <string name="coach_desc_balance">كل ما يدين به عملاؤك لك، مطروحًا منه كل ما عليك. اضغط على العين لإخفاء المبلغ إذا كان أحد ينظر.</string>
+    <string name="coach_desc_balance">كل ما يدين به عملاؤك لك، مطروحًا منه كل ما عليك. يظهر في البداية مخفيًا بنقاط: اضغط على العين لرؤيته، ومرة أخرى لإخفائه.</string>
     <string name="coach_desc_get">إجمالي ما لا يزال على عملائك أن يدفعوه لك.</string>
     <string name="coach_desc_give">إجمالي ما لا يزال عليك أن تدفعه للموردين وغيرهم.</string>
     <string name="coach_title_search">ابحث عن عميل</string>
@@ -2478,4 +2478,8 @@
     <string name="trade_pick_explain">سيضبط روشن كهاتا الأمثلة والوحدات والميزات الخاصة لتناسب متجرك.</string>
     <string name="trade_pick_later">يمكنك تغييره لاحقًا من الملف الشخصي</string>
     <string name="trade_card_selected">محدد</string>
+    <string name="onboard_step">الخطوة %1$s من %2$s</string>
+    <string name="coach_title_all">كل الميزات</string>
+    <string name="coach_desc_all">المنتجات والفواتير والزكاة والبطاقة وغيرها في الأسفل. \"عرض الكل\" أو قائمة ☰ في الأعلى تجمعها كلها.</string>
+    <string name="help_replay_tour">اعرض جولة الشاشة الرئيسية مرة أخرى</string>
 </resources>

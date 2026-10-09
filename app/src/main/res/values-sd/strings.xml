@@ -9,7 +9,7 @@
     <string name="coach_skip">ڇڏي ڏيو</string>
     <string name="coach_next">اڳتي</string>
     <string name="coach_done">سمجهي ويس</string>
-    <string name="coach_desc_balance">گراهڪن جو ڪل بقايو، مائنس جيڪو توهان کي ڏيڻو آهي. ڪو ڏسي رهيو هجي ته اک دٻائي رقم لڪايو.</string>
+    <string name="coach_desc_balance">گراهڪن جو ڪل بقايو، مائنس جيڪو توهان کي ڏيڻو آهي. شروع ۾ اهو نقطن ۾ لڪل هوندو آهي: ڏسڻ لاءِ اک دٻايو، لڪائڻ لاءِ ٻيهر.</string>
     <string name="coach_desc_get">ڪل رقم جيڪا گراهڪن اڃا توهان کي ڏيڻي آهي.</string>
     <string name="coach_desc_give">ڪل رقم جيڪا توهان اڃا سپلائرن ۽ ٻين کي ڏيڻي آهي.</string>
     <string name="coach_title_search">گراهڪ ڳوليو</string>
@@ -2334,4 +2334,8 @@
     <string name="trade_pick_explain">روشن کاتو مثالون، يونٽ ۽ خاص فيچر توهان جي دڪان مطابق ڪري ڇڏيندو.</string>
     <string name="trade_pick_later">پوءِ پروفائل مان بدلائي سگهو ٿا</string>
     <string name="trade_card_selected">چونڊيل</string>
+    <string name="onboard_step">مرحلو %1$s مان %2$s</string>
+    <string name="coach_title_all">سڀ فيچر</string>
+    <string name="coach_desc_all">پراڊڪٽس، انوائس، زڪوٰات، ڪارڊ ۽ باقي سڀ هيٺ آهن. \"سڀ ڏسو\" يا مٿي ☰ مينيو ۾ هر فيچر موجود آهي.</string>
+    <string name="help_replay_tour">هوم جو تعارف ٻيهر ڏيکاريو</string>
 </resources>

@@ -13,7 +13,7 @@
     <string name="coach_skip">छोड़ें</string>
     <string name="coach_next">आगे</string>
     <string name="coach_done">समझ गया</string>
-    <string name="coach_desc_balance">ग्राहकों पर आपका जितना बकाया है, उसमें से आपकी देनदारी घटाकर। कोई देख रहा हो तो आँख के निशान से छुपाएँ।</string>
+    <string name="coach_desc_balance">ग्राहकों पर आपका जितना बकाया है, उसमें से आपकी देनदारी घटाकर। शुरू में यह बिंदुओं में छुपा रहता है: देखने के लिए आँख दबाएँ, छुपाने के लिए फिर से।</string>
     <string name="coach_desc_get">वह कुल रकम जो ग्राहकों को अभी आपको देनी है।</string>
     <string name="coach_desc_give">वह कुल रकम जो आपको सप्लायरों और दूसरों को अभी देनी है।</string>
     <string name="coach_title_search">ग्राहक खोजें</string>
@@ -2350,4 +2350,8 @@
     <string name="trade_pick_explain">रोशन खाता उदाहरण, यूनिट और खास फ़ीचर आपकी दुकान के हिसाब से कर देगा।</string>
     <string name="trade_pick_later">बाद में प्रोफ़ाइल से बदल सकते हैं</string>
     <string name="trade_card_selected">चुना गया</string>
+    <string name="onboard_step">चरण %1$s / %2$s</string>
+    <string name="coach_title_all">सारे फ़ीचर</string>
+    <string name="coach_desc_all">प्रोडक्ट्स, इनवॉइस, ज़कात, कार्ड और बाकी सब नीचे हैं। \"सब देखें\" या ऊपर ☰ मेनू में हर फ़ीचर है।</string>
+    <string name="help_replay_tour">होम का परिचय फिर से दिखाएँ</string>
 </resources>

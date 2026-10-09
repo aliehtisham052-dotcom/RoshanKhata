@@ -80,8 +80,12 @@ class GateActivity : BaseActivity() {
     }
 
     companion object {
-        /** The first launch, where the name is worth a moment. */
-        private const val SPLASH_FIRST_MS = 1200L
+        /**
+         * The first launch. 1.2s until 9 Oct; the language screen now shows
+         * the same painting, so the splash only has to settle before the
+         * panel rises under it - a longer hold read as the app stalling.
+         */
+        private const val SPLASH_FIRST_MS = 700L
 
         /** Every launch after: enough to see, not enough to wait through. */
         private const val SPLASH_MS = 500L

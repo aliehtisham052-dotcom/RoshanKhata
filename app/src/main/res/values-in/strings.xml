@@ -13,7 +13,7 @@
     <string name="coach_skip">Lewati</string>
     <string name="coach_next">Lanjut</string>
     <string name="coach_done">Mengerti</string>
-    <string name="coach_desc_balance">Semua utang pelanggan kepada Anda, dikurangi semua utang Anda. Ketuk ikon mata untuk menyembunyikannya saat ada orang yang melihat.</string>
+    <string name="coach_desc_balance">Semua utang pelanggan kepada Anda, dikurangi semua utang Anda. Awalnya tersembunyi sebagai titik: ketuk ikon mata untuk melihatnya, dan lagi untuk menyembunyikannya.</string>
     <string name="coach_desc_get">Total yang masih harus dibayar pelanggan kepada Anda.</string>
     <string name="coach_desc_give">Total yang masih harus Anda bayar kepada pemasok dan pihak lain.</string>
     <string name="coach_title_search">Cari Pelanggan</string>
@@ -2307,4 +2307,8 @@
     <string name="trade_pick_explain">Roshan Khata akan menyesuaikan contoh, satuan, dan fitur khusus dengan toko Anda.</string>
     <string name="trade_pick_later">Bisa diubah nanti di Profil</string>
     <string name="trade_card_selected">Dipilih</string>
+    <string name="onboard_step">Langkah %1$s dari %2$s</string>
+    <string name="coach_title_all">Semua fitur</string>
+    <string name="coach_desc_all">Produk, Faktur, Zakat, Kartu, dan lainnya ada di bawah. \"Lihat semua\" atau menu ☰ di atas memuat semuanya.</string>
+    <string name="help_replay_tour">Tampilkan lagi tur Beranda</string>
 </resources>

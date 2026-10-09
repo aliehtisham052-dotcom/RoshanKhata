@@ -13,7 +13,7 @@
     <string name="coach_skip">বাদ দিন</string>
     <string name="coach_next">পরের</string>
     <string name="coach_done">বুঝেছি</string>
-    <string name="coach_desc_balance">গ্রাহকদের কাছে আপনার মোট পাওনা, তা থেকে আপনার দেনা বাদ দিয়ে। কেউ দেখলে চোখের চিহ্নে টিপে লুকিয়ে রাখুন।</string>
+    <string name="coach_desc_balance">গ্রাহকদের কাছে আপনার মোট পাওনা, তা থেকে আপনার দেনা বাদ দিয়ে। শুরুতে এটি বিন্দুতে লুকানো থাকে: দেখতে চোখে টিপুন, লুকাতে আবার টিপুন।</string>
     <string name="coach_desc_get">গ্রাহকদের কাছ থেকে আপনার এখনো মোট পাওনা।</string>
     <string name="coach_desc_give">সরবরাহকারী ও অন্যদের আপনার এখনো মোট দেনা।</string>
     <string name="coach_title_search">গ্রাহক খুঁজুন</string>
@@ -2350,4 +2350,8 @@
     <string name="trade_pick_explain">রোশন খাতা উদাহরণ, ইউনিট আর বিশেষ ফিচার আপনার দোকান অনুযায়ী সাজিয়ে দেবে।</string>
     <string name="trade_pick_later">পরে প্রোফাইল থেকে বদলাতে পারবেন</string>
     <string name="trade_card_selected">নির্বাচিত</string>
+    <string name="onboard_step">ধাপ %1$s / %2$s</string>
+    <string name="coach_title_all">সব ফিচার</string>
+    <string name="coach_desc_all">প্রোডাক্ট, ইনভয়েস, যাকাত, কার্ড আর বাকি সব নিচে আছে। \"সব দেখুন\" বা উপরের ☰ মেনুতে প্রতিটি ফিচার পাবেন।</string>
+    <string name="help_replay_tour">হোমের পরিচিতি আবার দেখান</string>
 </resources>
