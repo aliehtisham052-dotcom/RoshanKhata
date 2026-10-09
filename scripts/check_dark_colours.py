@@ -47,6 +47,9 @@ for f in glob.glob(f"{RES}/color/*.xml"):
 
 for f in glob.glob(f"{RES}/layout/*.xml") + glob.glob(f"{RES}/drawable*/*.xml"):
     t = open(f, encoding="utf-8").read()
+    # A shape's <stroke> is an outline, like strokeColor above: neither text
+    # nor fill, so a light ring at night is the intent (the chosen trade card).
+    t = re.sub(r"<stroke\b[^>]*/>", "", t)
     for a, kind_src, c in re.findall(r'([\w:]+)="@(color)/(\w+)"', t):
         where = f"{f.split('/')[-1]} {a}"
         # fi_* are the two tones of a Home tile icon (6 Oct): glyph colours
