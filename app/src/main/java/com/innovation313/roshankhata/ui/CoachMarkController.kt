@@ -108,7 +108,34 @@ class CoachMarkController(
             .setInterpolator(DecelerateInterpolator(1.6f)).start()
 
         index = 0
-        tipView.post { showStep(first = true) }
+        tipView.post {
+            makeRoom(tipView.height)
+            showStep(first = true)
+        }
+    }
+
+    private var roomScroller: ScrollView? = null
+    private var roomBasePadding = 0
+
+    /**
+     * The sheet covers the foot of the screen, so the last rows of a
+     * scrolling screen could never rise above it: Tools sat under the sheet
+     * on its own step (the owner's report, 10 Oct). While the tour runs the
+     * scroller gets the sheet's height as extra bottom padding - room to
+     * scroll that far - and gives it back when the tour ends.
+     */
+    private fun makeRoom(sheetHeight: Int) {
+        val scroller = steps.firstNotNullOfOrNull { scrollerOf(it.target) } ?: return
+        roomScroller = scroller
+        roomBasePadding = scroller.paddingBottom
+        scroller.clipToPadding = false
+        scroller.setPadding(scroller.paddingLeft, scroller.paddingTop, scroller.paddingRight, roomBasePadding + sheetHeight)
+    }
+
+    private fun scrollerOf(target: View): ScrollView? {
+        var parent = target.parent
+        while (parent != null && parent !is ScrollView) parent = (parent as? View)?.parent
+        return parent as? ScrollView
     }
 
     private fun dp(value: Float): Float = value * activity.resources.displayMetrics.density
@@ -158,7 +185,11 @@ class CoachMarkController(
             }, 110)
         }
 
+        val mine = index
         scrollIntoStage(step.target) {
+            // A scroll the next step cut short still ends; its placement is
+            // not wanted any more.
+            if (mine != index || container == null) return@scrollIntoStage
             val rect = CoachMarkOverlay.boundsWithin(step.target, host)
             overlayView.holePadding = dp(step.paddingDp)
             overlayView.holeRadius = dp(step.cornerRadiusDp)
@@ -196,11 +227,7 @@ class CoachMarkController(
      * (the header) runs [then] at once.
      */
     private fun scrollIntoStage(target: View, then: () -> Unit) {
-        var parent = target.parent
-        while (parent != null && parent !is ScrollView) {
-            parent = (parent as? View)?.parent
-        }
-        val scroller = parent as? ScrollView
+        val scroller = scrollerOf(target)
         val host = container
         if (scroller == null || host == null) {
             then()
@@ -211,7 +238,7 @@ class CoachMarkController(
         val stageTop = CoachMarkOverlay.boundsWithin(scroller, host).top
         val stageCentre = stageTop + (stageHeight() - stageTop) / 2f
         val itemCentre = CoachMarkOverlay.boundsWithin(target, host).centerY()
-        val maxScroll = (scroller.getChildAt(0)?.height ?: 0) - scroller.height
+        val maxScroll = (scroller.getChildAt(0)?.height ?: 0) + scroller.paddingTop + scroller.paddingBottom - scroller.height
         val desired = (scroller.scrollY + (itemCentre - stageCentre)).toInt()
             .coerceIn(0, maxScroll.coerceAtLeast(0))
         if (kotlin.math.abs(desired - scroller.scrollY) < dp(2f)) {
@@ -219,7 +246,7 @@ class CoachMarkController(
             return
         }
 
-        scrollAnimator?.cancel()
+        scrollAnimator?.let { it.removeAllListeners(); it.cancel() }
         scrollAnimator = ValueAnimator.ofInt(scroller.scrollY, desired).apply {
             duration = SCROLL_MS
             interpolator = DecelerateInterpolator(1.6f)
@@ -231,14 +258,29 @@ class CoachMarkController(
         }
     }
 
+    private var lastAdvanceAt = 0L
+
+    /**
+     * One step per tap. A second tap inside the step change - the words
+     * cross-fade and the spotlight glides for about 300ms - used to count
+     * as the next step too, so a quick double tap on Next went from
+     * Cashbook straight past Cheques (the owner's report, 10 Oct).
+     */
     private fun advance() {
+        val now = android.os.SystemClock.uptimeMillis()
+        if (now - lastAdvanceAt < ADVANCE_GAP_MS) return
+        lastAdvanceAt = now
         index++
         if (index >= steps.size) finish() else showStep()
     }
 
     private fun finish() {
-        scrollAnimator?.cancel()
+        scrollAnimator?.let { it.removeAllListeners(); it.cancel() }
         scrollAnimator = null
+        roomScroller?.let { sc ->
+            sc.setPadding(sc.paddingLeft, sc.paddingTop, sc.paddingRight, roomBasePadding)
+        }
+        roomScroller = null
         holeAnimator?.cancel()
         holeAnimator = null
         val host = container
@@ -259,6 +301,9 @@ class CoachMarkController(
 
         /** How long the spotlight takes to glide between items. */
         private const val HOLE_MS = 300L
+
+        /** Taps on Next closer together than this are one tap. */
+        private const val ADVANCE_GAP_MS = 400L
 
         private const val PREFS = "coach_marks"
         private const val KEY_RUN = "home_tour_done"
