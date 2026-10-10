@@ -740,6 +740,10 @@ class MainActivity : BaseActivity() {
             },
             tileStep(R.string.nav_khata, R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata),
             tileStep(R.string.nav_cashbook, R.string.coach_title_nav_cashbook, R.string.coach_desc_nav_cashbook),
+            // Cheques was never in this list (10 Oct): the comment above said
+            // six daily tiles and five were listed, so the tour went from
+            // Cashbook to Bills over it. Not a double tap, as first thought.
+            tileStep(R.string.nav_cheques, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques),
             tileStep(R.string.tile_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
             tileStep(R.string.nav_plans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
             tileStep(R.string.tile_expiry, R.string.coach_title_stock, R.string.coach_desc_stock),
