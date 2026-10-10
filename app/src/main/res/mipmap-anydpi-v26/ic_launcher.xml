@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The launcher icon on Android 8 and up.
+  The launcher icon on Android 8 and up (redrawn 10 Oct): the open book in
+  green and gold, with a thin gold ring.
 
-  The system masks these two layers to whatever shape the phone uses: a
-  squircle on most Samsung, Oppo, Vivo, Infinix and Xiaomi phones, a circle on
-  a Pixel. The logo tile is drawn at 70dp of the 108dp layer, just inside the
-  72dp that any mask shows, so on a squircle its whole gold rim is visible and
-  on a circle only the rim's four corners fall outside. Behind it the
-  background layer is the tile's own green, so whatever the mask shows beyond
-  the rim is more of the tile and never a coloured plate.
+  The system masks these two layers to whatever shape the phone uses - a
+  squircle on most Samsung, Oppo, Vivo, Infinix and Xiaomi phones, a circle
+  on a Pixel - and shows only the middle 72dp of the 108dp canvas. So the
+  book and the ring sit inside that 72dp (the ring at its very edge), and the
+  background layer carries the tile's own green gradient out to the corners,
+  so whatever a mask reveals beyond the ring is more of the same green and
+  never a plate. The old icon was the full wordmark logo: its gold rim and
+  "ROSHAN KHATA" were cut by every mask and unreadable at 48px.
 
-  Both variants were rendered under both mask shapes before this was chosen;
-  the other candidate, the tile on the old cream at 66dp, read as a sticker on
-  a plate.
+  Android 7 and below use the PNGs in mipmap-*/ic_launcher(_round).png,
+  rendered from the same layers under a rounded square and a circle.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/icon_background" />
+    <background android:drawable="@mipmap/ic_launcher_background" />
     <foreground android:drawable="@mipmap/ic_launcher_foreground" />
     <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
 </adaptive-icon>
