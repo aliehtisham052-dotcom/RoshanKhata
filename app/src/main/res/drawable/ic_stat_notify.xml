@@ -2,18 +2,21 @@
 <!--
   The status-bar icon for every notification (downloads, reminders).
 
-  Android draws a notification's small icon from its alpha channel only, so
-  the full-colour launcher tile showed up as a plain white square. This is the
-  "R" of the logo as a solid white silhouette; setColor(brand_green) on the
-  notification tints it green in the shade.
+  Android draws a notification's small icon from its alpha channel only, so a
+  full-colour picture shows as a plain white square. This is the launcher's
+  open book as one white silhouette (the same shape as the Android 13 themed
+  icon, scaled from its 108dp canvas to 24dp); setColor(brand_green) on the
+  notification tints it green in the shade. Redrawn 10 Oct with the icon.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:fillType="evenOdd"
-        android:pathData="M6,4 H13 A4.5,4.5 0 0 1 14.6,12.7 L18,20 H14.2 L11.2,13 H9.6 V20 H6 Z M9.6,7 V10.2 H12.8 A1.6,1.6 0 0 0 12.8,7 Z" />
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:scaleX="1.25" android:scaleY="1.25" android:pivotX="54" android:pivotY="56">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M30,34 Q42,30 52,36 L52,70 Q42,64 30,67 Z" />
+        <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd"
+            android:pathData="M56,36 Q66,30 78,34 L78,67 Q66,64 56,70 Z M60,43 L72,40 L72,43.5 L60,46.5 Z M60,50 L72,47 L72,50.5 L60,53.5 Z M60,57 L72,54 L72,57.5 L60,60.5 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M26,66 Q40,62 54,74 Q68,62 82,66 L82,72 Q68,70 54,82 Q40,70 26,72 Z" />
+    </group>
 </vector>

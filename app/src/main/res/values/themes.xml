@@ -121,10 +121,12 @@
           until now it was left to its default (the bare launcher icon) and the
           gate then showed a painting of its own, so every launch opened twice
           and a first run showed the logo four times. Now this IS the splash:
-          the logo tile on the page's paper, held by GateActivity only while
-          it decides where to go, and nothing after it.
-          splash_logo is drawn for the 288dp splash box with the tile inside
-          the 192dp circle Android shows, at 4x so it is sharp on any phone.
+          the launcher's open-book icon on the page's paper, held by
+          GateActivity only while it decides where to go, and nothing after
+          it. splash_logo is the icon as one rounded square, drawn for the
+          288dp splash box inside the 192dp Android shows, at 4x so it is
+          sharp on any phone (10 Oct: the same mark as the launcher, so the
+          icon tapped and the splash seen are one thing).
         -->
         <!-- The page's own paper (and its dark at night), not a green sheet:
              the owner found a full-green frame heavy, and Home is light. -->
