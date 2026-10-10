@@ -259,7 +259,7 @@ class KhataActivity : BaseActivity() {
         // The backup icon opens the Backup screen (time of last backup, restore),
         // the way the owner asked — a header icon rather than a "Backup due" line.
         findViewById<MaterialButton>(R.id.btnHeaderBackup).setOnClickListener {
-            startActivity(Intent(this, BackupActivity::class.java))
+            startActivity(BackupActivity.connectIntent(this))
         }
 
         // One filter door. It opens a sheet with Account (all / clear / to-get

@@ -228,7 +228,9 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="6dp">
 
+                <!-- The Google G until an account is connected (MainActivity.paintHeaderLine). -->
                 <ImageView
+                    android:id="@+id/ivHomeBackupIcon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:importantForAccessibility="no"
