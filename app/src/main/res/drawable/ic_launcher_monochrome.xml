@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Monochrome launcher layer for Android 13+ "Themed icons".
-
-  The same "R" as the notification icon, scaled x2 and centred in the 108dp
-  adaptive canvas (48dp glyph, well inside the 66dp safe zone). The system
-  supplies the colour; only the shape is read.
+  Monochrome launcher layer for Android 13+ "Themed icons" (10 Oct): the open
+  book of the launcher icon as one silhouette - two pages, the spine, three
+  lines on the right page - centred in the 108dp canvas, 52dp wide, well
+  inside the 66dp safe zone. The system supplies the colour; only the shape
+  is read, so it is drawn in white.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <group
-        android:scaleX="2"
-        android:scaleY="2"
-        android:translateX="30"
-        android:translateY="30">
-        <path
-            android:fillColor="#FFFFFFFF"
-            android:fillType="evenOdd"
-            android:pathData="M6,4 H13 A4.5,4.5 0 0 1 14.6,12.7 L18,20 H14.2 L11.2,13 H9.6 V20 H6 Z M9.6,7 V10.2 H12.8 A1.6,1.6 0 0 0 12.8,7 Z" />
-    </group>
+    <!-- left page -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M30,34 Q42,30 52,36 L52,70 Q42,64 30,67 Z" />
+    <!-- right page, with three lines cut out -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M56,36 Q66,30 78,34 L78,67 Q66,64 56,70 Z M60,43 L72,40 L72,43.5 L60,46.5 Z M60,50 L72,47 L72,50.5 L60,53.5 Z M60,57 L72,54 L72,57.5 L60,60.5 Z"
+        android:fillType="evenOdd" />
+    <!-- the open cover under both pages -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M26,66 Q40,62 54,74 Q68,62 82,66 L82,72 Q68,70 54,82 Q40,70 26,72 Z" />
 </vector>
