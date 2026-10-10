@@ -116,7 +116,7 @@
                     android:drawableStart="@drawable/ic_phone_small"
                     android:drawablePadding="5dp"
                     android:drawableTint="@color/header_light_ink_soft"
-                    android:gravity="center_vertical"
+                    android:gravity="start|center_vertical"
                     android:textColor="@color/header_light_ink_soft"
                     android:textSize="13sp"
                     android:visibility="gone" />
