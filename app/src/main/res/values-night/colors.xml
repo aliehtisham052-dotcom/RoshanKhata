@@ -131,4 +131,5 @@
     <color name="trade_general_fg">#B3D49C</color>
     <!-- The ring round a chosen trade card: a line, not text or a fill. -->
     <color name="trade_card_ring">#7FD1A3</color>
+    <color name="picker_accent">#2A7D4F</color>
 </resources>

@@ -849,7 +849,7 @@ class PartyDetailActivity : BaseActivity() {
         etUnit.setAdapter(
             ArrayAdapter(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.item_dropdown_row,
                 UnitWords.choices(this)
             )
         )
@@ -2837,7 +2837,7 @@ class PartyDetailActivity : BaseActivity() {
                 i < ends.size -> saveHarvestPromise(ends[i].second)
                 i == ends.size -> {
                     val c = java.util.Calendar.getInstance()
-                    android.app.DatePickerDialog(this, { _, yy, mm, dd ->
+                    com.innovation313.roshankhata.ui.BrandDatePickerDialog(this, { _, yy, mm, dd ->
                         val at = java.util.Calendar.getInstance().apply {
                             clear(); set(yy, mm, dd, 23, 59, 59)
                         }.timeInMillis

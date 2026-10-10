@@ -235,7 +235,7 @@ class CashbookActivity : BaseActivity() {
             etCategory.setAdapter(
                 ArrayAdapter(
                     this@CashbookActivity,
-                    android.R.layout.simple_dropdown_item_1line,
+                    R.layout.item_dropdown_row,
                     merged
                 )
             )

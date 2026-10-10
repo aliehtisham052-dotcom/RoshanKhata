@@ -91,7 +91,7 @@ object ProductDetailsDialog {
             setText(product.productType ?: guessedType)
             // The trade's own types (9 Oct): a dairy is offered Milk, Packaged,
             // Feed; a pharmacy Tablet, Syrup, Injection. Typed words still save.
-            setAdapter(android.widget.ArrayAdapter(activity, android.R.layout.simple_dropdown_item_1line, TradeVocab.types(activity)))
+            setAdapter(android.widget.ArrayAdapter(activity, R.layout.item_dropdown_row, TradeVocab.types(activity)))
             setOnClickListener { if (text.isNullOrBlank()) showDropDown() }
         }
         view.findViewById<android.widget.TextView>(R.id.tvProductTypeLabel).text = TradeVocab.typeHint(activity)

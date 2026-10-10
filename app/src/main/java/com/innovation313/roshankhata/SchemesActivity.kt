@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.BrandDatePickerDialog
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
 import android.app.DatePickerDialog
@@ -292,7 +293,7 @@ class SchemesActivity : BaseActivity() {
 
     private fun pickDate(startAt: Long, onPicked: (Long) -> Unit) {
         val cal = Calendar.getInstance().apply { timeInMillis = startAt }
-        DatePickerDialog(this, { _, y, m, d ->
+        BrandDatePickerDialog(this, { _, y, m, d ->
             onPicked(Calendar.getInstance().apply { clear(); set(y, m, d) }.timeInMillis)
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
     }

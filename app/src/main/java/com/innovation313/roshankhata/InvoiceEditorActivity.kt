@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.BrandDatePickerDialog
 import com.innovation313.roshankhata.data.UnitWords
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -311,7 +312,7 @@ class InvoiceEditorActivity : BaseActivity() {
             etCustomer.setAdapter(
                 ArrayAdapter(
                     this@InvoiceEditorActivity,
-                    android.R.layout.simple_dropdown_item_1line,
+                    R.layout.item_dropdown_row,
                     parties.map { it.name }.distinct()
                 )
             )
@@ -790,7 +791,7 @@ class InvoiceEditorActivity : BaseActivity() {
 
     private fun pickDate(current: Long, onPicked: (Long) -> Unit) {
         val cal = Calendar.getInstance().apply { timeInMillis = current }
-        DatePickerDialog(
+        BrandDatePickerDialog(
             this,
             { _, year, month, day ->
                 val picked = Calendar.getInstance().apply {

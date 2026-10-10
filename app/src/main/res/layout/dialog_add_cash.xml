@@ -21,6 +21,8 @@
             android:digits="0123456789.+-*/%" />
 
     <AutoCompleteTextView
+        android:popupBackground="@drawable/bg_dropdown_popup"
+        android:dropDownVerticalOffset="4dp"
         android:id="@+id/etCashCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

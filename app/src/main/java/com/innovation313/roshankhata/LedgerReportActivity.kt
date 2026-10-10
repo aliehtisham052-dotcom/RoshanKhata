@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.BrandDatePickerDialog
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.DateWords
 import android.app.DatePickerDialog
@@ -133,7 +134,7 @@ class LedgerReportActivity : BaseActivity() {
         val seed = Calendar.getInstance().apply {
             (if (isStart) startMs else endMs)?.let { timeInMillis = it }
         }
-        DatePickerDialog(
+        BrandDatePickerDialog(
             this,
             { _, y, m, d ->
                 if (isStart) {

@@ -59,6 +59,8 @@
             android:visibility="gone" />
 
         <AutoCompleteTextView
+            android:popupBackground="@drawable/bg_dropdown_popup"
+            android:dropDownVerticalOffset="4dp"
             android:id="@+id/etBillSupplier"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

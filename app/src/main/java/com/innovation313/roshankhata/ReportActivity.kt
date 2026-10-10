@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.BrandDatePickerDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
@@ -144,7 +145,7 @@ class ReportActivity : BaseActivity() {
     private fun pickCustomRange() {
         val cal = Calendar.getInstance()
 
-        DatePickerDialog(
+        BrandDatePickerDialog(
             this,
             { _, y1, m1, d1 ->
                 val start = Calendar.getInstance().apply {
@@ -152,7 +153,7 @@ class ReportActivity : BaseActivity() {
                     set(Calendar.MILLISECOND, 0)
                 }.timeInMillis
 
-                DatePickerDialog(
+                BrandDatePickerDialog(
                     this,
                     { _, y2, m2, d2 ->
                         // End of the chosen day, not its start — otherwise a

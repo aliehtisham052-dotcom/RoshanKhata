@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.BrandDatePickerDialog
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -121,7 +122,7 @@ class StaffActivity : BaseActivity() {
             choices, current,
             secondary = ChoiceSheet.Action(getString(R.string.staff_change_date)) {
                 val c = Calendar.getInstance().apply { timeInMillis = d }
-                DatePickerDialog(this, { _, y, mo, dd ->
+                BrandDatePickerDialog(this, { _, y, mo, dd ->
                     val picked = Calendar.getInstance().apply { set(y, mo, dd, 0, 0, 0); set(Calendar.MILLISECOND, 0) }.timeInMillis
                     markDay(person, marks, from, to, picked)
                 }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).apply {

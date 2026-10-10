@@ -332,7 +332,7 @@ class EntryDetailActivity : BaseActivity() {
         etItemName.setText(line?.itemName.orEmpty(), false)
         etQuantity.setText(line?.quantity?.let { Format.plain(it) } ?: "")
         etUnit.setAdapter(
-            ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, UnitWords.choices(this))
+            ArrayAdapter(this, R.layout.item_dropdown_row, UnitWords.choices(this))
         )
         etUnit.setText(UnitWords.label(line?.unit), false)
         if (!canEditGoods) {
