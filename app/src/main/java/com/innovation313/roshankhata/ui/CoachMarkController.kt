@@ -58,6 +58,9 @@ class CoachMarkController(
     private var holeAnimator: ValueAnimator? = null
     private var sheetBottomInset = 0
 
+    /** The item the spotlight is on now; the hole rides with it while the screen scrolls. */
+    private var lit: View? = null
+
     fun start() {
         if (steps.isEmpty()) return
 
@@ -193,6 +196,7 @@ class CoachMarkController(
                 val rect = CoachMarkOverlay.boundsWithin(step.target, host)
                 overlayView.holePadding = dp(step.paddingDp)
                 overlayView.holeRadius = dp(step.cornerRadiusDp)
+                lit = step.target
                 glideHole(overlayView, rect)
             }
         }
@@ -263,6 +267,17 @@ class CoachMarkController(
         } else {
             item.top - (stageTop + margin)
         }
+        // Already in the clear: no scroll at all (10 Oct). Each tile used to be
+        // re-centred, so going from Cheques (end of the first row) to Bills
+        // (start of the second) scrolled a row while the spotlight waited -
+        // and the waiting spotlight then sat on Expiry, under Cheques, before
+        // gliding back to Bills: the owner saw it twice. Both rows fit on the
+        // stage together, so the spotlight now simply moves from the end of
+        // one row to the start of the next.
+        if (item.top >= stageTop + margin && item.bottom <= stageBottom - margin) {
+            then()
+            return
+        }
         val maxScroll = (scroller.getChildAt(0)?.height ?: 0) + scroller.paddingTop + scroller.paddingBottom - scroller.height
         val desired = (scroller.scrollY + shift).toInt()
             .coerceIn(0, maxScroll.coerceAtLeast(0))
@@ -275,7 +290,16 @@ class CoachMarkController(
         scrollAnimator = ValueAnimator.ofInt(scroller.scrollY, desired).apply {
             duration = SCROLL_MS
             interpolator = DecelerateInterpolator(1.6f)
-            addUpdateListener { scroller.scrollTo(0, it.animatedValue as Int) }
+            addUpdateListener {
+                scroller.scrollTo(0, it.animatedValue as Int)
+                // The hole stays on the item it lights while the screen moves
+                // under it, instead of standing still over whatever scrolls in.
+                val holding = lit
+                val overlayView = overlay
+                if (holding != null && overlayView != null && holeAnimator?.isRunning != true) {
+                    overlayView.holeRect = CoachMarkOverlay.boundsWithin(holding, host)
+                }
+            }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) { then() }
             })
