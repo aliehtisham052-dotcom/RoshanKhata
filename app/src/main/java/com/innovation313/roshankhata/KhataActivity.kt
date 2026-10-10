@@ -890,6 +890,12 @@ class KhataActivity : BaseActivity() {
         // The icon and the Add button belong to an empty book; a search
         // with no match gets the plain line only.
         findViewById<View>(R.id.btnEmptyAdd).visibility = if (bookEmpty) View.VISIBLE else View.GONE
+        // One Add Party at a time: on an empty book the card's button is the
+        // action, and the floating one underneath it read as a second copy
+        // (the owner's screenshot, 10 Oct). It returns with the first row.
+        findViewById<ExtendedFloatingActionButton>(R.id.fabAddParty).apply {
+            if (bookEmpty) hide() else show()
+        }
         tvEmpty.setText(if (bookEmpty) R.string.no_parties_yet else R.string.no_matching_parties)
     }
 

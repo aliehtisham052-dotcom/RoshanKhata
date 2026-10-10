@@ -131,7 +131,9 @@
     <string name="add_party">पार्टी जोड़ें</string>
     <string name="add_party_duplicate_with_phone">मिलता-जुलता ग्राहक पहले से है: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">मिलता-जुलता ग्राहक पहले से है: %1$s</string>
-    <string name="no_parties_yet">अभी कोई ग्राहक नहीं।\n\nपहला ग्राहक जोड़ने और खाता शुरू करने के लिए नीचे “पार्टी जोड़ें” दबाएँ।</string>
+    <string name="no_parties_yet">अभी कोई ग्राहक नहीं।
+
+पहला ग्राहक जोड़ें और अपना खाता शुरू करें।</string>
     <string name="no_entries_yet">अभी कोई एंट्री नहीं।</string>
 
     <string name="i_gave">मैंने दिए</string>
