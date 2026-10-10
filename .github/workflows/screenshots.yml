@@ -7,6 +7,9 @@ name: Store screenshots
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   shots:
     runs-on: ubuntu-24.04
@@ -44,6 +47,24 @@ jobs:
           pip install --quiet pillow
           python3 scripts/frame_screenshots.py /tmp/store-shots /tmp/store-framed
           ls -R /tmp/store-framed
+      # A release asset, not only an Actions artifact: artifacts serve from
+      # Azure blob storage, which a locked-down network cannot reach (the
+      # same reason build.yml publishes the APK as a release). The rolling
+      # "store-screenshots" release always holds the newest set.
+      - name: Zip
+        run: |
+          cd /tmp && zip -qr store-screenshots.zip store-shots store-framed && ls -lh store-screenshots.zip
+      - name: Publish to Releases
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: store-screenshots
+          name: "Roshan Khata — Store screenshots"
+          body: |
+            Play Store screenshots on a demo book, English and Urdu, raw and
+            framed with captions. Built by the Store screenshots workflow from
+            ${{ github.sha }}. Not an app build.
+          files: /tmp/store-screenshots.zip
+          make_latest: false
       - uses: actions/upload-artifact@v6
         with:
           name: store-screenshots
