@@ -161,8 +161,8 @@ class StoreScreenshotsTest(private val language: String) {
     }
 
     companion object {
-        /** A thin space and a tag no owner types; purged by it. */
-        private const val MARK = " (demo)"
+        /** A zero-width space no owner types: invisible on screen, purged by it. */
+        private const val MARK = "\u200B"
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
