@@ -21,7 +21,8 @@ EVENTS=4000
 SEED=313
 
 # ---- 1. Written tests ------------------------------------------------------
-gradle connectedDebugAndroidTest --no-daemon --stacktrace > /tmp/instrumented_output.txt 2>&1
+# StoreScreenshotsTest is the Play listing's, run by screenshots.yml alone.
+gradle connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.innovation313.roshankhata.StoreScreenshotsTest --no-daemon --stacktrace > /tmp/instrumented_output.txt 2>&1
 tests=$?
 tail -150 /tmp/instrumented_output.txt
 
