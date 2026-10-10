@@ -160,12 +160,24 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Runs in CI after the APK is published (never blocks it). Only the checks
-    // that catch a crash on an older phone: an API call newer than minSdk 24
-    // (Android 7.0) without a version check. Report-only for now; CI turns
-    // each finding into an annotation on the run.
+    // Runs in CI after the APK is published (never blocks it). Report-only;
+    // CI turns each finding into an annotation on the run. Two families:
+    //  - what crashes an older phone: an API call newer than minSdk 24
+    //    (Android 7.0) without a version check;
+    //  - what the 10 Oct review asked for, from Android's own checker rather
+    //    than a third-party skill: accessibility (images without a
+    //    description, touch targets under 48dp, text under 12sp, fields
+    //    without a label), right-to-left mistakes (left/right instead of
+    //    start/end, in five of the app's nine languages), and text written
+    //    into a layout instead of strings.xml.
     lint {
-        checkOnly += setOf("NewApi", "InlinedApi")
+        checkOnly += setOf(
+            "NewApi", "InlinedApi",
+            "ContentDescription", "TouchTargetSizeCheck", "SmallSp", "LabelFor",
+            "ClickableViewAccessibility", "KeyboardInaccessibleWidget",
+            "RtlHardcoded", "RtlSymmetry", "RtlCompat",
+            "HardcodedText", "SetTextI18n", "StringFormatInvalid", "PluralsCandidate"
+        )
         abortOnError = false
         xmlReport = true
     }
