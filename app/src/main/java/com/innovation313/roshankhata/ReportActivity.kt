@@ -166,7 +166,7 @@ class ReportActivity : BaseActivity() {
 
                         if (end < start) {
                             Toast.makeText(this, R.string.invalid_range, Toast.LENGTH_LONG).show()
-                            return@DatePickerDialog
+                            return@BrandDatePickerDialog
                         }
 
                         setRange(start, end)

@@ -144,7 +144,7 @@ class LedgerReportActivity : BaseActivity() {
                     val e = endMs
                     if (e != null && e < v) {
                         Toast.makeText(this, R.string.invalid_range, Toast.LENGTH_LONG).show()
-                        return@DatePickerDialog
+                        return@BrandDatePickerDialog
                     }
                     startMs = v
                 } else {
@@ -154,7 +154,7 @@ class LedgerReportActivity : BaseActivity() {
                     val s = startMs
                     if (s != null && v < s) {
                         Toast.makeText(this, R.string.invalid_range, Toast.LENGTH_LONG).show()
-                        return@DatePickerDialog
+                        return@BrandDatePickerDialog
                     }
                     endMs = v
                 }

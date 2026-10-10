@@ -380,8 +380,4 @@
     <color name="trade_general_fg">#3F6032</color>
     <!-- The ring round a chosen trade card: a line, not text or a fill. -->
     <color name="trade_card_ring">#1B5E3A</color>
-    <!-- The date and time pickers (10 Oct): header, chosen day, buttons. The
-         brand green by day; a lighter green by night that still carries white
-         text (4.7:1) and reads on the dark dialog. -->
-    <color name="picker_accent">#1B5E3A</color>
 </resources>
