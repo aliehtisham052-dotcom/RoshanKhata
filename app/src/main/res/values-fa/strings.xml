@@ -127,7 +127,9 @@
     <string name="add_party">افزودن طرف‌حساب</string>
     <string name="add_party_duplicate_with_phone">مشتری مشابه از قبل موجود است: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">مشتری مشابه از قبل موجود است: %1$s</string>
-    <string name="no_parties_yet">هنوز مشتری‌ای ثبت نشده است.\n\nبرای افزودن نخستین مشتری و آغاز دفتر خود، روی «افزودن طرف‌حساب» در پایین بزنید.</string>
+    <string name="no_parties_yet">هنوز مشتری‌ای نیست.
+
+اولین مشتری را اضافه کنید و دفتر خود را شروع کنید.</string>
     <string name="no_entries_yet">هنوز ثبتی وجود ندارد.</string>
 
     <string name="i_gave">دادم</string>

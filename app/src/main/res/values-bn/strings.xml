@@ -131,7 +131,9 @@
     <string name="add_party">পার্টি যোগ করুন</string>
     <string name="add_party_duplicate_with_phone">একই রকম গ্রাহক আগে থেকেই আছে: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">একই রকম গ্রাহক আগে থেকেই আছে: %1$s</string>
-    <string name="no_parties_yet">এখনো কোনো গ্রাহক নেই।\n\nপ্রথম গ্রাহক যোগ করে খাতা শুরু করতে নিচে “পার্টি যোগ করুন” চাপুন।</string>
+    <string name="no_parties_yet">এখনও কোনো গ্রাহক নেই।
+
+প্রথম গ্রাহক যোগ করুন আর আপনার খাতা শুরু করুন।</string>
     <string name="no_entries_yet">এখনো কোনো এন্ট্রি নেই।</string>
 
     <string name="i_gave">আমি দিয়েছি</string>
