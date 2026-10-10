@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.BrandDatePickerDialog
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.data.TradeVocab
@@ -275,7 +276,7 @@ class BillsActivity : BaseActivity() {
         etSupplier.setAdapter(
             ArrayAdapter(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.item_dropdown_row,
                 parties.map { it.name }
             )
         )
@@ -556,7 +557,7 @@ class BillsActivity : BaseActivity() {
         etUnit.setAdapter(
             ArrayAdapter(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.item_dropdown_row,
                 UnitWords.choices(this)
             )
         )
@@ -1351,7 +1352,7 @@ class BillsActivity : BaseActivity() {
     private fun pickDate(startAt: Long, onPicked: (Long) -> Unit) {
         val cal = Calendar.getInstance().apply { timeInMillis = startAt }
 
-        DatePickerDialog(
+        BrandDatePickerDialog(
             this,
             { _, y, m, d ->
                 val picked = Calendar.getInstance().apply {

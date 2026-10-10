@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The suggestion list under a typing field (10 Oct): the chooser card's
+     paper, hairline and rounded corners, rather than a bare grey box. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/surface" />
+    <stroke android:width="1dp" android:color="@color/page_line" />
+    <corners android:radius="14dp" />
+    <padding android:top="6dp" android:bottom="6dp" />
+</shape>

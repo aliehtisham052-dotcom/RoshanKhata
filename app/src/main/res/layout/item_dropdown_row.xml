@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One plain suggestion (10 Oct) - units, categories, crops - in place of
+  android's simple_dropdown_item_1line, so it matches item_suggestion (the
+  two-line rows) beside it: the same 16sp ink, 48dp height and 16dp sides.
+  The id is android's text1 because ArrayAdapter writes into that.
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:maxLines="1"
+    android:minHeight="48dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:textAlignment="viewStart"
+    android:textColor="@color/ink"
+    android:textSize="16sp" />

@@ -153,6 +153,8 @@
         <!-- An AutoCompleteTextView (9 Oct): the trade's own types drop down,
              and the owner may still type a type of his own. -->
         <AutoCompleteTextView
+            android:popupBackground="@drawable/bg_dropdown_popup"
+            android:dropDownVerticalOffset="4dp"
             android:id="@+id/etProductType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

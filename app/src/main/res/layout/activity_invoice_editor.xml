@@ -110,6 +110,8 @@
                         android:text="@string/invoice_section_customer" />
 
                     <AutoCompleteTextView
+                        android:popupBackground="@drawable/bg_dropdown_popup"
+                        android:dropDownVerticalOffset="4dp"
                         android:id="@+id/etInvoiceCustomer"
                         style="@style/EditorField"
                         android:completionThreshold="1"

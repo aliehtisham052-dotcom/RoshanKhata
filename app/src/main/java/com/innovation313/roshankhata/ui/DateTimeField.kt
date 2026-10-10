@@ -52,7 +52,7 @@ object DateTimeField {
 
         button.setOnClickListener {
             val cal = Calendar.getInstance().apply { timeInMillis = chosen }
-            DatePickerDialog(
+            BrandDatePickerDialog(
                 activity,
                 { _, year, month, day ->
                     cal.set(Calendar.YEAR, year)

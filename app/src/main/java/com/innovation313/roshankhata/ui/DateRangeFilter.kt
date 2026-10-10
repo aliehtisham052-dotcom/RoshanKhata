@@ -80,7 +80,7 @@ object DateRangeFilter {
             timeInMillis = if (current == Range.ALL) System.currentTimeMillis() else current.from
         }
 
-        DatePickerDialog(
+        BrandDatePickerDialog(
             activity,
             { _, y, m, d ->
                 val from = dayStart(y, m, d)
@@ -89,7 +89,7 @@ object DateRangeFilter {
                 // pair is picked in one gesture and the second cannot land
                 // before the first by accident.
                 val endCal = Calendar.getInstance().apply { timeInMillis = from }
-                DatePickerDialog(
+                BrandDatePickerDialog(
                     activity,
                     { _, y2, m2, d2 ->
                         val to = dayEnd(y2, m2, d2)

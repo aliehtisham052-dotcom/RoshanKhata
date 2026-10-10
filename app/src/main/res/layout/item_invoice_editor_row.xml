@@ -31,6 +31,8 @@
             android:textStyle="bold" />
 
         <AutoCompleteTextView
+            android:popupBackground="@drawable/bg_dropdown_popup"
+            android:dropDownVerticalOffset="4dp"
             android:id="@+id/etRowName"
             style="@style/EditorField"
             android:layout_width="0dp"

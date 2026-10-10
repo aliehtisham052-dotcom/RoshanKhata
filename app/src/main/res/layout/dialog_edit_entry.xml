@@ -49,6 +49,8 @@
             app:iconTint="@color/brand_green_text" />
 
         <AutoCompleteTextView
+            android:popupBackground="@drawable/bg_dropdown_popup"
+            android:dropDownVerticalOffset="4dp"
             android:id="@+id/etEditItemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,6 +78,8 @@
                 android:inputType="numberDecimal" />
 
             <AutoCompleteTextView
+                android:popupBackground="@drawable/bg_dropdown_popup"
+                android:dropDownVerticalOffset="4dp"
                 android:id="@+id/etEditUnit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

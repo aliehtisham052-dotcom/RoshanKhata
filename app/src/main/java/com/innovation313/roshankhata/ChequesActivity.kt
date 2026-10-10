@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.BrandDatePickerDialog
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.Digits
 
@@ -143,7 +144,7 @@ class ChequesActivity : BaseActivity() {
         etParty.setAdapter(
             ArrayAdapter(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.item_dropdown_row,
                 parties.map { it.name }
             )
         )
@@ -168,7 +169,7 @@ class ChequesActivity : BaseActivity() {
             // today — correcting a date should start from the one being
             // corrected.
             val cal = Calendar.getInstance().apply { dueDate?.let { timeInMillis = it } }
-            DatePickerDialog(
+            BrandDatePickerDialog(
                 this,
                 { _, year, month, day ->
                     val picked = Calendar.getInstance().apply {
