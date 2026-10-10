@@ -82,9 +82,12 @@ class MainActivity : BaseActivity() {
         }
         ivEye = findViewById(R.id.ivEye)
 
-        findViewById<View>(R.id.balanceRow).setOnClickListener {
-            BalancePrivacy.toggle(this)
-            renderBalance()
+        findViewById<View>(R.id.balanceRow).apply {
+            contentDescription = getString(R.string.hide_balance)
+            setOnClickListener {
+                BalancePrivacy.toggle(this@MainActivity)
+                renderBalance()
+            }
         }
 
         buildFeatureGrid()

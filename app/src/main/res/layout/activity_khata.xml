@@ -306,7 +306,7 @@
                         android:layout_marginTop="1dp"
                         android:text="@string/i_have_to_get"
                         android:textColor="@color/text_muted"
-                        android:textSize="10sp" />
+                        android:textSize="11sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -358,7 +358,7 @@
                         android:layout_marginTop="1dp"
                         android:text="@string/i_have_to_give"
                         android:textColor="@color/text_muted"
-                        android:textSize="10sp" />
+                        android:textSize="11sp" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -711,22 +711,67 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/selectionBar" />
 
-    <TextView
-        android:id="@+id/tvEmpty"
+    <!--
+      The empty book (9 Oct): an icon, the words, and the action itself,
+      rather than words pointing at a button elsewhere on the screen. The
+      first thing a new owner must do is add a customer; the skill review's
+      one firm finding was that a blank screen should carry its own action.
+      Shown only while the book is empty; a search with no match keeps the
+      plain line.
+    -->
+    <LinearLayout
+        android:id="@+id/emptyBook"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:gravity="center"
-        android:lineSpacingExtra="4dp"
-        android:text="@string/no_parties_yet"
-        android:textColor="@color/text_muted"
-        android:textSize="15sp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/rvParties"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rvParties" />
+        app:layout_constraintTop_toTopOf="@id/rvParties"
+        app:layout_constraintVertical_bias="0.42">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_trade_chip"
+            android:backgroundTint="@color/tile_khata_bg"
+            android:importantForAccessibility="no"
+            android:padding="14dp"
+            android:src="@drawable/ic_tile_khata" />
+
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            android:lineSpacingExtra="4dp"
+            android:text="@string/no_parties_yet"
+            android:textColor="@color/text_muted"
+            android:textSize="15sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEmptyAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:minHeight="50dp"
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:text="@string/add_party"
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/brand_green"
+            app:cornerRadius="14dp"
+            app:icon="@drawable/ic_add_plain"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white" />
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAddParty"

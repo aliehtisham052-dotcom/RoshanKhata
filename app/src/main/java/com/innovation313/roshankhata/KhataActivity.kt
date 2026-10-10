@@ -221,6 +221,7 @@ class KhataActivity : BaseActivity() {
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddParty).setOnClickListener {
             showAddPartyChoice()
         }
+        findViewById<View>(R.id.btnEmptyAdd).setOnClickListener { showAddPartyChoice() }
 
         etSearch = findViewById(R.id.etSearchParties)
 
@@ -883,15 +884,13 @@ class KhataActivity : BaseActivity() {
         }
         renderFilterState()
 
-        tvEmpty.visibility = when {
-            allParties.isEmpty() -> View.VISIBLE
-            sorted.isEmpty() -> View.VISIBLE
-            else -> View.GONE
-        }
-        tvEmpty.setText(
-            if (allParties.isEmpty()) R.string.no_parties_yet
-            else R.string.no_matching_parties
-        )
+        val bookEmpty = allParties.isEmpty()
+        findViewById<View>(R.id.emptyBook).visibility =
+            if (bookEmpty || sorted.isEmpty()) View.VISIBLE else View.GONE
+        // The icon and the Add button belong to an empty book; a search
+        // with no match gets the plain line only.
+        findViewById<View>(R.id.btnEmptyAdd).visibility = if (bookEmpty) View.VISIBLE else View.GONE
+        tvEmpty.setText(if (bookEmpty) R.string.no_parties_yet else R.string.no_matching_parties)
     }
 
     /**
