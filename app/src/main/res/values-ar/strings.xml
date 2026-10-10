@@ -1403,7 +1403,7 @@
     <string name="product_type_pesticide">مبيد</string>
     <string name="product_type_fertilizer">سماد</string>
     <string name="product_type_seed">بذور</string>
-    <string name="technical_name_hint">المادة الفعالة، مثل Chlorpyrifos 40% EC</string>
+    <string name="technical_name_hint" formatted="false">المادة الفعالة، مثل Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">التركيبة — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">رقم تسجيل المبيد</string>
     <string name="product_who_bought">من اشترى هذا</string>

@@ -1317,7 +1317,7 @@
     <string name="product_type_pesticide">কীটনাশক</string>
     <string name="product_type_fertilizer">সার</string>
     <string name="product_type_seed">বীজ</string>
-    <string name="technical_name_hint">সক্রিয় উপাদান, যেমন Chlorpyrifos 40% EC</string>
+    <string name="technical_name_hint" formatted="false">সক্রিয় উপাদান, যেমন Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">ফর্মুলেশন — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">কীটনাশক নিবন্ধন নম্বর</string>
     <string name="product_who_bought">এটি কে কিনেছে</string>
