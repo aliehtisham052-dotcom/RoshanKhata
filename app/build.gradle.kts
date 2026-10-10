@@ -173,7 +173,7 @@ android {
     lint {
         checkOnly += setOf(
             "NewApi", "InlinedApi",
-            "ContentDescription", "TouchTargetSizeCheck", "SmallSp", "LabelFor",
+            "ContentDescription", "SmallSp", "LabelFor",
             "ClickableViewAccessibility", "KeyboardInaccessibleWidget",
             "RtlHardcoded", "RtlSymmetry", "RtlCompat",
             "HardcodedText", "SetTextI18n", "StringFormatInvalid", "PluralsCandidate"

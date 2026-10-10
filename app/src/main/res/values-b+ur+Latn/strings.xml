@@ -1283,7 +1283,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="product_type_pesticide">Pesticide</string>
     <string name="product_type_fertilizer">Khaad</string>
     <string name="product_type_seed">Beej</string>
-    <string name="technical_name_hint">Moassir juzu, maslan Chlorpyrifos 40% EC</string>
+    <string name="technical_name_hint" formatted="false">Moassir juzu, maslan Chlorpyrifos 40% EC</string>
     <string name="formulation_hint">Formulation — EC, WP, SC, GR, SL, WG</string>
     <string name="registration_number_hint">Pesticide registration number</string>
     <string name="product_who_bought">Kis kis ne khareeda</string>
