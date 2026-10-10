@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -126,25 +127,23 @@ class SchemesActivity : BaseActivity() {
 
     private fun showActions(s: Scheme) {
         val options = listOf(
-            getString(R.string.scheme_edit),
-            getString(if (s.claimedAmount == null) R.string.scheme_mark_claimed else R.string.scheme_unmark_claimed),
-            getString(R.string.scheme_delete)
-        ).toTypedArray()
-        MaterialAlertDialogBuilder(this)
-            .setTitle(s.name)
-            .setItems(options) { _, i ->
-                when (i) {
-                    0 -> showForm(s)
-                    1 -> if (s.claimedAmount == null) askClaim(s) else AppScope.launch { dao.setSchemeClaim(s.id, null, null) }
-                    2 -> MaterialAlertDialogBuilder(this)
-                        .setTitle(R.string.scheme_delete)
-                        .setMessage(getString(R.string.scheme_delete_confirm, s.name))
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.scheme_delete) { _, _ -> AppScope.launch { dao.deleteScheme(s.id) } }
-                        .show()
-                }
+            ChoiceSheet.edit(getString(R.string.scheme_edit)),
+            if (s.claimedAmount == null) ChoiceSheet.done(getString(R.string.scheme_mark_claimed))
+            else ChoiceSheet.stop(getString(R.string.scheme_unmark_claimed)),
+            ChoiceSheet.delete(getString(R.string.scheme_delete))
+        )
+        ChoiceSheet.show(this, s.name, options) { i ->
+            when (i) {
+                0 -> showForm(s)
+                1 -> if (s.claimedAmount == null) askClaim(s) else AppScope.launch { dao.setSchemeClaim(s.id, null, null) }
+                2 -> MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.scheme_delete)
+                    .setMessage(getString(R.string.scheme_delete_confirm, s.name))
+                    .setNegativeButton(R.string.cancel, null)
+                    .setPositiveButton(R.string.scheme_delete) { _, _ -> AppScope.launch { dao.deleteScheme(s.id) } }
+                    .show()
             }
-            .show()
+        }
     }
 
     /** "Claim received" — what actually came (credit note, rebate, free bags' value). */
@@ -232,13 +231,14 @@ class SchemesActivity : BaseActivity() {
             showSupplier(); showDates(); syncMeasure()
             rgMeasure.setOnCheckedChangeListener { _, _ -> syncMeasure() }
             btnSupplier.setOnClickListener {
-                val names = listOf(getString(R.string.scheme_any_supplier)) + suppliers.map { it.name }
-                MaterialAlertDialogBuilder(this@SchemesActivity)
-                    .setItems(names.toTypedArray()) { _, i ->
-                        partyId = if (i == 0) null else suppliers[i - 1].id
-                        showSupplier()
-                    }
-                    .show()
+                val choices = listOf(ChoiceSheet.buyers(getString(R.string.scheme_any_supplier))) +
+                    suppliers.map { ChoiceSheet.Option(it.name, icon = R.drawable.ic_truck,
+                        iconTint = R.color.tile_stock_fg, tile = R.color.tile_stock_bg) }
+                val now = if (partyId == null) 0 else suppliers.indexOfFirst { it.id == partyId } + 1
+                ChoiceSheet.show(this@SchemesActivity, getString(R.string.supplier), choices, now) { i ->
+                    partyId = if (i == 0) null else suppliers[i - 1].id
+                    showSupplier()
+                }
             }
             btnStart.setOnClickListener { pickDate(start) { start = startOfDay(it); showDates() } }
             btnEnd.setOnClickListener { pickDate(end) { end = endOfDay(it); showDates() } }

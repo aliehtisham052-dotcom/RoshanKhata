@@ -404,20 +404,17 @@ class KhataActivity : BaseActivity() {
      * to hand over their contact list to use the app.
      */
     private fun showAddPartyChoice() {
-        val options = arrayOf(
-            getString(R.string.import_contacts),
-            getString(R.string.add_manually)
+        val options = listOf(
+            ChoiceSheet.buyers(getString(R.string.import_contacts)),
+            ChoiceSheet.edit(getString(R.string.add_manually))
         )
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.add_party)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> startActivity(Intent(this, ImportContactsActivity::class.java))
-                    1 -> showAddPartyDialog()
-                }
+        ChoiceSheet.show(this, getString(R.string.add_party), options) { which ->
+            when (which) {
+                0 -> startActivity(Intent(this, ImportContactsActivity::class.java))
+                1 -> showAddPartyDialog()
             }
-            .show()
+        }
     }
 
     private fun showAddPartyDialog() {
@@ -1526,19 +1523,19 @@ class KhataActivity : BaseActivity() {
             spoken
         ) { it.name }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.voice_which_party, Format.money(amount)))
-            .setItems(choices.map { it.name }.toTypedArray()) { _, which ->
-                val chosen = choices[which]
-                startActivity(
-                    Intent(this, PartyDetailActivity::class.java)
-                        .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, chosen.id)
-                        .putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, amount)
-                        .putExtra(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, isGiven)
-                )
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        // Each name with its phone beneath, so two "Aslam"s can be told apart (10 Oct).
+        val cards = choices.map { p ->
+            ChoiceSheet.person(Format.isolate(p.name), p.phone?.takeIf { it.isNotBlank() }?.let { Format.ltr(it) })
+        }
+        ChoiceSheet.show(this, getString(R.string.voice_which_party, Format.money(amount)), cards) { which ->
+            val chosen = choices[which]
+            startActivity(
+                Intent(this, PartyDetailActivity::class.java)
+                    .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, chosen.id)
+                    .putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, amount)
+                    .putExtra(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, isGiven)
+            )
+        }
     }
 
     private fun showSpokenProblem(heard: String, problem: String) {

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.Digits
 
 import android.content.Intent
@@ -147,15 +148,13 @@ class ViewerActivity : BaseActivity() {
                 return@launch
             }
             val size = android.text.format.Formatter.formatShortFileSize(this@ViewerActivity, bytes)
-            val choices = arrayOf(
-                getString(R.string.viewer_send_with_photos, size),
-                getString(R.string.viewer_send_without_photos)
+            val choices = listOf(
+                ChoiceSheet.photo(getString(R.string.viewer_send_with_photos, size)),
+                ChoiceSheet.file(getString(R.string.viewer_send_without_photos))
             )
-            MaterialAlertDialogBuilder(this@ViewerActivity)
-                .setTitle(R.string.viewer_send_file)
-                .setItems(choices) { _, which -> shareCopy(withPhotos = which == 0) }
-                .setNegativeButton(R.string.cancel, null)
-                .show()
+            ChoiceSheet.show(this@ViewerActivity, getString(R.string.viewer_send_file), choices) { which ->
+                shareCopy(withPhotos = which == 0)
+            }
         }
     }
 
@@ -281,14 +280,16 @@ class ViewerActivity : BaseActivity() {
                 }
                 found.size == 1 -> loadFromDrive(account, found[0].id)
                 else -> {
-                    val labels = found.map {
-                        it.name ?: Digits.string(resources, R.string.viewer_business_number, it.id)
-                    }.toTypedArray()
-                    MaterialAlertDialogBuilder(this@ViewerActivity)
-                        .setTitle(R.string.viewer_pick_business)
-                        .setItems(labels) { _, which -> loadFromDrive(account, found[which].id) }
-                        .setOnCancelListener { setBusy(false) }
-                        .show()
+                    val choices = found.map {
+                        ChoiceSheet.Option(
+                            it.name ?: Digits.string(resources, R.string.viewer_business_number, it.id),
+                            icon = R.drawable.ic_storefront, iconTint = R.color.brand_green_text, tile = R.color.tile_khata_bg
+                        )
+                    }
+                    ChoiceSheet.show(
+                        this@ViewerActivity, getString(R.string.viewer_pick_business), choices,
+                        onCancel = { setBusy(false) }
+                    ) { which -> loadFromDrive(account, found[which].id) }
                 }
             }
         }

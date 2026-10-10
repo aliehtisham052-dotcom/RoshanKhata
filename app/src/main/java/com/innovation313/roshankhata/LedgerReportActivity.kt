@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.DateWords
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -279,17 +280,18 @@ class LedgerReportActivity : BaseActivity() {
      * the saved file opens from Downloads like any other.
      */
     private fun chooseDownload() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.ledger_report_download_as)
-            .setItems(arrayOf("PDF", getString(R.string.export_excel))) { _, which ->
-                if (which == 0) {
-                    buildPdf { file -> saveToDownloads(file, "application/pdf") }
-                } else {
-                    buildCsv { file -> saveToDownloads(file, "text/csv") }
-                }
+        val options = listOf(
+            ChoiceSheet.pdf("PDF"),
+            ChoiceSheet.Option(getString(R.string.export_excel), icon = R.drawable.ic_list_all,
+                iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg)
+        )
+        ChoiceSheet.show(this, getString(R.string.ledger_report_download_as), options) { which ->
+            if (which == 0) {
+                buildPdf { file -> saveToDownloads(file, "application/pdf") }
+            } else {
+                buildCsv { file -> saveToDownloads(file, "text/csv") }
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        }
     }
 
     private fun saveToDownloads(file: File, mime: String) {

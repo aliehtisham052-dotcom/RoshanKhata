@@ -1610,12 +1610,12 @@ class PartyDetailActivity : BaseActivity() {
                 return@setOnClickListener
             }
             val scanLabel = getString(if (isGiven) R.string.bill_scan else R.string.payment_scan)
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.entry_bill_chip)
-                .setItems(arrayOf(scanLabel, getString(R.string.bill_chip_photo_only))) { _, which ->
-                    if (which == 0) scan() else pickPhotoOnly()
-                }
-                .show()
+            ChoiceSheet.show(
+                this, getString(R.string.entry_bill_chip),
+                listOf(ChoiceSheet.camera(scanLabel), ChoiceSheet.photo(getString(R.string.bill_chip_photo_only)))
+            ) { which ->
+                if (which == 0) scan() else pickPhotoOnly()
+            }
         }
         onPaymentScanUsed = { payment, photo ->
             payment.amount?.let {
@@ -2673,12 +2673,9 @@ class PartyDetailActivity : BaseActivity() {
             }
         }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.pick_batch)
-            .setItems(labels) { _, which ->
-                onPicked(if (which == 0) null else options[which - 1])
-            }
-            .show()
+        ChoiceSheet.show(this, getString(R.string.pick_batch), labels.map { ChoiceSheet.batch(it) }) { which ->
+            onPicked(if (which == 0) null else options[which - 1])
+        }
     }
 
     /**
@@ -2826,27 +2823,32 @@ class PartyDetailActivity : BaseActivity() {
         } + getString(R.string.harvest_promise_other_date) +
             listOfNotNull(harvestPromise?.let { getString(R.string.harvest_promise_remove) })
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.harvest_promise_title, partyName))
-            .setItems(labels.toTypedArray()) { _, i ->
-                when {
-                    i < ends.size -> saveHarvestPromise(ends[i].second)
-                    i == ends.size -> {
-                        val c = java.util.Calendar.getInstance()
-                        android.app.DatePickerDialog(this, { _, yy, mm, dd ->
-                            val at = java.util.Calendar.getInstance().apply {
-                                clear(); set(yy, mm, dd, 23, 59, 59)
-                            }.timeInMillis
-                            saveHarvestPromise(at)
-                        }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH))
-                            .apply { datePicker.minDate = now }
-                            .show()
-                    }
-                    else -> saveHarvestPromise(null)
-                }
+        // The coming harvests on the season tile, any other date on the
+        // calendar, and taking the promise back in red (10 Oct).
+        val choices = labels.mapIndexed { i, l ->
+            when {
+                i < ends.size -> ChoiceSheet.Option(l, icon = R.drawable.ic_tile_season, iconTint = 0, tile = R.color.tile_plans_bg)
+                i == ends.size -> ChoiceSheet.date(l)
+                else -> ChoiceSheet.delete(l)
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        }
+        ChoiceSheet.show(this, getString(R.string.harvest_promise_title, partyName), choices) { i ->
+            when {
+                i < ends.size -> saveHarvestPromise(ends[i].second)
+                i == ends.size -> {
+                    val c = java.util.Calendar.getInstance()
+                    android.app.DatePickerDialog(this, { _, yy, mm, dd ->
+                        val at = java.util.Calendar.getInstance().apply {
+                            clear(); set(yy, mm, dd, 23, 59, 59)
+                        }.timeInMillis
+                        saveHarvestPromise(at)
+                    }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH))
+                        .apply { datePicker.minDate = now }
+                        .show()
+                }
+                else -> saveHarvestPromise(null)
+            }
+        }
     }
 
     private fun saveHarvestPromise(at: Long?) {

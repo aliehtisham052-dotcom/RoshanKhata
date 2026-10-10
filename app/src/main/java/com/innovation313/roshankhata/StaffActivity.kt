@@ -195,19 +195,19 @@ class StaffActivity : BaseActivity() {
     }
 
     private fun manage(person: Staff) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(person.name)
-            .setItems(arrayOf(getString(R.string.staff_edit), getString(R.string.staff_remove))) { _, which ->
-                if (which == 0) editStaff(person)
-                else MaterialAlertDialogBuilder(this)
-                    .setMessage(getString(R.string.staff_remove_confirm, person.name))
-                    .setPositiveButton(R.string.staff_remove) { _, _ ->
-                        lifecycleScope.launch { dao.updateStaff(person.copy(isActive = false)) }
-                    }
-                    .setNegativeButton(R.string.cancel, null)
-                    .show()
-            }
-            .show()
+        ChoiceSheet.show(
+            this, person.name,
+            listOf(ChoiceSheet.edit(getString(R.string.staff_edit)), ChoiceSheet.delete(getString(R.string.staff_remove)))
+        ) { which ->
+            if (which == 0) editStaff(person)
+            else MaterialAlertDialogBuilder(this)
+                .setMessage(getString(R.string.staff_remove_confirm, person.name))
+                .setPositiveButton(R.string.staff_remove) { _, _ ->
+                    lifecycleScope.launch { dao.updateStaff(person.copy(isActive = false)) }
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
     }
 
     /** The month's slip as text, to WhatsApp or anywhere: every figure on its own line. */

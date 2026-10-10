@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -90,25 +91,22 @@ class InvoicesActivity : BaseActivity() {
         // design (previewPdf), so the same action in this list was a second
         // door to the same room. View stays — it is the plain itemised
         // readout for checking figures, which the printed design is not.
-        val options = arrayOf(
-            getString(R.string.view),
-            getString(R.string.edit),
-            getString(R.string.invoice_send_whatsapp),
-            getString(R.string.invoice_share_pdf),
-            getString(R.string.delete)
+        val options = listOf(
+            ChoiceSheet.view(getString(R.string.view)),
+            ChoiceSheet.edit(getString(R.string.edit)),
+            ChoiceSheet.whatsapp(getString(R.string.invoice_send_whatsapp)),
+            ChoiceSheet.pdf(getString(R.string.invoice_share_pdf)),
+            ChoiceSheet.delete(getString(R.string.delete))
         )
-        MaterialAlertDialogBuilder(this)
-            .setTitle(invoice.customerName)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> viewInvoice(invoice)
-                    1 -> editInvoice(invoice)
-                    2 -> sendPdfToCustomer(invoice)
-                    3 -> sharePdf(invoice)
-                    4 -> confirmDeleteInvoice(invoice)
-                }
+        ChoiceSheet.show(this, invoice.customerName, options) { which ->
+            when (which) {
+                0 -> viewInvoice(invoice)
+                1 -> editInvoice(invoice)
+                2 -> sendPdfToCustomer(invoice)
+                3 -> sharePdf(invoice)
+                4 -> confirmDeleteInvoice(invoice)
             }
-            .show()
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.Digits
 
 import android.content.Intent
@@ -108,16 +109,15 @@ class SeasonsActivity : BaseActivity() {
             Toast.makeText(this, R.string.season_all_clear, Toast.LENGTH_SHORT).show()
             return
         }
-        val labels = owing.map { "${shown.names[it.partyId] ?: "—"}  ·  ${Format.money(it.outstanding)}" }.toTypedArray()
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.season_owing_title, SeasonText.name(this, season)))
-            .setItems(labels) { _, i ->
-                startActivity(
-                    Intent(this, PartyDetailActivity::class.java)
-                        .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, owing[i].partyId)
-                )
-            }
-            .setNegativeButton(R.string.close, null)
-            .show()
+        // Name on the card, what is still owed beneath it in the "to get" red (10 Oct).
+        val cards = owing.map {
+            ChoiceSheet.person(shown.names[it.partyId] ?: "\u2014", Format.money(it.outstanding))
+        }
+        ChoiceSheet.show(this, getString(R.string.season_owing_title, SeasonText.name(this, season)), cards) { i ->
+            startActivity(
+                Intent(this, PartyDetailActivity::class.java)
+                    .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, owing[i].partyId)
+            )
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.Digits
 
 import android.content.Intent
@@ -472,20 +473,17 @@ class BackupActivity : BaseActivity() {
             return
         }
 
-        val options = arrayOf(
-            getString(R.string.restore_from_app),
-            getString(R.string.restore_from_storage)
+        val options = listOf(
+            ChoiceSheet.Option(getString(R.string.restore_from_app), icon = R.drawable.ic_tile_backup,
+                iconTint = 0, tile = R.color.tile_backup_bg),
+            ChoiceSheet.file(getString(R.string.restore_from_storage))
         )
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.restore_from_file)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showSavedBackups(saved)
-                    1 -> pickFromStorage()
-                }
+        ChoiceSheet.show(this, getString(R.string.restore_from_file), options) { which ->
+            when (which) {
+                0 -> showSavedBackups(saved)
+                1 -> pickFromStorage()
             }
-            .show()
+        }
     }
 
     private fun showSavedBackups(files: List<File>) {
@@ -494,14 +492,11 @@ class BackupActivity : BaseActivity() {
                 Format.dateTime(f.lastModified()),
                 (f.length() / 1024).coerceAtLeast(1)
             )
-        }.toTypedArray()
+        }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.restore_from_app)
-            .setItems(labels) { _, which ->
-                restoreFromFile(files[which])
-            }
-            .show()
+        ChoiceSheet.show(this, getString(R.string.restore_from_app), labels.map { ChoiceSheet.file(it) }) { which ->
+            restoreFromFile(files[which])
+        }
     }
 
     private fun pickFromStorage() {
@@ -838,21 +833,21 @@ class BackupActivity : BaseActivity() {
                 return@launch
             }
 
-            val labels = found.map { biz ->
+            // Shop name on the card, its backup date beneath (10 Oct). A tap
+            // restores that one shop; the button restores all of them.
+            val choices = found.map { biz ->
                 val shop = biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id)
-                "$shop — ${Format.dateOnly(biz.modifiedAt)}"
-            }.toTypedArray()
-
-            MaterialAlertDialogBuilder(this@BackupActivity)
-                .setTitle(Digits.quantity(resources, 
-                    R.plurals.drive_found_businesses, found.size, found.size
-                ))
-                .setItems(labels) { _, which -> confirmRestoreAll(account, listOf(found[which])) }
-                .setNeutralButton(R.string.cancel, null)
-                .setPositiveButton(R.string.drive_restore_all) { _, _ ->
+                ChoiceSheet.Option(shop, Format.dateOnly(biz.modifiedAt), icon = R.drawable.ic_storefront,
+                    iconTint = R.color.brand_green_text, tile = R.color.tile_khata_bg)
+            }
+            ChoiceSheet.show(
+                this@BackupActivity,
+                Digits.quantity(resources, R.plurals.drive_found_businesses, found.size, found.size),
+                choices,
+                secondary = ChoiceSheet.Action(getString(R.string.drive_restore_all)) {
                     confirmRestoreAll(account, found)
                 }
-                .show()
+            ) { which -> confirmRestoreAll(account, listOf(found[which])) }
         }
     }
 

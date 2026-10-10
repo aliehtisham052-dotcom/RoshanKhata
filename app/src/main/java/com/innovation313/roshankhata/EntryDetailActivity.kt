@@ -147,11 +147,8 @@ class EntryDetailActivity : BaseActivity() {
         btn.visibility = View.VISIBLE
         btn.setOnClickListener {
             if (goods.size == 1) { editAdvice(goods[0]); return@setOnClickListener }
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.advice_pick_line)
-                .setItems(goods.map { it.itemName.orEmpty() }.toTypedArray()) { _, i -> editAdvice(goods[i]) }
-                .setNegativeButton(R.string.cancel, null)
-                .show()
+            ChoiceSheet.show(this, getString(R.string.advice_pick_line),
+                goods.map { ChoiceSheet.batch(it.itemName.orEmpty()) }) { i -> editAdvice(goods[i]) }
         }
     }
 
@@ -540,12 +537,9 @@ class EntryDetailActivity : BaseActivity() {
             }
         }
 
-        AlertDialog.Builder(this)
-            .setTitle(R.string.pick_batch)
-            .setItems(labels) { _, which ->
-                onPicked(if (which == 0) null else options[which - 1])
-            }
-            .show()
+        ChoiceSheet.show(this, getString(R.string.pick_batch), labels.map { ChoiceSheet.batch(it) }) { which ->
+            onPicked(if (which == 0) null else options[which - 1])
+        }
     }
 
     private fun confirmDelete() {

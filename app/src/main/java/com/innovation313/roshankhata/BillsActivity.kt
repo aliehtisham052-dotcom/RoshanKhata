@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.data.TradeVocab
 import android.app.DatePickerDialog
@@ -417,21 +418,21 @@ class BillsActivity : BaseActivity() {
                 isClickable = true
                 isFocusable = true
                 setOnClickListener {
-                    MaterialAlertDialogBuilder(this@BillsActivity)
-                        .setTitle(item.productName)
-                        .setItems(arrayOf(getString(R.string.edit_item), getString(R.string.delete_item))) { _, which ->
-                            if (which == 0) {
-                                showAddItemDialog(existing = item) { changed ->
-                                    val at = pendingItems.indexOf(item)
-                                    if (at >= 0) pendingItems[at] = changed
-                                    renderPendingItems(tvPending, llItems)
-                                }
-                            } else {
-                                pendingItems.remove(item)
+                    ChoiceSheet.show(
+                        this@BillsActivity, item.productName,
+                        listOf(ChoiceSheet.edit(getString(R.string.edit_item)), ChoiceSheet.delete(getString(R.string.delete_item)))
+                    ) { which ->
+                        if (which == 0) {
+                            showAddItemDialog(existing = item) { changed ->
+                                val at = pendingItems.indexOf(item)
+                                if (at >= 0) pendingItems[at] = changed
                                 renderPendingItems(tvPending, llItems)
                             }
+                        } else {
+                            pendingItems.remove(item)
+                            renderPendingItems(tvPending, llItems)
                         }
-                        .show()
+                    }
                 }
             }
             llItems.addView(row, LinearLayout.LayoutParams(
@@ -924,23 +925,20 @@ class BillsActivity : BaseActivity() {
             // A cash bill may carry its own photo (v21); offer it only then.
             val photo = dao.getBill(bill.id)?.photoPath?.takeIf { it.isNotBlank() }
             val options = listOfNotNull(
-                getString(R.string.edit_bill),
-                getString(R.string.manage_items),
-                getString(R.string.delete_bill),
-                photo?.let { getString(R.string.view_bill_photo) }
-            ).toTypedArray()
+                ChoiceSheet.edit(getString(R.string.edit_bill)),
+                ChoiceSheet.batch(getString(R.string.manage_items)),
+                ChoiceSheet.delete(getString(R.string.delete_bill)),
+                photo?.let { ChoiceSheet.photo(getString(R.string.view_bill_photo)) }
+            )
 
-            MaterialAlertDialogBuilder(this@BillsActivity)
-                .setTitle(R.string.bill_actions)
-                .setItems(options) { _, which ->
-                    when (which) {
-                        0 -> startEditBill(bill)
-                        1 -> manageItems(bill.id)
-                        2 -> confirmDeleteBill(bill)
-                        3 -> photo?.let { showBillPhoto(it) }
-                    }
+            ChoiceSheet.show(this@BillsActivity, getString(R.string.bill_actions), options) { which ->
+                when (which) {
+                    0 -> startEditBill(bill)
+                    1 -> manageItems(bill.id)
+                    2 -> confirmDeleteBill(bill)
+                    3 -> photo?.let { showBillPhoto(it) }
                 }
-                .show()
+            }
         }
     }
 
@@ -1127,72 +1125,71 @@ class BillsActivity : BaseActivity() {
                     append(getString(R.string.batch_label, i.batchNumber))
                 }
             }
-        }.toTypedArray() + getString(R.string.add_item)
+        }
+        // Each line a card - its name, and quantity and batch beneath - and
+        // the last card adds a line (10 Oct).
+        val choices = labels.map { l ->
+            val parts = l.split(" \u2014 ", limit = 2)
+            ChoiceSheet.batch(parts[0], parts.getOrNull(1))
+        } + ChoiceSheet.add(getString(R.string.add_item))
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.manage_items)
-            .setItems(labels) { _, which ->
-                if (which == items.size) {
-                    showAddItemDialog { newItem ->
-                        AppScope.launch {
-                            // Same birth rule as saveBill: naming a product on
-                            // a bill line creates it if it does not exist yet.
-                            val product = dao.findOrCreateProduct(
-                                name = newItem.productName,
-                                defaultUnit = newItem.unit
-                            )
-                            dao.insertBillItem(
-                                newItem.copy(billId = billId, productId = product.id)
-                            )
-                            withContext(Dispatchers.Main) {
-                                if (!isFinishing && !isDestroyed) manageItems(billId)
-                            }
+        ChoiceSheet.show(this, getString(R.string.manage_items), choices) { which ->
+            if (which == items.size) {
+                showAddItemDialog { newItem ->
+                    AppScope.launch {
+                        // Same birth rule as saveBill: naming a product on
+                        // a bill line creates it if it does not exist yet.
+                        val product = dao.findOrCreateProduct(
+                            name = newItem.productName,
+                            defaultUnit = newItem.unit
+                        )
+                        dao.insertBillItem(
+                            newItem.copy(billId = billId, productId = product.id)
+                        )
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) manageItems(billId)
                         }
                     }
-                } else {
-                    showItemActions(billId, items[which])
                 }
+            } else {
+                showItemActions(billId, items[which])
             }
-            .setNegativeButton(R.string.ok, null)
-            .show()
+        }
     }
 
     private fun showItemActions(billId: Long, item: BillItem) {
-        val options = arrayOf(
-            getString(R.string.edit_item), getString(R.string.delete_item),
-            getString(R.string.batch_buyers_action), getString(R.string.return_action)
+        val options = listOf(
+            ChoiceSheet.edit(getString(R.string.edit_item)), ChoiceSheet.delete(getString(R.string.delete_item)),
+            ChoiceSheet.buyers(getString(R.string.batch_buyers_action)), ChoiceSheet.sendBack(getString(R.string.return_action))
         )
-        MaterialAlertDialogBuilder(this)
-            .setTitle(item.productName)
-            .setItems(options) { _, which ->
-                when (which) {
-                    2 -> com.innovation313.roshankhata.ui.BatchBuyersDialog.show(this, lifecycleScope, dao, item.id)
-                    3 -> com.innovation313.roshankhata.ui.BatchReturnDialog.show(this, lifecycleScope, dao, item.id)
-                    0 -> showAddItemDialog(existing = item) { updated ->
-                        AppScope.launch {
-                            // The name on the line decides which product the
-                            // line is of. Renaming "urea" to "DAP" and leaving
-                            // productId pointing at urea would silently count
-                            // this stock against the wrong product, so the
-                            // link is re-derived from the final name — created
-                            // if that product does not exist yet, same as a
-                            // new line.
-                            val product = dao.findOrCreateProduct(
-                                name = updated.productName,
-                                defaultUnit = updated.unit
-                            )
-                            dao.updateBillItem(
-                                updated.copy(id = item.id, billId = billId, productId = product.id)
-                            )
-                            withContext(Dispatchers.Main) {
-                                if (!isFinishing && !isDestroyed) manageItems(billId)
-                            }
+        ChoiceSheet.show(this, item.productName, options) { which ->
+            when (which) {
+                2 -> com.innovation313.roshankhata.ui.BatchBuyersDialog.show(this, lifecycleScope, dao, item.id)
+                3 -> com.innovation313.roshankhata.ui.BatchReturnDialog.show(this, lifecycleScope, dao, item.id)
+                0 -> showAddItemDialog(existing = item) { updated ->
+                    AppScope.launch {
+                        // The name on the line decides which product the
+                        // line is of. Renaming "urea" to "DAP" and leaving
+                        // productId pointing at urea would silently count
+                        // this stock against the wrong product, so the
+                        // link is re-derived from the final name — created
+                        // if that product does not exist yet, same as a
+                        // new line.
+                        val product = dao.findOrCreateProduct(
+                            name = updated.productName,
+                            defaultUnit = updated.unit
+                        )
+                        dao.updateBillItem(
+                            updated.copy(id = item.id, billId = billId, productId = product.id)
+                        )
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) manageItems(billId)
                         }
                     }
-                    1 -> confirmDeleteItem(billId, item)
                 }
+                1 -> confirmDeleteItem(billId, item)
             }
-            .show()
+        }
     }
 
     /**
@@ -1327,17 +1324,25 @@ class BillsActivity : BaseActivity() {
                         ))
                         .setPositiveButton(R.string.ok, null)
                     if (results.isEmpty()) {
-                        dialog.setMessage(text)
+                        dialog.setMessage(text).show()
                     } else {
                         // Each found batch opens on: who bought it, or send it back (2 Oct).
-                        val blocks = text.split("\n\n").toTypedArray()
-                        dialog.setItems(blocks) { _, i ->
+                        // A card per batch since 10 Oct: its first line on the card,
+                        // the rest beneath.
+                        val found = text.split("\n\n").map { block ->
+                            val lines = block.split("\n", limit = 2)
+                            ChoiceSheet.batch(lines[0], lines.getOrNull(1))
+                        }
+                        ChoiceSheet.show(
+                            this@BillsActivity,
+                            Digits.quantity(resources, R.plurals.trace_results, results.size, results.size),
+                            found
+                        ) { i ->
                             com.innovation313.roshankhata.ui.BatchReturnDialog.chooser(
                                 this@BillsActivity, lifecycleScope, dao, results[i].itemId
                             )
                         }
                     }
-                    dialog.show()
                 }
             }
             .show()
