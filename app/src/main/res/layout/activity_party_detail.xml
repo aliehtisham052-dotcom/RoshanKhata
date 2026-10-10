@@ -274,10 +274,10 @@
                         android:paddingEnd="2dp"
                         android:text="@string/call"
                         android:textColor="@color/ink"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
-                        app:autoSizeMaxTextSize="10sp"
-                        app:autoSizeMinTextSize="7sp"
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="9sp"
                         app:autoSizeStepGranularity="0.5sp"
                         app:autoSizeTextType="uniform" />
                 </LinearLayout>
@@ -326,10 +326,10 @@
                         android:paddingEnd="2dp"
                         android:text="@string/remind_whatsapp"
                         android:textColor="@color/ink"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
-                        app:autoSizeMaxTextSize="10sp"
-                        app:autoSizeMinTextSize="7sp"
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="9sp"
                         app:autoSizeStepGranularity="0.5sp"
                         app:autoSizeTextType="uniform" />
                 </LinearLayout>
@@ -378,10 +378,10 @@
                         android:paddingEnd="2dp"
                         android:text="@string/remind_sms"
                         android:textColor="@color/ink"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
-                        app:autoSizeMaxTextSize="10sp"
-                        app:autoSizeMinTextSize="7sp"
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="9sp"
                         app:autoSizeStepGranularity="0.5sp"
                         app:autoSizeTextType="uniform" />
                 </LinearLayout>
@@ -430,10 +430,10 @@
                         android:paddingEnd="2dp"
                         android:text="@string/statement_pdf"
                         android:textColor="@color/ink"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
-                        app:autoSizeMaxTextSize="10sp"
-                        app:autoSizeMinTextSize="7sp"
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="9sp"
                         app:autoSizeStepGranularity="0.5sp"
                         app:autoSizeTextType="uniform" />
                 </LinearLayout>

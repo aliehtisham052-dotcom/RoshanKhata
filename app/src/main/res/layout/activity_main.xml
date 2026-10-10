@@ -196,13 +196,16 @@
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
+                    <!-- The eye is a marker, not the control: the whole balance
+                         row toggles (MainActivity), a target far wider than 48dp.
+                         So the row carries the description and the eye is skipped. -->
                     <ImageView
                         android:id="@+id/ivEye"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/bg_home_eye"
-                        android:contentDescription="@string/hide_balance"
+                        android:importantForAccessibility="no"
                         android:padding="6dp"
                         android:src="@drawable/ic_eye_closed"
                         app:tint="@color/white" />
@@ -241,7 +244,7 @@
                     android:maxLines="2"
                     android:maxWidth="84dp"
                     android:textColor="@color/backup_ink"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textStyle="bold"
                     tools:text="Backed up 10:42" />
             </LinearLayout>
