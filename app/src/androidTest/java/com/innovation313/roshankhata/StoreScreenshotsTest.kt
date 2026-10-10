@@ -53,6 +53,9 @@ class StoreScreenshotsTest(private val language: String) {
         app.getSharedPreferences("language", Context.MODE_PRIVATE).edit().putBoolean("chosen", true).commit()
         app.getSharedPreferences("welcome", Context.MODE_PRIVATE).edit().putBoolean("welcome_seen", true).commit()
         CoachMarkController.markRun(app)
+        // Home's one-time backup offer (MainActivity.maybeOfferBackup) sat
+        // over the first English screenshot; the listing shows the screen.
+        app.getSharedPreferences("home_offers", Context.MODE_PRIVATE).edit().putBoolean("backup_offered", true).commit()
         BalancePrivacy.setHidden(app, false)
         BusinessProfile.setTrade(app, Trade.AGRI)
         BusinessProfile.setBusinessName(app, if (language == "ur") "بلال زرعی سروس" else "Bilal Zarai Service")
@@ -89,15 +92,15 @@ class StoreScreenshotsTest(private val language: String) {
         val ur = language == "ur"
         val book = listOf(
             Triple(if (ur) "محمد اکرم" else "Muhammad Akram", "0300 1234567",
-                listOf(Line(18500.0, true, 12, if (ur) "یوریا 5 بوری" else "Urea 5 bori"), Line(8000.0, false, 6, null), Line(6200.0, true, 2, if (ur) "سپرے" else "Spray"))),
+                listOf(Line(18500.0, true, 12, if (ur) "یوریا 5 بوری" else "Urea 5 bori"), Line(8000.0, false, 6, null), Line(6200.0, true, 0, if (ur) "سپرے" else "Spray"))),
             Triple(if (ur) "رانا شفیق" else "Rana Shafiq", "0321 7654321",
                 listOf(Line(42000.0, true, 30, if (ur) "گندم بیج 10 بوری" else "Wheat seed 10 bori"), Line(20000.0, false, 14, null))),
             Triple(if (ur) "چوہدری نذیر" else "Chaudhry Nazeer", "0345 1122334",
-                listOf(Line(9700.0, true, 9, if (ur) "ڈی اے پی 2 بوری" else "DAP 2 bori"), Line(9700.0, false, 1, null))),
+                listOf(Line(9700.0, true, 9, if (ur) "ڈی اے پی 2 بوری" else "DAP 2 bori"), Line(9700.0, false, 0, null))),
             Triple(if (ur) "ملک عمران" else "Malik Imran", "0333 9988776",
                 listOf(Line(15000.0, true, 40, null), Line(5000.0, false, 20, null), Line(3300.0, true, 4, if (ur) "فیڈ 3 بوری" else "Feed 3 bori"))),
             Triple(if (ur) "حاجی اسلم" else "Haji Aslam", "0301 5566778",
-                listOf(Line(7500.0, false, 3, if (ur) "ایڈوانس" else "Advance"))),
+                listOf(Line(7500.0, false, 0, if (ur) "ایڈوانس" else "Advance"))),
             Triple(if (ur) "عثمان گجر" else "Usman Gujjar", "0312 4433221",
                 listOf(Line(26400.0, true, 18, if (ur) "زنک + پوٹاش" else "Zinc + Potash"), Line(10000.0, false, 7, null)))
         )
