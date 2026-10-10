@@ -2445,7 +2445,6 @@ You can change this any time from this screen.</string>
     <string name="trade_card_selected">Selected</string>
     <string name="onboard_step">Step %1$s of %2$s</string>
     <string name="help_replay_tour">Show the Home tour again</string>
-    <string name="backup_offer_open">Set up backup</string>
     <string name="coach_title_business">Business</string>
     <string name="coach_desc_business">Products and stock, invoices, your price list and purchase rates, insights, cash flow and follow-up on late payers — the business side of the shop.</string>
     <string name="coach_title_tools">Tools</string>

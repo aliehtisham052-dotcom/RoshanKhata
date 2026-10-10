@@ -214,7 +214,7 @@ class MainActivity : BaseActivity() {
             findViewById<View>(R.id.btnAlerts).setOnClickListener { startActivity(Intent(this, AlertsActivity::class.java)) }
             // The quiet line under the summary cards (7 Oct): backup age opens
             // Backup, the open business's name opens the switcher.
-            findViewById<View>(R.id.homeBackupTap).setOnClickListener { startActivity(Intent(this, BackupActivity::class.java)) }
+            findViewById<View>(R.id.homeBackupTap).setOnClickListener { startActivity(BackupActivity.connectIntent(this)) }
             // The ⋮ menu beside the bell, and the business card in the drawer (7 Oct).
             findViewById<View>(R.id.btnMore).setOnClickListener { com.innovation313.roshankhata.ui.MoreSheet.showMenu(this, it) }
             findViewById<View>(R.id.drawerBusinessTap).setOnClickListener {
@@ -447,8 +447,8 @@ class MainActivity : BaseActivity() {
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
             .setTitle(R.string.welcome_title)
             .setMessage(R.string.welcome_body)
-            .setPositiveButton(R.string.backup_offer_open) { _, _ ->
-                startActivity(Intent(this, BackupActivity::class.java))
+            .setPositiveButton(R.string.welcome_connect) { _, _ ->
+                startActivity(BackupActivity.connectIntent(this))
             }
             .setNegativeButton(R.string.welcome_skip, null)
             .show()
@@ -517,12 +517,34 @@ class MainActivity : BaseActivity() {
      */
     private fun paintHeaderLine() {
         val line = com.innovation313.roshankhata.data.BackupAge.line(this)
-        findViewById<TextView>(R.id.tvHomeBackupAge)?.apply {
-            text = line.text
-            // On the light header the words are the deep gold whether stale
-            // or fresh; stale is bold, fresh is not.
-            setTypeface(null, if (line.stale) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+        // Until a Google account is connected the chip is the app's sign-in
+        // (10 Oct): the Google G and "Continue with Google", one tap to the
+        // account picker. The owner found that with the welcome screen gone
+        // nothing on the front said the app could connect to Gmail at all.
+        // A helper's read-only phone has nothing to back up, so it keeps the age.
+        val drive = com.innovation313.roshankhata.data.DriveAuth
+        val offerSignIn = !drive.isConnected(this) &&
+            !com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+        findViewById<android.widget.ImageView>(R.id.ivHomeBackupIcon)?.apply {
+            if (offerSignIn) {
+                setImageResource(R.drawable.ic_google_g)
+                imageTintList = null
+            } else {
+                setImageResource(R.drawable.ic_feature_backup)
+                imageTintList = android.content.res.ColorStateList.valueOf(
+                    androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.backup_ink))
+            }
         }
+        findViewById<TextView>(R.id.tvHomeBackupAge)?.apply {
+            text = if (offerSignIn) getString(R.string.welcome_connect) else line.text
+            // On the light header the words are the deep gold whether stale
+            // or fresh; stale is bold, fresh is not. The sign-in is bold.
+            setTypeface(null, if (offerSignIn || line.stale) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+        }
+        // Read aloud with the account, which there is no room to print.
+        findViewById<View>(R.id.homeBackupTap)?.contentDescription =
+            if (offerSignIn) getString(R.string.welcome_connect)
+            else listOfNotNull(line.text, drive.accountName(this)).joinToString(", ")
         // The drawer's business card: the open shop's name, and its place
         // among the books when there is more than one.
         val saved = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@MainActivity)

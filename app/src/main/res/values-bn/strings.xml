@@ -2354,7 +2354,6 @@
     <string name="trade_card_selected">নির্বাচিত</string>
     <string name="onboard_step">ধাপ %1$s / %2$s</string>
     <string name="help_replay_tour">হোমের পরিচিতি আবার দেখান</string>
-    <string name="backup_offer_open">ব্যাকআপ চালু করুন</string>
     <string name="coach_title_business">ব্যবসা</string>
     <string name="coach_desc_business">প্রোডাক্ট ও স্টক, ইনভয়েস, দরের তালিকা ও কেনার দর, ইনসাইট, ক্যাশ ফ্লো আর দেরিতে দেওয়াদের ফলো-আপ — দোকানের ব্যবসার দিক।</string>
     <string name="coach_title_tools">টুলস</string>

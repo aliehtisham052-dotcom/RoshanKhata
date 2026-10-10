@@ -130,7 +130,28 @@ class BackupActivity : BaseActivity() {
             }
 
             refreshDriveUi()
+
+            // Home's "Continue with Google" chip, its one-time offer and the
+            // Khata screen's cloud button (10 Oct) open this screen straight
+            // into the account picker, so connecting is one tap from the front
+            // rather than a screen to find and a button to look for. Not after
+            // a rotation, and never once connected.
+            if (savedInstanceState == null && intent.getBooleanExtra(EXTRA_CONNECT, false) &&
+                !DriveAuth.isConnected(this)
+            ) {
+                window.decorView.post { if (!isFinishing && !isDestroyed) connectDrive() }
+            }
         }
+    }
+
+    companion object {
+        /** Open straight into "Continue with Google" when not connected yet. */
+        const val EXTRA_CONNECT = "connect_google"
+
+        /** The Backup screen, opening on the Google account picker if no account is connected. */
+        fun connectIntent(context: android.content.Context): Intent =
+            Intent(context, BackupActivity::class.java)
+                .putExtra(EXTRA_CONNECT, !DriveAuth.isConnected(context))
     }
 
     /**

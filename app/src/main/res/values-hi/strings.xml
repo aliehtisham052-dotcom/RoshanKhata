@@ -2354,7 +2354,6 @@
     <string name="trade_card_selected">चुना गया</string>
     <string name="onboard_step">चरण %1$s / %2$s</string>
     <string name="help_replay_tour">होम का परिचय फिर से दिखाएँ</string>
-    <string name="backup_offer_open">बैकअप सेट करें</string>
     <string name="coach_title_business">बिज़नेस</string>
     <string name="coach_desc_business">प्रोडक्ट्स और स्टॉक, इनवॉइस, भाव सूची और ख़रीद के रेट, इनसाइट्स, कैश फ़्लो और देर करने वालों का फ़ॉलो-अप — दुकान का बिज़नेस वाला हिस्सा।</string>
     <string name="coach_title_tools">टूल्स</string>
