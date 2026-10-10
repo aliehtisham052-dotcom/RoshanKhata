@@ -95,21 +95,19 @@ class BillScanFlow(
      * [titleRes]: a payment slip is not a bill, and should not be called one.
      */
     fun chooseSource(titleRes: Int = R.string.bill_scan) {
-        var chosen = false
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(titleRes)
-            .setItems(
-                arrayOf(activity.getString(R.string.bill_scan_camera), activity.getString(R.string.bill_scan_gallery))
-            ) { _, which ->
-                chosen = true
-                if (which == 0) launchDocScanner()
-                else pickPhoto.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                )
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .setOnDismissListener { if (!chosen) onNothing() }
-            .show()
+        ChoiceSheet.show(
+            activity, activity.getString(titleRes),
+            listOf(
+                ChoiceSheet.camera(activity.getString(R.string.bill_scan_camera)),
+                ChoiceSheet.photo(activity.getString(R.string.bill_scan_gallery))
+            ),
+            onCancel = { onNothing() }
+        ) { which ->
+            if (which == 0) launchDocScanner()
+            else pickPhoto.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
     }
 
     private fun launchDocScanner() {

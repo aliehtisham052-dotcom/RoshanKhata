@@ -109,13 +109,15 @@ object BatchReturnDialog {
 
     /** Expiring batch tapped: who bought it, or send the rest back. */
     fun chooser(activity: Activity, scope: LifecycleCoroutineScope, dao: KhataDao, billItemId: Long) {
-        MaterialAlertDialogBuilder(activity)
-            .setItems(
-                arrayOf(activity.getString(R.string.batch_buyers_action), activity.getString(R.string.return_action))
-            ) { _, i ->
-                if (i == 0) BatchBuyersDialog.show(activity, scope, dao, billItemId)
-                else show(activity, scope, dao, billItemId)
-            }
-            .show()
+        ChoiceSheet.show(
+            activity, "",
+            listOf(
+                ChoiceSheet.buyers(activity.getString(R.string.batch_buyers_action)),
+                ChoiceSheet.sendBack(activity.getString(R.string.return_action))
+            )
+        ) { i ->
+            if (i == 0) BatchBuyersDialog.show(activity, scope, dao, billItemId)
+            else show(activity, scope, dao, billItemId)
+        }
     }
 }

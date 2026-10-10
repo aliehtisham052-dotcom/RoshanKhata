@@ -33,27 +33,27 @@ object BatchBuyersDialog {
                 Digits.quantity(activity.resources, R.plurals.batch_buyers_untagged, untagged, untagged)
             else null
 
-            val builder = MaterialAlertDialogBuilder(activity).setTitle(title)
             if (buyers.isEmpty()) {
-                builder.setMessage(
-                    listOfNotNull(activity.getString(R.string.batch_buyers_none), note).joinToString("\n\n")
-                )
+                MaterialAlertDialogBuilder(activity)
+                    .setTitle(title)
+                    .setMessage(listOfNotNull(activity.getString(R.string.batch_buyers_none), note).joinToString("\n\n"))
+                    .setNegativeButton(R.string.close, null)
+                    .show()
             } else {
-                val labels = buyers.map { b ->
-                    val qty = b.quantity?.let { Format.qty(it, b.unit) } ?: "—"
-                    "${b.partyName}  ·  $qty  ·  ${Format.dateOnly(b.lastAt)}"
-                }.toTypedArray()
-                // A message cannot sit beside a list in one dialog, so the
-                // missing-batch warning rides in the title.
-                if (note != null) builder.setTitle("$title\n$note")
-                builder.setItems(labels) { _, i ->
+                // A card per buyer (10 Oct): the name, then quantity and the
+                // last date beneath. The sheet has room for the missing-batch
+                // note as its own line, which the old dialog's title carried.
+                val cards = buyers.map { b ->
+                    val qty = b.quantity?.let { Format.qty(it, b.unit) } ?: "\u2014"
+                    ChoiceSheet.person(b.partyName, "$qty  \u00b7  ${Format.dateOnly(b.lastAt)}")
+                }
+                ChoiceSheet.show(activity, title, cards, message = note) { i ->
                     activity.startActivity(
                         Intent(activity, PartyDetailActivity::class.java)
                             .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, buyers[i].partyId)
                     )
                 }
             }
-            builder.setNegativeButton(R.string.close, null).show()
         }
     }
 }

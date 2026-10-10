@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.DateTimeField
 
@@ -205,17 +206,17 @@ class CashbookActivity : BaseActivity() {
 
     /** In or out — asked first, because it changes what the entry means. */
     private fun showDirectionChoice() {
-        val options = arrayOf(
-            getString(R.string.cash_income),
-            getString(R.string.cash_expense)
+        // In on the "got" green, out on the "gave" red, with the same arrows
+        // as the khata (10 Oct).
+        val options = listOf(
+            ChoiceSheet.Option(getString(R.string.cash_income), icon = R.drawable.ic_arrow_got,
+                iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg),
+            ChoiceSheet.Option(getString(R.string.cash_expense), icon = R.drawable.ic_arrow_gave,
+                iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg)
         )
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.add_cash_entry)
-            .setItems(options) { _, which ->
-                showAddDialog(isIncome = which == 0)
-            }
-            .show()
+        ChoiceSheet.show(this, getString(R.string.add_cash_entry), options) { which ->
+            showAddDialog(isIncome = which == 0)
+        }
     }
 
     private fun showAddDialog(isIncome: Boolean) {

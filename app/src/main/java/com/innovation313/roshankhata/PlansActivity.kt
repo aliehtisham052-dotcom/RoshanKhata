@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.ui.Calc
 
@@ -188,31 +189,26 @@ class PlansActivity : BaseActivity() {
 
     private fun showPlanActions(plan: PlanProgress) {
         if (plan.isClosed) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(plan.partyName)
-                .setItems(arrayOf(getString(R.string.delete_plan))) { _, _ ->
-                    confirmDeletePlan(plan)
-                }
-                .show()
+            ChoiceSheet.show(this, plan.partyName, listOf(ChoiceSheet.delete(getString(R.string.delete_plan)))) {
+                confirmDeletePlan(plan)
+            }
             return
         }
 
-        val options = arrayOf(
-            getString(R.string.record_payment),
-            getString(R.string.close_plan),
-            getString(R.string.delete_plan)
+        val options = listOf(
+            ChoiceSheet.Option(getString(R.string.record_payment), icon = R.drawable.ic_arrow_got,
+                iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg),
+            ChoiceSheet.done(getString(R.string.close_plan)),
+            ChoiceSheet.delete(getString(R.string.delete_plan))
         )
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.plan_actions)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showRecordPaymentDialog(plan)
-                    1 -> closePlan(plan)
-                    2 -> confirmDeletePlan(plan)
-                }
+        ChoiceSheet.show(this, getString(R.string.plan_actions), options) { which ->
+            when (which) {
+                0 -> showRecordPaymentDialog(plan)
+                1 -> closePlan(plan)
+                2 -> confirmDeletePlan(plan)
             }
-            .show()
+        }
     }
 
     private fun showRecordPaymentDialog(plan: PlanProgress) {

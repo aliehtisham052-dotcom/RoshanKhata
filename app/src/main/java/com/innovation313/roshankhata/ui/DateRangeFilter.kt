@@ -46,20 +46,24 @@ object DateRangeFilter {
             activity.getString(R.string.range_custom)
         )
 
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.filter_by_date)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> onPicked(Range.ALL)
-                    1 -> onPicked(today())
-                    2 -> onPicked(yesterday())
-                    3 -> onPicked(thisWeek())
-                    4 -> onPicked(thisMonth())
-                    5 -> pickCustom(activity, current, onPicked)
-                }
+        val choices = options.mapIndexed { i, label ->
+            when (i) {
+                0 -> ChoiceSheet.Option(label, icon = R.drawable.ic_list_all,
+                    iconTint = R.color.brand_green_text, tile = R.color.tile_khata_bg)
+                5 -> ChoiceSheet.edit(label)
+                else -> ChoiceSheet.date(label)
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        }
+        ChoiceSheet.show(activity, activity.getString(R.string.filter_by_date), choices) { which ->
+            when (which) {
+                0 -> onPicked(Range.ALL)
+                1 -> onPicked(today())
+                2 -> onPicked(yesterday())
+                3 -> onPicked(thisWeek())
+                4 -> onPicked(thisMonth())
+                5 -> pickCustom(activity, current, onPicked)
+            }
+        }
     }
 
     /** A label for the button, e.g. "Today" or "1 Jul – 20 Jul". */

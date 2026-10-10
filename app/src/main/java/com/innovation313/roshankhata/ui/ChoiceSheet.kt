@@ -53,7 +53,9 @@ object ChoiceSheet {
         val iconTint: Int = R.color.brand_green_text,
         val tile: Int = R.color.tile_khata_bg,
         val glyph: CharSequence? = null,
-        val glyphSp: Float = 14f
+        val glyphSp: Float = 14f,
+        /** A choice that removes something: its name in the deletion red. */
+        val danger: Boolean = false
     )
 
     /** A button under the cards: its label and what it does. */
@@ -73,13 +75,18 @@ object ChoiceSheet {
         message: CharSequence? = null,
         confirm: CharSequence? = null,
         secondary: Action? = null,
+        /** Runs when the sheet closes with nothing chosen (swipe, Back, outside). */
+        onCancel: (() -> Unit)? = null,
         onPick: (Int) -> Unit
     ): BottomSheetDialog {
         val sheet = BottomSheetDialog(activity)
         val inflater = LayoutInflater.from(activity)
         val view = inflater.inflate(R.layout.sheet_choice, null)
 
-        view.findViewById<TextView>(R.id.tvChoiceTitle).text = title
+        view.findViewById<TextView>(R.id.tvChoiceTitle).apply {
+            // A blank title (a chooser that never had one) leaves no gap.
+            if (title.isBlank()) visibility = View.GONE else text = title
+        }
         view.findViewById<TextView>(R.id.tvChoiceMessage).apply {
             if (message.isNullOrBlank()) visibility = View.GONE
             else { text = message; visibility = View.VISIBLE }
@@ -137,6 +144,7 @@ object ChoiceSheet {
                 primary.text = confirm
                 primary.setOnClickListener {
                     if (marked < 0) return@setOnClickListener
+                    decided = true
                     sheet.dismiss()
                     onPick(marked)
                 }
@@ -147,10 +155,12 @@ object ChoiceSheet {
                 view.findViewById<MaterialButton>(R.id.btnChoiceSecondary).apply {
                     visibility = View.VISIBLE
                     text = secondary.label
-                    setOnClickListener { sheet.dismiss(); secondary.run() }
+                    setOnClickListener { decided = true; sheet.dismiss(); secondary.run() }
                 }
             }
         }
+
+        if (onCancel != null) sheet.setOnDismissListener { if (!decided) onCancel() }
 
         TextFit.relax(view)
         sheet.setContentView(view)
@@ -163,7 +173,10 @@ object ChoiceSheet {
     }
 
     private fun bindRow(activity: Activity, row: View, opt: Option) {
-        row.findViewById<TextView>(R.id.tvChoiceRowTitle).text = opt.title
+        row.findViewById<TextView>(R.id.tvChoiceRowTitle).apply {
+            text = opt.title
+            if (opt.danger) setTextColor(ContextCompat.getColor(activity, R.color.red_gave_text))
+        }
         row.findViewById<TextView>(R.id.tvChoiceRowSub).apply {
             if (opt.subtitle.isNullOrBlank()) visibility = View.GONE
             else { text = opt.subtitle; visibility = View.VISIBLE }
@@ -186,4 +199,43 @@ object ChoiceSheet {
             tile.visibility = View.GONE
         }
     }
+
+    /*
+     * The common actions, so the same verb wears the same tile on every
+     * screen: Edit is always the green pencil, Delete always the red bin.
+     */
+    fun edit(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_edit, iconTint = R.color.brand_green_text, tile = R.color.tile_khata_bg)
+    fun delete(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_delete, iconTint = R.color.tile_bin_fg, tile = R.color.tile_bin_bg, danger = true)
+    fun view(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_eye_open, iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg)
+    fun share(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_share, iconTint = R.color.tile_backup_fg, tile = R.color.tile_backup_bg)
+    fun whatsapp(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_action_whatsapp, iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg)
+    fun pdf(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_pdf_doc, iconTint = R.color.tile_bin_fg, tile = R.color.tile_stock_bg)
+    fun photo(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_image, iconTint = R.color.tile_invoice_fg, tile = R.color.tile_invoice_bg)
+    fun camera(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_camera, iconTint = R.color.tile_calc_fg, tile = R.color.tile_calc_bg)
+    fun person(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_person, iconTint = R.color.tile_card_fg, tile = R.color.tile_card_bg)
+    fun date(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_calendar, iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg)
+    fun add(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_add_plain, iconTint = R.color.brand_green_text, tile = R.color.brand_green_soft)
+    fun done(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_check_circle, iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg)
+    fun stop(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_close, iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg)
+    fun file(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_download, iconTint = R.color.tile_backup_fg, tile = R.color.tile_backup_bg)
+    fun batch(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_register_stock, iconTint = R.color.tile_stock_fg, tile = R.color.tile_stock_bg)
+    fun sendBack(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_truck, iconTint = R.color.tile_stock_fg, tile = R.color.tile_stock_bg)
+    fun buyers(label: CharSequence, sub: CharSequence? = null) =
+        Option(label, sub, icon = R.drawable.ic_people, iconTint = R.color.tile_card_fg, tile = R.color.tile_card_bg)
 }

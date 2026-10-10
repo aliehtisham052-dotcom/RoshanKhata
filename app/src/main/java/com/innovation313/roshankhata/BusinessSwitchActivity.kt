@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.Digits
 
 import android.content.DialogInterface
@@ -114,17 +115,13 @@ class BusinessSwitchActivity : BaseActivity() {
      */
     private fun showBusinessOptions(b: Businesses.Business) {
         val display = Businesses.displayName(this, b) ?: getString(R.string.app_name)
-        val labels = if (Businesses.canDelete(this, b.id)) {
-            arrayOf(getString(R.string.business_rename), getString(R.string.business_delete))
-        } else {
-            arrayOf(getString(R.string.business_rename))
+        val choices = listOfNotNull(
+            ChoiceSheet.edit(getString(R.string.business_rename)),
+            if (Businesses.canDelete(this, b.id)) ChoiceSheet.delete(getString(R.string.business_delete)) else null
+        )
+        ChoiceSheet.show(this, display, choices) { which ->
+            if (which == 0) promptRename(b.id, display) else promptDelete(b, display)
         }
-        MaterialAlertDialogBuilder(this)
-            .setTitle(display)
-            .setItems(labels) { _, which ->
-                if (which == 0) promptRename(b.id, display) else promptDelete(b, display)
-            }
-            .show()
     }
 
     /**

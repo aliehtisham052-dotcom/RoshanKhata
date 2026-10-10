@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.Digits
 
 import android.content.Intent
@@ -117,20 +118,18 @@ class ProductsActivity : BaseActivity() {
         // Two things an owner wants from a product, so ask which rather than
         // guessing: who bought it, or what it actually is. Same shape as the
         // invoice list's own tap.
-        MaterialAlertDialogBuilder(this)
-            .setTitle(stock.name)
-            .setItems(
-                arrayOf(
-                    getString(R.string.product_who_bought),
-                    getString(R.string.product_edit_details)
-                )
-            ) { _, which ->
-                when (which) {
-                    0 -> openProductCustomers(stock)
-                    1 -> editProduct(stock)
-                }
+        ChoiceSheet.show(
+            this, stock.name,
+            listOf(
+                ChoiceSheet.buyers(getString(R.string.product_who_bought)),
+                ChoiceSheet.edit(getString(R.string.product_edit_details))
+            )
+        ) { which ->
+            when (which) {
+                0 -> openProductCustomers(stock)
+                1 -> editProduct(stock)
             }
-            .show()
+        }
     }
 
     private fun openProductCustomers(stock: Stock.ProductStock) {

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.Digits
 
 import com.innovation313.roshankhata.ui.Calc
@@ -264,20 +265,17 @@ class ChequesActivity : BaseActivity() {
             // its own job, not a line in this menu.
             val canReopen =
                 cheque.status == ChequeStatus.BOUNCED || cheque.status == ChequeStatus.CANCELLED
-            val settledOptions = if (canReopen) {
-                arrayOf(getString(R.string.cheque_reopen), getString(R.string.delete_cheque))
-            } else {
-                arrayOf(getString(R.string.delete_cheque))
-            }
-            MaterialAlertDialogBuilder(this)
-                .setTitle(cheque.partyName)
-                .setItems(settledOptions) { _, which ->
-                    when {
-                        canReopen && which == 0 -> reopen(cheque)
-                        else -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
-                    }
+            val settledOptions = listOfNotNull(
+                if (canReopen) ChoiceSheet.Option(getString(R.string.cheque_reopen), icon = R.drawable.ic_swap,
+                    iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg) else null,
+                ChoiceSheet.delete(getString(R.string.delete_cheque))
+            )
+            ChoiceSheet.show(this, cheque.partyName, settledOptions) { which ->
+                when {
+                    canReopen && which == 0 -> reopen(cheque)
+                    else -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
                 }
-                .show()
+            }
             return
         }
 
@@ -286,26 +284,24 @@ class ChequesActivity : BaseActivity() {
         // written on paper and can be corrected freely. Once cleared, the
         // amount is also an entry in the books, and letting the two drift
         // apart would leave the cheque saying one thing and the khata another.
-        val options = arrayOf(
-            getString(R.string.edit_cheque),
-            getString(R.string.mark_cleared),
-            getString(R.string.mark_bounced),
-            getString(R.string.mark_cancelled),
-            getString(R.string.delete_cheque)
+        val options = listOf(
+            ChoiceSheet.edit(getString(R.string.edit_cheque)),
+            ChoiceSheet.done(getString(R.string.mark_cleared)),
+            ChoiceSheet.Option(getString(R.string.mark_bounced), icon = R.drawable.ic_close,
+                iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg),
+            ChoiceSheet.stop(getString(R.string.mark_cancelled)),
+            ChoiceSheet.delete(getString(R.string.delete_cheque))
         )
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.cheque_actions)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showChequeDialog(cheque)
-                    1 -> confirmCleared(cheque)
-                    2 -> confirmBounced(cheque)
-                    3 -> settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled)
-                    4 -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
-                }
+        ChoiceSheet.show(this, getString(R.string.cheque_actions), options) { which ->
+            when (which) {
+                0 -> showChequeDialog(cheque)
+                1 -> confirmCleared(cheque)
+                2 -> confirmBounced(cheque)
+                3 -> settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled)
+                4 -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
             }
-            .show()
+        }
     }
 
     /** Back to waiting. settledAt clears with the status — a pending cheque was never settled. */
