@@ -3,31 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roshan Khata — Innovation-313</title>
+<title>Roshan Khata — Udhaar Ledger for Shops | Innovation-313</title>
+<meta name="description" content="Roshan Khata is a digital udhaar khata for small shops: customer accounts, cashbook, cheques, supplier bills and invoices. Works offline, in nine languages. Backup goes to your own Google Drive.">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="canonical" href="https://ehtisham.shop/roshan-khata/">
+<!--
+  One page, two homes. The same file is served by GitHub Pages
+  (aliehtisham052-dotcom.github.io/RoshanKhata/) and on the owner's own domain
+  (ehtisham.shop/roshan-khata/), which is the homepage Google's brand
+  verification checks. The privacy link is relative, so it always points to
+  the policy on the same domain, as Google requires.
+-->
 <style>
-  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    max-width:640px; margin:0 auto; padding:60px 24px; color:#1A1A18;
-    background:#F7F6F2; text-align:center; }
-  h1 { color:#1B5E3A; }
-  .tag { color:#5C4A16; font-weight:bold; }
-  a { display:inline-block; margin-top:24px; color:#1B5E3A; font-weight:bold; }
-  .btn { background:#1B5E3A; color:#fff; padding:14px 28px; border-radius:10px;
-    text-decoration:none; font-size:17px; }
-  .note { color:#777; font-size:13px; margin-top:8px; }
+  :root {
+    --green: #1B5E3A; --green-deep: #123F27; --gold: #D4A02A;
+    --brown: #5C4A16; --paper: #F7F6F2; --ink: #1A1A18; --muted: #5f5f5a;
+    --card: #FFFFFF; --soft: #E9F3EC;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--ink); background: var(--paper); line-height: 1.6; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+  header.hero { background: linear-gradient(160deg, var(--green) 0%, var(--green-deep) 100%);
+    color: #fff; padding: 48px 0 56px; text-align: center; }
+  .hero img { width: 112px; height: 112px; border-radius: 26px; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .hero h1 { margin: 18px 0 4px; font-size: 34px; letter-spacing: .3px; }
+  .hero .tag { color: var(--gold); font-weight: 700; margin: 0; }
+  .hero p.lead { max-width: 620px; margin: 18px auto 0; font-size: 18px; color: #EAF2EC; }
+  .hero p.ur { direction: rtl; font-size: 20px; margin-top: 8px; color: #EAF2EC;
+    font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Noto Naskh Arabic", serif; line-height: 2; }
+  .btn { display: inline-block; margin-top: 26px; background: var(--gold); color: var(--green-deep);
+    font-weight: 800; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-size: 17px; }
+  .btn:hover, .btn:focus { background: #E6B33C; }
+  .note { font-size: 13px; color: #CFE2D5; margin-top: 10px; }
+  section { padding: 44px 0 8px; }
+  h2 { color: var(--green); font-size: 24px; margin: 0 0 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border-radius: 14px; padding: 18px; border-top: 4px solid var(--gold);
+    box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .card h3 { margin: 0 0 6px; font-size: 17px; color: var(--green-deep); }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .privacy { background: var(--soft); border-left: 4px solid var(--green); border-radius: 10px; padding: 18px 20px; }
+  .privacy ul { margin: 8px 0 0; padding-left: 20px; }
+  .langs { color: var(--muted); }
+  footer { margin-top: 48px; padding: 28px 0 40px; border-top: 1px solid #e2e0d8; color: var(--muted); font-size: 14px; text-align: center; }
+  footer a { color: var(--green); font-weight: 600; }
+  @media (max-width: 480px) { .hero h1 { font-size: 28px; } .hero p.lead { font-size: 16px; } }
 </style>
 </head>
 <body>
-  <h1>Roshan Khata</h1>
-  <p class="tag">Har Hisaab Roshan · By Innovation-313</p>
-  <p>A digital ledger (bahi-khata) for small businesses. Your records stay on your own device.</p>
-  <p>چھوٹے کاروبار کے لیے ڈیجیٹل بہی کھاتہ۔ آپ کا ریکارڈ آپ کے اپنے فون پر رہتا ہے۔</p>
-  <!--
-    The download button statements point at. Today it hands out the APK from
-    GitHub releases; the day the app is on Play Store, this one href changes
-    to the store listing and every statement ever sent starts leading there.
-  -->
-  <p><a class="btn" href="https://github.com/aliehtisham052-dotcom/RoshanKhata/releases/download/latest/RoshanKhata-latest.apk">⬇ Download Roshan Khata (Android)</a></p>
-  <p class="note">Install karne ke liye "Unknown apps" ki ijazat dein · Android 7.0 ya us se naya</p>
-  <a href="privacy-policy.html">Privacy Policy →</a>
+
+<header class="hero">
+  <div class="wrap">
+    <img src="app-icon.png" alt="Roshan Khata app icon" width="112" height="112">
+    <h1>Roshan Khata</h1>
+    <p class="tag">Har Hisaab Roshan · By Innovation-313</p>
+    <p class="lead">The shop counter's ledger, on your phone. Customer udhaar, daily cash, cheques,
+      supplier bills and instalments — kept the way they are kept on paper, in your own language.</p>
+    <p class="ur" lang="ur">دکان کا کھاتہ، آپ کے فون میں۔ گاہکوں کا ادھار، روز کا کیش، چیک اور بل — آپ کی اپنی زبان میں۔</p>
+    <a class="btn" href="https://play.google.com/store/apps/details?id=com.innovation313.roshankhata">Get it on Google Play</a>
+    <p class="note">Free · Android 7.0 and newer · No ads</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section aria-labelledby="what">
+    <h2 id="what">What the app does</h2>
+    <div class="grid">
+      <div class="card"><h3>Khata — who owes what</h3>
+        <p>Every customer's account with a running balance. "I gave" and "I got" in one tap, with goods and quantity. Voice entry, and a PDF statement for WhatsApp.</p></div>
+      <div class="card"><h3>Cashbook</h3>
+        <p>Cash in and cash out by category, with daily, weekly and monthly totals.</p></div>
+      <div class="card"><h3>Cheques, bills, plans</h3>
+        <p>Post-dated cheques with reminders, supplier bills and what you still owe, and instalment plans.</p></div>
+      <div class="card"><h3>Invoices and stock</h3>
+        <p>Invoices in 10 designs with your logo and signature, products and stock with expiry alerts, and a price list to share.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="data">
+    <h2 id="data">Your books stay on your phone</h2>
+    <div class="privacy">
+      <ul>
+        <li>No account, no sign-up and no ads. The app works fully offline.</li>
+        <li>Your records are stored on your own device. We run no server and collect nothing.</li>
+        <li>Backup is optional and goes to <strong>your own Google Drive</strong>, into the app's private folder only. The app cannot see your other Drive files.</li>
+        <li>App lock with fingerprint or PIN.</li>
+      </ul>
+      <p style="margin:12px 0 0">Read exactly what the app does with your information in the
+        <a href="privacy-policy.html">Privacy Policy</a>.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="langs">
+    <h2 id="langs">Nine languages</h2>
+    <p class="langs">English, Urdu, Roman Urdu, Sindhi, Arabic, Persian, Hindi, Bengali and Indonesian — every screen and every receipt.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Roshan Khata is made by Innovation-313, Pakistan.</p>
+    <p><a href="privacy-policy.html">Privacy Policy</a> ·
+       <a href="mailto:innovation313.support@gmail.com">innovation313.support@gmail.com</a></p>
+  </div>
+</footer>
+
 </body>
 </html>
