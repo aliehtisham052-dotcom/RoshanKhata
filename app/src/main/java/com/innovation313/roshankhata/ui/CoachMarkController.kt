@@ -108,10 +108,7 @@ class CoachMarkController(
             .setInterpolator(DecelerateInterpolator(1.6f)).start()
 
         index = 0
-        tipView.post {
-            makeRoom(tipView.height)
-            showStep(first = true)
-        }
+        tipView.post { showStep(first = true) }
     }
 
     private var roomScroller: ScrollView? = null
@@ -125,11 +122,17 @@ class CoachMarkController(
      * scroll that far - and gives it back when the tour ends.
      */
     private fun makeRoom(sheetHeight: Int) {
-        val scroller = steps.firstNotNullOfOrNull { scrollerOf(it.target) } ?: return
-        roomScroller = scroller
-        roomBasePadding = scroller.paddingBottom
-        scroller.clipToPadding = false
-        scroller.setPadding(scroller.paddingLeft, scroller.paddingTop, scroller.paddingRight, roomBasePadding + sheetHeight)
+        val scroller = roomScroller ?: (steps.firstNotNullOfOrNull { scrollerOf(it.target) } ?: return).also {
+            // Remembered once, so a later step never mistakes the room it
+            // added for the screen's own padding.
+            roomScroller = it
+            roomBasePadding = it.paddingBottom
+            it.clipToPadding = false
+        }
+        val wanted = roomBasePadding + sheetHeight
+        if (scroller.paddingBottom != wanted) {
+            scroller.setPadding(scroller.paddingLeft, scroller.paddingTop, scroller.paddingRight, wanted)
+        }
     }
 
     private fun scrollerOf(target: View): ScrollView? {
@@ -174,26 +177,38 @@ class CoachMarkController(
                 if (isLast) View.INVISIBLE else View.VISIBLE
         }
 
+        val mine = index
+        // Placed only once this step's words are in and the sheet has been
+        // laid out with them (10 Oct). The sheet's height changes from step
+        // to step - Tools has the longest words, and the gesture-bar inset
+        // arrives after the first measure - and placing against the first
+        // step's height left Tools under a sheet that had since grown.
+        fun place() {
+            if (mine != index || container == null) return
+            makeRoom(tipView.height)
+            scrollIntoStage(step.target) {
+                // A scroll the next step cut short still ends; its placement is
+                // not wanted any more.
+                if (mine != index || container == null) return@scrollIntoStage
+                val rect = CoachMarkOverlay.boundsWithin(step.target, host)
+                overlayView.holePadding = dp(step.paddingDp)
+                overlayView.holeRadius = dp(step.cornerRadiusDp)
+                glideHole(overlayView, rect)
+            }
+        }
+
         if (first) {
             fill()
+            tipView.post { place() }
         } else {
             // The words cross-fade in place; the card itself never moves.
             words.forEach { it.animate().alpha(0f).setDuration(110).start() }
             tipView.postDelayed({
+                if (mine != index || container == null) return@postDelayed
                 fill()
                 words.forEach { it.animate().alpha(1f).setDuration(160).start() }
+                tipView.post { place() }
             }, 110)
-        }
-
-        val mine = index
-        scrollIntoStage(step.target) {
-            // A scroll the next step cut short still ends; its placement is
-            // not wanted any more.
-            if (mine != index || container == null) return@scrollIntoStage
-            val rect = CoachMarkOverlay.boundsWithin(step.target, host)
-            overlayView.holePadding = dp(step.paddingDp)
-            overlayView.holeRadius = dp(step.cornerRadiusDp)
-            glideHole(overlayView, rect)
         }
     }
 
@@ -234,12 +249,22 @@ class CoachMarkController(
             return
         }
 
-        // Where the item is on the host, and where the stage's centre is.
+        // Where the item is on the host, and where the stage is: below the
+        // scroller's top (the header stays put) and above the sheet.
         val stageTop = CoachMarkOverlay.boundsWithin(scroller, host).top
-        val stageCentre = stageTop + (stageHeight() - stageTop) / 2f
-        val itemCentre = CoachMarkOverlay.boundsWithin(target, host).centerY()
+        val stageBottom = stageHeight().toFloat()
+        val item = CoachMarkOverlay.boundsWithin(target, host)
+        val margin = dp(16f)
+        // Centred when it fits; a section taller than the stage (Tools on a
+        // short phone) starts at the top of the stage instead, so its first
+        // rows show rather than its middle with both ends hidden.
+        val shift = if (item.height() + 2 * margin <= stageBottom - stageTop) {
+            item.centerY() - (stageTop + (stageBottom - stageTop) / 2f)
+        } else {
+            item.top - (stageTop + margin)
+        }
         val maxScroll = (scroller.getChildAt(0)?.height ?: 0) + scroller.paddingTop + scroller.paddingBottom - scroller.height
-        val desired = (scroller.scrollY + (itemCentre - stageCentre)).toInt()
+        val desired = (scroller.scrollY + shift).toInt()
             .coerceIn(0, maxScroll.coerceAtLeast(0))
         if (kotlin.math.abs(desired - scroller.scrollY) < dp(2f)) {
             then()
