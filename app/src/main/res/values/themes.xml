@@ -58,13 +58,16 @@
       The date and time pickers (10 Oct). The calendar's header, the chosen
       day's circle and the buttons all take colorAccent; it was the theme's
       gold, so the one green app showed its calendars in another colour.
+      brand_green_text is dark green by day and light green by night, which
+      is what the platform picker expects of its accent: its header and
+      chosen-day text use the inverse text colour (white by day, dark by
+      night), so both modes keep their contrast.
       Buttons in sentence case, like every other dialog (DialogButton).
     -->
     <style name="ThemeOverlay.RoshanKhata.Picker" parent="ThemeOverlay.MaterialComponents.Dialog">
-        <item name="colorAccent">@color/picker_accent</item>
-        <item name="android:colorAccent">@color/picker_accent</item>
-        <item name="colorPrimary">@color/picker_accent</item>
-        <item name="colorControlActivated">@color/picker_accent</item>
+        <item name="colorAccent">@color/brand_green_text</item>
+        <item name="android:colorAccent">@color/brand_green_text</item>
+        <item name="colorControlActivated">@color/brand_green_text</item>
         <item name="android:buttonBarPositiveButtonStyle">@style/PickerButton</item>
         <item name="android:buttonBarNegativeButtonStyle">@style/PickerButton</item>
         <item name="android:buttonBarNeutralButtonStyle">@style/PickerButton</item>
@@ -75,8 +78,6 @@
 
     <style name="PickerButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:textAllCaps">false</item>
-        <!-- brand_green_text, not the accent: on the dark dialog the
-             accent's green is too dim for words. -->
         <item name="android:textColor">@color/brand_green_text</item>
         <item name="android:textStyle">bold</item>
     </style>
