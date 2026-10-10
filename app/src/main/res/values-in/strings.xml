@@ -2317,4 +2317,18 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="coach_title_tools">Alat</string>
     <string name="coach_desc_tools">Kalkulator, zakat, kartu nama Anda, poster untuk status WhatsApp, cadangan ke Google Drive, dan tempat sampah untuk apa pun yang terhapus tak sengaja.</string>
     <string name="tile_backup">Cadangan</string>
+
+    <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
+    <string name="sort_name_az_hint">Urut abjad</string>
+    <string name="sort_name_za_hint">Urut abjad terbalik</string>
+    <string name="sort_owes_most_hint">Piutang terbesar di atas</string>
+    <string name="sort_i_owe_most_hint">Utang terbesar Anda di atas</string>
+    <string name="sort_recent_activity_hint">Transaksi terbaru di atas</string>
+    <string name="sort_newest_hint">Catatan terbaru dulu</string>
+    <string name="sort_oldest_hint">Catatan terlama dulu</string>
+    <string name="sort_amount_high_hint">Jumlah terbesar dulu</string>
+    <string name="sort_amount_low_hint">Jumlah terkecil dulu</string>
+    <string name="theme_light_hint">Jelas di siang hari</string>
+    <string name="theme_dark_hint">Nyaman di mata saat malam</string>
+    <string name="theme_system_hint">Mengikuti pengaturan ponsel</string>
 </resources>

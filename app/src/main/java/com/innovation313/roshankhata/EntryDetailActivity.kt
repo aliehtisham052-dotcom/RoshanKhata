@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.data.TradeVocab
 import android.content.Intent
@@ -122,19 +123,17 @@ class EntryDetailActivity : BaseActivity() {
                 if (it == byDate) getString(R.string.season_from_date, SeasonText.name(this, it))
                 else SeasonText.name(this, it)
             }.toTypedArray()
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.season_pick)
-                .setSingleChoiceItems(labels, options.indexOf(shown)) { d, i ->
-                    val pick = options[i]
-                    lifecycleScope.launch {
-                        KhataDatabase.get(this@EntryDetailActivity).khataDao()
-                            .setEntrySeason(e.id, if (pick == byDate) null else pick.key)
-                        load()
-                    }
-                    d.dismiss()
+            val choices = labels.map {
+                ChoiceSheet.Option(it, icon = R.drawable.ic_tile_season, iconTint = 0, tile = R.color.tile_plans_bg)
+            }
+            ChoiceSheet.show(this, getString(R.string.season_pick), choices, options.indexOf(shown)) { i ->
+                val pick = options[i]
+                lifecycleScope.launch {
+                    KhataDatabase.get(this@EntryDetailActivity).khataDao()
+                        .setEntrySeason(e.id, if (pick == byDate) null else pick.key)
+                    load()
                 }
-                .setNegativeButton(R.string.cancel, null)
-                .show()
+            }
         }
     }
 
@@ -694,15 +693,14 @@ class EntryDetailActivity : BaseActivity() {
         }
         val prefs = getSharedPreferences("printer", MODE_PRIVATE)
         val last = devices.indexOfFirst { it.address == prefs.getString("address", null) }
-        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.print_choose)
-            .setSingleChoiceItems(devices.map { com.innovation313.roshankhata.ui.ReceiptPrinter.label(it) }.toTypedArray(), last) { d, which ->
-                d.dismiss()
-                prefs.edit().putString("address", devices[which].address).apply()
-                sendToPrinter(devices[which])
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        val choices = devices.map {
+            ChoiceSheet.Option(com.innovation313.roshankhata.ui.ReceiptPrinter.label(it), icon = R.drawable.ic_print,
+                iconTint = R.color.tile_calc_fg, tile = R.color.tile_calc_bg)
+        }
+        ChoiceSheet.show(this, getString(R.string.print_choose), choices, last) { which ->
+            prefs.edit().putString("address", devices[which].address).apply()
+            sendToPrinter(devices[which])
+        }
     }
 
     private fun sendToPrinter(device: android.bluetooth.BluetoothDevice) {

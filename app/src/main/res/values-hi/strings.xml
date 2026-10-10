@@ -2360,4 +2360,18 @@
     <string name="coach_title_tools">टूल्स</string>
     <string name="coach_desc_tools">कैलकुलेटर, ज़कात, आपका बिज़नेस कार्ड, व्हाट्सऐप स्टेटस के लिए पोस्टर, Google Drive पर बैकअप, और ग़लती से डिलीट हुई चीज़ों के लिए बिन।</string>
     <string name="tile_backup">बैकअप</string>
+
+    <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
+    <string name="sort_name_az_hint">वर्णमाला के क्रम में</string>
+    <string name="sort_name_za_hint">उल्टे वर्णमाला क्रम में</string>
+    <string name="sort_owes_most_hint">सबसे ज़्यादा वसूली वाले ऊपर</string>
+    <string name="sort_i_owe_most_hint">जिन्हें सबसे ज़्यादा देना है वे ऊपर</string>
+    <string name="sort_recent_activity_hint">ताज़ा लेन-देन वाले ऊपर</string>
+    <string name="sort_newest_hint">नई एंट्री पहले</string>
+    <string name="sort_oldest_hint">पुरानी एंट्री पहले</string>
+    <string name="sort_amount_high_hint">बड़ी रकम पहले</string>
+    <string name="sort_amount_low_hint">छोटी रकम पहले</string>
+    <string name="theme_light_hint">दिन की रोशनी में साफ़</string>
+    <string name="theme_dark_hint">रात में आँखों के लिए आरामदेह</string>
+    <string name="theme_system_hint">फ़ोन की सेटिंग के साथ बदले</string>
 </resources>

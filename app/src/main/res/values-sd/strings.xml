@@ -2344,4 +2344,18 @@
     <string name="coach_title_tools">ٽولز</string>
     <string name="coach_desc_tools">ڪيلڪيوليٽر، زڪوٰات، توهان جو بزنس ڪارڊ، واٽس ايپ اسٽيٽس لاءِ پوسٽر، گوگل ڊرائيو تي بيڪ اپ، ۽ غلطيءَ سان ڊليٽ ٿيل شين لاءِ بن.</string>
     <string name="tile_backup">بيڪ اپ</string>
+
+    <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
+    <string name="sort_name_az_hint">اکرن جي ترتيب سان</string>
+    <string name="sort_name_za_hint">اکرن جي اُبتي ترتيب سان</string>
+    <string name="sort_owes_most_hint">سڀ کان وڌيڪ وصولي وارا مٿي</string>
+    <string name="sort_i_owe_most_hint">جن کي سڀ کان وڌيڪ ڏيڻو آهي اهي مٿي</string>
+    <string name="sort_recent_activity_hint">تازي ليڻ ڏيڻ وارا مٿي</string>
+    <string name="sort_newest_hint">تازي داخلا پهرين</string>
+    <string name="sort_oldest_hint">پهرين داخلا پهرين</string>
+    <string name="sort_amount_high_hint">وڏي رقم پهرين</string>
+    <string name="sort_amount_low_hint">ننڍي رقم پهرين</string>
+    <string name="theme_light_hint">ڏينهن جي روشنيءَ ۾ صاف</string>
+    <string name="theme_dark_hint">رات جو اکين لاءِ آرامده</string>
+    <string name="theme_system_hint">فون جي سيٽنگ سان بدلجي</string>
 </resources>

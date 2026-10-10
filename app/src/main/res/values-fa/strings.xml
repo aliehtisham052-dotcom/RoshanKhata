@@ -2344,4 +2344,18 @@
     <string name="coach_title_tools">ابزارها</string>
     <string name="coach_desc_tools">ماشین‌حساب، زکات، کارت ویزیت شما، پوستر برای استوری واتساپ، پشتیبان‌گیری در Google Drive، و سطل بازیابی برای هر چیزی که اشتباهی حذف شد.</string>
     <string name="tile_backup">پشتیبان‌گیری</string>
+
+    <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
+    <string name="sort_name_az_hint">به ترتیب الفبا</string>
+    <string name="sort_name_za_hint">به ترتیب وارونهٔ الفبا</string>
+    <string name="sort_owes_most_hint">بیشترین طلب در بالا</string>
+    <string name="sort_i_owe_most_hint">بیشترین بدهی شما در بالا</string>
+    <string name="sort_recent_activity_hint">آخرین معامله در بالا</string>
+    <string name="sort_newest_hint">جدیدترین ثبت اول</string>
+    <string name="sort_oldest_hint">قدیمی‌ترین ثبت اول</string>
+    <string name="sort_amount_high_hint">بیشترین مبلغ اول</string>
+    <string name="sort_amount_low_hint">کمترین مبلغ اول</string>
+    <string name="theme_light_hint">روشن و خوانا در روز</string>
+    <string name="theme_dark_hint">راحت برای چشم در شب</string>
+    <string name="theme_system_hint">همراه با تنظیم گوشی</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -84,15 +85,17 @@ class ProductCustomersActivity : BaseActivity() {
         )
 
     private fun pickWindow() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.promo_window)
-            .setSingleChoiceItems(windowLabels, choice) { dialog, which ->
-                choice = which
-                dialog.dismiss()
-                load()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        val icons = intArrayOf(R.drawable.ic_tile_season, R.drawable.ic_calendar, R.drawable.ic_list_all)
+        val choices = windowLabels.mapIndexed { i, label ->
+            // The season tile is a duotone (own colours); the other two take the tint.
+            if (i == 0) ChoiceSheet.Option(label, icon = icons[i], iconTint = 0, tile = R.color.tile_plans_bg)
+            else ChoiceSheet.Option(label, icon = icons[i.coerceAtMost(icons.size - 1)],
+                iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg)
+        }
+        ChoiceSheet.show(this, getString(R.string.promo_window), choices, choice) { which ->
+            choice = which
+            load()
+        }
     }
 
     private fun load() {

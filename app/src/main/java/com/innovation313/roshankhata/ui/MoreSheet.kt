@@ -162,17 +162,18 @@ object MoreSheet {
             activity.getString(R.string.text_size_largest)
         )
         val current = TextSize.level(activity)
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.text_size)
-            .setSingleChoiceItems(labels, current) { dialog, which ->
-                dialog.dismiss()
-                if (which != current) {
-                    TextSize.setLevel(activity, which)
-                    activity.recreate()
-                }
+        // Each size shows itself: "Aa" in the tile at that size (10 Oct).
+        val glyphSizes = floatArrayOf(12f, 15f, 18f, 21f)
+        val choices = labels.mapIndexed { i, label ->
+            ChoiceSheet.Option(label, glyph = "Aa", glyphSp = glyphSizes[i.coerceAtMost(glyphSizes.size - 1)],
+                iconTint = R.color.tile_invoice_fg, tile = R.color.tile_invoice_bg)
+        }
+        ChoiceSheet.show(activity, activity.getString(R.string.text_size), choices, current) { which ->
+            if (which != current) {
+                TextSize.setLevel(activity, which)
+                activity.recreate()
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        }
     }
 
     /** Light, dark, or the phone's own (see [ThemeMode]); setDefaultNightMode rebuilds open screens itself. */
@@ -183,14 +184,18 @@ object MoreSheet {
             activity.getString(R.string.theme_system)
         )
         val current = ThemeMode.get(activity)
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.theme)
-            .setSingleChoiceItems(labels, current) { dialog, which ->
-                dialog.dismiss()
-                if (which != current) ThemeMode.set(activity, which)
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        // Sun, moon, phone (10 Oct); same order as the labels above.
+        val choices = listOf(
+            ChoiceSheet.Option(labels[0], activity.getString(R.string.theme_light_hint),
+                icon = R.drawable.ic_theme_light, iconTint = R.color.backup_ink, tile = R.color.tile_bills_bg),
+            ChoiceSheet.Option(labels[1], activity.getString(R.string.theme_dark_hint),
+                icon = R.drawable.ic_theme_dark, iconTint = R.color.tile_card_fg, tile = R.color.tile_card_bg),
+            ChoiceSheet.Option(labels[2], activity.getString(R.string.theme_system_hint),
+                icon = R.drawable.ic_theme_phone, iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg)
+        )
+        ChoiceSheet.show(activity, activity.getString(R.string.theme), choices, current) { which ->
+            if (which != current) ThemeMode.set(activity, which)
+        }
     }
 
     private fun appLock(activity: Activity) {

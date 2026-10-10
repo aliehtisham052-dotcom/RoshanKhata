@@ -2316,4 +2316,18 @@
     <string name="coach_title_tools">ٹولز</string>
     <string name="coach_desc_tools">کیلکولیٹر، زکوٰۃ، آپ کا بزنس کارڈ، واٹس ایپ اسٹیٹس کے لیے پوسٹر، گوگل ڈرائیو پر بیک اپ، اور غلطی سے ڈیلیٹ ہونے والی چیزوں کے لیے بن۔</string>
     <string name="tile_backup">بیک اپ</string>
+
+    <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
+    <string name="sort_name_az_hint">حروفِ تہجی کی ترتیب سے</string>
+    <string name="sort_name_za_hint">حروفِ تہجی کی الٹی ترتیب سے</string>
+    <string name="sort_owes_most_hint">سب سے زیادہ وصولی والے اوپر</string>
+    <string name="sort_i_owe_most_hint">جنہیں سب سے زیادہ دینا ہے وہ اوپر</string>
+    <string name="sort_recent_activity_hint">تازہ لین دین والے اوپر</string>
+    <string name="sort_newest_hint">تازہ اندراج پہلے</string>
+    <string name="sort_oldest_hint">پہلا اندراج پہلے</string>
+    <string name="sort_amount_high_hint">بڑی رقم پہلے</string>
+    <string name="sort_amount_low_hint">چھوٹی رقم پہلے</string>
+    <string name="theme_light_hint">دن کی روشنی میں صاف</string>
+    <string name="theme_dark_hint">رات کو آنکھوں کے لیے آرام دہ</string>
+    <string name="theme_system_hint">فون کی سیٹنگ کے ساتھ بدلے</string>
 </resources>

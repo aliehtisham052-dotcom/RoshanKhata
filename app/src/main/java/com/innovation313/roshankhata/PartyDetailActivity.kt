@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.data.TradeVocab
 import com.innovation313.roshankhata.ui.Calc
@@ -2411,14 +2412,21 @@ class PartyDetailActivity : BaseActivity() {
             getString(R.string.sort_amount_low)
         )
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.sort_by)
-            .setSingleChoiceItems(options, entrySortMode.ordinal) { dialog, which ->
-                entrySortMode = EntrySort.values()[which]
-                renderEntries()
-                dialog.dismiss()
-            }
-            .show()
+        // The chooser sheet (10 Oct); same order as EntrySort.
+        val hints = intArrayOf(
+            R.string.sort_newest_hint, R.string.sort_oldest_hint,
+            R.string.sort_amount_high_hint, R.string.sort_amount_low_hint
+        )
+        val choices = options.mapIndexed { i, label ->
+            if (i < 2) ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_calendar,
+                iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg)
+            else ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_sort_arrows,
+                iconTint = R.color.brand_green_text, tile = R.color.tile_khata_bg)
+        }
+        ChoiceSheet.show(this, getString(R.string.sort_by), choices, entrySortMode.ordinal) { which ->
+            entrySortMode = EntrySort.values()[which]
+            renderEntries()
+        }
     }
 
     /**

@@ -2488,4 +2488,18 @@
     <string name="coach_title_tools">الأدوات</string>
     <string name="coach_desc_tools">آلة حاسبة، الزكاة، بطاقة عملك، ملصق لحالة واتساب، نسخ احتياطي إلى Google Drive، وسلة المحذوفات لأي شيء حُذف بالخطأ.</string>
     <string name="tile_backup">النسخ الاحتياطي</string>
+
+    <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
+    <string name="sort_name_az_hint">بالترتيب الأبجدي</string>
+    <string name="sort_name_za_hint">بالترتيب الأبجدي العكسي</string>
+    <string name="sort_owes_most_hint">الأكثر تحصيلًا في الأعلى</string>
+    <string name="sort_i_owe_most_hint">الأكثر دَينًا عليك في الأعلى</string>
+    <string name="sort_recent_activity_hint">صاحب أحدث معاملة في الأعلى</string>
+    <string name="sort_newest_hint">أحدث قيد أولًا</string>
+    <string name="sort_oldest_hint">أقدم قيد أولًا</string>
+    <string name="sort_amount_high_hint">أكبر مبلغ أولًا</string>
+    <string name="sort_amount_low_hint">أصغر مبلغ أولًا</string>
+    <string name="theme_light_hint">واضح في ضوء النهار</string>
+    <string name="theme_dark_hint">مريح للعين ليلًا</string>
+    <string name="theme_system_hint">يتبع إعداد هاتفك</string>
 </resources>
