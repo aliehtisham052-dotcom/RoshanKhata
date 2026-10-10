@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -103,16 +104,22 @@ class StaffActivity : BaseActivity() {
         val labels = arrayOf(getString(R.string.staff_present), getString(R.string.staff_absent),
             getString(R.string.staff_half), getString(R.string.staff_leave))
         val current = (marks.firstOrNull { it.day == d }?.status ?: Payroll.PRESENT) - 1
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.staff_day_for, person.name + " \u00b7 " + DateWords.format("d MMM", d)))
-            .setSingleChoiceItems(labels, current) { dialog, which ->
-                dialog.dismiss()
-                lifecycleScope.launch {
-                    if (which == 0) dao.clearAttendance(person.id, d)
-                    else dao.markAttendance(StaffAttendance(staffId = person.id, day = d, status = which + 1))
-                }
-            }
-            .setNeutralButton(R.string.staff_change_date) { _, _ ->
+        // Present, absent, half day, leave - each with its own tile (10 Oct);
+        // "Change date" stays, as the sheet's second button.
+        val choices = listOf(
+            ChoiceSheet.Option(labels[0], icon = R.drawable.ic_check_circle,
+                iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg),
+            ChoiceSheet.Option(labels[1], icon = R.drawable.ic_close,
+                iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg),
+            ChoiceSheet.Option(labels[2], glyph = "\u00bd", glyphSp = 18f,
+                iconTint = R.color.backup_ink, tile = R.color.tile_bills_bg),
+            ChoiceSheet.Option(labels[3], icon = R.drawable.ic_calendar,
+                iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg)
+        )
+        ChoiceSheet.show(
+            this, getString(R.string.staff_day_for, person.name + " \u00b7 " + DateWords.format("d MMM", d)),
+            choices, current,
+            secondary = ChoiceSheet.Action(getString(R.string.staff_change_date)) {
                 val c = Calendar.getInstance().apply { timeInMillis = d }
                 DatePickerDialog(this, { _, y, mo, dd ->
                     val picked = Calendar.getInstance().apply { set(y, mo, dd, 0, 0, 0); set(Calendar.MILLISECOND, 0) }.timeInMillis
@@ -122,8 +129,12 @@ class StaffActivity : BaseActivity() {
                     datePicker.maxDate = to - 1
                 }.show()
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        ) { which ->
+            lifecycleScope.launch {
+                if (which == 0) dao.clearAttendance(person.id, d)
+                else dao.markAttendance(StaffAttendance(staffId = person.id, day = d, status = which + 1))
+            }
+        }
     }
 
     private fun field(hint: Int, type: Int, value: String? = null) = EditText(this).apply {

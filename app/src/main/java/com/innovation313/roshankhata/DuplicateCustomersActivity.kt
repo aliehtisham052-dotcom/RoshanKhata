@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -85,26 +86,22 @@ class DuplicateCustomersActivity : BaseActivity() {
 
     /** Step 1: which record survives. Nothing is written yet. */
     private fun reviewGroup(group: DuplicateDetector.Group) {
+        // Name on the card, phone and balance on the line beneath it (10 Oct).
+        // This one changes the book, so a tap only marks a card and Next decides.
         val options = group.members.map { m ->
             val phone = m.phone?.takeIf { it.isNotBlank() } ?: "—"
-            "${Format.isolate(m.name)}  —  ${Format.ltr(phone)}  —  ${Format.money(m.balance)}"
-        }.toTypedArray()
-
-        var chosen = 0
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.duplicate_pick_primary_title)
-            .setMessage(R.string.duplicate_pick_primary_message)
-            .setSingleChoiceItems(options, chosen) { _, which -> chosen = which }
-            .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton(R.string.duplicate_not_duplicate) { dialog, _ ->
-                dialog.dismiss()
-                dismissGroup(group)
-            }
-            .setPositiveButton(R.string.duplicate_next) { dialog, _ ->
-                dialog.dismiss()
-                confirmMerge(group, chosen)
-            }
-            .show()
+            ChoiceSheet.Option(
+                Format.isolate(m.name),
+                "${Format.ltr(phone)}  \u00b7  ${Format.money(m.balance)}",
+                icon = R.drawable.ic_person, iconTint = R.color.tile_card_fg, tile = R.color.tile_card_bg
+            )
+        }
+        ChoiceSheet.show(
+            this, getString(R.string.duplicate_pick_primary_title), options, 0,
+            message = getString(R.string.duplicate_pick_primary_message),
+            confirm = getString(R.string.duplicate_next),
+            secondary = ChoiceSheet.Action(getString(R.string.duplicate_not_duplicate)) { dismissGroup(group) }
+        ) { chosen -> confirmMerge(group, chosen) }
     }
 
     /**

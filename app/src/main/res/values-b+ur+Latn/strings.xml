@@ -2316,4 +2316,18 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="coach_title_tools">Tools</string>
     <string name="coach_desc_tools">Calculator, Zakat, aap ka business card, WhatsApp status ke liye poster, Google Drive par backup, aur ghalti se delete hone wali cheezon ke liye bin.</string>
     <string name="tile_backup">Backup</string>
+
+    <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
+    <string name="sort_name_az_hint">Huroof-e-tahajji ki tarteeb se</string>
+    <string name="sort_name_za_hint">Huroof-e-tahajji ki ulti tarteeb se</string>
+    <string name="sort_owes_most_hint">Sab se zyada wasooli wale upar</string>
+    <string name="sort_i_owe_most_hint">Jinhein sab se zyada dena hai woh upar</string>
+    <string name="sort_recent_activity_hint">Taaza lain dain wale upar</string>
+    <string name="sort_newest_hint">Taaza entry pehle</string>
+    <string name="sort_oldest_hint">Pehli entry pehle</string>
+    <string name="sort_amount_high_hint">Bari raqam pehle</string>
+    <string name="sort_amount_low_hint">Chhoti raqam pehle</string>
+    <string name="theme_light_hint">Din ki roshni mein saaf</string>
+    <string name="theme_dark_hint">Raat ko aankhon ke liye aaram deh</string>
+    <string name="theme_system_hint">Phone ki setting ke saath badle</string>
 </resources>

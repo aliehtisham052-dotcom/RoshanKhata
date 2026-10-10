@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -633,15 +634,14 @@ class BusinessSettingsActivity : BaseActivity() {
     private fun chooseCalendar() {
         val kinds = com.innovation313.roshankhata.data.ShopCalendar.Kind.values()
         val current = BusinessProfile.calendar(this)
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.bp_calendar)
-            .setSingleChoiceItems(kinds.map { calendarLabel(it) }.toTypedArray(), kinds.indexOf(current)) { dialog, which ->
-                dialog.dismiss()
-                com.innovation313.roshankhata.data.ShopCalendar.set(this, kinds[which])
-                renderCalendar()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        val choices = kinds.map {
+            ChoiceSheet.Option(calendarLabel(it), icon = R.drawable.ic_calendar,
+                iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg)
+        }
+        ChoiceSheet.show(this, getString(R.string.bp_calendar), choices, kinds.indexOf(current)) { which ->
+            com.innovation313.roshankhata.data.ShopCalendar.set(this, kinds[which])
+            renderCalendar()
+        }
     }
 
     private fun renderCurrency() {
@@ -655,22 +655,22 @@ class BusinessSettingsActivity : BaseActivity() {
      */
     private fun chooseCurrency() {
         val current = BusinessProfile.currency(this)
-        val labels = Currency.CHOICES.map { (sign, code) -> "$sign — $code" } +
-            getString(R.string.currency_custom)
+        // The sign itself sits in the tile (10 Oct), the code beside it; the
+        // last card types any other sign.
+        val choices = Currency.CHOICES.map { (sign, code) ->
+            ChoiceSheet.Option(code, glyph = sign, glyphSp = if (sign.length > 2) 11f else 15f,
+                iconTint = R.color.backup_ink, tile = R.color.tile_bills_bg)
+        } + ChoiceSheet.Option(getString(R.string.currency_custom), icon = R.drawable.ic_hash,
+            iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg)
         val checked = Currency.CHOICES.indexOfFirst { it.first == current }
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.bp_currency)
-            .setSingleChoiceItems(labels.toTypedArray(), checked) { dialog, which ->
-                dialog.dismiss()
-                if (which < Currency.CHOICES.size) {
-                    Currency.set(this, Currency.CHOICES[which].first)
-                    renderCurrency()
-                } else {
-                    typeCurrency(current)
-                }
+        ChoiceSheet.show(this, getString(R.string.bp_currency), choices, checked) { which ->
+            if (which < Currency.CHOICES.size) {
+                Currency.set(this, Currency.CHOICES[which].first)
+                renderCurrency()
+            } else {
+                typeCurrency(current)
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        }
     }
 
     private fun typeCurrency(current: String) {

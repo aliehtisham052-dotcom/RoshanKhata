@@ -2451,4 +2451,18 @@ You can change this any time from this screen.</string>
     <string name="coach_title_tools">Tools</string>
     <string name="coach_desc_tools">A calculator, Zakat, your business card, a poster for WhatsApp status, backup to your Google Drive, and the bin for anything deleted by mistake.</string>
     <string name="tile_backup">Backup</string>
+
+    <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
+    <string name="sort_name_az_hint">In alphabetical order</string>
+    <string name="sort_name_za_hint">In reverse alphabetical order</string>
+    <string name="sort_owes_most_hint">Most to collect at the top</string>
+    <string name="sort_i_owe_most_hint">Most you owe at the top</string>
+    <string name="sort_recent_activity_hint">Latest entry at the top</string>
+    <string name="sort_newest_hint">Latest entry first</string>
+    <string name="sort_oldest_hint">Earliest entry first</string>
+    <string name="sort_amount_high_hint">Biggest amount first</string>
+    <string name="sort_amount_low_hint">Smallest amount first</string>
+    <string name="theme_light_hint">Clear in daylight</string>
+    <string name="theme_dark_hint">Easy on the eyes at night</string>
+    <string name="theme_system_hint">Follows your phone setting</string>
 </resources>

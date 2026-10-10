@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -1024,14 +1025,28 @@ class KhataActivity : BaseActivity() {
             getString(R.string.sort_recent_activity)
         )
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.sort_by)
-            .setSingleChoiceItems(options, sortMode.ordinal) { dialog, which ->
-                sortMode = SortMode.values()[which]
-                render()
-                dialog.dismiss()
+        // The chooser sheet (10 Oct): each order with its own tile and a line
+        // on what it puts at the top. Same order as SortMode.
+        val hints = intArrayOf(
+            R.string.sort_name_az_hint, R.string.sort_name_za_hint, R.string.sort_owes_most_hint,
+            R.string.sort_i_owe_most_hint, R.string.sort_recent_activity_hint
+        )
+        val choices = options.mapIndexed { i, label ->
+            when (i) {
+                0 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = "A\u2013Z", glyphSp = 13f)
+                1 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = "Z\u2013A", glyphSp = 13f)
+                2 -> ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_arrow_got,
+                    iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg)
+                3 -> ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_arrow_gave,
+                    iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg)
+                else -> ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_calendar,
+                    iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg)
             }
-            .show()
+        }
+        ChoiceSheet.show(this, getString(R.string.sort_by), choices, sortMode.ordinal) { which ->
+            sortMode = SortMode.values()[which]
+            render()
+        }
     }
 
     override fun onResume() {
