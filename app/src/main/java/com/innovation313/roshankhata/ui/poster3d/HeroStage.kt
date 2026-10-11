@@ -183,6 +183,7 @@ class HeroStage(context: Context, private val hero: Hero) {
      * turned the right way up here.
      */
     suspend fun still(w: Int, h: Int): Bitmap = suspendCancellableCoroutine { cont ->
+        Log.d(TAG, "still: swapchain ${w}x$h")
         val sc = engine.createSwapChain(w, h, SwapChainFlags.CONFIG_TRANSPARENT or SwapChainFlags.CONFIG_READABLE)
         project(w, h)
         pose(0f)
@@ -195,7 +196,7 @@ class HeroStage(context: Context, private val hero: Hero) {
         val watchdog = Runnable {
             if (!finished) {
                 finished = true
-                Log.w("Poster3D", "readPixels did not return within 5 s")
+                Log.w(TAG, "readPixels did not return within 5 s")
                 engine.destroySwapChain(sc)
                 project(liveW, liveH)
                 if (cont.isActive) cont.resumeWithException(IllegalStateException("The GPU did not return the picture"))
@@ -205,6 +206,7 @@ class HeroStage(context: Context, private val hero: Hero) {
         val done = Runnable {
             if (finished) return@Runnable
             finished = true
+            Log.d(TAG, "still: pixels returned")
             handler.removeCallbacks(watchdog)
             engine.destroySwapChain(sc)
             project(liveW, liveH)
@@ -221,7 +223,9 @@ class HeroStage(context: Context, private val hero: Hero) {
         var started = false
         for (attempt in 0 until 4) {
             if (renderer.beginFrame(sc, 0L)) {
+                Log.d(TAG, "still: frame begun (attempt $attempt), rendering")
                 renderer.render(view)
+                Log.d(TAG, "still: rendered, reading pixels")
                 renderer.readPixels(0, 0, w, h,
                     Texture.PixelBufferDescriptor(buffer, Texture.Format.RGBA, Texture.Type.UBYTE, 1, 0, 0, w, handler, done))
                 renderer.endFrame()
@@ -231,7 +235,9 @@ class HeroStage(context: Context, private val hero: Hero) {
             engine.flushAndWait()
         }
         if (started) {
+            Log.d(TAG, "still: frame ended, waiting for the GPU")
             engine.flushAndWait()
+            Log.d(TAG, "still: GPU done")
         } else {
             finished = true
             handler.removeCallbacks(watchdog)
@@ -263,6 +269,8 @@ class HeroStage(context: Context, private val hero: Hero) {
  * (store/poster3d/make_models.py builds them); the camera looks down a little
  * so the top of the crate and the plinth's face both show.
  */
+private const val TAG = "Poster3D"
+
 enum class Hero(
     val asset: String,
     val spinNode: String,

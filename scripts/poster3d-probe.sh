@@ -3,7 +3,7 @@
 # poster test, with the device log streamed to a file the workflow prints
 # even when the test hangs. Kept short and separate from device-check.sh.
 adb logcat -c
-adb logcat -v time Poster3D:V Filament:V AndroidRuntime:E ActivityManager:W TestRunner:V *:S > /tmp/probe_logcat.txt 2>&1 &
+adb logcat -v time Poster3D:V Filament:V AndroidRuntime:E ActivityManager:W TestRunner:V DEBUG:V libc:V *:E > /tmp/probe_logcat.txt 2>&1 &
 LOGPID=$!
 timeout 600 gradle connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.innovation313.roshankhata.Poster3dOnDeviceTest --no-daemon > /tmp/probe_gradle.txt 2>&1
 code=$?
@@ -18,5 +18,7 @@ adb pull /sdcard/Download/rtl-proof /tmp/rtl-proof > /dev/null 2>&1 || true
 enc() { sed -e 's/%/%25/g' -e 's/\r//g' | awk '{printf "%s%%0A", $0}'; }
 echo "::notice title=gradle exit $code::$(grep -E 'FAILED|Exception|Error|error:|tests completed|BUILD|Tests on|expected|assert' /tmp/probe_gradle.txt | tail -40 | enc)"
 echo "::notice title=device log::$(grep -vE 'ActivityManager' /tmp/probe_logcat.txt | tail -60 | enc)"
-echo "::notice title=device crashes::$(grep -E 'FATAL|AndroidRuntime|Poster3D|SIG|abort' /tmp/probe_logcat.txt | tail -40 | enc)"
+r=$(find app/build/outputs/androidTest-results -name '*.xml' 2>/dev/null | head -1)
+[ -n "$r" ] && echo "::notice title=test failure::$(grep -A25 '<failure' "$r" | head -40 | enc)"
+echo "::notice title=device crashes::$(grep -E 'FATAL|AndroidRuntime|Poster3D|SIG|abort|DEBUG|libc|Filament' /tmp/probe_logcat.txt | tail -40 | enc)"
 exit $code
