@@ -296,8 +296,7 @@ class HeroStage(
 
     /**
      * One frame of the resting hero, [w]×[h], with a clear background, for
-     * the shared picture. Rows come back bottom-up from the GPU and are
-     * turned the right way up here.
+     * the shared picture.
      */
     suspend fun still(w: Int, h: Int): Bitmap = suspendCancellableCoroutine { cont ->
         Log.d(TAG, "still: swapchain ${w}x$h")
@@ -327,14 +326,12 @@ class HeroStage(
             Log.d(TAG, "still: pixels returned")
             handler.removeCallbacks(watchdog)
             engine.destroySwapChain(sc)
-            val bytes = ByteArray(w * h * 4)
+            // Filament hands the rows back top row first, as a Bitmap wants them.
+            // (They were flipped here until 11 Oct, which turned every shared
+            // hero upside down; the CI pictures showed the crate under its plinth.)
             buffer.rewind()
-            buffer.get(bytes)
-            val flipped = ByteArray(bytes.size)
-            val row = w * 4
-            for (y in 0 until h) System.arraycopy(bytes, (h - 1 - y) * row, flipped, y * row, row)
             val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-            bmp.copyPixelsFromBuffer(ByteBuffer.wrap(flipped))
+            bmp.copyPixelsFromBuffer(buffer)
             if (cont.isActive) cont.resume(bmp)
         }
         var started = false
