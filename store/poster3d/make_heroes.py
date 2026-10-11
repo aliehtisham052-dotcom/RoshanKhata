@@ -246,9 +246,10 @@ def eid_fitr():
     c = (540, 345)
     sc = trimesh.Scene()
     add(sc, crescent(0.583), "crescent", at=at(528, 516, *c))
-    add(sc, lantern(1.26, chain=1.4), "lantern_l", at=at(132, 234, *c))
-    add(sc, lantern(1.03, chain=0.8), "lantern_r", at=at(936, 108, *c))
-    add(sc, lantern(0.78, chain=0.4), "lantern_m", at=at(810, 45, *c, z=-0.3))
+    # Lanterns x1.35 over the first cut: on the CI pictures they read smaller than the mockup's.
+    add(sc, lantern(1.7, chain=1.4), "lantern_l", at=at(132, 200, *c))
+    add(sc, lantern(1.39, chain=0.8), "lantern_r", at=at(936, 96, *c))
+    add(sc, lantern(1.05, chain=0.4), "lantern_m", at=at(800, 40, *c, z=-0.3))
     return sc
 
 
@@ -257,7 +258,7 @@ def ramazan():
     c = (540, 350)
     sc = trimesh.Scene()
     add(sc, crescent(0.84), "crescent", at=at(408, 426, *c))
-    add(sc, lantern(1.1, chain=1.2), "lantern_r", at=at(900, 150, *c))
+    add(sc, lantern(1.5, chain=1.2), "lantern_r", at=at(900, 130, *c))
     return sc
 
 
