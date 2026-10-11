@@ -193,6 +193,13 @@ jobs:
             line=$(grep -E "Finished [0-9]+ tests|Tests on .* [0-9]+|tests completed|BUILD (SUCCESSFUL|FAILED)" /tmp/instrumented_output.txt | tr -d '\r' | tr '\n' ' ' | cut -c1-400)
             echo "::notice::Gradle said: ${line:-nothing matched}"
           fi
+          # The 3D posters' log, one annotation (newlines as %0A), when it has
+          # anything worth reading: a still that did not return, or an error.
+          if [ -f /tmp/poster3d_log.txt ] && grep -qE "did not return|E/Filament|FATAL|failed: .*Poster" /tmp/poster3d_log.txt; then
+            body=$(grep -E "Poster3D|Filament|TestRunner.*(Poster|failed)|AndroidRuntime" /tmp/poster3d_log.txt | grep -v " grid " | tail -70 \
+              | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::notice title=Poster 3D log::$body"
+          fi
           if [ "$files" -eq 0 ]; then
             where=$(find app/build -path '*androidTest*' -name '*.xml' 2>/dev/null | head -5 | tr '\n' ' ')
             echo "::notice::No TEST-*.xml found. androidTest XMLs present: ${where:-none}"
