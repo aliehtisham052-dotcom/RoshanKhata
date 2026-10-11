@@ -62,8 +62,6 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
                 "shadows" -> Look(true, false, true, true, false, false, false)
                 "msaa" -> Look(true, false, false, false, true, false, false)
                 "fxaa" -> Look(true, false, false, false, false, true, false)
-                // Everything the CI emulator's GPU survives (see Studio.isAndroidEmulator).
-                "emulator" -> Look(true, true, true, false, true, false, false)
                 else -> Look()
             }
         }

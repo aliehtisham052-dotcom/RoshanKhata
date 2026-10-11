@@ -24,6 +24,10 @@ name: On-device tests
 #   3. That line runs in POSIX sh, not bash: no ${PIPESTATUS}.
 #   4. api-level 30 / google_apis / x86_64 / pixel_2 boots here. api-level 29
 #      with the default target has no system image, and fails in ~80 seconds.
+#   5. -gpu swangle_indirect (ANGLE over SwiftShader Vulkan, OpenGL ES 3.1),
+#      not swiftshader_indirect: on the old translator Filament's 3D posters
+#      render white, abort the app, and shadows kill the emulator, which
+#      then hangs the job to its time limit (11 Oct, Poster 3D probe).
 
 on:
   push:
@@ -92,7 +96,7 @@ jobs:
           profile: pixel_2
           emulator-options: >-
             -no-window -no-snapshot -noaudio -no-boot-anim
-            -gpu swiftshader_indirect -camera-back none
+            -gpu swangle_indirect -camera-back none
           disable-animations: true
           # ONE line (see note 2 at the top). The real steps live in
           # scripts/device-check.sh, which runs as one sh process: the written
