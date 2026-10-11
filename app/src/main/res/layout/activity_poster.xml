@@ -242,6 +242,7 @@
                             android:id="@+id/btnPhoto"
                             style="@style/ProfileSmallButton"
                             android:layout_marginStart="0dp"
+                            android:letterSpacing="0"
                             android:text="@string/poster_add_photo"
                             app:icon="@drawable/ic_camera" />
 
@@ -557,7 +558,8 @@
                     android:text="@string/poster_no_phone"
                     android:textColor="@color/ink"
                     android:textSize="14sp"
-                    app:drawableStartCompat="@drawable/ic_phone_small" />
+                    app:drawableStartCompat="@drawable/ic_phone_small"
+                    app:drawableTint="@color/brand_green_text" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddPhone"
@@ -567,6 +569,7 @@
                     android:backgroundTint="@color/brand_green"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
+                    android:letterSpacing="0"
                     android:text="@string/poster_add_phone"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -608,6 +611,7 @@
             android:backgroundTint="@color/brand_green"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:letterSpacing="0"
             android:text="@string/poster_put_on_status"
             android:textAllCaps="false"
             android:textColor="@color/white"

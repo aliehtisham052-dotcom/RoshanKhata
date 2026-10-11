@@ -151,8 +151,11 @@ object PosterDesigns {
                 lines = 3, width = (panel.width() - 108f).toInt())
         } else {
             // The dua under the greeting, then the shop's Ramazan hours on glass (the mockup).
-            msg = PosterKit.message(page, page.message, 1010f, 0xF2F6EBD4.toInt(), if (page.urdu) 44f else 40f, lines = 2, width = 900)
-            val panel = RectF(78f, 1124f, W - 78f, 1124f + PosterKit.rowsHeight(hours.size, true))
+            // Lower in Urdu: the Ruqaa greeting reaches further down than Playfair.
+            msg = PosterKit.message(page, page.message, if (page.urdu) 1050f else 1010f, 0xF2F6EBD4.toInt(),
+                if (page.urdu) 44f else 40f, lines = 2, width = 900)
+            val top = if (page.urdu) 1170f else 1124f
+            val panel = RectF(78f, top, W - 78f, top + PosterKit.rowsHeight(hours.size, true))
             PosterKit.glass(c, panel, fill = 0x14FFFFFF)
             PosterKit.rows(page, panel, hours, title = str(page, R.string.poster_ramazan_hours_title))
         }

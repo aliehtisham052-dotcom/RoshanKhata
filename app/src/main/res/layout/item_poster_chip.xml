@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A choice on the poster screen: green and ticked when chosen, as the mockup. -->
+<com.google.android.material.chip.Chip
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.Chip.Choice"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/poster_chip_text"
+    app:checkedIcon="@drawable/ic_check_plain"
+    app:checkedIconTint="@color/white"
+    app:checkedIconVisible="true"
+    app:chipBackgroundColor="@color/poster_chip_bg"
+    app:chipStrokeColor="@color/hairline"
+    app:chipStrokeWidth="1dp"
+    app:closeIconTint="@color/poster_chip_text" />

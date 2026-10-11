@@ -342,7 +342,7 @@ class PosterActivity : BaseActivity() {
     }
 
     private fun choiceChip(group: ChipGroup, text: String): Chip {
-        val chip = layoutInflater.inflate(R.layout.item_rate_list_chip, group, false) as Chip
+        val chip = layoutInflater.inflate(R.layout.item_poster_chip, group, false) as Chip
         chip.id = View.generateViewId()
         chip.text = text
         group.addView(chip)
