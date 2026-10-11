@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.Choreographer
 import android.view.Surface
 import android.view.TextureView
@@ -61,6 +62,8 @@ class HeroStage(context: Context, private val hero: Hero) {
     private var running = false
     private var startNanos = 0L
     private var destroyed = false
+    /** A frame is owed (new surface or size). With animations off, only owed frames are drawn. */
+    private var dirty = true
 
     init {
         scene.setIndirectLight(light)
@@ -119,11 +122,15 @@ class HeroStage(context: Context, private val hero: Hero) {
             if (!running) return
             choreographer.postFrameCallback(this)
             if (startNanos == 0L) startNanos = frameTimeNanos
+            // With the phone's animations off nothing moves, so nothing is redrawn
+            // either: the GPU (a software one on a test emulator) rests.
+            if (!motion && !dirty) return
             pose(if (motion) (frameTimeNanos - startNanos) / 1e9f else 0f)
             val sc = swapChain ?: return
             if (uiHelper?.isReadyToRender == true && renderer.beginFrame(sc, frameTimeNanos)) {
                 renderer.render(view)
                 renderer.endFrame()
+                dirty = false
             }
         }
     }
@@ -138,6 +145,7 @@ class HeroStage(context: Context, private val hero: Hero) {
             override fun onNativeWindowChanged(surface: Surface) {
                 swapChain?.let { engine.destroySwapChain(it) }
                 swapChain = engine.createSwapChain(surface, helper.swapChainFlags)
+                dirty = true
             }
 
             override fun onDetachedFromSurface() {
@@ -152,6 +160,7 @@ class HeroStage(context: Context, private val hero: Hero) {
                 liveW = width
                 liveH = height
                 project(width, height)
+                dirty = true
             }
         })
         helper.attachTo(target)
@@ -179,7 +188,24 @@ class HeroStage(context: Context, private val hero: Hero) {
         pose(0f)
         val buffer = ByteBuffer.allocateDirect(w * h * 4)
         val handler = Handler(Looper.getMainLooper())
+        var finished = false
+        // A GPU that never hands the pixels back must not hold the share button
+        // (or a test) forever: after five seconds the caller gets an error and
+        // draws the flat hero instead. The late callback, if it ever comes, is ignored.
+        val watchdog = Runnable {
+            if (!finished) {
+                finished = true
+                Log.w("Poster3D", "readPixels did not return within 5 s")
+                engine.destroySwapChain(sc)
+                project(liveW, liveH)
+                if (cont.isActive) cont.resumeWithException(IllegalStateException("The GPU did not return the picture"))
+            }
+        }
+        handler.postDelayed(watchdog, 5_000L)
         val done = Runnable {
+            if (finished) return@Runnable
+            finished = true
+            handler.removeCallbacks(watchdog)
             engine.destroySwapChain(sc)
             project(liveW, liveH)
             val bytes = ByteArray(w * h * 4)
@@ -207,6 +233,8 @@ class HeroStage(context: Context, private val hero: Hero) {
         if (started) {
             engine.flushAndWait()
         } else {
+            finished = true
+            handler.removeCallbacks(watchdog)
             engine.destroySwapChain(sc)
             project(liveW, liveH)
             cont.resumeWithException(IllegalStateException("The GPU did not take a frame"))
