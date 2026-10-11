@@ -17,8 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        look: [full, emulator]
-        gpu: [swangle_indirect, guest]
+        look: [full]
+        gpu: [swangle_indirect]
     env:
       LOOK: ${{ matrix.look }}
     steps:

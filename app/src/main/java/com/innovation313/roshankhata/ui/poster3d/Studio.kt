@@ -1,7 +1,9 @@
 package com.innovation313.roshankhata.ui.poster3d
 
 import android.content.Context
-import android.os.Build
+import android.opengl.EGL14
+import android.opengl.EGLConfig
+import android.opengl.GLES20
 import android.util.Log
 import com.google.android.filament.Engine
 import com.google.android.filament.EntityManager
@@ -61,28 +63,70 @@ object Studio {
     val engine: Engine get() = engineOrNull ?: error("Studio not started")
 
     /**
-     * Android's own emulator draws through an old SwiftShader GL translator,
-     * and Filament does not survive it (checked on the CI emulator, 11 Oct):
-     * its FXAA and translucent-blit shaders fail to compile there, which
-     * aborts the app, and shadow maps take the whole emulator down. Real
-     * phone GPUs compile those shaders, so only the emulator gets flat heroes.
+     * The GL driver this phone would give Filament, e.g. "Adreno (TM) 610 |
+     * OpenGL ES 3.2 V@0502.0". Read once through a throwaway 1×1 context.
      */
-    val isAndroidEmulator: Boolean by lazy {
-        val hw = Build.HARDWARE.lowercase()
-        val product = Build.PRODUCT.lowercase()
-        val fp = Build.FINGERPRINT.lowercase()
-        hw == "ranchu" || hw == "goldfish" ||
-            product.startsWith("sdk") || product.contains("emulator") ||
-            fp.startsWith("generic") || fp.contains("sdk_gphone")
+    val glDriver: String by lazy { readGlDriver() }
+
+    /**
+     * The Android emulator's legacy GL translator ("Google SwiftShader",
+     * OpenGL ES 3.0, -gpu swiftshader_indirect). Filament does not survive it
+     * (checked on the CI emulator, 11 Oct): lit materials come out flat white,
+     * the FXAA and translucent-blit shaders fail to compile and abort the app,
+     * and shadow maps take the whole emulator down. The same emulator on
+     * ANGLE (-gpu swangle_indirect, OpenGL ES 3.1) renders the full poster
+     * correctly, as do real phone GPUs, so only this one driver gets flat heroes.
+     */
+    val isLegacySwiftShader: Boolean by lazy {
+        glDriver.contains("SwiftShader", ignoreCase = true) && !glDriver.contains("ANGLE", ignoreCase = true)
     }
 
+    private fun readGlDriver(): String {
+        val display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
+        var context = EGL14.EGL_NO_CONTEXT
+        var surface = EGL14.EGL_NO_SURFACE
+        return try {
+            val version = IntArray(2)
+            if (!EGL14.eglInitialize(display, version, 0, version, 1)) return ""
+            val configs = arrayOfNulls<EGLConfig>(1)
+            val count = IntArray(1)
+            val wanted = intArrayOf(
+                EGL14.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+                EGL14.EGL_SURFACE_TYPE, EGL14.EGL_PBUFFER_BIT,
+                EGL14.EGL_NONE
+            )
+            if (!EGL14.eglChooseConfig(display, wanted, 0, configs, 0, 1, count, 0) || count[0] == 0) return ""
+            context = EGL14.eglCreateContext(display, configs[0], EGL14.EGL_NO_CONTEXT,
+                intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 3, EGL14.EGL_NONE), 0)
+            surface = EGL14.eglCreatePbufferSurface(display, configs[0],
+                intArrayOf(EGL14.EGL_WIDTH, 1, EGL14.EGL_HEIGHT, 1, EGL14.EGL_NONE), 0)
+            if (!EGL14.eglMakeCurrent(display, surface, surface, context)) return ""
+            "${GLES20.glGetString(GLES20.GL_RENDERER)} | ${GLES20.glGetString(GLES20.GL_VERSION)}"
+        } catch (t: Throwable) {
+            ""
+        } finally {
+            // The display stays initialised: it is shared with Filament and the UI.
+            EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT)
+            if (surface != EGL14.EGL_NO_SURFACE) EGL14.eglDestroySurface(display, surface)
+            if (context != EGL14.EGL_NO_CONTEXT) EGL14.eglDestroyContext(display, context)
+        }
+    }
+
+    private const val EGL_OPENGL_ES3_BIT = 0x40
+
     /** True when the posters should show their 3D heroes on this phone. */
-    fun available(context: Context): Boolean = !isAndroidEmulator && engineReady(context)
+    fun available(context: Context): Boolean {
+        if (isLegacySwiftShader) {
+            Log.i(TAG, "legacy SwiftShader translator ($glDriver): posters draw flat")
+            return false
+        }
+        return engineReady(context)
+    }
 
     /**
      * True once the engine is up; false on a phone that cannot start it.
-     * Unlike [available] this ignores the emulator, so the on-device test can
-     * still check the parts of the frame that the emulator does take.
+     * Unlike [available] this ignores [isLegacySwiftShader], so the on-device
+     * test can still check the parts of the frame that driver does take.
      */
     fun engineReady(context: Context): Boolean {
         if (!tried) {

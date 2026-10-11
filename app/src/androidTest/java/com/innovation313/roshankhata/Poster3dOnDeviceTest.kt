@@ -36,9 +36,8 @@ import java.util.Locale
  * Download/rtl-proof/ for a person to look at in the CI report.
  *
  * A phone that cannot run Filament (no OpenGL ES 3.0) skips the 3D part;
- * the poster still draws, with the flat crate. On the CI emulator only the
- * parts its GPU survives are drawn (HeroStage.Look "emulator": no shadows,
- * no FXAA, opaque), so the gold and the read-back are still checked there.
+ * the poster still draws, with the flat crate. So does the emulator's legacy
+ * SwiftShader translator (see Studio.isLegacySwiftShader); CI uses ANGLE.
  */
 class Poster3dOnDeviceTest {
 
@@ -61,11 +60,12 @@ class Poster3dOnDeviceTest {
 
         var stage: HeroStage? = null
         // The probe workflow passes -e look <name> to find which part a GPU cannot take.
-        // On the emulator the app shows no 3D (Studio.isAndroidEmulator); the test
-        // still draws the parts its GPU takes, so the model, light and read-back
-        // are checked on every push.
+        // CI's emulator runs on ANGLE (swangle_indirect), which takes the full look.
+        // The legacy SwiftShader translator draws every material white, and the
+        // app shows no 3D there, so there is nothing to check.
+        Log.i("Poster3D", "GL driver: ${Studio.glDriver}")
         val lookName = InstrumentationRegistry.getArguments().getString("look")
-            ?: if (Studio.isAndroidEmulator) "emulator" else null
+        assumeTrue("legacy SwiftShader: the app draws flat heroes here", lookName != null || !Studio.isLegacySwiftShader)
         val look = HeroStage.Look.named(lookName)
         Log.i("Poster3D", "look: ${lookName ?: "full"} = $look")
         InstrumentationRegistry.getInstrumentation().runOnMainSync { stage = HeroStage(app, Hero.CRATE, look) }
