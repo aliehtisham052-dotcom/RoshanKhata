@@ -36,7 +36,9 @@ import java.util.Locale
  * Download/rtl-proof/ for a person to look at in the CI report.
  *
  * A phone that cannot run Filament (no OpenGL ES 3.0) skips the 3D part;
- * the poster still draws, with the flat crate.
+ * the poster still draws, with the flat crate. On the CI emulator only the
+ * parts its GPU survives are drawn (HeroStage.Look "emulator": no shadows,
+ * no FXAA, opaque), so the gold and the read-back are still checked there.
  */
 class Poster3dOnDeviceTest {
 
@@ -52,14 +54,18 @@ class Poster3dOnDeviceTest {
     fun the_crate_renders_in_3d_and_lands_on_the_poster() {
         var ok = false
         Log.i("Poster3D", "starting the engine")
-        InstrumentationRegistry.getInstrumentation().runOnMainSync { ok = Studio.available(app) }
+        InstrumentationRegistry.getInstrumentation().runOnMainSync { ok = Studio.engineReady(app) }
         Log.i("Poster3D", "engine available: $ok")
         if (!ok) Log.w("Poster3D", "This device cannot run Filament; the flat crate is used")
         assumeTrue("Filament not available on this device", ok)
 
         var stage: HeroStage? = null
         // The probe workflow passes -e look <name> to find which part a GPU cannot take.
+        // On the emulator the app shows no 3D (Studio.isAndroidEmulator); the test
+        // still draws the parts its GPU takes, so the model, light and read-back
+        // are checked on every push.
         val lookName = InstrumentationRegistry.getArguments().getString("look")
+            ?: if (Studio.isAndroidEmulator) "emulator" else null
         val look = HeroStage.Look.named(lookName)
         Log.i("Poster3D", "look: ${lookName ?: "full"} = $look")
         InstrumentationRegistry.getInstrumentation().runOnMainSync { stage = HeroStage(app, Hero.CRATE, look) }
@@ -71,7 +77,7 @@ class Poster3dOnDeviceTest {
         Log.i("Poster3D", "still rendered")
         InstrumentationRegistry.getInstrumentation().runOnMainSync { stage!!.destroy() }
 
-        if (lookName != null && lookName != "full") {
+        if (lookName != null && lookName != "full" && lookName != "emulator") {
             // A partial look is only asked whether the GPU survives it.
             Log.i("Poster3D", "look $lookName survived")
             save("hero_$lookName.png", hero)
@@ -93,7 +99,9 @@ class Poster3dOnDeviceTest {
         val clear = px.count { Color.alpha(it) < 10 }
         assertTrue("the crate drew nothing ($solid solid pixels)", solid > px.size / 20)
         assertTrue("no gold on the crate ($gold)", gold > 200)
-        assertTrue("background not clear ($clear clear pixels)", clear > px.size / 4)
+        // An opaque frame (the emulator's look) has no clear background to check.
+        if (look.translucent) assertTrue("background not clear ($clear clear pixels)", clear > px.size / 4)
+        Log.i("Poster3D", "checked: $solid solid, $gold gold, $clear clear of ${px.size}")
         save("hero_crate.png", hero)
 
         for (tag in listOf("en", "ur")) {
@@ -102,7 +110,8 @@ class Poster3dOnDeviceTest {
                 occasion = PosterOccasion.NEW_STOCK, title = ctx.getString(R.string.poster_new_stock),
                 message = ctx.getString(R.string.poster_new_stock_msg), shopName = "Ali Traders",
                 phone = "0300 0000000", address = "Main Bazaar", logo = null,
-                mark = ctx.getString(R.string.made_with_app), hero = hero
+                mark = ctx.getString(R.string.made_with_app),
+                hero = if (look.translucent) hero else null
             ))
             assertEquals(PosterImage.HEIGHT, bmp.height)
             assertTrue("$tag: headline at the floor (${fit.titleSize})", fit.titleSize > 72f)

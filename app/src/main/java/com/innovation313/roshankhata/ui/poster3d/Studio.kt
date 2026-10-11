@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.ui.poster3d
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import com.google.android.filament.Engine
 import com.google.android.filament.EntityManager
@@ -59,8 +60,31 @@ object Studio {
 
     val engine: Engine get() = engineOrNull ?: error("Studio not started")
 
-    /** True once the engine is up; false on a phone that cannot run it. */
-    fun available(context: Context): Boolean {
+    /**
+     * Android's own emulator draws through an old SwiftShader GL translator,
+     * and Filament does not survive it (checked on the CI emulator, 11 Oct):
+     * its FXAA and translucent-blit shaders fail to compile there, which
+     * aborts the app, and shadow maps take the whole emulator down. Real
+     * phone GPUs compile those shaders, so only the emulator gets flat heroes.
+     */
+    val isAndroidEmulator: Boolean by lazy {
+        val hw = Build.HARDWARE.lowercase()
+        val product = Build.PRODUCT.lowercase()
+        val fp = Build.FINGERPRINT.lowercase()
+        hw == "ranchu" || hw == "goldfish" ||
+            product.startsWith("sdk") || product.contains("emulator") ||
+            fp.startsWith("generic") || fp.contains("sdk_gphone")
+    }
+
+    /** True when the posters should show their 3D heroes on this phone. */
+    fun available(context: Context): Boolean = !isAndroidEmulator && engineReady(context)
+
+    /**
+     * True once the engine is up; false on a phone that cannot start it.
+     * Unlike [available] this ignores the emulator, so the on-device test can
+     * still check the parts of the frame that the emulator does take.
+     */
+    fun engineReady(context: Context): Boolean {
         if (!tried) {
             tried = true
             try {

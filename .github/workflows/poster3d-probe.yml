@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        look: [empty, model, translucent, ibl, sun, shadows, msaa, fxaa, full]
+        look: [empty, model, translucent, ibl, sun, shadows, msaa, fxaa, emulator, full]
     env:
       LOOK: ${{ matrix.look }}
     steps:

@@ -62,6 +62,8 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
                 "shadows" -> Look(true, false, true, true, false, false, false)
                 "msaa" -> Look(true, false, false, false, true, false, false)
                 "fxaa" -> Look(true, false, false, false, false, true, false)
+                // Everything the CI emulator's GPU survives (see Studio.isAndroidEmulator).
+                "emulator" -> Look(true, true, true, false, true, false, false)
                 else -> Look()
             }
         }
@@ -221,25 +223,25 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
         val handler = Handler(Looper.getMainLooper())
         var finished = false
         // A GPU that never hands the pixels back must not hold the share button
-        // (or a test) forever: after five seconds the caller gets an error and
-        // draws the flat hero instead. The late callback, if it ever comes, is ignored.
+        // (or a test) forever: after WAIT_MS the caller gets an error and draws
+        // the flat hero instead. The late callback, if it ever comes, is ignored.
+        // The clock starts once the frame is handed over, and the main thread is
+        // not blocked meanwhile: on the CI emulator the first frame alone took
+        // 5.3 s (shaders compiling), and a cheap phone may be as slow.
         val watchdog = Runnable {
             if (!finished) {
                 finished = true
-                Log.w(TAG, "readPixels did not return within 5 s")
+                Log.w(TAG, "readPixels did not return within $WAIT_MS ms")
                 engine.destroySwapChain(sc)
-                project(liveW, liveH)
                 if (cont.isActive) cont.resumeWithException(IllegalStateException("The GPU did not return the picture"))
             }
         }
-        handler.postDelayed(watchdog, 5_000L)
         val done = Runnable {
             if (finished) return@Runnable
             finished = true
             Log.d(TAG, "still: pixels returned")
             handler.removeCallbacks(watchdog)
             engine.destroySwapChain(sc)
-            project(liveW, liveH)
             val bytes = ByteArray(w * h * 4)
             buffer.rewind()
             buffer.get(bytes)
@@ -259,15 +261,18 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
                 renderer.readPixels(0, 0, w, h,
                     Texture.PixelBufferDescriptor(buffer, Texture.Format.RGBA, Texture.Type.UBYTE, 1, 0, 0, w, handler, done))
                 renderer.endFrame()
+                // The frame is recorded; the live view gets its own size back at
+                // once, so its next frames are not drawn at the still's size.
+                project(liveW, liveH)
                 started = true
                 break
             }
             engine.flushAndWait()
         }
         if (started) {
-            Log.d(TAG, "still: frame ended, waiting for the GPU")
-            engine.flushAndWait()
-            Log.d(TAG, "still: GPU done")
+            Log.d(TAG, "still: frame handed to the GPU")
+            engine.flush()
+            handler.postDelayed(watchdog, WAIT_MS)
         } else {
             finished = true
             handler.removeCallbacks(watchdog)
@@ -300,6 +305,7 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
  * so the top of the crate and the plinth's face both show.
  */
 private const val TAG = "Poster3D"
+private const val WAIT_MS = 20_000L
 
 enum class Hero(
     val asset: String,
