@@ -58,7 +58,11 @@ class Poster3dOnDeviceTest {
         assumeTrue("Filament not available on this device", ok)
 
         var stage: HeroStage? = null
-        InstrumentationRegistry.getInstrumentation().runOnMainSync { stage = HeroStage(app, Hero.CRATE) }
+        // The probe workflow passes -e look <name> to find which part a GPU cannot take.
+        val lookName = InstrumentationRegistry.getArguments().getString("look")
+        val look = HeroStage.Look.named(lookName)
+        Log.i("Poster3D", "look: ${lookName ?: "full"} = $look")
+        InstrumentationRegistry.getInstrumentation().runOnMainSync { stage = HeroStage(app, Hero.CRATE, look) }
         val r = PosterNewStock.HERO
         val w = r.width().toInt()
         val h = r.height().toInt()
@@ -67,6 +71,13 @@ class Poster3dOnDeviceTest {
         Log.i("Poster3D", "still rendered")
         InstrumentationRegistry.getInstrumentation().runOnMainSync { stage!!.destroy() }
 
+        if (lookName != null && lookName != "full") {
+            // A partial look is only asked whether the GPU survives it.
+            Log.i("Poster3D", "look $lookName survived")
+            save("hero_$lookName.png", hero)
+            hero.recycle()
+            return
+        }
         assertEquals(w, hero.width)
         assertEquals(h, hero.height)
         var solid = 0

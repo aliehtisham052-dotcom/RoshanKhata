@@ -12,6 +12,14 @@ jobs:
   probe:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    # One emulator per look: a GPU fault kills the whole emulator, so each
+    # part of the frame is tried on its own.
+    strategy:
+      fail-fast: false
+      matrix:
+        look: [empty, model, translucent, ibl, sun, shadows, msaa, fxaa, full]
+    env:
+      LOOK: ${{ matrix.look }}
     steps:
       - uses: actions/checkout@v5
       - name: Set up JDK 17
@@ -45,6 +53,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: poster3d-probe
+          name: poster3d-probe-${{ matrix.look }}
           path: /tmp/rtl-proof/
           if-no-files-found: ignore
