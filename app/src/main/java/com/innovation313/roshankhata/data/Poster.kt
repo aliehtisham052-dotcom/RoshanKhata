@@ -6,10 +6,11 @@ import com.innovation313.roshankhata.R
  * The occasions a shop posts on its WhatsApp Status, each with its own
  * wording in the app's language and its own colours.
  *
- * Text and geometric ornament only — a crescent and star for Eid and
- * Ramazan, an eight-point star otherwise. No people and no animals: that is
- * the owner's standing caution for anything the app draws (a qualified
- * scholar has the final word), and it also keeps every poster about the shop.
+ * Each is drawn in its own premium design (ui/PosterDesigns.kt): crescents,
+ * lanterns, a mosque, a clock, a wax seal, geometric ornament. No people and
+ * no animals: that is the owner's standing caution for anything the app draws
+ * (a qualified scholar has the final word), and it also keeps every poster
+ * about the shop. Eid ul-Adha shows a mosque, not the Kaaba, for the same reason.
  *
  * No dates are printed. Eid follows the moon sighting where the shop is, so
  * the owner posts it on the day; the app does not guess the day for him.

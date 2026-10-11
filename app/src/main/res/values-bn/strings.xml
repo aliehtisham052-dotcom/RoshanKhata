@@ -322,6 +322,9 @@
     <string name="business_settings_subtitle">আপনার ইনভয়েস, স্টেটমেন্ট ও রিপোর্টে ছাপা হয়</string>
     <string name="business_name">ব্যবসার নাম</string>
     <string name="business_name_hint">যেমন ভাট্টি ট্রেডার্স</string>
+    <string name="business_name_urdu">উর্দুতে দোকানের নাম</string>
+    <string name="business_name_urdu_hint">যেমন بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_help">উর্দু পোস্টারে এই নাম ছাপা হবে। খালি রাখলে উপরের নাম।</string>
     <string name="business_address">দোকানের ঠিকানা</string>
     <string name="business_address_hint">যেমন মেইন বাজার, পসরুর</string>
     <string name="invoice_bank_name_hint">ব্যাংকের নাম</string>
@@ -2732,4 +2735,10 @@
     <string name="trade_other_items_label">তিনটি জিনিস যা আপনি বিক্রি করেন (ঐচ্ছিক)</string>
     <string name="trade_other_items_hint">গোলাপ, মালা, তোড়া</string>
     <string name="poster_kicker_new_stock">সদ্য এসেছে</string>
+    <string name="poster_kicker_eid">তাকাব্বালাল্লাহু মিন্না ওয়া মিনকুম</string>
+    <string name="poster_kicker_ramazan">রহমতের মাস</string>
+    <string name="poster_from">শুভেচ্ছান্তে</string>
+    <string name="poster_neon_closed">বন্ধ</string>
+    <string name="poster_call_urgent">জরুরি কাজে কল করুন</string>
+    <string name="poster_kicker_custom">ঘোষণা</string>
 </resources>

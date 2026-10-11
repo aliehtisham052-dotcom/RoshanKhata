@@ -33,7 +33,7 @@
             android:textSize="14sp" />
 
         <!-- The picture at 9:16; a transparent 3D view is laid over the hero's place
-             in code (PosterActivity.placeHero), so the crate turns live on the poster. -->
+             in code (PosterActivity.placeHero), so the hero moves live on the poster. -->
         <FrameLayout
             android:id="@+id/posterFrame"
             android:layout_width="236dp"
@@ -54,6 +54,14 @@
                 android:layout_height="0dp"
                 android:importantForAccessibility="no"
                 android:visibility="gone" />
+
+            <!-- Twinkling stars, a glint on the gold, a humming neon, a drifting aurora:
+                 the 2D half of the poster's motion (PosterMotion). Not in the shared picture. -->
+            <com.innovation313.roshankhata.ui.PosterMotionView
+                android:id="@+id/motionView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:importantForAccessibility="no" />
         </FrameLayout>
 
         <HorizontalScrollView

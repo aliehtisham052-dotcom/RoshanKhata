@@ -41,6 +41,7 @@ import kotlinx.coroutines.withContext
 class BusinessSettingsActivity : BaseActivity() {
 
     private lateinit var etBusinessName: EditText
+    private lateinit var etBusinessNameUrdu: EditText
     private lateinit var etBusinessAddress: EditText
     private lateinit var etBusinessPhone: EditText
     private lateinit var ivQrPreview: ImageView
@@ -90,7 +91,7 @@ class BusinessSettingsActivity : BaseActivity() {
     /** The text fields as they were loaded, to tell whether anything changed. */
     private var saved: List<String> = emptyList()
     private val fields: List<EditText> get() = listOf(
-        etBusinessName, etBusinessAddress, etBusinessPhone, etStrn,
+        etBusinessName, etBusinessNameUrdu, etBusinessAddress, etBusinessPhone, etStrn,
         etBankName, etBankTitle, etBankIban, etBankJazzCash, etInvoiceTerms
     )
     private fun current(): List<String> = fields.map { it.text.toString().trim() }
@@ -215,6 +216,7 @@ class BusinessSettingsActivity : BaseActivity() {
         }
 
         etBusinessName = findViewById(R.id.etBusinessName)
+        etBusinessNameUrdu = findViewById(R.id.etBusinessNameUrdu)
         etBusinessAddress = findViewById(R.id.etBusinessAddress)
         etBusinessPhone = findViewById(R.id.etBusinessPhone)
         ivQrPreview = findViewById(R.id.ivQrPreview)
@@ -253,6 +255,7 @@ class BusinessSettingsActivity : BaseActivity() {
         tvPreviewQrPlaceholder = findViewById(R.id.tvPreviewQrPlaceholder)
 
         etBusinessName.setText(BusinessProfile.businessName(this).orEmpty())
+        etBusinessNameUrdu.setText(BusinessProfile.businessNameUrdu(this).orEmpty())
         etBusinessAddress.setText(BusinessProfile.businessAddress(this).orEmpty())
         etBusinessPhone.setText(BusinessProfile.businessPhone(this).orEmpty())
         etBankName.setText(BusinessProfile.bankName(this).orEmpty())
@@ -319,6 +322,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 this,
                 etBusinessName.text.toString().trim().ifEmpty { null }
             )
+            BusinessProfile.setBusinessNameUrdu(this, etBusinessNameUrdu.text.toString().trim().ifEmpty { null })
             BusinessProfile.setBusinessAddress(
                 this,
                 etBusinessAddress.text.toString().trim().ifEmpty { null }

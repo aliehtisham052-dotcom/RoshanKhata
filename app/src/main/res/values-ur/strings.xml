@@ -305,6 +305,9 @@
     <string name="business_settings_subtitle">انوائس، اسٹیٹمنٹ اور رپورٹس پر چھپنے والی معلومات</string>
     <string name="business_name">کاروبار کا نام</string>
     <string name="business_name_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu">دکان کا نام اردو میں</string>
+    <string name="business_name_urdu_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_help">اردو پوسٹر پر یہی نام چھپے گا۔ خالی چھوڑیں تو اوپر والا نام۔</string>
     <string name="business_address">دکان کا پتہ</string>
     <string name="business_address_hint">مثلاً مین بازار، پسرور</string>
     <string name="invoice_bank_name_hint">بینک کا نام</string>
@@ -2688,4 +2691,10 @@
     <string name="trade_other_items_label">تین چیزیں جو آپ بیچتے ہیں (اختیاری)</string>
     <string name="trade_other_items_hint">گلاب، ہار، گلدستہ</string>
     <string name="poster_kicker_new_stock">تازہ آمد</string>
+    <string name="poster_kicker_eid">تقبل اللہ منا و منکم</string>
+    <string name="poster_kicker_ramazan">رحمتوں اور برکتوں کا مہینہ</string>
+    <string name="poster_from">منجانب</string>
+    <string name="poster_neon_closed">بند</string>
+    <string name="poster_call_urgent">ضروری کام کے لیے کال کریں</string>
+    <string name="poster_kicker_custom">اعلان</string>
 </resources>

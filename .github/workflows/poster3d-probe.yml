@@ -1,26 +1,22 @@
-name: Poster 3D probe
+name: Poster proof
 
-# Run by hand (workflow_dispatch) when the 3D poster needs looking at on an
-# emulator: only Poster3dOnDeviceTest, ten minutes at most, with the device
-# log printed whether the test passes, fails or hangs. The full on-device
+# Run by hand (workflow_dispatch): draws every poster design on an emulator,
+# in English and Urdu, with its 3D hero (Poster3dOnDeviceTest) and flat
+# (PosterOnDeviceTest), prints the device log as annotations, and puts the
+# pictures on the "poster-proof" pre-release so they can be looked at.
+# Dummy shop data only ("Ali Traders", 0300 0000000). The full on-device
 # suite (instrumented.yml) is unchanged.
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  probe:
+  proof:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    # One emulator per look: a GPU fault kills the whole emulator, so each
-    # part of the frame is tried on its own.
-    strategy:
-      fail-fast: false
-      matrix:
-        look: [full]
-        gpu: [swangle_indirect]
-    env:
-      LOOK: ${{ matrix.look }}
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v5
       - name: Set up JDK 17
@@ -40,20 +36,23 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Run the 3D test with the device log
+      - name: Draw the posters with the device log
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
           target: google_apis
           arch: x86_64
           profile: pixel_2
-          emulator-options: -no-window -gpu ${{ matrix.gpu }} -noaudio -no-boot-anim -camera-back none
+          # ANGLE, as instrumented.yml (note 5 there): the old translator cannot run Filament.
+          emulator-options: -no-window -gpu swangle_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: sh scripts/poster3d-probe.sh
-      - name: Upload pictures
+      - name: Put the pictures on the poster-proof pre-release
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: poster3d-probe-${{ matrix.look }}-${{ matrix.gpu }}
-          path: /tmp/rtl-proof/
-          if-no-files-found: ignore
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls /tmp/rtl-proof/*.png >/dev/null 2>&1 || { echo "no pictures"; exit 0; }
+          gh release view poster-proof >/dev/null 2>&1 || gh release create poster-proof --prerelease \
+            --title "Poster proof (CI pictures)" --notes "Pictures drawn by the Poster proof workflow on an emulator, dummy data only."
+          gh release upload poster-proof /tmp/rtl-proof/*.png --clobber

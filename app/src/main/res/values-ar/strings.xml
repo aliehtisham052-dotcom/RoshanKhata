@@ -337,6 +337,9 @@
     <string name="business_settings_subtitle">تُطبع على فواتيرك وكشوفك وتقاريرك</string>
     <string name="business_name">اسم النشاط التجاري</string>
     <string name="business_name_hint">مثل بهاتي للتجارة</string>
+    <string name="business_name_urdu">اسم المحل بالأردية</string>
+    <string name="business_name_urdu_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_help">يظهر على الملصقات الأردية. اتركه فارغاً لاستخدام الاسم أعلاه.</string>
     <string name="business_address">عنوان المحل</string>
     <string name="business_address_hint">مثل السوق الرئيسي، باسرور</string>
     <string name="invoice_bank_name_hint">اسم البنك</string>
@@ -2864,4 +2867,10 @@
     <string name="trade_other_items_label">ثلاثة أشياء تبيعها (اختياري)</string>
     <string name="trade_other_items_hint">ورود، أكاليل، باقات</string>
     <string name="poster_kicker_new_stock">وصل حديثاً</string>
+    <string name="poster_kicker_eid">تقبّل الله منّا ومنكم</string>
+    <string name="poster_kicker_ramazan">شهر الرحمة</string>
+    <string name="poster_from">مع تحيات</string>
+    <string name="poster_neon_closed">مغلق</string>
+    <string name="poster_call_urgent">للأمور العاجلة اتصل</string>
+    <string name="poster_kicker_custom">إعلان</string>
 </resources>

@@ -322,6 +322,9 @@ Add your first customer and start your khata.</string>
     <string name="business_settings_subtitle">Printed on your invoices, statements and reports</string>
     <string name="business_name">Business name</string>
     <string name="business_name_hint">e.g. Bhatti Traders</string>
+    <string name="business_name_urdu">Shop name in Urdu</string>
+    <string name="business_name_urdu_hint">e.g. بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_help">Shown on posters in Urdu. Leave blank to use the name above.</string>
     <string name="business_address">Shop address</string>
     <string name="business_address_hint">e.g. Main Bazaar, Pasrur</string>
     <string name="invoice_bank_name_hint">Bank name</string>
@@ -2902,4 +2905,10 @@ You can change this any time from this screen.</string>
     <string name="trade_other_items_label">Three things you sell (optional)</string>
     <string name="trade_other_items_hint">Roses, garlands, bouquets</string>
     <string name="poster_kicker_new_stock">JUST ARRIVED</string>
+    <string name="poster_kicker_eid">Taqabbal Allahu minna wa minkum</string>
+    <string name="poster_kicker_ramazan">THE MONTH OF MERCY</string>
+    <string name="poster_from">with love from</string>
+    <string name="poster_neon_closed">CLOSED</string>
+    <string name="poster_call_urgent">For urgent work, call</string>
+    <string name="poster_kicker_custom">ANNOUNCEMENT</string>
 </resources>

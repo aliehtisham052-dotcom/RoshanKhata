@@ -293,6 +293,20 @@
                         android:inputType="textCapWords" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- The name in Urdu script, for Urdu posters (11 Oct). Written right to left. -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:hint="@string/business_name_urdu"
+                    app:placeholderText="@string/business_name_urdu_hint"
+                    app:helperText="@string/business_name_urdu_help">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBusinessNameUrdu"
+                        style="@style/ProfileFieldInput"
+                        android:textDirection="rtl"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/ProfileField"
                     android:hint="@string/business_address"

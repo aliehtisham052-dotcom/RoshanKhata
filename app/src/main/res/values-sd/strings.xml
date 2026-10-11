@@ -315,6 +315,9 @@
     <string name="business_settings_subtitle">انوائس، اسٽيٽمينٽ ۽ رپورٽن تي ڇپجندڙ معلومات</string>
     <string name="business_name">ڪاروبار جو نالو</string>
     <string name="business_name_hint">مثال: ڀٽي ٽريڊرز</string>
+    <string name="business_name_urdu">دڪان جو نالو اردو ۾</string>
+    <string name="business_name_urdu_hint">مثال: بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_help">اردو پوسٽرن تي ڏيکاريو ويندو. خالي ڇڏيو ته مٿيون نالو.</string>
     <string name="business_address">دڪان جو پتو</string>
     <string name="business_address_hint">مثال: مين بازار، پسرور</string>
     <string name="invoice_bank_name_hint">بئنڪ جو نالو</string>
@@ -2716,4 +2719,10 @@
     <string name="trade_other_items_label">ٽي شيون جيڪي توهان وڪڻو ٿا (اختياري)</string>
     <string name="trade_other_items_hint">گلاب، هار، گلدستو</string>
     <string name="poster_kicker_new_stock">نئون مال</string>
+    <string name="poster_kicker_eid">تقبل الله منا و منکم</string>
+    <string name="poster_kicker_ramazan">رحمتن جو مهينو</string>
+    <string name="poster_from">پاران</string>
+    <string name="poster_neon_closed">بند</string>
+    <string name="poster_call_urgent">ضروري ڪم لاءِ ڪال ڪريو</string>
+    <string name="poster_kicker_custom">اعلان</string>
 </resources>

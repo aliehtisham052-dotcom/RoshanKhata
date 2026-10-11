@@ -20,10 +20,13 @@ import com.google.android.material.textfield.TextInputEditText
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.PosterOccasion
+import com.innovation313.roshankhata.ui.PosterDesigns
 import com.innovation313.roshankhata.ui.PosterImage
-import com.innovation313.roshankhata.ui.PosterNewStock
+import com.innovation313.roshankhata.ui.PosterKit
+import com.innovation313.roshankhata.ui.PosterMotionView
 import com.innovation313.roshankhata.ui.poster3d.Hero
 import com.innovation313.roshankhata.ui.poster3d.HeroStage
+import com.innovation313.roshankhata.ui.poster3d.SealFace
 import com.innovation313.roshankhata.ui.poster3d.Studio
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
@@ -57,9 +60,13 @@ class PosterActivity : BaseActivity() {
     private lateinit var share: MaterialButton
     private lateinit var frame: FrameLayout
     private lateinit var heroView: TextureView
+    private lateinit var motionView: PosterMotionView
 
     /** The live 3D hero, while the chosen design has one and the phone can draw it. */
     private var stage: HeroStage? = null
+    /** Which hero [stage] shows, and whether its face carries the logo, to know when to rebuild it. */
+    private var stageHero: Hero? = null
+    private var stageHadLogo = false
 
     private var occasion = PosterOccasion.NEW_STOCK
     private var logo: Bitmap? = null
@@ -81,6 +88,7 @@ class PosterActivity : BaseActivity() {
         share = findViewById(R.id.btnSharePoster)
         frame = findViewById(R.id.posterFrame)
         heroView = findViewById(R.id.heroView)
+        motionView = findViewById(R.id.motionView)
         frame.post { placeHero() }
 
         occasion = PosterOccasion.byKey(prefs.getString(KEY_OCCASION, null))
@@ -110,11 +118,12 @@ class PosterActivity : BaseActivity() {
         etTitle.doAfterTextChanged { if (!filling) { save(KEY_TITLE, it?.toString(), occasion.title); render() } }
         etMessage.doAfterTextChanged { if (!filling) { save(KEY_MSG, it?.toString(), occasion.message); render() } }
         markSwitch.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(KEY_MARK, on).apply(); render() }
-        logoSwitch.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(KEY_LOGO, on).apply(); render() }
+        logoSwitch.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(KEY_LOGO, on).apply(); updateHero(); render() }
         share.setOnClickListener { sharePoster() }
 
         lifecycleScope.launch {
             logo = withContext(Dispatchers.IO) { BusinessProfile.loadLogo(this@PosterActivity) }
+            updateHero()
             render()
         }
     }
@@ -141,40 +150,65 @@ class PosterActivity : BaseActivity() {
         occasion = occasion,
         title = etTitle.text?.toString()?.trim().orEmpty(),
         message = etMessage.text?.toString()?.trim().orEmpty(),
-        shopName = BusinessProfile.businessName(this)?.trim().orEmpty(),
+        shopName = shopName(),
         phone = BusinessProfile.businessPhone(this)?.trim(),
         address = BusinessProfile.businessAddress(this)?.trim(),
-        logo = if (logoSwitch.isChecked) logo else null,
+        logo = shownLogo(),
         mark = if (markSwitch.isChecked) getString(R.string.made_with_app) else null,
         heroOverlay = stage != null
     )
+
+    /** The shop's name as this language's poster prints it: in Urdu script on an Urdu poster, if the owner gave one. */
+    private fun shopName(): String {
+        val locale = resources.configuration.locales[0]
+        return BusinessProfile.nameFor(this, locale != null && PosterKit.urduScript(locale))?.trim().orEmpty()
+    }
+
+    private fun shownLogo() = if (logoSwitch.isChecked) logo else null
 
     /** Lay the 3D view over the hero's place on the picture, at the frame's scale. */
     private fun placeHero() {
         val s = frame.width / PosterImage.WIDTH.toFloat()
         if (s <= 0f) return
-        val r = PosterNewStock.HERO
+        val r = (stageHero ?: return).rect
         heroView.layoutParams = FrameLayout.LayoutParams((r.width() * s).toInt(), (r.height() * s).toInt()).apply {
             leftMargin = (r.left * s).toInt()
             topMargin = (r.top * s).toInt()
         }
     }
 
-    /** Start or stop the live hero for the chosen design; a phone without 3D keeps the flat drawing. */
+    /**
+     * Start, swap or stop the live hero for the chosen design; a phone without
+     * 3D keeps the flat drawing. A hero with a face (the Thank-you seal) is
+     * rebuilt when the logo arrives or is switched, so the seal shows the mark.
+     */
     private fun updateHero() {
-        val wants = occasion == PosterOccasion.NEW_STOCK && Studio.available(this)
-        if (wants && stage == null) {
+        val hero = PosterDesigns.hero(occasion)?.takeIf { Studio.available(this) }
+        val withLogo = shownLogo() != null
+        val stale = stage != null && (stageHero != hero || (hero?.face != null && stageHadLogo != withLogo))
+        if (stale || (hero == null && stage != null)) {
+            stage?.destroy()
+            stage = null
+            stageHero = null
+        }
+        if (hero != null && stage == null) {
             stage = try {
-                HeroStage(this, Hero.CRATE).also { it.attach(heroView) }
+                val face = hero.face?.let { SealFace.draw(this, shopName(), shownLogo()) }
+                HeroStage(this, hero, face = face).also {
+                    face?.recycle()
+                    stageHero = hero
+                    stageHadLogo = withLogo
+                    if (isStarted) it.attach(heroView)
+                }
             } catch (e: Exception) {
                 null
             }
-        } else if (!wants && stage != null) {
-            stage?.destroy()
-            stage = null
         }
         heroView.visibility = if (stage != null) View.VISIBLE else View.GONE
+        placeHero()
     }
+
+    private var isStarted = false
 
     /** Redraw after the owner stops typing; the old picture is let go only once the new one is up. */
     private fun render() {
@@ -182,9 +216,10 @@ class PosterActivity : BaseActivity() {
         val inp = input()
         renderJob = lifecycleScope.launch {
             delay(150)
-            val bmp = withContext(Dispatchers.Default) { PosterImage.draw(this@PosterActivity, inp).first }
+            val (bmp, fit) = withContext(Dispatchers.Default) { PosterImage.draw(this@PosterActivity, inp) }
             val old = shown
             preview.setImageBitmap(bmp)
+            motionView.show(fit.motion)
             shown = bmp
             old?.recycle()
         }
@@ -196,7 +231,7 @@ class PosterActivity : BaseActivity() {
             // The shared picture carries the hero itself, drawn still off-screen at full size.
             val hero = stage?.let { st ->
                 try {
-                    val r = PosterNewStock.HERO
+                    val r = stageHero!!.rect
                     st.still(r.width().toInt(), r.height().toInt())
                 } catch (e: Exception) {
                     null
@@ -236,10 +271,12 @@ class PosterActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
+        isStarted = true
         stage?.attach(heroView)
     }
 
     override fun onStop() {
+        isStarted = false
         stage?.detach()
         super.onStop()
     }
