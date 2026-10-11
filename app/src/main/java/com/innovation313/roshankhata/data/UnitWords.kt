@@ -31,34 +31,45 @@ object UnitWords {
 
     /** What is saved. Order is the order of the list the owner picks from. */
     val KEYS: List<String> = listOf(
-        "bag", "kg", "maund", "seer", "litre", "ml", "packet", "bottle", "piece", "box", "ton"
+        "bag", "kg", "maund", "seer", "litre", "ml", "packet", "bottle", "piece", "box", "ton",
+        // For the trades added 11 Oct: cloth by the metre, shoes by the pair,
+        // eggs and bread by the dozen, a restaurant's plates, gas cylinders.
+        "metre", "pair", "dozen", "plate", "cylinder"
     )
 
     /** One array per language, in [KEYS] order. English shows the keys themselves. */
     private val LABELS: Map<String, Array<String>> = mapOf(
         "ur-latn" to arrayOf(
-            "bori", "kg", "mann", "ser", "litre", "ml", "packet", "botal", "adad", "dabba", "ton"
+            "bori", "kg", "mann", "ser", "litre", "ml", "packet", "botal", "adad", "dabba", "ton",
+            "meter", "jora", "darjan", "plate", "cylinder"
         ),
         "ur" to arrayOf(
-            "بوری", "کلو", "من", "سیر", "لیٹر", "ملی لیٹر", "پیکٹ", "بوتل", "عدد", "ڈبہ", "ٹن"
+            "بوری", "کلو", "من", "سیر", "لیٹر", "ملی لیٹر", "پیکٹ", "بوتل", "عدد", "ڈبہ", "ٹن",
+            "میٹر", "جوڑا", "درجن", "پلیٹ", "سلنڈر"
         ),
         "sd" to arrayOf(
-            "ٻوري", "ڪلو", "مڻ", "سير", "ليٽر", "ملي ليٽر", "پيڪيٽ", "بوتل", "عدد", "دٻو", "ٽن"
+            "ٻوري", "ڪلو", "مڻ", "سير", "ليٽر", "ملي ليٽر", "پيڪيٽ", "بوتل", "عدد", "دٻو", "ٽن",
+            "ميٽر", "جوڙو", "درجن", "پليٽ", "سلنڊر"
         ),
         "fa" to arrayOf(
-            "کیسه", "کیلو", "من", "سیر", "لیتر", "میلی‌لیتر", "بسته", "بطری", "عدد", "جعبه", "تن"
+            "کیسه", "کیلو", "من", "سیر", "لیتر", "میلی‌لیتر", "بسته", "بطری", "عدد", "جعبه", "تن",
+            "متر", "جفت", "دوجین", "بشقاب", "کپسول"
         ),
         "ar" to arrayOf(
-            "كيس", "كغ", "مَنّ", "سير", "لتر", "مل", "عبوة", "زجاجة", "قطعة", "صندوق", "طن"
+            "كيس", "كغ", "مَنّ", "سير", "لتر", "مل", "عبوة", "زجاجة", "قطعة", "صندوق", "طن",
+            "متر", "زوج", "دزينة", "طبق", "أسطوانة"
         ),
         "hi" to arrayOf(
-            "बोरी", "किलो", "मन", "सेर", "लीटर", "मिली", "पैकेट", "बोतल", "नग", "डिब्बा", "टन"
+            "बोरी", "किलो", "मन", "सेर", "लीटर", "मिली", "पैकेट", "बोतल", "नग", "डिब्बा", "टन",
+            "मीटर", "जोड़ी", "दर्जन", "प्लेट", "सिलेंडर"
         ),
         "bn" to arrayOf(
-            "বস্তা", "কেজি", "মণ", "সের", "লিটার", "মিলি", "প্যাকেট", "বোতল", "পিস", "বাক্স", "টন"
+            "বস্তা", "কেজি", "মণ", "সের", "লিটার", "মিলি", "প্যাকেট", "বোতল", "পিস", "বাক্স", "টন",
+            "মিটার", "জোড়া", "ডজন", "প্লেট", "সিলিন্ডার"
         ),
         "id" to arrayOf(
-            "karung", "kg", "maund", "seer", "liter", "ml", "bungkus", "botol", "buah", "kotak", "ton"
+            "karung", "kg", "maund", "seer", "liter", "ml", "bungkus", "botol", "buah", "kotak", "ton",
+            "meter", "pasang", "lusin", "piring", "tabung"
         )
     )
 

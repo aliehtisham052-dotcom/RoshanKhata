@@ -32,6 +32,8 @@ object BusinessProfile {
     private const val KEY_STRN = "strn_ntn"
     private const val KEY_CURRENCY = "currency"
     private const val KEY_TRADE = "trade"
+    private const val KEY_TRADE_OTHER_NAME = "trade_other_name"
+    private const val KEY_TRADE_OTHER_ITEMS = "trade_other_items"
     private const val KEY_QR_SAVED = "payment_qr_saved"
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
     private const val KEY_STAMP_SAVED = "stamp_saved"
@@ -240,12 +242,41 @@ object BusinessProfile {
         prefs(context).getString(KEY_TRADE, null)?.takeIf { it.isNotBlank() }
 
     fun setTrade(context: Context, trade: Trade) {
-        prefs(context).edit().putString(KEY_TRADE, trade.name).apply()
+        setTradeOf(context, Businesses.active(context).id, trade)
     }
 
-    /** A business's trade by id - for a book being created, before it is open. */
+    /**
+     * A business's trade by id - for a book being created, before it is open.
+     * Choosing [Trade.OTHER] keeps the owner's words the picker left in
+     * [OtherTrade.pending] (11 Oct); any other trade leaves them stored, so
+     * switching back to Other later brings them back.
+     */
     fun setTradeOf(context: Context, businessId: Long, trade: Trade) {
-        prefsOf(context, businessId).edit().putString(KEY_TRADE, trade.name).apply()
+        val edit = prefsOf(context, businessId).edit().putString(KEY_TRADE, trade.name)
+        if (trade == Trade.OTHER) {
+            OtherTrade.pending?.let { words ->
+                edit.putString(KEY_TRADE_OTHER_NAME, words.name?.trim().orEmpty())
+                edit.putString(KEY_TRADE_OTHER_ITEMS, words.items.joinToString(", "))
+            }
+            OtherTrade.pending = null
+        }
+        edit.apply()
+    }
+
+    /** The owner's own name for an Other shop, or null. */
+    fun otherTradeName(context: Context): String? =
+        prefs(context).getString(KEY_TRADE_OTHER_NAME, null)?.takeIf { it.isNotBlank() }
+
+    /** The owner's own three goods for an Other shop, comma-separated, or null. */
+    fun otherTradeItems(context: Context): String? =
+        prefs(context).getString(KEY_TRADE_OTHER_ITEMS, null)?.takeIf { it.isNotBlank() }
+
+    /** Restore's way in: the words as a backup holds them. */
+    fun setOtherTrade(context: Context, name: String?, items: String?) {
+        prefs(context).edit()
+            .putString(KEY_TRADE_OTHER_NAME, name?.trim().orEmpty())
+            .putString(KEY_TRADE_OTHER_ITEMS, items?.trim().orEmpty())
+            .apply()
     }
 
     // ---------- Payment QR ----------

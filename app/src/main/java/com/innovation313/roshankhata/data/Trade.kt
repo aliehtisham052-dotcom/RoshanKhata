@@ -43,9 +43,45 @@ enum class Trade(
     FURNITURE(R.string.trade_furniture, R.string.trade_name_furniture, R.string.trade_eg_furniture, R.drawable.ic_trade_furniture, R.color.trade_furniture_bg, R.color.trade_furniture_fg),
     SALON(R.string.trade_salon, R.string.trade_name_salon, R.string.trade_eg_salon, R.drawable.ic_trade_salon, R.color.trade_salon_bg, R.color.trade_salon_fg),
     SOLAR(R.string.trade_solar, R.string.trade_name_solar, R.string.trade_eg_solar, R.drawable.ic_trade_solar, R.color.trade_solar_bg, R.color.trade_solar_fg),
-    GENERAL(R.string.trade_general, R.string.trade_name_general, R.string.trade_eg_general, R.drawable.ic_trade_general, R.color.trade_general_bg, R.color.trade_general_fg);
+    // Twelve more (11 Oct): the shops most common the world over that the
+    // first twelve did not cover. Each has its own words in every language
+    // (TradeVocab) and its own icon; none turns on an agri-only feature.
+    CLOTHING(R.string.trade_clothing, R.string.trade_name_clothing, R.string.trade_eg_clothing, R.drawable.ic_trade_clothing, R.color.trade_clothing_bg, R.color.trade_clothing_fg),
+    FOOTWEAR(R.string.trade_footwear, R.string.trade_name_footwear, R.string.trade_eg_footwear, R.drawable.ic_trade_footwear, R.color.trade_footwear_bg, R.color.trade_footwear_fg),
+    ELECTRONICS(R.string.trade_electronics, R.string.trade_name_electronics, R.string.trade_eg_electronics, R.drawable.ic_trade_electronics, R.color.trade_electronics_bg, R.color.trade_electronics_fg),
+    RESTAURANT(R.string.trade_restaurant, R.string.trade_name_restaurant, R.string.trade_eg_restaurant, R.drawable.ic_trade_restaurant, R.color.trade_restaurant_bg, R.color.trade_restaurant_fg),
+    BAKERY(R.string.trade_bakery, R.string.trade_name_bakery, R.string.trade_eg_bakery, R.drawable.ic_trade_bakery, R.color.trade_bakery_bg, R.color.trade_bakery_fg),
+    MEAT(R.string.trade_meat, R.string.trade_name_meat, R.string.trade_eg_meat, R.drawable.ic_trade_meat, R.color.trade_meat_bg, R.color.trade_meat_fg),
+    PRODUCE(R.string.trade_produce, R.string.trade_name_produce, R.string.trade_eg_produce, R.drawable.ic_trade_produce, R.color.trade_produce_bg, R.color.trade_produce_fg),
+    STATIONERY(R.string.trade_stationery, R.string.trade_name_stationery, R.string.trade_eg_stationery, R.drawable.ic_trade_stationery, R.color.trade_stationery_bg, R.color.trade_stationery_fg),
+    COSMETICS(R.string.trade_cosmetics, R.string.trade_name_cosmetics, R.string.trade_eg_cosmetics, R.drawable.ic_trade_cosmetics, R.color.trade_cosmetics_bg, R.color.trade_cosmetics_fg),
+    BUILDING(R.string.trade_building, R.string.trade_name_building, R.string.trade_eg_building, R.drawable.ic_trade_building, R.color.trade_building_bg, R.color.trade_building_fg),
+    FUEL(R.string.trade_fuel, R.string.trade_name_fuel, R.string.trade_eg_fuel, R.drawable.ic_trade_fuel, R.color.trade_fuel_bg, R.color.trade_fuel_fg),
+    WHOLESALE(R.string.trade_wholesale, R.string.trade_name_wholesale, R.string.trade_eg_wholesale, R.drawable.ic_trade_wholesale, R.color.trade_wholesale_bg, R.color.trade_wholesale_fg),
+    GENERAL(R.string.trade_general, R.string.trade_name_general, R.string.trade_eg_general, R.drawable.ic_trade_general, R.color.trade_general_bg, R.color.trade_general_fg),
+    /**
+     * Any shop the list does not name (11 Oct). The owner writes what it is
+     * ("Flower shop") and, if he likes, three things it sells; those become
+     * every hint and the first suggestions, until his own products take
+     * over. See [OtherTrade].
+     */
+    OTHER(R.string.trade_other, R.string.trade_name_other, R.string.trade_eg_other, R.drawable.ic_trade_other, R.color.trade_other_bg, R.color.trade_other_fg);
 
-    fun label(context: Context): String = context.getString(labelRes)
+    /** The full name; for [OTHER], the owner's own words once written. */
+    fun label(context: Context): String =
+        if (this == OTHER) OtherTrade.name(context) ?: context.getString(labelRes)
+        else context.getString(labelRes)
+
+    /** The short name on a card; for [OTHER], the owner's own words once written. */
+    fun shortName(context: Context): String =
+        if (this == OTHER) OtherTrade.name(context) ?: context.getString(nameRes)
+        else context.getString(nameRes)
+
+    /** The line under it; for [OTHER], the three goods the owner wrote, once written. */
+    fun example(context: Context): String =
+        if (this == OTHER) OtherTrade.items(context).takeIf { it.isNotEmpty() }?.joinToString(" \u00b7 ")
+            ?: context.getString(exampleRes)
+        else context.getString(exampleRes)
 
     companion object {
         val DEFAULT = AGRI

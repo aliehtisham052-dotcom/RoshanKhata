@@ -2397,4 +2397,322 @@
     <string name="shop_name_field">دڪان جو نالو</string>
     <string name="shop_name_hint">ڀٽي ٽريڊرز</string>
     <string name="shop_phone_field">دڪان جو فون (اختياري)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">ڪپڙو ۽ گارمينٽس</string>
+    <string name="trade_name_clothing">ڪپڙو</string>
+    <string name="trade_eg_clothing">ڪپڙو · سوٽ · تيار ٿيل</string>
+    <string-array name="vocab_clothing_items">
+        <item>ڪپڙو</item>
+        <item>قميص</item>
+        <item>سوٽ</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>ڪپڙو</item>
+        <item>تيار ٿيل</item>
+        <item>ٻار</item>
+        <item>لوازمات</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>لان</item>
+        <item>ڪاٽن</item>
+        <item>قميص</item>
+        <item>پتلون</item>
+        <item>شلوار سوٽ</item>
+        <item>رئو</item>
+        <item>ٻارن جو سوٽ</item>
+        <item>گنجي</item>
+    </string-array>
+    <string name="trade_footwear">جوتا (جوتا، سينڊل)</string>
+    <string name="trade_name_footwear">جوتا</string>
+    <string name="trade_eg_footwear">جوتا · سينڊل · چپل</string>
+    <string-array name="vocab_footwear_items">
+        <item>جوتا</item>
+        <item>سينڊل</item>
+        <item>چپل</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>مردانا</item>
+        <item>زنانا</item>
+        <item>ٻار</item>
+        <item>اسپورٽس</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>مردانا جوتا</item>
+        <item>زنانا جوتا</item>
+        <item>ٻارن جا جوتا</item>
+        <item>سينڊل</item>
+        <item>چپل</item>
+        <item>جاگرز</item>
+        <item>اسڪول شوز</item>
+        <item>جورابون</item>
+    </string-array>
+    <string name="trade_electronics">اليڪٽرانڪس ۽ گهريلو سامان</string>
+    <string name="trade_name_electronics">اليڪٽرانڪس</string>
+    <string name="trade_eg_electronics">پکا · بلب · سامان</string>
+    <string-array name="vocab_electronics_items">
+        <item>پکو</item>
+        <item>ايل اي ڊي بلب</item>
+        <item>استري</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>سامان</item>
+        <item>روشني</item>
+        <item>لوازمات</item>
+        <item>مرمت</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>ڇت جو پکو</item>
+        <item>ايل اي ڊي بلب</item>
+        <item>استري</item>
+        <item>ايڪسٽينشن بورڊ</item>
+        <item>چارجر</item>
+        <item>واٽر پمپ</item>
+        <item>واشنگ مشين</item>
+        <item>مرمت</item>
+    </string-array>
+    <string name="trade_restaurant">هوٽل، ريسٽورنٽ ۽ ڍابو</string>
+    <string name="trade_name_restaurant">هوٽل</string>
+    <string name="trade_eg_restaurant">کاڌو · چانهه · ڪيٽرنگ</string>
+    <string-array name="vocab_restaurant_items">
+        <item>چانهه</item>
+        <item>برياني</item>
+        <item>ماني</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>کاڌو</item>
+        <item>مشروب</item>
+        <item>سنيڪس</item>
+        <item>ڪيٽرنگ</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>چانهه</item>
+        <item>ماني</item>
+        <item>برياني</item>
+        <item>دال</item>
+        <item>چڪن ڪڙاهي</item>
+        <item>ٿڌو مشروب</item>
+        <item>پاڻي جي بوتل</item>
+        <item>پارسل</item>
+    </string-array>
+    <string name="trade_bakery">بيڪري ۽ مٺائي</string>
+    <string name="trade_name_bakery">بيڪري</string>
+    <string name="trade_eg_bakery">ڊبل روٽي · ڪيڪ · مٺائي</string>
+    <string-array name="vocab_bakery_items">
+        <item>ڊبل روٽي</item>
+        <item>ڪيڪ</item>
+        <item>مٺائي</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>بيڪري</item>
+        <item>مٺائي</item>
+        <item>سنيڪس</item>
+        <item>مشروب</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>ڊبل روٽي</item>
+        <item>رس</item>
+        <item>ڪيڪ</item>
+        <item>بسڪيٽ</item>
+        <item>مٺائي</item>
+        <item>سموسو</item>
+        <item>آنا</item>
+        <item>کير جو ڊٻو</item>
+    </string-array>
+    <string name="trade_meat">گوشت ۽ ڪڪڙ</string>
+    <string name="trade_name_meat">گوشت</string>
+    <string name="trade_eg_meat">ڪڪڙ · ٻڪري · ڳئون</string>
+    <string-array name="vocab_meat_items">
+        <item>ڪڪڙ</item>
+        <item>ٻڪري جو گوشت</item>
+        <item>ڳئون جو گوشت</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>ڪڪڙ</item>
+        <item>ٻڪري</item>
+        <item>ڳئون</item>
+        <item>مڇي</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>ڪڪڙ</item>
+        <item>بون ليس</item>
+        <item>ٻڪري جو گوشت</item>
+        <item>ڳئون جو گوشت</item>
+        <item>قيمو</item>
+        <item>مڇي</item>
+        <item>آنا</item>
+        <item>ڪليجي</item>
+    </string-array>
+    <string name="trade_produce">ميوو ۽ ڀاڄي</string>
+    <string name="trade_name_produce">ميوو ڀاڄي</string>
+    <string name="trade_eg_produce">ميوو · ڀاڄي · تازو</string>
+    <string-array name="vocab_produce_items">
+        <item>پٽاٽا</item>
+        <item>بصر</item>
+        <item>صوف</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>ڀاڄي</item>
+        <item>ميوو</item>
+        <item>ساوا</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>پٽاٽا</item>
+        <item>بصر</item>
+        <item>ٽماٽا</item>
+        <item>ٿوم</item>
+        <item>ادرڪ</item>
+        <item>صوف</item>
+        <item>ڪيلا</item>
+        <item>ڪنو</item>
+    </string-array>
+    <string name="trade_stationery">اسٽيشنري ۽ ڪتاب</string>
+    <string name="trade_name_stationery">اسٽيشنري</string>
+    <string name="trade_eg_stationery">ڪاپي · ڪتاب · قلم</string>
+    <string-array name="vocab_stationery_items">
+        <item>ڪاپي</item>
+        <item>قلم</item>
+        <item>ڪتاب</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>اسٽيشنري</item>
+        <item>ڪتاب</item>
+        <item>ڇپائي</item>
+        <item>تحفا</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>ڪاپي</item>
+        <item>رجسٽر</item>
+        <item>قلم</item>
+        <item>پينسل</item>
+        <item>ربڙ</item>
+        <item>ڪتاب</item>
+        <item>فوٽو ڪاپي</item>
+        <item>جاميٽري باڪس</item>
+    </string-array>
+    <string name="trade_cosmetics">ڪاسميٽڪس ۽ زيور</string>
+    <string name="trade_name_cosmetics">ڪاسميٽڪس</string>
+    <string name="trade_eg_cosmetics">ميڪ اپ · زيور · خوشبو</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>ڪريم</item>
+        <item>لپ اسٽڪ</item>
+        <item>چوڙيون</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>ڪاسميٽڪس</item>
+        <item>زيور</item>
+        <item>خوشبو</item>
+        <item>تحفا</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>فيس ڪريم</item>
+        <item>لپ اسٽڪ</item>
+        <item>نيل پالش</item>
+        <item>چوڙيون</item>
+        <item>ڪنڊل</item>
+        <item>خوشبو</item>
+        <item>شيمپو</item>
+        <item>وارن جو تيل</item>
+    </string-array>
+    <string name="trade_building">تعميراتي سامان (سيمينٽ، سريو، سرون)</string>
+    <string name="trade_name_building">تعميراتي سامان</string>
+    <string name="trade_eg_building">سيمينٽ · سريو · سرون</string>
+    <string-array name="vocab_building_items">
+        <item>سيمينٽ</item>
+        <item>سريو</item>
+        <item>سرون</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>سيمينٽ</item>
+        <item>سريو</item>
+        <item>سرون</item>
+        <item>واري بجري</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>سيمينٽ</item>
+        <item>سريو</item>
+        <item>سرون</item>
+        <item>واري</item>
+        <item>بجري</item>
+        <item>ٽائلون</item>
+        <item>رنگ</item>
+        <item>پائيپ</item>
+    </string-array>
+    <string name="trade_fuel">گيس ۽ ٻارڻ (ايل پي جي، پيٽرول)</string>
+    <string name="trade_name_fuel">گيس ۽ ٻارڻ</string>
+    <string name="trade_eg_fuel">ايل پي جي · پيٽرول · ڊيزل</string>
+    <string-array name="vocab_fuel_items">
+        <item>ايل پي جي</item>
+        <item>پيٽرول</item>
+        <item>ڊيزل</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>گيس</item>
+        <item>ٻارڻ</item>
+        <item>تيل</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>گيس سلنڊر</item>
+        <item>گيس ري فل</item>
+        <item>پيٽرول</item>
+        <item>ڊيزل</item>
+        <item>انجڻ آئل</item>
+        <item>گاسليٽ</item>
+        <item>ريگيوليٽر</item>
+        <item>گيس پائيپ</item>
+    </string-array>
+    <string name="trade_wholesale">هول سيل ۽ ڊسٽري بيوشن</string>
+    <string name="trade_name_wholesale">هول سيل</string>
+    <string name="trade_eg_wholesale">ٿوڪ · ڪارٽن · سپلائي</string>
+    <string-array name="vocab_wholesale_items">
+        <item>ڪارٽن</item>
+        <item>ٻوري</item>
+        <item>پيڪيٽ</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>ٿوڪ</item>
+        <item>پيڪيٽ وارو</item>
+        <item>سپلائي</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>ڪارٽن</item>
+        <item>ٻوري</item>
+        <item>دٻو</item>
+        <item>پيڪيٽ</item>
+        <item>درجن پيڪ</item>
+        <item>پهچائڻ</item>
+        <item>ڀاڙو</item>
+        <item>واپسي</item>
+    </string-array>
+    <string name="trade_other">ٻيو (پنهنجو لکو)</string>
+    <string name="trade_name_other">ٻيو</string>
+    <string name="trade_eg_other">پنهنجي دڪان جو قسم لکو</string>
+    <string-array name="vocab_other_items">
+        <item>شيءِ</item>
+        <item>پراڊڪٽ</item>
+        <item>سروس</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>سامان</item>
+        <item>سروس</item>
+        <item>ٻيو</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>شيءِ</item>
+        <item>پراڊڪٽ</item>
+        <item>سروس</item>
+        <item>پهچائڻ</item>
+        <item>مرمت</item>
+        <item>پيڪيٽ</item>
+        <item>دٻو</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">ڳوليو: ڪپڙو، بيڪري، گيس…</string>
+    <string name="trade_search_none">فهرست ۾ ناهي؟ ٻيو چونڊيو ۽ پنهنجو لکو.</string>
+    <string name="trade_other_title">توهان جي دڪان جو قسم</string>
+    <string name="trade_other_explain">لکو توهان جو دڪان ڇا آهي، ۽ ٽي شيون جيڪي توهان وڪڻو ٿا. اهي ئي هر هنڌ مثال ۽ پهريون صلاحون بڻبيون.</string>
+    <string name="trade_other_name_label">دڪان جو قسم</string>
+    <string name="trade_other_name_hint">گلن جو دڪان</string>
+    <string name="trade_other_items_label">ٽي شيون جيڪي توهان وڪڻو ٿا (اختياري)</string>
+    <string name="trade_other_items_hint">گلاب، هار، گلدستو</string>
 </resources>

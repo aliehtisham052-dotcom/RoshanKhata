@@ -2369,4 +2369,322 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="shop_name_field">Dukaan ka naam</string>
     <string name="shop_name_hint">Bhatti Traders</string>
     <string name="shop_phone_field">Dukaan ka phone (ikhtiyari)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">Kapra aur garments</string>
+    <string name="trade_name_clothing">Kapra</string>
+    <string name="trade_eg_clothing">Kapra · suit · ready-made</string>
+    <string-array name="vocab_clothing_items">
+        <item>Kapra</item>
+        <item>Qameez</item>
+        <item>Suit</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>Kapra</item>
+        <item>Ready-made</item>
+        <item>Bachay</item>
+        <item>Lawazmaat</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>Lawn</item>
+        <item>Cotton</item>
+        <item>Qameez</item>
+        <item>Patloon</item>
+        <item>Shalwar suit</item>
+        <item>Dupatta</item>
+        <item>Bachon ka suit</item>
+        <item>Baniyan</item>
+    </string-array>
+    <string name="trade_footwear">Jootay (jootay, sandal)</string>
+    <string name="trade_name_footwear">Jootay</string>
+    <string name="trade_eg_footwear">Jootay · sandal · chappal</string>
+    <string-array name="vocab_footwear_items">
+        <item>Jootay</item>
+        <item>Sandal</item>
+        <item>Chappal</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>Mardana</item>
+        <item>Zanana</item>
+        <item>Bachay</item>
+        <item>Sports</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>Mardana jootay</item>
+        <item>Zanana jootay</item>
+        <item>Bachon ke jootay</item>
+        <item>Sandal</item>
+        <item>Chappal</item>
+        <item>Joggers</item>
+        <item>School shoes</item>
+        <item>Jurabein</item>
+    </string-array>
+    <string name="trade_electronics">Electronics aur ghareloo aalaat</string>
+    <string name="trade_name_electronics">Electronics</string>
+    <string name="trade_eg_electronics">Pankhay · bulb · aalaat</string>
+    <string-array name="vocab_electronics_items">
+        <item>Pankha</item>
+        <item>LED bulb</item>
+        <item>Istri</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>Aalaat</item>
+        <item>Roshni</item>
+        <item>Lawazmaat</item>
+        <item>Marammat</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>Chhat ka pankha</item>
+        <item>LED bulb</item>
+        <item>Istri</item>
+        <item>Extension board</item>
+        <item>Charger</item>
+        <item>Water pump</item>
+        <item>Washing machine</item>
+        <item>Marammat</item>
+    </string-array>
+    <string name="trade_restaurant">Hotel, restaurant aur dhaba</string>
+    <string name="trade_name_restaurant">Hotel</string>
+    <string name="trade_eg_restaurant">Khana · chai · catering</string>
+    <string-array name="vocab_restaurant_items">
+        <item>Chai</item>
+        <item>Biryani</item>
+        <item>Roti</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>Khana</item>
+        <item>Mashroobat</item>
+        <item>Snacks</item>
+        <item>Catering</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>Chai</item>
+        <item>Roti</item>
+        <item>Biryani</item>
+        <item>Daal</item>
+        <item>Chicken karahi</item>
+        <item>Cold drink</item>
+        <item>Paani ki botal</item>
+        <item>Parcel</item>
+    </string-array>
+    <string name="trade_bakery">Bakery aur mithai</string>
+    <string name="trade_name_bakery">Bakery</string>
+    <string name="trade_eg_bakery">Double roti · cake · mithai</string>
+    <string-array name="vocab_bakery_items">
+        <item>Double roti</item>
+        <item>Cake</item>
+        <item>Mithai</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>Bakery</item>
+        <item>Mithai</item>
+        <item>Snacks</item>
+        <item>Mashroobat</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>Double roti</item>
+        <item>Rus</item>
+        <item>Cake</item>
+        <item>Biscuit</item>
+        <item>Mithai</item>
+        <item>Samosa</item>
+        <item>Anday</item>
+        <item>Doodh ka dabba</item>
+    </string-array>
+    <string name="trade_meat">Gosht aur murghi</string>
+    <string name="trade_name_meat">Gosht</string>
+    <string name="trade_eg_meat">Murghi · mutton · beef</string>
+    <string-array name="vocab_meat_items">
+        <item>Murghi</item>
+        <item>Mutton</item>
+        <item>Beef</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>Murghi</item>
+        <item>Mutton</item>
+        <item>Beef</item>
+        <item>Machhli</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>Murghi</item>
+        <item>Boneless</item>
+        <item>Mutton</item>
+        <item>Beef</item>
+        <item>Qeema</item>
+        <item>Machhli</item>
+        <item>Anday</item>
+        <item>Kaleji</item>
+    </string-array>
+    <string name="trade_produce">Phal aur sabzi</string>
+    <string name="trade_name_produce">Phal sabzi</string>
+    <string name="trade_eg_produce">Phal · sabzi · taaza</string>
+    <string-array name="vocab_produce_items">
+        <item>Aloo</item>
+        <item>Piyaz</item>
+        <item>Saib</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>Sabzi</item>
+        <item>Phal</item>
+        <item>Hari booti</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>Aloo</item>
+        <item>Piyaz</item>
+        <item>Tamatar</item>
+        <item>Lehsan</item>
+        <item>Adrak</item>
+        <item>Saib</item>
+        <item>Kela</item>
+        <item>Kinnow</item>
+    </string-array>
+    <string name="trade_stationery">Stationery aur kitabein</string>
+    <string name="trade_name_stationery">Stationery</string>
+    <string name="trade_eg_stationery">Copy · kitab · qalam</string>
+    <string-array name="vocab_stationery_items">
+        <item>Copy</item>
+        <item>Qalam</item>
+        <item>Kitab</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>Stationery</item>
+        <item>Kitabein</item>
+        <item>Printing</item>
+        <item>Tohfay</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>Copy</item>
+        <item>Register</item>
+        <item>Qalam</item>
+        <item>Pencil</item>
+        <item>Rubber</item>
+        <item>Kitab</item>
+        <item>Photocopy</item>
+        <item>Geometry box</item>
+    </string-array>
+    <string name="trade_cosmetics">Cosmetics aur jewellery</string>
+    <string name="trade_name_cosmetics">Cosmetics</string>
+    <string name="trade_eg_cosmetics">Make-up · jewellery · khushboo</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>Cream</item>
+        <item>Lipstick</item>
+        <item>Choorian</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>Cosmetics</item>
+        <item>Jewellery</item>
+        <item>Khushboo</item>
+        <item>Tohfay</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>Face cream</item>
+        <item>Lipstick</item>
+        <item>Nail polish</item>
+        <item>Choorian</item>
+        <item>Baaliyan</item>
+        <item>Khushboo</item>
+        <item>Shampoo</item>
+        <item>Baalon ka tel</item>
+    </string-array>
+    <string name="trade_building">Tameerati saman (cement, sariya, eent)</string>
+    <string name="trade_name_building">Tameerati saman</string>
+    <string name="trade_eg_building">Cement · sariya · eent</string>
+    <string-array name="vocab_building_items">
+        <item>Cement</item>
+        <item>Sariya</item>
+        <item>Eent</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>Cement</item>
+        <item>Sariya</item>
+        <item>Eent</item>
+        <item>Rait bajri</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>Cement</item>
+        <item>Sariya</item>
+        <item>Eent</item>
+        <item>Rait</item>
+        <item>Bajri</item>
+        <item>Tiles</item>
+        <item>Paint</item>
+        <item>Pipe</item>
+    </string-array>
+    <string name="trade_fuel">Gas aur eendhan (LPG, petrol)</string>
+    <string name="trade_name_fuel">Gas aur eendhan</string>
+    <string name="trade_eg_fuel">LPG · petrol · diesel</string>
+    <string-array name="vocab_fuel_items">
+        <item>LPG</item>
+        <item>Petrol</item>
+        <item>Diesel</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>Gas</item>
+        <item>Eendhan</item>
+        <item>Tel</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>Gas cylinder</item>
+        <item>Gas refill</item>
+        <item>Petrol</item>
+        <item>Diesel</item>
+        <item>Engine oil</item>
+        <item>Mitti ka tel</item>
+        <item>Regulator</item>
+        <item>Gas pipe</item>
+    </string-array>
+    <string name="trade_wholesale">Wholesale aur distribution</string>
+    <string name="trade_name_wholesale">Wholesale</string>
+    <string name="trade_eg_wholesale">Thok · carton · supply</string>
+    <string-array name="vocab_wholesale_items">
+        <item>Carton</item>
+        <item>Bori</item>
+        <item>Packet</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>Thok</item>
+        <item>Packet wala</item>
+        <item>Supply</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>Carton</item>
+        <item>Bori</item>
+        <item>Dabba</item>
+        <item>Packet</item>
+        <item>Darjan pack</item>
+        <item>Delivery</item>
+        <item>Kiraya</item>
+        <item>Wapsi</item>
+    </string-array>
+    <string name="trade_other">Deegar (apni likhein)</string>
+    <string name="trade_name_other">Deegar</string>
+    <string name="trade_eg_other">Apni dukaan ki qisam likhein</string>
+    <string-array name="vocab_other_items">
+        <item>Item</item>
+        <item>Product</item>
+        <item>Service</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>Saman</item>
+        <item>Service</item>
+        <item>Deegar</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>Item</item>
+        <item>Product</item>
+        <item>Service</item>
+        <item>Delivery</item>
+        <item>Marammat</item>
+        <item>Packet</item>
+        <item>Dabba</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">Talaash: kapra, bakery, gas…</string>
+    <string name="trade_search_none">List mein nahi? Deegar chunein aur apni likhein.</string>
+    <string name="trade_other_title">Aap ki dukaan ki qisam</string>
+    <string name="trade_other_explain">Likhein aap ki dukaan kya hai, aur teen cheezein jo aap bechte hain. Yahi har jagah misaal aur pehli tajaveez banengi.</string>
+    <string name="trade_other_name_label">Dukaan ki qisam</string>
+    <string name="trade_other_name_hint">Phoolon ki dukaan</string>
+    <string name="trade_other_items_label">Teen cheezein jo aap bechte hain (ikhtiyari)</string>
+    <string name="trade_other_items_hint">Gulab, haar, guldasta</string>
 </resources>

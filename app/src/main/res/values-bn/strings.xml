@@ -2413,4 +2413,322 @@
     <string name="shop_name_field">দোকানের নাম</string>
     <string name="shop_name_hint">রহমান স্টোর</string>
     <string name="shop_phone_field">দোকানের ফোন (ঐচ্ছিক)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">কাপড় ও পোশাক</string>
+    <string name="trade_name_clothing">কাপড়</string>
+    <string name="trade_eg_clothing">কাপড় · স্যুট · রেডিমেড</string>
+    <string-array name="vocab_clothing_items">
+        <item>কাপড়</item>
+        <item>শার্ট</item>
+        <item>স্যুট</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>কাপড়</item>
+        <item>রেডিমেড</item>
+        <item>শিশু</item>
+        <item>আনুষঙ্গিক</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>লন কাপড়</item>
+        <item>সুতি কাপড়</item>
+        <item>শার্ট</item>
+        <item>প্যান্ট</item>
+        <item>সালোয়ার কামিজ</item>
+        <item>ওড়না</item>
+        <item>শিশুদের পোশাক</item>
+        <item>গেঞ্জি</item>
+    </string-array>
+    <string name="trade_footwear">জুতা (জুতা, স্যান্ডেল)</string>
+    <string name="trade_name_footwear">জুতা</string>
+    <string name="trade_eg_footwear">জুতা · স্যান্ডেল · চপ্পল</string>
+    <string-array name="vocab_footwear_items">
+        <item>জুতা</item>
+        <item>স্যান্ডেল</item>
+        <item>চপ্পল</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>পুরুষ</item>
+        <item>মহিলা</item>
+        <item>শিশু</item>
+        <item>স্পোর্টস</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>পুরুষের জুতা</item>
+        <item>মহিলার জুতা</item>
+        <item>শিশুর জুতা</item>
+        <item>স্যান্ডেল</item>
+        <item>চপ্পল</item>
+        <item>কেডস</item>
+        <item>স্কুল জুতা</item>
+        <item>মোজা</item>
+    </string-array>
+    <string name="trade_electronics">ইলেকট্রনিক্স ও গৃহস্থালি যন্ত্র</string>
+    <string name="trade_name_electronics">ইলেকট্রনিক্স</string>
+    <string name="trade_eg_electronics">ফ্যান · বাল্ব · যন্ত্র</string>
+    <string-array name="vocab_electronics_items">
+        <item>ফ্যান</item>
+        <item>LED বাল্ব</item>
+        <item>ইস্ত্রি</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>যন্ত্র</item>
+        <item>আলো</item>
+        <item>আনুষঙ্গিক</item>
+        <item>মেরামত</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>সিলিং ফ্যান</item>
+        <item>LED বাল্ব</item>
+        <item>ইস্ত্রি</item>
+        <item>এক্সটেনশন বোর্ড</item>
+        <item>চার্জার</item>
+        <item>পানির পাম্প</item>
+        <item>ওয়াশিং মেশিন</item>
+        <item>মেরামত</item>
+    </string-array>
+    <string name="trade_restaurant">হোটেল, রেস্টুরেন্ট ও ধাবা</string>
+    <string name="trade_name_restaurant">রেস্টুরেন্ট</string>
+    <string name="trade_eg_restaurant">খাবার · চা · ক্যাটারিং</string>
+    <string-array name="vocab_restaurant_items">
+        <item>চা</item>
+        <item>বিরিয়ানি</item>
+        <item>রুটি</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>খাবার</item>
+        <item>পানীয়</item>
+        <item>নাস্তা</item>
+        <item>ক্যাটারিং</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>চা</item>
+        <item>রুটি</item>
+        <item>বিরিয়ানি</item>
+        <item>ডাল</item>
+        <item>চিকেন কড়াই</item>
+        <item>কোল্ড ড্রিংক</item>
+        <item>পানির বোতল</item>
+        <item>পার্সেল</item>
+    </string-array>
+    <string name="trade_bakery">বেকারি ও মিষ্টি</string>
+    <string name="trade_name_bakery">বেকারি</string>
+    <string name="trade_eg_bakery">পাউরুটি · কেক · মিষ্টি</string>
+    <string-array name="vocab_bakery_items">
+        <item>পাউরুটি</item>
+        <item>কেক</item>
+        <item>মিষ্টি</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>বেকারি</item>
+        <item>মিষ্টি</item>
+        <item>নাস্তা</item>
+        <item>পানীয়</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>পাউরুটি</item>
+        <item>টোস্ট</item>
+        <item>কেক</item>
+        <item>বিস্কুট</item>
+        <item>মিষ্টি</item>
+        <item>সমুচা</item>
+        <item>ডিম</item>
+        <item>দুধের প্যাকেট</item>
+    </string-array>
+    <string name="trade_meat">মাংস ও মুরগি</string>
+    <string name="trade_name_meat">মাংস</string>
+    <string name="trade_eg_meat">মুরগি · খাসি · গরু</string>
+    <string-array name="vocab_meat_items">
+        <item>মুরগি</item>
+        <item>খাসির মাংস</item>
+        <item>গরুর মাংস</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>মুরগি</item>
+        <item>খাসি</item>
+        <item>গরু</item>
+        <item>মাছ</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>মুরগি</item>
+        <item>হাড় ছাড়া মুরগি</item>
+        <item>খাসির মাংস</item>
+        <item>গরুর মাংস</item>
+        <item>কিমা</item>
+        <item>মাছ</item>
+        <item>ডিম</item>
+        <item>কলিজা</item>
+    </string-array>
+    <string name="trade_produce">ফল ও সবজি</string>
+    <string name="trade_name_produce">ফল সবজি</string>
+    <string name="trade_eg_produce">ফল · সবজি · তাজা</string>
+    <string-array name="vocab_produce_items">
+        <item>আলু</item>
+        <item>পেঁয়াজ</item>
+        <item>আপেল</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>সবজি</item>
+        <item>ফল</item>
+        <item>শাক</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>আলু</item>
+        <item>পেঁয়াজ</item>
+        <item>টমেটো</item>
+        <item>রসুন</item>
+        <item>আদা</item>
+        <item>আপেল</item>
+        <item>কলা</item>
+        <item>কমলা</item>
+    </string-array>
+    <string name="trade_stationery">স্টেশনারি ও বই</string>
+    <string name="trade_name_stationery">স্টেশনারি</string>
+    <string name="trade_eg_stationery">খাতা · বই · কলম</string>
+    <string-array name="vocab_stationery_items">
+        <item>খাতা</item>
+        <item>কলম</item>
+        <item>বই</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>স্টেশনারি</item>
+        <item>বই</item>
+        <item>প্রিন্টিং</item>
+        <item>উপহার</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>খাতা</item>
+        <item>রেজিস্টার</item>
+        <item>কলম</item>
+        <item>পেন্সিল</item>
+        <item>রাবার</item>
+        <item>বই</item>
+        <item>ফটোকপি</item>
+        <item>জ্যামিতি বক্স</item>
+    </string-array>
+    <string name="trade_cosmetics">প্রসাধনী ও গয়না</string>
+    <string name="trade_name_cosmetics">প্রসাধনী</string>
+    <string name="trade_eg_cosmetics">মেকআপ · গয়না · সুগন্ধি</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>ক্রিম</item>
+        <item>লিপস্টিক</item>
+        <item>চুড়ি</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>প্রসাধনী</item>
+        <item>গয়না</item>
+        <item>সুগন্ধি</item>
+        <item>উপহার</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>ফেস ক্রিম</item>
+        <item>লিপস্টিক</item>
+        <item>নেইল পলিশ</item>
+        <item>চুড়ি</item>
+        <item>কানের দুল</item>
+        <item>সুগন্ধি</item>
+        <item>শ্যাম্পু</item>
+        <item>চুলের তেল</item>
+    </string-array>
+    <string name="trade_building">নির্মাণ সামগ্রী (সিমেন্ট, রড, ইট)</string>
+    <string name="trade_name_building">নির্মাণ সামগ্রী</string>
+    <string name="trade_eg_building">সিমেন্ট · রড · ইট</string>
+    <string-array name="vocab_building_items">
+        <item>সিমেন্ট</item>
+        <item>রড</item>
+        <item>ইট</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>সিমেন্ট</item>
+        <item>রড</item>
+        <item>ইট</item>
+        <item>বালু ও পাথর</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>সিমেন্ট</item>
+        <item>রড</item>
+        <item>ইট</item>
+        <item>বালু</item>
+        <item>পাথর</item>
+        <item>টাইলস</item>
+        <item>রং</item>
+        <item>পাইপ</item>
+    </string-array>
+    <string name="trade_fuel">গ্যাস ও জ্বালানি (LPG, পেট্রোল)</string>
+    <string name="trade_name_fuel">গ্যাস ও জ্বালানি</string>
+    <string name="trade_eg_fuel">LPG · পেট্রোল · ডিজেল</string>
+    <string-array name="vocab_fuel_items">
+        <item>LPG</item>
+        <item>পেট্রোল</item>
+        <item>ডিজেল</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>গ্যাস</item>
+        <item>জ্বালানি</item>
+        <item>তেল</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>গ্যাস সিলিন্ডার</item>
+        <item>গ্যাস রিফিল</item>
+        <item>পেট্রোল</item>
+        <item>ডিজেল</item>
+        <item>ইঞ্জিন অয়েল</item>
+        <item>কেরোসিন</item>
+        <item>রেগুলেটর</item>
+        <item>গ্যাস পাইপ</item>
+    </string-array>
+    <string name="trade_wholesale">পাইকারি ও পরিবেশন</string>
+    <string name="trade_name_wholesale">পাইকারি</string>
+    <string name="trade_eg_wholesale">পাইকারি · কার্টন · সরবরাহ</string>
+    <string-array name="vocab_wholesale_items">
+        <item>কার্টন</item>
+        <item>বস্তা</item>
+        <item>প্যাকেট</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>পাইকারি</item>
+        <item>প্যাকেটজাত</item>
+        <item>সরবরাহ</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>কার্টন</item>
+        <item>বস্তা</item>
+        <item>বাক্স</item>
+        <item>প্যাকেট</item>
+        <item>ডজন প্যাক</item>
+        <item>ডেলিভারি</item>
+        <item>ভাড়া</item>
+        <item>ফেরত</item>
+    </string-array>
+    <string name="trade_other">অন্যান্য (নিজে লিখুন)</string>
+    <string name="trade_name_other">অন্যান্য</string>
+    <string name="trade_eg_other">আপনার দোকানের ধরন লিখুন</string>
+    <string-array name="vocab_other_items">
+        <item>পণ্য</item>
+        <item>প্রোডাক্ট</item>
+        <item>সেবা</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>মালামাল</item>
+        <item>সেবা</item>
+        <item>অন্যান্য</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>পণ্য</item>
+        <item>প্রোডাক্ট</item>
+        <item>সেবা</item>
+        <item>ডেলিভারি</item>
+        <item>মেরামত</item>
+        <item>প্যাকেট</item>
+        <item>বাক্স</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">খুঁজুন: কাপড়, বেকারি, গ্যাস…</string>
+    <string name="trade_search_none">তালিকায় নেই? অন্যান্য বেছে নিজে লিখুন।</string>
+    <string name="trade_other_title">আপনার দোকানের ধরন</string>
+    <string name="trade_other_explain">লিখুন আপনার দোকান কী, আর তিনটি জিনিস যা আপনি বিক্রি করেন। এগুলোই সব জায়গায় উদাহরণ ও প্রথম পরামর্শ হবে।</string>
+    <string name="trade_other_name_label">দোকানের ধরন</string>
+    <string name="trade_other_name_hint">ফুলের দোকান</string>
+    <string name="trade_other_items_label">তিনটি জিনিস যা আপনি বিক্রি করেন (ঐচ্ছিক)</string>
+    <string name="trade_other_items_hint">গোলাপ, মালা, তোড়া</string>
 </resources>

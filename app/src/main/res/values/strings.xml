@@ -2504,4 +2504,401 @@ You can change this any time from this screen.</string>
     <string name="shop_name_field">Shop name</string>
     <string name="shop_name_hint">Bhatti Traders</string>
     <string name="shop_phone_field">Shop phone (optional)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">Clothing and garments</string>
+    <string name="trade_name_clothing">Clothing</string>
+    <string name="trade_eg_clothing">Cloth · suits · ready-made</string>
+    <string-array name="vocab_clothing_items">
+        <item>Cloth</item>
+        <item>Shirt</item>
+        <item>Suit</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>Cloth</item>
+        <item>Ready-made</item>
+        <item>Kids</item>
+        <item>Accessories</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>Lawn cloth</item>
+        <item>Cotton cloth</item>
+        <item>Shirt</item>
+        <item>Trouser</item>
+        <item>Shalwar suit</item>
+        <item>Dupatta</item>
+        <item>Kids suit</item>
+        <item>Undergarments</item>
+    </string-array>
+    <string-array name="vocab_clothing_units" translatable="false">
+        <item>metre</item>
+        <item>piece</item>
+        <item>packet</item>
+        <item>box</item>
+    </string-array>
+    <string name="trade_footwear">Footwear (shoes, sandals)</string>
+    <string name="trade_name_footwear">Footwear</string>
+    <string name="trade_eg_footwear">Shoes · sandals · slippers</string>
+    <string-array name="vocab_footwear_items">
+        <item>Shoes</item>
+        <item>Sandals</item>
+        <item>Slippers</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>Men</item>
+        <item>Women</item>
+        <item>Kids</item>
+        <item>Sports</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>Men\'s shoes</item>
+        <item>Women\'s shoes</item>
+        <item>Kids\' shoes</item>
+        <item>Sandals</item>
+        <item>Slippers</item>
+        <item>Joggers</item>
+        <item>School shoes</item>
+        <item>Socks</item>
+    </string-array>
+    <string-array name="vocab_footwear_units" translatable="false">
+        <item>pair</item>
+        <item>piece</item>
+        <item>box</item>
+    </string-array>
+    <string name="trade_electronics">Electronics and appliances</string>
+    <string name="trade_name_electronics">Electronics</string>
+    <string name="trade_eg_electronics">Fans · lights · appliances</string>
+    <string-array name="vocab_electronics_items">
+        <item>Fan</item>
+        <item>LED bulb</item>
+        <item>Iron</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>Appliance</item>
+        <item>Lighting</item>
+        <item>Accessory</item>
+        <item>Repair</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>Ceiling fan</item>
+        <item>LED bulb</item>
+        <item>Electric iron</item>
+        <item>Extension board</item>
+        <item>Charger</item>
+        <item>Water pump</item>
+        <item>Washing machine</item>
+        <item>Repair</item>
+    </string-array>
+    <string-array name="vocab_electronics_units" translatable="false">
+        <item>piece</item>
+        <item>box</item>
+        <item>packet</item>
+    </string-array>
+    <string name="trade_restaurant">Restaurant, hotel and dhaba</string>
+    <string name="trade_name_restaurant">Restaurant</string>
+    <string name="trade_eg_restaurant">Meals · tea · catering</string>
+    <string-array name="vocab_restaurant_items">
+        <item>Tea</item>
+        <item>Biryani</item>
+        <item>Roti</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>Meals</item>
+        <item>Drinks</item>
+        <item>Snacks</item>
+        <item>Catering</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>Tea</item>
+        <item>Roti</item>
+        <item>Biryani</item>
+        <item>Daal</item>
+        <item>Chicken karahi</item>
+        <item>Cold drink</item>
+        <item>Water bottle</item>
+        <item>Parcel</item>
+    </string-array>
+    <string-array name="vocab_restaurant_units" translatable="false">
+        <item>plate</item>
+        <item>piece</item>
+        <item>kg</item>
+        <item>litre</item>
+        <item>packet</item>
+    </string-array>
+    <string name="trade_bakery">Bakery and sweets</string>
+    <string name="trade_name_bakery">Bakery</string>
+    <string name="trade_eg_bakery">Bread · cakes · sweets</string>
+    <string-array name="vocab_bakery_items">
+        <item>Bread</item>
+        <item>Cake</item>
+        <item>Sweets</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>Bakery</item>
+        <item>Sweets</item>
+        <item>Snacks</item>
+        <item>Drinks</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>Bread</item>
+        <item>Rusk</item>
+        <item>Cake</item>
+        <item>Biscuits</item>
+        <item>Sweets</item>
+        <item>Samosa</item>
+        <item>Eggs</item>
+        <item>Milk pack</item>
+    </string-array>
+    <string-array name="vocab_bakery_units" translatable="false">
+        <item>kg</item>
+        <item>piece</item>
+        <item>packet</item>
+        <item>dozen</item>
+        <item>box</item>
+    </string-array>
+    <string name="trade_meat">Meat and poultry</string>
+    <string name="trade_name_meat">Meat &amp; poultry</string>
+    <string name="trade_eg_meat">Chicken · mutton · beef</string>
+    <string-array name="vocab_meat_items">
+        <item>Chicken</item>
+        <item>Mutton</item>
+        <item>Beef</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>Chicken</item>
+        <item>Mutton</item>
+        <item>Beef</item>
+        <item>Fish</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>Chicken</item>
+        <item>Boneless chicken</item>
+        <item>Mutton</item>
+        <item>Beef</item>
+        <item>Mince</item>
+        <item>Fish</item>
+        <item>Eggs</item>
+        <item>Liver</item>
+    </string-array>
+    <string-array name="vocab_meat_units" translatable="false">
+        <item>kg</item>
+        <item>piece</item>
+        <item>dozen</item>
+    </string-array>
+    <string name="trade_produce">Fruit and vegetables</string>
+    <string name="trade_name_produce">Fruit &amp; veg</string>
+    <string name="trade_eg_produce">Fruit · vegetables · fresh</string>
+    <string-array name="vocab_produce_items">
+        <item>Potatoes</item>
+        <item>Onions</item>
+        <item>Apples</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>Vegetables</item>
+        <item>Fruit</item>
+        <item>Herbs</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>Potatoes</item>
+        <item>Onions</item>
+        <item>Tomatoes</item>
+        <item>Garlic</item>
+        <item>Ginger</item>
+        <item>Apples</item>
+        <item>Bananas</item>
+        <item>Oranges</item>
+    </string-array>
+    <string-array name="vocab_produce_units" translatable="false">
+        <item>kg</item>
+        <item>dozen</item>
+        <item>piece</item>
+        <item>box</item>
+        <item>bag</item>
+    </string-array>
+    <string name="trade_stationery">Stationery and books</string>
+    <string name="trade_name_stationery">Stationery</string>
+    <string name="trade_eg_stationery">Copies · books · pens</string>
+    <string-array name="vocab_stationery_items">
+        <item>Copy</item>
+        <item>Pen</item>
+        <item>Book</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>Stationery</item>
+        <item>Books</item>
+        <item>Printing</item>
+        <item>Gifts</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>Copy</item>
+        <item>Register</item>
+        <item>Pen</item>
+        <item>Pencil</item>
+        <item>Eraser</item>
+        <item>Book</item>
+        <item>Photocopy</item>
+        <item>Geometry box</item>
+    </string-array>
+    <string-array name="vocab_stationery_units" translatable="false">
+        <item>piece</item>
+        <item>packet</item>
+        <item>box</item>
+        <item>dozen</item>
+    </string-array>
+    <string name="trade_cosmetics">Cosmetics and jewellery</string>
+    <string name="trade_name_cosmetics">Cosmetics</string>
+    <string name="trade_eg_cosmetics">Makeup · jewellery · perfume</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>Cream</item>
+        <item>Lipstick</item>
+        <item>Bangles</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>Cosmetics</item>
+        <item>Jewellery</item>
+        <item>Perfume</item>
+        <item>Gifts</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>Face cream</item>
+        <item>Lipstick</item>
+        <item>Nail polish</item>
+        <item>Bangles</item>
+        <item>Earrings</item>
+        <item>Perfume</item>
+        <item>Shampoo</item>
+        <item>Hair oil</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_units" translatable="false">
+        <item>piece</item>
+        <item>bottle</item>
+        <item>packet</item>
+        <item>box</item>
+    </string-array>
+    <string name="trade_building">Building material (cement, steel, bricks)</string>
+    <string name="trade_name_building">Building material</string>
+    <string name="trade_eg_building">Cement · steel · bricks</string>
+    <string-array name="vocab_building_items">
+        <item>Cement</item>
+        <item>Steel bar</item>
+        <item>Bricks</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>Cement</item>
+        <item>Steel</item>
+        <item>Bricks</item>
+        <item>Sand and gravel</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>Cement</item>
+        <item>Steel bar</item>
+        <item>Bricks</item>
+        <item>Sand</item>
+        <item>Gravel</item>
+        <item>Tiles</item>
+        <item>Paint</item>
+        <item>Pipe</item>
+    </string-array>
+    <string-array name="vocab_building_units" translatable="false">
+        <item>bag</item>
+        <item>ton</item>
+        <item>piece</item>
+        <item>kg</item>
+    </string-array>
+    <string name="trade_fuel">Gas and fuel (LPG, petrol)</string>
+    <string name="trade_name_fuel">Gas &amp; fuel</string>
+    <string name="trade_eg_fuel">LPG · petrol · diesel</string>
+    <string-array name="vocab_fuel_items">
+        <item>LPG</item>
+        <item>Petrol</item>
+        <item>Diesel</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>Gas</item>
+        <item>Fuel</item>
+        <item>Oil</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>LPG cylinder</item>
+        <item>Gas refill</item>
+        <item>Petrol</item>
+        <item>Diesel</item>
+        <item>Engine oil</item>
+        <item>Kerosene</item>
+        <item>Regulator</item>
+        <item>Gas pipe</item>
+    </string-array>
+    <string-array name="vocab_fuel_units" translatable="false">
+        <item>cylinder</item>
+        <item>litre</item>
+        <item>kg</item>
+    </string-array>
+    <string name="trade_wholesale">Wholesale and distribution</string>
+    <string name="trade_name_wholesale">Wholesale</string>
+    <string name="trade_eg_wholesale">Bulk · cartons · supply</string>
+    <string-array name="vocab_wholesale_items">
+        <item>Carton</item>
+        <item>Bag</item>
+        <item>Packet</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>Bulk</item>
+        <item>Packaged</item>
+        <item>Supply</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>Carton</item>
+        <item>Bag</item>
+        <item>Box</item>
+        <item>Packet</item>
+        <item>Dozen pack</item>
+        <item>Delivery</item>
+        <item>Freight</item>
+        <item>Return</item>
+    </string-array>
+    <string-array name="vocab_wholesale_units" translatable="false">
+        <item>box</item>
+        <item>bag</item>
+        <item>packet</item>
+        <item>piece</item>
+        <item>kg</item>
+    </string-array>
+    <string name="trade_other">Other (write your own)</string>
+    <string name="trade_name_other">Other</string>
+    <string name="trade_eg_other">Write your own shop type</string>
+    <string-array name="vocab_other_items">
+        <item>Item</item>
+        <item>Product</item>
+        <item>Service</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>Goods</item>
+        <item>Service</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>Item</item>
+        <item>Product</item>
+        <item>Service</item>
+        <item>Delivery</item>
+        <item>Repair</item>
+        <item>Packet</item>
+        <item>Box</item>
+    </string-array>
+    <string-array name="vocab_other_units" translatable="false">
+        <item>piece</item>
+        <item>kg</item>
+        <item>packet</item>
+        <item>box</item>
+        <item>litre</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">Search: cloth, bakery, gas…</string>
+    <string name="trade_search_none">Not in the list? Choose Other and write your own.</string>
+    <string name="trade_other_title">Your kind of shop</string>
+    <string name="trade_other_explain">Write what your shop is, and three things it sells. They become the examples and first suggestions everywhere you add goods.</string>
+    <string name="trade_other_name_label">Shop type</string>
+    <string name="trade_other_name_hint">Flower shop</string>
+    <string name="trade_other_items_label">Three things you sell (optional)</string>
+    <string name="trade_other_items_hint">Roses, garlands, bouquets</string>
 </resources>

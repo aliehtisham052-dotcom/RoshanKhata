@@ -10,7 +10,7 @@ class TradeTest {
     fun unsetUnknownOrBlankIsAgri() {
         assertEquals(Trade.AGRI, Trade.of(null))
         assertEquals(Trade.AGRI, Trade.of(""))
-        assertEquals(Trade.AGRI, Trade.of("BAKERY"))
+        assertEquals(Trade.AGRI, Trade.of("SPACESHIP"))
     }
 
     @Test

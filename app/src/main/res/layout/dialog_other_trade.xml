@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Other": the owner's own words for his shop (11 Oct) - what it is, and
+     up to three things it sells. Read by TradePicker into OtherTrade. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="2dp"
+        android:text="@string/trade_other_explain"
+        android:textAlignment="viewStart"
+        android:textColor="@color/ink_soft"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:labelFor="@+id/etOtherName"
+        android:text="@string/trade_other_name_label"
+        android:textAlignment="viewStart"
+        android:textColor="@color/brand_green_text"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etOtherName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/trade_other_name_hint"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:maxLength="40"
+        android:minHeight="48dp"
+        android:textAlignment="viewStart" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:labelFor="@+id/etOtherItems"
+        android:text="@string/trade_other_items_label"
+        android:textAlignment="viewStart"
+        android:textColor="@color/brand_green_text"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etOtherItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/trade_other_items_hint"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:maxLength="120"
+        android:minHeight="48dp"
+        android:textAlignment="viewStart" />
+</LinearLayout>

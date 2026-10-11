@@ -809,7 +809,10 @@ object Backup {
         /** Absent before 4 Oct 2026 → stays unset, which reads as the agri default. */
         val trade: String? = null,
         /** Added 30 Sep 2026. A file from before it has no key and restores as blank. */
-        val businessPhone: String? = null
+        val businessPhone: String? = null,
+        /** An Other shop's own name and goods (11 Oct); absent before, and for every other trade. */
+        val tradeOtherName: String? = null,
+        val tradeOtherItems: String? = null
     )
 
     /**
@@ -1288,6 +1291,8 @@ object Backup {
         put("currency", BusinessProfile.currency(context))
         put("calendar", BusinessProfile.calendar(context).key)
         put("trade", BusinessProfile.trade(context) ?: JSONObject.NULL)
+        put("tradeOtherName", BusinessProfile.otherTradeName(context) ?: JSONObject.NULL)
+        put("tradeOtherItems", BusinessProfile.otherTradeItems(context) ?: JSONObject.NULL)
         put("photoOnStatement", BusinessProfile.photoOnStatement(context))
     }
 
@@ -1304,7 +1309,9 @@ object Backup {
         calendar = o.optNullableString("calendar"),
         trade = o.optNullableString("trade"),
         photoOnStatement = o.optBoolean("photoOnStatement", false),
-        businessPhone = o.optNullableString("businessPhone")
+        businessPhone = o.optNullableString("businessPhone"),
+        tradeOtherName = o.optNullableString("tradeOtherName"),
+        tradeOtherItems = o.optNullableString("tradeOtherItems")
     )
 
     // Written through the existing setters so trimming/normalisation stays in
@@ -1326,6 +1333,7 @@ object Backup {
         BusinessProfile.setCalendar(context, ShopCalendar.Kind.of(p.calendar))
         ShopCalendar.refresh(context)
         p.trade?.let { BusinessProfile.setTrade(context, Trade.of(it)) }
+        BusinessProfile.setOtherTrade(context, p.tradeOtherName, p.tradeOtherItems)
         BusinessProfile.setPhotoOnStatement(context, p.photoOnStatement)
     }
 

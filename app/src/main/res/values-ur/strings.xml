@@ -2369,4 +2369,322 @@
     <string name="shop_name_field">دکان کا نام</string>
     <string name="shop_name_hint">بھٹی ٹریڈرز</string>
     <string name="shop_phone_field">دکان کا فون (اختیاری)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">کپڑا اور گارمنٹس</string>
+    <string name="trade_name_clothing">کپڑا</string>
+    <string name="trade_eg_clothing">کپڑا · سوٹ · ریڈی میڈ</string>
+    <string-array name="vocab_clothing_items">
+        <item>کپڑا</item>
+        <item>قمیض</item>
+        <item>سوٹ</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>کپڑا</item>
+        <item>ریڈی میڈ</item>
+        <item>بچے</item>
+        <item>لوازمات</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>لان</item>
+        <item>کاٹن</item>
+        <item>قمیض</item>
+        <item>پتلون</item>
+        <item>شلوار سوٹ</item>
+        <item>دوپٹہ</item>
+        <item>بچوں کا سوٹ</item>
+        <item>بنیان</item>
+    </string-array>
+    <string name="trade_footwear">جوتے (جوتے، سینڈل)</string>
+    <string name="trade_name_footwear">جوتے</string>
+    <string name="trade_eg_footwear">جوتے · سینڈل · چپل</string>
+    <string-array name="vocab_footwear_items">
+        <item>جوتے</item>
+        <item>سینڈل</item>
+        <item>چپل</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>مردانہ</item>
+        <item>زنانہ</item>
+        <item>بچے</item>
+        <item>اسپورٹس</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>مردانہ جوتے</item>
+        <item>زنانہ جوتے</item>
+        <item>بچوں کے جوتے</item>
+        <item>سینڈل</item>
+        <item>چپل</item>
+        <item>جاگرز</item>
+        <item>اسکول شوز</item>
+        <item>جرابیں</item>
+    </string-array>
+    <string name="trade_electronics">الیکٹرانکس اور گھریلو آلات</string>
+    <string name="trade_name_electronics">الیکٹرانکس</string>
+    <string name="trade_eg_electronics">پنکھے · بلب · آلات</string>
+    <string-array name="vocab_electronics_items">
+        <item>پنکھا</item>
+        <item>ایل ای ڈی بلب</item>
+        <item>استری</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>آلات</item>
+        <item>روشنی</item>
+        <item>لوازمات</item>
+        <item>مرمت</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>چھت کا پنکھا</item>
+        <item>ایل ای ڈی بلب</item>
+        <item>استری</item>
+        <item>ایکسٹینشن بورڈ</item>
+        <item>چارجر</item>
+        <item>واٹر پمپ</item>
+        <item>واشنگ مشین</item>
+        <item>مرمت</item>
+    </string-array>
+    <string name="trade_restaurant">ہوٹل، ریسٹورنٹ اور ڈھابہ</string>
+    <string name="trade_name_restaurant">ہوٹل</string>
+    <string name="trade_eg_restaurant">کھانا · چائے · کیٹرنگ</string>
+    <string-array name="vocab_restaurant_items">
+        <item>چائے</item>
+        <item>بریانی</item>
+        <item>روٹی</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>کھانا</item>
+        <item>مشروبات</item>
+        <item>اسنیکس</item>
+        <item>کیٹرنگ</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>چائے</item>
+        <item>روٹی</item>
+        <item>بریانی</item>
+        <item>دال</item>
+        <item>چکن کڑاہی</item>
+        <item>کولڈ ڈرنک</item>
+        <item>پانی کی بوتل</item>
+        <item>پارسل</item>
+    </string-array>
+    <string name="trade_bakery">بیکری اور مٹھائی</string>
+    <string name="trade_name_bakery">بیکری</string>
+    <string name="trade_eg_bakery">ڈبل روٹی · کیک · مٹھائی</string>
+    <string-array name="vocab_bakery_items">
+        <item>ڈبل روٹی</item>
+        <item>کیک</item>
+        <item>مٹھائی</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>بیکری</item>
+        <item>مٹھائی</item>
+        <item>اسنیکس</item>
+        <item>مشروبات</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>ڈبل روٹی</item>
+        <item>رس</item>
+        <item>کیک</item>
+        <item>بسکٹ</item>
+        <item>مٹھائی</item>
+        <item>سموسہ</item>
+        <item>انڈے</item>
+        <item>دودھ کا ڈبہ</item>
+    </string-array>
+    <string name="trade_meat">گوشت اور مرغی</string>
+    <string name="trade_name_meat">گوشت</string>
+    <string name="trade_eg_meat">مرغی · مٹن · بیف</string>
+    <string-array name="vocab_meat_items">
+        <item>مرغی</item>
+        <item>مٹن</item>
+        <item>بیف</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>مرغی</item>
+        <item>مٹن</item>
+        <item>بیف</item>
+        <item>مچھلی</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>مرغی</item>
+        <item>بون لیس</item>
+        <item>مٹن</item>
+        <item>بیف</item>
+        <item>قیمہ</item>
+        <item>مچھلی</item>
+        <item>انڈے</item>
+        <item>کلیجی</item>
+    </string-array>
+    <string name="trade_produce">پھل اور سبزی</string>
+    <string name="trade_name_produce">پھل سبزی</string>
+    <string name="trade_eg_produce">پھل · سبزی · تازہ</string>
+    <string-array name="vocab_produce_items">
+        <item>آلو</item>
+        <item>پیاز</item>
+        <item>سیب</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>سبزی</item>
+        <item>پھل</item>
+        <item>ہری بوٹی</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>آلو</item>
+        <item>پیاز</item>
+        <item>ٹماٹر</item>
+        <item>لہسن</item>
+        <item>ادرک</item>
+        <item>سیب</item>
+        <item>کیلا</item>
+        <item>کینو</item>
+    </string-array>
+    <string name="trade_stationery">اسٹیشنری اور کتابیں</string>
+    <string name="trade_name_stationery">اسٹیشنری</string>
+    <string name="trade_eg_stationery">کاپی · کتاب · قلم</string>
+    <string-array name="vocab_stationery_items">
+        <item>کاپی</item>
+        <item>قلم</item>
+        <item>کتاب</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>اسٹیشنری</item>
+        <item>کتابیں</item>
+        <item>پرنٹنگ</item>
+        <item>تحائف</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>کاپی</item>
+        <item>رجسٹر</item>
+        <item>قلم</item>
+        <item>پنسل</item>
+        <item>ربڑ</item>
+        <item>کتاب</item>
+        <item>فوٹو کاپی</item>
+        <item>جیومیٹری بکس</item>
+    </string-array>
+    <string name="trade_cosmetics">کاسمیٹکس اور جیولری</string>
+    <string name="trade_name_cosmetics">کاسمیٹکس</string>
+    <string name="trade_eg_cosmetics">میک اپ · جیولری · خوشبو</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>کریم</item>
+        <item>لپ اسٹک</item>
+        <item>چوڑیاں</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>کاسمیٹکس</item>
+        <item>جیولری</item>
+        <item>خوشبو</item>
+        <item>تحائف</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>فیس کریم</item>
+        <item>لپ اسٹک</item>
+        <item>نیل پالش</item>
+        <item>چوڑیاں</item>
+        <item>بالیاں</item>
+        <item>خوشبو</item>
+        <item>شیمپو</item>
+        <item>بالوں کا تیل</item>
+    </string-array>
+    <string name="trade_building">تعمیراتی سامان (سیمنٹ، سریا، اینٹ)</string>
+    <string name="trade_name_building">تعمیراتی سامان</string>
+    <string name="trade_eg_building">سیمنٹ · سریا · اینٹ</string>
+    <string-array name="vocab_building_items">
+        <item>سیمنٹ</item>
+        <item>سریا</item>
+        <item>اینٹ</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>سیمنٹ</item>
+        <item>سریا</item>
+        <item>اینٹ</item>
+        <item>ریت بجری</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>سیمنٹ</item>
+        <item>سریا</item>
+        <item>اینٹ</item>
+        <item>ریت</item>
+        <item>بجری</item>
+        <item>ٹائلیں</item>
+        <item>پینٹ</item>
+        <item>پائپ</item>
+    </string-array>
+    <string name="trade_fuel">گیس اور ایندھن (ایل پی جی، پیٹرول)</string>
+    <string name="trade_name_fuel">گیس اور ایندھن</string>
+    <string name="trade_eg_fuel">ایل پی جی · پیٹرول · ڈیزل</string>
+    <string-array name="vocab_fuel_items">
+        <item>ایل پی جی</item>
+        <item>پیٹرول</item>
+        <item>ڈیزل</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>گیس</item>
+        <item>ایندھن</item>
+        <item>تیل</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>گیس سلنڈر</item>
+        <item>گیس ری فل</item>
+        <item>پیٹرول</item>
+        <item>ڈیزل</item>
+        <item>انجن آئل</item>
+        <item>مٹی کا تیل</item>
+        <item>ریگولیٹر</item>
+        <item>گیس پائپ</item>
+    </string-array>
+    <string name="trade_wholesale">ہول سیل اور ڈسٹری بیوشن</string>
+    <string name="trade_name_wholesale">ہول سیل</string>
+    <string name="trade_eg_wholesale">تھوک · کارٹن · سپلائی</string>
+    <string-array name="vocab_wholesale_items">
+        <item>کارٹن</item>
+        <item>بوری</item>
+        <item>پیکٹ</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>تھوک</item>
+        <item>پیکٹ والا</item>
+        <item>سپلائی</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>کارٹن</item>
+        <item>بوری</item>
+        <item>ڈبہ</item>
+        <item>پیکٹ</item>
+        <item>درجن پیک</item>
+        <item>ڈلیوری</item>
+        <item>کرایہ</item>
+        <item>واپسی</item>
+    </string-array>
+    <string name="trade_other">دیگر (اپنی لکھیں)</string>
+    <string name="trade_name_other">دیگر</string>
+    <string name="trade_eg_other">اپنی دکان کی قسم لکھیں</string>
+    <string-array name="vocab_other_items">
+        <item>آئٹم</item>
+        <item>پروڈکٹ</item>
+        <item>سروس</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>سامان</item>
+        <item>سروس</item>
+        <item>دیگر</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>آئٹم</item>
+        <item>پروڈکٹ</item>
+        <item>سروس</item>
+        <item>ڈلیوری</item>
+        <item>مرمت</item>
+        <item>پیکٹ</item>
+        <item>ڈبہ</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">تلاش: کپڑا، بیکری، گیس…</string>
+    <string name="trade_search_none">فہرست میں نہیں؟ دیگر چنیں اور اپنی لکھیں۔</string>
+    <string name="trade_other_title">آپ کی دکان کی قسم</string>
+    <string name="trade_other_explain">لکھیں آپ کی دکان کیا ہے، اور تین چیزیں جو آپ بیچتے ہیں۔ یہی ہر جگہ مثال اور پہلی تجاویز بنیں گی۔</string>
+    <string name="trade_other_name_label">دکان کی قسم</string>
+    <string name="trade_other_name_hint">پھولوں کی دکان</string>
+    <string name="trade_other_items_label">تین چیزیں جو آپ بیچتے ہیں (اختیاری)</string>
+    <string name="trade_other_items_hint">گلاب، ہار، گلدستہ</string>
 </resources>
