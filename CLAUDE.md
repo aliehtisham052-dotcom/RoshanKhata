@@ -117,6 +117,17 @@ Each of these cost a build or a bug.
     own `*_on_dark` variant; the ledger's plain red and green measure barely
     above 1:1 there. Anything carrying a figure must clear 4.5:1.
 
+14. **3D posters (Filament): the CI emulator must use `-gpu swangle_indirect`.**
+    The old `swiftshader_indirect` translator renders every material white,
+    aborts on FXAA, and shadow maps kill the emulator (the run then hangs).
+15. **A Filament read-back finishes only on `Renderer` frames.** `readPixels`
+    waits on a fence that only `driver.tick()` (beginFrame/endFrame) checks;
+    `Engine.flush()` then delivers the callback. `HeroStage.still` pumps both.
+    Its rows come back top first — do not flip them.
+16. **Look at the pictures, not only the numbers.** Upside-down 3D heroes and
+    a reversed phone number passed every assertion; the "Poster proof"
+    workflow puts the CI pictures on the `poster-proof` pre-release.
+
 ---
 
 ## Working with the owner
