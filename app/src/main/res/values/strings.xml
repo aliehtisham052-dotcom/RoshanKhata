@@ -89,10 +89,8 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Net balance</string>
-    <string name="home_switch_business">Switch business</string>
     <string name="home_sec_daily">Every day</string>
     <string name="home_sec_business">Business</string>
-    <string name="home_see_all">See all ›</string>
     <string name="home_today">Today</string>
     <string name="tile_bills">Bills</string>
     <string name="tile_expiry">Expiry</string>
@@ -107,8 +105,6 @@
     <string name="today_backup">Backup</string>
     <string name="today_gap">Cash gap</string>
     <string name="today_chip">%1$s · %2$s</string>
-    <string name="drawer_active_business">Active business</string>
-    <string name="drawer_active_business_n">Active business · %1$s of %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">Ledger report PDF</string>
     <string name="ledger_report_generating">Building the ledger report…</string>
@@ -2464,4 +2460,43 @@ You can change this any time from this screen.</string>
     <string name="theme_light_hint">Clear in daylight</string>
     <string name="theme_dark_hint">Easy on the eyes at night</string>
     <string name="theme_system_hint">Follows your phone setting</string>
+
+    <!-- Shop button and shop sheet (11 Oct). -->
+    <string name="shop_sub_profile">Profile</string>
+    <string name="shop_sub_switch">Profile · Switch shop</string>
+    <string name="shop_add_name">Add your shop name</string>
+    <string name="shop_add_name_sub">Printed on invoices and statements</string>
+    <string name="shop_edit_profile">Edit profile</string>
+    <string name="shop_progress">Profile %1$d%% complete</string>
+    <string name="shop_progress_done">Profile complete</string>
+    <string name="shop_progress_missing">Still missing: %1$s</string>
+    <string name="shop_missing_name">shop name</string>
+    <string name="shop_missing_phone">phone</string>
+    <string name="shop_missing_address">address</string>
+    <string name="shop_missing_logo">logo</string>
+    <string name="shop_missing_payment">payment QR or bank</string>
+    <string name="shop_missing_stamp">stamp</string>
+    <string name="shop_missing_signature">signature</string>
+    <string name="shop_sec_profile">Your profile</string>
+    <string name="shop_sec_google">Google account</string>
+    <string name="shop_sec_shops">Your shops</string>
+    <string name="shop_row_name">Name and logo</string>
+    <string name="shop_row_name_sub">Shop name, phone, address</string>
+    <string name="shop_row_stamp">Stamp and signature</string>
+    <string name="shop_row_stamp_sub">On invoices and statements</string>
+    <string name="shop_row_payment">Payment QR and bank</string>
+    <string name="shop_row_payment_sub">For customers to pay you</string>
+    <string name="shop_row_trade">Shop type</string>
+    <string name="shop_row_money">Currency and calendar</string>
+    <string name="shop_google_backup">Backup: %1$s</string>
+    <string name="shop_google_why">Back up your books to your own Drive</string>
+    <string name="shop_open_now">Open now</string>
+    <string name="shop_tap_open">Tap to open</string>
+    <string name="shop_new">New shop</string>
+    <string name="shop_settings_row">Shop profile</string>
+    <string name="type_tab_count">%1$s · %2$d</string>
+    <plurals name="supplier_count">
+        <item quantity="one">%d supplier</item>
+        <item quantity="other">%d suppliers</item>
+    </plurals>
 </resources>

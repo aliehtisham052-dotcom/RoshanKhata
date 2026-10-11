@@ -85,10 +85,8 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">مانده خالص</string>
-    <string name="home_switch_business">تغییر کسب‌وکار</string>
     <string name="home_sec_daily">هر روز</string>
     <string name="home_sec_business">کسب‌وکار</string>
-    <string name="home_see_all">همه ›</string>
     <string name="home_today">امروز</string>
     <string name="tile_bills">صورت‌حساب</string>
     <string name="tile_expiry">انقضا</string>
@@ -103,8 +101,6 @@
     <string name="today_backup">پشتیبان</string>
     <string name="today_gap">کمبود نقد</string>
     <string name="today_chip">%1$s · %2$s</string>
-    <string name="drawer_active_business">کسب‌وکار فعال</string>
-    <string name="drawer_active_business_n">کسب‌وکار فعال · %1$s از %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">گزارش دفتر کل PDF</string>
     <string name="ledger_report_generating">گزارش دفتر کل در حال ساخت است…</string>
@@ -2357,4 +2353,43 @@
     <string name="theme_light_hint">روشن و خوانا در روز</string>
     <string name="theme_dark_hint">راحت برای چشم در شب</string>
     <string name="theme_system_hint">همراه با تنظیم گوشی</string>
+
+    <!-- Shop button and shop sheet (11 Oct). -->
+    <string name="shop_sub_profile">پروفایل</string>
+    <string name="shop_sub_switch">پروفایل · تغییر فروشگاه</string>
+    <string name="shop_add_name">نام فروشگاه را بنویسید</string>
+    <string name="shop_add_name_sub">روی فاکتور و صورت‌حساب چاپ می‌شود</string>
+    <string name="shop_edit_profile">ویرایش پروفایل</string>
+    <string name="shop_progress">پروفایل %1$d%% کامل</string>
+    <string name="shop_progress_done">پروفایل کامل است</string>
+    <string name="shop_progress_missing">هنوز مانده: %1$s</string>
+    <string name="shop_missing_name">نام فروشگاه</string>
+    <string name="shop_missing_phone">تلفن</string>
+    <string name="shop_missing_address">نشانی</string>
+    <string name="shop_missing_logo">لوگو</string>
+    <string name="shop_missing_payment">QR پرداخت یا بانک</string>
+    <string name="shop_missing_stamp">مهر</string>
+    <string name="shop_missing_signature">امضا</string>
+    <string name="shop_sec_profile">پروفایل شما</string>
+    <string name="shop_sec_google">حساب Google</string>
+    <string name="shop_sec_shops">فروشگاه‌های شما</string>
+    <string name="shop_row_name">نام و لوگو</string>
+    <string name="shop_row_name_sub">نام فروشگاه، تلفن، نشانی</string>
+    <string name="shop_row_stamp">مهر و امضا</string>
+    <string name="shop_row_stamp_sub">روی فاکتور و صورت‌حساب</string>
+    <string name="shop_row_payment">QR پرداخت و بانک</string>
+    <string name="shop_row_payment_sub">تا مشتری به شما پرداخت کند</string>
+    <string name="shop_row_trade">نوع فروشگاه</string>
+    <string name="shop_row_money">واحد پول و تقویم</string>
+    <string name="shop_google_backup">پشتیبان: %1$s</string>
+    <string name="shop_google_why">دفترتان را در Drive خودتان نگه دارید</string>
+    <string name="shop_open_now">الان باز است</string>
+    <string name="shop_tap_open">برای باز کردن بزنید</string>
+    <string name="shop_new">فروشگاه جدید</string>
+    <string name="shop_settings_row">پروفایل فروشگاه</string>
+    <string name="type_tab_count">%1$s · %2$d</string>
+    <plurals name="supplier_count">
+        <item quantity="one">%d تأمین‌کننده</item>
+        <item quantity="other">%d تأمین‌کننده</item>
+    </plurals>
 </resources>

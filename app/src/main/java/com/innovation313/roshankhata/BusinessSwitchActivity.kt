@@ -204,11 +204,19 @@ class BusinessSwitchActivity : BaseActivity() {
      * still pointing at the old file — before the home screen opens against
      * the newly active business's own database.
      */
-    private fun switchAndRestart(id: Long) {
-        Businesses.switchTo(this, id)
-        val fresh = Intent(this, KhataActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        startActivity(fresh)
+    private fun switchAndRestart(id: Long) = switchAndRestart(this, id)
+
+    companion object {
+        /**
+         * The one way to change shops, from here or the shop sheet (11 Oct):
+         * switch, then rebuild every screen against the new shop's book.
+         */
+        fun switchAndRestart(activity: android.app.Activity, id: Long) {
+            Businesses.switchTo(activity, id)
+            val fresh = Intent(activity, KhataActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            activity.startActivity(fresh)
+        }
     }
 
     private inner class Adapter : RecyclerView.Adapter<Adapter.VH>() {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The shop button on Home and Khata (11 Oct): the shop's name in a paper
+     card with a brand-green edge, so it reads as a button and not a title.
+     A dashed edge (bg_shop_button_empty) while the shop has no name yet. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/surface" />
+    <stroke android:width="1.5dp" android:color="@color/brand_green_text" />
+    <corners android:radius="16dp" />
+</shape>

@@ -85,10 +85,8 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">خالص بيلنس</string>
-    <string name="home_switch_business">ڪاروبار بدلايو</string>
     <string name="home_sec_daily">هر روز</string>
     <string name="home_sec_business">ڪاروبار</string>
-    <string name="home_see_all">سڀ ڏسو ›</string>
     <string name="home_today">اڄ</string>
     <string name="tile_bills">بل</string>
     <string name="tile_expiry">ايڪسپائري</string>
@@ -103,8 +101,6 @@
     <string name="today_backup">بيڪ اپ</string>
     <string name="today_gap">نقدي کوٽ</string>
     <string name="today_chip">%1$s · %2$s</string>
-    <string name="drawer_active_business">کليل ڪاروبار</string>
-    <string name="drawer_active_business_n">کليل ڪاروبار · %2$s مان %1$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">ليجر رپورٽ PDF</string>
     <string name="ledger_report_generating">ليجر رپورٽ ٺهي رهي آهي…</string>
@@ -2357,4 +2353,43 @@
     <string name="theme_light_hint">ڏينهن جي روشنيءَ ۾ صاف</string>
     <string name="theme_dark_hint">رات جو اکين لاءِ آرامده</string>
     <string name="theme_system_hint">فون جي سيٽنگ سان بدلجي</string>
+
+    <!-- Shop button and shop sheet (11 Oct). -->
+    <string name="shop_sub_profile">پروفائل</string>
+    <string name="shop_sub_switch">پروفائل · دڪان بدلايو</string>
+    <string name="shop_add_name">پنهنجي دڪان جو نالو لکو</string>
+    <string name="shop_add_name_sub">انوائس ۽ اسٽيٽمينٽ تي ڇپبو</string>
+    <string name="shop_edit_profile">پروفائل ۾ تبديلي</string>
+    <string name="shop_progress">پروفائل %1$d%% مڪمل</string>
+    <string name="shop_progress_done">پروفائل مڪمل آهي</string>
+    <string name="shop_progress_missing">اڃا باقي: %1$s</string>
+    <string name="shop_missing_name">دڪان جو نالو</string>
+    <string name="shop_missing_phone">فون</string>
+    <string name="shop_missing_address">پتو</string>
+    <string name="shop_missing_logo">لوگو</string>
+    <string name="shop_missing_payment">پيمينٽ QR يا بينڪ</string>
+    <string name="shop_missing_stamp">مهر</string>
+    <string name="shop_missing_signature">صحيح</string>
+    <string name="shop_sec_profile">توهان جي پروفائل</string>
+    <string name="shop_sec_google">گوگل اڪائونٽ</string>
+    <string name="shop_sec_shops">توهان جون دڪانون</string>
+    <string name="shop_row_name">نالو ۽ لوگو</string>
+    <string name="shop_row_name_sub">دڪان جو نالو، فون، پتو</string>
+    <string name="shop_row_stamp">مهر ۽ صحيح</string>
+    <string name="shop_row_stamp_sub">انوائس ۽ اسٽيٽمينٽ تي</string>
+    <string name="shop_row_payment">پيمينٽ QR ۽ بينڪ</string>
+    <string name="shop_row_payment_sub">گراهڪ توهان کي رقم موڪلي سگهن</string>
+    <string name="shop_row_trade">دڪان جو قسم</string>
+    <string name="shop_row_money">ڪرنسي ۽ ڪئلينڊر</string>
+    <string name="shop_google_backup">بيڪ اپ: %1$s</string>
+    <string name="shop_google_why">پنهنجو کاتو پنهنجي ڊرائيو تي محفوظ ڪريو</string>
+    <string name="shop_open_now">هاڻي کليل آهي</string>
+    <string name="shop_tap_open">کولڻ لاءِ دٻايو</string>
+    <string name="shop_new">نئون دڪان</string>
+    <string name="shop_settings_row">دڪان جي پروفائل</string>
+    <string name="type_tab_count">%1$s · %2$d</string>
+    <plurals name="supplier_count">
+        <item quantity="one">%d سپلائر</item>
+        <item quantity="other">%d سپلائر</item>
+    </plurals>
 </resources>

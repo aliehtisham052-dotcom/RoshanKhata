@@ -380,4 +380,13 @@
     <color name="trade_general_fg">#3F6032</color>
     <!-- The ring round a chosen trade card: a line, not text or a fill. -->
     <color name="trade_card_ring">#1B5E3A</color>
+    <!-- The shop sheet's profile card and the shop logo tile (11 Oct): the
+         same deep green, white, soft green and gold in both themes. -->
+    <color name="shop_card_bg">#123F27</color>
+    <color name="shop_card_soft">#CFE2D5</color>
+    <color name="shop_card_gold">#F3C552</color>
+    <color name="shop_card_ink">#123F27</color>
+    <color name="shop_card_track">#2D5A40</color>
+    <!-- The All / Customers / Suppliers track (11 Oct). -->
+    <color name="type_tabs_track">#ECE9DF</color>
 </resources>

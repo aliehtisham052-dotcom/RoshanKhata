@@ -85,10 +85,8 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Saldo bersih</string>
-    <string name="home_switch_business">Ganti usaha</string>
     <string name="home_sec_daily">Setiap hari</string>
     <string name="home_sec_business">Usaha</string>
-    <string name="home_see_all">Lihat semua ›</string>
     <string name="home_today">Hari ini</string>
     <string name="tile_bills">Tagihan</string>
     <string name="tile_expiry">Kedaluwarsa</string>
@@ -103,8 +101,6 @@
     <string name="today_backup">Cadangan</string>
     <string name="today_gap">Kas kurang</string>
     <string name="today_chip">%1$s · %2$s</string>
-    <string name="drawer_active_business">Usaha aktif</string>
-    <string name="drawer_active_business_n">Usaha aktif · %1$s dari %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">PDF laporan buku</string>
     <string name="ledger_report_generating">Menyusun laporan buku…</string>
@@ -2330,4 +2326,42 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="theme_light_hint">Jelas di siang hari</string>
     <string name="theme_dark_hint">Nyaman di mata saat malam</string>
     <string name="theme_system_hint">Mengikuti pengaturan ponsel</string>
+
+    <!-- Shop button and shop sheet (11 Oct). -->
+    <string name="shop_sub_profile">Profil</string>
+    <string name="shop_sub_switch">Profil · Ganti toko</string>
+    <string name="shop_add_name">Tulis nama toko Anda</string>
+    <string name="shop_add_name_sub">Dicetak di faktur dan laporan</string>
+    <string name="shop_edit_profile">Ubah profil</string>
+    <string name="shop_progress">Profil %1$d%% lengkap</string>
+    <string name="shop_progress_done">Profil lengkap</string>
+    <string name="shop_progress_missing">Masih kurang: %1$s</string>
+    <string name="shop_missing_name">nama toko</string>
+    <string name="shop_missing_phone">telepon</string>
+    <string name="shop_missing_address">alamat</string>
+    <string name="shop_missing_logo">logo</string>
+    <string name="shop_missing_payment">QR pembayaran atau bank</string>
+    <string name="shop_missing_stamp">stempel</string>
+    <string name="shop_missing_signature">tanda tangan</string>
+    <string name="shop_sec_profile">Profil Anda</string>
+    <string name="shop_sec_google">Akun Google</string>
+    <string name="shop_sec_shops">Toko Anda</string>
+    <string name="shop_row_name">Nama dan logo</string>
+    <string name="shop_row_name_sub">Nama toko, telepon, alamat</string>
+    <string name="shop_row_stamp">Stempel dan tanda tangan</string>
+    <string name="shop_row_stamp_sub">Di faktur dan laporan</string>
+    <string name="shop_row_payment">QR pembayaran dan bank</string>
+    <string name="shop_row_payment_sub">Agar pelanggan bisa membayar Anda</string>
+    <string name="shop_row_trade">Jenis toko</string>
+    <string name="shop_row_money">Mata uang dan kalender</string>
+    <string name="shop_google_backup">Cadangan: %1$s</string>
+    <string name="shop_google_why">Cadangkan buku Anda ke Drive sendiri</string>
+    <string name="shop_open_now">Sedang dibuka</string>
+    <string name="shop_tap_open">Ketuk untuk membuka</string>
+    <string name="shop_new">Toko baru</string>
+    <string name="shop_settings_row">Profil toko</string>
+    <string name="type_tab_count">%1$s · %2$d</string>
+    <plurals name="supplier_count">
+        <item quantity="other">%d pemasok</item>
+    </plurals>
 </resources>

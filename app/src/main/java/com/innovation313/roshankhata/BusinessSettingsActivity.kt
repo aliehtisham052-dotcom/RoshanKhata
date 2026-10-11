@@ -189,6 +189,31 @@ class BusinessSettingsActivity : BaseActivity() {
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
+        // Opened from one row of the shop sheet (11 Oct): bring that part of
+        // the profile into view rather than leaving the owner at the top of
+        // a long screen to find it again.
+        intent.getStringExtra(EXTRA_FOCUS)?.let { focus ->
+            val targetId = when (focus) {
+                FOCUS_NAME -> R.id.etBusinessName
+                FOCUS_STAMP -> R.id.ivStampPreview
+                FOCUS_PAYMENT -> R.id.etBankName
+                FOCUS_TRADE -> R.id.btnTrade
+                else -> 0
+            }
+            val scroll = findViewById<android.widget.ScrollView>(R.id.scroll)
+            val target = if (targetId != 0) findViewById<View>(targetId) else null
+            if (scroll != null && target != null) scroll.post {
+                var y = 0
+                var v: View? = target
+                while (v != null && v !== scroll) {
+                    y += v.top
+                    v = v.parent as? View
+                }
+                val margin = (24 * resources.displayMetrics.density).toInt()
+                scroll.smoothScrollTo(0, (y - margin).coerceAtLeast(0))
+            }
+        }
+
         etBusinessName = findViewById(R.id.etBusinessName)
         etBusinessAddress = findViewById(R.id.etBusinessAddress)
         etBusinessPhone = findViewById(R.id.etBusinessPhone)
@@ -695,5 +720,14 @@ class BusinessSettingsActivity : BaseActivity() {
                 renderCurrency()
             }
             .show()
+    }
+
+    companion object {
+        /** Which part of the profile to bring into view: one of the FOCUS_ values. */
+        const val EXTRA_FOCUS = "focus"
+        const val FOCUS_NAME = "name"
+        const val FOCUS_STAMP = "stamp"
+        const val FOCUS_PAYMENT = "payment"
+        const val FOCUS_TRADE = "trade"
     }
 }

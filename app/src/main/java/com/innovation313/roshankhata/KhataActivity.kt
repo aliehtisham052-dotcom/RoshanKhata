@@ -115,6 +115,30 @@ class KhataActivity : BaseActivity() {
     // keeps everyone, as before, so nothing changes until they choose.
     private enum class TypeFilter { ALL, CUSTOMERS, SUPPLIERS }
     private var typeFilter = TypeFilter.ALL
+    private var customerCount = 0
+    private var supplierCount = 0
+
+    /** The tabs show which type is on, and how many of each the book holds. */
+    private fun paintTypeTabs() {
+        val all = findViewById<TextView>(R.id.tabTypeAll) ?: return
+        val cust = findViewById<TextView>(R.id.tabTypeCustomers) ?: return
+        val supp = findViewById<TextView>(R.id.tabTypeSuppliers) ?: return
+        all.text = getString(R.string.filter_account_all)
+        cust.text = Digits.string(resources, R.string.type_tab_count, getString(R.string.filter_type_customers), customerCount)
+        supp.text = Digits.string(resources, R.string.type_tab_count, getString(R.string.filter_type_suppliers), supplierCount)
+        all.isSelected = typeFilter == TypeFilter.ALL
+        cust.isSelected = typeFilter == TypeFilter.CUSTOMERS
+        supp.isSelected = typeFilter == TypeFilter.SUPPLIERS
+        listOf(all to TypeFilter.ALL, cust to TypeFilter.CUSTOMERS, supp to TypeFilter.SUPPLIERS).forEach { (v, t) ->
+            androidx.core.view.ViewCompat.setAccessibilityDelegate(v, object : androidx.core.view.AccessibilityDelegateCompat() {
+                override fun onInitializeAccessibilityNodeInfo(host: View, info: androidx.core.view.accessibility.AccessibilityNodeInfoCompat) {
+                    super.onInitializeAccessibilityNodeInfo(host, info)
+                    info.className = "android.widget.Tab"
+                    info.isSelected = typeFilter == t
+                }
+            })
+        }
+    }
 
     /** Which stretch of days the list is showing. All of them, until asked. */
     private var dateRange = DateRangeFilter.Range.ALL
@@ -237,24 +261,26 @@ class KhataActivity : BaseActivity() {
             override fun afterTextChanged(s: Editable?) = render()
         })
 
-        // Two different acts, two different targets: the profile icon EDITS
-        // the open shop; the shop's own name CHOOSES which shop is open.
-        val openBusinessSettings = {
-            startActivity(Intent(this, BusinessSettingsActivity::class.java))
-        }
+        // The shop button (11 Oct): the same sheet as Home's - the profile,
+        // the Google account and every shop. It replaces the name that
+        // switched shops and the person icon that edited the shop.
         findViewById<View>(R.id.businessNameTap).setOnClickListener {
-            startActivity(Intent(this, BusinessSwitchActivity::class.java))
+            com.innovation313.roshankhata.ui.ShopSheet.show(this)
         }
 
-        // The gear opens the app-wide menu (settings, language, help, lock) —
-        // these belong to the whole app, not to this one ledger, which is why
-        // the owner asked for a settings gear here rather than a menu of this
-        // screen's own actions.
-        // The header button opens the business PROFILE — the shop's own basics
-        // (name, stamp, payment QR, bank line). The owner asked for this to be a
-        // profile, not an app-settings menu: app-wide settings (lock, language,
-        // help) stay on the "More" tab at the bottom, which is unchanged.
-        findViewById<MaterialButton>(R.id.btnHeaderSettings).setOnClickListener { openBusinessSettings() }
+        // All / Customers / Suppliers, one tap each (11 Oct).
+        listOf(
+            R.id.tabTypeAll to TypeFilter.ALL,
+            R.id.tabTypeCustomers to TypeFilter.CUSTOMERS,
+            R.id.tabTypeSuppliers to TypeFilter.SUPPLIERS
+        ).forEach { (id, type) ->
+            findViewById<View>(id).setOnClickListener {
+                if (typeFilter != type) {
+                    typeFilter = type
+                    render()
+                }
+            }
+        }
 
         // The backup icon opens the Backup screen (time of last backup, restore),
         // the way the owner asked — a header icon rather than a "Backup due" line.
@@ -881,6 +907,7 @@ class KhataActivity : BaseActivity() {
             if (scrollUp) findViewById<RecyclerView>(R.id.rvParties).scrollToPosition(0)
         }
         renderFilterState()
+        paintTypeTabs()
 
         val bookEmpty = allParties.isEmpty()
         findViewById<View>(R.id.emptyBook).visibility =
@@ -1061,6 +1088,9 @@ class KhataActivity : BaseActivity() {
             val saved = BusinessProfile.businessName(this@KhataActivity)
             text = if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
         }
+        findViewById<android.widget.ImageView>(R.id.ivBusinessLogo)?.let {
+            com.innovation313.roshankhata.ui.ShopSheet.paintLogo(this, it, 8f)
+        }
 
         // Returning from the Backup screen changes the backup age but not the
         // ledger, so the flow that builds the summary line never fires. Repaint
@@ -1091,12 +1121,20 @@ class KhataActivity : BaseActivity() {
      */
     private fun renderPartySummary(list: List<com.innovation313.roshankhata.data.PartyWithBalance>) {
         val count = list.size
+        val suppliers = list.count { !it.isCustomer }
+        customerCount = count - suppliers
+        supplierCount = suppliers
+        paintTypeTabs()
         val cutoff = System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000
         val overdue = list.count { Money.isPositive(it.balance) && it.lastActivity in 1 until cutoff }
 
         // Counts go through Digits, not getQuantityString, so that Bengali,
         // Sindhi and Persian read 1205 in the same 0-9 the amounts use.
-        val countText = Digits.quantity(resources, R.plurals.customer_count, count, count)
+        // Customers and suppliers counted apart (11 Oct): "1206 customers"
+        // counted the suppliers in too.
+        val customersOnly = count - suppliers
+        val countText = Digits.quantity(resources, R.plurals.customer_count, customersOnly, customersOnly) +
+            (if (suppliers > 0) "  \u00b7  " + Digits.quantity(resources, R.plurals.supplier_count, suppliers, suppliers) else "")
         val withCount = if (overdue > 0) {
             Digits.quantity(
                 resources, R.plurals.summary_with_overdue, overdue, countText, overdue

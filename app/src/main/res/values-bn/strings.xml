@@ -89,10 +89,8 @@
     <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">নিট ব্যালেন্স</string>
-    <string name="home_switch_business">ব্যবসা পরিবর্তন করুন</string>
     <string name="home_sec_daily">প্রতিদিন</string>
     <string name="home_sec_business">ব্যবসা</string>
-    <string name="home_see_all">সব দেখুন ›</string>
     <string name="home_today">আজ</string>
     <string name="tile_bills">বিল</string>
     <string name="tile_expiry">মেয়াদ</string>
@@ -107,8 +105,6 @@
     <string name="today_backup">ব্যাকআপ</string>
     <string name="today_gap">নগদ ঘাটতি</string>
     <string name="today_chip">%1$s · %2$s</string>
-    <string name="drawer_active_business">সক্রিয় ব্যবসা</string>
-    <string name="drawer_active_business_n">সক্রিয় ব্যবসা · %2$s-এর মধ্যে %1$s</string>
     <string name="ledger_pdf_button">PDF</string>
     <string name="ledger_pdf_title">খাতা রিপোর্ট PDF</string>
     <string name="ledger_report_generating">খাতা রিপোর্ট তৈরি হচ্ছে…</string>
@@ -2373,4 +2369,43 @@
     <string name="theme_light_hint">দিনের আলোয় পরিষ্কার</string>
     <string name="theme_dark_hint">রাতে চোখের জন্য আরামদায়ক</string>
     <string name="theme_system_hint">ফোনের সেটিং অনুযায়ী বদলায়</string>
+
+    <!-- Shop button and shop sheet (11 Oct). -->
+    <string name="shop_sub_profile">প্রোফাইল</string>
+    <string name="shop_sub_switch">প্রোফাইল · দোকান বদলান</string>
+    <string name="shop_add_name">আপনার দোকানের নাম লিখুন</string>
+    <string name="shop_add_name_sub">ইনভয়েস ও স্টেটমেন্টে ছাপা হবে</string>
+    <string name="shop_edit_profile">প্রোফাইল সম্পাদনা</string>
+    <string name="shop_progress">প্রোফাইল %1$d%% সম্পূর্ণ</string>
+    <string name="shop_progress_done">প্রোফাইল সম্পূর্ণ</string>
+    <string name="shop_progress_missing">এখনও বাকি: %1$s</string>
+    <string name="shop_missing_name">দোকানের নাম</string>
+    <string name="shop_missing_phone">ফোন</string>
+    <string name="shop_missing_address">ঠিকানা</string>
+    <string name="shop_missing_logo">লোগো</string>
+    <string name="shop_missing_payment">পেমেন্ট QR বা ব্যাংক</string>
+    <string name="shop_missing_stamp">সিল</string>
+    <string name="shop_missing_signature">স্বাক্ষর</string>
+    <string name="shop_sec_profile">আপনার প্রোফাইল</string>
+    <string name="shop_sec_google">Google অ্যাকাউন্ট</string>
+    <string name="shop_sec_shops">আপনার দোকান</string>
+    <string name="shop_row_name">নাম ও লোগো</string>
+    <string name="shop_row_name_sub">দোকানের নাম, ফোন, ঠিকানা</string>
+    <string name="shop_row_stamp">সিল ও স্বাক্ষর</string>
+    <string name="shop_row_stamp_sub">ইনভয়েস ও স্টেটমেন্টে</string>
+    <string name="shop_row_payment">পেমেন্ট QR ও ব্যাংক</string>
+    <string name="shop_row_payment_sub">গ্রাহক যেন আপনাকে টাকা পাঠাতে পারে</string>
+    <string name="shop_row_trade">দোকানের ধরন</string>
+    <string name="shop_row_money">মুদ্রা ও ক্যালেন্ডার</string>
+    <string name="shop_google_backup">ব্যাকআপ: %1$s</string>
+    <string name="shop_google_why">আপনার খাতা নিজের Drive-এ সুরক্ষিত রাখুন</string>
+    <string name="shop_open_now">এখন খোলা</string>
+    <string name="shop_tap_open">খুলতে চাপুন</string>
+    <string name="shop_new">নতুন দোকান</string>
+    <string name="shop_settings_row">দোকানের প্রোফাইল</string>
+    <string name="type_tab_count">%1$s · %2$d</string>
+    <plurals name="supplier_count">
+        <item quantity="one">%d সরবরাহকারী</item>
+        <item quantity="other">%d সরবরাহকারী</item>
+    </plurals>
 </resources>

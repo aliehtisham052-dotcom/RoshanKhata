@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The shop sheet (11 Oct): what the shop button on Home and the Khata screen
+  opens. The open shop's profile card - its logo, name, phone, how complete
+  the profile is and Edit profile - then the profile's parts, the Google
+  account, and every shop on this phone with a new one at the foot. One
+  door for "my shop", where the owner kept looking for it.
+-->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="20dp">
+
+        <View
+            android:layout_width="44dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="14dp"
+            android:background="@drawable/bg_sheet_grabber" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_shop_card"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:id="@+id/sheetLogoTile"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_shop_logo">
+
+                    <ImageView
+                        android:id="@+id/ivSheetLogo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:importantForAccessibility="no"
+                        android:padding="13dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_storefront"
+                        app:tint="@color/shop_card_gold" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvSheetShopName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvSheetShopLine"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="3"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/shop_card_soft"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sheetProgressBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvSheetProgress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/pbSheetProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="6dp"
+                    android:importantForAccessibility="no"
+                    android:max="100"
+                    android:progressBackgroundTint="@color/shop_card_track"
+                    android:progressTint="@color/shop_card_gold" />
+
+                <TextView
+                    android:id="@+id/tvSheetMissing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/shop_card_soft"
+                    android:textSize="12.5sp" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSheetEditProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:minHeight="50dp"
+                android:text="@string/shop_edit_profile"
+                android:textAllCaps="false"
+                android:textColor="@color/shop_card_ink"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/shop_card_gold"
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_edit"
+                app:iconGravity="textStart"
+                app:iconTint="@color/shop_card_ink" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSheetSecProfile"
+            style="@style/ShopSheetLabel"
+            android:text="@string/shop_sec_profile" />
+
+        <LinearLayout
+            android:id="@+id/sheetProfileRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_party_card"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/tvSheetSecGoogle"
+            style="@style/ShopSheetLabel"
+            android:text="@string/shop_sec_google" />
+
+        <LinearLayout
+            android:id="@+id/sheetGoogleRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_party_card"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/tvSheetSecShops"
+            style="@style/ShopSheetLabel"
+            android:text="@string/shop_sec_shops" />
+
+        <LinearLayout
+            android:id="@+id/sheetShopRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_party_card"
+            android:orientation="vertical" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

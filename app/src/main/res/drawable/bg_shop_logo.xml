@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The shop's logo tile (11 Oct): brand green with a gold edge, the
+     launcher icon's own colours; the owner's logo, once set, fills it. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/shop_card_bg" />
+    <stroke android:width="2dp" android:color="@color/shop_card_gold" />
+    <corners android:radius="12dp" />
+</shape>
