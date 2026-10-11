@@ -403,8 +403,10 @@ object PosterDesigns {
         np.textAlign = Paint.Align.CENTER
         PosterKit.fitWidth(np, page.shopName, 860f)
         PosterKit.inkLine(c, page.shopName, np, W / 2, 1694f)
-        // The number isolated left-to-right: inside an Urdu line its two groups would swap.
-        val bits = listOfNotNull(page.phone?.trim()?.takeIf { it.isNotEmpty() }?.let { Format.ltr(it) },
+        // The number isolated left-to-right (LRI … PDI): inside an Urdu line its two
+        // groups would swap. Not Format.ltr: its BidiFormatter takes the phone's
+        // language for the context, which is not always the poster's.
+        val bits = listOfNotNull(page.phone?.trim()?.takeIf { it.isNotEmpty() }?.let { "\u2066$it\u2069" },
             page.address?.trim()?.takeIf { it.isNotEmpty() })
         if (bits.isNotEmpty()) {
             val line = bits.joinToString("  •  ")
