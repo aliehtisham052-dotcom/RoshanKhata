@@ -101,10 +101,21 @@ object PosterDesigns {
         }
         val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 198f else 180f, 84f, 834f)
         PosterKit.kicker(page, str(page, R.string.poster_kicker_eid), 1000f, 0xFF9FE3D6.toInt(), size = 30f, spaced = false)
-        val panel = RectF(78f, 1098f, W - 78f, 1410f)
+        val note = PosterWords.eidNote(page.context, page.fields)
+        val panel = RectF(78f, 1098f, W - 78f, if (note != null) 1470f else 1410f)
         PosterKit.glass(c, panel)
-        val msg = PosterKit.message(page, page.message, panel.centerY(), 0xFFFFFFFF.toInt(), if (page.urdu) 48f else 46f,
-            lines = 3, width = (panel.width() - 108f).toInt())
+        val msgCy = if (note != null) panel.top + 130f else panel.centerY()
+        val msg = PosterKit.message(page, page.message, msgCy, 0xFFFFFFFF.toInt(), if (page.urdu) 48f else 46f,
+            lines = if (note != null) 2 else 3, width = (panel.width() - 108f).toInt())
+        if (note != null) {
+            // The Eid holidays, in gold under a short rule.
+            c.drawLine(W / 2 - 90f, panel.bottom - 112f, W / 2 + 90f, panel.bottom - 112f,
+                Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 2f; color = 0x80F3CF6A.toInt() })
+            val np = PosterKit.textPaint(page.context, note, if (page.urdu) 40f else 36f, GOLD, false, page.locale, page.urdu)
+            np.textAlign = Paint.Align.CENTER
+            PosterKit.fitWidth(np, note, panel.width() - 96f, 24f)
+            PosterKit.inkLine(c, note, np, W / 2, panel.bottom - 58f)
+        }
         PosterKit.signOff(page, str(page, R.string.poster_from), 1689f)
         PosterKit.mark(page)
         return out(head, msg, PosterMotion.Spec(stars = FITR_STARS, glint = head.second))
@@ -130,11 +141,21 @@ object PosterDesigns {
             PosterFlat.lantern(fc, 900f, 150f, 2.6f)
         }
         val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 186f else 170f, 84f, 846f)
-        PosterKit.kicker(page, str(page, R.string.poster_kicker_ramazan), 1000f, 0xFFB9C8F0.toInt(), size = 30f)
-        val panel = RectF(78f, 1100f, W - 78f, 1440f)
-        PosterKit.glass(c, panel, fill = 0x14FFFFFF)
-        val msg = PosterKit.message(page, page.message, panel.centerY(), 0xF2F6EBD4.toInt(), if (page.urdu) 48f else 46f,
-            lines = 3, width = (panel.width() - 108f).toInt())
+        val hours = PosterWords.ramazanRows(page.context, page.fields)
+        val msg: android.text.StaticLayout?
+        if (hours.isEmpty()) {
+            PosterKit.kicker(page, str(page, R.string.poster_kicker_ramazan), 1000f, 0xFFB9C8F0.toInt(), size = 30f)
+            val panel = RectF(78f, 1100f, W - 78f, 1440f)
+            PosterKit.glass(c, panel, fill = 0x14FFFFFF)
+            msg = PosterKit.message(page, page.message, panel.centerY(), 0xF2F6EBD4.toInt(), if (page.urdu) 48f else 46f,
+                lines = 3, width = (panel.width() - 108f).toInt())
+        } else {
+            // The dua under the greeting, then the shop's Ramazan hours on glass (the mockup).
+            msg = PosterKit.message(page, page.message, 1010f, 0xF2F6EBD4.toInt(), if (page.urdu) 44f else 40f, lines = 2, width = 900)
+            val panel = RectF(78f, 1124f, W - 78f, 1124f + PosterKit.rowsHeight(hours.size, true))
+            PosterKit.glass(c, panel, fill = 0x14FFFFFF)
+            PosterKit.rows(page, panel, hours, title = str(page, R.string.poster_ramazan_hours_title))
+        }
         PosterKit.signOff(page, str(page, R.string.poster_from), 1700f, fromColour = 0xFFB9C8F0.toInt(),
             inner = 0xFF2A4B9A.toInt(), innerDark = 0xFF0A1430.toInt())
         PosterKit.mark(page)
@@ -284,20 +305,26 @@ object PosterDesigns {
         tp.setShadowLayer(18f, 0f, 0f, 0xCCF3A623.toInt())
         val tl = PosterKit.fitBlock(title, tp, (sign.width() - 110f).toInt(), page.rtl, 2, 40f, 1.0f)
         PosterKit.put(c, tl, sign.left + 55f, 790f - tl.height / 2f)
-        val panel = RectF(78f, 1008f, W - 78f, 1360f)
+        val why = PosterWords.closedRows(page.context, page.fields)
+        val panel = if (why.isEmpty()) RectF(78f, 1008f, W - 78f, 1360f)
+            else RectF(78f, 1040f, W - 78f, 1040f + PosterKit.rowsHeight(why.size, false))
         PosterKit.glass(c, panel, fill = 0x14FFFFFF, edge = 0x33FFFFFF)
-        val msg = PosterKit.message(page, page.message, panel.centerY(), 0xFFF2EDE8.toInt(), if (page.urdu) 48f else 46f,
-            lines = 3, width = (panel.width() - 108f).toInt())
-        if (!page.phone.isNullOrBlank()) {
+        // Why, and when it opens again, if the owner said; else his own line.
+        val msg = if (why.isEmpty()) PosterKit.message(page, page.message, panel.centerY(), 0xFFF2EDE8.toInt(), if (page.urdu) 48f else 46f,
+            lines = 3, width = (panel.width() - 108f).toInt()) else null
+        val rowSize = PosterKit.rows(page, panel, why, label = 0xB3F2EDE8.toInt(), value = 0xFFF2EDE8.toInt(),
+            rule = 0x1AFFFFFF)
+        val urgent = page.fields.urgentPhone && !page.phone.isNullOrBlank()
+        if (urgent) {
             val call = str(page, R.string.poster_call_urgent)
             val cp = PosterKit.textPaint(page.context, call, if (page.urdu) 38f else 36f, 0xB3F2EDE8.toInt(), false, page.locale, page.urdu)
             cp.textAlign = Paint.Align.CENTER
             PosterKit.inkLine(c, call, cp, W / 2, 1470f)
         }
-        PosterKit.phonePill(page, RectF(102f, 1536f, W - 102f, 1716f), disc = 0xFF2A2120.toInt(), discDark = 0xFF120D0C.toInt())
+        if (urgent) PosterKit.phonePill(page, RectF(102f, 1536f, W - 102f, 1716f), disc = 0xFF2A2120.toInt(), discDark = 0xFF120D0C.toInt())
         PosterKit.address(page, 1790f, colour = 0xB3F2EDE8.toInt())
         PosterKit.mark(page, 0x59F2EDE8)
-        val fit = PosterKit.Out(tp.textSize, tl.lineCount, msg?.paint?.textSize ?: 0f, msg?.lineCount ?: 0,
+        val fit = PosterKit.Out(tp.textSize, tl.lineCount, msg?.paint?.textSize ?: rowSize, msg?.lineCount ?: why.size,
             PosterMotion.Spec(neon = PosterMotion.Neon(sign, 90f, NEON)))
         return fit
     }
@@ -311,44 +338,14 @@ object PosterDesigns {
         PosterKit.header(page, top = 54f, sealSize = 90f, centred = true)
         page.drawHero(Hero.HOURS.rect) { fc -> PosterFlat.clock(fc, 540f, 426f, 240f) }
         val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 120f else 112f, 64f, 812f, greeting = false)
-        // The timings: one row per line of the message; "Mon – Sat: 9 – 8" splits into label and time.
-        val rows = page.message.lines().map { it.trim() }.filter { it.isNotEmpty() }.take(5)
-        // The panel is as tall as its rows need, centred in the space under the headline.
-        val wanted = if (rows.size <= 1) 300f else 48f + rows.size * 118f
-        val panelH = wanted.coerceAtMost(510f)
+        // The timings, from the owner's choices (PosterWords.hoursRows): open days,
+        // the Friday prayer break, the weekly holiday. The panel is as tall as they need,
+        // centred in the space under the headline.
+        val rows = PosterWords.hoursRows(page.context, page.fields)
+        val panelH = PosterKit.rowsHeight(rows.size, false).coerceAtMost(540f)
         val panel = RectF(72f, 1191f - panelH / 2, W - 72f, 1191f + panelH / 2)
         PosterKit.glass(c, panel)
-        var msgSize = 0f
-        if (rows.isNotEmpty()) {
-            val inner = panel.width() - 96f
-            val rowH = (panel.height() - 48f) / rows.size
-            val rule = Paint().apply { color = 0x26FFFFFF; strokeWidth = 2f }
-            for ((i, row) in rows.withIndex()) {
-                val cy = panel.top + 24f + rowH * (i + 0.5f)
-                if (i > 0) c.drawLine(panel.left + 48f, panel.top + 24f + rowH * i, panel.right - 48f, panel.top + 24f + rowH * i, rule)
-                val cut = row.indexOfFirst { it == ':' || it == '：' }
-                val size = if (page.urdu) 48f else 44f
-                if (cut in 1 until row.length - 1) {
-                    val label = row.substring(0, cut).trim()
-                    val value = row.substring(cut + 1).trim()
-                    val lp = PosterKit.textPaint(page.context, label, size, GOLD, true, page.locale, page.urdu)
-                    val vp = PosterKit.textPaint(page.context, value, size, 0xFFFFFFFF.toInt(), true, page.locale, page.urdu)
-                    if (value.contains(Regex("(?i)closed|بند|chutti|چھٹی|band"))) vp.color = 0xFFFF8A80.toInt()
-                    PosterKit.fitWidth(lp, label, inner * 0.45f, 26f)
-                    PosterKit.fitWidth(vp, value, inner * 0.52f, 26f)
-                    lp.textAlign = if (page.rtl) Paint.Align.RIGHT else Paint.Align.LEFT
-                    vp.textAlign = if (page.rtl) Paint.Align.LEFT else Paint.Align.RIGHT
-                    PosterKit.inkLine(c, label, lp, if (page.rtl) panel.right - 48f else panel.left + 48f, cy)
-                    PosterKit.inkLine(c, value, vp, if (page.rtl) panel.left + 48f else panel.right - 48f, cy)
-                    msgSize = maxOf(msgSize, vp.textSize)
-                } else {
-                    val p = PosterKit.textPaint(page.context, row, size, 0xFFFFFFFF.toInt(), false, page.locale, page.urdu)
-                    val l = PosterKit.fitBlock(row, p, inner.toInt(), page.rtl, if (rows.size == 1) 3 else 1, 26f)
-                    PosterKit.put(c, l, panel.left + 48f, cy - l.height / 2f)
-                    msgSize = maxOf(msgSize, p.textSize)
-                }
-            }
-        }
+        val msgSize = PosterKit.rows(page, panel, rows)
         PosterKit.phonePill(page, RectF(102f, 1494f, W - 102f, 1662f), size = 64f)
         PosterKit.address(page, 1734f)
         PosterKit.mark(page)

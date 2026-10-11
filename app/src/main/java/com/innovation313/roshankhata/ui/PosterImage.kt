@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import com.innovation313.roshankhata.data.PdfRtl
+import com.innovation313.roshankhata.data.PosterFields
 import com.innovation313.roshankhata.data.PosterOccasion
 import java.util.Locale
 
@@ -34,7 +35,11 @@ object PosterImage {
         /** The 3D hero, already rendered for this design (see poster3d.HeroStage); null draws it flat. */
         val hero: Bitmap? = null,
         /** True when a live 3D view is laid over the hero's place: leave that place empty. */
-        val heroOverlay: Boolean = false
+        val heroOverlay: Boolean = false,
+        /** The owner's choices beyond the two lines (see PosterFields). */
+        val fields: PosterFields = PosterFields(),
+        /** His own photo of the stock, for New stock. */
+        val photo: Bitmap? = null
     )
 
     /** Sizes the big line and message ended at (for the on-device test), and what the preview animates. */
@@ -54,7 +59,7 @@ object PosterImage {
         val page = PosterKit.Page(
             context, Canvas(bmp), locale, rtl, input.title, input.message,
             input.shopName.ifBlank { " " }, input.phone, input.address, input.logo, input.mark,
-            input.hero, input.heroOverlay
+            input.hero, input.heroOverlay, input.fields, input.photo
         )
         val o = PosterDesigns.draw(input.occasion, page)
         return bmp to Fit(o.titleSize, o.titleLines, o.messageSize, o.messageLines, o.motion)

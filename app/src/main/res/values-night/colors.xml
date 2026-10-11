@@ -159,4 +159,7 @@
     <!-- The ring round a chosen trade card: a line, not text or a fill. -->
     <color name="trade_card_ring">#7FD1A3</color>
     <color name="type_tabs_track">#2B302C</color>
+    <!-- The poster screen's warm note (12 Oct). -->
+    <color name="poster_note_bg">#2E2716</color>
+    <color name="poster_note_stroke">#7A6330</color>
 </resources>

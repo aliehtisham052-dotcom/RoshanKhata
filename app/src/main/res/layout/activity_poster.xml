@@ -1,132 +1,638 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Poster & Status: pick an occasion, change the two lines if you like, share.
-  The preview is the real picture, drawn the same way as the one that is sent.
+  Poster & Status (12 Oct, the approved screen mockup): choose a design from
+  its picture, the poster's language, the live preview (the real picture,
+  with its 3D hero moving), what goes on this design, what the poster shows,
+  and a fixed bar to put it on WhatsApp Status or share it.
+
+  The cards for one design (new stock, closed, timings, Ramazan, Eid) are
+  shown and hidden in code (PosterActivity.showFieldsFor).
 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/page_bg"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
+    <ScrollView
+        android:id="@+id/posterScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/poster_title"
+                android:textColor="@color/ink"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/poster_subtitle"
+                android:textColor="@color/ink_soft"
+                android:textSize="14sp" />
+
+            <TextView
+                style="@style/ProfileSectionLabel"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/poster_choose_design" />
+
+            <HorizontalScrollView
+                android:id="@+id/designScroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/designRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <!-- The language of the poster, which may differ from the app's. -->
+            <LinearLayout
+                style="@style/ProfileCard"
+                android:layout_marginTop="14dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:text="@string/poster_language"
+                        android:textColor="@color/ink_soft"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipLanguages"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:selectionRequired="true"
+                        app:singleSelection="true" />
+                </LinearLayout>
+
+                <!-- The picture at 9:16; a transparent 3D view is laid over the hero's place
+                     in code (PosterActivity.placeHero), so the hero moves live on the poster. -->
+                <FrameLayout
+                    android:id="@+id/posterFrame"
+                    android:layout_width="236dp"
+                    android:layout_height="420dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp">
+
+                    <ImageView
+                        android:id="@+id/ivPoster"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/poster_title"
+                        android:scaleType="fitXY" />
+
+                    <TextureView
+                        android:id="@+id/heroView"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:importantForAccessibility="no"
+                        android:visibility="gone" />
+
+                    <!-- Twinkling stars, a glint on the gold, a humming neon, a drifting aurora:
+                         the 2D half of the poster's motion (PosterMotion). Not in the shared picture. -->
+                    <com.innovation313.roshankhata.ui.PosterMotionView
+                        android:id="@+id/motionView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:importantForAccessibility="no" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="@string/poster_real_picture"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- What goes on the poster: the big line, this design's own fields, the last line. -->
+            <LinearLayout
+                style="@style/ProfileCard"
+                android:layout_marginTop="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/poster_what_goes"
+                    android:textColor="@color/ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:hint="@string/poster_heading_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPosterTitle"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="textCapSentences"
+                        android:maxLength="60" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- New stock: what arrived, or a photo of it. -->
+                <LinearLayout
+                    android:id="@+id/fieldsStock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/poster_items_label"
+                        android:textColor="@color/brand_green_text"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipItems"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/ProfileField"
+                            android:layout_width="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_weight="1"
+                            android:hint="@string/poster_item_hint">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etItem"
+                                style="@style/ProfileFieldInput"
+                                android:imeOptions="actionDone"
+                                android:inputType="textCapSentences"
+                                android:maxLength="24" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAddItem"
+                            style="@style/ProfileSmallButton"
+                            android:layout_marginTop="6dp"
+                            android:text="@string/poster_add_item"
+                            app:icon="@drawable/ic_add_plain" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/poster_for_your_shop"
+                        android:textColor="@color/ink_soft"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipSuggest"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnPhoto"
+                            style="@style/ProfileSmallButton"
+                            android:layout_marginStart="0dp"
+                            android:text="@string/poster_add_photo"
+                            app:icon="@drawable/ic_camera" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:text="@string/poster_photo_hint"
+                            android:textColor="@color/ink_soft"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Closed: why, and when it opens again. -->
+                <LinearLayout
+                    android:id="@+id/fieldsClosed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/poster_why_closed"
+                        android:textColor="@color/brand_green_text"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipReasons"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleSelection="true" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilReason"
+                        style="@style/ProfileField"
+                        android:hint="@string/poster_reason_hint"
+                        android:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etReason"
+                            style="@style/ProfileFieldInput"
+                            android:inputType="textCapSentences"
+                            android:maxLength="40" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/poster_opens_again"
+                        android:textColor="@color/brand_green_text"
+                        android:textSize="13sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnReopenDay"
+                            style="@style/ProfileTileButton"
+                            android:layout_marginEnd="8dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnReopenTime"
+                            style="@style/ProfileTileButton" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchUrgent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:minHeight="48dp"
+                        android:text="@string/poster_urgent_phone"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <!-- Timings: open and close, the weekly holiday, the Friday prayer break. -->
+                <LinearLayout
+                    android:id="@+id/fieldsHours"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/poster_opens"
+                            android:textColor="@color/brand_green_text"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/poster_closes"
+                            android:textColor="@color/brand_green_text"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnOpens"
+                            style="@style/ProfileTileButton"
+                            android:layout_marginEnd="8dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCloses"
+                            style="@style/ProfileTileButton" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/poster_weekly_holiday"
+                        android:textColor="@color/brand_green_text"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipHolidays"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchBreak"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:minHeight="48dp"
+                        android:text="@string/poster_prayer_break_toggle"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:id="@+id/rowBreak"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnBreakFrom"
+                            style="@style/ProfileTileButton" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:text="@string/poster_to"
+                            android:textColor="@color/ink_soft"
+                            android:textSize="14sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnBreakTo"
+                            style="@style/ProfileTileButton" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Ramazan: the shop's hours in the month, by day and by night. -->
+                <LinearLayout
+                    android:id="@+id/fieldsRamazan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchRamazan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:minHeight="48dp"
+                        android:text="@string/poster_ramazan_toggle"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:id="@+id/ramazanTimes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="56dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/poster_day_label"
+                                android:textColor="@color/brand_green_text"
+                                android:textSize="14sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnDayFrom"
+                                style="@style/ProfileTileButton"
+                                android:layout_marginEnd="8dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnDayTo"
+                                style="@style/ProfileTileButton" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="56dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/poster_night_label"
+                                android:textColor="@color/brand_green_text"
+                                android:textSize="14sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnNightFrom"
+                                style="@style/ProfileTileButton"
+                                android:layout_marginEnd="8dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnNightTo"
+                                style="@style/ProfileTileButton" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Eid ul-Fitr: closed for the holidays, and for how many days. -->
+                <LinearLayout
+                    android:id="@+id/fieldsEid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchEid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:minHeight="48dp"
+                        android:text="@string/poster_eid_toggle"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipEidDays"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:selectionRequired="true"
+                        app:singleSelection="true" />
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilMessage"
+                    style="@style/ProfileField"
+                    android:hint="@string/poster_last_line">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPosterMessage"
+                        style="@style/ProfileFieldInput"
+                        android:inputType="textCapSentences|textMultiLine"
+                        android:maxLength="160" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <!-- No phone in the profile yet: every poster would lose its call button. -->
+            <LinearLayout
+                android:id="@+id/noPhoneNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_poster_note"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="10dp"
+                    android:text="@string/poster_no_phone"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    app:drawableStartCompat="@drawable/ic_phone_small" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/brand_green"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/poster_add_phone"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/ProfileSectionLabel"
+                android:layout_marginStart="16dp"
+                android:text="@string/poster_show_on" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipShow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Always in reach: put it on Status, or share it anywhere. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:background="@color/surface"
+        android:elevation="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/poster_title"
-            android:textColor="@color/ink"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/poster_subtitle"
-            android:textColor="@color/ink_soft"
-            android:textSize="14sp" />
-
-        <!-- The picture at 9:16; a transparent 3D view is laid over the hero's place
-             in code (PosterActivity.placeHero), so the hero moves live on the poster. -->
-        <FrameLayout
-            android:id="@+id/posterFrame"
-            android:layout_width="236dp"
-            android:layout_height="420dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="14dp">
-
-            <ImageView
-                android:id="@+id/ivPoster"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/poster_title"
-                android:scaleType="fitXY" />
-
-            <TextureView
-                android:id="@+id/heroView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:importantForAccessibility="no"
-                android:visibility="gone" />
-
-            <!-- Twinkling stars, a glint on the gold, a humming neon, a drifting aurora:
-                 the 2D half of the poster's motion (PosterMotion). Not in the shared picture. -->
-            <com.innovation313.roshankhata.ui.PosterMotionView
-                android:id="@+id/motionView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:importantForAccessibility="no" />
-        </FrameLayout>
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:scrollbars="none">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipOccasions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:selectionRequired="true"
-                app:singleLine="true"
-                app:singleSelection="true" />
-        </HorizontalScrollView>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/ProfileField"
-            android:hint="@string/poster_heading_hint">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPosterTitle"
-                style="@style/ProfileFieldInput"
-                android:inputType="textCapSentences"
-                android:maxLength="60" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/ProfileField"
-            android:hint="@string/poster_message_hint">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPosterMessage"
-                style="@style/ProfileFieldInput"
-                android:inputType="textCapSentences|textMultiLine"
-                android:maxLength="160" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchPosterLogo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:minHeight="48dp"
-            android:text="@string/poster_show_logo"
-            android:textColor="@color/ink"
-            android:textSize="14sp" />
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchPosterMark"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:text="@string/poster_show_mark"
-            android:textColor="@color/ink"
-            android:textSize="14sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStatus"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/brand_green"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/poster_put_on_status"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:cornerRadius="14dp"
+            app:icon="@drawable/ic_action_whatsapp"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSharePoster"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:minHeight="52dp"
-            android:text="@string/share"
-            app:icon="@drawable/ic_share" />
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/share"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            app:cornerRadius="14dp"
+            app:icon="@drawable/ic_share"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="@color/brand_green_text"
+            app:strokeColor="@color/brand_green_text" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

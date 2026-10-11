@@ -416,4 +416,7 @@
     <color name="shop_card_track">#2D5A40</color>
     <!-- The All / Customers / Suppliers track (11 Oct). -->
     <color name="type_tabs_track">#ECE9DF</color>
+    <!-- The poster screen's warm note (12 Oct). -->
+    <color name="poster_note_bg">#FFF6DD</color>
+    <color name="poster_note_stroke">#E8C873</color>
 </resources>
