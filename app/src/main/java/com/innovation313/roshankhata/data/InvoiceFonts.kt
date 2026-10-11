@@ -66,6 +66,23 @@ object InvoiceFonts {
         ibmPlexMonoBold ?: (ResourcesCompat.getFont(context, R.font.ibm_plex_mono_bold) ?: Typeface.MONOSPACE)
             .also { ibmPlexMonoBold = it }
 
+    private var nastaliq: Typeface? = null
+    private var arefRuqaa: Typeface? = null
+
+    /**
+     * Noto Nastaliq Urdu (SIL OFL), the posters' Urdu (11 Oct). Phones draw
+     * Urdu in Naskh by default; a Pakistani customer reads Nastaliq as Urdu.
+     * Variable weight 400–700; drawn bold through [bold].
+     */
+    fun nastaliq(context: Context): Typeface =
+        nastaliq ?: (ResourcesCompat.getFont(context, R.font.noto_nastaliq_urdu) ?: Typeface.DEFAULT)
+            .also { nastaliq = it }
+
+    /** Aref Ruqaa Bold (SIL OFL): Arabic calligraphy for عيد مبارك and the like. */
+    fun arefRuqaa(context: Context): Typeface =
+        arefRuqaa ?: (ResourcesCompat.getFont(context, R.font.aref_ruqaa_bold) ?: Typeface.DEFAULT_BOLD)
+            .also { arefRuqaa = it }
+
     /** A bold variant of any of the above, synthesised — see the class doc for why this is fine except for IBM Plex Mono, which has its own true bold. */
     fun bold(typeface: Typeface): Typeface = Typeface.create(typeface, Typeface.BOLD)
 }

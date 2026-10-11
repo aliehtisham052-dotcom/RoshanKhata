@@ -206,6 +206,15 @@ if (versionCodeOverride != null) {
 dependencies {
     // QR generation only — pure Java, no camera, ~0.5 MB. Scanning is a
     // later step and uses Play Services so no camera permission is needed.
+    // Filament, Google's physically based renderer, for the posters' 3D heroes
+    // (11 Oct). 1.72.1 rather than the newest 1.77.x: from 1.77 its published
+    // POM pulls kotlin-stdlib 2.4.0, which this Kotlin 2.1.21 compiler cannot
+    // read; 1.72.1 declares no Kotlin dependency at all, and it is the version
+    // SceneView 4.53 (released the same week) builds on. gltfio loads the .glb
+    // models and carries the ready-made "ubershader" materials, so no material
+    // compiler is needed in the build.
+    implementation("com.google.android.filament:filament-android:1.72.1")
+    implementation("com.google.android.filament:gltfio-android:1.72.1")
     implementation("com.google.zxing:core:3.5.3")
     // Scanning, through Google Play Services: the scanner UI and models live
     // there, so the app needs no CAMERA permission and gains no model weight.

@@ -56,7 +56,11 @@ object PosterImage {
         val phone: String?,
         val address: String?,
         val logo: Bitmap?,
-        val mark: String?
+        val mark: String?,
+        /** The 3D hero, already rendered for this design (see poster3d.HeroStage); null draws it flat. */
+        val hero: Bitmap? = null,
+        /** True when a live 3D view is laid over the hero's place: leave that place empty. */
+        val heroOverlay: Boolean = false
     )
 
     /** Sizes the big line and message ended at — for the on-device test. */
@@ -135,6 +139,12 @@ object PosterImage {
         val bmp = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
         val o = input.occasion
+
+        if (o == PosterOccasion.NEW_STOCK) {
+            val r = PosterNewStock.draw(context, c, locale, rtl, input.title, input.message, input.shopName,
+                input.phone, input.address, input.logo, input.hero, input.mark, input.heroOverlay)
+            return bmp to Fit(r.titleSize, r.titleLines, r.messageSize, r.messageLines)
+        }
 
         // Ground and frame.
         val bg = Paint().apply {

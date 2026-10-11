@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.TextureView
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -19,6 +21,10 @@ import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.PosterOccasion
 import com.innovation313.roshankhata.ui.PosterImage
+import com.innovation313.roshankhata.ui.PosterNewStock
+import com.innovation313.roshankhata.ui.poster3d.Hero
+import com.innovation313.roshankhata.ui.poster3d.HeroStage
+import com.innovation313.roshankhata.ui.poster3d.Studio
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,6 +55,11 @@ class PosterActivity : BaseActivity() {
     private lateinit var logoSwitch: SwitchMaterial
     private lateinit var markSwitch: SwitchMaterial
     private lateinit var share: MaterialButton
+    private lateinit var frame: FrameLayout
+    private lateinit var heroView: TextureView
+
+    /** The live 3D hero, while the chosen design has one and the phone can draw it. */
+    private var stage: HeroStage? = null
 
     private var occasion = PosterOccasion.NEW_STOCK
     private var logo: Bitmap? = null
@@ -68,6 +79,9 @@ class PosterActivity : BaseActivity() {
         logoSwitch = findViewById(R.id.switchPosterLogo)
         markSwitch = findViewById(R.id.switchPosterMark)
         share = findViewById(R.id.btnSharePoster)
+        frame = findViewById(R.id.posterFrame)
+        heroView = findViewById(R.id.heroView)
+        frame.post { placeHero() }
 
         occasion = PosterOccasion.byKey(prefs.getString(KEY_OCCASION, null))
         markSwitch.isChecked = prefs.getBoolean(KEY_MARK, true)
@@ -87,9 +101,11 @@ class PosterActivity : BaseActivity() {
             val chip = ids.firstOrNull()?.let { g.findViewById<Chip>(it) } ?: return@setOnCheckedStateChangeListener
             occasion = PosterOccasion.byKey(chip.tag as String)
             prefs.edit().putString(KEY_OCCASION, occasion.key).apply()
+            updateHero()
             fill()
         }
 
+        updateHero()
         fill()
         etTitle.doAfterTextChanged { if (!filling) { save(KEY_TITLE, it?.toString(), occasion.title); render() } }
         etMessage.doAfterTextChanged { if (!filling) { save(KEY_MSG, it?.toString(), occasion.message); render() } }
@@ -129,8 +145,36 @@ class PosterActivity : BaseActivity() {
         phone = BusinessProfile.businessPhone(this)?.trim(),
         address = BusinessProfile.businessAddress(this)?.trim(),
         logo = if (logoSwitch.isChecked) logo else null,
-        mark = if (markSwitch.isChecked) getString(R.string.made_with_app) else null
+        mark = if (markSwitch.isChecked) getString(R.string.made_with_app) else null,
+        heroOverlay = stage != null
     )
+
+    /** Lay the 3D view over the hero's place on the picture, at the frame's scale. */
+    private fun placeHero() {
+        val s = frame.width / PosterImage.WIDTH.toFloat()
+        if (s <= 0f) return
+        val r = PosterNewStock.HERO
+        heroView.layoutParams = FrameLayout.LayoutParams((r.width() * s).toInt(), (r.height() * s).toInt()).apply {
+            leftMargin = (r.left * s).toInt()
+            topMargin = (r.top * s).toInt()
+        }
+    }
+
+    /** Start or stop the live hero for the chosen design; a phone without 3D keeps the flat drawing. */
+    private fun updateHero() {
+        val wants = occasion == PosterOccasion.NEW_STOCK && Studio.available(this)
+        if (wants && stage == null) {
+            stage = try {
+                HeroStage(this, Hero.CRATE).also { it.attach(heroView) }
+            } catch (e: Exception) {
+                null
+            }
+        } else if (!wants && stage != null) {
+            stage?.destroy()
+            stage = null
+        }
+        heroView.visibility = if (stage != null) View.VISIBLE else View.GONE
+    }
 
     /** Redraw after the owner stops typing; the old picture is let go only once the new one is up. */
     private fun render() {
@@ -147,9 +191,18 @@ class PosterActivity : BaseActivity() {
     }
 
     private fun sharePoster() {
-        val inp = input()
         share.isEnabled = false
         lifecycleScope.launch {
+            // The shared picture carries the hero itself, drawn still off-screen at full size.
+            val hero = stage?.let { st ->
+                try {
+                    val r = PosterNewStock.HERO
+                    st.still(r.width().toInt(), r.height().toInt())
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            val inp = input().copy(hero = hero, heroOverlay = false)
             val file = withContext(Dispatchers.Default) {
                 try {
                     val dir = File(cacheDir, "posters").apply { mkdirs() }
@@ -157,6 +210,7 @@ class PosterActivity : BaseActivity() {
                     val bmp = PosterImage.draw(this@PosterActivity, inp).first
                     FileOutputStream(f).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
                     bmp.recycle()
+                    hero?.recycle()
                     f
                 } catch (e: Exception) {
                     null
@@ -180,7 +234,19 @@ class PosterActivity : BaseActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        stage?.attach(heroView)
+    }
+
+    override fun onStop() {
+        stage?.detach()
+        super.onStop()
+    }
+
     override fun onDestroy() {
+        stage?.destroy()
+        stage = null
         super.onDestroy()
         preview.setImageDrawable(null)
         shown?.recycle()
