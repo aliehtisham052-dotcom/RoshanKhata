@@ -77,6 +77,7 @@ class Poster3dOnDeviceTest {
         Log.i("Poster3D", "still rendered")
         InstrumentationRegistry.getInstrumentation().runOnMainSync { stage!!.destroy() }
 
+        describe(hero)
         if (lookName != null && lookName != "full" && lookName != "emulator") {
             // A partial look is only asked whether the GPU survives it.
             Log.i("Poster3D", "look $lookName survived")
@@ -119,6 +120,32 @@ class Poster3dOnDeviceTest {
             bmp.recycle()
         }
         hero.recycle()
+    }
+
+    /**
+     * What the frame holds, in the log: a 32×16 grid of brightness (0-9, '.'
+     * for clear) and the average colour of the solid pixels. CI pictures
+     * cannot always be downloaded; the log always comes back.
+     */
+    private fun describe(bmp: Bitmap) {
+        val cols = 32
+        val rows = 16
+        val sb = StringBuilder()
+        var n = 0L; var r = 0L; var g = 0L; var b = 0L
+        for (y in 0 until rows) {
+            for (x in 0 until cols) {
+                val p = bmp.getPixel(x * bmp.width / cols + bmp.width / cols / 2, y * bmp.height / rows + bmp.height / rows / 2)
+                if (Color.alpha(p) < 10) sb.append('.')
+                else sb.append(((Color.red(p) + Color.green(p) + Color.blue(p)) * 10 / 766).toString())
+            }
+            Log.i("Poster3D", "grid ${"%02d".format(y)} $sb")
+            sb.setLength(0)
+        }
+        val px = IntArray(bmp.width * bmp.height)
+        bmp.getPixels(px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
+        for (p in px) if (Color.alpha(p) > 200) { n++; r += Color.red(p); g += Color.green(p); b += Color.blue(p) }
+        if (n > 0) Log.i("Poster3D", "solid $n of ${px.size}, mean rgb ${r / n},${g / n},${b / n}")
+        else Log.i("Poster3D", "no solid pixels")
     }
 
     private fun save(name: String, bmp: Bitmap) {
