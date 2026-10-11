@@ -2499,4 +2499,9 @@ You can change this any time from this screen.</string>
         <item quantity="one">%d supplier</item>
         <item quantity="other">%d suppliers</item>
     </plurals>
+    <!-- First run, step 3: the shop name (11 Oct). -->
+    <string name="shop_name_title">What is your shop\'s name?</string>
+    <string name="shop_name_field">Shop name</string>
+    <string name="shop_name_hint">Bhatti Traders</string>
+    <string name="shop_phone_field">Shop phone (optional)</string>
 </resources>

@@ -19,7 +19,8 @@ import com.innovation313.roshankhata.R
  */
 object StepDots {
 
-    const val TOTAL = 2
+    /** Language, shop type, shop name (the name joined on 11 Oct). */
+    const val TOTAL = 3
 
     fun show(dots: LinearLayout, label: TextView?, step: Int) {
         val d = dots.resources.displayMetrics.density

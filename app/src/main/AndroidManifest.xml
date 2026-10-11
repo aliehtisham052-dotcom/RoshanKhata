@@ -98,6 +98,12 @@
             android:theme="@style/Theme.RoshanKhata" />
 
         <activity
+            android:name=".ShopNameActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RoshanKhata"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".GateActivity"
             android:exported="true"
             android:noHistory="true"

@@ -2364,4 +2364,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">%d supplier</item>
         <item quantity="other">%d supplier</item>
     </plurals>
+    <!-- First run, step 3: the shop name (11 Oct). -->
+    <string name="shop_name_title">Aap ki dukaan ka naam kya hai?</string>
+    <string name="shop_name_field">Dukaan ka naam</string>
+    <string name="shop_name_hint">Bhatti Traders</string>
+    <string name="shop_phone_field">Dukaan ka phone (ikhtiyari)</string>
 </resources>

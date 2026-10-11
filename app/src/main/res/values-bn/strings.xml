@@ -2408,4 +2408,9 @@
         <item quantity="one">%d সরবরাহকারী</item>
         <item quantity="other">%d সরবরাহকারী</item>
     </plurals>
+    <!-- First run, step 3: the shop name (11 Oct). -->
+    <string name="shop_name_title">আপনার দোকানের নাম কী?</string>
+    <string name="shop_name_field">দোকানের নাম</string>
+    <string name="shop_name_hint">রহমান স্টোর</string>
+    <string name="shop_phone_field">দোকানের ফোন (ঐচ্ছিক)</string>
 </resources>
