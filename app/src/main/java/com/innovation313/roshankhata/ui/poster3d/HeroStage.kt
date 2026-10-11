@@ -353,15 +353,19 @@ class HeroStage(
         }
         if (started) {
             Log.d(TAG, "still: frame handed to the GPU")
-            // On OpenGL, Filament learns that the read-back finished by polling a
-            // GPU fence while it works through commands, so the callback comes only
-            // while the engine is kept busy. The live view's frames do that; with
-            // no live view (the test, a share right after a switch) it may never
-            // come — seen on the CI emulator, 11 Oct. So keep the engine pumping
-            // until the picture is back.
+            // How the picture comes back, from Filament 1.72.1's source: readPixels
+            // copies into a buffer behind a GPU fence; only driver.tick() checks the
+            // fence, and only the Renderer's beginFrame and endFrame call tick; then
+            // Engine.flush() hands the finished callback to our handler. So until
+            // the picture is back: an empty frame on the still's own swapchain (two
+            // ticks) and a flush, every 16 ms. Without it the callback came only
+            // when something else happened to render — never, on the CI emulator
+            // after the poster screen had used the engine, or on a phone with its
+            // animations off (no live frames). Found 12 Oct.
             val pump = object : Runnable {
                 override fun run() {
                     if (finished || destroyed) return
+                    if (renderer.beginFrame(sc, 0L)) renderer.endFrame()
                     engine.flush()
                     handler.postDelayed(this, 16L)
                 }
