@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The profile card at the top of the shop sheet (11 Oct): deep green in
+     both themes, so its white and gold read the same by day and by night. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/shop_card_bg" />
+    <corners android:radius="22dp" />
+</shape>

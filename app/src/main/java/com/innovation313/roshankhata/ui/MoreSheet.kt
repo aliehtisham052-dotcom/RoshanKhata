@@ -41,8 +41,11 @@ object MoreSheet {
             // it is now the first row of the one settings sheet. A read-only
             // phone cannot change the shop.
             if (viewer && com.innovation313.roshankhata.data.ViewerMode.ownerOnly(com.innovation313.roshankhata.BusinessSettingsActivity::class.java)) null
-            else e(R.drawable.ic_tile_settings, R.color.tile_settings_bg, R.string.business_profile, shop) {
-                activity.startActivity(Intent(activity, com.innovation313.roshankhata.BusinessSettingsActivity::class.java))
+            // Since 11 Oct it opens the shop sheet, the same one the shop
+            // button opens, so whoever looks for the profile in settings
+            // lands in the one place it lives.
+            else e(R.drawable.ic_tile_settings, R.color.tile_settings_bg, R.string.shop_settings_row, shop) {
+                ShopSheet.show(activity)
             },
             e(R.drawable.ic_menu_lock, R.color.tile_bills_bg, R.string.app_lock, security) { appLock(activity) },
             e(R.drawable.ic_menu_privacy, R.color.tile_cheques_bg, R.string.screen_privacy, security) { ScreenPrivacyDialog.show(activity) },

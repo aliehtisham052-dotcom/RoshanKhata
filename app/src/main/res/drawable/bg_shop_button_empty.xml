@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The shop button while no shop name is set (11 Oct): a dashed edge, the
+     usual sign of a place still to be filled in. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/surface" />
+    <stroke android:width="2dp" android:color="@color/brand_green_text"
+        android:dashWidth="6dp" android:dashGap="4dp" />
+    <corners android:radius="16dp" />
+</shape>

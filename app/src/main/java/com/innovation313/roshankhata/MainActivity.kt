@@ -130,7 +130,9 @@ class MainActivity : BaseActivity() {
                 R.color.tile_cashbook_bg, R.color.section_cashbook),
             Feature(R.drawable.ic_tile_cheques, R.string.nav_cheques, ChequesActivity::class.java,
                 R.color.tile_cheques_bg, R.color.section_cheques),
-            Feature(R.drawable.ic_tile_bills, R.string.tile_bills, BillsActivity::class.java,
+            // "Supplier bills" again (11 Oct): as "Bills" the word supplier had
+            // gone from the whole Home screen, and the owner could not find it.
+            Feature(R.drawable.ic_tile_bills, R.string.supplier_bills, BillsActivity::class.java,
                 R.color.tile_bills_bg, R.color.section_bills),
             Feature(R.drawable.ic_tile_plans, R.string.nav_plans, PlansActivity::class.java,
                 R.color.tile_plans_bg, R.color.section_plans),
@@ -199,38 +201,27 @@ class MainActivity : BaseActivity() {
         featureViews.clear()
         com.innovation313.roshankhata.ui.HomeSlides.attach(findViewById(R.id.homeSlides), findViewById(R.id.homeSlideDots))
         run {
-            val drawer = findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)
-            fun entry(f: Feature) = com.innovation313.roshankhata.ui.HomeDrawer.Entry(f.iconRes, f.tintRes, f.labelRes) {
-                startActivity(Intent(this, f.destination))
-            }
-            com.innovation313.roshankhata.ui.HomeDrawer.fill(
-                this, drawer, findViewById(R.id.drawerContent),
-                shown(daily).map(::entry), shown(business).map(::entry), shown(tools).map(::entry))
-            findViewById<View>(R.id.tvSeeAll).setOnClickListener { drawer.openDrawer(androidx.core.view.GravityCompat.START) }
             findViewById<View>(R.id.todayStrip).setOnClickListener { startActivity(Intent(this, AlertsActivity::class.java)) }
             findViewById<TextView>(R.id.tvHomeFooter).text =
                 getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME + " \u00b7 " + getString(R.string.app_tagline)
-            findViewById<View>(R.id.btnDrawer).setOnClickListener { drawer.openDrawer(androidx.core.view.GravityCompat.START) }
             findViewById<View>(R.id.btnAlerts).setOnClickListener { startActivity(Intent(this, AlertsActivity::class.java)) }
-            // The quiet line under the summary cards (7 Oct): backup age opens
-            // Backup, the open business's name opens the switcher.
+            // The backup chip (7 Oct): the backup's age, or Continue with Google.
             findViewById<View>(R.id.homeBackupTap).setOnClickListener { startActivity(BackupActivity.connectIntent(this)) }
-            // The ⋮ menu beside the bell, and the business card in the drawer (7 Oct).
+            // The gear beside the bell: the app's own settings (7 Oct).
             findViewById<View>(R.id.btnMore).setOnClickListener { com.innovation313.roshankhata.ui.MoreSheet.showMenu(this, it) }
-            findViewById<View>(R.id.drawerBusinessTap).setOnClickListener {
-                drawer.closeDrawers()
-                startActivity(Intent(this, BusinessSwitchActivity::class.java))
+            // The shop button (11 Oct): the profile, the Google account and
+            // every shop, in one sheet. Before any name is set it goes
+            // straight to the profile, where the name is written.
+            findViewById<View>(R.id.shopButton).setOnClickListener {
+                if (com.innovation313.roshankhata.data.BusinessProfile.businessName(this).isNullOrBlank() &&
+                    !com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+                ) {
+                    startActivity(Intent(this, BusinessSettingsActivity::class.java)
+                        .putExtra(BusinessSettingsActivity.EXTRA_FOCUS, BusinessSettingsActivity.FOCUS_NAME))
+                } else {
+                    com.innovation313.roshankhata.ui.ShopSheet.show(this)
+                }
             }
-            // The title is the shop's name (7 Oct); tapping it switches shops too.
-            findViewById<View>(R.id.tvHomeTitle).setOnClickListener { startActivity(Intent(this, BusinessSwitchActivity::class.java)) }
-            onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(false) {
-                override fun handleOnBackPressed() = drawer.closeDrawers()
-            }.also { cb ->
-                drawer.addDrawerListener(object : androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener() {
-                    override fun onDrawerOpened(drawerView: View) { cb.isEnabled = true }
-                    override fun onDrawerClosed(drawerView: View) { cb.isEnabled = false }
-                })
-            })
         }
         fillGrid(findViewById(R.id.gridDaily), shown(daily), 3, compact = false)
         fillGrid(findViewById(R.id.gridBusiness), shown(business), 4, compact = true)
@@ -510,7 +501,7 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     * The backup age under the summary cards, and the drawer's business card
+     * The backup age under the summary cards, and the shop button
      * (7 Oct). Painted on every resume: a backup taken one screen away, or a
      * business switched, must show the moment Home is back, not after a
      * restart.
@@ -545,18 +536,25 @@ class MainActivity : BaseActivity() {
         findViewById<View>(R.id.homeBackupTap)?.contentDescription =
             if (offerSignIn) getString(R.string.welcome_connect)
             else listOfNotNull(line.text, drive.accountName(this)).joinToString(", ")
-        // The drawer's business card: the open shop's name, and its place
-        // among the books when there is more than one.
+        // The shop button (11 Oct): the shop's logo and name, and under it
+        // what a tap opens - "Profile", or "Profile · Switch shop" when there
+        // is more than one. With no name yet it asks for one, on a dashed edge.
         val saved = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@MainActivity)
-        val shop = if (saved.isNullOrBlank()) getString(R.string.app_name) else saved
-        findViewById<TextView>(R.id.tvHomeTitle)?.text = shop
-        findViewById<TextView>(R.id.tvDrawerBusiness)?.text = shop
-        findViewById<TextView>(R.id.tvDrawerBusinessSub)?.apply {
-            val all = Businesses.list(this@MainActivity)
-            val at = all.indexOfFirst { it.id == Businesses.active(this@MainActivity).id } + 1
-            text = if (all.size > 1 && at > 0)
-                getString(R.string.drawer_active_business_n, Format.ltr(at.toString()), Format.ltr(all.size.toString()))
-            else getString(R.string.drawer_active_business)
+        val unnamed = saved.isNullOrBlank() && !com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+        findViewById<TextView>(R.id.tvHomeTitle)?.text =
+            if (unnamed) getString(R.string.shop_add_name) else saved ?: getString(R.string.app_name)
+        findViewById<TextView>(R.id.tvHomeSub)?.text = getString(when {
+            unnamed -> R.string.shop_add_name_sub
+            Businesses.list(this@MainActivity).size > 1 -> R.string.shop_sub_switch
+            else -> R.string.shop_sub_profile
+        })
+        findViewById<View>(R.id.shopButton)?.apply {
+            setBackgroundResource(if (unnamed) R.drawable.bg_shop_button_empty else R.drawable.bg_shop_button)
+            contentDescription = (findViewById<TextView>(R.id.tvHomeTitle)?.text ?: "").toString() + ", " +
+                (findViewById<TextView>(R.id.tvHomeSub)?.text ?: "")
+        }
+        findViewById<android.widget.ImageView>(R.id.ivShopLogo)?.let {
+            com.innovation313.roshankhata.ui.ShopSheet.paintLogo(this@MainActivity, it, 9f)
         }
     }
 
@@ -766,7 +764,7 @@ class MainActivity : BaseActivity() {
             // six daily tiles and five were listed, so the tour went from
             // Cashbook to Bills over it. Not a double tap, as first thought.
             tileStep(R.string.nav_cheques, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques),
-            tileStep(R.string.tile_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
+            tileStep(R.string.supplier_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
             tileStep(R.string.nav_plans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
             tileStep(R.string.tile_expiry, R.string.coach_title_stock, R.string.coach_desc_stock),
             // The two smaller sections as one step each: the owner is told
