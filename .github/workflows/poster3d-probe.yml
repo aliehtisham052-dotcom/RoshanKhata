@@ -17,7 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        look: [empty, model, ibl, sun, msaa, emulator]
+        look: [full, emulator]
+        gpu: [swangle_indirect, guest]
     env:
       LOOK: ${{ matrix.look }}
     steps:
@@ -46,13 +47,13 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_2
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu ${{ matrix.gpu }} -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: sh scripts/poster3d-probe.sh
       - name: Upload pictures
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: poster3d-probe-${{ matrix.look }}
+          name: poster3d-probe-${{ matrix.look }}-${{ matrix.gpu }}
           path: /tmp/rtl-proof/
           if-no-files-found: ignore
