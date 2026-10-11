@@ -19,6 +19,7 @@ import com.innovation313.roshankhata.ui.poster3d.Studio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
@@ -50,7 +51,9 @@ class Poster3dOnDeviceTest {
     @Test
     fun the_crate_renders_in_3d_and_lands_on_the_poster() {
         var ok = false
+        Log.i("Poster3D", "starting the engine")
         InstrumentationRegistry.getInstrumentation().runOnMainSync { ok = Studio.available(app) }
+        Log.i("Poster3D", "engine available: $ok")
         if (!ok) Log.w("Poster3D", "This device cannot run Filament; the flat crate is used")
         assumeTrue("Filament not available on this device", ok)
 
@@ -59,7 +62,9 @@ class Poster3dOnDeviceTest {
         val r = PosterNewStock.HERO
         val w = r.width().toInt()
         val h = r.height().toInt()
-        val hero = runBlocking { withContext(Dispatchers.Main) { stage!!.still(w, h) } }
+        Log.i("Poster3D", "stage built, rendering the still")
+        val hero = runBlocking { withTimeout(30_000L) { withContext(Dispatchers.Main) { stage!!.still(w, h) } } }
+        Log.i("Poster3D", "still rendered")
         InstrumentationRegistry.getInstrumentation().runOnMainSync { stage!!.destroy() }
 
         assertEquals(w, hero.width)
