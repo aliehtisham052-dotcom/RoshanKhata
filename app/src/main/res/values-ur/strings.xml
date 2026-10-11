@@ -2364,4 +2364,9 @@
         <item quantity="one">%d سپلائر</item>
         <item quantity="other">%d سپلائر</item>
     </plurals>
+    <!-- First run, step 3: the shop name (11 Oct). -->
+    <string name="shop_name_title">آپ کی دکان کا نام کیا ہے؟</string>
+    <string name="shop_name_field">دکان کا نام</string>
+    <string name="shop_name_hint">بھٹی ٹریڈرز</string>
+    <string name="shop_phone_field">دکان کا فون (اختیاری)</string>
 </resources>

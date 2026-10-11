@@ -6,7 +6,7 @@ import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.ui.TradePicker
 
 /**
- * First run, step 2 of 2: what the shop sells (9 Oct).
+ * First run, step 2 of 3: what the shop sells (9 Oct; the name became step 3 on 11 Oct).
  *
  * The first run used to be splash, a painting, language, a Google backup
  * page and then the shop type - six screens, the logo on four of them -
@@ -40,13 +40,10 @@ class ShopTypeActivity : BaseActivity() {
         })
     }
 
+    /** On to step 3, the shop's name (11 Oct); it steps aside by itself when one is set. */
     private fun proceed() {
         if (isFinishing || isDestroyed) return
-        startActivity(
-            Intent(this, MainActivity::class.java)
-                .putExtra(MainActivity.EXTRA_UNLOCKED, true)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        )
+        startActivity(Intent(this, ShopNameActivity::class.java))
         finish()
     }
 }

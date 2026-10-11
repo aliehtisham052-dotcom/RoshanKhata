@@ -2392,4 +2392,9 @@
         <item quantity="one">%d تأمین‌کننده</item>
         <item quantity="other">%d تأمین‌کننده</item>
     </plurals>
+    <!-- First run, step 3: the shop name (11 Oct). -->
+    <string name="shop_name_title">نام فروشگاه شما چیست؟</string>
+    <string name="shop_name_field">نام فروشگاه</string>
+    <string name="shop_name_hint">فروشگاه نور</string>
+    <string name="shop_phone_field">تلفن فروشگاه (اختیاری)</string>
 </resources>

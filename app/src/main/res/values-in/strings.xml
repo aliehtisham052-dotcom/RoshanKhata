@@ -2364,4 +2364,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <plurals name="supplier_count">
         <item quantity="other">%d pemasok</item>
     </plurals>
+    <!-- First run, step 3: the shop name (11 Oct). -->
+    <string name="shop_name_title">Apa nama toko Anda?</string>
+    <string name="shop_name_field">Nama toko</string>
+    <string name="shop_name_hint">Toko Makmur</string>
+    <string name="shop_phone_field">Telepon toko (opsional)</string>
 </resources>

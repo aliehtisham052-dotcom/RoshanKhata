@@ -2392,4 +2392,9 @@
         <item quantity="one">%d سپلائر</item>
         <item quantity="other">%d سپلائر</item>
     </plurals>
+    <!-- First run, step 3: the shop name (11 Oct). -->
+    <string name="shop_name_title">توهان جي دڪان جو نالو ڇا آهي؟</string>
+    <string name="shop_name_field">دڪان جو نالو</string>
+    <string name="shop_name_hint">ڀٽي ٽريڊرز</string>
+    <string name="shop_phone_field">دڪان جو فون (اختياري)</string>
 </resources>

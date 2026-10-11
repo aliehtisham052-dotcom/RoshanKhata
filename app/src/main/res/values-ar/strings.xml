@@ -2540,4 +2540,9 @@
         <item quantity="many">%d موردًا</item>
         <item quantity="other">%d مورد</item>
     </plurals>
+    <!-- First run, step 3: the shop name (11 Oct). -->
+    <string name="shop_name_title">ما اسم متجرك؟</string>
+    <string name="shop_name_field">اسم المتجر</string>
+    <string name="shop_name_hint">متجر النور</string>
+    <string name="shop_phone_field">هاتف المتجر (اختياري)</string>
 </resources>
