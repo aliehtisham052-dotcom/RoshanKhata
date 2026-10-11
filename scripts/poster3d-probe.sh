@@ -13,4 +13,10 @@ tail -60 /tmp/probe_gradle.txt
 echo "----- device log -----"
 tail -200 /tmp/probe_logcat.txt
 adb pull /sdcard/Download/rtl-proof /tmp/rtl-proof > /dev/null 2>&1 || true
+# Job logs are not always downloadable; annotations are. One annotation per
+# file, newlines escaped as GitHub requires (%0A), so both reach the API.
+enc() { sed -e 's/%/%25/g' -e 's/\r//g' | awk '{printf "%s%%0A", $0}'; }
+echo "::notice title=gradle exit $code::$(grep -E 'FAILED|Exception|Error|error:|tests completed|BUILD|Tests on|expected|assert' /tmp/probe_gradle.txt | tail -40 | enc)"
+echo "::notice title=device log::$(grep -vE 'ActivityManager' /tmp/probe_logcat.txt | tail -60 | enc)"
+echo "::notice title=device crashes::$(grep -E 'FATAL|AndroidRuntime|Poster3D|SIG|abort' /tmp/probe_logcat.txt | tail -40 | enc)"
 exit $code
