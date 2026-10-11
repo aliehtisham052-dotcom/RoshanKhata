@@ -30,11 +30,15 @@ object SealFace {
 
     private const val SIZE = 512
     private const val WAX = 0xFF0C462C.toInt()
-    private const val GOLD = 0xFFE9BE64.toInt()
+    private const val GOLD = 0xFFF6D27A.toInt()
     /** Glossy wax: roughness 0.26, no metal. */
     private const val WAX_MR = 0xFF004200.toInt()
-    /** Gold leaf: roughness 0.3, all metal. */
-    private const val GOLD_MR = 0xFF004DFF.toInt()
+    /**
+     * Gold leaf: roughness 0.35, metal 0.4. Fully metal, it mirrored the dark
+     * studio and read as bronze on the CI pictures (11 Oct); part metal keeps
+     * the shine and the colour.
+     */
+    private const val GOLD_MR = 0xFF005966.toInt()
 
     fun draw(context: Context, shopName: String, logo: Bitmap?): Maps {
         val colour = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888)
