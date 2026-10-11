@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.ui
 
+import android.graphics.Bitmap
 import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.Color
@@ -82,11 +83,14 @@ object PosterNewStock {
         // Headline in gold foil.
         val head = PosterKit.foilHeadline(page, page.title, if (urdu) 138f else 126f, 72f, 470f, greeting = false)
 
-        // The hero: the 3D crate if the phone could render it, else a flat one.
-        page.drawHero(HERO) { flatCrate(it) }
+        // The hero: the owner's own photo of the stock if he gave one, else the
+        // 3D crate if the phone could render it, else a flat one.
+        val photo = page.photo
+        if (photo != null) photoCard(c, photo) else page.drawHero(HERO) { flatCrate(it) }
 
-        // What arrived, on a strip of glass.
-        val items = TradeVocab.items(context).take(3).joinToString("   ◆   ")
+        // What arrived, on a strip of glass: the owner's list, or his trade's usual three.
+        val list = page.fields.items.ifEmpty { TradeVocab.items(context).take(3) }
+        val items = list.joinToString("   ◆   ")
         val strip = RectF(66f, 1230f, W - 66f, 1374f)
         PosterKit.glass(c, strip, radius = 72f, fill = 0x12FFFFFF)
         val ip = PosterKit.textPaint(context, items, if (urdu) 42f else 39f, Color.WHITE, urdu, page.locale, urdu)
@@ -104,6 +108,31 @@ object PosterNewStock {
         return PosterKit.Out(head.first.textSize, head.second.layout?.lineCount ?: 1, ml?.paint?.textSize ?: 0f, ml?.lineCount ?: 0,
             PosterMotion.Spec(glint = head.second,
                 stars = DUST.map { PosterMotion.Star(it.first, it.second, it.third) }))
+    }
+
+    /**
+     * The owner's photo of what arrived, as a print in a gold frame, a little
+     * turned, standing in the crate's light. Cropped to fill, never stretched.
+     */
+    private fun photoCard(c: Canvas, photo: Bitmap) {
+        val card = RectF(240f, 600f, 840f, 1150f)
+        c.save()
+        c.rotate(-3f, card.centerX(), card.centerY())
+        val shadow = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF0B1F15.toInt(); setShadowLayer(40f, 0f, 26f, 0x99000000.toInt()) }
+        c.drawRoundRect(card, 28f, 28f, shadow)
+        val gold = Paint(Paint.ANTI_ALIAS_FLAG)
+        gold.shader = LinearGradient(card.left, card.top, card.right, card.bottom,
+            intArrayOf(0xFFFFF1C1.toInt(), 0xFFC8962B.toInt(), 0xFFF7DC8C.toInt()), null, Shader.TileMode.CLAMP)
+        c.drawRoundRect(card, 28f, 28f, gold)
+        val inner = RectF(card.left + 16f, card.top + 16f, card.right - 16f, card.bottom - 16f)
+        val clip = Path().apply { addRoundRect(inner, 16f, 16f, Path.Direction.CW) }
+        c.clipPath(clip)
+        val s = maxOf(inner.width() / photo.width, inner.height() / photo.height)
+        val w = photo.width * s
+        val h = photo.height * s
+        c.drawBitmap(photo, null, RectF(inner.centerX() - w / 2, inner.centerY() - h / 2, inner.centerX() + w / 2, inner.centerY() + h / 2),
+            Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
+        c.restore()
     }
 
     /** A flat crate for phones that cannot render the 3D one. */

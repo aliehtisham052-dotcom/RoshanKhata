@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.provider.MediaStore
 import androidx.test.core.app.ApplicationProvider
+import com.innovation313.roshankhata.data.PosterFields
 import com.innovation313.roshankhata.data.PosterOccasion
 import com.innovation313.roshankhata.ui.PosterImage
 import org.junit.Assert.assertEquals
@@ -72,6 +73,40 @@ class PosterOnDeviceTest {
             assertTrue("$tag: big line squeezed (${fit.titleSize})", fit.titleSize > 56f)
             save("poster_custom_$tag.png", bmp)
             bmp.recycle()
+        }
+    }
+
+    /**
+     * The fields chosen on the poster screen (12 Oct), drawn in English and
+     * Urdu: four things arrived, closed for a wedding until tomorrow 9, the
+     * timings with the Friday break and Sunday off, the Ramazan hours, three
+     * days of Eid holidays. Each picture is saved for a person to look at.
+     */
+    @Test
+    fun the_fields_draw_in_both_languages() {
+        val cases = listOf(
+            PosterOccasion.NEW_STOCK to PosterFields(items = listOf("Urea", "DAP", "Wheat seed", "Sprays")),
+            PosterOccasion.CLOSED to PosterFields(reason = PosterFields.Reason.WEDDING.key, reopen = PosterFields.Reopen.TOMORROW.key),
+            PosterOccasion.HOURS to PosterFields(),
+            PosterOccasion.RAMAZAN to PosterFields(ramazanHours = true),
+            PosterOccasion.EID_FITR to PosterFields(eidDays = 3)
+        )
+        for (tag in listOf("en", "ur")) {
+            val ctx = inLanguage(tag)
+            for ((o, f) in cases) {
+                val fields = if (o == PosterOccasion.NEW_STOCK && tag == "ur")
+                    f.copy(items = listOf("یوریا", "ڈی اے پی", "گندم کا بیج", "سپرے")) else f
+                val (bmp, fit) = PosterImage.draw(ctx, PosterImage.Input(
+                    occasion = o, title = ctx.getString(o.title), message = ctx.getString(o.message),
+                    shopName = if (tag == "ur") "علی ٹریڈرز" else "Ali Traders", phone = "0300 0000000",
+                    address = if (tag == "ur") "مین بازار، پسرور" else "Main Bazaar, Pasrur", logo = null,
+                    mark = ctx.getString(R.string.made_with_app), fields = fields
+                ))
+                assertTrue("$tag/${o.key}: big line squeezed (${fit.titleSize})", fit.titleSize > 56f)
+                assertTrue("$tag/${o.key}: words squeezed (${fit.messageSize})", fit.messageSize > 24f)
+                save("poster_fields_${o.key}_$tag.png", bmp)
+                bmp.recycle()
+            }
         }
     }
 

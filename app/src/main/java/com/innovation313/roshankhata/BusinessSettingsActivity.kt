@@ -196,6 +196,7 @@ class BusinessSettingsActivity : BaseActivity() {
         intent.getStringExtra(EXTRA_FOCUS)?.let { focus ->
             val targetId = when (focus) {
                 FOCUS_NAME -> R.id.etBusinessName
+                FOCUS_PHONE -> R.id.etBusinessPhone
                 FOCUS_STAMP -> R.id.ivStampPreview
                 FOCUS_PAYMENT -> R.id.etBankName
                 FOCUS_TRADE -> R.id.btnTrade
@@ -730,6 +731,8 @@ class BusinessSettingsActivity : BaseActivity() {
         /** Which part of the profile to bring into view: one of the FOCUS_ values. */
         const val EXTRA_FOCUS = "focus"
         const val FOCUS_NAME = "name"
+        /** The phone field (the poster screen sends the owner here when it is empty). */
+        const val FOCUS_PHONE = "phone"
         const val FOCUS_STAMP = "stamp"
         const val FOCUS_PAYMENT = "payment"
         const val FOCUS_TRADE = "trade"

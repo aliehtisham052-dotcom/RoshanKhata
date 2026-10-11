@@ -16,6 +16,7 @@ import android.text.StaticLayout
 import android.text.TextDirectionHeuristics
 import android.text.TextPaint
 import com.innovation313.roshankhata.data.InvoiceFonts
+import com.innovation313.roshankhata.data.PosterFields
 import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.max
@@ -57,7 +58,11 @@ object PosterKit {
         val logo: Bitmap?,
         val mark: String?,
         val hero: Bitmap?,
-        val heroOverlay: Boolean
+        val heroOverlay: Boolean,
+        /** What the owner chose on the poster screen (see PosterFields). */
+        val fields: PosterFields = PosterFields(),
+        /** The owner's own photo of the stock, for New stock. */
+        val photo: Bitmap? = null
     ) {
         val urdu = urduScript(locale)
         /** Draw the hero here, or its flat stand-in, unless the live 3D view covers the place. */
@@ -396,6 +401,50 @@ object PosterKit {
         put(page.c, l, (W - width) / 2, cy - l.height / 2f)
         return l
     }
+
+    /**
+     * Label-and-value rows on a panel (timings, why closed, Ramazan hours):
+     * the label on the reading side in gold, the value on the far side, a
+     * hairline between rows; a row marked closed shows its value in red. An
+     * optional [title] sits centred over them. Returns the value size used.
+     */
+    fun rows(page: Page, panel: RectF, rows: List<PosterWords.Row>, title: String? = null,
+             label: Int = GOLD, value: Int = 0xFFFFFFFF.toInt(), closed: Int = 0xFFFF8A80.toInt(),
+             good: Int = 0xFF7EE0A8.toInt(), rule: Int = 0x26FFFFFF): Float {
+        if (rows.isEmpty()) return 0f
+        val c = page.c
+        var top = panel.top + 24f
+        if (title != null) {
+            val tp = textPaint(page.context, title, if (page.urdu) 44f else 38f, label, true, page.locale, page.urdu)
+            tp.textAlign = Paint.Align.CENTER
+            fitWidth(tp, title, panel.width() - 96f, 24f)
+            inkLine(c, title, tp, panel.centerX(), top + 46f)
+            top += 96f
+            c.drawLine(panel.left + 48f, top, panel.right - 48f, top, Paint().apply { color = rule; strokeWidth = 2f })
+        }
+        val inner = panel.width() - 96f
+        val rowH = (panel.bottom - 24f - top) / rows.size
+        val line = Paint().apply { color = rule; strokeWidth = 2f }
+        val size = if (page.urdu) 46f else 42f
+        var used = 0f
+        for ((i, row) in rows.withIndex()) {
+            val cy = top + rowH * (i + 0.5f)
+            if (i > 0) c.drawLine(panel.left + 48f, top + rowH * i, panel.right - 48f, top + rowH * i, line)
+            val lp = textPaint(page.context, row.label, size, label, true, page.locale, page.urdu)
+            val vp = textPaint(page.context, row.value, size, when { row.closed -> closed; row.good -> good; else -> value }, true, page.locale, page.urdu)
+            fitWidth(lp, row.label, inner * 0.42f, 24f)
+            fitWidth(vp, row.value, inner * 0.56f, 24f)
+            lp.textAlign = if (page.rtl) Paint.Align.RIGHT else Paint.Align.LEFT
+            vp.textAlign = if (page.rtl) Paint.Align.LEFT else Paint.Align.RIGHT
+            inkLine(c, row.label, lp, if (page.rtl) panel.right - 48f else panel.left + 48f, cy)
+            inkLine(c, row.value, vp, if (page.rtl) panel.left + 48f else panel.right - 48f, cy)
+            used = maxOf(used, vp.textSize)
+        }
+        return used
+    }
+
+    /** The height a [rows] panel wants for [n] rows (and a title). */
+    fun rowsHeight(n: Int, titled: Boolean) = 48f + n * 112f + if (titled) 96f else 0f
 
     /** A soft round glow (a halo behind a moon or a lamp). */
     fun halo(c: Canvas, cx: Float, cy: Float, r: Float, colour: Int) {

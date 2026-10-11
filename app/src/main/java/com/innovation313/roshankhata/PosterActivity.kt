@@ -2,33 +2,52 @@ package com.innovation313.roshankhata
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.net.Uri
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.TextureView
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.widget.doAfterTextChanged
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.Businesses
+import com.innovation313.roshankhata.data.PosterFields
 import com.innovation313.roshankhata.data.PosterOccasion
+import com.innovation313.roshankhata.data.TradeVocab
+import com.innovation313.roshankhata.ui.LocaleRefresh
 import com.innovation313.roshankhata.ui.PosterDesigns
 import com.innovation313.roshankhata.ui.PosterImage
 import com.innovation313.roshankhata.ui.PosterKit
 import com.innovation313.roshankhata.ui.PosterMotionView
+import com.innovation313.roshankhata.ui.PosterWords
+import com.innovation313.roshankhata.ui.ScreenInsets
+import com.innovation313.roshankhata.ui.TextFit
 import com.innovation313.roshankhata.ui.poster3d.Hero
 import com.innovation313.roshankhata.ui.poster3d.HeroStage
 import com.innovation313.roshankhata.ui.poster3d.SealFace
 import com.innovation313.roshankhata.ui.poster3d.Studio
-import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,16 +55,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Locale
 
 /**
- * Poster & Status — a 9:16 picture for WhatsApp Status with the shop's name,
- * phone and logo: new stock, Eid, Ramazan, closed today, timings, thanks, or
- * the owner's own words.
+ * Poster & Status (12 Oct, the approved screen mockup).
+ *
+ * Choose a design from its picture and the poster's language (which may
+ * differ from the app's: an English-speaking helper can make an Urdu poster);
+ * the preview is the real picture, its 3D hero moving live; under it go the
+ * big line, this design's own fields (what arrived, why closed and when it
+ * opens, the timings, the Ramazan hours, the Eid holidays) and the last line;
+ * then what the poster shows. A fixed bar puts it on WhatsApp Status (the
+ * share goes to WhatsApp, where "My status" is the first choice) or shares it
+ * anywhere.
  *
  * Reads Profile, writes nothing to the ledger, so it opens on the helper's
- * phone too. The owner's own wording for an occasion (his timings, say) is
- * remembered per shop; the app's default wording is not stored, so it
- * follows the app language.
+ * phone too. Everything chosen here is remembered per shop (PosterFields,
+ * and the owner's own wording per design and language).
  */
 class PosterActivity : BaseActivity() {
 
@@ -55,25 +81,48 @@ class PosterActivity : BaseActivity() {
     private lateinit var preview: ImageView
     private lateinit var etTitle: TextInputEditText
     private lateinit var etMessage: TextInputEditText
-    private lateinit var logoSwitch: SwitchMaterial
-    private lateinit var markSwitch: SwitchMaterial
-    private lateinit var share: MaterialButton
+    private lateinit var tilMessage: TextInputLayout
     private lateinit var frame: FrameLayout
     private lateinit var heroView: TextureView
     private lateinit var motionView: PosterMotionView
+    private lateinit var designRow: LinearLayout
+    private lateinit var chipLanguages: ChipGroup
+    private lateinit var chipShow: ChipGroup
+    private lateinit var chipItems: ChipGroup
+    private lateinit var chipSuggest: ChipGroup
+    private lateinit var chipReasons: ChipGroup
+    private lateinit var chipHolidays: ChipGroup
+    private lateinit var chipEidDays: ChipGroup
+    private lateinit var etItem: TextInputEditText
+    private lateinit var etReason: TextInputEditText
+    private lateinit var tilReason: TextInputLayout
+    private lateinit var btnPhoto: MaterialButton
+    private lateinit var btnStatus: MaterialButton
+    private lateinit var btnShare: MaterialButton
+    private lateinit var noPhoneNote: View
 
     /** The live 3D hero, while the chosen design has one and the phone can draw it. */
     private var stage: HeroStage? = null
-    /** Which hero [stage] shows, and whether its face carries the logo, to know when to rebuild it. */
+    /** What [stage] was built for, to know when it must be rebuilt (another hero, or the seal's mark changed). */
+    private var stageKey: String? = null
     private var stageHero: Hero? = null
-    private var stageHadLogo = false
+    private var isStarted = false
 
     private var occasion = PosterOccasion.NEW_STOCK
+    private var lang = "ur"
+    private var fields = PosterFields()
     private var logo: Bitmap? = null
+    private var photo: Bitmap? = null
     private var shown: Bitmap? = null
     private var renderJob: Job? = null
+    private var thumbsJob: Job? = null
+    private val thumbs = mutableMapOf<PosterOccasion, Bitmap>()
     /** True while the fields are being filled in code, so that is not saved as the owner's wording. */
     private var filling = false
+
+    private val pickPhoto = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) takePhoto(uri)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,58 +132,486 @@ class PosterActivity : BaseActivity() {
         preview = findViewById(R.id.ivPoster)
         etTitle = findViewById(R.id.etPosterTitle)
         etMessage = findViewById(R.id.etPosterMessage)
-        logoSwitch = findViewById(R.id.switchPosterLogo)
-        markSwitch = findViewById(R.id.switchPosterMark)
-        share = findViewById(R.id.btnSharePoster)
+        tilMessage = findViewById(R.id.tilMessage)
         frame = findViewById(R.id.posterFrame)
         heroView = findViewById(R.id.heroView)
         motionView = findViewById(R.id.motionView)
+        designRow = findViewById(R.id.designRow)
+        chipLanguages = findViewById(R.id.chipLanguages)
+        chipShow = findViewById(R.id.chipShow)
+        chipItems = findViewById(R.id.chipItems)
+        chipSuggest = findViewById(R.id.chipSuggest)
+        chipReasons = findViewById(R.id.chipReasons)
+        chipHolidays = findViewById(R.id.chipHolidays)
+        chipEidDays = findViewById(R.id.chipEidDays)
+        etItem = findViewById(R.id.etItem)
+        etReason = findViewById(R.id.etReason)
+        tilReason = findViewById(R.id.tilReason)
+        btnPhoto = findViewById(R.id.btnPhoto)
+        btnStatus = findViewById(R.id.btnStatus)
+        btnShare = findViewById(R.id.btnSharePoster)
+        noPhoneNote = findViewById(R.id.noPhoneNote)
         frame.post { placeHero() }
 
         occasion = PosterOccasion.byKey(prefs.getString(KEY_OCCASION, null))
-        markSwitch.isChecked = prefs.getBoolean(KEY_MARK, true)
-        logoSwitch.isChecked = prefs.getBoolean(KEY_LOGO, true)
-        logoSwitch.visibility = if (BusinessProfile.hasLogo(this)) View.VISIBLE else View.GONE
+        lang = prefs.getString(KEY_LANG + shopKey, null)?.takeIf { it in LANGS } ?: defaultLanguage()
+        fields = PosterFields.load(this, shopKey)
 
-        val group = findViewById<ChipGroup>(R.id.chipOccasions)
-        PosterOccasion.values().forEach { o ->
-            val chip = layoutInflater.inflate(R.layout.item_rate_list_chip, group, false) as Chip
-            chip.id = View.generateViewId()
-            chip.text = if (o == PosterOccasion.CUSTOM) getString(R.string.poster_custom) else getString(o.title)
-            chip.tag = o.key
-            chip.isChecked = o == occasion
-            group.addView(chip)
-        }
-        group.setOnCheckedStateChangeListener { g, ids ->
-            val chip = ids.firstOrNull()?.let { g.findViewById<Chip>(it) } ?: return@setOnCheckedStateChangeListener
-            occasion = PosterOccasion.byKey(chip.tag as String)
-            prefs.edit().putString(KEY_OCCASION, occasion.key).apply()
-            updateHero()
-            fill()
-        }
+        buildDesignRow()
+        buildLanguageChips()
+        buildShowChips()
+        buildStockFields()
+        buildClosedFields()
+        buildHoursFields()
+        buildRamazanFields()
+        buildEidFields()
 
-        updateHero()
-        fill()
         etTitle.doAfterTextChanged { if (!filling) { save(KEY_TITLE, it?.toString(), occasion.title); render() } }
         etMessage.doAfterTextChanged { if (!filling) { save(KEY_MSG, it?.toString(), occasion.message); render() } }
-        markSwitch.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(KEY_MARK, on).apply(); render() }
-        logoSwitch.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(KEY_LOGO, on).apply(); updateHero(); render() }
-        share.setOnClickListener { sharePoster() }
+        btnStatus.setOnClickListener { sharePoster(toWhatsApp = true) }
+        btnShare.setOnClickListener { sharePoster(toWhatsApp = false) }
+        findViewById<MaterialButton>(R.id.btnAddPhone).setOnClickListener {
+            startActivity(Intent(this, BusinessSettingsActivity::class.java)
+                .putExtra(BusinessSettingsActivity.EXTRA_FOCUS, BusinessSettingsActivity.FOCUS_PHONE))
+        }
 
+        showFieldsFor()
+        fill()
         lifecycleScope.launch {
             logo = withContext(Dispatchers.IO) { BusinessProfile.loadLogo(this@PosterActivity) }
+            photo = withContext(Dispatchers.IO) { loadPhoto() }
             updateHero()
             render()
+            renderThumbs()
         }
     }
 
-    private fun key(kind: String) = "${kind}${occasion.key}_$shopKey"
+    override fun onResume() {
+        super.onResume()
+        // The profile may have changed (a phone number added, a name, a logo).
+        noPhoneNote.visibility = if (BusinessProfile.businessPhone(this).isNullOrBlank()) View.VISIBLE else View.GONE
+        if (shown != null) {
+            lifecycleScope.launch {
+                logo = withContext(Dispatchers.IO) { BusinessProfile.loadLogo(this@PosterActivity) }
+                buildShowChips()
+                updateHero()
+                render()
+            }
+        }
+    }
 
-    /** The owner's wording if he changed it, else the occasion's own in the app language. */
+    // ------------------------------------------------------------------ language
+
+    /** The app's language when it is one a poster speaks, else English. */
+    private fun defaultLanguage(): String {
+        val app = LocaleRefresh.tag(this)
+        return LANGS.firstOrNull { it.equals(app, ignoreCase = true) }
+            ?: LANGS.firstOrNull { Locale.forLanguageTag(it).language == Locale.forLanguageTag(app).language && !it.contains("-") }
+            ?: "en"
+    }
+
+    /** A context speaking the poster's language: its words, its direction, its defaults. */
+    private fun posterContext(): Context {
+        val config = Configuration(resources.configuration)
+        config.setLocale(Locale.forLanguageTag(lang))
+        return createConfigurationContext(config)
+    }
+
+    private fun posterUrdu() = PosterKit.urduScript(Locale.forLanguageTag(lang))
+
+    private fun buildLanguageChips() {
+        chipLanguages.removeAllViews()
+        val shownTags = listOf("ur", "en")
+        for (tag in shownTags) {
+            val chip = choiceChip(chipLanguages, NAMES.getValue(tag))
+            chip.isChecked = lang == tag
+            chip.setOnClickListener { setLanguage(tag) }
+        }
+        val more = choiceChip(chipLanguages, if (lang in shownTags) getString(R.string.poster_lang_more) + " ▾" else NAMES.getValue(lang) + " ▾")
+        more.isChecked = lang !in shownTags
+        more.setOnClickListener {
+            more.isChecked = lang !in shownTags
+            val others = LANGS.filter { it !in shownTags }
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.poster_language)
+                .setItems(others.map { NAMES.getValue(it) }.toTypedArray()) { _, i -> setLanguage(others[i]) }
+                .show()
+        }
+        TextFit.relax(chipLanguages)
+    }
+
+    private fun setLanguage(tag: String) {
+        if (tag == lang) { buildLanguageChips(); return }
+        lang = tag
+        prefs.edit().putString(KEY_LANG + shopKey, tag).apply()
+        buildLanguageChips()
+        buildStockFields()
+        updateHero()
+        fill()
+        renderThumbs()
+    }
+
+    // ------------------------------------------------------------------ designs
+
+    private fun buildDesignRow() {
+        designRow.removeAllViews()
+        for (o in PosterOccasion.values()) {
+            val item = layoutInflater.inflate(R.layout.item_poster_design, designRow, false)
+            item.tag = o.key
+            item.findViewById<TextView>(R.id.designName).text =
+                if (o == PosterOccasion.CUSTOM) getString(R.string.poster_custom) else designName(o)
+            item.contentDescription = item.findViewById<TextView>(R.id.designName).text
+            item.setOnClickListener { chooseDesign(o) }
+            designRow.addView(item)
+        }
+        TextFit.relax(designRow)
+        markDesign()
+    }
+
+    /** The design's short name in the app's language. */
+    private fun designName(o: PosterOccasion): String = getString(o.title).trimEnd('!', '!', '۔').let {
+        if (it.length > 22) it.take(20) + "…" else it
+    }
+
+    private fun markDesign() {
+        for (i in 0 until designRow.childCount) {
+            val item = designRow.getChildAt(i)
+            val on = item.tag == occasion.key
+            item.findViewById<MaterialCardView>(R.id.designCard).apply {
+                strokeWidth = (if (on) 3 else 1) * resources.displayMetrics.density.toInt().coerceAtLeast(1)
+                strokeColor = getColor(if (on) R.color.brand_gold else R.color.hairline)
+            }
+            item.findViewById<View>(R.id.designTick).visibility = if (on) View.VISIBLE else View.GONE
+            item.isSelected = on
+        }
+    }
+
+    private fun chooseDesign(o: PosterOccasion) {
+        if (o == occasion) return
+        occasion = o
+        prefs.edit().putString(KEY_OCCASION, o.key).apply()
+        markDesign()
+        showFieldsFor()
+        updateHero()
+        fill()
+    }
+
+    /** Small pictures of every design, drawn as the real poster (flat heroes), in the poster's language. */
+    private fun renderThumbs() {
+        thumbsJob?.cancel()
+        val ctx = posterContext()
+        val w = (88 * resources.displayMetrics.density).toInt().coerceAtLeast(60)
+        val h = w * PosterImage.HEIGHT / PosterImage.WIDTH
+        val name = shopName()
+        val phone = BusinessProfile.businessPhone(this)?.trim()
+        val lg = logo
+        thumbsJob = lifecycleScope.launch {
+            for (o in PosterOccasion.values()) {
+                val small = withContext(Dispatchers.Default) {
+                    val title = if (o.title != 0) ctx.getString(o.title) else ctx.getString(R.string.poster_custom)
+                    val message = if (o.message != 0) ctx.getString(o.message) else ""
+                    val (full, _) = PosterImage.draw(ctx, PosterImage.Input(o, title, message, name, phone, null, lg, null,
+                        fields = fields))
+                    Bitmap.createScaledBitmap(full, w, h, true).also { full.recycle() }
+                }
+                // The new picture goes up before the old one is let go.
+                designRow.findViewWithTag<View>(o.key)?.findViewById<ImageView>(R.id.designThumb)?.setImageBitmap(small)
+                thumbs.put(o, small)?.recycle()
+            }
+        }
+    }
+
+    /** Show the cards that belong to this design, and the last line where it has one. */
+    private fun showFieldsFor() {
+        fun show(id: Int, on: Boolean) { findViewById<View>(id).visibility = if (on) View.VISIBLE else View.GONE }
+        show(R.id.fieldsStock, occasion == PosterOccasion.NEW_STOCK)
+        show(R.id.fieldsClosed, occasion == PosterOccasion.CLOSED)
+        show(R.id.fieldsHours, occasion == PosterOccasion.HOURS)
+        show(R.id.fieldsRamazan, occasion == PosterOccasion.RAMAZAN)
+        show(R.id.fieldsEid, occasion == PosterOccasion.EID_FITR)
+        // Closed and Hours print rows chosen above, not a free line.
+        tilMessage.visibility = if (occasion == PosterOccasion.CLOSED || occasion == PosterOccasion.HOURS) View.GONE else View.VISIBLE
+    }
+
+    // ------------------------------------------------------------------ fields
+
+    private fun setFields(f: PosterFields) {
+        fields = f
+        PosterFields.save(this, shopKey, f)
+        render()
+    }
+
+    private fun choiceChip(group: ChipGroup, text: String): Chip {
+        val chip = layoutInflater.inflate(R.layout.item_rate_list_chip, group, false) as Chip
+        chip.id = View.generateViewId()
+        chip.text = text
+        group.addView(chip)
+        return chip
+    }
+
+    private fun buildShowChips() {
+        chipShow.removeAllViews()
+        fun add(text: String, on: Boolean, set: (PosterFields, Boolean) -> PosterFields) {
+            val chip = choiceChip(chipShow, text)
+            chip.isChecked = on
+            chip.setOnCheckedChangeListener { _, checked -> setFields(set(fields, checked)); if (text == getString(R.string.poster_chip_logo)) updateHero() }
+        }
+        if (BusinessProfile.hasLogo(this)) add(getString(R.string.poster_chip_logo), fields.showLogo) { f, v -> f.copy(showLogo = v) }
+        add(getString(R.string.poster_chip_phone), fields.showPhone) { f, v -> f.copy(showPhone = v) }
+        add(getString(R.string.poster_chip_address), fields.showAddress) { f, v -> f.copy(showAddress = v) }
+        add("“" + getString(R.string.made_with_app) + "”", fields.showMark) { f, v -> f.copy(showMark = v) }
+        TextFit.relax(chipShow)
+    }
+
+    private fun buildStockFields() {
+        chipItems.removeAllViews()
+        for (item in fields.items) {
+            val chip = choiceChip(chipItems, item)
+            chip.isCheckable = false
+            chip.isCloseIconVisible = true
+            chip.setOnCloseIconClickListener {
+                setFields(fields.copy(items = fields.items - item))
+                buildStockFields()
+            }
+        }
+        // Suggestions from the shop's trade, in the poster's language.
+        chipSuggest.removeAllViews()
+        for (s in TradeVocab.items(posterContext()).filter { it !in fields.items }.take(8)) {
+            val chip = choiceChip(chipSuggest, "+ $s")
+            chip.isCheckable = false
+            chip.setOnClickListener { addItem(s) }
+        }
+        val full = fields.items.size >= PosterFields.MAX_ITEMS
+        findViewById<View>(R.id.btnAddItem).isEnabled = !full
+        etItem.isEnabled = !full
+        btnPhoto.text = getString(if (fields.usePhoto && photo != null) R.string.poster_remove_photo else R.string.poster_add_photo)
+        TextFit.relax(chipItems)
+        TextFit.relax(chipSuggest)
+        if (findViewById<View>(R.id.btnAddItem).tag == null) {
+            findViewById<View>(R.id.btnAddItem).tag = true
+            findViewById<View>(R.id.btnAddItem).setOnClickListener { addItem(etItem.text?.toString().orEmpty()) }
+            etItem.setOnEditorActionListener { _, action, _ ->
+                if (action == EditorInfo.IME_ACTION_DONE) { addItem(etItem.text?.toString().orEmpty()); true } else false
+            }
+            btnPhoto.setOnClickListener {
+                if (fields.usePhoto && photo != null) {
+                    // Not recycled: a picture being drawn in the background may still hold it.
+                    photo = null
+                    photoFile().delete()
+                    setFields(fields.copy(usePhoto = false))
+                    buildStockFields(); updateHero()
+                } else {
+                    pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
+            }
+        }
+    }
+
+    private fun addItem(text: String) {
+        val t = text.trim()
+        if (t.isEmpty() || t in fields.items || fields.items.size >= PosterFields.MAX_ITEMS) return
+        etItem.setText("")
+        setFields(fields.copy(items = fields.items + t))
+        buildStockFields()
+    }
+
+    private fun buildClosedFields() {
+        chipReasons.removeAllViews()
+        val reasons = PosterFields.Reason.values().map { it.key to PosterWords.reason(this, it.key)!! } +
+            (PosterFields.CUSTOM_REASON to getString(R.string.poster_write_own))
+        for ((key, label) in reasons) {
+            val chip = choiceChip(chipReasons, label)
+            chip.tag = key
+            chip.isChecked = fields.reason == key
+        }
+        chipReasons.setOnCheckedStateChangeListener { g, ids ->
+            val key = ids.firstOrNull()?.let { g.findViewById<Chip>(it)?.tag as? String } ?: ""
+            tilReason.visibility = if (key == PosterFields.CUSTOM_REASON) View.VISIBLE else View.GONE
+            setFields(fields.copy(reason = key))
+        }
+        tilReason.visibility = if (fields.reason == PosterFields.CUSTOM_REASON) View.VISIBLE else View.GONE
+        etReason.setText(fields.reasonText)
+        etReason.doAfterTextChanged { setFields(fields.copy(reasonText = it?.toString().orEmpty())) }
+
+        val dayBtn = findViewById<MaterialButton>(R.id.btnReopenDay)
+        val timeBtn = findViewById<MaterialButton>(R.id.btnReopenTime)
+        fun label() {
+            dayBtn.text = PosterWords.reopenDay(this, fields.reopen) ?: getString(R.string.poster_not_said)
+            timeBtn.text = PosterWords.time(this, fields.reopenAt)
+            timeBtn.isEnabled = fields.reopen.isNotEmpty()
+        }
+        label()
+        dayBtn.setOnClickListener {
+            val keys = PosterFields.Reopen.values().map { it.key } + ""
+            val names = keys.map { PosterWords.reopenDay(this, it) ?: getString(R.string.poster_not_said) }
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.poster_opens_again)
+                .setItems(names.toTypedArray()) { _, i -> setFields(fields.copy(reopen = keys[i])); label() }
+                .show()
+        }
+        timeBtn.setOnClickListener { pickTime(fields.reopenAt) { setFields(fields.copy(reopenAt = it)); label() } }
+        val urgent = findViewById<SwitchMaterial>(R.id.switchUrgent)
+        urgent.isChecked = fields.urgentPhone
+        urgent.setOnCheckedChangeListener { _, on -> setFields(fields.copy(urgentPhone = on)) }
+    }
+
+    private fun buildHoursFields() {
+        val opens = findViewById<MaterialButton>(R.id.btnOpens)
+        val closes = findViewById<MaterialButton>(R.id.btnCloses)
+        val from = findViewById<MaterialButton>(R.id.btnBreakFrom)
+        val to = findViewById<MaterialButton>(R.id.btnBreakTo)
+        val rowBreak = findViewById<View>(R.id.rowBreak)
+        fun label() {
+            opens.text = PosterWords.time(this, fields.opens)
+            closes.text = PosterWords.time(this, fields.closes)
+            from.text = PosterWords.time(this, fields.breakFrom)
+            to.text = PosterWords.time(this, fields.breakTo)
+            rowBreak.visibility = if (fields.prayerBreak) View.VISIBLE else View.GONE
+        }
+        label()
+        opens.setOnClickListener { pickTime(fields.opens) { setFields(fields.copy(opens = it)); label() } }
+        closes.setOnClickListener { pickTime(fields.closes) { setFields(fields.copy(closes = it)); label() } }
+        from.setOnClickListener { pickTime(fields.breakFrom) { setFields(fields.copy(breakFrom = it)); label() } }
+        to.setOnClickListener { pickTime(fields.breakTo) { setFields(fields.copy(breakTo = it)); label() } }
+        val sw = findViewById<SwitchMaterial>(R.id.switchBreak)
+        sw.isChecked = fields.prayerBreak
+        sw.setOnCheckedChangeListener { _, on -> setFields(fields.copy(prayerBreak = on)); label() }
+
+        chipHolidays.removeAllViews()
+        for (d in PosterWords.WEEK) {
+            val chip = choiceChip(chipHolidays, PosterWords.day(this, d, short = true))
+            chip.isChecked = d in fields.holidays
+            chip.setOnCheckedChangeListener { _, on ->
+                // Not every day can be a holiday: one stays open.
+                val next = if (on) fields.holidays + d else fields.holidays - d
+                if (next.size >= 7) { chip.isChecked = false; return@setOnCheckedChangeListener }
+                setFields(fields.copy(holidays = next))
+            }
+        }
+        TextFit.relax(chipHolidays)
+    }
+
+    private fun buildRamazanFields() {
+        val times = findViewById<View>(R.id.ramazanTimes)
+        val dayFrom = findViewById<MaterialButton>(R.id.btnDayFrom)
+        val dayTo = findViewById<MaterialButton>(R.id.btnDayTo)
+        val nightFrom = findViewById<MaterialButton>(R.id.btnNightFrom)
+        val nightTo = findViewById<MaterialButton>(R.id.btnNightTo)
+        fun label() {
+            times.visibility = if (fields.ramazanHours) View.VISIBLE else View.GONE
+            dayFrom.text = PosterWords.time(this, fields.dayFrom)
+            dayTo.text = PosterWords.time(this, fields.dayTo)
+            nightFrom.text = if (fields.afterTaraweeh) getString(R.string.poster_after_taraweeh) else PosterWords.time(this, fields.nightFrom)
+            nightTo.text = PosterWords.time(this, fields.nightTo)
+        }
+        label()
+        val sw = findViewById<SwitchMaterial>(R.id.switchRamazan)
+        sw.isChecked = fields.ramazanHours
+        sw.setOnCheckedChangeListener { _, on -> setFields(fields.copy(ramazanHours = on)); label() }
+        dayFrom.setOnClickListener { pickTime(fields.dayFrom) { setFields(fields.copy(dayFrom = it)); label() } }
+        dayTo.setOnClickListener { pickTime(fields.dayTo) { setFields(fields.copy(dayTo = it)); label() } }
+        nightTo.setOnClickListener { pickTime(fields.nightTo) { setFields(fields.copy(nightTo = it)); label() } }
+        nightFrom.setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setItems(arrayOf(getString(R.string.poster_after_taraweeh), getString(R.string.pick_time))) { _, i ->
+                    if (i == 0) { setFields(fields.copy(afterTaraweeh = true)); label() }
+                    else pickTime(fields.nightFrom) { setFields(fields.copy(afterTaraweeh = false, nightFrom = it)); label() }
+                }
+                .show()
+        }
+    }
+
+    private fun buildEidFields() {
+        val sw = findViewById<SwitchMaterial>(R.id.switchEid)
+        chipEidDays.removeAllViews()
+        for (n in 1..5) {
+            val chip = choiceChip(chipEidDays, n.toString())
+            chip.tag = n
+            chip.isChecked = fields.eidDays == n
+        }
+        chipEidDays.visibility = if (fields.eidDays > 0) View.VISIBLE else View.GONE
+        sw.isChecked = fields.eidDays > 0
+        sw.setOnCheckedChangeListener { _, on ->
+            val days = if (on) 3 else 0
+            setFields(fields.copy(eidDays = days))
+            chipEidDays.visibility = if (on) View.VISIBLE else View.GONE
+            for (i in 0 until chipEidDays.childCount) (chipEidDays.getChildAt(i) as Chip).let { it.isChecked = it.tag == days }
+        }
+        chipEidDays.setOnCheckedStateChangeListener { g, ids ->
+            val n = ids.firstOrNull()?.let { g.findViewById<Chip>(it)?.tag as? Int } ?: return@setOnCheckedStateChangeListener
+            if (fields.eidDays > 0) setFields(fields.copy(eidDays = n))
+        }
+        TextFit.relax(chipEidDays)
+    }
+
+    private fun pickTime(minutes: Int, onPicked: (Int) -> Unit) {
+        android.app.TimePickerDialog(this, { _, h, m -> onPicked(h * 60 + m) },
+            minutes / 60, minutes % 60, DateFormat.is24HourFormat(this)).show()
+    }
+
+    // ------------------------------------------------------------------ photo
+
+    private fun photoFile() = File(File(filesDir, "poster").apply { mkdirs() }, "stock_$shopKey.jpg")
+
+    private fun loadPhoto(): Bitmap? = photoFile().takeIf { it.exists() }?.let { BitmapFactory.decodeFile(it.path) }
+
+    /** Read the chosen picture at no more than 1600 px, upright, and keep a copy for this shop. */
+    private fun takePhoto(uri: Uri) {
+        lifecycleScope.launch {
+            val bmp = withContext(Dispatchers.IO) {
+                try {
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+                    var sample = 1
+                    while (maxOf(bounds.outWidth, bounds.outHeight) / sample > 1600) sample *= 2
+                    val raw = contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
+                    } ?: return@withContext null
+                    val turn = contentResolver.openInputStream(uri)?.use {
+                        when (ExifInterface(it).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+                            ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                            ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                            ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                            else -> 0f
+                        }
+                    } ?: 0f
+                    val upright = if (turn == 0f) raw else Bitmap.createBitmap(raw, 0, 0, raw.width, raw.height,
+                        Matrix().apply { postRotate(turn) }, true).also { if (it !== raw) raw.recycle() }
+                    FileOutputStream(photoFile()).use { upright.compress(Bitmap.CompressFormat.JPEG, 90, it) }
+                    upright
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            if (bmp == null) {
+                Toast.makeText(this@PosterActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            photo = bmp
+            setFields(fields.copy(usePhoto = true))
+            buildStockFields()
+            updateHero()
+        }
+    }
+
+    // ------------------------------------------------------------------ wording
+
+    private fun key(kind: String) = "${kind}${occasion.key}_${lang}_$shopKey"
+    /** Before the poster had its own language (11 Oct) the wording was kept per design only. */
+    private fun oldKey(kind: String) = "${kind}${occasion.key}_$shopKey"
+
+    /** The owner's wording if he changed it, else the design's own in the poster's language. */
     private fun fill() {
         filling = true
-        etTitle.setText(prefs.getString(key(KEY_TITLE), null) ?: occasion.title.takeIf { it != 0 }?.let { getString(it) } ?: "")
-        etMessage.setText(prefs.getString(key(KEY_MSG), null) ?: occasion.message.takeIf { it != 0 }?.let { getString(it) } ?: "")
+        val ctx = posterContext()
+        val appLang = lang == defaultLanguage()
+        fun stored(kind: String) = prefs.getString(key(kind), null) ?: if (appLang) prefs.getString(oldKey(kind), null) else null
+        etTitle.setText(stored(KEY_TITLE) ?: occasion.title.takeIf { it != 0 }?.let { ctx.getString(it) } ?: "")
+        etMessage.setText(stored(KEY_MSG) ?: occasion.message.takeIf { it != 0 }?.let { ctx.getString(it) } ?: "")
+        val rtl = PosterKit.urduScript(Locale.forLanguageTag(lang)) || Locale.forLanguageTag(lang).language in listOf("ar", "fa", "sd")
+        val dir = if (rtl) View.TEXT_DIRECTION_RTL else View.TEXT_DIRECTION_LTR
+        etTitle.textDirection = dir
+        etMessage.textDirection = dir
         filling = false
         render()
     }
@@ -142,29 +619,30 @@ class PosterActivity : BaseActivity() {
     private fun save(kind: String, text: String?, default: Int) {
         val t = text?.trim().orEmpty()
         val e = prefs.edit()
-        if (default != 0 && t == getString(default)) e.remove(key(kind)) else e.putString(key(kind), t)
+        if (default != 0 && t == posterContext().getString(default)) e.remove(key(kind)) else e.putString(key(kind), t)
         e.apply()
     }
+
+    /** The shop's name as this poster prints it: in Urdu script on an Urdu poster, if the owner gave one. */
+    private fun shopName(): String = BusinessProfile.nameFor(this, posterUrdu())?.trim().orEmpty()
+
+    private fun usingPhoto() = occasion == PosterOccasion.NEW_STOCK && fields.usePhoto && photo != null
 
     private fun input() = PosterImage.Input(
         occasion = occasion,
         title = etTitle.text?.toString()?.trim().orEmpty(),
         message = etMessage.text?.toString()?.trim().orEmpty(),
         shopName = shopName(),
-        phone = BusinessProfile.businessPhone(this)?.trim(),
-        address = BusinessProfile.businessAddress(this)?.trim(),
-        logo = shownLogo(),
-        mark = if (markSwitch.isChecked) getString(R.string.made_with_app) else null,
-        heroOverlay = stage != null
+        phone = if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
+        address = if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
+        logo = if (fields.showLogo) logo else null,
+        mark = if (fields.showMark) posterContext().getString(R.string.made_with_app) else null,
+        heroOverlay = stage != null,
+        fields = fields,
+        photo = if (usingPhoto()) photo else null
     )
 
-    /** The shop's name as this language's poster prints it: in Urdu script on an Urdu poster, if the owner gave one. */
-    private fun shopName(): String {
-        val locale = resources.configuration.locales[0]
-        return BusinessProfile.nameFor(this, locale != null && PosterKit.urduScript(locale))?.trim().orEmpty()
-    }
-
-    private fun shownLogo() = if (logoSwitch.isChecked) logo else null
+    // ------------------------------------------------------------------ 3D hero
 
     /** Lay the 3D view over the hero's place on the picture, at the frame's scale. */
     private fun placeHero() {
@@ -179,25 +657,27 @@ class PosterActivity : BaseActivity() {
 
     /**
      * Start, swap or stop the live hero for the chosen design; a phone without
-     * 3D keeps the flat drawing. A hero with a face (the Thank-you seal) is
-     * rebuilt when the logo arrives or is switched, so the seal shows the mark.
+     * 3D keeps the flat drawing, and New stock with the owner's photo shows the
+     * photo instead. The Thank-you seal is rebuilt when its mark changes (the
+     * logo, or the name in the poster's language).
      */
     private fun updateHero() {
-        val hero = PosterDesigns.hero(occasion)?.takeIf { Studio.available(this) }
-        val withLogo = shownLogo() != null
-        val stale = stage != null && (stageHero != hero || (hero?.face != null && stageHadLogo != withLogo))
-        if (stale || (hero == null && stage != null)) {
+        val hero = PosterDesigns.hero(occasion)?.takeIf { !usingPhoto() && Studio.available(this) }
+        val markLogo = if (fields.showLogo) logo else null
+        val wantKey = hero?.let { "${it.name}|${if (it.face != null) "${shopName()}|${markLogo != null}" else ""}" }
+        if (stage != null && stageKey != wantKey) {
             stage?.destroy()
             stage = null
             stageHero = null
+            stageKey = null
         }
         if (hero != null && stage == null) {
             stage = try {
-                val face = hero.face?.let { SealFace.draw(this, shopName(), shownLogo()) }
+                val face = hero.face?.let { SealFace.draw(this, shopName(), markLogo) }
                 HeroStage(this, hero, face = face).also {
                     face?.recycle()
                     stageHero = hero
-                    stageHadLogo = withLogo
+                    stageKey = wantKey
                     if (isStarted) it.attach(heroView)
                 }
             } catch (e: Exception) {
@@ -206,17 +686,19 @@ class PosterActivity : BaseActivity() {
         }
         heroView.visibility = if (stage != null) View.VISIBLE else View.GONE
         placeHero()
+        render()
     }
 
-    private var isStarted = false
+    // ------------------------------------------------------------------ picture
 
     /** Redraw after the owner stops typing; the old picture is let go only once the new one is up. */
     private fun render() {
         renderJob?.cancel()
         val inp = input()
+        val ctx = posterContext()
         renderJob = lifecycleScope.launch {
             delay(150)
-            val (bmp, fit) = withContext(Dispatchers.Default) { PosterImage.draw(this@PosterActivity, inp) }
+            val (bmp, fit) = withContext(Dispatchers.Default) { PosterImage.draw(ctx, inp) }
             val old = shown
             preview.setImageBitmap(bmp)
             motionView.show(fit.motion)
@@ -225,8 +707,9 @@ class PosterActivity : BaseActivity() {
         }
     }
 
-    private fun sharePoster() {
-        share.isEnabled = false
+    private fun sharePoster(toWhatsApp: Boolean) {
+        btnStatus.isEnabled = false
+        btnShare.isEnabled = false
         lifecycleScope.launch {
             // The shared picture carries the hero itself, drawn still off-screen at full size.
             val hero = stage?.let { st ->
@@ -238,11 +721,12 @@ class PosterActivity : BaseActivity() {
                 }
             }
             val inp = input().copy(hero = hero, heroOverlay = false)
+            val ctx = posterContext()
             val file = withContext(Dispatchers.Default) {
                 try {
                     val dir = File(cacheDir, "posters").apply { mkdirs() }
                     val f = File(dir, "poster.png")
-                    val bmp = PosterImage.draw(this@PosterActivity, inp).first
+                    val bmp = PosterImage.draw(ctx, inp).first
                     FileOutputStream(f).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
                     bmp.recycle()
                     hero?.recycle()
@@ -251,18 +735,31 @@ class PosterActivity : BaseActivity() {
                     null
                 }
             }
-            share.isEnabled = true
+            btnStatus.isEnabled = true
+            btnShare.isEnabled = true
             if (file == null) {
                 Toast.makeText(this@PosterActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
                 return@launch
             }
             try {
                 val uri = FileProvider.getUriForFile(this@PosterActivity, "$packageName.fileprovider", file)
-                startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                val send = Intent(Intent.ACTION_SEND).apply {
                     type = "image/png"
                     putExtra(Intent.EXTRA_STREAM, uri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }, getString(R.string.share)))
+                }
+                // WhatsApp, or WhatsApp Business; its share screen offers "My status" first.
+                val whatsapp = if (toWhatsApp) WHATSAPP.firstOrNull { pkg ->
+                    send.setPackage(pkg)
+                    val found = send.resolveActivity(packageManager) != null
+                    send.setPackage(null)
+                    found
+                } else null
+                if (toWhatsApp && whatsapp == null) {
+                    Toast.makeText(this@PosterActivity, R.string.poster_whatsapp_missing, Toast.LENGTH_LONG).show()
+                }
+                if (whatsapp != null) startActivity(send.setPackage(whatsapp))
+                else startActivity(Intent.createChooser(send, getString(R.string.share)))
             } catch (e: Exception) {
                 Toast.makeText(this@PosterActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
             }
@@ -284,18 +781,33 @@ class PosterActivity : BaseActivity() {
     override fun onDestroy() {
         stage?.destroy()
         stage = null
+        thumbsJob?.cancel()
         super.onDestroy()
         preview.setImageDrawable(null)
         shown?.recycle()
         shown = null
+        for (i in 0 until designRow.childCount) designRow.getChildAt(i).findViewById<ImageView>(R.id.designThumb)?.setImageDrawable(null)
+        thumbs.values.forEach { it.recycle() }
+        thumbs.clear()
+        photo = null
     }
 
     companion object {
         private const val PREFS = "poster"
         private const val KEY_OCCASION = "occasion"
-        private const val KEY_MARK = "mark"
-        private const val KEY_LOGO = "logo"
+        private const val KEY_LANG = "lang_"
         private const val KEY_TITLE = "title_"
         private const val KEY_MSG = "msg_"
+
+        private val WHATSAPP = listOf("com.whatsapp", "com.whatsapp.w4b")
+
+        /** The languages a poster speaks, the app's own nine. */
+        val LANGS = listOf("ur", "en", "ur-Latn", "sd", "ar", "fa", "hi", "bn", "in")
+
+        /** Each language by its own name. */
+        private val NAMES = mapOf(
+            "ur" to "اردو", "en" to "English", "ur-Latn" to "Roman Urdu", "sd" to "سنڌي", "ar" to "العربية",
+            "fa" to "فارسی", "hi" to "हिन्दी", "bn" to "বাংলা", "in" to "Bahasa Indonesia"
+        )
     }
 }
