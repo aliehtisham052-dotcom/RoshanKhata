@@ -105,7 +105,7 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
             .build(engine, sun)
         if (look.sun) scene.addEntity(sun)
         if (look.model) scene.addEntities(asset.entities)
-        view.isShadowingEnabled = look.shadows
+        view.setShadowingEnabled(look.shadows)
         view.setScene(scene)
         view.setCamera(camera)
         view.setBlendMode(if (look.translucent) View.BlendMode.TRANSLUCENT else View.BlendMode.OPAQUE)
