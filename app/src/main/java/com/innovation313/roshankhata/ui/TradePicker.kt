@@ -18,7 +18,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.OtherTrade
 import com.innovation313.roshankhata.data.Trade
+import com.innovation313.roshankhata.data.TradeVocab
 
 /**
  * "What does your shop sell?" - the one place the trade is chosen (9 Oct).
@@ -100,11 +102,26 @@ object TradePicker {
 
         var chosen: Trade? = current
         go.isEnabled = chosen != null
-        val adapter = Cards(Trade.entries, chosen) { picked ->
-            chosen = picked
-            go.isEnabled = true
+        // Other's words while the page is open: the owner's saved ones when
+        // he is changing an Other shop, else none until he writes them.
+        var otherWords: OtherTrade.Words? = if (current == Trade.OTHER)
+            OtherTrade.Words(OtherTrade.name(activity), OtherTrade.items(activity)) else null
+        lateinit var adapter: Cards
+        adapter = Cards(Trade.entries, chosen, { otherWords }) { picked ->
+            if (picked == Trade.OTHER) {
+                askOther(activity, otherWords) { words ->
+                    otherWords = words
+                    chosen = Trade.OTHER
+                    adapter.choose(Trade.OTHER)
+                    go.isEnabled = true
+                }
+            } else {
+                chosen = picked
+                adapter.choose(picked)
+                go.isEnabled = true
+            }
         }
-        root.findViewById<RecyclerView>(R.id.rvTrades).apply {
+        val list = root.findViewById<RecyclerView>(R.id.rvTrades).apply {
             layoutManager = GridLayoutManager(activity, 2)
             this.adapter = adapter
             itemAnimator = null
@@ -112,8 +129,28 @@ object TradePicker {
             current?.let { scrollToPosition(Trade.entries.indexOf(it)) }
         }
 
+        // Search (11 Oct): a few letters of the trade's name, its examples or
+        // its English name. Other is always kept, last, for a shop not found.
+        val noMatch = root.findViewById<TextView>(R.id.tvTradeNoMatch)
+        root.findViewById<android.widget.EditText>(R.id.etTradeSearch)?.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun afterTextChanged(e: android.text.Editable?) {
+                val q = e?.toString()?.trim()?.lowercase().orEmpty()
+                val shown = if (q.isEmpty()) Trade.entries else {
+                    val hits = Trade.entries.filter { it != Trade.OTHER && matches(activity, it, q) }
+                    hits + Trade.OTHER
+                }
+                adapter.submit(shown)
+                noMatch.visibility = if (q.isNotEmpty() && shown.size == 1) View.VISIBLE else View.GONE
+                list.scrollToPosition(0)
+            }
+        })
+
         go.setOnClickListener {
             val picked = chosen ?: return@setOnClickListener
+            // The words go with the trade: setTrade / setTradeOf store them.
+            if (picked == Trade.OTHER) OtherTrade.pending = otherWords ?: OtherTrade.Words(null, emptyList())
             onPicked(picked)
         }
 
@@ -161,11 +198,58 @@ object TradePicker {
         ViewCompat.requestApplyInsets(root)
     }
 
+    /** Whether [q] is in the trade's name, label, example line, example goods or English name. */
+    private fun matches(activity: Activity, trade: Trade, q: String): Boolean {
+        val words = listOf(
+            activity.getString(trade.nameRes), activity.getString(trade.labelRes),
+            activity.getString(trade.exampleRes), trade.name
+        ) + TradeVocab.items(activity, trade) + TradeVocab.types(activity, trade)
+        return words.any { it.lowercase().contains(q) }
+    }
+
+    /**
+     * Other's two questions (11 Oct): what the shop is, and up to three things
+     * it sells. OK hands them back; Cancel leaves the choice as it was.
+     */
+    private fun askOther(activity: Activity, now: OtherTrade.Words?, onDone: (OtherTrade.Words) -> Unit) {
+        val view = LayoutInflater.from(activity).inflate(R.layout.dialog_other_trade, null)
+        val etName = view.findViewById<android.widget.EditText>(R.id.etOtherName)
+        val etItems = view.findViewById<android.widget.EditText>(R.id.etOtherItems)
+        now?.name?.let { etName.setText(it) }
+        now?.items?.takeIf { it.isNotEmpty() }?.let { etItems.setText(it.joinToString(", ")) }
+        TextFit.relax(view)
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.trade_other_title)
+            .setView(view)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.save) { _, _ ->
+                onDone(OtherTrade.Words(etName.text.toString().trim().ifEmpty { null }, OtherTrade.split(etItems.text.toString())))
+            }
+            .show()
+        etName.requestFocus()
+    }
+
     private class Cards(
-        private val trades: List<Trade>,
+        private var trades: List<Trade>,
         private var chosen: Trade?,
+        /** Other's words as written so far on this page, for its card. */
+        private val other: () -> OtherTrade.Words?,
         private val onChoose: (Trade) -> Unit
     ) : RecyclerView.Adapter<Cards.Holder>() {
+
+        @android.annotation.SuppressLint("NotifyDataSetChanged")
+        fun submit(list: List<Trade>) {
+            trades = list
+            notifyDataSetChanged()
+        }
+
+        /** Mark [trade] chosen (Other only once its words are written). */
+        fun choose(trade: Trade) {
+            val was = chosen
+            chosen = trade
+            was?.let { i -> trades.indexOf(i).takeIf { it >= 0 }?.let { notifyItemChanged(it) } }
+            trades.indexOf(trade).takeIf { it >= 0 }?.let { notifyItemChanged(it) }
+        }
 
         class Holder(view: View) : RecyclerView.ViewHolder(view) {
             val card: View = view.findViewById(R.id.tradeCard)
@@ -189,25 +273,26 @@ object TradePicker {
             holder.icon.setImageResource(trade.iconRes)
             holder.icon.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, trade.chipRes))
             holder.icon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, trade.inkRes))
-            holder.name.setText(trade.nameRes)
-            holder.example.setText(trade.exampleRes)
+            // Other wears the owner's own words once written (11 Oct).
+            val words = if (trade == Trade.OTHER) other() else null
+            val name = words?.name ?: ctx.getString(trade.nameRes)
+            val example = words?.items?.takeIf { it.isNotEmpty() }?.joinToString(" \u00b7 ") ?: ctx.getString(trade.exampleRes)
+            holder.name.text = name
+            holder.example.text = example
 
             val on = trade == chosen
             holder.card.isSelected = on
             holder.check.visibility = if (on) View.VISIBLE else View.GONE
             // Read as one control: "Dairy, Milk · yogurt, selected".
-            holder.card.contentDescription = ctx.getString(trade.nameRes) + ", " + ctx.getString(trade.exampleRes)
+            holder.card.contentDescription = "$name, $example"
             ViewCompat.setStateDescription(
                 holder.card,
                 if (on) ctx.getString(R.string.trade_card_selected) else null
             )
 
             holder.card.setOnClickListener {
-                val was = chosen
-                if (was == trade) return@setOnClickListener
-                chosen = trade
-                was?.let { notifyItemChanged(trades.indexOf(it)) }
-                notifyItemChanged(holder.bindingAdapterPosition)
+                // Other opens its questions even when chosen, so its words can be changed.
+                if (chosen == trade && trade != Trade.OTHER) return@setOnClickListener
                 onChoose(trade)
             }
         }

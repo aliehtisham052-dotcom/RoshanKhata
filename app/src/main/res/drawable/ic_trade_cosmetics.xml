@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A gem: cosmetics and jewellery. (11 Oct) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="@android:color/white" android:fillType="evenOdd"
+        android:pathData="M6,3h12l4,6 -10,12L2,9zM6.8,9.6L12,16.3 17.2,9.6zM8.7,5L7,8h4.1l0.9,-3zM15.3,5h-2.4l0.9,3H17z"/>
+</vector>

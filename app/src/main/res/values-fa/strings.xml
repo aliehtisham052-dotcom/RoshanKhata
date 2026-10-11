@@ -2397,4 +2397,322 @@
     <string name="shop_name_field">نام فروشگاه</string>
     <string name="shop_name_hint">فروشگاه نور</string>
     <string name="shop_phone_field">تلفن فروشگاه (اختیاری)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">پوشاک و پارچه</string>
+    <string name="trade_name_clothing">پوشاک</string>
+    <string name="trade_eg_clothing">پارچه · کت‌وشلوار · آماده</string>
+    <string-array name="vocab_clothing_items">
+        <item>پارچه</item>
+        <item>پیراهن</item>
+        <item>کت‌وشلوار</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>پارچه</item>
+        <item>آماده</item>
+        <item>بچگانه</item>
+        <item>لوازم جانبی</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>پارچه نخی</item>
+        <item>پارچه لان</item>
+        <item>پیراهن</item>
+        <item>شلوار</item>
+        <item>کت‌وشلوار</item>
+        <item>روسری</item>
+        <item>لباس بچگانه</item>
+        <item>لباس زیر</item>
+    </string-array>
+    <string name="trade_footwear">کفش (کفش، صندل)</string>
+    <string name="trade_name_footwear">کفش</string>
+    <string name="trade_eg_footwear">کفش · صندل · دمپایی</string>
+    <string-array name="vocab_footwear_items">
+        <item>کفش</item>
+        <item>صندل</item>
+        <item>دمپایی</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>مردانه</item>
+        <item>زنانه</item>
+        <item>بچگانه</item>
+        <item>ورزشی</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>کفش مردانه</item>
+        <item>کفش زنانه</item>
+        <item>کفش بچگانه</item>
+        <item>صندل</item>
+        <item>دمپایی</item>
+        <item>کتانی</item>
+        <item>کفش مدرسه</item>
+        <item>جوراب</item>
+    </string-array>
+    <string name="trade_electronics">الکترونیک و لوازم خانگی</string>
+    <string name="trade_name_electronics">الکترونیک</string>
+    <string name="trade_eg_electronics">پنکه · لامپ · لوازم</string>
+    <string-array name="vocab_electronics_items">
+        <item>پنکه</item>
+        <item>لامپ LED</item>
+        <item>اتو</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>لوازم</item>
+        <item>روشنایی</item>
+        <item>جانبی</item>
+        <item>تعمیر</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>پنکه سقفی</item>
+        <item>لامپ LED</item>
+        <item>اتو</item>
+        <item>سه‌راهی برق</item>
+        <item>شارژر</item>
+        <item>پمپ آب</item>
+        <item>ماشین لباسشویی</item>
+        <item>تعمیر</item>
+    </string-array>
+    <string name="trade_restaurant">رستوران، هتل و غذاخوری</string>
+    <string name="trade_name_restaurant">رستوران</string>
+    <string name="trade_eg_restaurant">غذا · چای · پذیرایی</string>
+    <string-array name="vocab_restaurant_items">
+        <item>چای</item>
+        <item>برنج</item>
+        <item>نان</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>غذا</item>
+        <item>نوشیدنی</item>
+        <item>میان‌وعده</item>
+        <item>پذیرایی</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>چای</item>
+        <item>نان</item>
+        <item>برنج</item>
+        <item>عدس</item>
+        <item>مرغ</item>
+        <item>نوشابه</item>
+        <item>بطری آب</item>
+        <item>بیرون‌بر</item>
+    </string-array>
+    <string name="trade_bakery">نانوایی و شیرینی</string>
+    <string name="trade_name_bakery">شیرینی‌فروشی</string>
+    <string name="trade_eg_bakery">نان · کیک · شیرینی</string>
+    <string-array name="vocab_bakery_items">
+        <item>نان</item>
+        <item>کیک</item>
+        <item>شیرینی</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>نان</item>
+        <item>شیرینی</item>
+        <item>میان‌وعده</item>
+        <item>نوشیدنی</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>نان</item>
+        <item>سوخاری</item>
+        <item>کیک</item>
+        <item>بیسکویت</item>
+        <item>شیرینی</item>
+        <item>سمبوسه</item>
+        <item>تخم‌مرغ</item>
+        <item>پاکت شیر</item>
+    </string-array>
+    <string name="trade_meat">گوشت و مرغ</string>
+    <string name="trade_name_meat">گوشت</string>
+    <string name="trade_eg_meat">مرغ · گوسفند · گاو</string>
+    <string-array name="vocab_meat_items">
+        <item>مرغ</item>
+        <item>گوشت گوسفند</item>
+        <item>گوشت گاو</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>مرغ</item>
+        <item>گوسفند</item>
+        <item>گاو</item>
+        <item>ماهی</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>مرغ</item>
+        <item>مرغ بی‌استخوان</item>
+        <item>گوشت گوسفند</item>
+        <item>گوشت گاو</item>
+        <item>چرخ‌کرده</item>
+        <item>ماهی</item>
+        <item>تخم‌مرغ</item>
+        <item>جگر</item>
+    </string-array>
+    <string name="trade_produce">میوه و سبزی</string>
+    <string name="trade_name_produce">میوه و سبزی</string>
+    <string name="trade_eg_produce">میوه · سبزی · تازه</string>
+    <string-array name="vocab_produce_items">
+        <item>سیب‌زمینی</item>
+        <item>پیاز</item>
+        <item>سیب</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>سبزی</item>
+        <item>میوه</item>
+        <item>سبزی معطر</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>سیب‌زمینی</item>
+        <item>پیاز</item>
+        <item>گوجه</item>
+        <item>سیر</item>
+        <item>زنجبیل</item>
+        <item>سیب</item>
+        <item>موز</item>
+        <item>پرتقال</item>
+    </string-array>
+    <string name="trade_stationery">لوازم‌التحریر و کتاب</string>
+    <string name="trade_name_stationery">لوازم‌التحریر</string>
+    <string name="trade_eg_stationery">دفتر · کتاب · خودکار</string>
+    <string-array name="vocab_stationery_items">
+        <item>دفتر</item>
+        <item>خودکار</item>
+        <item>کتاب</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>لوازم‌التحریر</item>
+        <item>کتاب</item>
+        <item>چاپ</item>
+        <item>هدیه</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>دفتر</item>
+        <item>دفتر ثبت</item>
+        <item>خودکار</item>
+        <item>مداد</item>
+        <item>پاک‌کن</item>
+        <item>کتاب</item>
+        <item>کپی</item>
+        <item>جعبه هندسه</item>
+    </string-array>
+    <string name="trade_cosmetics">آرایشی و زیورآلات</string>
+    <string name="trade_name_cosmetics">آرایشی</string>
+    <string name="trade_eg_cosmetics">آرایش · زیور · عطر</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>کرم</item>
+        <item>رژ لب</item>
+        <item>النگو</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>آرایشی</item>
+        <item>زیورآلات</item>
+        <item>عطر</item>
+        <item>هدیه</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>کرم صورت</item>
+        <item>رژ لب</item>
+        <item>لاک ناخن</item>
+        <item>النگو</item>
+        <item>گوشواره</item>
+        <item>عطر</item>
+        <item>شامپو</item>
+        <item>روغن مو</item>
+    </string-array>
+    <string name="trade_building">مصالح ساختمانی (سیمان، میلگرد، آجر)</string>
+    <string name="trade_name_building">مصالح ساختمانی</string>
+    <string name="trade_eg_building">سیمان · میلگرد · آجر</string>
+    <string-array name="vocab_building_items">
+        <item>سیمان</item>
+        <item>میلگرد</item>
+        <item>آجر</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>سیمان</item>
+        <item>میلگرد</item>
+        <item>آجر</item>
+        <item>شن و ماسه</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>سیمان</item>
+        <item>میلگرد</item>
+        <item>آجر</item>
+        <item>ماسه</item>
+        <item>شن</item>
+        <item>کاشی</item>
+        <item>رنگ</item>
+        <item>لوله</item>
+    </string-array>
+    <string name="trade_fuel">گاز و سوخت (گاز مایع، بنزین)</string>
+    <string name="trade_name_fuel">گاز و سوخت</string>
+    <string name="trade_eg_fuel">گاز مایع · بنزین · گازوئیل</string>
+    <string-array name="vocab_fuel_items">
+        <item>گاز مایع</item>
+        <item>بنزین</item>
+        <item>گازوئیل</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>گاز</item>
+        <item>سوخت</item>
+        <item>روغن</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>کپسول گاز</item>
+        <item>شارژ گاز</item>
+        <item>بنزین</item>
+        <item>گازوئیل</item>
+        <item>روغن موتور</item>
+        <item>نفت سفید</item>
+        <item>رگولاتور</item>
+        <item>شلنگ گاز</item>
+    </string-array>
+    <string name="trade_wholesale">عمده‌فروشی و پخش</string>
+    <string name="trade_name_wholesale">عمده‌فروشی</string>
+    <string name="trade_eg_wholesale">عمده · کارتن · پخش</string>
+    <string-array name="vocab_wholesale_items">
+        <item>کارتن</item>
+        <item>کیسه</item>
+        <item>بسته</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>عمده</item>
+        <item>بسته‌بندی</item>
+        <item>پخش</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>کارتن</item>
+        <item>کیسه</item>
+        <item>جعبه</item>
+        <item>بسته</item>
+        <item>بسته دوجین</item>
+        <item>تحویل</item>
+        <item>کرایه</item>
+        <item>مرجوعی</item>
+    </string-array>
+    <string name="trade_other">سایر (خودتان بنویسید)</string>
+    <string name="trade_name_other">سایر</string>
+    <string name="trade_eg_other">نوع فروشگاه را بنویسید</string>
+    <string-array name="vocab_other_items">
+        <item>کالا</item>
+        <item>محصول</item>
+        <item>خدمت</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>کالا</item>
+        <item>خدمت</item>
+        <item>سایر</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>کالا</item>
+        <item>محصول</item>
+        <item>خدمت</item>
+        <item>تحویل</item>
+        <item>تعمیر</item>
+        <item>بسته</item>
+        <item>جعبه</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">جستجو: پوشاک، نانوایی، گاز…</string>
+    <string name="trade_search_none">در فهرست نیست؟ سایر را بزنید و خودتان بنویسید.</string>
+    <string name="trade_other_title">نوع فروشگاه شما</string>
+    <string name="trade_other_explain">بنویسید فروشگاهتان چیست و سه چیزی که می‌فروشید. همین‌ها هر جا کالا اضافه می‌کنید مثال و پیشنهاد اول می‌شوند.</string>
+    <string name="trade_other_name_label">نوع فروشگاه</string>
+    <string name="trade_other_name_hint">گل‌فروشی</string>
+    <string name="trade_other_items_label">سه چیزی که می‌فروشید (اختیاری)</string>
+    <string name="trade_other_items_hint">رز، گلبند، دسته‌گل</string>
 </resources>

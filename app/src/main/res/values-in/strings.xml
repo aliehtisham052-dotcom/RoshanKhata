@@ -2369,4 +2369,322 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="shop_name_field">Nama toko</string>
     <string name="shop_name_hint">Toko Makmur</string>
     <string name="shop_phone_field">Telepon toko (opsional)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">Pakaian dan garmen</string>
+    <string name="trade_name_clothing">Pakaian</string>
+    <string name="trade_eg_clothing">Kain · setelan · siap pakai</string>
+    <string-array name="vocab_clothing_items">
+        <item>Kain</item>
+        <item>Kemeja</item>
+        <item>Setelan</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>Kain</item>
+        <item>Siap pakai</item>
+        <item>Anak</item>
+        <item>Aksesori</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>Kain katun</item>
+        <item>Kain lawn</item>
+        <item>Kemeja</item>
+        <item>Celana</item>
+        <item>Setelan</item>
+        <item>Kerudung</item>
+        <item>Baju anak</item>
+        <item>Pakaian dalam</item>
+    </string-array>
+    <string name="trade_footwear">Alas kaki (sepatu, sandal)</string>
+    <string name="trade_name_footwear">Alas kaki</string>
+    <string name="trade_eg_footwear">Sepatu · sandal · sendal jepit</string>
+    <string-array name="vocab_footwear_items">
+        <item>Sepatu</item>
+        <item>Sandal</item>
+        <item>Sendal jepit</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>Pria</item>
+        <item>Wanita</item>
+        <item>Anak</item>
+        <item>Olahraga</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>Sepatu pria</item>
+        <item>Sepatu wanita</item>
+        <item>Sepatu anak</item>
+        <item>Sandal</item>
+        <item>Sendal jepit</item>
+        <item>Sepatu lari</item>
+        <item>Sepatu sekolah</item>
+        <item>Kaus kaki</item>
+    </string-array>
+    <string name="trade_electronics">Elektronik dan peralatan rumah</string>
+    <string name="trade_name_electronics">Elektronik</string>
+    <string name="trade_eg_electronics">Kipas · lampu · peralatan</string>
+    <string-array name="vocab_electronics_items">
+        <item>Kipas</item>
+        <item>Lampu LED</item>
+        <item>Setrika</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>Peralatan</item>
+        <item>Penerangan</item>
+        <item>Aksesori</item>
+        <item>Servis</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>Kipas angin</item>
+        <item>Lampu LED</item>
+        <item>Setrika</item>
+        <item>Kabel roll</item>
+        <item>Charger</item>
+        <item>Pompa air</item>
+        <item>Mesin cuci</item>
+        <item>Servis</item>
+    </string-array>
+    <string name="trade_restaurant">Restoran, hotel dan warung</string>
+    <string name="trade_name_restaurant">Restoran</string>
+    <string name="trade_eg_restaurant">Makanan · teh · katering</string>
+    <string-array name="vocab_restaurant_items">
+        <item>Teh</item>
+        <item>Biryani</item>
+        <item>Roti</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>Makanan</item>
+        <item>Minuman</item>
+        <item>Camilan</item>
+        <item>Katering</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>Teh</item>
+        <item>Roti</item>
+        <item>Biryani</item>
+        <item>Dal</item>
+        <item>Ayam karahi</item>
+        <item>Minuman dingin</item>
+        <item>Air mineral</item>
+        <item>Bungkus</item>
+    </string-array>
+    <string name="trade_bakery">Toko roti dan kue</string>
+    <string name="trade_name_bakery">Toko roti</string>
+    <string name="trade_eg_bakery">Roti · kue · manisan</string>
+    <string-array name="vocab_bakery_items">
+        <item>Roti</item>
+        <item>Kue</item>
+        <item>Manisan</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>Roti</item>
+        <item>Manisan</item>
+        <item>Camilan</item>
+        <item>Minuman</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>Roti</item>
+        <item>Roti kering</item>
+        <item>Kue</item>
+        <item>Biskuit</item>
+        <item>Manisan</item>
+        <item>Samosa</item>
+        <item>Telur</item>
+        <item>Susu kotak</item>
+    </string-array>
+    <string name="trade_meat">Daging dan unggas</string>
+    <string name="trade_name_meat">Daging</string>
+    <string name="trade_eg_meat">Ayam · kambing · sapi</string>
+    <string-array name="vocab_meat_items">
+        <item>Ayam</item>
+        <item>Daging kambing</item>
+        <item>Daging sapi</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>Ayam</item>
+        <item>Kambing</item>
+        <item>Sapi</item>
+        <item>Ikan</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>Ayam</item>
+        <item>Ayam fillet</item>
+        <item>Daging kambing</item>
+        <item>Daging sapi</item>
+        <item>Daging giling</item>
+        <item>Ikan</item>
+        <item>Telur</item>
+        <item>Hati</item>
+    </string-array>
+    <string name="trade_produce">Buah dan sayur</string>
+    <string name="trade_name_produce">Buah sayur</string>
+    <string name="trade_eg_produce">Buah · sayur · segar</string>
+    <string-array name="vocab_produce_items">
+        <item>Kentang</item>
+        <item>Bawang</item>
+        <item>Apel</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>Sayur</item>
+        <item>Buah</item>
+        <item>Daun</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>Kentang</item>
+        <item>Bawang merah</item>
+        <item>Tomat</item>
+        <item>Bawang putih</item>
+        <item>Jahe</item>
+        <item>Apel</item>
+        <item>Pisang</item>
+        <item>Jeruk</item>
+    </string-array>
+    <string name="trade_stationery">Alat tulis dan buku</string>
+    <string name="trade_name_stationery">Alat tulis</string>
+    <string name="trade_eg_stationery">Buku tulis · buku · pena</string>
+    <string-array name="vocab_stationery_items">
+        <item>Buku tulis</item>
+        <item>Pena</item>
+        <item>Buku</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>Alat tulis</item>
+        <item>Buku</item>
+        <item>Cetak</item>
+        <item>Hadiah</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>Buku tulis</item>
+        <item>Buku besar</item>
+        <item>Pena</item>
+        <item>Pensil</item>
+        <item>Penghapus</item>
+        <item>Buku</item>
+        <item>Fotokopi</item>
+        <item>Kotak geometri</item>
+    </string-array>
+    <string name="trade_cosmetics">Kosmetik dan perhiasan</string>
+    <string name="trade_name_cosmetics">Kosmetik</string>
+    <string name="trade_eg_cosmetics">Rias · perhiasan · parfum</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>Krim</item>
+        <item>Lipstik</item>
+        <item>Gelang</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>Kosmetik</item>
+        <item>Perhiasan</item>
+        <item>Parfum</item>
+        <item>Hadiah</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>Krim wajah</item>
+        <item>Lipstik</item>
+        <item>Cat kuku</item>
+        <item>Gelang</item>
+        <item>Anting</item>
+        <item>Parfum</item>
+        <item>Sampo</item>
+        <item>Minyak rambut</item>
+    </string-array>
+    <string name="trade_building">Bahan bangunan (semen, besi, bata)</string>
+    <string name="trade_name_building">Bahan bangunan</string>
+    <string name="trade_eg_building">Semen · besi · bata</string>
+    <string-array name="vocab_building_items">
+        <item>Semen</item>
+        <item>Besi beton</item>
+        <item>Bata</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>Semen</item>
+        <item>Besi</item>
+        <item>Bata</item>
+        <item>Pasir dan kerikil</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>Semen</item>
+        <item>Besi beton</item>
+        <item>Bata</item>
+        <item>Pasir</item>
+        <item>Kerikil</item>
+        <item>Keramik</item>
+        <item>Cat</item>
+        <item>Pipa</item>
+    </string-array>
+    <string name="trade_fuel">Gas dan bahan bakar (LPG, bensin)</string>
+    <string name="trade_name_fuel">Gas dan BBM</string>
+    <string name="trade_eg_fuel">LPG · bensin · solar</string>
+    <string-array name="vocab_fuel_items">
+        <item>LPG</item>
+        <item>Bensin</item>
+        <item>Solar</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>Gas</item>
+        <item>BBM</item>
+        <item>Oli</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>Tabung LPG</item>
+        <item>Isi ulang gas</item>
+        <item>Bensin</item>
+        <item>Solar</item>
+        <item>Oli mesin</item>
+        <item>Minyak tanah</item>
+        <item>Regulator</item>
+        <item>Selang gas</item>
+    </string-array>
+    <string name="trade_wholesale">Grosir dan distribusi</string>
+    <string name="trade_name_wholesale">Grosir</string>
+    <string name="trade_eg_wholesale">Grosir · karton · pasokan</string>
+    <string-array name="vocab_wholesale_items">
+        <item>Karton</item>
+        <item>Karung</item>
+        <item>Bungkus</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>Grosir</item>
+        <item>Kemasan</item>
+        <item>Pasokan</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>Karton</item>
+        <item>Karung</item>
+        <item>Kotak</item>
+        <item>Bungkus</item>
+        <item>Paket lusin</item>
+        <item>Antar</item>
+        <item>Ongkos kirim</item>
+        <item>Retur</item>
+    </string-array>
+    <string name="trade_other">Lainnya (tulis sendiri)</string>
+    <string name="trade_name_other">Lainnya</string>
+    <string name="trade_eg_other">Tulis jenis toko Anda</string>
+    <string-array name="vocab_other_items">
+        <item>Barang</item>
+        <item>Produk</item>
+        <item>Jasa</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>Barang</item>
+        <item>Jasa</item>
+        <item>Lainnya</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>Barang</item>
+        <item>Produk</item>
+        <item>Jasa</item>
+        <item>Antar</item>
+        <item>Servis</item>
+        <item>Bungkus</item>
+        <item>Kotak</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">Cari: pakaian, roti, gas…</string>
+    <string name="trade_search_none">Tidak ada di daftar? Pilih Lainnya dan tulis sendiri.</string>
+    <string name="trade_other_title">Jenis toko Anda</string>
+    <string name="trade_other_explain">Tulis toko Anda apa, dan tiga barang yang Anda jual. Itu menjadi contoh dan saran pertama di mana pun Anda menambah barang.</string>
+    <string name="trade_other_name_label">Jenis toko</string>
+    <string name="trade_other_name_hint">Toko bunga</string>
+    <string name="trade_other_items_label">Tiga barang yang Anda jual (opsional)</string>
+    <string name="trade_other_items_hint">Mawar, kalung bunga, buket</string>
 </resources>

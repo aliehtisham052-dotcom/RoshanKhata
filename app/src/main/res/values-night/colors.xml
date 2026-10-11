@@ -129,6 +129,33 @@
     <color name="trade_solar_fg">#F0CF6E</color>
     <color name="trade_general_bg">#25301F</color>
     <color name="trade_general_fg">#B3D49C</color>
+    <!-- The twelve trades added 11 Oct, and Other. -->
+    <color name="trade_clothing_bg">#3A2430</color>
+    <color name="trade_clothing_fg">#F0A9C6</color>
+    <color name="trade_footwear_bg">#33291F</color>
+    <color name="trade_footwear_fg">#D9B48F</color>
+    <color name="trade_electronics_bg">#1E2A3A</color>
+    <color name="trade_electronics_fg">#9CC0EA</color>
+    <color name="trade_restaurant_bg">#3B2318</color>
+    <color name="trade_restaurant_fg">#F2A988</color>
+    <color name="trade_bakery_bg">#382818</color>
+    <color name="trade_bakery_fg">#EDBB84</color>
+    <color name="trade_meat_bg">#3A2222</color>
+    <color name="trade_meat_fg">#F0A3A3</color>
+    <color name="trade_produce_bg">#24321E</color>
+    <color name="trade_produce_fg">#A9D58E</color>
+    <color name="trade_stationery_bg">#232A3D</color>
+    <color name="trade_stationery_fg">#AFC0EE</color>
+    <color name="trade_cosmetics_bg">#352235</color>
+    <color name="trade_cosmetics_fg">#E6A9E0</color>
+    <color name="trade_building_bg">#2E2A26</color>
+    <color name="trade_building_fg">#D3C7BB</color>
+    <color name="trade_fuel_bg">#36291A</color>
+    <color name="trade_fuel_fg">#E8C27E</color>
+    <color name="trade_wholesale_bg">#1D3034</color>
+    <color name="trade_wholesale_fg">#98D1DA</color>
+    <color name="trade_other_bg">#2B2C2A</color>
+    <color name="trade_other_fg">#D6D6D0</color>
     <!-- The ring round a chosen trade card: a line, not text or a fill. -->
     <color name="trade_card_ring">#7FD1A3</color>
     <color name="type_tabs_track">#2B302C</color>

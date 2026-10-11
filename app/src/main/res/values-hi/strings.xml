@@ -2413,4 +2413,322 @@
     <string name="shop_name_field">दुकान का नाम</string>
     <string name="shop_name_hint">शर्मा ट्रेडर्स</string>
     <string name="shop_phone_field">दुकान का फ़ोन (वैकल्पिक)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">कपड़ा और गारमेंट्स</string>
+    <string name="trade_name_clothing">कपड़ा</string>
+    <string name="trade_eg_clothing">कपड़ा · सूट · रेडीमेड</string>
+    <string-array name="vocab_clothing_items">
+        <item>कपड़ा</item>
+        <item>कमीज़</item>
+        <item>सूट</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>कपड़ा</item>
+        <item>रेडीमेड</item>
+        <item>बच्चे</item>
+        <item>एक्सेसरी</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>लॉन</item>
+        <item>कॉटन</item>
+        <item>कमीज़</item>
+        <item>पैंट</item>
+        <item>सलवार सूट</item>
+        <item>दुपट्टा</item>
+        <item>बच्चों का सूट</item>
+        <item>बनियान</item>
+    </string-array>
+    <string name="trade_footwear">जूते (जूते, सैंडल)</string>
+    <string name="trade_name_footwear">जूते</string>
+    <string name="trade_eg_footwear">जूते · सैंडल · चप्पल</string>
+    <string-array name="vocab_footwear_items">
+        <item>जूते</item>
+        <item>सैंडल</item>
+        <item>चप्पल</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>मर्दाना</item>
+        <item>ज़नाना</item>
+        <item>बच्चे</item>
+        <item>स्पोर्ट्स</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>मर्दाना जूते</item>
+        <item>ज़नाना जूते</item>
+        <item>बच्चों के जूते</item>
+        <item>सैंडल</item>
+        <item>चप्पल</item>
+        <item>जॉगर्स</item>
+        <item>स्कूल शूज़</item>
+        <item>मोज़े</item>
+    </string-array>
+    <string name="trade_electronics">इलेक्ट्रॉनिक्स और घरेलू उपकरण</string>
+    <string name="trade_name_electronics">इलेक्ट्रॉनिक्स</string>
+    <string name="trade_eg_electronics">पंखे · बल्ब · उपकरण</string>
+    <string-array name="vocab_electronics_items">
+        <item>पंखा</item>
+        <item>LED बल्ब</item>
+        <item>इस्त्री</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>उपकरण</item>
+        <item>रोशनी</item>
+        <item>एक्सेसरी</item>
+        <item>मरम्मत</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>छत का पंखा</item>
+        <item>LED बल्ब</item>
+        <item>इस्त्री</item>
+        <item>एक्सटेंशन बोर्ड</item>
+        <item>चार्जर</item>
+        <item>पानी की मोटर</item>
+        <item>वॉशिंग मशीन</item>
+        <item>मरम्मत</item>
+    </string-array>
+    <string name="trade_restaurant">होटल, रेस्टोरेंट और ढाबा</string>
+    <string name="trade_name_restaurant">होटल</string>
+    <string name="trade_eg_restaurant">खाना · चाय · कैटरिंग</string>
+    <string-array name="vocab_restaurant_items">
+        <item>चाय</item>
+        <item>बिरयानी</item>
+        <item>रोटी</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>खाना</item>
+        <item>पेय</item>
+        <item>नाश्ता</item>
+        <item>कैटरिंग</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>चाय</item>
+        <item>रोटी</item>
+        <item>बिरयानी</item>
+        <item>दाल</item>
+        <item>चिकन कड़ाही</item>
+        <item>कोल्ड ड्रिंक</item>
+        <item>पानी की बोतल</item>
+        <item>पार्सल</item>
+    </string-array>
+    <string name="trade_bakery">बेकरी और मिठाई</string>
+    <string name="trade_name_bakery">बेकरी</string>
+    <string name="trade_eg_bakery">ब्रेड · केक · मिठाई</string>
+    <string-array name="vocab_bakery_items">
+        <item>ब्रेड</item>
+        <item>केक</item>
+        <item>मिठाई</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>बेकरी</item>
+        <item>मिठाई</item>
+        <item>नाश्ता</item>
+        <item>पेय</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>ब्रेड</item>
+        <item>रस</item>
+        <item>केक</item>
+        <item>बिस्कुट</item>
+        <item>मिठाई</item>
+        <item>समोसा</item>
+        <item>अंडे</item>
+        <item>दूध का पैकेट</item>
+    </string-array>
+    <string name="trade_meat">मांस और मुर्गी</string>
+    <string name="trade_name_meat">मांस</string>
+    <string name="trade_eg_meat">मुर्गी · मटन · बीफ़</string>
+    <string-array name="vocab_meat_items">
+        <item>मुर्गी</item>
+        <item>मटन</item>
+        <item>बीफ़</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>मुर्गी</item>
+        <item>मटन</item>
+        <item>बीफ़</item>
+        <item>मछली</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>मुर्गी</item>
+        <item>बोनलेस</item>
+        <item>मटन</item>
+        <item>बीफ़</item>
+        <item>कीमा</item>
+        <item>मछली</item>
+        <item>अंडे</item>
+        <item>कलेजी</item>
+    </string-array>
+    <string name="trade_produce">फल और सब्ज़ी</string>
+    <string name="trade_name_produce">फल सब्ज़ी</string>
+    <string name="trade_eg_produce">फल · सब्ज़ी · ताज़ा</string>
+    <string-array name="vocab_produce_items">
+        <item>आलू</item>
+        <item>प्याज़</item>
+        <item>सेब</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>सब्ज़ी</item>
+        <item>फल</item>
+        <item>हरी पत्ती</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>आलू</item>
+        <item>प्याज़</item>
+        <item>टमाटर</item>
+        <item>लहसुन</item>
+        <item>अदरक</item>
+        <item>सेब</item>
+        <item>केला</item>
+        <item>संतरा</item>
+    </string-array>
+    <string name="trade_stationery">स्टेशनरी और किताबें</string>
+    <string name="trade_name_stationery">स्टेशनरी</string>
+    <string name="trade_eg_stationery">कॉपी · किताब · पेन</string>
+    <string-array name="vocab_stationery_items">
+        <item>कॉपी</item>
+        <item>पेन</item>
+        <item>किताब</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>स्टेशनरी</item>
+        <item>किताबें</item>
+        <item>प्रिंटिंग</item>
+        <item>उपहार</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>कॉपी</item>
+        <item>रजिस्टर</item>
+        <item>पेन</item>
+        <item>पेंसिल</item>
+        <item>रबड़</item>
+        <item>किताब</item>
+        <item>फ़ोटोकॉपी</item>
+        <item>ज्योमेट्री बॉक्स</item>
+    </string-array>
+    <string name="trade_cosmetics">कॉस्मेटिक्स और ज्वेलरी</string>
+    <string name="trade_name_cosmetics">कॉस्मेटिक्स</string>
+    <string name="trade_eg_cosmetics">मेकअप · ज्वेलरी · इत्र</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>क्रीम</item>
+        <item>लिपस्टिक</item>
+        <item>चूड़ियाँ</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>कॉस्मेटिक्स</item>
+        <item>ज्वेलरी</item>
+        <item>इत्र</item>
+        <item>उपहार</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>फ़ेस क्रीम</item>
+        <item>लिपस्टिक</item>
+        <item>नेल पॉलिश</item>
+        <item>चूड़ियाँ</item>
+        <item>बालियाँ</item>
+        <item>इत्र</item>
+        <item>शैम्पू</item>
+        <item>बालों का तेल</item>
+    </string-array>
+    <string name="trade_building">बिल्डिंग मटेरियल (सीमेंट, सरिया, ईंट)</string>
+    <string name="trade_name_building">बिल्डिंग मटेरियल</string>
+    <string name="trade_eg_building">सीमेंट · सरिया · ईंट</string>
+    <string-array name="vocab_building_items">
+        <item>सीमेंट</item>
+        <item>सरिया</item>
+        <item>ईंट</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>सीमेंट</item>
+        <item>सरिया</item>
+        <item>ईंट</item>
+        <item>रेत बजरी</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>सीमेंट</item>
+        <item>सरिया</item>
+        <item>ईंट</item>
+        <item>रेत</item>
+        <item>बजरी</item>
+        <item>टाइल्स</item>
+        <item>पेंट</item>
+        <item>पाइप</item>
+    </string-array>
+    <string name="trade_fuel">गैस और ईंधन (LPG, पेट्रोल)</string>
+    <string name="trade_name_fuel">गैस और ईंधन</string>
+    <string name="trade_eg_fuel">LPG · पेट्रोल · डीज़ल</string>
+    <string-array name="vocab_fuel_items">
+        <item>LPG</item>
+        <item>पेट्रोल</item>
+        <item>डीज़ल</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>गैस</item>
+        <item>ईंधन</item>
+        <item>तेल</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>गैस सिलेंडर</item>
+        <item>गैस रीफ़िल</item>
+        <item>पेट्रोल</item>
+        <item>डीज़ल</item>
+        <item>इंजन ऑयल</item>
+        <item>मिट्टी का तेल</item>
+        <item>रेगुलेटर</item>
+        <item>गैस पाइप</item>
+    </string-array>
+    <string name="trade_wholesale">होलसेल और डिस्ट्रीब्यूशन</string>
+    <string name="trade_name_wholesale">होलसेल</string>
+    <string name="trade_eg_wholesale">थोक · कार्टन · सप्लाई</string>
+    <string-array name="vocab_wholesale_items">
+        <item>कार्टन</item>
+        <item>बोरी</item>
+        <item>पैकेट</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>थोक</item>
+        <item>पैक्ड</item>
+        <item>सप्लाई</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>कार्टन</item>
+        <item>बोरी</item>
+        <item>डिब्बा</item>
+        <item>पैकेट</item>
+        <item>दर्जन पैक</item>
+        <item>डिलीवरी</item>
+        <item>भाड़ा</item>
+        <item>वापसी</item>
+    </string-array>
+    <string name="trade_other">अन्य (अपना लिखें)</string>
+    <string name="trade_name_other">अन्य</string>
+    <string name="trade_eg_other">अपनी दुकान का प्रकार लिखें</string>
+    <string-array name="vocab_other_items">
+        <item>आइटम</item>
+        <item>प्रोडक्ट</item>
+        <item>सेवा</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>सामान</item>
+        <item>सेवा</item>
+        <item>अन्य</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>आइटम</item>
+        <item>प्रोडक्ट</item>
+        <item>सेवा</item>
+        <item>डिलीवरी</item>
+        <item>मरम्मत</item>
+        <item>पैकेट</item>
+        <item>डिब्बा</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">खोजें: कपड़ा, बेकरी, गैस…</string>
+    <string name="trade_search_none">सूची में नहीं? अन्य चुनें और अपना लिखें।</string>
+    <string name="trade_other_title">आपकी दुकान का प्रकार</string>
+    <string name="trade_other_explain">लिखें आपकी दुकान क्या है, और तीन चीज़ें जो आप बेचते हैं। यही हर जगह उदाहरण और पहले सुझाव बनेंगे।</string>
+    <string name="trade_other_name_label">दुकान का प्रकार</string>
+    <string name="trade_other_name_hint">फूलों की दुकान</string>
+    <string name="trade_other_items_label">तीन चीज़ें जो आप बेचते हैं (वैकल्पिक)</string>
+    <string name="trade_other_items_hint">गुलाब, हार, गुलदस्ता</string>
 </resources>

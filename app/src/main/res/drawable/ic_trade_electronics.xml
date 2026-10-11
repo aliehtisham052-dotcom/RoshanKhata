@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A light bulb: electronics and appliances. (11 Oct) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="@android:color/white"
+        android:pathData="M12,2a7,7 0,0 0,-4 12.74V17h8v-2.26A7,7 0,0 0,12 2zM9,19h6v1.5a1.5,1.5 0,0 1,-1.5 1.5h-3A1.5,1.5 0,0 1,9 20.5z"/>
+</vector>

@@ -34,14 +34,26 @@ object TradeVocab {
         return if (id == 0) emptyList() else context.resources.getStringArray(id).toList()
     }
 
-    /** Three example goods of the active trade, in the app's language. */
-    fun items(context: Context, trade: Trade = Trade.current(context)): List<String> = arr(context, trade, "items")
+    /**
+     * Three example goods of the active trade, in the app's language. An
+     * Other shop's own goods come first when the owner wrote some (11 Oct),
+     * topped up from the general words so there are always three.
+     */
+    fun items(context: Context, trade: Trade = Trade.current(context)): List<String> {
+        val base = arr(context, trade, "items")
+        val own = if (trade == Trade.OTHER) OtherTrade.items(context) else emptyList()
+        return if (own.isEmpty()) base else (own + base).distinct().take(3)
+    }
 
     /** The product types the active trade's rate list offers. */
     fun types(context: Context, trade: Trade = Trade.current(context)): List<String> = arr(context, trade, "types")
 
-    /** The goods a new book of this trade is offered before it has its own. */
-    fun starters(context: Context, trade: Trade = Trade.current(context)): List<String> = arr(context, trade, "starters")
+    /** The goods a new book of this trade is offered before it has its own; an Other shop's own words first. */
+    fun starters(context: Context, trade: Trade = Trade.current(context)): List<String> {
+        val base = arr(context, trade, "starters")
+        val own = if (trade == Trade.OTHER) OtherTrade.items(context) else emptyList()
+        return (own + base).distinct()
+    }
 
     /** The trade's units as UnitWords KEYS, in the order its list should lead with. */
     fun unitKeys(context: Context, trade: Trade = Trade.current(context)): List<String> = arr(context, trade, "units")

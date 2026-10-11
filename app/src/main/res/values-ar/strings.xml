@@ -2545,4 +2545,322 @@
     <string name="shop_name_field">اسم المتجر</string>
     <string name="shop_name_hint">متجر النور</string>
     <string name="shop_phone_field">هاتف المتجر (اختياري)</string>
+
+    <!-- The twelve trades added 11 Oct, and Other: names and words. -->
+    <string name="trade_clothing">ملابس وأقمشة</string>
+    <string name="trade_name_clothing">ملابس</string>
+    <string name="trade_eg_clothing">أقمشة · بدلات · جاهزة</string>
+    <string-array name="vocab_clothing_items">
+        <item>قماش</item>
+        <item>قميص</item>
+        <item>بدلة</item>
+    </string-array>
+    <string-array name="vocab_clothing_types">
+        <item>أقمشة</item>
+        <item>جاهزة</item>
+        <item>أطفال</item>
+        <item>إكسسوارات</item>
+    </string-array>
+    <string-array name="vocab_clothing_starters">
+        <item>قماش قطني</item>
+        <item>قماش لان</item>
+        <item>قميص</item>
+        <item>بنطال</item>
+        <item>بدلة</item>
+        <item>وشاح</item>
+        <item>ملابس أطفال</item>
+        <item>ملابس داخلية</item>
+    </string-array>
+    <string name="trade_footwear">أحذية (أحذية، صنادل)</string>
+    <string name="trade_name_footwear">أحذية</string>
+    <string name="trade_eg_footwear">أحذية · صنادل · شباشب</string>
+    <string-array name="vocab_footwear_items">
+        <item>حذاء</item>
+        <item>صندل</item>
+        <item>شبشب</item>
+    </string-array>
+    <string-array name="vocab_footwear_types">
+        <item>رجالي</item>
+        <item>نسائي</item>
+        <item>أطفال</item>
+        <item>رياضي</item>
+    </string-array>
+    <string-array name="vocab_footwear_starters">
+        <item>حذاء رجالي</item>
+        <item>حذاء نسائي</item>
+        <item>حذاء أطفال</item>
+        <item>صندل</item>
+        <item>شبشب</item>
+        <item>حذاء رياضي</item>
+        <item>حذاء مدرسي</item>
+        <item>جوارب</item>
+    </string-array>
+    <string name="trade_electronics">إلكترونيات وأجهزة منزلية</string>
+    <string name="trade_name_electronics">إلكترونيات</string>
+    <string name="trade_eg_electronics">مراوح · إضاءة · أجهزة</string>
+    <string-array name="vocab_electronics_items">
+        <item>مروحة</item>
+        <item>لمبة LED</item>
+        <item>مكواة</item>
+    </string-array>
+    <string-array name="vocab_electronics_types">
+        <item>أجهزة</item>
+        <item>إضاءة</item>
+        <item>إكسسوارات</item>
+        <item>صيانة</item>
+    </string-array>
+    <string-array name="vocab_electronics_starters">
+        <item>مروحة سقف</item>
+        <item>لمبة LED</item>
+        <item>مكواة</item>
+        <item>وصلة كهرباء</item>
+        <item>شاحن</item>
+        <item>مضخة ماء</item>
+        <item>غسالة</item>
+        <item>صيانة</item>
+    </string-array>
+    <string name="trade_restaurant">مطعم وفندق ومقهى</string>
+    <string name="trade_name_restaurant">مطعم</string>
+    <string name="trade_eg_restaurant">وجبات · شاي · تموين</string>
+    <string-array name="vocab_restaurant_items">
+        <item>شاي</item>
+        <item>برياني</item>
+        <item>خبز</item>
+    </string-array>
+    <string-array name="vocab_restaurant_types">
+        <item>وجبات</item>
+        <item>مشروبات</item>
+        <item>وجبات خفيفة</item>
+        <item>تموين</item>
+    </string-array>
+    <string-array name="vocab_restaurant_starters">
+        <item>شاي</item>
+        <item>خبز</item>
+        <item>برياني</item>
+        <item>عدس</item>
+        <item>دجاج كراهي</item>
+        <item>مشروب غازي</item>
+        <item>زجاجة ماء</item>
+        <item>طلب خارجي</item>
+    </string-array>
+    <string name="trade_bakery">مخبز وحلويات</string>
+    <string name="trade_name_bakery">مخبز</string>
+    <string name="trade_eg_bakery">خبز · كيك · حلويات</string>
+    <string-array name="vocab_bakery_items">
+        <item>خبز</item>
+        <item>كيك</item>
+        <item>حلويات</item>
+    </string-array>
+    <string-array name="vocab_bakery_types">
+        <item>مخبوزات</item>
+        <item>حلويات</item>
+        <item>وجبات خفيفة</item>
+        <item>مشروبات</item>
+    </string-array>
+    <string-array name="vocab_bakery_starters">
+        <item>خبز</item>
+        <item>بقسماط</item>
+        <item>كيك</item>
+        <item>بسكويت</item>
+        <item>حلويات</item>
+        <item>سمبوسة</item>
+        <item>بيض</item>
+        <item>علبة حليب</item>
+    </string-array>
+    <string name="trade_meat">لحوم ودواجن</string>
+    <string name="trade_name_meat">لحوم</string>
+    <string name="trade_eg_meat">دجاج · ضأن · بقر</string>
+    <string-array name="vocab_meat_items">
+        <item>دجاج</item>
+        <item>لحم ضأن</item>
+        <item>لحم بقر</item>
+    </string-array>
+    <string-array name="vocab_meat_types">
+        <item>دجاج</item>
+        <item>ضأن</item>
+        <item>بقر</item>
+        <item>سمك</item>
+    </string-array>
+    <string-array name="vocab_meat_starters">
+        <item>دجاج</item>
+        <item>دجاج بلا عظم</item>
+        <item>لحم ضأن</item>
+        <item>لحم بقر</item>
+        <item>لحم مفروم</item>
+        <item>سمك</item>
+        <item>بيض</item>
+        <item>كبدة</item>
+    </string-array>
+    <string name="trade_produce">فواكه وخضروات</string>
+    <string name="trade_name_produce">خضار وفاكهة</string>
+    <string name="trade_eg_produce">فواكه · خضروات · طازج</string>
+    <string-array name="vocab_produce_items">
+        <item>بطاطس</item>
+        <item>بصل</item>
+        <item>تفاح</item>
+    </string-array>
+    <string-array name="vocab_produce_types">
+        <item>خضروات</item>
+        <item>فواكه</item>
+        <item>أعشاب</item>
+    </string-array>
+    <string-array name="vocab_produce_starters">
+        <item>بطاطس</item>
+        <item>بصل</item>
+        <item>طماطم</item>
+        <item>ثوم</item>
+        <item>زنجبيل</item>
+        <item>تفاح</item>
+        <item>موز</item>
+        <item>برتقال</item>
+    </string-array>
+    <string name="trade_stationery">قرطاسية وكتب</string>
+    <string name="trade_name_stationery">قرطاسية</string>
+    <string name="trade_eg_stationery">دفاتر · كتب · أقلام</string>
+    <string-array name="vocab_stationery_items">
+        <item>دفتر</item>
+        <item>قلم</item>
+        <item>كتاب</item>
+    </string-array>
+    <string-array name="vocab_stationery_types">
+        <item>قرطاسية</item>
+        <item>كتب</item>
+        <item>طباعة</item>
+        <item>هدايا</item>
+    </string-array>
+    <string-array name="vocab_stationery_starters">
+        <item>دفتر</item>
+        <item>سجل</item>
+        <item>قلم</item>
+        <item>قلم رصاص</item>
+        <item>ممحاة</item>
+        <item>كتاب</item>
+        <item>تصوير</item>
+        <item>علبة هندسة</item>
+    </string-array>
+    <string name="trade_cosmetics">مستحضرات تجميل ومجوهرات</string>
+    <string name="trade_name_cosmetics">تجميل</string>
+    <string name="trade_eg_cosmetics">مكياج · مجوهرات · عطور</string>
+    <string-array name="vocab_cosmetics_items">
+        <item>كريم</item>
+        <item>أحمر شفاه</item>
+        <item>أساور</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_types">
+        <item>تجميل</item>
+        <item>مجوهرات</item>
+        <item>عطور</item>
+        <item>هدايا</item>
+    </string-array>
+    <string-array name="vocab_cosmetics_starters">
+        <item>كريم وجه</item>
+        <item>أحمر شفاه</item>
+        <item>طلاء أظافر</item>
+        <item>أساور</item>
+        <item>أقراط</item>
+        <item>عطر</item>
+        <item>شامبو</item>
+        <item>زيت شعر</item>
+    </string-array>
+    <string name="trade_building">مواد بناء (إسمنت، حديد، طوب)</string>
+    <string name="trade_name_building">مواد بناء</string>
+    <string name="trade_eg_building">إسمنت · حديد · طوب</string>
+    <string-array name="vocab_building_items">
+        <item>إسمنت</item>
+        <item>حديد تسليح</item>
+        <item>طوب</item>
+    </string-array>
+    <string-array name="vocab_building_types">
+        <item>إسمنت</item>
+        <item>حديد</item>
+        <item>طوب</item>
+        <item>رمل وحصى</item>
+    </string-array>
+    <string-array name="vocab_building_starters">
+        <item>إسمنت</item>
+        <item>حديد تسليح</item>
+        <item>طوب</item>
+        <item>رمل</item>
+        <item>حصى</item>
+        <item>بلاط</item>
+        <item>دهان</item>
+        <item>أنابيب</item>
+    </string-array>
+    <string name="trade_fuel">غاز ووقود (غاز مسال، بنزين)</string>
+    <string name="trade_name_fuel">غاز ووقود</string>
+    <string name="trade_eg_fuel">غاز مسال · بنزين · ديزل</string>
+    <string-array name="vocab_fuel_items">
+        <item>غاز مسال</item>
+        <item>بنزين</item>
+        <item>ديزل</item>
+    </string-array>
+    <string-array name="vocab_fuel_types">
+        <item>غاز</item>
+        <item>وقود</item>
+        <item>زيوت</item>
+    </string-array>
+    <string-array name="vocab_fuel_starters">
+        <item>أسطوانة غاز</item>
+        <item>تعبئة غاز</item>
+        <item>بنزين</item>
+        <item>ديزل</item>
+        <item>زيت محرك</item>
+        <item>كيروسين</item>
+        <item>منظم غاز</item>
+        <item>خرطوم غاز</item>
+    </string-array>
+    <string name="trade_wholesale">جملة وتوزيع</string>
+    <string name="trade_name_wholesale">جملة</string>
+    <string name="trade_eg_wholesale">جملة · كراتين · توريد</string>
+    <string-array name="vocab_wholesale_items">
+        <item>كرتونة</item>
+        <item>كيس</item>
+        <item>عبوة</item>
+    </string-array>
+    <string-array name="vocab_wholesale_types">
+        <item>جملة</item>
+        <item>معبأ</item>
+        <item>توريد</item>
+    </string-array>
+    <string-array name="vocab_wholesale_starters">
+        <item>كرتونة</item>
+        <item>كيس</item>
+        <item>صندوق</item>
+        <item>عبوة</item>
+        <item>عبوة دزينة</item>
+        <item>توصيل</item>
+        <item>شحن</item>
+        <item>مرتجع</item>
+    </string-array>
+    <string name="trade_other">أخرى (اكتب نوعك)</string>
+    <string name="trade_name_other">أخرى</string>
+    <string name="trade_eg_other">اكتب نوع متجرك</string>
+    <string-array name="vocab_other_items">
+        <item>صنف</item>
+        <item>منتج</item>
+        <item>خدمة</item>
+    </string-array>
+    <string-array name="vocab_other_types">
+        <item>بضائع</item>
+        <item>خدمة</item>
+        <item>أخرى</item>
+    </string-array>
+    <string-array name="vocab_other_starters">
+        <item>صنف</item>
+        <item>منتج</item>
+        <item>خدمة</item>
+        <item>توصيل</item>
+        <item>صيانة</item>
+        <item>عبوة</item>
+        <item>صندوق</item>
+    </string-array>
+    <!-- The trade picker: search and Other (11 Oct). -->
+    <string name="trade_search_hint">ابحث: ملابس، مخبز، غاز…</string>
+    <string name="trade_search_none">ليس في القائمة؟ اختر أخرى واكتب نوعك.</string>
+    <string name="trade_other_title">نوع متجرك</string>
+    <string name="trade_other_explain">اكتب ما هو متجرك وثلاثة أشياء تبيعها. ستصبح الأمثلة والاقتراحات الأولى أينما تضيف البضائع.</string>
+    <string name="trade_other_name_label">نوع المتجر</string>
+    <string name="trade_other_name_hint">محل زهور</string>
+    <string name="trade_other_items_label">ثلاثة أشياء تبيعها (اختياري)</string>
+    <string name="trade_other_items_hint">ورود، أكاليل، باقات</string>
 </resources>
