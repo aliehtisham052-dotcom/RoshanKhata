@@ -221,6 +221,8 @@ class HeroStage(
             .width(bmp.width).height(bmp.height).levels(levels)
             .sampler(Texture.Sampler.SAMPLER_2D)
             .format(if (srgb) Texture.InternalFormat.SRGB8_A8 else Texture.InternalFormat.RGBA8)
+            // generateMipmaps refuses a texture not declared for it (found on the CI emulator, 11 Oct).
+            .usage(Texture.Usage.DEFAULT or Texture.Usage.GEN_MIPMAPPABLE)
             .build(engine)
         val buf = ByteBuffer.allocateDirect(bmp.byteCount)
         bmp.copyPixelsToBuffer(buf)
