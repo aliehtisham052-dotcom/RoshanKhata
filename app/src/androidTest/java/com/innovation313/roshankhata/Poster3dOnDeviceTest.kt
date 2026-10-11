@@ -93,7 +93,10 @@ class Poster3dOnDeviceTest {
                 for (p in px) {
                     if (Color.alpha(p) > 200) {
                         solid++
-                        if (Color.red(p) > 150 && Color.green(p) > 110 && Color.blue(p) < Color.red(p) - 50) gold++
+                        // Gold by its hue (red over green over blue, well clear of grey) and
+                        // some brightness: lit gold leaf on the seal sits near (155, 125, 65).
+                        val r = Color.red(p); val g = Color.green(p); val b = Color.blue(p)
+                        if (r > 120 && g > 90 && r > g && g > b && b < r - 50) gold++
                     }
                 }
                 val clear = px.count { Color.alpha(it) < 10 }

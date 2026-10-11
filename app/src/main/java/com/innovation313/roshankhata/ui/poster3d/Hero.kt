@@ -114,7 +114,7 @@ enum class Hero(
     THANKS(
         asset = "poster3d/thanks.glb",
         rect = RectF(360f, 1296f, 720f, 1656f),
-        eye = FRAMED_EYE, target = ORIGIN, fov = framed(360f), sunLux = 50_000f,
+        eye = FRAMED_EYE, target = ORIGIN, fov = framed(360f), sunLux = 75_000f,
         motions = listOf(
             Motion("seal", Motion.Kind.SWAY, Motion.Axis.Y, amount = 14f, period = 6f, rest = -6f),
             Motion("seal", Motion.Kind.SWAY, Motion.Axis.X, amount = 8f, period = 7.5f, phase = 1f, rest = 10f)
