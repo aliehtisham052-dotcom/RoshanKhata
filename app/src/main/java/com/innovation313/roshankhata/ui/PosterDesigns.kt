@@ -183,13 +183,13 @@ object PosterDesigns {
         if (!PosterKit.hasArabic(dua)) dp.typeface = Typeface.create(InvoiceFonts.playfairDisplay(page.context), Typeface.ITALIC)
         dp.textAlign = Paint.Align.CENTER
         PosterKit.fitWidth(dp, dua, 860f)
-        PosterKit.inkLine(c, dua, dp, W / 2, 1200f)
-        for (dx in floatArrayOf(-30f, 0f, 30f)) diamond(c, W / 2 + dx, 1282f, 9f, gold)
+        PosterKit.inkLine(c, dua, dp, W / 2, 1218f)
+        for (dx in floatArrayOf(-30f, 0f, 30f)) diamond(c, W / 2 + dx, 1294f, 9f, gold)
         val line = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 2f; color = 0x66E7C268 }
-        c.drawLine(300f, 1282f, 480f, 1282f, line); c.drawLine(600f, 1282f, 780f, 1282f, line)
-        val msg = PosterKit.message(page, page.message, 1400f, 0xD9FBEBD0.toInt(), if (page.urdu) 46f else 44f, lines = 2, width = 900)
+        c.drawLine(300f, 1294f, 480f, 1294f, line); c.drawLine(600f, 1294f, 780f, 1294f, line)
+        val msg = PosterKit.message(page, page.message, 1400f, 0xD9FBEBD0.toInt(), if (page.urdu) 44f else 42f, lines = 2, width = 900)
         // The sign-off as a column: seal, "from", name, phone.
-        PosterKit.seal(page.context, c, 540f, 1580f, 66f, page.shopName, page.logo,
+        PosterKit.seal(page.context, c, 540f, 1586f, 60f, page.shopName, page.logo,
             0xFFFBEBD0.toInt(), 0xFFE9D3B0.toInt(), 0xFF5A1E2B.toInt())
         val from = str(page, R.string.poster_from)
         val fp = PosterKit.textPaint(page.context, from, 31f, 0xD9FBEBD0.toInt(), false, page.locale, page.urdu)
@@ -313,7 +313,10 @@ object PosterDesigns {
         val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 120f else 112f, 64f, 812f, greeting = false)
         // The timings: one row per line of the message; "Mon – Sat: 9 – 8" splits into label and time.
         val rows = page.message.lines().map { it.trim() }.filter { it.isNotEmpty() }.take(5)
-        val panel = RectF(72f, 936f, W - 72f, 1446f)
+        // The panel is as tall as its rows need, centred in the space under the headline.
+        val wanted = if (rows.size <= 1) 300f else 48f + rows.size * 118f
+        val panelH = wanted.coerceAtMost(510f)
+        val panel = RectF(72f, 1191f - panelH / 2, W - 72f, 1191f + panelH / 2)
         PosterKit.glass(c, panel)
         var msgSize = 0f
         if (rows.isNotEmpty()) {
