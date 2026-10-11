@@ -37,7 +37,36 @@ import kotlin.math.sin
  *
  * Main thread only — see [Studio].
  */
-class HeroStage(context: Context, private val hero: Hero) {
+class HeroStage(context: Context, private val hero: Hero, private val look: Look = Look()) {
+
+    /**
+     * What the frame uses. Everything is on in the app; the on-device probe
+     * switches parts off one at a time to find which one a GPU cannot take.
+     */
+    data class Look(
+        val model: Boolean = true,
+        val studioLight: Boolean = true,
+        val sun: Boolean = true,
+        val shadows: Boolean = true,
+        val msaa: Boolean = true,
+        val fxaa: Boolean = true,
+        val translucent: Boolean = true
+    ) {
+        companion object {
+            fun named(name: String?): Look = when (name) {
+                "empty" -> Look(false, false, false, false, false, false, false)
+                "model" -> Look(true, false, false, false, false, false, false)
+                "translucent" -> Look(true, false, false, false, false, false, true)
+                "ibl" -> Look(true, true, false, false, false, false, false)
+                "sun" -> Look(true, false, true, false, false, false, false)
+                "shadows" -> Look(true, false, true, true, false, false, false)
+                "msaa" -> Look(true, false, false, false, true, false, false)
+                "fxaa" -> Look(true, false, false, false, false, true, false)
+                else -> Look()
+            }
+        }
+    }
+
 
     private val engine = Studio.engine
     private val renderer: Renderer = engine.createRenderer()
@@ -66,22 +95,23 @@ class HeroStage(context: Context, private val hero: Hero) {
     private var dirty = true
 
     init {
-        scene.setIndirectLight(light)
+        if (look.studioLight) scene.setIndirectLight(light)
         LightManager.Builder(LightManager.Type.SUN)
             .color(1.0f, 0.95f, 0.86f)
             .intensity(hero.sunLux)
             .direction(0.35f, -1.0f, -0.55f)
             .sunAngularRadius(1.6f)
-            .castShadows(true)
+            .castShadows(look.shadows)
             .build(engine, sun)
-        scene.addEntity(sun)
-        scene.addEntities(asset.entities)
+        if (look.sun) scene.addEntity(sun)
+        if (look.model) scene.addEntities(asset.entities)
+        view.isShadowingEnabled = look.shadows
         view.setScene(scene)
         view.setCamera(camera)
-        view.setBlendMode(View.BlendMode.TRANSLUCENT)
-        view.setAntiAliasing(View.AntiAliasing.FXAA)
+        view.setBlendMode(if (look.translucent) View.BlendMode.TRANSLUCENT else View.BlendMode.OPAQUE)
+        view.setAntiAliasing(if (look.fxaa) View.AntiAliasing.FXAA else View.AntiAliasing.NONE)
         view.setMultiSampleAntiAliasingOptions(View.MultiSampleAntiAliasingOptions().apply {
-            enabled = true
+            enabled = look.msaa
             sampleCount = 4
         })
         renderer.setClearOptions(Renderer.ClearOptions().apply {
