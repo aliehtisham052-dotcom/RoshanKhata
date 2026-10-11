@@ -367,11 +367,13 @@ object PosterKit {
         val ap = textPaint(page.context, a, if (page.urdu) 39f else 38f, colour, false, page.locale, page.urdu)
         ap.textAlign = Paint.Align.CENTER
         fitWidth(ap, a, 860f, floor = 26f)
-        // The ink's own edges, not the advance: a Nastaliq letter reaches past it.
+        // The ink's own edges, not the advance: a Nastaliq letter can reach past
+        // it. getTextBounds measures from the line's start, whatever the alignment.
         val ink = Rect()
         ap.getTextBounds(a, 0, a.length, ink)
-        val pinX = if (page.rtl) W / 2 + maxOf(ink.right.toFloat(), ap.measureText(a) / 2) + 34f
-            else W / 2 + minOf(ink.left.toFloat(), -ap.measureText(a) / 2) - 34f
+        val start = W / 2 - ap.measureText(a) / 2
+        val pinX = if (page.rtl) maxOf(start + ink.right, W / 2 + ap.measureText(a) / 2) + 34f
+            else minOf(start + ink.left, W / 2 - ap.measureText(a) / 2) - 34f
         CardGlyphs.pin(page.c, pinX, cy, 40f, pin)
         inkLine(page.c, a, ap, W / 2, cy)
     }
