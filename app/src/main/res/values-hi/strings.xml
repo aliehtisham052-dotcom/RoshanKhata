@@ -2731,4 +2731,5 @@
     <string name="trade_other_name_hint">फूलों की दुकान</string>
     <string name="trade_other_items_label">तीन चीज़ें जो आप बेचते हैं (वैकल्पिक)</string>
     <string name="trade_other_items_hint">गुलाब, हार, गुलदस्ता</string>
+    <string name="poster_kicker_new_stock">अभी-अभी आया</string>
 </resources>

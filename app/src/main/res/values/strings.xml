@@ -2901,4 +2901,5 @@ You can change this any time from this screen.</string>
     <string name="trade_other_name_hint">Flower shop</string>
     <string name="trade_other_items_label">Three things you sell (optional)</string>
     <string name="trade_other_items_hint">Roses, garlands, bouquets</string>
+    <string name="poster_kicker_new_stock">JUST ARRIVED</string>
 </resources>

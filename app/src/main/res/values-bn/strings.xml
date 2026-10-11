@@ -2731,4 +2731,5 @@
     <string name="trade_other_name_hint">ফুলের দোকান</string>
     <string name="trade_other_items_label">তিনটি জিনিস যা আপনি বিক্রি করেন (ঐচ্ছিক)</string>
     <string name="trade_other_items_hint">গোলাপ, মালা, তোড়া</string>
+    <string name="poster_kicker_new_stock">সদ্য এসেছে</string>
 </resources>

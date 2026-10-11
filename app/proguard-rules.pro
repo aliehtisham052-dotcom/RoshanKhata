@@ -160,3 +160,9 @@
 -dontwarn kotlin.**
 -dontwarn kotlinx.coroutines.**
 -keepclassmembers class kotlin.Metadata { public <methods>; }
+
+# Filament (posters' 3D, 11 Oct). Its Java classes are reached from native code
+# by name (callbacks, buffer descriptors, enums by ordinal); renaming or removing
+# any of them breaks rendering at runtime, not at build time. Keep them whole.
+-keep class com.google.android.filament.** { *; }
+-dontwarn com.google.android.filament.**

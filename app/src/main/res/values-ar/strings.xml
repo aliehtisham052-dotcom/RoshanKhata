@@ -2863,4 +2863,5 @@
     <string name="trade_other_name_hint">محل زهور</string>
     <string name="trade_other_items_label">ثلاثة أشياء تبيعها (اختياري)</string>
     <string name="trade_other_items_hint">ورود، أكاليل، باقات</string>
+    <string name="poster_kicker_new_stock">وصل حديثاً</string>
 </resources>

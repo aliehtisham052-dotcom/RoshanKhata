@@ -2687,4 +2687,5 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="trade_other_name_hint">Toko bunga</string>
     <string name="trade_other_items_label">Tiga barang yang Anda jual (opsional)</string>
     <string name="trade_other_items_hint">Mawar, kalung bunga, buket</string>
+    <string name="poster_kicker_new_stock">BARU TIBA</string>
 </resources>
