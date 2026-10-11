@@ -16,6 +16,7 @@ import com.google.android.filament.Renderer
 import com.google.android.filament.SwapChain
 import com.google.android.filament.SwapChainFlags
 import com.google.android.filament.Texture
+import com.google.android.filament.TextureSampler
 import com.google.android.filament.View
 import com.google.android.filament.Viewport
 import com.google.android.filament.android.UiHelper
@@ -27,17 +28,22 @@ import kotlin.math.PI
 import kotlin.math.sin
 
 /**
- * One poster's 3D hero: its model, a camera, the studio light and a sun
- * that throws the hero's shadow onto its plinth.
+ * One poster's 3D hero ([Hero]): its model, a camera, the studio light and a
+ * sun that throws the hero's shadow.
  *
  * [attach] shows it live on a transparent TextureView laid over the poster,
- * turning at the screen's rate; [still] draws one frame off-screen for the
- * picture that is shared. The shared picture is always the resting pose
- * (t = 0), so the owner sends exactly what he saw when the preview settled.
+ * moving at the screen's rate; [still] draws one frame off-screen for the
+ * picture that is shared, always in the resting pose (see [Motion]).
  *
  * Main thread only — see [Studio].
  */
-class HeroStage(context: Context, private val hero: Hero, private val look: Look = Look()) {
+class HeroStage(
+    context: Context,
+    private val hero: Hero,
+    private val look: Look = Look(),
+    /** For a hero with a [Hero.face]: the shop's mark, colour and metal (see SealFace). */
+    face: SealFace.Maps? = null
+) {
 
     /**
      * What the frame uses. Everything is on in the app; the on-device probe
@@ -77,7 +83,18 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
     private val light = Studio.studioLight()
     private val sun = EntityManager.get().create()
     private val asset = Studio.load(context, hero.asset)
-    private val spinEntity = asset.getFirstEntityByName(hero.spinNode)
+    /** Each moving node with its rest pose and its motions, in the order they apply. */
+    private val movers: List<Mover> = hero.motions.groupBy { it.node }.mapNotNull { (node, list) ->
+        val entity = asset.getFirstEntityByName(node)
+        val inst = if (entity == 0) 0 else engine.transformManager.getInstance(entity)
+        if (inst == 0) {
+            Log.w(TAG, "${hero.name}: no node \"$node\"")
+            null
+        } else {
+            Mover(inst, engine.transformManager.getTransform(inst, FloatArray(16)), list)
+        }
+    }
+    private val faceTextures = mutableListOf<Texture>()
     private val motion = try {
         Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
     } catch (e: Exception) {
@@ -124,8 +141,11 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
             hero.target[0].toDouble(), hero.target[1].toDouble(), hero.target[2].toDouble(),
             0.0, 1.0, 0.0
         )
-        pose(0f)
+        face?.let { applyFace(it) }
+        pose(0f, live = false)
     }
+
+    private class Mover(val instance: Int, val rest: FloatArray, val motions: List<Motion>)
 
     private fun project(w: Int, h: Int) {
         if (w <= 0 || h <= 0) return
@@ -133,17 +153,82 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
         camera.setProjection(hero.fov, w.toDouble() / h, 0.1, 50.0, Camera.Fov.VERTICAL)
     }
 
-    /** The hero at [t] seconds: a slow turn and a gentle float. */
-    private fun pose(t: Float) {
-        if (spinEntity == 0) return
+    /**
+     * The hero at [t] seconds. Each part's own motions are applied on top of
+     * its rest pose, in the order the hero lists them. A clock reads the
+     * phone's time when [live]; the shared picture shows the watchmakers'
+     * 10:10, the hands framing the face.
+     */
+    private fun pose(t: Float, live: Boolean) {
         val tm = engine.transformManager
-        val inst = tm.getInstance(spinEntity)
-        if (inst == 0) return
         val m = FloatArray(16)
-        android.opengl.Matrix.setIdentityM(m, 0)
-        android.opengl.Matrix.translateM(m, 0, 0f, (sin(t * 2 * PI / 3.6) * hero.bob).toFloat(), 0f)
-        android.opengl.Matrix.rotateM(m, 0, hero.restYaw + t * hero.degreesPerSecond, 0f, 1f, 0f)
-        tm.setTransform(inst, m)
+        val tmp = FloatArray(16)
+        val out = FloatArray(16)
+        val now = if (live) java.util.Calendar.getInstance() else null
+        val sec = now?.let { it.get(java.util.Calendar.SECOND) + it.get(java.util.Calendar.MILLISECOND) / 1000f } ?: 36f
+        val min = now?.get(java.util.Calendar.MINUTE)?.toFloat()?.plus(sec / 60f) ?: (10f + sec / 60f)
+        val hour = now?.get(java.util.Calendar.HOUR)?.toFloat()?.plus(min / 60f) ?: (10f + min / 60f)
+        for (mover in movers) {
+            android.opengl.Matrix.setIdentityM(m, 0)
+            for (mo in mover.motions) {
+                val tt = t + mo.phase
+                android.opengl.Matrix.setIdentityM(tmp, 0)
+                when (mo.kind) {
+                    Motion.Kind.BOB ->
+                        android.opengl.Matrix.translateM(tmp, 0, 0f, (sin(tt * 2 * PI / mo.period) * mo.amount).toFloat(), 0f)
+                    Motion.Kind.SPIN ->
+                        android.opengl.Matrix.rotateM(tmp, 0, mo.rest + (if (live) tt else 0f) * mo.amount, mo.axis.x, mo.axis.y, mo.axis.z)
+                    Motion.Kind.SWAY ->
+                        android.opengl.Matrix.rotateM(tmp, 0,
+                            mo.rest + (if (live) (sin(tt * 2 * PI / mo.period) * mo.amount).toFloat() else 0f),
+                            mo.axis.x, mo.axis.y, mo.axis.z)
+                    // Clockwise seen from the front is a negative turn about +Z.
+                    Motion.Kind.HOUR -> android.opengl.Matrix.rotateM(tmp, 0, -hour * 30f, 0f, 0f, 1f)
+                    Motion.Kind.MINUTE -> android.opengl.Matrix.rotateM(tmp, 0, -min * 6f, 0f, 0f, 1f)
+                    // The second hand ticks, as a quartz clock's does.
+                    Motion.Kind.SECOND -> android.opengl.Matrix.rotateM(tmp, 0, -kotlin.math.floor(sec) * 6f, 0f, 0f, 1f)
+                }
+                if (mo.kind == Motion.Kind.BOB && !live) android.opengl.Matrix.setIdentityM(tmp, 0)
+                android.opengl.Matrix.multiplyMM(out, 0, m, 0, tmp, 0)
+                System.arraycopy(out, 0, m, 0, 16)
+            }
+            android.opengl.Matrix.multiplyMM(out, 0, mover.rest, 0, m, 0)
+            tm.setTransform(mover.instance, out)
+        }
+    }
+
+    /** Put the shop's mark on the hero's face material (its base colour and metal). */
+    private fun applyFace(maps: SealFace.Maps) {
+        val name = hero.face ?: return
+        val sampler = TextureSampler(TextureSampler.MinFilter.LINEAR_MIPMAP_LINEAR,
+            TextureSampler.MagFilter.LINEAR, TextureSampler.WrapMode.CLAMP_TO_EDGE)
+        val base = texture(maps.colour, srgb = true)
+        val metal = texture(maps.metalRough, srgb = false)
+        var found = false
+        for (mi in asset.instance.materialInstances) {
+            if (mi.name != name) continue
+            mi.setParameter("baseColorMap", base, sampler)
+            mi.setParameter("metallicRoughnessMap", metal, sampler)
+            found = true
+        }
+        if (!found) Log.w(TAG, "${hero.name}: no material \"$name\"")
+    }
+
+    private fun texture(bmp: Bitmap, srgb: Boolean): Texture {
+        var levels = 1
+        while ((bmp.width shr levels) > 0 && (bmp.height shr levels) > 0) levels++
+        val tex = Texture.Builder()
+            .width(bmp.width).height(bmp.height).levels(levels)
+            .sampler(Texture.Sampler.SAMPLER_2D)
+            .format(if (srgb) Texture.InternalFormat.SRGB8_A8 else Texture.InternalFormat.RGBA8)
+            .build(engine)
+        val buf = ByteBuffer.allocateDirect(bmp.byteCount)
+        bmp.copyPixelsToBuffer(buf)
+        buf.rewind()
+        tex.setImage(engine, 0, Texture.PixelBufferDescriptor(buf, Texture.Format.RGBA, Texture.Type.UBYTE))
+        tex.generateMipmaps(engine)
+        faceTextures += tex
+        return tex
     }
 
     private val choreographer = Choreographer.getInstance()
@@ -155,7 +240,7 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
             // With the phone's animations off nothing moves, so nothing is redrawn
             // either: the GPU (a software one on a test emulator) rests.
             if (!motion && !dirty) return
-            pose(if (motion) (frameTimeNanos - startNanos) / 1e9f else 0f)
+            pose(if (motion) (frameTimeNanos - startNanos) / 1e9f else 0f, live = motion)
             val sc = swapChain ?: return
             if (uiHelper?.isReadyToRender == true && renderer.beginFrame(sc, frameTimeNanos)) {
                 renderer.render(view)
@@ -216,7 +301,7 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
         Log.d(TAG, "still: swapchain ${w}x$h")
         val sc = engine.createSwapChain(w, h, SwapChainFlags.CONFIG_TRANSPARENT or SwapChainFlags.CONFIG_READABLE)
         project(w, h)
-        pose(0f)
+        pose(0f, live = false)
         val buffer = ByteBuffer.allocateDirect(w * h * 4)
         val handler = Handler(Looper.getMainLooper())
         var finished = false
@@ -294,37 +379,12 @@ class HeroStage(context: Context, private val hero: Hero, private val look: Look
         engine.destroyCameraComponent(cameraEntity)
         EntityManager.get().destroy(cameraEntity)
         Studio.destroyAsset(asset)
+        faceTextures.forEach { engine.destroyTexture(it) }
+        faceTextures.clear()
     }
 }
 
-/**
- * The heroes and how each is framed. Numbers are in the model's own units
- * (store/poster3d/make_models.py builds them); the camera looks down a little
- * so the top of the crate and the plinth's face both show.
- */
 private const val TAG = "Poster3D"
-private const val WAIT_MS = 20_000L
 
-enum class Hero(
-    val asset: String,
-    val spinNode: String,
-    val eye: FloatArray,
-    val target: FloatArray,
-    val fov: Double,
-    val restYaw: Float,
-    val degreesPerSecond: Float,
-    val bob: Double,
-    val sunLux: Float
-) {
-    CRATE(
-        asset = "poster3d/naya_maal.glb",
-        spinNode = "box",
-        eye = floatArrayOf(0f, 0.95f, 4.2f),
-        target = floatArrayOf(0f, -0.28f, 0f),
-        fov = 30.0,
-        restYaw = 35f,
-        degreesPerSecond = 36f,
-        bob = 0.06,
-        sunLux = 70_000f
-    )
-}
+/** How long [HeroStage.still] waits for the GPU once the frame is handed over. */
+private const val WAIT_MS = 20_000L

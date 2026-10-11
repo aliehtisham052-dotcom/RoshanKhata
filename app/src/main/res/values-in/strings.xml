@@ -314,6 +314,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="business_settings_subtitle">Dicetak pada faktur, laporan, dan rekap Anda</string>
     <string name="business_name">Nama usaha</string>
     <string name="business_name_hint">mis. Toko Tani Makmur</string>
+    <string name="business_name_urdu">Nama toko dalam bahasa Urdu</string>
+    <string name="business_name_urdu_hint">mis. بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_help">Tampil di poster berbahasa Urdu. Kosongkan untuk memakai nama di atas.</string>
     <string name="business_address">Alamat toko</string>
     <string name="business_address_hint">mis. Jl. Pasar Baru No. 12</string>
     <string name="invoice_bank_name_hint">Nama bank</string>
@@ -2688,4 +2691,10 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="trade_other_items_label">Tiga barang yang Anda jual (opsional)</string>
     <string name="trade_other_items_hint">Mawar, kalung bunga, buket</string>
     <string name="poster_kicker_new_stock">BARU TIBA</string>
+    <string name="poster_kicker_eid">Taqabbalallahu minna wa minkum</string>
+    <string name="poster_kicker_ramazan">BULAN PENUH RAHMAT</string>
+    <string name="poster_from">Salam hangat dari</string>
+    <string name="poster_neon_closed">TUTUP</string>
+    <string name="poster_call_urgent">Untuk keperluan mendesak, hubungi</string>
+    <string name="poster_kicker_custom">PENGUMUMAN</string>
 </resources>

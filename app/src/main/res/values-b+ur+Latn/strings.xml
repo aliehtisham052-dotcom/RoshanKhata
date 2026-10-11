@@ -305,6 +305,9 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="business_settings_subtitle">Invoice, statement aur reports par chhapne wali maloomat</string>
     <string name="business_name">Karobar ka naam</string>
     <string name="business_name_hint">maslan Bhatti Traders</string>
+    <string name="business_name_urdu">Dukaan ka naam Urdu mein</string>
+    <string name="business_name_urdu_hint">Maslan بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_help">Urdu poster par yahi naam chhapega. Khali chhorein to upar wala naam.</string>
     <string name="business_address">Dukan ka pata</string>
     <string name="business_address_hint">maslan Main Bazaar, Pasrur</string>
     <string name="invoice_bank_name_hint">Bank ka naam</string>
@@ -2688,4 +2691,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="trade_other_items_label">Teen cheezein jo aap bechte hain (ikhtiyari)</string>
     <string name="trade_other_items_hint">Gulab, haar, guldasta</string>
     <string name="poster_kicker_new_stock">TAZA AAMAD</string>
+    <string name="poster_kicker_eid">Taqabbal Allahu minna wa minkum</string>
+    <string name="poster_kicker_ramazan">REHMATON KA MAHEENA</string>
+    <string name="poster_from">Minjanib</string>
+    <string name="poster_neon_closed">BAND</string>
+    <string name="poster_call_urgent">Zaroori kaam ke liye call karein</string>
+    <string name="poster_kicker_custom">ELAAN</string>
 </resources>

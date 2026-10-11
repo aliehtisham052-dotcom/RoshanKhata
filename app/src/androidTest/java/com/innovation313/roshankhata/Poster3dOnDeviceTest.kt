@@ -10,11 +10,12 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
+import com.innovation313.roshankhata.ui.PosterDesigns
 import com.innovation313.roshankhata.data.PosterOccasion
 import com.innovation313.roshankhata.ui.PosterImage
-import com.innovation313.roshankhata.ui.PosterNewStock
 import com.innovation313.roshankhata.ui.poster3d.Hero
 import com.innovation313.roshankhata.ui.poster3d.HeroStage
+import com.innovation313.roshankhata.ui.poster3d.SealFace
 import com.innovation313.roshankhata.ui.poster3d.Studio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -27,16 +28,16 @@ import org.junit.Test
 import java.util.Locale
 
 /**
- * The posters' 3D hero, rendered by Filament on a real Android (11 Oct).
+ * The posters' 3D heroes, rendered by Filament on a real Android (11 Oct).
  *
- * Checked by numbers: the still frame is the size asked for, mostly clear
- * (the poster shows through around the crate), yet carries a solid object
- * with gold in it. The full New stock poster is then drawn in English and
- * Urdu with the hero in place, and both pictures are saved to
- * Download/rtl-proof/ for a person to look at in the CI report.
+ * Every hero is drawn still, off-screen, at its place's size and checked by
+ * numbers: the frame is the size asked for, mostly clear (the poster shows
+ * through around it), yet carries a solid object with gold in it. Its poster
+ * is then drawn in English and Urdu with the hero in place, and every picture
+ * is saved to Download/rtl-proof/ for a person to look at.
  *
- * A phone that cannot run Filament (no OpenGL ES 3.0) skips the 3D part;
- * the poster still draws, with the flat crate. So does the emulator's legacy
+ * A phone that cannot run Filament (no OpenGL ES 3.0) skips this; the
+ * posters still draw, with flat heroes. So does the emulator's legacy
  * SwiftShader translator (see Studio.isLegacySwiftShader); CI uses ANGLE.
  */
 class Poster3dOnDeviceTest {
@@ -50,16 +51,13 @@ class Poster3dOnDeviceTest {
     }
 
     @Test
-    fun the_crate_renders_in_3d_and_lands_on_the_poster() {
+    fun every_hero_renders_in_3d_and_lands_on_its_poster() {
         var ok = false
         Log.i("Poster3D", "starting the engine")
         InstrumentationRegistry.getInstrumentation().runOnMainSync { ok = Studio.engineReady(app) }
         Log.i("Poster3D", "engine available: $ok")
-        if (!ok) Log.w("Poster3D", "This device cannot run Filament; the flat crate is used")
+        if (!ok) Log.w("Poster3D", "This device cannot run Filament; the flat heroes are used")
         assumeTrue("Filament not available on this device", ok)
-
-        var stage: HeroStage? = null
-        // The probe workflow passes -e look <name> to find which part a GPU cannot take.
         // CI's emulator runs on ANGLE (swangle_indirect), which takes the full look.
         // The legacy SwiftShader translator draws every material white, and the
         // app shows no 3D there, so there is nothing to check.
@@ -68,84 +66,80 @@ class Poster3dOnDeviceTest {
         assumeTrue("legacy SwiftShader: the app draws flat heroes here", lookName != null || !Studio.isLegacySwiftShader)
         val look = HeroStage.Look.named(lookName)
         Log.i("Poster3D", "look: ${lookName ?: "full"} = $look")
-        InstrumentationRegistry.getInstrumentation().runOnMainSync { stage = HeroStage(app, Hero.CRATE, look) }
-        val r = PosterNewStock.HERO
-        val w = r.width().toInt()
-        val h = r.height().toInt()
-        Log.i("Poster3D", "stage built, rendering the still")
-        val hero = runBlocking { withTimeout(30_000L) { withContext(Dispatchers.Main) { stage!!.still(w, h) } } }
-        Log.i("Poster3D", "still rendered")
-        InstrumentationRegistry.getInstrumentation().runOnMainSync { stage!!.destroy() }
 
-        describe(hero)
-        if (lookName != null && lookName != "full" && lookName != "emulator") {
-            // A partial look is only asked whether the GPU survives it.
-            Log.i("Poster3D", "look $lookName survived")
-            save("hero_$lookName.png", hero)
-            hero.recycle()
-            return
-        }
-        assertEquals(w, hero.width)
-        assertEquals(h, hero.height)
-        var solid = 0
-        var gold = 0
-        val px = IntArray(w * h)
-        hero.getPixels(px, 0, w, 0, 0, w, h)
-        for (p in px) {
-            if (Color.alpha(p) > 200) {
-                solid++
-                if (Color.red(p) > 150 && Color.green(p) > 110 && Color.blue(p) < Color.red(p) - 50) gold++
+        for (hero in Hero.values()) {
+            val r = hero.rect
+            val w = r.width().toInt()
+            val h = r.height().toInt()
+            var stage: HeroStage? = null
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                val face = hero.face?.let { SealFace.draw(app, "Ali Traders", null) }
+                stage = HeroStage(app, hero, look, face)
+                face?.recycle()
             }
-        }
-        val clear = px.count { Color.alpha(it) < 10 }
-        assertTrue("the crate drew nothing ($solid solid pixels)", solid > px.size / 20)
-        assertTrue("no gold on the crate ($gold)", gold > 200)
-        // An opaque frame (the emulator's look) has no clear background to check.
-        if (look.translucent) assertTrue("background not clear ($clear clear pixels)", clear > px.size / 4)
-        Log.i("Poster3D", "checked: $solid solid, $gold gold, $clear clear of ${px.size}")
-        save("hero_crate.png", hero)
+            Log.i("Poster3D", "${hero.name}: stage built, rendering the still ${w}x$h")
+            val still = runBlocking { withTimeout(30_000L) { withContext(Dispatchers.Main) { stage!!.still(w, h) } } }
+            InstrumentationRegistry.getInstrumentation().runOnMainSync { stage!!.destroy() }
+            describe(hero.name, still)
+            save("hero_${hero.name.lowercase(Locale.ROOT)}.png", still)
 
-        for (tag in listOf("en", "ur")) {
-            val ctx = inLanguage(tag)
-            val (bmp, fit) = PosterImage.draw(ctx, PosterImage.Input(
-                occasion = PosterOccasion.NEW_STOCK, title = ctx.getString(R.string.poster_new_stock),
-                message = ctx.getString(R.string.poster_new_stock_msg), shopName = "Ali Traders",
-                phone = "0300 0000000", address = "Main Bazaar", logo = null,
-                mark = ctx.getString(R.string.made_with_app),
-                hero = if (look.translucent) hero else null
-            ))
-            assertEquals(PosterImage.HEIGHT, bmp.height)
-            assertTrue("$tag: headline at the floor (${fit.titleSize})", fit.titleSize > 72f)
-            save("poster_new_stock_$tag.png", bmp)
-            bmp.recycle()
+            if (lookName == null || lookName == "full") {
+                assertEquals(w, still.width)
+                assertEquals(h, still.height)
+                val px = IntArray(w * h)
+                still.getPixels(px, 0, w, 0, 0, w, h)
+                var solid = 0
+                var gold = 0
+                for (p in px) {
+                    if (Color.alpha(p) > 200) {
+                        solid++
+                        if (Color.red(p) > 150 && Color.green(p) > 110 && Color.blue(p) < Color.red(p) - 50) gold++
+                    }
+                }
+                val clear = px.count { Color.alpha(it) < 10 }
+                Log.i("Poster3D", "${hero.name}: $solid solid, $gold gold, $clear clear of ${px.size}")
+                assertTrue("${hero.name}: drew too little ($solid solid pixels)", solid > px.size / 60)
+                assertTrue("${hero.name}: no gold ($gold)", gold > 200)
+                assertTrue("${hero.name}: background not clear ($clear clear pixels)", clear > px.size / 4)
+            }
+
+            val occasion = PosterOccasion.values().first { PosterDesigns.hero(it) == hero }
+            for (tag in listOf("en", "ur")) {
+                val ctx = inLanguage(tag)
+                val (bmp, fit) = PosterImage.draw(ctx, PosterImage.Input(
+                    occasion = occasion, title = ctx.getString(occasion.title),
+                    message = ctx.getString(occasion.message),
+                    shopName = if (tag == "ur") "علی ٹریڈرز" else "Ali Traders",
+                    phone = "0300 0000000", address = if (tag == "ur") "مین بازار" else "Main Bazaar", logo = null,
+                    mark = ctx.getString(R.string.made_with_app), hero = still
+                ))
+                assertEquals(PosterImage.HEIGHT, bmp.height)
+                assertTrue("$tag/${occasion.key}: headline at the floor (${fit.titleSize})", fit.titleSize > 56f)
+                save("poster3d_${occasion.key}_$tag.png", bmp)
+                bmp.recycle()
+            }
+            still.recycle()
         }
-        hero.recycle()
     }
 
     /**
-     * What the frame holds, in the log: a 32×16 grid of brightness (0-9, '.'
+     * What a frame holds, in the log: a 32×16 grid of brightness (0-9, '.'
      * for clear) and the average colour of the solid pixels. CI pictures
      * cannot always be downloaded; the log always comes back.
      */
-    private fun describe(bmp: Bitmap) {
+    private fun describe(name: String, bmp: Bitmap) {
         val cols = 32
         val rows = 16
         val sb = StringBuilder()
-        var n = 0L; var r = 0L; var g = 0L; var b = 0L
         for (y in 0 until rows) {
             for (x in 0 until cols) {
                 val p = bmp.getPixel(x * bmp.width / cols + bmp.width / cols / 2, y * bmp.height / rows + bmp.height / rows / 2)
                 if (Color.alpha(p) < 10) sb.append('.')
                 else sb.append(((Color.red(p) + Color.green(p) + Color.blue(p)) * 10 / 766).toString())
             }
-            Log.i("Poster3D", "grid ${"%02d".format(y)} $sb")
+            Log.i("Poster3D", "$name grid ${"%02d".format(y)} $sb")
             sb.setLength(0)
         }
-        val px = IntArray(bmp.width * bmp.height)
-        bmp.getPixels(px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
-        for (p in px) if (Color.alpha(p) > 200) { n++; r += Color.red(p); g += Color.green(p); b += Color.blue(p) }
-        if (n > 0) Log.i("Poster3D", "solid $n of ${px.size}, mean rgb ${r / n},${g / n},${b / n}")
-        else Log.i("Poster3D", "no solid pixels")
     }
 
     private fun save(name: String, bmp: Bitmap) {

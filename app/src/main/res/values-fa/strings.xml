@@ -315,6 +315,9 @@
     <string name="business_settings_subtitle">روی فاکتورها، صورت‌حساب‌ها و گزارش‌های شما چاپ می‌شود</string>
     <string name="business_name">نام کسب‌وکار</string>
     <string name="business_name_hint">مثلاً بهاتی تریدرز</string>
+    <string name="business_name_urdu">نام فروشگاه به اردو</string>
+    <string name="business_name_urdu_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_help">روی پوسترهای اردو نشان داده می‌شود. خالی بگذارید تا نام بالا استفاده شود.</string>
     <string name="business_address">آدرس مغازه</string>
     <string name="business_address_hint">مثلاً بازار اصلی، پسرور</string>
     <string name="invoice_bank_name_hint">نام بانک</string>
@@ -2716,4 +2719,10 @@
     <string name="trade_other_items_label">سه چیزی که می‌فروشید (اختیاری)</string>
     <string name="trade_other_items_hint">رز، گلبند، دسته‌گل</string>
     <string name="poster_kicker_new_stock">تازه رسید</string>
+    <string name="poster_kicker_eid">تقبل الله منا و منکم</string>
+    <string name="poster_kicker_ramazan">ماه رحمت</string>
+    <string name="poster_from">با احترام</string>
+    <string name="poster_neon_closed">تعطیل</string>
+    <string name="poster_call_urgent">برای کار ضروری تماس بگیرید</string>
+    <string name="poster_kicker_custom">اطلاعیه</string>
 </resources>

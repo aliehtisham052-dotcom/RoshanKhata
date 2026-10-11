@@ -812,7 +812,9 @@ object Backup {
         val businessPhone: String? = null,
         /** An Other shop's own name and goods (11 Oct); absent before, and for every other trade. */
         val tradeOtherName: String? = null,
-        val tradeOtherItems: String? = null
+        val tradeOtherItems: String? = null,
+        /** The shop's name in Urdu script for Urdu posters (11 Oct); absent before. */
+        val businessNameUrdu: String? = null
     )
 
     /**
@@ -1280,6 +1282,7 @@ object Backup {
 
     private fun businessProfileToJson(context: Context) = JSONObject().apply {
         put("businessName", BusinessProfile.businessName(context) ?: JSONObject.NULL)
+        put("businessNameUrdu", BusinessProfile.businessNameUrdu(context) ?: JSONObject.NULL)
         put("businessAddress", BusinessProfile.businessAddress(context) ?: JSONObject.NULL)
         put("businessPhone", BusinessProfile.businessPhone(context) ?: JSONObject.NULL)
         put("bankName", BusinessProfile.bankName(context) ?: JSONObject.NULL)
@@ -1311,7 +1314,8 @@ object Backup {
         photoOnStatement = o.optBoolean("photoOnStatement", false),
         businessPhone = o.optNullableString("businessPhone"),
         tradeOtherName = o.optNullableString("tradeOtherName"),
-        tradeOtherItems = o.optNullableString("tradeOtherItems")
+        tradeOtherItems = o.optNullableString("tradeOtherItems"),
+        businessNameUrdu = o.optNullableString("businessNameUrdu")
     )
 
     // Written through the existing setters so trimming/normalisation stays in
@@ -1321,6 +1325,7 @@ object Backup {
     // ledger restore replaces rather than merges.
     private fun restoreBusinessProfile(context: Context, p: BusinessProfileData) {
         BusinessProfile.setBusinessName(context, p.businessName)
+        BusinessProfile.setBusinessNameUrdu(context, p.businessNameUrdu)
         BusinessProfile.setBusinessAddress(context, p.businessAddress)
         BusinessProfile.setBusinessPhone(context, p.businessPhone)
         BusinessProfile.setBankName(context, p.bankName)

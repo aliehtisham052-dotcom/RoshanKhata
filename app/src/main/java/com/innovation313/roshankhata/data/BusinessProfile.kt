@@ -22,6 +22,7 @@ object BusinessProfile {
 
     private const val PREFS = "roshan_khata_prefs"
     private const val KEY_BUSINESS_NAME = "business_name"
+    private const val KEY_BUSINESS_NAME_URDU = "business_name_urdu"
     private const val KEY_BUSINESS_ADDRESS = "business_address"
     private const val KEY_BUSINESS_PHONE = "business_phone"
     private const val KEY_BANK_NAME = "bank_name"
@@ -98,6 +99,24 @@ object BusinessProfile {
             .putString(KEY_BUSINESS_NAME, name?.trim().orEmpty())
             .apply()
     }
+
+    /**
+     * The shop's name in Urdu script, e.g. بھٹی ٹریڈرز (11 Oct). Optional:
+     * an Urdu poster shows it in Nastaliq; with it blank the poster prints
+     * [businessName] as typed.
+     */
+    fun businessNameUrdu(context: Context): String? =
+        prefs(context).getString(KEY_BUSINESS_NAME_URDU, null)?.takeIf { it.isNotBlank() }
+
+    fun setBusinessNameUrdu(context: Context, name: String?) {
+        prefs(context).edit()
+            .putString(KEY_BUSINESS_NAME_URDU, name?.trim().orEmpty())
+            .apply()
+    }
+
+    /** The name a picture in [urduScript] (Urdu, Arabic letters) should print. */
+    fun nameFor(context: Context, urduScript: Boolean): String? =
+        (if (urduScript) businessNameUrdu(context) else null) ?: businessName(context)
 
     /**
      * The letterhead line under a shop's name — address, or address and

@@ -21,8 +21,9 @@ import java.util.Locale
  * Checked by numbers: the picture is 1080 × 1920, and the big line and the
  * message fitted their space without dropping below the smallest size the
  * renderer allows — the sign that a translation is too long for the poster.
- * Each language's Eid poster is saved to Download/rtl-proof/ for a person to
- * look at in the CI report.
+ * Every design in English and Urdu, and each language's Eid poster, is saved
+ * to Download/rtl-proof/ for a person to look at. These are the flat heroes
+ * (no 3D picture is passed); Poster3dOnDeviceTest draws them with 3D.
  */
 class PosterOnDeviceTest {
 
@@ -43,7 +44,7 @@ class PosterOnDeviceTest {
             for (o in PosterOccasion.values().filter { it != PosterOccasion.CUSTOM }) {
                 val input = PosterImage.Input(
                     occasion = o, title = ctx.getString(o.title), message = ctx.getString(o.message),
-                    shopName = "Ali Traders Pasrur", phone = "0340 7026467", address = "Main Bazaar, Pasrur",
+                    shopName = "Ali Traders Pasrur", phone = "0300 0000000", address = "Main Bazaar, Pasrur",
                     logo = null, mark = ctx.getString(R.string.made_with_app)
                 )
                 val (bmp, fit) = PosterImage.draw(ctx, input)
@@ -51,9 +52,26 @@ class PosterOnDeviceTest {
                 assertEquals("$tag/${o.key} height", PosterImage.HEIGHT, bmp.height)
                 assertTrue("$tag/${o.key}: big line squeezed to the floor (${fit.titleSize})", fit.titleSize > 56f)
                 assertTrue("$tag/${o.key}: message squeezed to the floor (${fit.messageSize})", fit.messageSize > 30f)
-                if (o == PosterOccasion.EID_FITR) save("poster_eid_$tag.png", bmp)
+                if (o == PosterOccasion.EID_FITR || tag == "en" || tag == "ur") save("poster_${o.key}_$tag.png", bmp)
                 bmp.recycle()
             }
+        }
+    }
+
+    @Test
+    fun the_owners_own_words_draw_in_both_languages() {
+        for ((tag, title, message) in listOf(
+            Triple("en", "Wheat seed booking is open", "Book at the shop or call us. First come, first served."),
+            Triple("ur", "گندم کے بیج کی بکنگ شروع ہو گئی ہے", "اپنی بکنگ کے لیے دکان پر تشریف لائیں یا کال کریں۔ پہلے آئیں، پہلے پائیں۔")
+        )) {
+            val ctx = inLanguage(tag)
+            val (bmp, fit) = PosterImage.draw(ctx, PosterImage.Input(
+                PosterOccasion.CUSTOM, title, message, "Ali Traders", "0300 0000000", "Main Bazaar", null,
+                ctx.getString(R.string.made_with_app)
+            ))
+            assertTrue("$tag: big line squeezed (${fit.titleSize})", fit.titleSize > 56f)
+            save("poster_custom_$tag.png", bmp)
+            bmp.recycle()
         }
     }
 
