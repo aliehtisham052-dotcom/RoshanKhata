@@ -165,6 +165,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnViewFull"
             style="@style/ProfileSmallButton"
+            android:letterSpacing="0"
             android:text="@string/poster_view_full"
             android:visibility="gone" />
 
