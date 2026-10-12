@@ -158,4 +158,76 @@ object PosterFlat {
         c.drawCircle(cx, cy, r * 0.66f, ring)
         PosterKit.seal(context, c, cx, cy, r * 0.56f, name, logo, 0xFF15603F.toInt(), 0xFF0A3A26.toInt(), 0xFFE9BE64.toInt())
     }
+
+    /**
+     * Pakistan's flag, [w] × [h] (2 : 3): a white band of a quarter of the
+     * length at the hoist, the dark green field, and the white crescent and
+     * five-pointed star set on the field's diagonal from its lower hoist to
+     * its upper fly — the national flag's own construction (outer circle
+     * 3/10 of the height on the field's centre, the cutting circle 11/40,
+     * the star in a circle of 1/10).
+     */
+    fun pakistanFlag(w: Int, h: Int): Bitmap {
+        val bmp = Bitmap.createBitmap(w.coerceAtLeast(3), h.coerceAtLeast(2), Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        val green = 0xFF01411C.toInt()
+        c.drawColor(green)
+        val white = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFFFFF.toInt() }
+        c.drawRect(0f, 0f, w / 4f, h.toFloat(), white)
+        val fh = h.toFloat()
+        val gx = w / 4f + (w * 3f / 4f) / 2f
+        val gy = fh / 2f
+        // The field's diagonal, toward its upper fly corner.
+        val dxv = w * 3f / 4f
+        val dyv = -fh
+        val len = kotlin.math.sqrt(dxv * dxv + dyv * dyv)
+        val ux = dxv / len
+        val uy = dyv / len
+        val moon = Path().apply { addCircle(gx, gy, 0.3f * fh, Path.Direction.CW) }
+        val cut = Path().apply { addCircle(gx + ux * 0.0625f * fh, gy + uy * 0.0625f * fh, 0.275f * fh, Path.Direction.CW) }
+        moon.op(cut, Path.Op.DIFFERENCE)
+        c.drawPath(moon, white)
+        val sx = gx + ux * 0.215f * fh
+        val sy = gy + uy * 0.215f * fh
+        val starR = 0.1f * fh
+        val star = Path()
+        // One point toward the upper fly corner, along the diagonal.
+        val start = kotlin.math.atan2(uy.toDouble(), ux.toDouble())
+        for (k in 0 until 10) {
+            val rad = if (k % 2 == 0) starR else starR * 0.382f
+            val a = start + Math.PI * k / 5
+            val x = sx + (rad * cos(a)).toFloat()
+            val y = sy + (rad * sin(a)).toFloat()
+            if (k == 0) star.moveTo(x, y) else star.lineTo(x, y)
+        }
+        star.close()
+        c.drawPath(star, white)
+        return bmp
+    }
+
+    /** The flagpole: a gold pole with a ball on top, standing beside the cloth's hoist. */
+    fun flagPole(c: Canvas, x: Float, top: Float, bottom: Float) {
+        val pole = Paint(Paint.ANTI_ALIAS_FLAG)
+        pole.shader = LinearGradient(x - 9f, 0f, x + 9f, 0f, intArrayOf(0xFF8A5E14.toInt(), 0xFFFFE6A0.toInt(), 0xFF9A6A16.toInt()), null, Shader.TileMode.CLAMP)
+        c.drawRoundRect(RectF(x - 8f, top + 18f, x + 8f, bottom), 8f, 8f, pole)
+        val ball = Paint(Paint.ANTI_ALIAS_FLAG)
+        ball.shader = RadialGradient(x - 6f, top + 4f, 26f, intArrayOf(0xFFFFF4D0.toInt(), 0xFFE2B44C.toInt(), 0xFF8A5E14.toInt()), floatArrayOf(0f, 0.5f, 1f), Shader.TileMode.CLAMP)
+        c.drawCircle(x, top + 10f, 18f, ball)
+    }
+
+    /** A flat gold coin with the discount, for a phone without 3D. */
+    fun coin(context: Context, c: Canvas, cx: Float, cy: Float, r: Float, percent: Int) {
+        val rim = Paint(Paint.ANTI_ALIAS_FLAG)
+        rim.shader = android.graphics.SweepGradient(cx, cy, intArrayOf(0xFF8A5E14.toInt(), 0xFFFFF1C1.toInt(), 0xFFC8962B.toInt(),
+            0xFF8A5E14.toInt(), 0xFFF7DC8C.toInt(), 0xFF8A5E14.toInt()), null)
+        rim.setShadowLayer(r * 0.12f, 0f, r * 0.08f, 0x80000000.toInt())
+        c.drawCircle(cx, cy, r, rim)
+        val face = com.innovation313.roshankhata.ui.poster3d.CoinFace.draw(context, percent)
+        val inner = r * 0.87f
+        val clip = Path().apply { addCircle(cx, cy, inner, Path.Direction.CW) }
+        c.save(); c.clipPath(clip)
+        c.drawBitmap(face.colour, null, RectF(cx - inner, cy - inner, cx + inner, cy + inner), Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
+        c.restore()
+        face.recycle()
+    }
 }

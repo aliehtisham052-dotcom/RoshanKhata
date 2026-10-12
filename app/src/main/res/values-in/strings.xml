@@ -2757,7 +2757,20 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="poster_as_video">Video bergerak</string>
     <string name="poster_making_video">Membuat video… %1$d%%</string>
     <string name="poster_video_failed">Video tidak bisa dibuat di ponsel ini, jadi gambarnya yang dikirim.</string>
+    <string name="poster_offer">Penawaran spesial</string>
+    <string name="poster_offer_msg">Untuk semua barang di toko</string>
+    <string name="poster_jumma">Jumat Mubarak</string>
+    <string name="poster_jumma_msg">Semoga Allah memberkahi rezeki dan rumah Anda</string>
+    <string name="poster_azadi">Selamat Hari Kemerdekaan</string>
+    <string name="poster_azadi_msg">Hidup Pakistan</string>
+    <string name="poster_azadi_date">14 Agustus</string>
+    <string name="poster_off_word">DISKON</string>
+    <string name="poster_offer_percent">Diskon</string>
+    <string name="poster_offer_days_toggle">Hanya beberapa hari</string>
     <plurals name="poster_eid_holidays">
         <item quantity="other">Libur Lebaran: toko tutup %d hari</item>
+    </plurals>
+    <plurals name="poster_offer_days">
+        <item quantity="other">Hanya %d hari</item>
     </plurals>
 </resources>

@@ -13,6 +13,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.innovation313.roshankhata.ui.PosterDesigns
 import com.innovation313.roshankhata.data.PosterOccasion
 import com.innovation313.roshankhata.ui.PosterImage
+import com.innovation313.roshankhata.ui.poster3d.CoinFace
 import com.innovation313.roshankhata.ui.poster3d.Hero
 import com.innovation313.roshankhata.ui.poster3d.HeroStage
 import com.innovation313.roshankhata.ui.poster3d.SealFace
@@ -73,7 +74,11 @@ class Poster3dOnDeviceTest {
             val h = r.height().toInt()
             var stage: HeroStage? = null
             InstrumentationRegistry.getInstrumentation().runOnMainSync {
-                val face = hero.face?.let { SealFace.draw(app, "Ali Traders", null) }
+                val face = when {
+                    hero.face == null -> null
+                    hero == Hero.OFFER -> CoinFace.draw(app, 20)
+                    else -> SealFace.draw(app, "Ali Traders", null)
+                }
                 stage = HeroStage(app, hero, look, face)
                 face?.recycle()
             }

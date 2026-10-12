@@ -120,6 +120,31 @@ enum class Hero(
             Motion("seal", Motion.Kind.SWAY, Motion.Axis.X, amount = 8f, period = 7.5f, phase = 1f, rest = 10f)
         ),
         face = "seal_face"
+    ),
+    OFFER(
+        asset = "poster3d/offer.glb",
+        rect = RectF(180f, 430f, 900f, 1150f),
+        eye = FRAMED_EYE, target = ORIGIN, fov = framed(720f), sunLux = 60_000f,
+        motions = listOf(
+            // Rocks to show its thickness and catch the light; never turns its back.
+            Motion("coin", Motion.Kind.SWAY, Motion.Axis.Y, amount = 28f, period = 4.5f, rest = -14f),
+            Motion("coin", Motion.Kind.SWAY, Motion.Axis.X, amount = 6f, period = 6f, phase = 0.8f, rest = 6f),
+            Motion("coin", Motion.Kind.BOB, amount = 0.05f, period = 3f)
+        ),
+        face = "coin_face"
+    ),
+    /**
+     * Jumu'ah: the Eid ul-Adha mosque, larger and lower, as the mockup. The
+     * camera shows its rectangle as if it were 734 px tall, so the 630 px
+     * mosque fills 790.
+     */
+    JUMMA(
+        asset = "poster3d/eid_adha.glb",
+        rect = RectF(40f, 700f, 1040f, 1620f),
+        eye = FRAMED_EYE, target = floatArrayOf(0f, 0.35f, 0f), fov = framed(734f), sunLux = 55_000f,
+        motions = listOf(
+            Motion("mosque", Motion.Kind.SWAY, Motion.Axis.Y, amount = 12f, period = 10f, rest = 8f)
+        )
     )
 }
 

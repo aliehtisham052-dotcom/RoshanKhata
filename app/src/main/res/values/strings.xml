@@ -2971,8 +2971,22 @@ You can change this any time from this screen.</string>
     <string name="poster_as_video">Moving video</string>
     <string name="poster_making_video">Making the video… %1$d%%</string>
     <string name="poster_video_failed">The video could not be made on this phone, so the picture is shared instead.</string>
+    <string name="poster_offer">Special offer</string>
+    <string name="poster_offer_msg">On everything in the shop</string>
+    <string name="poster_jumma">Jumu\'ah Mubarak</string>
+    <string name="poster_jumma_msg">May Allah bless your provision and your home.</string>
+    <string name="poster_azadi">Happy Independence Day</string>
+    <string name="poster_azadi_msg">Pakistan Zindabad</string>
+    <string name="poster_azadi_date">14 August</string>
+    <string name="poster_off_word">OFF</string>
+    <string name="poster_offer_percent">Discount</string>
+    <string name="poster_offer_days_toggle">For a few days only</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">Eid holidays: the shop is closed for %d day</item>
         <item quantity="other">Eid holidays: the shop is closed for %d days</item>
+    </plurals>
+    <plurals name="poster_offer_days">
+        <item quantity="one">Only for %d day</item>
+        <item quantity="other">Only for %d days</item>
     </plurals>
 </resources>

@@ -2785,8 +2785,22 @@
     <string name="poster_as_video">ویدیوی متحرک</string>
     <string name="poster_making_video">در حال ساخت ویدیو… %1$d%%</string>
     <string name="poster_video_failed">ساخت ویدیو روی این گوشی ممکن نشد، پس تصویر فرستاده می‌شود.</string>
+    <string name="poster_offer">پیشنهاد ویژه</string>
+    <string name="poster_offer_msg">روی همه اجناس فروشگاه</string>
+    <string name="poster_jumma">جمعه مبارک</string>
+    <string name="poster_jumma_msg">خداوند به روزی و خانه‌تان برکت دهد</string>
+    <string name="poster_azadi">روز استقلال مبارک</string>
+    <string name="poster_azadi_msg">زنده باد پاکستان</string>
+    <string name="poster_azadi_date">14 اوت</string>
+    <string name="poster_off_word">تخفیف</string>
+    <string name="poster_offer_percent">تخفیف</string>
+    <string name="poster_offer_days_toggle">فقط چند روز</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">تعطیلات عید: فروشگاه %d روز بسته است</item>
         <item quantity="other">تعطیلات عید: فروشگاه %d روز بسته است</item>
+    </plurals>
+    <plurals name="poster_offer_days">
+        <item quantity="one">فقط %d روز</item>
+        <item quantity="other">فقط %d روز</item>
     </plurals>
 </resources>

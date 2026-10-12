@@ -2933,6 +2933,16 @@
     <string name="poster_as_video">فيديو متحرك</string>
     <string name="poster_making_video">جارٍ إنشاء الفيديو… %1$d%%</string>
     <string name="poster_video_failed">تعذّر إنشاء الفيديو على هذا الهاتف، لذلك ستُرسل الصورة.</string>
+    <string name="poster_offer">عرض خاص</string>
+    <string name="poster_offer_msg">على كل ما في المحل</string>
+    <string name="poster_jumma">جمعة مباركة</string>
+    <string name="poster_jumma_msg">بارك الله في رزقكم وبيوتكم</string>
+    <string name="poster_azadi">عيد استقلال سعيد</string>
+    <string name="poster_azadi_msg">عاشت باكستان</string>
+    <string name="poster_azadi_date">14 أغسطس</string>
+    <string name="poster_off_word">خصم</string>
+    <string name="poster_offer_percent">الخصم</string>
+    <string name="poster_offer_days_toggle">لأيام قليلة فقط</string>
     <plurals name="poster_eid_holidays">
         <item quantity="zero">عطلة العيد: المحل مغلق %d أيام</item>
         <item quantity="one">عطلة العيد: المحل مغلق يومًا واحدًا</item>
@@ -2940,5 +2950,13 @@
         <item quantity="few">عطلة العيد: المحل مغلق %d أيام</item>
         <item quantity="many">عطلة العيد: المحل مغلق %d يومًا</item>
         <item quantity="other">عطلة العيد: المحل مغلق %d يوم</item>
+    </plurals>
+    <plurals name="poster_offer_days">
+        <item quantity="zero">لمدة %d أيام فقط</item>
+        <item quantity="one">ليوم واحد فقط</item>
+        <item quantity="two">ليومين فقط</item>
+        <item quantity="few">لمدة %d أيام فقط</item>
+        <item quantity="many">لمدة %d يومًا فقط</item>
+        <item quantity="other">لمدة %d يوم فقط</item>
     </plurals>
 </resources>

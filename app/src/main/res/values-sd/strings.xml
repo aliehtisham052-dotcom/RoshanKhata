@@ -2785,8 +2785,22 @@
     <string name="poster_as_video">هلندڙ وڊيو</string>
     <string name="poster_making_video">وڊيو ٺهي رهي آهي… %1$d%%</string>
     <string name="poster_video_failed">هن فون تي وڊيو نه ٺهي سگهي، تنهنڪري تصوير موڪلي پئي وڃي.</string>
+    <string name="poster_offer">خاص آڇ</string>
+    <string name="poster_offer_msg">دڪان جي هر شيءِ تي</string>
+    <string name="poster_jumma">جمعو مبارڪ</string>
+    <string name="poster_jumma_msg">الله توهان جي رزق ۽ گهر ۾ برڪت ڏئي</string>
+    <string name="poster_azadi">آزاديءَ جو ڏڻ مبارڪ</string>
+    <string name="poster_azadi_msg">پاڪستان زنده باد</string>
+    <string name="poster_azadi_date">14 آگسٽ</string>
+    <string name="poster_off_word">رعايت</string>
+    <string name="poster_offer_percent">رعايت</string>
+    <string name="poster_offer_days_toggle">رڳو ڪجهه ڏينهن لاءِ</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">عيد جون موڪلون: دڪان %d ڏينهن بند رهندو</item>
         <item quantity="other">عيد جون موڪلون: دڪان %d ڏينهن بند رهندو</item>
+    </plurals>
+    <plurals name="poster_offer_days">
+        <item quantity="one">رڳو %d ڏينهن لاءِ</item>
+        <item quantity="other">رڳو %d ڏينهن لاءِ</item>
     </plurals>
 </resources>
