@@ -74,7 +74,15 @@
             android:text="@string/poster_step_send" />
     </LinearLayout>
 
-    <!-- The live preview: big with arrows, or a pinned strip on Words. -->
+    <!--
+      The preview: big on Design and Send, a pinned strip on Words.
+
+      On Design, the designs are pages that slide (designPager), each a finished
+      still picture, the way the invoice's designs slide. The live poster (its
+      3D hero moving) lies over the page in view and is hidden the moment a
+      slide starts, then shown again once the new design is drawn: one design
+      never shows through another (12 Oct, the owner saw the last one linger).
+    -->
     <LinearLayout
         android:id="@+id/previewHost"
         android:layout_width="match_parent"
@@ -85,44 +93,64 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPrevDesign"
-            style="@style/PosterRoundButton"
-            android:contentDescription="@string/poster_prev_design"
-            android:scaleX="-1"
-            app:icon="@drawable/ic_chevron_right" />
-
-        <!-- The picture at 9:16; a transparent 3D view is laid over the hero's place
-             in code (PosterActivity.placeHero), so the hero moves live on the poster. -->
         <FrameLayout
-            android:id="@+id/posterFrame"
+            android:id="@+id/previewStage"
             android:layout_width="220dp"
-            android:layout_height="391dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:contentDescription="@string/poster_view_full">
+            android:layout_height="391dp">
 
-            <ImageView
-                android:id="@+id/ivPoster"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/designPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- The picture at 9:16; a transparent 3D view is laid over the hero's place
+                 in code (PosterActivity.placeHero), so the hero moves live on the poster. -->
+            <FrameLayout
+                android:id="@+id/posterFrame"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/poster_title"
-                android:scaleType="fitXY" />
+                android:contentDescription="@string/poster_view_full">
 
-            <TextureView
-                android:id="@+id/heroView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:importantForAccessibility="no"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/ivPoster"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/poster_title"
+                    android:scaleType="fitXY" />
 
-            <!-- Twinkling stars, a glint on the gold, a humming neon, a drifting aurora:
-                 the 2D half of the poster's motion (PosterMotion). Not in the shared picture. -->
-            <com.innovation313.roshankhata.ui.PosterMotionView
-                android:id="@+id/motionView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:importantForAccessibility="no" />
+                <TextureView
+                    android:id="@+id/heroView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:importantForAccessibility="no"
+                    android:visibility="gone" />
+
+                <!-- Twinkling stars, a glint on the gold, a humming neon, a drifting aurora:
+                     the 2D half of the poster's motion (PosterMotion). Not in the shared picture. -->
+                <com.innovation313.roshankhata.ui.PosterMotionView
+                    android:id="@+id/motionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:importantForAccessibility="no" />
+            </FrameLayout>
+
+            <!-- Over the poster's edges, not beside it: the poster keeps the width. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPrevDesign"
+                style="@style/PosterRoundButton"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="6dp"
+                android:contentDescription="@string/poster_prev_design"
+                android:scaleX="-1"
+                app:icon="@drawable/ic_chevron_right" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNextDesign"
+                style="@style/PosterRoundButton"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="6dp"
+                android:contentDescription="@string/poster_next_design"
+                app:icon="@drawable/ic_chevron_right" />
         </FrameLayout>
 
         <!-- Words only: what the small picture is. -->
@@ -130,6 +158,7 @@
             android:id="@+id/previewInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:orientation="vertical"
             android:visibility="gone">
@@ -168,12 +197,6 @@
             android:letterSpacing="0"
             android:text="@string/poster_view_full"
             android:visibility="gone" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNextDesign"
-            style="@style/PosterRoundButton"
-            android:contentDescription="@string/poster_next_design"
-            app:icon="@drawable/ic_chevron_right" />
     </LinearLayout>
 
     <ScrollView
@@ -218,6 +241,28 @@
                 <TextView
                     style="@style/ProfileSectionLabel"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="@string/poster_choose_design" />
+
+                <HorizontalScrollView
+                    android:id="@+id/designScroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/designRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+                <TextView
+                    style="@style/ProfileSectionLabel"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="6dp"
                     android:text="@string/poster_language" />
@@ -249,28 +294,6 @@
                         app:iconSize="16dp" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
 
-                <TextView
-                    style="@style/ProfileSectionLabel"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginBottom="6dp"
-                    android:text="@string/poster_choose_design" />
-
-                <HorizontalScrollView
-                    android:id="@+id/designScroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:id="@+id/designRow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" />
-                </HorizontalScrollView>
             </LinearLayout>
 
             <!-- ============ Step 2: Words ============ -->
@@ -343,6 +366,7 @@
                     </LinearLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilTitle"
                         style="@style/ProfileField"
                         android:layout_marginTop="4dp">
 

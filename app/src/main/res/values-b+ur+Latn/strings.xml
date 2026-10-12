@@ -2805,4 +2805,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="poster_lang_other">Doosri</string>
     <string name="poster_lang_note">Sirf poster badalta hai. App waisi hi rehti hai.</string>
     <string name="poster_lang_most_used">Zyada istemal hone wali</string>
+
+    <!-- An empty Announcement in the preview (12 Oct). -->
+    <string name="poster_custom_title_hint">Yahan apni surkhi likhein</string>
+    <string name="poster_custom_msg_hint">Aap ka paigham yahan aayega</string>
+    <string name="poster_heading_needed">Is poster ki surkhi likhein</string>
 </resources>

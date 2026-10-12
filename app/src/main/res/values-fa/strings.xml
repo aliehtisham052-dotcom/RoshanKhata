@@ -2833,4 +2833,9 @@
     <string name="poster_lang_other">دیگر</string>
     <string name="poster_lang_note">فقط پوستر تغییر می‌کند. برنامه همان‌طور می‌ماند.</string>
     <string name="poster_lang_most_used">پرکاربرد</string>
+
+    <!-- An empty Announcement in the preview (12 Oct). -->
+    <string name="poster_custom_title_hint">سرتیتر خود را اینجا بنویسید</string>
+    <string name="poster_custom_msg_hint">پیام شما اینجا می‌آید</string>
+    <string name="poster_heading_needed">برای این پوستر سرتیتر بنویسید</string>
 </resources>

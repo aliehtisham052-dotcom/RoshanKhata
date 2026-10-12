@@ -116,6 +116,24 @@ class PosterActivity : BaseActivity() {
 
     /** 1 Design, 2 Words, 3 Send: the step on screen. */
     private var step = 1
+
+    // The designs as sliding pages (Design step). Each page is a finished still;
+    // the live poster lies over the page in view and is hidden while one slides.
+    private lateinit var pager: androidx.viewpager2.widget.ViewPager2
+    private lateinit var stageBox: FrameLayout
+    private val pageAdapter = PageAdapter()
+    /** Finished pages at the stage's size, a few at a time (each ~2 MB). */
+    private val pages = object : android.util.LruCache<PosterOccasion, Bitmap>(5) {}
+    private val pageJobs = mutableMapOf<PosterOccasion, Job>()
+    /** The live poster as it last looked, standing in for its page while it slides away. */
+    private var leaving: Pair<PosterOccasion, Bitmap>? = null
+    private var pageW = 0
+    private var pageH = 0
+    /** The live picture for the chosen design is drawn, and the pages are at rest: the live layer may show. */
+    private var liveDrawn = false
+    private var pagerIdle = true
+    /** Something on every page changed (the name, a choice) since the pages were drawn. */
+    private var pagesDirty = false
     /** True while the language switch is being set in code, so it is not taken as the owner's choice. */
     private var syncingLang = false
     private var shopNameJob: Job? = null
@@ -183,6 +201,8 @@ class PosterActivity : BaseActivity() {
         previewHost = findViewById(R.id.previewHost)
         btnStepBack = findViewById(R.id.btnStepBack)
         btnStepNext = findViewById(R.id.btnStepNext)
+        pager = findViewById(R.id.designPager)
+        stageBox = findViewById(R.id.previewStage)
         frame.post { placeHero() }
 
         occasion = PosterOccasion.byKey(prefs.getString(KEY_OCCASION, null))
@@ -201,7 +221,10 @@ class PosterActivity : BaseActivity() {
         asVideo = prefs.getBoolean(KEY_VIDEO, true)
         buildSendAs()
 
-        etTitle.doAfterTextChanged { if (!filling) { save(KEY_TITLE, it?.toString(), occasion.title); render() } }
+        etTitle.doAfterTextChanged {
+            if (!filling) { save(KEY_TITLE, it?.toString(), occasion.title); render() }
+            if (!it.isNullOrBlank()) findViewById<TextInputLayout>(R.id.tilTitle).error = null
+        }
         etMessage.doAfterTextChanged { if (!filling) { save(KEY_MSG, it?.toString(), occasion.message); render() } }
         buildShopName()
         buildSteps()
@@ -367,8 +390,16 @@ class PosterActivity : BaseActivity() {
         }
     }
 
-    private fun chooseDesign(o: PosterOccasion) {
+    /**
+     * Another design, from the strip, the arrows or a slide of the pages. The
+     * live layer goes out at once (the leaving design stands on its page as it
+     * last looked), the pages slide, and the new live poster shows only when it
+     * is drawn and the pages are at rest: nothing of one design shows through
+     * the next.
+     */
+    private fun chooseDesign(o: PosterOccasion, fromPager: Boolean = false) {
         if (o == occasion) return
+        if (step == 1) hideLive()
         occasion = o
         prefs.edit().putString(KEY_OCCASION, o.key).apply()
         markDesign()
@@ -376,6 +407,138 @@ class PosterActivity : BaseActivity() {
         updateHero()
         fill()
         updateDesignInfo()
+        val i = PosterOccasion.values().indexOf(o)
+        if (!fromPager && pager.currentItem != i) pager.setCurrentItem(i, true)
+    }
+
+    /** Take the live layer off the stage; the leaving design's page shows it as it last looked. */
+    private fun hideLive() {
+        if (frame.visibility == View.VISIBLE) {
+            snapshotLive()?.let { shot ->
+                // Not recycled: a page may still be showing the last one; it is let go to the collector.
+                leaving = occasion to shot
+                pageAdapter.notifyItemChanged(PosterOccasion.values().indexOf(occasion))
+            }
+        }
+        frame.visibility = View.INVISIBLE
+        liveDrawn = false
+    }
+
+    /** The live poster now, hero and all, at the stage's size. */
+    private fun snapshotLive(): Bitmap? {
+        val base = shown?.takeIf { !it.isRecycled } ?: return null
+        val w = frame.width
+        val h = frame.height
+        if (w <= 0 || h <= 0) return null
+        val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val c = android.graphics.Canvas(out)
+        c.drawBitmap(base, null, android.graphics.Rect(0, 0, w, h), android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG))
+        if (heroView.visibility == View.VISIBLE && heroView.isAvailable) {
+            heroView.bitmap?.let { hb -> c.drawBitmap(hb, heroView.left.toFloat(), heroView.top.toFloat(), null); hb.recycle() }
+        }
+        return out
+    }
+
+    /** Show the live layer once its picture is drawn and, on Design, the pages are at rest on it. */
+    private fun maybeShowLive() {
+        if (!liveDrawn) return
+        if (step == 1 && (!pagerIdle || pager.currentItem != PosterOccasion.values().indexOf(occasion))) return
+        if (frame.visibility == View.VISIBLE) return
+        // Two frames on, so a new 3D hero has drawn into its view before it is seen.
+        frame.postOnAnimation {
+            frame.postOnAnimation {
+                if (!liveDrawn) return@postOnAnimation
+                frame.alpha = 0f
+                frame.visibility = View.VISIBLE
+                frame.animate().alpha(1f).setDuration(120).withEndAction {
+                    val gone = leaving?.first ?: return@withEndAction
+                    leaving = null
+                    pageAdapter.notifyItemChanged(PosterOccasion.values().indexOf(gone))
+                }.start()
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------ pages
+
+    private fun buildPager() {
+        pager.adapter = pageAdapter
+        pager.offscreenPageLimit = 1
+        pager.setCurrentItem(PosterOccasion.values().indexOf(occasion), false)
+        pager.registerOnPageChangeCallback(object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrollStateChanged(state: Int) {
+                pagerIdle = state == androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE
+                if (!pagerIdle) hideLive() else maybeShowLive()
+            }
+
+            override fun onPageSelected(position: Int) {
+                chooseDesign(PosterOccasion.values()[position], fromPager = true)
+            }
+        })
+    }
+
+    /** A finished still of one design at the stage's size, drawn once and kept for a while. */
+    private fun requestPage(o: PosterOccasion) {
+        if (pageW <= 0 || pages.get(o) != null || pageJobs[o]?.isActive == true) return
+        val ctx = posterContext()
+        val w = pageW
+        val h = pageH
+        val inp = pageInput(ctx, o)
+        pageJobs[o] = lifecycleScope.launch {
+            val bmp = withContext(Dispatchers.Default) {
+                val (full, _) = PosterImage.draw(ctx, inp)
+                Bitmap.createScaledBitmap(full, w, h, true).also { if (it !== full) full.recycle() }
+            }
+            if (w != pageW || h != pageH) { bmp.recycle(); return@launch }
+            pages.put(o, bmp)
+            pageAdapter.notifyItemChanged(PosterOccasion.values().indexOf(o))
+        }
+    }
+
+    /** What a page shows: the owner's own wording on the chosen design, each design's own on the rest. */
+    private fun pageInput(ctx: Context, o: PosterOccasion): PosterImage.Input =
+        if (o == occasion) input(animated = false, placeholder = true).copy(heroOverlay = false)
+        else PosterImage.Input(o,
+            if (o.title != 0) ctx.getString(o.title) else ctx.getString(R.string.poster_custom_title_hint),
+            if (o.message != 0) ctx.getString(o.message) else ctx.getString(R.string.poster_custom_msg_hint),
+            shopName(),
+            if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
+            if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
+            if (fields.showLogo) logo else null,
+            if (fields.showMark) ctx.getString(R.string.made_with_app) else null,
+            fields = fields)
+
+    /** Every page is drawn again: the language, name, logo or a choice changed. */
+    private fun refreshPages() {
+        pageJobs.values.forEach { it.cancel() }
+        pageJobs.clear()
+        pages.evictAll()
+        pageAdapter.notifyDataSetChanged()
+    }
+
+    private inner class PageAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<PageAdapter.Holder>() {
+        inner class Holder(val image: ImageView) : androidx.recyclerview.widget.RecyclerView.ViewHolder(image)
+
+        override fun getItemCount() = PosterOccasion.values().size
+
+        override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): Holder {
+            val iv = ImageView(parent.context).apply {
+                layoutParams = android.view.ViewGroup.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT)
+                scaleType = ImageView.ScaleType.FIT_XY
+                setOnClickListener { showFull() }
+            }
+            return Holder(iv)
+        }
+
+        override fun onBindViewHolder(holder: Holder, position: Int) {
+            val o = PosterOccasion.values()[position]
+            val shot = leaving?.takeIf { it.first == o }?.second
+            val page = pages.get(o)
+            holder.image.setImageBitmap(shot ?: page ?: thumbs[o])
+            holder.image.contentDescription = if (o == PosterOccasion.CUSTOM) getString(R.string.poster_custom) else designName(o)
+            if (page == null) requestPage(o)
+        }
     }
 
     /** The design's name and place under the big picture, and on the pinned strip. */
@@ -405,6 +568,7 @@ class PosterActivity : BaseActivity() {
     /** Small pictures of every design, drawn as the real poster (flat heroes), in the poster's language. */
     private fun renderThumbs() {
         thumbsJob?.cancel()
+        refreshPages()
         val ctx = posterContext()
         val w = (88 * resources.displayMetrics.density).toInt().coerceAtLeast(60)
         val h = w * PosterImage.HEIGHT / PosterImage.WIDTH
@@ -449,6 +613,7 @@ class PosterActivity : BaseActivity() {
 
     private fun setFields(f: PosterFields) {
         fields = f
+        pagesDirty = true
         PosterFields.save(this, shopKey, f)
         render()
     }
@@ -587,6 +752,7 @@ class PosterActivity : BaseActivity() {
                 val name = e?.toString().orEmpty()
                 if (posterUrdu()) BusinessProfile.setBusinessNameUrdu(this, name) else BusinessProfile.setBusinessName(this, name)
                 if (name.isNotBlank()) tilShopName.error = null
+                pagesDirty = true
                 render()
                 // The seal (Thank you) carries the name: rebuilt once the owner pauses.
                 shopNameJob?.cancel()
@@ -606,21 +772,7 @@ class PosterActivity : BaseActivity() {
         findViewById<View>(R.id.btnPrevDesign).setOnClickListener { moveDesign(-1) }
         findViewById<View>(R.id.btnNextDesign).setOnClickListener { moveDesign(1) }
         findViewById<View>(R.id.btnViewFull).setOnClickListener { showFull() }
-        // On the big picture: a swipe moves between designs (step 1), a tap shows it full size.
-        val swipe = android.view.GestureDetector(this, object : android.view.GestureDetector.SimpleOnGestureListener() {
-            override fun onDown(e: android.view.MotionEvent) = true
-            override fun onSingleTapUp(e: android.view.MotionEvent): Boolean { showFull(); return true }
-            override fun onFling(e1: android.view.MotionEvent?, e2: android.view.MotionEvent, vx: Float, vy: Float): Boolean {
-                if (step != 1 || e1 == null) return false
-                val dx = e2.x - e1.x
-                if (kotlin.math.abs(dx) < dp(48) || kotlin.math.abs(dx) < kotlin.math.abs(e2.y - e1.y)) return false
-                val rtl = frame.layoutDirection == View.LAYOUT_DIRECTION_RTL
-                moveDesign(if ((dx < 0) != rtl) 1 else -1)
-                return true
-            }
-        })
-        frame.setOnTouchListener { _, e -> swipe.onTouchEvent(e) }
-        frame.setOnClickListener { showFull() }
+        buildPager()
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (step > 1) showStep(step - 1) else { isEnabled = false; onBackPressedDispatcher.onBackPressed() }
@@ -655,16 +807,35 @@ class PosterActivity : BaseActivity() {
         btnStatus.visibility = if (step == 3) View.VISIBLE else View.GONE
         btnShare.visibility = if (step == 3) View.VISIBLE else View.GONE
 
-        // The picture: big, or the pinned strip. Its height is what the screen can spare.
+        // The picture: big, or the pinned strip. Big is what the screen can spare
+        // with the step's own rows in view: title and steps (~100dp), the design's
+        // name and strip (~150dp), the language (~90dp), the bar (~84dp) and the
+        // system bars (~50dp). It never runs wider than the screen.
         val d = resources.displayMetrics.density
         val screenDp = resources.displayMetrics.heightPixels / d
-        val bigH = (screenDp - 330f).coerceIn(250f, 420f)
+        val widthDp = resources.displayMetrics.widthPixels / d - 32f
+        val bigH = (screenDp - 474f).coerceIn(220f, 460f).coerceAtMost(widthDp * 16f / 9f)
         val h = if (step == 2) 112f else bigH
-        frame.layoutParams = (frame.layoutParams as LinearLayout.LayoutParams).apply {
+        stageBox.layoutParams = (stageBox.layoutParams as LinearLayout.LayoutParams).apply {
             height = (h * d).toInt()
             width = (h * 9f / 16f * d).toInt()
-            marginStart = if (step == 2) 0 else dp(10)
-            marginEnd = if (step == 2) dp(12) else dp(10)
+        }
+        val pw = (bigH * 9f / 16f * d).toInt()
+        val ph = (bigH * d).toInt()
+        if (pw != pageW || ph != pageH || (step == 1 && pagesDirty)) {
+            pageW = pw; pageH = ph; pagesDirty = false
+            refreshPages()
+        }
+        // On Design the pages take the touches (slide, tap); elsewhere the live poster is tapped.
+        pager.visibility = if (step == 1) View.VISIBLE else View.INVISIBLE
+        if (step == 1) {
+            frame.setOnClickListener(null)
+            frame.isClickable = false
+            val i = PosterOccasion.values().indexOf(occasion)
+            if (pager.currentItem != i) pager.setCurrentItem(i, false)
+        } else {
+            frame.setOnClickListener { showFull() }
+            if (liveDrawn) { frame.visibility = View.VISIBLE; frame.alpha = 1f }
         }
         previewHost.background = if (step == 2) getDrawable(R.drawable.bg_profile_card) else null
         val pad = if (step == 2) dp(10) else 0
@@ -1020,10 +1191,15 @@ class PosterActivity : BaseActivity() {
     private fun usingPhoto() = occasion == PosterOccasion.NEW_STOCK && fields.usePhoto && photo != null
 
     /** [animated]: the moving layer (preview, video) draws the confetti, flag and fireworks; a still picture has them drawn in. */
-    private fun input(animated: Boolean = true) = PosterImage.Input(
+    private fun input(animated: Boolean = true, placeholder: Boolean = true) = PosterImage.Input(
         occasion = occasion,
-        title = etTitle.text?.toString()?.trim().orEmpty(),
-        message = etMessage.text?.toString()?.trim().orEmpty(),
+        // An empty Announcement shows where its words go, in the preview only.
+        title = etTitle.text?.toString()?.trim().orEmpty().ifEmpty {
+            if (placeholder && occasion == PosterOccasion.CUSTOM) posterContext().getString(R.string.poster_custom_title_hint) else ""
+        },
+        message = etMessage.text?.toString()?.trim().orEmpty().ifEmpty {
+            if (placeholder && occasion == PosterOccasion.CUSTOM) posterContext().getString(R.string.poster_custom_msg_hint) else ""
+        },
         shopName = shopName(),
         phone = if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
         address = if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
@@ -1099,19 +1275,29 @@ class PosterActivity : BaseActivity() {
         renderJob?.cancel()
         val inp = input()
         val ctx = posterContext()
+        // While the owner types, wait for a pause; a new design is drawn at once.
+        val wait = if (frame.visibility == View.VISIBLE) 150L else 0L
         renderJob = lifecycleScope.launch {
-            delay(150)
+            delay(wait)
             val (bmp, fit) = withContext(Dispatchers.Default) { PosterImage.draw(ctx, inp) }
             val old = shown
             preview.setImageBitmap(bmp)
             motionView.show(fit.motion)
             shown = bmp
             old?.recycle()
+            liveDrawn = true
+            maybeShowLive()
         }
     }
 
     private fun sharePoster(toWhatsApp: Boolean) {
         if (shopName().isBlank()) { showStep(3); return }
+        if (occasion == PosterOccasion.CUSTOM && etTitle.text.isNullOrBlank()) {
+            showStep(2)
+            findViewById<TextInputLayout>(R.id.tilTitle).error = getString(R.string.poster_heading_needed)
+            etTitle.requestFocus()
+            return
+        }
         btnStatus.isEnabled = false
         btnShare.isEnabled = false
         val ctx = posterContext()
@@ -1167,7 +1353,7 @@ class PosterActivity : BaseActivity() {
                 null
             }
         }
-        val inp = input(animated = false).copy(hero = hero, heroOverlay = false)
+        val inp = input(animated = false, placeholder = false).copy(hero = hero, heroOverlay = false)
         return withContext(Dispatchers.Default) {
             try {
                 PosterImage.draw(ctx, inp).first
@@ -1208,7 +1394,7 @@ class PosterActivity : BaseActivity() {
             .setNegativeButton(android.R.string.cancel) { _, _ -> cancelled = true; videoCancelled = true; videoJob?.cancel() }
             .show()
         return try {
-            val inp = input().copy(hero = null, heroOverlay = stage != null)
+            val inp = input(placeholder = false).copy(hero = null, heroOverlay = stage != null)
             val (base, fit) = withContext(Dispatchers.Default) { PosterImage.draw(ctx, inp) }
             val out = File(File(cacheDir, "posters").apply { mkdirs() }, "poster.mp4")
             var made = false

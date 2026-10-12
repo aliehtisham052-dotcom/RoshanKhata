@@ -2803,4 +2803,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="poster_lang_other">Lainnya</string>
     <string name="poster_lang_note">Hanya poster yang berubah. Aplikasi tetap seperti biasa.</string>
     <string name="poster_lang_most_used">Paling sering dipakai</string>
+
+    <!-- An empty Announcement in the preview (12 Oct). -->
+    <string name="poster_custom_title_hint">Tulis judul Anda di sini</string>
+    <string name="poster_custom_msg_hint">Pesan Anda muncul di sini</string>
+    <string name="poster_heading_needed">Tulis judul untuk poster ini</string>
 </resources>

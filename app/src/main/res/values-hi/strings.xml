@@ -2849,4 +2849,9 @@
     <string name="poster_lang_other">दूसरी</string>
     <string name="poster_lang_note">सिर्फ़ पोस्टर बदलता है। ऐप वैसी ही रहती है।</string>
     <string name="poster_lang_most_used">सबसे ज़्यादा इस्तेमाल</string>
+
+    <!-- An empty Announcement in the preview (12 Oct). -->
+    <string name="poster_custom_title_hint">अपनी हेडिंग यहाँ लिखें</string>
+    <string name="poster_custom_msg_hint">आपका संदेश यहाँ आएगा</string>
+    <string name="poster_heading_needed">इस पोस्टर की हेडिंग लिखें</string>
 </resources>
