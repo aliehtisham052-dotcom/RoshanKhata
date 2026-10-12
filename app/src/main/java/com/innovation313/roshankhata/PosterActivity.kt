@@ -791,7 +791,7 @@ class PosterActivity : BaseActivity() {
     private suspend fun makeVideo(ctx: Context): File? {
         val text = TextView(this).apply {
             setTextColor(getColor(R.color.ink)); textSize = 15f
-            text = getString(R.string.poster_making_video, 0)
+            text = com.innovation313.roshankhata.data.Digits.string(resources, R.string.poster_making_video, 0)
         }
         val bar = com.google.android.material.progressindicator.LinearProgressIndicator(this).apply {
             max = 100; isIndeterminate = false
@@ -822,7 +822,7 @@ class PosterActivity : BaseActivity() {
                 try {
                     PosterVideo.make(base, stage, stageHero?.rect, fit.motion, VIDEO_SECONDS, out) { p ->
                         bar.setProgressCompat(p, true)
-                        text.text = getString(R.string.poster_making_video, p)
+                        text.text = com.innovation313.roshankhata.data.Digits.string(resources, R.string.poster_making_video, p)
                     }
                     made = true
                 } catch (e: kotlinx.coroutines.CancellationException) {
