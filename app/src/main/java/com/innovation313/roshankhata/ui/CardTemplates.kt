@@ -131,6 +131,8 @@ object CardTemplates {
         urduTf = InvoiceFonts.nastaliq(context)
     }
 
+    private const val NASTALIQ_STEP = 1.15f
+
     /** True while an Urdu card's design is being drawn in its mirror (see [Template.draw]). */
     @Volatile
     private var mirrored = false
@@ -156,7 +158,9 @@ object CardTemplates {
             val tf = urduTf
             paint = Paint(p).apply {
                 letterSpacing = 0f
-                if (tf != null) { typeface = tf; isFakeBoldText = false }
+                // Nastaliq reads a size smaller than Latin set at the same size; it
+                // starts a step larger and comes down only as far as its line needs.
+                if (tf != null) { typeface = tf; isFakeBoldText = false; textSize = p.textSize * NASTALIQ_STEP }
             }
             val room = p.measureText(s)
             while (paint.measureText(s) > room && paint.textSize > 14f) paint.textSize -= 1f
