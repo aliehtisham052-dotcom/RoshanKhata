@@ -114,17 +114,31 @@ class Poster3dOnDeviceTest {
             val occasion = PosterOccasion.values().first { PosterDesigns.hero(it) == hero }
             for (tag in listOf("en", "ur")) {
                 val ctx = inLanguage(tag)
+                // The coin is struck in the poster's language, as the app does it.
+                val heroPic = if (hero == Hero.OFFER && tag != "en") {
+                    var st: HeroStage? = null
+                    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                        val face = CoinFace.draw(ctx, 20)
+                        st = HeroStage(app, hero, look, face)
+                        face.recycle()
+                    }
+                    val pic = runBlocking { withTimeout(30_000L) { withContext(Dispatchers.Main) { st!!.still(w, h) } } }
+                    InstrumentationRegistry.getInstrumentation().runOnMainSync { st!!.destroy() }
+                    save("hero_${hero.name.lowercase(Locale.ROOT)}_$tag.png", pic)
+                    pic
+                } else still
                 val (bmp, fit) = PosterImage.draw(ctx, PosterImage.Input(
                     occasion = occasion, title = ctx.getString(occasion.title),
                     message = ctx.getString(occasion.message),
                     shopName = if (tag == "ur") "علی ٹریڈرز" else "Ali Traders",
                     phone = "0300 0000000", address = if (tag == "ur") "مین بازار" else "Main Bazaar", logo = null,
-                    mark = ctx.getString(R.string.made_with_app), hero = still
+                    mark = ctx.getString(R.string.made_with_app), hero = heroPic
                 ))
                 assertEquals(PosterImage.HEIGHT, bmp.height)
                 assertTrue("$tag/${occasion.key}: headline at the floor (${fit.titleSize})", fit.titleSize > 56f)
                 save("poster3d_${occasion.key}_$tag.png", bmp)
                 bmp.recycle()
+                if (heroPic !== still) heroPic.recycle()
             }
             still.recycle()
         }

@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PointF
 import android.graphics.RadialGradient
+import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
@@ -519,14 +520,21 @@ object PosterDesigns {
             inner = 0xFF9E1F23.toInt(), innerDark = 0xFF4A0A0D.toInt())
         val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 150f else 120f, 64f, 345f)
         page.drawHero(Hero.OFFER.rect) { fc -> PosterFlat.coin(page.context, fc, 540f, 790f, 300f, page.fields.offerPercent) }
-        // What is on offer, big and white under the coin.
+        // What is on offer, big and white under the coin, in the room left above
+        // the days tag (Nastaliq stands taller than Latin: measured, not assumed).
         val on = page.message
         var msgSize = 0f
+        val tagTop = 1406f
+        val room = RectF(90f, 1170f, W - 90f, if (page.fields.offerDays > 0) tagTop - 20f else 1500f)
         if (on.isNotBlank()) {
             val mp = PosterKit.textPaint(page.context, on, if (page.urdu) 84f else 70f, 0xFFFFFFFF.toInt(), true, page.locale, page.urdu)
             mp.setShadowLayer(18f, 0f, 8f, 0x66000000)
-            val l = PosterKit.fitBlock(on, mp, 900, page.rtl, 2, 40f, 1.0f)
-            PosterKit.put(c, l, 90f, 1272f - l.height / 2f)
+            var l = PosterKit.fitBlock(on, mp, 900, page.rtl, 2, 40f, 1.0f)
+            while (l.height > room.height() && mp.textSize > 40f) {
+                mp.textSize -= 4f
+                l = PosterKit.fitBlock(on, mp, 900, page.rtl, 2, 40f, 1.0f)
+            }
+            PosterKit.put(c, l, 90f, room.centerY() - l.height / 2f)
             msgSize = mp.textSize
         }
         // "Only for 3 days", on a gold-edged tag.
@@ -537,7 +545,7 @@ object PosterDesigns {
             dp.textAlign = Paint.Align.CENTER
             PosterKit.fitWidth(dp, days, 700f, 24f)
             val tw = dp.measureText(days) + 90f
-            val tag = RectF(540f - tw / 2, 1360f, 540f + tw / 2, 1444f)
+            val tag = RectF(540f - tw / 2, tagTop, 540f + tw / 2, tagTop + 84f)
             c.drawRoundRect(tag, 42f, 42f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x33000000 })
             c.drawRoundRect(tag, 42f, 42f, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = 0xB3F3CF6A.toInt() })
             PosterKit.inkLine(c, days, dp, 540f, tag.centerY())
@@ -548,7 +556,7 @@ object PosterDesigns {
         if (!page.animated) {
             // The still picture's confetti, at rest.
             val fall = Paint(Paint.ANTI_ALIAS_FLAG)
-            for ((k, p) in listOf(110f to 640f, 960f to 520f, 140f to 1180f, 930f to 1120f, 300f to 140f, 820f to 230f, 70f to 900f).withIndex()) {
+            for ((k, p) in listOf(110f to 640f, 960f to 520f, 70f to 1160f, 1010f to 1130f, 480f to 215f, 820f to 230f, 70f to 900f).withIndex()) {
                 fall.color = intArrayOf(0xFFF3CF6A.toInt(), 0xFFFFFFFF.toInt(), 0xFFFF8A80.toInt())[k % 3]
                 c.save(); c.rotate(k * 37f, p.first, p.second); c.drawRect(p.first - 9f, p.second - 13f, p.first + 9f, p.second + 13f, fall); c.restore()
             }
@@ -590,7 +598,8 @@ object PosterDesigns {
             strokeWidth = 6f
             shader = LinearGradient(110f, 0f, W - 110f, 0f, intArrayOf(0x00E7C268, 0xFFE7C268.toInt(), 0x00E7C268), null, Shader.TileMode.CLAMP)
         })
-        PosterKit.signOff(page, str(page, R.string.poster_from), 1730f, sealSize = 120f)
+        // Clear of the mosque's ground line above and the phone line and mark below.
+        PosterKit.signOff(page, str(page, R.string.poster_from), 1690f, sealSize = 120f)
         PosterKit.mark(page)
         return out(head, msg, PosterMotion.Spec(glint = head.second, embers = RectF(80f, 680f, 1000f, 1600f)))
     }
@@ -598,13 +607,13 @@ object PosterDesigns {
     // ---------------------------------------------------------------- 14 August
 
     private val AZADI_FLAG = RectF(213f, 207f, 905f, 668f)
-    private val AZADI_FIREWORKS = listOf(PointF(230f, 960f), PointF(980f, 340f), PointF(960f, 930f))
+    private val AZADI_FIREWORKS = listOf(PointF(100f, 780f), PointF(980f, 340f), PointF(975f, 790f))
 
     private fun azadi(page: Page): PosterKit.Out {
         val c = page.c
         ground(c, intArrayOf(0xFF0E6A38.toInt(), 0xFF0B5A2F.toInt(), 0xFF053019.toInt()), floatArrayOf(0f, 0.45f, 1f))
         PosterKit.halo(c, 560f, 470f, 700f, 0x33FFFFFF)
-        PosterFlat.flagPole(c, 200f, 150f, 930f)
+        PosterFlat.flagPole(c, 200f, 150f, 860f)
         if (!page.animated) {
             // The still picture: the flag at rest and the bursts mid-air.
             val cache = PosterMotion.Cache()
@@ -638,12 +647,19 @@ object PosterDesigns {
             val start = (W - total) / 2
             dp.textAlign = Paint.Align.LEFT; mp.textAlign = Paint.Align.LEFT
             val cy = 1000f
+            // Both words stand on one line. Latin shares the figures' baseline; Nastaliq's
+            // ink ends where the figures' does (centred by ink, the tall gaf stroke of
+            // "اگست" made it sit low).
+            val db = Rect().also { dp.getTextBounds(day, 0, day.length, it) }
+            val mb = Rect().also { mp.getTextBounds(month, 0, month.length, it) }
+            val dayBase = PosterKit.inkBaseline(day, dp, cy)
+            val monthBase = if (PosterKit.hasArabic(month)) dayBase + db.bottom - mb.bottom else dayBase
             if (page.rtl) {
-                PosterKit.inkLine(c, month, mp, start, cy)
-                PosterKit.inkLine(c, day, dp, start + mp.measureText(month) + gap, cy)
+                c.drawText(month, start, monthBase, mp)
+                c.drawText(day, start + mp.measureText(month) + gap, dayBase, dp)
             } else {
-                PosterKit.inkLine(c, day, dp, start, cy)
-                PosterKit.inkLine(c, month, mp, start + dp.measureText(day) + gap, cy)
+                c.drawText(day, start, dayBase, dp)
+                c.drawText(month, start + dp.measureText(day) + gap, monthBase, mp)
             }
         } else {
             PosterKit.foilHeadline(page, date, 200f, 80f, 1000f)
