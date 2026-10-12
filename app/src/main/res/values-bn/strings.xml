@@ -2819,4 +2819,34 @@
         <item quantity="one">মাত্র %d দিনের জন্য</item>
         <item quantity="other">মাত্র %d দিনের জন্য</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">কার্ডের ভাষা</string>
+    <string name="biz_card_language_note">উর্দু কার্ড পুরোটাই উর্দুতে এবং ডান থেকে বাঁয়ে পড়া হয়। প্রতিটি ভাষার নিজস্ব নাম, মালিক ও ঠিকানা থাকে; নম্বর, ইমেল ও ওয়েবসাইট দুটোতেই এক।</string>
+    <string name="poster_step_design">ডিজাইন</string>
+    <string name="poster_step_words">লেখা</string>
+    <string name="poster_step_send">পাঠান</string>
+    <string name="poster_prev_design">আগের ডিজাইন</string>
+    <string name="poster_next_design">পরের ডিজাইন</string>
+    <string name="poster_view_full">পুরোটা দেখুন</string>
+    <string name="poster_live_preview">সরাসরি প্রিভিউ</string>
+    <string name="poster_live_note">লেখার সময় এখানেই থাকে</string>
+    <string name="poster_shop_heading">দোকানের নাম — পোস্টারের শিরোনাম</string>
+    <string name="poster_shop_heading_note">প্রতিটি পোস্টার শুরু হয় আপনার দোকানের নাম দিয়ে, পণ্যের তালিকা দিয়ে নয়। দোকানের প্রোফাইলেও সেভ হয়।</string>
+    <string name="poster_shop_in_en">দোকানের নাম ইংরেজিতে</string>
+    <string name="poster_shop_in_ur">দোকানের নাম উর্দুতে</string>
+    <string name="poster_shop_needed">দোকানের নাম লিখুন: এটাই পোস্টারের শিরোনাম</string>
+    <string name="poster_use_original">আসল লেখা</string>
+    <string name="poster_quick_add">দ্রুত যোগ করুন — আপনার ব্যবসা</string>
+    <string name="poster_photo_title">ছবি (ঐচ্ছিক)</string>
+    <string name="poster_remove_item">%1$s সরান</string>
+    <string name="poster_add_named">%1$s যোগ করুন</string>
+    <string name="poster_tap_full">পুরো ছবি দেখতে এতে ট্যাপ করুন</string>
+    <string name="poster_back">ফিরে যান</string>
+    <string name="poster_next_words">পরবর্তী: লেখা</string>
+    <string name="poster_next_send">পরবর্তী: পাঠান</string>
+    <string name="poster_design_count">আরও দেখতে সোয়াইপ করুন · %2$d-এর মধ্যে %1$d</string>
+    <string name="poster_lang_other">অন্য</string>
+    <string name="poster_lang_note">শুধু পোস্টার বদলায়। অ্যাপ যেমন আছে তেমনই থাকে।</string>
+    <string name="poster_lang_most_used">সবচেয়ে বেশি ব্যবহৃত</string>
 </resources>

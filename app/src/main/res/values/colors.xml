@@ -419,4 +419,6 @@
     <!-- The poster screen's warm note (12 Oct). -->
     <color name="poster_note_bg">#FFF6DD</color>
     <color name="poster_note_stroke">#E8C873</color>
+    <!-- Poster screen (12 Oct): the soft green under a chosen item and the photo drop. -->
+    <color name="poster_soft_green">#EEF5F0</color>
 </resources>

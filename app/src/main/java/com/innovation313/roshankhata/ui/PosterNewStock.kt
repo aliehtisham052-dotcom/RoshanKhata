@@ -11,7 +11,6 @@ import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
 import com.innovation313.roshankhata.R
-import com.innovation313.roshankhata.data.Trade
 import com.innovation313.roshankhata.data.TradeVocab
 import com.innovation313.roshankhata.ui.poster3d.Hero
 
@@ -75,8 +74,8 @@ object PosterNewStock {
         val urdu = page.urdu
         drawBackground(c)
 
-        val trade = Trade.current(context).example(context)
-        PosterKit.header(page, top = 66f, sealSize = 138f, tradeLine = trade)
+        // The heading is the shop's name alone (12 Oct, the owner: never a list of products).
+        PosterKit.header(page, top = 66f, sealSize = 138f)
 
         PosterKit.kicker(page, context.getString(R.string.poster_kicker_new_stock), 300f, GOLD, size = 33f)
 

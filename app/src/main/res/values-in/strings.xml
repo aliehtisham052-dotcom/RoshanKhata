@@ -2773,4 +2773,34 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <plurals name="poster_offer_days">
         <item quantity="other">Hanya %d hari</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">Bahasa kartu</string>
+    <string name="biz_card_language_note">Kartu Urdu sepenuhnya berbahasa Urdu dan dibaca dari kanan ke kiri. Tiap bahasa punya nama, pemilik, dan alamatnya sendiri; nomor, email, dan situs web sama di keduanya.</string>
+    <string name="poster_step_design">Desain</string>
+    <string name="poster_step_words">Kata-kata</string>
+    <string name="poster_step_send">Kirim</string>
+    <string name="poster_prev_design">Desain sebelumnya</string>
+    <string name="poster_next_design">Desain berikutnya</string>
+    <string name="poster_view_full">Lihat penuh</string>
+    <string name="poster_live_preview">Pratinjau langsung</string>
+    <string name="poster_live_note">Tetap di sini saat Anda mengetik</string>
+    <string name="poster_shop_heading">Nama toko — judul poster</string>
+    <string name="poster_shop_heading_note">Setiap poster dibuka dengan nama toko Anda, bukan daftar produk. Juga disimpan di profil toko.</string>
+    <string name="poster_shop_in_en">Nama toko dalam bahasa Inggris</string>
+    <string name="poster_shop_in_ur">Nama toko dalam bahasa Urdu</string>
+    <string name="poster_shop_needed">Tulis nama toko Anda: itulah judul poster</string>
+    <string name="poster_use_original">Pakai teks asli</string>
+    <string name="poster_quick_add">Tambah cepat — usaha Anda</string>
+    <string name="poster_photo_title">Foto (opsional)</string>
+    <string name="poster_remove_item">Hapus %1$s</string>
+    <string name="poster_add_named">Tambah %1$s</string>
+    <string name="poster_tap_full">Ketuk gambar untuk melihatnya penuh</string>
+    <string name="poster_back">Kembali</string>
+    <string name="poster_next_words">Lanjut: Kata-kata</string>
+    <string name="poster_next_send">Lanjut: Kirim</string>
+    <string name="poster_design_count">Geser untuk lainnya · %1$d dari %2$d</string>
+    <string name="poster_lang_other">Lainnya</string>
+    <string name="poster_lang_note">Hanya poster yang berubah. Aplikasi tetap seperti biasa.</string>
+    <string name="poster_lang_most_used">Paling sering dipakai</string>
 </resources>

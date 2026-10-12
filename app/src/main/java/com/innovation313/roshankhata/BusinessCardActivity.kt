@@ -1,6 +1,8 @@
 package com.innovation313.roshankhata
 
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -12,12 +14,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.ui.CardPreviewView
 import com.innovation313.roshankhata.ui.CardTemplates
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Locale
 
 /**
  * The Dukan Card: a visiting card for the shop, drawn entirely on the phone
@@ -53,6 +58,11 @@ class BusinessCardActivity : BaseActivity() {
 
     private var template = TPL_DEFAULT
 
+    /** "ur" or "en": the card's own language, independent of the app's (12 Oct). */
+    private var cardLang = "en"
+    /** Set while a language's fields are being filled in, so they are not saved or drawn one by one. */
+    private var loading = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_business_card)
@@ -85,17 +95,15 @@ class BusinessCardActivity : BaseActivity() {
         // Prefill from what the app already knows, then whatever was last typed
         // here. The business name is shared with statements via BusinessProfile.
         val prefs = getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE)
-        etBizName.setText(BusinessProfile.businessName(this) ?: "")
-        etType.setText(prefs.getString(KEY_TYPE, ""))
-        etOwner.setText(prefs.getString(KEY_OWNER, ""))
+        cardLang = prefs.getString(KEY_LANG, null)?.takeIf { it == UR || it == EN } ?: defaultLanguage()
+        loading = true
         etPhone.setText(prefs.getString(KEY_PHONE, ""))
-        etAddress.setText(prefs.getString(KEY_ADDRESS, ""))
         etWhatsapp.setText(prefs.getString(KEY_WHATSAPP, ""))
         etEmail.setText(prefs.getString(KEY_EMAIL, ""))
         etWeb.setText(prefs.getString(KEY_WEB, ""))
-        etTagline.setText(prefs.getString(KEY_TAGLINE, ""))
-        // Pre-filled until the owner changes it; an emptied box stays empty.
-        etQrMessage.setText(prefs.getString(KEY_QR_MESSAGE, getString(R.string.biz_card_qr_message_default)))
+        fillLanguageFields()
+        loading = false
+        buildLanguageToggle()
         // A design that was removed (ids 0-7) resolves to the first card, and the
         // picker highlights that card rather than nothing.
         template = CardTemplates.byId(prefs.getInt(KEY_TEMPLATE, TPL_DEFAULT)).id
@@ -122,7 +130,7 @@ class BusinessCardActivity : BaseActivity() {
         val watcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
-            override fun afterTextChanged(s: Editable?) = render()
+            override fun afterTextChanged(s: Editable?) { if (!loading) render() }
         }
         listOf(etBizName, etType, etOwner, etPhone, etAddress, etWhatsapp, etEmail, etWeb, etTagline, etQrMessage)
             .forEach { it.addTextChangedListener(watcher) }
@@ -146,6 +154,62 @@ class BusinessCardActivity : BaseActivity() {
             loadLogo()
             render()
         }
+    }
+
+    // ---------- Language ----------
+
+    /** The app's language when it is Urdu (in its own script), else English. */
+    private fun defaultLanguage(): String {
+        val app = Locale.forLanguageTag(com.innovation313.roshankhata.ui.LocaleRefresh.tag(this))
+        return if (app.language == "ur" && app.script != "Latn") UR else EN
+    }
+
+    /** A context speaking the card's language: its default lines and the app's mark. */
+    private fun cardContext(): Context {
+        val config = Configuration(resources.configuration)
+        config.setLocale(Locale.forLanguageTag(cardLang))
+        return createConfigurationContext(config)
+    }
+
+    /** The key a language-own field is kept under: the English card's keys are the old ones. */
+    private fun k(key: String) = if (cardLang == UR) key + "_ur" else key
+
+    private fun buildLanguageToggle() {
+        val group = findViewById<MaterialButtonToggleGroup>(R.id.toggleCardLang)
+        val ur = findViewById<MaterialButton>(R.id.btnCardUrdu)
+        val en = findViewById<MaterialButton>(R.id.btnCardEnglish)
+        ur.text = "اردو"
+        en.text = "English"
+        group.check(if (cardLang == UR) R.id.btnCardUrdu else R.id.btnCardEnglish)
+        group.addOnButtonCheckedListener { _, id, checked ->
+            if (!checked) return@addOnButtonCheckedListener
+            val next = if (id == R.id.btnCardUrdu) UR else EN
+            if (next == cardLang) return@addOnButtonCheckedListener
+            save()
+            cardLang = next
+            getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE).edit().putString(KEY_LANG, next).apply()
+            loading = true
+            fillLanguageFields()
+            loading = false
+            render()
+        }
+        com.innovation313.roshankhata.ui.TextFit.relax(group)
+    }
+
+    /** The fields each language keeps for itself, and the way they are typed. */
+    private fun fillLanguageFields() {
+        val prefs = getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE)
+        etBizName.setText(
+            (if (cardLang == UR) BusinessProfile.businessNameUrdu(this) else BusinessProfile.businessName(this)) ?: ""
+        )
+        etType.setText(prefs.getString(k(KEY_TYPE), ""))
+        etOwner.setText(prefs.getString(k(KEY_OWNER), ""))
+        etAddress.setText(prefs.getString(k(KEY_ADDRESS), ""))
+        etTagline.setText(prefs.getString(k(KEY_TAGLINE), ""))
+        // Pre-filled until the owner changes it; an emptied box stays empty.
+        etQrMessage.setText(prefs.getString(k(KEY_QR_MESSAGE), cardContext().getString(R.string.biz_card_qr_message_default)))
+        val dir = if (cardLang == UR) android.view.View.TEXT_DIRECTION_RTL else android.view.View.TEXT_DIRECTION_LTR
+        listOf(etBizName, etType, etOwner, etAddress, etTagline, etQrMessage).forEach { it.textDirection = dir }
     }
 
     /** Read the Profile logo, and show the switch or the "add one" hint accordingly. */
@@ -203,7 +267,7 @@ class BusinessCardActivity : BaseActivity() {
 
     private fun cardData() = CardTemplates.CardData(
         name = etBizName.text.toString().trim()
-            .ifEmpty { getString(R.string.biz_card_name_hint) },
+            .ifEmpty { cardContext().getString(R.string.biz_card_name_hint) },
         type = etType.text.toString().trim(),
         owner = etOwner.text.toString().trim(),
         phone = etPhone.text.toString().trim(),
@@ -211,13 +275,14 @@ class BusinessCardActivity : BaseActivity() {
         // Empty when the owner has switched the mark off — CardTemplates
         // draws nothing for an empty footer, so no template needs to know
         // about the setting.
-        footer = if (markSwitch.isChecked) getString(R.string.made_with_app) else "",
+        footer = if (markSwitch.isChecked) cardContext().getString(R.string.made_with_app) else "",
         whatsapp = etWhatsapp.text.toString().trim(),
         email = etEmail.text.toString().trim(),
         web = etWeb.text.toString().trim(),
         tagline = etTagline.text.toString().trim(),
         qrMessage = etQrMessage.text.toString().trim(),
-        logo = if (logoSwitch.isChecked) logo else null
+        logo = if (logoSwitch.isChecked) logo else null,
+        rtl = cardLang == UR
     )
 
     /** The still card that is shared: every moving part at rest. */
@@ -279,17 +344,18 @@ class BusinessCardActivity : BaseActivity() {
     }
 
     private fun save() {
-        BusinessProfile.setBusinessName(this, etBizName.text.toString())
+        if (cardLang == UR) BusinessProfile.setBusinessNameUrdu(this, etBizName.text.toString())
+        else BusinessProfile.setBusinessName(this, etBizName.text.toString())
         getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE).edit()
-            .putString(KEY_TYPE, etType.text.toString().trim())
-            .putString(KEY_OWNER, etOwner.text.toString().trim())
+            .putString(k(KEY_TYPE), etType.text.toString().trim())
+            .putString(k(KEY_OWNER), etOwner.text.toString().trim())
             .putString(KEY_PHONE, etPhone.text.toString().trim())
-            .putString(KEY_ADDRESS, etAddress.text.toString().trim())
+            .putString(k(KEY_ADDRESS), etAddress.text.toString().trim())
             .putString(KEY_WHATSAPP, etWhatsapp.text.toString().trim())
             .putString(KEY_EMAIL, etEmail.text.toString().trim())
             .putString(KEY_WEB, etWeb.text.toString().trim())
-            .putString(KEY_TAGLINE, etTagline.text.toString().trim())
-            .putString(KEY_QR_MESSAGE, etQrMessage.text.toString().trim())
+            .putString(k(KEY_TAGLINE), etTagline.text.toString().trim())
+            .putString(k(KEY_QR_MESSAGE), etQrMessage.text.toString().trim())
             .putInt(KEY_TEMPLATE, template)
             .apply()
     }
@@ -324,6 +390,9 @@ class BusinessCardActivity : BaseActivity() {
         private const val KEY_TEMPLATE = "template"
         private const val KEY_MARK = "show_mark"
         private const val KEY_LOGO = "show_logo"
+        private const val KEY_LANG = "card_lang"
+        private const val UR = "ur"
+        private const val EN = "en"
 
         private val INK = Color.parseColor("#1A1A18")
         private val BRAND_GREEN = Color.parseColor("#1B5E3A")

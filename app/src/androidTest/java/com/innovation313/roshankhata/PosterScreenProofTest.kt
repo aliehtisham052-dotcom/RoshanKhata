@@ -22,23 +22,34 @@ class PosterScreenProofTest {
 
     private val app: Context = ApplicationProvider.getApplicationContext()
 
+    /**
+     * The three steps (12 Oct): Design with its big picture and language
+     * switch; Words with the pinned preview and the design's own fields; Send.
+     * Each design's Words step is photographed; Send once. The shop has a name
+     * (dummy), as the Send step asks for one.
+     */
     @Test
     fun the_screen_opens_with_each_designs_fields() {
+        com.innovation313.roshankhata.data.BusinessProfile.setBusinessName(app, "Ali Traders")
         for (key in listOf("new_stock", "closed", "hours", "ramazan", "offer", "azadi")) {
             app.getSharedPreferences("poster", Context.MODE_PRIVATE).edit().putString("occasion", key).commit()
             ActivityScenario.launch(PosterActivity::class.java).use { scenario ->
                 SystemClock.sleep(2500)
                 if (key == "new_stock") save("screen_top.png")
-                scenario.onActivity { a ->
-                    val scroll = a.findViewById<ScrollView>(R.id.posterScroll)
-                    val card = a.findViewById<android.view.View>(R.id.etPosterTitle)
-                    var y = 0
-                    var v: android.view.View? = card
-                    while (v != null && v !== scroll) { y += v.top; v = v.parent as? android.view.View }
-                    scroll.scrollTo(0, (y - 120).coerceAtLeast(0))
-                }
-                SystemClock.sleep(1200)
+                scenario.onActivity { a -> a.findViewById<android.view.View>(R.id.btnStepNext).performClick() }
+                SystemClock.sleep(1500)
                 save("screen_fields_$key.png")
+                if (key == "new_stock") {
+                    scenario.onActivity { a ->
+                        val scroll = a.findViewById<ScrollView>(R.id.posterScroll)
+                        scroll.scrollTo(0, scroll.getChildAt(0).height)
+                    }
+                    SystemClock.sleep(800)
+                    save("screen_fields_new_stock_end.png")
+                    scenario.onActivity { a -> a.findViewById<android.view.View>(R.id.btnStepNext).performClick() }
+                    SystemClock.sleep(1500)
+                    save("screen_send.png")
+                }
             }
         }
         assertTrue(true)

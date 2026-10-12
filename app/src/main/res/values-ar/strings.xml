@@ -2959,4 +2959,34 @@
         <item quantity="many">لمدة %d يومًا فقط</item>
         <item quantity="other">لمدة %d يوم فقط</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">لغة البطاقة</string>
+    <string name="biz_card_language_note">البطاقة الأردية كلها بالأردية وتُقرأ من اليمين إلى اليسار. لكل لغة اسمها ومالكها وعنوانها؛ الأرقام والبريد والموقع واحدة في الاثنتين.</string>
+    <string name="poster_step_design">التصميم</string>
+    <string name="poster_step_words">الكلمات</string>
+    <string name="poster_step_send">الإرسال</string>
+    <string name="poster_prev_design">التصميم السابق</string>
+    <string name="poster_next_design">التصميم التالي</string>
+    <string name="poster_view_full">عرض كامل</string>
+    <string name="poster_live_preview">معاينة مباشرة</string>
+    <string name="poster_live_note">تبقى هنا أثناء الكتابة</string>
+    <string name="poster_shop_heading">اسم المتجر — عنوان الملصق</string>
+    <string name="poster_shop_heading_note">كل ملصق يبدأ باسم متجرك، لا بقائمة منتجات. ويُحفظ في ملف متجرك أيضًا.</string>
+    <string name="poster_shop_in_en">اسم المتجر بالإنجليزية</string>
+    <string name="poster_shop_in_ur">اسم المتجر بالأردية</string>
+    <string name="poster_shop_needed">اكتب اسم متجرك: إنه عنوان الملصق</string>
+    <string name="poster_use_original">النص الأصلي</string>
+    <string name="poster_quick_add">إضافة سريعة — تجارتك</string>
+    <string name="poster_photo_title">صورة (اختياري)</string>
+    <string name="poster_remove_item">إزالة %1$s</string>
+    <string name="poster_add_named">إضافة %1$s</string>
+    <string name="poster_tap_full">اضغط على الصورة لرؤيتها كاملة</string>
+    <string name="poster_back">رجوع</string>
+    <string name="poster_next_words">التالي: الكلمات</string>
+    <string name="poster_next_send">التالي: الإرسال</string>
+    <string name="poster_design_count">اسحب للمزيد · %1$d من %2$d</string>
+    <string name="poster_lang_other">أخرى</string>
+    <string name="poster_lang_note">يتغير الملصق فقط. يبقى التطبيق كما هو.</string>
+    <string name="poster_lang_most_used">الأكثر استخدامًا</string>
 </resources>

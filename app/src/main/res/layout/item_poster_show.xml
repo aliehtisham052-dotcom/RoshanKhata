@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One thing the poster may show (phone, address, logo, the app's mark), ticked on or off. -->
+<com.google.android.material.checkbox.MaterialCheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_profile_card"
+    android:minHeight="52dp"
+    android:paddingStart="6dp"
+    android:paddingEnd="10dp"
+    android:textColor="@color/ink"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    app:buttonTint="@color/brand_green_text" />

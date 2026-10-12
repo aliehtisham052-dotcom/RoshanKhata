@@ -69,7 +69,13 @@ object CardTemplates {
          */
         val qrMessage: String = "",
         /** The shop's logo from its Profile, or null for none (see [CardLogo]). */
-        val logo: Bitmap? = null
+        val logo: Bitmap? = null,
+        /**
+         * An Urdu card (12 Oct): the whole design reads right to left - every
+         * shape mirrored, every line anchored on the right - while the words,
+         * the QR and the logo themselves stay the right way round.
+         */
+        val rtl: Boolean = false
     )
 
     /** One design: a name for the picker, and how to draw it. */
@@ -83,9 +89,17 @@ object CardTemplates {
     ) {
         /** The card, and the shop's logo in a free spot on it when there is one. */
         fun draw(c: Canvas, d: CardData, w: Int, h: Int, t: Float) {
-            body(c, d, w, h, t)
+            if (d.rtl && c !is CardLogo.Recorder) {
+                // Drawn once in a mirror: the layout's left becomes its right.
+                c.save()
+                c.scale(-1f, 1f, w / 2f, 0f)
+                mirrored = true
+                try { body(c, d, w, h, t) } finally { mirrored = false; c.restore() }
+            } else {
+                body(c, d, w, h, t)
+            }
             val logo = d.logo ?: return
-            CardLogo.draw(c, id, body, d, logo, w, h)
+            CardLogo.draw(c, id, body, d, logo, w, h, mirror = d.rtl)
         }
 
         /** Where text, QR and shapes land on this card (for the logo and its tests). */
@@ -106,12 +120,61 @@ object CardTemplates {
     private var sansTf: Typeface = Typeface.DEFAULT
     private var boldTf: Typeface = Typeface.DEFAULT_BOLD
     private var serifTf: Typeface = Typeface.SERIF
+    /** Urdu words on a card are set in Nastaliq, as on the posters. */
+    private var urduTf: Typeface? = null
 
     /** Loads the app's fonts once. Without it the cards still draw, in the system font. */
     fun init(context: Context) {
         sansTf = InvoiceFonts.manrope(context)
         boldTf = InvoiceFonts.manropeBold(context)
         serifTf = InvoiceFonts.playfairDisplay(context)
+        urduTf = InvoiceFonts.nastaliq(context)
+    }
+
+    /** True while an Urdu card's design is being drawn in its mirror (see [Template.draw]). */
+    @Volatile
+    private var mirrored = false
+
+    internal fun arabicScript(s: String) = s.any {
+        it in '\u0600'..'\u06FF' || it in '\u0750'..'\u077F' || it in '\uFB50'..'\uFDFF' || it in '\uFE70'..'\uFEFF'
+    }
+
+    /**
+     * Every word on every card goes through here.
+     *
+     * Urdu is set in Nastaliq, never letter-spaced (spacing breaks the joins),
+     * and no wider than the line the design measured for it. On an Urdu card
+     * the design is drawn in a mirror, so each line is turned back the right
+     * way round about its own middle: it stays where the mirror put it, now
+     * anchored on the right, and reads normally.
+     */
+    private fun text(c: Canvas, raw: String, x: Float, y: Float, p: Paint) {
+        if (raw.isEmpty()) return
+        val s = if (mirrored && raw == "\u2192") "\u2190" else raw
+        var paint = p
+        if (arabicScript(s)) {
+            val tf = urduTf
+            paint = Paint(p).apply {
+                letterSpacing = 0f
+                if (tf != null) { typeface = tf; isFakeBoldText = false }
+            }
+            val room = p.measureText(s)
+            while (paint.measureText(s) > room && paint.textSize > 14f) paint.textSize -= 1f
+        }
+        if (!mirrored) {
+            c.drawText(s, x, y, paint)
+            return
+        }
+        val w = paint.measureText(s)
+        val mid = when (paint.textAlign) {
+            Paint.Align.CENTER -> x
+            Paint.Align.RIGHT -> x - w / 2
+            else -> x + w / 2
+        }
+        c.save()
+        c.scale(-1f, 1f, mid, 0f)
+        c.drawText(s, x, y, paint)
+        c.restore()
     }
 
     // ---------- paint helpers ----------
@@ -223,7 +286,7 @@ object CardTemplates {
         }
         var y = top + s * 0.86f
         parts.forEachIndexed { i, part ->
-            c.drawText(part, x, y, p)
+            text(c, part, x, y, p)
             if (i < parts.size - 1) y += s * lineGap
         }
         return y + s * 0.2f
@@ -248,7 +311,7 @@ object CardTemplates {
             s -= 1f
             p = paint(s, colour, bold = true, align = align, spacing = 0.16f)
         }
-        c.drawText(ellipsise(t, p, max), x, baseline, p)
+        text(c, ellipsise(t, p, max), x, baseline, p)
         return baseline
     }
 
@@ -271,7 +334,7 @@ object CardTemplates {
         val h = size * 1.7f
         val left = if (alignRight) x - w else x
         c.drawRoundRect(RectF(left, y, left + w, y + h), h / 2, h / 2, fill(bg))
-        c.drawText(shown, left + size * 0.7f, y + h * 0.68f, p)
+        text(c, shown, left + size * 0.7f, y + h * 0.68f, p)
         return w
     }
 
@@ -407,7 +470,7 @@ object CardTemplates {
             val allowTwo = ico == Ico.PIN && y + gap * 0.75f <= bottom
             val parts = if (allowTwo) wrap(value, p, room, 2) else listOf(ellipsise(value, p, room))
             parts.forEachIndexed { i, part ->
-                c.drawText(part, tx, y, p)
+                text(c, part, tx, y, p)
                 if (i < parts.size - 1) y += gap * 0.75f
             }
             y += gap
@@ -433,7 +496,7 @@ object CardTemplates {
         var y = top
         if (d.owner.isNotEmpty()) {
             val p = paint(size * 1.12f, ownerColour, bold = true, align = align)
-            c.drawText(ellipsise(d.owner, p, max), x, y, p)
+            text(c, ellipsise(d.owner, p, max), x, y, p)
             y += gap * 1.05f
         }
         return rowList(c, rows(d), x, y, max, text, icon, size, gap, align, bottom)
@@ -453,7 +516,7 @@ object CardTemplates {
     private fun watermark(c: Canvas, d: CardData, x: Float, y: Float, onDark: Boolean, align: Paint.Align = Paint.Align.RIGHT) {
         if (d.footer.isEmpty()) return
         val base = if (onDark) WHITE else INK
-        c.drawText(d.footer, x, y, paint(16f, alpha(base, 96), align = align))
+        text(c, d.footer, x, y, paint(16f, alpha(base, 96), align = align))
     }
 
     // ---------- QR ----------
@@ -509,6 +572,9 @@ object CardTemplates {
         rec?.markQr(RectF(x, y, x + size, y + size))
         rec?.muted = true
         val p = fill(dark)
+        // On an Urdu card the code is turned back the right way: a mirrored QR
+        // does not scan on every phone.
+        if (mirrored) { c.save(); c.scale(-1f, 1f, x + size / 2, 0f) }
         for (yy in 0 until m.height) for (xx in 0 until m.width) {
             if (m.get(xx, yy)) {
                 val l = x + off + xx * cell
@@ -516,6 +582,7 @@ object CardTemplates {
                 c.drawRect(l, t, l + cell, t + cell, p)
             }
         }
+        if (mirrored) c.restore()
         rec?.muted = false
         return true
     }
@@ -563,7 +630,7 @@ object CardTemplates {
         val top = 520f
         var ly = top
         if (d.owner.isNotEmpty()) {
-            c.drawText(ellipsise(d.owner, paint(30f, GOLD_PALE, true), 500f), 70f, ly, paint(30f, GOLD_PALE, true))
+            text(c, ellipsise(d.owner, paint(30f, GOLD_PALE, true), 500f), 70f, ly, paint(30f, GOLD_PALE, true))
             ly += 44f
         }
         rowList(c, left, 70f, ly, 500f, WHITE, GOLD, bottom = h - 30f)
@@ -578,7 +645,7 @@ object CardTemplates {
         val barW = if (live(t)) w * min(1f, 0.6f + 0.4f * wave(t)) else w.toFloat()
         c.drawRect(0f, 0f, barW, 22f, fill(red))
         val small = paint(26f, Color.parseColor("#888780"))
-        c.drawText(ellipsise(d.name, small, 600f), 70f, 96f, small)
+        text(c, ellipsise(d.name, small, 600f), 70f, 96f, small)
         val hero = d.whatsapp.ifEmpty { d.phone }
         if (hero.isNotEmpty()) {
             val sp = hero.indexOf(' ')
@@ -588,7 +655,7 @@ object CardTemplates {
                 val p = paint(116f, INK, bold = true, spacing = -0.03f)
                 var s = 116f
                 while (p.measureText(part) > 620f && s > 60f) { s -= 4f; p.textSize = s }
-                c.drawText(part, 66f, y, p)
+                text(c, part, 66f, y, p)
                 y += s * 0.98f
             }
             glyph(c, Ico.PHONE_WA, 100f, y - 20f, 30f, red)
@@ -599,14 +666,14 @@ object CardTemplates {
         var ry = 96f
         if (d.type.isNotEmpty()) {
             val p = paint(24f, Color.parseColor("#5F5E5A"), align = Paint.Align.RIGHT)
-            c.drawText(ellipsise(d.type, p, 400f), w - 70f, ry, p); ry += 38f
+            text(c, ellipsise(d.type, p, 400f), w - 70f, ry, p); ry += 38f
         }
         // The number is this card's hero, so it carries no QR: a code big
         // enough to print would leave the contact column no room.
         rowList(c, list, w - 70f, ry, 420f, Color.parseColor("#5F5E5A"), red, size = 24f, gap = 38f, align = Paint.Align.RIGHT, bottom = h - 120f)
         c.drawRect(70f, h - 92f, w - 70f, h - 89f, fill(INK))
         val op = paint(28f, INK)
-        c.drawText(ellipsise(d.owner, op, 700f), 70f, h - 46f, op)
+        text(c, ellipsise(d.owner, op, 700f), 70f, h - 46f, op)
         caps(c, d.tagline, w - 70f, h - 46f, 380f, red, align = Paint.Align.RIGHT)
         watermark(c, d, w - 70f, 52f, onDark = false)
     }
@@ -644,7 +711,7 @@ object CardTemplates {
         var s = 40f
         val name = d.name.uppercase()
         while (np.measureText(name) > h - 120f && s > 22f) { s -= 2f; np.textSize = s }
-        c.drawText(ellipsise(name, np, h - 120f), bandL + 70f, h / 2f + s * 0.35f, np)
+        text(c, ellipsise(name, np, h - 120f), bandL + 70f, h / 2f + s * 0.35f, np)
         c.restore()
         c.drawCircle(bandL + 70f, h - 44f, 12f * (0.8f + 0.4f * wave(t)), fill(amber))
         caps(c, d.type, 70f, 92f, bandL - 120f, Color.parseColor("#854F0B"))
@@ -652,7 +719,7 @@ object CardTemplates {
         var y = 196f
         if (d.owner.isNotEmpty()) {
             val op = paint(52f, INK, bold = true)
-            c.drawText(ellipsise(d.owner, op, bandL - 120f), 70f, y, op); y += 64f
+            text(c, ellipsise(d.owner, op, bandL - 120f), 70f, y, op); y += 64f
         }
         val hasQr = qr(c, d, bandL - 40f - QR_TILE, h - 60f - QR_TILE, QR_TILE)
         rowList(c, rows(d), 70f, y + 10f, bandL - 120f - (if (hasQr) QR_TILE + 40f else 0f), INK, amber, bottom = h - 40f)
@@ -697,12 +764,12 @@ object CardTemplates {
             val txt = ellipsise(d.type.uppercase(), p, panel.width() - 120f)
             val tw = p.measureText(txt)
             c.drawRect(panel.left + 40f, b + 4f, panel.left + 60f + tw, b + 42f, fill(INK))
-            c.drawText(txt, panel.left + 50f, b + 31f, p)
+            text(c, txt, panel.left + 50f, b + 31f, p)
         }
         info(c, d, panel.left + 40f, infoTopFor(d, panel.bottom - 30f), panel.width() - 260f, INK, INK, bottom = panel.bottom - 20f)
         c.save()
         c.rotate(if (live(t)) -6f + 12f * wave(t) else 0f, panel.right - 90f, panel.bottom - 70f)
-        c.drawText("→", panel.right - 90f, panel.bottom - 40f, paint(110f, INK, bold = true, align = Paint.Align.CENTER))
+        text(c, "→", panel.right - 90f, panel.bottom - 40f, paint(110f, INK, bold = true, align = Paint.Align.CENTER))
         c.restore()
         pill(c, d.tagline, panel.right - 30f, panel.top + 26f, INK, Color.parseColor("#FAC775"), size = 20f, alignRight = true, max = 360f)
         watermark(c, d, w - 64f, h - 20f, onDark = false)
@@ -729,7 +796,7 @@ object CardTemplates {
             val tp = paint(24f, brown, bold = true, align = Paint.Align.CENTER)
             val top = if (hasQr) r.top + 40f + QR_TILE + 50f else r.centerY()
             wrap(d.tagline, tp, 360f, 2).forEachIndexed { i, line ->
-                c.drawText(line, stubX + 210f, top + i * 32f, tp)
+                text(c, line, stubX + 210f, top + i * 32f, tp)
             }
         }
         watermark(c, d, stubX - 30f, r.bottom - 14f, onDark = false)
@@ -832,7 +899,7 @@ object CardTemplates {
         c.drawRoundRect(RectF(tile.left, tile.top + 18f, tile.right, tile.bottom + 18f), 64f, 64f, fill(alpha(blue, 70)))
         c.drawRoundRect(tile, 64f, 64f, linear(tile.left, tile.top, tile.right, tile.bottom, blue, Color.parseColor("#7F77DD")))
         val initial = d.name.trim().take(1).uppercase().ifEmpty { "•" }
-        c.drawText(initial, tile.centerX(), tile.centerY() + 62f, paint(176f, WHITE, bold = true, align = Paint.Align.CENTER))
+        text(c, initial, tile.centerX(), tile.centerY() + 62f, paint(176f, WHITE, bold = true, align = Paint.Align.CENTER))
         val x0 = 400f
         val room = w - x0 - 64f
         val b = title(c, d.name, x0, 60f, room, 56f, WHITE)
@@ -858,7 +925,7 @@ object CardTemplates {
         info(c, d, 72f, infoTopFor(d, tapeTop - 34f), 720f, INK, clay, bottom = tapeTop - 20f)
         if (d.tagline.isNotEmpty()) {
             val p = paint(26f, Color.parseColor("#993C1D"), align = Paint.Align.RIGHT)
-            wrap(d.tagline, p, 340f, 2).forEachIndexed { i, s -> c.drawText(s, w - 70f, tapeTop - 70f + i * 34f, p) }
+            wrap(d.tagline, p, 340f, 2).forEachIndexed { i, s -> text(c, s, w - 70f, tapeTop - 70f + i * 34f, p) }
         }
         c.drawRect(0f, tapeTop, w.toFloat(), h.toFloat(), fill(Color.parseColor("#FAC775")))
         val shift = if (live(t)) t * 90f else 0f
@@ -888,7 +955,7 @@ object CardTemplates {
         hazard(0f, 34f)
         hazard(h - 18f, h.toFloat())
         val initial = d.name.trim().take(1).uppercase()
-        c.drawText(initial, w - 70f, h - 70f, paint(320f, Color.parseColor("#2E2A24"), bold = true, align = Paint.Align.RIGHT))
+        text(c, initial, w - 70f, h - 70f, paint(320f, Color.parseColor("#2E2A24"), bold = true, align = Paint.Align.RIGHT))
         val b = title(c, d.name.uppercase(), 70f, 70f, w - 380f, 84f, amber, lineGap = 0.95f)
         caps(c, d.type, 72f, b + 26f, w - 380f, Color.parseColor("#9C9A92"))
         info(c, d, 72f, infoTopFor(d, h - 60f), w - 420f, Color.parseColor("#F1EFE8"), amber, ownerColour = WHITE, bottom = h - 40f)
@@ -960,9 +1027,9 @@ object CardTemplates {
         val p1 = paint(82f, WHITE, bold = true)
         var s = 82f
         while ((p1.measureText(first) > room || paint(s, red, true).measureText(rest) > room) && s > 40f) { s -= 3f; p1.textSize = s }
-        c.drawText(ellipsise(first, p1, room), 70f, 120f, p1)
+        text(c, ellipsise(first, p1, room), 70f, 120f, p1)
         var y = 120f
-        if (rest.isNotEmpty()) { y += s * 0.95f; c.drawText(ellipsise(rest, paint(s, red, true), room), 70f, y, paint(s, red, true)) }
+        if (rest.isNotEmpty()) { y += s * 0.95f; text(c, ellipsise(rest, paint(s, red, true), room), 70f, y, paint(s, red, true)) }
         caps(c, d.type, 72f, y + 46f, room, Color.parseColor("#9C9A92"))
         info(c, d, 72f, infoTopFor(d, h - 56f), room - 40f, Color.parseColor("#F1EFE8"), red, ownerColour = WHITE, bottom = h - 34f)
         caps(c, d.tagline, w - 60f, 70f, 420f, Color.parseColor("#9C9A92"), size = 20f, align = Paint.Align.RIGHT)
@@ -1109,7 +1176,7 @@ object CardTemplates {
         while (np.measureText(d.name) > room - 40f && s > 28f) { s -= 2f; np.textSize = s }
         val label = ellipsise(d.name, np, room - 40f)
         c.drawRect(x0, 70f, x0 + np.measureText(label) + 40f, 70f + s * 1.5f, fill(red))
-        c.drawText(label, x0 + 20f, 70f + s * 1.08f, np)
+        text(c, label, x0 + 20f, 70f + s * 1.08f, np)
         caps(c, d.type, x0, 70f + s * 1.5f + 44f, room, red)
         info(c, d, x0, infoTopFor(d, h - 56f), room, INK, red, bottom = h - 34f)
         watermark(c, d, w - 60f, h - 22f, onDark = false)
@@ -1140,7 +1207,7 @@ object CardTemplates {
             quadTo(barR, 110f, barR, 160f); quadTo(barR, 210f, barR - 50f, 210f)
             lineTo(0f, 210f); close()
         }, fill(AMBER))
-        c.drawText(label, 70f, 160f + s * 0.35f, np)
+        text(c, label, 70f, 160f + s * 0.35f, np)
         caps(c, d.type, 72f, 262f, 600f, Color.parseColor("#854F0B"))
         info(c, d, w - 70f, infoTopFor(d, h - 90f), 400f, WHITE, AMBER, ownerColour = AMBER, align = Paint.Align.RIGHT, bottom = h - 80f)
         pill(c, d.tagline, 70f, 300f, navy, WHITE, size = 22f, max = 420f)

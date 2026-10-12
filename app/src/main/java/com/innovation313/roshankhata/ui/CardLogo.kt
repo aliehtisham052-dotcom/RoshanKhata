@@ -189,7 +189,9 @@ object CardLogo {
         d: CardTemplates.CardData,
         logo: Bitmap,
         w: Int,
-        h: Int
+        h: Int,
+        /** An Urdu card: its layout was drawn in a mirror, so the slot is mirrored too (the logo itself is not). */
+        mirror: Boolean = false
     ) {
         if (c is Recorder || logo.isRecycled) return
         val key = listOf(templateId, w, h, d.copy(logo = null))
@@ -200,7 +202,7 @@ object CardLogo {
             }
             cacheSlot
         } ?: return
-        paintTile(c, logo, slot)
+        paintTile(c, logo, if (mirror) RectF(w - slot.right, slot.top, w - slot.left, slot.bottom) else slot)
     }
 
     private fun paintTile(c: Canvas, logo: Bitmap, r: RectF) {

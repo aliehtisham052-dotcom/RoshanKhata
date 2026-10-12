@@ -2775,4 +2775,34 @@
         <item quantity="one">صرف %d دن کے لیے</item>
         <item quantity="other">صرف %d دن کے لیے</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">کارڈ کی زبان</string>
+    <string name="biz_card_language_note">اردو کارڈ پورا اردو میں اور دائیں سے بائیں ہوتا ہے۔ ہر زبان کا نام، مالک اور پتا الگ رہتا ہے؛ نمبر، ای میل اور ویب سائٹ دونوں پر ایک ہی ہیں۔</string>
+    <string name="poster_step_design">ڈیزائن</string>
+    <string name="poster_step_words">لکھائی</string>
+    <string name="poster_step_send">بھیجیں</string>
+    <string name="poster_prev_design">پچھلا ڈیزائن</string>
+    <string name="poster_next_design">اگلا ڈیزائن</string>
+    <string name="poster_view_full">پورا دیکھیں</string>
+    <string name="poster_live_preview">براہِ راست جھلک</string>
+    <string name="poster_live_note">لکھتے وقت یہیں رہتی ہے</string>
+    <string name="poster_shop_heading">دکان کا نام — پوسٹر کی سرخی</string>
+    <string name="poster_shop_heading_note">ہر پوسٹر آپ کی دکان کے نام سے شروع ہوتا ہے، چیزوں کی فہرست سے نہیں۔ دکان کی پروفائل میں بھی محفوظ ہو جاتا ہے۔</string>
+    <string name="poster_shop_in_en">دکان کا نام انگریزی میں</string>
+    <string name="poster_shop_in_ur">دکان کا نام اردو میں</string>
+    <string name="poster_shop_needed">دکان کا نام لکھیں: یہی پوسٹر کی سرخی ہے</string>
+    <string name="poster_use_original">اصل لکھائی</string>
+    <string name="poster_quick_add">جلدی شامل کریں — آپ کا کاروبار</string>
+    <string name="poster_photo_title">تصویر (اختیاری)</string>
+    <string name="poster_remove_item">%1$s ہٹائیں</string>
+    <string name="poster_add_named">%1$s شامل کریں</string>
+    <string name="poster_tap_full">پوری تصویر دیکھنے کے لیے اس پر ٹیپ کریں</string>
+    <string name="poster_back">واپس</string>
+    <string name="poster_next_words">آگے: لکھائی</string>
+    <string name="poster_next_send">آگے: بھیجیں</string>
+    <string name="poster_design_count">مزید کے لیے سوائپ کریں · %2$d میں سے %1$d</string>
+    <string name="poster_lang_other">دوسری</string>
+    <string name="poster_lang_note">صرف پوسٹر بدلتا ہے۔ ایپ ویسی ہی رہتی ہے۔</string>
+    <string name="poster_lang_most_used">زیادہ استعمال ہونے والی</string>
 </resources>
