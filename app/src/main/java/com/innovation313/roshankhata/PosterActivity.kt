@@ -895,11 +895,16 @@ class PosterActivity : BaseActivity() {
             height = (h * d).toInt()
             width = (h * 9f / 16f * d).toInt()
         }
-        val pw = (bigH * 9f / 16f * d).toInt()
-        val ph = (bigH * d).toInt()
-        if (pw != pageW || ph != pageH || (step == 1 && pagesDirty)) {
-            pageW = pw; pageH = ph; pagesDirty = false
-            refreshPages()
+        setPageSize((bigH * d).toInt())
+        // Then, measured: the Design step's last row (the language) must clear the bar.
+        if (step == 1) {
+            val root = window.decorView.viewTreeObserver
+            root.addOnGlobalLayoutListener(object : android.view.ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    window.decorView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    fitDesignStep()
+                }
+            })
         }
         // On Design the pages take the touches (slide, tap); elsewhere the live poster is tapped.
         pager.visibility = if (step == 1) View.VISIBLE else View.INVISIBLE
@@ -922,6 +927,41 @@ class PosterActivity : BaseActivity() {
         updateDesignInfo()
         findViewById<android.widget.ScrollView>(R.id.posterScroll).scrollTo(0, 0)
         TextFit.relax(btnStepNext)
+    }
+
+    private fun setPageSize(heightPx: Int) {
+        val pw = heightPx * 9 / 16
+        if (pw != pageW || heightPx != pageH || (step == 1 && pagesDirty)) {
+            pageW = pw; pageH = heightPx; pagesDirty = false
+            refreshPages()
+        }
+    }
+
+    /**
+     * The estimate above, corrected by what the screen really shows: if the
+     * language switch ends under the bar the poster gives up that much height,
+     * and if there is room to spare it takes it, between 200 dp and 460 dp and
+     * never wider than the screen.
+     */
+    private fun fitDesignStep() {
+        if (step != 1) return
+        val lang = toggleLang
+        val bar = btnStepNext
+        if (lang.height == 0 || bar.height == 0) return
+        val l = IntArray(2); lang.getLocationOnScreen(l)
+        val b = IntArray(2); bar.getLocationOnScreen(b)
+        val gap = dp(12)
+        val spare = b[1] - gap - (l[1] + lang.height)
+        val d = resources.displayMetrics.density
+        val maxByWidth = ((resources.displayMetrics.widthPixels / d - 32f) * 16f / 9f * d).toInt()
+        val h = (stageBox.height + spare).coerceIn(dp(200), minOf(dp(460), maxByWidth))
+        if (kotlin.math.abs(h - stageBox.height) < dp(4)) return
+        stageBox.layoutParams = (stageBox.layoutParams as LinearLayout.LayoutParams).apply {
+            height = h
+            width = h * 9 / 16
+        }
+        setPageSize(h)
+        frame.post { placeHero() }
     }
 
     /** The stepper: the step on screen filled green, done ones ticked, the rest outlined. */

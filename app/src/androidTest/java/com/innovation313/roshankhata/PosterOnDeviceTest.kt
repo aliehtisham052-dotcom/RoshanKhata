@@ -100,7 +100,9 @@ class PosterOnDeviceTest {
                     occasion = o, title = ctx.getString(o.title), message = ctx.getString(o.message),
                     shopName = if (tag == "ur") "علی ٹریڈرز" else "Ali Traders", phone = "0300 0000000",
                     address = if (tag == "ur") "مین بازار، پسرور" else "Main Bazaar, Pasrur", logo = null,
-                    mark = ctx.getString(R.string.made_with_app), fields = fields
+                    mark = ctx.getString(R.string.made_with_app), fields = fields,
+                    // The contact line at its fullest (12 Oct): address and email, on WhatsApp.
+                    email = "ali.traders@example.com", whatsapp = true
                 ))
                 assertTrue("$tag/${o.key}: big line squeezed (${fit.titleSize})", fit.titleSize > 56f)
                 assertTrue("$tag/${o.key}: words squeezed (${fit.messageSize})", fit.messageSize > 24f)
