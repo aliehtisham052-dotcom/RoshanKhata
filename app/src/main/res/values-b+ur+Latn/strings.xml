@@ -2757,8 +2757,22 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="poster_as_video">Chalti video</string>
     <string name="poster_making_video">Video ban rahi hai… %1$d%%</string>
     <string name="poster_video_failed">Is phone par video nahi ban saki, is liye tasveer bheji ja rahi hai.</string>
+    <string name="poster_offer">Khaas Peshkash</string>
+    <string name="poster_offer_msg">Dukaan ki har cheez par</string>
+    <string name="poster_jumma">Jumma Mubarak</string>
+    <string name="poster_jumma_msg">Allah aap ke rizq aur ghar mein barkat ata farmaye</string>
+    <string name="poster_azadi">Jashn-e-Azadi Mubarak</string>
+    <string name="poster_azadi_msg">Pakistan Zindabad</string>
+    <string name="poster_azadi_date">14 August</string>
+    <string name="poster_off_word">RIAYAT</string>
+    <string name="poster_offer_percent">Riayat</string>
+    <string name="poster_offer_days_toggle">Sirf chand din ke liye</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">Eid ki chuttiyan: dukaan %d din band rahegi</item>
         <item quantity="other">Eid ki chuttiyan: dukaan %d din band rahegi</item>
+    </plurals>
+    <plurals name="poster_offer_days">
+        <item quantity="one">Sirf %d din ke liye</item>
+        <item quantity="other">Sirf %d din ke liye</item>
     </plurals>
 </resources>

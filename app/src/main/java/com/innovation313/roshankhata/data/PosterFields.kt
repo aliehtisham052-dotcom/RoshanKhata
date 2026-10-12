@@ -52,6 +52,12 @@ data class PosterFields(
     /** Days the shop is closed for Eid; 0 = not on the poster. */
     val eidDays: Int = 0,
 
+    // Offer
+    /** The discount, in percent. */
+    val offerPercent: Int = 20,
+    /** "Only for 3 days"; 0 = not on the poster. */
+    val offerDays: Int = 3,
+
     // What the poster shows
     val showLogo: Boolean = true,
     val showPhone: Boolean = true,
@@ -83,6 +89,7 @@ data class PosterFields(
         put("ramazanHours", ramazanHours); put("dayFrom", dayFrom); put("dayTo", dayTo)
         put("afterTaraweeh", afterTaraweeh); put("nightFrom", nightFrom); put("nightTo", nightTo)
         put("eidDays", eidDays)
+        put("offerPercent", offerPercent); put("offerDays", offerDays)
         put("showLogo", showLogo); put("showPhone", showPhone); put("showAddress", showAddress); put("showMark", showMark)
     }
 
@@ -116,6 +123,8 @@ data class PosterFields(
                 afterTaraweeh = o.optBoolean("afterTaraweeh", d.afterTaraweeh),
                 nightFrom = mins("nightFrom", d.nightFrom), nightTo = mins("nightTo", d.nightTo),
                 eidDays = o.optInt("eidDays", d.eidDays).coerceIn(0, 10),
+                offerPercent = o.optInt("offerPercent", d.offerPercent).coerceIn(1, 90),
+                offerDays = o.optInt("offerDays", d.offerDays).coerceIn(0, 30),
                 showLogo = o.optBoolean("showLogo", d.showLogo), showPhone = o.optBoolean("showPhone", d.showPhone),
                 showAddress = o.optBoolean("showAddress", d.showAddress), showMark = o.optBoolean("showMark", d.showMark)
             )

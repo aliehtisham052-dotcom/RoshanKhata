@@ -398,6 +398,46 @@ def seal():
     return sc
 
 
+def coin():
+    """The Offer poster's gold coin, facing the camera (+Z): a thick reeded
+    rim and two flat faces whose material "coin_face" the app paints with the
+    discount (ui/poster3d/CoinFace.kt). Rectangle (180, 430)-(900, 1150),
+    centre (540, 790); radius 1.5 (300 px)."""
+    k = 1.5
+    gold = mat(GOLD, 1.0, 0.2, "gold")
+    # Rim and edge, turned about Z: raised lip on both faces, a rounded edge.
+    prof = [(0.86, 0.075), (0.9, 0.115), (0.98, 0.115), (1.02, 0.07), (1.03, 0.0),
+            (1.02, -0.07), (0.98, -0.115), (0.9, -0.115), (0.86, -0.075)]
+    rim = trimesh.creation.revolve(np.array(prof) * [k, k], sections=160)
+    rim.fix_normals()
+    parts = [paint(rim, gold)]
+    # Reeding: fine ridges round the edge.
+    for i in range(120):
+        a = 2 * math.pi * i / 120
+        r = trimesh.creation.box(extents=[0.012 * k, 0.03 * k, 0.12 * k])
+        r.apply_translation([1.03 * k, 0, 0])
+        r.apply_transform(T.rotation_matrix(a, [0, 0, 1]))
+        parts.append(paint(r, gold))
+    tex = Image.open(os.environ["COIN_TEX"]).convert("RGB") if os.environ.get("COIN_TEX") else Image.new("RGB", (8, 8), (255, 255, 255))
+    mr = Image.new("RGB", (8, 8), (0, 60, 255))
+    face_mat = PBRMaterial(baseColorFactor=[1.0, 1.0, 1.0, 1.0], metallicFactor=1.0, roughnessFactor=1.0,
+                           baseColorTexture=tex, metallicRoughnessTexture=mr, name="coin_face")
+    for side in (1, -1):
+        n = 160
+        R = 0.87 * k
+        verts = [(0, 0, side * 0.075 * k)] + [(R * math.cos(2 * math.pi * i / n), R * math.sin(2 * math.pi * i / n), side * 0.075 * k) for i in range(n)]
+        faces = [(0, 1 + i, 1 + (i + 1) % n) if side > 0 else (0, 1 + (i + 1) % n, 1 + i) for i in range(n)]
+        v = np.array(verts)
+        # The back reads the right way round from behind.
+        u = (v[:, 0] / R + 1) / 2 if side > 0 else 1 - (v[:, 0] / R + 1) / 2
+        uv = np.column_stack([u, (v[:, 1] / R + 1) / 2])
+        disc = trimesh.Trimesh(v, np.array(faces), process=False)
+        parts.append(paint(disc, face_mat, uv))
+    sc = trimesh.Scene()
+    add(sc, parts, "coin")
+    return sc
+
+
 GLOW_STRENGTH = float(os.environ.get("GLOW", "0.6"))
 
 
@@ -428,7 +468,7 @@ def glow(path):
 def main():
     os.makedirs(OUT, exist_ok=True)
     for name, build in (("eid_fitr", eid_fitr), ("ramazan", ramazan), ("eid_adha", mosque),
-                        ("hours", clock), ("thanks", seal)):
+                        ("hours", clock), ("thanks", seal), ("offer", coin)):
         path = os.path.join(OUT, name + ".glb")
         build().export(path)
         glow(path)

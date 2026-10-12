@@ -30,6 +30,11 @@ enum class PosterOccasion(
     CLOSED("closed", R.string.poster_closed, R.string.poster_closed_msg, 0xFF3A3A38.toInt(), 0xFF1E1E1D.toInt(), false),
     HOURS("hours", R.string.poster_hours, R.string.poster_hours_msg, 0xFF5C4A16.toInt(), 0xFF33290C.toInt(), false),
     THANKS("thanks", R.string.poster_thanks, R.string.poster_thanks_msg, 0xFF24553F.toInt(), 0xFF12301F.toInt(), false),
+    /** A discount: the figure on a gold coin (12 Oct). */
+    OFFER("offer", R.string.poster_offer, R.string.poster_offer_msg, 0xFF8E1B1B.toInt(), 0xFF4A0A0A.toInt(), false),
+    JUMMA("jumma", R.string.poster_jumma, R.string.poster_jumma_msg, 0xFF0E4A34.toInt(), 0xFF06261B.toInt(), false),
+    /** 14 August, Pakistan's Independence Day: the flag waving, fireworks. */
+    AZADI("azadi", R.string.poster_azadi, R.string.poster_azadi_msg, 0xFF0B5A2F.toInt(), 0xFF053019.toInt(), false),
     /** The owner's own words: both lines start empty. */
     CUSTOM("custom", 0, 0, 0xFF1B5E3A.toInt(), 0xFF134228.toInt(), false);
 

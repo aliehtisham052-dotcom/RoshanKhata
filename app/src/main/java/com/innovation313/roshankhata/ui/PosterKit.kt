@@ -62,7 +62,14 @@ object PosterKit {
         /** What the owner chose on the poster screen (see PosterFields). */
         val fields: PosterFields = PosterFields(),
         /** The owner's own photo of the stock, for New stock. */
-        val photo: Bitmap? = null
+        val photo: Bitmap? = null,
+        /**
+         * True when the motion layer (PosterMotion) is drawn over this picture —
+         * the live preview and the video — so parts it draws moving (the flag,
+         * the confetti) are left to it; false for the shared still, which
+         * draws them at rest itself.
+         */
+        val animated: Boolean = false
     ) {
         val urdu = urduScript(locale)
         /** Draw the hero here, or its flat stand-in, unless the live 3D view covers the place. */

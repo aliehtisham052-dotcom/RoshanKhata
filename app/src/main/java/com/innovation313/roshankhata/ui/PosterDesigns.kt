@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PointF
 import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
@@ -46,7 +47,9 @@ object PosterDesigns {
         PosterOccasion.RAMAZAN -> Hero.RAMAZAN
         PosterOccasion.HOURS -> Hero.HOURS
         PosterOccasion.THANKS -> Hero.THANKS
-        PosterOccasion.CLOSED, PosterOccasion.CUSTOM -> null
+        PosterOccasion.OFFER -> Hero.OFFER
+        PosterOccasion.JUMMA -> Hero.JUMMA
+        PosterOccasion.CLOSED, PosterOccasion.CUSTOM, PosterOccasion.AZADI -> null
     }
 
     fun draw(o: PosterOccasion, page: Page): PosterKit.Out = when (o) {
@@ -58,6 +61,9 @@ object PosterDesigns {
         PosterOccasion.HOURS -> hours(page)
         PosterOccasion.THANKS -> thanks(page)
         PosterOccasion.CUSTOM -> custom(page)
+        PosterOccasion.OFFER -> offer(page)
+        PosterOccasion.JUMMA -> jumma(page)
+        PosterOccasion.AZADI -> azadi(page)
     }
 
     private fun str(page: Page, id: Int) = page.context.getString(id)
@@ -485,5 +491,174 @@ object PosterDesigns {
         return PosterKit.Out(tp.textSize, tl.lineCount, msgLayout?.paint?.textSize ?: 0f, msgLayout?.lineCount ?: 0,
             PosterMotion.Spec(aurora = PosterMotion.Aurora(intArrayOf(0xFF5B83FF.toInt(), 0xFFF3CF6A.toInt(), 0xFF7A5BFF.toInt()),
                 listOf(panel, pill))))
+    }
+
+    // ---------------------------------------------------------------- Offer
+
+    private fun offer(page: Page): PosterKit.Out {
+        val c = page.c
+        val bg = Paint()
+        bg.shader = RadialGradient(540f, 790f, 1350f, intArrayOf(0xFFC62A2E.toInt(), 0xFF8E1B1B.toInt(), 0xFF4A0A0D.toInt()),
+            floatArrayOf(0f, 0.45f, 1f), Shader.TileMode.CLAMP)
+        c.drawRect(0f, 0f, W, H, bg)
+        // A sunburst from the coin.
+        val ray = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x12FFFFFF }
+        for (k in 0 until 24) {
+            val a0 = Math.toRadians(k * 15.0)
+            val a1 = Math.toRadians(k * 15.0 + 7.0)
+            val p = Path().apply {
+                moveTo(540f, 790f)
+                lineTo(540f + 1600f * kotlin.math.cos(a0).toFloat(), 790f + 1600f * kotlin.math.sin(a0).toFloat())
+                lineTo(540f + 1600f * kotlin.math.cos(a1).toFloat(), 790f + 1600f * kotlin.math.sin(a1).toFloat())
+                close()
+            }
+            c.drawPath(p, ray)
+        }
+        PosterKit.halo(c, 540f, 790f, 470f, 0x66FFD27A)
+        PosterKit.header(page, top = 60f, sealSize = 120f, nameColour = 0xFFFFF4E0.toInt(),
+            inner = 0xFF9E1F23.toInt(), innerDark = 0xFF4A0A0D.toInt())
+        val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 150f else 120f, 64f, 345f)
+        page.drawHero(Hero.OFFER.rect) { fc -> PosterFlat.coin(page.context, fc, 540f, 790f, 300f, page.fields.offerPercent) }
+        // What is on offer, big and white under the coin.
+        val on = page.message
+        var msgSize = 0f
+        if (on.isNotBlank()) {
+            val mp = PosterKit.textPaint(page.context, on, if (page.urdu) 84f else 70f, 0xFFFFFFFF.toInt(), true, page.locale, page.urdu)
+            mp.setShadowLayer(18f, 0f, 8f, 0x66000000)
+            val l = PosterKit.fitBlock(on, mp, 900, page.rtl, 2, 40f, 1.0f)
+            PosterKit.put(c, l, 90f, 1272f - l.height / 2f)
+            msgSize = mp.textSize
+        }
+        // "Only for 3 days", on a gold-edged tag.
+        if (page.fields.offerDays > 0) {
+            val days = com.innovation313.roshankhata.data.Digits.quantity(page.context.resources, R.plurals.poster_offer_days,
+                page.fields.offerDays, page.fields.offerDays)
+            val dp = PosterKit.textPaint(page.context, days, if (page.urdu) 44f else 38f, PosterKit.GOLD, true, page.locale, page.urdu)
+            dp.textAlign = Paint.Align.CENTER
+            PosterKit.fitWidth(dp, days, 700f, 24f)
+            val tw = dp.measureText(days) + 90f
+            val tag = RectF(540f - tw / 2, 1360f, 540f + tw / 2, 1444f)
+            c.drawRoundRect(tag, 42f, 42f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x33000000 })
+            c.drawRoundRect(tag, 42f, 42f, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = 0xB3F3CF6A.toInt() })
+            PosterKit.inkLine(c, days, dp, 540f, tag.centerY())
+        }
+        PosterKit.phonePill(page, RectF(102f, 1530f, W - 102f, 1700f), disc = 0xFF9E1F23.toInt(), discDark = 0xFF4A0A0D.toInt())
+        PosterKit.address(page, 1784f, colour = 0xD9FFF4E0.toInt())
+        PosterKit.mark(page, 0x66FFF4E0)
+        if (!page.animated) {
+            // The still picture's confetti, at rest.
+            val fall = Paint(Paint.ANTI_ALIAS_FLAG)
+            for ((k, p) in listOf(110f to 640f, 960f to 520f, 140f to 1180f, 930f to 1120f, 300f to 140f, 820f to 230f, 70f to 900f).withIndex()) {
+                fall.color = intArrayOf(0xFFF3CF6A.toInt(), 0xFFFFFFFF.toInt(), 0xFFFF8A80.toInt())[k % 3]
+                c.save(); c.rotate(k * 37f, p.first, p.second); c.drawRect(p.first - 9f, p.second - 13f, p.first + 9f, p.second + 13f, fall); c.restore()
+            }
+        }
+        return PosterKit.Out(head.first.textSize, head.second.layout?.lineCount ?: 1, msgSize, if (on.isBlank()) 0 else 1,
+            PosterMotion.Spec(glint = head.second, confetti = true))
+    }
+
+    // ---------------------------------------------------------------- Jumu'ah
+
+    private fun jumma(page: Page): PosterKit.Out {
+        val c = page.c
+        ground(c, intArrayOf(0xFF0F5238.toInt(), 0xFF0A3D2A.toInt(), 0xFF06261B.toInt()), floatArrayOf(0f, 0.5f, 1f))
+        // A scalloped gold edge along the top.
+        val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 4f; color = 0xCCE7C268.toInt() }
+        var x = 0f
+        while (x < W) { c.drawArc(RectF(x, -30f, x + 60f, 30f), 0f, 180f, false, edge); x += 60f }
+        // Light rising behind the mosque.
+        PosterKit.halo(c, 540f, 1180f, 620f, 0x40F3CF6A)
+        val ray = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x0FFFE9A8 }
+        for (k in 0 until 18) {
+            val a0 = Math.toRadians(180.0 + k * 10.0)
+            val a1 = Math.toRadians(180.0 + k * 10.0 + 4.0)
+            c.drawPath(Path().apply {
+                moveTo(540f, 1560f)
+                lineTo(540f + 1500f * kotlin.math.cos(a0).toFloat(), 1560f + 1500f * kotlin.math.sin(a0).toFloat())
+                lineTo(540f + 1500f * kotlin.math.cos(a1).toFloat(), 1560f + 1500f * kotlin.math.sin(a1).toFloat())
+                close()
+            }, ray)
+        }
+        val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 170f else 140f, 72f, 300f)
+        val pill = RectF(110f, 460f, W - 110f, 600f)
+        PosterKit.glass(c, pill, radius = 70f, fill = 0x14FFFFFF)
+        val msg = PosterKit.message(page, page.message, pill.centerY(), 0xFFF6EBD0.toInt(), if (page.urdu) 42f else 38f, lines = 2,
+            width = (pill.width() - 80f).toInt(), floor = 26f)
+        page.drawHero(Hero.JUMMA.rect) { fc -> PosterFlat.mosque(fc, 540f, 1570f, 790f) }
+        // The ground line the mosque stands on.
+        c.drawLine(110f, 1590f, W - 110f, 1590f, Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            strokeWidth = 6f
+            shader = LinearGradient(110f, 0f, W - 110f, 0f, intArrayOf(0x00E7C268, 0xFFE7C268.toInt(), 0x00E7C268), null, Shader.TileMode.CLAMP)
+        })
+        PosterKit.signOff(page, str(page, R.string.poster_from), 1730f, sealSize = 120f)
+        PosterKit.mark(page)
+        return out(head, msg, PosterMotion.Spec(glint = head.second, embers = RectF(80f, 680f, 1000f, 1600f)))
+    }
+
+    // ---------------------------------------------------------------- 14 August
+
+    private val AZADI_FLAG = RectF(213f, 207f, 905f, 668f)
+    private val AZADI_FIREWORKS = listOf(PointF(230f, 960f), PointF(980f, 340f), PointF(960f, 930f))
+
+    private fun azadi(page: Page): PosterKit.Out {
+        val c = page.c
+        ground(c, intArrayOf(0xFF0E6A38.toInt(), 0xFF0B5A2F.toInt(), 0xFF053019.toInt()), floatArrayOf(0f, 0.45f, 1f))
+        PosterKit.halo(c, 560f, 470f, 700f, 0x33FFFFFF)
+        PosterFlat.flagPole(c, 200f, 150f, 930f)
+        if (!page.animated) {
+            // The still picture: the flag at rest and the bursts mid-air.
+            val cache = PosterMotion.Cache()
+            PosterMotion.flag(c, PosterMotion.Flag(AZADI_FLAG), 0f, cache)
+            cache.clear()
+            val burst = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 4f; strokeCap = Paint.Cap.ROUND }
+            for ((k, p) in AZADI_FIREWORKS.withIndex()) {
+                burst.color = intArrayOf(0xCCFFFFFF.toInt(), 0xCC9EF0B8.toInt(), 0xCCF3CF6A.toInt())[k % 3]
+                for (i in 0 until 16) {
+                    val a = 2 * Math.PI * i / 16
+                    c.drawLine(p.x + (40 * kotlin.math.cos(a)).toFloat(), p.y + (40 * kotlin.math.sin(a)).toFloat(),
+                        p.x + (80 * kotlin.math.cos(a)).toFloat(), p.y + (80 * kotlin.math.sin(a)).toFloat(), burst)
+                }
+            }
+        }
+        // The date: the day in large white figures, the month in gold, in reading order.
+        val date = str(page, R.string.poster_azadi_date)
+        val m = Regex("""^\s*(\d+)\s*(.*)$""").find(date)
+        if (m != null) {
+            val day = m.groupValues[1]
+            val month = m.groupValues[2]
+            val dp = android.text.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD); textSize = 260f; color = 0xFFFFFFFF.toInt()
+                setShadowLayer(30f, 0f, 12f, 0x66000000)
+            }
+            val mp = PosterKit.textPaint(page.context, month, if (page.urdu) 170f else 130f, PosterKit.GOLD, true, page.locale, page.urdu)
+            if (!PosterKit.hasArabic(month)) mp.typeface = Typeface.create(InvoiceFonts.playfairDisplay(page.context), Typeface.BOLD)
+            mp.setShadowLayer(24f, 0f, 10f, 0x66000000)
+            val gap = 34f
+            val total = dp.measureText(day) + gap + mp.measureText(month)
+            val start = (W - total) / 2
+            dp.textAlign = Paint.Align.LEFT; mp.textAlign = Paint.Align.LEFT
+            val cy = 1000f
+            if (page.rtl) {
+                PosterKit.inkLine(c, month, mp, start, cy)
+                PosterKit.inkLine(c, day, dp, start + mp.measureText(month) + gap, cy)
+            } else {
+                PosterKit.inkLine(c, day, dp, start, cy)
+                PosterKit.inkLine(c, month, mp, start + dp.measureText(day) + gap, cy)
+            }
+        } else {
+            PosterKit.foilHeadline(page, date, 200f, 80f, 1000f)
+        }
+        val title = page.title.ifBlank { " " }
+        val tp = PosterKit.textPaint(page.context, title, if (page.urdu) 118f else 96f, 0xFFFFFFFF.toInt(), true, page.locale, page.urdu)
+        if (!page.urdu && !PosterKit.hasArabic(title)) tp.typeface = Typeface.create(InvoiceFonts.playfairDisplay(page.context), Typeface.BOLD)
+        tp.setShadowLayer(24f, 0f, 10f, 0x80000000.toInt())
+        val tl = PosterKit.fitBlock(title, tp, 960, page.rtl, 2, 56f, 1.0f)
+        PosterKit.put(c, tl, 60f, 1248f - tl.height / 2f)
+        val msg = PosterKit.message(page, page.message, 1420f, PosterKit.GOLD, if (page.urdu) 58f else 50f, lines = 1, width = 900)
+        PosterKit.signOff(page, str(page, R.string.poster_from), 1680f, fromColour = 0xFFB8F0CF.toInt(),
+            inner = 0xFF0E6A38.toInt(), innerDark = 0xFF053019.toInt())
+        PosterKit.mark(page)
+        return PosterKit.Out(tp.textSize, tl.lineCount, msg?.paint?.textSize ?: 0f, msg?.lineCount ?: 0,
+            PosterMotion.Spec(flag = PosterMotion.Flag(AZADI_FLAG), fireworks = PosterMotion.Fireworks(AZADI_FIREWORKS)))
     }
 }

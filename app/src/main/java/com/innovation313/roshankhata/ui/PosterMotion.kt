@@ -6,6 +6,7 @@ import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
+import android.graphics.PointF
 import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
@@ -49,21 +50,138 @@ object PosterMotion {
 
     class Aurora(val colours: IntArray, val keepClear: List<RectF>)
 
+    /** A flag on a pole, waving: the cloth's rectangle; the pole is drawn with the poster. */
+    class Flag(val rect: RectF)
+
+    /** Where fireworks burst, in turn. */
+    class Fireworks(val at: List<PointF>)
+
     data class Spec(
         val stars: List<Star> = emptyList(),
         val glint: Glint? = null,
         val neon: Neon? = null,
-        val aurora: Aurora? = null
+        val aurora: Aurora? = null,
+        /** Gold, white and red paper falling over the whole poster (Offer). */
+        val confetti: Boolean = false,
+        /** Golden motes rising through this area (Jumu'ah). */
+        val embers: RectF? = null,
+        val fireworks: Fireworks? = null,
+        val flag: Flag? = null
     ) {
-        val moves get() = stars.isNotEmpty() || glint != null || neon != null || aurora != null
+        val moves get() = stars.isNotEmpty() || glint != null || neon != null || aurora != null ||
+            confetti || embers != null || fireworks != null || flag != null
     }
 
     /** Draw [spec] at [t] seconds on [c], already in poster pixels. */
     fun draw(c: Canvas, spec: Spec, t: Float, cache: Cache) {
         spec.aurora?.let { aurora(c, it, t) }
+        spec.fireworks?.let { fireworks(c, it, t) }
+        spec.flag?.let { flag(c, it, t, cache) }
         spec.neon?.let { neon(c, it, t, cache) }
+        spec.embers?.let { embers(c, it, t) }
         if (spec.stars.isNotEmpty()) stars(c, spec.stars, t)
         spec.glint?.let { glint(c, it, t) }
+        if (spec.confetti) confetti(c, t)
+    }
+
+    /** A steady pseudo-random number in 0..1 for piece [i], kind [k]: the same every frame. */
+    private fun rnd(i: Int, k: Int): Float {
+        var x = i * 374761393 + k * 668265263
+        x = (x xor (x ushr 13)) * 1274126177
+        return ((x xor (x ushr 16)) and 0xFFFF) / 65535f
+    }
+
+    private val piece = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val CONFETTI = intArrayOf(0xFFF3CF6A.toInt(), 0xFFFFF4D0.toInt(), 0xFFFFFFFF.toInt(), 0xFFE2B44C.toInt(), 0xFFFF8A80.toInt())
+
+    /** Forty pieces of paper falling, turning and drifting, each on its own course. */
+    private fun confetti(c: Canvas, t: Float) {
+        for (i in 0 until 40) {
+            val speed = 140f + 220f * rnd(i, 1)
+            val y = ((rnd(i, 2) * (PosterKit.H + 200f) + t * speed) % (PosterKit.H + 200f)) - 100f
+            val x = rnd(i, 3) * PosterKit.W + 40f * sin((t * (0.8f + rnd(i, 4)) + i) * 2 * PI).toFloat()
+            val spin = (t * (90f + 180f * rnd(i, 5)) + 360f * rnd(i, 6)) % 360f
+            val w = 10f + 10f * rnd(i, 7)
+            // Turning about its own long axis: the paper narrows and widens.
+            val h = (18f + 10f * rnd(i, 8)) * abs(cos((t * (1.5f + rnd(i, 9)) + i) * PI).toFloat()).coerceAtLeast(0.15f)
+            piece.color = CONFETTI[i % CONFETTI.size]
+            c.save(); c.rotate(spin, x, y); c.drawRect(x - w / 2, y - h / 2, x + w / 2, y + h / 2, piece); c.restore()
+        }
+    }
+
+    private val ember = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    /** Thirty golden motes rising slowly, swaying, glowing brighter then fading near the top. */
+    private fun embers(c: Canvas, area: RectF, t: Float) {
+        for (i in 0 until 30) {
+            val speed = 40f + 60f * rnd(i, 1)
+            val f = ((rnd(i, 2) * area.height() + t * speed) % area.height()) / area.height()
+            val y = area.bottom - f * area.height()
+            val x = area.left + rnd(i, 3) * area.width() + 18f * sin((t * 0.5f + rnd(i, 4) * 6f) * 2 * PI).toFloat()
+            val r = 2.5f + 3.5f * rnd(i, 5)
+            val life = sin(f * PI).toFloat()
+            ember.shader = RadialGradient(x, y, r * 3f, intArrayOf(0xFFFFE9A8.toInt(), 0x00F3CF6A), null, Shader.TileMode.CLAMP)
+            ember.alpha = (220 * life).toInt().coerceIn(0, 255)
+            c.drawCircle(x, y, r * 3f, ember)
+        }
+    }
+
+    private val spark = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeCap = Paint.Cap.ROUND }
+    private val FIRE = intArrayOf(0xFFFFFFFF.toInt(), 0xFF9EF0B8.toInt(), 0xFFF3CF6A.toInt())
+
+    /** Bursts in turn, each 1.6 s: sparks fly out, slow, fall a little and fade. */
+    private fun fireworks(c: Canvas, fw: Fireworks, t: Float) {
+        val cycle = 1.6f
+        for ((k, p) in fw.at.withIndex()) {
+            val local = (t - k * 0.55f) % (cycle * fw.at.size.coerceAtLeast(1) * 0.75f)
+            if (local < 0f || local > cycle) continue
+            val f = local / cycle
+            val reach = 150f * (1f - (1f - f) * (1f - f))
+            spark.color = FIRE[k % FIRE.size]
+            spark.alpha = (255 * (1f - f)).toInt()
+            spark.strokeWidth = 5f
+            for (i in 0 until 16) {
+                val a = 2 * PI * i / 16 + k
+                val x0 = p.x + (reach * 0.55f * cos(a)).toFloat()
+                val y0 = p.y + (reach * 0.55f * sin(a)).toFloat() + 40f * f * f
+                val x1 = p.x + (reach * cos(a)).toFloat()
+                val y1 = p.y + (reach * sin(a)).toFloat() + 60f * f * f
+                c.drawLine(x0, y0, x1, y1, spark)
+            }
+        }
+    }
+
+    /**
+     * The flag waving: the cloth drawn on a bending mesh, a wave travelling
+     * out from the pole that grows toward the fly, with light and shade
+     * across its folds. At t = 0 it is the shape the still poster shows.
+     */
+    fun flag(c: Canvas, fl: Flag, t: Float, cache: Cache) {
+        val r = fl.rect
+        val cloth = cache.flag ?: PosterFlat.pakistanFlag(r.width().toInt(), r.height().toInt()).also { cache.flag = it }
+        val cols = 24
+        val rows = 8
+        val verts = FloatArray((cols + 1) * (rows + 1) * 2)
+        val colours = IntArray((cols + 1) * (rows + 1))
+        var n = 0
+        for (j in 0..rows) {
+            for (i in 0..cols) {
+                val u = i / cols.toFloat()
+                val v = j / rows.toFloat()
+                val phase = (u * 1.6f - t * 0.9f) * 2 * PI
+                val amp = r.height() * 0.07f * u
+                val dy = (sin(phase) * amp).toFloat() + r.height() * 0.04f * u * u
+                val dx = (-cos(phase) * amp * 0.25f).toFloat() - r.width() * 0.02f * u
+                verts[n * 2] = r.left + u * r.width() + dx
+                verts[n * 2 + 1] = r.top + v * r.height() + dy
+                // Lit where the cloth faces the light, darker in the folds.
+                val shade = (0.82f + 0.18f * cos(phase - 0.6)).toFloat().coerceIn(0f, 1f)
+                val g = (255 * shade).toInt()
+                colours[n] = (0xFF shl 24) or (g shl 16) or (g shl 8) or g
+                n++
+            }
+        }
+        c.drawBitmapMesh(cloth, cols, rows, verts, 0, colours, 0, null)
     }
 
     private val starPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFF4D0.toInt() }
@@ -118,7 +236,11 @@ object PosterMotion {
     class Cache {
         var neonGlow: Bitmap? = null
         var neonFor: Neon? = null
-        fun clear() { neonGlow?.recycle(); neonGlow = null; neonFor = null }
+        var flag: Bitmap? = null
+        fun clear() {
+            neonGlow?.recycle(); neonGlow = null; neonFor = null
+            flag?.recycle(); flag = null
+        }
     }
 
     /**
@@ -209,13 +331,15 @@ class PosterMotionView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (!spec.moves || width == 0 || !animate) return
+        if (!spec.moves || width == 0) return
         val k = width / PosterKit.W
         canvas.save()
         canvas.scale(k, k)
-        PosterMotion.draw(canvas, spec, (SystemClock.uptimeMillis() - start) / 1000f, cache)
+        // With the phone's animations off: the first moment, still (the flag must
+        // still be drawn — the poster under it leaves the cloth to this layer).
+        PosterMotion.draw(canvas, spec, if (animate) (SystemClock.uptimeMillis() - start) / 1000f else 0f, cache)
         canvas.restore()
-        if (isShown) postInvalidateOnAnimation()
+        if (animate && isShown) postInvalidateOnAnimation()
     }
 
     override fun onDetachedFromWindow() {

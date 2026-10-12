@@ -45,6 +45,7 @@ import com.innovation313.roshankhata.ui.PosterVideo
 import com.innovation313.roshankhata.ui.PosterWords
 import com.innovation313.roshankhata.ui.ScreenInsets
 import com.innovation313.roshankhata.ui.TextFit
+import com.innovation313.roshankhata.ui.poster3d.CoinFace
 import com.innovation313.roshankhata.ui.poster3d.Hero
 import com.innovation313.roshankhata.ui.poster3d.HeroStage
 import com.innovation313.roshankhata.ui.poster3d.SealFace
@@ -94,6 +95,8 @@ class PosterActivity : BaseActivity() {
     private lateinit var chipReasons: ChipGroup
     private lateinit var chipHolidays: ChipGroup
     private lateinit var chipEidDays: ChipGroup
+    private lateinit var chipOfferPercent: ChipGroup
+    private lateinit var chipOfferDays: ChipGroup
     private lateinit var etItem: TextInputEditText
     private lateinit var etReason: TextInputEditText
     private lateinit var tilReason: TextInputLayout
@@ -151,6 +154,8 @@ class PosterActivity : BaseActivity() {
         chipReasons = findViewById(R.id.chipReasons)
         chipHolidays = findViewById(R.id.chipHolidays)
         chipEidDays = findViewById(R.id.chipEidDays)
+        chipOfferPercent = findViewById(R.id.chipOfferPercent)
+        chipOfferDays = findViewById(R.id.chipOfferDays)
         etItem = findViewById(R.id.etItem)
         etReason = findViewById(R.id.etReason)
         tilReason = findViewById(R.id.tilReason)
@@ -173,6 +178,7 @@ class PosterActivity : BaseActivity() {
         buildHoursFields()
         buildRamazanFields()
         buildEidFields()
+        buildOfferFields()
         asVideo = prefs.getBoolean(KEY_VIDEO, true)
         buildSendAs()
 
@@ -339,6 +345,7 @@ class PosterActivity : BaseActivity() {
         show(R.id.fieldsHours, occasion == PosterOccasion.HOURS)
         show(R.id.fieldsRamazan, occasion == PosterOccasion.RAMAZAN)
         show(R.id.fieldsEid, occasion == PosterOccasion.EID_FITR)
+        show(R.id.fieldsOffer, occasion == PosterOccasion.OFFER)
         // Closed and Hours print rows chosen above, not a free line.
         tilMessage.visibility = if (occasion == PosterOccasion.CLOSED || occasion == PosterOccasion.HOURS) View.GONE else View.VISIBLE
     }
@@ -565,6 +572,44 @@ class PosterActivity : BaseActivity() {
         TextFit.relax(chipEidDays)
     }
 
+    private fun buildOfferFields() {
+        chipOfferPercent.removeAllViews()
+        // The usual steps, and the owner's own figure if he saved another.
+        val steps = (OFFER_STEPS + fields.offerPercent).distinct().sorted()
+        for (n in steps) {
+            val chip = choiceChip(chipOfferPercent, "$n%")
+            chip.tag = n
+            chip.isChecked = fields.offerPercent == n
+        }
+        chipOfferPercent.setOnCheckedStateChangeListener { g, ids ->
+            val n = ids.firstOrNull()?.let { g.findViewById<Chip>(it)?.tag as? Int } ?: return@setOnCheckedStateChangeListener
+            if (n == fields.offerPercent) return@setOnCheckedStateChangeListener
+            setFields(fields.copy(offerPercent = n))
+            updateHero()
+        }
+        val sw = findViewById<SwitchMaterial>(R.id.switchOfferDays)
+        chipOfferDays.removeAllViews()
+        for (n in OFFER_DAYS) {
+            val chip = choiceChip(chipOfferDays, n.toString())
+            chip.tag = n
+            chip.isChecked = fields.offerDays == n
+        }
+        chipOfferDays.visibility = if (fields.offerDays > 0) View.VISIBLE else View.GONE
+        sw.isChecked = fields.offerDays > 0
+        sw.setOnCheckedChangeListener { _, on ->
+            val days = if (on) 3 else 0
+            setFields(fields.copy(offerDays = days))
+            chipOfferDays.visibility = if (on) View.VISIBLE else View.GONE
+            for (i in 0 until chipOfferDays.childCount) (chipOfferDays.getChildAt(i) as Chip).let { it.isChecked = it.tag == days }
+        }
+        chipOfferDays.setOnCheckedStateChangeListener { g, ids ->
+            val n = ids.firstOrNull()?.let { g.findViewById<Chip>(it)?.tag as? Int } ?: return@setOnCheckedStateChangeListener
+            if (fields.offerDays > 0) setFields(fields.copy(offerDays = n))
+        }
+        TextFit.relax(chipOfferPercent)
+        TextFit.relax(chipOfferDays)
+    }
+
     private fun pickTime(minutes: Int, onPicked: (Int) -> Unit) {
         android.app.TimePickerDialog(this, { _, h, m -> onPicked(h * 60 + m) },
             minutes / 60, minutes % 60, DateFormat.is24HourFormat(this)).show()
@@ -649,7 +694,8 @@ class PosterActivity : BaseActivity() {
 
     private fun usingPhoto() = occasion == PosterOccasion.NEW_STOCK && fields.usePhoto && photo != null
 
-    private fun input() = PosterImage.Input(
+    /** [animated]: the moving layer (preview, video) draws the confetti, flag and fireworks; a still picture has them drawn in. */
+    private fun input(animated: Boolean = true) = PosterImage.Input(
         occasion = occasion,
         title = etTitle.text?.toString()?.trim().orEmpty(),
         message = etMessage.text?.toString()?.trim().orEmpty(),
@@ -660,7 +706,8 @@ class PosterActivity : BaseActivity() {
         mark = if (fields.showMark) posterContext().getString(R.string.made_with_app) else null,
         heroOverlay = stage != null,
         fields = fields,
-        photo = if (usingPhoto()) photo else null
+        photo = if (usingPhoto()) photo else null,
+        animated = animated
     )
 
     // ------------------------------------------------------------------ 3D hero
@@ -685,7 +732,13 @@ class PosterActivity : BaseActivity() {
     private fun updateHero() {
         val hero = PosterDesigns.hero(occasion)?.takeIf { !usingPhoto() && Studio.available(this) }
         val markLogo = if (fields.showLogo) logo else null
-        val wantKey = hero?.let { "${it.name}|${if (it.face != null) "${shopName()}|${markLogo != null}" else ""}" }
+        val wantKey = hero?.let {
+            when (it) {
+                Hero.THANKS -> "${it.name}|${shopName()}|${markLogo != null}"
+                Hero.OFFER -> "${it.name}|${fields.offerPercent}|$lang"
+                else -> it.name
+            }
+        }
         if (stage != null && stageKey != wantKey) {
             stage?.destroy()
             stage = null
@@ -694,7 +747,11 @@ class PosterActivity : BaseActivity() {
         }
         if (hero != null && stage == null) {
             stage = try {
-                val face = hero.face?.let { SealFace.draw(this, shopName(), markLogo) }
+                val face = when {
+                    hero.face == null -> null
+                    hero == Hero.OFFER -> CoinFace.draw(posterContext(), fields.offerPercent)
+                    else -> SealFace.draw(this, shopName(), markLogo)
+                }
                 HeroStage(this, hero, face = face).also {
                     face?.recycle()
                     stageHero = hero
@@ -767,7 +824,7 @@ class PosterActivity : BaseActivity() {
                 null
             }
         }
-        val inp = input().copy(hero = hero, heroOverlay = false)
+        val inp = input(animated = false).copy(hero = hero, heroOverlay = false)
         return withContext(Dispatchers.Default) {
             try {
                 val dir = File(cacheDir, "posters").apply { mkdirs() }
@@ -904,6 +961,8 @@ class PosterActivity : BaseActivity() {
         private const val KEY_VIDEO = "as_video"
         /** Long enough for every motion to show (the slowest sway is 11 s; most loop in 3-8). */
         const val VIDEO_SECONDS = 8f
+        private val OFFER_STEPS = listOf(5, 10, 15, 20, 25, 30, 40, 50)
+        private val OFFER_DAYS = listOf(1, 2, 3, 5, 7, 10, 15)
 
         private val WHATSAPP = listOf("com.whatsapp", "com.whatsapp.w4b")
 
