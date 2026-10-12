@@ -2849,4 +2849,9 @@
     <string name="poster_lang_other">অন্য</string>
     <string name="poster_lang_note">শুধু পোস্টার বদলায়। অ্যাপ যেমন আছে তেমনই থাকে।</string>
     <string name="poster_lang_most_used">সবচেয়ে বেশি ব্যবহৃত</string>
+
+    <!-- An empty Announcement in the preview (12 Oct). -->
+    <string name="poster_custom_title_hint">আপনার শিরোনাম এখানে লিখুন</string>
+    <string name="poster_custom_msg_hint">আপনার বার্তা এখানে আসবে</string>
+    <string name="poster_heading_needed">এই পোস্টারের একটি শিরোনাম লিখুন</string>
 </resources>

@@ -2833,4 +2833,9 @@
     <string name="poster_lang_other">ٻي</string>
     <string name="poster_lang_note">رڳو پوسٽر بدلجي ٿو. ايپ ساڳي رهي ٿي.</string>
     <string name="poster_lang_most_used">گهڻو استعمال ٿيندڙ</string>
+
+    <!-- An empty Announcement in the preview (12 Oct). -->
+    <string name="poster_custom_title_hint">هتي پنهنجي سرخي لکو</string>
+    <string name="poster_custom_msg_hint">توهان جو پيغام هتي ايندو</string>
+    <string name="poster_heading_needed">هن پوسٽر جي سرخي لکو</string>
 </resources>

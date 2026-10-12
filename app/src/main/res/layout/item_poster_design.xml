@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One design in the poster screen's row: a small picture of it and its name. -->
+<!-- One design in the poster screen's strip: a small picture of it. Its name is
+     shown once, over the strip (designName), and read out from the picture. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="96dp"
+    android:layout_width="64dp"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="10dp"
+    android:layout_marginEnd="8dp"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/designCard"
-        android:layout_width="88dp"
-        android:layout_height="156dp"
-        app:cardCornerRadius="12dp"
+        android:layout_width="58dp"
+        android:layout_height="103dp"
+        app:cardCornerRadius="9dp"
         app:cardElevation="0dp"
         app:strokeColor="@color/hairline"
         app:strokeWidth="1dp">
@@ -26,10 +27,10 @@
 
         <ImageView
             android:id="@+id/designTick"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_gravity="top|end"
-            android:layout_margin="6dp"
+            android:layout_margin="4dp"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_check_circle"
             android:visibility="gone"
@@ -44,5 +45,6 @@
         android:gravity="center"
         android:maxLines="2"
         android:textColor="@color/ink"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:visibility="gone" />
 </LinearLayout>

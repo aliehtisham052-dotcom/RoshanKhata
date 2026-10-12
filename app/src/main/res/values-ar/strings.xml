@@ -2989,4 +2989,9 @@
     <string name="poster_lang_other">أخرى</string>
     <string name="poster_lang_note">يتغير الملصق فقط. يبقى التطبيق كما هو.</string>
     <string name="poster_lang_most_used">الأكثر استخدامًا</string>
+
+    <!-- An empty Announcement in the preview (12 Oct). -->
+    <string name="poster_custom_title_hint">اكتب عنوانك هنا</string>
+    <string name="poster_custom_msg_hint">رسالتك تظهر هنا</string>
+    <string name="poster_heading_needed">اكتب عنوانًا لهذا الملصق</string>
 </resources>

@@ -2805,4 +2805,9 @@
     <string name="poster_lang_other">دوسری</string>
     <string name="poster_lang_note">صرف پوسٹر بدلتا ہے۔ ایپ ویسی ہی رہتی ہے۔</string>
     <string name="poster_lang_most_used">زیادہ استعمال ہونے والی</string>
+
+    <!-- An empty Announcement in the preview (12 Oct). -->
+    <string name="poster_custom_title_hint">یہاں اپنی سرخی لکھیں</string>
+    <string name="poster_custom_msg_hint">آپ کا پیغام یہاں آئے گا</string>
+    <string name="poster_heading_needed">اس پوسٹر کی سرخی لکھیں</string>
 </resources>
