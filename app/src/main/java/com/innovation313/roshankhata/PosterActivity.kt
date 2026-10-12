@@ -41,6 +41,7 @@ import com.innovation313.roshankhata.ui.PosterDesigns
 import com.innovation313.roshankhata.ui.PosterImage
 import com.innovation313.roshankhata.ui.PosterKit
 import com.innovation313.roshankhata.ui.PosterMotionView
+import com.innovation313.roshankhata.ui.PosterVideo
 import com.innovation313.roshankhata.ui.PosterWords
 import com.innovation313.roshankhata.ui.ScreenInsets
 import com.innovation313.roshankhata.ui.TextFit
@@ -100,6 +101,12 @@ class PosterActivity : BaseActivity() {
     private lateinit var btnStatus: MaterialButton
     private lateinit var btnShare: MaterialButton
     private lateinit var noPhoneNote: View
+    private lateinit var chipSendAs: ChipGroup
+    /** Send a moving video (the default: the motion is the point) or the still picture. */
+    private var asVideo = true
+    private var videoJob: Job? = null
+    /** True when the owner cancelled the last video, so nothing is sent in its place. */
+    private var videoCancelled = false
 
     /** The live 3D hero, while the chosen design has one and the phone can draw it. */
     private var stage: HeroStage? = null
@@ -151,6 +158,7 @@ class PosterActivity : BaseActivity() {
         btnStatus = findViewById(R.id.btnStatus)
         btnShare = findViewById(R.id.btnSharePoster)
         noPhoneNote = findViewById(R.id.noPhoneNote)
+        chipSendAs = findViewById(R.id.chipSendAs)
         frame.post { placeHero() }
 
         occasion = PosterOccasion.byKey(prefs.getString(KEY_OCCASION, null))
@@ -165,6 +173,8 @@ class PosterActivity : BaseActivity() {
         buildHoursFields()
         buildRamazanFields()
         buildEidFields()
+        asVideo = prefs.getBoolean(KEY_VIDEO, true)
+        buildSendAs()
 
         etTitle.doAfterTextChanged { if (!filling) { save(KEY_TITLE, it?.toString(), occasion.title); render() } }
         etMessage.doAfterTextChanged { if (!filling) { save(KEY_MSG, it?.toString(), occasion.message); render() } }
@@ -347,6 +357,17 @@ class PosterActivity : BaseActivity() {
         chip.text = text
         group.addView(chip)
         return chip
+    }
+
+    private fun buildSendAs() {
+        chipSendAs.removeAllViews()
+        val picture = choiceChip(chipSendAs, getString(R.string.poster_as_picture))
+        val video = choiceChip(chipSendAs, getString(R.string.poster_as_video))
+        picture.isChecked = !asVideo
+        video.isChecked = asVideo
+        picture.setOnClickListener { asVideo = false; prefs.edit().putBoolean(KEY_VIDEO, false).apply(); picture.isChecked = true }
+        video.setOnClickListener { asVideo = true; prefs.edit().putBoolean(KEY_VIDEO, true).apply(); video.isChecked = true }
+        TextFit.relax(chipSendAs)
     }
 
     private fun buildShowChips() {
@@ -710,59 +731,140 @@ class PosterActivity : BaseActivity() {
     private fun sharePoster(toWhatsApp: Boolean) {
         btnStatus.isEnabled = false
         btnShare.isEnabled = false
+        val ctx = posterContext()
         lifecycleScope.launch {
-            // The shared picture carries the hero itself, drawn still off-screen at full size.
-            val hero = stage?.let { st ->
-                try {
-                    val r = stageHero!!.rect
-                    st.still(r.width().toInt(), r.height().toInt())
-                } catch (e: Exception) {
-                    null
-                }
+            val file: File? = if (asVideo) makeVideo(ctx) else null
+            if (asVideo && videoCancelled) {
+                // The owner stopped it: nothing is sent.
+                btnStatus.isEnabled = true
+                btnShare.isEnabled = true
+                return@launch
             }
-            val inp = input().copy(hero = hero, heroOverlay = false)
-            val ctx = posterContext()
-            val file = withContext(Dispatchers.Default) {
-                try {
-                    val dir = File(cacheDir, "posters").apply { mkdirs() }
-                    val f = File(dir, "poster.png")
-                    val bmp = PosterImage.draw(ctx, inp).first
-                    FileOutputStream(f).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
-                    bmp.recycle()
-                    hero?.recycle()
-                    f
-                } catch (e: Exception) {
-                    null
+            val (shared, type) = when {
+                file != null -> file to "video/mp4"
+                else -> {
+                    if (asVideo) Toast.makeText(this@PosterActivity, R.string.poster_video_failed, Toast.LENGTH_LONG).show()
+                    makePicture(ctx) to "image/png"
                 }
             }
             btnStatus.isEnabled = true
             btnShare.isEnabled = true
-            if (file == null) {
+            if (shared == null) {
                 Toast.makeText(this@PosterActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
                 return@launch
             }
+            send(shared, type, toWhatsApp)
+        }
+    }
+
+    /** The still picture, with the hero itself drawn still off-screen at full size. */
+    private suspend fun makePicture(ctx: Context): File? {
+        val hero = stage?.let { st ->
             try {
-                val uri = FileProvider.getUriForFile(this@PosterActivity, "$packageName.fileprovider", file)
-                val send = Intent(Intent.ACTION_SEND).apply {
-                    type = "image/png"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                // WhatsApp, or WhatsApp Business; its share screen offers "My status" first.
-                val whatsapp = if (toWhatsApp) WHATSAPP.firstOrNull { pkg ->
-                    send.setPackage(pkg)
-                    val found = send.resolveActivity(packageManager) != null
-                    send.setPackage(null)
-                    found
-                } else null
-                if (toWhatsApp && whatsapp == null) {
-                    Toast.makeText(this@PosterActivity, R.string.poster_whatsapp_missing, Toast.LENGTH_LONG).show()
-                }
-                if (whatsapp != null) startActivity(send.setPackage(whatsapp))
-                else startActivity(Intent.createChooser(send, getString(R.string.share)))
+                val r = stageHero!!.rect
+                st.still(r.width().toInt(), r.height().toInt())
             } catch (e: Exception) {
-                Toast.makeText(this@PosterActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
+                null
             }
+        }
+        val inp = input().copy(hero = hero, heroOverlay = false)
+        return withContext(Dispatchers.Default) {
+            try {
+                val dir = File(cacheDir, "posters").apply { mkdirs() }
+                val f = File(dir, "poster.png")
+                val bmp = PosterImage.draw(ctx, inp).first
+                FileOutputStream(f).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                bmp.recycle()
+                hero?.recycle()
+                f
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    /**
+     * The moving poster as an MP4 (PosterVideo), with a progress window the
+     * owner can cancel. Null if it could not be made (the caller then sends
+     * the picture) or was cancelled.
+     */
+    private suspend fun makeVideo(ctx: Context): File? {
+        val text = TextView(this).apply {
+            setTextColor(getColor(R.color.ink)); textSize = 15f
+            text = getString(R.string.poster_making_video, 0)
+        }
+        val bar = com.google.android.material.progressindicator.LinearProgressIndicator(this).apply {
+            max = 100; isIndeterminate = false
+        }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val box = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, pad, pad, pad / 2)
+            addView(text)
+            addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = pad / 2 })
+        }
+        TextFit.relax(box)
+        var cancelled = false
+        videoCancelled = false
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(box)
+            .setCancelable(false)
+            .setNegativeButton(android.R.string.cancel) { _, _ -> cancelled = true; videoCancelled = true; videoJob?.cancel() }
+            .show()
+        return try {
+            val inp = input().copy(hero = null, heroOverlay = stage != null)
+            val (base, fit) = withContext(Dispatchers.Default) { PosterImage.draw(ctx, inp) }
+            val out = File(File(cacheDir, "posters").apply { mkdirs() }, "poster.mp4")
+            var made = false
+            val job = lifecycleScope.launch {
+                // Caught here: an encoder that refuses must not take the screen down
+                // (an exception in a launched job would); the picture is sent instead.
+                try {
+                    PosterVideo.make(base, stage, stageHero?.rect, fit.motion, VIDEO_SECONDS, out) { p ->
+                        bar.setProgressCompat(p, true)
+                        text.text = getString(R.string.poster_making_video, p)
+                    }
+                    made = true
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    android.util.Log.w("PosterVideo", "The video could not be made", e)
+                }
+            }
+            videoJob = job
+            job.join()
+            base.recycle()
+            if (cancelled || !made) null else out.takeIf { it.length() > 0 }
+        } catch (e: Exception) {
+            null
+        } finally {
+            videoJob = null
+            dialog.dismiss()
+        }
+    }
+
+    private fun send(file: File, type: String, toWhatsApp: Boolean) {
+        try {
+            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+            val send = Intent(Intent.ACTION_SEND).apply {
+                this.type = type
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            // WhatsApp, or WhatsApp Business; its share screen offers "My status" first.
+            val whatsapp = if (toWhatsApp) WHATSAPP.firstOrNull { pkg ->
+                send.setPackage(pkg)
+                val found = send.resolveActivity(packageManager) != null
+                send.setPackage(null)
+                found
+            } else null
+            if (toWhatsApp && whatsapp == null) {
+                Toast.makeText(this, R.string.poster_whatsapp_missing, Toast.LENGTH_LONG).show()
+            }
+            if (whatsapp != null) startActivity(send.setPackage(whatsapp))
+            else startActivity(Intent.createChooser(send, getString(R.string.share)))
+        } catch (e: Exception) {
+            Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -779,6 +881,7 @@ class PosterActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
+        videoJob?.cancel()
         stage?.destroy()
         stage = null
         thumbsJob?.cancel()
@@ -798,6 +901,9 @@ class PosterActivity : BaseActivity() {
         private const val KEY_LANG = "lang_"
         private const val KEY_TITLE = "title_"
         private const val KEY_MSG = "msg_"
+        private const val KEY_VIDEO = "as_video"
+        /** Long enough for every motion to show (the slowest sway is 11 s; most loop in 3-8). */
+        const val VIDEO_SECONDS = 8f
 
         private val WHATSAPP = listOf("com.whatsapp", "com.whatsapp.w4b")
 

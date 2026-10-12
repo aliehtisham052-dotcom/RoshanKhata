@@ -2780,6 +2780,11 @@
     <string name="poster_put_on_status">در وضعیت واتس‌اپ بگذار</string>
     <string name="poster_not_said">نگو</string>
     <string name="poster_whatsapp_missing">واتس‌اپ روی این گوشی نیست؛ برنامه دیگری انتخاب کنید.</string>
+    <string name="poster_send_as">ارسال به صورت</string>
+    <string name="poster_as_picture">تصویر</string>
+    <string name="poster_as_video">ویدیوی متحرک</string>
+    <string name="poster_making_video">در حال ساخت ویدیو… %1$d%%</string>
+    <string name="poster_video_failed">ساخت ویدیو روی این گوشی ممکن نشد، پس تصویر فرستاده می‌شود.</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">تعطیلات عید: فروشگاه %d روز بسته است</item>
         <item quantity="other">تعطیلات عید: فروشگاه %d روز بسته است</item>

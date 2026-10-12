@@ -52,7 +52,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ls /tmp/rtl-proof/*.png >/dev/null 2>&1 || { echo "no pictures"; exit 0; }
+          ls /tmp/rtl-proof/* >/dev/null 2>&1 || { echo "no pictures"; exit 0; }
           gh release view poster-proof >/dev/null 2>&1 || gh release create poster-proof --prerelease \
             --title "Poster proof (CI pictures)" --notes "Pictures drawn by the Poster proof workflow on an emulator, dummy data only."
-          gh release upload poster-proof /tmp/rtl-proof/*.png --clobber
+          gh release upload poster-proof /tmp/rtl-proof/*.png /tmp/rtl-proof/*.mp4 --clobber 2>/dev/null || gh release upload poster-proof /tmp/rtl-proof/*.png --clobber

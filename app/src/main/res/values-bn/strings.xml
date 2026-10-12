@@ -2796,6 +2796,11 @@
     <string name="poster_put_on_status">WhatsApp স্ট্যাটাসে দিন</string>
     <string name="poster_not_said">বলবেন না</string>
     <string name="poster_whatsapp_missing">এই ফোনে WhatsApp নেই; অন্য অ্যাপ বেছে নিন।</string>
+    <string name="poster_send_as">যেভাবে পাঠাবেন</string>
+    <string name="poster_as_picture">ছবি</string>
+    <string name="poster_as_video">চলমান ভিডিও</string>
+    <string name="poster_making_video">ভিডিও তৈরি হচ্ছে… %1$d%%</string>
+    <string name="poster_video_failed">এই ফোনে ভিডিও তৈরি করা গেল না, তাই ছবি পাঠানো হচ্ছে।</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">ঈদের ছুটি: দোকান %d দিন বন্ধ থাকবে</item>
         <item quantity="other">ঈদের ছুটি: দোকান %d দিন বন্ধ থাকবে</item>

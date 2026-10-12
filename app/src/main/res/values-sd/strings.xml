@@ -2780,6 +2780,11 @@
     <string name="poster_put_on_status">واٽس ايپ اسٽيٽس تي لڳايو</string>
     <string name="poster_not_said">نه ٻڌايو</string>
     <string name="poster_whatsapp_missing">هن فون تي واٽس ايپ ناهي؛ ڪا ٻي ايپ چونڊيو.</string>
+    <string name="poster_send_as">هن طور موڪليو</string>
+    <string name="poster_as_picture">تصوير</string>
+    <string name="poster_as_video">هلندڙ وڊيو</string>
+    <string name="poster_making_video">وڊيو ٺهي رهي آهي… %1$d%%</string>
+    <string name="poster_video_failed">هن فون تي وڊيو نه ٺهي سگهي، تنهنڪري تصوير موڪلي پئي وڃي.</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">عيد جون موڪلون: دڪان %d ڏينهن بند رهندو</item>
         <item quantity="other">عيد جون موڪلون: دڪان %d ڏينهن بند رهندو</item>

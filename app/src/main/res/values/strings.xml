@@ -2966,6 +2966,11 @@ You can change this any time from this screen.</string>
     <string name="poster_put_on_status">Put on WhatsApp Status</string>
     <string name="poster_not_said">Don\'t say</string>
     <string name="poster_whatsapp_missing">WhatsApp isn\'t on this phone; choose another app.</string>
+    <string name="poster_send_as">Send as</string>
+    <string name="poster_as_picture">Picture</string>
+    <string name="poster_as_video">Moving video</string>
+    <string name="poster_making_video">Making the video… %1$d%%</string>
+    <string name="poster_video_failed">The video could not be made on this phone, so the picture is shared instead.</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">Eid holidays: the shop is closed for %d day</item>
         <item quantity="other">Eid holidays: the shop is closed for %d days</item>

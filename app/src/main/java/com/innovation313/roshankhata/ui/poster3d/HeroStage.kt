@@ -156,15 +156,15 @@ class HeroStage(
     /**
      * The hero at [t] seconds. Each part's own motions are applied on top of
      * its rest pose, in the order the hero lists them. A clock reads the
-     * phone's time when [live]; the shared picture shows the watchmakers'
-     * 10:10, the hands framing the face.
+     * phone's time when [live] (or [clockMillis], a video's own time); the
+     * shared picture shows the watchmakers' 10:10, the hands framing the face.
      */
-    private fun pose(t: Float, live: Boolean) {
+    private fun pose(t: Float, live: Boolean, clockMillis: Long? = null) {
         val tm = engine.transformManager
         val m = FloatArray(16)
         val tmp = FloatArray(16)
         val out = FloatArray(16)
-        val now = if (live) java.util.Calendar.getInstance() else null
+        val now = if (live) java.util.Calendar.getInstance().also { c -> clockMillis?.let { c.timeInMillis = it } } else null
         val sec = now?.let { it.get(java.util.Calendar.SECOND) + it.get(java.util.Calendar.MILLISECOND) / 1000f } ?: 36f
         val min = now?.get(java.util.Calendar.MINUTE)?.toFloat()?.plus(sec / 60f) ?: (10f + sec / 60f)
         val hour = now?.get(java.util.Calendar.HOUR)?.toFloat()?.plus(min / 60f) ?: (10f + min / 60f)
@@ -298,11 +298,20 @@ class HeroStage(
      * One frame of the resting hero, [w]×[h], with a clear background, for
      * the shared picture.
      */
-    suspend fun still(w: Int, h: Int): Bitmap = suspendCancellableCoroutine { cont ->
-        Log.d(TAG, "still: swapchain ${w}x$h")
+    suspend fun still(w: Int, h: Int): Bitmap = capture(w, h, 0f, live = false, clockMillis = null)
+
+    /**
+     * The hero moving, at [t] seconds into a video, [w]×[h] with a clear
+     * background; a clock shows [clockMillis]. One frame of a Status video
+     * (ui/PosterVideo.kt).
+     */
+    suspend fun frameAt(w: Int, h: Int, t: Float, clockMillis: Long): Bitmap = capture(w, h, t, live = true, clockMillis = clockMillis)
+
+    private suspend fun capture(w: Int, h: Int, t: Float, live: Boolean, clockMillis: Long?): Bitmap = suspendCancellableCoroutine { cont ->
+        if (!live) Log.d(TAG, "still: swapchain ${w}x$h")
         val sc = engine.createSwapChain(w, h, SwapChainFlags.CONFIG_TRANSPARENT or SwapChainFlags.CONFIG_READABLE)
         project(w, h)
-        pose(0f, live = false)
+        pose(t, live, clockMillis)
         val buffer = ByteBuffer.allocateDirect(w * h * 4)
         val handler = Handler(Looper.getMainLooper())
         var finished = false
