@@ -166,3 +166,13 @@
 # any of them breaks rendering at runtime, not at build time. Keep them whole.
 -keep class com.google.android.filament.** { *; }
 -dontwarn com.google.android.filament.**
+
+# ---------------------------------------------------------------------------
+# Screens by name (12 Oct)
+# ---------------------------------------------------------------------------
+# ViewerMode decides which screens a helper's phone may open by each screen's
+# simple class name ("BackupActivity", ...). The manifest already keeps every
+# activity's name; this says so here too, so a screen left out of the manifest
+# (or a rule change) can never turn that check into "every screen allowed".
+-keepnames class com.innovation313.roshankhata.**Activity
+

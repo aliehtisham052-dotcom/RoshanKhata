@@ -28,6 +28,13 @@ val versionCodeOverride = (project.findProperty("versionCodeOverride") as String
 // never passes this property: what Play receives keeps the one true package.
 val sideBySide = (project.findProperty("sideBySide") as String?) == "true"
 
+// The owner's "dev" APK carries the ARM code only (12 Oct, app size): every
+// phone it goes to is ARM, and the x86 copies of the 3D engine were 13.4 MB
+// of the 41.9 MB download. The CI emulator is x86_64, so the smoke run of the
+// same build passes -PdevAllAbis=true to keep them. Play never sees this
+// build type: its bundle carries every ABI and Play sends each phone its own.
+val devAllAbis = (project.findProperty("devAllAbis") as String?) == "true"
+
 android {
     namespace = "com.innovation313.roshankhata"
     // Compiled against Android 16, still behaving like Android 14.
@@ -62,6 +69,17 @@ android {
         // The launcher name. The app's own translated name everywhere,
         // except the side-by-side dev build, which says what it is (below).
         manifestPlaceholders["appLabel"] = "@string/app_name"
+        // Only the app's own nine languages (12 Oct, app size). The libraries
+        // bring translations for 80-odd more that no screen of this app can
+        // show; the app's own strings are all in these folders, and
+        // LocalesKeptOnDeviceTest proves each language still reads in its own
+        // words after the filter. Keep this list equal to locales_config.xml
+        // and the values-* folders ("in" is Indonesian, the folder Android
+        // has always used for "id").
+        resourceConfigurations += listOf("en", "ur", "b+ur+Latn", "sd", "fa", "ar", "in", "hi", "bn")
+        // Debug tools (the seven-tap "big book" in About) are in the debug and
+        // dev builds, never in the Play build.
+        buildConfigField("boolean", "DEV_TOOLS", "false")
     }
 
     signingConfigs {
@@ -130,8 +148,28 @@ android {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
+        // The owner's daily APK (12 Oct): the RELEASE build's own code, R8 and
+        // resource shrinking included, so what he tests on his phone every day
+        // is what Play sends, and is half the size. It differs from release in
+        // only these: its own package and launcher name (as the debug build
+        // had), its key falls back to the debug key on a machine without the
+        // release one (so it always installs), ARM code only (see devAllAbis),
+        // and the debug tools stay on.
+        create("dev") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+            applicationIdSuffix = ".dev"
+            manifestPlaceholders["appLabel"] = "Roshan Khata TEST"
+            signingConfig = if (System.getenv("RELEASE_STORE_FILE") != null)
+                signingConfigs.getByName("release") else signingConfigs.getByName("debug")
+            buildConfigField("boolean", "DEV_TOOLS", "true")
+            if (!devAllAbis) {
+                ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
+            }
+        }
         debug {
             isDebuggable = true
+            buildConfigField("boolean", "DEV_TOOLS", "true")
             // Sign the DEBUG build with the release key too when it's present,
             // so the APK the owner installs from CI has the STABLE SHA-1 that
             // Google Sign-In needs. Without this, each CI debug build would be
@@ -196,6 +234,11 @@ android {
 if (versionCodeOverride != null) {
     androidComponents {
         onVariants(selector().withBuildType("debug")) { variant ->
+            variant.outputs.forEach { output ->
+                output.versionCode.set(versionCodeOverride)
+            }
+        }
+        onVariants(selector().withBuildType("dev")) { variant ->
             variant.outputs.forEach { output ->
                 output.versionCode.set(versionCodeOverride)
             }

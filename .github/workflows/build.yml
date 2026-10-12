@@ -101,7 +101,7 @@ jobs:
                           print('::error::' + part)
           PY
 
-      - name: Build Debug APK
+      - name: Build the dev APK (release code, R8, ARM)
         env:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
@@ -121,9 +121,16 @@ jobs:
           # "Roshan Khata TEST": Play re-signs the published app with Google's
           # key, so a build signed with ours can never install OVER it. As a
           # separate app it sits beside the real one and leaves its books alone.
+          #
+          # "dev" (12 Oct, app size) is the RELEASE build's own code: R8 and
+          # resource shrinking on, as Play receives it, ARM only (every phone
+          # it goes to is ARM), with the ".dev" package and TEST name. So the
+          # build tested every day is the build that ships, at half the size.
+          # The on-device workflow runs the same build on the emulator first
+          # (release-smoke), as R8's failures are runtime failures.
           DEV_VERSION_CODE=$(date +%s)
           echo "Dev build versionCode override: $DEV_VERSION_CODE"
-          gradle assembleDebug -PversionCodeOverride=$DEV_VERSION_CODE -PsideBySide=true --no-daemon --stacktrace 2>&1 | tee /tmp/build_output.txt
+          gradle assembleDev -PversionCodeOverride=$DEV_VERSION_CODE -PsideBySide=true --no-daemon --stacktrace 2>&1 | tee /tmp/build_output.txt
           EXIT=${PIPESTATUS[0]}
           exit $EXIT
 
@@ -152,8 +159,22 @@ jobs:
         if: success()
         run: |
           mkdir -p out
-          cp app/build/outputs/apk/debug/*.apk out/RoshanKhata-latest.apk
+          cp app/build/outputs/apk/dev/*.apk out/RoshanKhata-latest.apk
           ls -lh out/
+          # The size, every build, where it can be seen: a regression shows here first.
+          python3 - <<'PY'
+          import zipfile, collections
+          z = zipfile.ZipFile('out/RoshanKhata-latest.apk')
+          g = collections.Counter()
+          for i in z.infolist():
+              n = i.filename
+              k = ('lib/' + n.split('/')[1]) if n.startswith('lib/') else 'dex' if n.endswith('.dex') else \
+                  'assets' if n.startswith('assets/') else 'res' if n.startswith('res/') else n if n == 'resources.arsc' else 'other'
+              g[k] += i.compress_size
+          import os
+          total = os.path.getsize('out/RoshanKhata-latest.apk')
+          print(f"::notice title=APK size {total/1e6:.2f} MB::" + ", ".join(f"{k} {v/1e6:.2f}" for k, v in g.most_common()))
+          PY
 
       # A rolling "latest" release: one clean, permanent download link that
       # always points at the newest build. No zip, no login, no digging
@@ -207,5 +228,15 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v6
         with:
-          name: RoshanKhata-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: RoshanKhata-dev-apk
+          path: app/build/outputs/apk/dev/*.apk
+
+      # R8 renames the code: without this map a crash from the owner's phone
+      # reads a(), b(), c(). It belongs to this one build and cannot be made later.
+      - name: Upload R8 mapping
+        if: success()
+        uses: actions/upload-artifact@v6
+        with:
+          name: RoshanKhata-dev-r8-mapping
+          path: app/build/outputs/mapping/dev/
+          retention-days: 90

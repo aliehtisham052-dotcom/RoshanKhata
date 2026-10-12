@@ -78,6 +78,35 @@ jobs:
                 echo "::error::$clean"
               done
 
+      # The shrunk app the owner and Play get (R8 on), with the x86_64 code the
+      # emulator needs, for the monkey to walk through after the tests.
+      - name: Build the dev APK (R8) for the monkey
+        run: |
+          set +e
+          gradle assembleDev -PdevAllAbis=true --no-daemon --stacktrace 2>&1 | tee /tmp/dev_build_output.txt
+          code=${PIPESTATUS[0]}
+          if [ $code -ne 0 ]; then
+            grep -iE "^e: |error:|FAILURE:|Caused by|Missing class|R8:" /tmp/dev_build_output.txt | head -20 \
+              | while IFS= read -r line; do echo "::error::dev build: $(echo "$line" | tr -d '\r' | sed 's/%/%%/g')"; done
+          fi
+          if [ $code -ne 0 ]; then exit $code; fi
+          # What the shrinker kept, checked in the built APK itself (12 Oct):
+          #  - every trade's goods list (TradeVocab finds them by name, which the
+          #    shrinker cannot see; res/raw/keep.xml keeps them);
+          #  - all nine languages (the language filter must not drop one).
+          aapt2=$(ls -d $ANDROID_HOME/build-tools/*/aapt2 | sort -V | tail -1)
+          apk=$(ls app/build/outputs/apk/dev/*.apk | head -1)
+          want=$(grep -o '<string-array name="vocab_[a-z_]*"' app/src/main/res/values/strings.xml | sort -u | wc -l)
+          have=$($aapt2 dump resources "$apk" | grep -oE 'array/vocab_[a-z_]+' | sort -u | wc -l)
+          echo "::notice::dev APK keeps $have of $want trade goods lists"
+          if [ "$have" -ne "$want" ]; then echo "::error::the shrunk APK lost trade goods lists: $have of $want"; exit 1; fi
+          confs=$($aapt2 dump configurations "$apk" | tr '\n' ' ')
+          for l in ur b+ur+Latn sd fa ar in hi bn; do
+            case " $confs " in *" $l "*|*" $l-"*) ;; *) echo "::error::the shrunk APK has no $l strings ($confs)"; exit 1;; esac
+          done
+          echo "::notice::dev APK languages: $confs"
+          ls -l "$apk"
+
       # Without hardware acceleration the AVD falls back to software and times
       # out rather than failing with anything that reads like a cause.
       - name: Enable KVM
