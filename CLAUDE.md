@@ -16,8 +16,12 @@ No account, no server, no ads. Everything stays on the phone.
 - ~70 Kotlin files, ~13,400 lines
 - 634 string keys × 6 locales — English, Arabic, Sindhi, Farsi, Urdu, Roman Urdu
 - Room database, version 9
-- CI builds a debug APK on every push to `main` and publishes it to the
-  rolling `latest` release
+- CI builds the **dev** APK on every push to `main` and publishes it to the
+  rolling `latest` release: the release code with R8 and resource shrinking,
+  ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
+  monkeys the same build on the emulator (x86_64 kept with
+  `-PdevAllAbis=true`) and checks in the APK that the trade goods lists and
+  all nine languages survived the shrinker.
 
 ### Key files
 
@@ -127,6 +131,11 @@ Each of these cost a build or a bug.
 16. **Look at the pictures, not only the numbers.** Upside-down 3D heroes and
     a reversed phone number passed every assertion; the "Poster proof"
     workflow puts the CI pictures on the `poster-proof` pre-release.
+17. **R8 and the shrinker break at run time, not at build time.** Anything
+    found by NAME must be kept: `getIdentifier` resources go in
+    `res/raw/keep.xml`, classes compared by name in `proguard-rules.pro`.
+    Enum names stored in preferences are safe (R8 keeps `name()`), but check
+    any new reflection before shipping.
 
 ---
 

@@ -55,7 +55,7 @@ class AboutActivity : BaseActivity() {
         // version line write ten thousand seeded customers, so the app can be
         // felt at that size on a real phone; seven more take them out. A Play
         // build has no such door — the taps do nothing there.
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEV_TOOLS) {
             var taps = 0
             tvVersion.setOnClickListener {
                 taps++

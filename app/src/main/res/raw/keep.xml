@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Resources the shrinker must never remove (12 Oct, app size). It cannot see
+  these used: TradeVocab finds each trade's goods by NAME at run time,
+  getIdentifier("vocab_<trade>_<part>", "array", ...), so in a shrunk build a
+  missing one would leave a trade's suggestions empty without any error.
+  The name of this file and its tools: attributes are the build tools' own;
+  the file itself is not packaged.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@array/vocab_*" />
