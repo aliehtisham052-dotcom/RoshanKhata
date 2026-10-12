@@ -2810,4 +2810,12 @@
     <string name="poster_custom_title_hint">یہاں اپنی سرخی لکھیں</string>
     <string name="poster_custom_msg_hint">آپ کا پیغام یہاں آئے گا</string>
     <string name="poster_heading_needed">اس پوسٹر کی سرخی لکھیں</string>
+
+    <!-- The shop's email, and the poster's contact details (12 Oct). -->
+    <string name="bp_email">ای میل</string>
+    <string name="bp_email_help">آپ کے پوسٹروں اور کارڈوں پر۔ ذاتی ای میل کے بجائے دکان کی ای میل بہتر ہے۔</string>
+    <string name="poster_chip_email">ای میل</string>
+    <string name="poster_chip_whatsapp">واٹس ایپ پر</string>
+    <string name="poster_saved_to_profile">دکان کی پروفائل میں محفوظ، ہر پوسٹر کے لیے۔</string>
+    <string name="poster_value_needed">پہلے لکھیں</string>
 </resources>

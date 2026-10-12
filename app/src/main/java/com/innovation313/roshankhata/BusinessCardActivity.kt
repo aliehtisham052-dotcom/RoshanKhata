@@ -99,7 +99,8 @@ class BusinessCardActivity : BaseActivity() {
         loading = true
         etPhone.setText(prefs.getString(KEY_PHONE, ""))
         etWhatsapp.setText(prefs.getString(KEY_WHATSAPP, ""))
-        etEmail.setText(prefs.getString(KEY_EMAIL, ""))
+        // The card's own email, else the shop's (Profile, 12 Oct).
+        etEmail.setText(prefs.getString(KEY_EMAIL, null)?.takeIf { it.isNotBlank() } ?: BusinessProfile.businessEmail(this).orEmpty())
         etWeb.setText(prefs.getString(KEY_WEB, ""))
         fillLanguageFields()
         loading = false

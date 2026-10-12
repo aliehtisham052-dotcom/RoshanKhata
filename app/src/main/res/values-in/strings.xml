@@ -2808,4 +2808,12 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="poster_custom_title_hint">Tulis judul Anda di sini</string>
     <string name="poster_custom_msg_hint">Pesan Anda muncul di sini</string>
     <string name="poster_heading_needed">Tulis judul untuk poster ini</string>
+
+    <!-- The shop's email, and the poster's contact details (12 Oct). -->
+    <string name="bp_email">Email</string>
+    <string name="bp_email_help">Di poster dan kartu Anda. Email toko lebih baik daripada email pribadi.</string>
+    <string name="poster_chip_email">Email</string>
+    <string name="poster_chip_whatsapp">Di WhatsApp</string>
+    <string name="poster_saved_to_profile">Disimpan di profil toko, untuk setiap poster.</string>
+    <string name="poster_value_needed">Tulis dulu</string>
 </resources>

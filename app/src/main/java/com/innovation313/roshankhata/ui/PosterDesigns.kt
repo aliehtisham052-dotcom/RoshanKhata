@@ -413,7 +413,8 @@ object PosterDesigns {
         // groups would swap. Not Format.ltr: its BidiFormatter takes the phone's
         // language for the context, which is not always the poster's.
         val bits = listOfNotNull(page.phone?.trim()?.takeIf { it.isNotEmpty() }?.let { "\u2066$it\u2069" },
-            page.address?.trim()?.takeIf { it.isNotEmpty() })
+            page.address?.trim()?.takeIf { it.isNotEmpty() },
+            page.email?.trim()?.takeIf { it.isNotEmpty() }?.let { "\u2066$it\u2069" })
         if (bits.isNotEmpty()) {
             val line = bits.joinToString("  •  ")
             val lp = PosterKit.textPaint(page.context, line, if (page.urdu) 36f else 34f, 0xFF5F584D.toInt(), false, page.locale, page.urdu)

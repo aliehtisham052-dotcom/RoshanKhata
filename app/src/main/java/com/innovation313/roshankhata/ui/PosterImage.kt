@@ -41,7 +41,11 @@ object PosterImage {
         /** His own photo of the stock, for New stock. */
         val photo: Bitmap? = null,
         /** The motion layer is drawn over it (preview, video): see PosterKit.Page.animated. */
-        val animated: Boolean = false
+        val animated: Boolean = false,
+        /** The shop's email, when shown. */
+        val email: String? = null,
+        /** The number is on WhatsApp too. */
+        val whatsapp: Boolean = false
     )
 
     /** Sizes the big line and message ended at (for the on-device test), and what the preview animates. */
@@ -61,7 +65,8 @@ object PosterImage {
         val page = PosterKit.Page(
             context, Canvas(bmp), locale, rtl, input.title, input.message,
             input.shopName.ifBlank { " " }, input.phone, input.address, input.logo, input.mark,
-            input.hero, input.heroOverlay, input.fields, input.photo, input.animated
+            input.hero, input.heroOverlay, input.fields, input.photo, input.animated,
+            input.email, input.whatsapp
         )
         val o = PosterDesigns.draw(input.occasion, page)
         return bmp to Fit(o.titleSize, o.titleLines, o.messageSize, o.messageLines, o.motion)

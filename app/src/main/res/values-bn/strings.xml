@@ -2854,4 +2854,12 @@
     <string name="poster_custom_title_hint">আপনার শিরোনাম এখানে লিখুন</string>
     <string name="poster_custom_msg_hint">আপনার বার্তা এখানে আসবে</string>
     <string name="poster_heading_needed">এই পোস্টারের একটি শিরোনাম লিখুন</string>
+
+    <!-- The shop's email, and the poster's contact details (12 Oct). -->
+    <string name="bp_email">ইমেল</string>
+    <string name="bp_email_help">আপনার পোস্টার ও কার্ডে। ব্যক্তিগত ইমেলের চেয়ে দোকানের ইমেল ভালো।</string>
+    <string name="poster_chip_email">ইমেল</string>
+    <string name="poster_chip_whatsapp">হোয়াটসঅ্যাপে</string>
+    <string name="poster_saved_to_profile">দোকানের প্রোফাইলে সেভ হলো, প্রতিটি পোস্টারের জন্য।</string>
+    <string name="poster_value_needed">আগে লিখুন</string>
 </resources>

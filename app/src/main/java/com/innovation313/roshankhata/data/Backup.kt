@@ -814,7 +814,9 @@ object Backup {
         val tradeOtherName: String? = null,
         val tradeOtherItems: String? = null,
         /** The shop's name in Urdu script for Urdu posters (11 Oct); absent before. */
-        val businessNameUrdu: String? = null
+        val businessNameUrdu: String? = null,
+        /** The shop's email (12 Oct); absent before. */
+        val businessEmail: String? = null
     )
 
     /**
@@ -1285,6 +1287,7 @@ object Backup {
         put("businessNameUrdu", BusinessProfile.businessNameUrdu(context) ?: JSONObject.NULL)
         put("businessAddress", BusinessProfile.businessAddress(context) ?: JSONObject.NULL)
         put("businessPhone", BusinessProfile.businessPhone(context) ?: JSONObject.NULL)
+        put("businessEmail", BusinessProfile.businessEmail(context) ?: JSONObject.NULL)
         put("bankName", BusinessProfile.bankName(context) ?: JSONObject.NULL)
         put("bankAccountTitle", BusinessProfile.bankAccountTitle(context) ?: JSONObject.NULL)
         put("bankIban", BusinessProfile.bankIban(context) ?: JSONObject.NULL)
@@ -1315,7 +1318,8 @@ object Backup {
         businessPhone = o.optNullableString("businessPhone"),
         tradeOtherName = o.optNullableString("tradeOtherName"),
         tradeOtherItems = o.optNullableString("tradeOtherItems"),
-        businessNameUrdu = o.optNullableString("businessNameUrdu")
+        businessNameUrdu = o.optNullableString("businessNameUrdu"),
+        businessEmail = o.optNullableString("businessEmail")
     )
 
     // Written through the existing setters so trimming/normalisation stays in
@@ -1328,6 +1332,7 @@ object Backup {
         BusinessProfile.setBusinessNameUrdu(context, p.businessNameUrdu)
         BusinessProfile.setBusinessAddress(context, p.businessAddress)
         BusinessProfile.setBusinessPhone(context, p.businessPhone)
+        BusinessProfile.setBusinessEmail(context, p.businessEmail)
         BusinessProfile.setBankName(context, p.bankName)
         BusinessProfile.setBankAccountTitle(context, p.bankAccountTitle)
         BusinessProfile.setBankIban(context, p.bankIban)

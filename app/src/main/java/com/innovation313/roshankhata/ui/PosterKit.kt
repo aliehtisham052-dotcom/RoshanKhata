@@ -69,7 +69,11 @@ object PosterKit {
          * the confetti) are left to it; false for the shared still, which
          * draws them at rest itself.
          */
-        val animated: Boolean = false
+        val animated: Boolean = false,
+        /** The shop's email, when the owner shows it (12 Oct). */
+        val email: String? = null,
+        /** The phone number is on WhatsApp too: the call button carries a chat mark. */
+        val whatsapp: Boolean = false
     ) {
         val urdu = urduScript(locale)
         /** Draw the hero here, or its flat stand-in, unless the live 3D view covers the place. */
@@ -347,8 +351,13 @@ object PosterKit {
     }
 
     /** The gold call button, or nothing if the profile has no phone. */
+    /**
+     * The call button (12 Oct, redrawn): a gold pill, a coloured disc ringed in
+     * light with the standard filled call mark, the number in 0-9, and, when
+     * the number is on WhatsApp, a chat mark at the pill's other end.
+     */
     fun phonePill(page: Page, pill: RectF, disc: Int = 0xFF1E6B4A.toInt(), discDark: Int = 0xFF062418.toInt(),
-                  glyph: Int = GOLD, size: Float = 69f) {
+                  glyph: Int = 0xFFFFFFFF.toInt(), size: Float = 69f) {
         val phone = page.phone?.trim()
         if (phone.isNullOrBlank()) return
         val c = page.c
@@ -358,36 +367,107 @@ object PosterKit {
         gold.setShadowLayer(42f, 0f, 30f, 0x80000000.toInt())
         val r = pill.height() / 2
         c.drawRoundRect(pill, r, r, gold)
-        val dr = r - 22f
-        val icx = if (page.rtl) pill.right - 22f - dr else pill.left + 22f + dr
+        // A fine light edge along the pill's top: it reads as metal, not paint.
+        c.drawRoundRect(RectF(pill.left + 3f, pill.top + 3f, pill.right - 3f, pill.bottom - 3f), r - 3f, r - 3f,
+            Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 2.5f; color = 0x66FFFFFF })
+        val dr = r - 18f
+        val icx = if (page.rtl) pill.right - 18f - dr else pill.left + 18f + dr
+        val cy = pill.centerY()
         val d = Paint(Paint.ANTI_ALIAS_FLAG)
-        d.shader = RadialGradient(icx - 20f, pill.centerY() - 20f, dr * 1.3f, disc, discDark, Shader.TileMode.CLAMP)
-        c.drawCircle(icx, pill.centerY(), dr, d)
-        CardGlyphs.phone(c, icx, pill.centerY(), dr * 0.9f, glyph)
+        d.shader = RadialGradient(icx - dr * 0.35f, cy - dr * 0.35f, dr * 1.4f, disc, discDark, Shader.TileMode.CLAMP)
+        d.setShadowLayer(10f, 0f, 4f, 0x55000000)
+        c.drawCircle(icx, cy, dr, d)
+        c.drawCircle(icx, cy, dr - 7f, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 2.5f; color = 0x59FFFFFF })
+        PosterGlyphs.call(c, icx, cy, dr * 1.05f, glyph)
+        // The chat mark, at the other end.
+        var chatRoom = 0f
+        if (page.whatsapp) {
+            val br = r * 0.40f
+            val bcx = if (page.rtl) pill.left + 34f + br else pill.right - 34f - br
+            PosterGlyphs.chat(c, bcx, cy, br * 2.1f, discDark, 0xFFF3CF6A.toInt())
+            chatRoom = br * 2 + 34f
+        }
         val pp = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
             textSize = size; color = 0xFF1F1505.toInt(); textAlign = Paint.Align.CENTER; letterSpacing = 0.02f
         }
-        fitWidth(pp, phone, pill.width() - 2 * dr - 120f, floor = 40f)
-        inkLine(c, phone, pp, pill.centerX() + if (page.rtl) -(dr - 10f) else (dr - 10f), pill.centerY())
+        val textLeft = if (page.rtl) pill.left + 30f + chatRoom else icx + dr + 24f
+        val textRight = if (page.rtl) icx - dr - 24f else pill.right - 30f - chatRoom
+        fitWidth(pp, phone, textRight - textLeft, floor = 40f)
+        inkLine(c, phone, pp, (textLeft + textRight) / 2, cy)
     }
 
-    /** The address with a map pin, centred on [cy]. */
+    /**
+     * The address and the email under the call button, each with its mark:
+     * on one line when both fit, else the address over the email. Nothing is
+     * drawn for what the owner left out.
+     */
     fun address(page: Page, cy: Float, colour: Int = 0xD9F6EBD0.toInt(), pin: Int = GOLD) {
-        val a = page.address?.trim()
-        if (a.isNullOrBlank()) return
-        val ap = textPaint(page.context, a, if (page.urdu) 39f else 38f, colour, false, page.locale, page.urdu)
-        ap.textAlign = Paint.Align.CENTER
-        fitWidth(ap, a, 860f, floor = 26f)
-        // The ink's own edges, not the advance: a Nastaliq letter can reach past
-        // it. getTextBounds measures from the line's start, whatever the alignment.
+        val a = page.address?.trim()?.takeIf { it.isNotEmpty() }
+        val e = page.email?.trim()?.takeIf { it.isNotEmpty() }
+        if (a == null && e == null) return
+        val items = listOfNotNull(a?.let { 0 to it }, e?.let { 1 to it })
+        fun paintFor(text: String, size: Float): TextPaint {
+            val p = if (hasArabic(text)) textPaint(page.context, text, size, colour, false, page.locale, page.urdu)
+                else textPaint(page.context, text, size, colour, false, Locale.ENGLISH, false)
+            p.textAlign = Paint.Align.LEFT
+            return p
+        }
+        val iconSize = 40f
+        val iconGap = 14f
+        val between = 54f
+        fun width(text: String, p: TextPaint) = iconSize + iconGap + p.measureText(text)
+        if (items.size == 2) {
+            var size = if (page.urdu) 38f else 36f
+            while (size >= 30f) {
+                val ps = items.map { paintFor(it.second, size) }
+                val total = width(items[0].second, ps[0]) + between + width(items[1].second, ps[1])
+                if (total <= 900f) {
+                    // Reading order: the address first, from the right on an Urdu poster.
+                    var x = if (page.rtl) W / 2 + total / 2 else W / 2 - total / 2
+                    for ((i, item) in items.withIndex()) {
+                        val w = width(item.second, ps[i])
+                        val left = if (page.rtl) x - w else x
+                        contactItem(page, item.first, item.second, ps[i], left, cy, iconSize, iconGap, pin)
+                        x = if (page.rtl) x - w - between else x + w + between
+                    }
+                    return
+                }
+                size -= 2f
+            }
+            // Two lines: the address, then the email under it.
+            for ((i, item) in items.withIndex()) {
+                val p = paintFor(item.second, if (page.urdu && hasArabic(item.second)) 36f else 33f)
+                fitWidth(p, item.second, 900f - iconSize - iconGap, floor = 24f)
+                val w = width(item.second, p)
+                contactItem(page, item.first, item.second, p, W / 2 - w / 2, cy + i * 48f, iconSize * 0.9f, iconGap, pin)
+            }
+            return
+        }
+        val (kind, text) = items[0]
+        val p = paintFor(text, if (page.urdu) 39f else 38f)
+        fitWidth(p, text, 860f - iconSize - iconGap, floor = 26f)
+        val w = width(text, p)
+        contactItem(page, kind, text, p, W / 2 - w / 2, cy, iconSize, iconGap, pin)
+    }
+
+    /**
+     * One contact item in the box from [left]: its mark on the reading side,
+     * then the words. The mark is placed from the words' ink, not their
+     * advance: a Nastaliq letter can reach past it.
+     */
+    private fun contactItem(page: Page, kind: Int, text: String, p: TextPaint, left: Float, cy: Float,
+                            iconSize: Float, iconGap: Float, colour: Int) {
+        val tw = p.measureText(text)
         val ink = Rect()
-        ap.getTextBounds(a, 0, a.length, ink)
-        val start = W / 2 - ap.measureText(a) / 2
-        val pinX = if (page.rtl) maxOf(start + ink.right, W / 2 + ap.measureText(a) / 2) + 34f
-            else minOf(start + ink.left, W / 2 - ap.measureText(a) / 2) - 34f
-        CardGlyphs.pin(page.c, pinX, cy, 40f, pin)
-        inkLine(page.c, a, ap, W / 2, cy)
+        p.getTextBounds(text, 0, text.length, ink)
+        val rtl = page.rtl
+        val textX = if (rtl) left else left + iconSize + iconGap
+        val iconX = if (rtl) maxOf(textX + ink.right, textX + tw) + iconGap + iconSize / 2
+            else minOf(textX + ink.left, textX) - iconGap - iconSize / 2
+        if (kind == 0) PosterGlyphs.pin(page.c, iconX, cy, iconSize, colour)
+        else PosterGlyphs.mail(page.c, iconX, cy, iconSize * 0.95f, colour)
+        inkLine(page.c, text, p, textX, cy)
     }
 
     /** "Roshan Khata", faint, at the very foot. */
