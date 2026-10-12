@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.innovation313.roshankhata.data.Branding
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.ui.CardPreviewView
@@ -108,7 +109,9 @@ class BusinessCardActivity : BaseActivity() {
         // A design that was removed (ids 0-7) resolves to the first card, and the
         // picker highlights that card rather than nothing.
         template = CardTemplates.byId(prefs.getInt(KEY_TEMPLATE, TPL_DEFAULT)).id
-        // On unless the owner has said otherwise.
+        // On unless the owner has said otherwise. Not offered while the app's
+        // mark is off on cards (Branding); the saved choice is kept for later.
+        markSwitch.visibility = if (Branding.ON_POSTERS_AND_CARDS) android.view.View.VISIBLE else android.view.View.GONE
         markSwitch.isChecked = prefs.getBoolean(KEY_MARK, true)
         markSwitch.setOnCheckedChangeListener { _, on ->
             getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE)
@@ -276,7 +279,7 @@ class BusinessCardActivity : BaseActivity() {
         // Empty when the owner has switched the mark off — CardTemplates
         // draws nothing for an empty footer, so no template needs to know
         // about the setting.
-        footer = if (markSwitch.isChecked) cardContext().getString(R.string.made_with_app) else "",
+        footer = if (markSwitch.isChecked && Branding.ON_POSTERS_AND_CARDS) cardContext().getString(R.string.made_with_app) else "",
         whatsapp = etWhatsapp.text.toString().trim(),
         email = etEmail.text.toString().trim(),
         web = etWeb.text.toString().trim(),
