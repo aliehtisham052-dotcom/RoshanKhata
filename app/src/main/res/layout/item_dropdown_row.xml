@@ -11,7 +11,7 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:ellipsize="end"
-    android:gravity="center_vertical"
+    android:gravity="center_vertical|start"
     android:maxLines="1"
     android:minHeight="48dp"
     android:paddingStart="16dp"
