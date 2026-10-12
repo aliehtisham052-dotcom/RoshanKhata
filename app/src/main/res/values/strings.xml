@@ -2989,4 +2989,34 @@ You can change this any time from this screen.</string>
         <item quantity="one">Only for %d day</item>
         <item quantity="other">Only for %d days</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">Card language</string>
+    <string name="biz_card_language_note">An Urdu card is wholly Urdu and reads right to left. Each language keeps its own name, owner and address; the numbers, email and website are the same on both.</string>
+    <string name="poster_step_design">Design</string>
+    <string name="poster_step_words">Words</string>
+    <string name="poster_step_send">Send</string>
+    <string name="poster_prev_design">Previous design</string>
+    <string name="poster_next_design">Next design</string>
+    <string name="poster_view_full">View full</string>
+    <string name="poster_live_preview">Live preview</string>
+    <string name="poster_live_note">Stays here while you type</string>
+    <string name="poster_shop_heading">Shop name — the poster\'s heading</string>
+    <string name="poster_shop_heading_note">Every poster opens with your shop\'s name, never a list of products. Saved to your shop profile too.</string>
+    <string name="poster_shop_in_en">Shop name in English</string>
+    <string name="poster_shop_in_ur">Shop name in Urdu</string>
+    <string name="poster_shop_needed">Write your shop\'s name: it is the poster\'s heading</string>
+    <string name="poster_use_original">Use original</string>
+    <string name="poster_quick_add">Quick add — your trade</string>
+    <string name="poster_photo_title">Photo (optional)</string>
+    <string name="poster_remove_item">Remove %1$s</string>
+    <string name="poster_add_named">Add %1$s</string>
+    <string name="poster_tap_full">Tap the picture to see it full size</string>
+    <string name="poster_back">Back</string>
+    <string name="poster_next_words">Next: Words</string>
+    <string name="poster_next_send">Next: Send</string>
+    <string name="poster_design_count">Swipe for more · %1$d of %2$d</string>
+    <string name="poster_lang_other">Other</string>
+    <string name="poster_lang_note">Only the poster changes. The app stays as it is.</string>
+    <string name="poster_lang_most_used">Most used</string>
 </resources>

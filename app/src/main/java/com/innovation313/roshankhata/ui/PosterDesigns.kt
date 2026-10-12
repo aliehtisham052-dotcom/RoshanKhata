@@ -14,7 +14,6 @@ import android.text.Layout
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.InvoiceFonts
 import com.innovation313.roshankhata.data.PosterOccasion
-import com.innovation313.roshankhata.data.Trade
 import com.innovation313.roshankhata.ui.PosterKit.GOLD
 import com.innovation313.roshankhata.ui.PosterKit.H
 import com.innovation313.roshankhata.ui.PosterKit.Page
@@ -438,8 +437,8 @@ object PosterDesigns {
         val scan = Paint().apply { color = 0x06FFFFFF }
         var sy = 0f
         while (sy < H) { c.drawRect(0f, sy, W, sy + 3f, scan); sy += 9f }
-        val trade = Trade.current(page.context).example(page.context)
-        PosterKit.header(page, top = 66f, sealSize = 120f, tradeLine = trade,
+        // The heading is the shop's name alone (12 Oct, the owner: never a list of products).
+        PosterKit.header(page, top = 66f, sealSize = 120f,
             inner = 0xFF2A4FC8.toInt(), innerDark = 0xFF0B1638.toInt())
         val panel = RectF(66f, 372f, W - 66f, 1404f)
         PosterKit.glass(c, panel, radius = 84f, fill = 0x29FFFFFF, edge = 0x40FFFFFF)

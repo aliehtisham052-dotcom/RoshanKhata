@@ -2803,4 +2803,34 @@
         <item quantity="one">رڳو %d ڏينهن لاءِ</item>
         <item quantity="other">رڳو %d ڏينهن لاءِ</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">ڪارڊ جي ٻولي</string>
+    <string name="biz_card_language_note">اردو ڪارڊ سڄو اردو ۾ ۽ ساڄي کان کاٻي هوندو آهي. هر ٻوليءَ جو نالو، مالڪ ۽ پتو الڳ رهي ٿو؛ نمبر، اي ميل ۽ ويب سائيٽ ٻنهي تي ساڳيا آهن.</string>
+    <string name="poster_step_design">ڊزائن</string>
+    <string name="poster_step_words">لکت</string>
+    <string name="poster_step_send">موڪليو</string>
+    <string name="poster_prev_design">پويون ڊزائن</string>
+    <string name="poster_next_design">ايندڙ ڊزائن</string>
+    <string name="poster_view_full">پورو ڏسو</string>
+    <string name="poster_live_preview">سڌي جھلڪ</string>
+    <string name="poster_live_note">لکڻ دوران هتي رهي ٿي</string>
+    <string name="poster_shop_heading">دڪان جو نالو — پوسٽر جي سرخي</string>
+    <string name="poster_shop_heading_note">هر پوسٽر توهان جي دڪان جي نالي سان شروع ٿئي ٿو، شين جي فهرست سان نه. دڪان جي پروفائل ۾ به محفوظ ٿئي ٿو.</string>
+    <string name="poster_shop_in_en">دڪان جو نالو انگريزيءَ ۾</string>
+    <string name="poster_shop_in_ur">دڪان جو نالو اردوءَ ۾</string>
+    <string name="poster_shop_needed">دڪان جو نالو لکو: اهو ئي پوسٽر جي سرخي آهي</string>
+    <string name="poster_use_original">اصل لکت</string>
+    <string name="poster_quick_add">جلدي شامل ڪريو — توهان جو ڪاروبار</string>
+    <string name="poster_photo_title">تصوير (اختياري)</string>
+    <string name="poster_remove_item">%1$s هٽايو</string>
+    <string name="poster_add_named">%1$s شامل ڪريو</string>
+    <string name="poster_tap_full">پوري تصوير ڏسڻ لاءِ ان تي ٽيپ ڪريو</string>
+    <string name="poster_back">واپس</string>
+    <string name="poster_next_words">اڳيان: لکت</string>
+    <string name="poster_next_send">اڳيان: موڪليو</string>
+    <string name="poster_design_count">وڌيڪ لاءِ سوائپ ڪريو · %2$d مان %1$d</string>
+    <string name="poster_lang_other">ٻي</string>
+    <string name="poster_lang_note">رڳو پوسٽر بدلجي ٿو. ايپ ساڳي رهي ٿي.</string>
+    <string name="poster_lang_most_used">گهڻو استعمال ٿيندڙ</string>
 </resources>

@@ -572,6 +572,87 @@
         <item name="android:minWidth">0dp</item>
     </style>
 
+    <!--
+      One segment of a language switch (poster, business card, 12 Oct): the
+      chosen one filled green with white text, the rest white with ink. In a
+      MaterialButtonToggleGroup the corners join into one control.
+    -->
+    <style name="SegmentButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/poster_chip_text</item>
+        <item name="backgroundTint">@color/poster_chip_bg</item>
+        <item name="strokeColor">@color/page_line</item>
+        <item name="iconTint">@color/poster_chip_text</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- One step on the poster screen's stepper; coloured in code by state. -->
+    <style name="PosterStep">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:drawablePadding">6dp</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <!-- The round arrows either side of the poster: previous and next design. -->
+    <style name="PosterRoundButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="backgroundTint">@color/surface</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconTint">@color/ink</item>
+        <item name="strokeColor">@color/page_line</item>
+    </style>
+
+    <!-- A filled 48dp square with one icon: add the item typed beside it. -->
+    <style name="PosterSquareButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="backgroundTint">@color/brand_green</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+    <!-- A quiet text action at a card's corner: "Use original". -->
+    <style name="PosterTextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/brand_green_text</item>
+    </style>
+
     <!-- Icon-only remove, 48dp square: red outline, bin icon. -->
     <style name="ProfileRemoveButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:layout_width">48dp</item>

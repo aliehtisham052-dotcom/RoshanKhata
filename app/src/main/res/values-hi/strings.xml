@@ -2819,4 +2819,34 @@
         <item quantity="one">सिर्फ़ %d दिन के लिए</item>
         <item quantity="other">सिर्फ़ %d दिन के लिए</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">कार्ड की भाषा</string>
+    <string name="biz_card_language_note">उर्दू कार्ड पूरा उर्दू में और दाएँ से बाएँ होता है। हर भाषा का नाम, मालिक और पता अलग रहता है; नंबर, ईमेल और वेबसाइट दोनों पर एक ही हैं।</string>
+    <string name="poster_step_design">डिज़ाइन</string>
+    <string name="poster_step_words">लिखाई</string>
+    <string name="poster_step_send">भेजें</string>
+    <string name="poster_prev_design">पिछला डिज़ाइन</string>
+    <string name="poster_next_design">अगला डिज़ाइन</string>
+    <string name="poster_view_full">पूरा देखें</string>
+    <string name="poster_live_preview">लाइव झलक</string>
+    <string name="poster_live_note">लिखते समय यहीं रहती है</string>
+    <string name="poster_shop_heading">दुकान का नाम — पोस्टर की हेडिंग</string>
+    <string name="poster_shop_heading_note">हर पोस्टर आपकी दुकान के नाम से शुरू होता है, चीज़ों की सूची से नहीं। दुकान की प्रोफ़ाइल में भी सेव हो जाता है।</string>
+    <string name="poster_shop_in_en">दुकान का नाम अंग्रेज़ी में</string>
+    <string name="poster_shop_in_ur">दुकान का नाम उर्दू में</string>
+    <string name="poster_shop_needed">दुकान का नाम लिखें: यही पोस्टर की हेडिंग है</string>
+    <string name="poster_use_original">असली लिखाई</string>
+    <string name="poster_quick_add">जल्दी जोड़ें — आपका कारोबार</string>
+    <string name="poster_photo_title">फ़ोटो (वैकल्पिक)</string>
+    <string name="poster_remove_item">%1$s हटाएँ</string>
+    <string name="poster_add_named">%1$s जोड़ें</string>
+    <string name="poster_tap_full">पूरी तस्वीर देखने के लिए उस पर टैप करें</string>
+    <string name="poster_back">वापस</string>
+    <string name="poster_next_words">आगे: लिखाई</string>
+    <string name="poster_next_send">आगे: भेजें</string>
+    <string name="poster_design_count">और के लिए स्वाइप करें · %2$d में से %1$d</string>
+    <string name="poster_lang_other">दूसरी</string>
+    <string name="poster_lang_note">सिर्फ़ पोस्टर बदलता है। ऐप वैसी ही रहती है।</string>
+    <string name="poster_lang_most_used">सबसे ज़्यादा इस्तेमाल</string>
 </resources>

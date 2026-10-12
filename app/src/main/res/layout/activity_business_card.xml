@@ -54,6 +54,46 @@
             android:layout_marginTop="16dp"
             android:contentDescription="@string/biz_card" />
 
+        <!--
+          The card's language (12 Oct): an Urdu card is wholly Urdu and reads
+          right to left; an English one wholly English. Each keeps its own
+          name, owner, address and lines; phone, WhatsApp, email and website
+          are the same on both.
+        -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/biz_card_language"
+            android:textColor="@color/ink"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleCardLang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCardUrdu"
+                style="@style/SegmentButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCardEnglish"
+                style="@style/SegmentButton" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/biz_card_language_note"
+            android:textColor="@color/ink_soft"
+            android:textSize="12sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -2775,4 +2775,34 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">Sirf %d din ke liye</item>
         <item quantity="other">Sirf %d din ke liye</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">Card ki zabaan</string>
+    <string name="biz_card_language_note">Urdu card poora Urdu mein aur daayen se baayen hota hai. Har zabaan ka naam, maalik aur pata alag rehta hai; number, email aur website dono par aik hi hain.</string>
+    <string name="poster_step_design">Design</string>
+    <string name="poster_step_words">Likhai</string>
+    <string name="poster_step_send">Bhejein</string>
+    <string name="poster_prev_design">Pichhla design</string>
+    <string name="poster_next_design">Agla design</string>
+    <string name="poster_view_full">Poora dekhein</string>
+    <string name="poster_live_preview">Live jhalak</string>
+    <string name="poster_live_note">Likhte waqt yahin rehti hai</string>
+    <string name="poster_shop_heading">Dukaan ka naam — poster ki surkhi</string>
+    <string name="poster_shop_heading_note">Har poster aap ki dukaan ke naam se shuru hota hai, cheezon ki fehrist se nahi. Dukaan ki profile mein bhi mehfooz ho jata hai.</string>
+    <string name="poster_shop_in_en">Dukaan ka naam English mein</string>
+    <string name="poster_shop_in_ur">Dukaan ka naam Urdu mein</string>
+    <string name="poster_shop_needed">Dukaan ka naam likhein: yahi poster ki surkhi hai</string>
+    <string name="poster_use_original">Asal likhai</string>
+    <string name="poster_quick_add">Jaldi shamil karein — aap ka karobar</string>
+    <string name="poster_photo_title">Tasveer (ikhtiyari)</string>
+    <string name="poster_remove_item">%1$s hatayein</string>
+    <string name="poster_add_named">%1$s shamil karein</string>
+    <string name="poster_tap_full">Poori tasveer dekhne ke liye is par tap karein</string>
+    <string name="poster_back">Wapas</string>
+    <string name="poster_next_words">Aage: Likhai</string>
+    <string name="poster_next_send">Aage: Bhejein</string>
+    <string name="poster_design_count">Mazeed ke liye swipe karein · %2$d mein se %1$d</string>
+    <string name="poster_lang_other">Doosri</string>
+    <string name="poster_lang_note">Sirf poster badalta hai. App waisi hi rehti hai.</string>
+    <string name="poster_lang_most_used">Zyada istemal hone wali</string>
 </resources>

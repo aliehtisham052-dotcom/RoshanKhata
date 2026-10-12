@@ -2803,4 +2803,34 @@
         <item quantity="one">فقط %d روز</item>
         <item quantity="other">فقط %d روز</item>
     </plurals>
+
+    <!-- Poster screen in three steps, and the card's language (12 Oct). -->
+    <string name="biz_card_language">زبان کارت</string>
+    <string name="biz_card_language_note">کارت اردو یکسره اردو است و از راست به چپ خوانده می‌شود. هر زبان نام، مالک و نشانی خودش را دارد؛ شماره‌ها، ایمیل و وب‌سایت در هر دو یکی است.</string>
+    <string name="poster_step_design">طرح</string>
+    <string name="poster_step_words">متن</string>
+    <string name="poster_step_send">ارسال</string>
+    <string name="poster_prev_design">طرح قبلی</string>
+    <string name="poster_next_design">طرح بعدی</string>
+    <string name="poster_view_full">نمایش کامل</string>
+    <string name="poster_live_preview">پیش‌نمایش زنده</string>
+    <string name="poster_live_note">هنگام نوشتن همین‌جا می‌ماند</string>
+    <string name="poster_shop_heading">نام فروشگاه — سرتیتر پوستر</string>
+    <string name="poster_shop_heading_note">هر پوستر با نام فروشگاه شما شروع می‌شود، نه با فهرست کالاها. در نمایهٔ فروشگاه هم ذخیره می‌شود.</string>
+    <string name="poster_shop_in_en">نام فروشگاه به انگلیسی</string>
+    <string name="poster_shop_in_ur">نام فروشگاه به اردو</string>
+    <string name="poster_shop_needed">نام فروشگاه را بنویسید: سرتیتر پوستر همین است</string>
+    <string name="poster_use_original">متن اصلی</string>
+    <string name="poster_quick_add">افزودن سریع — کسب‌وکار شما</string>
+    <string name="poster_photo_title">عکس (اختیاری)</string>
+    <string name="poster_remove_item">حذف %1$s</string>
+    <string name="poster_add_named">افزودن %1$s</string>
+    <string name="poster_tap_full">برای دیدن کامل تصویر، روی آن بزنید</string>
+    <string name="poster_back">بازگشت</string>
+    <string name="poster_next_words">بعدی: متن</string>
+    <string name="poster_next_send">بعدی: ارسال</string>
+    <string name="poster_design_count">برای بیشتر بکشید · %1$d از %2$d</string>
+    <string name="poster_lang_other">دیگر</string>
+    <string name="poster_lang_note">فقط پوستر تغییر می‌کند. برنامه همان‌طور می‌ماند.</string>
+    <string name="poster_lang_most_used">پرکاربرد</string>
 </resources>
