@@ -204,6 +204,11 @@ class PosterActivity : BaseActivity() {
         pager = findViewById(R.id.designPager)
         stageBox = findViewById(R.id.previewStage)
         frame.post { placeHero() }
+        // Whenever the poster's size changes (a step, the fit to the screen), the 3D
+        // view is laid over the hero's place again, at the size the poster really has.
+        frame.addOnLayoutChangeListener { _, l, t, r, b, ol, ot, or, ob ->
+            if (r - l != or - ol || b - t != ob - ot) frame.post { placeHero() }
+        }
 
         occasion = PosterOccasion.byKey(prefs.getString(KEY_OCCASION, null))
         lang = prefs.getString(KEY_LANG + shopKey, null)?.takeIf { it in LANGS } ?: defaultLanguage()
