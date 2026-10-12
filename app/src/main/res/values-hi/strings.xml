@@ -2796,6 +2796,11 @@
     <string name="poster_put_on_status">WhatsApp स्टेटस पर लगाएँ</string>
     <string name="poster_not_said">न बताएँ</string>
     <string name="poster_whatsapp_missing">इस फ़ोन पर WhatsApp नहीं है; कोई और ऐप चुनें।</string>
+    <string name="poster_send_as">ऐसे भेजें</string>
+    <string name="poster_as_picture">तस्वीर</string>
+    <string name="poster_as_video">चलती वीडियो</string>
+    <string name="poster_making_video">वीडियो बन रही है… %1$d%%</string>
+    <string name="poster_video_failed">इस फ़ोन पर वीडियो नहीं बन सकी, इसलिए तस्वीर भेजी जा रही है।</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">ईद की छुट्टियाँ: दुकान %d दिन बंद रहेगी</item>
         <item quantity="other">ईद की छुट्टियाँ: दुकान %d दिन बंद रहेगी</item>

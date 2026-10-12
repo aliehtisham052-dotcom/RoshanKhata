@@ -2752,6 +2752,11 @@
     <string name="poster_put_on_status">واٹس ایپ اسٹیٹس پر لگائیں</string>
     <string name="poster_not_said">نہ بتائیں</string>
     <string name="poster_whatsapp_missing">اس فون پر واٹس ایپ نہیں؛ کوئی اور ایپ چنیں۔</string>
+    <string name="poster_send_as">بھیجیں بطور</string>
+    <string name="poster_as_picture">تصویر</string>
+    <string name="poster_as_video">چلتی ویڈیو</string>
+    <string name="poster_making_video">ویڈیو بن رہی ہے… %1$d%%</string>
+    <string name="poster_video_failed">اس فون پر ویڈیو نہیں بن سکی، اس لیے تصویر بھیجی جا رہی ہے۔</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">عید کی چھٹیاں: دکان %d دن بند رہے گی</item>
         <item quantity="other">عید کی چھٹیاں: دکان %d دن بند رہے گی</item>

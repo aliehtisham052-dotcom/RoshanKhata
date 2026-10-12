@@ -2928,6 +2928,11 @@
     <string name="poster_put_on_status">ضعه في حالة واتساب</string>
     <string name="poster_not_said">لا تذكر</string>
     <string name="poster_whatsapp_missing">واتساب غير موجود على هذا الهاتف؛ اختر تطبيقًا آخر.</string>
+    <string name="poster_send_as">أرسل بصيغة</string>
+    <string name="poster_as_picture">صورة</string>
+    <string name="poster_as_video">فيديو متحرك</string>
+    <string name="poster_making_video">جارٍ إنشاء الفيديو… %1$d%%</string>
+    <string name="poster_video_failed">تعذّر إنشاء الفيديو على هذا الهاتف، لذلك ستُرسل الصورة.</string>
     <plurals name="poster_eid_holidays">
         <item quantity="zero">عطلة العيد: المحل مغلق %d أيام</item>
         <item quantity="one">عطلة العيد: المحل مغلق يومًا واحدًا</item>

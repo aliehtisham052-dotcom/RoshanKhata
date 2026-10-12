@@ -2752,6 +2752,11 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="poster_put_on_status">Pasang di Status WhatsApp</string>
     <string name="poster_not_said">Jangan sebut</string>
     <string name="poster_whatsapp_missing">WhatsApp tidak ada di ponsel ini; pilih aplikasi lain.</string>
+    <string name="poster_send_as">Kirim sebagai</string>
+    <string name="poster_as_picture">Gambar</string>
+    <string name="poster_as_video">Video bergerak</string>
+    <string name="poster_making_video">Membuat video… %1$d%%</string>
+    <string name="poster_video_failed">Video tidak bisa dibuat di ponsel ini, jadi gambarnya yang dikirim.</string>
     <plurals name="poster_eid_holidays">
         <item quantity="other">Libur Lebaran: toko tutup %d hari</item>
     </plurals>

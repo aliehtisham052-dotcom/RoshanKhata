@@ -5,7 +5,7 @@
 adb logcat -c
 adb logcat -v time Poster3D:V Filament:V AndroidRuntime:E ActivityManager:W TestRunner:V DEBUG:V libc:V *:E > /tmp/probe_logcat.txt 2>&1 &
 LOGPID=$!
-timeout 1200 gradle connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.innovation313.roshankhata.Poster3dOnDeviceTest,com.innovation313.roshankhata.PosterOnDeviceTest,com.innovation313.roshankhata.PosterScreenProofTest -Pandroid.testInstrumentationRunnerArguments.look="${LOOK:-full}" --no-daemon > /tmp/probe_gradle.txt 2>&1
+timeout 1200 gradle connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.innovation313.roshankhata.Poster3dOnDeviceTest,com.innovation313.roshankhata.PosterOnDeviceTest,com.innovation313.roshankhata.PosterScreenProofTest,com.innovation313.roshankhata.PosterVideoOnDeviceTest -Pandroid.testInstrumentationRunnerArguments.look="${LOOK:-full}" --no-daemon > /tmp/probe_gradle.txt 2>&1
 code=$?
 kill $LOGPID 2>/dev/null
 echo "gradle exit: $code"

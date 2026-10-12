@@ -2752,6 +2752,11 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="poster_put_on_status">WhatsApp Status par lagayein</string>
     <string name="poster_not_said">Na batayein</string>
     <string name="poster_whatsapp_missing">Is phone par WhatsApp nahi; koi aur app chunein.</string>
+    <string name="poster_send_as">Bhejein bataur</string>
+    <string name="poster_as_picture">Tasveer</string>
+    <string name="poster_as_video">Chalti video</string>
+    <string name="poster_making_video">Video ban rahi hai… %1$d%%</string>
+    <string name="poster_video_failed">Is phone par video nahi ban saki, is liye tasveer bheji ja rahi hai.</string>
     <plurals name="poster_eid_holidays">
         <item quantity="one">Eid ki chuttiyan: dukaan %d din band rahegi</item>
         <item quantity="other">Eid ki chuttiyan: dukaan %d din band rahegi</item>
