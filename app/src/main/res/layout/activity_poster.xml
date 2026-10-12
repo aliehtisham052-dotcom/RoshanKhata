@@ -93,6 +93,15 @@
         android:gravity="center"
         android:orientation="horizontal">
 
+        <!-- Beside the poster, never over its words. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPrevDesign"
+            style="@style/PosterRoundButton"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="@string/poster_prev_design"
+            android:scaleX="-1"
+            app:icon="@drawable/ic_chevron_right" />
+
         <FrameLayout
             android:id="@+id/previewStage"
             android:layout_width="220dp"
@@ -134,24 +143,14 @@
                     android:importantForAccessibility="no" />
             </FrameLayout>
 
-            <!-- Over the poster's edges, not beside it: the poster keeps the width. -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPrevDesign"
-                style="@style/PosterRoundButton"
-                android:layout_gravity="start|center_vertical"
-                android:layout_marginStart="6dp"
-                android:contentDescription="@string/poster_prev_design"
-                android:scaleX="-1"
-                app:icon="@drawable/ic_chevron_right" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnNextDesign"
-                style="@style/PosterRoundButton"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginEnd="6dp"
-                android:contentDescription="@string/poster_next_design"
-                app:icon="@drawable/ic_chevron_right" />
         </FrameLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNextDesign"
+            style="@style/PosterRoundButton"
+            android:layout_marginStart="12dp"
+            android:contentDescription="@string/poster_next_design"
+            app:icon="@drawable/ic_chevron_right" />
 
         <!-- Words only: what the small picture is. -->
         <LinearLayout
@@ -233,17 +232,15 @@
                     android:id="@+id/designCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="1dp"
                     android:gravity="center"
                     android:textColor="@color/ink_soft"
                     android:textSize="12sp" />
 
-                <TextView
-                    style="@style/ProfileSectionLabel"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="6dp"
-                    android:text="@string/poster_choose_design" />
+                <!-- The strip of designs: its name and place are the line above it. -->
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
 
                 <HorizontalScrollView
                     android:id="@+id/designScroll"
@@ -263,7 +260,7 @@
                 <TextView
                     style="@style/ProfileSectionLabel"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginBottom="6dp"
                     android:text="@string/poster_language" />
 

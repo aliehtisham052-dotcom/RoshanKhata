@@ -888,7 +888,7 @@ class PosterActivity : BaseActivity() {
         // system bars (~50dp). It never runs wider than the screen.
         val d = resources.displayMetrics.density
         val screenDp = resources.displayMetrics.heightPixels / d
-        val widthDp = resources.displayMetrics.widthPixels / d - 32f
+        val widthDp = resources.displayMetrics.widthPixels / d - 32f - 120f
         val bigH = (screenDp - 474f).coerceIn(220f, 460f).coerceAtMost(widthDp * 16f / 9f)
         val h = if (step == 2) 112f else bigH
         stageBox.layoutParams = (stageBox.layoutParams as LinearLayout.LayoutParams).apply {
@@ -953,7 +953,8 @@ class PosterActivity : BaseActivity() {
         val gap = dp(12)
         val spare = b[1] - gap - (l[1] + lang.height)
         val d = resources.displayMetrics.density
-        val maxByWidth = ((resources.displayMetrics.widthPixels / d - 32f) * 16f / 9f * d).toInt()
+        // The width left beside the two arrows (48 dp each, 12 dp from the poster).
+        val maxByWidth = ((resources.displayMetrics.widthPixels / d - 32f - 120f) * 16f / 9f * d).toInt()
         val h = (stageBox.height + spare).coerceIn(dp(200), minOf(dp(460), maxByWidth))
         if (kotlin.math.abs(h - stageBox.height) < dp(4)) return
         stageBox.layoutParams = (stageBox.layoutParams as LinearLayout.LayoutParams).apply {
