@@ -27,8 +27,11 @@ object CoinFace {
 
     private const val SIZE = 512
     private const val INK = 0xFF7A1414.toInt()
-    /** Gold: roughness 0.35, metal 0.6. */
-    private const val GOLD_MR = 0xFF005999.toInt()
+    /**
+     * Gold: roughness 0.4, metal 0.3. More metal (0.6 at first) mirrored the
+     * dark studio and the face came out olive on CI (12 Oct).
+     */
+    private const val GOLD_MR = 0xFF00664D.toInt()
     /** Lettering: roughness 0.5, no metal. */
     private const val INK_MR = 0xFF008000.toInt()
 

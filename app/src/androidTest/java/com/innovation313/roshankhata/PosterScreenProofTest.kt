@@ -24,7 +24,7 @@ class PosterScreenProofTest {
 
     @Test
     fun the_screen_opens_with_each_designs_fields() {
-        for (key in listOf("new_stock", "closed", "hours", "ramazan")) {
+        for (key in listOf("new_stock", "closed", "hours", "ramazan", "offer", "azadi")) {
             app.getSharedPreferences("poster", Context.MODE_PRIVATE).edit().putString("occasion", key).commit()
             ActivityScenario.launch(PosterActivity::class.java).use { scenario ->
                 SystemClock.sleep(2500)
