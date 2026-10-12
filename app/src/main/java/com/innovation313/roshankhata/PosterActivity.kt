@@ -506,7 +506,9 @@ class PosterActivity : BaseActivity() {
             if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
             if (fields.showLogo) logo else null,
             if (fields.showMark) ctx.getString(R.string.made_with_app) else null,
-            fields = fields)
+            fields = fields,
+            email = if (fields.showEmail) BusinessProfile.businessEmail(this)?.trim() else null,
+            whatsapp = fields.onWhatsapp)
 
     /** Every page is drawn again: the language, name, logo or a choice changed. */
     private fun refreshPages() {
@@ -581,7 +583,7 @@ class PosterActivity : BaseActivity() {
                     val title = if (o.title != 0) ctx.getString(o.title) else ctx.getString(R.string.poster_custom)
                     val message = if (o.message != 0) ctx.getString(o.message) else ""
                     val (full, _) = PosterImage.draw(ctx, PosterImage.Input(o, title, message, name, phone, null, lg, null,
-                        fields = fields))
+                        fields = fields, whatsapp = fields.onWhatsapp))
                     Bitmap.createScaledBitmap(full, w, h, true).also { full.recycle() }
                 }
                 // The new picture goes up before the old one is let go.
@@ -636,27 +638,100 @@ class PosterActivity : BaseActivity() {
         TextFit.relax(toggleSendAs)
     }
 
-    /** What the poster shows, two ticks to a row. */
+    /**
+     * What the poster shows, two to a row (12 Oct): a tick for each detail the
+     * shop has, and for one it has not yet given, a tile that asks for it right
+     * here (it is saved to the shop's profile, like the name).
+     */
     private fun buildShowGrid() {
         showGrid.removeAllViews()
-        fun add(text: String, on: Boolean, isLogo: Boolean = false, set: (PosterFields, Boolean) -> PosterFields) {
-            val box = layoutInflater.inflate(R.layout.item_poster_show, showGrid, false) as android.widget.CheckBox
-            box.text = text
-            box.isChecked = on
-            box.setOnCheckedChangeListener { _, checked -> setFields(set(fields, checked)); if (isLogo) updateHero() }
-            box.layoutParams = GridLayout.LayoutParams(
+        fun place(v: View) {
+            v.layoutParams = GridLayout.LayoutParams(
                 GridLayout.spec(GridLayout.UNDEFINED), GridLayout.spec(GridLayout.UNDEFINED, 1f)
             ).apply {
                 width = 0
                 setMargins(0, 0, dp(8), dp(8))
             }
-            showGrid.addView(box)
+            showGrid.addView(v)
         }
-        add(getString(R.string.poster_chip_phone), fields.showPhone) { f, v -> f.copy(showPhone = v) }
-        add(getString(R.string.poster_chip_address), fields.showAddress) { f, v -> f.copy(showAddress = v) }
-        if (BusinessProfile.hasLogo(this)) add(getString(R.string.poster_chip_logo), fields.showLogo, isLogo = true) { f, v -> f.copy(showLogo = v) }
-        add("“" + getString(R.string.made_with_app) + "”", fields.showMark) { f, v -> f.copy(showMark = v) }
+        fun tick(text: String, on: Boolean, isLogo: Boolean = false, set: (PosterFields, Boolean) -> PosterFields) {
+            val box = layoutInflater.inflate(R.layout.item_poster_show, showGrid, false) as android.widget.CheckBox
+            box.text = text
+            box.isChecked = on
+            box.setOnCheckedChangeListener { _, checked -> setFields(set(fields, checked)); if (isLogo) updateHero() }
+            place(box)
+        }
+        fun ask(label: String, inputType: Int, save: (String) -> Unit) {
+            val b = layoutInflater.inflate(R.layout.item_poster_suggest, showGrid, false) as MaterialButton
+            b.text = label
+            b.setOnClickListener {
+                askValue(label, inputType) { value ->
+                    save(value)
+                    pagesDirty = true
+                    buildShowGrid()
+                    noPhoneNote.visibility = if (BusinessProfile.businessPhone(this).isNullOrBlank()) View.VISIBLE else View.GONE
+                    render()
+                }
+            }
+            place(b)
+        }
+        val phone = getString(R.string.poster_chip_phone)
+        val email = getString(R.string.poster_chip_email)
+        val address = getString(R.string.poster_chip_address)
+        if (BusinessProfile.businessPhone(this).isNullOrBlank()) {
+            ask(phone, android.text.InputType.TYPE_CLASS_PHONE) { BusinessProfile.setBusinessPhone(this, it); setFields(fields.copy(showPhone = true)) }
+        } else {
+            tick(phone, fields.showPhone) { f, v -> f.copy(showPhone = v) }
+            tick(getString(R.string.poster_chip_whatsapp), fields.onWhatsapp) { f, v -> f.copy(onWhatsapp = v) }
+        }
+        if (BusinessProfile.businessEmail(this).isNullOrBlank()) {
+            ask(email, android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS) {
+                BusinessProfile.setBusinessEmail(this, it); setFields(fields.copy(showEmail = true))
+            }
+        } else {
+            tick(email, fields.showEmail) { f, v -> f.copy(showEmail = v) }
+        }
+        if (BusinessProfile.businessAddress(this).isNullOrBlank()) {
+            ask(address, android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS or
+                android.text.InputType.TYPE_TEXT_FLAG_CAP_WORDS) {
+                BusinessProfile.setBusinessAddress(this, it); setFields(fields.copy(showAddress = true))
+            }
+        } else {
+            tick(address, fields.showAddress) { f, v -> f.copy(showAddress = v) }
+        }
+        if (BusinessProfile.hasLogo(this)) tick(getString(R.string.poster_chip_logo), fields.showLogo, isLogo = true) { f, v -> f.copy(showLogo = v) }
+        tick("“" + getString(R.string.made_with_app) + "”", fields.showMark) { f, v -> f.copy(showMark = v) }
         TextFit.relax(showGrid)
+    }
+
+    /** One detail typed in a small window; [onSave] gets it trimmed, never blank. */
+    private fun askValue(label: String, inputType: Int, onSave: (String) -> Unit) {
+        val box = layoutInflater.inflate(R.layout.dialog_poster_value, null)
+        val til = box.findViewById<TextInputLayout>(R.id.tilValue)
+        val et = box.findViewById<TextInputEditText>(R.id.etValue)
+        til.hint = label
+        et.inputType = inputType
+        // A number or an email reads left to right, whatever the app's language.
+        val cls = inputType and android.text.InputType.TYPE_MASK_CLASS
+        val variation = inputType and android.text.InputType.TYPE_MASK_VARIATION
+        if (cls == android.text.InputType.TYPE_CLASS_PHONE || variation == android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+            et.textDirection = View.TEXT_DIRECTION_LTR
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.poster_add_named, label))
+            .setMessage(R.string.poster_saved_to_profile)
+            .setView(box)
+            .setPositiveButton(R.string.save, null)
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+        dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            val v = et.text?.toString()?.trim().orEmpty()
+            if (v.isEmpty()) { til.error = getString(R.string.poster_value_needed); return@setOnClickListener }
+            onSave(v)
+            dialog.dismiss()
+        }
+        et.requestFocus()
+        dialog.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        TextFit.relax(box)
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
@@ -1208,7 +1283,9 @@ class PosterActivity : BaseActivity() {
         heroOverlay = stage != null,
         fields = fields,
         photo = if (usingPhoto()) photo else null,
-        animated = animated
+        animated = animated,
+        email = if (fields.showEmail) BusinessProfile.businessEmail(this)?.trim() else null,
+        whatsapp = fields.onWhatsapp
     )
 
     // ------------------------------------------------------------------ 3D hero

@@ -62,7 +62,11 @@ data class PosterFields(
     val showLogo: Boolean = true,
     val showPhone: Boolean = true,
     val showAddress: Boolean = true,
-    val showMark: Boolean = true
+    val showMark: Boolean = true,
+    /** The shop's email under the call button (12 Oct). */
+    val showEmail: Boolean = true,
+    /** The number is on WhatsApp too: the call button carries a chat mark. */
+    val onWhatsapp: Boolean = true
 ) {
     /** Why a shop closes, as the owner picks it; each has its own words in every language. */
     enum class Reason(val key: String) { FRIDAY("friday"), EID("eid"), WEDDING("wedding"), BEREAVEMENT("bereavement"), STRIKE("strike"), HOLIDAY("holiday") }
@@ -91,6 +95,7 @@ data class PosterFields(
         put("eidDays", eidDays)
         put("offerPercent", offerPercent); put("offerDays", offerDays)
         put("showLogo", showLogo); put("showPhone", showPhone); put("showAddress", showAddress); put("showMark", showMark)
+        put("showEmail", showEmail); put("onWhatsapp", onWhatsapp)
     }
 
     companion object {
@@ -126,7 +131,8 @@ data class PosterFields(
                 offerPercent = o.optInt("offerPercent", d.offerPercent).coerceIn(1, 90),
                 offerDays = o.optInt("offerDays", d.offerDays).coerceIn(0, 30),
                 showLogo = o.optBoolean("showLogo", d.showLogo), showPhone = o.optBoolean("showPhone", d.showPhone),
-                showAddress = o.optBoolean("showAddress", d.showAddress), showMark = o.optBoolean("showMark", d.showMark)
+                showAddress = o.optBoolean("showAddress", d.showAddress), showMark = o.optBoolean("showMark", d.showMark),
+                showEmail = o.optBoolean("showEmail", d.showEmail), onWhatsapp = o.optBoolean("onWhatsapp", d.onWhatsapp)
             )
         }
 

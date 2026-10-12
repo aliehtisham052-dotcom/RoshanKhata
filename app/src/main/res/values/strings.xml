@@ -3024,4 +3024,12 @@ You can change this any time from this screen.</string>
     <string name="poster_custom_title_hint">Write your heading here</string>
     <string name="poster_custom_msg_hint">Your message goes here</string>
     <string name="poster_heading_needed">Write a heading for this poster</string>
+
+    <!-- The shop's email, and the poster's contact details (12 Oct). -->
+    <string name="bp_email">Email</string>
+    <string name="bp_email_help">On your posters and cards. A shop email is better than your personal one.</string>
+    <string name="poster_chip_email">Email</string>
+    <string name="poster_chip_whatsapp">On WhatsApp</string>
+    <string name="poster_saved_to_profile">Saved to your shop profile, for every poster.</string>
+    <string name="poster_value_needed">Write it first</string>
 </resources>

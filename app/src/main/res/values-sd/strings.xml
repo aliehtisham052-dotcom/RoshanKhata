@@ -2838,4 +2838,12 @@
     <string name="poster_custom_title_hint">هتي پنهنجي سرخي لکو</string>
     <string name="poster_custom_msg_hint">توهان جو پيغام هتي ايندو</string>
     <string name="poster_heading_needed">هن پوسٽر جي سرخي لکو</string>
+
+    <!-- The shop's email, and the poster's contact details (12 Oct). -->
+    <string name="bp_email">اي ميل</string>
+    <string name="bp_email_help">توهان جي پوسٽرن ۽ ڪارڊن تي. ذاتي اي ميل بدران دڪان جي اي ميل بهتر آهي.</string>
+    <string name="poster_chip_email">اي ميل</string>
+    <string name="poster_chip_whatsapp">واٽس ايپ تي</string>
+    <string name="poster_saved_to_profile">دڪان جي پروفائل ۾ محفوظ، هر پوسٽر لاءِ.</string>
+    <string name="poster_value_needed">پهرين لکو</string>
 </resources>

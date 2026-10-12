@@ -44,6 +44,7 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var etBusinessNameUrdu: EditText
     private lateinit var etBusinessAddress: EditText
     private lateinit var etBusinessPhone: EditText
+    private lateinit var etBusinessEmail: EditText
     private lateinit var ivQrPreview: ImageView
     private lateinit var tvNoQr: View
     private lateinit var btnRemoveQr: MaterialButton
@@ -91,7 +92,7 @@ class BusinessSettingsActivity : BaseActivity() {
     /** The text fields as they were loaded, to tell whether anything changed. */
     private var saved: List<String> = emptyList()
     private val fields: List<EditText> get() = listOf(
-        etBusinessName, etBusinessNameUrdu, etBusinessAddress, etBusinessPhone, etStrn,
+        etBusinessName, etBusinessNameUrdu, etBusinessAddress, etBusinessPhone, etBusinessEmail, etStrn,
         etBankName, etBankTitle, etBankIban, etBankJazzCash, etInvoiceTerms
     )
     private fun current(): List<String> = fields.map { it.text.toString().trim() }
@@ -220,6 +221,7 @@ class BusinessSettingsActivity : BaseActivity() {
         etBusinessNameUrdu = findViewById(R.id.etBusinessNameUrdu)
         etBusinessAddress = findViewById(R.id.etBusinessAddress)
         etBusinessPhone = findViewById(R.id.etBusinessPhone)
+        etBusinessEmail = findViewById(R.id.etBusinessEmail)
         ivQrPreview = findViewById(R.id.ivQrPreview)
         tvNoQr = findViewById(R.id.tvNoQr)
         btnRemoveQr = findViewById(R.id.btnRemoveQr)
@@ -259,6 +261,7 @@ class BusinessSettingsActivity : BaseActivity() {
         etBusinessNameUrdu.setText(BusinessProfile.businessNameUrdu(this).orEmpty())
         etBusinessAddress.setText(BusinessProfile.businessAddress(this).orEmpty())
         etBusinessPhone.setText(BusinessProfile.businessPhone(this).orEmpty())
+        etBusinessEmail.setText(BusinessProfile.businessEmail(this).orEmpty())
         etBankName.setText(BusinessProfile.bankName(this).orEmpty())
         etBankTitle.setText(BusinessProfile.bankAccountTitle(this).orEmpty())
         etBankIban.setText(BusinessProfile.bankIban(this).orEmpty())
@@ -329,6 +332,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 etBusinessAddress.text.toString().trim().ifEmpty { null }
             )
             BusinessProfile.setBusinessPhone(this, etBusinessPhone.text.toString().trim().ifEmpty { null })
+            BusinessProfile.setBusinessEmail(this, etBusinessEmail.text.toString().trim().ifEmpty { null })
             BusinessProfile.setBankName(this, etBankName.text.toString().trim().ifEmpty { null })
             BusinessProfile.setBankAccountTitle(this, etBankTitle.text.toString().trim().ifEmpty { null })
             BusinessProfile.setBankIban(this, etBankIban.text.toString().trim().ifEmpty { null })

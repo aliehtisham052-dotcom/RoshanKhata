@@ -2994,4 +2994,12 @@
     <string name="poster_custom_title_hint">اكتب عنوانك هنا</string>
     <string name="poster_custom_msg_hint">رسالتك تظهر هنا</string>
     <string name="poster_heading_needed">اكتب عنوانًا لهذا الملصق</string>
+
+    <!-- The shop's email, and the poster's contact details (12 Oct). -->
+    <string name="bp_email">البريد الإلكتروني</string>
+    <string name="bp_email_help">على ملصقاتك وبطاقاتك. بريد المتجر أفضل من بريدك الشخصي.</string>
+    <string name="poster_chip_email">البريد</string>
+    <string name="poster_chip_whatsapp">على واتساب</string>
+    <string name="poster_saved_to_profile">محفوظ في ملف متجرك، لكل ملصق.</string>
+    <string name="poster_value_needed">اكتبه أولًا</string>
 </resources>

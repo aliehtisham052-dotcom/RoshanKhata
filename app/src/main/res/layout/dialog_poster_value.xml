@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One shop detail (phone, email, address) typed from the poster's Send step (12 Oct). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="20dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="20dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilValue"
+        style="@style/ProfileField">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etValue"
+            style="@style/ProfileFieldInput" />
+    </com.google.android.material.textfield.TextInputLayout>
+</FrameLayout>

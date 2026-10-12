@@ -2838,4 +2838,12 @@
     <string name="poster_custom_title_hint">سرتیتر خود را اینجا بنویسید</string>
     <string name="poster_custom_msg_hint">پیام شما اینجا می‌آید</string>
     <string name="poster_heading_needed">برای این پوستر سرتیتر بنویسید</string>
+
+    <!-- The shop's email, and the poster's contact details (12 Oct). -->
+    <string name="bp_email">ایمیل</string>
+    <string name="bp_email_help">روی پوسترها و کارت‌های شما. ایمیل فروشگاه از ایمیل شخصی بهتر است.</string>
+    <string name="poster_chip_email">ایمیل</string>
+    <string name="poster_chip_whatsapp">در واتس‌اپ</string>
+    <string name="poster_saved_to_profile">در نمایهٔ فروشگاه ذخیره شد، برای همهٔ پوسترها.</string>
+    <string name="poster_value_needed">اول آن را بنویسید</string>
 </resources>

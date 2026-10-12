@@ -25,6 +25,7 @@ object BusinessProfile {
     private const val KEY_BUSINESS_NAME_URDU = "business_name_urdu"
     private const val KEY_BUSINESS_ADDRESS = "business_address"
     private const val KEY_BUSINESS_PHONE = "business_phone"
+    private const val KEY_BUSINESS_EMAIL = "business_email"
     private const val KEY_BANK_NAME = "bank_name"
     private const val KEY_BANK_TITLE = "bank_account_title"
     private const val KEY_BANK_IBAN = "bank_iban"
@@ -145,6 +146,19 @@ object BusinessProfile {
     fun setBusinessPhone(context: Context, phone: String?) {
         prefs(context).edit()
             .putString(KEY_BUSINESS_PHONE, phone?.trim().orEmpty())
+            .apply()
+    }
+
+    /**
+     * The shop's email (12 Oct): on its posters, and the card's email when the
+     * card has none of its own. One place, as for the phone.
+     */
+    fun businessEmail(context: Context): String? =
+        prefs(context).getString(KEY_BUSINESS_EMAIL, null)?.takeIf { it.isNotBlank() }
+
+    fun setBusinessEmail(context: Context, email: String?) {
+        prefs(context).edit()
+            .putString(KEY_BUSINESS_EMAIL, email?.trim().orEmpty())
             .apply()
     }
 

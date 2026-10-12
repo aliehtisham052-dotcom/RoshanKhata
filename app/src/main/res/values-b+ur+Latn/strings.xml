@@ -2810,4 +2810,12 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="poster_custom_title_hint">Yahan apni surkhi likhein</string>
     <string name="poster_custom_msg_hint">Aap ka paigham yahan aayega</string>
     <string name="poster_heading_needed">Is poster ki surkhi likhein</string>
+
+    <!-- The shop's email, and the poster's contact details (12 Oct). -->
+    <string name="bp_email">Email</string>
+    <string name="bp_email_help">Aap ke posters aur cards par. Zaati email ke bajaye dukaan ki email behtar hai.</string>
+    <string name="poster_chip_email">Email</string>
+    <string name="poster_chip_whatsapp">WhatsApp par</string>
+    <string name="poster_saved_to_profile">Dukaan ki profile mein mehfooz, har poster ke liye.</string>
+    <string name="poster_value_needed">Pehle likhein</string>
 </resources>
