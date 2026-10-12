@@ -422,7 +422,7 @@ class PosterActivity : BaseActivity() {
             snapshotLive()?.let { shot ->
                 // Not recycled: a page may still be showing the last one; it is let go to the collector.
                 leaving = occasion to shot
-                pageAdapter.notifyItemChanged(PosterOccasion.values().indexOf(occasion))
+                notifyPage(PosterOccasion.values().indexOf(occasion))
             }
         }
         frame.visibility = View.INVISIBLE
@@ -458,7 +458,7 @@ class PosterActivity : BaseActivity() {
                 frame.animate().alpha(1f).setDuration(120).withEndAction {
                     val gone = leaving?.first ?: return@withEndAction
                     leaving = null
-                    pageAdapter.notifyItemChanged(PosterOccasion.values().indexOf(gone))
+                    notifyPage(PosterOccasion.values().indexOf(gone))
                 }.start()
             }
         }
@@ -496,7 +496,7 @@ class PosterActivity : BaseActivity() {
             }
             if (w != pageW || h != pageH) { bmp.recycle(); return@launch }
             pages.put(o, bmp)
-            pageAdapter.notifyItemChanged(PosterOccasion.values().indexOf(o))
+            notifyPage(PosterOccasion.values().indexOf(o))
         }
     }
 
@@ -520,7 +520,16 @@ class PosterActivity : BaseActivity() {
         pageJobs.values.forEach { it.cancel() }
         pageJobs.clear()
         pages.evictAll()
-        pageAdapter.notifyDataSetChanged()
+        pager.post { pageAdapter.notifyDataSetChanged() }
+    }
+
+    /**
+     * A page shows something new. Posted, never called at once: these come from
+     * the pager's own scroll and selection callbacks, and RecyclerView refuses
+     * (IllegalStateException) a change while it is laying out or scrolling.
+     */
+    private fun notifyPage(position: Int) {
+        pager.post { pageAdapter.notifyItemChanged(position) }
     }
 
     private inner class PageAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<PageAdapter.Holder>() {
