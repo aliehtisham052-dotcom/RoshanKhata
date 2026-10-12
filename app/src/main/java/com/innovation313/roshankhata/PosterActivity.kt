@@ -34,6 +34,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.innovation313.roshankhata.data.Branding
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.PosterFields
@@ -510,7 +511,7 @@ class PosterActivity : BaseActivity() {
             if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
             if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
             if (fields.showLogo) logo else null,
-            if (fields.showMark) ctx.getString(R.string.made_with_app) else null,
+            if (fields.showMark && Branding.ON_POSTERS_AND_CARDS) ctx.getString(R.string.made_with_app) else null,
             fields = fields,
             email = if (fields.showEmail) BusinessProfile.businessEmail(this)?.trim() else null,
             whatsapp = fields.onWhatsapp)
@@ -714,7 +715,8 @@ class PosterActivity : BaseActivity() {
             tick(address, fields.showAddress) { f, v -> f.copy(showAddress = v) }
         }
         if (BusinessProfile.hasLogo(this)) tick(getString(R.string.poster_chip_logo), fields.showLogo, isLogo = true) { f, v -> f.copy(showLogo = v) }
-        tick("“" + getString(R.string.made_with_app) + "”", fields.showMark) { f, v -> f.copy(showMark = v) }
+        // The app's own mark: off for now (Branding), and so not offered.
+        if (Branding.ON_POSTERS_AND_CARDS) tick("“" + getString(R.string.made_with_app) + "”", fields.showMark) { f, v -> f.copy(showMark = v) }
         TextFit.relax(showGrid)
     }
 
@@ -1334,7 +1336,7 @@ class PosterActivity : BaseActivity() {
         phone = if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
         address = if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
         logo = if (fields.showLogo) logo else null,
-        mark = if (fields.showMark) posterContext().getString(R.string.made_with_app) else null,
+        mark = if (fields.showMark && Branding.ON_POSTERS_AND_CARDS) posterContext().getString(R.string.made_with_app) else null,
         heroOverlay = stage != null,
         fields = fields,
         photo = if (usingPhoto()) photo else null,
