@@ -133,11 +133,13 @@ class EntryItemsMigrationTest {
             raw.execSQL(billsV20)
             billIndices.forEach { raw.execSQL(it) }
 
-            // v22 added invoices.sourceEntryId; same treatment (empty table).
+            // v22 added invoices.sourceEntryId, v31 discountAmount; same
+            // treatment (empty table).
             val invV22 = sqlOf("table", "invoices").single()
             val invIndices = sqlOf("index", "invoices")
-            val invV21 = invV22.replace(", `sourceEntryId` INTEGER", "")
-            assertTrue("could not strip sourceEntryId from: $invV22", !invV21.contains("sourceEntryId"))
+            val invV21 = invV22.replace(", `sourceEntryId` INTEGER", "").replace(", `discountAmount` REAL", "")
+            assertTrue("could not strip sourceEntryId/discountAmount from: $invV22",
+                !invV21.contains("sourceEntryId") && !invV21.contains("discountAmount"))
             raw.execSQL("DROP TABLE invoices")
             raw.execSQL(invV21)
             invIndices.forEach { raw.execSQL(it) }
