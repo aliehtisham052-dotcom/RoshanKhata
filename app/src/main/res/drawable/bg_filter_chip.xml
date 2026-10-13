@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A filter on the invoice design step: soft green when on. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/brand_green_soft" />
+            <stroke android:width="1.5dp" android:color="@color/brand_green_text" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/surface" />
+            <stroke android:width="1.5dp" android:color="@color/page_line" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+</selector>

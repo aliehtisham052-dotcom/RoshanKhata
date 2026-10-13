@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A design's name under its picture, and the design filters: green when chosen. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/brand_green_text" android:state_selected="true" />
+    <item android:color="@color/ink_soft" />
+</selector>

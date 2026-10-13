@@ -210,7 +210,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -313,7 +313,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -402,7 +402,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -498,7 +498,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -589,7 +589,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -676,7 +676,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -761,7 +761,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -853,7 +853,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -936,7 +936,7 @@ object InvoicePdfExport {
         c = tableCanvas
         y = tableY + 18f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         if (y > PAGE_H_A4 - 240f) {
             val fresh = newPage()
@@ -971,7 +971,7 @@ object InvoicePdfExport {
         val pageW = 226 // ~80mm at 72dpi
         val pad = 16f
 
-        val totals = InvoiceMath.totals(items, invoice.discountPercent, invoice.taxPercent, invoice.additionalChargeAmount, invoice.receivedAmount)
+        val totals = invoice.totals(items)
 
         // Height is computed, not guessed — a thermal roll has no fixed page,
         // and the alternative (a fixed too-short page) would silently cut the

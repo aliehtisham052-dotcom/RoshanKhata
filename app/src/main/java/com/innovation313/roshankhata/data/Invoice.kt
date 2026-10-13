@@ -84,7 +84,15 @@ data class Invoice(
      * key: the customer name on an invoice is already a snapshot, and binning
      * the entry must not touch a document that may have been handed over.
      */
-    val sourceEntryId: Long? = null
+    val sourceEntryId: Long? = null,
+
+    /**
+     * A discount in money rather than percent (v31, 13 Oct 2026): "Rs 50 off".
+     * When set it is the discount and [discountPercent] is ignored, so an
+     * invoice carries one kind or the other, never both. Never more than the
+     * item subtotal. Null on every invoice made before v31.
+     */
+    val discountAmount: Double? = null
 )
 
 /**
@@ -154,10 +162,15 @@ object InvoiceMath {
         discountPercent: Double?,
         taxPercent: Double?,
         additionalChargeAmount: Double? = null,
-        receivedAmount: Double? = null
+        receivedAmount: Double? = null,
+        discountAmount: Double? = null
     ): InvoiceTotals {
         val subtotal = items.sumOf { it.lineTotal }
-        val discountAmount = discountPercent?.takeIf { it != 0.0 }?.let { subtotal * it / 100.0 } ?: 0.0
+        val discountAmount = if (discountAmount != null) {
+            discountAmount.coerceIn(0.0, subtotal.coerceAtLeast(0.0))
+        } else {
+            discountPercent?.takeIf { it != 0.0 }?.let { subtotal * it / 100.0 } ?: 0.0
+        }
         val afterDiscount = subtotal - discountAmount
         val taxAmount = taxPercent?.takeIf { it != 0.0 }?.let { afterDiscount * it / 100.0 } ?: 0.0
         val charge = additionalChargeAmount ?: 0.0
@@ -169,6 +182,18 @@ object InvoiceMath {
         )
     }
 }
+
+/** This invoice's totals over [items], with every pricing field it carries. */
+fun Invoice.totals(items: List<InvoiceItem>): InvoiceTotals = InvoiceMath.totals(
+    items, discountPercent, taxPercent, additionalChargeAmount, receivedAmount, discountAmount
+)
+
+/**
+ * How the discount line reads: "Discount (5%)" for a percent, plain
+ * "Discount" for an amount in money, whose figure is printed beside it.
+ */
+fun Invoice.discountLabel(word: String): String =
+    if (discountAmount != null) word else "$word (${com.innovation313.roshankhata.ui.Format.plain(discountPercent ?: 0.0)}%)"
 
 /** An invoice with enough of its items rolled up to show in a list without loading them all. */
 data class InvoiceSummary(

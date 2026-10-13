@@ -701,7 +701,18 @@ val MIGRATION_29_30 = object : Migration(29, 30) {
     }
 }
 
-const val KHATA_DB_VERSION = 30
+/**
+ * v31 (13 Oct 2026): an invoice discount in money ("Rs 50 off") beside the
+ * percent one. One nullable column; every existing invoice reads it as null
+ * and keeps its percent discount exactly as before.
+ */
+val MIGRATION_30_31 = object : Migration(30, 31) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE invoices ADD COLUMN discountAmount REAL")
+    }
+}
+
+const val KHATA_DB_VERSION = 31
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -733,5 +744,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_26_27,
     MIGRATION_27_28,
     MIGRATION_28_29,
-    MIGRATION_29_30
+    MIGRATION_29_30,
+    MIGRATION_30_31
 )
