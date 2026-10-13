@@ -28,9 +28,23 @@ import java.security.MessageDigest
  */
 object SignInProblem {
 
-    /** A dismissal by the owner, as Credential Manager words it: not a fault. */
-    fun isOwnerDismissal(message: String?): Boolean =
-        message?.contains("cancelled by the user", ignoreCase = true) == true
+    /**
+     * A dismissal by the owner, as Credential Manager words it: not a fault.
+     *
+     * Google words it more than one way. On the owner's phone (13 Oct) it
+     * came as "[16] Cancelled by user." with no "the", so the old test for
+     * "cancelled by the user" missed it and the owner's own back-press got
+     * the full technical dialog. 16 is Google's status code CANCELED. Any of
+     * the three marks it as the owner's own choice; a sheet Google closed for
+     * a build it does not know says something else and still gets the dialog.
+     */
+    fun isOwnerDismissal(message: String?): Boolean {
+        if (message.isNullOrBlank()) return false
+        val m = message.lowercase()
+        return m.contains("cancelled by the user") || m.contains("cancelled by user") ||
+            m.contains("canceled by user") || m.contains("canceled by the user") ||
+            Regex("""^\s*\[16]""").containsMatchIn(m)
+    }
 
     fun show(activity: Activity, reason: String?) {
         if (activity.isFinishing || activity.isDestroyed) return
