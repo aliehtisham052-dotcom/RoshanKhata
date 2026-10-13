@@ -207,79 +207,92 @@
             </LinearLayout>
 
             <!-- ===== Identity ===== -->
-            <TextView
-                style="@style/ProfileSectionLabel"
-                android:text="@string/bp_section_identity" />
 
-            <LinearLayout style="@style/ProfileCard">
+            <LinearLayout
+                android:id="@+id/cardIdentity"
+                style="@style/ProfileCard"
+                android:layout_marginTop="12dp">
+                <include
+                    android:id="@+id/secIdentity"
+                    layout="@layout/view_profile_section" />
+
+                <LinearLayout
+                    android:id="@+id/bodyIdentity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
 
                 <!-- Shop logo: optional; the invoice tile falls back to the
                      app's mark and the stock register to the initials. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <FrameLayout
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:background="@drawable/bg_preview_thumb_slot">
-
-                        <ImageView
-                            android:id="@+id/ivLogoPreview"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:contentDescription="@string/bp_logo"
-                            android:padding="4dp"
-                            android:scaleType="fitCenter"
-                            android:visibility="gone" />
-
-                        <ImageView
-                            android:id="@+id/ivNoLogo"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:alpha="0.45"
-                            android:contentDescription="@string/bp_logo"
-                            android:src="@drawable/ic_image"
-                            app:tint="@color/text_muted" />
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:text="@string/bp_logo"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/bp_logo"
-                            android:textColor="@color/ink"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/bp_logo_help"
+                        android:textColor="@color/text_muted"
+                        android:textSize="13sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/bp_logo_help"
-                            android:textColor="@color/text_muted"
-                            android:textSize="12sp" />
+                    <!-- Picture, then the buttons on the same line. The text
+                         has the whole width above, so a large phone font can
+                         never squeeze it into a one-word column (13 Oct). -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:background="@drawable/bg_preview_thumb_slot">
+
+                            <ImageView
+                                android:id="@+id/ivLogoPreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:contentDescription="@string/bp_logo"
+                                android:padding="4dp"
+                                android:scaleType="fitCenter"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/ivNoLogo"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:alpha="0.45"
+                                android:contentDescription="@string/bp_logo"
+                                android:src="@drawable/ic_image"
+                                app:tint="@color/text_muted" />
+                        </FrameLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnPickLogo"
+                            style="@style/ProfileRowButton"
+                            android:layout_marginStart="12dp"
+                            android:text="@string/bp_add" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRemoveLogo"
+                            style="@style/ProfileRemoveButton"
+                            android:contentDescription="@string/bp_remove_logo"
+                            android:visibility="gone" />
                     </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPickLogo"
-                        style="@style/ProfileSmallButton"
-                        android:text="@string/bp_add" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnRemoveLogo"
-                        style="@style/ProfileRemoveButton"
-                        android:contentDescription="@string/bp_remove_logo"
-                        android:visibility="gone" />
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -358,13 +371,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:orientation="vertical">
 
                         <TextView
@@ -382,7 +393,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnTrade"
-                        style="@style/ProfileSmallButton" />
+                        style="@style/ProfileChoiceButton" />
                 </LinearLayout>
 
                 <!-- Currency sign (4 Oct 2026): a choice, so a button, not a text field -->
@@ -390,13 +401,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:orientation="vertical">
 
                         <TextView
@@ -414,7 +423,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCurrency"
-                        style="@style/ProfileSmallButton" />
+                        style="@style/ProfileChoiceButton" />
                 </LinearLayout>
 
                 <!-- Calendar (5 Oct): how dates print; what is saved never changes. -->
@@ -422,13 +431,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:orientation="vertical">
 
                         <TextView
@@ -446,16 +453,27 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCalendar"
-                        style="@style/ProfileSmallButton" />
+                        style="@style/ProfileChoiceButton" />
+                </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
             <!-- ===== Getting paid ===== -->
-            <TextView
-                style="@style/ProfileSectionLabel"
-                android:text="@string/bp_section_paid" />
 
-            <LinearLayout style="@style/ProfileCard">
+            <LinearLayout
+                android:id="@+id/cardPaid"
+                style="@style/ProfileCard"
+                android:layout_marginTop="12dp">
+                <include
+                    android:id="@+id/secPaid"
+                    layout="@layout/view_profile_section" />
+
+                <LinearLayout
+                    android:id="@+id/bodyPaid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -520,91 +538,107 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <FrameLayout
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:background="@drawable/bg_preview_thumb_slot">
-
-                        <ImageView
-                            android:id="@+id/ivQrPreview"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:contentDescription="@string/payment_qr"
-                            android:padding="4dp"
-                            android:scaleType="fitCenter"
-                            android:visibility="gone" />
-
-                        <ImageView
-                            android:id="@+id/tvNoQr"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:alpha="0.45"
-                            android:contentDescription="@string/no_qr_yet"
-                            android:src="@drawable/ic_qr_scan"
-                            app:tint="@color/text_muted" />
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:text="@string/bp_qr"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/bp_qr"
-                            android:textColor="@color/ink"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/bp_qr_help"
+                        android:textColor="@color/text_muted"
+                        android:textSize="13sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/bp_qr_help"
-                            android:textColor="@color/text_muted"
-                            android:textSize="12sp" />
+                    <!-- Picture, then the buttons on the same line. The text
+                         has the whole width above, so a large phone font can
+                         never squeeze it into a one-word column (13 Oct). -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:background="@drawable/bg_preview_thumb_slot">
+
+                            <ImageView
+                                android:id="@+id/ivQrPreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:contentDescription="@string/payment_qr"
+                                android:padding="4dp"
+                                android:scaleType="fitCenter"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/tvNoQr"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:alpha="0.45"
+                                android:contentDescription="@string/no_qr_yet"
+                                android:src="@drawable/ic_qr_scan"
+                                app:tint="@color/text_muted" />
+                        </FrameLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnPickQr"
+                            style="@style/ProfileRowButton"
+                            android:layout_marginStart="12dp"
+                            android:text="@string/bp_add" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRemoveQr"
+                            style="@style/ProfileRemoveButton"
+                            android:contentDescription="@string/remove_qr"
+                            android:visibility="gone" />
                     </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPickQr"
-                        style="@style/ProfileSmallButton"
-                        android:text="@string/bp_add" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnRemoveQr"
-                        style="@style/ProfileRemoveButton"
-                        android:contentDescription="@string/remove_qr"
-                        android:visibility="gone" />
+                </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
             <!-- ===== Stamp & signature ===== -->
-            <TextView
-                style="@style/ProfileSectionLabel"
-                android:text="@string/bp_section_seals" />
 
-            <LinearLayout style="@style/ProfileCard">
+            <LinearLayout
+                android:id="@+id/cardSeals"
+                style="@style/ProfileCard"
+                android:layout_marginTop="12dp">
+                <include
+                    android:id="@+id/secSeals"
+                    layout="@layout/view_profile_section" />
 
+                <LinearLayout
+                    android:id="@+id/bodySeals"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                <!-- One full-width row each (13 Oct): picture on one side,
+                     name and buttons on the other. Side-by-side tiles left
+                     "Change" about 80dp, so a large font broke the word. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        style="@style/ProfileTile"
-                        android:layout_marginEnd="6dp">
+                    android:layout_marginTop="0dp"
+                    android:background="@drawable/bg_profile_card"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
 
                         <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="96dp"
+                            android:layout_width="104dp"
+                            android:layout_height="76dp"
                             android:background="@drawable/bg_preview_thumb_slot">
 
                             <ImageView
@@ -627,18 +661,30 @@
                                 app:tint="@color/text_muted" />
                         </FrameLayout>
 
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
                         <TextView
-                            style="@style/ProfileTileTitle"
-                            android:text="@string/stamp" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/stamp"
+                            android:textColor="@color/ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
                             android:orientation="horizontal">
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnPickStamp"
-                                style="@style/ProfileTileButton"
+                                style="@style/ProfileRowButton"
                                 android:text="@string/bp_add" />
 
                             <com.google.android.material.button.MaterialButton
@@ -648,14 +694,23 @@
                                 android:visibility="gone" />
                         </LinearLayout>
                     </LinearLayout>
+                </LinearLayout>
 
-                    <LinearLayout
-                        style="@style/ProfileTile"
-                        android:layout_marginStart="6dp">
+                <!-- One full-width row each (13 Oct): picture on one side,
+                     name and buttons on the other. Side-by-side tiles left
+                     "Change" about 80dp, so a large font broke the word. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_profile_card"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
 
                         <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="96dp"
+                            android:layout_width="104dp"
+                            android:layout_height="76dp"
                             android:background="@drawable/bg_preview_thumb_slot">
 
                             <ImageView
@@ -678,18 +733,30 @@
                                 app:tint="@color/text_muted" />
                         </FrameLayout>
 
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
                         <TextView
-                            style="@style/ProfileTileTitle"
-                            android:text="@string/signature" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/signature"
+                            android:textColor="@color/ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
                             android:orientation="horizontal">
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnPickSignature"
-                                style="@style/ProfileTileButton"
+                                style="@style/ProfileRowButton"
                                 android:text="@string/bp_add" />
 
                             <com.google.android.material.button.MaterialButton
@@ -708,16 +775,26 @@
                     android:text="@string/bp_seals_help"
                     android:textColor="@color/text_muted"
                     android:textSize="12sp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- ===== Invoice & statement ===== -->
-            <TextView
-                style="@style/ProfileSectionLabel"
-                android:text="@string/bp_section_docs" />
 
             <LinearLayout
+                android:id="@+id/cardDocs"
+                android:layout_marginTop="12dp"
                 style="@style/ProfileCard"
                 android:layout_marginBottom="24dp">
+                <include
+                    android:id="@+id/secDocs"
+                    layout="@layout/view_profile_section" />
+
+                <LinearLayout
+                    android:id="@+id/bodyDocs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/ProfileField"
@@ -859,6 +936,7 @@
                         android:layout_marginStart="8dp"
                         android:contentDescription="@string/bp_pay_reminder"
                         android:minHeight="48dp" />
+                </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

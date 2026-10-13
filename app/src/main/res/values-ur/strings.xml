@@ -2370,7 +2370,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">آپ کی دکان کا نام کیا ہے؟</string>
     <string name="shop_name_field">دکان کا نام</string>
-    <string name="shop_name_hint">بھٹی ٹریڈرز</string>
+    <string name="shop_name_hint">مثلاً: بھٹی ٹریڈرز</string>
     <string name="shop_phone_field">دکان کا فون (اختیاری)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2818,4 +2818,17 @@
     <string name="poster_chip_whatsapp">واٹس ایپ پر</string>
     <string name="poster_saved_to_profile">دکان کی پروفائل میں محفوظ، ہر پوسٹر کے لیے۔</string>
     <string name="poster_value_needed">پہلے لکھیں</string>
+    <string name="print_short">پرنٹ</string>
+    <string name="calc_add_to_khata">کھاتے میں ڈالیں</string>
+    <string name="calc_pick_party">%1$s: جس کے کھاتے میں ڈالنا ہے اس پر ٹیپ کریں</string>
+    <string name="calc_khata_positive">کھاتے میں صرف صفر سے زیادہ رقم جا سکتی ہے۔</string>
+    <string name="stat_bills">بل</string>
+    <string name="stat_you_owe">آپ نے دینے ہیں</string>
+    <string name="stat_expiring">60 دن میں ختم</string>
+    <string name="bills_add_first">پہلا بل درج کریں</string>
+    <string name="sr_open_short">ریٹ ملائیں</string>
+    <string name="products_search_hint">پروڈکٹ تلاش کریں</string>
+    <string name="stat_products">پروڈکٹس</string>
+    <string name="stat_out_of_stock">اسٹاک ختم</string>
+    <string name="products_no_match">آپ کی تلاش سے کوئی پروڈکٹ نہیں ملا۔</string>
 </resources>

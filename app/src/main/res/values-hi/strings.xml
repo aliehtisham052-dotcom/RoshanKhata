@@ -2414,7 +2414,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">आपकी दुकान का नाम क्या है?</string>
     <string name="shop_name_field">दुकान का नाम</string>
-    <string name="shop_name_hint">शर्मा ट्रेडर्स</string>
+    <string name="shop_name_hint">जैसे: शर्मा ट्रेडर्स</string>
     <string name="shop_phone_field">दुकान का फ़ोन (वैकल्पिक)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2862,4 +2862,17 @@
     <string name="poster_chip_whatsapp">व्हाट्सऐप पर</string>
     <string name="poster_saved_to_profile">दुकान की प्रोफ़ाइल में सेव, हर पोस्टर के लिए।</string>
     <string name="poster_value_needed">पहले लिखें</string>
+    <string name="print_short">प्रिंट</string>
+    <string name="calc_add_to_khata">खाते में डालें</string>
+    <string name="calc_pick_party">%1$s: जिसके खाते में डालना है उस पर टैप करें</string>
+    <string name="calc_khata_positive">खाते में सिर्फ़ शून्य से ज़्यादा रक़म जा सकती है।</string>
+    <string name="stat_bills">बिल</string>
+    <string name="stat_you_owe">आपको देना है</string>
+    <string name="stat_expiring">60 दिन में एक्सपायर</string>
+    <string name="bills_add_first">पहला बिल दर्ज करें</string>
+    <string name="sr_open_short">रेट मिलाएँ</string>
+    <string name="products_search_hint">प्रोडक्ट खोजें</string>
+    <string name="stat_products">प्रोडक्ट</string>
+    <string name="stat_out_of_stock">स्टॉक ख़त्म</string>
+    <string name="products_no_match">आपकी खोज से कोई प्रोडक्ट नहीं मिला।</string>
 </resources>

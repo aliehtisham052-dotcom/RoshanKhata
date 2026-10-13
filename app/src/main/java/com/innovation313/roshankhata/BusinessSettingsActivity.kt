@@ -77,6 +77,12 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var btnCurrency: MaterialButton
     private lateinit var btnTrade: MaterialButton
 
+    /** Foldable sections; the flags feed their folded one-line summaries. */
+    private val sections = com.innovation313.roshankhata.ui.ProfileSections(this)
+    private var hasQr = false
+    private var hasStamp = false
+    private var hasSignature = false
+
     /** A shop that counts in rupees gets the Pakistani IBAN/mobile checks; any other, a general shape check. */
     private val pakistaniRules: Boolean get() = BusinessProfile.currency(this) == Currency.DEFAULT
     private lateinit var tvUnsaved: TextView
@@ -190,32 +196,6 @@ class BusinessSettingsActivity : BaseActivity() {
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
-
-        // Opened from one row of the shop sheet (11 Oct): bring that part of
-        // the profile into view rather than leaving the owner at the top of
-        // a long screen to find it again.
-        intent.getStringExtra(EXTRA_FOCUS)?.let { focus ->
-            val targetId = when (focus) {
-                FOCUS_NAME -> R.id.etBusinessName
-                FOCUS_PHONE -> R.id.etBusinessPhone
-                FOCUS_STAMP -> R.id.ivStampPreview
-                FOCUS_PAYMENT -> R.id.etBankName
-                FOCUS_TRADE -> R.id.btnTrade
-                else -> 0
-            }
-            val scroll = findViewById<android.widget.ScrollView>(R.id.scroll)
-            val target = if (targetId != 0) findViewById<View>(targetId) else null
-            if (scroll != null && target != null) scroll.post {
-                var y = 0
-                var v: View? = target
-                while (v != null && v !== scroll) {
-                    y += v.top
-                    v = v.parent as? View
-                }
-                val margin = (24 * resources.displayMetrics.density).toInt()
-                scroll.smoothScrollTo(0, (y - margin).coerceAtLeast(0))
-            }
-        }
 
         etBusinessName = findViewById(R.id.etBusinessName)
         etBusinessNameUrdu = findViewById(R.id.etBusinessNameUrdu)
@@ -370,6 +350,7 @@ class BusinessSettingsActivity : BaseActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: android.text.Editable?) {
                 refreshPreviewText()
+                sections.refreshAll()
                 val dirty = isDirty
                 tvUnsaved.visibility = if (dirty) View.VISIBLE else View.GONE
                 leaveGuard.isEnabled = dirty
@@ -399,6 +380,64 @@ class BusinessSettingsActivity : BaseActivity() {
         refreshSignature()
         refreshStamp()
         refreshLogo()
+
+        // Foldable sections (13 Oct): the shop's own details open, the rest
+        // folded to one line each that says what they hold.
+        sections.add(R.id.secIdentity, R.id.bodyIdentity, R.string.bp_section_identity,
+            R.drawable.ic_storefront, startOpen = true) {
+            listOf(
+                etBusinessName.text.toString().trim(),
+                etBusinessPhone.text.toString().trim(),
+                Trade.current(this).label(this),
+            ).filter { it.isNotEmpty() }.joinToString(" · ")
+        }
+        sections.add(R.id.secPaid, R.id.bodyPaid, R.string.bp_section_paid,
+            R.drawable.ic_qr_scan, startOpen = false) {
+            listOf(
+                etBankName.text.toString().trim(),
+                getString(if (hasQr) R.string.bp_qr else R.string.no_qr_yet),
+            ).filter { it.isNotEmpty() }.joinToString(" · ")
+        }
+        sections.add(R.id.secSeals, R.id.bodySeals, R.string.bp_section_seals,
+            R.drawable.ic_seal_stamp, startOpen = false) {
+            val have = listOfNotNull(
+                if (hasStamp) getString(R.string.stamp) else null,
+                if (hasSignature) getString(R.string.signature) else null,
+            )
+            if (have.isEmpty()) getString(R.string.no_stamp_yet) else have.joinToString(" · ")
+        }
+        sections.add(R.id.secDocs, R.id.bodyDocs, R.string.bp_section_docs,
+            R.drawable.ic_pdf_doc, startOpen = false) {
+            etInvoiceTerms.text.toString().trim().lineSequence().firstOrNull().orEmpty()
+        }
+
+        // Opened from one row of the shop sheet (11 Oct): bring that part of
+        // the profile into view rather than leaving the owner at the top of
+        // a long screen to find it again.
+        intent.getStringExtra(EXTRA_FOCUS)?.let { focus ->
+            val targetId = when (focus) {
+                FOCUS_NAME -> R.id.etBusinessName
+                FOCUS_PHONE -> R.id.etBusinessPhone
+                FOCUS_STAMP -> R.id.ivStampPreview
+                FOCUS_PAYMENT -> R.id.etBankName
+                FOCUS_TRADE -> R.id.btnTrade
+                else -> 0
+            }
+            val scroll = findViewById<android.widget.ScrollView>(R.id.scroll)
+            val target = if (targetId != 0) findViewById<View>(targetId) else null
+            target?.let { sections.reveal(it) }
+            if (scroll != null && target != null) scroll.post {
+                var y = 0
+                var v: View? = target
+                while (v != null && v !== scroll) {
+                    y += v.top
+                    v = v.parent as? View
+                }
+                val margin = (24 * resources.displayMetrics.density).toInt()
+                scroll.smoothScrollTo(0, (y - margin).coerceAtLeast(0))
+            }
+        }
+
     }
 
     private fun afterChange(block: () -> Unit) = object : android.text.TextWatcher {
@@ -497,13 +536,16 @@ class BusinessSettingsActivity : BaseActivity() {
                 tvNoSignature.visibility = android.view.View.VISIBLE
                 btnRemoveSignature.visibility = android.view.View.GONE
                 btnPickSignature.setText(R.string.bp_add)
+                hasSignature = false
             } else {
                 ivSignaturePreview.setImageBitmap(signature)
                 ivSignaturePreview.visibility = android.view.View.VISIBLE
                 tvNoSignature.visibility = android.view.View.GONE
                 btnRemoveSignature.visibility = android.view.View.VISIBLE
                 btnPickSignature.setText(R.string.bp_change)
+                hasSignature = true
             }
+            sections.refreshAll()
         }
     }
 
@@ -552,6 +594,8 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivPreviewStampThumb.visibility = View.VISIBLE
                 tvPreviewStampPlaceholder.visibility = View.GONE
             }
+            hasStamp = stamp != null
+            sections.refreshAll()
         }
     }
 
@@ -624,6 +668,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 tvNoQr.visibility = View.GONE
                 btnRemoveQr.visibility = View.VISIBLE
                 btnPickQr.setText(R.string.bp_change)
+                hasQr = true
                 ivPreviewQrThumb.setImageBitmap(bitmap)
                 ivPreviewQrThumb.visibility = View.VISIBLE
                 tvPreviewQrPlaceholder.visibility = View.GONE
@@ -632,9 +677,11 @@ class BusinessSettingsActivity : BaseActivity() {
                 tvNoQr.visibility = View.VISIBLE
                 btnRemoveQr.visibility = View.GONE
                 btnPickQr.setText(R.string.bp_add)
+                hasQr = false
                 ivPreviewQrThumb.visibility = View.GONE
                 tvPreviewQrPlaceholder.visibility = View.VISIBLE
             }
+            sections.refreshAll()
         }
     }
 
@@ -642,6 +689,7 @@ class BusinessSettingsActivity : BaseActivity() {
 
     private fun renderTrade() {
         btnTrade.text = Trade.current(this).label(this)
+        sections.refreshAll()
     }
 
     /** Saved the moment it is chosen, like the currency: a setting, not a text field. */

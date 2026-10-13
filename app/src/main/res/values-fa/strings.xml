@@ -2398,7 +2398,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">نام فروشگاه شما چیست؟</string>
     <string name="shop_name_field">نام فروشگاه</string>
-    <string name="shop_name_hint">فروشگاه نور</string>
+    <string name="shop_name_hint">مثلاً: فروشگاه نور</string>
     <string name="shop_phone_field">تلفن فروشگاه (اختیاری)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2846,4 +2846,17 @@
     <string name="poster_chip_whatsapp">در واتس‌اپ</string>
     <string name="poster_saved_to_profile">در نمایهٔ فروشگاه ذخیره شد، برای همهٔ پوسترها.</string>
     <string name="poster_value_needed">اول آن را بنویسید</string>
+    <string name="print_short">چاپ</string>
+    <string name="calc_add_to_khata">افزودن به حساب</string>
+    <string name="calc_pick_party">%1$s: روی مشتری بزنید تا به حسابش اضافه شود</string>
+    <string name="calc_khata_positive">فقط مبلغ بیشتر از صفر به حساب اضافه می‌شود.</string>
+    <string name="stat_bills">فاکتورها</string>
+    <string name="stat_you_owe">بدهی شما</string>
+    <string name="stat_expiring">انقضا تا ۶۰ روز</string>
+    <string name="bills_add_first">اولین فاکتور را اضافه کنید</string>
+    <string name="sr_open_short">مقایسه قیمت</string>
+    <string name="products_search_hint">جستجوی کالا</string>
+    <string name="stat_products">کالاها</string>
+    <string name="stat_out_of_stock">ناموجود</string>
+    <string name="products_no_match">کالایی با جستجوی شما پیدا نشد.</string>
 </resources>

@@ -202,7 +202,8 @@ object ViewerMode {
     private val WRITE_BUTTONS = intArrayOf(
         R.id.btnGave, R.id.btnGot, R.id.fabAddParty, R.id.btnDeleteSelected,
         R.id.btnEdit, R.id.btnDelete, R.id.fabAddBill, R.id.fabAddCash, R.id.fabAddCheque,
-        R.id.fabAddInvoice, R.id.fabAddPlan, R.id.btnCloseDay, R.id.btnAddScheme
+        R.id.fabAddInvoice, R.id.fabAddPlan, R.id.btnCloseDay, R.id.btnAddScheme,
+        R.id.btnCalcToKhata
     )
 
     /** Called by BaseActivity after every setContentView. No-op on a normal phone. */

@@ -55,6 +55,19 @@ import com.innovation313.roshankhata.data.Digits
  */
 class KhataActivity : BaseActivity() {
 
+    companion object {
+        /**
+         * An amount brought from the calculator (13 Oct): the next customer
+         * tapped opens with an entry already filled in with it, to check and
+         * save there. Never saved from here.
+         */
+        const val EXTRA_CARRY_AMOUNT = "carry_amount"
+    }
+
+    /** The calculator's answer waiting for a customer, or 0 for none. */
+    private var carryAmount = 0.0
+    private var carryBar: com.google.android.material.snackbar.Snackbar? = null
+
     private lateinit var adapter: PartyAdapter
     private lateinit var etSearch: EditText
 
@@ -115,6 +128,15 @@ class KhataActivity : BaseActivity() {
     // keeps everyone, as before, so nothing changes until they choose.
     private enum class TypeFilter { ALL, CUSTOMERS, SUPPLIERS }
     private var typeFilter = TypeFilter.ALL
+
+    /**
+     * Which list is on screen: tab, side, sort and dates. When it changes the
+     * owner asked for a different list, so it replaces the old one at once
+     * (13 Oct). Animating the difference made the old names drift across and
+     * slide away behind the new ones, which read as the list floating.
+     */
+    private var shownView: List<Any>? = null
+    private var partyAnimator: RecyclerView.ItemAnimator? = null
     private var customerCount = 0
     private var supplierCount = 0
 
@@ -221,8 +243,20 @@ class KhataActivity : BaseActivity() {
         )
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
+        partyAnimator = rv.itemAnimator
 
         selectionBar = findViewById(R.id.selectionBar)
+
+        carryAmount = intent.getDoubleExtra(EXTRA_CARRY_AMOUNT, 0.0)
+        if (carryAmount > 0.0) {
+            carryBar = com.google.android.material.snackbar.Snackbar.make(
+                findViewById(android.R.id.content),
+                getString(R.string.calc_pick_party, Format.money(carryAmount)),
+                com.google.android.material.snackbar.Snackbar.LENGTH_INDEFINITE
+            ).setAction(R.string.cancel) { finish() }
+                .setAnchorView(R.id.fabAddParty)
+                .also { it.show() }
+        }
         tvSelectedCount = findViewById(R.id.tvSelectedCount)
         btnSelectAll = findViewById(R.id.btnSelectAll)
 
@@ -821,7 +855,7 @@ class KhataActivity : BaseActivity() {
             val sorted = withContext(Dispatchers.Default) {
                 rank(book, keys, q, range, side, type, sort)
             }
-            show(sorted, q.text)
+            show(sorted, q.text, listOf(type, side, sort, range))
         }
     }
 
@@ -896,15 +930,21 @@ class KhataActivity : BaseActivity() {
     }
 
     /** The ranked list, back on the main thread. */
-    private fun show(sorted: List<PartyWithBalance>, query: String) {
+    private fun show(sorted: List<PartyWithBalance>, query: String, view: List<Any>) {
         shownParties = sorted
+        val rv = findViewById<RecyclerView>(R.id.rvParties)
+        val swap = shownView != null && shownView != view
+        shownView = view
+        // A new list: no moves or fades. The same list updated (a balance, a
+        // new entry): the usual gentle animation, put back here.
+        rv.itemAnimator = if (swap) null else partyAnimator
         // A typed search starts at the top (7 Oct). submitList keeps whatever
         // scroll the list had, so the best match — now ranked first — could
         // sit above the viewport while the owner read the third-best.
         val scrollUp = query.isNotEmpty() && query != lastQuery
         lastQuery = query
         adapter.submitList(sorted) {
-            if (scrollUp) findViewById<RecyclerView>(R.id.rvParties).scrollToPosition(0)
+            if (scrollUp || swap) rv.scrollToPosition(0)
         }
         renderFilterState()
         paintTypeTabs()
@@ -1233,6 +1273,17 @@ class KhataActivity : BaseActivity() {
     private fun openParty(party: PartyWithBalance) {
         val intent = Intent(this, PartyDetailActivity::class.java)
             .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
+        if (carryAmount > 0.0) {
+            // From the calculator: the form opens filled in on "you gave",
+            // which the owner can switch there; back from it returns to the
+            // calculator rather than to this picking list.
+            intent.putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, carryAmount)
+                .putExtra(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, true)
+            carryBar?.dismiss()
+            startActivity(intent)
+            finish()
+            return
+        }
         // The row on screen, if this customer has one, grows into the ledger.
         val row = shownParties.indexOfFirst { it.id == party.id }
             .takeIf { it >= 0 }?.let { findViewById<RecyclerView>(R.id.rvParties).findViewHolderForAdapterPosition(it)?.itemView }

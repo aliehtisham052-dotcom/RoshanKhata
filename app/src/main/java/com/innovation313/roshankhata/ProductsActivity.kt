@@ -40,7 +40,11 @@ import kotlinx.coroutines.withContext
 class ProductsActivity : BaseActivity() {
 
     private lateinit var adapter: ProductAdapter
-    private lateinit var tvEmpty: TextView
+    private lateinit var tvEmpty: View
+    private lateinit var tvEmptyText: TextView
+
+    /** Every product with its stock, before the search box narrows it. */
+    private var allStock: List<Stock.ProductStock> = emptyList()
     private lateinit var btnLink: MaterialButton
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -50,7 +54,14 @@ class ProductsActivity : BaseActivity() {
         setContentView(R.layout.activity_products)
         ScreenInsets.on(this)
 
-        tvEmpty = findViewById(R.id.tvNoProducts)
+        tvEmpty = findViewById(R.id.emptyProducts)
+        tvEmptyText = findViewById(R.id.tvNoProducts)
+        findViewById<android.widget.EditText>(R.id.etProductSearch).addTextChangedListener(
+            object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun afterTextChanged(s: android.text.Editable?) = show()
+            })
         btnLink = findViewById(R.id.btnLinkGoods)
 
         adapter = ProductAdapter { stock -> openCustomers(stock) }
@@ -109,9 +120,28 @@ class ProductsActivity : BaseActivity() {
                 returned = dao.returnedPerProduct()
             ).sortedBy { it.name.lowercase() }
 
-            adapter.submitList(stock)
-            tvEmpty.visibility = if (stock.isEmpty()) View.VISIBLE else View.GONE
+            allStock = stock
+            show()
         }
+    }
+
+    /**
+     * The list as the search box narrows it, and the figures above it. The
+     * figures always count the whole shop, not the search (13 Oct). "Out of
+     * stock" counts only products whose bought and sold sides count in the
+     * same unit: one that cannot be subtracted is not called empty.
+     */
+    private fun show() {
+        val q = findViewById<android.widget.EditText>(R.id.etProductSearch).text.toString().trim()
+        val shown = if (q.isEmpty()) allStock
+        else allStock.filter { com.innovation313.roshankhata.ui.NameSearch.matches(it.name, null, q.lowercase()) }
+        adapter.submitList(shown)
+        tvEmptyText.setText(if (allStock.isEmpty()) R.string.no_products else R.string.products_no_match)
+        tvEmpty.visibility = if (shown.isEmpty()) View.VISIBLE else View.GONE
+        val figures = com.innovation313.roshankhata.data.Digits.FIGURES
+        findViewById<TextView>(R.id.tvStatProducts).text = "%,d".format(figures, allStock.size)
+        findViewById<TextView>(R.id.tvStatOut).text =
+            "%,d".format(figures, allStock.count { (it.onHand ?: 1.0) <= 0.0 })
     }
 
     private fun openCustomers(stock: Stock.ProductStock) {

@@ -11,55 +11,114 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/section_bills"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/products_stock"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/products_stock"
+                    android:textColor="@color/white"
+                    android:textSize="21sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/products_subtitle"
+                    android:textColor="@color/section_bills_soft"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!--
+              The rate list is sent from the products it lists. A labelled
+              button, not a bare icon: "send my prices" is not something a
+              share glyph in a corner says on its own. A tile on the band like
+              the Supplier Bills tools (13 Oct), one line always.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRateList"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="12dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0"
+                android:maxWidth="170dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="@string/rate_list_title"
+                android:textAllCaps="false"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/products_subtitle"
-                android:textColor="@color/section_bills_soft"
-                android:textSize="12sp" />
+                android:textStyle="bold"
+                app:backgroundTint="@color/header_tile_fill"
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_share"
+                app:iconTint="@color/gold_on_dark"
+                app:strokeColor="@color/header_tile_stroke" />
         </LinearLayout>
 
-        <!--
-          The rate list is sent from the products it lists. A labelled button,
-          not a bare icon: "send my prices" is not something a share glyph in a
-          corner says on its own. Outlined in white on the band, so it reads
-          the same at night (white is not repainted in values-night).
-        -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnRateList"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:maxWidth="180dp"
-            android:minHeight="48dp"
-            android:text="@string/rate_list_title"
+        <!-- Find a product by name (13 Oct): a dealer stocks dozens. -->
+        <EditText
+            android:id="@+id/etProductSearch"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_header_search"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/section_bills_soft"
+            android:hint="@string/products_search_hint"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
             android:textColor="@color/white"
-            app:icon="@drawable/ic_share"
-            app:iconTint="@color/white"
-            app:strokeColor="@color/white" />
+            android:textColorHint="@color/section_bills_soft"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <!-- What is on the shelf at a glance (13 Oct): how many products, and how
+         many have run out by the bills and sales entered. -->
+    <LinearLayout
+        android:id="@+id/productStats"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <LinearLayout style="@style/StatTile">
+            <TextView android:id="@+id/tvStatProducts" style="@style/StatTileValue" />
+            <TextView style="@style/StatTileLabel" android:text="@string/stat_products" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/StatTile" android:layout_marginStart="8dp">
+            <TextView android:id="@+id/tvStatOut" style="@style/StatTileValue" android:textColor="@color/red_gave_text" />
+            <TextView style="@style/StatTileLabel" android:text="@string/stat_out_of_stock" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- The app's own limit, admitted rather than hidden -->
@@ -67,14 +126,17 @@
         android:id="@+id/tvProductsNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/note_bg"
-        android:padding="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_note_card"
+        android:padding="12dp"
         android:text="@string/products_note"
         android:textColor="@color/note_text"
-        android:textSize="12sp"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header" />
+        app:layout_constraintTop_toBottomOf="@id/productStats" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProducts"
@@ -85,21 +147,46 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvProductsNote" />
 
-    <TextView
-        android:id="@+id/tvNoProducts"
+    <!-- Empty: a picture and the reason, above the button below that ties
+         old entries to products (13 Oct). -->
+    <LinearLayout
+        android:id="@+id/emptyProducts"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:gravity="center"
-        android:text="@string/no_products"
-        android:textColor="@color/text_muted"
-        android:textSize="14sp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/rvProducts"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rvProducts" />
+        app:layout_constraintTop_toTopOf="@id/rvProducts">
+
+        <FrameLayout
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/bg_empty_icon_bills">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_tile_products" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvNoProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/no_products"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <!--
       The two registers this screen prints, and the one-off job of tying old

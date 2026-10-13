@@ -2505,7 +2505,7 @@ You can change this any time from this screen.</string>
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">What is your shop\'s name?</string>
     <string name="shop_name_field">Shop name</string>
-    <string name="shop_name_hint">Bhatti Traders</string>
+    <string name="shop_name_hint">e.g. Bhatti Traders</string>
     <string name="shop_phone_field">Shop phone (optional)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -3032,4 +3032,17 @@ You can change this any time from this screen.</string>
     <string name="poster_chip_whatsapp">On WhatsApp</string>
     <string name="poster_saved_to_profile">Saved to your shop profile, for every poster.</string>
     <string name="poster_value_needed">Write it first</string>
+    <string name="print_short">Print</string>
+    <string name="calc_add_to_khata">Add to a khata</string>
+    <string name="calc_pick_party">%1$s: tap the customer to add it to</string>
+    <string name="calc_khata_positive">Only an amount above zero can go on a khata.</string>
+    <string name="stat_bills">Bills</string>
+    <string name="stat_you_owe">You owe them</string>
+    <string name="stat_expiring">Expiring in 60 days</string>
+    <string name="bills_add_first">Add the first bill</string>
+    <string name="sr_open_short">Compare rates</string>
+    <string name="products_search_hint">Search products</string>
+    <string name="stat_products">Products</string>
+    <string name="stat_out_of_stock">Out of stock</string>
+    <string name="products_no_match">No product matches your search.</string>
 </resources>
