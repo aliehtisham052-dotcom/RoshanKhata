@@ -839,7 +839,7 @@ class InvoiceEditorActivity : BaseActivity() {
             }
             val frame = android.widget.FrameLayout(this).apply {
                 background = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.bg_design_thumb)
-                duplicateParentStateEnabled = true
+                isDuplicateParentStateEnabled = true
                 setPadding((3 * dp).toInt(), (3 * dp).toInt(), (3 * dp).toInt(), (3 * dp).toInt())
                 layoutParams = LinearLayout.LayoutParams((78 * dp).toInt(), (100 * dp).toInt())
             }
@@ -857,7 +857,7 @@ class InvoiceEditorActivity : BaseActivity() {
                 textSize = 11f
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
                 setTextColor(androidx.core.content.ContextCompat.getColorStateList(context, R.color.design_thumb_text))
-                duplicateParentStateEnabled = true
+                isDuplicateParentStateEnabled = true
                 setPadding(0, (5 * dp).toInt(), 0, 0)
             })
             designStrip.addView(cell)
