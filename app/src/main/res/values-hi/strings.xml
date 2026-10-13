@@ -566,7 +566,6 @@
     <string name="businesses_title">बिज़नेस</string>
     <string name="businesses_subtitle">हर बिज़नेस का अपना अलग खाता है</string>
     <string name="business_add">बिज़नेस जोड़ें</string>
-    <string name="business_open_now">खोलें</string>
     <string name="business_rename">बिज़नेस का नाम बदलें</string>
     <string name="business_delete">बिज़नेस मिटाएँ</string>
     <string name="business_delete_confirm_title">%1$s मिटाएँ?</string>
@@ -2905,4 +2904,8 @@
     <string name="invoice_filter_a4">A4 पेज</string>
     <string name="invoice_filter_roll">रसीद रोल</string>
     <string name="invoice_filter_ink">कम स्याही</string>
+    <string name="business_current">अभी खुला है</string>
+    <string name="business_switch_open">खोलें</string>
+    <string name="business_name_needed">पहले कारोबार का नाम लिखें।</string>
+    <string name="business_not_added">कारोबार नहीं जुड़ा। जोड़ने के लिए चुनें कि यह क्या बेचता है।</string>
 </resources>

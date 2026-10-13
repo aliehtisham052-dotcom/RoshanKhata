@@ -45,17 +45,47 @@
             android:textSize="11sp" />
     </LinearLayout>
 
+    <!-- The shop now open (13 Oct): a status, not a button. A solid green
+         "Open" pill looked like one, and tapping it seemed to do nothing. -->
     <TextView
         android:id="@+id/tvBizOpen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_business_open_chip"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="4dp"
-        android:text="@string/business_open_now"
-        android:textColor="@color/white"
-        android:textSize="11sp"
+        android:background="@drawable/bg_business_current_chip"
+        android:drawableStart="@drawable/ic_check_plain"
+        android:drawablePadding="4dp"
+        android:drawableTint="@color/brand_green_text"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="5dp"
+        android:text="@string/business_current"
+        android:textColor="@color/brand_green_text"
+        android:textSize="12sp"
         android:textStyle="bold"
         android:visibility="gone" />
+
+    <!-- Every other shop: a real button that switches to it. -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBizSwitch"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:letterSpacing="0"
+        android:maxLines="1"
+        android:minWidth="0dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/business_switch_open"
+        android:textAllCaps="false"
+        android:textColor="@color/brand_green_text"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:cornerRadius="12dp"
+        app:strokeColor="@color/brand_green_text" />
 
 </LinearLayout>

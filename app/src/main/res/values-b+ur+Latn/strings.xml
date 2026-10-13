@@ -539,7 +539,6 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="businesses_title">Aap ke business</string>
     <string name="businesses_subtitle">Har business ka apna alag khata rehta hai</string>
     <string name="business_add">Naya business shamil karein</string>
-    <string name="business_open_now">Khula hai</string>
     <string name="business_rename">Business ka naam badlein</string>
     <string name="business_delete">Business delete karein</string>
     <string name="business_delete_confirm_title">%1$s delete karein?</string>
@@ -2861,4 +2860,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="invoice_filter_a4">A4 safha</string>
     <string name="invoice_filter_roll">Receipt roll</string>
     <string name="invoice_filter_ink">Kam syahi</string>
+    <string name="business_current">Abhi khula hai</string>
+    <string name="business_switch_open">Kholein</string>
+    <string name="business_name_needed">Pehle karobar ka naam likhein.</string>
+    <string name="business_not_added">Karobar add nahi hua. Add karne ke liye chunein ke ye kya bechta hai.</string>
 </resources>

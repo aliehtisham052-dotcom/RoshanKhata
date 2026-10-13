@@ -559,7 +559,6 @@
     <string name="businesses_title">توهان جا ڪاروبار</string>
     <string name="businesses_subtitle">هر ڪاروبار جو پنهنجو الڳ کاتو رهي ٿو</string>
     <string name="business_add">نئون ڪاروبار شامل ڪريو</string>
-    <string name="business_open_now">کليل آهي</string>
     <string name="business_rename">ڪاروبار جو نالو بدلايو</string>
     <string name="business_delete">ڪاروبار ختم ڪريو</string>
     <string name="business_delete_confirm_title">%1$s ختم ڪجي؟</string>
@@ -2889,4 +2888,8 @@
     <string name="invoice_filter_a4">A4 صفحو</string>
     <string name="invoice_filter_roll">رسيد رول</string>
     <string name="invoice_filter_ink">گهٽ مس</string>
+    <string name="business_current">هاڻي کليل</string>
+    <string name="business_switch_open">کوليو</string>
+    <string name="business_name_needed">پهرين ڪاروبار جو نالو لکو.</string>
+    <string name="business_not_added">ڪاروبار شامل نه ٿيو. شامل ڪرڻ لاءِ چونڊيو ته اهو ڇا ٿو وڪڻي.</string>
 </resources>

@@ -559,7 +559,6 @@
     <string name="businesses_title">کسب‌وکارهای شما</string>
     <string name="businesses_subtitle">هر کسب‌وکار دفتر جداگانهٔ خود را دارد</string>
     <string name="business_add">افزودن کسب‌وکار</string>
-    <string name="business_open_now">باز است</string>
     <string name="business_rename">تغییر نام کسب‌وکار</string>
     <string name="business_delete">حذف کسب‌وکار</string>
     <string name="business_delete_confirm_title">%1$s حذف شود؟</string>
@@ -2889,4 +2888,8 @@
     <string name="invoice_filter_a4">صفحه A4</string>
     <string name="invoice_filter_roll">رول رسید</string>
     <string name="invoice_filter_ink">کم‌جوهر</string>
+    <string name="business_current">اکنون باز</string>
+    <string name="business_switch_open">باز کردن</string>
+    <string name="business_name_needed">ابتدا نام کسب‌وکار را بنویسید.</string>
+    <string name="business_not_added">کسب‌وکار اضافه نشد. برای افزودن، انتخاب کنید چه می‌فروشد.</string>
 </resources>

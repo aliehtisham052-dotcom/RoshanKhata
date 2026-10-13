@@ -583,7 +583,6 @@
     <string name="businesses_title">أنشطتك التجارية</string>
     <string name="businesses_subtitle">لكل نشاط تجاري دفتر حسابات منفصل خاص به</string>
     <string name="business_add">إضافة نشاط تجاري</string>
-    <string name="business_open_now">مفتوح</string>
     <string name="business_rename">إعادة تسمية النشاط التجاري</string>
     <string name="business_delete">حذف النشاط التجاري</string>
     <string name="business_delete_confirm_title">حذف %1$s؟</string>
@@ -3049,4 +3048,8 @@
     <string name="invoice_filter_a4">صفحة A4</string>
     <string name="invoice_filter_roll">لفة إيصالات</string>
     <string name="invoice_filter_ink">أقل حبر</string>
+    <string name="business_current">مفتوح الآن</string>
+    <string name="business_switch_open">افتح</string>
+    <string name="business_name_needed">اكتب اسم النشاط أولاً.</string>
+    <string name="business_not_added">لم تتم إضافة النشاط. اختر ما يبيعه لإضافته.</string>
 </resources>

@@ -49,6 +49,8 @@ object TradePicker {
         required: Boolean,
         /** Which first-run step this is (2 of 2), or null anywhere else. */
         step: Int? = null,
+        /** Closed (X or back) without a trade chosen; null to stay silent. */
+        onClosed: (() -> Unit)? = null,
         onPicked: (Trade) -> Unit
     ) {
         val dialog = Dialog(activity, R.style.Theme_RoshanKhata)
@@ -56,8 +58,9 @@ object TradePicker {
         dialog.setContentView(root)
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog.setCancelable(!required)
+        dialog.setOnCancelListener { onClosed?.invoke() }
         bind(activity, dialog.window, root, current, required, step,
-            onClose = { dialog.dismiss() },
+            onClose = { dialog.dismiss(); onClosed?.invoke() },
             onPicked = { dialog.dismiss(); onPicked(it) })
         dialog.show()
     }
