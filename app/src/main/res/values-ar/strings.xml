@@ -1653,7 +1653,14 @@
     <string name="pdf_biz_paid_of">%1$s من %2$s</string>
     <string name="pdf_biz_expiring">مخزون قارب على الانتهاء</string>
     <string name="pdf_biz_expired">منتهي الصلاحية</string>
-    <string name="pdf_biz_days_left">%1$d يومًا</string>
+    <plurals name="pdf_biz_days_left">
+        <item quantity="zero">%1$d يومًا</item>
+        <item quantity="one">%1$d يومًا</item>
+        <item quantity="two">%1$d يومًا</item>
+        <item quantity="few">%1$d يومًا</item>
+        <item quantity="many">%1$d يومًا</item>
+        <item quantity="other">%1$d يومًا</item>
+    </plurals>
     <string name="pdf_biz_batch">دفعة %1$s \u00B7 </string>
 
     <string name="pdf_reg_title">سجل المبيعات والمشتريات</string>

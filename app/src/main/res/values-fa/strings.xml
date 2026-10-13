@@ -1545,7 +1545,10 @@
     <string name="pdf_biz_paid_of">%1$s از %2$s</string>
     <string name="pdf_biz_expiring">موجودی رو به انقضا</string>
     <string name="pdf_biz_expired">منقضی</string>
-    <string name="pdf_biz_days_left">%1$d روز</string>
+    <plurals name="pdf_biz_days_left">
+        <item quantity="one">%1$d روز</item>
+        <item quantity="other">%1$d روز</item>
+    </plurals>
     <string name="pdf_biz_batch">بچ %1$s \u00B7 </string>
 
     <string name="pdf_reg_title">دفتر فروش و خرید</string>

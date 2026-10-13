@@ -1558,7 +1558,10 @@
     <string name="pdf_biz_paid_of">%2$s में से %1$s</string>
     <string name="pdf_biz_expiring">जल्द एक्सपायर होने वाला स्टॉक</string>
     <string name="pdf_biz_expired">एक्सपायर</string>
-    <string name="pdf_biz_days_left">%1$d दिन</string>
+    <plurals name="pdf_biz_days_left">
+        <item quantity="one">%1$d दिन</item>
+        <item quantity="other">%1$d दिन</item>
+    </plurals>
     <string name="pdf_biz_batch">बैच %1$s \u00B7 </string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
