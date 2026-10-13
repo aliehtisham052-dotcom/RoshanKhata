@@ -97,6 +97,38 @@ jobs:
           path: app/build/outputs/bundle/release/*.aab
           retention-days: 14
 
+      # THE AAB AS A PLAIN FILE, not a ZIP (14 Oct).
+      #
+      # An Actions artifact always arrives as a .zip served from Azure blob
+      # storage. On the owner's phone that download came out unopenable in
+      # both the browser's handler and Files by Google, and Play refuses a
+      # .zip ("Upload a valid app bundle"). A release asset is the file
+      # itself, from github.com, the same route the test APK already takes.
+      #
+      # Its own tag, never "latest" (the debug APK) and never "release-test"
+      # (the minified APK). The file holds the signature block only: the
+      # keystore stays in the secrets and was never in the workspace.
+      - name: Copy the bundle under a plain name
+        run: |
+          AAB=$(find app/build/outputs/bundle/release -name '*.aab' | head -1)
+          if [ -z "$AAB" ]; then echo "::error::No .aab to publish"; exit 1; fi
+          mkdir -p out-aab
+          cp "$AAB" out-aab/RoshanKhata-release.aab
+
+      - name: Publish the bundle as a downloadable file
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: release-aab
+          name: "Roshan Khata — signed AAB for Play upload"
+          body: |
+            The signed Android App Bundle for the Play Console, as a plain
+            file (not a ZIP). Upload it as it is.
+
+            **Commit:** ${{ github.sha }}
+          files: out-aab/RoshanKhata-release.aab
+          make_latest: false
+          prerelease: true
+
       # THE MINIFIED APK, and why this step had to exist.
       #
       # R8 runs on the RELEASE variant only. The rolling APK everyone installs
