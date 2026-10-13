@@ -253,6 +253,10 @@ class PartyDetailActivity : BaseActivity() {
     private var partyIsCustomerAccount: Boolean = false
     /** Party.harvestPromise (v28): "I'll pay after the harvest" date. */
     private var harvestPromise: Long? = null
+
+    /** The due date chosen in the open entry form, and whether it was touched (13 Oct). */
+    private var entryDue: Long? = null
+    private var entryDueTouched = false
     private var currentBalance: Double = 0.0
     private var creditLimit: Double? = null
     private var currentRows: List<EntryRow> = emptyList()
@@ -1865,6 +1869,7 @@ class PartyDetailActivity : BaseActivity() {
                     rateType = rateType
                 )
                 AppScope.launch { dao.updateEntryWithItems(updated, items) }
+                if (entryDueTouched) saveHarvestPromise(entryDue)
                 return true
             }
 
@@ -1914,7 +1919,31 @@ class PartyDetailActivity : BaseActivity() {
                 getString(R.string.entry_preview_title, partyName)
         }
 
+        // Payment due (13 Oct, owner's report): udhar written with no day to
+        // pay gave Cash flow nothing to count on. The date is the customer's
+        // promise for the balance as a whole — the same one Follow-up and
+        // Cash flow already read — set right where the udhar is written.
+        entryDue = harvestPromise
+        entryDueTouched = false
+        val btnDue = view.findViewById<MaterialButton>(R.id.btnEntryDueDate)
+        if (isGiven && partyIsCustomerAccount) {
+            fun paintDue() {
+                btnDue.text = entryDue?.let { getString(R.string.entry_due_set, Format.dateOnly(it)) }
+                    ?: getString(R.string.entry_due_none)
+            }
+            paintDue()
+            btnDue.visibility = View.VISIBLE
+            btnDue.setOnClickListener {
+                chooseDueDate(entryDue) { at ->
+                    entryDue = at
+                    entryDueTouched = true
+                    paintDue()
+                }
+            }
+        }
+
         onAmountChanged = {
+            fitAmount(etAmount)
             val value = Calc.evalAmount(etAmount.text.toString())
             val valid = value != null
             val shown = value ?: 0.0
@@ -2782,6 +2811,9 @@ class PartyDetailActivity : BaseActivity() {
             }
             withContext(Dispatchers.Main) {
                 if (isFinishing || isDestroyed) return@withContext
+                // The due date picked on the form, kept only while something is owed.
+                if (entryDueTouched && Money.isPositive(after)) saveHarvestPromise(entryDue)
+                entryDueTouched = false
                 // Felt in the hand: the entry is in (2 Oct).
                 com.innovation313.roshankhata.ui.Motion.confirm(findViewById(android.R.id.content))
                 // Paid down to nothing from owing: celebrate (it includes the
@@ -2810,43 +2842,71 @@ class PartyDetailActivity : BaseActivity() {
      * Follow-up then leaves him alone until that day and puts him first on
      * it. No late fee or markup goes with it, ever.
      */
-    private fun showHarvestPromiseDialog() {
+    /**
+     * A long sum stays in sight (13 Oct, owner's report): "12,500+3,400×2+…"
+     * ran past the box and its start slid out of view. The figure shrinks to
+     * fit, from its full 26sp down to 14sp; only past that does the box
+     * scroll, and the green total under it still shows the answer.
+     */
+    private fun fitAmount(et: EditText) {
+        val dm = resources.displayMetrics
+        val max = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, 26f, dm)
+        val min = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, 14f, dm)
+        val room = et.width - et.totalPaddingLeft - et.totalPaddingRight
+        if (room <= 0) { et.post { if (et.width > 0) fitAmount(et) }; return }
+        val probe = android.text.TextPaint(et.paint).apply { textSize = max }
+        val wide = probe.measureText(et.text.toString())
+        val size = if (wide <= room) max else (max * room / wide * 0.96f).coerceAtLeast(min)
+        if (kotlin.math.abs(et.textSize - size) > 0.5f) et.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, size)
+    }
+
+    private fun showHarvestPromiseDialog() = chooseDueDate(harvestPromise) { saveHarvestPromise(it) }
+
+    /**
+     * When will this customer pay: a week, two weeks or a month from today,
+     * the next two harvest ends where the shop keeps seasons, any other day on
+     * the calendar, or — when one is set — taking it back. [onPick] gets the
+     * day (end of day) or null for "remove".
+     */
+    private fun chooseDueDate(current: Long?, onPick: (Long?) -> Unit) {
         val now = System.currentTimeMillis()
+        fun endOfDayIn(days: Int) = java.util.Calendar.getInstance().apply {
+            add(java.util.Calendar.DAY_OF_YEAR, days)
+            set(java.util.Calendar.HOUR_OF_DAY, 23); set(java.util.Calendar.MINUTE, 59)
+            set(java.util.Calendar.SECOND, 59); set(java.util.Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val quick = listOf(7, 15, 30).map { d ->
+            getString(R.string.entry_due_in_days, String.format(Digits.latinIn(), "%d", d), Format.dateOnly(endOfDayIn(d))) to endOfDayIn(d)
+        }
         val y = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-        val ends = listOf(
+        val harvests = if (!TradeFeatures.seasons(this)) emptyList() else listOf(
             SeasonBook.Season(SeasonBook.Crop.RABI, y - 1), SeasonBook.Season(SeasonBook.Crop.KHARIF, y),
             SeasonBook.Season(SeasonBook.Crop.RABI, y), SeasonBook.Season(SeasonBook.Crop.KHARIF, y + 1)
         ).map { it to SeasonBook.harvestEnd(it) }.filter { it.second > now }.sortedBy { it.second }.take(2)
+            .map { (s, at) -> getString(R.string.harvest_promise_option, SeasonText.name(this, s), Format.dateOnly(at)) to at }
+        val fixed = quick + harvests
 
-        val labels = ends.map { (s, at) ->
-            getString(R.string.harvest_promise_option, SeasonText.name(this, s), Format.dateOnly(at))
-        } + getString(R.string.harvest_promise_other_date) +
-            listOfNotNull(harvestPromise?.let { getString(R.string.harvest_promise_remove) })
+        val choices = fixed.mapIndexed { i, (label, _) ->
+            if (i < quick.size) ChoiceSheet.date(label)
+            else ChoiceSheet.Option(label, icon = R.drawable.ic_tile_season, iconTint = 0, tile = R.color.tile_plans_bg)
+        } + ChoiceSheet.date(getString(R.string.harvest_promise_other_date)) +
+            listOfNotNull(current?.let { ChoiceSheet.delete(getString(R.string.harvest_promise_remove)) })
 
-        // The coming harvests on the season tile, any other date on the
-        // calendar, and taking the promise back in red (10 Oct).
-        val choices = labels.mapIndexed { i, l ->
-            when {
-                i < ends.size -> ChoiceSheet.Option(l, icon = R.drawable.ic_tile_season, iconTint = 0, tile = R.color.tile_plans_bg)
-                i == ends.size -> ChoiceSheet.date(l)
-                else -> ChoiceSheet.delete(l)
-            }
-        }
         ChoiceSheet.show(this, getString(R.string.harvest_promise_title, partyName), choices) { i ->
             when {
-                i < ends.size -> saveHarvestPromise(ends[i].second)
-                i == ends.size -> {
+                i < fixed.size -> onPick(fixed[i].second)
+                i == fixed.size -> {
                     val c = java.util.Calendar.getInstance()
                     com.innovation313.roshankhata.ui.BrandDatePickerDialog(this, { _, yy, mm, dd ->
                         val at = java.util.Calendar.getInstance().apply {
                             clear(); set(yy, mm, dd, 23, 59, 59)
                         }.timeInMillis
-                        saveHarvestPromise(at)
+                        onPick(at)
                     }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH))
                         .apply { datePicker.minDate = now }
                         .show()
                 }
-                else -> saveHarvestPromise(null)
+                else -> onPick(null)
             }
         }
     }
@@ -2867,7 +2927,8 @@ class PartyDetailActivity : BaseActivity() {
                 withContext(Dispatchers.Default) { SeasonBook.book(dao.seasonLinesOf(partyId)) }
             } else emptyList()
             if (isFinishing || isDestroyed) return@launch
-            val promise = party?.harvestPromise?.takeIf { TradeFeatures.seasons(this@PartyDetailActivity) }
+            // The promised day shows for every shop now that any udhar can carry one (13 Oct).
+            val promise = party?.harvestPromise
                 ?.let { getString(R.string.harvest_promise_header, Format.dateOnly(it)) }
             val text = listOfNotNull(promise, SeasonText.record(this@PartyDetailActivity, rows).takeIf { it.isNotEmpty() })
                 .joinToString("  ·  ")
@@ -2895,10 +2956,10 @@ class PartyDetailActivity : BaseActivity() {
             balanceAfter = balanceAfter,
             businessName = BusinessProfile.businessName(this)
         )
-        com.google.android.material.snackbar.Snackbar
-            .make(findViewById(android.R.id.content), getString(R.string.entry_share_offer, partyName), 8000)
-            .setAction(R.string.entry_share_send) { Reminder.sendViaWhatsApp(this, partyPhone, message) }
-            .show()
+        com.innovation313.roshankhata.ui.EntryBar.show(
+            this, getString(R.string.entry_share_offer, partyName), R.drawable.ic_action_whatsapp,
+            getString(R.string.entry_share_send), 4500
+        ) { Reminder.sendViaWhatsApp(this, partyPhone, message) }
     }
 
     /**
@@ -2908,10 +2969,10 @@ class PartyDetailActivity : BaseActivity() {
      * was too easy to hit by accident straight after Save.
      */
     private fun offerUndoCash(saleId: Long, gotId: Long, amount: Double) {
-        com.google.android.material.snackbar.Snackbar
-            .make(findViewById(android.R.id.content), getString(R.string.cash_paid_recorded, Format.money(amount)), 8000)
-            .setAction(R.string.undo) { AppScope.launch { dao.undoCashForSale(saleId, gotId) } }
-            .show()
+        com.innovation313.roshankhata.ui.EntryBar.show(
+            this, getString(R.string.cash_paid_recorded, Format.money(amount)), R.drawable.ic_check_circle,
+            getString(R.string.undo), 4500
+        ) { AppScope.launch { dao.undoCashForSale(saleId, gotId) } }
     }
 
     /**

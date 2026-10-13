@@ -2921,4 +2921,7 @@
     <string name="biz_card_ex_qr">जैसे अस्सलामु अलैकुम, आपका कार्ड देखा</string>
     <string name="biz_card_send_picture">कार्ड तस्वीर की शक्ल में भेजें</string>
     <string name="drive_signed_in_ok">✓ %1$s से साइन इन हो गया। अब आपका खाता आपकी Google Drive में बैकअप हो सकता है।</string>
+    <string name="entry_due_none">भुगतान की तारीख़: तारीख़ जोड़ें</string>
+    <string name="entry_due_set">भुगतान की तारीख़: %1$s</string>
+    <string name="entry_due_in_days">%1$s दिन में · %2$s</string>
 </resources>

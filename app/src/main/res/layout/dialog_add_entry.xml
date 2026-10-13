@@ -262,6 +262,33 @@
                         android:textColor="@color/ink"
                         android:textSize="13sp"
                         android:textStyle="bold" />
+
+                    <!-- When this customer will pay (13 Oct): the date Cash flow
+                         and Follow-up count on. One date per customer, for the
+                         balance as a whole. Customers only; set in code. -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEntryDueDate"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="start|center_vertical"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:letterSpacing="0"
+                        android:minHeight="44dp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/brand_green_text"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:backgroundTint="@color/surface"
+                        app:cornerRadius="12dp"
+                        app:icon="@drawable/ic_calendar"
+                        app:iconPadding="10dp"
+                        app:iconSize="18dp"
+                        app:iconTint="@color/brand_green_text"
+                        app:strokeColor="@color/brand_green" />
                 </LinearLayout>
 
         <LinearLayout
