@@ -3091,4 +3091,7 @@ You can change this any time from this screen.</string>
     <string name="biz_card_ex_qr">e.g. Assalam o alaikum, I saw your card</string>
     <string name="biz_card_send_picture">Send the card as a picture</string>
     <string name="drive_signed_in_ok">✓ Signed in as %1$s. Your books can now back up to your Google Drive.</string>
+    <string name="entry_due_none">Payment due: add a date</string>
+    <string name="entry_due_set">Payment due: %1$s</string>
+    <string name="entry_due_in_days">In %1$s days · %2$s</string>
 </resources>

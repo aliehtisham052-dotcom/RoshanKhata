@@ -2877,4 +2877,7 @@
     <string name="biz_card_ex_qr">مثلاً السلام علیکم، آپ کا کارڈ دیکھا</string>
     <string name="biz_card_send_picture">کارڈ تصویر کی شکل میں بھیجیں</string>
     <string name="drive_signed_in_ok">✓ %1$s سے سائن اِن ہو گیا۔ اب آپ کا کھاتہ آپ کی گوگل ڈرائیو میں بیک اپ ہو سکتا ہے۔</string>
+    <string name="entry_due_none">ادائیگی کی تاریخ: شامل کریں</string>
+    <string name="entry_due_set">ادائیگی کی تاریخ: %1$s</string>
+    <string name="entry_due_in_days">%1$s دن میں · %2$s</string>
 </resources>
