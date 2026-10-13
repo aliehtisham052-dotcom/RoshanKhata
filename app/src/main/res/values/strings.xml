@@ -1134,10 +1134,6 @@ You can change this any time from this screen.</string>
     <string name="biz_card">Business Card</string>
     <string name="biz_card_sub">A card for your shop, ready to share</string>
     <string name="biz_card_name_hint">Business name</string>
-    <string name="biz_card_owner_hint">Owner name</string>
-    <string name="biz_card_phone_hint">Phone</string>
-    <string name="biz_card_type_hint">What you sell</string>
-    <string name="biz_card_address_hint">Address / city (optional)</string>
     <string name="biz_card_template">Design</string>
     <string name="biz_card_share">Share card</string>
     <string name="biz_card_note">The card is drawn on your phone and shared as an image. Nothing is uploaded.</string>
@@ -2022,13 +2018,7 @@ You can change this any time from this screen.</string>
     <string name="biz_tpl_furniture">Furniture</string>
     <string name="biz_tpl_salon">Salon</string>
     <string name="biz_tpl_solar">Solar</string>
-    <string name="biz_card_whatsapp_hint">WhatsApp (if different from phone)</string>
-    <string name="biz_card_email_hint">Email (optional)</string>
-    <string name="biz_card_web_hint">Website or Facebook/Instagram (optional)</string>
-    <string name="biz_card_tagline_hint">One line to stand out, e.g. Home delivery (optional)</string>
-    <string name="biz_card_qr_message_hint">WhatsApp message when the QR is scanned (optional)</string>
     <string name="biz_card_qr_message_default">Assalam o Alaikum, I saw your card</string>
-    <string name="biz_card_print_pdf">Print-ready PDF (3.5 × 2 in)</string>
 
     <!-- The trade vocabulary (9 Oct 2026): what each kind of shop calls its goods, in
          the app's own language. Hints, unit lists, product types and a new book's first
@@ -3078,4 +3068,28 @@ You can change this any time from this screen.</string>
     <string name="business_switch_open">Open</string>
     <string name="business_name_needed">Write the business\'s name first.</string>
     <string name="business_not_added">Business not added. Pick what it sells to add it.</string>
+    <string name="biz_card_sec_own">On this card</string>
+    <string name="biz_card_sec_own_sub">Written once for each card language.</string>
+    <string name="biz_card_sec_shared">Same on both cards</string>
+    <string name="biz_card_l_name">Shop name</string>
+    <string name="biz_card_l_type">What you sell</string>
+    <string name="biz_card_l_owner">Owner</string>
+    <string name="biz_card_l_address">Address</string>
+    <string name="biz_card_l_tagline">One line to stand out</string>
+    <string name="biz_card_l_call">Call</string>
+    <string name="biz_card_l_whatsapp">WhatsApp</string>
+    <string name="biz_card_l_wa_same">Same as call</string>
+    <string name="biz_card_l_email">Email</string>
+    <string name="biz_card_l_web">Website</string>
+    <string name="biz_card_l_qr">Message when the QR is scanned</string>
+    <string name="biz_card_ex_name">e.g. Bhatti Traders</string>
+    <string name="biz_card_ex_type">e.g. Pesticides and seeds</string>
+    <string name="biz_card_ex_owner">e.g. Ali Khan</string>
+    <string name="biz_card_ex_address">e.g. Main Bazar, Pasrur</string>
+    <string name="biz_card_ex_tagline">e.g. Home delivery</string>
+    <string name="biz_card_ex_phone">e.g. 0300 1234567</string>
+    <string name="biz_card_ex_email">e.g. shop@gmail.com</string>
+    <string name="biz_card_ex_web">e.g. yourshop.com or a Facebook page</string>
+    <string name="biz_card_ex_qr">e.g. Assalam o alaikum, I saw your card</string>
+    <string name="biz_card_send_picture">Send the card as a picture</string>
 </resources>
