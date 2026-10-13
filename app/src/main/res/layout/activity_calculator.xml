@@ -39,28 +39,47 @@
       phone, while a display is simply a surface that can be any height. The
       spare height was going the other way and stretching the keys instead.
     -->
-    <LinearLayout
+<LinearLayout
         android:id="@+id/display"
         android:layoutDirection="ltr"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/surface"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="14dp"
+        android:background="@drawable/bg_profile_card"
         android:gravity="bottom|end"
         android:orientation="vertical"
-        android:paddingStart="22dp"
-        android:paddingTop="24dp"
-        android:paddingEnd="22dp"
-        android:paddingBottom="22dp"
-        app:layout_constraintBottom_toTopOf="@id/keypad"
+        android:paddingStart="20dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/calcActions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_min="120dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
+        <!-- The last few sums worked out here (13 Oct), newest at the bottom,
+             so a total built in steps can be read back without a pencil. -->
+        <TextView
+            android:id="@+id/tvHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:lineSpacingExtra="4dp"
+            android:maxLines="3"
+            android:textColor="@color/text_muted"
+            android:textSize="15sp"
+            android:visibility="gone"
+            tools:text="850 × 4 = 3,400"
+            tools:visibility="visible" />
+
         <TextView
             android:id="@+id/tvExpression"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="end"
             android:maxLines="2"
             android:textColor="@color/ink"
@@ -71,13 +90,53 @@
             android:id="@+id/tvResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:gravity="end"
             android:maxLines="1"
             android:textColor="@color/brand_green_text"
             android:textSize="26sp"
             android:textStyle="bold"
             tools:text="1,050" />
+    </LinearLayout>
+
+    <!-- What to do with the answer (13 Oct): put it on a customer's khata,
+         copy it, or send it. -->
+    <LinearLayout
+        android:id="@+id/calcActions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="14dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/keypad"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCalcToKhata"
+            style="@style/CalcActionButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="@string/calc_add_to_khata"
+            app:icon="@drawable/ic_tile_khata"
+            app:iconPadding="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCalcCopy"
+            style="@style/CalcActionButton"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/copy_details"
+            app:icon="@drawable/ic_menu_duplicate" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCalcShare"
+            style="@style/CalcActionButton"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/share"
+            app:icon="@drawable/ic_share" />
     </LinearLayout>
 
     <!--
@@ -129,7 +188,7 @@
             <Button android:id="@+id/btn0" style="@style/CalcKey" android:text="0" />
             <Button android:id="@+id/btn00" style="@style/CalcKey" android:text="@string/calc_double_zero" />
             <Button android:id="@+id/btnDot" style="@style/CalcKey" android:text="@string/calc_dot" />
-            <Button android:id="@+id/btnEquals" style="@style/CalcKeyOp" android:text="@string/calc_equals" />
+            <Button android:id="@+id/btnEquals" style="@style/CalcKeyEquals" android:text="@string/calc_equals" />
         </LinearLayout>
     </LinearLayout>
 

@@ -2546,7 +2546,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">ما اسم متجرك؟</string>
     <string name="shop_name_field">اسم المتجر</string>
-    <string name="shop_name_hint">متجر النور</string>
+    <string name="shop_name_hint">مثلاً: متجر النور</string>
     <string name="shop_phone_field">هاتف المتجر (اختياري)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -3002,4 +3002,17 @@
     <string name="poster_chip_whatsapp">على واتساب</string>
     <string name="poster_saved_to_profile">محفوظ في ملف متجرك، لكل ملصق.</string>
     <string name="poster_value_needed">اكتبه أولًا</string>
+    <string name="print_short">طباعة</string>
+    <string name="calc_add_to_khata">أضف إلى حساب</string>
+    <string name="calc_pick_party">%1$s: اضغط على العميل لإضافته</string>
+    <string name="calc_khata_positive">يمكن إضافة مبلغ أكبر من الصفر فقط.</string>
+    <string name="stat_bills">فواتير</string>
+    <string name="stat_you_owe">عليك لهم</string>
+    <string name="stat_expiring">تنتهي خلال 60 يومًا</string>
+    <string name="bills_add_first">أضف أول فاتورة</string>
+    <string name="sr_open_short">قارن الأسعار</string>
+    <string name="products_search_hint">ابحث عن منتج</string>
+    <string name="stat_products">منتجات</string>
+    <string name="stat_out_of_stock">نفد المخزون</string>
+    <string name="products_no_match">لا يوجد منتج يطابق بحثك.</string>
 </resources>

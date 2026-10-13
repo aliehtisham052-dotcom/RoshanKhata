@@ -2398,7 +2398,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">توهان جي دڪان جو نالو ڇا آهي؟</string>
     <string name="shop_name_field">دڪان جو نالو</string>
-    <string name="shop_name_hint">ڀٽي ٽريڊرز</string>
+    <string name="shop_name_hint">مثال: ڀٽي ٽريڊرز</string>
     <string name="shop_phone_field">دڪان جو فون (اختياري)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2846,4 +2846,17 @@
     <string name="poster_chip_whatsapp">واٽس ايپ تي</string>
     <string name="poster_saved_to_profile">دڪان جي پروفائل ۾ محفوظ، هر پوسٽر لاءِ.</string>
     <string name="poster_value_needed">پهرين لکو</string>
+    <string name="print_short">پرنٽ</string>
+    <string name="calc_add_to_khata">کاتي ۾ وجهو</string>
+    <string name="calc_pick_party">%1$s: جنهن جي کاتي ۾ وجهڻو آهي، ان تي ٽيپ ڪريو</string>
+    <string name="calc_khata_positive">کاتي ۾ صرف صفر کان وڌيڪ رقم وجهي سگهجي ٿي.</string>
+    <string name="stat_bills">بل</string>
+    <string name="stat_you_owe">توهان کي ڏيڻا آهن</string>
+    <string name="stat_expiring">60 ڏينهن ۾ ختم</string>
+    <string name="bills_add_first">پهريون بل داخل ڪريو</string>
+    <string name="sr_open_short">اگهه ڀيٽيو</string>
+    <string name="products_search_hint">پراڊڪٽ ڳوليو</string>
+    <string name="stat_products">پراڊڪٽس</string>
+    <string name="stat_out_of_stock">اسٽاڪ ختم</string>
+    <string name="products_no_match">توهان جي ڳولا سان ڪو پراڊڪٽ نه مليو.</string>
 </resources>

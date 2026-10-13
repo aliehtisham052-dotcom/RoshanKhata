@@ -64,7 +64,7 @@ import com.innovation313.roshankhata.data.Digits
 class BillsActivity : BaseActivity() {
 
     private lateinit var adapter: BillAdapter
-    private lateinit var tvEmpty: TextView
+    private lateinit var tvEmpty: View
     private lateinit var btnExpiring: MaterialButton
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -165,7 +165,8 @@ class BillsActivity : BaseActivity() {
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
-        tvEmpty = findViewById(R.id.tvNoBills)
+        tvEmpty = findViewById(R.id.emptyBills)
+        findViewById<MaterialButton>(R.id.btnFirstBill).setOnClickListener { startNewBill() }
         btnExpiring = findViewById(R.id.btnExpiring)
         findViewById<android.view.View>(R.id.btnSupplierRates).setOnClickListener {
             startActivity(android.content.Intent(this, SupplierRatesActivity::class.java))
@@ -201,6 +202,7 @@ class BillsActivity : BaseActivity() {
             dao.observeBills().collectLatest { list ->
                 adapter.submit(list)
                 tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+                renderStats(list)
             }
         }
 
@@ -220,6 +222,7 @@ class BillsActivity : BaseActivity() {
         val cutoff = System.currentTimeMillis() + ExpiryWindow.WARN_MS
         lifecycleScope.launch {
             dao.observeExpiringCount(cutoff).collectLatest { count ->
+                findViewById<TextView>(R.id.tvStatExpiring).text = "%,d".format(Digits.FIGURES, count)
                 if (count > 0) {
                     btnExpiring.visibility = View.VISIBLE
                     btnExpiring.text = Digits.string(resources, R.string.expiring_badge, count)
@@ -228,6 +231,18 @@ class BillsActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * The figures above the list (13 Oct). "You owe" is each supplier's
+     * live ledger balance counted once, not the bills added up: a payment
+     * made in the khata is not tied to any one bill, so only the balance
+     * says what is really still owed.
+     */
+    private fun renderStats(list: List<com.innovation313.roshankhata.data.BillSummary>) {
+        findViewById<TextView>(R.id.tvStatBills).text = "%,d".format(Digits.FIGURES, list.size)
+        val owed = list.distinctBy { it.partyId }.sumOf { (-it.supplierBalance).coerceAtLeast(0.0) }
+        findViewById<TextView>(R.id.tvStatOwe).text = Format.money(owed)
     }
 
     // ---------- Entering a bill ----------

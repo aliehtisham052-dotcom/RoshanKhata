@@ -2370,7 +2370,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">Apa nama toko Anda?</string>
     <string name="shop_name_field">Nama toko</string>
-    <string name="shop_name_hint">Toko Makmur</string>
+    <string name="shop_name_hint">mis. Toko Makmur</string>
     <string name="shop_phone_field">Telepon toko (opsional)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2816,4 +2816,17 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="poster_chip_whatsapp">Di WhatsApp</string>
     <string name="poster_saved_to_profile">Disimpan di profil toko, untuk setiap poster.</string>
     <string name="poster_value_needed">Tulis dulu</string>
+    <string name="print_short">Cetak</string>
+    <string name="calc_add_to_khata">Tambah ke buku</string>
+    <string name="calc_pick_party">%1$s: ketuk pelanggan untuk menambahkannya</string>
+    <string name="calc_khata_positive">Hanya jumlah di atas nol yang bisa masuk buku.</string>
+    <string name="stat_bills">Tagihan</string>
+    <string name="stat_you_owe">Utang Anda</string>
+    <string name="stat_expiring">Kedaluwarsa 60 hari</string>
+    <string name="bills_add_first">Tambah tagihan pertama</string>
+    <string name="sr_open_short">Bandingkan harga</string>
+    <string name="products_search_hint">Cari produk</string>
+    <string name="stat_products">Produk</string>
+    <string name="stat_out_of_stock">Stok habis</string>
+    <string name="products_no_match">Tidak ada produk yang cocok.</string>
 </resources>

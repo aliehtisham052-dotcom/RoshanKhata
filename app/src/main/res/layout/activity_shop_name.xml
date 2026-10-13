@@ -128,9 +128,8 @@
                 android:paddingEnd="16dp"
                 android:textAlignment="viewStart"
                 android:textColor="@color/ink"
-                android:textColorHint="@color/text_muted"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textColorHint="@color/hint_pale"
+                android:textSize="18sp" />
 
             <TextView
                 android:layout_width="match_parent"

@@ -2370,7 +2370,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">Aap ki dukaan ka naam kya hai?</string>
     <string name="shop_name_field">Dukaan ka naam</string>
-    <string name="shop_name_hint">Bhatti Traders</string>
+    <string name="shop_name_hint">Maslan: Bhatti Traders</string>
     <string name="shop_phone_field">Dukaan ka phone (ikhtiyari)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2818,4 +2818,17 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="poster_chip_whatsapp">WhatsApp par</string>
     <string name="poster_saved_to_profile">Dukaan ki profile mein mehfooz, har poster ke liye.</string>
     <string name="poster_value_needed">Pehle likhein</string>
+    <string name="print_short">Print</string>
+    <string name="calc_add_to_khata">Khate mein daalein</string>
+    <string name="calc_pick_party">%1$s: jis ke khate mein daalna hai us par tap karein</string>
+    <string name="calc_khata_positive">Khate mein sirf zero se zyada raqam ja sakti hai.</string>
+    <string name="stat_bills">Bill</string>
+    <string name="stat_you_owe">Aap ne dene hain</string>
+    <string name="stat_expiring">60 din mein expire</string>
+    <string name="bills_add_first">Pehla bill darj karein</string>
+    <string name="sr_open_short">Rates milayein</string>
+    <string name="products_search_hint">Product talaash karein</string>
+    <string name="stat_products">Products</string>
+    <string name="stat_out_of_stock">Stock khatam</string>
+    <string name="products_no_match">Aap ki talaash se koi product nahi mila.</string>
 </resources>

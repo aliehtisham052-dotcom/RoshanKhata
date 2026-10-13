@@ -54,8 +54,10 @@ class ShopNameActivity : BaseActivity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 btnContinue.isEnabled = !s.isNullOrBlank()
+                styleName(etName)
             }
         })
+        styleName(etName)
         btnContinue.setOnClickListener {
             val name = etName.text.toString().trim()
             if (name.isEmpty()) return@setOnClickListener
@@ -103,6 +105,16 @@ class ShopNameActivity : BaseActivity() {
             insets
         }
         ViewCompat.requestApplyInsets(root)
+    }
+
+    /**
+     * Bold once the owner has typed, plain while only the pale example shows
+     * (13 Oct). A bold example looked like a name already filled in, so the
+     * owner waited for a Continue that, rightly, stayed off on an empty field.
+     */
+    private fun styleName(et: EditText) {
+        val style = if (et.text.isNullOrEmpty()) android.graphics.Typeface.NORMAL else android.graphics.Typeface.BOLD
+        if (et.typeface?.style != style) et.setTypeface(android.graphics.Typeface.create(et.typeface, style))
     }
 
     private fun proceed() {

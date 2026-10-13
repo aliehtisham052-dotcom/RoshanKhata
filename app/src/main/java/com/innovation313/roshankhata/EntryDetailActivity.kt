@@ -75,6 +75,12 @@ class EntryDetailActivity : BaseActivity() {
         entryId = intent.getLongExtra(EXTRA_ENTRY_ID, 0)
         partyName = intent.getStringExtra(EXTRA_PARTY_NAME).orEmpty()
 
+        // The receipt is the shop's paper, so it carries the shop's name
+        // (13 Oct); the app's name only until the owner has entered one.
+        findViewById<TextView>(R.id.tvBusinessName).text =
+            com.innovation313.roshankhata.data.BusinessProfile.businessName(this)
+                ?.trim()?.ifEmpty { null } ?: getString(R.string.app_name)
+
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
         findViewById<ImageButton>(R.id.btnDelete).setOnClickListener { confirmDelete() }
         findViewById<MaterialButton>(R.id.btnEdit).setOnClickListener { showEditDialog() }

@@ -12,7 +12,10 @@
         android:layout_height="wrap_content"
         android:background="@color/section_bills"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,7 +25,7 @@
             android:layout_height="wrap_content"
             android:text="@string/supplier_bills"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="21sp"
             android:textStyle="bold" />
 
         <TextView
@@ -31,7 +34,41 @@
             android:layout_marginTop="2dp"
             android:text="@string/bills_subtitle"
             android:textColor="@color/section_bills_soft"
-            android:textSize="12sp" />
+            android:textSize="13sp" />
+
+        <!-- Three tools as equal tiles, icon over a short label (13 Oct).
+             Three full-width outlined buttons cut "Where is it cheaper?
+             Purchase rates" in half and filled the header with lines. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTrace"
+                style="@style/HeaderTileButton"
+                android:text="@string/trace_batch"
+                app:icon="@drawable/ic_search" />
+
+            <!-- "Where is it cheaper?" (6 Oct): purchase rates by product and supplier. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSupplierRates"
+                style="@style/HeaderTileButton"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/sr_open"
+                android:text="@string/sr_open_short"
+                app:icon="@drawable/ic_tile_supplier_rates" />
+
+            <!-- C1 (2 Oct): schemes are bought towards on these very bills. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSchemes"
+                style="@style/HeaderTileButton"
+                android:layout_marginStart="8dp"
+                android:text="@string/schemes_title"
+                app:icon="@drawable/ic_tile_season" />
+        </LinearLayout>
 
         <!-- Expiry is the thing that quietly costs money, so it gets a banner,
              not a menu item three taps away. -->
@@ -39,64 +76,68 @@
             android:id="@+id/btnExpiring"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:text="@string/expiring_stock"
+            android:textAllCaps="false"
             android:textColor="@color/white"
+            android:textStyle="bold"
             android:visibility="gone"
             app:backgroundTint="@color/red_gave"
-            app:cornerRadius="8dp" />
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_tile_expiring"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white" />
+    </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTrace"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/trace_batch"
-            android:textColor="@color/section_bills_soft"
-            android:textSize="13sp"
-            app:cornerRadius="8dp"
-            app:strokeColor="@color/section_bills_soft" />
+    <!-- The page at a glance (13 Oct): how many bills, what is still owed to
+         the suppliers on them, and how much stock is near its expiry. -->
+    <LinearLayout
+        android:id="@+id/billStats"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header">
 
-        <!-- "Where is it cheaper?" (6 Oct): purchase rates by product and supplier. -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSupplierRates"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/sr_open"
-            android:textColor="@color/section_bills_soft"
-            android:textSize="13sp"
-            app:cornerRadius="8dp"
-            app:strokeColor="@color/section_bills_soft" />
+        <LinearLayout style="@style/StatTile">
+            <TextView android:id="@+id/tvStatBills" style="@style/StatTileValue" />
+            <TextView style="@style/StatTileLabel" android:text="@string/stat_bills" />
+        </LinearLayout>
 
-        <!-- C1 (2 Oct): schemes are bought towards on these very bills. -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSchemes"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/schemes_title"
-            android:textColor="@color/section_bills_soft"
-            android:textSize="13sp"
-            app:cornerRadius="8dp"
-            app:strokeColor="@color/section_bills_soft" />
+        <LinearLayout style="@style/StatTile" android:layout_marginStart="8dp">
+            <TextView android:id="@+id/tvStatOwe" style="@style/StatTileValue" android:textColor="@color/green_got_text" />
+            <TextView style="@style/StatTileLabel" android:text="@string/stat_you_owe" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/StatTile" android:layout_marginStart="8dp">
+            <TextView android:id="@+id/tvStatExpiring" style="@style/StatTileValue" android:textColor="@color/red_gave_text" />
+            <TextView style="@style/StatTileLabel" android:text="@string/stat_expiring" />
+        </LinearLayout>
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvBillNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/note_bg"
-        android:padding="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_note_card"
+        android:drawablePadding="10dp"
+        android:padding="12dp"
         android:text="@string/bill_ledger_note"
         android:textColor="@color/note_text"
-        android:textSize="12sp"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header" />
+        app:layout_constraintTop_toBottomOf="@id/billStats" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBills"
@@ -109,21 +150,66 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvBillNote" />
 
-    <TextView
-        android:id="@+id/tvNoBills"
+    <!-- Empty: a picture, the reason a bill is worth entering, and the way
+         to enter the first one (13 Oct). -->
+    <LinearLayout
+        android:id="@+id/emptyBills"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:gravity="center"
-        android:text="@string/no_bills"
-        android:textColor="@color/text_muted"
-        android:textSize="14sp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/rvBills"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rvBills" />
+        app:layout_constraintTop_toTopOf="@id/rvBills">
+
+        <FrameLayout
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/bg_empty_icon_bills">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_tile_bills" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvNoBills"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/no_bills"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFirstBill"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="18dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:text="@string/bills_add_first"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/section_bills"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_camera"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white" />
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAddBill"

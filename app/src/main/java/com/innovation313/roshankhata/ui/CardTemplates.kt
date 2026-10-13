@@ -363,7 +363,26 @@ object CardTemplates {
         c.drawPath(h, fill(colour))
     }
 
+    /**
+     * One contact mark. On an Urdu card the design is drawn in a mirror, so a
+     * mark would come out backwards too: the handset faced the wrong way and
+     * WhatsApp's bubble, its tail flipped, read as a "Q" (13 Oct). Each single
+     * mark is turned back about its own centre, exactly as [text] turns back
+     * each line: it stays where the mirror put it, the right way round. The
+     * call + WhatsApp pair is not turned as a whole, so on an Urdu card the
+     * call mark comes first from the right, the way the line reads.
+     */
     private fun glyph(c: Canvas, ico: Ico, cx: Float, cy: Float, s: Float, colour: Int) {
+        if (mirrored && ico != Ico.PHONE_WA) {
+            c.save()
+            c.scale(-1f, 1f, cx, 0f)
+            try { glyphShape(c, ico, cx, cy, s, colour) } finally { c.restore() }
+        } else {
+            glyphShape(c, ico, cx, cy, s, colour)
+        }
+    }
+
+    private fun glyphShape(c: Canvas, ico: Ico, cx: Float, cy: Float, s: Float, colour: Int) {
         val line = stroke(colour, s * 0.11f)
         when (ico) {
             Ico.PHONE -> handset(c, cx, cy, s, colour)
