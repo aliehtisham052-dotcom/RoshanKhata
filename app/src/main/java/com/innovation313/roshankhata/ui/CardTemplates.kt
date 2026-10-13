@@ -669,7 +669,16 @@ object CardTemplates {
         c.drawRect(0f, 0f, barW, 22f, fill(red))
         val small = paint(26f, Color.parseColor("#888780"))
         text(c, ellipsise(d.name, small, 600f), 70f, 96f, small)
-        val hero = d.whatsapp.ifEmpty { d.phone }
+        // The call number is the hero (13 Oct). It used to be the WhatsApp
+        // number with a "call + WhatsApp" mark under it, so a shop with two
+        // numbers lost its call number from the card altogether.
+        val hero = d.phone.ifEmpty { d.whatsapp }
+        val sameNumber = d.phone.isNotEmpty() && d.whatsapp.isNotEmpty() && digits(d.phone) == digits(d.whatsapp)
+        val heroMark = when {
+            sameNumber -> Ico.PHONE_WA
+            d.phone.isNotEmpty() -> Ico.PHONE
+            else -> Ico.WHATSAPP
+        }
         if (hero.isNotEmpty()) {
             val sp = hero.indexOf(' ')
             val parts = if (sp > 0) listOf(hero.substring(0, sp), hero.substring(sp + 1)) else listOf(hero)
@@ -681,11 +690,15 @@ object CardTemplates {
                 text(c, part, 66f, y, p)
                 y += s * 0.98f
             }
-            glyph(c, Ico.PHONE_WA, 100f, y - 20f, 30f, red)
+            glyph(c, heroMark, 100f, y - 20f, 30f, red)
         } else {
             title(c, d.name, 66f, 130f, 620f, 90f, INK)
         }
-        val list = rows(d).filter { it.first != Ico.PHONE && it.first != Ico.PHONE_WA && it.first != Ico.WHATSAPP }
+        // Everything but the hero number; a second, different WhatsApp number
+        // stays in the list with its own mark.
+        val list = rows(d).filter { (ico, _) ->
+            ico != Ico.PHONE && ico != Ico.PHONE_WA && !(ico == Ico.WHATSAPP && heroMark == Ico.WHATSAPP)
+        }
         var ry = 96f
         if (d.type.isNotEmpty()) {
             val p = paint(24f, Color.parseColor("#5F5E5A"), align = Paint.Align.RIGHT)
@@ -992,11 +1005,17 @@ object CardTemplates {
         val sy = 220f - (if (live(t)) 18f * wave(t) else 0f)
         if (live(t)) c.drawCircle(w - 260f, sy, 120f + 26f * wave(t), fill(alpha(AMBER, (70 * (1 - wave(t))).toInt())))
         c.drawCircle(w - 260f, sy, 110f, fill(AMBER))
-        c.drawOval(RectF(-300f, h * 0.55f, w * 0.72f, h * 1.9f), fill(Color.parseColor("#639922")))
-        c.drawOval(RectF(w * 0.3f, h * 0.62f, w + 360f, h * 2.1f), fill(Color.parseColor("#3B6D11")))
+        // The light hill holds the owner's name and every contact line. With
+        // all five lines filled the block used to start above the hill, so
+        // the pale-green name sat on the pale sky and vanished (13 Oct): the
+        // hill now rises as far as the block needs, never lower than before.
+        val infoTop = infoTopFor(d, h - 50f)
+        val lift = (h * 0.55f - (infoTop - 90f)).coerceAtLeast(0f)
+        c.drawOval(RectF(-300f, h * 0.55f - lift, w * 0.72f, h * 1.9f), fill(Color.parseColor("#639922")))
+        c.drawOval(RectF(w * 0.3f, h * 0.62f - lift * 0.6f, w + 360f, h * 2.1f), fill(Color.parseColor("#3B6D11")))
         val b = title(c, d.name, 70f, 50f, 640f, 58f, Color.parseColor("#173404"))
         caps(c, d.type, 72f, b + 26f, 640f, Color.parseColor("#854F0B"))
-        info(c, d, 72f, infoTopFor(d, h - 50f), 640f, WHITE, Color.parseColor("#C0DD97"), ownerColour = Color.parseColor("#C0DD97"), bottom = h - 30f)
+        info(c, d, 72f, infoTop, 640f, WHITE, Color.parseColor("#E3F0CC"), ownerColour = Color.parseColor("#FFF4D6"), bottom = h - 30f)
         pill(c, d.tagline, w - 60f, h - 100f, Color.parseColor("#FFF4D6"), Color.parseColor("#173404"), alignRight = true, max = 420f)
         watermark(c, d, w - 60f, h - 20f, onDark = true)
     }
