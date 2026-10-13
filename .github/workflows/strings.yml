@@ -21,6 +21,7 @@ on:
       - 'scripts/check_dark_colours.py'
       - 'scripts/check_dark_pairs.py'
       - 'scripts/check_pdf_rtl.py'
+      - 'scripts/check_icon_direction.py'
       - 'app/src/main/java/**'
   pull_request:
     paths:
@@ -37,6 +38,7 @@ on:
       - 'scripts/check_dark_colours.py'
       - 'scripts/check_dark_pairs.py'
       - 'scripts/check_pdf_rtl.py'
+      - 'scripts/check_icon_direction.py'
       - 'app/src/main/java/**'
 
 jobs:
@@ -52,3 +54,5 @@ jobs:
         run: python3 scripts/check_dark_pairs.py
       - name: Every PDF draw goes through PdfRtl (right-to-left languages)
         run: python3 scripts/check_pdf_rtl.py
+      - name: Icons face the right way in every language
+        run: python3 scripts/check_icon_direction.py

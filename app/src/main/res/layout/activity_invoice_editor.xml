@@ -121,6 +121,7 @@
 
                     <EditText
                         android:id="@+id/etInvoicePhone"
+                        android:layoutDirection="ltr"
                         android:textDirection="ltr"
                         android:textAlignment="viewStart"
                         style="@style/EditorField"
