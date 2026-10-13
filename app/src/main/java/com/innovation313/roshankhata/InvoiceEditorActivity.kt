@@ -26,7 +26,8 @@ import com.innovation313.roshankhata.data.EntryInvoice
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceFeatureSettings
 import com.innovation313.roshankhata.data.InvoiceItem
-import com.innovation313.roshankhata.data.InvoiceMath
+import com.innovation313.roshankhata.data.discountLabel
+import com.innovation313.roshankhata.data.totals
 import com.innovation313.roshankhata.data.InvoiceNumber
 import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.data.InvoicePdfExport
@@ -160,6 +161,8 @@ class InvoiceEditorActivity : BaseActivity() {
     // permanent view, so these are plain state — set when the dialog is
     // saved, read back in to pre-fill it next time it opens.
     private var discountPercent: Double? = null
+    /** A discount in money; when set it is the discount and the percent is not used (v31). */
+    private var discountAmount: Double? = null
     private var taxPercent: Double? = null
     private var note: String? = null
 
@@ -270,6 +273,7 @@ class InvoiceEditorActivity : BaseActivity() {
             }
         })
         buildTemplateDots()
+        buildDesignStrip()
         showTemplatePosition(0)
 
         btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
@@ -409,6 +413,7 @@ class InvoiceEditorActivity : BaseActivity() {
             btnDue.setTextColor(ContextCompat.getColor(this, R.color.ink))
         }
         discountPercent = invoice.discountPercent
+        discountAmount = invoice.discountAmount
         taxPercent = invoice.taxPercent
         chargeLabel = invoice.additionalChargeLabel
         chargeAmount = invoice.additionalChargeAmount
@@ -586,7 +591,7 @@ class InvoiceEditorActivity : BaseActivity() {
         if (!::tvItemsTotal.isInitialized) return
         val items = validItems()
         val d = draft()
-        val totals = InvoiceMath.totals(items, d.discountPercent, d.taxPercent, d.additionalChargeAmount, d.receivedAmount)
+        val totals = d.totals(items)
         tvItemsCount.text = Digits.string(resources, R.string.invoice_editor_item_count, items.size)
         tvItemsTotal.text = getString(R.string.invoice_editor_total, Format.money(totals.grandTotal))
     }
@@ -618,58 +623,129 @@ class InvoiceEditorActivity : BaseActivity() {
      */
     private fun showMoreOptions() {
         val view = layoutInflater.inflate(R.layout.dialog_invoice_more_options, null)
+        val sheet = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        sheet.setContentView(view)
+        sheet.behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        sheet.behavior.skipCollapsed = true
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
+
         val etDiscount: EditText = view.findViewById(R.id.etInvoiceDiscount)
         val etTax: EditText = view.findViewById(R.id.etInvoiceTax)
         val etChargeLabel: EditText = view.findViewById(R.id.etChargeLabel)
         val etChargeAmount: EditText = view.findViewById(R.id.etChargeAmount)
         val etReceived: EditText = view.findViewById(R.id.etReceived)
         val etNote: EditText = view.findViewById(R.id.etInvoiceNote)
+        val kind = view.findViewById<com.google.android.material.button.MaterialButtonToggleGroup>(R.id.toggleDiscountKind)
 
-        // Discount and tax share a row but toggle independently — hiding
-        // one still leaves the other its own line. Extra charge is a pair
-        // (a label with no amount means nothing), so it hides as one row.
-        etDiscount.visibility = if (InvoiceFeatureSettings.discountEnabled(this)) View.VISIBLE else View.GONE
-        etTax.visibility = if (InvoiceFeatureSettings.taxEnabled(this)) View.VISIBLE else View.GONE
-        view.findViewById<View>(R.id.rowExtraChargeFields).visibility =
-            if (InvoiceFeatureSettings.extraChargeEnabled(this)) View.VISIBLE else View.GONE
-        etReceived.visibility = if (InvoiceFeatureSettings.receivedEnabled(this)) View.VISIBLE else View.GONE
-        etNote.visibility = if (InvoiceFeatureSettings.noteEnabled(this)) View.VISIBLE else View.GONE
+        // Each field follows its own switch in Invoice settings; extra charge
+        // is a pair (a name with no amount means nothing), so it hides as one.
+        val useDiscount = InvoiceFeatureSettings.discountEnabled(this)
+        val useTax = InvoiceFeatureSettings.taxEnabled(this)
+        val useCharge = InvoiceFeatureSettings.extraChargeEnabled(this)
+        val useReceived = InvoiceFeatureSettings.receivedEnabled(this)
+        val useNote = InvoiceFeatureSettings.noteEnabled(this)
+        view.findViewById<View>(R.id.blockDiscount).visibility = if (useDiscount) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.blockTax).visibility = if (useTax) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.rowExtraChargeFields).visibility = if (useCharge) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.blockReceived).visibility = if (useReceived) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.blockNote).visibility = if (useNote) View.VISIBLE else View.GONE
 
-        etDiscount.setText(discountPercent?.let { Format.plain(it) } ?: "")
+        // The money side wears the shop's own sign (Profile → Currency).
+        view.findViewById<TextView>(R.id.btnDiscountAmount).text =
+            com.innovation313.roshankhata.data.Currency.symbol.ifBlank { getString(R.string.invoice_discount_kind_amount) }
+        kind.check(if (discountAmount != null) R.id.btnDiscountAmount else R.id.btnDiscountPercent)
+        etDiscount.setText((discountAmount ?: discountPercent)?.let { Format.plain(it) } ?: "")
         etTax.setText(taxPercent?.let { Format.plain(it) } ?: "")
         etChargeLabel.setText(chargeLabel.orEmpty())
         etChargeAmount.setText(chargeAmount?.let { Format.plain(it) } ?: "")
         etReceived.setText(receivedAmount?.let { Format.plain(it) } ?: "")
         etNote.setText(note.orEmpty())
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.invoice_more_options)
-            .setView(view)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save) { _, _ ->
-                // A field hidden by a switch keeps whatever it already held
-                // rather than being read (and possibly cleared) from a view
-                // that was never shown — turning Tax off should not erase a
-                // tax figure already set earlier in the same invoice.
-                if (InvoiceFeatureSettings.discountEnabled(this)) {
-                    discountPercent = Digits.parse(etDiscount.text)
-                }
-                if (InvoiceFeatureSettings.taxEnabled(this)) {
-                    taxPercent = Digits.parse(etTax.text)
-                }
-                if (InvoiceFeatureSettings.extraChargeEnabled(this)) {
-                    chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
-                    chargeAmount = Digits.parse(etChargeAmount.text)
-                }
-                if (InvoiceFeatureSettings.receivedEnabled(this)) {
-                    receivedAmount = Digits.parse(etReceived.text)
-                }
-                if (InvoiceFeatureSettings.noteEnabled(this)) {
-                    note = etNote.text.toString().trim().ifEmpty { null }
-                }
-                refreshTotals()
+        fun inMoney() = kind.checkedButtonId == R.id.btnDiscountAmount
+
+        /** What the invoice would be with the sheet as it stands, before Apply. */
+        fun trial(): Invoice {
+            val base = draft()
+            val disc = if (useDiscount) Digits.parse(etDiscount.text) else null
+            val label = if (useCharge) etChargeLabel.text.toString().trim().ifEmpty { null } else base.additionalChargeLabel
+            val charge = if (useCharge) Digits.parse(etChargeAmount.text) else base.additionalChargeAmount
+            val hasCharge = label != null && charge != null
+            return base.copy(
+                discountPercent = if (!useDiscount) base.discountPercent else if (inMoney()) null else disc,
+                discountAmount = if (!useDiscount) base.discountAmount else if (inMoney()) disc else null,
+                taxPercent = if (useTax) Digits.parse(etTax.text) else base.taxPercent,
+                additionalChargeLabel = if (hasCharge) label else null,
+                additionalChargeAmount = if (hasCharge) charge else null,
+                receivedAmount = if (useReceived) Digits.parse(etReceived.text) else base.receivedAmount,
+            )
+        }
+
+        fun row(id: Int, show: Boolean) { view.findViewById<View>(id).visibility = if (show) View.VISIBLE else View.GONE }
+        fun text(id: Int, value: String) { view.findViewById<TextView>(id).text = value }
+
+        fun renderSum() {
+            val inv = trial()
+            val t = inv.totals(validItems())
+            text(R.id.tvSumItems, Format.money(t.subtotal))
+            row(R.id.rowSumDiscount, t.discountAmount > 0)
+            text(R.id.tvSumDiscountLabel, inv.discountLabel(getString(R.string.invoice_discount_label)))
+            text(R.id.tvSumDiscount, "− " + Format.money(t.discountAmount))
+            row(R.id.rowSumTax, t.taxAmount > 0)
+            text(R.id.tvSumTaxLabel, getString(R.string.invoice_tax_label) + " (" + Format.plain(inv.taxPercent ?: 0.0) + "%)")
+            text(R.id.tvSumTax, "+ " + Format.money(t.taxAmount))
+            row(R.id.rowSumCharge, t.additionalCharge > 0)
+            text(R.id.tvSumChargeLabel, inv.additionalChargeLabel.orEmpty())
+            text(R.id.tvSumCharge, "+ " + Format.money(t.additionalCharge))
+            text(R.id.tvSumTotal, Format.money(t.grandTotal))
+            row(R.id.rowSumReceived, inv.receivedAmount != null)
+            row(R.id.rowSumBalance, inv.receivedAmount != null)
+            text(R.id.tvSumReceived, Format.money(t.received))
+            text(R.id.tvSumBalance, Format.signedIfNegative(t.balanceDue))
+        }
+
+        fun applyDiscountHint() {
+            etDiscount.setHint(if (inMoney()) R.string.invoice_discount_example_amount else R.string.invoice_discount_example)
+        }
+        applyDiscountHint()
+        kind.addOnButtonCheckedListener { _, _, checked ->
+            if (checked) { applyDiscountHint(); renderSum() }
+        }
+        val watcher = object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) = renderSum()
+        }
+        listOf(etDiscount, etTax, etChargeLabel, etChargeAmount, etReceived).forEach { it.addTextChangedListener(watcher) }
+
+        // Full: the whole total, worked out with everything above it; None: zero.
+        view.findViewById<View>(R.id.btnReceivedFull).setOnClickListener {
+            val t = trial().copy(receivedAmount = null).totals(validItems())
+            etReceived.setText(Format.plain(t.grandTotal))
+        }
+        view.findViewById<View>(R.id.btnReceivedNone).setOnClickListener { etReceived.setText("0") }
+        renderSum()
+
+        view.findViewById<View>(R.id.btnMoreClose).setOnClickListener { sheet.dismiss() }
+        view.findViewById<View>(R.id.btnMoreApply).setOnClickListener {
+            // A field hidden by a switch keeps whatever it already held rather
+            // than being read (and possibly cleared) from a view that was never
+            // shown: turning Tax off should not erase a tax figure already set.
+            if (useDiscount) {
+                val value = Digits.parse(etDiscount.text)
+                if (inMoney()) { discountAmount = value; discountPercent = null }
+                else { discountPercent = value; discountAmount = null }
             }
-            .show()
+            if (useTax) taxPercent = Digits.parse(etTax.text)
+            if (useCharge) {
+                chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
+                chargeAmount = Digits.parse(etChargeAmount.text)
+            }
+            if (useReceived) receivedAmount = Digits.parse(etReceived.text)
+            if (useNote) note = etNote.text.toString().trim().ifEmpty { null }
+            refreshTotals()
+            sheet.dismiss()
+        }
+        sheet.show()
     }
 
     private fun draft(): Invoice {
@@ -683,7 +759,8 @@ class InvoiceEditorActivity : BaseActivity() {
             customerPhone = etPhone.text.toString().trim().ifEmpty { null },
             invoiceDate = invoiceDate,
             dueDate = dueDate,
-            discountPercent = discountPercent,
+            discountPercent = if (discountAmount != null) null else discountPercent,
+            discountAmount = discountAmount,
             taxPercent = taxPercent,
             additionalChargeLabel = if (hasCharge) chargeLabel else null,
             additionalChargeAmount = if (hasCharge) chargeAmount else null,
@@ -714,8 +791,140 @@ class InvoiceEditorActivity : BaseActivity() {
         }
     }
 
+    /** A design's name split into its title and what it is for: "Teal Corporate" / "full business invoice". */
+    private fun designName(position: Int): Pair<String, String> {
+        val full = getString(templateNameRes.getOrElse(position) { templateNameRes.first() })
+        val cut = full.indexOf(" — ")
+        return if (cut < 0) full to "" else full.substring(0, cut).trim() to full.substring(cut + 3).trim()
+    }
+
+    private lateinit var designStrip: LinearLayout
+    private lateinit var designStripScroll: android.widget.HorizontalScrollView
+
+    /**
+     * Which designs a filter keeps. The thermal receipt (10) is the one
+     * narrow roll; Minimal Slate (5) and the thermal one use least ink;
+     * every other design is an A4 page.
+     */
+    private val designFilters = listOf(
+        R.string.invoice_filter_all to { _: Int -> true },
+        R.string.invoice_filter_a4 to { id: Int -> id != 10 },
+        R.string.invoice_filter_roll to { id: Int -> id == 10 },
+        R.string.invoice_filter_ink to { id: Int -> id == 5 || id == 10 },
+    )
+
+    /**
+     * The row of all ten designs (13 Oct), each its small picture over its
+     * name; the pictures arrive with the previews in [renderAllPreviews].
+     * And the filters above it, which narrow the row to one kind of paper.
+     */
+    private fun buildDesignStrip() {
+        designStrip = findViewById(R.id.designStrip)
+        designStripScroll = findViewById(R.id.designStripScroll)
+        findViewById<TextView>(R.id.tvDesignsCount).text =
+            Digits.string(resources, R.string.invoice_designs_count, templateIds.size)
+        val dp = resources.displayMetrics.density
+        designStrip.removeAllViews()
+        templateIds.forEachIndexed { index, _ ->
+            val (title, _) = designName(index)
+            val cell = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                isClickable = true
+                isFocusable = true
+                contentDescription = title
+                layoutParams = LinearLayout.LayoutParams((78 * dp).toInt(), LinearLayout.LayoutParams.WRAP_CONTENT)
+                    .also { if (index > 0) it.marginStart = (10 * dp).toInt() }
+                setOnClickListener { vpTemplates.setCurrentItem(index, true) }
+            }
+            val frame = android.widget.FrameLayout(this).apply {
+                background = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.bg_design_thumb)
+                duplicateParentStateEnabled = true
+                setPadding((3 * dp).toInt(), (3 * dp).toInt(), (3 * dp).toInt(), (3 * dp).toInt())
+                layoutParams = LinearLayout.LayoutParams((78 * dp).toInt(), (100 * dp).toInt())
+            }
+            frame.addView(ImageView(this).apply {
+                scaleType = ImageView.ScaleType.FIT_START
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                layoutParams = android.widget.FrameLayout.LayoutParams(
+                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT, android.widget.FrameLayout.LayoutParams.MATCH_PARENT)
+            })
+            cell.addView(frame)
+            cell.addView(TextView(this).apply {
+                text = title
+                gravity = android.view.Gravity.CENTER
+                maxLines = 2
+                textSize = 11f
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setTextColor(androidx.core.content.ContextCompat.getColorStateList(context, R.color.design_thumb_text))
+                duplicateParentStateEnabled = true
+                setPadding(0, (5 * dp).toInt(), 0, 0)
+            })
+            designStrip.addView(cell)
+        }
+
+        val filters = findViewById<LinearLayout>(R.id.designFilters)
+        filters.removeAllViews()
+        designFilters.forEachIndexed { i, (label, keeps) ->
+            filters.addView(TextView(this).apply {
+                setText(label)
+                textSize = 13f
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setTextColor(androidx.core.content.ContextCompat.getColorStateList(context, R.color.design_thumb_text))
+                background = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.bg_filter_chip)
+                gravity = android.view.Gravity.CENTER
+                minHeight = (40 * dp).toInt()
+                setPadding((14 * dp).toInt(), 0, (14 * dp).toInt(), 0)
+                isClickable = true
+                isFocusable = true
+                isSelected = i == 0
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (40 * dp).toInt())
+                    .also { if (i > 0) it.marginStart = (8 * dp).toInt() }
+                setOnClickListener {
+                    for (k in 0 until filters.childCount) filters.getChildAt(k).isSelected = k == i
+                    templateIds.forEachIndexed { index, id ->
+                        designStrip.getChildAt(index)?.visibility = if (keeps(id)) View.VISIBLE else View.GONE
+                    }
+                    // The big preview follows: to the first design the filter keeps,
+                    // unless the one showing is already among them.
+                    if (!keeps(templateIds[vpTemplates.currentItem])) {
+                        templateIds.indexOfFirst(keeps).takeIf { it >= 0 }?.let { vpTemplates.setCurrentItem(it, true) }
+                    }
+                }
+            })
+        }
+    }
+
+    /** The rendered previews, shrunk once for the row of small pictures. */
+    private fun fillDesignStrip(bitmaps: List<android.graphics.Bitmap?>) {
+        val w = (72 * resources.displayMetrics.density).toInt()
+        bitmaps.forEachIndexed { index, bmp ->
+            val frame = (designStrip.getChildAt(index) as? LinearLayout)?.getChildAt(0) as? android.widget.FrameLayout ?: return@forEachIndexed
+            val image = frame.getChildAt(0) as? ImageView ?: return@forEachIndexed
+            if (bmp == null || bmp.width <= 0) { image.setImageDrawable(null); return@forEachIndexed }
+            val h = (bmp.height.toLong() * w / bmp.width).toInt().coerceAtLeast(1)
+            image.setImageBitmap(android.graphics.Bitmap.createScaledBitmap(bmp, w, h, true))
+        }
+    }
+
     private fun showTemplatePosition(position: Int) {
-        tvTemplateCaption.setText(templateNameRes.getOrElse(position) { templateNameRes.first() })
+        val (title, use) = designName(position)
+        tvTemplateCaption.text = title
+        findViewById<TextView>(R.id.tvTemplateUse).apply {
+            text = use
+            visibility = if (use.isEmpty()) View.GONE else View.VISIBLE
+        }
+        findViewById<TextView>(R.id.tvTemplatePosition).text =
+            Digits.string(resources, R.string.invoice_design_position, position + 1, templateIds.size)
+        if (::designStrip.isInitialized) {
+            for (i in 0 until designStrip.childCount) designStrip.getChildAt(i).isSelected = i == position
+            designStrip.getChildAt(position)?.let { thumb ->
+                designStripScroll.post {
+                    val target = thumb.left - (designStripScroll.width - thumb.width) / 2
+                    designStripScroll.smoothScrollTo(target.coerceAtLeast(0), 0)
+                }
+            }
+        }
         tvSwipeHint.text = Digits.string(resources, R.string.invoice_swipe_designs, position + 1, templateIds.size)
         val active = androidx.core.content.ContextCompat.getColor(this, R.color.brand_green)
         val inactive = androidx.core.content.ContextCompat.getColor(this, R.color.text_muted)
@@ -748,6 +957,7 @@ class InvoiceEditorActivity : BaseActivity() {
             if (isFinishing || isDestroyed) return@launch
             pbLoading.visibility = View.GONE
             templatePagerAdapter.submit(bitmaps)
+            fillDesignStrip(bitmaps)
 
             pendingTemplateId?.let { id ->
                 vpTemplates.setCurrentItem(templateIds.indexOf(id).coerceAtLeast(0), false)

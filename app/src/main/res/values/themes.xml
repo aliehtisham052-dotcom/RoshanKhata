@@ -529,6 +529,80 @@
         <item name="iconSize">20dp</item>
     </style>
 
+    <!-- Invoice "more options" sheet (13 Oct): a field's label above its box. -->
+    <style name="SheetFieldLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ink_soft</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- % / Rs beside the discount label. -->
+    <style name="SheetToggleButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:minWidth">52dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/poster_chip_text</item>
+        <item name="backgroundTint">@color/poster_chip_bg</item>
+        <item name="strokeColor">@color/page_line</item>
+    </style>
+
+    <!-- "Full" / "None" beside Amount received: one tap fills the box. -->
+    <style name="SheetQuickButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/brand_green_text</item>
+        <item name="strokeColor">@color/page_line</item>
+        <item name="cornerRadius">10dp</item>
+    </style>
+
+    <!-- One line of the live sum at the foot of the sheet. -->
+    <style name="SumRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="SumLabel">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/ink_soft</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="SumValue">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:textDirection">ltr</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!-- The small gold capitals over each card on the invoice editor. -->
     <style name="EditorSectionLabel">
         <item name="android:layout_width">wrap_content</item>

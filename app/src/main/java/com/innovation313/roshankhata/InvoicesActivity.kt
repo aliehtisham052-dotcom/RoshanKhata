@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.innovation313.roshankhata.data.InvoiceMath
+import com.innovation313.roshankhata.data.totals
 import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.InvoiceSummary
 import com.innovation313.roshankhata.data.AppScope
@@ -235,7 +235,7 @@ class InvoicesActivity : BaseActivity() {
         lifecycleScope.launch {
             val full = dao.getInvoice(invoice.id) ?: return@launch
             val items = dao.invoiceItems(invoice.id)
-            val totals = InvoiceMath.totals(items, full.discountPercent, full.taxPercent, full.additionalChargeAmount, full.receivedAmount)
+            val totals = full.totals(items)
 
             val body = buildString {
                 append(invoice.invoiceNumber)
@@ -260,7 +260,10 @@ class InvoicesActivity : BaseActivity() {
                 append(getString(R.string.invoice_subtotal, Format.money(totals.subtotal)))
                 if (totals.discountAmount > 0) {
                     append("\n")
-                    append(getString(R.string.invoice_discount_line, Format.plain(full.discountPercent ?: 0.0), Format.money(totals.discountAmount)))
+                    append(
+                        if (full.discountAmount != null) getString(R.string.invoice_discount_amount_line, Format.money(totals.discountAmount))
+                        else getString(R.string.invoice_discount_line, Format.plain(full.discountPercent ?: 0.0), Format.money(totals.discountAmount))
+                    )
                 }
                 if (totals.taxAmount > 0) {
                     append("\n")

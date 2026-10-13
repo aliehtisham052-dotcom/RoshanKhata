@@ -464,7 +464,7 @@ object InvoiceTemplateKit {
         }
         if (showSubtotal(totals)) totalRow(labels.subtotal, Format.money(totals.subtotal))
         if (totals.discountAmount > 0) {
-            totalRow("${labels.discount} (${Format.plain(invoice.discountPercent ?: 0.0)}%)", "-" + Format.money(totals.discountAmount))
+            totalRow(invoice.discountLabel(labels.discount), "-" + Format.money(totals.discountAmount))
         }
         if (totals.taxAmount > 0) {
             totalRow("${labels.tax} (${Format.plain(invoice.taxPercent ?: 0.0)}%)", Format.money(totals.taxAmount))

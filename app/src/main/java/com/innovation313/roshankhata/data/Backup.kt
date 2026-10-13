@@ -1218,6 +1218,7 @@ object Backup {
         put("dueDate", i.dueDate ?: JSONObject.NULL)
         put("taxPercent", i.taxPercent ?: JSONObject.NULL)
         put("discountPercent", i.discountPercent ?: JSONObject.NULL)
+        put("discountAmount", i.discountAmount ?: JSONObject.NULL)
         put("additionalChargeLabel", i.additionalChargeLabel ?: JSONObject.NULL)
         put("additionalChargeAmount", i.additionalChargeAmount ?: JSONObject.NULL)
         put("receivedAmount", i.receivedAmount ?: JSONObject.NULL)
@@ -1238,6 +1239,8 @@ object Backup {
         dueDate = o.optNullableLong("dueDate"),
         taxPercent = o.optNullableDouble("taxPercent"),
         discountPercent = o.optNullableDouble("discountPercent"),
+        // Absent from every backup made before v31: reads as null, a percent discount.
+        discountAmount = o.optNullableDouble("discountAmount"),
         additionalChargeLabel = o.optNullableString("additionalChargeLabel"),
         additionalChargeAmount = o.optNullableDouble("additionalChargeAmount"),
         receivedAmount = o.optNullableDouble("receivedAmount"),

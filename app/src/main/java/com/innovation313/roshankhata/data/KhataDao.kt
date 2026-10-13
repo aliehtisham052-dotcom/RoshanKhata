@@ -861,9 +861,14 @@ interface KhataDao {
                (SELECT COUNT(*) FROM invoice_items li
                 WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
                (
-                 (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
-                  WHERE li.invoiceId = i.id AND li.isDeleted = 0)
-                 * (1 - COALESCE(i.discountPercent, 0) / 100.0)
+                 (CASE WHEN i.discountAmount IS NOT NULL THEN
+                    MAX(0, (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
+                            WHERE li.invoiceId = i.id AND li.isDeleted = 0) - MAX(0, i.discountAmount))
+                  ELSE
+                    (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
+                     WHERE li.invoiceId = i.id AND li.isDeleted = 0)
+                    * (1 - COALESCE(i.discountPercent, 0) / 100.0)
+                  END)
                  * (1 + COALESCE(i.taxPercent, 0) / 100.0)
                  + COALESCE(i.additionalChargeAmount, 0)
                ) AS grandTotal
