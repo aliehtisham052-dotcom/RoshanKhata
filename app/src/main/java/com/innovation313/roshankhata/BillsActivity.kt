@@ -202,6 +202,13 @@ class BillsActivity : BaseActivity() {
             dao.observeBills().collectLatest { list ->
                 adapter.submit(list)
                 tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+                // One way to add a bill at a time (13 Oct): an empty page has
+                // its own "Add the first bill", so the floating button waits
+                // until there is a list to sit over. On a helper's read-only
+                // phone it stays hidden either way.
+                if (!com.innovation313.roshankhata.data.ViewerMode.isOn(this@BillsActivity)) {
+                    findViewById<View>(R.id.fabAddBill).visibility = if (list.isEmpty()) View.GONE else View.VISIBLE
+                }
                 renderStats(list)
             }
         }

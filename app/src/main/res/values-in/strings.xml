@@ -1524,7 +1524,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="pdf_biz_paid_of">%1$s dari %2$s</string>
     <string name="pdf_biz_expiring">Stok segera kedaluwarsa</string>
     <string name="pdf_biz_expired">KEDALUWARSA</string>
-    <string name="pdf_biz_days_left">%1$d hari</string>
+    <plurals name="pdf_biz_days_left">
+        <item quantity="other">%1$d hari</item>
+    </plurals>
     <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->

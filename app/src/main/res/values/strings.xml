@@ -1569,7 +1569,10 @@ You can change this any time from this screen.</string>
     <string name="pdf_biz_paid_of">%1$s of %2$s</string>
     <string name="pdf_biz_expiring">Stock expiring soon</string>
     <string name="pdf_biz_expired">EXPIRED</string>
-    <string name="pdf_biz_days_left">%1$d days</string>
+    <plurals name="pdf_biz_days_left">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
     <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->

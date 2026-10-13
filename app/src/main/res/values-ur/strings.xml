@@ -1517,7 +1517,10 @@
     <string name="pdf_biz_paid_of">%2$s میں سے %1$s</string>
     <string name="pdf_biz_expiring">اسٹاک جو جلد ختم ہو رہا ہے</string>
     <string name="pdf_biz_expired">میعاد ختم</string>
-    <string name="pdf_biz_days_left">%1$d دن</string>
+    <plurals name="pdf_biz_days_left">
+        <item quantity="one">%1$d دن</item>
+        <item quantity="other">%1$d دن</item>
+    </plurals>
     <string name="pdf_biz_batch">بیچ %1$s \u00B7 </string>
 
     <string name="pdf_reg_title">سیلز اینڈ پرچیز رجسٹر</string>

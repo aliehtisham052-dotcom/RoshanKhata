@@ -1517,7 +1517,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_biz_paid_of">%2$s mein se %1$s</string>
     <string name="pdf_biz_expiring">Stock jo jald expire ho raha hai</string>
     <string name="pdf_biz_expired">EXPIRE HO CHUKA</string>
-    <string name="pdf_biz_days_left">%1$d din</string>
+    <plurals name="pdf_biz_days_left">
+        <item quantity="one">%1$d din</item>
+        <item quantity="other">%1$d din</item>
+    </plurals>
     <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
 
     <string name="pdf_reg_title">Sales &amp; Purchase Register</string>

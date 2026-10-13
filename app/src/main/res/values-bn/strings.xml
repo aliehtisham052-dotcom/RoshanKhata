@@ -1558,7 +1558,10 @@
     <string name="pdf_biz_paid_of">%2$s-এর মধ্যে %1$s</string>
     <string name="pdf_biz_expiring">শিগগিরই মেয়াদ শেষ হবে এমন স্টক</string>
     <string name="pdf_biz_expired">মেয়াদ শেষ</string>
-    <string name="pdf_biz_days_left">%1$d দিন</string>
+    <plurals name="pdf_biz_days_left">
+        <item quantity="one">%1$d দিন</item>
+        <item quantity="other">%1$d দিন</item>
+    </plurals>
     <string name="pdf_biz_batch">ব্যাচ %1$s \u00B7 </string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->

@@ -340,7 +340,7 @@ object BusinessReport {
 
                 val days = e.daysLeft
                 val txt = if (e.hasExpired) context.getString(R.string.pdf_biz_expired)
-                    else Digits.string(context.resources, R.string.pdf_biz_days_left, days)
+                    else Digits.quantity(context.resources, R.plurals.pdf_biz_days_left, days, days)
                 val paint = if (e.hasExpired || days <= 14) red else body
                 val w = paint.measureText(txt)
                 PdfRtl.drawText(canvas, txt, PAGE_W - MARGIN - w, y, paint)
