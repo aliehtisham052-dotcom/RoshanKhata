@@ -423,6 +423,7 @@
     <color name="poster_soft_green">#EEF5F0</color>
     <!-- An example inside an empty field (13 Oct): pale enough that it never reads as already typed. -->
     <color name="hint_pale">#8F8C82</color>
-    <!-- The outline of a tile on a dark section header (13 Oct). -->
-    <color name="header_tile_stroke">#40FFFFFF</color>
+    <!-- The outline of a tile on a dark section header (13 Oct): opaque, so
+         it measures 3.6:1 on the bills band, where a 25% white was 1.9:1. -->
+    <color name="header_tile_stroke">#B9A86F</color>
 </resources>
