@@ -967,7 +967,6 @@
     <string name="vq_no_recognizer">لا يوجد في هذا الهاتف تطبيق للتعرّف على الكلام.</string>
     <string name="vq_not_paid_body">قائمة المتابعة تضع في أعلاها العملاء الذين يجب التحصيل منهم أولًا.</string>
     <string name="vq_expiring_body">شاشة البضاعة القريبة من انتهاء الصلاحية تعرض ما ينتهي أولًا.</string>
-    <string name="cf_open">التدفق النقدي: المال الداخل والخارج</string>
     <string name="cf_title">التدفق النقدي</string>
     <string name="cf_subtitle">مال موعود بدخوله ومال مستحق خروجه</string>
     <string name="cf_days">%1$s يومًا</string>
@@ -2530,7 +2529,6 @@
     <string name="shop_tap_open">اضغط للفتح</string>
     <string name="shop_new">متجر جديد</string>
     <string name="shop_settings_row">ملف المتجر</string>
-    <string name="type_tab_count">%1$s · %2$d</string>
     <plurals name="supplier_count">
         <item quantity="zero">%d موردين</item>
         <item quantity="one">مورّد واحد</item>

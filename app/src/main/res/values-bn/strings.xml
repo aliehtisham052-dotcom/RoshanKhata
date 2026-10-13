@@ -925,7 +925,6 @@
     <string name="vq_no_recognizer">এই ফোনে কণ্ঠস্বর চেনার অ্যাপ নেই।</string>
     <string name="vq_not_paid_body">ফলো-আপ তালিকায় যাদের কাছ থেকে আগে আদায় করতে হবে তারা সবার ওপরে।</string>
     <string name="vq_expiring_body">মেয়াদ শেষ হওয়া স্টকের পর্দায় সবার আগে যা ফুরোবে তা দেখায়।</string>
-    <string name="cf_open">ক্যাশ ফ্লো: আসা ও যাওয়া টাকা</string>
     <string name="cf_title">ক্যাশ ফ্লো</string>
     <string name="cf_subtitle">আসার প্রতিশ্রুতি ও যাওয়ার টাকা</string>
     <string name="cf_days">%1$s দিন</string>
@@ -2398,7 +2397,6 @@
     <string name="shop_tap_open">খুলতে চাপুন</string>
     <string name="shop_new">নতুন দোকান</string>
     <string name="shop_settings_row">দোকানের প্রোফাইল</string>
-    <string name="type_tab_count">%1$s · %2$d</string>
     <plurals name="supplier_count">
         <item quantity="one">%d সরবরাহকারী</item>
         <item quantity="other">%d সরবরাহকারী</item>

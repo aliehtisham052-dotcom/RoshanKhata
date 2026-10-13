@@ -57,7 +57,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/note_bg"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_note_card"
+            android:lineSpacingMultiplier="1.1"
             android:padding="14dp"
             android:text="@string/backup_warning"
             android:textColor="@color/note_text"
@@ -83,7 +87,9 @@
                 android:id="@+id/driveSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_profile_card"
                 android:orientation="vertical"
+                android:padding="16dp"
                 android:visibility="gone">
 
             <!--
@@ -97,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/drive_section"
                 android:textColor="@color/brand_green_text"
-                android:textSize="16sp"
+                android:textSize="17sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -179,46 +185,32 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDriveBackupNow"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="10dp"
+                style="@style/BackupPrimaryButton"
+                android:layout_marginTop="16dp"
                 android:text="@string/drive_backup_now"
-                android:textColor="@color/white"
-                android:textSize="15sp"
                 android:visibility="gone"
-                app:backgroundTint="@color/brand_green"
-                app:cornerRadius="10dp" />
+                app:icon="@drawable/ic_feature_backup" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDriveRestore"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
+                style="@style/BackupOutlineButton"
                 android:layout_marginTop="10dp"
                 android:text="@string/drive_restore"
-                android:textColor="@color/brand_green_text"
-                android:textSize="15sp"
-                android:visibility="gone"
-                app:cornerRadius="10dp"
-                app:strokeColor="@color/brand_green" />
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDriveSignOut"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
+                android:letterSpacing="0"
                 android:text="@string/drive_sign_out"
+                android:textAllCaps="false"
                 android:textColor="@color/text_muted"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:visibility="gone" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="4dp"
-                android:background="@color/page_line" />
 
             </LinearLayout>
             <!-- end of the cloud-backup section (hidden until verified) -->
@@ -237,15 +229,22 @@
               A tap on the header opens it; the chevron says which way it is.
             -->
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_profile_card"
+                android:orientation="vertical">
+
+            <LinearLayout
                 android:id="@+id/fileSectionHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:background="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
+                android:minHeight="56dp"
                 android:orientation="horizontal"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp">
+                android:paddingStart="16dp"
+                android:paddingEnd="12dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -271,6 +270,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="12dp"
                 android:visibility="gone">
 
             <TextView
@@ -283,25 +285,15 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBackup"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="24dp"
-                android:text="@string/backup_now"
-                android:textSize="15sp"
-                app:backgroundTint="@color/brand_green"
-                app:cornerRadius="10dp" />
+                style="@style/BackupPrimaryButton"
+                android:layout_marginTop="16dp"
+                android:text="@string/backup_now" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRestore"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="12dp"
-                android:text="@string/restore_from_file"
-                android:textColor="@color/brand_green_text"
-                android:textSize="15sp"
-                app:cornerRadius="10dp"
-                app:strokeColor="@color/brand_green" />
+                style="@style/BackupOutlineButton"
+                android:layout_marginTop="10dp"
+                android:text="@string/restore_from_file" />
 
             <!--
               The way to the daily copies. It belongs here rather than buried
@@ -315,10 +307,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:letterSpacing="0"
                 android:text="@string/daily_copies"
+                android:textAllCaps="false"
                 android:textColor="@color/brand_green_text"
                 android:textSize="14sp" />
 
+            </LinearLayout>
             </LinearLayout>
 
             <!--
@@ -328,13 +323,14 @@
             -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEraseAll"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                style="@style/BackupOutlineButton"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/erase_all_button"
                 android:textColor="@color/red_gave_text"
-                android:textSize="14sp" />
+                app:icon="@drawable/ic_delete"
+                app:iconTint="@color/red_gave_text"
+                app:strokeColor="@color/red_gave_text" />
 
         </LinearLayout>
     </LinearLayout>

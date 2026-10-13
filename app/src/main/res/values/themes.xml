@@ -97,16 +97,55 @@
     </style>
 
     <!-- One tab of the All / Customers / Suppliers track (11 Oct). -->
+    <!-- Backup screen buttons (13 Oct): sentence case, one height, one radius. -->
+    <style name="BackupPrimaryButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">54dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/brand_green</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconTint">@color/white</item>
+        <item name="cornerRadius">14dp</item>
+    </style>
+
+    <style name="BackupOutlineButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">54dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/brand_green_text</item>
+        <item name="iconGravity">textStart</item>
+        <item name="strokeColor">@color/brand_green</item>
+        <item name="strokeWidth">1.5dp</item>
+        <item name="cornerRadius">14dp</item>
+    </style>
+
     <style name="TypeTab">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">52dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:background">@drawable/bg_type_tab</item>
         <item name="android:gravity">center</item>
-        <item name="android:maxLines">1</item>
+        <item name="android:maxLines">2</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:lineSpacingMultiplier">0.95</item>
         <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingTop">5dp</item>
         <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingBottom">5dp</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/type_tab_text</item>

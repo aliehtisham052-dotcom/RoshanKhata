@@ -477,7 +477,8 @@ object CardTemplates {
         size: Float = 27f,
         gap: Float = 42f,
         align: Paint.Align = Paint.Align.LEFT,
-        bottom: Float = H - 30f
+        bottom: Float = H - 30f,
+        bold: Boolean = false
     ): Float {
         var y = top
         val right = align == Paint.Align.RIGHT
@@ -485,7 +486,7 @@ object CardTemplates {
             if (y > bottom) break
             val iconW = if (ico == Ico.PHONE_WA) size * 1.9f else size * 1.15f
             val room = max - iconW
-            val p = paint(size, text, align = align)
+            val p = paint(size, text, bold = bold, align = align)
             val ix = if (right) x - size * 0.5f - (if (ico == Ico.PHONE_WA) size * 0.45f else 0f)
             else x + size * 0.5f + (if (ico == Ico.PHONE_WA) size * 0.36f else 0f)
             val tx = if (right) x - iconW else x + iconW
@@ -661,17 +662,16 @@ object CardTemplates {
         watermark(c, d, w / 2f, h - 18f, onDark = true, align = Paint.Align.CENTER)
     }
 
-    /** 3 · Swiss — the number is the design. */
+    /** 3 · Swiss — the shop's name large, its call number bold under it. */
     private fun swiss(c: Canvas, d: CardData, w: Int, h: Int, t: Float) {
         val red = Color.parseColor("#E24B4A")
         c.drawColor(WHITE)
         val barW = if (live(t)) w * min(1f, 0.6f + 0.4f * wave(t)) else w.toFloat()
         c.drawRect(0f, 0f, barW, 22f, fill(red))
-        val small = paint(26f, Color.parseColor("#888780"))
-        text(c, ellipsise(d.name, small, 600f), 70f, 96f, small)
-        // The call number is the hero (13 Oct). It used to be the WhatsApp
-        // number with a "call + WhatsApp" mark under it, so a shop with two
-        // numbers lost its call number from the card altogether.
+        // The shop's name is the hero (13 Oct, owner's report): the number had
+        // taken the name's place and the name shrank to a grey caption. The
+        // call number now follows the name in bold, its own mark beside it,
+        // so the shop is read first and the number is still the next thing.
         val hero = d.phone.ifEmpty { d.whatsapp }
         val sameNumber = d.phone.isNotEmpty() && d.whatsapp.isNotEmpty() && digits(d.phone) == digits(d.whatsapp)
         val heroMark = when {
@@ -679,34 +679,20 @@ object CardTemplates {
             d.phone.isNotEmpty() -> Ico.PHONE
             else -> Ico.WHATSAPP
         }
-        if (hero.isNotEmpty()) {
-            val sp = hero.indexOf(' ')
-            val parts = if (sp > 0) listOf(hero.substring(0, sp), hero.substring(sp + 1)) else listOf(hero)
-            var y = 210f
-            parts.forEach { part ->
-                val p = paint(116f, INK, bold = true, spacing = -0.03f)
-                var s = 116f
-                while (p.measureText(part) > 620f && s > 60f) { s -= 4f; p.textSize = s }
-                text(c, part, 66f, y, p)
-                y += s * 0.98f
-            }
-            glyph(c, heroMark, 100f, y - 20f, 30f, red)
-        } else {
-            title(c, d.name, 66f, 130f, 620f, 90f, INK)
+        var y = caps(c, d.type, 66f, 92f, 620f, red)
+        val nameTop = if (d.type.isNotEmpty()) y + 18f else 70f
+        y = title(c, d.name.ifEmpty { hero }, 66f, nameTop, 620f, 92f, INK)
+        if (d.name.isNotEmpty() && hero.isNotEmpty()) {
+            rowList(c, listOf(heroMark to hero), 66f, y + 58f, 620f, INK, red, size = 50f, gap = 60f, bottom = h - 110f, bold = true)
         }
         // Everything but the hero number; a second, different WhatsApp number
         // stays in the list with its own mark.
         val list = rows(d).filter { (ico, _) ->
             ico != Ico.PHONE && ico != Ico.PHONE_WA && !(ico == Ico.WHATSAPP && heroMark == Ico.WHATSAPP)
         }
-        var ry = 96f
-        if (d.type.isNotEmpty()) {
-            val p = paint(24f, Color.parseColor("#5F5E5A"), align = Paint.Align.RIGHT)
-            text(c, ellipsise(d.type, p, 400f), w - 70f, ry, p); ry += 38f
-        }
-        // The number is this card's hero, so it carries no QR: a code big
-        // enough to print would leave the contact column no room.
-        rowList(c, list, w - 70f, ry, 420f, Color.parseColor("#5F5E5A"), red, size = 24f, gap = 38f, align = Paint.Align.RIGHT, bottom = h - 120f)
+        // No QR on this card: a code big enough to print would leave the
+        // contact column no room.
+        rowList(c, list, w - 70f, 110f, 420f, Color.parseColor("#5F5E5A"), red, size = 24f, gap = 38f, align = Paint.Align.RIGHT, bottom = h - 120f)
         c.drawRect(70f, h - 92f, w - 70f, h - 89f, fill(INK))
         val op = paint(28f, INK)
         text(c, ellipsise(d.owner, op, 700f), 70f, h - 46f, op)
