@@ -2876,4 +2876,5 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="biz_card_ex_web">Maslan website ya Facebook page</string>
     <string name="biz_card_ex_qr">Maslan Assalam o alaikum, aap ka card dekha</string>
     <string name="biz_card_send_picture">Card tasveer ki shakal mein bhejein</string>
+    <string name="drive_signed_in_ok">✓ %1$s se sign in ho gaya. Ab aap ka khata aap ki Google Drive mein backup ho sakta hai.</string>
 </resources>

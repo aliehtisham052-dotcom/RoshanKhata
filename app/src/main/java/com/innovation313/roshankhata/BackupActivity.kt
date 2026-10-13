@@ -613,6 +613,7 @@ class BackupActivity : BaseActivity() {
                     // Access was already granted -- the account is remembered,
                     // so just refresh.
                     refreshDriveUi()
+                    announceSignedIn()
                 }
             }
             .addOnFailureListener { e ->
@@ -629,8 +630,10 @@ class BackupActivity : BaseActivity() {
         // grant went through by reading the result (a declined grant still
         // closes the screen).
         try {
+            if (activityResult.resultCode != RESULT_OK) throw IllegalStateException("Drive consent not given")
             DriveAuth.resultFromIntent(this, activityResult.data)
             refreshDriveUi()
+            announceSignedIn()
         } catch (e: Exception) {
             Toast.makeText(this, R.string.drive_permission_needed, Toast.LENGTH_LONG).show()
             refreshDriveUi()
@@ -685,6 +688,25 @@ class BackupActivity : BaseActivity() {
             .show()
     }
 
+    /**
+     * Say plainly that the sign-in worked (13 Oct). Google's sheets close on
+     * their own and the screen only changed a line of grey text, so the owner
+     * was left looking at the screen wondering whether anything had happened.
+     */
+    private fun announceSignedIn() {
+        val name = DriveAuth.accountName(this) ?: return
+        if (isFinishing || isDestroyed) return
+        com.google.android.material.snackbar.Snackbar.make(
+            findViewById(android.R.id.content),
+            getString(R.string.drive_signed_in_ok, name),
+            com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+        ).apply {
+            setTextMaxLines(4)
+            setBackgroundTint(androidx.core.content.ContextCompat.getColor(this@BackupActivity, R.color.brand_green))
+            setTextColor(androidx.core.content.ContextCompat.getColor(this@BackupActivity, R.color.white))
+        }.show()
+    }
+
     /** Show the right Drive controls for whether someone is signed in. */
     private fun refreshDriveUi() {
         val name = DriveAuth.accountName(this)
@@ -722,6 +744,15 @@ class BackupActivity : BaseActivity() {
         imagesSwitch.visibility = android.view.View.VISIBLE
         autoSwitch.visibility = android.view.View.VISIBLE
         autoHint.visibility = android.view.View.VISIBLE
+
+        // The switches follow the saved choice every time the screen is
+        // redrawn (13 Oct). They were set once, when the screen opened, so a
+        // "Turn on" in the automatic-backup offer saved the choice and the
+        // worker ran — but the switch beside it still showed off, and the
+        // owner turned it on again by hand believing it had not worked.
+        // Setting the same value back through the listener writes nothing new.
+        if (autoSwitch.isChecked != DriveBackup.autoBackup(this)) autoSwitch.isChecked = DriveBackup.autoBackup(this)
+        if (imagesSwitch.isChecked != DriveBackup.includeImages(this)) imagesSwitch.isChecked = DriveBackup.includeImages(this)
 
         // Asked here, where the account is KNOWN to be connected — not on the
         // connect flow, which was the first attempt and reached almost nobody.

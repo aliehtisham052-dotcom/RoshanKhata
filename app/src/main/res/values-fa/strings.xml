@@ -2904,4 +2904,5 @@
     <string name="biz_card_ex_web">مثلاً وب‌سایت یا صفحه فیسبوک</string>
     <string name="biz_card_ex_qr">مثلاً سلام، کارت شما را دیدم</string>
     <string name="biz_card_send_picture">ارسال کارت به صورت تصویر</string>
+    <string name="drive_signed_in_ok">✓ با %1$s وارد شدید. اکنون دفاتر شما می‌توانند در Google Drive شما پشتیبان‌گیری شوند.</string>
 </resources>
