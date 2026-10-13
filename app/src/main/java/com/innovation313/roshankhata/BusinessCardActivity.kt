@@ -12,6 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.google.android.material.button.MaterialButton
@@ -61,6 +62,7 @@ class BusinessCardActivity : BaseActivity() {
 
     /** "ur" or "en": the card's own language, independent of the app's (12 Oct). */
     private var cardLang = "en"
+    private lateinit var waSame: com.google.android.material.switchmaterial.SwitchMaterial
     /** Set while a language's fields are being filled in, so they are not saved or drawn one by one. */
     private var loading = false
 
@@ -97,6 +99,16 @@ class BusinessCardActivity : BaseActivity() {
         loading = true
         etPhone.setText(prefs.getString(KEY_PHONE, ""))
         etWhatsapp.setText(prefs.getString(KEY_WHATSAPP, ""))
+        // WhatsApp on the call number (13 Oct): on when it was saved so, or
+        // when the two boxes already held the same number.
+        waSame = findViewById(R.id.switchWhatsappSame)
+        waSame.isChecked = prefs.getBoolean(KEY_WA_SAME,
+            etWhatsapp.text.isNotBlank() && etWhatsapp.text.toString().filter { it.isDigit() } == etPhone.text.toString().filter { it.isDigit() })
+        etWhatsapp.visibility = if (waSame.isChecked) android.view.View.GONE else android.view.View.VISIBLE
+        waSame.setOnCheckedChangeListener { _, on ->
+            etWhatsapp.visibility = if (on) android.view.View.GONE else android.view.View.VISIBLE
+            render()
+        }
         // The card's own email, else the shop's (Profile, 12 Oct).
         etEmail.setText(prefs.getString(KEY_EMAIL, null)?.takeIf { it.isNotBlank() } ?: BusinessProfile.businessEmail(this).orEmpty())
         etWeb.setText(prefs.getString(KEY_WEB, ""))
@@ -141,7 +153,6 @@ class BusinessCardActivity : BaseActivity() {
             setTextColor(Color.WHITE)
             setOnClickListener { shareCard() }
         }
-        findViewById<Button>(R.id.btnCardPdf).setOnClickListener { sharePdf() }
 
         refreshTemplateButtons()
         loadLogo()
@@ -209,8 +220,54 @@ class BusinessCardActivity : BaseActivity() {
         etTagline.setText(prefs.getString(k(KEY_TAGLINE), ""))
         // Pre-filled until the owner changes it; an emptied box stays empty.
         etQrMessage.setText(prefs.getString(k(KEY_QR_MESSAGE), cardContext().getString(R.string.biz_card_qr_message_default)))
-        val dir = if (cardLang == UR) android.view.View.TEXT_DIRECTION_RTL else android.view.View.TEXT_DIRECTION_LTR
-        listOf(etBizName, etType, etOwner, etAddress, etTagline, etQrMessage).forEach { it.textDirection = dir }
+        applyCardLanguage()
+    }
+
+    /**
+     * The form speaks the card's language (13 Oct). An Urdu card is filled
+     * in wholly in Urdu: labels, examples and typing right to left, with no
+     * English hint sitting inside an Urdu box. Its whole section is laid out
+     * right to left, not only its text, so each box keeps one fixed side for
+     * its text and nothing moves while the owner types. Numbers, email and
+     * website stay left to right on both cards.
+     */
+    private fun applyCardLanguage() {
+        val cc = cardContext()
+        val ur = cardLang == UR
+        fun label(id: Int, res: Int) { findViewById<TextView>(id).text = cc.getString(res) }
+        label(R.id.tvCardOwnTitle, R.string.biz_card_sec_own)
+        findViewById<TextView>(R.id.tvCardOwnTag).text = if (ur) "UR" else "EN"
+        label(R.id.tvCardOwnSub, R.string.biz_card_sec_own_sub)
+        label(R.id.tvCardSharedTitle, R.string.biz_card_sec_shared)
+        label(R.id.lblCardName, R.string.biz_card_l_name)
+        label(R.id.lblCardType, R.string.biz_card_l_type)
+        label(R.id.lblCardOwner, R.string.biz_card_l_owner)
+        label(R.id.lblCardAddress, R.string.biz_card_l_address)
+        label(R.id.lblCardTagline, R.string.biz_card_l_tagline)
+        label(R.id.lblCardPhone, R.string.biz_card_l_call)
+        label(R.id.lblCardWhatsapp, R.string.biz_card_l_whatsapp)
+        label(R.id.lblCardEmail, R.string.biz_card_l_email)
+        label(R.id.lblCardWeb, R.string.biz_card_l_web)
+        label(R.id.lblCardQr, R.string.biz_card_l_qr)
+        waSame.text = cc.getString(R.string.biz_card_l_wa_same)
+        etBizName.hint = cc.getString(R.string.biz_card_ex_name)
+        etType.hint = cc.getString(R.string.biz_card_ex_type)
+        etOwner.hint = cc.getString(R.string.biz_card_ex_owner)
+        etAddress.hint = cc.getString(R.string.biz_card_ex_address)
+        etTagline.hint = cc.getString(R.string.biz_card_ex_tagline)
+        etPhone.hint = cc.getString(R.string.biz_card_ex_phone)
+        etWhatsapp.hint = cc.getString(R.string.biz_card_ex_phone)
+        etEmail.hint = cc.getString(R.string.biz_card_ex_email)
+        etWeb.hint = cc.getString(R.string.biz_card_ex_web)
+        etQrMessage.hint = cc.getString(R.string.biz_card_ex_qr)
+        val layoutDir = if (ur) android.view.View.LAYOUT_DIRECTION_RTL else android.view.View.LAYOUT_DIRECTION_LTR
+        findViewById<android.view.View>(R.id.cardOwnSection).layoutDirection = layoutDir
+        findViewById<android.view.View>(R.id.cardSharedSection).layoutDirection = layoutDir
+        val textDir = if (ur) android.view.View.TEXT_DIRECTION_RTL else android.view.View.TEXT_DIRECTION_LTR
+        listOf(etBizName, etType, etOwner, etAddress, etTagline, etQrMessage).forEach {
+            it.layoutDirection = layoutDir
+            it.textDirection = textDir
+        }
     }
 
     /** Read the Profile logo, and show the switch or the "add one" hint accordingly. */
@@ -277,7 +334,7 @@ class BusinessCardActivity : BaseActivity() {
         // draws nothing for an empty footer, so no template needs to know
         // about the setting.
         footer = if (markSwitch.isChecked && Branding.ON_POSTERS_AND_CARDS) cardContext().getString(R.string.made_with_app) else "",
-        whatsapp = etWhatsapp.text.toString().trim(),
+        whatsapp = if (waSame.isChecked) etPhone.text.toString().trim() else etWhatsapp.text.toString().trim(),
         email = etEmail.text.toString().trim(),
         web = etWeb.text.toString().trim(),
         tagline = etTagline.text.toString().trim(),
@@ -322,28 +379,6 @@ class BusinessCardActivity : BaseActivity() {
         }
     }
 
-    /** The card as a print-ready PDF (3.5 x 2 in + bleed), for a print shop. */
-    private fun sharePdf() {
-        if (etBizName.text.toString().isBlank()) {
-            Toast.makeText(this, R.string.biz_card_enter_name, Toast.LENGTH_SHORT).show()
-            return
-        }
-        save()
-        try {
-            val file = com.innovation313.roshankhata.data.CardPdf.write(
-                this, CardTemplates.byId(template), cardData()
-            )
-            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
-            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                type = "application/pdf"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }, getString(R.string.biz_card_print_pdf)))
-        } catch (e: Exception) {
-            Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private fun save() {
         if (cardLang == UR) BusinessProfile.setBusinessNameUrdu(this, etBizName.text.toString())
         else BusinessProfile.setBusinessName(this, etBizName.text.toString())
@@ -353,6 +388,7 @@ class BusinessCardActivity : BaseActivity() {
             .putString(KEY_PHONE, etPhone.text.toString().trim())
             .putString(k(KEY_ADDRESS), etAddress.text.toString().trim())
             .putString(KEY_WHATSAPP, etWhatsapp.text.toString().trim())
+            .putBoolean(KEY_WA_SAME, waSame.isChecked)
             .putString(KEY_EMAIL, etEmail.text.toString().trim())
             .putString(KEY_WEB, etWeb.text.toString().trim())
             .putString(k(KEY_TAGLINE), etTagline.text.toString().trim())
@@ -384,6 +420,7 @@ class BusinessCardActivity : BaseActivity() {
         private const val KEY_PHONE = "phone"
         private const val KEY_ADDRESS = "address"
         private const val KEY_WHATSAPP = "whatsapp"
+        private const val KEY_WA_SAME = "whatsapp_same"
         private const val KEY_EMAIL = "email"
         private const val KEY_WEB = "web"
         private const val KEY_TAGLINE = "tagline"

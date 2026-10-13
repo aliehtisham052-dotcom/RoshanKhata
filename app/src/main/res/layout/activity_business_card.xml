@@ -106,126 +106,213 @@
                 android:orientation="horizontal" />
         </HorizontalScrollView>
 
-        <EditText
-            android:id="@+id/etBizName"
+        <!-- The card's details (13 Oct): what each language keeps for itself,
+             then what both cards share. Labels and examples speak the CARD's
+             language (BusinessCardActivity.applyCardLanguage), so an Urdu card
+             is filled in wholly in Urdu and an English card in English. -->
+        <LinearLayout
+            android:id="@+id/cardOwnSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:hint="@string/biz_card_name_hint"
-            android:inputType="textCapWords"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_profile_card"
+            android:orientation="vertical"
+            android:padding="14dp">
 
-        <EditText
-            android:id="@+id/etType"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvCardOwnTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCardOwnTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_business_current_chip"
+                    android:paddingStart="8dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="2dp"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCardOwnSub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lblCardName"
+                style="@style/CardFieldLabel" />
+
+            <EditText
+                android:id="@+id/etBizName"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:inputType="textCapWords" />
+
+            <TextView
+                android:id="@+id/lblCardType"
+                style="@style/CardFieldLabel" />
+
+            <EditText
+                android:id="@+id/etType"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:inputType="textCapSentences" />
+
+            <TextView
+                android:id="@+id/lblCardOwner"
+                style="@style/CardFieldLabel" />
+
+            <EditText
+                android:id="@+id/etOwner"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:inputType="textCapWords" />
+
+            <TextView
+                android:id="@+id/lblCardAddress"
+                style="@style/CardFieldLabel" />
+
+            <EditText
+                android:id="@+id/etAddress"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:inputType="textPostalAddress|textCapSentences" />
+
+            <TextView
+                android:id="@+id/lblCardTagline"
+                style="@style/CardFieldLabel" />
+
+            <EditText
+                android:id="@+id/etTagline"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:inputType="textCapSentences" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cardSharedSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_type_hint"
-            android:inputType="text"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_profile_card"
+            android:orientation="vertical"
+            android:padding="14dp">
 
-        <EditText
-            android:id="@+id/etOwner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_owner_hint"
-            android:inputType="textCapWords"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/tvCardSharedTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/ink"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/etPhone"
-            android:textDirection="ltr"
-            android:textAlignment="viewStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_phone_hint"
-            android:inputType="phone"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/lblCardPhone"
+                style="@style/CardFieldLabel" />
 
+            <EditText
+                android:id="@+id/etPhone"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:drawableStart="@drawable/ic_phone_small"
+                android:textDirection="ltr"
+                android:layoutDirection="ltr"
+                android:textAlignment="viewStart"
+                android:inputType="phone" />
 
-        <EditText
-            android:id="@+id/etWhatsapp"
-            android:textDirection="ltr"
-            android:textAlignment="viewStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_whatsapp_hint"
-            android:inputType="phone"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+            <!-- WhatsApp: the call number itself, or a number of its own. -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-        <!-- Typed into the customer's WhatsApp when they scan the card's QR.
-             Capped at 40 characters: a longer message makes a denser code. -->
-        <EditText
-            android:id="@+id/etQrMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_qr_message_hint"
-            android:inputType="textCapSentences"
-            android:maxLength="40"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/lblCardWhatsapp"
+                    style="@style/CardFieldLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1" />
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:textDirection="ltr"
-            android:textAlignment="viewStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_email_hint"
-            android:inputType="textEmailAddress"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchWhatsappSame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:minHeight="48dp"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="13sp" />
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/etWeb"
-            android:textDirection="ltr"
-            android:textAlignment="viewStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_web_hint"
-            android:inputType="textUri"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+            <EditText
+                android:id="@+id/etWhatsapp"
+                style="@style/EditorField"
+                android:layout_marginTop="2dp"
+                android:drawableStart="@drawable/ic_action_whatsapp"
+                android:inputType="phone"
+                android:layoutDirection="ltr"
+                android:textAlignment="viewStart"
+                android:textDirection="ltr" />
 
-        <EditText
-            android:id="@+id/etAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_address_hint"
-            android:inputType="textPostalAddress"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/lblCardEmail"
+                style="@style/CardFieldLabel" />
 
-        <EditText
-            android:id="@+id/etTagline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:hint="@string/biz_card_tagline_hint"
-            android:inputType="textCapSentences"
-            android:minHeight="48dp"
-            android:textSize="15sp" />
+            <EditText
+                android:id="@+id/etEmail"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:drawableStart="@drawable/ic_mail_line"
+                android:textDirection="ltr"
+                android:layoutDirection="ltr"
+                android:textAlignment="viewStart"
+                android:inputType="textEmailAddress" />
 
-        <!--
-          The owner's card, the owner's call.
-          Left on by default, because most shops will not think about it and
-          the mark is small enough not to intrude. But a card sent as an
-          inauguration announcement is the shop's own statement, and an owner
-          who wants nothing else on it should not have to crop the image or
-          look for another app to get that.
-        -->
+            <TextView
+                android:id="@+id/lblCardWeb"
+                style="@style/CardFieldLabel" />
+
+            <EditText
+                android:id="@+id/etWeb"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:drawableStart="@drawable/ic_globe_line"
+                android:textDirection="ltr"
+                android:layoutDirection="ltr"
+                android:textAlignment="viewStart"
+                android:inputType="textUri" />
+
+            <!-- Typed into the customer's WhatsApp when they scan the card's QR.
+                 Capped at 40 characters: a longer message makes a denser code. -->
+            <TextView
+                android:id="@+id/lblCardQr"
+                style="@style/CardFieldLabel" />
+
+            <EditText
+                android:id="@+id/etQrMessage"
+                style="@style/EditorField"
+                android:layout_marginTop="5dp"
+                android:maxLength="40"
+                android:inputType="textCapSentences" />
+        </LinearLayout>
+
         <!-- The shop's logo from its Profile, placed by CardLogo in a free spot. -->
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchCardLogo"
@@ -256,37 +343,37 @@
             android:text="@string/biz_card_show_mark"
             android:textSize="14sp" />
 
+        <!-- One action (13 Oct): the card goes out as a picture. The print-shop
+             PDF is gone from this screen; the owner wants the card kept simple. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnShareCard"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="16dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="0"
+            android:text="@string/biz_card_send_picture"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/brand_green"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_share"
+            app:iconGravity="textStart"
+            app:iconPadding="10dp"
+            app:iconTint="@color/white" />
+
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
             android:text="@string/biz_card_note"
             android:textColor="@color/ink_soft"
             android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnShareCard"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="14dp"
-            android:textAllCaps="false"
-            android:text="@string/biz_card_share"
-            android:textSize="16sp" />
-
-        <!-- Print-ready PDF: 3.5 x 2 inch card with 0.125 inch bleed (see CardPdf). -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCardPdf"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp"
-            android:textAllCaps="false"
-            android:text="@string/biz_card_print_pdf"
-            android:textColor="@color/brand_green_text"
-            android:textSize="16sp"
-            app:cornerRadius="10dp"
-            app:strokeColor="@color/brand_green" />
 
     </LinearLayout>
 </ScrollView>
