@@ -906,7 +906,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="vq_no_recognizer">Ponsel ini tidak punya aplikasi pengenal suara.</string>
     <string name="vq_not_paid_body">Daftar tindak lanjut menaruh pelanggan yang harus ditagih lebih dulu di paling atas.</string>
     <string name="vq_expiring_body">Layar stok kedaluwarsa menampilkan yang paling cepat habis.</string>
-    <string name="cf_open">Arus kas: uang masuk dan keluar</string>
     <string name="cf_title">Arus kas</string>
     <string name="cf_subtitle">Uang yang dijanjikan masuk dan uang yang harus keluar</string>
     <string name="cf_days">%1$s hari</string>
@@ -2354,7 +2353,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="shop_tap_open">Ketuk untuk membuka</string>
     <string name="shop_new">Toko baru</string>
     <string name="shop_settings_row">Profil toko</string>
-    <string name="type_tab_count">%1$s · %2$d</string>
     <plurals name="supplier_count">
         <item quantity="other">%d pemasok</item>
     </plurals>

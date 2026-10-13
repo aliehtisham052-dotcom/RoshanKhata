@@ -891,7 +891,6 @@
     <string name="vq_no_recognizer">اس فون میں آواز پہچاننے والی ایپ نہیں۔</string>
     <string name="vq_not_paid_body">فالو اپ فہرست میں وہ گاہک سب سے اوپر ہیں جن سے پہلے وصولی کرنی ہے۔</string>
     <string name="vq_expiring_body">میعاد ختم ہونے والے اسٹاک کی اسکرین پر وہ مال ہے جو سب سے پہلے ختم ہوگا۔</string>
-    <string name="cf_open">کیش فلو: آنے والا اور جانے والا پیسہ</string>
     <string name="cf_title">کیش فلو</string>
     <string name="cf_subtitle">آنے کا وعدہ اور جانے والا پیسہ</string>
     <string name="cf_days">%1$s دن</string>
@@ -2354,7 +2353,6 @@
     <string name="shop_tap_open">کھولنے کے لیے دبائیں</string>
     <string name="shop_new">نئی دکان</string>
     <string name="shop_settings_row">دکان کی پروفائل</string>
-    <string name="type_tab_count">%1$s · %2$d</string>
     <plurals name="supplier_count">
         <item quantity="one">%d سپلائر</item>
         <item quantity="other">%d سپلائر</item>

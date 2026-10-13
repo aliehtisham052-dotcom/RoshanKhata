@@ -919,7 +919,6 @@
     <string name="vq_no_recognizer">هن فون ۾ آواز سڃاڻڻ واري ايپ ناهي.</string>
     <string name="vq_not_paid_body">فالو اپ لسٽ ۾ اهي گراهڪ مٿي آهن جن کان پهرين وصولي ڪرڻي آهي.</string>
     <string name="vq_expiring_body">ختم ٿيندڙ اسٽاڪ واري اسڪرين تي اهو مال آهي جيڪو سڀ کان پهرين ختم ٿيندو.</string>
-    <string name="cf_open">ڪيش فلو: ايندڙ ۽ ويندڙ پئسو</string>
     <string name="cf_title">ڪيش فلو</string>
     <string name="cf_subtitle">اچڻ جو واعدو ۽ ويندڙ پئسو</string>
     <string name="cf_days">%1$s ڏينهن</string>
@@ -2382,7 +2381,6 @@
     <string name="shop_tap_open">کولڻ لاءِ دٻايو</string>
     <string name="shop_new">نئون دڪان</string>
     <string name="shop_settings_row">دڪان جي پروفائل</string>
-    <string name="type_tab_count">%1$s · %2$d</string>
     <plurals name="supplier_count">
         <item quantity="one">%d سپلائر</item>
         <item quantity="other">%d سپلائر</item>

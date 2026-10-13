@@ -891,7 +891,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="vq_no_recognizer">Is phone mein awaaz pehchanne wali app nahi.</string>
     <string name="vq_not_paid_body">Follow-up list mein woh grahak sab se upar hain jin se pehle wusooli karni hai.</string>
     <string name="vq_expiring_body">Expiring stock screen par woh maal hai jo sab se pehle khatam hoga.</string>
-    <string name="cf_open">Cash flow: aane wala aur jane wala paisa</string>
     <string name="cf_title">Cash Flow</string>
     <string name="cf_subtitle">Aane ka waada aur jane wala paisa</string>
     <string name="cf_days">%1$s din</string>
@@ -2354,7 +2353,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="shop_tap_open">Kholne ke liye dabayein</string>
     <string name="shop_new">Nayi dukaan</string>
     <string name="shop_settings_row">Dukaan ki profile</string>
-    <string name="type_tab_count">%1$s · %2$d</string>
     <plurals name="supplier_count">
         <item quantity="one">%d supplier</item>
         <item quantity="other">%d supplier</item>

@@ -925,7 +925,6 @@
     <string name="vq_no_recognizer">इस फ़ोन में आवाज़ पहचानने वाला ऐप नहीं है।</string>
     <string name="vq_not_paid_body">फ़ॉलो-अप सूची में वे ग्राहक सबसे ऊपर हैं जिनसे पहले वसूली करनी है।</string>
     <string name="vq_expiring_body">एक्सपायर होने वाले स्टॉक की स्क्रीन पर वह माल है जो सबसे पहले ख़त्म होगा।</string>
-    <string name="cf_open">कैश फ़्लो: आने वाला और जाने वाला पैसा</string>
     <string name="cf_title">कैश फ़्लो</string>
     <string name="cf_subtitle">आने का वादा और जाने वाला पैसा</string>
     <string name="cf_days">%1$s दिन</string>
@@ -2398,7 +2397,6 @@
     <string name="shop_tap_open">खोलने के लिए दबाएँ</string>
     <string name="shop_new">नई दुकान</string>
     <string name="shop_settings_row">दुकान की प्रोफ़ाइल</string>
-    <string name="type_tab_count">%1$s · %2$d</string>
     <plurals name="supplier_count">
         <item quantity="one">%d सप्लायर</item>
         <item quantity="other">%d सप्लायर</item>

@@ -38,7 +38,7 @@ class InsightsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_insights)
         findViewById<View>(R.id.btnAskVoice).setOnClickListener { askByVoice() }
-        findViewById<View>(R.id.btnCashFlow).setOnClickListener { startActivity(android.content.Intent(this, CashFlowActivity::class.java)) }
+        // Cash flow has its own tile on Home (13 Oct): the second door to it here is gone.
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)

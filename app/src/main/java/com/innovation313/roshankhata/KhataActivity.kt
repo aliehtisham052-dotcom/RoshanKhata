@@ -140,14 +140,28 @@ class KhataActivity : BaseActivity() {
     private var customerCount = 0
     private var supplierCount = 0
 
+    /** A tab's two lines: its name, then the count smaller and lighter. */
+    private fun tabLabel(name: String, count: Int): CharSequence {
+        val n = String.format(Digits.latinIn(), "%,d", count)
+        val out = android.text.SpannableStringBuilder(name).append('\n')
+        val start = out.length
+        out.append(n)
+        out.setSpan(android.text.style.RelativeSizeSpan(0.86f), start, out.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        out.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.NORMAL), start, out.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return out
+    }
+
     /** The tabs show which type is on, and how many of each the book holds. */
     private fun paintTypeTabs() {
         val all = findViewById<TextView>(R.id.tabTypeAll) ?: return
         val cust = findViewById<TextView>(R.id.tabTypeCustomers) ?: return
         val supp = findViewById<TextView>(R.id.tabTypeSuppliers) ?: return
-        all.text = getString(R.string.filter_account_all)
-        cust.text = Digits.string(resources, R.string.type_tab_count, getString(R.string.filter_type_customers), customerCount)
-        supp.text = Digits.string(resources, R.string.type_tab_count, getString(R.string.filter_type_suppliers), supplierCount)
+        // Name on top, count under it (13 Oct): "Customers · 1207" on one line
+        // was cut to "Customers · 1..." on a phone, so the count — the point
+        // of putting it there — was the part that vanished.
+        all.text = tabLabel(getString(R.string.filter_account_all), customerCount + supplierCount)
+        cust.text = tabLabel(getString(R.string.filter_type_customers), customerCount)
+        supp.text = tabLabel(getString(R.string.filter_type_suppliers), supplierCount)
         all.isSelected = typeFilter == TypeFilter.ALL
         cust.isSelected = typeFilter == TypeFilter.CUSTOMERS
         supp.isSelected = typeFilter == TypeFilter.SUPPLIERS

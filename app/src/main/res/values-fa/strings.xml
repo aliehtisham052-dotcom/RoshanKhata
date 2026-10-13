@@ -919,7 +919,6 @@
     <string name="vq_no_recognizer">این گوشی برنامه تشخیص گفتار ندارد.</string>
     <string name="vq_not_paid_body">فهرست پیگیری مشتریانی را که باید زودتر وصول کنید بالاتر نشان می‌دهد.</string>
     <string name="vq_expiring_body">صفحه کالای رو به انقضا آنچه زودتر تمام می‌شود را نشان می‌دهد.</string>
-    <string name="cf_open">جریان نقدی: پول ورودی و خروجی</string>
     <string name="cf_title">جریان نقدی</string>
     <string name="cf_subtitle">پولی که قول آمدنش داده شده و پولی که باید برود</string>
     <string name="cf_days">%1$s روز</string>
@@ -2382,7 +2381,6 @@
     <string name="shop_tap_open">برای باز کردن بزنید</string>
     <string name="shop_new">فروشگاه جدید</string>
     <string name="shop_settings_row">پروفایل فروشگاه</string>
-    <string name="type_tab_count">%1$s · %2$d</string>
     <plurals name="supplier_count">
         <item quantity="one">%d تأمین‌کننده</item>
         <item quantity="other">%d تأمین‌کننده</item>
