@@ -642,7 +642,10 @@ object InspectorReport {
                             lineTo(cx - 1.2f, cy + 3.3f)
                             lineTo(cx + 5f, cy - 3.8f)
                         }
-                        canvas.drawPath(path, tickPaint)
+                        // A tick is not mirror writing, but it is read the same
+                        // way: flipped, it leans backwards. Turned back on its
+                        // own centre on a right-to-left page.
+                        PdfRtl.asOne(canvas, cx - 5f, cx + 5f) { canvas.drawPath(path, tickPaint) }
                     }
                 }
             }
