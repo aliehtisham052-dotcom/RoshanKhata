@@ -2873,4 +2873,5 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="biz_card_ex_web">mis. situs web atau halaman Facebook</string>
     <string name="biz_card_ex_qr">mis. Assalamualaikum, saya lihat kartu Anda</string>
     <string name="biz_card_send_picture">Kirim kartu sebagai gambar</string>
+    <string name="drive_signed_in_ok">✓ Masuk sebagai %1$s. Buku Anda kini dapat dicadangkan ke Google Drive Anda.</string>
 </resources>

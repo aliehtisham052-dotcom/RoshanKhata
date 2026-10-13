@@ -3064,4 +3064,5 @@
     <string name="biz_card_ex_web">مثلاً موقعك أو صفحة فيسبوك</string>
     <string name="biz_card_ex_qr">مثلاً السلام عليكم، رأيت بطاقتك</string>
     <string name="biz_card_send_picture">أرسل البطاقة كصورة</string>
+    <string name="drive_signed_in_ok">✓ تم تسجيل الدخول باسم %1$s. يمكن الآن نسخ دفاترك احتياطيًا إلى Google Drive الخاص بك.</string>
 </resources>

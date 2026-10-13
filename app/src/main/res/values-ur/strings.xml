@@ -2876,4 +2876,5 @@
     <string name="biz_card_ex_web">مثلاً ویب سائٹ یا فیس بک پیج</string>
     <string name="biz_card_ex_qr">مثلاً السلام علیکم، آپ کا کارڈ دیکھا</string>
     <string name="biz_card_send_picture">کارڈ تصویر کی شکل میں بھیجیں</string>
+    <string name="drive_signed_in_ok">✓ %1$s سے سائن اِن ہو گیا۔ اب آپ کا کھاتہ آپ کی گوگل ڈرائیو میں بیک اپ ہو سکتا ہے۔</string>
 </resources>

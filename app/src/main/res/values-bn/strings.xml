@@ -2920,4 +2920,5 @@
     <string name="biz_card_ex_web">যেমন ওয়েবসাইট বা ফেসবুক পেজ</string>
     <string name="biz_card_ex_qr">যেমন আসসালামু আলাইকুম, আপনার কার্ড দেখেছি</string>
     <string name="biz_card_send_picture">কার্ড ছবি হিসেবে পাঠান</string>
+    <string name="drive_signed_in_ok">✓ %1$s দিয়ে সাইন ইন হয়েছে। এখন আপনার খাতা আপনার Google Drive-এ ব্যাকআপ হতে পারে।</string>
 </resources>

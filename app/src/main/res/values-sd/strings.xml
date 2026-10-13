@@ -2904,4 +2904,5 @@
     <string name="biz_card_ex_web">مثال ويب سائيٽ يا فيس بڪ پيج</string>
     <string name="biz_card_ex_qr">مثال السلام عليڪم، توهان جو ڪارڊ ڏٺو</string>
     <string name="biz_card_send_picture">ڪارڊ تصوير طور موڪليو</string>
+    <string name="drive_signed_in_ok">✓ %1$s سان سائن اِن ٿي ويو. هاڻي توهان جو کاتو توهان جي گوگل ڊرائيو ۾ بيڪ اپ ٿي سگهي ٿو.</string>
 </resources>
