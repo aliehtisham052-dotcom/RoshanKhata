@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Open now" beside the shop in use (13 Oct): soft green, outlined, so it
+     reads as where you are rather than as a button to press. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/brand_green_soft" />
+    <stroke android:width="1dp" android:color="@color/brand_green_text" />
+    <corners android:radius="12dp" />
+</shape>

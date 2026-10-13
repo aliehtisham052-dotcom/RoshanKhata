@@ -555,7 +555,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="businesses_title">Usaha</string>
     <string name="businesses_subtitle">Setiap usaha memiliki buku tersendiri</string>
     <string name="business_add">Tambah usaha</string>
-    <string name="business_open_now">Terbuka</string>
     <string name="business_rename">Ganti nama usaha</string>
     <string name="business_delete">Hapus usaha</string>
     <string name="business_delete_confirm_title">Hapus %1$s?</string>
@@ -2858,4 +2857,8 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="invoice_filter_a4">Halaman A4</string>
     <string name="invoice_filter_roll">Rol struk</string>
     <string name="invoice_filter_ink">Hemat tinta</string>
+    <string name="business_current">Sedang dibuka</string>
+    <string name="business_switch_open">Buka</string>
+    <string name="business_name_needed">Tulis nama usaha dulu.</string>
+    <string name="business_not_added">Usaha belum ditambahkan. Pilih apa yang dijualnya untuk menambahkan.</string>
 </resources>

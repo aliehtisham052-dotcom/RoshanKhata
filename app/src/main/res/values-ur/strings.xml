@@ -539,7 +539,6 @@
     <string name="businesses_title">آپ کے کاروبار</string>
     <string name="businesses_subtitle">ہر کاروبار کا اپنا الگ کھاتہ رہتا ہے</string>
     <string name="business_add">نیا کاروبار شامل کریں</string>
-    <string name="business_open_now">کھلا ہے</string>
     <string name="business_rename">کاروبار کا نام بدلیں</string>
     <string name="business_delete">کاروبار حذف کریں</string>
     <string name="business_delete_confirm_title">%1$s حذف کریں؟</string>
@@ -2861,4 +2860,8 @@
     <string name="invoice_filter_a4">A4 صفحہ</string>
     <string name="invoice_filter_roll">رسید رول</string>
     <string name="invoice_filter_ink">کم سیاہی</string>
+    <string name="business_current">ابھی کھلا ہے</string>
+    <string name="business_switch_open">کھولیں</string>
+    <string name="business_name_needed">پہلے کاروبار کا نام لکھیں۔</string>
+    <string name="business_not_added">کاروبار شامل نہیں ہوا۔ شامل کرنے کے لیے چنیں کہ یہ کیا بیچتا ہے۔</string>
 </resources>

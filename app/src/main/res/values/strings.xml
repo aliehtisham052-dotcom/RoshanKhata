@@ -566,7 +566,6 @@ Add your first customer and start your khata.</string>
     <string name="businesses_title">Businesses</string>
     <string name="businesses_subtitle">Each business keeps its own separate khata</string>
     <string name="business_add">Add business</string>
-    <string name="business_open_now">Open</string>
     <string name="business_rename">Rename business</string>
     <string name="business_delete">Delete business</string>
     <string name="business_delete_confirm_title">Delete %1$s?</string>
@@ -3075,4 +3074,8 @@ You can change this any time from this screen.</string>
     <string name="invoice_filter_a4">A4 page</string>
     <string name="invoice_filter_roll">Receipt roll</string>
     <string name="invoice_filter_ink">Least ink</string>
+    <string name="business_current">Open now</string>
+    <string name="business_switch_open">Open</string>
+    <string name="business_name_needed">Write the business\'s name first.</string>
+    <string name="business_not_added">Business not added. Pick what it sells to add it.</string>
 </resources>

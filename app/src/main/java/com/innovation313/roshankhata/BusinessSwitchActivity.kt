@@ -65,17 +65,29 @@ class BusinessSwitchActivity : BaseActivity() {
     private fun promptCreate() {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_business_name, null)
         val et: EditText = view.findViewById(R.id.etBusinessName)
-        MaterialAlertDialogBuilder(this)
+        val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.business_add)
             .setView(view)
-            .setPositiveButton(R.string.save) { _, _ ->
+            .setPositiveButton(R.string.save, null)
+            .setNegativeButton(R.string.cancel, null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE).setOnClickListener {
                 val name = et.text.toString().trim()
-                if (name.isEmpty()) return@setPositiveButton
+                // An empty name used to close the dialog and add nothing,
+                // silently (13 Oct); the dialog now stays and says why.
+                if (name.isEmpty()) {
+                    et.error = getString(R.string.business_name_needed)
+                    return@setOnClickListener
+                }
+                dialog.dismiss()
                 // The new book's trade, asked before it exists (9 Oct): a
                 // second shop is often a different trade from the first, and
                 // every hint, unit and feature reads it. Nothing is created
                 // until it is chosen.
-                com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = false) { trade ->
+                com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = false, onClosed = {
+                    android.widget.Toast.makeText(this, R.string.business_not_added, android.widget.Toast.LENGTH_LONG).show()
+                }) { trade ->
                     val fresh = Businesses.create(this, name)
                     com.innovation313.roshankhata.data.BusinessProfile.setTradeOf(this, fresh.id, trade)
                     // Created to be used: open it straight away. The restart
@@ -83,8 +95,8 @@ class BusinessSwitchActivity : BaseActivity() {
                     switchAndRestart(fresh.id)
                 }
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        }
+        dialog.show()
         et.requestFocus()
     }
 
@@ -234,6 +246,7 @@ class BusinessSwitchActivity : BaseActivity() {
             val name: TextView = v.findViewById(R.id.tvBizName)
             val hint: TextView = v.findViewById(R.id.tvBizHint)
             val open: TextView = v.findViewById(R.id.tvBizOpen)
+            val switch: View = v.findViewById(R.id.btnBizSwitch)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH =
@@ -260,10 +273,20 @@ class BusinessSwitchActivity : BaseActivity() {
                 ctx.getString(R.string.business_last_backup, Format.dateOnly(last))
             }
 
-            holder.open.visibility = if (b.id == activeId) View.VISIBLE else View.GONE
+            val isOpen = b.id == activeId
+            holder.open.visibility = if (isOpen) View.VISIBLE else View.GONE
+            holder.switch.visibility = if (isOpen) View.GONE else View.VISIBLE
+            holder.switch.contentDescription = ctx.getString(R.string.business_switch_open) + " " + display
+            holder.switch.setOnClickListener { switchAndRestart(b.id) }
             holder.itemView.setOnClickListener {
-                // Tapping the open shop is not a switch; nothing to do.
-                if (b.id != activeId) switchAndRestart(b.id)
+                // The open shop: no switch is needed, so go straight to its
+                // khata (13 Oct). Doing nothing read as "it will not open".
+                if (isOpen) {
+                    startActivity(Intent(this@BusinessSwitchActivity, KhataActivity::class.java))
+                    finish()
+                } else {
+                    switchAndRestart(b.id)
+                }
             }
             holder.itemView.setOnLongClickListener {
                 showBusinessOptions(b)
