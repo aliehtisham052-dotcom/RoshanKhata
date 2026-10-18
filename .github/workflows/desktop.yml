@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          gradle :shared:desktopTest :desktop:test :desktop:packageMsi --no-daemon --stacktrace 2>&1 | tee /tmp/msi_output.txt
+          gradle :shared:desktopTest :desktop:test :desktop:packageMsi :desktop:createDistributable --no-daemon --stacktrace 2>&1 | tee /tmp/msi_output.txt
           exit ${PIPESTATUS[0]}
 
       - name: Publish the cause
