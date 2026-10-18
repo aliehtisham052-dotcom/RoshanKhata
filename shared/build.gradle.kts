@@ -22,12 +22,16 @@ plugins {
     id("com.android.library")
     // Room's code generator, run for each target (Phase 3: the database).
     id("com.google.devtools.ksp")
+    // Room's own plugin keeps the schema files: with a plain KSP argument the
+    // Android and desktop KSP runs wrote and read one 31.json at the same
+    // time, and one read it half-written (CI, 18 Oct).
+    id("androidx.room")
 }
 
 // The schema files stay where they have always been (app/schemas): the
 // migration tests in the app read them.
-ksp {
-    arg("room.schemaLocation", "$rootDir/app/schemas")
+room {
+    schemaDirectory("$rootDir/app/schemas")
 }
 
 kotlin {
