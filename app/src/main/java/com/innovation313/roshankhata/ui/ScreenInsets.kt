@@ -33,7 +33,8 @@ import com.innovation313.roshankhata.R
  *   padding, so its colour runs up behind the clock as it always did.
  * - The root takes the gesture bar at the bottom — except when the screen has
  *   a BottomNavigationView, which insets itself, and helping it would double
- *   the gap.
+ *   the gap. While the keyboard is up it takes the keyboard instead, and the
+ *   field being typed in is scrolled above it (KeyboardFollow).
  * - A screen with no header takes the status bar on the root instead.
  */
 object ScreenInsets {
@@ -86,13 +87,23 @@ object ScreenInsets {
                 WindowInsetsCompat.Type.systemBars() or
                     WindowInsetsCompat.Type.displayCutout()
             )
+            // The keyboard too (18 Oct): drawn behind the bars, the screen is
+            // no longer shrunk for the keyboard (adjustResize is ignored), so
+            // without this every form's lower fields typed out of sight.
+            // The larger of the two, never the sum: the keyboard sits over
+            // the gesture bar, not above it.
+            val ime = KeyboardFollow.imeBottom(insets)
             val top = if (header == null) rootBase[1] + bars.top else rootBase[1]
-            val bottom = if (ownBottomBar == null) rootBase[3] + bars.bottom else rootBase[3]
+            val bottom = rootBase[3] + if (ownBottomBar == null) maxOf(bars.bottom, ime) else ime
             val start = if (header == null) rootBase[0] + bars.startOf(v) else rootBase[0]
             val end = if (header == null) rootBase[2] + bars.endOf(v) else rootBase[2]
             v.setPaddingRelative(start, top, end, bottom)
+            // Room alone leaves a low field under the new padding; scroll it
+            // up once the smaller screen has been laid out.
+            if (ime > 0) v.post { KeyboardFollow.reveal(v) }
             insets
         }
+        KeyboardFollow.keepFocusedVisible(root)
 
         ViewCompat.requestApplyInsets(root)
     }

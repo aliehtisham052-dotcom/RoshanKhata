@@ -194,8 +194,12 @@ object TradePicker {
             val rtl = root.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
             val start = if (rtl) bars.right else bars.left
             val end = if (rtl) bars.left else bars.right
+            // The footer rides above the keyboard while the search box is in
+            // use, as on the shop-name page (18 Oct); behind the bars nothing
+            // else would move it.
+            val ime = KeyboardFollow.imeBottom(insets)
             header.setPaddingRelative(h[0] + start, h[1] + bars.top, h[2] + end, h[3])
-            footer.setPaddingRelative(f[0] + start, f[1], f[2] + end, f[3] + bars.bottom)
+            footer.setPaddingRelative(f[0] + start, f[1], f[2] + end, f[3] + maxOf(bars.bottom, ime))
             insets
         }
         ViewCompat.requestApplyInsets(root)

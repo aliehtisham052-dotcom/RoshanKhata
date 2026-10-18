@@ -102,8 +102,10 @@ class ShopNameActivity : BaseActivity() {
             val end = if (rtl) bars.left else bars.right
             header.setPaddingRelative(h[0] + start, h[1] + bars.top, h[2] + end, h[3])
             footer.setPaddingRelative(f[0] + start, f[1], f[2] + end, f[3] + maxOf(bars.bottom, ime.bottom))
+            if (ime.bottom > 0) root.post { com.innovation313.roshankhata.ui.KeyboardFollow.reveal(root) }
             insets
         }
+        com.innovation313.roshankhata.ui.KeyboardFollow.keepFocusedVisible(root)
         ViewCompat.requestApplyInsets(root)
     }
 

@@ -746,6 +746,9 @@ class InvoiceEditorActivity : BaseActivity() {
             sheet.dismiss()
         }
         sheet.show()
+        // The note and amounts sit low in the sheet; keep the one being typed
+        // above the keyboard (18 Oct, KeyboardFollow).
+        com.innovation313.roshankhata.ui.KeyboardFollow.dialog(sheet)
     }
 
     private fun draft(): Invoice {

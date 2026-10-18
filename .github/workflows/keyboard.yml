@@ -1,0 +1,84 @@
+name: Keyboard check
+
+# Every text field stays above the on-screen keyboard (18 Oct). Runs the two
+# keyboard tests on Android 11 (API 30, what the other on-device tests use)
+# and Android 15 (API 35, where every app is drawn behind the bars and
+# adjustResize stops shrinking screens). Pictures and measurements go up as
+# the "keyboard-proof-apiNN" artifact for a person to look at.
+#
+# Its own workflow, like instrumented.yml: an emulator never holds up the APK.
+# Same lessons as instrumented.yml (Gradle pinned, one-line script, swangle).
+
+on:
+  push:
+    branches: [main, 'keyboard-*']
+  workflow_dispatch:
+
+concurrency:
+  group: keyboard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  keyboard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [30, 35]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-disabled: true
+          gradle-version: 8.14.3
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run the keyboard tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: >-
+            -no-window -no-snapshot -noaudio -no-boot-anim
+            -gpu swangle_indirect -camera-back none
+          disable-animations: true
+          script: sh scripts/keyboard-check.sh
+
+      - name: Keep the pictures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keyboard-proof-api${{ matrix.api }}
+          path: /tmp/keyboard-proof
+          if-no-files-found: ignore
+
+      - name: Publish the failure
+        if: failure()
+        run: |
+          if [ ! -f /tmp/instrumented_output.txt ]; then
+            echo "::error::The emulator did not start (API ${{ matrix.api }})."
+            exit 0
+          fi
+          grep -iE "^e: |error:|FAILURE:|Caused by|FAILED|AssertionError|hidden by the keyboard|never appeared|java\.lang\.[A-Za-z]+(Exception|Error)" \
+            /tmp/instrumented_output.txt | head -30 \
+            | while IFS= read -r line; do
+                clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                echo "::error::API ${{ matrix.api }}: $clean"
+              done
