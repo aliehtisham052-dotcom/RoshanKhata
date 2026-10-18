@@ -177,7 +177,7 @@ object NameSearch {
      * difference appears, which is both faster over a thousand names and
      * exactly the question being asked.
      */
-    internal fun withinOneEdit(a: String, b: String): Boolean {
+    fun withinOneEdit(a: String, b: String): Boolean {
         if (a == b) return true
         val (short, long) = if (a.length <= b.length) a to b else b to a
         if (long.length - short.length > 1) return false
