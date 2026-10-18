@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.ui
 
 import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.data.DateWords
-import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.EntryItem
 
@@ -29,17 +28,14 @@ object Format {
      * exactly what the owner's Urdu screenshot showed.) Wrapped, the number
      * keeps its own order inside any sentence; in English nothing changes.
      */
-    fun ltr(text: String): String =
-        androidx.core.text.BidiFormatter.getInstance()
-            .unicodeWrap(text, androidx.core.text.TextDirectionHeuristicsCompat.LTR)
+    fun ltr(text: String): String = BidiWrap.ltr(text)
 
     /**
      * A name dropped into a translated sentence, isolated so that brackets
      * or Latin letters in it — "(Shari)Touseef" inside an Urdu line — are
      * laid out by the name's own direction and do not flip around it.
      */
-    fun isolate(text: String): String =
-        androidx.core.text.BidiFormatter.getInstance().unicodeWrap(text)
+    fun isolate(text: String): String = BidiWrap.auto(text)
 
     /**
      * A party's name on its own line — the list row, the customer screen,
@@ -127,12 +123,7 @@ object Format {
         else -> money(value)
     }
 
-    /** The colour for [signedTotal] on a dark header. Green up, red down, plain at zero. */
-    fun signedTotalColourOnDark(value: Double): Int = when {
-        value > 0 -> R.color.bal_i_owe_on_dark
-        value < 0 -> R.color.bal_owed_to_me_on_dark
-        else -> R.color.white
-    }
+    // signedTotalColourOnDark(value): a colour resource, app ui/FormatColours.kt.
 
     /**
      * A customer balance with its sign, the shopkeeper's way round.
@@ -156,15 +147,7 @@ object Format {
         }
     }
 
-    /**
-     * The colour that goes with customerBalance(): red for money to collect,
-     * green for money owed out, neutral when settled. Returns a colour RES id.
-     */
-    fun customerBalanceColour(value: Double): Int = when {
-        Money.isPositive(value) -> R.color.bal_owed_to_me
-        Money.isNegative(value) -> R.color.bal_i_owe
-        else -> R.color.text_muted
-    }
+    // customerBalanceColour(value): a colour resource, app ui/FormatColours.kt.
 
     fun dateTime(millis: Long): String = dateTimeFmt.format(Date(millis))
 
