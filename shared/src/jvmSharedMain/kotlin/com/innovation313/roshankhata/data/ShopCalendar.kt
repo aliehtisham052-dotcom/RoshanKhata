@@ -1,6 +1,5 @@
 package com.innovation313.roshankhata.data
 
-import android.content.Context
 import java.text.FieldPosition
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -37,20 +36,12 @@ object ShopCalendar {
 
     @Volatile
     var current: Kind = Kind.GREGORIAN
-        private set
 
-    /** Re-read the active shop's choice (same places Currency is refreshed). */
-    fun refresh(context: Context) {
-        current = BusinessProfile.calendar(context)
-    }
-
-    fun set(context: Context, kind: Kind) {
-        BusinessProfile.setCalendar(context, kind)
-        refresh(context)
-    }
+    // refresh(context) and set(context, kind) read and save the shop's choice;
+    // they live with the phone's preferences (app data/ShopCalendarAndroid.kt).
 
     /** Tests only: print in [kind] without a shop behind it. */
-    internal fun useForTest(kind: Kind) {
+    fun useForTest(kind: Kind) {
         current = kind
     }
 
@@ -62,18 +53,9 @@ object ShopCalendar {
         return if (kind == Kind.JALALI) jalali(g.first, g.second, g.third) else g
     }
 
-    private fun hijri(millis: Long, zone: TimeZone): Triple<Int, Int, Int> {
-        val c = android.icu.util.IslamicCalendar(
-            android.icu.util.TimeZone.getTimeZone(zone.id), android.icu.util.ULocale.ENGLISH
-        )
-        c.calculationType = android.icu.util.IslamicCalendar.CalculationType.ISLAMIC_UMALQURA
-        c.timeInMillis = millis
-        return Triple(
-            c.get(android.icu.util.Calendar.YEAR),
-            c.get(android.icu.util.Calendar.MONTH) + 1,
-            c.get(android.icu.util.Calendar.DAY_OF_MONTH)
-        )
-    }
+    // Umm al-Qura comes from the platform: android.icu on the phone,
+    // java.time's Hijrah chronology on the computer (HijriDate.kt in each).
+    private fun hijri(millis: Long, zone: TimeZone): Triple<Int, Int, Int> = hijriUmmAlQura(millis, zone)
 
     // ---------- Jalali (jalaali-js, Behrooz Borkowski's breaks) ----------
 
@@ -184,7 +166,7 @@ object ShopCalendar {
  * [base], the same Gregorian formatter DateWords would have used, so times
  * read exactly as before. Figures stay 0-9 like every other date in the app.
  */
-internal class CalendarDateFormat(
+class CalendarDateFormat(
     private val datePattern: String,
     private val base: SimpleDateFormat,
     private val kind: ShopCalendar.Kind,

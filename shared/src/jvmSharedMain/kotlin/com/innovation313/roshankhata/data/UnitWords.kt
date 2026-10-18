@@ -1,6 +1,5 @@
 package com.innovation313.roshankhata.data
 
-import androidx.sqlite.db.SupportSQLiteDatabase
 import java.util.Locale
 
 /**
@@ -74,7 +73,7 @@ object UnitWords {
     )
 
     /** Every label of every language, and every key, to its key. Lower-cased. */
-    private val TO_KEY: Map<String, String> = buildMap {
+    val TO_KEY: Map<String, String> = buildMap {
         for ((i, key) in KEYS.withIndex()) {
             put(key, key)
             for (labels in LABELS.values) put(fold(labels[i]), key)
@@ -83,7 +82,7 @@ object UnitWords {
 
     private fun fold(text: String): String = text.trim().lowercase(Locale.ROOT)
 
-    internal fun tableOf(locale: Locale): String {
+    fun tableOf(locale: Locale): String {
         val language = locale.language.lowercase(Locale.ROOT)
         return when {
             language == "ur" && locale.script.equals("Latn", ignoreCase = true) -> "ur-latn"
@@ -109,21 +108,8 @@ object UnitWords {
     fun choices(locale: Locale = DateWords.appLocale()): List<String> =
         KEYS.map { label(it, locale) }
 
-    /** A key's word in the app's language, for [TradeVocab]. */
-    fun label(context: android.content.Context, key: String): String = label(key, DateWords.appLocale())
-
-    /**
-     * The list the owner picks from, the active trade's own units first (9 Oct
-     * 2026): a dairy sees litre, kg, packet at the top and bag, maund, seer
-     * below, where before every shop was handed a pesticide dealer's order.
-     * Every unit is still offered — a trade's list is an order, not a fence —
-     * and what is saved is the same key as ever.
-     */
-    fun choices(context: android.content.Context): List<String> {
-        val locale = DateWords.appLocale()
-        val lead = TradeVocab.unitKeys(context)
-        return (lead + KEYS.filter { it !in lead }).map { label(it, locale) }
-    }
+    // label(context, key), choices(context) and normalizeStored(db) need the
+    // phone (TradeVocab, SQLite): app data/UnitWordsAndroid.kt.
 
     /**
      * What to SAVE or COMPARE for a unit the owner typed or picked: the key
@@ -137,7 +123,7 @@ object UnitWords {
     }
 
     /** Every table and column a unit is saved in. */
-    internal val STORED_IN = listOf(
+    val STORED_IN = listOf(
         "transactions" to "unit",
         "entry_items" to "unit",
         "bill_items" to "unit",
@@ -145,31 +131,4 @@ object UnitWords {
         "products" to "defaultUnit",
         "schemes" to "unit"
     )
-
-    /**
-     * Turn units that were typed by hand as one of the app's own labels into
-     * their key, once per opening of a book. One UPDATE per table, touching
-     * only rows whose unit is exactly such a label; a key, an empty unit and
-     * the owner's own words are not rows it matches. Each table on its own
-     * and never fatal: a book must open whether or not this ran.
-     *
-     * English keys are deliberately not in the list: "bag" is already right,
-     * and "Bag" typed by hand is left as the owner wrote it (the app has
-     * always compared units without regard to letter case).
-     */
-    fun normalizeStored(db: SupportSQLiteDatabase) {
-        val pairs = TO_KEY.filter { (label, key) -> label != key }
-        if (pairs.isEmpty()) return
-        val quoted = { s: String -> "'" + s.replace("'", "''") + "'" }
-        val cases = pairs.entries.joinToString(" ") { (label, key) -> "WHEN ${quoted(label)} THEN ${quoted(key)}" }
-        val labels = pairs.keys.joinToString(", ") { quoted(it) }
-        for ((table, column) in STORED_IN) {
-            runCatching {
-                db.execSQL(
-                    "UPDATE $table SET $column = CASE lower(trim($column)) $cases ELSE $column END " +
-                        "WHERE $column IS NOT NULL AND lower(trim($column)) IN ($labels)"
-                )
-            }
-        }
-    }
 }
