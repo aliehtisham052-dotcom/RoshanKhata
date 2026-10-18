@@ -712,7 +712,7 @@ val MIGRATION_30_31 = object : Migration(30, 31) {
     }
 }
 
-const val KHATA_DB_VERSION = 31
+// KHATA_DB_VERSION (31) moved to the shared module with the database class (KMP Phase 3).
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(

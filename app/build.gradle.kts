@@ -1,15 +1,12 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
 }
 
 // Room writes the schema out here. With this in place a future migration can be
 // verified against the real schema at build time — a broken one fails the build
 // instead of failing on a shopkeeper's phone.
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-}
+// Room's schema files (app/schemas) are now written by the shared module's KSP.
 
 // A private dev/debug APK can carry a higher versionCode than the fixed one
 // in defaultConfig, passed in as -PversionCodeOverride=<n> (build.yml uses a
@@ -346,7 +343,8 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("androidx.room:room-runtime:2.7.1")
     implementation("androidx.room:room-ktx:2.7.1")
-    ksp("androidx.room:room-compiler:2.7.1")
+    // Room's code is generated in the shared module now, where the database
+    // class lives (KMP Phase 3); the app no longer runs Room's KSP.
 
     testImplementation("junit:junit:4.13.2")
 

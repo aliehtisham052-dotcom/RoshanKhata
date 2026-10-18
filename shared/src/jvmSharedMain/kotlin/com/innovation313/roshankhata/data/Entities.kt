@@ -1,7 +1,5 @@
 package com.innovation313.roshankhata.data
 
-import android.content.Context
-import com.innovation313.roshankhata.R
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -110,19 +108,8 @@ object PaymentMethod {
 
     val ALL = listOf(CASH, BANK, CHEQUE, ONLINE)
 
-    fun labelRes(key: String): Int? = when (key) {
-        CASH -> R.string.payment_method_cash
-        BANK -> R.string.payment_method_bank
-        CHEQUE -> R.string.payment_method_cheque
-        ONLINE -> R.string.payment_method_online
-        else -> null
-    }
-
-    fun labelOf(context: Context, key: String?): String? {
-        if (key.isNullOrBlank()) return null
-        val res = labelRes(key) ?: return key
-        return context.getString(res)
-    }
+    // labelRes() and labelOf(), which read the app's strings, are in the app
+    // (PaymentMethodLabels.kt): KMP Phase 3, 18 Oct.
 }
 
 /** A single ledger entry against a party. */
