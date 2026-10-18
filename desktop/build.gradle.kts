@@ -20,6 +20,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     // Dispatchers.Main on the desktop is Swing's event thread.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
+    testImplementation("junit:junit:4.13.2")
 }
 
 compose.desktop {

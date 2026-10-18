@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          gradle :shared:desktopTest :desktop:packageMsi --no-daemon --stacktrace 2>&1 | tee /tmp/msi_output.txt
+          gradle :shared:desktopTest :desktop:test :desktop:packageMsi --no-daemon --stacktrace 2>&1 | tee /tmp/msi_output.txt
           exit ${PIPESTATUS[0]}
 
       - name: Publish the cause
@@ -64,4 +64,6 @@ jobs:
           gh release view desktop-test >/dev/null 2>&1 || gh release create desktop-test --prerelease \
             --title "Roshan Khata for Windows - test build" --notes "Windows test build. Not signed yet." || true
           gh release upload desktop-test RoshanKhata-Windows-test.msi --clobber
+          # The statement pictures from StatementPrintTest, to look at (lesson 16).
+          for f in desktop/build/statement-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           gh release edit desktop-test --notes "Windows test build from ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not signed yet: Windows will warn before installing."
