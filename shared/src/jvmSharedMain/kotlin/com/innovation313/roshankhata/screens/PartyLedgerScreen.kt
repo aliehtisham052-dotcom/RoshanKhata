@@ -46,12 +46,24 @@ fun PartyLedgerScreen(
     entries: List<LedgerEntry>,
     onGave: () -> Unit,
     onGot: () -> Unit,
+    onStatement: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val c = LocalRoshanColors.current
     Column(modifier.fillMaxSize().background(c.pageBg)) {
         Column(Modifier.fillMaxWidth().background(c.surface).padding(20.dp)) {
-            Text(Format.name(name), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(Format.name(name), Modifier.weight(1f), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                if (onStatement != null) {
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = onStatement,
+                        modifier = Modifier.testTag("ledgerStatement"),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, c.brandGreen),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = c.brandGreenText)
+                    ) { Text(word(W.statement_pdf)) }
+                }
+            }
             phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 14.sp) }
             Row(Modifier.fillMaxWidth().padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(word(W.net_balance), Modifier.weight(1f), color = c.textMuted, fontSize = 14.sp)

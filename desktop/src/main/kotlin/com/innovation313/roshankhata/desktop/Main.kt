@@ -111,6 +111,7 @@ fun main() = application {
                         restore = { data -> restore(data, db, settings) },
                         backup = { file -> backup(file, db, settings) },
                         onLanguage = { tag -> appPrefs.setLanguage(tag); language = tag },
+                        rtl = rtl,
                         words = words
                     )
                 }
@@ -165,6 +166,7 @@ private fun Book(
     restore: suspend (BackupCodec.ParsedBackup) -> Unit,
     backup: suspend (File) -> Long,
     onLanguage: (String) -> Unit,
+    rtl: Boolean,
     words: Words
 ) {
     val c = LocalRoshanColors.current
@@ -290,7 +292,16 @@ private fun Book(
                         balance = party.balance,
                         entries = entries.sortedByDescending { it.timestamp },
                         onGave = { entryWay = true },
-                        onGot = { entryWay = false }
+                        onGot = { entryWay = false },
+                        onStatement = {
+                            scope.launch {
+                                val rows = withContext(Dispatchers.IO) { dao.latestEntriesWithItems(party.id, Int.MAX_VALUE) }
+                                StatementPrint.show(
+                                    StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), party.name, party.phone, rows),
+                                    words.text(W.pdf_stmt_title, party.name)
+                                )
+                            }
+                        }
                     )
                 }
             }
