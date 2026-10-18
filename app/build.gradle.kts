@@ -369,6 +369,6 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.7.0")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     // Reading the shared Compose screens in on-device tests (KMP Phase 5).
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.12.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.12.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.11.2")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.11.2")
 }
