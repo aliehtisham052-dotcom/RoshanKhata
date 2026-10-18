@@ -22,4 +22,9 @@ plugins {
     id("com.android.library") version "8.11.1" apply false
     // Room's Gradle plugin for the shared module's schema files; same version as Room.
     id("androidx.room") version "2.7.1" apply false
+    // Compose Multiplatform (KMP Phase 5): screens written once for the phone and
+    // the computer. 1.12.1 (22 Sep 2026; 1.12.2 is days old). The compiler plugin
+    // ships with Kotlin, so its version is Kotlin's.
+    id("org.jetbrains.compose") version "1.12.1" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.4.21" apply false
 }

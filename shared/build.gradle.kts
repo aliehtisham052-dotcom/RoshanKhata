@@ -26,6 +26,9 @@ plugins {
     // Android and desktop KSP runs wrote and read one 31.json at the same
     // time, and one read it half-written (CI, 18 Oct).
     id("androidx.room")
+    // Screens in Compose (Phase 5), and the Compose compiler.
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 // The schema files stay where they have always been (app/schemas): the
@@ -46,6 +49,11 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
                 // api: KhataDatabase extends RoomDatabase, so the app sees Room through it.
                 api("androidx.room:room-runtime:2.7.1")
+                // api: the app hosts the shared screens in its own activities.
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.material3)
+                api(compose.components.resources)
             }
         }
         val jvmSharedMain by creating {
@@ -94,4 +102,35 @@ android {
 dependencies {
     add("kspAndroid", "androidx.room:room-compiler:2.7.1")
     add("kspDesktop", "androidx.room:room-compiler:2.7.1")
+}
+
+// The app's own words, pictures' fonts and lists, as Compose resources (Phase 5).
+// One source: app/src/main/res stays where translations are made and checked
+// (strings.yml), and this copies it for the shared screens at build time, so
+// a phone screen and its computer twin can never say different things.
+// values-in is Indonesian as Android names it; the computer's JDK calls it
+// "id", so it is copied under both names.
+val syncAppResources by tasks.registering(Sync::class) {
+    val res = rootProject.file("app/src/main/res")
+    from(res) {
+        include("values/strings.xml", "values/arrays.xml")
+        include("values-*/strings.xml", "values-*/arrays.xml")
+        exclude("values-night/**")
+        include("font/*.ttf")
+    }
+    from(res.resolve("values-in")) {
+        include("strings.xml", "arrays.xml")
+        into("values-id")
+    }
+    into(layout.buildDirectory.dir("appResources"))
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.innovation313.roshankhata.res"
+    generateResClass = always
+    customDirectory(
+        sourceSetName = "commonMain",
+        directoryProvider = syncAppResources.map { layout.projectDirectory.dir(it.destinationDir.absolutePath) }
+    )
 }

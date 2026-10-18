@@ -6,10 +6,14 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import android.widget.TextView
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.platform.ComposeView
+import androidx.core.graphics.drawable.toBitmap
+import com.innovation313.roshankhata.screens.AboutScreen
+import com.innovation313.roshankhata.screens.RoshanTheme
 import android.widget.Toast
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.data.ProblemReport
 
 /**
@@ -49,31 +53,42 @@ class AboutActivity : BaseActivity() {
 
         findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
 
-        val tvVersion = findViewById<TextView>(R.id.tvVersion)
-        tvVersion.text = getString(R.string.about_version, BuildConfig.VERSION_NAME)
+        // The page is the shared Compose screen; the toolbar and the insets stay
+        // the phone's, as on every other screen.
+        val icon = androidx.core.content.ContextCompat.getDrawable(this, R.mipmap.ic_launcher)!!
+            .toBitmap(216, 216).asImageBitmap()
+        val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
         // A debug build's door to the big book (P0, 7 Oct): seven taps on the
         // version line write ten thousand seeded customers, so the app can be
         // felt at that size on a real phone; seven more take them out. A Play
         // build has no such door — the taps do nothing there.
-        if (BuildConfig.DEV_TOOLS) {
-            var taps = 0
-            tvVersion.setOnClickListener {
+        var taps = 0
+        val versionTap: (() -> Unit)? = if (!BuildConfig.DEV_TOOLS) null else {
+            {
                 taps++
-                if (taps < 7) return@setOnClickListener
-                taps = 0
-                com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                    .setTitle("Big book (debug)")
-                    .setMessage("Seed ${com.innovation313.roshankhata.data.BigBook.CUSTOMERS} customers x ${com.innovation313.roshankhata.data.BigBook.ENTRIES_EACH} entries, or remove the seeded ones?")
-                    .setPositiveButton("Seed") { _, _ -> bigBook(seed = true) }
-                    .setNegativeButton("Remove") { _, _ -> bigBook(seed = false) }
-                    .setNeutralButton(R.string.cancel, null)
-                    .show()
+                if (taps >= 7) {
+                    taps = 0
+                    com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                        .setTitle("Big book (debug)")
+                        .setMessage("Seed ${com.innovation313.roshankhata.data.BigBook.CUSTOMERS} customers x ${com.innovation313.roshankhata.data.BigBook.ENTRIES_EACH} entries, or remove the seeded ones?")
+                        .setPositiveButton("Seed") { _, _ -> bigBook(seed = true) }
+                        .setNegativeButton("Remove") { _, _ -> bigBook(seed = false) }
+                        .setNeutralButton(R.string.cancel, null)
+                        .show()
+                }
             }
         }
-        findViewById<TextView>(R.id.tvContact).text = ProblemReport.SUPPORT_EMAIL
-
-        findViewById<MaterialButton>(R.id.btnPrivacyPolicy).setOnClickListener {
-            openPrivacyPolicy()
+        findViewById<ComposeView>(R.id.aboutCompose).setContent {
+            RoshanTheme(dark = dark) {
+                AboutScreen(
+                    icon = BitmapPainter(icon),
+                    versionName = BuildConfig.VERSION_NAME,
+                    supportEmail = ProblemReport.SUPPORT_EMAIL,
+                    onPrivacyPolicy = { openPrivacyPolicy() },
+                    onVersionTap = versionTap
+                )
+            }
         }
     }
 
