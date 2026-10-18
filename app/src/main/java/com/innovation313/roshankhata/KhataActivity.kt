@@ -1491,7 +1491,9 @@ class KhataActivity : BaseActivity() {
         val spokenWords = VoiceEntry.nameWords(heard)
         val party = NameSearch.confidentMatch(allParties, spokenWords) { it.name }
 
-        if (parsed.amount == null || parsed.amount <= 0.0) {
+        // A local, for the smart cast: VoiceEntry's result is from the shared module.
+        val spokenAmount = parsed.amount
+        if (spokenAmount == null || spokenAmount <= 0.0) {
             showSpokenProblem(heard, getString(R.string.voice_no_amount))
             return
         }
@@ -1501,7 +1503,7 @@ class KhataActivity : BaseActivity() {
             // than the door: a shop with a hundred customers has said the hard
             // part already, and a dead end here would send them back to typing
             // the whole entry.
-            pickPartyForSpoken(heard, parsed.amount, parsed.isGiven ?: true)
+            pickPartyForSpoken(heard, spokenAmount, parsed.isGiven ?: true)
             return
         }
 
@@ -1515,7 +1517,7 @@ class KhataActivity : BaseActivity() {
 
         showVoiceStrip(
             heard = heard,
-            summary = "${party.name}  ·  ${Format.money(parsed.amount)}  ·  $direction",
+            summary = "${party.name}  ·  ${Format.money(spokenAmount)}  ·  $direction",
             // Waving the strip away is the clearest signal there is that the
             // confident match was the wrong customer: there is no way to
             // change the party once the entry has opened on their page, so an
@@ -1524,7 +1526,7 @@ class KhataActivity : BaseActivity() {
                 startActivity(
                     Intent(this, PartyDetailActivity::class.java)
                         .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
-                        .putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, parsed.amount)
+                        .putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, spokenAmount)
                         .putExtra(
                             PartyDetailActivity.EXTRA_VOICE_IS_GIVEN,
                             parsed.isGiven ?: true
