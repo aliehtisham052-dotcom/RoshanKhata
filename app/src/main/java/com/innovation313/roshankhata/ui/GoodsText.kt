@@ -71,8 +71,9 @@ object GoodsText {
             val price = when {
                 item.isBonus -> " (" + context.getString(R.string.bonus_tag) + ")"
                 item.rate != null -> {
-                    val total = LineMath.lineTotal(item.quantity, item.rate)
-                    " × " + Format.money(item.rate) + (total?.let { " = " + Format.money(it) }.orEmpty())
+                    val rate = checkNotNull(item.rate)   // shared-module property: no smart cast
+                    val total = LineMath.lineTotal(item.quantity, rate)
+                    " × " + Format.money(rate) + (total?.let { " = " + Format.money(it) }.orEmpty())
                 }
                 else -> ""
             }
