@@ -139,19 +139,19 @@ class KeyboardOnDeviceTest(
         field.getLocationInWindow(at)
         return Measure(
             fieldBottom = at[1] + field.height,
-            keyboardTop = decor.height - keyboardHeight(act),
+            keyboardTop = decor.height - imeHeightHere(act),
             focused = field.hasFocus()
         )
     }
 
-    private fun keyboardHeight(act: Activity): Int {
-        var h = 0
-        instrumentation.runOnMainSync {
-            val insets = ViewCompat.getRootWindowInsets(act.window.decorView)
-            h = if (insets != null && insets.isVisible(WindowInsetsCompat.Type.ime()))
-                insets.getInsets(WindowInsetsCompat.Type.ime()).bottom else 0
-        }
-        return h
+    /** From the test thread. */
+    private fun keyboardHeight(act: Activity): Int = onMain { imeHeightHere(act) }
+
+    /** Already on the main thread. */
+    private fun imeHeightHere(act: Activity): Int {
+        val insets = ViewCompat.getRootWindowInsets(act.window.decorView)
+        return if (insets != null && insets.isVisible(WindowInsetsCompat.Type.ime()))
+            insets.getInsets(WindowInsetsCompat.Type.ime()).bottom else 0
     }
 
     private fun hideKeyboard(act: Activity) {
