@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.string
+
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration

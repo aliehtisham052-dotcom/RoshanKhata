@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.string
+
 import com.innovation313.roshankhata.data.TradeVocab
 import com.innovation313.roshankhata.data.UnitWords
 import android.app.Activity

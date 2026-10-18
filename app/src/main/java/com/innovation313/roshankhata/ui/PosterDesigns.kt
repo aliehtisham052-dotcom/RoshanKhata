@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.quantity
+
 import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
