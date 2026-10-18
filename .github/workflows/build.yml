@@ -77,12 +77,14 @@ jobs:
             # not, which is the only channel that actually gets back here.
             # Plus Gradle's own "What went wrong" block: a plugin that fails to
             # apply names its cause only there (18 Oct, KSP on the shared module).
-            { grep -A12 "What went wrong" /tmp/test_output.txt | grep -v "^--$" | head -14; \
-              grep -iE "FAILED|AssertionError|^e: " /tmp/test_output.txt | head -25; } \
-              | while IFS= read -r line; do
-                  clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
-                  echo "::error::$clean"
-                done
+            # One annotation each, lines joined: GitHub shows only 10 error
+            # annotations per step, and one line per annotation lost the
+            # compiler's own errors behind Gradle's summary.
+            errs=$(grep -iE "^e: |FAILED|AssertionError" /tmp/test_output.txt | head -40 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            [ -n "$errs" ] && echo "::error title=Compiler and test errors::$errs"
+            why=$(grep -A12 "What went wrong" /tmp/test_output.txt | grep -v "^--$" | head -14 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            [ -n "$why" ] && echo "::error title=What went wrong::$why"
+            true
           fi
 
           # The console only says a test FAILED and the exception's class —
