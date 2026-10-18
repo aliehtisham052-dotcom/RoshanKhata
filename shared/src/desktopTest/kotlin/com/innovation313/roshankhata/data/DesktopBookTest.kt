@@ -31,4 +31,24 @@ class DesktopBookTest {
             dir.deleteRecursively()
         }
     }
+
+    @Test
+    fun `entries written on the computer are numbered and summed as on the phone`() {
+        val dir = Files.createTempDirectory("rk-book").toFile()
+        val db = DesktopDatabase.open(dir.resolve("khata.db"))
+        try {
+            runBlocking {
+                val dao = db.khataDao()
+                val id = dao.insertParty(Party(name = "Bilal", phone = null, isCustomer = true))
+                dao.insertEntryWithItems(LedgerEntry(partyId = id, amount = 1550.0, isGiven = true, entryNumber = ""), emptyList())
+                dao.insertEntryWithItems(LedgerEntry(partyId = id, amount = 500.0, isGiven = false, note = "cash", entryNumber = ""), emptyList())
+                val entries = dao.latestEntriesWithItems(id, 10).map { it.entry }
+                assertEquals(setOf("RK-000001", "RK-000002"), entries.map { it.entryNumber }.toSet())
+                assertEquals(1050.0, dao.partiesWithBalanceOnce().single().balance, 0.001)
+            }
+        } finally {
+            db.close()
+            dir.deleteRecursively()
+        }
+    }
 }

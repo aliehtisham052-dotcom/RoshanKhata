@@ -26,7 +26,9 @@ data class RoshanColors(
     val onDark: Color,
     /** A balance the customer owes (bal_owed_to_me) and one the shop owes (bal_i_owe). */
     val owedToMe: Color,
-    val iOwe: Color
+    val iOwe: Color,
+    /** The You gave button and pill (red_gave; the same in dark). */
+    val gaveFill: Color
 )
 
 object RoshanPalette {
@@ -41,7 +43,8 @@ object RoshanPalette {
         sectionKhata = Color(0xFF1B5E3A),
         onDark = Color(0xFFFFFFFF),
         owedToMe = Color(0xFF8E2226),
-        iOwe = Color(0xFF0A5A44)
+        iOwe = Color(0xFF0A5A44),
+        gaveFill = Color(0xFFA32D2D)
     )
     val dark = light.copy(
         pageBg = Color(0xFF121513),
