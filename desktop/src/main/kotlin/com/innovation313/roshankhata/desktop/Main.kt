@@ -56,6 +56,7 @@ import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.screens.AddPartyForm
 import com.innovation313.roshankhata.screens.EntryForm
 import com.innovation313.roshankhata.screens.PartyLedgerScreen
+import com.innovation313.roshankhata.screens.RecycleBinScreen
 import com.innovation313.roshankhata.screens.balanceColour
 import com.innovation313.roshankhata.screens.AboutScreen
 import com.innovation313.roshankhata.screens.LocalRoshanColors
@@ -186,6 +187,8 @@ private fun Book(
     var editing by remember { mutableStateOf<LedgerEntry?>(null) }
     var deleting by remember { mutableStateOf<LedgerEntry?>(null) }
     var halves by remember { mutableStateOf<Pair<LedgerEntry, LedgerEntry>?>(null) }
+    var bin by remember { mutableStateOf(false) }
+    var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
 
@@ -231,6 +234,8 @@ private fun Book(
                     }
                 }
             }
+            Spacer(Modifier.width(8.dp))
+            HeaderButton(word(W.recycle_bin)) { bin = true }
             Spacer(Modifier.width(8.dp))
             HeaderButton(word(W.language)) { choosingLanguage = true }
             Spacer(Modifier.width(8.dp))
@@ -297,6 +302,7 @@ private fun Book(
                         onGave = { entryWay = true },
                         onGot = { entryWay = false },
                         onEntry = { editing = it },
+                        onDeleteParty = { deletingParty = party },
                         onStatement = {
                             scope.launch {
                                 val rows = withContext(Dispatchers.IO) { dao.latestEntriesWithItems(party.id, Int.MAX_VALUE) }
@@ -466,6 +472,59 @@ private fun Book(
                 }) { Text(word(W.delete_pair_one)) }
             }
         )
+    }
+    deletingParty?.let { p ->
+        AlertDialog(
+            onDismissRequest = { deletingParty = null },
+            title = { Text(word(W.delete_party_title)) },
+            text = { Text(word(W.delete_party_confirm, p.name)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deletingParty = null
+                        scope.launch {
+                            // The phone's delete: the customer and their entries, one timestamp, one transaction.
+                            withContext(Dispatchers.IO) { dao.softDeleteParties(listOf(p.id)) }
+                            selected = null
+                            reload++
+                        }
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
+                ) { Text(word(W.delete)) }
+            },
+            dismissButton = { TextButton({ deletingParty = null }) { Text(word(W.cancel)) } }
+        )
+    }
+    if (bin) {
+        DialogWindow(
+            onCloseRequest = { bin = false },
+            title = word(W.recycle_bin),
+            state = rememberDialogState(width = 560.dp, height = 640.dp)
+        ) {
+            val binParties by remember(reload) { dao.observeDeletedParties() }.collectAsState(emptyList())
+            val binEntries by remember(reload) { dao.observeDeletedEntries() }.collectAsState(emptyList())
+            RecycleBinScreen(
+                parties = binParties,
+                entries = binEntries,
+                partyName = { id -> parties.firstOrNull { it.id == id }?.name.orEmpty() },
+                onRestoreParty = { p ->
+                    scope.launch {
+                        // The phone's restore: the customer and the entries binned with them.
+                        withContext(Dispatchers.IO) {
+                            dao.restoreParty(p.id)
+                            p.deletedAt?.let { dao.restoreEntriesOfParty(p.id, it) }
+                        }
+                        reload++
+                    }
+                },
+                onRestoreEntry = { e ->
+                    scope.launch {
+                        withContext(Dispatchers.IO) { dao.restoreEntry(e.id) }
+                        reload++
+                    }
+                }
+            )
+        }
     }
     if (addParty) {
         DialogWindow(
