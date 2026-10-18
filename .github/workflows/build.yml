@@ -219,6 +219,9 @@ jobs:
           gh release view kmp-test >/dev/null 2>&1 || gh release create kmp-test --prerelease \
             --title "Roshan Khata - KMP test build" --notes "Test build from a kmp-* branch. Not the Play app, not the latest build." || true
           gh release upload kmp-test out/RoshanKhata-kmp-test.apk --clobber
+          # Room's schema files, so they can be checked in (the Room plugin's
+          # on-device test task expects app/schemas to exist in the repo).
+          if [ -d app/schemas ]; then (cd app && zip -qr ../out/kmp-schemas.zip schemas) && gh release upload kmp-test out/kmp-schemas.zip --clobber || true; fi
           gh release edit kmp-test --notes "Test build from branch ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not the Play app, not the latest build."
 
       - name: Lint (old-Android API, accessibility, RTL, hardcoded text)
