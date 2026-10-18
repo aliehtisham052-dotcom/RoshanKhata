@@ -20,6 +20,8 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Backup
+import com.innovation313.roshankhata.data.BackupCodec
+import com.innovation313.roshankhata.data.reason
 import com.innovation313.roshankhata.data.BackupImages
 import com.innovation313.roshankhata.data.BackupReminder
 import com.innovation313.roshankhata.data.Businesses
@@ -261,12 +263,12 @@ class BackupActivity : BaseActivity() {
      * copies. Neither can skip the validation the other performs.
      */
     private fun handleParseResult(
-        result: Backup.ImportResult,
-        data: Backup.ParsedBackup?,
+        result: BackupCodec.ImportResult,
+        data: BackupCodec.ParsedBackup?,
         driveAccount: String? = null
     ) {
         when (result) {
-            is Backup.ImportResult.Failed -> {
+            is BackupCodec.ImportResult.Failed -> {
                 MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.restore_from_file)
                     .setMessage(getString(R.string.restore_failed, result.reason(this)))
@@ -274,7 +276,7 @@ class BackupActivity : BaseActivity() {
                     .show()
             }
 
-            is Backup.ImportResult.Ok -> {
+            is BackupCodec.ImportResult.Ok -> {
                 if (data == null) return
                 confirmRestore(result, data, driveAccount)
             }
@@ -288,8 +290,8 @@ class BackupActivity : BaseActivity() {
      * file. No amount of convenience justifies hiding that.
      */
     private fun confirmRestore(
-        counts: Backup.ImportResult.Ok,
-        data: Backup.ParsedBackup,
+        counts: BackupCodec.ImportResult.Ok,
+        data: BackupCodec.ParsedBackup,
         driveAccount: String? = null
     ) {
         val body = Digits.string(resources, R.string.restore_warning_message,
@@ -324,7 +326,7 @@ class BackupActivity : BaseActivity() {
             .show()
     }
 
-    private fun doRestore(data: Backup.ParsedBackup, driveAccount: String? = null) {
+    private fun doRestore(data: BackupCodec.ParsedBackup, driveAccount: String? = null) {
         Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
@@ -951,7 +953,7 @@ class BackupActivity : BaseActivity() {
                 if (file == null) { failed += label; continue }
 
                 val (result, data) = withContext(Dispatchers.IO) { Backup.parseFile(file).also { file.delete() } }
-                if (result !is Backup.ImportResult.Ok || data == null) { failed += label; continue }
+                if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += label; continue }
 
                 val liveDao = KhataDatabase.get(this@BackupActivity).khataDao()
                 withContext(Dispatchers.IO) { Backup.restore(this@BackupActivity, liveDao, data) }
