@@ -15,6 +15,14 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.kotlin.multiplatform.library")
+    // Room's code generator, run for each target (Phase 3: the database).
+    id("com.google.devtools.ksp")
+}
+
+// The schema files stay where they have always been (app/schemas): the
+// migration tests in the app read them.
+ksp {
+    arg("room.schemaLocation", "$rootDir/app/schemas")
 }
 
 kotlin {
@@ -32,6 +40,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+                // api: KhataDatabase extends RoomDatabase, so the app sees Room through it.
+                api("androidx.room:room-runtime:2.7.1")
             }
         }
         val jvmSharedMain by creating { dependsOn(commonMain) }
@@ -45,4 +55,12 @@ kotlin {
         }
         val desktopTest by getting { dependsOn(jvmSharedTest) }
     }
+}
+
+// Room's KSP for each target (Phase 3). KSP for the shared source sets is
+// not used: Room writes each target's code, including the actual
+// KhataDatabaseConstructor.
+dependencies {
+    add("kspAndroid", "androidx.room:room-compiler:2.7.1")
+    add("kspDesktop", "androidx.room:room-compiler:2.7.1")
 }
