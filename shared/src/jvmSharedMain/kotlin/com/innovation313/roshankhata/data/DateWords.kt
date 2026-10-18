@@ -88,7 +88,7 @@ object DateWords {
      * (ur written in Latin letters) reads English, and Indonesian answers to
      * both of its codes ("id", and Android's old "in").
      */
-    internal fun keyOf(locale: Locale): String {
+    fun keyOf(locale: Locale): String {
         val language = locale.language.lowercase(Locale.ROOT)
         return when {
             language == "ur" && locale.script.equals("Latn", ignoreCase = true) -> "en"
@@ -103,7 +103,7 @@ object DateWords {
      * relies on the same fact), and reading it costs nothing, which matters
      * here: a ledger PDF formats a date on every row.
      */
-    internal fun appLocale(): Locale = Locale.getDefault()
+    fun appLocale(): Locale = Locale.getDefault()
 
     /** The twelve month names for [locale], as the app prints them. */
     fun months(locale: Locale = appLocale()): Array<String> = MONTHS[keyOf(locale)] ?: ENGLISH
@@ -135,7 +135,7 @@ object DateWords {
      * the list, the customer screen, the date picker and every report agree.
      * Roman Urdu keys as "en" and keeps the Latin comma.
      */
-    internal fun localPunctuation(pattern: String, key: String): String =
+    fun localPunctuation(pattern: String, key: String): String =
         if (key in ARABIC_COMMA) pattern.replace(", ", "\u060C ") else pattern
 
     private val ARABIC_COMMA = setOf("ur", "sd", "ar", "fa")
@@ -155,7 +155,7 @@ object DateWords {
     }
 
     /** True when [pattern] has a day-of-month letter outside quotes. */
-    internal fun hasDay(pattern: String): Boolean {
+    fun hasDay(pattern: String): Boolean {
         var quoted = false
         for (c in pattern) {
             if (c == '\'') quoted = !quoted else if (!quoted && c == 'd') return true

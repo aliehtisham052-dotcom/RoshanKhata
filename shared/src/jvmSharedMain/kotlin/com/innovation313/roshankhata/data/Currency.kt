@@ -1,6 +1,5 @@
 package com.innovation313.roshankhata.data
 
-import android.content.Context
 
 /**
  * Which money sign a shop's figures wear (4 Oct 2026, worldwide phase 1).
@@ -56,18 +55,9 @@ object Currency {
 
     @Volatile
     var symbol: String = DEFAULT
-        private set
 
-    /** Re-read the active shop's choice. Cheap: SharedPreferences is in memory after first load. */
-    fun refresh(context: Context) {
-        symbol = BusinessProfile.currency(context)
-    }
-
-    /** Save the shop's choice and print with it from now on. */
-    fun set(context: Context, value: String?) {
-        BusinessProfile.setCurrency(context, value)
-        refresh(context)
-    }
+    // refresh(context) and set(context, value) live with the phone's
+    // preferences (app data/ShopCalendarAndroid.kt).
 
     /** A typed sign, trimmed to what fits; blank falls back to [DEFAULT]. */
     fun clean(value: String?): String {
