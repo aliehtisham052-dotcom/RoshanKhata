@@ -219,9 +219,13 @@ android {
         abortOnError = false
         xmlReport = true
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "17"
+// kotlinOptions {} inside android {} is an error from Kotlin 2.2; the same
+// setting now lives on the Kotlin extension.
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
 
