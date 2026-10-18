@@ -63,6 +63,7 @@ import com.innovation313.roshankhata.screens.RoshanTheme
 import com.innovation313.roshankhata.ui.BidiPort
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.NameSearch
+import com.innovation313.roshankhata.words.AppLanguages
 import com.innovation313.roshankhata.words.ProvideWords
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.WP
@@ -88,8 +89,12 @@ fun main() = application {
     val home = DesktopDatabase.home()
     val db = remember { DesktopDatabase.open(File(home, "khata.db")) }
     val settings = remember { FileShopSettings(File(home, "shop.properties")).also { it.refreshDisplay() } }
-    val words = remember { desktopWords(Locale.getDefault()) }
-    val rtl = BidiPort.isRtlLocale(Locale.getDefault())
+    // The app's language: the owner's choice (app.properties), else the computer's.
+    val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
+    var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
+    val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
+    val words = remember(locale) { desktopWords(locale) }
+    val rtl = BidiPort.isRtlLocale(locale)
     Window(
         onCloseRequest = { db.close(); exitApplication() },
         title = words.text(W.app_name),
@@ -105,6 +110,7 @@ fun main() = application {
                         shopName = { settings.businessName() },
                         restore = { data -> restore(data, db, settings) },
                         backup = { file -> backup(file, db, settings) },
+                        onLanguage = { tag -> appPrefs.setLanguage(tag); language = tag },
                         words = words
                     )
                 }
@@ -158,6 +164,7 @@ private fun Book(
     shopName: () -> String?,
     restore: suspend (BackupCodec.ParsedBackup) -> Unit,
     backup: suspend (File) -> Long,
+    onLanguage: (String) -> Unit,
     words: Words
 ) {
     val c = LocalRoshanColors.current
@@ -173,6 +180,7 @@ private fun Book(
     var entryWay by remember { mutableStateOf<Boolean?>(null) }
     var addParty by remember { mutableStateOf(false) }
     var backedUp by remember { mutableStateOf<String?>(null) }
+    var choosingLanguage by remember { mutableStateOf(false) }
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
 
@@ -218,6 +226,8 @@ private fun Book(
                     }
                 }
             }
+            Spacer(Modifier.width(8.dp))
+            HeaderButton(word(W.language)) { choosingLanguage = true }
             Spacer(Modifier.width(8.dp))
             HeaderButton(word(W.about_us)) { about = true }
         }
@@ -391,6 +401,26 @@ private fun Book(
             confirmButton = { TextButton({ backedUp = null }) { Text(word(W.ok)) } },
             text = { Text(text) }
         )
+    }
+    if (choosingLanguage) {
+        DialogWindow(
+            onCloseRequest = { choosingLanguage = false },
+            title = word(W.language),
+            state = rememberDialogState(width = 360.dp, height = 560.dp)
+        ) {
+            Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
+                AppLanguages.ALL.forEach { lang ->
+                    Text(
+                        lang.nativeName,
+                        Modifier.fillMaxWidth()
+                            .clickable { choosingLanguage = false; onLanguage(lang.tag) }
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        color = c.ink, fontSize = 18.sp
+                    )
+                    HorizontalDivider(color = c.pageBg)
+                }
+            }
+        }
     }
     if (about) {
         DialogWindow(
