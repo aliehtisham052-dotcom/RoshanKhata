@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    // The shared Compose screens are hosted here (KMP Phase 5).
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 // Room writes the schema out here. With this in place a future migration can be
@@ -188,6 +190,7 @@ android {
     buildFeatures {
         buildConfig = true
         viewBinding = true
+        compose = true
     }
 
     compileOptions {
@@ -365,4 +368,7 @@ dependencies {
     androidTestImplementation("androidx.test:core-ktx:1.7.0")
     androidTestImplementation("androidx.test:runner:1.7.0")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    // Reading the shared Compose screens in on-device tests (KMP Phase 5).
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.12.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.12.0")
 }
