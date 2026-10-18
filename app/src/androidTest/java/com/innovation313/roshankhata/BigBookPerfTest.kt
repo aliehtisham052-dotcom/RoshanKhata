@@ -80,15 +80,23 @@ class BigBookPerfTest {
             // TextWatcher, and the TextWatcher runs render().
             var box: EditText? = null
             scenario.onActivity { box = it.findViewById(R.id.etSearchParties) }
+            // Each query three times, the fastest counted (18 Oct): a single
+            // garbage-collection pause on CI's emulator put one keystroke at
+            // 46-81 ms on unchanged code while the others took 3-17 ms. Slow
+            // code is slow all three times, so the budget still catches it.
             val worst = listOf("b", "bi", "bil", "bila", "asg", "lapewali").maxOf { q ->
-                var ms = 0L
-                InstrumentationRegistry.getInstrumentation().runOnMainSync {
-                    val t = SystemClock.elapsedRealtime()
-                    box!!.setText(q)
-                    ms = SystemClock.elapsedRealtime() - t
+                val runs = (1..3).map {
+                    var ms = 0L
+                    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                        box!!.setText("")
+                        val t = SystemClock.elapsedRealtime()
+                        box!!.setText(q)
+                        ms = SystemClock.elapsedRealtime() - t
+                    }
+                    ms
                 }
-                Log.i(TAG, "search '$q': $ms ms on the main thread")
-                ms
+                Log.i(TAG, "search '$q': ${runs.joinToString("/")} ms on the main thread")
+                runs.min()
             }
             // Every figure in the message: a failing run then reports the whole
             // picture through the CI annotation, not only the one line that broke.
