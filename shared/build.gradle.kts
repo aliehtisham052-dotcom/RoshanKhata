@@ -70,7 +70,8 @@ kotlin {
         val desktopMain by getting {
             dependsOn(jvmSharedMain)
             dependencies {
-                implementation("org.json:json:20250517")
+                // api: BackupCodec.profileToJson hands a JSONObject to the Windows app.
+                api("org.json:json:20250517")
                 // JsonStream on the computer: Gson's JsonReader, which Android's copies.
                 implementation("com.google.code.gson:gson:2.11.0")
                 // Plural rules for the computer's words (the phone uses android.icu).

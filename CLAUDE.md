@@ -13,15 +13,57 @@ No account, no server, no ads. Everything stays on the phone.
 
 ## Shape of the project
 
-- ~70 Kotlin files, ~13,400 lines
-- 634 string keys × 6 locales — English, Arabic, Sindhi, Farsi, Urdu, Roman Urdu
-- Room database, version 9
+- Three modules (Kotlin Multiplatform since 18 Oct 2026):
+  - `:app` — the Android app, ~194 Kotlin files, ~47,000 lines
+  - `:shared` — everything that does not need Android, ~14,500 lines with
+    `:desktop`: sums, voice parsing, search, dates, the Room database, the
+    backup format, the shared Compose screens. Android and Windows both run it.
+  - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
+- 2,038 strings × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
+  Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
+- Room database, version 31 (schema checked in at `app/schemas`)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
   monkeys the same build on the emulator (x86_64 kept with
   `-PdevAllAbis=true`) and checks in the APK that the trade goods lists and
-  all nine languages survived the shrinker.
+  all nine languages survived the shrinker. `kmp-*` branches build too; their
+  APK goes to the `kmp-test` pre-release, never `latest`.
+- `desktop.yml` builds the Windows MSI on GitHub's Windows runner and puts it
+  on the `desktop-test` pre-release (not signed yet).
+
+### The shared module (KMP)
+
+```
+shared/src/
+  jvmSharedMain/   Kotlin that may use the JDK; Android and the computer share it
+    data/          KhataDatabase (Room, @ConstructedBy), KhataDao, entities,
+                   BackupCodec (the backup format), ShopSettings, Format...
+    screens/       Shared Compose screens: About, PartyLedger, EntryForm, RoshanTheme
+    words/         Words: the app's strings for shared screens (W / WP / WA names)
+  androidMain/     The phone's side of each door (android.icu, JsonReader, BidiFormatter)
+  desktopMain/     The computer's side (java.time Hijri, Gson, BidiPort, FileShopSettings,
+                   DesktopDatabase, XmlWords from the copied strings.xml)
+  desktopTest/     Run with `gradle :shared:desktopTest`
+```
+
+Rules learned moving code there:
+- Android-only calls stay in `app` as **extensions with the same call shape**
+  (`ShopCalendar.refresh(context)`, `Digits.quantity(res, ...)`,
+  `UnitWords.choices(context)`): callers outside the `data` package import them.
+- Across modules there are no smart casts on public `var`s and `internal` is
+  not visible: copy to a local `val`, make test-used members public.
+- A platform difference is a **door**: an `expect` in jvmSharedMain, one
+  `actual` per platform, and a test holding the computer's side to the phone's
+  (BidiPortTest, XmlWordsVsAndroidTest, HijriDesktopTest).
+- Shared screens name words as `W.x`; the phone reads them through its own
+  resources (generated `WordIds`, which also keeps them through shrinking),
+  the computer from the same strings.xml (XmlWords). Compose resources are
+  not used: Roman Urdu's script folder needs Compose 1.12, which needs
+  compileSdk 37 and AGP 9.
+- Compose Multiplatform is **1.11.1**; 1.12 waits for the AGP 9 move.
+- `.gitattributes` keeps binaries binary: the Windows runner otherwise
+  rewrote a PDF fixture's line endings.
 
 ### Key files
 
@@ -43,7 +85,7 @@ app/src/main/java/com/innovation313/roshankhata/
     BusinessProfile.kt      QR, signature, photo-on-statement setting
     PdfExport.kt            Statement PDF — signature, optional photo
     DriveFeature.kt         ENABLED = false — the one line to flip
-    KhataDatabase.kt        version = 9
+    KhataDatabaseAndroid.kt get(context): migrations, the phone's file (DB itself in :shared)
   ui/
     CardTemplates.kt        12 business card designs
     NameSearch.kt           One search rule for every screen
@@ -53,6 +95,10 @@ app/src/main/java/com/innovation313/roshankhata/
 
 app/src/test/java/.../data/VoiceEntryTest.kt   What the microphone may conclude
 ```
+
+VoiceEntry, DriveFeature, Calc and NameSearch now live in `:shared`
+(`shared/src/jvmSharedMain/...`, same packages); their tests are in
+`shared/src/jvmSharedTest`.
 
 ---
 
