@@ -71,7 +71,7 @@ class BackupRoundTripTest {
         val json = Backup.export(context, from)
         val (result, parsed) = Backup.parseText(json)
 
-        assertTrue("the backup did not parse: $result", result is Backup.ImportResult.Ok)
+        assertTrue("the backup did not parse: $result", result is BackupCodec.ImportResult.Ok)
         val data = requireNotNull(parsed) { "parse said Ok but returned nothing" }
         assertEquals(2, data.parties.size)
         assertEquals(3, data.entries.size)
@@ -115,7 +115,7 @@ class BackupRoundTripTest {
         val json = Backup.export(context, oldPhone.khataDao())
         val (result, parsed) = Backup.parseText(json)
 
-        assertTrue("an empty backup did not parse: $result", result is Backup.ImportResult.Ok)
+        assertTrue("an empty backup did not parse: $result", result is BackupCodec.ImportResult.Ok)
         Backup.restore(context, newPhone.khataDao(), requireNotNull(parsed))
         assertEquals(0, newPhone.khataDao().partiesWithBalanceOnce().size)
     }

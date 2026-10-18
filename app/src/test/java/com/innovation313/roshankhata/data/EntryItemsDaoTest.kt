@@ -177,7 +177,7 @@ class EntryItemsDaoTest {
         )
 
         val (result, parsed) = Backup.parseText(Backup.export(context, dao))
-        assertTrue("backup did not parse: $result", result is Backup.ImportResult.Ok)
+        assertTrue("backup did not parse: $result", result is BackupCodec.ImportResult.Ok)
 
         val other = inMemory()
         try {
@@ -206,7 +206,7 @@ class EntryItemsDaoTest {
             .put("itemName", "Urea").put("quantity", 2.0).put("unit", "bori")
 
         val (result, parsed) = Backup.parseText(root.toString())
-        assertTrue("old file did not parse: $result", result is Backup.ImportResult.Ok)
+        assertTrue("old file did not parse: $result", result is BackupCodec.ImportResult.Ok)
         assertEquals(1, parsed!!.entryItems.size)
 
         val other = inMemory()
@@ -231,7 +231,7 @@ class EntryItemsDaoTest {
         root.getJSONArray("entryItems").getJSONObject(0).put("entryId", 999_999L)
 
         val (result, parsed) = Backup.parseText(root.toString())
-        assertTrue("a line pointing at no entry must be refused", result is Backup.ImportResult.Failed)
+        assertTrue("a line pointing at no entry must be refused", result is BackupCodec.ImportResult.Failed)
         assertEquals(null, parsed)
     }
 

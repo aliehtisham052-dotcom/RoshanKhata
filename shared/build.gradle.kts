@@ -48,13 +48,26 @@ kotlin {
                 api("androidx.room:room-runtime:2.7.1")
             }
         }
-        val jvmSharedMain by creating { dependsOn(commonMain) }
+        val jvmSharedMain by creating {
+            dependsOn(commonMain)
+            // The backup format is org.json (BackupCodec). The phone has it
+            // built in, so here it is compile-only; the computer gets the
+            // same API from the org.json library (desktopMain).
+            dependencies { compileOnly("org.json:json:20250517") }
+        }
         val androidMain by getting {
             dependsOn(jvmSharedMain)
             // BidiFormatter for Format.ltr / isolate (the app's own version).
             dependencies { implementation("androidx.core:core-ktx:1.13.1") }
         }
-        val desktopMain by getting { dependsOn(jvmSharedMain) }
+        val desktopMain by getting {
+            dependsOn(jvmSharedMain)
+            dependencies {
+                implementation("org.json:json:20250517")
+                // JsonStream on the computer: Gson's JsonReader, which Android's copies.
+                implementation("com.google.code.gson:gson:2.11.0")
+            }
+        }
 
         val commonTest by getting
         val jvmSharedTest by creating {

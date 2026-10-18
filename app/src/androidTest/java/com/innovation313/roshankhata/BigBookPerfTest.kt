@@ -156,7 +156,7 @@ class BigBookPerfTest {
         val (result, data) = com.innovation313.roshankhata.data.Backup.parseFile(file)
         val parsedMs = SystemClock.elapsedRealtime() - t
         val heap = (rt.totalMemory() - rt.freeMemory()) / 1048576
-        assertTrue("parse failed: $result", result is com.innovation313.roshankhata.data.Backup.ImportResult.Ok && data != null)
+        assertTrue("parse failed: $result", result is com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok && data != null)
         runBlocking { com.innovation313.roshankhata.data.Backup.restore(context, dao, data!!) }
         val ms = SystemClock.elapsedRealtime() - t
         file.delete()

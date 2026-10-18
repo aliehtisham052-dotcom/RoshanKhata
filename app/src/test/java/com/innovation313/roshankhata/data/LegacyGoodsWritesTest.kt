@@ -15,7 +15,7 @@ import java.io.File
  * took. This reads the source and fails the build before that can ship.
  *
  * Two places are allowed, and only these:
- *  - Backup.kt's jsonToEntry, which puts a restored entry's legacy columns
+ *  - BackupCodec.kt's jsonToEntry, which puts a restored entry's legacy columns
  *    back EXACTLY as the file had them (a restore must not alter a record).
  *  - Nothing else.
  */
@@ -60,7 +60,7 @@ class LegacyGoodsWritesTest {
         assertTrue("found no LedgerEntry( calls at all — the scan is broken", calls.isNotEmpty())
 
         val offenders = calls.filter { (file, _, args) ->
-            file != "Backup.kt" && legacy.containsMatchIn(args)
+            file != "BackupCodec.kt" && legacy.containsMatchIn(args)
         }
         assertTrue(
             "These build a LedgerEntry with legacy goods columns — goods belong " +
