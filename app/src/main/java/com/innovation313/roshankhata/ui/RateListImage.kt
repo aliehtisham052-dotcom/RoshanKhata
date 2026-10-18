@@ -227,8 +227,8 @@ object RateListImage {
 
         val rowLayouts = rows.mapIndexed { i, r ->
             val name = block(r.name, namePaint, nameCol.width, start, rtl)
-            val company = if (input.companyPerRow && r.company != null)
-                block(r.company, companyPaint, nameCol.width, start, rtl) else null
+            val company = r.company?.takeIf { input.companyPerRow }
+                ?.let { block(it, companyPaint, nameCol.width, start, rtl) }
             val unit = unitCol?.let { c -> unitTexts[i].takeIf { it.isNotEmpty() }?.let { block(it, unitPaint, c.width, start, rtl) } }
             val cash = cashCol?.let { block(cashTexts[i], pricePaint, it.width, end, rtl) }
             val credit = creditCol?.let { block(creditTexts[i], pricePaint, it.width, end, rtl) }

@@ -110,10 +110,11 @@ class SchemesActivity : BaseActivity() {
         v.findViewById<TextView>(R.id.tvSchemeNext).text = p.next?.let {
             getString(R.string.scheme_next, amountText(s, it.target), rewardText(s, it), amountText(s, p.toNext ?: 0.0))
         } ?: getString(R.string.scheme_top_reached)
+        val achieved = p.achieved   // a local, for the smart cast (shared module)
         v.findViewById<TextView>(R.id.tvSchemeEarned).text = when {
-            p.achieved == null -> getString(R.string.scheme_nothing_yet)
-            s.rewardKind == SchemeMath.UNITS -> getString(R.string.scheme_earned, rewardText(s, p.achieved))
-            else -> getString(R.string.scheme_earned, p.earned?.let { Format.money(it) } ?: rewardText(s, p.achieved))
+            achieved == null -> getString(R.string.scheme_nothing_yet)
+            s.rewardKind == SchemeMath.UNITS -> getString(R.string.scheme_earned, rewardText(s, achieved))
+            else -> getString(R.string.scheme_earned, p.earned?.let { Format.money(it) } ?: rewardText(s, achieved))
         }
         val status = SchemeMath.status(s, p, now)
         v.findViewById<TextView>(R.id.tvSchemeStatus).apply {

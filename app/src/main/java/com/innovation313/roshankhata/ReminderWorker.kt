@@ -236,14 +236,14 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // Payment plans: open, with an agreed date that has arrived.
         val plans = dao.allPlansForBackup().count {
             !it.isDeleted && !it.isClosed &&
-                it.nextDueDate != null && it.nextDueDate <= endOfToday
+                (it.nextDueDate ?: Long.MAX_VALUE) <= endOfToday
         }
         // Expiring stock: items with a recorded expiry inside the 60-day
         // window (or already past it), on bills that still exist.
         val liveBills = dao.allBillsForBackup()
             .filter { !it.isDeleted }.map { it.id }.toSet()
         val expiring = dao.allBillItemsForBackup().count {
-            it.billId in liveBills && it.expiryDate != null && it.expiryDate <= expiryWindow
+            it.billId in liveBills && (it.expiryDate ?: Long.MAX_VALUE) <= expiryWindow
         }
         return Due(cheques, plans, expiring)
     }

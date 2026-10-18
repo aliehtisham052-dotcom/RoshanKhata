@@ -1297,7 +1297,7 @@ class PartyDetailActivity : BaseActivity() {
                 etItemName.requestFocus()
                 return@setOnClickListener
             }
-            if (draft.quantity == null || draft.quantity <= 0.0) {
+            if ((draft.quantity ?: 0.0) <= 0.0) {
                 etQuantity.error = getString(R.string.line_need_qty)
                 etQuantity.requestFocus()
                 return@setOnClickListener
@@ -1796,7 +1796,7 @@ class PartyDetailActivity : BaseActivity() {
                         if (!d.updateProductRate && !d.addToProducts) continue
                         var productId = d.productId
                         if (d.addToProducts && productId == null && !d.itemName.isNullOrBlank()) {
-                            productId = dao.findOrCreateProduct(d.itemName, defaultUnit = d.unit).id
+                            productId = dao.findOrCreateProduct(d.itemName.orEmpty(), defaultUnit = d.unit).id
                         }
                         val rate = d.rate
                         if (isSale() && productId != null && rate != null && rate > 0.0 && !d.isBonus) {

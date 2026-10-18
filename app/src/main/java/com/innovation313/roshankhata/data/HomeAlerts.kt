@@ -40,7 +40,7 @@ object HomeAlerts {
                 context.getString(if (c.isReceived) R.string.na_cheque_in else R.string.na_cheque_out),
                 (names[c.partyId] ?: "") + " \u00b7 " + money(c.amount), context.getString(R.string.na_tag_today))
         }
-        dao.openPlansOnce().filter { it.nextDueDate != null && it.nextDueDate < t1 && it.totalAmount - it.paidSoFar > 0.004 }.forEach { p ->
+        dao.openPlansOnce().filter { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > 0.004 }.forEach { p ->
             val late = p.nextDueDate!! < t0
             val next = minOf(p.installmentAmount ?: (p.totalAmount - p.paidSoFar), p.totalAmount - p.paidSoFar)
             out += Alert(Kind.PLAN, context.getString(if (late) R.string.na_plan_late else R.string.na_plan_due),
