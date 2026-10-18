@@ -25,3 +25,16 @@ book inside the 72dp safe disc, a circular gold ring at the disc's edge (a
 circle fits inside every launcher mask), the tile's own green gradient as
 the background out to the corners. `drawable/ic_launcher_monochrome.xml` is
 the same book as one silhouette for Android 13 themed icons.
+
+## In-app brand art (18 Oct)
+The old "R + chart" emblem is gone from the app. Two pictures carried it:
+- `drawable-nodpi/splash_art.webp` (language screen painting): the emblem was
+  painted out and the book tile from `icon-source-book.png` set in its place.
+  The wordmark, tagline, room and desk are untouched, so the tagline anchor in
+  `ui/SplashArt.kt` (`TAGLINE_OF_ART = 0.62`) is unchanged.
+- `drawable-nodpi/logo_full.webp` (App Lock screen): the green tile, gold rim,
+  ROSHAN KHATA and tagline kept (they read on both light and dark `page_bg`);
+  only the emblem replaced by the same book tile.
+The launcher icon, system splash (`splash_logo`), About screen, PDF logo
+(`assets/roshan_logo.png`) and notification icon were already the book.
+`drawable-nodpi/app_badge.webp` is referenced nowhere.
