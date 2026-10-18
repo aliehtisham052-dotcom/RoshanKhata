@@ -276,6 +276,8 @@ dependencies {
     // (~300 KB here), no CAMERA permission; on phones it cannot serve (under
     // 1.7 GB RAM) BillsActivity falls back to the plain camera.
     implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
+    // KMP Phase 2: the code shared with the Windows app.
+    implementation(project(":shared"))
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.core:core-ktx:1.13.1")
     // Reads the orientation flag a camera writes into a JPEG. Without it a
