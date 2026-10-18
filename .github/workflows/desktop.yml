@@ -64,6 +64,8 @@ jobs:
           PUBLISHER: ${{ vars.MSIX_PUBLISHER || 'CN=Innovation313' }}
           PUBLISHER_DISPLAY: ${{ vars.MSIX_PUBLISHER_DISPLAY || 'Innovation 313' }}
         run: |
+          $ErrorActionPreference = 'Continue'
+          trap { Write-Output "::error title=MSIX step::$($_.Exception.Message)"; exit 1 }
           $app = Get-ChildItem desktop/build/compose/binaries/main/app -Directory | Select-Object -First 1
           if (-not $app) { Write-Output "::error::No app folder from createDistributable"; exit 1 }
           $stage = "msix-stage"
@@ -76,8 +78,14 @@ jobs:
           Set-Content "$stage/AppxManifest.xml" $m -Encoding utf8
           $makeappx = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1
           if (-not $makeappx) { Write-Output "::error::makeappx.exe not found on the runner"; exit 1 }
-          & $makeappx.FullName pack /d $stage /p RoshanKhata-Windows-store.msix /o
-          if ($LASTEXITCODE -ne 0) { Write-Output "::error::makeappx failed ($LASTEXITCODE)"; exit 1 }
+          # makeappx's own words, as one annotation: the log is not readable from outside.
+          $PSNativeCommandUseErrorActionPreference = $false
+          $out = & $makeappx.FullName pack /d $stage /p RoshanKhata-Windows-store.msix /o 2>&1 | Out-String
+          if ($LASTEXITCODE -ne 0) {
+            $msg = ($out -split "`n" | Where-Object { $_ -match 'error|Error|0x|manifest|line' } | Select-Object -First 20) -join '%0A'
+            Write-Output "::error title=makeappx failed ($LASTEXITCODE)::$msg"
+            exit 1
+          }
           Write-Output "::notice::MSIX: $((Get-Item RoshanKhata-Windows-store.msix).Length) bytes, identity $env:IDENTITY_NAME"
 
       - name: Put the MSI on the desktop-test pre-release
