@@ -1,0 +1,21 @@
+# Binary files stay byte for byte on every checkout. Without this, Git on
+# Windows (the Windows app's CI runner) treated a PDF test fixture as text and
+# rewrote its line endings, and four PDF tests failed there only (18 Oct).
+*.pdf  binary
+*.png  binary
+*.webp binary
+*.jpg  binary
+*.jpeg binary
+*.ico  binary
+*.ttf  binary
+*.otf  binary
+*.jar  binary
+*.jks  binary
+*.keystore binary
+*.zip  binary
+*.msi  binary
+*.glb  binary
+*.ktx  binary
+*.filamat binary
+# The shell scripts CI runs must keep Unix line endings on any machine.
+*.sh   text eol=lf
