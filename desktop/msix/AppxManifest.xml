@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Roshan Khata as an MSIX package for the Microsoft Store (KMP Phase 6g).
+  desktop.yml fills the @...@ values and packs it with the Windows SDK's
+  makeappx. The Identity Name and Publisher must be exactly the ones Partner
+  Center shows for the reserved app (Product identity page); until then they
+  are placeholders and the package is for checking only. The Store signs the
+  package itself, free (Microsoft Learn, Code signing options, 29 Aug 2026).
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity Name="@IDENTITY_NAME@" Publisher="@PUBLISHER@" Version="@VERSION@" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>Roshan Khata</DisplayName>
+    <PublisherDisplayName>@PUBLISHER_DISPLAY@</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Roshan Khata - the shopkeeper's udhar khata. Everything stays on this computer.</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+    <Resource Language="ur" />
+  </Resources>
+
+  <Applications>
+    <Application Id="RoshanKhata" Executable="Roshan Khata.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Roshan Khata"
+        Description="Roshan Khata - udhar khata"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <!-- A desktop (Win32) app runs with full trust: it reads the backup file the owner picks. -->
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

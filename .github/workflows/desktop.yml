@@ -52,6 +52,34 @@ jobs:
           [ -n "$why" ] && echo "::error title=What went wrong::$why"
           true
 
+      # The Store's package (MSIX), from the same app folder the MSI installs.
+      # Identity values come from Partner Center once the name is reserved
+      # (repository variables MSIX_IDENTITY_NAME, MSIX_PUBLISHER,
+      # MSIX_PUBLISHER_DISPLAY); until then placeholders, for checking only.
+      - name: Pack the MSIX (Microsoft Store)
+        if: success()
+        shell: pwsh
+        env:
+          IDENTITY_NAME: ${{ vars.MSIX_IDENTITY_NAME || 'Innovation313.RoshanKhata' }}
+          PUBLISHER: ${{ vars.MSIX_PUBLISHER || 'CN=Innovation313' }}
+          PUBLISHER_DISPLAY: ${{ vars.MSIX_PUBLISHER_DISPLAY || 'Innovation 313' }}
+        run: |
+          $app = Get-ChildItem desktop/build/compose/binaries/main/app -Directory | Select-Object -First 1
+          if (-not $app) { Write-Output "::error::No app folder from createDistributable"; exit 1 }
+          $stage = "msix-stage"
+          New-Item -ItemType Directory -Force $stage | Out-Null
+          Copy-Item "$($app.FullName)\*" $stage -Recurse
+          Copy-Item desktop/msix/Assets $stage -Recurse
+          $m = Get-Content desktop/msix/AppxManifest.xml -Raw
+          $m = $m.Replace('@IDENTITY_NAME@', $env:IDENTITY_NAME).Replace('@PUBLISHER@', $env:PUBLISHER)
+          $m = $m.Replace('@PUBLISHER_DISPLAY@', $env:PUBLISHER_DISPLAY).Replace('@VERSION@', '1.0.0.0')
+          Set-Content "$stage/AppxManifest.xml" $m -Encoding utf8
+          $makeappx = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $makeappx) { Write-Output "::error::makeappx.exe not found on the runner"; exit 1 }
+          & $makeappx.FullName pack /d $stage /p RoshanKhata-Windows-store.msix /o
+          if ($LASTEXITCODE -ne 0) { Write-Output "::error::makeappx failed ($LASTEXITCODE)"; exit 1 }
+          Write-Output "::notice::MSIX: $((Get-Item RoshanKhata-Windows-store.msix).Length) bytes, identity $env:IDENTITY_NAME"
+
       - name: Put the MSI on the desktop-test pre-release
         if: success()
         shell: bash
@@ -64,6 +92,7 @@ jobs:
           gh release view desktop-test >/dev/null 2>&1 || gh release create desktop-test --prerelease \
             --title "Roshan Khata for Windows - test build" --notes "Windows test build. Not signed yet." || true
           gh release upload desktop-test RoshanKhata-Windows-test.msi --clobber
+          [ -f RoshanKhata-Windows-store.msix ] && gh release upload desktop-test RoshanKhata-Windows-store.msix --clobber
           # The statement pictures from StatementPrintTest, to look at (lesson 16).
           for f in desktop/build/statement-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           gh release edit desktop-test --notes "Windows test build from ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not signed yet: Windows will warn before installing."
