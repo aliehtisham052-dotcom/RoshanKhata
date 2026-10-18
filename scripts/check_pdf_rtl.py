@@ -16,11 +16,12 @@ PdfRtl.kt itself.
 """
 import glob, re, sys
 
-ROOT = "app/src/main/java/com/innovation313/roshankhata/data"
+ROOTS = ["app/src/main/java/com/innovation313/roshankhata/data",
+         "shared/src"]
 RAW = re.compile(r'(?<!PdfRtl)\.(drawText|drawBitmap|startPage|drawTextOnPath|drawTextRun|drawPosText)\(')
 
 problems = []
-for path in sorted(glob.glob(f"{ROOT}/**/*.kt", recursive=True)):
+for path in sorted(p for r in ROOTS for p in glob.glob(f"{r}/**/*.kt", recursive=True)):
     if path.endswith("/PdfRtl.kt"):
         continue
     for n, line in enumerate(open(encoding="utf-8", file=path), 1):

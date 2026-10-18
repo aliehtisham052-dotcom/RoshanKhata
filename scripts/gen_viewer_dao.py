@@ -16,7 +16,8 @@ import re, sys, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "app/src/main/java/com/innovation313/roshankhata/data"
-src = (DATA / "KhataDao.kt").read_text()
+SHARED = ROOT / "shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data"
+src = (SHARED / "KhataDao.kt").read_text()  # the DAO moved to the shared module; ViewerDao stays in app
 
 
 def methods(text):
