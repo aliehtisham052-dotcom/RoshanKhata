@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.core.graphics.drawable.toBitmap
 import com.innovation313.roshankhata.screens.AboutScreen
 import com.innovation313.roshankhata.screens.RoshanTheme
+import com.innovation313.roshankhata.words.ProvideWords
 import android.widget.Toast
 import com.google.android.material.appbar.MaterialToolbar
 import com.innovation313.roshankhata.data.ProblemReport
@@ -79,15 +80,18 @@ class AboutActivity : BaseActivity() {
                 }
             }
         }
+        val words = com.innovation313.roshankhata.data.AndroidWords(this)
         findViewById<ComposeView>(R.id.aboutCompose).setContent {
             RoshanTheme(dark = dark) {
-                AboutScreen(
-                    icon = BitmapPainter(icon),
-                    versionName = BuildConfig.VERSION_NAME,
-                    supportEmail = ProblemReport.SUPPORT_EMAIL,
-                    onPrivacyPolicy = { openPrivacyPolicy() },
-                    onVersionTap = versionTap
-                )
+                ProvideWords(words) {
+                    AboutScreen(
+                        icon = BitmapPainter(icon),
+                        versionName = BuildConfig.VERSION_NAME,
+                        supportEmail = ProblemReport.SUPPORT_EMAIL,
+                        onPrivacyPolicy = { openPrivacyPolicy() },
+                        onVersionTap = versionTap
+                    )
+                }
             }
         }
     }
