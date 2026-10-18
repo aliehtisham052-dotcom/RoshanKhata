@@ -296,48 +296,9 @@ object Backup {
 
     // ---------- Business Profile (SharedPreferences, not Room) ----------
 
-    private fun businessProfileToJson(context: Context) = JSONObject().apply {
-        put("businessName", BusinessProfile.businessName(context) ?: JSONObject.NULL)
-        put("businessNameUrdu", BusinessProfile.businessNameUrdu(context) ?: JSONObject.NULL)
-        put("businessAddress", BusinessProfile.businessAddress(context) ?: JSONObject.NULL)
-        put("businessPhone", BusinessProfile.businessPhone(context) ?: JSONObject.NULL)
-        put("businessEmail", BusinessProfile.businessEmail(context) ?: JSONObject.NULL)
-        put("bankName", BusinessProfile.bankName(context) ?: JSONObject.NULL)
-        put("bankAccountTitle", BusinessProfile.bankAccountTitle(context) ?: JSONObject.NULL)
-        put("bankIban", BusinessProfile.bankIban(context) ?: JSONObject.NULL)
-        put("bankJazzCash", BusinessProfile.bankJazzCash(context) ?: JSONObject.NULL)
-        put("termsAndConditions", BusinessProfile.termsAndConditions(context) ?: JSONObject.NULL)
-        put("strn", BusinessProfile.strn(context) ?: JSONObject.NULL)
-        put("currency", BusinessProfile.currency(context))
-        put("calendar", BusinessProfile.calendar(context).key)
-        put("trade", BusinessProfile.trade(context) ?: JSONObject.NULL)
-        put("tradeOtherName", BusinessProfile.otherTradeName(context) ?: JSONObject.NULL)
-        put("tradeOtherItems", BusinessProfile.otherTradeItems(context) ?: JSONObject.NULL)
-        put("photoOnStatement", BusinessProfile.photoOnStatement(context))
-    }
+    private fun businessProfileToJson(context: Context): JSONObject =
+        BackupCodec.profileToJson(AndroidShopSettings(context))
 
-    // Written through the existing setters so trimming/normalisation stays in
-    // one place. Only the text fields — never the image flags. A null field is
-    // passed straight to its setter, which stores an empty string (its own
-    // "unset"); this is a full REPLACE of the text profile, matching how the
-    // ledger restore replaces rather than merges.
-    private fun restoreBusinessProfile(context: Context, p: BusinessProfileData) {
-        BusinessProfile.setBusinessName(context, p.businessName)
-        BusinessProfile.setBusinessNameUrdu(context, p.businessNameUrdu)
-        BusinessProfile.setBusinessAddress(context, p.businessAddress)
-        BusinessProfile.setBusinessPhone(context, p.businessPhone)
-        BusinessProfile.setBusinessEmail(context, p.businessEmail)
-        BusinessProfile.setBankName(context, p.bankName)
-        BusinessProfile.setBankAccountTitle(context, p.bankAccountTitle)
-        BusinessProfile.setBankIban(context, p.bankIban)
-        BusinessProfile.setBankJazzCash(context, p.bankJazzCash)
-        BusinessProfile.setTermsAndConditions(context, p.termsAndConditions)
-        BusinessProfile.setStrn(context, p.strn)
-        BusinessProfile.setCurrency(context, p.currency)
-        BusinessProfile.setCalendar(context, ShopCalendar.Kind.of(p.calendar))
-        ShopCalendar.refresh(context)
-        p.trade?.let { BusinessProfile.setTrade(context, Trade.of(it)) }
-        BusinessProfile.setOtherTrade(context, p.tradeOtherName, p.tradeOtherItems)
-        BusinessProfile.setPhotoOnStatement(context, p.photoOnStatement)
-    }
+    private fun restoreBusinessProfile(context: Context, p: BusinessProfileData) =
+        BackupCodec.restoreProfile(AndroidShopSettings(context), p)
 }
