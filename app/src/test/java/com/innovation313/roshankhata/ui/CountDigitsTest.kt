@@ -1,5 +1,8 @@
 package com.innovation313.roshankhata.ui
 
+import com.innovation313.roshankhata.data.quantity
+import com.innovation313.roshankhata.data.string
+
 import android.content.Context
 import android.content.res.Configuration
 import androidx.test.core.app.ApplicationProvider
