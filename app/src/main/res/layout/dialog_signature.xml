@@ -174,6 +174,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSigUndo"
+            android:letterSpacing="0"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
@@ -192,6 +193,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSigClear"
+            android:letterSpacing="0"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
@@ -217,6 +219,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSigCancel"
+            android:letterSpacing="0"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="52dp"
@@ -230,6 +233,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSigSave"
+            android:letterSpacing="0"
             android:layout_width="0dp"
             android:layout_height="52dp"
             android:layout_marginStart="12dp"

@@ -83,6 +83,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSigRowAction"
+            android:letterSpacing="0"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
