@@ -4,7 +4,8 @@
 // zakat, dates in words. The Android app uses it exactly as before (same
 // packages, so no import changed); the Windows app will use the same files.
 //
-// Targets: Android, and "desktop" (the JVM, i.e. Windows/Mac/Linux).
+// Targets: Android (androidTarget, classic library plugin), and "desktop" (the JVM,
+// i.e. Windows/Mac/Linux).
 // Source sets:
 //   commonMain     - pure Kotlin, for every target (iPhone/web one day)
 //   jvmSharedMain  - Kotlin that may use the JDK (java.util.Locale,
@@ -14,7 +15,11 @@
 // Tests in jvmSharedTest run on the desktop JVM: gradle :shared:desktopTest.
 plugins {
     kotlin("multiplatform")
-    id("com.android.kotlin.multiplatform.library")
+    // The classic Android library plugin, not com.android.kotlin.multiplatform.library:
+    // KSP 2.3.11 cannot attach to the newer plugin yet ("Kotlin multiplatform
+    // Variant API does not support addKspConfigurations() yet", CI 18 Oct), and
+    // Room needs KSP. Revisit when moving to AGP 9.
+    id("com.android.library")
     // Room's code generator, run for each target (Phase 3: the database).
     id("com.google.devtools.ksp")
 }
@@ -26,12 +31,7 @@ ksp {
 }
 
 kotlin {
-    // AGP 8.11's name for the Android target block (android {} from 8.12).
-    androidLibrary {
-        namespace = "com.innovation313.roshankhata.shared"
-        compileSdk = 36
-        minSdk = 24
-    }
+    androidTarget()
     jvm("desktop")
 
     jvmToolchain(17)
@@ -54,6 +54,16 @@ kotlin {
             dependencies { implementation("junit:junit:4.13.2") }
         }
         val desktopTest by getting { dependsOn(jvmSharedTest) }
+    }
+}
+
+android {
+    namespace = "com.innovation313.roshankhata.shared"
+    compileSdk = 36
+    defaultConfig { minSdk = 24 }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
