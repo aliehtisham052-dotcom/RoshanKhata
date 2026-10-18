@@ -54,6 +54,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hyphenationFrequency="none"
                 android:text="@string/sig_label"
                 android:textColor="@color/ink"
                 android:textSize="15sp"
@@ -67,19 +68,20 @@
                 android:text="@string/sig_none"
                 android:textColor="@color/text_muted"
                 android:textSize="12sp" />
-        </LinearLayout>
 
-        <!-- The signature itself, small, once there is one. Always on white: it is a document. -->
-        <ImageView
-            android:id="@+id/ivSigRowThumb"
-            android:layout_width="72dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:background="@color/white"
-            android:contentDescription="@string/sig_label"
-            android:padding="2dp"
-            android:scaleType="fitCenter"
-            android:visibility="gone" />
+            <!-- The signature itself, small, under the words once there is one (beside them it squeezed
+                 the title into broken pieces in the narrow Edit popup). Always on white: it is a document. -->
+            <ImageView
+                android:id="@+id/ivSigRowThumb"
+                android:layout_width="104dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="6dp"
+                android:background="@color/white"
+                android:contentDescription="@string/sig_label"
+                android:padding="2dp"
+                android:scaleType="fitStart"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSigRowAction"
