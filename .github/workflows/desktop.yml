@@ -1,0 +1,67 @@
+name: Windows app
+
+# Roshan Khata for Windows (KMP Phase 6). GitHub's Windows runner builds the
+# MSI (Compose Desktop packages only on the system it targets, and fetches
+# its own WiX). The MSI goes on the "desktop-test" pre-release for the owner
+# to install on a laptop; it is not signed, so Windows SmartScreen will warn
+# until it ships through the Microsoft Store, which signs it for free.
+on:
+  push:
+    branches: [ main, 'kmp-*' ]
+    paths-ignore:
+      - 'ci/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  msi:
+    # Pinned, like the Android build: a runner image change should be chosen, not met.
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-disabled: true
+          gradle-version: 8.14.3
+
+      - name: Computer-side tests, then the MSI
+        shell: bash
+        run: |
+          set +e
+          gradle :shared:desktopTest :desktop:packageMsi --no-daemon --stacktrace 2>&1 | tee /tmp/msi_output.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: Publish the cause
+        if: failure()
+        shell: bash
+        run: |
+          errs=$(grep -iE "^e: |FAILED|AssertionError|error:" /tmp/msi_output.txt | head -40 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$errs" ] && echo "::error title=Compiler and test errors::$errs"
+          why=$(grep -A14 "What went wrong" /tmp/msi_output.txt | grep -v "^--$" | head -16 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$why" ] && echo "::error title=What went wrong::$why"
+          true
+
+      - name: Put the MSI on the desktop-test pre-release
+        if: success()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          msi=$(find desktop/build/compose/binaries -name '*.msi' | head -1)
+          echo "::notice::MSI: $msi ($(stat -c %s "$msi") bytes)"
+          cp "$msi" RoshanKhata-Windows-test.msi
+          gh release view desktop-test >/dev/null 2>&1 || gh release create desktop-test --prerelease \
+            --title "Roshan Khata for Windows - test build" --notes "Windows test build. Not signed yet." || true
+          gh release upload desktop-test RoshanKhata-Windows-test.msi --clobber
+          gh release edit desktop-test --notes "Windows test build from ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not signed yet: Windows will warn before installing."

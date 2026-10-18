@@ -23,7 +23,10 @@ data class RoshanColors(
     val brandGreen: Color,
     val brandGreenText: Color,
     val sectionKhata: Color,
-    val onDark: Color
+    val onDark: Color,
+    /** A balance the customer owes (bal_owed_to_me) and one the shop owes (bal_i_owe). */
+    val owedToMe: Color,
+    val iOwe: Color
 )
 
 object RoshanPalette {
@@ -36,7 +39,9 @@ object RoshanPalette {
         brandGreen = Color(0xFF1B5E3A),
         brandGreenText = Color(0xFF1B5E3A),
         sectionKhata = Color(0xFF1B5E3A),
-        onDark = Color(0xFFFFFFFF)
+        onDark = Color(0xFFFFFFFF),
+        owedToMe = Color(0xFF8E2226),
+        iOwe = Color(0xFF0A5A44)
     )
     val dark = light.copy(
         pageBg = Color(0xFF121513),
@@ -44,7 +49,9 @@ object RoshanPalette {
         ink = Color(0xFFECEAE4),
         inkSoft = Color(0xFFBDBBB4),
         textMuted = Color(0xFFA7A69F),
-        brandGreenText = Color(0xFF7FD1A3)
+        brandGreenText = Color(0xFF7FD1A3),
+        owedToMe = Color(0xFFFF9C9C),
+        iOwe = Color(0xFF7FE3C4)
     )
 }
 

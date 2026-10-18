@@ -59,7 +59,7 @@ jobs:
       - name: Unit tests
         run: |
           set +e
-          gradle testDebugUnitTest :shared:desktopTest --no-daemon --stacktrace 2>&1 | tee /tmp/test_output.txt
+          gradle testDebugUnitTest :shared:desktopTest :desktop:compileKotlin --no-daemon --stacktrace 2>&1 | tee /tmp/test_output.txt
           EXIT=${PIPESTATUS[0]}
           exit $EXIT
 
