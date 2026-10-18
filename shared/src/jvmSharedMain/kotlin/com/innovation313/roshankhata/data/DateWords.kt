@@ -155,7 +155,7 @@ object DateWords {
     }
 
     /** True when [pattern] has a day-of-month letter outside quotes. */
-    internal fun hasDay(pattern: String): Boolean {
+    fun hasDay(pattern: String): Boolean {
         var quoted = false
         for (c in pattern) {
             if (c == '\'') quoted = !quoted else if (!quoted && c == 'd') return true
