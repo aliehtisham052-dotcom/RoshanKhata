@@ -1,0 +1,41 @@
+package com.innovation313.roshankhata.data
+
+import android.content.Context
+
+/** The phone's [ShopSettings]: the active shop's BusinessProfile, unchanged. */
+class AndroidShopSettings(private val context: Context) : ShopSettings {
+    override fun businessName() = BusinessProfile.businessName(context)
+    override fun setBusinessName(value: String?) = BusinessProfile.setBusinessName(context, value)
+    override fun businessNameUrdu() = BusinessProfile.businessNameUrdu(context)
+    override fun setBusinessNameUrdu(value: String?) = BusinessProfile.setBusinessNameUrdu(context, value)
+    override fun businessAddress() = BusinessProfile.businessAddress(context)
+    override fun setBusinessAddress(value: String?) = BusinessProfile.setBusinessAddress(context, value)
+    override fun businessPhone() = BusinessProfile.businessPhone(context)
+    override fun setBusinessPhone(value: String?) = BusinessProfile.setBusinessPhone(context, value)
+    override fun businessEmail() = BusinessProfile.businessEmail(context)
+    override fun setBusinessEmail(value: String?) = BusinessProfile.setBusinessEmail(context, value)
+    override fun bankName() = BusinessProfile.bankName(context)
+    override fun setBankName(value: String?) = BusinessProfile.setBankName(context, value)
+    override fun bankAccountTitle() = BusinessProfile.bankAccountTitle(context)
+    override fun setBankAccountTitle(value: String?) = BusinessProfile.setBankAccountTitle(context, value)
+    override fun bankIban() = BusinessProfile.bankIban(context)
+    override fun setBankIban(value: String?) = BusinessProfile.setBankIban(context, value)
+    override fun bankJazzCash() = BusinessProfile.bankJazzCash(context)
+    override fun setBankJazzCash(value: String?) = BusinessProfile.setBankJazzCash(context, value)
+    override fun termsAndConditions() = BusinessProfile.termsAndConditions(context)
+    override fun setTermsAndConditions(value: String?) = BusinessProfile.setTermsAndConditions(context, value)
+    override fun strn() = BusinessProfile.strn(context)
+    override fun setStrn(value: String?) = BusinessProfile.setStrn(context, value)
+    override fun currency() = BusinessProfile.currency(context)
+    override fun setCurrency(value: String?) = BusinessProfile.setCurrency(context, value)
+    override fun calendar() = BusinessProfile.calendar(context)
+    override fun setCalendar(kind: ShopCalendar.Kind) = BusinessProfile.setCalendar(context, kind)
+    override fun tradeKey() = BusinessProfile.trade(context)
+    override fun setTradeKey(key: String) = BusinessProfile.setTrade(context, Trade.of(key))
+    override fun otherTradeName() = BusinessProfile.otherTradeName(context)
+    override fun otherTradeItems() = BusinessProfile.otherTradeItems(context)
+    override fun setOtherTrade(name: String?, items: String?) = BusinessProfile.setOtherTrade(context, name, items)
+    override fun photoOnStatement() = BusinessProfile.photoOnStatement(context)
+    override fun setPhotoOnStatement(enabled: Boolean) = BusinessProfile.setPhotoOnStatement(context, enabled)
+    override fun refreshDisplay() = ShopCalendar.refresh(context)
+}

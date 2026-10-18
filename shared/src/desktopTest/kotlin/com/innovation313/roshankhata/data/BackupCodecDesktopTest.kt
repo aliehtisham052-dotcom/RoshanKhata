@@ -86,6 +86,37 @@ class BackupCodecDesktopTest {
     }
 
     @Test
+    fun `a phone's shop profile lands in the computer's settings and back out the same`() {
+        val dir = java.nio.file.Files.createTempDirectory("rk-settings").toFile()
+        try {
+            val file = java.io.File(dir, "shop.properties")
+            val profile = BackupCodec.parseText(v7).second!!.businessProfile!!
+            BackupCodec.restoreProfile(FileShopSettings(file), profile)
+
+            // A fresh read of the file: what a restart of the app would see.
+            val again = FileShopSettings(file)
+            assertEquals("Bhatti Traders", again.businessName())
+            assertEquals("Lappay Wali", again.businessAddress())
+            assertNull(again.bankName())
+            assertEquals(ShopCalendar.Kind.HIJRI, again.calendar())
+            assertEquals("Rs", again.currency())
+            assertNull(again.tradeKey())
+            assertTrue(again.photoOnStatement())
+            assertEquals(ShopCalendar.Kind.HIJRI, ShopCalendar.current)
+
+            val out = BackupCodec.profileToJson(again)
+            assertEquals("Bhatti Traders", out.getString("businessName"))
+            assertTrue(out.isNull("bankName"))
+            assertEquals("hijri", out.getString("calendar"))
+            assertEquals("Rs", out.getString("currency"))
+            assertTrue(out.getBoolean("photoOnStatement"))
+        } finally {
+            ShopCalendar.useForTest(ShopCalendar.Kind.GREGORIAN)
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
     fun `refusals are the same kinds as on the phone`() {
         fun why(text: String) = (BackupCodec.parseText(text).first as BackupCodec.ImportResult.Failed).why
         assertEquals(BackupCodec.ImportResult.Why.NOT_OURS, why("""{"format": "SomethingElse", "version": 1}"""))

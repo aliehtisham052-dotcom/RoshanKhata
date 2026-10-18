@@ -1034,6 +1034,49 @@ object BackupCodec {
         dismissedAt = o.optLong("dismissedAt", System.currentTimeMillis())
     )
 
+    // ---------- Business Profile (the shop's ShopSettings) ----------
+
+    /** The shop Profile's TEXT for a backup (no image flags: see exportSmall). */
+    fun profileToJson(s: ShopSettings) = JSONObject().apply {
+        put("businessName", s.businessName() ?: JSONObject.NULL)
+        put("businessNameUrdu", s.businessNameUrdu() ?: JSONObject.NULL)
+        put("businessAddress", s.businessAddress() ?: JSONObject.NULL)
+        put("businessPhone", s.businessPhone() ?: JSONObject.NULL)
+        put("businessEmail", s.businessEmail() ?: JSONObject.NULL)
+        put("bankName", s.bankName() ?: JSONObject.NULL)
+        put("bankAccountTitle", s.bankAccountTitle() ?: JSONObject.NULL)
+        put("bankIban", s.bankIban() ?: JSONObject.NULL)
+        put("bankJazzCash", s.bankJazzCash() ?: JSONObject.NULL)
+        put("termsAndConditions", s.termsAndConditions() ?: JSONObject.NULL)
+        put("strn", s.strn() ?: JSONObject.NULL)
+        put("currency", s.currency())
+        put("calendar", s.calendar().key)
+        put("trade", s.tradeKey() ?: JSONObject.NULL)
+        put("tradeOtherName", s.otherTradeName() ?: JSONObject.NULL)
+        put("tradeOtherItems", s.otherTradeItems() ?: JSONObject.NULL)
+        put("photoOnStatement", s.photoOnStatement())
+    }
+
+    fun restoreProfile(s: ShopSettings, p: BusinessProfileData) {
+        s.setBusinessName(p.businessName)
+        s.setBusinessNameUrdu(p.businessNameUrdu)
+        s.setBusinessAddress(p.businessAddress)
+        s.setBusinessPhone(p.businessPhone)
+        s.setBusinessEmail(p.businessEmail)
+        s.setBankName(p.bankName)
+        s.setBankAccountTitle(p.bankAccountTitle)
+        s.setBankIban(p.bankIban)
+        s.setBankJazzCash(p.bankJazzCash)
+        s.setTermsAndConditions(p.termsAndConditions)
+        s.setStrn(p.strn)
+        s.setCurrency(p.currency)
+        s.setCalendar(ShopCalendar.Kind.of(p.calendar))
+        s.refreshDisplay()
+        p.trade?.let { s.setTradeKey(it) }
+        s.setOtherTrade(p.tradeOtherName, p.tradeOtherItems)
+        s.setPhotoOnStatement(p.photoOnStatement)
+    }
+
     private fun jsonToBusinessProfile(o: JSONObject) = BusinessProfileData(
         businessName = o.optNullableString("businessName"),
         businessAddress = o.optNullableString("businessAddress"),
