@@ -19,6 +19,8 @@ plugins {
     id("com.google.devtools.ksp") version "2.3.11" apply false
     // KMP Phase 2: the shared module (Android + desktop).
     id("org.jetbrains.kotlin.multiplatform") version "2.4.21" apply false
+    // The Windows app module (:desktop, KMP Phase 6).
+    id("org.jetbrains.kotlin.jvm") version "2.4.21" apply false
     id("com.android.library") version "8.11.1" apply false
     // Room's Gradle plugin for the shared module's schema files; same version as Room.
     id("androidx.room") version "2.7.1" apply false

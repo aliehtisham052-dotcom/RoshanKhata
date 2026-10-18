@@ -75,6 +75,8 @@ kotlin {
                 implementation("com.google.code.gson:gson:2.11.0")
                 // Plural rules for the computer's words (the phone uses android.icu).
                 implementation("com.ibm.icu:icu4j:77.1")
+                // The computer's SQLite, packed with the app (Room KMP's bundled driver).
+                api("androidx.sqlite:sqlite-bundled:2.5.1")
             }
         }
 
