@@ -2,7 +2,10 @@ name: Android CI
 
 on:
   push:
-    branches: [ main ]
+    # kmp-* (18 Oct): the Kotlin Multiplatform steps are built and tested
+    # here before they reach main. Only main publishes the "latest" APK; a
+    # kmp-* branch puts its APK on the separate "kmp-test" pre-release.
+    branches: [ main, 'kmp-*' ]
     paths-ignore:
       - 'ci/**' 
   pull_request:
@@ -201,6 +204,19 @@ jobs:
       # Android 7.0 (minSdk 24) compatibility, plus accessibility, RTL and
       # hardcoded-text checks (10 Oct). Runs after the APK is published and is
       # continue-on-error, so it can never hold back the download link.
+      # A kmp-* branch's APK, for the owner to try on his phone before the
+      # step is merged. Never the "latest" release (that is main's alone).
+      - name: Publish a kmp branch APK to the kmp-test pre-release
+        if: success() && startsWith(github.ref, 'refs/heads/kmp-')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp out/RoshanKhata-latest.apk out/RoshanKhata-kmp-test.apk
+          gh release view kmp-test >/dev/null 2>&1 || gh release create kmp-test --prerelease \
+            --title "Roshan Khata - KMP test build" --notes "Test build from a kmp-* branch. Not the Play app, not the latest build." || true
+          gh release upload kmp-test out/RoshanKhata-kmp-test.apk --clobber
+          gh release edit kmp-test --notes "Test build from branch ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not the Play app, not the latest build."
+
       - name: Lint (old-Android API, accessibility, RTL, hardcoded text)
         if: success()
         continue-on-error: true
