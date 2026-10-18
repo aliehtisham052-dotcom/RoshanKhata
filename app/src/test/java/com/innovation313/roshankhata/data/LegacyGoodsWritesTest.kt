@@ -23,13 +23,19 @@ class LegacyGoodsWritesTest {
 
     private val legacy = Regex("""\b(itemName|quantity|unit|productId|billItemId)\s*=""")
 
-    private fun sourceRoot(): File =
-        listOf(File("src/main/java"), File("app/src/main/java")).first { it.isDirectory }
+    /** The app's sources and, since KMP Phase 3, the shared module's (the tables live there). */
+    private fun sourceRoots(): List<File> = listOfNotNull(
+        listOf(File("src/main/java"), File("app/src/main/java")).first { it.isDirectory },
+        listOf(File("../shared/src"), File("shared/src")).firstOrNull { it.isDirectory }
+    )
+
+    private fun sourceFiles(): Sequence<File> =
+        sourceRoots().asSequence().flatMap { it.walkTopDown() }.filter { it.extension == "kt" }
 
     /** Every `LedgerEntry( … )` call, as (file, line, argument text). */
     private fun ledgerEntryCalls(): List<Triple<String, Int, String>> {
         val found = mutableListOf<Triple<String, Int, String>>()
-        sourceRoot().walkTopDown().filter { it.extension == "kt" }.forEach { file ->
+        sourceFiles().forEach { file ->
             val text = file.readText()
             Regex("""\bLedgerEntry\(""").findAll(text).forEach { m ->
                 var i = m.range.last + 1
@@ -66,7 +72,7 @@ class LegacyGoodsWritesTest {
 
     @Test
     fun `no SQL writes the legacy goods columns of transactions`() {
-        val dao = sourceRoot().walkTopDown().first { it.name == "KhataDao.kt" }.readText()
+        val dao = sourceFiles().first { it.name == "KhataDao.kt" }.readText()
         val writes = Regex(
             """UPDATE\s+transactions\s+SET\s+[^"]*\b(itemName|quantity|unit|productId|billItemId)\s*=""",
             RegexOption.IGNORE_CASE

@@ -108,13 +108,20 @@ class ViewerDaoTest {
             File("app/src/main/java/com/innovation313/roshankhata/data")
         ).first { it.isDirectory }
 
+    /** Where KhataDao.kt lives since KMP Phase 3: the shared module. */
+    private fun sharedDataDir(): File =
+        listOf(
+            File("../shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data"),
+            File("shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data")
+        ).first { it.isDirectory }
+
     private fun stripComments(s: String) =
         s.replace(Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL), "")
             .replace(Regex("""//[^\n]*"""), "")
 
     /** The same rule as scripts/gen_viewer_dao.py, written independently. */
     private fun writesInKhataDao(): Set<String> {
-        val src = stripComments(File(dataDir(), "KhataDao.kt").readText())
+        val src = stripComments(File(sharedDataDir(), "KhataDao.kt").readText())
         val funs = Regex("""\bfun\s+(\w+)\s*\(""").findAll(src).toList()
         val direct = mutableSetOf<String>()
         val bodies = mutableMapOf<String, String>()
