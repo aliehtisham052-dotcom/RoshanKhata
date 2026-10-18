@@ -71,7 +71,11 @@ class StatementPrint(
     private fun pageCount(): Int =
         if (rows.size <= rowsFirstPage) 1 else 1 + (rows.size - rowsFirstPage + rowsPerPage - 1) / rowsPerPage
 
-    /** Text at [x] measured from the start side: from the left in English, from the right in Urdu. */
+    /**
+     * Text at [x] measured from the start side: from the left in English, from
+     * the right in Urdu. [end]: [x] is where the text ends, not where it starts
+     * (pageW - margin is the far edge).
+     */
     private fun Graphics2D.text(s: String, x: Double, y: Double, end: Boolean = false) {
         val w = fontMetrics.stringWidth(s)
         val left = when {
@@ -115,7 +119,7 @@ class StatementPrint(
                 ) + "  ·  " + words.plural(WP.pdf_stmt_entries, rows.size, rows.size)
             } else words.text(W.pdf_stmt_no_entries)
             g.text(period, margin, y)
-            if (pageCount() > 1) g.text(words.text(W.pdf_stmt_page, 1, pageCount()), margin, y, end = true)
+            if (pageCount() > 1) g.text(words.text(W.pdf_stmt_page, 1, pageCount()), pageW - margin, y, end = true)
             y += 12.0
             // What was given and what was paid, in the table's own colours.
             val gap = 10.0
@@ -139,7 +143,7 @@ class StatementPrint(
         } else {
             g.color = muted
             g.font = Font(Font.DIALOG, Font.PLAIN, 9)
-            g.text(words.text(W.pdf_stmt_page, pageIndex + 1, pageCount()), margin, y, end = true)
+            g.text(words.text(W.pdf_stmt_page, pageIndex + 1, pageCount()), pageW - margin, y, end = true)
             y += 14.0
         }
 
