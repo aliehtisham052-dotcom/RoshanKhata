@@ -188,12 +188,8 @@ fun Invoice.totals(items: List<InvoiceItem>): InvoiceTotals = InvoiceMath.totals
     items, discountPercent, taxPercent, additionalChargeAmount, receivedAmount, discountAmount
 )
 
-/**
- * How the discount line reads: "Discount (5%)" for a percent, plain
- * "Discount" for an amount in money, whose figure is printed beside it.
- */
-fun Invoice.discountLabel(word: String): String =
-    if (discountAmount != null) word else "$word (${com.innovation313.roshankhata.ui.Format.plain(discountPercent ?: 0.0)}%)"
+// Invoice.discountLabel() formats with the app's Format, so it lives in the
+// app (data/InvoiceLabels.kt), KMP Phase 3.
 
 /** An invoice with enough of its items rolled up to show in a list without loading them all. */
 data class InvoiceSummary(
