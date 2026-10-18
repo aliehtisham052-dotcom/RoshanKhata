@@ -83,6 +83,8 @@
 
                 <TextView
                     android:id="@+id/tvSigDirection"
+                android:backgroundTint="@color/red_gave"
+                android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_entry_pill"
@@ -149,7 +151,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <!-- Fades once the first stroke goes down. Not touchable: the pad takes every touch. -->
+            <!-- Fades once the first stroke goes down. Not touchable: the pad takes every touch.
+                 #86827A on the white pad clears 3:1 (EveryLayoutReadableInDarkTest). -->
             <TextView
                 android:id="@+id/tvSigPlaceholder"
                 android:layout_width="wrap_content"
@@ -157,7 +160,7 @@
                 android:layout_gravity="center"
                 android:importantForAccessibility="no"
                 android:text="@string/sig_title"
-                android:textColor="#B8B4A8"
+                android:textColor="#86827A"
                 android:textSize="22sp"
                 android:textStyle="italic" />
         </FrameLayout>
