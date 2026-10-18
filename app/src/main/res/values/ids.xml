@@ -2,4 +2,6 @@
 <resources>
     <!-- Tag on a Home tile: true for the compact (four-a-row) size. -->
     <item name="tile_compact" type="id" />
+    <!-- KeyboardFollow: marks a root whose focus listener is already added. -->
+    <item name="tag_keyboard_follow" type="id" />
 </resources>
