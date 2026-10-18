@@ -285,8 +285,11 @@ class BillScanFlow(
                     setPadding(0, (3 * dp).toInt(), 0, (3 * dp).toInt())
                 })
             }
-            if (payment.amount != null) {
-                line(activity.getString(R.string.payment_scan_amount, Format.money(payment.amount)), bold = true)
+            // Read once into a local: payment comes from the shared module, where
+            // Kotlin cannot smart-cast another module's property.
+            val paidAmount = payment.amount
+            if (paidAmount != null) {
+                line(activity.getString(R.string.payment_scan_amount, Format.money(paidAmount)), bold = true)
             } else {
                 line(activity.getString(R.string.payment_scan_no_amount), R.color.gold_accent, bold = true)
             }
@@ -385,12 +388,13 @@ class BillScanFlow(
                 }.also { column.addView(it) }
             }
 
-            if (bill.items.isNotEmpty() && bill.total != null) {
+            val billTotal = bill.total   // a local, for the smart cast (shared module)
+            if (bill.items.isNotEmpty() && billTotal != null) {
                 val sum = bill.itemsTotal
-                if (kotlin.math.abs(sum - bill.total) < 1.0) {
+                if (kotlin.math.abs(sum - billTotal) < 1.0) {
                     line(activity.getString(R.string.bill_scan_sum_matches), R.color.green_got_text, bold = true)
                 } else {
-                    line(activity.getString(R.string.bill_scan_sum_differs, Format.money(sum), Format.money(bill.total)), R.color.gold_accent, bold = true)
+                    line(activity.getString(R.string.bill_scan_sum_differs, Format.money(sum), Format.money(billTotal)), R.color.gold_accent, bold = true)
                 }
             }
             if (bill.items.isEmpty()) line(activity.getString(R.string.bill_scan_no_items), R.color.text_muted)
