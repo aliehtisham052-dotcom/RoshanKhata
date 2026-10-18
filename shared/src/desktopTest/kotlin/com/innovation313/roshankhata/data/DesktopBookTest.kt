@@ -33,6 +33,37 @@ class DesktopBookTest {
     }
 
     @Test
+    fun `a computer backup reads back whole, for the phone to restore`() {
+        val dir = Files.createTempDirectory("rk-book").toFile()
+        val db = DesktopDatabase.open(dir.resolve("khata.db"))
+        try {
+            val settings = FileShopSettings(dir.resolve("shop.properties"))
+            settings.setBusinessName("Bhatti Traders")
+            settings.setCalendar(ShopCalendar.Kind.HIJRI)
+            val text = runBlocking {
+                val dao = db.khataDao()
+                val id = dao.insertParty(Party(name = "Bilal", phone = "0300 1234567", isCustomer = true))
+                dao.insertEntryWithItems(LedgerEntry(partyId = id, amount = 1550.0, isGiven = true, note = "urea", entryNumber = ""), emptyList())
+                val out = java.io.StringWriter()
+                BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), out)
+                out.toString()
+            }
+            val (result, data) = BackupCodec.parseText(text)
+            assertEquals(BackupCodec.ImportResult.Ok(parties = 1, entries = 1, cheques = 0, cash = 0), result)
+            data!!
+            assertEquals("Bilal", data.parties.single().name)
+            assertEquals("urea", data.entries.single().note)
+            assertEquals("RK-000001", data.entries.single().entryNumber)
+            assertEquals("Bhatti Traders", data.businessName)
+            assertEquals("hijri", data.businessProfile!!.calendar)
+        } finally {
+            db.close()
+            dir.deleteRecursively()
+            ShopCalendar.useForTest(ShopCalendar.Kind.GREGORIAN)
+        }
+    }
+
+    @Test
     fun `entries written on the computer are numbered and summed as on the phone`() {
         val dir = Files.createTempDirectory("rk-book").toFile()
         val db = DesktopDatabase.open(dir.resolve("khata.db"))

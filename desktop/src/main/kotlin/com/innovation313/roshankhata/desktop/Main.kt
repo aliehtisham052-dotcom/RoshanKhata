@@ -104,6 +104,7 @@ fun main() = application {
                         load = { db.khataDao().partiesWithBalanceOnce() },
                         shopName = { settings.businessName() },
                         restore = { data -> restore(data, db, settings) },
+                        backup = { file -> backup(file, db, settings) },
                         words = words
                     )
                 }
@@ -116,6 +117,18 @@ fun main() = application {
 private sealed interface Picked {
     data class Ready(val file: File, val data: BackupCodec.ParsedBackup, val ok: BackupCodec.ImportResult.Ok) : Picked
     data class Refused(val why: String) : Picked
+}
+
+/** The whole book to [file] in the phone's format, streamed; returns the file's size. */
+private suspend fun backup(
+    file: File,
+    db: com.innovation313.roshankhata.data.KhataDatabase,
+    settings: FileShopSettings
+): Long = withContext(Dispatchers.IO) {
+    file.bufferedWriter(Charsets.UTF_8).use {
+        BackupCodec.exportTo(db.khataDao(), settings.businessName(), BackupCodec.profileToJson(settings), it)
+    }
+    file.length()
 }
 
 /** The ledger in one transaction, then the shop's details — the phone's order. */
@@ -144,6 +157,7 @@ private fun Book(
     load: suspend () -> List<PartyWithBalance>,
     shopName: () -> String?,
     restore: suspend (BackupCodec.ParsedBackup) -> Unit,
+    backup: suspend (File) -> Long,
     words: Words
 ) {
     val c = LocalRoshanColors.current
@@ -158,6 +172,7 @@ private fun Book(
     var selected by remember { mutableStateOf<Long?>(null) }
     var entryWay by remember { mutableStateOf<Boolean?>(null) }
     var addParty by remember { mutableStateOf(false) }
+    var backedUp by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
 
@@ -173,6 +188,21 @@ private fun Book(
                 color = c.onDark, fontSize = 20.sp, fontWeight = FontWeight.Bold
             )
             HeaderButton(word(W.add_party)) { addParty = true }
+            Spacer(Modifier.width(8.dp))
+            HeaderButton(word(W.backup_now)) {
+                val dialog = FileDialog(null as Frame?, words.text(W.save_backup), FileDialog.SAVE)
+                // The phone's file name and .txt (WhatsApp sends .txt; the content is JSON).
+                dialog.file = "RoshanKhata_Backup_" +
+                    java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(java.util.Date()) + ".txt"
+                dialog.isVisible = true
+                val name = dialog.file ?: return@HeaderButton
+                val file = File(dialog.directory, name)
+                scope.launch {
+                    backedUp = runCatching { backup(file) }
+                        .map { size -> words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt()) }
+                        .getOrElse { words.text(W.backup_failed) }
+                }
+            }
             Spacer(Modifier.width(8.dp))
             HeaderButton(word(W.restore_from_file)) {
                 val dialog = FileDialog(null as Frame?, words.text(W.restore_from_file), FileDialog.LOAD)
@@ -353,6 +383,14 @@ private fun Book(
                 )
             }
         }
+    }
+    backedUp?.let { text ->
+        AlertDialog(
+            onDismissRequest = { backedUp = null },
+            title = { Text(word(W.backup_done_title)) },
+            confirmButton = { TextButton({ backedUp = null }) { Text(word(W.ok)) } },
+            text = { Text(text) }
+        )
     }
     if (about) {
         DialogWindow(
