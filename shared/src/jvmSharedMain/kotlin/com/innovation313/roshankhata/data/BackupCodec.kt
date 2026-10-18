@@ -1061,4 +1061,5 @@ object BackupCodec {
         if (isNull(key)) null else optLong(key)
 
     private fun JSONObject.optNullableDouble(key: String): Double? =
+        if (isNull(key)) null else optDouble(key)
 }
