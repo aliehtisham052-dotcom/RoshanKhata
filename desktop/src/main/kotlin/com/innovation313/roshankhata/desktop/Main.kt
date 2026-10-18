@@ -183,6 +183,9 @@ private fun Book(
     var addParty by remember { mutableStateOf(false) }
     var backedUp by remember { mutableStateOf<String?>(null) }
     var choosingLanguage by remember { mutableStateOf(false) }
+    var editing by remember { mutableStateOf<LedgerEntry?>(null) }
+    var deleting by remember { mutableStateOf<LedgerEntry?>(null) }
+    var halves by remember { mutableStateOf<Pair<LedgerEntry, LedgerEntry>?>(null) }
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
 
@@ -293,6 +296,7 @@ private fun Book(
                         entries = entries.sortedByDescending { it.timestamp },
                         onGave = { entryWay = true },
                         onGot = { entryWay = false },
+                        onEntry = { editing = it },
                         onStatement = {
                             scope.launch {
                                 val rows = withContext(Dispatchers.IO) { dao.latestEntriesWithItems(party.id, Int.MAX_VALUE) }
@@ -381,6 +385,87 @@ private fun Book(
                 )
             }
         }
+    }
+    editing?.let { e ->
+        DialogWindow(
+            onCloseRequest = { editing = null },
+            title = word(W.edit),
+            state = rememberDialogState(width = 460.dp, height = 430.dp)
+        ) {
+            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+                EntryForm(
+                    partyName = forParty?.name.orEmpty(),
+                    isGiven = e.isGiven,
+                    initialAmount = e.amount,
+                    initialNote = e.note,
+                    onSave = { amount, note ->
+                        scope.launch {
+                            withContext(Dispatchers.IO) {
+                                // The phone's edit: the entry and its goods lines, all or nothing.
+                                dao.updateEntryWithItems(e.copy(amount = amount, note = note), dao.itemsOfEntry(e.id))
+                            }
+                            editing = null
+                            reload++
+                        }
+                    },
+                    onCancel = { editing = null },
+                    onDelete = { deleting = e; editing = null }
+                )
+            }
+        }
+    }
+    deleting?.let { e ->
+        AlertDialog(
+            onDismissRequest = { deleting = null },
+            title = { Text(word(W.delete_entry_title)) },
+            text = { Text(word(W.delete_entry_confirm)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deleting = null
+                        scope.launch {
+                            // Half of a cash sale: ask about the other half, as the phone does.
+                            val pair = withContext(Dispatchers.IO) {
+                                e.pairedEntryId?.let { dao.getEntry(it) }?.takeIf { !it.isDeleted }
+                            }
+                            if (pair != null) {
+                                halves = e to pair
+                            } else {
+                                withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id) }
+                                reload++
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
+                ) { Text(word(W.delete)) }
+            },
+            dismissButton = { TextButton({ deleting = null }) { Text(word(W.cancel)) } }
+        )
+    }
+    halves?.let { (e, pair) ->
+        AlertDialog(
+            onDismissRequest = { halves = null },
+            title = { Text(word(W.delete_pair_title)) },
+            text = { Text(word(W.delete_pair_message, pair.entryNumber)) },
+            confirmButton = {
+                TextButton({
+                    halves = null
+                    scope.launch {
+                        withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id); dao.softDeleteEntry(pair.id) }
+                        reload++
+                    }
+                }) { Text(word(W.delete_pair_both)) }
+            },
+            dismissButton = {
+                TextButton({
+                    halves = null
+                    scope.launch {
+                        withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id) }
+                        reload++
+                    }
+                }) { Text(word(W.delete_pair_one)) }
+            }
+        )
     }
     if (addParty) {
         DialogWindow(

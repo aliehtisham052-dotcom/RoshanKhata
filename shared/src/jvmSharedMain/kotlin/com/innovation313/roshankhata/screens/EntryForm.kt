@@ -41,11 +41,16 @@ fun EntryForm(
     isGiven: Boolean,
     onSave: (amount: Double, note: String?) -> Unit,
     onCancel: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Editing: the entry's amount and note to start from. */
+    initialAmount: Double? = null,
+    initialNote: String? = null,
+    /** Editing: moves the entry to the Recycle Bin (the caller confirms). */
+    onDelete: (() -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
-    var amountText by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
+    var amountText by remember { mutableStateOf(initialAmount?.let { Calc.trim(it) } ?: "") }
+    var note by remember { mutableStateOf(initialNote.orEmpty()) }
     val amount = Calc.evalAmount(amountText)
     Column(modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
@@ -73,6 +78,12 @@ fun EntryForm(
             modifier = Modifier.fillMaxWidth().testTag("entryNote")
         )
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, androidx.compose.ui.Alignment.End)) {
+            if (onDelete != null) {
+                TextButton(onClick = onDelete, modifier = Modifier.testTag("entryDelete")) {
+                    Text(word(W.delete), color = c.owedToMe)
+                }
+                androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+            }
             TextButton(onClick = onCancel) { Text(word(W.cancel)) }
             Button(
                 onClick = { amount?.let { onSave(it, note.trim().ifEmpty { null }) } },

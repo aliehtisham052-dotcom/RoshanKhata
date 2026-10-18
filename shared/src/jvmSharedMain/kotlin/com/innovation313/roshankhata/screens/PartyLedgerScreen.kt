@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,6 +48,8 @@ fun PartyLedgerScreen(
     onGave: () -> Unit,
     onGot: () -> Unit,
     onStatement: (() -> Unit)? = null,
+    /** An entry was clicked: open it to edit or delete. */
+    onEntry: ((LedgerEntry) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val c = LocalRoshanColors.current
@@ -82,7 +85,7 @@ fun PartyLedgerScreen(
             )
         } else {
             LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
-                items(entries, key = { it.id }) { e -> EntryRow(e) }
+                items(entries, key = { it.id }) { e -> EntryRow(e, onEntry) }
             }
         }
         Row(
@@ -106,10 +109,12 @@ fun PartyLedgerScreen(
 }
 
 @Composable
-private fun EntryRow(e: LedgerEntry) {
+private fun EntryRow(e: LedgerEntry, onEntry: ((LedgerEntry) -> Unit)?) {
     val c = LocalRoshanColors.current
     Row(
-        Modifier.fillMaxWidth().background(c.surface).padding(horizontal = 20.dp, vertical = 12.dp),
+        Modifier.fillMaxWidth().background(c.surface)
+            .let { m -> if (onEntry != null) m.clickable { onEntry(e) } else m }
+            .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(Modifier.weight(1f)) {
