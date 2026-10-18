@@ -1069,6 +1069,17 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="sig_clear">Hapus</string>
     <string name="sig_empty">Tanda tangani dulu</string>
     <string name="sig_label">Tanda tangan pelanggan</string>
+    <string name="sig_undo">Urungkan</string>
+    <string name="sig_save">Simpan tanda tangan</string>
+    <string name="sig_signed_at">Ditandatangani %1$s</string>
+    <string name="sig_none">Belum ditandatangani</string>
+    <string name="sig_done">Sudah ditandatangani</string>
+    <string name="sig_sign">Tanda tangan</string>
+    <string name="sig_change">Ganti</string>
+    <string name="sig_remove">Hapus tanda tangan</string>
+    <string name="edit_entry_title">Ubah catatan</string>
+    <string name="edit_section_money">Jumlah dan tanggal</string>
+    <string name="edit_section_note">Catatan</string>
     <string name="invalid_amount">Masukkan jumlah yang benar</string>
     <string name="saved">Tersimpan</string>
     <string name="select_language">Pilih bahasa Anda</string>

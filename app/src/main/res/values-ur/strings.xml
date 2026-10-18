@@ -1057,6 +1057,17 @@
     <string name="sig_clear">مٹائیں</string>
     <string name="sig_empty">پہلے دستخط کریں</string>
     <string name="sig_label">گاہک کے دستخط</string>
+    <string name="sig_undo">واپس</string>
+    <string name="sig_save">دستخط محفوظ کریں</string>
+    <string name="sig_signed_at">دستخط: %1$s</string>
+    <string name="sig_none">ابھی دستخط نہیں ہوئے</string>
+    <string name="sig_done">دستخط ہو گئے</string>
+    <string name="sig_sign">دستخط</string>
+    <string name="sig_change">بدلیں</string>
+    <string name="sig_remove">دستخط ہٹائیں</string>
+    <string name="edit_entry_title">اندراج میں ترمیم</string>
+    <string name="edit_section_money">رقم اور تاریخ</string>
+    <string name="edit_section_note">نوٹ</string>
     <string name="invalid_amount">درست رقم لکھیں</string>
     <string name="saved">محفوظ ہو گیا</string>
     <string name="select_language">اپنی زبان چنیں</string>

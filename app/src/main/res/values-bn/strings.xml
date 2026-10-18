@@ -1091,6 +1091,17 @@
     <string name="sig_clear">মুছুন</string>
     <string name="sig_empty">আগে স্বাক্ষর করুন</string>
     <string name="sig_label">গ্রাহকের স্বাক্ষর</string>
+    <string name="sig_undo">ফিরিয়ে নিন</string>
+    <string name="sig_save">স্বাক্ষর সেভ করুন</string>
+    <string name="sig_signed_at">স্বাক্ষর: %1$s</string>
+    <string name="sig_none">এখনও স্বাক্ষর হয়নি</string>
+    <string name="sig_done">স্বাক্ষর হয়েছে</string>
+    <string name="sig_sign">স্বাক্ষর</string>
+    <string name="sig_change">বদলান</string>
+    <string name="sig_remove">স্বাক্ষর মুছুন</string>
+    <string name="edit_entry_title">এন্ট্রি সম্পাদনা</string>
+    <string name="edit_section_money">টাকা ও তারিখ</string>
+    <string name="edit_section_note">নোট</string>
     <string name="invalid_amount">সঠিক অঙ্ক লিখুন</string>
     <string name="saved">সেভ হয়েছে</string>
     <string name="select_language">আপনার ভাষা বেছে নিন</string>

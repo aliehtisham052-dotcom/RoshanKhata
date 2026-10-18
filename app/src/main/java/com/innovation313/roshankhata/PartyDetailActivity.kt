@@ -126,6 +126,13 @@ class PartyDetailActivity : BaseActivity() {
      * dialog reads it when Save is pressed.
      */
     private var pendingBillPhoto: String? = null
+
+    /**
+     * The signature taken on the new-entry form (18 Oct). An entry has no
+     * number until it is written, and signatures are filed by number, so it
+     * waits here and saveEntry files it under the id the insert returns.
+     */
+    private var pendingSignature: android.graphics.Bitmap? = null
     private var billButton: com.google.android.material.button.MaterialButton? = null
 
     private val pickBillPhoto = registerForActivityResult(
@@ -678,6 +685,7 @@ class PartyDetailActivity : BaseActivity() {
         // then cancelled is a file nobody will ever look at.
         BillPhoto.delete(pendingBillPhoto)
         pendingBillPhoto = null
+        pendingSignature = null
 
         billButton = view.findViewById(R.id.btnAddBill)
         billButton?.setText(R.string.entry_bill_chip)
@@ -821,6 +829,30 @@ class PartyDetailActivity : BaseActivity() {
         }
 
         val etNote: EditText = view.findViewById(R.id.etNote)
+
+        // The customer's signature, on the form itself (18 Oct): until now it
+        // could only be added afterwards, from the receipt. Shows what is being
+        // signed for as it stands at that moment on the form.
+        val sigRow = com.innovation313.roshankhata.ui.SignatureRow(
+            this, view.findViewById(R.id.sigRow),
+            about = {
+                com.innovation313.roshankhata.ui.SignatureSheet.About(
+                    party = partyName.ifBlank { null },
+                    isGiven = isGiven,
+                    amount = Calc.evalAmount(etAmount.text.toString()),
+                    time = chosenTime
+                )
+            }
+        )
+        editing?.let { ed ->
+            lifecycleScope.launch {
+                val old = withContext(Dispatchers.IO) {
+                    com.innovation313.roshankhata.data.EntrySignature.load(this@PartyDetailActivity, ed.entry.id)
+                }
+                sigRow.showExisting(old)
+            }
+        }
+
         val etItemName: AutoCompleteTextView = view.findViewById(R.id.etItemName)
         // The trade's own words in the hints (9 Oct): a dairy reads
         // "Item (Milk, Yogurt, Ghee…)", not a pesticide dealer's examples.
@@ -1869,9 +1901,21 @@ class PartyDetailActivity : BaseActivity() {
                     rateType = rateType
                 )
                 AppScope.launch { dao.updateEntryWithItems(updated, items) }
+                if (sigRow.changed) {
+                    val sig = sigRow.current
+                    val ctx = applicationContext
+                    AppScope.launch(Dispatchers.IO) {
+                        runCatching {
+                            if (sig != null) com.innovation313.roshankhata.data.EntrySignature.save(ctx, updated.id, sig)
+                            else com.innovation313.roshankhata.data.EntrySignature.delete(ctx, updated.id)
+                        }
+                    }
+                }
                 if (entryDueTouched) saveHarvestPromise(entryDue)
                 return true
             }
+
+            pendingSignature = sigRow.current
 
             // Warn BEFORE writing, not after — a warning that arrives once
             // the entry is already in the ledger is just an accusation.
@@ -2789,12 +2833,20 @@ class PartyDetailActivity : BaseActivity() {
      *   sale, and an Undo bar takes it back.
      */
     private fun saveEntry(entry: LedgerEntry, items: List<EntryItem>, paidNow: Boolean = false) {
+        // Taken now, on the main thread: the form's signature belongs to this
+        // entry and no other (see pendingSignature).
+        val signature = pendingSignature
+        pendingSignature = null
+        val appContext = applicationContext
         AppScope.launch {
             // Numbering, the entry and its goods lines all happen inside the
             // DAO's own transaction — see insertEntryNumbered for why the count
             // must not be read out here, and insertEntryWithItems for why the
             // lines are written in the same step.
             val id = dao.insertEntryWithItems(entry, items)
+            if (signature != null) withContext(Dispatchers.IO) {
+                runCatching { com.innovation313.roshankhata.data.EntrySignature.save(appContext, id, signature) }
+            }
             // Ticked on the form: the money came with the goods. Its cash
             // "I got" is written straight after, paired with the sale.
             val gotId = if (paidNow && entry.isGiven && entry.rateType == RateType.CASH)

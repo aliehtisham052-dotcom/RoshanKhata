@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Edit an entry (redesigned 18 Oct). Laid out like the rest of the app's
+  forms: a header saying which entry and which way the money went, then the
+  fields in labelled groups, in outlined boxes — amount and date, note, goods
+  — and the customer's signature, which can now be added, changed or removed
+  here too. The ids are the ones EntryDetailActivity has always used.
+-->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -8,104 +15,238 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="8dp">
 
-        <EditText
-            android:id="@+id/etEditAmount"
-            android:textDirection="ltr"
-            android:textAlignment="viewStart"
+        <!-- Header: arrow tile, "Edit entry", whose and which number, which way. -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/amount"
-            android:importantForAutofill="no"
-            android:inputType="numberDecimal" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/etEditNote"
+            <FrameLayout
+                android:id="@+id/editIconTile"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_section_icon">
+
+                <ImageView
+                    android:id="@+id/ivEditDirection"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_arrow_gave" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/edit_entry_title"
+                    android:textColor="@color/ink"
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvEditWhose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvEditDirection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_entry_pill"
+                android:paddingStart="10dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="3dp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/note_optional"
-            android:importantForAutofill="no"
-            android:inputType="text" />
+            android:layout_height="1dp"
+            android:layout_marginTop="14dp"
+            android:background="@color/page_line" />
+
+        <!-- Amount and date -->
+        <TextView
+            style="@style/EditSectionLabel"
+            android:text="@string/edit_section_money" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEditAmount"
+            style="@style/ProfileField"
+            android:layout_marginTop="6dp"
+            android:hint="@string/amount">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEditAmount"
+                style="@style/ProfileFieldInput"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:textAlignment="viewStart"
+                android:textDirection="ltr"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!--
           Correcting when it happened, not only what it was. An entry recorded on
-          the wrong day is as wrong as one recorded for the wrong amount, and until
-          now only the amount could be put right.
+          the wrong day is as wrong as one recorded for the wrong amount.
         -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditDate"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
             android:gravity="start|center_vertical"
             android:textAllCaps="false"
-            android:textColor="@color/brand_green_text"
-            android:textSize="14sp"
+            android:textColor="@color/ink"
+            android:textSize="15sp"
+            app:cornerRadius="12dp"
             app:icon="@drawable/ic_calendar"
             app:iconGravity="textStart"
-            app:iconTint="@color/brand_green_text" />
+            app:iconPadding="12dp"
+            app:iconTint="@color/brand_green_text"
+            app:strokeColor="@color/editor_field_stroke" />
 
-        <AutoCompleteTextView
-            android:popupBackground="@drawable/bg_dropdown_popup"
-            android:dropDownVerticalOffset="4dp"
-            android:id="@+id/etEditItemName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:hint="@string/item_name_hint"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:completionThreshold="1" />
+        <!-- Note -->
+        <TextView
+            style="@style/EditSectionLabel"
+            android:text="@string/edit_section_note" />
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/ProfileField"
+            android:layout_marginTop="6dp"
+            android:hint="@string/note_optional">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEditNote"
+                style="@style/ProfileFieldInput"
+                android:gravity="top|start"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="4"
+                android:minLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Goods (hidden as a block when the entry has several lines) -->
         <LinearLayout
-            android:layout_marginTop="8dp"
+            android:id="@+id/blockEditGoods"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/etEditQuantity"
-                android:textDirection="ltr"
-                android:textAlignment="viewStart"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/quantity_hint"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal" />
+            <TextView
+                style="@style/EditSectionLabel"
+                android:text="@string/goods_section" />
 
-            <AutoCompleteTextView
-                android:popupBackground="@drawable/bg_dropdown_popup"
-                android:dropDownVerticalOffset="4dp"
-                android:id="@+id/etEditUnit"
-                android:layout_width="0dp"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/ProfileField"
+                android:layout_marginTop="6dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/etEditItemName"
+                    style="@style/ProfileFieldInput"
+                    android:completionThreshold="1"
+                    android:dropDownVerticalOffset="4dp"
+                    android:hint="@string/item_name_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:paddingStart="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="16dp"
+                    android:popupBackground="@drawable/bg_dropdown_popup" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/rowEditQtyUnit"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:completionThreshold="1"
-                android:hint="@string/unit_hint"
-                android:importantForAutofill="no"
-                android:inputType="text" />
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:hint="@string/quantity_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEditQuantity"
+                        style="@style/ProfileFieldInput"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal"
+                        android:textAlignment="viewStart"
+                        android:textDirection="ltr" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfileField"
+                    android:layout_width="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/etEditUnit"
+                        style="@style/ProfileFieldInput"
+                        android:completionThreshold="1"
+                        android:dropDownVerticalOffset="4dp"
+                        android:hint="@string/unit_hint"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:paddingStart="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="16dp"
+                        android:popupBackground="@drawable/bg_dropdown_popup" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <!--
+              Shown only for a sale, and only once a product with a recorded batch
+              is recognised — the same rule the add-entry screen follows.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditBatch"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/pick_batch"
+                android:textAllCaps="false"
+                android:textColor="@color/ink"
+                android:visibility="gone"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/editor_field_stroke" />
         </LinearLayout>
 
-        <!--
-          Shown only for a sale, and only once a product with a recorded batch
-          is recognised — the same rule the add-entry screen follows.
-        -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditBatch"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:textColor="@color/ink"
-        app:strokeColor="@color/editor_field_stroke"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/pick_batch"
-            android:visibility="gone"
-            app:cornerRadius="8dp" />
+        <!-- The customer's signature: add, change or remove (18 Oct). -->
+        <include layout="@layout/item_signature_row" />
 
     </LinearLayout>
 </ScrollView>

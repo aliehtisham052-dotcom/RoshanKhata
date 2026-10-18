@@ -730,6 +730,16 @@
         <item name="hintTextColor">@color/brand_green_text</item>
     </style>
 
+    <!-- A group's small heading on the Edit entry form (18 Oct). -->
+    <style name="EditSectionLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">18dp</item>
+        <item name="android:textColor">@color/brand_green_text</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="ProfileFieldInput">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

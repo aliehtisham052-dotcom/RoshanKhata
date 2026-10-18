@@ -1085,6 +1085,17 @@
     <string name="sig_clear">پاک کردن</string>
     <string name="sig_empty">اول امضا کنید</string>
     <string name="sig_label">امضای مشتری</string>
+    <string name="sig_undo">برگرداندن</string>
+    <string name="sig_save">ذخیره امضا</string>
+    <string name="sig_signed_at">امضا: %1$s</string>
+    <string name="sig_none">هنوز امضا نشده</string>
+    <string name="sig_done">امضا شد</string>
+    <string name="sig_sign">امضا</string>
+    <string name="sig_change">تغییر</string>
+    <string name="sig_remove">حذف امضا</string>
+    <string name="edit_entry_title">ویرایش ثبت</string>
+    <string name="edit_section_money">مبلغ و تاریخ</string>
+    <string name="edit_section_note">یادداشت</string>
     <string name="invalid_amount">مبلغ معتبری وارد کنید</string>
     <string name="saved">ذخیره شد</string>
     <string name="select_language">زبان خود را انتخاب کنید</string>

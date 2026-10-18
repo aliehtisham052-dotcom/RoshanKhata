@@ -30,6 +30,15 @@ object EntrySignature {
     fun load(context: Context, entryId: Long): Bitmap? =
         file(context, entryId).takeIf { it.exists() }?.let { BitmapFactory.decodeFile(it.absolutePath) }
 
+    /** When the signature was taken (its file's time), or null if there is none. */
+    fun signedAt(context: Context, entryId: Long): Long? =
+        file(context, entryId).takeIf { it.exists() }?.lastModified()?.takeIf { it > 0 }
+
+    /** Take the signature off an entry (Edit → Remove, 18 Oct). */
+    fun delete(context: Context, entryId: Long) {
+        file(context, entryId).delete()
+    }
+
     fun save(context: Context, entryId: Long, bitmap: Bitmap) {
         val f = file(context, entryId)
         val tmp = File(f.parentFile, f.name + ".tmp")

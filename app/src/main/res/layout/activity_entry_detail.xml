@@ -220,6 +220,15 @@
                             android:background="@color/white"
                             android:contentDescription="@string/sig_label"
                             android:scaleType="fitStart" />
+
+                        <!-- When it was signed (18 Oct): proof is stronger with a time. -->
+                        <TextView
+                            android:id="@+id/tvSignedAt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/ink_soft"
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <LinearLayout

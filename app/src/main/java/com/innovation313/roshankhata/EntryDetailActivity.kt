@@ -316,11 +316,60 @@ class EntryDetailActivity : BaseActivity() {
         val etAmount = view.findViewById<EditText>(R.id.etEditAmount)
         val etNote = view.findViewById<EditText>(R.id.etEditNote)
         val etItemName = view.findViewById<AutoCompleteTextView>(R.id.etEditItemName)
-        etItemName.hint = TradeVocab.itemHint(this)
+        // The fields sit in outlined boxes (18 Oct): the box carries the
+        // label, so the trade's own words go there, not into the field too.
+        fun boxHint(field: View, text: CharSequence) {
+            val box = generateSequence(field.parent) { it.parent }
+                .filterIsInstance<com.google.android.material.textfield.TextInputLayout>().firstOrNull()
+            if (box != null) box.hint = text else (field as? EditText)?.hint = text
+        }
+        boxHint(etItemName, TradeVocab.itemHint(this))
         val etQuantity = view.findViewById<EditText>(R.id.etEditQuantity)
         val etUnit = view.findViewById<AutoCompleteTextView>(R.id.etEditUnit)
-        etUnit.hint = TradeVocab.unitHint(this)
+        boxHint(etUnit, TradeVocab.unitHint(this))
         val btnBatch = view.findViewById<MaterialButton>(R.id.btnEditBatch)
+
+        // Header (18 Oct): whose entry, which number, and which way.
+        val color = { id: Int -> androidx.core.content.ContextCompat.getColor(this, id) }
+        view.findViewById<TextView>(R.id.tvEditWhose).text =
+            listOf(partyName, e.entryNumber).filter { it.isNotBlank() }.joinToString("  ·  ")
+        view.findViewById<TextView>(R.id.tvEditDirection).apply {
+            setText(if (e.isGiven) R.string.you_gave else R.string.you_got)
+            backgroundTintList = android.content.res.ColorStateList.valueOf(
+                color(if (e.isGiven) R.color.red_gave else R.color.brand_green)
+            )
+        }
+        view.findViewById<android.widget.ImageView>(R.id.ivEditDirection).apply {
+            setImageResource(if (e.isGiven) R.drawable.ic_arrow_gave else R.drawable.ic_arrow_got)
+            imageTintList = android.content.res.ColorStateList.valueOf(
+                color(if (e.isGiven) R.color.red_gave_text else R.color.brand_green_text)
+            )
+        }
+        view.findViewById<View>(R.id.editIconTile).backgroundTintList =
+            android.content.res.ColorStateList.valueOf(
+                color(if (e.isGiven) R.color.tile_stock_bg else R.color.brand_green_soft)
+            )
+        etAmount.setTextColor(color(if (e.isGiven) R.color.red_gave_text else R.color.brand_green_text))
+
+        // The signature, editable here too; filed only when Save is tapped.
+        var editTime = e.timestamp
+        val sigRow = com.innovation313.roshankhata.ui.SignatureRow(
+            this, view.findViewById(R.id.sigRow),
+            about = {
+                com.innovation313.roshankhata.ui.SignatureSheet.About(
+                    party = partyName.ifBlank { null },
+                    isGiven = e.isGiven,
+                    amount = Calc.evalAmount(etAmount.text.toString()) ?: e.amount,
+                    time = editTime
+                )
+            }
+        )
+        lifecycleScope.launch {
+            val old = withContext(Dispatchers.IO) {
+                com.innovation313.roshankhata.data.EntrySignature.load(this@EntryDetailActivity, e.id)
+            }
+            sigRow.showExisting(old)
+        }
 
         etAmount.setText(Format.plain(e.amount))
         etNote.setText(e.note.orEmpty())
@@ -342,9 +391,9 @@ class EntryDetailActivity : BaseActivity() {
         )
         etUnit.setText(UnitWords.label(line?.unit), false)
         if (!canEditGoods) {
-            etItemName.visibility = View.GONE
-            (etQuantity.parent as? View)?.visibility = View.GONE
-            btnBatch.visibility = View.GONE
+            // The whole goods group, by id: inside outlined boxes a field's
+            // parent is the box's frame, not the row it used to be.
+            view.findViewById<View>(R.id.blockEditGoods).visibility = View.GONE
         }
 
         val dao = KhataDatabase.get(this).khataDao()
@@ -456,10 +505,9 @@ class EntryDetailActivity : BaseActivity() {
             activity = this,
             button = view.findViewById(R.id.btnEditDate),
             initial = chosenTime
-        ) { chosenTime = it }
+        ) { chosenTime = it; editTime = it }
 
-        AlertDialog.Builder(this)
-            .setTitle(R.string.edit)
+        MaterialAlertDialogBuilder(this)
             .setView(view)
             .setPositiveButton(R.string.save) { _, _ ->
                 val amount = Calc.evalAmount(etAmount.text.toString())
@@ -503,14 +551,21 @@ class EntryDetailActivity : BaseActivity() {
                 // write is still in flight; a quick Back press right after
                 // must not be able to cancel a correction any more than it
                 // could a new entry.
+                val sigChanged = sigRow.changed
+                val sig = sigRow.current
                 AppScope.launch {
                     dao.updateEntryWithItems(updated, newItems)
+                    if (sigChanged) runCatching {
+                        if (sig != null) com.innovation313.roshankhata.data.EntrySignature.save(applicationContext, updated.id, sig)
+                        else com.innovation313.roshankhata.data.EntrySignature.delete(applicationContext, updated.id)
+                    }
                     val savedItems = dao.itemsOfEntry(updated.id)
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
                             entry = updated
                             items = savedItems
                             render(updated)
+                            if (sigChanged) showSignature()
                             Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT)
                                 .show()
                         }
@@ -596,62 +651,44 @@ class EntryDetailActivity : BaseActivity() {
 
     private fun showSignature() {
         lifecycleScope.launch {
-            val sig = withContext(kotlinx.coroutines.Dispatchers.IO) {
-                com.innovation313.roshankhata.data.EntrySignature.load(this@EntryDetailActivity, entryId)
+            val (sig, at) = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                com.innovation313.roshankhata.data.EntrySignature.load(this@EntryDetailActivity, entryId) to
+                    com.innovation313.roshankhata.data.EntrySignature.signedAt(this@EntryDetailActivity, entryId)
             }
             findViewById<View>(R.id.blockSignature).visibility = if (sig != null) View.VISIBLE else View.GONE
             findViewById<android.widget.ImageView>(R.id.ivSignature).setImageBitmap(sig)
+            findViewById<TextView>(R.id.tvSignedAt).text =
+                at?.let { getString(R.string.sig_signed_at, Format.dateTime(it)) }.orEmpty()
             findViewById<MaterialButton>(R.id.btnSignature).setText(if (sig != null) R.string.sig_retake else R.string.sig_take)
         }
     }
 
+    /** What the signature screen shows at the top: this entry. */
+    private fun signatureAbout(): com.innovation313.roshankhata.ui.SignatureSheet.About {
+        val e = entry
+        return com.innovation313.roshankhata.ui.SignatureSheet.About(
+            party = partyName.ifBlank { null },
+            isGiven = e?.isGiven ?: true,
+            amount = e?.amount,
+            time = e?.timestamp
+        )
+    }
+
+    /** The redesigned signature screen (18 Oct); saved the moment it comes back. */
     private fun takeSignature() {
-        val dp = resources.displayMetrics.density
-        val pad = com.innovation313.roshankhata.ui.SignaturePad(this)
-        val hint = android.widget.TextView(this).apply {
-            setText(R.string.sig_hint)
-            setTextColor(androidx.core.content.ContextCompat.getColor(this@EntryDetailActivity, R.color.ink_soft))
-            textSize = 13f
-        }
-        val clear = MaterialButton(this, null, androidx.appcompat.R.attr.borderlessButtonStyle).apply {
-            setText(R.string.sig_clear)
-            setOnClickListener { pad.clear() }
-        }
-        val box = android.widget.LinearLayout(this).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            setPadding((20 * dp).toInt(), (8 * dp).toInt(), (20 * dp).toInt(), 0)
-            addView(hint)
-            addView(pad, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, (220 * dp).toInt()).apply { topMargin = (8 * dp).toInt() })
-            addView(clear)
-        }
-        val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.sig_title)
-            .setView(box)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save, null)
-            .create()
-        dialog.setOnShowListener {
-            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                if (!pad.hasInk) {
-                    Toast.makeText(this, R.string.sig_empty, Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
+        com.innovation313.roshankhata.ui.SignatureSheet.show(this, signatureAbout()) { bmp ->
+            lifecycleScope.launch {
+                val ok = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    runCatching { com.innovation313.roshankhata.data.EntrySignature.save(this@EntryDetailActivity, entryId, bmp) }.isSuccess
                 }
-                val bmp = pad.toBitmap()
-                lifecycleScope.launch {
-                    val ok = withContext(kotlinx.coroutines.Dispatchers.IO) {
-                        runCatching { com.innovation313.roshankhata.data.EntrySignature.save(this@EntryDetailActivity, entryId, bmp) }.isSuccess
-                    }
-                    if (ok) {
-                        com.innovation313.roshankhata.ui.Motion.savedTick(this@EntryDetailActivity)
-                        dialog.dismiss()
-                        showSignature()
-                    } else {
-                        Toast.makeText(this@EntryDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
-                    }
+                if (ok) {
+                    com.innovation313.roshankhata.ui.Motion.savedTick(this@EntryDetailActivity)
+                    showSignature()
+                } else {
+                    Toast.makeText(this@EntryDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
                 }
             }
         }
-        dialog.show()
     }
 
     // ---------- Print (5 Oct): the receipt card on a paired Bluetooth printer ----------
