@@ -103,7 +103,7 @@ object BatchReturnDialog {
                         }
                     }
                 }
-                .show()
+                .show().also { KeyboardFollow.dialog(it) }
         }
     }
 

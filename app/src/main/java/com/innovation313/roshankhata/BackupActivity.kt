@@ -446,6 +446,7 @@ class BackupActivity : BaseActivity() {
             })
         }
         dialog.show()
+        com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
         etConfirm.requestFocus()
     }
 

@@ -218,6 +218,7 @@ object ProductDetailsDialog {
         // buttons (or Back) close it now.
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+        KeyboardFollow.dialog(dialog)
     }
 
     /** Where this form sits in a run of several; see [show]. */

@@ -177,7 +177,7 @@ class EntryDetailActivity : BaseActivity() {
                     }
                 }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun load() {
@@ -518,7 +518,7 @@ class EntryDetailActivity : BaseActivity() {
                 }
             }
             .setNegativeButton(R.string.cancel, null)
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**

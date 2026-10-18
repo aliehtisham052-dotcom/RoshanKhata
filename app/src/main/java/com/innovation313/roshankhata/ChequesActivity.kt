@@ -254,7 +254,7 @@ class ChequesActivity : BaseActivity() {
                     }
                 }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun showChequeActions(cheque: ChequeWithParty) {

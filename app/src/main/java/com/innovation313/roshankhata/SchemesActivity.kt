@@ -167,7 +167,7 @@ class SchemesActivity : BaseActivity() {
                     Toast.makeText(this, R.string.scheme_claim_hint, Toast.LENGTH_SHORT).show()
                 } else AppScope.launch { dao.setSchemeClaim(s.id, amount, System.currentTimeMillis()) }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun showForm(existing: Scheme?) {
@@ -287,7 +287,7 @@ class SchemesActivity : BaseActivity() {
                         }
                     }
                 }
-                .show()
+                .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }
     }
 

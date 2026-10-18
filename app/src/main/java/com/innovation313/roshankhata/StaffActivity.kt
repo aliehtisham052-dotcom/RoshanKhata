@@ -168,7 +168,7 @@ class StaffActivity : BaseActivity() {
                 }
             }
             .setNegativeButton(R.string.cancel, null)
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun editStaff(person: Staff?) {
@@ -192,7 +192,7 @@ class StaffActivity : BaseActivity() {
                 }
             }
             .setNegativeButton(R.string.cancel, null)
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun manage(person: Staff) {

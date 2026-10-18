@@ -377,7 +377,7 @@ class BillsActivity : BaseActivity() {
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
 
         btnScan.setOnClickListener {
             val draft = BillDraft(
@@ -649,7 +649,7 @@ class BillsActivity : BaseActivity() {
                     )
                 )
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun saveBill(
@@ -1075,7 +1075,7 @@ class BillsActivity : BaseActivity() {
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**
@@ -1368,7 +1368,7 @@ class BillsActivity : BaseActivity() {
                     }
                 }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun pickDate(startAt: Long, onPicked: (Long) -> Unit) {

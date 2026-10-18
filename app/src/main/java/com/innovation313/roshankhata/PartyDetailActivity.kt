@@ -2311,7 +2311,7 @@ class PartyDetailActivity : BaseActivity() {
                     Reminder.sendViaSms(this, partyPhone, message)
                 }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**
@@ -3127,7 +3127,7 @@ class PartyDetailActivity : BaseActivity() {
                         }
                     }
                 }
-                .show()
+                .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }
     }
 
@@ -3174,7 +3174,7 @@ class PartyDetailActivity : BaseActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
