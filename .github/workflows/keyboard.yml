@@ -14,6 +14,9 @@ on:
     branches: [main, 'keyboard-*']
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 concurrency:
   group: keyboard-${{ github.ref }}
   cancel-in-progress: true
@@ -61,13 +64,31 @@ jobs:
           disable-animations: true
           script: sh scripts/keyboard-check.sh
 
-      - name: Keep the pictures
+      # Every measurement as one notice: annotations come back through the
+      # REST API even when logs and artifacts cannot be fetched.
+      - name: Report the measurements
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: keyboard-proof-api${{ matrix.api }}
-          path: /tmp/keyboard-proof
-          if-no-files-found: ignore
+        run: |
+          [ -f /tmp/keyboard_log.txt ] || exit 0
+          lines=$(grep "KeyboardTest" /tmp/keyboard_log.txt | sed 's/^.*KeyboardTest[^:]*: //' | tr -d '\r')
+          [ -n "$lines" ] || exit 0
+          echo "$lines" | split -l 25 - /tmp/kbpart_
+          for f in /tmp/kbpart_*; do
+            body=$(sed 's/%/%25/g' "$f" | awk '{printf "%s%%0A", $0}')
+            echo "::notice title=Keyboard API ${{ matrix.api }}::$body"
+          done
+
+      # The pictures on the "keyboard-proof" pre-release (dummy data only), to
+      # be looked at, not only measured.
+      - name: Put the pictures on the keyboard-proof pre-release
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls /tmp/keyboard-proof/*.png >/dev/null 2>&1 || { echo "no pictures"; exit 0; }
+          gh release view keyboard-proof >/dev/null 2>&1 || gh release create keyboard-proof --prerelease \
+            --title "Keyboard proof (CI pictures)" --notes "Screens with the on-screen keyboard up, from the Keyboard check workflow on an emulator. Dummy data only." || true
+          gh release upload keyboard-proof /tmp/keyboard-proof/*.png --clobber
 
       - name: Publish the failure
         if: failure()
