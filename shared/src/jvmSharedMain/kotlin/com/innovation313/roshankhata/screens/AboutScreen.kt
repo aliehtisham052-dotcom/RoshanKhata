@@ -30,15 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.innovation313.roshankhata.res.Res
-import com.innovation313.roshankhata.res.about_maker
-import com.innovation313.roshankhata.res.about_privacy_body
-import com.innovation313.roshankhata.res.about_privacy_policy
-import com.innovation313.roshankhata.res.about_privacy_title
-import com.innovation313.roshankhata.res.about_version
-import com.innovation313.roshankhata.res.about_what
-import com.innovation313.roshankhata.res.app_name
-import org.jetbrains.compose.resources.stringResource
+import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.word
 
 /**
  * About (the first shared screen, KMP Phase 5a): what this is, where the
@@ -74,11 +67,11 @@ fun AboutScreen(
             modifier = Modifier.padding(top = 12.dp).size(72.dp).align(Alignment.CenterHorizontally)
         )
         Text(
-            stringResource(Res.string.app_name),
+            word(W.app_name),
             Modifier.fillMaxWidth().padding(top = 14.dp),
             color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
         )
-        val version = stringResource(Res.string.about_version, versionName)
+        val version = word(W.about_version, versionName)
         Text(
             version,
             Modifier.fillMaxWidth().padding(top = 2.dp).testTag("aboutVersion")
@@ -86,7 +79,7 @@ fun AboutScreen(
             color = c.textMuted, fontSize = 13.sp, textAlign = TextAlign.Center
         )
         Text(
-            stringResource(Res.string.about_what),
+            word(W.about_what),
             Modifier.fillMaxWidth().padding(top = 22.dp).testTag("aboutWhat"),
             color = c.inkSoft, fontSize = 15.sp, lineHeight = 15.sp * 1.6f
         )
@@ -97,9 +90,9 @@ fun AboutScreen(
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Column(Modifier.padding(18.dp)) {
-                Text(stringResource(Res.string.about_privacy_title), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                Text(word(W.about_privacy_title), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 Text(
-                    stringResource(Res.string.about_privacy_body),
+                    word(W.about_privacy_body),
                     Modifier.padding(top = 8.dp),
                     color = c.inkSoft, fontSize = 14.sp, lineHeight = 14.sp * 1.55f
                 )
@@ -110,12 +103,12 @@ fun AboutScreen(
                     border = BorderStroke(1.dp, c.brandGreen),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = c.brandGreenText)
                 ) {
-                    Text(stringResource(Res.string.about_privacy_policy), fontSize = 14.sp)
+                    Text(word(W.about_privacy_policy), fontSize = 14.sp)
                 }
             }
         }
         Text(
-            stringResource(Res.string.about_maker),
+            word(W.about_maker),
             Modifier.fillMaxWidth().padding(top = 24.dp),
             color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
         )

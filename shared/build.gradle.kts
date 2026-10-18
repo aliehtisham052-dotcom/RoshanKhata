@@ -53,7 +53,6 @@ kotlin {
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.material3)
-                api(compose.components.resources)
             }
         }
         val jvmSharedMain by creating {
@@ -74,6 +73,8 @@ kotlin {
                 implementation("org.json:json:20250517")
                 // JsonStream on the computer: Gson's JsonReader, which Android's copies.
                 implementation("com.google.code.gson:gson:2.11.0")
+                // Plural rules for the computer's words (the phone uses android.icu).
+                implementation("com.ibm.icu:icu4j:77.1")
             }
         }
 
@@ -104,33 +105,56 @@ dependencies {
     add("kspDesktop", "androidx.room:room-compiler:2.7.1")
 }
 
-// The app's own words, pictures' fonts and lists, as Compose resources (Phase 5).
-// One source: app/src/main/res stays where translations are made and checked
-// (strings.yml), and this copies it for the shared screens at build time, so
-// a phone screen and its computer twin can never say different things.
-// values-in is Indonesian as Android names it; the computer's JDK calls it
-// "id", so it is copied under both names.
-val syncAppResources by tasks.registering(Sync::class) {
-    val res = rootProject.file("app/src/main/res")
-    from(res) {
-        include("values/strings.xml", "values/arrays.xml")
-        include("values-*/strings.xml", "values-*/arrays.xml")
-        exclude("values-night/**")
-        include("font/*.ttf")
+// ---------- The app's words for the shared screens (KMP Phase 5a) ----------
+//
+// One source: app/src/main/res, where translations are made and checked
+// (strings.yml). Compose Multiplatform's own resources were tried first and
+// cannot carry Roman Urdu: the script qualifier (values-b+ur+Latn) arrives in
+// 1.12, which needs compileSdk 37 and so AGP 9 (CI, 18 Oct). Instead:
+//  - W / WP / WA: every string, plural and list name as a constant, so a
+//    shared screen that names a missing word does not compile;
+//  - the phone reads the words through its own resources (AndroidWords);
+//  - the computer reads the same strings.xml files (XmlWords), copied here.
+val appRes = rootProject.file("app/src/main/res")
+
+val generateWordKeys by tasks.registering {
+    val out = layout.buildDirectory.dir("generated/wordKeys/kotlin")
+    inputs.files(fileTree(appRes) { include("values/strings.xml", "values/arrays.xml") })
+    outputs.dir(out)
+    doLast {
+        val text = listOf("strings.xml", "arrays.xml").map { appRes.resolve("values/$it") }.filter { it.isFile }
+            .joinToString("\n") { it.readText() }
+        fun names(tag: String) = Regex("<$tag\\s+name=\"([^\"]+)\"").findAll(text).map { it.groupValues[1] }.distinct().sorted().toList()
+        val keywords = setOf("as", "break", "class", "continue", "do", "else", "false", "for", "fun", "if", "in",
+            "interface", "is", "null", "object", "package", "return", "super", "this", "throw", "true", "try",
+            "typealias", "typeof", "val", "var", "when", "while")
+        fun id(n: String) = if (n in keywords) "`$n`" else n
+        fun block(obj: String, doc: String, list: List<String>) = buildString {
+            append("/** $doc */\nobject $obj {\n")
+            list.forEach { append("    const val ${id(it)} = \"$it\"\n") }
+            append("}\n\n")
+        }
+        val file = out.get().file("com/innovation313/roshankhata/words/WordKeys.kt").asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            "// Generated from app/src/main/res/values by :shared:generateWordKeys. Do not edit.\n" +
+                "package com.innovation313.roshankhata.words\n\n" +
+                block("W", "Every string's name.", names("string")) +
+                block("WP", "Every plural's name.", names("plurals")) +
+                block("WA", "Every list's name (string-array).", names("string-array"))
+        )
     }
-    from(res.resolve("values-in")) {
-        include("strings.xml", "arrays.xml")
-        into("values-id")
-    }
-    into(layout.buildDirectory.dir("appResources"))
 }
 
-compose.resources {
-    publicResClass = true
-    packageOfResClass = "com.innovation313.roshankhata.res"
-    generateResClass = always
-    customDirectory(
-        sourceSetName = "commonMain",
-        directoryProvider = syncAppResources.map { layout.projectDirectory.dir(it.destinationDir.absolutePath) }
-    )
+// The strings.xml files themselves, for the computer (and for the phone's
+// test that holds XmlWords to Android's own reading of them).
+val syncAppWords by tasks.registering(Sync::class) {
+    from(appRes) {
+        include("values/strings.xml", "values/arrays.xml", "values-*/strings.xml", "values-*/arrays.xml")
+        exclude("values-night/**")
+    }
+    into(layout.buildDirectory.dir("appWords/words"))
 }
+
+kotlin.sourceSets.getByName("jvmSharedMain").kotlin.srcDir(generateWordKeys)
+kotlin.sourceSets.getByName("desktopMain").resources.srcDir(syncAppWords.map { it.destinationDir.parentFile })
