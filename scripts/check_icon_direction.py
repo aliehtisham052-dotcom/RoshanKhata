@@ -21,7 +21,9 @@ none of them shows in English:
 import glob, re, sys
 
 RES = "app/src/main/res"
-POINTING = re.compile(r'^ic_(arrow_(back|forward)|chevron_(right|left|start|end))$')
+# Undo and redo turn with the reading direction too (Material's bidirectionality
+# guidance mirrors them), so the signature pad's Undo may carry it.
+POINTING = re.compile(r'^ic_(arrow_(back|forward)|chevron_(right|left|start|end)|undo|redo)$')
 problems = []
 
 for path in sorted(glob.glob(f"{RES}/drawable*/*.xml")):

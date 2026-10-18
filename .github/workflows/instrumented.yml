@@ -71,12 +71,13 @@ jobs:
         if: failure()
         run: |
           if [ ! -f /tmp/compile_output.txt ]; then exit 0; fi
-          grep -iE "^e: |error:|FAILURE:|Caused by|Unresolved reference|Could not (find|resolve)" \
-            /tmp/compile_output.txt | head -25 \
-            | while IFS= read -r line; do
-                clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
-                echo "::error::$clean"
-              done
+          # Joined into one annotation each (GitHub keeps only 10 per step), plus
+          # Gradle's "What went wrong" block, which names a cause the e: lines miss.
+          errs=$(grep -iE "^e: |error:|Unresolved reference|Could not (find|resolve)" /tmp/compile_output.txt | head -40 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$errs" ] && echo "::error title=Compiler errors::$errs"
+          why=$(grep -A12 "What went wrong" /tmp/compile_output.txt | grep -v "^--$" | head -14 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$why" ] && echo "::error title=What went wrong::$why"
+          true
 
       # The shrunk app the owner and Play get (R8 on), with the x86_64 code the
       # emulator needs, for the monkey to walk through after the tests.
