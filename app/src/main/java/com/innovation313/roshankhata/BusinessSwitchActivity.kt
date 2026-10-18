@@ -97,6 +97,7 @@ class BusinessSwitchActivity : BaseActivity() {
             }
         }
         dialog.show()
+        com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
         et.requestFocus()
     }
 
@@ -115,7 +116,7 @@ class BusinessSwitchActivity : BaseActivity() {
                 refresh()
             }
             .setNegativeButton(R.string.cancel, null)
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         et.requestFocus()
     }
 
@@ -206,6 +207,7 @@ class BusinessSwitchActivity : BaseActivity() {
             })
         }
         dialog.show()
+        com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
         etConfirm.requestFocus()
     }
 

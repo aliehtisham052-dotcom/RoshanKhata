@@ -185,7 +185,7 @@ class PlansActivity : BaseActivity() {
                     )
                 }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun showPlanActions(plan: PlanProgress) {
@@ -270,7 +270,7 @@ class PlansActivity : BaseActivity() {
                     recordPayment(plan, amount, etNote.text.toString().trim())
                 }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**

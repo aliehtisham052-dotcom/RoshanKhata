@@ -622,7 +622,7 @@ class KhataActivity : BaseActivity() {
                     }
                 }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**

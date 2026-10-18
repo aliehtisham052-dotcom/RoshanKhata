@@ -168,7 +168,7 @@ class CashbookActivity : BaseActivity() {
                     )
                     AppScope.launch { dao.saveDayClose(close) }
                 }
-                .show()
+                .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }
     }
 
@@ -284,7 +284,7 @@ class CashbookActivity : BaseActivity() {
                     )
                 }
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun confirmDelete(entry: CashEntry) {

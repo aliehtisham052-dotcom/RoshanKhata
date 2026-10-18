@@ -747,6 +747,8 @@ class PosterActivity : BaseActivity() {
         }
         et.requestFocus()
         dialog.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        // After the line above, which sets the whole mode: keep the box above the keyboard (18 Oct).
+        com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
         TextFit.relax(box)
     }
 

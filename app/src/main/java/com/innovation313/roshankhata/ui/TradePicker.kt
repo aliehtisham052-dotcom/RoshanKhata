@@ -232,7 +232,7 @@ object TradePicker {
             .setPositiveButton(R.string.save) { _, _ ->
                 onDone(OtherTrade.Words(etName.text.toString().trim().ifEmpty { null }, OtherTrade.split(etItems.text.toString())))
             }
-            .show()
+            .show().also { KeyboardFollow.dialog(it) }
         etName.requestFocus()
     }
 

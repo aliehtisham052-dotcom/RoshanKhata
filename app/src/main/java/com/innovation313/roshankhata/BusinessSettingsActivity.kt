@@ -776,7 +776,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 Currency.set(this, input.text.toString())
                 renderCurrency()
             }
-            .show()
+            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     companion object {
