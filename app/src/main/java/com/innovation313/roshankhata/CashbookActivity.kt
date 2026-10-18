@@ -30,6 +30,8 @@ import com.innovation313.roshankhata.data.DayClose
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.CashAdapter
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.ui.customerBalanceColour
+import com.innovation313.roshankhata.ui.signedTotalColourOnDark
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch

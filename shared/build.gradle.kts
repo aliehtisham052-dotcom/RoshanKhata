@@ -49,7 +49,11 @@ kotlin {
             }
         }
         val jvmSharedMain by creating { dependsOn(commonMain) }
-        val androidMain by getting { dependsOn(jvmSharedMain) }
+        val androidMain by getting {
+            dependsOn(jvmSharedMain)
+            // BidiFormatter for Format.ltr / isolate (the app's own version).
+            dependencies { implementation("androidx.core:core-ktx:1.13.1") }
+        }
         val desktopMain by getting { dependsOn(jvmSharedMain) }
 
         val commonTest by getting
