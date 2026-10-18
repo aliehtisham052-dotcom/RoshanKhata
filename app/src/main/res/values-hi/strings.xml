@@ -1091,6 +1091,17 @@
     <string name="sig_clear">मिटाएँ</string>
     <string name="sig_empty">पहले दस्तख़त करें</string>
     <string name="sig_label">ग्राहक के दस्तख़त</string>
+    <string name="sig_undo">वापस</string>
+    <string name="sig_save">दस्तख़त सेव करें</string>
+    <string name="sig_signed_at">दस्तख़त: %1$s</string>
+    <string name="sig_none">अभी दस्तख़त नहीं हुए</string>
+    <string name="sig_done">दस्तख़त हो गए</string>
+    <string name="sig_sign">दस्तख़त</string>
+    <string name="sig_change">बदलें</string>
+    <string name="sig_remove">दस्तख़त हटाएँ</string>
+    <string name="edit_entry_title">एंट्री बदलें</string>
+    <string name="edit_section_money">रकम और तारीख़</string>
+    <string name="edit_section_note">नोट</string>
     <string name="invalid_amount">सही रकम लिखें</string>
     <string name="saved">सेव हो गया</string>
     <string name="select_language">अपनी भाषा चुनें</string>

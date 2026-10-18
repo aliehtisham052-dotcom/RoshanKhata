@@ -217,6 +217,8 @@ class PlansActivity : BaseActivity() {
         com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
         val etNote: EditText = view.findViewById(R.id.etNote)
+        // An instalment has no receipt of its own to sign (18 Oct).
+        view.findViewById<android.view.View>(R.id.sigRow)?.visibility = android.view.View.GONE
 
         // This dialog is reused from the ledger; the fields that make no sense
         // for an instalment are hidden rather than left to confuse.

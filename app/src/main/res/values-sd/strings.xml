@@ -1085,6 +1085,17 @@
     <string name="sig_clear">ميٽيو</string>
     <string name="sig_empty">پهريان صحيح ڪريو</string>
     <string name="sig_label">گراهڪ جي صحيح</string>
+    <string name="sig_undo">واپس</string>
+    <string name="sig_save">صحيح محفوظ ڪريو</string>
+    <string name="sig_signed_at">صحيح: %1$s</string>
+    <string name="sig_none">اڃا صحيح ناهي ٿي</string>
+    <string name="sig_done">صحيح ٿي وئي</string>
+    <string name="sig_sign">صحيح</string>
+    <string name="sig_change">بدلايو</string>
+    <string name="sig_remove">صحيح هٽايو</string>
+    <string name="edit_entry_title">داخلا بدلايو</string>
+    <string name="edit_section_money">رقم ۽ تاريخ</string>
+    <string name="edit_section_note">نوٽ</string>
     <string name="invalid_amount">صحيح رقم لکو</string>
     <string name="saved">محفوظ ٿيو</string>
     <string name="select_language">پنهنجي ٻولي چونڊيو</string>

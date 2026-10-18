@@ -1057,6 +1057,17 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="sig_clear">Mitayen</string>
     <string name="sig_empty">Pehle dastakhat karein</string>
     <string name="sig_label">Grahak ke dastakhat</string>
+    <string name="sig_undo">Wapas</string>
+    <string name="sig_save">Dastakhat mehfooz karein</string>
+    <string name="sig_signed_at">Dastakhat: %1$s</string>
+    <string name="sig_none">Abhi dastakhat nahi huay</string>
+    <string name="sig_done">Dastakhat ho gaye</string>
+    <string name="sig_sign">Dastakhat</string>
+    <string name="sig_change">Badlein</string>
+    <string name="sig_remove">Dastakhat hatayen</string>
+    <string name="edit_entry_title">Entry mein tarmeem</string>
+    <string name="edit_section_money">Raqam aur tareekh</string>
+    <string name="edit_section_note">Note</string>
     <string name="invalid_amount">Durust raqam likhein</string>
     <string name="saved">Mehfooz ho gaya</string>
     <string name="select_language">Apni zaban chunein</string>

@@ -32,7 +32,7 @@ SEED=313
 adb logcat -c
 adb logcat -v time Poster3D:V Filament:V TestRunner:I AndroidRuntime:E *:S > /tmp/poster3d_log.txt 2>&1 &
 p3d=$!
-gradle connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.innovation313.roshankhata.StoreScreenshotsTest,com.innovation313.roshankhata.KeyboardOnDeviceTest,com.innovation313.roshankhata.KeyboardDialogsOnDeviceTest --no-daemon --stacktrace > /tmp/instrumented_output.txt 2>&1
+gradle connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.innovation313.roshankhata.StoreScreenshotsTest,com.innovation313.roshankhata.KeyboardOnDeviceTest,com.innovation313.roshankhata.KeyboardDialogsOnDeviceTest,com.innovation313.roshankhata.SignatureProofTest --no-daemon --stacktrace > /tmp/instrumented_output.txt 2>&1
 tests=$?
 kill $p3d 2>/dev/null
 tail -150 /tmp/instrumented_output.txt

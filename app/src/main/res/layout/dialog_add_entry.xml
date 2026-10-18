@@ -500,6 +500,9 @@
             android:minLines="1"
             android:scrollbars="vertical" />
 
+        <!-- The customer's signature, taken with the entry itself (18 Oct). -->
+        <include layout="@layout/item_signature_row" />
+
         <!-- Goods, if any moved. Optional — a cash-only entry skips this. -->
         <TextView
             android:layout_width="wrap_content"

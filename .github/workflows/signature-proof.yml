@@ -1,0 +1,79 @@
+name: Signature proof
+
+# Pictures of the signature screens (18 Oct): the signature screen empty and
+# signed, the receipt, the Edit popup and the new-entry form, light and dark,
+# on Android 15. They go on the "signature-proof" pre-release (dummy data
+# only) for a person to look at. Run by hand, or by pushing a signature-*
+# branch. Same emulator lessons as instrumented.yml.
+
+on:
+  push:
+    branches: ['signature-*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: signature-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-disabled: true
+          gradle-version: 8.14.3
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Walk the signature screens
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: >-
+            -no-window -no-snapshot -noaudio -no-boot-anim
+            -gpu swangle_indirect -camera-back none
+          disable-animations: true
+          script: sh scripts/signature-proof.sh
+
+      - name: Put the pictures on the signature-proof pre-release
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls /tmp/signature-proof/*.png >/dev/null 2>&1 || { echo "no pictures"; exit 0; }
+          gh release view signature-proof >/dev/null 2>&1 || gh release create signature-proof --prerelease \
+            --title "Signature proof (CI pictures)" --notes "The signature screens on an emulator. Dummy data only." || true
+          gh release upload signature-proof /tmp/signature-proof/*.png --clobber
+
+      - name: Publish the failure
+        if: failure()
+        run: |
+          [ -f /tmp/instrumented_output.txt ] || { echo "::error::The emulator did not start."; exit 0; }
+          grep -iE "^e: |error:|FAILURE:|Caused by|FAILED|AssertionError|java\.lang\.[A-Za-z]+(Exception|Error)" \
+            /tmp/instrumented_output.txt | head -30 \
+            | while IFS= read -r line; do
+                clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
+                echo "::error::$clean"
+              done
