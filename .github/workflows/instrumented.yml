@@ -196,6 +196,10 @@ jobs:
             tests=$((tests + ${t:-0})); failed=$((failed + ${x:-0}))
           done < /tmp/xmls.txt
           echo "::notice::On-device tests (JUnit XML, $files files): $tests run, $failed failed"
+          # The big-book timings, every query, pass or fail: a budget that is
+          # nearly used up shows here before it turns red.
+          perf=$(grep "BigBookPerf" /tmp/poster3d_log.txt 2>/dev/null | sed 's/^.*BigBookPerf[^:]*: //' | head -20 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$perf" ] && echo "::notice title=Big book timings::$perf"
           # The failure MESSAGES, not just the count: the assertion text lives
           # in the JUnit XML, which (like the log) is otherwise unreachable
           # through the API. Deduplicated, so twelve cases failing for one
