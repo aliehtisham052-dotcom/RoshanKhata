@@ -117,6 +117,7 @@
         -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditDate"
+            android:letterSpacing="0"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -233,6 +234,7 @@
             -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEditBatch"
+            android:letterSpacing="0"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"

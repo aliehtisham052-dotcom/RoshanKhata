@@ -108,7 +108,9 @@ class SignatureProofTest {
             val edit = topRoot()
             val status = onMain { edit.findViewById<TextView>(R.id.tvSigRowStatus).text.toString() }
             assertEquals("Edit should show the entry as signed", context.getString(R.string.sig_done), status)
-            onMain { (findScroll(edit) as? ScrollView)?.fullScroll(View.FOCUS_DOWN) }
+            // The form's own scroll: the one around the signature row (an
+            // alert dialog has a hidden message scroll of its own, found first).
+            onMain { (scrollAround(edit.findViewById(R.id.sigRow)) as? ScrollView)?.fullScroll(View.FOCUS_DOWN) }
             idle(600)
             shot("$theme-5-edit-bottom")
         }
@@ -128,19 +130,20 @@ class SignatureProofTest {
             idle(900)
             onMain {
                 val row = form.findViewById<View>(R.id.sigRow)
-                findScroll(form)?.let { scrollTo(it, row) }
+                scrollAround(row)?.let { scrollTo(it, row) }
             }
             idle(600)
             shot("$theme-6-new-entry-row")
             onMain { form.findViewById<View>(R.id.sigRow).performClick() }
             idle(1000)
             shot("$theme-7-new-entry-sheet")
-            sign(onMain { topRoot().findViewById<View>(R.id.sigPad) })
-            onMain { topRoot().findViewById<View>(R.id.btnSigSave).performClick() }
+            val sheet2 = topRoot()
+            sign(onMain { sheet2.findViewById<View>(R.id.sigPad) })
+            onMain { sheet2.findViewById<View>(R.id.btnSigSave).performClick() }
             idle(800)
             onMain {
                 val row = form.findViewById<View>(R.id.sigRow)
-                findScroll(form)?.let { scrollTo(it, row) }
+                scrollAround(row)?.let { scrollTo(it, row) }
             }
             idle(500)
             shot("$theme-8-new-entry-row-signed")
@@ -176,6 +179,15 @@ class SignatureProofTest {
         val global = cls.getMethod("getInstance").invoke(null)
         val field = cls.getDeclaredField("mViews").apply { isAccessible = true }
         (field.get(global) as List<View>).last { it.isShown }
+    }
+
+    private fun scrollAround(v: View): View? {
+        var p = v.parent
+        while (p is View) {
+            if (p is ScrollView || p is androidx.core.widget.NestedScrollView) return p
+            p = p.parent
+        }
+        return null
     }
 
     private fun findScroll(v: View): ViewGroup? {
