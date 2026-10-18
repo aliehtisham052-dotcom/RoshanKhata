@@ -75,8 +75,10 @@ jobs:
 
             # Annotations reach us through the REST API even when log blobs do
             # not, which is the only channel that actually gets back here.
-            grep -iE "FAILED|AssertionError|^e: " /tmp/test_output.txt \
-              | head -25 \
+            # Plus Gradle's own "What went wrong" block: a plugin that fails to
+            # apply names its cause only there (18 Oct, KSP on the shared module).
+            { grep -A12 "What went wrong" /tmp/test_output.txt | grep -v "^--$" | head -14; \
+              grep -iE "FAILED|AssertionError|^e: " /tmp/test_output.txt | head -25; } \
               | while IFS= read -r line; do
                   clean=$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')
                   echo "::error::$clean"
