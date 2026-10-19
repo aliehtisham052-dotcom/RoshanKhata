@@ -56,18 +56,26 @@ import java.awt.print.Printable
  * Numbered INV- on save (KhataDao.saveInvoiceWithItems).
  */
 @Composable
-fun InvoiceForm(parties: List<PartyWithBalance>, onSave: (Invoice, List<InvoiceItem>) -> Unit, onCancel: () -> Unit) {
+fun InvoiceForm(
+    parties: List<PartyWithBalance>,
+    onSave: (Invoice, List<InvoiceItem>) -> Unit,
+    onCancel: () -> Unit,
+    /** A saved invoice to correct: its number, design and source stay; everything typed can change. */
+    existing: Invoice? = null,
+    existingLines: List<InvoiceItem> = emptyList()
+) {
     val c = LocalRoshanColors.current
-    var customer by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf(System.currentTimeMillis()) }
-    var lines by remember { mutableStateOf<List<InvoiceItem>>(emptyList()) }
-    var discount by remember { mutableStateOf("") }
-    var tax by remember { mutableStateOf("") }
-    var chargeLabel by remember { mutableStateOf("") }
-    var charge by remember { mutableStateOf("") }
-    var received by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
+    fun pad(v: Double?) = v?.takeIf { it != 0.0 }?.let { Calc.trim(it) }.orEmpty()
+    var customer by remember { mutableStateOf(existing?.customerName.orEmpty()) }
+    var phone by remember { mutableStateOf(existing?.customerPhone.orEmpty()) }
+    var date by remember { mutableStateOf(existing?.invoiceDate ?: System.currentTimeMillis()) }
+    var lines by remember { mutableStateOf(existingLines) }
+    var discount by remember { mutableStateOf(pad(existing?.discountPercent)) }
+    var tax by remember { mutableStateOf(pad(existing?.taxPercent)) }
+    var chargeLabel by remember { mutableStateOf(existing?.additionalChargeLabel.orEmpty()) }
+    var charge by remember { mutableStateOf(pad(existing?.additionalChargeAmount)) }
+    var received by remember { mutableStateOf(pad(existing?.receivedAmount)) }
+    var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var picking by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
     val needCustomer = word(W.invoice_customer_required)
@@ -75,7 +83,7 @@ fun InvoiceForm(parties: List<PartyWithBalance>, onSave: (Invoice, List<InvoiceI
     val t = InvoiceMath.totals(lines, Calc.evalPad(discount), Calc.evalPad(tax), Calc.evalPad(charge), Calc.evalPad(received))
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(word(W.add_invoice), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text(existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber } ?: word(W.add_invoice), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         OutlinedTextField(customer, { customer = it; problem = null }, label = { Text(word(W.invoice_customer_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         val q = customer.trim().lowercase()
         if (q.isNotEmpty()) {
@@ -139,7 +147,7 @@ fun InvoiceForm(parties: List<PartyWithBalance>, onSave: (Invoice, List<InvoiceI
                     customer.isBlank() -> problem = needCustomer
                     lines.isEmpty() -> problem = needItem
                     else -> onSave(
-                        Invoice(
+                        (existing ?: Invoice(customerName = "")).copy(
                             customerName = customer.trim(),
                             customerPhone = phone.trim().ifEmpty { null },
                             invoiceDate = date,

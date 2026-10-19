@@ -768,6 +768,32 @@ interface KhataDao {
         return rows.size
     }
 
+    /**
+     * A bill's own details corrected (the phone's Edit Bill): number, total,
+     * dates, note. The supplier and cash/credit are not changed here. A credit
+     * bill's ledger entry follows the new total and note in the same
+     * transaction — two answers to "what do I owe them?" is never left behind.
+     */
+    @Transaction
+    suspend fun editSupplierBill(bill: SupplierBill, entryNote: String?) {
+        updateBill(bill)
+        bill.ledgerEntryId?.let { id ->
+            getEntry(id)?.let { e -> updateEntry(e.copy(amount = bill.totalAmount, note = entryNote)) }
+        }
+    }
+
+    /**
+     * One bill line added or corrected. The name on the line decides its
+     * product (created when new, the phone's birth rule), so a line renamed
+     * from Urea to DAP never keeps counting against Urea. Returns the line id.
+     */
+    @Transaction
+    suspend fun saveBillLine(billId: Long, item: BillItem): Long {
+        val product = findOrCreateProduct(name = item.productName, defaultUnit = item.unit)
+        val line = item.copy(billId = billId, productId = product.id)
+        return if (item.id == 0L) insertBillItem(line) else { updateBillItem(line); item.id }
+    }
+
     @Query("SELECT * FROM installments WHERE planId = :planId AND isDeleted = 0 ORDER BY paidAt DESC")
     fun observeInstallments(planId: Long): Flow<List<Installment>>
 

@@ -23,7 +23,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.runtime.LaunchedEffect
+import com.innovation313.roshankhata.data.BatchOption
 import com.innovation313.roshankhata.data.EntryItem
+import com.innovation313.roshankhata.data.RateType
+import com.innovation313.roshankhata.data.SeasonBook
+import kotlinx.coroutines.delay
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.Recovery
@@ -34,8 +43,19 @@ import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
 import java.util.Calendar
 
-/** What the entry form hands back: the entry (unsaved) and its one goods line, if any. */
-class EntryDraft(val entry: LedgerEntry, val item: EntryItem?)
+/**
+ * What the entry form hands back: the entry (unsaved), its one goods line,
+ * whether the cash came with a cash-rate sale ([paidNow]: the matching "I got"
+ * is written with it, paired), and the payment day picked on the form
+ * ([due], only when [dueTouched]; null then means "remove the promise").
+ */
+class EntryDraft(
+    val entry: LedgerEntry,
+    val item: EntryItem?,
+    val paidNow: Boolean = false,
+    val due: Long? = null,
+    val dueTouched: Boolean = false
+)
 
 /**
  * A khata entry on the computer, with what the phone's entry dialog has
@@ -56,7 +76,13 @@ fun EntryEditor(
     onSave: (EntryDraft) -> Unit,
     onCancel: () -> Unit,
     onDelete: (() -> Unit)? = null,
-    onPrint: (() -> Unit)? = null
+    onPrint: (() -> Unit)? = null,
+    /** A customer (not a supplier): sales get a rate type, "paid now" and batches. */
+    isCustomer: Boolean = true,
+    /** The batches a sale of this item may be drawn from (bill lines with stock), soonest-expiring first. */
+    batchesFor: (suspend (String) -> List<BatchOption>)? = null,
+    /** The customer's promised payment day (Party.harvestPromise), shown on the due button. */
+    promise: Long? = null
 ) {
     val c = LocalRoshanColors.current
     var amountText by remember { mutableStateOf(existing?.amount?.let { Calc.trim(it) }.orEmpty()) }
@@ -70,6 +96,23 @@ fun EntryEditor(
     var doubtful by remember { mutableStateOf(existing?.recovery == Recovery.DOUBTFUL) }
     var method by remember { mutableStateOf(existing?.paymentMethod) }
     var picking by remember { mutableStateOf(false) }
+    val isSale = isGiven && isCustomer
+    var cashRate by remember { mutableStateOf(existing?.rateType == RateType.CASH) }
+    var paidNow by remember { mutableStateOf(false) }
+    var due by remember { mutableStateOf(promise) }
+    var dueTouched by remember { mutableStateOf(false) }
+    var choosingDue by remember { mutableStateOf(false) }
+    // Batches: looked up when the item name settles, as on the phone (a sale only).
+    var batches by remember { mutableStateOf<List<BatchOption>>(emptyList()) }
+    var batchId by remember { mutableStateOf(existingItem?.billItemId) }
+    var batchMenu by remember { mutableStateOf(false) }
+    LaunchedEffect(item) {
+        val name = item.trim()
+        if (!isSale || batchesFor == null || name.isEmpty()) { batches = emptyList(); return@LaunchedEffect }
+        delay(350)
+        batches = runCatching { batchesFor(name) }.getOrDefault(emptyList())
+        if (batches.none { it.id == batchId } && batchId != existingItem?.billItemId) batchId = null
+    }
     val amount = Calc.evalAmount(amountText)
     val q = Calc.evalAmount(qty)
     val r = Calc.evalAmount(rate)
@@ -98,7 +141,51 @@ fun EntryEditor(
                 Text(word(W.amount) + ": " + Format.money(goodsTotal), color = c.brandGreenText)
             }
         }
+        if (isSale && batches.isNotEmpty()) {
+            Box {
+                val chosen = batches.firstOrNull { it.id == batchId }
+                TextButton({ batchMenu = true }) {
+                    Text(
+                        chosen?.let { word(W.batch_chosen, it.batchNumber?.takeIf { b -> b.isNotBlank() } ?: word(W.batch_none)) } ?: word(W.pick_batch),
+                        color = c.brandGreenText
+                    )
+                }
+                DropdownMenu(batchMenu, { batchMenu = false }) {
+                    batches.forEach { b ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    listOfNotNull(
+                                        b.batchNumber?.takeIf { it.isNotBlank() } ?: word(W.batch_none),
+                                        b.expiryDate?.let { word(W.expiry_date) + ": " + Format.dateOnly(it) },
+                                        word(W.batch_remaining, Format.qty(b.remaining, b.unit))
+                                    ).joinToString("  ·  ")
+                                )
+                            },
+                            onClick = { batchId = b.id; batchMenu = false }
+                        )
+                    }
+                    DropdownMenuItem(text = { Text(word(W.pick_batch_clear)) }, onClick = { batchId = null; batchMenu = false })
+                }
+            }
+        }
+        if (isSale) {
+            // Fixed at the sale and never recalculated (LedgerEntry.rateType).
+            TwoWay(word(W.rate_type_credit), word(W.rate_type_cash), !cashRate) { credit -> cashRate = !credit; if (credit) paidNow = false }
+            if (existing == null && cashRate) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(paidNow, { paidNow = it })
+                    Text(word(W.cash_paid_now), color = c.ink, fontSize = 14.sp)
+                }
+            }
+        }
         OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
+        if (isSale && !paidNow) {
+            // When the money is due: a week, a fortnight, a month, the next harvest ends, or any day.
+            TextButton({ choosingDue = true }) {
+                Text(due?.let { word(W.entry_due_set, Format.dateOnly(it)) } ?: word(W.entry_due_none), color = c.brandGreenText)
+            }
+        }
 
         if (!isGiven) {
             // How it was paid: null unless chosen, as on the phone. The day's cash count
@@ -136,9 +223,11 @@ fun EntryEditor(
                 val goods = item.trim().takeIf { it.isNotEmpty() }?.let {
                     EntryItem(
                         id = 0, entryId = existing?.id ?: 0, itemName = it, quantity = q,
-                        unit = unit.trim().ifEmpty { null }, rate = r, productId = existingItem?.takeIf { e -> e.itemName == it }?.productId
+                        unit = unit.trim().ifEmpty { null }, rate = r, productId = existingItem?.takeIf { e -> e.itemName == it }?.productId,
+                        billItemId = if (isSale) batchId?.takeIf { id -> batches.any { b -> b.id == id } || id == existingItem?.billItemId } else null
                     )
                 }
+                val rateType = if (isSale && goods?.rate != null) (if (cashRate) RateType.CASH else RateType.CREDIT) else base.rateType
                 onSave(
                     EntryDraft(
                         base.copy(
@@ -147,14 +236,19 @@ fun EntryEditor(
                             note = note.trim().ifEmpty { null },
                             isQarzeHasna = isGiven && qarz,
                             recovery = if (isGiven && doubtful) Recovery.DOUBTFUL else Recovery.CERTAIN,
-                            paymentMethod = if (isGiven) base.paymentMethod else method
+                            paymentMethod = if (isGiven) base.paymentMethod else method,
+                            rateType = rateType
                         ),
-                        goods
+                        goods,
+                        paidNow = existing == null && isSale && cashRate && paidNow,
+                        due = due,
+                        dueTouched = dueTouched
                     )
                 )
             }
         }
     }
+    if (choosingDue) DueDialog(partyName, due, onPick = { at -> due = at; dueTouched = true; choosingDue = false }, onDismiss = { choosingDue = false })
     if (picking) {
         // The day changes; the time of day the entry was written stays.
         DayPicker(at, onPick = { day ->
@@ -166,4 +260,43 @@ fun EntryEditor(
             picking = false
         }, onDismiss = { picking = false })
     }
+}
+
+/**
+ * "When will he pay?" (the phone's chooseDueDate): 7, 15 or 30 days from
+ * today, the next two harvest ends, any other day, or taking the promise
+ * back. A day is kept as its last minute. No late fee or markup goes with it.
+ */
+@Composable
+private fun DueDialog(partyName: String, current: Long?, onPick: (Long?) -> Unit, onDismiss: () -> Unit) {
+    val c = LocalRoshanColors.current
+    var other by remember { mutableStateOf(false) }
+    val now = System.currentTimeMillis()
+    fun endOfDay(base: Long, days: Int = 0) = Calendar.getInstance().apply {
+        timeInMillis = base; add(Calendar.DAY_OF_YEAR, days)
+        set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59); set(Calendar.SECOND, 59); set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+    val quick = listOf(7, 15, 30).map { d -> word(W.entry_due_in_days, d.toString(), Format.dateOnly(endOfDay(now, d))) to endOfDay(now, d) }
+    val y = Calendar.getInstance().get(Calendar.YEAR)
+    val harvests = listOf(
+        SeasonBook.Season(SeasonBook.Crop.RABI, y - 1), SeasonBook.Season(SeasonBook.Crop.KHARIF, y),
+        SeasonBook.Season(SeasonBook.Crop.RABI, y), SeasonBook.Season(SeasonBook.Crop.KHARIF, y + 1)
+    ).map { it to SeasonBook.harvestEnd(it) }.filter { it.second > now }.sortedBy { it.second }.take(2)
+        .map { (s, at) -> word(W.harvest_promise_option, seasonName(s), Format.dateOnly(at)) to at }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(word(W.harvest_promise_title, Format.name(partyName))) },
+        text = {
+            Column {
+                (quick + harvests).forEach { (label, at) ->
+                    TextButton({ onPick(at) }) { Text(label, color = c.ink) }
+                }
+                TextButton({ other = true }) { Text(word(W.harvest_promise_other_date), color = c.brandGreenText) }
+                if (current != null) TextButton({ onPick(null) }) { Text(word(W.harvest_promise_remove), color = c.owedToMe) }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onDismiss) { Text(word(W.cancel)) } }
+    )
+    if (other) DayPicker(current ?: now, onPick = { day -> other = false; onPick(endOfDay(day)) }, onDismiss = { other = false })
 }

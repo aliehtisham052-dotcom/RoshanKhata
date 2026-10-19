@@ -118,7 +118,7 @@ fun SeasonsPane(dao: KhataDao, parties: List<PartyWithBalance>, reload: Int) {
 }
 
 @Composable
-private fun seasonName(s: SeasonBook.Season): String =
+internal fun seasonName(s: SeasonBook.Season): String =
     if (s.crop == SeasonBook.Crop.RABI) word(W.season_rabi, s.year, (s.year + 1) % 100) else word(W.season_kharif, s.year)
 
 @Composable

@@ -66,6 +66,29 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
     var open by remember { mutableStateOf<Long?>(null) }
     var adding by remember { mutableStateOf(false) }
     var deletingBill by remember { mutableStateOf<BillSummary?>(null) }
+    var editingBill by remember { mutableStateOf<BillSummary?>(null) }
+    // A bill line being added (id 0 on a bill) or corrected, and a line whose buyers are asked for.
+    var lineFor by remember { mutableStateOf<Pair<Long, com.innovation313.roshankhata.data.BillItem?>?>(null) }
+    var deletingLine by remember { mutableStateOf<com.innovation313.roshankhata.data.BillItem?>(null) }
+    var buyersOf by remember { mutableStateOf<Long?>(null) }
+    editingBill?.let { b -> BillEditDialog(dao, words, b.id, b.partyName) { editingBill = null; onLedgerChanged() } }
+    lineFor?.let { (billId, line) -> BillLineDialog(dao, billId, line) { lineFor = null } }
+    buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
+    deletingLine?.let { l ->
+        // Soft, like everywhere: the batch record stays the answer to "which batch was this sale from".
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { deletingLine = null },
+            title = { Text(word(W.delete_item)) },
+            text = { Text(word(W.delete_item_confirm, l.productName)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton({
+                    deletingLine = null
+                    scope.launch { withContext(Dispatchers.IO) { dao.softDeleteBillItem(l.id) } }
+                }) { Text(word(W.delete), color = c.owedToMe) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ deletingLine = null }) { Text(word(W.cancel)) } }
+        )
+    }
     deletingBill?.let { b ->
         // A credit bill's own "I owe them" entry goes to the Recycle Bin with it (the phone's rule).
         androidx.compose.material3.AlertDialog(
@@ -115,7 +138,11 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                     }
                 }
                 if (open == b.id) {
-                    androidx.compose.material3.TextButton({ deletingBill = b }) { Text(word(W.delete_bill), color = c.owedToMe) }
+                    Row {
+                        androidx.compose.material3.TextButton({ editingBill = b }) { Text(word(W.edit_bill), color = c.brandGreenText) }
+                        androidx.compose.material3.TextButton({ lineFor = b.id to null }) { Text(word(W.add_item), color = c.brandGreenText) }
+                        androidx.compose.material3.TextButton({ deletingBill = b }) { Text(word(W.delete_bill), color = c.owedToMe) }
+                    }
                     val lines by remember(b.id) { dao.observeBillItems(b.id) }.collectAsState(emptyList())
                     Column(Modifier.padding(top = 8.dp).fillMaxWidth().background(c.pageBg, RoundedCornerShape(10.dp)).padding(10.dp)) {
                         lines.forEach { l ->
@@ -125,8 +152,15 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                                 l.batchNumber?.takeIf { it.isNotBlank() }?.let { word(W.batch_label, it) },
                                 l.expiryDate?.let { word(W.expiry_date) + ": " + Format.dateOnly(it) }
                             ).joinToString("  ·  ")
-                            Text(l.productName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                            Text(detail, color = c.inkSoft, fontSize = 12.sp)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(l.productName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                                    Text(detail, color = c.inkSoft, fontSize = 12.sp)
+                                }
+                                androidx.compose.material3.TextButton({ buyersOf = l.id }) { Text(word(W.batch_buyers_action), color = c.brandGreenText, fontSize = 12.sp) }
+                                androidx.compose.material3.TextButton({ lineFor = b.id to l }) { Text(word(W.edit), color = c.brandGreenText, fontSize = 12.sp) }
+                                androidx.compose.material3.TextButton({ deletingLine = l }) { Text(word(W.delete), color = c.owedToMe, fontSize = 12.sp) }
+                            }
                         }
                     }
                 }
@@ -193,6 +227,8 @@ fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, r
     val scope = rememberCoroutineScope()
     val invoices by remember { dao.observeInvoices() }.collectAsState(emptyList())
     var adding by remember { mutableStateOf(false) }
+    // A saved invoice opened to correct it: the row and its live lines.
+    var editingInvoice by remember { mutableStateOf<Pair<com.innovation313.roshankhata.data.Invoice, List<com.innovation313.roshankhata.data.InvoiceItem>>?>(null) }
     var deletingInvoice by remember { mutableStateOf<com.innovation313.roshankhata.data.InvoiceSummary?>(null) }
     deletingInvoice?.let { inv ->
         androidx.compose.material3.AlertDialog(
@@ -234,6 +270,26 @@ fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, r
             }
         }
     }
+    editingInvoice?.let { (inv, lines) ->
+        DialogWindow(onCloseRequest = { editingInvoice = null }, title = word(W.edit), state = rememberDialogState(width = 720.dp, height = 860.dp)) {
+            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+                InvoiceForm(
+                    parties = parties,
+                    existing = inv,
+                    existingLines = lines,
+                    onSave = { updated, newLines ->
+                        editingInvoice = null
+                        scope.launch {
+                            // The phone's edit: the invoice and its whole line list, in one transaction.
+                            withContext(Dispatchers.IO) { dao.updateInvoiceWithItems(updated.copy(id = inv.id), newLines) }
+                            print(inv.id)
+                        }
+                    },
+                    onCancel = { editingInvoice = null }
+                )
+            }
+        }
+    }
     RecordList(word(W.nav_invoice), null, invoices.isEmpty(), word(W.no_invoices), action = word(W.add_invoice) to { adding = true }) {
         items(invoices, key = { it.id }) { i ->
             Row(Modifier.fillMaxWidth().clickable { print(i.id) }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -243,6 +299,11 @@ fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, r
                 }
                 Text(Format.money(i.grandTotal), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 Text("  " + word(W.ledger_pdf_button), color = c.brandGreenText, fontSize = 13.sp)
+                androidx.compose.material3.TextButton({
+                    scope.launch {
+                        editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(i.id)?.let { it to dao.invoiceItems(i.id) } }
+                    }
+                }) { Text(word(W.edit), color = c.brandGreenText) }
                 androidx.compose.material3.TextButton({ deletingInvoice = i }) { Text(word(W.delete), color = c.owedToMe) }
             }
             HorizontalDivider(color = c.pageBg)
@@ -280,9 +341,13 @@ fun ExpiryPane(dao: KhataDao) {
     val c = LocalRoshanColors.current
     val cutoff = remember { System.currentTimeMillis() + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS }
     val batches by remember { dao.observeExpiringBatches(cutoff) }.collectAsState(emptyList())
-    RecordList(word(W.expiring_stock), word(W.expiring_subtitle), batches.isEmpty(), word(W.no_expiring)) {
+    var buyersOf by remember { mutableStateOf<Long?>(null) }
+    buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
+    RecordList(word(W.expiring_stock), word(W.expiring_subtitle), false, word(W.no_expiring)) {
+        item(key = "trace") { BatchTraceCard(dao) { buyersOf = it } }
+        if (batches.isEmpty()) item(key = "none") { Text(word(W.no_expiring), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp) }
         items(batches, key = { it.itemId }) { b ->
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().clickable { buyersOf = b.itemId }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(b.productName, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     Text(

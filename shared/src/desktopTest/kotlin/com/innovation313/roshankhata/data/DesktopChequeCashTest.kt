@@ -91,6 +91,41 @@ class DesktopChequeCashTest {
     }
 
     @Test
+    fun `editing a credit bill moves its ledger entry with it, and a renamed line changes product`() = withBook { dao ->
+        val id = dao.insertParty(Party(name = "Supplier", phone = null, isCustomer = false))
+        dao.insertSupplierBill(
+            LedgerEntry(partyId = id, amount = 5000.0, isGiven = false, note = "Bill 12", entryNumber = ""),
+            SupplierBill(partyId = id, billNumber = "12", totalAmount = 5000.0, billDate = 0L, dueDate = null, ledgerEntryId = null, isPaidInFull = false, note = null),
+            listOf(BillItem(billId = 0, productName = "Urea", quantity = 10.0, unit = "bag"))
+        )
+        val bill = dao.getBill(dao.observeBills().first().single().id)!!
+        dao.editSupplierBill(bill.copy(billNumber = "13", totalAmount = 4500.0), entryNote = "Bill 13")
+        assertEquals(-4500.0, dao.partiesWithBalanceOnce().single().balance, 0.001)
+        assertEquals("Bill 13", dao.getEntry(bill.ledgerEntryId!!)!!.note)
+
+        val line = dao.billItems(bill.id).single()
+        dao.saveBillLine(bill.id, line.copy(productName = "DAP"))
+        val after = dao.billItems(bill.id).single()
+        assertEquals(line.id, after.id)
+        assertEquals(dao.productByKey(ProductName.key("DAP"))!!.id, after.productId)
+        dao.saveBillLine(bill.id, BillItem(billId = 0, productName = "Seed", quantity = 2.0, batchNumber = "B-7"))
+        assertEquals(2, dao.billItems(bill.id).size)
+    }
+
+    @Test
+    fun `a cash sale with the money taken writes its paired I got, so nothing is owed`() = withBook { dao ->
+        val id = dao.insertParty(Party(name = "Bilal", phone = null, isCustomer = true))
+        val sale = dao.insertEntryWithItems(
+            LedgerEntry(partyId = id, amount = 800.0, isGiven = true, entryNumber = "", rateType = RateType.CASH), emptyList()
+        )
+        val got = dao.recordCashForSale(sale)!!
+        assertEquals(0.0, dao.partiesWithBalanceOnce().single().balance, 0.001)
+        assertEquals(sale, dao.getEntry(got)!!.pairedEntryId)
+        dao.setHarvestPromise(id, 123L)
+        assertEquals(123L, dao.getParty(id)!!.harvestPromise)
+    }
+
+    @Test
     fun `customers from another app come in with one opening entry each`() = withBook { dao ->
         val added = dao.importOpeningBalances(
             listOf(CsvImport.Row("Bilal", "0300", 1200.0), CsvImport.Row("Akram", null, -300.0), CsvImport.Row("Nawaz", null, 0.0)),
