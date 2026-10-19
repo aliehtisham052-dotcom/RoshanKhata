@@ -27,19 +27,15 @@ import java.util.Locale
  */
 object CsvExport {
 
-    private val dateFmt = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH)
     private val fileFmt = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
     /** @return the written file, or null if it could not be written. */
     fun ledger(context: Context, entries: List<EntryWithParty>): File? {
         return try {
-            val sb = StringBuilder()
-            sb.append('\uFEFF') // BOM — see the header comment.
             // The column names in the app's language, like every other word the
-            // owner reads; a spreadsheet takes any heading. The figures and
-            // dates below stay as a spreadsheet needs them.
-            row(
-                sb,
+            // owner reads; the text itself is shared with the computer (LedgerCsv).
+            val text = LedgerCsv.text(
+                entries,
                 listOf(
                     context.getString(R.string.date_label),
                     context.getString(R.string.name),
@@ -48,25 +44,9 @@ object CsvExport {
                     context.getString(R.string.i_got)
                 )
             )
-            // Oldest first, the order a book is read and a spreadsheet is
-            // summed — the screen's newest-first is for glancing, not for
-            // working.
-            entries.sortedBy { it.timestamp }.forEach { e ->
-                row(
-                    sb,
-                    listOf(
-                        dateFmt.format(Date(e.timestamp)),
-                        e.partyName,
-                        e.note.orEmpty(),
-                        if (e.isGiven) plain(e.amount) else "",
-                        if (!e.isGiven) plain(e.amount) else ""
-                    )
-                )
-            }
-
             val dir = File(context.cacheDir, "statements").apply { mkdirs() }
             val file = File(dir, "RoshanKhata_Report_${fileFmt.format(Date())}.csv")
-            file.writeText(sb.toString(), Charsets.UTF_8)
+            file.writeText(text, Charsets.UTF_8)
             file
         } catch (e: Exception) {
             null
@@ -86,14 +66,5 @@ object CsvExport {
         context.startActivity(
             Intent.createChooser(send, file.name)
         )
-    }
-
-    /** A whole number stays whole; paise appear only when they exist. */
-    private fun plain(value: Double): String =
-        if (value % 1.0 == 0.0) "%.0f".format(Digits.FIGURES, value) else "%.2f".format(Digits.FIGURES, value)
-
-    private fun row(sb: StringBuilder, cells: List<String>) {
-        cells.joinTo(sb, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }
-        sb.append("\r\n")
     }
 }

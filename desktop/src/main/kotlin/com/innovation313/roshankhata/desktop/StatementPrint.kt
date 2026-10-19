@@ -213,8 +213,8 @@ class StatementPrint(
     }
 
     companion object {
-        /** Windows' print dialog, then the print, off the window's thread. False when cancelled. */
-        fun show(statement: StatementPrint, jobName: String): Boolean {
+        /** Windows' print dialog for any A4 sheet (a statement, a report), then the print off the window's thread. False when cancelled. */
+        fun show(statement: Printable, jobName: String): Boolean {
             val job = PrinterJob.getPrinterJob()
             job.jobName = jobName
             val format = job.defaultPage().apply {

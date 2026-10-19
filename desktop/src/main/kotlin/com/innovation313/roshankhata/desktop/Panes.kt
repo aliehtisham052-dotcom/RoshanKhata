@@ -13,6 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,12 +29,17 @@ import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZoneOffset
 
 /** The parts of the book the computer has, in the phone's Home order (KMP Phase 7). */
 enum class Section(val word: String) {
     KHATA(W.nav_khata),
     CASHBOOK(W.nav_cashbook),
     CHEQUES(W.nav_cheques),
+    REPORT(W.ledger_report_title),
     SHOP(W.business_profile)
 }
 
@@ -101,4 +110,30 @@ fun PaneTitle(title: String, subtitle: String?) {
         Text(title, color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         subtitle?.let { Text(it, color = c.textMuted, fontSize = 13.sp) }
     }
+}
+
+/**
+ * A day picked on Material's calendar. The picker speaks UTC midnights; the
+ * book keeps the start of that day on this computer's clock, so "today" in
+ * Pakistan stays today. [initial] is any moment on the day to start from.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DayPicker(initial: Long?, onPick: (startOfDay: Long) -> Unit, onDismiss: () -> Unit) {
+    val zone = ZoneId.systemDefault()
+    val state = rememberDatePickerState(
+        initialSelectedDateMillis = (initial?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() } ?: LocalDate.now(zone))
+            .atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+    )
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton({
+                val utc = state.selectedDateMillis
+                if (utc == null) onDismiss()
+                else onPick(Instant.ofEpochMilli(utc).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(zone).toInstant().toEpochMilli())
+            }) { Text(word(W.ok)) }
+        },
+        dismissButton = { TextButton(onDismiss) { Text(word(W.cancel)) } }
+    ) { DatePicker(state) }
 }
