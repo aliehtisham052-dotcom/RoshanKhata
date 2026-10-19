@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogWindow
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberDialogState
@@ -100,7 +101,8 @@ fun main() = application {
         onCloseRequest = { db.close(); exitApplication() },
         title = words.text(W.app_name),
         icon = painterResource("roshan_khata_icon.png"),
-        state = rememberWindowState(width = 1100.dp, height = 740.dp)
+        // Opened filling the screen: a laptop's 768 rows otherwise cut off the entry buttons.
+        state = rememberWindowState(placement = WindowPlacement.Maximized, width = 1100.dp, height = 740.dp)
     ) {
         RoshanTheme {
             ProvideWords(words) {
@@ -109,6 +111,7 @@ fun main() = application {
                         dao = db.khataDao(),
                         load = { db.khataDao().partiesWithBalanceOnce() },
                         shopName = { settings.businessName() },
+                        settings = settings,
                         restore = { data -> restore(data, db, settings) },
                         backup = { file -> backup(file, db, settings) },
                         onLanguage = { tag -> appPrefs.setLanguage(tag); language = tag },
@@ -164,6 +167,7 @@ private fun Book(
     dao: KhataDao,
     load: suspend () -> List<PartyWithBalance>,
     shopName: () -> String?,
+    settings: FileShopSettings,
     restore: suspend (BackupCodec.ParsedBackup) -> Unit,
     backup: suspend (File) -> Long,
     onLanguage: (String) -> Unit,
@@ -189,6 +193,8 @@ private fun Book(
     var halves by remember { mutableStateOf<Pair<LedgerEntry, LedgerEntry>?>(null) }
     var bin by remember { mutableStateOf(false) }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
+    var section by remember { mutableStateOf(Section.KHATA) }
+    var shop by remember { mutableStateOf(shopName()) }
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
 
@@ -199,7 +205,7 @@ private fun Book(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                shopName() ?: word(W.app_name),
+                shop ?: word(W.app_name),
                 Modifier.weight(1f),
                 color = c.onDark, fontSize = 20.sp, fontWeight = FontWeight.Bold
             )
@@ -243,76 +249,84 @@ private fun Book(
         }
 
         Row(Modifier.fillMaxSize()) {
-            // The book on the left, as the phone's Khata list.
-            Column(Modifier.weight(0.42f).fillMaxSize()) {
-                // Totals: what the shop will get, and what it will give.
-                val get = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-                val give = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
-                Row(Modifier.fillMaxWidth().padding(20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
-                    Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
-                }
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    placeholder = { Text(word(W.search_parties)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
-                )
-                val q = query.trim().lowercase()
-                val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }
-                Text(
-                    plural(WP.customer_count, shown.size, shown.size),
-                    Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
-                    color = c.textMuted, fontSize = 13.sp
-                )
-                LazyColumn(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
-                    items(shown, key = { it.id }) { p ->
-                        Row(
-                            Modifier.fillMaxWidth()
-                                .background(if (p.id == selected) c.pageBg else c.surface)
-                                .clickable { selected = p.id }
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(Modifier.weight(1f)) {
-                                Text(Format.name(p.name), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                                p.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 13.sp) }
+            SectionRail(section, { section = it })
+            when (section) {
+                Section.CASHBOOK -> Box(Modifier.weight(1f)) { CashbookPane(dao) }
+                Section.CHEQUES -> Box(Modifier.weight(1f)) { ChequesPane(dao, parties, words) { reload++ } }
+                Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
+                Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
+                    // The book on the left, as the phone's Khata list.
+                    Column(Modifier.weight(0.42f).fillMaxSize()) {
+                        // Totals: what the shop will get, and what it will give.
+                        val get = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
+                        val give = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+                        Row(Modifier.fillMaxWidth().padding(20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
+                            Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
+                        }
+                        OutlinedTextField(
+                            value = query,
+                            onValueChange = { query = it },
+                            placeholder = { Text(word(W.search_parties)) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+                        )
+                        val q = query.trim().lowercase()
+                        val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }
+                        Text(
+                            plural(WP.customer_count, shown.size, shown.size),
+                            Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                            color = c.textMuted, fontSize = 13.sp
+                        )
+                        LazyColumn(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
+                            items(shown, key = { it.id }) { p ->
+                                Row(
+                                    Modifier.fillMaxWidth()
+                                        .background(if (p.id == selected) c.pageBg else c.surface)
+                                        .clickable { selected = p.id }
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(Modifier.weight(1f)) {
+                                        Text(Format.name(p.name), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                                        p.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 13.sp) }
+                                    }
+                                    Text(
+                                        Format.customerBalance(p.balance),
+                                        color = balanceColour(p.balance),
+                                        fontSize = 16.sp, fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                HorizontalDivider(color = c.pageBg)
                             }
-                            Text(
-                                Format.customerBalance(p.balance),
-                                color = balanceColour(p.balance),
-                                fontSize = 16.sp, fontWeight = FontWeight.Bold
+                        }
+                    }
+                    // The chosen customer's page on the right: the shared ledger screen.
+                    val party = parties.firstOrNull { it.id == selected }
+                    Box(Modifier.weight(0.58f).fillMaxSize()) {
+                        if (party != null) {
+                            val entries by remember(party.id, reload) { dao.observeEntries(party.id) }.collectAsState(emptyList())
+                            PartyLedgerScreen(
+                                name = party.name,
+                                phone = party.phone,
+                                balance = party.balance,
+                                entries = entries.sortedByDescending { it.timestamp },
+                                onGave = { entryWay = true },
+                                onGot = { entryWay = false },
+                                onEntry = { editing = it },
+                                onDeleteParty = { deletingParty = party },
+                                onStatement = {
+                                    scope.launch {
+                                        val rows = withContext(Dispatchers.IO) { dao.latestEntriesWithItems(party.id, Int.MAX_VALUE) }
+                                        StatementPrint.show(
+                                            StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), party.name, party.phone, rows),
+                                            words.text(W.pdf_stmt_title, party.name)
+                                        )
+                                    }
+                                }
                             )
                         }
-                        HorizontalDivider(color = c.pageBg)
                     }
-                }
-            }
-            // The chosen customer's page on the right: the shared ledger screen.
-            val party = parties.firstOrNull { it.id == selected }
-            Box(Modifier.weight(0.58f).fillMaxSize()) {
-                if (party != null) {
-                    val entries by remember(party.id, reload) { dao.observeEntries(party.id) }.collectAsState(emptyList())
-                    PartyLedgerScreen(
-                        name = party.name,
-                        phone = party.phone,
-                        balance = party.balance,
-                        entries = entries.sortedByDescending { it.timestamp },
-                        onGave = { entryWay = true },
-                        onGot = { entryWay = false },
-                        onEntry = { editing = it },
-                        onDeleteParty = { deletingParty = party },
-                        onStatement = {
-                            scope.launch {
-                                val rows = withContext(Dispatchers.IO) { dao.latestEntriesWithItems(party.id, Int.MAX_VALUE) }
-                                StatementPrint.show(
-                                    StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), party.name, party.phone, rows),
-                                    words.text(W.pdf_stmt_title, party.name)
-                                )
-                            }
-                        }
-                    )
                 }
             }
         }
@@ -345,6 +359,7 @@ private fun Book(
                             busy = false
                             picked = null
                             done = true
+                            shop = shopName()
                             reload++
                         }
                     },
@@ -542,6 +557,7 @@ private fun Book(
                             addParty = false
                             reload++
                             selected = id
+                            section = Section.KHATA
                         }
                     },
                     onCancel = { addParty = false }

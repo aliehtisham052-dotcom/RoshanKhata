@@ -1,0 +1,104 @@
+package com.innovation313.roshankhata.desktop
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.innovation313.roshankhata.screens.LocalRoshanColors
+import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.word
+
+/** The parts of the book the computer has, in the phone's Home order (KMP Phase 7). */
+enum class Section(val word: String) {
+    KHATA(W.nav_khata),
+    CASHBOOK(W.nav_cashbook),
+    CHEQUES(W.nav_cheques),
+    SHOP(W.business_profile)
+}
+
+/** The rail on the start side: one row per section, the open one filled. */
+@Composable
+fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier = Modifier) {
+    val c = LocalRoshanColors.current
+    Column(modifier.width(190.dp).fillMaxHeight().background(c.surface).padding(vertical = 12.dp)) {
+        Section.entries.forEach { s ->
+            val on = s == current
+            Text(
+                word(s.word),
+                Modifier.fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 3.dp)
+                    .background(if (on) c.brandGreen else Color.Transparent, RoundedCornerShape(10.dp))
+                    .clickable { onPick(s) }
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                color = if (on) Color.White else c.ink,
+                fontSize = 16.sp,
+                fontWeight = if (on) FontWeight.Bold else FontWeight.Medium
+            )
+        }
+    }
+}
+
+/** A total in a rounded card: a label, and the figure in its colour. */
+@Composable
+fun TotalCard(label: String, amount: String, color: Color, modifier: Modifier = Modifier) {
+    val c = LocalRoshanColors.current
+    Column(modifier.background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp)) {
+        Text(label, color = c.textMuted, fontSize = 13.sp)
+        Spacer(Modifier.height(4.dp))
+        Text(amount, color = color, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+/** A filled button in [fill] with white bold text. */
+@Composable
+fun FillButton(text: String, fill: Color, enabled: Boolean = true, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(containerColor = fill, contentColor = Color.White)
+    ) { Text(text, fontWeight = FontWeight.Bold) }
+}
+
+/** Two choices side by side, the chosen one filled — the phone's toggle. */
+@Composable
+fun TwoWay(first: String, second: String, firstOn: Boolean, onPick: (Boolean) -> Unit) {
+    val c = LocalRoshanColors.current
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        listOf(first to true, second to false).forEach { (label, isFirst) ->
+            if (isFirst == firstOn) {
+                FillButton(label, c.brandGreen) { onPick(isFirst) }
+            } else {
+                TextButton({ onPick(isFirst) }) { Text(label, color = c.brandGreenText) }
+            }
+            Spacer(Modifier.width(8.dp))
+        }
+    }
+}
+
+/** A page's title and the line under it. */
+@Composable
+fun PaneTitle(title: String, subtitle: String?) {
+    val c = LocalRoshanColors.current
+    Column {
+        Text(title, color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        subtitle?.let { Text(it, color = c.textMuted, fontSize = 13.sp) }
+    }
+}
