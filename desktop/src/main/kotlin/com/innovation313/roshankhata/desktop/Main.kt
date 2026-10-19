@@ -35,6 +35,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
@@ -105,8 +108,11 @@ fun main() = application {
     val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
     val words = remember(locale) { desktopWords(locale) }
     val rtl = BidiPort.isRtlLocale(locale)
+    // Keyboard shortcuts for the counter (Phase 9a): the open page fills these in.
+    val keys = remember { KeyActions() }
     Window(
         onCloseRequest = { db.close(); exitApplication() },
+        onPreviewKeyEvent = { keys.handle(it) },
         title = words.text(W.app_name),
         icon = painterResource("roshan_khata_icon.png"),
         // Opened filling the screen: a laptop's 768 rows otherwise cut off the entry buttons.
@@ -116,6 +122,7 @@ fun main() = application {
             ProvideWords(words) {
                 CompositionLocalProvider(LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
                     key(active) { Book(
+                        keys = keys,
                         dao = db.khataDao(),
                         load = { db.khataDao().partiesWithBalanceOnce() },
                         shopName = { settings.businessName() },
@@ -176,6 +183,7 @@ private fun reasonOf(failed: BackupCodec.ImportResult.Failed, words: Words): Str
 
 @Composable
 private fun Book(
+    keys: KeyActions,
     dao: KhataDao,
     load: suspend () -> List<PartyWithBalance>,
     shopName: () -> String?,
@@ -221,6 +229,13 @@ private fun Book(
     }
     var choosingBusiness by remember { mutableStateOf(false) }
     var statementFor by remember { mutableStateOf<PartyWithBalance?>(null) }
+    // F2 you gave, F3 you got (on the open customer), Ctrl+N new customer, Ctrl+P statement,
+    // F1 the Khata page. Each does only what its button does.
+    keys.gave = { if (selected != null) { section = Section.KHATA; entryWay = true } }
+    keys.got = { if (selected != null) { section = Section.KHATA; entryWay = false } }
+    keys.newParty = { addParty = true }
+    keys.statement = { parties.firstOrNull { it.id == selected }?.let { statementFor = it } }
+    keys.khata = { section = Section.KHATA }
     statementFor?.let { party ->
         StatementRangeDialog(party.name, onCancel = { statementFor = null }) { from, till ->
             statementFor = null
@@ -359,11 +374,44 @@ private fun Book(
                         // Newest dealing first, as the phone's default (SortMode.RECENT): the customer
                         // just served is at the top, not buried under A-Z.
                         val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }.sortedByDescending { it.lastActivity }
-                        Text(
-                            plural(WP.customer_count, shown.size, shown.size),
-                            Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
-                            color = c.textMuted, fontSize = 13.sp
-                        )
+                        Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                plural(WP.customer_count, shown.size, shown.size),
+                                Modifier.weight(1f).padding(vertical = 10.dp),
+                                color = c.textMuted, fontSize = 13.sp
+                            )
+                            // The whole book out (Phase 9b): every party to Excel, and every
+                            // statement with money on it as one print job.
+                            TextButton({
+                                val dialog = FileDialog(null as Frame?, words.text(W.export_excel), FileDialog.SAVE)
+                                startIn(dialog, "Documents")
+                                dialog.file = "RoshanKhata_Customers_" +
+                                    java.text.SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(java.util.Date()) + ".csv"
+                                dialog.isVisible = true
+                                val name = dialog.file ?: return@TextButton
+                                val file = File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
+                                val headers = listOf(words.text(W.name), words.text(W.bp_phone), words.text(W.net_balance))
+                                scope.launch {
+                                    backedUp = runCatching {
+                                        withContext(Dispatchers.IO) { file.writeText(BookExport.customersCsv(parties, headers), Charsets.UTF_8) }
+                                    }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
+                                }
+                            }, enabled = parties.isNotEmpty()) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp) }
+                            TextButton({
+                                scope.launch {
+                                    val owing = parties.filter { kotlin.math.abs(it.balance) >= 0.005 }.sortedBy { it.name.lowercase() }
+                                    val sheets = withContext(Dispatchers.IO) {
+                                        owing.map { p ->
+                                            StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), p.name, p.phone,
+                                                dao.latestEntriesWithItems(p.id, Int.MAX_VALUE))
+                                        }
+                                    }
+                                    if (sheets.isNotEmpty()) StatementPrint.show(AllStatements(sheets), words.text(W.statement_pdf))
+                                }
+                            }, enabled = parties.any { kotlin.math.abs(it.balance) >= 0.005 }) {
+                                Text(word(W.statement_pdf) + " · " + word(W.filter_type_all), color = c.brandGreenText, fontSize = 13.sp)
+                            }
+                        }
                         LazyColumn(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
                             items(shown, key = { it.id }) { p ->
                                 Row(
@@ -833,4 +881,29 @@ private fun AlertChip(text: String, onClick: () -> Unit) {
             .padding(horizontal = 12.dp, vertical = 6.dp),
         color = c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.Bold
     )
+}
+
+/** What each shortcut does on the open page; set by the page, read by the window. */
+class KeyActions {
+    var gave: () -> Unit = {}
+    var got: () -> Unit = {}
+    var newParty: () -> Unit = {}
+    var statement: () -> Unit = {}
+    var khata: () -> Unit = {}
+
+    fun handle(e: androidx.compose.ui.input.key.KeyEvent): Boolean {
+        if (e.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return false
+        val k = e.key
+        val ctrl = e.isCtrlPressed
+        val act: (() -> Unit)? = when {
+            k == androidx.compose.ui.input.key.Key.F1 -> khata
+            k == androidx.compose.ui.input.key.Key.F2 -> gave
+            k == androidx.compose.ui.input.key.Key.F3 -> got
+            ctrl && k == androidx.compose.ui.input.key.Key.N -> newParty
+            ctrl && k == androidx.compose.ui.input.key.Key.P -> statement
+            else -> null
+        }
+        act?.invoke()
+        return act != null
+    }
 }
