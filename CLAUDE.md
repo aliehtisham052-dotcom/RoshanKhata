@@ -48,7 +48,7 @@ No account, no server, no ads. Everything stays on the phone.
   Bump `packageVersion` in `desktop/build.gradle.kts` for every MSI the owner
   installs, or Windows will not upgrade it; the MSIX takes its version from
   the same line. Material's own colours come from `RoshanTheme` (dark mode
-  once hid typed text). Not on Windows yet: Business Card, Poster, invoice
+  once hid typed text). Entries carry date, goods, payment method, Qarz-e-Hasna and recovery; the bin purges after 30 days. Not on Windows yet: Business Card, Poster, invoice
   templates, Google Drive, voice entry.
 
 ### The shared module (KMP)
