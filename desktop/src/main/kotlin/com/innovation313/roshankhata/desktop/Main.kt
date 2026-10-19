@@ -274,7 +274,7 @@ private fun Book(
             when (section) {
                 Section.CASHBOOK -> Box(Modifier.weight(1f)) { CashbookPane(dao) }
                 Section.CHEQUES -> Box(Modifier.weight(1f)) { ChequesPane(dao, parties, words) { reload++ } }
-                Section.PLANS -> Box(Modifier.weight(1f)) { PlansPane(dao) }
+                Section.PLANS -> Box(Modifier.weight(1f)) { PlansPane(dao, parties, words) { reload++ } }
                 Section.EXPIRY -> Box(Modifier.weight(1f)) { ExpiryPane(dao) }
                 Section.BILLS -> Box(Modifier.weight(1f)) { BillsPane(dao, parties, words) { reload++ } }
                 Section.PRODUCTS -> Box(Modifier.weight(1f)) { ProductsPane(dao, words) }

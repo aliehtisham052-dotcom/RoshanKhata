@@ -722,6 +722,33 @@ interface KhataDao {
     @Insert
     suspend fun insertInstallment(item: Installment): Long
 
+    /**
+     * A plan instalment received, as ONE transaction: the payment posted to
+     * the party's ledger once ("I got", numbered RK-), the instalment row
+     * pointing at that entry, and the plan closed when [paidBefore] plus this
+     * payment reaches its total — the phone's PlansActivity.recordPayment,
+     * which wrote these one after another. Returns the entry's id.
+     */
+    @Transaction
+    suspend fun recordPlanPayment(
+        planId: Long,
+        partyId: Long,
+        amount: Double,
+        paidBefore: Double,
+        entryNote: String,
+        note: String?,
+        now: Long = System.currentTimeMillis()
+    ): Long {
+        val entryId = insertEntryNumbered(
+            LedgerEntry(partyId = partyId, amount = amount, isGiven = false, note = entryNote, entryNumber = "", timestamp = now)
+        )
+        insertInstallment(Installment(planId = planId, amount = amount, ledgerEntryId = entryId, paidAt = now, note = note))
+        getPlan(planId)?.let { plan ->
+            if (paidBefore + amount >= plan.totalAmount && !plan.isClosed) updatePlan(plan.copy(isClosed = true, closedAt = now))
+        }
+        return entryId
+    }
+
     @Query("SELECT * FROM installments WHERE planId = :planId AND isDeleted = 0 ORDER BY paidAt DESC")
     fun observeInstallments(planId: Long): Flow<List<Installment>>
 
