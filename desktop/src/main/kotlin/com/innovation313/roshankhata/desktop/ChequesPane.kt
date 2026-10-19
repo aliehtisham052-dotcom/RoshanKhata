@@ -20,14 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -64,7 +60,6 @@ import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 /**
@@ -297,7 +292,6 @@ private fun daysUntil(due: Long): Int {
     return ChronoUnit.DAYS.between(today, day).toInt()
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChequeEditor(
     existing: ChequeWithParty?,
@@ -400,25 +394,6 @@ private fun ChequeEditor(
     }
 
     if (picking) {
-        // The picker speaks UTC midnights; the cheque keeps the start of that day here.
-        val zone = ZoneId.systemDefault()
-        val state = rememberDatePickerState(
-            initialSelectedDateMillis = (due?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() } ?: LocalDate.now(zone))
-                .atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
-        )
-        DatePickerDialog(
-            onDismissRequest = { picking = false },
-            confirmButton = {
-                TextButton({
-                    state.selectedDateMillis?.let { utc ->
-                        due = Instant.ofEpochMilli(utc).atZone(ZoneOffset.UTC).toLocalDate()
-                            .atStartOfDay(zone).toInstant().toEpochMilli()
-                        problem = null
-                    }
-                    picking = false
-                }) { Text(word(W.ok)) }
-            },
-            dismissButton = { TextButton({ picking = false }) { Text(word(W.cancel)) } }
-        ) { DatePicker(state) }
+        DayPicker(due, onPick = { due = it; problem = null; picking = false }, onDismiss = { picking = false })
     }
 }
