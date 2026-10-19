@@ -208,6 +208,25 @@ private fun Book(
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
     var section by remember { mutableStateOf(Section.KHATA) }
     var choosingBusiness by remember { mutableStateOf(false) }
+    var statementFor by remember { mutableStateOf<PartyWithBalance?>(null) }
+    statementFor?.let { party ->
+        StatementRangeDialog(party.name, onCancel = { statementFor = null }) { from, till ->
+            statementFor = null
+            scope.launch {
+                val all = withContext(Dispatchers.IO) { dao.latestEntriesWithItems(party.id, Int.MAX_VALUE) }
+                // A period: its own entries, the balance carried in before it, and the whole
+                // account as the closing figure (the phone's ReportActivity rule).
+                val sign = { e: com.innovation313.roshankhata.data.EntryWithItems -> if (e.entry.isGiven) e.entry.amount else -e.entry.amount }
+                val rows = if (from == null) all else all.filter { it.entry.timestamp in from..till!! }
+                val opening = if (from == null) 0.0 else all.filter { it.entry.timestamp < from }.sumOf(sign)
+                StatementPrint.show(
+                    StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), party.name, party.phone, rows,
+                        opening = opening, periodFrom = from, accountBalance = if (from == null) null else all.sumOf(sign)),
+                    words.text(W.pdf_stmt_title, party.name)
+                )
+            }
+        }
+    }
     if (choosingBusiness) BusinessesDialog(businesses, activeBusiness, onSwitch = { choosingBusiness = false; onSwitch(it) }, onClose = { choosingBusiness = false })
     var shop by remember { mutableStateOf(shopName()) }
 
@@ -358,15 +377,7 @@ private fun Book(
                                 onGot = { entryWay = false },
                                 onEntry = { editing = it },
                                 onDeleteParty = { deletingParty = party },
-                                onStatement = {
-                                    scope.launch {
-                                        val rows = withContext(Dispatchers.IO) { dao.latestEntriesWithItems(party.id, Int.MAX_VALUE) }
-                                        StatementPrint.show(
-                                            StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), party.name, party.phone, rows),
-                                            words.text(W.pdf_stmt_title, party.name)
-                                        )
-                                    }
-                                }
+                                onStatement = { statementFor = party }
                             )
                         }
                     }
@@ -679,5 +690,49 @@ private fun Total(label: String, amount: String, color: Color, modifier: Modifie
         Text(label, color = c.textMuted, fontSize = 13.sp)
         Spacer(Modifier.height(4.dp))
         Text(amount, color = color, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+/** The whole ledger, or a period by two dates (the end date's whole day), before a statement prints. */
+@Composable
+private fun StatementRangeDialog(partyName: String, onCancel: () -> Unit, onPrint: (from: Long?, till: Long?) -> Unit) {
+    val c = LocalRoshanColors.current
+    var from by remember { mutableStateOf<Long?>(null) }
+    var till by remember { mutableStateOf<Long?>(null) }
+    var picking by remember { mutableStateOf<Boolean?>(null) }
+    val day = 24L * 60 * 60 * 1000
+    val bad = from != null && till != null && till!! < from!!
+    AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text(word(W.pdf_stmt_title, partyName)) },
+        text = {
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton({ picking = true }) { Text(from?.let { Format.dateOnly(it) } ?: word(W.pick_start_date), color = c.brandGreenText) }
+                    Text("\u2013", color = c.textMuted)
+                    TextButton({ picking = false }) { Text(till?.let { Format.dateOnly(it) } ?: word(W.pick_end_date), color = c.brandGreenText) }
+                }
+                Text(
+                    if (from == null || till == null) word(W.range_label_all) else word(W.range_label, Format.dateOnly(from!!), Format.dateOnly(till!!)),
+                    color = c.ink
+                )
+                if (bad) Text(word(W.invalid_range), color = c.owedToMe)
+            }
+        },
+        confirmButton = {
+            TextButton(enabled = !bad, onClick = {
+                val f = from; val t = till
+                if (f == null || t == null) onPrint(null, null) else onPrint(f, t + day - 1)
+            }) { Text(word(W.ledger_pdf_button)) }
+        },
+        dismissButton = {
+            Row {
+                TextButton({ from = null; till = null }) { Text(word(W.range_all)) }
+                TextButton(onCancel) { Text(word(W.cancel)) }
+            }
+        }
+    )
+    picking?.let { start ->
+        DayPicker(if (start) from else till, onPick = { d -> if (start) from = d else till = d; picking = null }, onDismiss = { picking = null })
     }
 }
