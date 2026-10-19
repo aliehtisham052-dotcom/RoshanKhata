@@ -270,6 +270,7 @@ private fun Book(
                 Section.CALC -> Box(Modifier.weight(1f)) { CalculatorPane() }
                 Section.SCHEMES -> Box(Modifier.weight(1f)) { SchemesPane(dao, reload) }
                 Section.CASHFLOW -> Box(Modifier.weight(1f)) { CashFlowPane(dao, reload) }
+                Section.BUY_RATES -> Box(Modifier.weight(1f)) { SupplierRatesPane(dao, reload) }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
