@@ -266,6 +266,7 @@ private fun Book(
                 Section.ZAKAT -> Box(Modifier.weight(1f)) { ZakatPane(dao) }
                 Section.RATES -> Box(Modifier.weight(1f)) { RateListPane(dao, words, rtl, shop) }
                 Section.STAFF -> Box(Modifier.weight(1f)) { StaffPane(dao) }
+                Section.FOLLOWUP -> Box(Modifier.weight(1f)) { FollowUpPane(dao, parties, words, shop) }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {

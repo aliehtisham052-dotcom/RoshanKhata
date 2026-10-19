@@ -44,10 +44,11 @@ import java.time.ZoneOffset
 /** [icon] and [tile]: the phone's Home tile picture and its background colour for the same place. */
 enum class Section(val word: String, val icon: String, val tile: String) {
     KHATA(W.nav_khata, "ic_tile_khata", "tile_khata_bg"),
+    FOLLOWUP(W.followup_title, "ic_tile_followup", "tile_followup_bg"),
     CASHBOOK(W.nav_cashbook, "ic_tile_cashbook", "tile_cashbook_bg"),
     CHEQUES(W.nav_cheques, "ic_tile_cheques", "tile_cheques_bg"),
     PLANS(W.nav_plans, "ic_tile_plans", "tile_plans_bg"),
-    STAFF(W.staff_title, "ic_tile_followup", "tile_followup_bg"),
+    STAFF(W.staff_title, "ic_tile_card", "tile_card_bg"),
     BILLS(W.supplier_bills, "ic_tile_bills", "tile_bills_bg"),
     EXPIRY(W.tile_expiry, "ic_tile_expiring", "tile_stock_bg"),
     PRODUCTS(W.tile_products, "ic_tile_products", "tile_bills_bg"),

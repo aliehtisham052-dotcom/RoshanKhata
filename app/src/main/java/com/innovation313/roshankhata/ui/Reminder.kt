@@ -25,22 +25,8 @@ object Reminder {
      * 0092..., or with spaces and dashes. WhatsApp needs a bare international
      * number with no plus and no separators.
      */
-    fun toWhatsAppNumber(raw: String, defaultCountryCode: String = "92"): String? {
-        val digits = raw.filter { it.isDigit() }
-        if (digits.isEmpty()) return null
-
-        return when {
-            // 00 92 300 1234567
-            digits.startsWith("00") && digits.length > 4 -> digits.removePrefix("00")
-            // 92 300 1234567  (already international)
-            digits.startsWith(defaultCountryCode) && digits.length >= 12 -> digits
-            // 0300 1234567  (local, leading zero)
-            digits.startsWith("0") -> defaultCountryCode + digits.drop(1)
-            // 300 1234567  (local, no leading zero)
-            digits.length in 9..10 -> defaultCountryCode + digits
-            else -> digits
-        }
-    }
+    fun toWhatsAppNumber(raw: String, defaultCountryCode: String = "92"): String? =
+        com.innovation313.roshankhata.data.WhatsAppNumber.of(raw, defaultCountryCode)
 
     /**
      * The message body. Kept plain and polite — this goes to a real customer.
