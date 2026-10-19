@@ -45,6 +45,7 @@ enum class Section(val word: String) {
     BILLS(W.supplier_bills),
     EXPIRY(W.tile_expiry),
     PRODUCTS(W.tile_products),
+    RATES(W.rate_list_title),
     INVOICES(W.nav_invoice),
     REPORT(W.ledger_report_title),
     INSIGHTS(W.insights_title),
