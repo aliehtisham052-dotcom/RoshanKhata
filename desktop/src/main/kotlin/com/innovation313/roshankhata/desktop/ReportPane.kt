@@ -89,6 +89,7 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
             Box(Modifier.weight(1f)) { PaneTitle(word(W.ledger_report_title), period) }
             FillButton(word(W.export_excel), c.brandGreen, enabled = !invalid && entries.isNotEmpty()) {
                 val dialog = FileDialog(null as Frame?, words.text(W.export_excel), FileDialog.SAVE)
+                startIn(dialog, "Documents")
                 dialog.file = "RoshanKhata_Report_" + SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(Date()) + ".csv"
                 dialog.isVisible = true
                 val name = dialog.file ?: return@FillButton

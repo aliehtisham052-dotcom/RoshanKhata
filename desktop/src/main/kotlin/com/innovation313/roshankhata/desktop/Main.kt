@@ -214,6 +214,8 @@ private fun Book(
             HeaderButton(word(W.backup_now)) {
                 val dialog = FileDialog(null as Frame?, words.text(W.save_backup), FileDialog.SAVE)
                 // The phone's file name and .txt (WhatsApp sends .txt; the content is JSON).
+                // Documents, not the program's own folder: an update or uninstall must not take the backup with it.
+                startIn(dialog, "Documents")
                 dialog.file = "RoshanKhata_Backup_" +
                     java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(java.util.Date()) + ".txt"
                 dialog.isVisible = true
@@ -228,6 +230,8 @@ private fun Book(
             Spacer(Modifier.width(8.dp))
             HeaderButton(word(W.restore_from_file)) {
                 val dialog = FileDialog(null as Frame?, words.text(W.restore_from_file), FileDialog.LOAD)
+                // Downloads: where a backup sent from the phone (WhatsApp, a browser) lands.
+                startIn(dialog, "Downloads")
                 dialog.isVisible = true
                 val name = dialog.file ?: return@HeaderButton
                 val file = File(dialog.directory, name)
@@ -273,7 +277,9 @@ private fun Book(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
                         )
                         val q = query.trim().lowercase()
-                        val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }
+                        // Newest dealing first, as the phone's default (SortMode.RECENT): the customer
+                        // just served is at the top, not buried under A-Z.
+                        val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }.sortedByDescending { it.lastActivity }
                         Text(
                             plural(WP.customer_count, shown.size, shown.size),
                             Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
@@ -283,7 +289,7 @@ private fun Book(
                             items(shown, key = { it.id }) { p ->
                                 Row(
                                     Modifier.fillMaxWidth()
-                                        .background(if (p.id == selected) c.pageBg else c.surface)
+                                        .background(if (p.id == selected) c.brandGreen.copy(alpha = 0.28f) else c.surface)
                                         .clickable { selected = p.id }
                                         .padding(horizontal = 16.dp, vertical = 12.dp),
                                     verticalAlignment = Alignment.CenterVertically
@@ -613,6 +619,12 @@ private fun Book(
             )
         }
     }
+}
+
+/** Opens [dialog] in the user's own [folder] (Documents, Downloads) when it exists. */
+internal fun startIn(dialog: FileDialog, folder: String) {
+    val dir = File(System.getProperty("user.home"), folder)
+    if (dir.isDirectory) dialog.directory = dir.absolutePath
 }
 
 @Composable
