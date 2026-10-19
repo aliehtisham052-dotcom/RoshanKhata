@@ -79,7 +79,7 @@ class StatementPrint(
     private val muted = Color(0x6B, 0x6B, 0x66)
     private val line = Color(0xE4, 0xE2, 0xDC)
 
-    private fun pageCount(): Int =
+    fun pageCount(): Int =
         if (rows.size <= rowsFirstPage) 1 else 1 + (rows.size - rowsFirstPage + rowsPerPage - 1) / rowsPerPage
 
     /**

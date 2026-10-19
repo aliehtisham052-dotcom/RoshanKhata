@@ -1,0 +1,42 @@
+package com.innovation313.roshankhata.desktop
+
+import com.innovation313.roshankhata.data.LedgerCsv
+import com.innovation313.roshankhata.data.PartyWithBalance
+import java.awt.Graphics
+import java.awt.print.PageFormat
+import java.awt.print.Printable
+
+/**
+ * The whole book out of the computer (Phase 9b).
+ *
+ * [customersCsv]: every customer and supplier with phone and balance, for
+ * Excel — the same rules as the ledger CSV (BOM so Urdu names open right,
+ * quoted cells, CRLF, bare figures so SUM() works). Positive: they owe the
+ * shop; negative: the shop owes them, as in the book.
+ *
+ * [AllStatements]: many customers' statements as one print job, each
+ * starting on its own page — one trip to the printer, or one PDF.
+ */
+object BookExport {
+    fun customersCsv(parties: List<PartyWithBalance>, headers: List<String>): String {
+        val sb = StringBuilder("﻿")
+        fun row(cells: List<String>) {
+            cells.joinTo(sb, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }
+            sb.append("\r\n")
+        }
+        row(headers)
+        parties.sortedBy { it.name.lowercase() }.forEach { p ->
+            row(listOf(p.name, p.phone.orEmpty(), LedgerCsv.plain(p.balance)))
+        }
+        return sb.toString()
+    }
+}
+
+class AllStatements(private val sheets: List<StatementPrint>) : Printable {
+    private val starts: List<Int> = sheets.runningFold(0) { acc, s -> acc + s.pageCount() }
+
+    override fun print(graphics: Graphics, format: PageFormat, pageIndex: Int): Int {
+        val i = starts.indexOfLast { it <= pageIndex }.takeIf { it in sheets.indices } ?: return Printable.NO_SUCH_PAGE
+        return sheets[i].print(graphics, format, pageIndex - starts[i])
+    }
+}

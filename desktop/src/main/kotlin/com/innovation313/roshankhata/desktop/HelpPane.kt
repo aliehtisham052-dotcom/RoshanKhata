@@ -49,6 +49,18 @@ fun HelpPane(words: Words) {
     )
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         PaneTitle(word(W.help_support), null)
+        // The keyboard shortcuts, named with the app's own words for what they do.
+        Column(Modifier.widthIn(max = 760.dp).fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(14.dp)) {
+            listOf(
+                "F1" to word(W.nav_khata), "F2" to word(W.you_gave), "F3" to word(W.you_got),
+                "Ctrl + N" to word(W.add_party), "Ctrl + P" to word(W.statement_pdf)
+            ).forEach { (k, what) ->
+                androidx.compose.foundation.layout.Row(Modifier.padding(vertical = 3.dp)) {
+                    Text(k, Modifier.widthIn(min = 90.dp), color = c.brandGreenText, fontWeight = FontWeight.Bold)
+                    Text(what, color = c.ink)
+                }
+            }
+        }
         Text(word(W.help_questions), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         faqs.forEachIndexed { i, (q, a) ->
             Column(
