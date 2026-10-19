@@ -56,8 +56,23 @@ No account, no server, no ads. Everything stays on the phone.
   anything is written). Daily copies can also go to a chosen folder (USB,
   Google Drive for Desktop), rewritten on open and on close. Receipts print on
   a Windows-installed thermal printer as an ESC/POS picture (`ThermalReceipt`,
-  raw through the spooler; not yet tried on a real printer). Not on Windows yet: Business Card, Poster, invoice
-  templates, Google Drive, voice entry.
+  raw through the spooler; not yet tried on a real printer). Bills and invoices
+  are edited (`editSupplierBill`, `saveBillLine`, `updateInvoiceWithItems`);
+  sales carry rate type, paid-now pairing (`recordCashForSale`), a batch and
+  the payment day (Party.harvestPromise); Expiring traces a batch to its buyers.
+  A customer card's QR typed by a USB scanner opens that customer.
+  **The phone's printed designs run unchanged on the computer**: invoices
+  (InvoicePdfExport, InvoiceTemplateKit) and business cards (CardTemplates,
+  CardGlyphs, CardLogo) are COPIED by `scripts/gen_desktop_invoice.py` and
+  `scripts/gen_desktop_cards.py` (Strings CI fails if stale — re-run after
+  touching the phone's files) and drawn on `desktop/.../gfx`, a small
+  android.graphics stand-in over Java2D. Proof pictures of every design go
+  to the desktop-test release. Shop pictures (logo, signature, stamp, QR) and
+  photos live per computer (the text backup carries none). The MSI's Java
+  runtime has only the modules in desktop/build.gradle.kts (no java.prefs).
+  Not on Windows: Poster (Filament 3D heroes, StaticLayout), voice entry
+  (no free offline Urdu recognition), Google Drive sign-in (the backup
+  folder can be a Google Drive for Desktop folder instead).
 
 ### The shared module (KMP)
 
