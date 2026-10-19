@@ -2891,4 +2891,22 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="entry_due_none">Adaigi ki tareekh: shamil karein</string>
     <string name="entry_due_set">Adaigi ki tareekh: %1$s</string>
     <string name="entry_due_in_days">%1$s din mein · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">Kisi folder mein bhi copy rakhein</string>
+    <string name="auto_folder_help">USB ya is computer par Google Drive ka folder chunein. Har din ki copy wahan bhi mehfooz hogi, taake computer kharab ya gum ho jaye tab bhi khata mehfooz rahe.</string>
+    <string name="auto_folder_choose">Folder chunein</string>
+    <string name="auto_folder_stop">Copy band karein</string>
+    <string name="auto_folder_none">Abhi koi folder nahi chuna gaya.</string>
+    <string name="auto_folder_last">Wahan aakhri copy: %1$s</string>
+    <string name="auto_folder_missing">Ye folder abhi dastiyab nahi. USB lagayein, ya koi aur folder chunein.</string>
+    <string name="import_csv">Customers import karein</string>
+    <string name="import_csv_help">Kisi doosri khata app se customers layein: naam, phone aur balance wali CSV file. Har customer apne balance ke saath aik ibtidai entry ke taur par aayega.</string>
+    <string name="import_csv_found">File mein customers: %1$d · kul %2$s</string>
+    <string name="import_csv_skipped">Pehle se khate mein, jon ke ton chhor diye: %1$d</string>
+    <string name="import_csv_sign">Is file mein musbat balance ka matlab hai:</string>
+    <string name="import_csv_owes_me">Unhon ne mujhe dena hai</string>
+    <string name="import_csv_i_owe">Main ne unhein dena hai</string>
+    <string name="import_csv_go">Inhein le aayein</string>
+    <string name="import_csv_done">Customers shamil huay: %1$d</string>
+    <string name="import_csv_empty">Is file se koi customer nahi parha ja saka. Is mein kam az kam naamon ka aik column hona chahiye.</string>
 </resources>

@@ -3079,4 +3079,22 @@
     <string name="entry_due_none">تاريخ السداد: أضف تاريخًا</string>
     <string name="entry_due_set">تاريخ السداد: %1$s</string>
     <string name="entry_due_in_days">خلال %1$s يومًا · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">انسخ أيضًا إلى مجلد</string>
+    <string name="auto_folder_help">اختر ذاكرة USB أو مجلد Google Drive على هذا الحاسوب. ستُحفظ نسخة كل يوم هناك أيضًا، فيبقى الدفتر سليمًا حتى لو ضاع هذا الحاسوب أو تعطّل.</string>
+    <string name="auto_folder_choose">اختر مجلدًا</string>
+    <string name="auto_folder_stop">أوقف النسخ</string>
+    <string name="auto_folder_none">لم يُختر أي مجلد بعد.</string>
+    <string name="auto_folder_last">آخر نسخة هناك: %1$s</string>
+    <string name="auto_folder_missing">لا يمكن الوصول إلى هذا المجلد الآن. أدخل ذاكرة USB أو اختر مجلدًا آخر.</string>
+    <string name="import_csv">استيراد العملاء</string>
+    <string name="import_csv_help">انقل العملاء من تطبيق دفتر آخر: ملف CSV فيه الاسم والهاتف والرصيد. يُضاف كل عميل برصيده كقيد افتتاحي واحد.</string>
+    <string name="import_csv_found">العملاء في الملف: %1$d · المجموع %2$s</string>
+    <string name="import_csv_skipped">موجودون في الدفتر من قبل، تُركوا كما هم: %1$d</string>
+    <string name="import_csv_sign">في هذا الملف، الرصيد الموجب يعني:</string>
+    <string name="import_csv_owes_me">هم مدينون لي</string>
+    <string name="import_csv_i_owe">أنا مدين لهم</string>
+    <string name="import_csv_go">أضفهم</string>
+    <string name="import_csv_done">تمت إضافة العملاء: %1$d</string>
+    <string name="import_csv_empty">تعذّر قراءة أي عميل من هذا الملف. يجب أن يحتوي على عمود للأسماء على الأقل.</string>
 </resources>

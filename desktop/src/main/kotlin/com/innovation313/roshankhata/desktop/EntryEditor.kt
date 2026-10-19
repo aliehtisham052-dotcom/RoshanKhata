@@ -55,7 +55,8 @@ fun EntryEditor(
     existingItem: EntryItem?,
     onSave: (EntryDraft) -> Unit,
     onCancel: () -> Unit,
-    onDelete: (() -> Unit)? = null
+    onDelete: (() -> Unit)? = null,
+    onPrint: (() -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     var amountText by remember { mutableStateOf(existing?.amount?.let { Calc.trim(it) }.orEmpty()) }
@@ -125,6 +126,8 @@ fun EntryEditor(
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             if (onDelete != null) TextButton(onDelete) { Text(word(W.delete), color = c.owedToMe) }
+            // The saved entry on the thermal printer (Phase 9e); a new one is printed once saved.
+            if (onPrint != null) TextButton(onPrint) { Text(word(W.print_receipt), color = c.brandGreenText) }
             Spacer(Modifier.weight(1f))
             TextButton(onCancel) { Text(word(W.cancel)) }
             FillButton(word(W.save), if (isGiven) c.gaveFill else c.brandGreen, enabled = amount != null) {

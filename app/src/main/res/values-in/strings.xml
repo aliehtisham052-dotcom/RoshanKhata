@@ -2888,4 +2888,22 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="entry_due_none">Jatuh tempo: tambahkan tanggal</string>
     <string name="entry_due_set">Jatuh tempo: %1$s</string>
     <string name="entry_due_in_days">Dalam %1$s hari · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">Salin juga ke sebuah folder</string>
+    <string name="auto_folder_help">Pilih flashdisk USB, atau folder Google Drive di komputer ini. Salinan setiap hari juga disimpan di sana, jadi buku kas tetap aman meski komputer ini hilang atau rusak.</string>
+    <string name="auto_folder_choose">Pilih folder</string>
+    <string name="auto_folder_stop">Hentikan penyalinan</string>
+    <string name="auto_folder_none">Belum ada folder yang dipilih.</string>
+    <string name="auto_folder_last">Salinan terakhir di sana: %1$s</string>
+    <string name="auto_folder_missing">Folder itu tidak dapat dijangkau sekarang. Pasang flashdisk USB, atau pilih folder lain.</string>
+    <string name="import_csv">Impor pelanggan</string>
+    <string name="import_csv_help">Bawa pelanggan dari aplikasi buku kas lain: file CSV berisi nama, telepon, dan saldo. Setiap pelanggan masuk dengan saldonya sebagai satu catatan awal.</string>
+    <string name="import_csv_found">Pelanggan dalam file: %1$d · total %2$s</string>
+    <string name="import_csv_skipped">Sudah ada di buku kas, dibiarkan apa adanya: %1$d</string>
+    <string name="import_csv_sign">Dalam file ini, saldo positif berarti:</string>
+    <string name="import_csv_owes_me">Mereka berutang kepada saya</string>
+    <string name="import_csv_i_owe">Saya berutang kepada mereka</string>
+    <string name="import_csv_go">Masukkan mereka</string>
+    <string name="import_csv_done">Pelanggan ditambahkan: %1$d</string>
+    <string name="import_csv_empty">Tidak ada pelanggan yang dapat dibaca dari file ini. File perlu setidaknya satu kolom nama.</string>
 </resources>

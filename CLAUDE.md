@@ -48,7 +48,15 @@ No account, no server, no ads. Everything stays on the phone.
   Bump `packageVersion` in `desktop/build.gradle.kts` for every MSI the owner
   installs, or Windows will not upgrade it; the MSIX takes its version from
   the same line. Material's own colours come from `RoshanTheme` (dark mode
-  once hid typed text). Entries carry date, goods, payment method, Qarz-e-Hasna and recovery; the bin purges after 30 days. Not on Windows yet: Business Card, Poster, invoice
+  once hid typed text). Entries carry date, goods, payment method, Qarz-e-Hasna and recovery; the bin purges after 30 days. Counter shortcuts: F1 Khata, F2/F3 gave/got,
+  Ctrl+N, Ctrl+P. The Khata page exports every party to Excel (CSV), prints
+  every statement as one job, and imports customers from another app's CSV
+  (`CsvImport`: name, phone, balance -> one opening entry each, in one
+  `importOpeningBalances` transaction; the owner picks the file's sign before
+  anything is written). Daily copies can also go to a chosen folder (USB,
+  Google Drive for Desktop), rewritten on open and on close. Receipts print on
+  a Windows-installed thermal printer as an ESC/POS picture (`ThermalReceipt`,
+  raw through the spooler; not yet tried on a real printer). Not on Windows yet: Business Card, Poster, invoice
   templates, Google Drive, voice entry.
 
 ### The shared module (KMP)

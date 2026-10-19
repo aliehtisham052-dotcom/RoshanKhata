@@ -65,6 +65,7 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun softDeletePlan(id: Long, now: Long): Unit = refused()
     override suspend fun insertInstallment(item: Installment): Long = refused()
     override suspend fun recordPlanPayment(planId: Long, partyId: Long, amount: Double, paidBefore: Double, entryNote: String, note: String?, now: Long): Long = refused()
+    override suspend fun importOpeningBalances(rows: List<CsvImport.Row>, note: String, now: Long): Int = refused()
     override suspend fun insertBill(bill: SupplierBill): Long = refused()
     override suspend fun updateBill(bill: SupplierBill): Unit = refused()
     override suspend fun softDeleteBill(id: Long, now: Long): Unit = refused()

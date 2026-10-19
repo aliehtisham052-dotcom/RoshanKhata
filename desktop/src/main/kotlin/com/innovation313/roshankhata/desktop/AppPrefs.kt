@@ -16,9 +16,22 @@ class AppPrefs(private val file: File) {
     /** The chosen language's tag ("ur", "ur-Latn"...), or null when never chosen. */
     fun language(): String? = props.getProperty(KEY_LANGUAGE)?.takeIf { it.isNotBlank() }
 
+    /** The owner's second place for the daily copies (USB, Google Drive folder), or null. */
+    fun backupFolder(): File? = props.getProperty(KEY_BACKUP_FOLDER)?.takeIf { it.isNotBlank() }?.let(::File)
+
+    @Synchronized
+    fun setBackupFolder(folder: File?) {
+        if (folder == null) props.remove(KEY_BACKUP_FOLDER) else props.setProperty(KEY_BACKUP_FOLDER, folder.absolutePath)
+        save()
+    }
+
     @Synchronized
     fun setLanguage(tag: String) {
         props.setProperty(KEY_LANGUAGE, tag)
+        save()
+    }
+
+    private fun save() {
         file.parentFile?.mkdirs()
         val tmp = File(file.path + ".tmp")
         tmp.writer(Charsets.UTF_8).use { props.store(it, "Roshan Khata") }
@@ -27,5 +40,6 @@ class AppPrefs(private val file: File) {
 
     private companion object {
         const val KEY_LANGUAGE = "app_language"
+        const val KEY_BACKUP_FOLDER = "backup_folder"
     }
 }
