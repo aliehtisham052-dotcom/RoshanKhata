@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,6 +34,8 @@ import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.WP
+import com.innovation313.roshankhata.words.plural
 import com.innovation313.roshankhata.words.word
 
 /**
@@ -158,6 +162,89 @@ private fun RecordList(
             Text(emptyText, Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
         } else {
             LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp)), content = rows)
+        }
+    }
+}
+
+/** Stock expiring within the phone's warning window (ExpiryWindow), soonest first; expired in red. */
+@Composable
+fun ExpiryPane(dao: KhataDao) {
+    val c = LocalRoshanColors.current
+    val cutoff = remember { System.currentTimeMillis() + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS }
+    val batches by remember { dao.observeExpiringBatches(cutoff) }.collectAsState(emptyList())
+    RecordList(word(W.expiring_stock), word(W.expiring_subtitle), batches.isEmpty(), word(W.no_expiring)) {
+        items(batches, key = { it.itemId }) { b ->
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(b.productName, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        (b.batchNumber?.takeIf { it.isNotBlank() }?.let { word(W.batch_label, it) } ?: word(W.batch_none)) +
+                            "  ·  " + Format.qty(b.quantity, b.unit),
+                        color = c.inkSoft, fontSize = 13.sp
+                    )
+                    Text(
+                        b.billNumber?.takeIf { it.isNotBlank() }?.let { word(W.from_supplier_bill, b.partyName, it) }
+                            ?: word(W.from_supplier, b.partyName),
+                        color = c.textMuted, fontSize = 12.sp
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        when {
+                            b.hasExpired -> plural(WP.expired_days, -b.daysLeft, -b.daysLeft)
+                            b.daysLeft == 0 -> word(W.expires_today)
+                            else -> plural(WP.expires_days, b.daysLeft, b.daysLeft)
+                        },
+                        color = if (b.daysLeft <= 0) c.owedToMe else c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold
+                    )
+                    Text(Format.dateOnly(b.expiryDate), color = c.textMuted, fontSize = 12.sp)
+                }
+            }
+            HorizontalDivider(color = c.pageBg)
+        }
+    }
+}
+
+/** Payment plans: paid of total, what is left, the next date (overdue in red); complete ones faded. */
+@Composable
+fun PlansPane(dao: KhataDao) {
+    val c = LocalRoshanColors.current
+    val plans by remember { dao.observePlans() }.collectAsState(emptyList())
+    RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(W.no_plans)) {
+        items(plans, key = { it.id }) { p ->
+            Column(
+                Modifier.fillMaxWidth().alpha(if (p.isClosed) 0.6f else 1f).padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(Format.name(p.partyName), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(word(if (p.isClosed) W.plan_closed else W.plan_open), color = if (p.isClosed) c.iOwe else c.ink, fontSize = 13.sp)
+                }
+                LinearProgressIndicator(
+                    progress = { p.percentPaid / 100f },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = c.brandGreen,
+                    trackColor = c.pageBg
+                )
+                Text(
+                    word(W.plan_paid, Format.money(p.paidSoFar), Format.money(p.totalAmount)) + "  ·  " +
+                        word(W.plan_remaining, Format.money(p.remaining)),
+                    color = c.inkSoft, fontSize = 13.sp
+                )
+                if (!p.isClosed) {
+                    val due = p.nextDueDate
+                    val overdue = due != null && due < System.currentTimeMillis()
+                    Text(
+                        when {
+                            due == null -> word(W.plan_next_due_none)
+                            overdue -> word(W.plan_overdue, Format.dateOnly(due))
+                            else -> word(W.plan_next_due, Format.dateOnly(due))
+                        },
+                        color = if (overdue) c.owedToMe else c.textMuted, fontSize = 12.sp
+                    )
+                }
+            }
+            HorizontalDivider(color = c.pageBg)
         }
     }
 }
