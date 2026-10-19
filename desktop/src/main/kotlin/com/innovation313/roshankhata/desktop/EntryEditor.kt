@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Calc
@@ -66,6 +67,7 @@ fun EntryEditor(
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var qarz by remember { mutableStateOf(existing?.isQarzeHasna ?: false) }
     var doubtful by remember { mutableStateOf(existing?.recovery == Recovery.DOUBTFUL) }
+    var method by remember { mutableStateOf(existing?.paymentMethod) }
     var picking by remember { mutableStateOf(false) }
     val amount = Calc.evalAmount(amountText)
     val q = Calc.evalAmount(qty)
@@ -97,6 +99,20 @@ fun EntryEditor(
         }
         OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
 
+        if (!isGiven) {
+            // How it was paid: null unless chosen, as on the phone. The day's cash count
+            // (Cashbook, Close the day) counts only khata money marked Cash.
+            Text(word(W.payment_method_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                listOf(
+                    PaymentMethod.CASH to W.payment_method_cash, PaymentMethod.BANK to W.payment_method_bank,
+                    PaymentMethod.CHEQUE to W.payment_method_cheque, PaymentMethod.ONLINE to W.payment_method_online
+                ).forEach { (m, label) ->
+                    if (m == method) FillButton(word(label), c.brandGreen) { method = null }
+                    else TextButton({ method = m }) { Text(word(label), color = c.brandGreenText) }
+                }
+            }
+        }
         if (isGiven) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(qarz, { qarz = it })
@@ -127,7 +143,8 @@ fun EntryEditor(
                             timestamp = at,
                             note = note.trim().ifEmpty { null },
                             isQarzeHasna = isGiven && qarz,
-                            recovery = if (isGiven && doubtful) Recovery.DOUBTFUL else Recovery.CERTAIN
+                            recovery = if (isGiven && doubtful) Recovery.DOUBTFUL else Recovery.CERTAIN,
+                            paymentMethod = if (isGiven) base.paymentMethod else method
                         ),
                         goods
                     )
