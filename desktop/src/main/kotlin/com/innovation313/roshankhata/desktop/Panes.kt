@@ -2,6 +2,8 @@ package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,7 +41,9 @@ enum class Section(val word: String) {
     KHATA(W.nav_khata),
     CASHBOOK(W.nav_cashbook),
     CHEQUES(W.nav_cheques),
+    PLANS(W.nav_plans),
     BILLS(W.supplier_bills),
+    EXPIRY(W.tile_expiry),
     PRODUCTS(W.tile_products),
     INVOICES(W.nav_invoice),
     REPORT(W.ledger_report_title),
@@ -50,7 +54,8 @@ enum class Section(val word: String) {
 @Composable
 fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier = Modifier) {
     val c = LocalRoshanColors.current
-    Column(modifier.width(190.dp).fillMaxHeight().background(c.surface).padding(vertical = 12.dp)) {
+    // Scrolls: ten sections can outgrow a 768-row laptop at 125% display scale.
+    Column(modifier.width(190.dp).fillMaxHeight().background(c.surface).verticalScroll(rememberScrollState()).padding(vertical = 12.dp)) {
         Section.entries.forEach { s ->
             val on = s == current
             Text(
@@ -59,7 +64,7 @@ fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier 
                     .padding(horizontal = 10.dp, vertical = 3.dp)
                     .background(if (on) c.brandGreen else Color.Transparent, RoundedCornerShape(10.dp))
                     .clickable { onPick(s) }
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
                 color = if (on) Color.White else c.ink,
                 fontSize = 16.sp,
                 fontWeight = if (on) FontWeight.Bold else FontWeight.Medium
