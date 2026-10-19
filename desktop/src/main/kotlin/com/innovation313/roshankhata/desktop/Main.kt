@@ -257,6 +257,9 @@ private fun Book(
             when (section) {
                 Section.CASHBOOK -> Box(Modifier.weight(1f)) { CashbookPane(dao) }
                 Section.CHEQUES -> Box(Modifier.weight(1f)) { ChequesPane(dao, parties, words) { reload++ } }
+                Section.BILLS -> Box(Modifier.weight(1f)) { BillsPane(dao) }
+                Section.PRODUCTS -> Box(Modifier.weight(1f)) { ProductsPane(dao) }
+                Section.INVOICES -> Box(Modifier.weight(1f)) { InvoicesPane(dao) }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {

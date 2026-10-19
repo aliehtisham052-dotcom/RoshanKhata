@@ -39,6 +39,9 @@ enum class Section(val word: String) {
     KHATA(W.nav_khata),
     CASHBOOK(W.nav_cashbook),
     CHEQUES(W.nav_cheques),
+    BILLS(W.supplier_bills),
+    PRODUCTS(W.tile_products),
+    INVOICES(W.nav_invoice),
     REPORT(W.ledger_report_title),
     SHOP(W.business_profile)
 }
