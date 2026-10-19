@@ -346,3 +346,48 @@ suspend fun saveBill(dao: KhataDao, b: NewBill, words: Words) {
         items = b.items
     )
 }
+
+/**
+ * Purchase rates (KMP Phase 7s), the phone's SupplierRatesActivity on the
+ * shared SupplierRates: what each supplier charged, product by product, the
+ * change on the bill before, and a cheaper supplier lately. "Needs a look"
+ * first; All shows everything.
+ */
+@Composable
+fun SupplierRatesPane(dao: KhataDao, reload: Int) {
+    val c = LocalRoshanColors.current
+    var rows by remember { mutableStateOf<List<com.innovation313.roshankhata.data.SupplierRates.Row>>(emptyList()) }
+    var watchOnly by remember { mutableStateOf(true) }
+    androidx.compose.runtime.LaunchedEffect(reload) {
+        rows = withContext(Dispatchers.IO) {
+            com.innovation313.roshankhata.data.SupplierRates.rows(dao.supplierRateLinesOnce(), System.currentTimeMillis())
+        }
+    }
+    val shown = if (watchOnly) rows.filter { it.needsLook } else rows
+    Column(Modifier.fillMaxSize()) {
+        Row(Modifier.padding(start = 20.dp, top = 20.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOf(true to W.sr_watch, false to W.filter_type_all).forEach { (watch, label) ->
+                if (watch == watchOnly) FillButton(word(label), c.brandGreen) { watchOnly = watch }
+                else androidx.compose.material3.TextButton({ watchOnly = watch }) { Text(word(label), color = c.brandGreenText) }
+            }
+        }
+        RecordList(word(W.sr_title), word(W.sr_subtitle), shown.isEmpty(), word(if (rows.isEmpty()) W.sr_none else W.sr_nothing_to_watch)) {
+            items(shown) { r ->
+                Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    val unit = com.innovation313.roshankhata.data.UnitWords.label(r.unit).takeIf { it.isNotEmpty() }
+                    Text(listOfNotNull(r.name, unit).joinToString(" · "), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(word(W.sr_last, Format.money(r.last.rate), r.last.supplierName, com.innovation313.roshankhata.data.DateWords.format("d MMM yyyy", r.last.date)),
+                        color = c.inkSoft, fontSize = 13.sp)
+                    val pct = String.format(java.util.Locale.US, "%.1f%%", kotlin.math.abs(r.percent))
+                    if (r.previous != null && r.change > 0.004) Text(word(W.sr_up, Format.money(r.change), pct), color = c.owedToMe, fontSize = 13.sp)
+                    if (r.previous != null && r.change < -0.004) Text(word(W.sr_down, Format.money(-r.change), pct), color = c.iOwe, fontSize = 13.sp)
+                    r.cheaperElsewhere?.let { q ->
+                        Text(word(W.sr_cheaper, q.supplierName, Format.money(q.rate), com.innovation313.roshankhata.data.DateWords.format("d MMM yyyy", q.date)),
+                            color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+                HorizontalDivider(color = c.pageBg)
+            }
+        }
+    }
+}
