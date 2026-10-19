@@ -34,7 +34,17 @@ class StatementPrint(
     private val shopName: String,
     private val partyName: String,
     private val partyPhone: String?,
-    entries: List<EntryWithItems>
+    entries: List<EntryWithItems>,
+    /** The balance carried in from before the period; 0 for the whole ledger. */
+    private val opening: Double = 0.0,
+    /** The period's first day, for "Opening balance (before ...)"; null for the whole ledger. */
+    private val periodFrom: Long? = null,
+    /**
+     * The whole account's balance, printed as the closing figure. A part-period
+     * total is not what the customer owes (the phone's ReportActivity rule);
+     * null: the running balance of the entries printed.
+     */
+    private val accountBalance: Double? = null
 ) : Printable {
 
     private class Row(val e: EntryWithItems, val running: Double)
@@ -45,20 +55,21 @@ class StatementPrint(
     private val closing: Double
 
     init {
-        var running = 0.0
+        var running = opening
         rows = entries.sortedWith(compareBy({ it.entry.timestamp }, { it.entry.id })).map {
             running += if (it.entry.isGiven) it.entry.amount else -it.entry.amount
             Row(it, running)
         }
         totalGave = entries.filter { it.entry.isGiven }.sumOf { it.entry.amount }
         totalGot = entries.filter { !it.entry.isGiven }.sumOf { it.entry.amount }
-        closing = running
+        closing = accountBalance ?: running
     }
 
     // A4 in points, the phone's margins.
     private val pageW = 595.0
     private val margin = 36.0
-    private val rowsFirstPage = 20
+    // One row fewer on the first page when the opening balance takes a line.
+    private val rowsFirstPage get() = if (periodFrom != null) 19 else 20
     private val rowsPerPage = 26
 
     private val navy = Color(0x1B, 0x2A, 0x4A)
@@ -163,6 +174,19 @@ class StatementPrint(
         g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
         y += 16
 
+        // The balance carried in, as the period's first line.
+        if (first && periodFrom != null) {
+            g.font = Font(Font.DIALOG, Font.PLAIN, 10)
+            g.color = muted
+            g.text(words.text(W.pdf_stmt_opening_before, Format.dateOnly(periodFrom)), xDate, y)
+            g.color = Color.BLACK
+            g.font = Font(Font.DIALOG, Font.BOLD, 10)
+            g.text(Format.money(opening), xBal, y, end = true)
+            y += 8
+            g.color = line
+            g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
+            y += 16
+        }
         val from = if (first) 0 else rowsFirstPage + (pageIndex - 1) * rowsPerPage
         val until = minOf(rows.size, if (first) rowsFirstPage else from + rowsPerPage)
         for (row in rows.subList(minOf(from, rows.size), until)) {
