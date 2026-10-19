@@ -1,6 +1,9 @@
 package com.innovation313.roshankhata.screens
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -63,5 +66,39 @@ val LocalRoshanColors = staticCompositionLocalOf { RoshanPalette.light }
 /** The colours for the theme the phone or computer is in (or the owner's choice, [dark]). */
 @Composable
 fun RoshanTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalRoshanColors provides if (dark) RoshanPalette.dark else RoshanPalette.light, content = content)
+    val colors = if (dark) RoshanPalette.dark else RoshanPalette.light
+    // Material's own parts (text boxes, dialogs, the date picker) take the same
+    // light or dark. Without this they stayed in Material's light default: on a
+    // computer in dark mode, typed text was near-black on the dark page and
+    // could not be seen (19 Oct 2026, the owner's laptop).
+    val scheme = if (dark) {
+        darkColorScheme(
+            primary = colors.brandGreenText,
+            onPrimary = Color(0xFF0B2A1A),
+            background = colors.pageBg,
+            onBackground = colors.ink,
+            surface = colors.surface,
+            onSurface = colors.ink,
+            onSurfaceVariant = colors.textMuted,
+            outline = colors.textMuted,
+            surfaceContainerHigh = colors.surface,
+            surfaceContainerHighest = colors.surface
+        )
+    } else {
+        lightColorScheme(
+            primary = colors.brandGreen,
+            onPrimary = Color.White,
+            background = colors.pageBg,
+            onBackground = colors.ink,
+            surface = colors.surface,
+            onSurface = colors.ink,
+            onSurfaceVariant = colors.textMuted,
+            outline = colors.textMuted,
+            surfaceContainerHigh = colors.surface,
+            surfaceContainerHighest = colors.surface
+        )
+    }
+    MaterialTheme(colorScheme = scheme) {
+        CompositionLocalProvider(LocalRoshanColors provides colors, content = content)
+    }
 }
