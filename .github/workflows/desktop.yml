@@ -106,4 +106,6 @@ jobs:
           [ -f RoshanKhata-Windows-store.msix ] && gh release upload desktop-test RoshanKhata-Windows-store.msix --clobber
           # The statement pictures from StatementPrintTest, to look at (lesson 16).
           for f in desktop/build/statement-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
+          # The ten invoice designs from InvoiceDesignsTest, to look at as well.
+          for f in desktop/build/invoice-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           gh release edit desktop-test --notes "Windows test build from ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not signed yet: Windows will warn before installing."

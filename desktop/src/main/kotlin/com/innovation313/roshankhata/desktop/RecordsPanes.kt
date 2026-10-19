@@ -222,7 +222,16 @@ fun ProductsPane(dao: KhataDao, words: Words) {
 }
 
 @Composable
-fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl: Boolean, shopName: String?, shopLine: String?) {
+fun InvoicesPane(
+    dao: KhataDao,
+    parties: List<PartyWithBalance>,
+    words: Words,
+    rtl: Boolean,
+    shopName: String?,
+    shopLine: String?,
+    /** What the phone's ten designs draw with: the words, the shop and its pictures (Phase 10). */
+    designs: () -> com.innovation313.roshankhata.desktop.invoice.Context
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val invoices by remember { dao.observeInvoices() }.collectAsState(emptyList())
@@ -247,8 +256,12 @@ fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, r
     fun print(id: Long) {
         scope.launch {
             val pair = withContext(Dispatchers.IO) { dao.getInvoice(id)?.let { it to dao.invoiceItems(id) } } ?: return@launch
+            // The invoice in the design it was made with — the phone's own drawing; the plain
+            // layout only if a design could not be drawn.
+            val doc = withContext(Dispatchers.IO) { com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), pair.first, pair.second) }
             StatementPrint.show(
-                InvoicePrint(words, rtl, shopName ?: words.text(W.app_name), shopLine, pair.first, pair.second),
+                doc?.let { com.innovation313.roshankhata.desktop.invoice.DocumentPrint(it) }
+                    ?: InvoicePrint(words, rtl, shopName ?: words.text(W.app_name), shopLine, pair.first, pair.second),
                 pair.first.invoiceNumber
             )
         }
@@ -258,6 +271,7 @@ fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, r
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 InvoiceForm(
                     parties = parties,
+                    preview = { inv, lines -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.picture(0, 0.8f) },
                     onSave = { inv, lines ->
                         adding = false
                         scope.launch {
@@ -275,6 +289,7 @@ fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, r
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 InvoiceForm(
                     parties = parties,
+                    preview = { i, l -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), i, l)?.picture(0, 0.8f) },
                     existing = inv,
                     existingLines = lines,
                     onSave = { updated, newLines ->

@@ -24,7 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import com.innovation313.roshankhata.data.ShopCalendar
+import com.innovation313.roshankhata.desktop.invoice.ProfileImages
 import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.words.W
@@ -37,7 +43,7 @@ import com.innovation313.roshankhata.words.word
  * one button, as on the phone.
  */
 @Composable
-fun ShopDetailsPane(settings: ShopSettings, onSaved: () -> Unit) {
+fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -> Unit) {
     val c = LocalRoshanColors.current
     // One "version" per save, so the fields re-read what was actually stored (trimmed, blanks to null).
     var version by remember { mutableStateOf(0) }
@@ -116,5 +122,55 @@ fun ShopDetailsPane(settings: ShopSettings, onSaved: () -> Unit) {
                 }
             }
         }
+        Spacer(Modifier.padding(top = 14.dp))
+        ProfilePictures(images)
+    }
+}
+
+/**
+ * The shop's four pictures for its invoices (Phase 10): logo, signature,
+ * stamp and payment QR. The text backup carries no pictures (the owner's
+ * own rule), so the computer keeps its own, one set per business.
+ */
+@Composable
+private fun ProfilePictures(images: ProfileImages) {
+    val c = LocalRoshanColors.current
+    var version by remember { mutableStateOf(0) }
+    var failed by remember { mutableStateOf(false) }
+    val chooseTitle = word(W.bp_add)
+    Column(
+        Modifier.widthIn(max = 720.dp).background(c.surface, RoundedCornerShape(14.dp)).padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(word(W.bp_seals_help), color = c.textMuted, fontSize = 12.sp)
+        listOf(
+            ProfileImages.Kind.LOGO to (W.bp_logo to W.bp_logo_help), ProfileImages.Kind.SIGNATURE to (W.signature to W.no_signature_yet),
+            ProfileImages.Kind.STAMP to (W.stamp to W.no_stamp_yet), ProfileImages.Kind.QR to (W.bp_qr to W.bp_qr_help)
+        ).forEach { (kind, texts) ->
+            val picture = remember(version, kind) { images.load(kind)?.image?.toComposeImageBitmap() }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(64.dp).background(c.pageBg, RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+                    picture?.let { Image(it, contentDescription = word(texts.first), modifier = Modifier.size(60.dp)) }
+                }
+                Column(Modifier.weight(1f).padding(start = 12.dp)) {
+                    Text(word(texts.first), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                    Text(word(texts.second), color = c.textMuted, fontSize = 12.sp)
+                }
+                TextButton({
+                    val dialog = java.awt.FileDialog(null as java.awt.Frame?, chooseTitle, java.awt.FileDialog.LOAD)
+                    startIn(dialog, "Pictures")
+                    dialog.setFilenameFilter { _, name -> name.lowercase().let { it.endsWith(".png") || it.endsWith(".jpg") || it.endsWith(".jpeg") || it.endsWith(".bmp") || it.endsWith(".gif") } }
+                    dialog.file = "*.png;*.jpg;*.jpeg"
+                    dialog.isVisible = true
+                    val name = dialog.file
+                    if (name != null) {
+                        failed = !images.set(kind, java.io.File(dialog.directory, name))
+                        version++
+                    }
+                }) { Text(word(if (picture == null) W.bp_add else W.bp_change), color = c.brandGreenText) }
+                if (picture != null) TextButton({ images.remove(kind); version++ }) { Text(word(W.delete), color = c.owedToMe) }
+            }
+        }
+        if (failed) Text(word(W.bp_logo_save_failed), color = c.owedToMe, fontSize = 13.sp)
     }
 }

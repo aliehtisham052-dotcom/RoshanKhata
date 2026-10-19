@@ -14,6 +14,7 @@ import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.NumberWords
+import com.innovation313.roshankhata.ui.amountInWords
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat

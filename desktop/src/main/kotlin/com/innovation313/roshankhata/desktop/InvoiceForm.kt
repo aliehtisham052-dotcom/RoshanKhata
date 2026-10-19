@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,7 +63,9 @@ fun InvoiceForm(
     onCancel: () -> Unit,
     /** A saved invoice to correct: its number, design and source stay; everything typed can change. */
     existing: Invoice? = null,
-    existingLines: List<InvoiceItem> = emptyList()
+    existingLines: List<InvoiceItem> = emptyList(),
+    /** The chosen design drawn with what is typed so far (its first page), or null. */
+    preview: (suspend (Invoice, List<InvoiceItem>) -> java.awt.image.BufferedImage?)? = null
 ) {
     val c = LocalRoshanColors.current
     fun pad(v: Double?) = v?.takeIf { it != 0.0 }?.let { Calc.trim(it) }.orEmpty()
@@ -76,6 +79,9 @@ fun InvoiceForm(
     var charge by remember { mutableStateOf(pad(existing?.additionalChargeAmount)) }
     var received by remember { mutableStateOf(pad(existing?.receivedAmount)) }
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
+    var templateId by remember { mutableStateOf(existing?.templateId ?: 1) }
+    var designMenu by remember { mutableStateOf(false) }
+    var picture by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
     var picking by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
     val needCustomer = word(W.invoice_customer_required)
@@ -104,6 +110,40 @@ fun InvoiceForm(
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton({ picking = true }) { Text(word(W.pick_invoice_date), color = c.brandGreenText) }
             Text(Format.dateOnly(date), color = c.ink, fontWeight = FontWeight.Bold)
+        }
+
+        // The design: the phone's ten, by name, and the first page as it will print.
+        androidx.compose.foundation.layout.Box {
+            TextButton({ designMenu = true }) {
+                Text(word(com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.NAMES.first { it.first == templateId }.second), color = c.brandGreenText)
+            }
+            androidx.compose.material3.DropdownMenu(designMenu, { designMenu = false }) {
+                com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.NAMES.forEach { (id, name) ->
+                    androidx.compose.material3.DropdownMenuItem(text = { Text(word(name)) }, onClick = { templateId = id; designMenu = false })
+                }
+            }
+        }
+        if (preview != null) {
+            androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, lines, discount, tax, chargeLabel, charge, received, note) {
+                kotlinx.coroutines.delay(400)
+                val draft = (existing ?: Invoice(customerName = "")).copy(
+                    templateId = templateId, customerName = customer.trim().ifEmpty { "\u2014" }, customerPhone = phone.trim().ifEmpty { null },
+                    invoiceDate = date, taxPercent = Calc.evalPad(tax)?.takeIf { it != 0.0 },
+                    discountPercent = Calc.evalPad(discount)?.takeIf { it != 0.0 },
+                    additionalChargeLabel = chargeLabel.trim().ifEmpty { null }, additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
+                    receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 }, note = note.trim().ifEmpty { null },
+                    invoiceNumber = existing?.invoiceNumber ?: "INV-\u2026"
+                )
+                picture = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+                    runCatching { preview(draft, lines) }.getOrNull()?.toComposeImageBitmap()
+                }
+            }
+            picture?.let {
+                androidx.compose.foundation.Image(
+                    it, contentDescription = null,
+                    modifier = Modifier.fillMaxWidth().heightIn(max = 520.dp).background(c.pageBg, RoundedCornerShape(8.dp)).padding(6.dp)
+                )
+            }
         }
 
         lines.forEachIndexed { i, l ->
@@ -148,6 +188,7 @@ fun InvoiceForm(
                     lines.isEmpty() -> problem = needItem
                     else -> onSave(
                         (existing ?: Invoice(customerName = "")).copy(
+                            templateId = templateId,
                             customerName = customer.trim(),
                             customerPhone = phone.trim().ifEmpty { null },
                             invoiceDate = date,

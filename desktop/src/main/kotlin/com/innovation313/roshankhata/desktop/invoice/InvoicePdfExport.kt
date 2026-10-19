@@ -1,0 +1,1232 @@
+// GENERATED from app/src/main/java/com/innovation313/roshankhata/data/InvoicePdfExport.kt
+// by scripts/gen_desktop_invoice.py. Do not edit: change the phone's file and re-run.
+package com.innovation313.roshankhata.desktop.invoice
+
+import com.innovation313.roshankhata.data.Currency
+import com.innovation313.roshankhata.data.DateWords
+import com.innovation313.roshankhata.data.Invoice
+import com.innovation313.roshankhata.data.InvoiceItem
+import com.innovation313.roshankhata.data.InvoiceTotals
+import com.innovation313.roshankhata.data.lineTotal
+import com.innovation313.roshankhata.data.totals
+import com.innovation313.roshankhata.desktop.gfx.Bitmap
+import com.innovation313.roshankhata.desktop.gfx.Canvas
+import com.innovation313.roshankhata.desktop.gfx.Color
+import com.innovation313.roshankhata.desktop.gfx.LinearGradient
+import com.innovation313.roshankhata.desktop.gfx.Paint
+import com.innovation313.roshankhata.desktop.gfx.PdfDocument
+import com.innovation313.roshankhata.desktop.gfx.Rect
+import com.innovation313.roshankhata.desktop.gfx.RectF
+import com.innovation313.roshankhata.desktop.gfx.Shader
+import com.innovation313.roshankhata.desktop.gfx.Typeface
+import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.ui.NumberWords
+import java.io.File
+import java.util.Date
+
+/**
+ * Renders a saved [Invoice] as a printable PDF, in whichever of the ten
+ * finalised template designs the invoice was made with. Two so far — see
+ * the class doc on [Invoice] for why a template is a print choice only and
+ * touches nothing about the ledger.
+ *
+ * Same mechanism as [PdfExport] (native android.graphics.pdf.PdfDocument,
+ * hand-drawn on a Canvas, no external library), on purpose: one PDF engine
+ * in this app, not two.
+ *
+ * The finalised HTML/CSS mockups use web fonts this app does not bundle
+ * (Sora, Fraunces, IBM Plex Mono, Playfair Display). Android's own
+ * sans-serif/serif/monospace families stand in for them here — chosen to
+ * keep each template's actual character (T1's bold grotesque headings, T10's
+ * monospace receipt feel), not to match the mockup pixel for pixel.
+ */
+object InvoicePdfExport {
+
+    private const val PAGE_W_A4 = 595
+    private const val PAGE_H_A4 = 842
+    private const val MARGIN = 40f
+
+    private val timeFmt get() = DateWords.formatter("h:mm a")
+
+    /**
+     * A money figure with thousand separators but no "Rs" — the mockups'
+     * own convention for a line item (the currency is established once, at
+     * the totals), reusing [Format.money]'s rounding rule rather than a
+     * second one that could drift from it.
+     */
+    private fun numberOnly(value: Double): String = Format.money(value).removePrefix(Currency.symbol).trim()
+
+    /**
+     * Draws [bmp] centred inside [box], scaled to fit without stretching —
+     * a signature is naturally wide and short, a stamp closer to square,
+     * and forcing either into a shape it isn't is what made an earlier
+     * version of this look cramped and distorted.
+     */
+    private fun drawBitmapFit(c: Canvas, bmp: Bitmap, box: RectF) {
+        if (box.width() <= 0f || box.height() <= 0f) return
+        val bmpAspect = bmp.width.toFloat() / bmp.height.toFloat()
+        val boxAspect = box.width() / box.height()
+        val w: Float
+        val h: Float
+        if (bmpAspect > boxAspect) {
+            w = box.width(); h = w / bmpAspect
+        } else {
+            h = box.height(); w = h * bmpAspect
+        }
+        val left = box.centerX() - w / 2f
+        val top = box.centerY() - h / 2f
+        PdfRtl.drawBitmap(c,
+            bmp, null,
+            Rect(left.toInt(), top.toInt(), (left + w).toInt(), (top + h).toInt()),
+            null
+        )
+    }
+
+    fun build(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        return when (invoice.templateId) {
+            2 -> buildBlackGold(context, invoice, items)
+            3 -> buildModernGradient(context, invoice, items)
+            4 -> buildGreenRetail(context, invoice, items)
+            5 -> buildMinimalSlate(context, invoice, items)
+            6 -> buildIndigoTech(context, invoice, items)
+            7 -> buildWarmOrange(context, invoice, items)
+            8 -> buildClassicCream(context, invoice, items)
+            9 -> buildCrimsonBold(context, invoice, items)
+            10 -> buildThermalReceipt(context, invoice, items)
+            else -> buildTealCorporate(context, invoice, items)
+        }
+    }
+
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun outputFile(context: Context, invoice: Invoice): File? = null
+
+    // ==================== T1 — Teal Corporate ====================
+
+    /**
+     * T1 "Teal Corporate" — the full-featured design, redrawn to the
+     * finalised mockup rather than approximated: a gradient header band with
+     * the shop monogram, Bill To and Invoice Details as two labelled
+     * columns, a real items table with a dark header row and zebra rows, a
+     * payment-info box beside a totals stack ending in a filled TOTAL bar,
+     * amount-in-words in its own tinted strip, and a bordered signature box.
+     *
+     * Palette is the mockup's own (see the invoice-templates spec): #0F2A2A
+     * ink, #0C6B6B primary into #12908C, #F1F8F7 box fill, #E4EDEC rules.
+     */
+    /**
+     * The full-featured design, built on [InvoiceTemplateKit] rather than
+     * drawing its own header/table/totals/signature — this IS the base the
+     * other eight templates are built on, so its own code is now the
+     * shared pieces plus this template's own palette and fonts, not a
+     * standalone 300-line function any more.
+     *
+     * Fonts and palette straight from the finalised mockup spec: Sora for
+     * headings, IBM Plex Mono for numbers and money; #0F2A2A ink, #0C6B6B
+     * into #12908C for the band, #F1F8F7 box fill, #E4EDEC rules.
+     */
+    private fun buildTealCorporate(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF0F2A2A.toInt(),
+            primary = 0xFF0C6B6B.toInt(),
+            primaryEnd = 0xFF0E7672.toInt(),
+            muted = 0xFF5E706F.toInt(),
+            ruleColor = 0xFFE4EDEC.toInt(),
+            boxFill = 0xFFF1F8F7.toInt(),
+            zebra = 0xFFF9FCFC.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.sora(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T2 — Black & Gold Executive ====================
+
+    /**
+     * The premium design from the spec — near-black sheet, gold rules and
+     * headings, Playfair Display for the serif headings a jeweller's
+     * letterhead wants, IBM Plex Mono for weights and money.
+     *
+     * Two spec details worth stating rather than silently following:
+     *
+     * The mockup lists a "Wazan" (weight) column. It is NOT drawn here,
+     * because there is no weight field on an invoice item to fill it —
+     * drawing an always-empty column would look broken. Weight is already
+     * expressible with what exists: quantity 12.5 with unit "gram" prints
+     * as "12.5 gram" in the Qty column, which is what a jeweller actually
+     * writes. A real weight field can be added later if the owner wants
+     * one separate from quantity.
+     *
+     * The mockup also says "no tax field". That is a description of the
+     * jeweller use-case, not a rule this template should enforce by
+     * hiding a number: a tax amount that is IN the grand total but not
+     * shown would make the arithmetic impossible to follow. A shop that
+     * never charges tax turns it off in Invoice Settings, which hides it
+     * everywhere including here — the correct place for that choice.
+     */
+    private fun buildBlackGold(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFFEDE3C8.toInt(),          // cream text ON the dark sheet
+            primary = 0xFFD4B15A.toInt(),      // gold
+            primaryEnd = 0xFFB08D3A.toInt(),   // deeper gold, for the band's gradient
+            muted = 0xFFA8926A.toInt(),
+            ruleColor = 0xFF37311F.toInt(),
+            boxFill = 0xFF1F1B14.toInt(),      // barely-lighter than the sheet, so the box reads without glowing
+            zebra = 0xFF1A1710.toInt(),
+            gradient = true,
+            pageBackground = 0xFF141310.toInt(),
+            // Gold band, near-black text on it — the one place white would
+            // be wrong on this template.
+            onPrimary = 0xFF141310.toInt(),
+            onPrimaryMuted = 0xFF3A2F16.toInt(),
+            // The table header is gold too, not the page's cream "ink".
+            tableHeaderFill = 0xFFD4B15A.toInt(),
+            onTableHeader = 0xFF141310.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.playfairDisplay(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            // Before anything else — a continuation page left white would
+            // be a jarring break in the middle of a dark document.
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T3 — Modern Gradient ====================
+
+    /**
+     * The bright, modern design from the spec — violet through magenta into
+     * pink across the header band, Manrope's rounded shapes for headings.
+     * Aimed at a salon or a newer shop rather than a wholesale trader.
+     *
+     * The spec describes this one as "no bank clutter, discount only, no
+     * tax". Neither is enforced by hiding data, for the same reason stated
+     * on T2: a shop that does not use tax or bank details simply has them
+     * unset, and every one of those blocks already prints only when it has
+     * a value. So an owner who wants the clean look gets it automatically,
+     * while an owner who deliberately entered a payment QR still sees it —
+     * rather than the template silently dropping something they set on
+     * purpose. Invoice Settings is where a feature gets turned off.
+     */
+    private fun buildModernGradient(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF1E1630.toInt(),
+            primary = 0xFF6D28D9.toInt(),      // violet
+            primaryEnd = 0xFFDB2777.toInt(),   // pink
+            primaryMid = 0xFFA21CAF.toInt(),   // magenta, the middle stop
+            muted = 0xFF6B6480.toInt(),
+            ruleColor = 0xFFEDE4F5.toInt(),
+            boxFill = 0xFFF7F0FB.toInt(),
+            zebra = 0xFFFBF7FD.toInt(),
+            // The table header takes the violet end of the sweep rather than
+            // the page's near-black ink, keeping the whole sheet in one
+            // family instead of a dark bar cutting across a bright design.
+            tableHeaderFill = 0xFF6D28D9.toInt(),
+            onPrimaryMuted = 0xFFF0D9FB.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.manrope(context),
+            headingBold = InvoiceFonts.manropeBold(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T4 — Green Retail ====================
+
+    /**
+     * The everyday shop counter design from the spec — a flat green band
+     * rather than a gradient, generous tints, aimed at a general store
+     * handing a bill across the counter.
+     *
+     * Its spec line is "Scan-to-Pay QR + Tax + JazzCash/EasyPaisa,
+     * compact". Every one of those already works through the shared kit
+     * and Business Profile — the QR and JazzCash row print whenever those
+     * are set, tax whenever it has a value. So this template does not add
+     * mechanism for them; it is the palette and typography that make it
+     * the retail-counter design rather than the wholesale one.
+     *
+     * FONT SUBSTITUTION, stated rather than hidden: the spec asks for
+     * Inter, which is not bundled. Manrope is used instead — the closest
+     * neutral sans of the four fonts that ARE bundled, and much nearer
+     * Inter than Sora's more geometric shapes. Bundling Inter as a fifth
+     * family is a small change if the difference ever matters.
+     */
+    private fun buildGreenRetail(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF123524.toInt(),
+            primary = 0xFF15803D.toInt(),
+            // Flat band, not a sweep: the spec calls this one compact and
+            // plain next to T3's bright gradient, so primaryEnd matches
+            // primary and gradient stays off.
+            primaryEnd = 0xFF15803D.toInt(),
+            muted = 0xFF5F7568.toInt(),
+            ruleColor = 0xFFDCE8E0.toInt(),
+            boxFill = 0xFFEAF6EE.toInt(),
+            zebra = 0xFFF4FAF6.toInt(),
+            gradient = false,
+            onPrimaryMuted = 0xFFF1FAF5.toInt(),
+            // Header bar in the same green as the band rather than the
+            // page's dark ink — one colour family across the sheet, the
+            // same reasoning T3 used for its violet bar.
+            tableHeaderFill = 0xFF15803D.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.manrope(context),
+            headingBold = InvoiceFonts.manropeBold(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T5 — Minimal Slate ====================
+
+    /**
+     * The lightest design of the ten — the spec's own framing is "saada &
+     * saaf", print-friendly, least ink. Aimed at a stationery or book shop
+     * printing a lot of bills on its own printer, where a full-colour band
+     * across every page is a real running cost, not just a look.
+     *
+     * That is why this is the one template with bandFilled = false: the
+     * letterhead is plain text over a hairline rather than a filled block.
+     * Zebra striping is switched off the same way, by setting it to the
+     * page colour — no code branch needed, the row fill simply becomes
+     * invisible. The table header keeps a light slate tint with dark text
+     * instead of a solid dark bar, and the TOTAL bar stays filled: it is
+     * small, and it is the one figure that should be impossible to miss.
+     */
+    private fun buildMinimalSlate(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF1E2530.toInt(),
+            primary = 0xFF334155.toInt(),
+            primaryEnd = 0xFF334155.toInt(),   // same value — no sweep on a flat design
+            muted = 0xFF5D6B80.toInt(),
+            ruleColor = 0xFFE8ECF1.toInt(),
+            boxFill = 0xFFF6F8FA.toInt(),
+            zebra = Color.WHITE,               // striping off, without a code branch
+            gradient = false,
+            bandFilled = false,
+            // No coloured band to sit on, so the letterhead text uses the
+            // page's own ink and muted colours.
+            onPrimary = 0xFF1E2530.toInt(),
+            onPrimaryMuted = 0xFF94A0B0.toInt(),
+            tableHeaderFill = 0xFFEDF1F5.toInt(),
+            onTableHeader = 0xFF1E2530.toInt(),
+            onTotalBar = Color.WHITE
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.sora(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T6 — Indigo Tech ====================
+
+    /**
+     * For a mobile or computer shop — indigo through to a lighter indigo,
+     * Sora's technical shapes for headings.
+     *
+     * The spec gives this template a Serial/IMEI column and a warranty box.
+     * NEITHER is drawn, for the same reason T2's Wazan column was not:
+     * there is no serial-number field and no warranty field on an invoice
+     * item to fill them, so both would print permanently empty, which looks
+     * broken rather than professional. A serial number is perfectly
+     * writable today in the item name ("Redmi 13C — IMEI 3517..."), and a
+     * warranty line belongs in Terms, which prints on every template
+     * already. Both become real columns the day the data model carries
+     * them, and the kit's ExtraColumn hook is waiting for exactly that.
+     */
+    private fun buildIndigoTech(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF1A1E3A.toInt(),
+            primary = 0xFF3730A3.toInt(),
+            primaryEnd = 0xFF5458E8.toInt(),
+            primaryMid = 0xFF4F46E5.toInt(),
+            muted = 0xFF6E739B.toInt(),
+            ruleColor = 0xFFE3E5F7.toInt(),
+            boxFill = 0xFFEEF0FE.toInt(),
+            zebra = 0xFFF8F9FF.toInt(),
+            tableHeaderFill = 0xFF3730A3.toInt(),
+            onPrimaryMuted = 0xFFE4E6FD.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.sora(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T7 — Warm Orange ====================
+
+    /**
+     * For a bakery or restaurant — a warm orange sweep, Manrope's rounded
+     * shapes, which suit food service better than anything sharper.
+     *
+     * The spec asks for a service charge and a table/order number. Neither
+     * needs new machinery: a service charge IS the additional-charge field
+     * (label it "Service Charge" and it prints in the totals exactly where
+     * it should), and a table or order number goes in the invoice number or
+     * the note. Adding parallel fields for those would duplicate what the
+     * invoice already carries.
+     */
+    private fun buildWarmOrange(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF3A2410.toInt(),
+            primary = 0xFFC2410C.toInt(),
+            primaryEnd = 0xFFC94D0D.toInt(),
+            primaryMid = 0xFFC2410C.toInt(),
+            muted = 0xFF8A6F55.toInt(),
+            ruleColor = 0xFFF6E3D3.toInt(),
+            boxFill = 0xFFFFF1E6.toInt(),
+            zebra = 0xFFFFFAF5.toInt(),
+            tableHeaderFill = 0xFFC2410C.toInt(),
+            onPrimaryMuted = 0xFFFFF1E8.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.manrope(context),
+            headingBold = InvoiceFonts.manropeBold(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T8 — Classic Cream ====================
+
+    /**
+     * For a consultant or a law office — a cream sheet, bronze rules, and
+     * Playfair Display's serif throughout.
+     *
+     * This is the only template with a centred letterhead: shop name,
+     * address, then INVOICE stacked down the middle rather than the usual
+     * name-left / INVOICE-right split. That arrangement is what makes a
+     * formal document read as formal, which is this design's entire
+     * purpose, so it is a real option on the shared header rather than
+     * something faked with spacing.
+     */
+    private fun buildClassicCream(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF2B2721.toInt(),
+            primary = 0xFF8A6D3B.toInt(),
+            primaryEnd = 0xFF8A6D3B.toInt(),
+            muted = 0xFF77633A.toInt(),
+            ruleColor = 0xFFE8DFCC.toInt(),
+            boxFill = 0xFFF5EFE1.toInt(),
+            zebra = 0xFFFAF6EC.toInt(),
+            gradient = false,
+            bandFilled = false,
+            centeredHeader = true,
+            pageBackground = 0xFFFBF8F1.toInt(),
+            // No filled band on this one, so the letterhead uses the page's
+            // own ink and bronze rather than light-on-colour.
+            onPrimary = 0xFF2B2721.toInt(),
+            onPrimaryMuted = 0xFFA8926A.toInt(),
+            tableHeaderFill = 0xFFF0E8D6.toInt(),
+            onTableHeader = 0xFF2B2721.toInt(),
+            onTotalBar = Color.WHITE
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.playfairDisplay(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T9 — Crimson Bold ====================
+
+    /**
+     * For a sports or garments shop — a flat crimson band over near-black
+     * ink, deliberately louder than the other nine.
+     *
+     * The spec gives this one a size/colour tag column. Not drawn, for the
+     * same reason as T6's IMEI column and T2's Wazan column: no such field
+     * exists on an invoice item, so it would print permanently empty. Size
+     * and colour are written in the item name today ("Shirt — L, Blue"),
+     * which is what a garments shop writes on paper anyway.
+     */
+    private fun buildCrimsonBold(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val palette = InvoiceTemplateKit.Palette(
+            ink = 0xFF2B1015.toInt(),
+            primary = 0xFFDC2626.toInt(),
+            primaryEnd = 0xFFDC2626.toInt(),
+            muted = 0xFF8A6A6E.toInt(),
+            ruleColor = 0xFFF2E2E4.toInt(),
+            boxFill = 0xFFFEE2E2.toInt(),
+            zebra = 0xFFFEF7F7.toInt(),
+            gradient = false,
+            tableHeaderFill = 0xFF2B1015.toInt(),
+            onPrimaryMuted = 0xFFFFF5F5.toInt()
+        )
+        val fonts = InvoiceTemplateKit.Fonts(
+            heading = InvoiceFonts.sora(context),
+            mono = InvoiceFonts.ibmPlexMono(context),
+            monoBold = InvoiceFonts.ibmPlexMonoBold(context)
+        )
+
+        val doc = PdfDocument()
+        val left = MARGIN
+        val right = PAGE_W_A4 - MARGIN
+
+        var pageNo = 1
+        var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+        var c = page.canvas
+        InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+
+        fun newPage(): Pair<Canvas, Float> {
+            doc.finishPage(page)
+            pageNo++
+            page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
+            c = page.canvas
+            InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            return c to bandY
+        }
+
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
+
+        val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+        ) { newPage() }
+        c = tableCanvas
+        y = tableY + 18f
+
+        val totals = invoice.totals(items)
+
+        if (y > PAGE_H_A4 - 240f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
+        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+
+        if (y > PAGE_H_A4 - 140f) {
+            val fresh = newPage()
+            c = fresh.first
+            y = fresh.second
+        }
+        y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
+
+        val finalState = drawMakerStrip(context, doc, page, c, y)
+        page = finalState.first
+        c = finalState.second
+
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    // ==================== T10 — Thermal Receipt ====================
+
+    /**
+     * The narrow 80mm-style receipt: monospace, centred, dashed dividers.
+     * No bank box (a thermal counter sale is cash-in-hand, not invoiced to
+     * an account) — discount and tax lines still show when set.
+     */
+    private fun buildThermalReceipt(context: Context, invoice: Invoice, items: List<InvoiceItem>): PdfDocument? {
+        val pageW = 226 // ~80mm at 72dpi
+        val pad = 16f
+
+        val totals = invoice.totals(items)
+
+        // Height is computed, not guessed — a thermal roll has no fixed page,
+        // and the alternative (a fixed too-short page) would silently cut the
+        // receipt off mid-item.
+        var estimatedH = 210f
+        estimatedH += items.size * 26f
+        if (BusinessProfile.strn(context) != null) estimatedH += 11f
+        if (invoice.dueDate != null) estimatedH += 13f
+        if (totals.discountAmount > 0) estimatedH += 12f
+        if (totals.taxAmount > 0) estimatedH += 12f
+        if (totals.additionalCharge > 0) estimatedH += 12f
+        if (invoice.receivedAmount != null) estimatedH += 24f
+        if (BusinessProfile.loadSignature(context) != null) estimatedH += 36f
+        // Amount-in-words wraps across roughly two lines for a typical
+        // total; a generous fixed budget here is safer than measuring the
+        // exact wrap in advance, given the page height has to be decided
+        // before any drawing happens.
+        estimatedH += 45f
+        val bankCount = listOfNotNull(
+            BusinessProfile.bankName(context), BusinessProfile.bankAccountTitle(context),
+            BusinessProfile.bankIban(context), BusinessProfile.bankJazzCash(context)
+        ).size
+        if (bankCount > 0 || BusinessProfile.hasQr(context)) {
+            estimatedH += 35f + bankCount * 12f
+            if (BusinessProfile.hasQr(context)) estimatedH += 70f
+        }
+        val footerLineCount = listOfNotNull(invoice.note, BusinessProfile.termsAndConditions(context)).size
+        if (footerLineCount > 0) estimatedH += 32f + footerLineCount * 24f
+        // The download banner at the very end: 10 above it, its own height, 6 below.
+        estimatedH += 16f + PdfBranding.COMPACT_BANNER_HEIGHT
+        val pageH = estimatedH.toInt().coerceAtLeast(400)
+
+        val doc = PdfDocument()
+        val page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(pageW, pageH, 1).create())
+        val c = page.canvas
+
+        val center = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            textAlign = Paint.Align.CENTER; color = Color.BLACK
+        }
+        val shopName = Paint(center).apply {
+            textSize = 12f; typeface = Typeface.create(InvoiceFonts.sora(context), Typeface.BOLD)
+        }
+        val shopSub = Paint(center).apply { textSize = 8f; color = 0xFF777777.toInt() }
+        val mono = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            typeface = InvoiceFonts.ibmPlexMono(context); textSize = 9f; color = Color.BLACK
+        }
+        val monoR = Paint(mono).apply { textAlign = Paint.Align.RIGHT }
+        val monoGrey = Paint(mono).apply { color = 0xFF555555.toInt() }
+        val monoGreyR = Paint(monoGrey).apply { textAlign = Paint.Align.RIGHT }
+        val monoBold = Paint(mono).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) }
+        val grandPaint = Paint(mono).apply {
+            typeface = InvoiceFonts.ibmPlexMonoBold(context); textSize = 11f
+        }
+        val grandPaintR = Paint(grandPaint).apply { textAlign = Paint.Align.RIGHT }
+        val dash = Paint().apply {
+            color = 0xFFBBBBBB.toInt(); strokeWidth = 0.7f
+            pathEffect = com.innovation313.roshankhata.desktop.gfx.DashPathEffect(floatArrayOf(2f, 2f), 0f)
+        }
+
+        val cx = pageW / 2f
+        var y = 22f
+        // The receipt's words in the app's language (see InvoiceTemplateKit.Labels).
+        val labels = InvoiceTemplateKit.Labels(context)
+
+        PdfRtl.drawText(c, BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata", cx, y, shopName)
+        BusinessProfile.businessAddress(context)?.let {
+            y += 12f
+            PdfRtl.drawText(c, it, cx, y, shopSub)
+        }
+        BusinessProfile.strn(context)?.let {
+            y += 11f
+            PdfRtl.drawText(c, "${BusinessProfile.taxLabel(context)}: $it", cx, y, shopSub)
+        }
+        BusinessProfile.businessPhone(context)?.let {
+            y += 11f
+            PdfRtl.drawText(c, it, cx, y, shopSub)
+        }
+
+        y += 16f
+        c.drawLine(pad, y, pageW - pad, y, dash)
+        y += 16f
+
+        PdfRtl.drawText(c, "${labels.invoiceNo}:", pad, y, mono)
+        PdfRtl.drawText(c, invoice.invoiceNumber, pageW - pad, y, monoR)
+        y += 13f
+        PdfRtl.drawText(c, "${labels.date}:", pad, y, mono)
+        PdfRtl.drawText(c, Format.dateOnly(invoice.invoiceDate), pageW - pad, y, monoR)
+        invoice.dueDate?.let {
+            y += 13f
+            PdfRtl.drawText(c, "${labels.dueDate}:", pad, y, mono)
+            PdfRtl.drawText(c, Format.dateOnly(it), pageW - pad, y, monoR)
+        }
+        y += 13f
+        PdfRtl.drawText(c, "${labels.time}:", pad, y, mono)
+        PdfRtl.drawText(c, timeFmt.format(Date(invoice.createdAt)), pageW - pad, y, monoR)
+
+        y += 16f
+        c.drawLine(pad, y, pageW - pad, y, dash)
+        y += 16f
+
+        items.forEach { item ->
+            PdfRtl.drawText(c, item.itemName, pad, y, monoBold)
+            y += 11f
+            PdfRtl.drawText(c,
+                "${Format.qty(item.quantity, item.unit)} × ${numberOnly(item.rate)}",
+                pad, y, monoGrey
+            )
+            PdfRtl.drawText(c, numberOnly(item.lineTotal), pageW - pad, y, monoGreyR)
+            y += 15f
+        }
+
+        c.drawLine(pad, y, pageW - pad, y, dash)
+        y += 16f
+
+        // Same rule as the A4 templates: only when something sits between it
+        // and the total, otherwise it just repeats the total.
+        if (InvoiceTemplateKit.showSubtotal(totals)) {
+            PdfRtl.drawText(c, labels.subtotal, pad, y, mono)
+            PdfRtl.drawText(c, numberOnly(totals.subtotal), pageW - pad, y, monoR)
+            y += 13f
+        }
+        if (totals.discountAmount > 0) {
+            PdfRtl.drawText(c, labels.discount, pad, y, mono)
+            PdfRtl.drawText(c, "-" + numberOnly(totals.discountAmount), pageW - pad, y, monoR)
+            y += 13f
+        }
+        if (totals.taxAmount > 0) {
+            PdfRtl.drawText(c, labels.tax, pad, y, mono)
+            PdfRtl.drawText(c, numberOnly(totals.taxAmount), pageW - pad, y, monoR)
+            y += 13f
+        }
+        if (totals.additionalCharge > 0) {
+            PdfRtl.drawText(c, invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: labels.extraCharges, pad, y, mono)
+            PdfRtl.drawText(c, numberOnly(totals.additionalCharge), pageW - pad, y, monoR)
+            y += 13f
+        }
+        y += 4f
+        c.drawLine(pad, y, pageW - pad, y, dash)
+        y += 15f
+        PdfRtl.drawText(c, labels.total, pad, y, grandPaint)
+        PdfRtl.drawText(c, Format.money(totals.grandTotal), pageW - pad, y, grandPaintR)
+        y += 12f
+        if (invoice.receivedAmount != null) {
+            PdfRtl.drawText(c, labels.received, pad, y, mono)
+            PdfRtl.drawText(c, numberOnly(totals.received), pageW - pad, y, monoR)
+            y += 13f
+            PdfRtl.drawText(c, labels.balanceDue, pad, y, monoBold)
+            PdfRtl.drawText(c, numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) })
+            y += 12f
+        }
+        c.drawLine(pad, y, pageW - pad, y, dash)
+        y += 16f
+        PdfRtl.drawText(c, "${labels.amountInWords}:", pad, y, Paint(mono).apply { textSize = 8f; color = 0xFF555555.toInt() })
+        y += 11f
+        // Wrapped by hand, not left to overflow the receipt's own width —
+        // the words for a large total are routinely longer than 226pt fits
+        // on one line, unlike every other value on this narrow page.
+        y = wrapMonoText(context, c, NumberWords.amountInWords(context, totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
+
+        val bank = listOfNotNull(
+            BusinessProfile.bankName(context)?.let { labels.bank to it },
+            BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
+            BusinessProfile.bankIban(context)?.let { "IBAN" to it },
+            BusinessProfile.bankJazzCash(context)?.let { (if (Currency.symbol == Currency.DEFAULT) "JazzCash" else context.getString(R.string.pay_wallet_label)) to it }
+        )
+        val qr = BusinessProfile.loadQr(context)
+        if (bank.isNotEmpty() || qr != null) {
+            y += 6f
+            c.drawLine(pad, y, pageW - pad, y, dash)
+            y += 16f
+            PdfRtl.drawText(c, labels.paymentInfo, cx, y, Paint(shopSub).apply { color = Color.BLACK; isFakeBoldText = true })
+            y += 13f
+            bank.forEach { (label, value) ->
+                PdfRtl.drawText(c, label, pad, y, monoGrey)
+                PdfRtl.drawText(c, value, pageW - pad, y, monoGreyR)
+                y += 12f
+            }
+            qr?.let {
+                y += 4f
+                val qrSize = 64f
+                drawBitmapFit(c, it, RectF(cx - qrSize / 2f, y, cx + qrSize / 2f, y + qrSize))
+                y += qrSize + 6f
+            }
+        }
+
+        val footerLines = listOfNotNull(
+            invoice.note?.takeIf { it.isNotBlank() },
+            BusinessProfile.termsAndConditions(context)
+        )
+        if (footerLines.isNotEmpty()) {
+            y += 6f
+            c.drawLine(pad, y, pageW - pad, y, dash)
+            y += 14f
+            PdfRtl.drawText(c, labels.terms, pad, y, Paint(mono).apply { textSize = 8f; isFakeBoldText = true })
+            y += 12f
+            footerLines.forEach {
+                y = wrapMonoText(context, c, it, pad, y, pageW - 2 * pad, 8f)
+                y += 3f
+            }
+        }
+
+        y += 6f
+        val availableW = pageW - 2 * pad
+        BusinessProfile.loadSignature(context)?.let { signature ->
+            val h = 30f
+            drawBitmapFit(c, signature, RectF(pad, y, pageW - pad, y + h))
+            y += h + 6f
+        }
+        BusinessProfile.loadStamp(context)?.let { stamp ->
+            val h = 40f
+            drawBitmapFit(c, stamp, RectF(cx - availableW / 4f, y, cx + availableW / 4f, y + h))
+            y += h + 10f
+        }
+
+        c.drawLine(pad, y, pageW - pad, y, dash)
+        y += 16f
+        PdfRtl.drawText(c, labels.thankYou, cx, y, shopSub)
+        y += 11f
+        PdfRtl.drawText(c, labels.visitAgain, cx, y, shopSub)
+        y += 10f
+        PdfBranding.drawDownloadBannerCompact(context, doc, c, pad, y, pageW - 2 * pad)
+
+        doc.finishPage(page)
+        return writeAndClose(doc, outputFile(context, invoice))
+    }
+
+    /**
+     * Word-wraps [text] across lines no wider than [maxWidth], left-aligned
+     * from [x] — for the thermal receipt's own narrow page, the one place
+     * on this template where a value routinely needs more than one line,
+     * unlike every fixed short label/value pair elsewhere on the receipt.
+     * Returns the y position after the last line drawn.
+     */
+    private fun wrapMonoText(context: Context, c: Canvas, text: String, x: Float, startY: Float, maxWidth: Float, size: Float): Float {
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            typeface = InvoiceFonts.ibmPlexMono(context); textSize = size; color = 0xFF333333.toInt()
+        }
+        var y = startY
+        val words = text.split(" ")
+        var line = StringBuilder()
+        for (word in words) {
+            val candidate = if (line.isEmpty()) word else "$line $word"
+            if (paint.measureText(candidate) > maxWidth && line.isNotEmpty()) {
+                PdfRtl.drawText(c, line.toString(), x, y, paint)
+                y += size + 3f
+                line = StringBuilder(word)
+            } else {
+                line = StringBuilder(candidate)
+            }
+        }
+        if (line.isNotEmpty()) {
+            PdfRtl.drawText(c, line.toString(), x, y, paint)
+            y += size + 3f
+        }
+        return y
+    }
+
+    // ==================== Shared ====================
+
+    /**
+     * The same maker's strip [PdfExport] carries — one mark, one place it is
+     * built, so the two renderers cannot drift into two different footers.
+     * Returns the page/canvas actually left open, since a strip that does
+     * not fit starts one more page than the caller had.
+     */
+    private fun drawMakerStrip(
+        context: Context,
+        doc: PdfDocument,
+        pageIn: PdfDocument.Page,
+        canvasIn: Canvas,
+        yIn: Float
+    ): Pair<PdfDocument.Page, Canvas> {
+        var page = pageIn
+        var c = canvasIn
+        // Sits at the foot of the page, where a footer belongs and where every
+        // other report the app prints (ledger, business, register, inspector)
+        // already puts it: PAGE_H - 96. It used to follow straight on from
+        // the signature, so on a short invoice it hung mid-page, stuck to the
+        // bill itself (owner's note, 30 Sep 2026).
+        val bandTop = PAGE_H_A4 - 96f
+        // Needs a little air above it; with no room left on this page it goes
+        // to the foot of the next one, as before.
+        if (yIn + 10f > bandTop) {
+            doc.finishPage(page)
+            page = PdfRtl.startPage(context, doc, 
+                PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, doc.pages.size + 1).create()
+            )
+            c = page.canvas
+        }
+
+        // The app's invitation: logo, a line, and a DOWNLOAD button that
+        // opens the Play listing (made tappable in writeAndClose).
+        PdfBranding.drawDownloadBanner(context, doc, c, MARGIN, bandTop, PAGE_W_A4 - 2 * MARGIN)
+
+        doc.finishPage(page)
+        return page to c
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun writeAndClose(doc: PdfDocument, file: File?): PdfDocument = doc
+}
