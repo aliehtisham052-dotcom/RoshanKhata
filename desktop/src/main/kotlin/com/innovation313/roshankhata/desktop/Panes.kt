@@ -65,6 +65,7 @@ enum class Section(val word: String, val icon: String, val tile: String) {
     ZAKAT(W.tile_zakat, "ic_tile_zakat", "tile_zakat_bg"),
     CALC(W.calculator, "ic_tile_calc", "tile_calc_bg"),
     DUPLICATES(W.duplicate_customers, "ic_tile_bin", "tile_bin_bg"),
+    DAILY(W.snapshots_title, "ic_tile_backup", "tile_backup_bg"),
     HELP(W.help_support, "ic_tile_insights", "tile_calc_bg"),
     SHOP(W.business_profile, "ic_tile_settings", "tile_settings_bg")
 }

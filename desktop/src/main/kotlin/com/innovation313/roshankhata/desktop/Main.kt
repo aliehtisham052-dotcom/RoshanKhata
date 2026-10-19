@@ -98,6 +98,9 @@ fun main() = application {
     val db = remember(active) { DesktopDatabase.open(businesses.dbFile(active)) }
     DisposableEffect(db) { onDispose { db.close() } }
     val settings = remember(active) { FileShopSettings(businesses.settingsFile(active)).also { it.refreshDisplay() } }
+    // Once a day, a checked copy of the open book (the phone's Snapshots); a failure never stops the app.
+    val dailyDir = remember(active) { DailyCopies.dir(home, active) }
+    LaunchedEffect(db) { runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir) } }
     // The app's language: the owner's choice (app.properties), else the computer's.
     val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
@@ -126,7 +129,8 @@ fun main() = application {
                         words = words,
                         businesses = businesses,
                         activeBusiness = active,
-                        onSwitch = { id -> businesses.switchTo(id); active = id }
+                        onSwitch = { id -> businesses.switchTo(id); active = id },
+                        dailyDir = dailyDir
                     ) }
                 }
             }
@@ -185,7 +189,8 @@ private fun Book(
     words: Words,
     businesses: Businesses,
     activeBusiness: Long,
-    onSwitch: (Long) -> Unit
+    onSwitch: (Long) -> Unit,
+    dailyDir: File
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -312,6 +317,7 @@ private fun Book(
                 Section.HELP -> Box(Modifier.weight(1f)) { HelpPane(words) }
                 Section.REGISTER -> Box(Modifier.weight(1f)) { RegisterPane(dao, words, rtl, shop, reload) }
                 Section.STOCK -> Box(Modifier.weight(1f)) { StockPane(dao, words, rtl, shop, reload) }
+                Section.DAILY -> Box(Modifier.weight(1f)) { DailyCopiesPane(dao, settings, dailyDir) { shop = shopName(); reload++ } }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
