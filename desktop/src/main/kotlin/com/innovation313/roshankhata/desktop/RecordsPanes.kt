@@ -143,6 +143,8 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     val shown = products.filter { NameSearch.matches(it.name, it.company, q) }
     var buyersOf by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
     buyersOf?.let { ProductBuyers(dao, words, it) { buyersOf = null } }
+    var editing by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
+    editing?.let { ProductEditDialog(dao, it) { editing = null } }
     Column(Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = query, onValueChange = { query = it }, singleLine = true,
@@ -152,9 +154,15 @@ fun ProductsPane(dao: KhataDao, words: Words) {
         RecordList(word(W.tile_products), null, shown.isEmpty(), word(W.no_products)) {
             items(shown, key = { it.id }) { p ->
                 Column(Modifier.fillMaxWidth().clickable { buyersOf = p }.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                    Text(p.name, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    val sub = listOfNotNull(p.company, p.category, p.defaultUnit).filter { it.isNotBlank() }
-                    if (sub.isNotEmpty()) Text(sub.joinToString("  ·  "), color = c.textMuted, fontSize = 13.sp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(p.name, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            val sub = listOfNotNull(p.company, p.category, p.defaultUnit).filter { it.isNotBlank() }
+                            if (sub.isNotEmpty()) Text(sub.joinToString("  ·  "), color = c.textMuted, fontSize = 13.sp)
+                        }
+                        p.salePrice?.let { Text(Format.money(it), color = c.ink, fontSize = 14.sp) }
+                        androidx.compose.material3.TextButton({ editing = p }) { Text(word(W.edit), color = c.brandGreenText) }
+                    }
                 }
                 HorizontalDivider(color = c.pageBg)
             }
