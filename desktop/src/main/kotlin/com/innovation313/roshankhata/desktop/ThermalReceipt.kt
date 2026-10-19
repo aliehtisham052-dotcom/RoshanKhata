@@ -21,7 +21,6 @@ import java.awt.font.TextAttribute
 import java.awt.font.TextLayout
 import java.awt.image.BufferedImage
 import java.text.AttributedString
-import java.util.prefs.Preferences
 import javax.print.DocFlavor
 import javax.print.PrintServiceLookup
 import javax.print.SimpleDoc
@@ -109,10 +108,12 @@ object ThermalReceipt {
         true
     }.getOrDefault(false)
 
-    private val prefs: Preferences? = runCatching { Preferences.userRoot().node("roshankhata") }.getOrNull()
+    // A small file beside the books, not java.util.prefs: the MSI's trimmed Java runtime
+    // carries only the modules listed in desktop/build.gradle.kts, and java.prefs is not one.
+    private val lastFile get() = java.io.File(com.innovation313.roshankhata.data.DesktopDatabase.home(), "receipt_printer.txt")
     var lastPrinter: String?
-        get() = runCatching { prefs?.get("receipt_printer", null) }.getOrNull()
-        set(value) { runCatching { if (value == null) prefs?.remove("receipt_printer") else prefs?.put("receipt_printer", value) } }
+        get() = runCatching { lastFile.takeIf { it.isFile }?.readText(Charsets.UTF_8)?.trim()?.ifEmpty { null } }.getOrNull()
+        set(value) { runCatching { if (value == null) lastFile.delete() else lastFile.writeText(value, Charsets.UTF_8) } }
 }
 
 /** The printers Windows knows, the one used last on top. */

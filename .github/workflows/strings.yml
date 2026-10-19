@@ -56,3 +56,5 @@ jobs:
         run: python3 scripts/check_pdf_rtl.py
       - name: Icons face the right way in every language
         run: python3 scripts/check_icon_direction.py
+      - name: The computer's invoice designs are the phone's (generated copies up to date)
+        run: python3 scripts/gen_desktop_invoice.py --check

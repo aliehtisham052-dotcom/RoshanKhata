@@ -13,6 +13,7 @@ import android.graphics.Typeface
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.NumberWords
+import com.innovation313.roshankhata.ui.amountInWords
 
 /**
  * The pieces every A4-style invoice template (T1 through T9 — T10 is a

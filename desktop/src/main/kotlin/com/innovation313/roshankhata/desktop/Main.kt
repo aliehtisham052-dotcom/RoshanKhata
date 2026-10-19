@@ -101,6 +101,8 @@ fun main() = application {
     val settings = remember(active) { FileShopSettings(businesses.settingsFile(active)).also { it.refreshDisplay() } }
     // Once a day, a checked copy of the open book (the phone's Snapshots); a failure never stops the app.
     val dailyDir = remember(active) { DailyCopies.dir(home, active) }
+    // The shop's logo, signature, stamp and payment QR for its invoices, one set per business.
+    val images = remember(active) { com.innovation313.roshankhata.desktop.invoice.ProfileImages.forBusiness(home, active) }
     LaunchedEffect(db) { runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir) } }
     // The app's language: the owner's choice (app.properties), else the computer's.
     val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
@@ -149,6 +151,7 @@ fun main() = application {
                         activeBusiness = active,
                         onSwitch = { id -> businesses.switchTo(id); active = id },
                         dailyDir = dailyDir,
+                        images = images,
                         outsideFolder = outsideFolder,
                         outsideDir = outsideDir,
                         onBackupFolder = { f -> appPrefs.setBackupFolder(f); outsideFolder = f }
@@ -213,6 +216,7 @@ private fun Book(
     activeBusiness: Long,
     onSwitch: (Long) -> Unit,
     dailyDir: File,
+    images: com.innovation313.roshankhata.desktop.invoice.ProfileImages,
     outsideFolder: File?,
     outsideDir: File?,
     onBackupFolder: (File?) -> Unit
@@ -348,7 +352,7 @@ private fun Book(
                 Section.EXPIRY -> Box(Modifier.weight(1f)) { ExpiryPane(dao) }
                 Section.BILLS -> Box(Modifier.weight(1f)) { BillsPane(dao, parties, words) { reload++ } }
                 Section.PRODUCTS -> Box(Modifier.weight(1f)) { ProductsPane(dao, words) }
-                Section.INVOICES -> Box(Modifier.weight(1f)) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress()) }
+                Section.INVOICES -> Box(Modifier.weight(1f)) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }) }
                 Section.INSIGHTS -> Box(Modifier.weight(1f)) { InsightsPane(dao, reload) }
                 Section.ZAKAT -> Box(Modifier.weight(1f)) { ZakatPane(dao) }
                 Section.RATES -> Box(Modifier.weight(1f)) { RateListPane(dao, words, rtl, shop) }
@@ -365,7 +369,7 @@ private fun Book(
                 Section.STOCK -> Box(Modifier.weight(1f)) { StockPane(dao, words, rtl, shop, reload) }
                 Section.DAILY -> Box(Modifier.weight(1f)) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder) { shop = shopName(); reload++ } }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
-                Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
+                Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings, images) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
                     // The book on the left, as the phone's Khata list.
                     Column(Modifier.weight(0.42f).fillMaxSize()) {
