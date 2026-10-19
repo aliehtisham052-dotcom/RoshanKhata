@@ -268,6 +268,7 @@ private fun Book(
                 Section.STAFF -> Box(Modifier.weight(1f)) { StaffPane(dao) }
                 Section.FOLLOWUP -> Box(Modifier.weight(1f)) { FollowUpPane(dao, parties, words, shop) }
                 Section.CALC -> Box(Modifier.weight(1f)) { CalculatorPane() }
+                Section.SCHEMES -> Box(Modifier.weight(1f)) { SchemesPane(dao, reload) }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
