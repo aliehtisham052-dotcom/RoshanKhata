@@ -52,7 +52,9 @@ fun PartyLedgerScreen(
     onEntry: ((LedgerEntry) -> Unit)? = null,
     /** Moves the customer and their entries to the Recycle Bin (the caller confirms). */
     onDeleteParty: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Opens the customer's details to edit (the caller shows the form). */
+    onEditParty: (() -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     Column(modifier.fillMaxSize().background(c.pageBg)) {
@@ -71,6 +73,11 @@ fun PartyLedgerScreen(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(phone?.let { Format.ltr(it) } ?: "", Modifier.weight(1f), color = c.textMuted, fontSize = 14.sp)
+                if (onEditParty != null) {
+                    androidx.compose.material3.TextButton(onClick = onEditParty) {
+                        Text(word(W.edit_party), color = c.brandGreenText, fontSize = 13.sp)
+                    }
+                }
                 if (onDeleteParty != null) {
                     androidx.compose.material3.TextButton(onClick = onDeleteParty, modifier = Modifier.testTag("ledgerDeleteParty")) {
                         Text(word(W.delete_party), color = c.owedToMe, fontSize = 13.sp)

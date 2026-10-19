@@ -56,8 +56,6 @@ import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Party
-import com.innovation313.roshankhata.screens.AddPartyForm
-import com.innovation313.roshankhata.screens.EntryForm
 import com.innovation313.roshankhata.screens.PartyLedgerScreen
 import com.innovation313.roshankhata.screens.RecycleBinScreen
 import com.innovation313.roshankhata.screens.balanceColour
@@ -212,6 +210,15 @@ private fun Book(
     var bin by remember { mutableStateOf(false) }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
     var section by remember { mutableStateOf(Section.KHATA) }
+    var editingParty by remember { mutableStateOf<Party?>(null) }
+    var purging by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
+    // The bin keeps things for the days its note promises, then lets them go, as on the phone.
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            val cutoff = System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000
+            runCatching { dao.purgeOldEntries(cutoff); dao.purgeOldParties(cutoff) }
+        }
+    }
     var choosingBusiness by remember { mutableStateOf(false) }
     var statementFor by remember { mutableStateOf<PartyWithBalance?>(null) }
     statementFor?.let { party ->
@@ -383,6 +390,9 @@ private fun Book(
                                 onGot = { entryWay = false },
                                 onEntry = { editing = it },
                                 onDeleteParty = { deletingParty = party },
+                                onEditParty = {
+                                    scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } }
+                                },
                                 onStatement = { statementFor = party }
                             )
                         }
@@ -439,27 +449,45 @@ private fun Book(
     }
     val way = entryWay
     val forParty = parties.firstOrNull { it.id == selected }
+    // A new entry asks twice before it saves, as the phone does: the same amount the
+    // same way already written today (a double click looks like a second sale), and
+    // a credit limit about to be passed. Both are warnings, never blocks.
+    var confirming by remember { mutableStateOf<Pair<EntryDraft, String>?>(null) }
+    fun saveNew(d: EntryDraft) {
+        scope.launch {
+            withContext(Dispatchers.IO) { dao.insertEntryWithItems(d.entry, listOfNotNull(linked(dao, d.item))) }
+            entryWay = null; confirming = null
+            reload++
+        }
+    }
     if (way != null && forParty != null) {
         DialogWindow(
             onCloseRequest = { entryWay = null },
             title = word(if (way) W.you_gave else W.you_got),
-            state = rememberDialogState(width = 460.dp, height = 430.dp)
+            state = rememberDialogState(width = 520.dp, height = 760.dp)
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
-                EntryForm(
-                    partyName = forParty.name,
-                    isGiven = way,
-                    onSave = { amount, note ->
+                EntryEditor(
+                    partyId = forParty.id, partyName = forParty.name, isGiven = way,
+                    existing = null, existingItem = null,
+                    onSave = { d ->
                         scope.launch {
-                            withContext(Dispatchers.IO) {
-                                // The phone's own write: numbered RK-, all or nothing.
-                                dao.insertEntryWithItems(
-                                    LedgerEntry(partyId = forParty.id, amount = amount, isGiven = way, note = note, entryNumber = ""),
-                                    emptyList()
-                                )
+                            val e = d.entry
+                            val dayStart = com.innovation313.roshankhata.data.Payroll.dayOf(e.timestamp)
+                            val (twin, party) = withContext(Dispatchers.IO) {
+                                dao.sameDayTwin(e.partyId, e.amount, e.isGiven, dayStart, dayStart + 24L * 60 * 60 * 1000 - 1) to dao.getParty(e.partyId)
                             }
-                            entryWay = null
-                            reload++
+                            val limit = party?.creditLimit
+                            val projected = forParty.balance + (if (e.isGiven) e.amount else -e.amount)
+                            val warnings = listOfNotNull(
+                                twin?.let {
+                                    words.text(W.twin_entry_body, Format.money(it.amount), words.text(if (e.isGiven) W.i_gave else W.i_got), Format.dateTime(it.timestamp))
+                                },
+                                if (e.isGiven && limit != null && limit > 0 && projected > limit && forParty.balance <= limit)
+                                    words.text(W.limit_warning_message, forParty.name, Format.money(forParty.balance), Format.money(e.amount), Format.money(projected), Format.money(limit))
+                                else null
+                            )
+                            if (warnings.isEmpty()) saveNew(d) else confirming = d to warnings.joinToString("\n\n")
                         }
                     },
                     onCancel = { entryWay = null }
@@ -467,23 +495,34 @@ private fun Book(
             }
         }
     }
+    confirming?.let { (d, text) ->
+        AlertDialog(
+            onDismissRequest = { confirming = null },
+            title = { Text(word(W.twin_entry_title)) },
+            text = { Text(text) },
+            confirmButton = { TextButton({ saveNew(d) }) { Text(word(W.twin_entry_add)) } },
+            dismissButton = { TextButton({ confirming = null }) { Text(word(W.cancel)) } }
+        )
+    }
     editing?.let { e ->
-        DialogWindow(
+        var items by remember(e.id) { mutableStateOf<List<com.innovation313.roshankhata.data.EntryItem>?>(null) }
+        LaunchedEffect(e.id) { items = withContext(Dispatchers.IO) { dao.itemsOfEntry(e.id) } }
+        val loaded = items
+        if (loaded != null) DialogWindow(
             onCloseRequest = { editing = null },
             title = word(W.edit),
-            state = rememberDialogState(width = 460.dp, height = 430.dp)
+            state = rememberDialogState(width = 520.dp, height = 760.dp)
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
-                EntryForm(
-                    partyName = forParty?.name.orEmpty(),
-                    isGiven = e.isGiven,
-                    initialAmount = e.amount,
-                    initialNote = e.note,
-                    onSave = { amount, note ->
+                EntryEditor(
+                    partyId = e.partyId, partyName = forParty?.name.orEmpty(), isGiven = e.isGiven,
+                    existing = e, existingItem = loaded.firstOrNull(),
+                    onSave = { d ->
                         scope.launch {
                             withContext(Dispatchers.IO) {
                                 // The phone's edit: the entry and its goods lines, all or nothing.
-                                dao.updateEntryWithItems(e.copy(amount = amount, note = note), dao.itemsOfEntry(e.id))
+                                // Only the first line is on the form; any others the phone wrote stay.
+                                dao.updateEntryWithItems(d.entry, listOfNotNull(linked(dao, d.item)) + loaded.drop(1))
                             }
                             editing = null
                             reload++
@@ -597,30 +636,53 @@ private fun Book(
                         withContext(Dispatchers.IO) { dao.restoreEntry(e.id) }
                         reload++
                     }
-                }
+                },
+                onPurgeParty = { p -> purging = Pair(words.text(W.delete_party_forever_confirm, p.name), suspend { dao.purgeParty(p.id) }) },
+                onPurgeEntry = { e -> purging = Pair(words.text(W.delete_entry_forever_confirm, e.entryNumber), suspend { dao.purgeEntry(e.id) }) },
+                onEmpty = { purging = Pair(words.text(W.empty_bin_confirm), suspend { dao.purgeAllEntries(); dao.purgeAllParties() }) }
             )
+            purging?.let { (text, go) ->
+                AlertDialog(
+                    onDismissRequest = { purging = null },
+                    title = { Text(word(W.delete_forever)) },
+                    text = { Text(text) },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                purging = null
+                                scope.launch { withContext(Dispatchers.IO) { go() }; reload++ }
+                            },
+                            colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
+                        ) { Text(word(W.delete_forever)) }
+                    },
+                    dismissButton = { TextButton({ purging = null }) { Text(word(W.cancel)) } }
+                )
+            }
         }
     }
-    if (addParty) {
+    if (addParty || editingParty != null) {
+        val existing = editingParty
         DialogWindow(
-            onCloseRequest = { addParty = false },
-            title = word(W.add_party),
-            state = rememberDialogState(width = 460.dp, height = 400.dp)
+            onCloseRequest = { addParty = false; editingParty = null },
+            title = word(if (existing == null) W.add_party else W.edit_party),
+            state = rememberDialogState(width = 500.dp, height = 680.dp)
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
-                AddPartyForm(
-                    onSave = { name, phone, isCustomer ->
+                PartyForm(
+                    existing = existing,
+                    book = parties,
+                    onSave = { p ->
                         scope.launch {
                             val id = withContext(Dispatchers.IO) {
-                                dao.insertParty(Party(name = name, phone = phone, isCustomer = isCustomer))
+                                if (existing == null) dao.insertParty(p) else { dao.updateParty(p); p.id }
                             }
-                            addParty = false
+                            addParty = false; editingParty = null
                             reload++
                             selected = id
                             section = Section.KHATA
                         }
                     },
-                    onCancel = { addParty = false }
+                    onCancel = { addParty = false; editingParty = null }
                 )
             }
         }
@@ -741,4 +803,12 @@ private fun StatementRangeDialog(partyName: String, onCancel: () -> Unit, onPrin
     picking?.let { start ->
         DayPicker(if (start) from else till, onPick = { d -> if (start) from = d else till = d; picking = null }, onDismiss = { picking = null })
     }
+}
+
+/** A goods line tied to its product by name, as the phone ties it (ProductName.key), when that product exists. */
+private suspend fun linked(dao: KhataDao, item: com.innovation313.roshankhata.data.EntryItem?): com.innovation313.roshankhata.data.EntryItem? {
+    val i = item ?: return null
+    if (i.productId != null) return i
+    val name = i.itemName ?: return i
+    return i.copy(productId = dao.productByKey(com.innovation313.roshankhata.data.ProductName.key(name))?.id)
 }

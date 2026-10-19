@@ -36,11 +36,21 @@ fun RecycleBinScreen(
     partyName: (Long) -> String,
     onRestoreParty: (Party) -> Unit,
     onRestoreEntry: (LedgerEntry) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Deletes one for good (the caller confirms); null: no such button. */
+    onPurgeParty: ((Party) -> Unit)? = null,
+    onPurgeEntry: ((LedgerEntry) -> Unit)? = null,
+    /** Empties the whole bin (the caller confirms); null: no such button. */
+    onEmpty: (() -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     Column(modifier.fillMaxSize().background(c.pageBg)) {
-        Text(word(W.bin_retention_note), Modifier.padding(16.dp), color = c.textMuted, fontSize = 13.sp)
+        Row(Modifier.fillMaxWidth().padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(word(W.bin_retention_note), Modifier.weight(1f).padding(16.dp), color = c.textMuted, fontSize = 13.sp)
+            if (onEmpty != null && (parties.isNotEmpty() || entries.isNotEmpty())) {
+                TextButton(onClick = onEmpty) { Text(word(W.empty_bin), color = c.owedToMe, fontWeight = FontWeight.Bold) }
+            }
+        }
         if (parties.isEmpty() && entries.isEmpty()) {
             Text(word(W.bin_empty), Modifier.padding(16.dp), color = c.ink, fontSize = 15.sp)
             return@Column
@@ -51,7 +61,8 @@ fun RecycleBinScreen(
                     title = Format.name(p.name),
                     detail = word(W.bin_party_note),
                     stamp = p.deletedAt?.let { Format.dateTime(it) },
-                    onRestore = { onRestoreParty(p) }
+                    onRestore = { onRestoreParty(p) },
+                    onPurge = onPurgeParty?.let { purge -> { purge(p) } }
                 )
             }
             items(entries, key = { "e" + it.id }) { e ->
@@ -59,7 +70,8 @@ fun RecycleBinScreen(
                     title = Format.name(partyName(e.partyId)) + "  ·  " + Format.money(e.amount),
                     detail = word(if (e.isGiven) W.you_gave else W.you_got) + "  ·  " + e.entryNumber,
                     stamp = e.deletedAt?.let { Format.dateTime(it) },
-                    onRestore = { onRestoreEntry(e) }
+                    onRestore = { onRestoreEntry(e) },
+                    onPurge = onPurgeEntry?.let { purge -> { purge(e) } }
                 )
             }
         }
@@ -67,7 +79,7 @@ fun RecycleBinScreen(
 }
 
 @Composable
-private fun BinRow(title: String, detail: String, stamp: String?, onRestore: () -> Unit) {
+private fun BinRow(title: String, detail: String, stamp: String?, onRestore: () -> Unit, onPurge: (() -> Unit)? = null) {
     val c = LocalRoshanColors.current
     Row(
         Modifier.fillMaxWidth().background(c.surface).padding(horizontal = 16.dp, vertical = 10.dp),
@@ -78,6 +90,7 @@ private fun BinRow(title: String, detail: String, stamp: String?, onRestore: () 
             Text(detail, color = c.textMuted, fontSize = 13.sp)
             stamp?.let { Text(it, color = c.textMuted, fontSize = 12.sp) }
         }
+        if (onPurge != null) TextButton(onClick = onPurge) { Text(word(W.delete_forever), color = c.owedToMe) }
         TextButton(onClick = onRestore) { Text(word(W.restore), color = c.brandGreenText, fontWeight = FontWeight.Bold) }
     }
     HorizontalDivider(color = c.pageBg)
