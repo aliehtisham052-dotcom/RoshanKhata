@@ -160,17 +160,47 @@ fun ProductsPane(dao: KhataDao) {
 }
 
 @Composable
-fun InvoicesPane(dao: KhataDao) {
+fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl: Boolean, shopName: String?, shopLine: String?) {
     val c = LocalRoshanColors.current
+    val scope = rememberCoroutineScope()
     val invoices by remember { dao.observeInvoices() }.collectAsState(emptyList())
-    RecordList(word(W.nav_invoice), null, invoices.isEmpty(), word(W.no_invoices)) {
+    var adding by remember { mutableStateOf(false) }
+    // Print an invoice by id: the saved row and its lines, as the customer will hold them.
+    fun print(id: Long) {
+        scope.launch {
+            val pair = withContext(Dispatchers.IO) { dao.getInvoice(id)?.let { it to dao.invoiceItems(id) } } ?: return@launch
+            StatementPrint.show(
+                InvoicePrint(words, rtl, shopName ?: words.text(W.app_name), shopLine, pair.first, pair.second),
+                pair.first.invoiceNumber
+            )
+        }
+    }
+    if (adding) {
+        DialogWindow(onCloseRequest = { adding = false }, title = word(W.add_invoice), state = rememberDialogState(width = 720.dp, height = 860.dp)) {
+            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+                InvoiceForm(
+                    parties = parties,
+                    onSave = { inv, lines ->
+                        adding = false
+                        scope.launch {
+                            val id = withContext(Dispatchers.IO) { dao.saveInvoiceWithItems(inv, lines) }
+                            print(id)
+                        }
+                    },
+                    onCancel = { adding = false }
+                )
+            }
+        }
+    }
+    RecordList(word(W.nav_invoice), null, invoices.isEmpty(), word(W.no_invoices), action = word(W.add_invoice) to { adding = true }) {
         items(invoices, key = { it.id }) { i ->
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().clickable { print(i.id) }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(Format.name(i.customerName), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Text(i.invoiceNumber + "  ·  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 13.sp)
+                    Text(i.invoiceNumber + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 13.sp)
                 }
                 Text(Format.money(i.grandTotal), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("  " + word(W.ledger_pdf_button), color = c.brandGreenText, fontSize = 13.sp)
             }
             HorizontalDivider(color = c.pageBg)
         }
