@@ -1,6 +1,18 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.window.DialogWindow
+import androidx.compose.ui.window.rememberDialogState
+import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.Party
+import com.innovation313.roshankhata.data.PartyWithBalance
+import com.innovation313.roshankhata.data.SupplierBill
+import com.innovation313.roshankhata.words.Words
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,11 +58,30 @@ import com.innovation313.roshankhata.words.word
  * own step with tests.
  */
 @Composable
-fun BillsPane(dao: KhataDao) {
+fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLedgerChanged: () -> Unit) {
     val c = LocalRoshanColors.current
+    val scope = rememberCoroutineScope()
     val bills by remember { dao.observeBills() }.collectAsState(emptyList())
     var open by remember { mutableStateOf<Long?>(null) }
-    RecordList(word(W.supplier_bills), word(W.bill_ledger_note), bills.isEmpty(), word(W.no_bills)) {
+    var adding by remember { mutableStateOf(false) }
+    if (adding) {
+        DialogWindow(onCloseRequest = { adding = false }, title = word(W.add_bill), state = rememberDialogState(width = 640.dp, height = 860.dp)) {
+            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+                BillForm(
+                    parties = parties,
+                    onSave = { b ->
+                        adding = false
+                        scope.launch {
+                            withContext(Dispatchers.IO) { saveBill(dao, b, words) }
+                            onLedgerChanged()
+                        }
+                    },
+                    onCancel = { adding = false }
+                )
+            }
+        }
+    }
+    RecordList(word(W.supplier_bills), word(W.bill_ledger_note), bills.isEmpty(), word(W.no_bills), action = word(W.add_bill) to { adding = true }) {
         items(bills, key = { it.id }) { b ->
             Column(Modifier.fillMaxWidth().clickable { open = if (open == b.id) null else b.id }.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -153,11 +184,15 @@ private fun RecordList(
     subtitle: String?,
     empty: Boolean,
     emptyText: String,
+    action: Pair<String, () -> Unit>? = null,
     rows: androidx.compose.foundation.lazy.LazyListScope.() -> Unit
 ) {
     val c = LocalRoshanColors.current
     Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        PaneTitle(title, subtitle)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) { PaneTitle(title, subtitle) }
+            action?.let { (label, go) -> FillButton(label, c.brandGreen, onClick = go) }
+        }
         if (empty) {
             Text(emptyText, Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
         } else {
@@ -247,4 +282,37 @@ fun PlansPane(dao: KhataDao) {
             HorizontalDivider(color = c.pageBg)
         }
     }
+}
+
+/**
+ * The phone's bill save (BillsActivity.dispatchSaveBill) on the computer: a
+ * new supplier is added first (or one of the same name reused), then the
+ * debt, the bill and its lines go in as ONE transaction
+ * (KhataDao.insertSupplierBill). On credit the khata gets one "I got" entry
+ * (isGiven = false: the shop owes the supplier); paid in cash, nothing.
+ */
+suspend fun saveBill(dao: KhataDao, b: NewBill, words: Words) {
+    val partyId = b.supplierId
+        ?: dao.findPartyByName(b.newSupplierName.orEmpty())?.id
+        ?: dao.insertParty(Party(name = b.newSupplierName.orEmpty().trim(), phone = null, isCustomer = false))
+    dao.insertSupplierBill(
+        entry = if (b.paidCash) null else LedgerEntry(
+            partyId = partyId,
+            amount = b.total,
+            isGiven = false,
+            note = b.billNumber?.let { words.text(W.bill_entry_note, it) } ?: b.note,
+            entryNumber = ""
+        ),
+        bill = SupplierBill(
+            partyId = partyId,
+            billNumber = b.billNumber,
+            totalAmount = b.total,
+            billDate = b.billDate,
+            dueDate = b.dueDate,
+            ledgerEntryId = null,
+            isPaidInFull = b.paidCash,
+            note = b.note
+        ),
+        items = b.items
+    )
 }
