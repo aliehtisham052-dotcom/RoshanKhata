@@ -42,6 +42,7 @@ enum class Section(val word: String) {
     CASHBOOK(W.nav_cashbook),
     CHEQUES(W.nav_cheques),
     PLANS(W.nav_plans),
+    STAFF(W.staff_title),
     BILLS(W.supplier_bills),
     EXPIRY(W.tile_expiry),
     PRODUCTS(W.tile_products),
