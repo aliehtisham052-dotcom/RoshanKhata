@@ -42,6 +42,13 @@ class TablePrint(
         drawString(s, left.toFloat(), y.toFloat())
     }
 
+    private fun Graphics2D.fit(s: String, width: Double): String {
+        if (fontMetrics.stringWidth(s) <= width) return s
+        var t = s
+        while (t.isNotEmpty() && fontMetrics.stringWidth("$t\u2026") > width) t = t.dropLast(1)
+        return "$t\u2026"
+    }
+
     override fun print(graphics: Graphics, format: PageFormat, pageIndex: Int): Int {
         if (pageIndex >= pages()) return Printable.NO_SUCH_PAGE
         val g = graphics as Graphics2D
@@ -75,12 +82,14 @@ class TablePrint(
         g.color = line
         g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
         y += 16
+        // The first column stops short of the first figure column, cut with an ellipsis.
+        val firstWidth = (ends.firstOrNull()?.let { it - 95.0 + 8.0 } ?: (pageW - margin)) - margin
         val from = pageIndex * rowsPerPage
         for (r in rows.subList(minOf(from, rows.size), minOf(rows.size, from + rowsPerPage))) {
             g.color = Color.BLACK
             r.forEachIndexed { i, cell ->
                 g.font = Font(Font.DIALOG, if (i == 0) Font.PLAIN else Font.BOLD, 10)
-                if (i == 0) g.text(cell, margin, y) else g.text(cell, ends[i - 1], y, end = true)
+                if (i == 0) g.text(g.fit(cell, firstWidth), margin, y) else g.text(cell, ends[i - 1], y, end = true)
             }
             y += 7
             g.color = line
