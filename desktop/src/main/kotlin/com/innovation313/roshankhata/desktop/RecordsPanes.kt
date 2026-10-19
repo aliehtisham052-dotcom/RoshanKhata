@@ -275,13 +275,93 @@ fun ExpiryPane(dao: KhataDao) {
 
 /** Payment plans: paid of total, what is left, the next date (overdue in red); complete ones faded. */
 @Composable
-fun PlansPane(dao: KhataDao) {
+fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLedgerChanged: () -> Unit) {
     val c = LocalRoshanColors.current
+    val scope = rememberCoroutineScope()
     val plans by remember { dao.observePlans() }.collectAsState(emptyList())
-    RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(W.no_plans)) {
+    var adding by remember { mutableStateOf(false) }
+    var acting by remember { mutableStateOf<com.innovation313.roshankhata.data.PlanProgress?>(null) }
+    var paying by remember { mutableStateOf<com.innovation313.roshankhata.data.PlanProgress?>(null) }
+    var deleting by remember { mutableStateOf<com.innovation313.roshankhata.data.PlanProgress?>(null) }
+    if (adding) PlanAddDialog(parties, onSave = { plan ->
+        adding = false
+        scope.launch { withContext(Dispatchers.IO) { dao.insertPlan(plan) } }
+    }, onCancel = { adding = false })
+    acting?.let { p ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { acting = null },
+            title = { Text(if (p.isClosed) Format.name(p.partyName) else word(W.plan_actions)) },
+            text = {
+                Column {
+                    val actions = buildList<Pair<String, () -> Unit>> {
+                        if (!p.isClosed) {
+                            add(word(W.record_payment) to { paying = p })
+                            add(word(W.close_plan) to {
+                                scope.launch { withContext(Dispatchers.IO) { dao.getPlan(p.id)?.let { dao.updatePlan(it.copy(isClosed = true, closedAt = System.currentTimeMillis())) } } }
+                            })
+                        }
+                        add(word(W.delete_plan) to { deleting = p })
+                    }
+                    actions.forEach { (label, go) ->
+                        Text(label, Modifier.fillMaxWidth().clickable { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)
+                    }
+                }
+            },
+            confirmButton = { androidx.compose.material3.TextButton({ acting = null }) { Text(word(W.cancel)) } }
+        )
+    }
+    paying?.let { p ->
+        var amountText by remember(p.id) { mutableStateOf(p.installmentAmount?.let { com.innovation313.roshankhata.ui.Calc.trim(it) }.orEmpty()) }
+        var note by remember(p.id) { mutableStateOf("") }
+        val amount = com.innovation313.roshankhata.ui.Calc.evalAmount(amountText)
+        val over = amount != null && amount > p.remaining
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { paying = null },
+            title = { Text(word(W.record_payment_title)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(word(W.record_payment_help, p.partyName), color = c.textMuted, fontSize = 13.sp)
+                    androidx.compose.material3.OutlinedTextField(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true)
+                    Text(amount?.let { Format.money(it) } ?: "", color = c.textMuted)
+                    androidx.compose.material3.OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, singleLine = true)
+                    // More than is left: said before Save, still posted in full if the owner goes ahead.
+                    if (over) Text(word(W.plan_overpay_warning, Format.money(p.remaining)), color = c.owedToMe, fontSize = 13.sp)
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(enabled = amount != null, onClick = {
+                    val a = amount ?: return@TextButton
+                    val entryNote = note.trim().ifEmpty { words.text(W.plan_note_prefix) }
+                    paying = null
+                    scope.launch {
+                        withContext(Dispatchers.IO) {
+                            dao.recordPlanPayment(p.id, p.partyId, a, p.paidSoFar, entryNote, note.trim().ifEmpty { null })
+                        }
+                        onLedgerChanged()
+                    }
+                }) { Text(word(if (over) W.proceed_anyway else W.save)) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ paying = null }) { Text(word(W.cancel)) } }
+        )
+    }
+    deleting?.let { p ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { deleting = null },
+            title = { Text(word(W.delete_plan)) },
+            text = { Text(word(W.delete_plan_confirm)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton({
+                    deleting = null
+                    scope.launch { withContext(Dispatchers.IO) { dao.softDeletePlan(p.id) } }
+                }) { Text(word(W.delete), color = c.owedToMe) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ deleting = null }) { Text(word(W.cancel)) } }
+        )
+    }
+    RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(W.no_plans), action = word(W.add_plan) to { adding = true }) {
         items(plans, key = { it.id }) { p ->
             Column(
-                Modifier.fillMaxWidth().alpha(if (p.isClosed) 0.6f else 1f).padding(horizontal = 16.dp, vertical = 12.dp),
+                Modifier.fillMaxWidth().alpha(if (p.isClosed) 0.6f else 1f).clickable { acting = p }.padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -449,4 +529,68 @@ private fun ProductBuyers(dao: KhataDao, words: Words, product: com.innovation31
         },
         confirmButton = { androidx.compose.material3.TextButton(onClose) { Text(word(W.ok)) } }
     )
+}
+
+/** A new plan: who (from the book), the total to clear, each instalment, the next date, a note. Adds nothing to the balance. */
+@Composable
+private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovation313.roshankhata.data.PaymentPlan) -> Unit, onCancel: () -> Unit) {
+    val c = LocalRoshanColors.current
+    var search by remember { mutableStateOf("") }
+    var partyId by remember { mutableStateOf<Long?>(null) }
+    var total by remember { mutableStateOf("") }
+    var each by remember { mutableStateOf("") }
+    var due by remember { mutableStateOf<Long?>(null) }
+    var note by remember { mutableStateOf("") }
+    var picking by remember { mutableStateOf(false) }
+    var problem by remember { mutableStateOf<String?>(null) }
+    val needParty = word(W.select_party_first)
+    val needAmount = word(W.enter_valid_amount)
+    DialogWindow(onCloseRequest = onCancel, title = word(W.add_plan), state = rememberDialogState(width = 520.dp, height = 680.dp)) {
+        Column(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(word(W.plan_dialog_help), color = c.textMuted, fontSize = 12.sp)
+            val chosen = parties.firstOrNull { it.id == partyId }
+            if (chosen != null) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(Format.name(chosen.name) + "  \u00b7  " + Format.money(chosen.balance), Modifier.weight(1f), color = c.ink, fontWeight = FontWeight.Bold)
+                    androidx.compose.material3.TextButton({ partyId = null }) { Text(word(W.edit), color = c.brandGreenText) }
+                }
+            } else {
+                androidx.compose.material3.OutlinedTextField(search, { search = it }, label = { Text(word(W.cheque_party_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                val q = search.trim().lowercase()
+                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 150.dp).background(c.pageBg, RoundedCornerShape(10.dp))) {
+                    items(parties.filter { NameSearch.matches(it.name, it.phone, q) }.take(40), key = { it.id }) { p ->
+                        Text(Format.name(p.name) + "  \u00b7  " + Format.money(p.balance),
+                            Modifier.fillMaxWidth().clickable { partyId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp), color = c.ink, fontSize = 14.sp)
+                    }
+                }
+            }
+            androidx.compose.material3.OutlinedTextField(total, { total = it; problem = null }, label = { Text(word(W.plan_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            androidx.compose.material3.OutlinedTextField(each, { each = it }, label = { Text(word(W.plan_installment_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.material3.TextButton({ picking = true }) { Text(word(W.plan_pick_next_due), color = c.brandGreenText) }
+                Text(due?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontWeight = FontWeight.Bold)
+            }
+            androidx.compose.material3.OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
+            problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
+                androidx.compose.material3.TextButton(onCancel) { Text(word(W.cancel)) }
+                FillButton(word(W.save), c.brandGreen) {
+                    val pid = partyId
+                    val t = com.innovation313.roshankhata.ui.Calc.evalAmount(total)
+                    when {
+                        pid == null -> problem = needParty
+                        t == null -> problem = needAmount
+                        else -> onSave(
+                            com.innovation313.roshankhata.data.PaymentPlan(
+                                partyId = pid, totalAmount = t,
+                                installmentAmount = com.innovation313.roshankhata.ui.Calc.evalAmount(each),
+                                nextDueDate = due, note = note.trim().ifEmpty { null }
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        if (picking) DayPicker(due, onPick = { due = it; picking = false }, onDismiss = { picking = false })
+    }
 }

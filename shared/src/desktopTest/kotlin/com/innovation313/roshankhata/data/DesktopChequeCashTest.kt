@@ -76,4 +76,17 @@ class DesktopChequeCashTest {
         assertEquals(1, dao.observeCashEntries().first().size)
         assertEquals(0.0, dao.partiesWithBalanceOnce().single { it.id == id }.balance, 0.001)
     }
+
+    @Test
+    fun `a plan payment is posted once and closes the plan when it is paid off`() = withBook { dao ->
+        val id = dao.insertParty(Party(name = "Bilal", phone = null, isCustomer = true))
+        dao.insertEntryNumbered(LedgerEntry(partyId = id, amount = 3000.0, isGiven = true, entryNumber = ""))
+        val plan = dao.insertPlan(PaymentPlan(partyId = id, totalAmount = 3000.0, installmentAmount = 1000.0))
+        dao.recordPlanPayment(plan, id, 1000.0, paidBefore = 0.0, entryNote = "Instalment payment", note = null)
+        assertEquals(2000.0, dao.partiesWithBalanceOnce().single().balance, 0.001)
+        assertEquals(false, dao.getPlan(plan)!!.isClosed)
+        dao.recordPlanPayment(plan, id, 2000.0, paidBefore = 1000.0, entryNote = "Instalment payment", note = null)
+        assertEquals(0.0, dao.partiesWithBalanceOnce().single().balance, 0.001)
+        assertEquals(true, dao.getPlan(plan)!!.isClosed)
+    }
 }
