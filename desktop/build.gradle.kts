@@ -30,7 +30,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.1.0"
+            packageVersion = "1.1.1"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
