@@ -117,7 +117,7 @@ object ThermalReceipt {
 
 /** The printers Windows knows, the one used last on top. */
 @Composable
-fun PrinterChoiceDialog(names: List<String>, onPick: (String) -> Unit, onCancel: () -> Unit) {
+fun PrinterChoiceDialog(names: List<String>, onCancel: () -> Unit, onPick: (String) -> Unit) {
     val c = LocalRoshanColors.current
     val last = ThermalReceipt.lastPrinter
     AlertDialog(

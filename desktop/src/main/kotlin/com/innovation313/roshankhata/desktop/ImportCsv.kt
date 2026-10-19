@@ -35,8 +35,8 @@ import com.innovation313.roshankhata.words.word
 fun ImportPreviewDialog(
     fresh: List<CsvImport.Row>,
     skipped: Int,
-    onImport: (List<CsvImport.Row>) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    onImport: (List<CsvImport.Row>) -> Unit
 ) {
     val c = LocalRoshanColors.current
     var owesMe by remember { mutableStateOf(true) }
