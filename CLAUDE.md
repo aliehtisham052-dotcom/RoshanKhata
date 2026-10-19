@@ -32,14 +32,24 @@ No account, no server, no ads. Everything stays on the phone.
 - `desktop.yml` builds the Windows MSI on GitHub's Windows runner and puts it
   on the `desktop-test` pre-release (not signed yet).
 - The Windows app (`desktop/src/main/kotlin/.../desktop/`) opens maximised with
-  a section rail: Khata (master-detail, newest dealing first, statement
-  print), Cashbook, Cheques (clear = `KhataDao.clearCheque`, one transaction),
-  Plans, Supplier Bills, Expiry, Products, Invoices (these four read-only for
-  now), Khata Report (CSV via shared `LedgerCsv`, PDF via print), Insights,
-  Zakat, Business Profile. Bump `packageVersion` in `desktop/build.gradle.kts`
-  for every MSI the owner installs, or Windows will not upgrade it; the MSIX
-  takes its version from the same line. Material's own colours come from
-  `RoshanTheme` (dark mode once hid typed text).
+  a scrolling section rail (each section wears the phone's own tile icon,
+  synced from `app/src/main/res` at build time; `TileIconsTest` reads them
+  all): Khata (master-detail, newest dealing first, statement for the whole
+  ledger or a period), Follow-up (WhatsApp reminders via wa.me), Cashbook,
+  Cheques, Plans, Staff, Seasons, Schemes, Supplier Bills (new bills via
+  `insertSupplierBill`), Expiry, Stock register, Products (edit, who bought),
+  Purchase rates, Price list, Invoices (new + print, one plain design), Khata
+  Report, Register, Cash flow, Insights, Zakat, Calculator, Duplicates, Daily
+  copies, Help, Business Profile; Businesses on the header (one book per
+  shop: `khata.db` / `khata_b<id>.db`, Business 1 never deleted).
+  Money-moving writes that the phone did step by step are DAO transactions
+  here (`clearCheque`, `recordPlanPayment`); any new DAO write needs
+  `scripts/gen_viewer_dao.py` or `ViewerDaoTest` fails.
+  Bump `packageVersion` in `desktop/build.gradle.kts` for every MSI the owner
+  installs, or Windows will not upgrade it; the MSIX takes its version from
+  the same line. Material's own colours come from `RoshanTheme` (dark mode
+  once hid typed text). Not on Windows yet: Business Card, Poster, invoice
+  templates, Google Drive, voice entry.
 
 ### The shared module (KMP)
 
