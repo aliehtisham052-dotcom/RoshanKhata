@@ -35,6 +35,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
@@ -152,6 +154,7 @@ fun main() = application {
                         onSwitch = { id -> businesses.switchTo(id); active = id },
                         dailyDir = dailyDir,
                         images = images,
+                        home = home,
                         outsideFolder = outsideFolder,
                         outsideDir = outsideDir,
                         onBackupFolder = { f -> appPrefs.setBackupFolder(f); outsideFolder = f }
@@ -217,6 +220,7 @@ private fun Book(
     onSwitch: (Long) -> Unit,
     dailyDir: File,
     images: com.innovation313.roshankhata.desktop.invoice.ProfileImages,
+    home: File,
     outsideFolder: File?,
     outsideDir: File?,
     onBackupFolder: (File?) -> Unit
@@ -350,7 +354,7 @@ private fun Book(
                 Section.CHEQUES -> Box(Modifier.weight(1f)) { ChequesPane(dao, parties, words) { reload++ } }
                 Section.PLANS -> Box(Modifier.weight(1f)) { PlansPane(dao, parties, words) { reload++ } }
                 Section.EXPIRY -> Box(Modifier.weight(1f)) { ExpiryPane(dao) }
-                Section.BILLS -> Box(Modifier.weight(1f)) { BillsPane(dao, parties, words) { reload++ } }
+                Section.BILLS -> Box(Modifier.weight(1f)) { BillsPane(dao, parties, words, home) { reload++ } }
                 Section.PRODUCTS -> Box(Modifier.weight(1f)) { ProductsPane(dao, words) }
                 Section.INVOICES -> Box(Modifier.weight(1f)) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }) }
                 Section.INSIGHTS -> Box(Modifier.weight(1f)) { InsightsPane(dao, reload) }
@@ -370,6 +374,7 @@ private fun Book(
                 Section.DAILY -> Box(Modifier.weight(1f)) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder) { shop = shopName(); reload++ } }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings, images) { shop = shopName() } }
+                Section.CARD -> Box(Modifier.weight(1f)) { BusinessCardPane(settings, images, home, activeBusiness, words) }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
                     // The book on the left, as the phone's Khata list.
                     Column(Modifier.weight(0.42f).fillMaxSize()) {
@@ -485,6 +490,14 @@ private fun Book(
                                         .padding(horizontal = 16.dp, vertical = 12.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    // The customer's face, when the computer has it (Photos: never on a statement).
+                                    Photos.bitmap(p.photoPath, 96)?.let { face ->
+                                        androidx.compose.foundation.Image(
+                                            face, contentDescription = null,
+                                            modifier = Modifier.padding(end = 10.dp).size(36.dp).clip(androidx.compose.foundation.shape.CircleShape),
+                                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                        )
+                                    }
                                     Column(Modifier.weight(1f)) {
                                         Text(Format.name(p.name), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                                         p.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 13.sp) }
@@ -852,7 +865,8 @@ private fun Book(
                             section = Section.KHATA
                         }
                     },
-                    onCancel = { addParty = false; editingParty = null }
+                    onCancel = { addParty = false; editingParty = null },
+                    home = home
                 )
             }
         }

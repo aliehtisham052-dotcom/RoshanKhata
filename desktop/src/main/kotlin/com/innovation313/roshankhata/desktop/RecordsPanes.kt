@@ -59,7 +59,7 @@ import com.innovation313.roshankhata.words.word
  * own step with tests.
  */
 @Composable
-fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLedgerChanged: () -> Unit) {
+fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home: java.io.File, onLedgerChanged: () -> Unit) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val bills by remember { dao.observeBills() }.collectAsState(emptyList())
@@ -71,6 +71,29 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
     var lineFor by remember { mutableStateOf<Pair<Long, com.innovation313.roshankhata.data.BillItem?>?>(null) }
     var deletingLine by remember { mutableStateOf<com.innovation313.roshankhata.data.BillItem?>(null) }
     var buyersOf by remember { mutableStateOf<Long?>(null) }
+    // A bill's photo: on a credit bill it rides on its ledger entry (billPhotoPath), on a cash bill on the bill.
+    var photoOf by remember { mutableStateOf<Pair<String, String?>?>(null) }
+    var photoVersion by remember { mutableStateOf(0) }
+    photoOf?.let { (title, path) -> PhotoDialog(title, path) { photoOf = null } }
+    suspend fun billPhoto(id: Long): String? = withContext(Dispatchers.IO) {
+        dao.getBill(id)?.let { bill -> bill.photoPath ?: bill.ledgerEntryId?.let { dao.getEntry(it)?.billPhotoPath } }
+    }
+    val attachTitle = word(W.add_bill_photo)
+    val billLabel = word(W.bill_photo_label)
+    fun attach(b: BillSummary) {
+        val src = Photos.pick(attachTitle) ?: return
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                val target = Photos.billFile(home)
+                if (Photos.save(src, target)) {
+                    val bill = dao.getBill(b.id) ?: return@withContext
+                    val entryId = bill.ledgerEntryId
+                    if (entryId != null) dao.setBillPhotoPath(entryId, target.absolutePath) else dao.setSupplierBillPhotoPath(b.id, target.absolutePath)
+                }
+            }
+            photoVersion++
+        }
+    }
     editingBill?.let { b -> BillEditDialog(dao, words, b.id, b.partyName) { editingBill = null; onLedgerChanged() } }
     lineFor?.let { (billId, line) -> BillLineDialog(dao, billId, line) { lineFor = null } }
     buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
@@ -142,6 +165,16 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                         androidx.compose.material3.TextButton({ editingBill = b }) { Text(word(W.edit_bill), color = c.brandGreenText) }
                         androidx.compose.material3.TextButton({ lineFor = b.id to null }) { Text(word(W.add_item), color = c.brandGreenText) }
                         androidx.compose.material3.TextButton({ deletingBill = b }) { Text(word(W.delete_bill), color = c.owedToMe) }
+                    }
+                    var path by remember(b.id, photoVersion) { mutableStateOf<String?>(null) }
+                    androidx.compose.runtime.LaunchedEffect(b.id, photoVersion) { path = billPhoto(b.id) }
+                    Row {
+                        if (path != null) androidx.compose.material3.TextButton({ photoOf = billLabel to path }) {
+                            Text(word(W.view_bill_photo), color = c.brandGreenText)
+                        }
+                        androidx.compose.material3.TextButton({ attach(b) }) {
+                            Text(word(if (path == null) W.add_bill_photo else W.bill_photo_attached), color = c.brandGreenText)
+                        }
                     }
                     val lines by remember(b.id) { dao.observeBillItems(b.id) }.collectAsState(emptyList())
                     Column(Modifier.padding(top = 8.dp).fillMaxWidth().background(c.pageBg, RoundedCornerShape(10.dp)).padding(10.dp)) {

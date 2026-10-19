@@ -6,12 +6,15 @@ import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.LinearGradientPaint
 import java.awt.MultipleGradientPaint
+import java.awt.RadialGradientPaint
 import java.awt.RenderingHints
 import java.awt.font.FontRenderContext
 import java.awt.font.TextAttribute
 import java.awt.font.TextLayout
 import java.awt.geom.AffineTransform
+import java.awt.geom.Arc2D
 import java.awt.geom.Ellipse2D
+import java.awt.geom.Path2D
 import java.awt.geom.Line2D
 import java.awt.geom.Point2D
 import java.awt.geom.Rectangle2D
@@ -45,6 +48,20 @@ object Color {
     fun argb(a: Int, r: Int, g: Int, b: Int): Int = (a shl 24) or (r shl 16) or (g shl 8) or b
     fun rgb(r: Int, g: Int, b: Int): Int = argb(255, r, g, b)
     fun alpha(c: Int): Int = c ushr 24
+    fun red(c: Int): Int = (c shr 16) and 0xFF
+    fun green(c: Int): Int = (c shr 8) and 0xFF
+    fun blue(c: Int): Int = c and 0xFF
+
+    /** "#RRGGBB" or "#AARRGGBB", as Android reads it. */
+    fun parseColor(s: String): Int {
+        val hex = s.removePrefix("#")
+        val v = hex.toLong(16)
+        return when (hex.length) {
+            6 -> (0xFF000000 or v).toInt()
+            8 -> v.toInt()
+            else -> throw IllegalArgumentException("Unknown color $s")
+        }
+    }
 }
 
 class Rect(@JvmField var left: Int = 0, @JvmField var top: Int = 0, @JvmField var right: Int = 0, @JvmField var bottom: Int = 0) {
@@ -62,6 +79,12 @@ class RectF(@JvmField var left: Float = 0f, @JvmField var top: Float = 0f, @JvmF
     fun set(l: Float, t: Float, r: Float, b: Float) { left = l; top = t; right = r; bottom = b }
     fun inset(dx: Float, dy: Float) { left += dx; top += dy; right -= dx; bottom -= dy }
     fun offset(dx: Float, dy: Float) { left += dx; right += dx; top += dy; bottom += dy }
+    fun contains(x: Float, y: Float) = left < right && top < bottom && x >= left && x < right && y >= top && y < bottom
+    fun intersects(l: Float, t: Float, r: Float, b: Float) = left < r && l < right && top < b && t < bottom
+
+    companion object {
+        fun intersects(a: RectF, b: RectF) = a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom
+    }
 }
 
 /** A face plus a style. Android's synthetic bold/italic becomes Java2D's, which embolds a face that has no bold file. */
@@ -88,9 +111,9 @@ open class Shader {
 
 class LinearGradient(
     private val x0: Float, private val y0: Float, private val x1: Float, private val y1: Float,
-    private val colors: IntArray, private val positions: FloatArray?, private val tile: TileMode
+    private val colors: IntArray, private val positions: FloatArray?, private val tile: Shader.TileMode
 ) : Shader() {
-    constructor(x0: Float, y0: Float, x1: Float, y1: Float, c0: Int, c1: Int, tile: TileMode) :
+    constructor(x0: Float, y0: Float, x1: Float, y1: Float, c0: Int, c1: Int, tile: Shader.TileMode) :
         this(x0, y0, x1, y1, intArrayOf(c0, c1), null, tile)
 
     override fun awt(): java.awt.Paint? {
@@ -100,9 +123,9 @@ class LinearGradient(
         val fixed = stops.copyOf()
         for (i in 1 until fixed.size) if (fixed[i] <= fixed[i - 1]) fixed[i] = (fixed[i - 1] + 1e-4f).coerceAtMost(1f)
         val cycle = when (tile) {
-            TileMode.CLAMP -> MultipleGradientPaint.CycleMethod.NO_CYCLE
-            TileMode.REPEAT -> MultipleGradientPaint.CycleMethod.REPEAT
-            TileMode.MIRROR -> MultipleGradientPaint.CycleMethod.REFLECT
+            Shader.TileMode.CLAMP -> MultipleGradientPaint.CycleMethod.NO_CYCLE
+            Shader.TileMode.REPEAT -> MultipleGradientPaint.CycleMethod.REPEAT
+            Shader.TileMode.MIRROR -> MultipleGradientPaint.CycleMethod.REFLECT
         }
         return LinearGradientPaint(Point2D.Float(x0, y0), Point2D.Float(x1, y1), fixed, colors.map { java.awt.Color(it, true) }.toTypedArray(), cycle)
     }
@@ -114,12 +137,23 @@ class DashPathEffect(val intervals: FloatArray, val phase: Float) : PathEffect()
 class Bitmap(val image: BufferedImage) {
     val width: Int get() = image.width
     val height: Int get() = image.height
+    val isRecycled: Boolean get() = false
 }
 
 class Paint(flags: Int = 0) {
     enum class Align { LEFT, CENTER, RIGHT }
     enum class Style { FILL, STROKE, FILL_AND_STROKE }
     enum class Cap { BUTT, ROUND, SQUARE }
+    enum class Join { MITER, ROUND, BEVEL }
+
+    /** Android's FontMetrics: ascent and top are negative (above the baseline). */
+    class FontMetrics {
+        @JvmField var top = 0f
+        @JvmField var ascent = 0f
+        @JvmField var descent = 0f
+        @JvmField var bottom = 0f
+        @JvmField var leading = 0f
+    }
 
     var isAntiAlias: Boolean = flags and ANTI_ALIAS_FLAG != 0
     var color: Int = Color.BLACK
@@ -135,17 +169,29 @@ class Paint(flags: Int = 0) {
     var style: Style = Style.FILL
     var pathEffect: PathEffect? = null
     var letterSpacing: Float = 0f
-    var isFilterBitmap: Boolean = false
+    var isFilterBitmap: Boolean = flags and FILTER_BITMAP_FLAG != 0
     var strokeCap: Cap = Cap.BUTT
+    var strokeJoin: Join = Join.MITER
 
     constructor(other: Paint) : this() {
         isAntiAlias = other.isAntiAlias; color = other.color; textSize = other.textSize; textAlign = other.textAlign
         typeface = other.typeface; isFakeBoldText = other.isFakeBoldText; shader = other.shader
         strokeWidth = other.strokeWidth; style = other.style; pathEffect = other.pathEffect
         letterSpacing = other.letterSpacing; isFilterBitmap = other.isFilterBitmap; strokeCap = other.strokeCap
+        strokeJoin = other.strokeJoin
     }
 
     fun measureText(text: String): Float = Text.advance(text, this)
+    fun measureText(text: CharSequence, start: Int, end: Int): Float = Text.advance(text.subSequence(start, end).toString(), this)
+
+    val fontMetrics: FontMetrics
+        get() {
+            val lm = Text.font(this).getLineMetrics("Ag", Text.frc)
+            return FontMetrics().apply {
+                ascent = -lm.ascent; descent = lm.descent; leading = lm.leading
+                top = ascent * 1.1f; bottom = descent * 1.1f
+            }
+        }
 
     companion object {
         const val ANTI_ALIAS_FLAG = 1
@@ -155,7 +201,7 @@ class Paint(flags: Int = 0) {
 
 /** Text the Android way on Java2D: a script the chosen face lacks (Urdu in Sora) falls back to the system's, as Android's does. */
 internal object Text {
-    private val frc = FontRenderContext(null, true, true)
+    val frc = FontRenderContext(null, true, true)
     private val fallbackBase = Font(Font.DIALOG, Font.PLAIN, 1)
 
     fun font(p: Paint): Font {
@@ -166,10 +212,13 @@ internal object Text {
         return tf.font.deriveFont(style, p.textSize)
     }
 
+    private fun tracked(f: Font, p: Paint): Font =
+        if (p.letterSpacing == 0f) f else f.deriveFont(mapOf(TextAttribute.TRACKING to p.letterSpacing))
+
     fun layout(text: String, p: Paint): TextLayout? {
         if (text.isEmpty()) return null
-        val main = font(p)
-        val fallback = fallbackBase.deriveFont(main.style, p.textSize)
+        val main = tracked(font(p), p)
+        val fallback = tracked(fallbackBase.deriveFont(main.style, p.textSize), p)
         val s = AttributedString(text)
         var i = 0
         while (i < text.length) {
@@ -179,66 +228,169 @@ internal object Text {
             s.addAttribute(TextAttribute.FONT, f, i, i + n)
             i += n
         }
-        if (p.letterSpacing != 0f) s.addAttribute(TextAttribute.TRACKING, p.letterSpacing)
         return TextLayout(s.iterator, frc)
     }
 
     fun advance(text: String, p: Paint): Float = layout(text, p)?.advance ?: 0f
 }
 
-/** One page's drawing, replayed onto any Graphics2D. */
-class Replay(val g: Graphics2D) {
-    private val stack = ArrayDeque<AffineTransform>()
-    fun push() { stack.addLast(g.transform) }
-    fun pop() { stack.removeLastOrNull()?.let { g.transform = it } }
+/** android.graphics.Path on a Path2D, with Android's arc angles (degrees, clockwise from three o'clock). */
+class Path {
+    enum class Direction { CW, CCW }
+    enum class FillType { WINDING, EVEN_ODD }
+
+    internal val p = Path2D.Float()
+    var fillType: FillType = FillType.WINDING
+        set(value) { field = value; p.windingRule = if (value == FillType.EVEN_ODD) Path2D.WIND_EVEN_ODD else Path2D.WIND_NON_ZERO }
+
+    private fun started() = p.currentPoint != null
+
+    fun moveTo(x: Float, y: Float) = p.moveTo(x, y)
+    fun lineTo(x: Float, y: Float) { if (!started()) p.moveTo(0f, 0f); p.lineTo(x, y) }
+    fun quadTo(x1: Float, y1: Float, x2: Float, y2: Float) { if (!started()) p.moveTo(0f, 0f); p.quadTo(x1, y1, x2, y2) }
+    fun cubicTo(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) { if (!started()) p.moveTo(0f, 0f); p.curveTo(x1, y1, x2, y2, x3, y3) }
+    fun close() { if (started()) p.closePath() }
+    fun reset() = p.reset()
+    fun addRect(r: RectF, dir: Direction) = p.append(Rectangle2D.Float(r.left, r.top, r.width(), r.height()), false)
+    fun addRoundRect(r: RectF, rx: Float, ry: Float, dir: Direction) =
+        p.append(RoundRectangle2D.Float(r.left, r.top, r.width(), r.height(), rx * 2, ry * 2), false)
+    fun addCircle(cx: Float, cy: Float, radius: Float, dir: Direction) =
+        p.append(Ellipse2D.Float(cx - radius, cy - radius, radius * 2, radius * 2), false)
+    fun addOval(r: RectF, dir: Direction) = p.append(Ellipse2D.Float(r.left, r.top, r.width(), r.height()), false)
+    fun arcTo(oval: RectF, startAngle: Float, sweepAngle: Float, forceMoveTo: Boolean = false) {
+        val arc = Arc2D.Float(oval.left, oval.top, oval.width(), oval.height(), -startAngle, -sweepAngle, Arc2D.OPEN)
+        p.append(arc, started() && !forceMoveTo)
+    }
+    fun addArc(oval: RectF, startAngle: Float, sweepAngle: Float) = arcTo(oval, startAngle, sweepAngle, true)
+    fun computeBounds(bounds: RectF, exact: Boolean) {
+        val b = p.bounds2D
+        bounds.set(b.minX.toFloat(), b.minY.toFloat(), b.maxX.toFloat(), b.maxY.toFloat())
+    }
 }
 
-class Canvas(val width: Int, val height: Int) {
+/** android.graphics.Matrix, as far as the cards need it: map a box through the canvas's transform. */
+class Matrix {
+    internal var at = AffineTransform()
+    fun reset() { at = AffineTransform() }
+    fun mapRect(r: RectF): Boolean {
+        val b = at.createTransformedShape(Rectangle2D.Float(r.left, r.top, r.width(), r.height())).bounds2D
+        r.set(b.minX.toFloat(), b.minY.toFloat(), b.maxX.toFloat(), b.maxY.toFloat())
+        return at.type and (AffineTransform.TYPE_GENERAL_ROTATION or AffineTransform.TYPE_GENERAL_TRANSFORM) == 0
+    }
+}
+
+class RadialGradient(
+    private val cx: Float, private val cy: Float, private val radius: Float,
+    private val colors: IntArray, private val positions: FloatArray?, private val tile: Shader.TileMode
+) : Shader() {
+    constructor(cx: Float, cy: Float, radius: Float, c0: Int, c1: Int, tile: Shader.TileMode) :
+        this(cx, cy, radius, intArrayOf(c0, c1), null, tile)
+
+    override fun awt(): java.awt.Paint? {
+        if (radius <= 0f) return java.awt.Color(colors.last(), true)
+        val stops = positions ?: FloatArray(colors.size) { i -> if (colors.size == 1) 0f else i / (colors.size - 1f) }
+        val fixed = stops.copyOf()
+        for (i in 1 until fixed.size) if (fixed[i] <= fixed[i - 1]) fixed[i] = (fixed[i - 1] + 1e-4f).coerceAtMost(1f)
+        val cycle = when (tile) {
+            Shader.TileMode.CLAMP -> MultipleGradientPaint.CycleMethod.NO_CYCLE
+            Shader.TileMode.REPEAT -> MultipleGradientPaint.CycleMethod.REPEAT
+            Shader.TileMode.MIRROR -> MultipleGradientPaint.CycleMethod.REFLECT
+        }
+        return RadialGradientPaint(Point2D.Float(cx, cy), radius, fixed, colors.map { java.awt.Color(it, true) }.toTypedArray(), cycle)
+    }
+}
+
+/** One page's drawing, replayed onto any Graphics2D: the transform and the clip are saved and restored together. */
+class Replay(val g: Graphics2D) {
+    private val stack = ArrayDeque<Pair<AffineTransform, java.awt.Shape?>>()
+    fun push() { stack.addLast(g.transform to g.clip) }
+    fun pop() { stack.removeLastOrNull()?.let { (t, c) -> g.transform = t; g.clip = c } }
+}
+
+/**
+ * Records what is drawn, for replaying. Open, as Android's is: the business
+ * cards measure themselves on a Canvas that only notes where things land.
+ * The current transform is kept while recording, so [getMatrix] answers.
+ */
+open class Canvas(val width: Int = 0, val height: Int = 0) {
     internal val ops = mutableListOf<(Replay) -> Unit>()
     private var depth = 1
+    private var current = AffineTransform()
+    private val saved = ArrayDeque<AffineTransform>()
 
     /** Returns the count to hand to [restoreToCount], as Android does. */
-    fun save(): Int { val before = depth; depth++; ops += { it.push() }; return before }
-    fun restore() { if (depth > 1) { depth--; ops += { it.pop() } } }
+    open fun save(): Int { val before = depth; depth++; saved.addLast(AffineTransform(current)); ops += { it.push() }; return before }
+    open fun restore() { if (depth > 1) { depth--; saved.removeLastOrNull()?.let { current = it }; ops += { it.pop() } } }
     fun restoreToCount(count: Int) { while (depth > count.coerceAtLeast(1)) restore() }
+    val saveCount: Int get() = depth
 
-    fun translate(dx: Float, dy: Float) { ops += { it.g.translate(dx.toDouble(), dy.toDouble()) } }
-    fun scale(sx: Float, sy: Float) { ops += { it.g.scale(sx.toDouble(), sy.toDouble()) } }
-    fun scale(sx: Float, sy: Float, px: Float, py: Float) {
+    fun getMatrix(m: Matrix) { m.at = AffineTransform(current) }
+
+    open fun translate(dx: Float, dy: Float) { current.translate(dx.toDouble(), dy.toDouble()); ops += { it.g.translate(dx.toDouble(), dy.toDouble()) } }
+    open fun scale(sx: Float, sy: Float) { current.scale(sx.toDouble(), sy.toDouble()); ops += { it.g.scale(sx.toDouble(), sy.toDouble()) } }
+    open fun scale(sx: Float, sy: Float, px: Float, py: Float) {
+        current.translate(px.toDouble(), py.toDouble()); current.scale(sx.toDouble(), sy.toDouble()); current.translate(-px.toDouble(), -py.toDouble())
         ops += {
             it.g.translate(px.toDouble(), py.toDouble()); it.g.scale(sx.toDouble(), sy.toDouble()); it.g.translate(-px.toDouble(), -py.toDouble())
         }
     }
-    fun rotate(degrees: Float) { ops += { it.g.rotate(Math.toRadians(degrees.toDouble())) } }
-    fun rotate(degrees: Float, px: Float, py: Float) { ops += { it.g.rotate(Math.toRadians(degrees.toDouble()), px.toDouble(), py.toDouble()) } }
-
-    fun drawColor(color: Int) {
-        ops += { r -> r.g.color = java.awt.Color(color, true); r.g.fill(Rectangle2D.Float(-10_000f, -10_000f, 20_000f, 20_000f)) }
+    open fun rotate(degrees: Float) { current.rotate(Math.toRadians(degrees.toDouble())); ops += { it.g.rotate(Math.toRadians(degrees.toDouble())) } }
+    open fun rotate(degrees: Float, px: Float, py: Float) {
+        current.rotate(Math.toRadians(degrees.toDouble()), px.toDouble(), py.toDouble())
+        ops += { it.g.rotate(Math.toRadians(degrees.toDouble()), px.toDouble(), py.toDouble()) }
     }
 
-    fun drawRect(left: Float, top: Float, right: Float, bottom: Float, paint: Paint) =
-        shape(Rectangle2D.Float(left, top, right - left, bottom - top), paint)
+    open fun clipRect(left: Float, top: Float, right: Float, bottom: Float): Boolean {
+        ops += { it.g.clip(Rectangle2D.Float(left, top, right - left, bottom - top)) }; return true
+    }
+    fun clipRect(r: RectF): Boolean = clipRect(r.left, r.top, r.right, r.bottom)
+    fun clipRect(r: Rect): Boolean = clipRect(RectF(r))
+    fun clipRect(left: Int, top: Int, right: Int, bottom: Int): Boolean = clipRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
+    open fun clipPath(path: Path): Boolean { val shape = Path2D.Float(path.p); ops += { it.g.clip(shape) }; return true }
 
-    fun drawRect(r: RectF, paint: Paint) = drawRect(r.left, r.top, r.right, r.bottom, paint)
+    open fun drawColor(color: Int) {
+        ops += { r ->
+            val g = r.g
+            val old = g.transform
+            g.transform = AffineTransform()
+            g.color = java.awt.Color(color, true)
+            g.fill(g.clip ?: Rectangle2D.Float(-100_000f, -100_000f, 200_000f, 200_000f))
+            g.transform = old
+        }
+    }
+
+    open fun drawRect(left: Float, top: Float, right: Float, bottom: Float, paint: Paint) =
+        shape(Rectangle2D.Float(minOf(left, right), minOf(top, bottom), kotlin.math.abs(right - left), kotlin.math.abs(bottom - top)), paint)
+
+    open fun drawRect(rect: RectF, paint: Paint) = drawRect(rect.left, rect.top, rect.right, rect.bottom, paint)
     fun drawRect(r: Rect, paint: Paint) = drawRect(RectF(r), paint)
 
-    fun drawRoundRect(r: RectF, rx: Float, ry: Float, paint: Paint) =
-        shape(RoundRectangle2D.Float(r.left, r.top, r.width(), r.height(), rx * 2, ry * 2), paint)
+    open fun drawRoundRect(rect: RectF, rx: Float, ry: Float, paint: Paint) =
+        shape(RoundRectangle2D.Float(rect.left, rect.top, rect.width(), rect.height(), rx * 2, ry * 2), paint)
 
-    fun drawRoundRect(left: Float, top: Float, right: Float, bottom: Float, rx: Float, ry: Float, paint: Paint) =
+    open fun drawRoundRect(left: Float, top: Float, right: Float, bottom: Float, rx: Float, ry: Float, paint: Paint) =
         drawRoundRect(RectF(left, top, right, bottom), rx, ry, paint)
 
-    fun drawCircle(cx: Float, cy: Float, radius: Float, paint: Paint) =
+    open fun drawCircle(cx: Float, cy: Float, radius: Float, paint: Paint) =
         shape(Ellipse2D.Float(cx - radius, cy - radius, radius * 2, radius * 2), paint)
 
-    fun drawOval(r: RectF, paint: Paint) = shape(Ellipse2D.Float(r.left, r.top, r.width(), r.height()), paint)
+    open fun drawOval(oval: RectF, paint: Paint) = shape(Ellipse2D.Float(oval.left, oval.top, oval.width(), oval.height()), paint)
+    open fun drawOval(left: Float, top: Float, right: Float, bottom: Float, paint: Paint) = drawOval(RectF(left, top, right, bottom), paint)
 
-    fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, paint: Paint) {
+    open fun drawArc(oval: RectF, startAngle: Float, sweepAngle: Float, useCenter: Boolean, paint: Paint) =
+        shape(Arc2D.Float(oval.left, oval.top, oval.width(), oval.height(), -startAngle, -sweepAngle, if (useCenter) Arc2D.PIE else Arc2D.OPEN), paint)
+
+    open fun drawArc(left: Float, top: Float, right: Float, bottom: Float, startAngle: Float, sweepAngle: Float, useCenter: Boolean, paint: Paint) =
+        drawArc(RectF(left, top, right, bottom), startAngle, sweepAngle, useCenter, paint)
+
+    open fun drawPath(path: Path, paint: Paint) = shape(Path2D.Float(path.p).apply { windingRule = path.p.windingRule }, paint)
+
+    open fun drawLine(startX: Float, startY: Float, stopX: Float, stopY: Float, paint: Paint) {
         val p = Paint(paint)
-        ops += { r -> setup(r.g, p); r.g.stroke = stroke(p); r.g.draw(Line2D.Float(x1, y1, x2, y2)) }
+        ops += { r -> setup(r.g, p); r.g.stroke = stroke(p); r.g.draw(Line2D.Float(startX, startY, stopX, stopY)) }
     }
 
-    fun drawText(text: String, x: Float, y: Float, paint: Paint) {
+    open fun drawText(text: String, x: Float, y: Float, paint: Paint) {
         val p = Paint(paint)
         ops += { r ->
             Text.layout(text, p)?.let { layout ->
@@ -259,7 +411,11 @@ class Canvas(val width: Int, val height: Int) {
         }
     }
 
-    fun drawBitmap(bmp: Bitmap, src: Rect?, dst: RectF, paint: Paint?) {
+    open fun drawText(text: String, start: Int, end: Int, x: Float, y: Float, paint: Paint) = drawText(text.substring(start, end), x, y, paint)
+    open fun drawText(text: CharSequence, start: Int, end: Int, x: Float, y: Float, paint: Paint) = drawText(text.subSequence(start, end).toString(), x, y, paint)
+    open fun drawText(text: CharArray, index: Int, count: Int, x: Float, y: Float, paint: Paint) = drawText(String(text, index, count), x, y, paint)
+
+    open fun drawBitmap(bmp: Bitmap, src: Rect?, dst: RectF, paint: Paint?) {
         val p = paint?.let { Paint(it) }
         ops += { r ->
             val g = r.g
@@ -298,21 +454,39 @@ class Canvas(val width: Int, val height: Int) {
         g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
         g.paint = p.shader?.awt() ?: java.awt.Color(p.color, true)
+        // A shader keeps the paint's alpha, as on Android.
+        if (p.shader != null && p.alpha < 255) g.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, p.alpha / 255f)
+        else g.composite = AlphaComposite.SrcOver
     }
 
     private fun stroke(p: Paint): BasicStroke {
         val cap = when (p.strokeCap) { Paint.Cap.BUTT -> BasicStroke.CAP_BUTT; Paint.Cap.ROUND -> BasicStroke.CAP_ROUND; Paint.Cap.SQUARE -> BasicStroke.CAP_SQUARE }
+        val join = when (p.strokeJoin) { Paint.Join.MITER -> BasicStroke.JOIN_MITER; Paint.Join.ROUND -> BasicStroke.JOIN_ROUND; Paint.Join.BEVEL -> BasicStroke.JOIN_BEVEL }
         val dash = (p.pathEffect as? DashPathEffect)?.intervals?.takeIf { it.isNotEmpty() && it.any { v -> v > 0f } }
-        return if (dash != null) BasicStroke(p.strokeWidth, cap, BasicStroke.JOIN_MITER, 10f, dash, (p.pathEffect as DashPathEffect).phase)
-        else BasicStroke(p.strokeWidth, cap, BasicStroke.JOIN_MITER)
+        return if (dash != null) BasicStroke(p.strokeWidth, cap, join, 10f, dash, (p.pathEffect as DashPathEffect).phase)
+        else BasicStroke(p.strokeWidth, cap, join, 4f)
     }
 
     /** Plays this page onto [g], in the page's own units (points). */
     fun replay(g: Graphics2D) {
         val r = Replay(g)
         val start = g.transform
+        val clip = g.clip
         ops.forEach { it(r) }
         g.transform = start
+        g.clip = clip
+        g.composite = AlphaComposite.SrcOver
+    }
+
+    /** This canvas drawn into a new picture of [w] x [h] pixels on [background]. */
+    fun picture(w: Int, h: Int, background: Int = Color.WHITE): BufferedImage {
+        val img = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
+        val g = img.createGraphics()
+        g.color = java.awt.Color(background, true)
+        g.fillRect(0, 0, w, h)
+        replay(g)
+        g.dispose()
+        return img
     }
 }
 

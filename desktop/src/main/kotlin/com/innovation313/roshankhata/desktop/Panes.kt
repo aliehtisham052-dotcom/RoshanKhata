@@ -58,6 +58,7 @@ enum class Section(val word: String, val icon: String, val tile: String) {
     BUY_RATES(W.sr_title, "ic_tile_supplier_rates", "tile_zakat_bg"),
     RATES(W.rate_list_title, "ic_tile_price_list", "tile_calc_bg"),
     INVOICES(W.nav_invoice, "ic_tile_invoice", "tile_invoice_bg"),
+    CARD(W.biz_card, "ic_tile_card", "tile_card_bg"),
     REPORT(W.ledger_report_title, "ic_tile_backup", "tile_backup_bg"),
     CASHFLOW(W.cf_title, "ic_tile_cashflow", "tile_insights_bg"),
     REGISTER(W.register_title, "ic_tile_price_list", "tile_invoice_bg"),

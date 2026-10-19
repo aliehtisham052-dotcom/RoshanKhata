@@ -18,6 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,7 +41,7 @@ import com.innovation313.roshankhata.words.word
  * informs and never blocks, as on the phone.
  */
 @Composable
-fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) -> Unit, onCancel: () -> Unit) {
+fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) -> Unit, onCancel: () -> Unit, home: java.io.File? = null) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf(existing?.name.orEmpty()) }
     var phone by remember { mutableStateOf(existing?.phone.orEmpty()) }
@@ -46,6 +49,10 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
     var village by remember { mutableStateOf(existing?.village.orEmpty()) }
     var customer by remember { mutableStateOf(existing?.isCustomer ?: true) }
     var limit by remember { mutableStateOf(existing?.creditLimit?.let { Calc.trim(it) }.orEmpty()) }
+    var photo by remember { mutableStateOf(existing?.photoPath) }
+    var photoVersion by remember { mutableStateOf(0) }
+    var photoFailed by remember { mutableStateOf(false) }
+    val photoTitle = word(W.set_photo)
     val others = remember(book, existing) {
         book.filter { it.id != existing?.id }.map { DuplicateDetector.Candidate(it.id, it.name, it.phone, it.isCustomer, it.balance) }
     }
@@ -64,6 +71,27 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
         }
         OutlinedTextField(father, { father = it }, label = { Text(word(W.father_name_optional)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(village, { village = it }, label = { Text(word(W.village_optional)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        if (existing != null && home != null) {
+            // A face to know the customer by (the phone's party photo): kept on this computer only.
+            val bmp = remember(photo, photoVersion) { Photos.bitmap(photo, 240) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.foundation.layout.Box(
+                    Modifier.size(72.dp).clip(androidx.compose.foundation.shape.CircleShape).background(c.pageBg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    bmp?.let { androidx.compose.foundation.Image(it, contentDescription = word(W.party_photo), modifier = Modifier.size(72.dp), contentScale = androidx.compose.ui.layout.ContentScale.Crop) }
+                }
+                TextButton({
+                    Photos.pick(photoTitle)?.let { src ->
+                        val target = Photos.partyFile(home, existing.id)
+                        if (Photos.save(src, target, max = 600)) { photo = target.absolutePath; photoVersion++; photoFailed = false } else photoFailed = true
+                    }
+                }) { Text(word(if (bmp == null) W.set_photo else W.change_photo), color = c.brandGreenText) }
+                if (photo != null) TextButton({ photo = null }) { Text(word(W.remove_photo), color = c.owedToMe) }
+            }
+            if (photoFailed) Text(word(W.photo_save_failed), color = c.owedToMe, fontSize = 12.sp)
+            Text(word(W.photo_privacy_note), color = c.textMuted, fontSize = 11.sp)
+        }
         if (existing != null) {
             Text(word(W.credit_limit), color = c.ink, fontWeight = FontWeight.Bold)
             OutlinedTextField(limit, { limit = it }, label = { Text(word(W.credit_limit_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
@@ -78,6 +106,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
                     base.copy(
                         name = name.trim(), phone = typed(phone), fatherName = typed(father), village = typed(village),
                         isCustomer = customer,
+                        photoPath = if (existing == null) null else photo,
                         // A cleared limit is "no limit", never zero.
                         creditLimit = if (existing == null) null else Calc.evalAmount(limit)
                     )

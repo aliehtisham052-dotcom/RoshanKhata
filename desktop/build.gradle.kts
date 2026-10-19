@@ -20,6 +20,8 @@ dependencies {
     implementation(compose.desktop.currentOs)
     // Dispatchers.Main on the desktop is Swing's event thread.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
+    // The business cards' QR (the phone's own library, pure Java).
+    implementation("com.google.zxing:core:3.5.3")
     testImplementation("junit:junit:4.13.2")
 }
 
@@ -30,7 +32,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.5.0"
+            packageVersion = "1.6.0"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
@@ -67,7 +69,9 @@ val syncPrintAssets by tasks.registering(Sync::class) {
     from(rootProject.file("app/src/main/res/font")) {
         include(
             "sora_variable.ttf", "manrope_regular.ttf", "manrope_bold.ttf", "playfair_display_variable.ttf",
-            "ibm_plex_mono_regular.ttf", "ibm_plex_mono_bold.ttf"
+            "ibm_plex_mono_regular.ttf", "ibm_plex_mono_bold.ttf",
+            // Urdu business cards are set in Nastaliq, as on the phone.
+            "noto_nastaliq_urdu.ttf"
         )
         into("fonts")
     }
