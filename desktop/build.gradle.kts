@@ -50,3 +50,13 @@ compose.desktop {
         }
     }
 }
+
+// The phone's own Home tile icons and their day/night colours, copied at build
+// time (never by hand), so the computer's sections wear the same pictures.
+val syncTileIcons by tasks.registering(Sync::class) {
+    from(rootProject.file("app/src/main/res")) {
+        include("drawable/ic_tile_*.xml", "values/colors.xml", "values-night/colors.xml")
+    }
+    into(layout.buildDirectory.dir("tileRes/tiles"))
+}
+sourceSets["main"].resources.srcDir(syncTileIcons.map { it.destinationDir.parentFile })

@@ -1,16 +1,20 @@
 package com.innovation313.roshankhata.desktop
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -37,42 +41,57 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 
 /** The parts of the book the computer has, in the phone's Home order (KMP Phase 7). */
-enum class Section(val word: String) {
-    KHATA(W.nav_khata),
-    CASHBOOK(W.nav_cashbook),
-    CHEQUES(W.nav_cheques),
-    PLANS(W.nav_plans),
-    STAFF(W.staff_title),
-    BILLS(W.supplier_bills),
-    EXPIRY(W.tile_expiry),
-    PRODUCTS(W.tile_products),
-    RATES(W.rate_list_title),
-    INVOICES(W.nav_invoice),
-    REPORT(W.ledger_report_title),
-    INSIGHTS(W.insights_title),
-    ZAKAT(W.tile_zakat),
-    SHOP(W.business_profile)
+/** [icon] and [tile]: the phone's Home tile picture and its background colour for the same place. */
+enum class Section(val word: String, val icon: String, val tile: String) {
+    KHATA(W.nav_khata, "ic_tile_khata", "tile_khata_bg"),
+    CASHBOOK(W.nav_cashbook, "ic_tile_cashbook", "tile_cashbook_bg"),
+    CHEQUES(W.nav_cheques, "ic_tile_cheques", "tile_cheques_bg"),
+    PLANS(W.nav_plans, "ic_tile_plans", "tile_plans_bg"),
+    STAFF(W.staff_title, "ic_tile_followup", "tile_followup_bg"),
+    BILLS(W.supplier_bills, "ic_tile_bills", "tile_bills_bg"),
+    EXPIRY(W.tile_expiry, "ic_tile_expiring", "tile_stock_bg"),
+    PRODUCTS(W.tile_products, "ic_tile_products", "tile_bills_bg"),
+    RATES(W.rate_list_title, "ic_tile_price_list", "tile_calc_bg"),
+    INVOICES(W.nav_invoice, "ic_tile_invoice", "tile_invoice_bg"),
+    REPORT(W.ledger_report_title, "ic_tile_cashflow", "tile_insights_bg"),
+    INSIGHTS(W.insights_title, "ic_tile_insights", "tile_insights_bg"),
+    ZAKAT(W.tile_zakat, "ic_tile_zakat", "tile_zakat_bg"),
+    SHOP(W.business_profile, "ic_tile_settings", "tile_settings_bg")
 }
 
 /** The rail on the start side: one row per section, the open one filled. */
 @Composable
 fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier = Modifier) {
     val c = LocalRoshanColors.current
-    // Scrolls: ten sections can outgrow a 768-row laptop at 125% display scale.
-    Column(modifier.width(190.dp).fillMaxHeight().background(c.surface).verticalScroll(rememberScrollState()).padding(vertical = 12.dp)) {
+    // Scrolls: fourteen sections can outgrow a 768-row laptop at 125% display scale.
+    Column(modifier.width(210.dp).fillMaxHeight().background(c.surface).verticalScroll(rememberScrollState()).padding(vertical = 12.dp)) {
+        val dark = isSystemInDarkTheme()
         Section.entries.forEach { s ->
             val on = s == current
-            Text(
-                word(s.word),
+            Row(
                 Modifier.fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 3.dp)
                     .background(if (on) c.brandGreen else Color.Transparent, RoundedCornerShape(10.dp))
                     .clickable { onPick(s) }
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                color = if (on) Color.White else c.ink,
-                fontSize = 16.sp,
-                fontWeight = if (on) FontWeight.Bold else FontWeight.Medium
-            )
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // The phone's tile: its own picture on its own tint.
+                Box(
+                    Modifier.size(34.dp).background(TileIcons.color(s.tile, dark) ?: c.pageBg, RoundedCornerShape(9.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    tileIcon(s.icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(22.dp)) }
+                }
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    word(s.word),
+                    color = if (on) Color.White else c.ink,
+                    fontSize = 15.sp,
+                    fontWeight = if (on) FontWeight.Bold else FontWeight.Medium,
+                    maxLines = 2
+                )
+            }
         }
     }
 }
