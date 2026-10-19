@@ -105,13 +105,26 @@ fun main() = application {
     // The app's language: the owner's choice (app.properties), else the computer's.
     val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
+    // The second place for the copies (USB, Google Drive folder): today's copy there on opening,
+    // and again on closing so the day's last work leaves the computer too. A missing stick
+    // never stops the app; the Daily copies page says it could not be reached.
+    var outsideFolder by remember { mutableStateOf(appPrefs.backupFolder()) }
+    val outsideDir = outsideFolder?.let { DailyCopies.outside(it, active) }
+    LaunchedEffect(db, outsideDir) {
+        if (outsideDir != null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
+    }
     val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
     val words = remember(locale) { desktopWords(locale) }
     val rtl = BidiPort.isRtlLocale(locale)
     // Keyboard shortcuts for the counter (Phase 9a): the open page fills these in.
     val keys = remember { KeyActions() }
     Window(
-        onCloseRequest = { db.close(); exitApplication() },
+        onCloseRequest = {
+            outsideDir?.let { dir ->
+                runCatching { kotlinx.coroutines.runBlocking { kotlinx.coroutines.withTimeoutOrNull(20_000) { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } } }
+            }
+            db.close(); exitApplication()
+        },
         onPreviewKeyEvent = { keys.handle(it) },
         title = words.text(W.app_name),
         icon = painterResource("roshan_khata_icon.png"),
@@ -135,7 +148,10 @@ fun main() = application {
                         businesses = businesses,
                         activeBusiness = active,
                         onSwitch = { id -> businesses.switchTo(id); active = id },
-                        dailyDir = dailyDir
+                        dailyDir = dailyDir,
+                        outsideFolder = outsideFolder,
+                        outsideDir = outsideDir,
+                        onBackupFolder = { f -> appPrefs.setBackupFolder(f); outsideFolder = f }
                     ) }
                 }
             }
@@ -196,7 +212,10 @@ private fun Book(
     businesses: Businesses,
     activeBusiness: Long,
     onSwitch: (Long) -> Unit,
-    dailyDir: File
+    dailyDir: File,
+    outsideFolder: File?,
+    outsideDir: File?,
+    onBackupFolder: (File?) -> Unit
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -211,9 +230,14 @@ private fun Book(
     var entryWay by remember { mutableStateOf<Boolean?>(null) }
     var addParty by remember { mutableStateOf(false) }
     var backedUp by remember { mutableStateOf<String?>(null) }
+    // A finished export or import: (title, what happened).
+    var told by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var importing by remember { mutableStateOf<Pair<List<com.innovation313.roshankhata.data.CsvImport.Row>, Int>?>(null) }
     var choosingLanguage by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<LedgerEntry?>(null) }
     var deleting by remember { mutableStateOf<LedgerEntry?>(null) }
+    // A receipt waiting for the owner to pick the thermal printer (Phase 9e).
+    var receipt by remember { mutableStateOf<List<ThermalReceipt.Line>?>(null) }
     var halves by remember { mutableStateOf<Pair<LedgerEntry, LedgerEntry>?>(null) }
     var bin by remember { mutableStateOf(false) }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
@@ -339,7 +363,7 @@ private fun Book(
                 Section.HELP -> Box(Modifier.weight(1f)) { HelpPane(words) }
                 Section.REGISTER -> Box(Modifier.weight(1f)) { RegisterPane(dao, words, rtl, shop, reload) }
                 Section.STOCK -> Box(Modifier.weight(1f)) { StockPane(dao, words, rtl, shop, reload) }
-                Section.DAILY -> Box(Modifier.weight(1f)) { DailyCopiesPane(dao, settings, dailyDir) { shop = shopName(); reload++ } }
+                Section.DAILY -> Box(Modifier.weight(1f)) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder) { shop = shopName(); reload++ } }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
@@ -392,11 +416,35 @@ private fun Book(
                                 val file = File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
                                 val headers = listOf(words.text(W.name), words.text(W.bp_phone), words.text(W.net_balance))
                                 scope.launch {
-                                    backedUp = runCatching {
+                                    told = words.text(W.export_excel) to runCatching {
                                         withContext(Dispatchers.IO) { file.writeText(BookExport.customersCsv(parties, headers), Charsets.UTF_8) }
                                     }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
                                 }
                             }, enabled = parties.isNotEmpty()) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp) }
+                            TextButton({
+                                val dialog = FileDialog(null as Frame?, words.text(W.import_csv), FileDialog.LOAD)
+                                startIn(dialog, "Downloads")
+                                dialog.isVisible = true
+                                val name = dialog.file ?: return@TextButton
+                                val file = File(dialog.directory, name)
+                                scope.launch {
+                                    val rows = withContext(Dispatchers.IO) {
+                                        runCatching { com.innovation313.roshankhata.data.CsvImport.parse(file.readText(Charsets.UTF_8)) }.getOrDefault(emptyList())
+                                    }
+                                    if (rows.isEmpty()) {
+                                        told = words.text(W.import_csv) to words.text(W.import_csv_empty)
+                                    } else {
+                                        // Already in the book, or twice in the file: brought in once, never doubled.
+                                        val seen = parties.toMutableList()
+                                        val fresh = rows.filter { r ->
+                                            !com.innovation313.roshankhata.data.CsvImport.alreadyIn(r, seen).also { dup ->
+                                                if (!dup) seen += PartyWithBalance(0, r.name, r.phone, true, null, 0.0)
+                                            }
+                                        }
+                                        importing = fresh to (rows.size - fresh.size)
+                                    }
+                                }
+                            }) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp) }
                             TextButton({
                                 scope.launch {
                                     val owing = parties.filter { kotlin.math.abs(it.balance) >= 0.005 }.sortedBy { it.name.lowercase() }
@@ -588,7 +636,29 @@ private fun Book(
                         }
                     },
                     onCancel = { editing = null },
-                    onDelete = { deleting = e; editing = null }
+                    onDelete = { deleting = e; editing = null },
+                    onPrint = {
+                        val item = loaded.firstOrNull()
+                        receipt = listOfNotNull(
+                            ThermalReceipt.Line(shopName() ?: words.text(W.app_name), 26f, bold = true, centre = true),
+                            ThermalReceipt.Line(Format.dateTime(e.timestamp) + "  " + e.entryNumber, 18f, centre = true),
+                            ThermalReceipt.Line(""),
+                            ThermalReceipt.Line(Format.name(forParty?.name.orEmpty()), 24f, bold = true),
+                            forParty?.phone?.let { ThermalReceipt.Line(it, 18f) },
+                            ThermalReceipt.Line(words.text(if (e.isGiven) W.you_gave else W.you_got), 22f),
+                            ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true),
+                            item?.takeIf { !it.itemName.isNullOrBlank() }?.let { i ->
+                                ThermalReceipt.Line(
+                                    listOfNotNull(i.itemName, i.quantity?.let { q -> com.innovation313.roshankhata.ui.Calc.trim(q) + (i.unit?.let { u -> " $u" } ?: "") },
+                                        i.rate?.let { r -> "@ " + Format.money(r) }).joinToString("  "), 20f
+                                )
+                            },
+                            e.note?.takeIf { it.isNotBlank() }?.let { ThermalReceipt.Line(it, 18f) },
+                            ThermalReceipt.Line(""),
+                            forParty?.let { p -> ThermalReceipt.Line(words.text(W.net_balance) + ": " + Format.money(p.balance), 22f, bold = true) },
+                            ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
+                        )
+                    }
                 )
             }
         }
@@ -745,6 +815,35 @@ private fun Book(
                 )
             }
         }
+    }
+    receipt?.let { lines ->
+        PrinterChoiceDialog(remember { ThermalReceipt.printers() }, onCancel = { receipt = null }) { printer ->
+            receipt = null
+            scope.launch {
+                val ok = withContext(Dispatchers.IO) { ThermalReceipt.send(printer, ThermalReceipt.bytes(lines, rtl)) }
+                if (ok) ThermalReceipt.lastPrinter = printer
+                told = words.text(W.print_receipt) to words.text(if (ok) W.print_done else W.print_failed)
+            }
+        }
+    }
+    importing?.let { (fresh, skipped) ->
+        ImportPreviewDialog(fresh, skipped, onCancel = { importing = null }) { rows ->
+            importing = null
+            scope.launch {
+                told = words.text(W.import_csv) to runCatching {
+                    withContext(Dispatchers.IO) { dao.importOpeningBalances(rows, words.text(W.pdf_stmt_opening)) }
+                }.map { words.text(W.import_csv_done, it) }.getOrElse { it.message ?: it.toString() }
+                reload++
+            }
+        }
+    }
+    told?.let { (title, text) ->
+        AlertDialog(
+            onDismissRequest = { told = null },
+            title = { Text(title) },
+            confirmButton = { TextButton({ told = null }) { Text(word(W.ok)) } },
+            text = { Text(text) }
+        )
     }
     backedUp?.let { text ->
         AlertDialog(

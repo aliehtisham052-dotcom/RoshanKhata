@@ -749,6 +749,25 @@ interface KhataDao {
         return entryId
     }
 
+    /**
+     * Customers brought in from another app (CsvImport): one party each and,
+     * when the balance is not zero, one opening entry carrying it. All or
+     * nothing: a file that fails half way leaves the book as it was.
+     * Returns how many parties were added.
+     */
+    @Transaction
+    suspend fun importOpeningBalances(rows: List<CsvImport.Row>, note: String, now: Long = System.currentTimeMillis()): Int {
+        rows.forEach { r ->
+            val id = insertParty(Party(name = r.name, phone = r.phone, isCustomer = true))
+            if (kotlin.math.abs(r.balance) >= 0.005) {
+                insertEntryNumbered(
+                    LedgerEntry(partyId = id, amount = kotlin.math.abs(r.balance), isGiven = r.balance > 0, note = note, entryNumber = "", timestamp = now)
+                )
+            }
+        }
+        return rows.size
+    }
+
     @Query("SELECT * FROM installments WHERE planId = :planId AND isDeleted = 0 ORDER BY paidAt DESC")
     fun observeInstallments(planId: Long): Flow<List<Installment>>
 

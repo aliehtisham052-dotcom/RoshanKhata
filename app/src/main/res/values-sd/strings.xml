@@ -2919,4 +2919,22 @@
     <string name="entry_due_none">ادائگي جي تاريخ: شامل ڪريو</string>
     <string name="entry_due_set">ادائگي جي تاريخ: %1$s</string>
     <string name="entry_due_in_days">%1$s ڏينهن ۾ · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">ڪنهن فولڊر ۾ به ڪاپي رکو</string>
+    <string name="auto_folder_help">يو ايس بي يا هن ڪمپيوٽر تي گوگل ڊرائيو جو فولڊر چونڊيو. هر ڏينهن جي ڪاپي اتي به محفوظ ٿيندي، ته جيئن ڪمپيوٽر خراب يا گم ٿي وڃي تڏهن به کاتو محفوظ رهي.</string>
+    <string name="auto_folder_choose">فولڊر چونڊيو</string>
+    <string name="auto_folder_stop">ڪاپي بند ڪريو</string>
+    <string name="auto_folder_none">اڃا ڪو فولڊر نه چونڊيو ويو آهي.</string>
+    <string name="auto_folder_last">اتي آخري ڪاپي: %1$s</string>
+    <string name="auto_folder_missing">هي فولڊر هن وقت پهچ ۾ ناهي. يو ايس بي لڳايو، يا ٻيو فولڊر چونڊيو.</string>
+    <string name="import_csv">گراهڪ امپورٽ ڪريو</string>
+    <string name="import_csv_help">ٻي کاتي واري ايپ مان گراهڪ آڻيو: نالي، فون ۽ بيلنس واري CSV فائل. هر گراهڪ پنهنجي بيلنس سان هڪ شروعاتي داخلا طور ايندو.</string>
+    <string name="import_csv_found">فائل ۾ گراهڪ: %1$d · ڪل %2$s</string>
+    <string name="import_csv_skipped">اڳ ۾ ئي کاتي ۾، جيئن جو تيئن ڇڏيا ويا: %1$d</string>
+    <string name="import_csv_sign">هن فائل ۾ مثبت بيلنس جو مطلب آهي:</string>
+    <string name="import_csv_owes_me">انهن مون کي ڏيڻو آهي</string>
+    <string name="import_csv_i_owe">مون انهن کي ڏيڻو آهي</string>
+    <string name="import_csv_go">انهن کي آڻيو</string>
+    <string name="import_csv_done">گراهڪ شامل ٿيا: %1$d</string>
+    <string name="import_csv_empty">هن فائل مان ڪو به گراهڪ پڙهي نه سگهيو. ان ۾ گهٽ ۾ گهٽ نالن جو هڪ ڪالم هجڻ گهرجي.</string>
 </resources>

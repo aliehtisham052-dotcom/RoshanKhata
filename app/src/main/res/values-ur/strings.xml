@@ -2891,4 +2891,22 @@
     <string name="entry_due_none">ادائیگی کی تاریخ: شامل کریں</string>
     <string name="entry_due_set">ادائیگی کی تاریخ: %1$s</string>
     <string name="entry_due_in_days">%1$s دن میں · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">کسی فولڈر میں بھی کاپی رکھیں</string>
+    <string name="auto_folder_help">یو ایس بی یا اس کمپیوٹر پر گوگل ڈرائیو کا فولڈر چنیں۔ ہر دن کی کاپی وہاں بھی محفوظ ہو گی، تاکہ کمپیوٹر خراب یا گم ہو جائے تب بھی کھاتہ محفوظ رہے۔</string>
+    <string name="auto_folder_choose">فولڈر چنیں</string>
+    <string name="auto_folder_stop">کاپی بند کریں</string>
+    <string name="auto_folder_none">ابھی کوئی فولڈر نہیں چنا گیا۔</string>
+    <string name="auto_folder_last">وہاں آخری کاپی: %1$s</string>
+    <string name="auto_folder_missing">یہ فولڈر ابھی دستیاب نہیں۔ یو ایس بی لگائیں، یا کوئی اور فولڈر چنیں۔</string>
+    <string name="import_csv">گاہک امپورٹ کریں</string>
+    <string name="import_csv_help">کسی دوسری کھاتہ ایپ سے گاہک لائیں: نام، فون اور بیلنس والی CSV فائل۔ ہر گاہک اپنے بیلنس کے ساتھ ایک ابتدائی اندراج کے طور پر آئے گا۔</string>
+    <string name="import_csv_found">فائل میں گاہک: %1$d · کل %2$s</string>
+    <string name="import_csv_skipped">پہلے سے کھاتے میں، جوں کے توں چھوڑ دیے: %1$d</string>
+    <string name="import_csv_sign">اس فائل میں مثبت بیلنس کا مطلب ہے:</string>
+    <string name="import_csv_owes_me">انہوں نے مجھے دینا ہے</string>
+    <string name="import_csv_i_owe">میں نے انہیں دینا ہے</string>
+    <string name="import_csv_go">انہیں لے آئیں</string>
+    <string name="import_csv_done">گاہک شامل ہوئے: %1$d</string>
+    <string name="import_csv_empty">اس فائل سے کوئی گاہک نہیں پڑھا جا سکا۔ اس میں کم از کم ناموں کا ایک کالم ہونا چاہیے۔</string>
 </resources>

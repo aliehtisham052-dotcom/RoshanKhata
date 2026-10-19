@@ -3105,4 +3105,22 @@ You can change this any time from this screen.</string>
     <string name="entry_due_none">Payment due: add a date</string>
     <string name="entry_due_set">Payment due: %1$s</string>
     <string name="entry_due_in_days">In %1$s days · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">Also copy to a folder</string>
+    <string name="auto_folder_help">Choose a USB stick, or the Google Drive folder on this computer. Each day\'s copy is also saved there, so the ledger survives even if this computer is lost or broken.</string>
+    <string name="auto_folder_choose">Choose folder</string>
+    <string name="auto_folder_stop">Stop copying</string>
+    <string name="auto_folder_none">No folder chosen yet.</string>
+    <string name="auto_folder_last">Last copy there: %1$s</string>
+    <string name="auto_folder_missing">That folder cannot be reached right now. Plug in the USB stick, or choose another folder.</string>
+    <string name="import_csv">Import customers</string>
+    <string name="import_csv_help">Bring customers from another ledger app: a CSV file with name, phone and balance. Each customer comes in with their balance as one opening entry.</string>
+    <string name="import_csv_found">Customers in the file: %1$d · total %2$s</string>
+    <string name="import_csv_skipped">Already in your khata, left as they are: %1$d</string>
+    <string name="import_csv_sign">In this file, a positive balance means:</string>
+    <string name="import_csv_owes_me">They owe me</string>
+    <string name="import_csv_i_owe">I owe them</string>
+    <string name="import_csv_go">Bring them in</string>
+    <string name="import_csv_done">Customers added: %1$d</string>
+    <string name="import_csv_empty">No customers could be read from this file. It needs at least a column of names.</string>
 </resources>

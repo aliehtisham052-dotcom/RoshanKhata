@@ -2935,4 +2935,22 @@
     <string name="entry_due_none">পরিশোধের তারিখ: তারিখ যোগ করুন</string>
     <string name="entry_due_set">পরিশোধের তারিখ: %1$s</string>
     <string name="entry_due_in_days">%1$s দিনে · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">একটি ফোল্ডারেও কপি রাখুন</string>
+    <string name="auto_folder_help">একটি USB বা এই কম্পিউটারের Google Drive ফোল্ডার বেছে নিন। প্রতিদিনের কপি সেখানেও সেভ হবে, যাতে কম্পিউটার হারালে বা নষ্ট হলেও খাতা নিরাপদ থাকে।</string>
+    <string name="auto_folder_choose">ফোল্ডার বেছে নিন</string>
+    <string name="auto_folder_stop">কপি বন্ধ করুন</string>
+    <string name="auto_folder_none">এখনও কোনো ফোল্ডার বেছে নেওয়া হয়নি।</string>
+    <string name="auto_folder_last">সেখানে শেষ কপি: %1$s</string>
+    <string name="auto_folder_missing">এই ফোল্ডারে এখন পৌঁছানো যাচ্ছে না। USB লাগান, অথবা অন্য ফোল্ডার বেছে নিন।</string>
+    <string name="import_csv">গ্রাহক ইমপোর্ট করুন</string>
+    <string name="import_csv_help">অন্য খাতা অ্যাপ থেকে গ্রাহক আনুন: নাম, ফোন ও ব্যালেন্সসহ একটি CSV ফাইল। প্রত্যেক গ্রাহক তার ব্যালেন্স নিয়ে একটি প্রারম্ভিক এন্ট্রি হিসেবে আসবে।</string>
+    <string name="import_csv_found">ফাইলে গ্রাহক: %1$d · মোট %2$s</string>
+    <string name="import_csv_skipped">আগে থেকেই খাতায় আছে, যেমন ছিল তেমন রাখা হলো: %1$d</string>
+    <string name="import_csv_sign">এই ফাইলে ধনাত্মক ব্যালেন্স মানে:</string>
+    <string name="import_csv_owes_me">তারা আমার কাছে দেনা</string>
+    <string name="import_csv_i_owe">আমি তাদের কাছে দেনা</string>
+    <string name="import_csv_go">তাদের নিয়ে আসুন</string>
+    <string name="import_csv_done">গ্রাহক যোগ হলো: %1$d</string>
+    <string name="import_csv_empty">এই ফাইল থেকে কোনো গ্রাহক পড়া যায়নি। এতে অন্তত নামের একটি কলাম থাকতে হবে।</string>
 </resources>

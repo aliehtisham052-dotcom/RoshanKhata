@@ -89,4 +89,19 @@ class DesktopChequeCashTest {
         assertEquals(0.0, dao.partiesWithBalanceOnce().single().balance, 0.001)
         assertEquals(true, dao.getPlan(plan)!!.isClosed)
     }
+
+    @Test
+    fun `customers from another app come in with one opening entry each`() = withBook { dao ->
+        val added = dao.importOpeningBalances(
+            listOf(CsvImport.Row("Bilal", "0300", 1200.0), CsvImport.Row("Akram", null, -300.0), CsvImport.Row("Nawaz", null, 0.0)),
+            note = "Opening balance"
+        )
+        assertEquals(3, added)
+        val book = dao.partiesWithBalanceOnce().associateBy { it.name }
+        assertEquals(1200.0, book.getValue("Bilal").balance, 0.001)
+        assertEquals(-300.0, book.getValue("Akram").balance, 0.001)
+        assertEquals(0.0, book.getValue("Nawaz").balance, 0.001)
+        assertEquals("a zero balance writes no entry", 0, dao.latestEntriesWithItems(book.getValue("Nawaz").id, 10).size)
+        assertEquals("Opening balance", dao.latestEntriesWithItems(book.getValue("Bilal").id, 10).single().entry.note)
+    }
 }

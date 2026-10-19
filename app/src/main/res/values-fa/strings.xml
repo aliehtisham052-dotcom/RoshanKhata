@@ -2919,4 +2919,22 @@
     <string name="entry_due_none">تاریخ پرداخت: افزودن تاریخ</string>
     <string name="entry_due_set">تاریخ پرداخت: %1$s</string>
     <string name="entry_due_in_days">تا %1$s روز دیگر · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">در یک پوشه هم کپی کن</string>
+    <string name="auto_folder_help">یک فلش USB یا پوشهٔ Google Drive روی این رایانه را انتخاب کنید. کپی هر روز آنجا هم ذخیره می‌شود تا اگر این رایانه گم یا خراب شد، دفتر سالم بماند.</string>
+    <string name="auto_folder_choose">انتخاب پوشه</string>
+    <string name="auto_folder_stop">توقف کپی</string>
+    <string name="auto_folder_none">هنوز پوشه‌ای انتخاب نشده است.</string>
+    <string name="auto_folder_last">آخرین کپی آنجا: %1$s</string>
+    <string name="auto_folder_missing">اکنون به این پوشه دسترسی نیست. فلش USB را وصل کنید یا پوشهٔ دیگری انتخاب کنید.</string>
+    <string name="import_csv">وارد کردن مشتریان</string>
+    <string name="import_csv_help">مشتریان را از یک برنامهٔ دفتر دیگر بیاورید: فایل CSV با نام، تلفن و مانده. هر مشتری با مانده‌اش به‌صورت یک ثبت آغازین اضافه می‌شود.</string>
+    <string name="import_csv_found">مشتریان در فایل: %1$d · جمع %2$s</string>
+    <string name="import_csv_skipped">از قبل در دفتر هستند، دست‌نخورده ماندند: %1$d</string>
+    <string name="import_csv_sign">در این فایل، ماندهٔ مثبت یعنی:</string>
+    <string name="import_csv_owes_me">آن‌ها به من بدهکارند</string>
+    <string name="import_csv_i_owe">من به آن‌ها بدهکارم</string>
+    <string name="import_csv_go">اضافه‌شان کن</string>
+    <string name="import_csv_done">مشتریان اضافه شدند: %1$d</string>
+    <string name="import_csv_empty">هیچ مشتری‌ای از این فایل خوانده نشد. فایل باید دست‌کم یک ستون نام داشته باشد.</string>
 </resources>

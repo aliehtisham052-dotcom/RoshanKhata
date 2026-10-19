@@ -54,6 +54,15 @@ object DailyCopies {
 
     fun dir(home: File, businessId: Long) = File(home, "daily/b$businessId")
 
+    /**
+     * The owner's second place (Phase 9c): a USB stick or the Google Drive
+     * folder. Each business gets its own folder there, named so a person
+     * browsing the stick knows what it is. Today's copy there is rewritten
+     * when the app opens and when it closes, so the day's last work leaves
+     * the computer too.
+     */
+    fun outside(folder: File, businessId: Long) = File(folder, "RoshanKhata-Backup/Business-$businessId")
+
     fun list(dir: File): List<File> =
         dir.listFiles { f -> f.isFile && f.name.endsWith(".txt") }?.sortedByDescending { it.lastModified() } ?: emptyList()
 
@@ -62,12 +71,12 @@ object DailyCopies {
      * read back whole, and only then given its name. A copy that does not
      * read back is thrown away, never kept as if it were good.
      */
-    suspend fun makeToday(dao: KhataDao, settings: FileShopSettings, dir: File, label: String? = null) = withContext(Dispatchers.IO) {
+    suspend fun makeToday(dao: KhataDao, settings: FileShopSettings, dir: File, label: String? = null, refresh: Boolean = false) = withContext(Dispatchers.IO) {
         dir.mkdirs()
         val day = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date())
         val name = if (label == null) "$day.txt" else "$day-$label.txt"
         val target = File(dir, name)
-        if (label == null && target.isFile) return@withContext
+        if (label == null && target.isFile && !refresh) return@withContext
         val tmp = File(dir, "$name.tmp")
         tmp.bufferedWriter(Charsets.UTF_8).use {
             BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), it)
@@ -83,7 +92,15 @@ object DailyCopies {
 }
 
 @Composable
-fun DailyCopiesPane(dao: KhataDao, settings: FileShopSettings, dir: File, onRestored: () -> Unit) {
+fun DailyCopiesPane(
+    dao: KhataDao,
+    settings: FileShopSettings,
+    dir: File,
+    outsideFolder: File?,
+    outsideDir: File?,
+    onFolder: (File?) -> Unit,
+    onRestored: () -> Unit
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var version by remember { mutableIntStateOf(0) }
@@ -98,6 +115,7 @@ fun DailyCopiesPane(dao: KhataDao, settings: FileShopSettings, dir: File, onRest
 
     Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.snapshots_title), word(W.snapshots_subtitle))
+        OutsideFolderCard(outsideFolder, outsideDir, onFolder)
         if (copies.isEmpty()) {
             Text(word(W.snapshots_empty), color = c.textMuted, fontSize = 15.sp)
         } else {
@@ -152,4 +170,58 @@ fun DailyCopiesPane(dao: KhataDao, settings: FileShopSettings, dir: File, onRest
         AlertDialog(onDismissRequest = { notice = null }, title = { Text(title) }, text = { if (body.isNotEmpty()) Text(body) },
             confirmButton = { TextButton({ notice = null }) { Text(word(W.ok)) } })
     }
+}
+
+/**
+ * Where the second copy goes (Phase 9c). What it shows is read from the
+ * folder itself, every few seconds while the page is open: the newest copy
+ * there, or that the folder cannot be reached (the stick is out).
+ */
+@Composable
+private fun OutsideFolderCard(folder: File?, dir: File?, onFolder: (File?) -> Unit) {
+    val c = LocalRoshanColors.current
+    val chooseTitle = word(W.auto_folder_choose)
+    var reachable by remember { mutableStateOf(true) }
+    var last by remember { mutableStateOf<File?>(null) }
+    LaunchedEffect(folder, dir) {
+        while (true) {
+            withContext(Dispatchers.IO) {
+                reachable = folder?.isDirectory ?: true
+                last = dir?.let { DailyCopies.list(it).firstOrNull() }
+            }
+            kotlinx.coroutines.delay(4000)
+        }
+    }
+    Column(
+        Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(word(W.auto_folder_title), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(word(W.auto_folder_help), color = c.textMuted, fontSize = 13.sp)
+        when {
+            folder == null -> Text(word(W.auto_folder_none), color = c.textMuted, fontSize = 13.sp)
+            !reachable -> Text(word(W.auto_folder_missing), color = c.owedToMe, fontSize = 13.sp)
+            else -> {
+                Text(folder.absolutePath, color = c.ink, fontSize = 13.sp)
+                last?.let { Text(word(W.auto_folder_last, Format.dateTime(it.lastModified())), color = c.brandGreenText, fontSize = 13.sp) }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FillButton(chooseTitle, c.brandGreen) {
+                chooseFolder(chooseTitle, folder)?.let(onFolder)
+            }
+            if (folder != null) TextButton({ onFolder(null) }) { Text(word(W.auto_folder_stop), color = c.owedToMe) }
+        }
+    }
+}
+
+/** Windows' own folder picker (FileDialog picks files only); null when cancelled. */
+private fun chooseFolder(title: String, current: File?): File? {
+    runCatching { javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName()) }
+    val chooser = javax.swing.JFileChooser(current ?: File(System.getProperty("user.home"))).apply {
+        dialogTitle = title
+        fileSelectionMode = javax.swing.JFileChooser.DIRECTORIES_ONLY
+        isAcceptAllFileFilterUsed = false
+    }
+    return if (chooser.showDialog(null, title) == javax.swing.JFileChooser.APPROVE_OPTION) chooser.selectedFile else null
 }

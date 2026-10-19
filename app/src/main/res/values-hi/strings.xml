@@ -2935,4 +2935,22 @@
     <string name="entry_due_none">भुगतान की तारीख़: तारीख़ जोड़ें</string>
     <string name="entry_due_set">भुगतान की तारीख़: %1$s</string>
     <string name="entry_due_in_days">%1$s दिन में · %2$s</string>
+    <!-- Windows: backup folder, import from another app -->
+    <string name="auto_folder_title">किसी फ़ोल्डर में भी कॉपी रखें</string>
+    <string name="auto_folder_help">USB या इस कंप्यूटर पर Google Drive का फ़ोल्डर चुनें। हर दिन की कॉपी वहाँ भी सहेजी जाएगी, ताकि कंप्यूटर खराब या गुम हो जाए तब भी खाता सुरक्षित रहे।</string>
+    <string name="auto_folder_choose">फ़ोल्डर चुनें</string>
+    <string name="auto_folder_stop">कॉपी बंद करें</string>
+    <string name="auto_folder_none">अभी कोई फ़ोल्डर नहीं चुना गया।</string>
+    <string name="auto_folder_last">वहाँ आखिरी कॉपी: %1$s</string>
+    <string name="auto_folder_missing">यह फ़ोल्डर अभी उपलब्ध नहीं है। USB लगाएँ, या कोई और फ़ोल्डर चुनें।</string>
+    <string name="import_csv">ग्राहक इंपोर्ट करें</string>
+    <string name="import_csv_help">किसी दूसरी खाता ऐप से ग्राहक लाएँ: नाम, फ़ोन और बैलेंस वाली CSV फ़ाइल। हर ग्राहक अपने बैलेंस के साथ एक शुरुआती एंट्री के रूप में आएगा।</string>
+    <string name="import_csv_found">फ़ाइल में ग्राहक: %1$d · कुल %2$s</string>
+    <string name="import_csv_skipped">पहले से खाते में, जैसे थे वैसे छोड़े गए: %1$d</string>
+    <string name="import_csv_sign">इस फ़ाइल में पॉज़िटिव बैलेंस का मतलब है:</string>
+    <string name="import_csv_owes_me">उन्हें मुझे देना है</string>
+    <string name="import_csv_i_owe">मुझे उन्हें देना है</string>
+    <string name="import_csv_go">उन्हें ले आएँ</string>
+    <string name="import_csv_done">ग्राहक जोड़े गए: %1$d</string>
+    <string name="import_csv_empty">इस फ़ाइल से कोई ग्राहक नहीं पढ़ा जा सका। इसमें कम से कम नामों का एक कॉलम होना चाहिए।</string>
 </resources>
