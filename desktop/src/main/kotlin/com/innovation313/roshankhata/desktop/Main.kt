@@ -263,6 +263,7 @@ private fun Book(
                 Section.PRODUCTS -> Box(Modifier.weight(1f)) { ProductsPane(dao) }
                 Section.INVOICES -> Box(Modifier.weight(1f)) { InvoicesPane(dao) }
                 Section.INSIGHTS -> Box(Modifier.weight(1f)) { InsightsPane(dao, reload) }
+                Section.ZAKAT -> Box(Modifier.weight(1f)) { ZakatPane(dao) }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
