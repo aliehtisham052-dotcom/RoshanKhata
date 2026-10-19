@@ -337,6 +337,17 @@ private fun Book(
                             Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
                             Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
                         }
+                        // What needs the owner today, as the phone's Home chips: cheques due
+                        // and stock expiring inside the warning window. Each opens its page.
+                        val now = remember { System.currentTimeMillis() }
+                        val dueCheques by remember { dao.observeDueChequeCount(now) }.collectAsState(0)
+                        val expiring by remember { dao.observeExpiringCount(now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
+                        if (dueCheques > 0 || expiring > 0) {
+                            Row(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                if (dueCheques > 0) AlertChip(word(W.today_chip, word(W.nav_cheques), dueCheques)) { section = Section.CHEQUES }
+                                if (expiring > 0) AlertChip(word(W.today_chip, word(W.tile_expiry), expiring)) { section = Section.EXPIRY }
+                            }
+                        }
                         OutlinedTextField(
                             value = query,
                             onValueChange = { query = it },
@@ -811,4 +822,15 @@ private suspend fun linked(dao: KhataDao, item: com.innovation313.roshankhata.da
     if (i.productId != null) return i
     val name = i.itemName ?: return i
     return i.copy(productId = dao.productByKey(com.innovation313.roshankhata.data.ProductName.key(name))?.id)
+}
+
+@Composable
+private fun AlertChip(text: String, onClick: () -> Unit) {
+    val c = LocalRoshanColors.current
+    Text(
+        text,
+        Modifier.background(c.gaveFill.copy(alpha = 0.18f), RoundedCornerShape(16.dp)).clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        color = c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.Bold
+    )
 }

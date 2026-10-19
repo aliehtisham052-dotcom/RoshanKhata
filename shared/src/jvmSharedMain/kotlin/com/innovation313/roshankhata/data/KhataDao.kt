@@ -784,6 +784,18 @@ interface KhataDao {
     @Query("UPDATE supplier_bills SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteBill(id: Long, now: Long = System.currentTimeMillis())
 
+    /**
+     * A supplier bill deleted as the phone's BillsActivity deletes it, in ONE
+     * transaction: a credit bill's own "I owe them" entry goes to the Recycle
+     * Bin with it (a debt with no bill behind it reads as a phantom amount
+     * owed), then the bill. A cash bill has no entry; only the bill goes.
+     */
+    @Transaction
+    suspend fun deleteSupplierBill(id: Long, now: Long = System.currentTimeMillis()) {
+        getBill(id)?.ledgerEntryId?.let { softDeleteEntry(it, now) }
+        softDeleteBill(id, now)
+    }
+
     // ---------- Bill items (batch + expiry) ----------
 
     @Insert

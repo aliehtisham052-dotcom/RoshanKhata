@@ -65,6 +65,22 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
     val bills by remember { dao.observeBills() }.collectAsState(emptyList())
     var open by remember { mutableStateOf<Long?>(null) }
     var adding by remember { mutableStateOf(false) }
+    var deletingBill by remember { mutableStateOf<BillSummary?>(null) }
+    deletingBill?.let { b ->
+        // A credit bill's own "I owe them" entry goes to the Recycle Bin with it (the phone's rule).
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { deletingBill = null },
+            title = { Text(word(W.delete_bill)) },
+            text = { Text(Format.name(b.partyName) + "  \u00b7  " + Format.money(b.totalAmount) + (b.billNumber?.let { "  \u00b7  #$it" } ?: "")) },
+            confirmButton = {
+                androidx.compose.material3.TextButton({
+                    deletingBill = null; open = null
+                    scope.launch { withContext(Dispatchers.IO) { dao.deleteSupplierBill(b.id) }; onLedgerChanged() }
+                }) { Text(word(W.delete), color = c.owedToMe) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ deletingBill = null }) { Text(word(W.cancel)) } }
+        )
+    }
     if (adding) {
         DialogWindow(onCloseRequest = { adding = false }, title = word(W.add_bill), state = rememberDialogState(width = 640.dp, height = 860.dp)) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
@@ -99,6 +115,7 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                     }
                 }
                 if (open == b.id) {
+                    androidx.compose.material3.TextButton({ deletingBill = b }) { Text(word(W.delete_bill), color = c.owedToMe) }
                     val lines by remember(b.id) { dao.observeBillItems(b.id) }.collectAsState(emptyList())
                     Column(Modifier.padding(top = 8.dp).fillMaxWidth().background(c.pageBg, RoundedCornerShape(10.dp)).padding(10.dp)) {
                         lines.forEach { l ->
@@ -176,6 +193,20 @@ fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, r
     val scope = rememberCoroutineScope()
     val invoices by remember { dao.observeInvoices() }.collectAsState(emptyList())
     var adding by remember { mutableStateOf(false) }
+    var deletingInvoice by remember { mutableStateOf<com.innovation313.roshankhata.data.InvoiceSummary?>(null) }
+    deletingInvoice?.let { inv ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { deletingInvoice = null },
+            text = { Text(inv.invoiceNumber + "  \u00b7  " + word(W.delete_invoice_confirm)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton({
+                    deletingInvoice = null
+                    scope.launch { withContext(Dispatchers.IO) { dao.softDeleteInvoice(inv.id) } }
+                }) { Text(word(W.delete), color = c.owedToMe) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ deletingInvoice = null }) { Text(word(W.cancel)) } }
+        )
+    }
     // Print an invoice by id: the saved row and its lines, as the customer will hold them.
     fun print(id: Long) {
         scope.launch {
@@ -212,6 +243,7 @@ fun InvoicesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, r
                 }
                 Text(Format.money(i.grandTotal), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 Text("  " + word(W.ledger_pdf_button), color = c.brandGreenText, fontSize = 13.sp)
+                androidx.compose.material3.TextButton({ deletingInvoice = i }) { Text(word(W.delete), color = c.owedToMe) }
             }
             HorizontalDivider(color = c.pageBg)
         }

@@ -62,6 +62,8 @@ fun CashbookPane(dao: KhataDao) {
     val expense by remember { dao.observeCashExpense() }.collectAsState(0.0)
     var adding by remember { mutableStateOf<Boolean?>(null) }
     var deleting by remember { mutableStateOf<CashEntry?>(null) }
+    var closing by remember { mutableStateOf(false) }
+    if (closing) DayCloseDialog(dao) { closing = false }
 
     Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -69,7 +71,14 @@ fun CashbookPane(dao: KhataDao) {
             FillButton(word(W.cash_income), c.iOwe) { adding = true }
             Spacer(Modifier.width(10.dp))
             FillButton(word(W.cash_expense), c.gaveFill) { adding = false }
+            Spacer(Modifier.width(10.dp))
+            TextButton({ closing = true }) { Text(word(W.dayclose_button), color = c.brandGreenText) }
         }
+        val last by remember { dao.observeLastDayClose() }.collectAsState(null)
+        Text(
+            last?.let { word(W.dayclose_last, Format.dateOnly(it.closedAt), Format.signedTotal(it.difference)) } ?: word(W.dayclose_never),
+            color = c.textMuted, fontSize = 12.sp
+        )
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             TotalCard(word(W.cash_in), Format.money(income), c.iOwe, Modifier.weight(1f))
             TotalCard(word(W.cash_out), Format.money(expense), c.owedToMe, Modifier.weight(1f))
@@ -210,3 +219,87 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
         }
     }
 }
+
+/**
+ * Close the day (galla), the phone's day close: since the last count, the
+ * cashbook's money in and out plus khata money marked Cash, what should be
+ * in the drawer, and what was counted — over, short or matching. The last
+ * count's figure is the next opening.
+ */
+@Composable
+fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
+    val c = LocalRoshanColors.current
+    val scope = rememberCoroutineScope()
+    var figures by remember { mutableStateOf<DayFigures?>(null) }
+    var opening by remember { mutableStateOf("") }
+    var counted by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
+    val needCount = word(W.dayclose_need_count)
+    var problem by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(Unit) {
+        val (fig, lastCounted) = withContext(Dispatchers.IO) {
+            val last = dao.lastDayClose()
+            val now = System.currentTimeMillis()
+            val from = last?.closedAt ?: 0L
+            DayFigures(
+                now = now,
+                cbIn = dao.cashbookTotalBetween(true, from, now),
+                cbOut = dao.cashbookTotalBetween(false, from, now),
+                kIn = dao.khataCashBetween(false, from, now),
+                kOut = dao.khataCashBetween(true, from, now)
+            ) to last?.counted
+        }
+        // The last count is this stretch's opening, as on the phone.
+        lastCounted?.let { opening = Calc.trim(it) }
+        figures = fig
+    }
+    val f = figures ?: return
+    val open = Calc.evalPad(opening) ?: 0.0
+    val expected = com.innovation313.roshankhata.data.DayCloseMath.expected(open, f.cbIn + f.kIn, f.cbOut + f.kOut)
+    val count = Calc.evalPad(counted)
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = { Text(word(W.dayclose_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(opening, { opening = it }, label = { Text(word(W.dayclose_opening)) }, singleLine = true)
+                Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.money(expected)),
+                    color = c.inkSoft, fontSize = 13.sp)
+                Text(word(W.dayclose_help), color = c.textMuted, fontSize = 12.sp)
+                OutlinedTextField(counted, { counted = it; problem = null }, label = { Text(word(W.dayclose_counted)) }, singleLine = true)
+                if (count != null) {
+                    val d = com.innovation313.roshankhata.data.DayCloseMath.difference(count, expected)
+                    Text(
+                        when {
+                            com.innovation313.roshankhata.data.Money.isPositive(d) -> word(W.dayclose_over, Format.money(d))
+                            com.innovation313.roshankhata.data.Money.isPositive(-d) -> word(W.dayclose_short, Format.money(-d))
+                            else -> word(W.dayclose_match)
+                        },
+                        color = if (com.innovation313.roshankhata.data.Money.isPositive(-d)) c.owedToMe else c.iOwe, fontWeight = FontWeight.Bold
+                    )
+                }
+                OutlinedTextField(note, { note = it }, label = { Text(word(W.dayclose_note_hint)) }, singleLine = true)
+                problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
+            }
+        },
+        confirmButton = {
+            TextButton({
+                val n = count ?: run { problem = needCount; return@TextButton }
+                val close = com.innovation313.roshankhata.data.DayClose(
+                    day = Math.floorDiv(f.now + java.util.TimeZone.getDefault().getOffset(f.now), 24L * 60 * 60 * 1000),
+                    opening = open,
+                    cashIn = com.innovation313.roshankhata.data.LineMath.round(f.cbIn + f.kIn),
+                    cashOut = com.innovation313.roshankhata.data.LineMath.round(f.cbOut + f.kOut),
+                    counted = n,
+                    note = note.trim().ifEmpty { null },
+                    closedAt = f.now
+                )
+                scope.launch { withContext(Dispatchers.IO) { dao.saveDayClose(close) } }
+                onClose()
+            }) { Text(word(W.save)) }
+        },
+        dismissButton = { TextButton(onClose) { Text(word(W.cancel)) } }
+    )
+}
+
+private class DayFigures(val now: Long, val cbIn: Double, val cbOut: Double, val kIn: Double, val kOut: Double)
