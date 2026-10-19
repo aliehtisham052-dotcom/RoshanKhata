@@ -38,6 +38,9 @@ import java.net.URLEncoder
 fun HelpPane(words: Words) {
     val c = LocalRoshanColors.current
     var open by remember { mutableStateOf<Int?>(null) }
+    var kind by remember { mutableStateOf(0) }
+    var description by remember { mutableStateOf("") }
+    var empty by remember { mutableStateOf(false) }
     // Only answers that are true word for word on the computer: the others
     // name phone screens, Google Drive or the phone itself.
     val faqs = listOf(
@@ -55,6 +58,38 @@ fun HelpPane(words: Words) {
                 Text(word(q), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 if (open == i) Text(word(a), Modifier.padding(top = 6.dp), color = c.inkSoft, fontSize = 14.sp)
             }
+        }
+        // Report a problem (the phone's ReportProblemActivity): the kind, the owner's own
+        // words, and the app version and Windows version only — never a customer's
+        // name, number or balance. It opens in the owner's own mail app to read first.
+        Text(word(W.report_problem), Modifier.padding(top = 10.dp), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(word(W.report_what_kind), color = c.textMuted, fontSize = 13.sp)
+        val kinds = listOf(W.report_kind_wrong_number, W.report_kind_lost, W.report_kind_crash, W.report_kind_confusing, W.report_kind_suggestion, W.report_kind_other)
+        kinds.forEachIndexed { i, k ->
+            val on = i == kind
+            Text(
+                word(k),
+                Modifier.widthIn(max = 760.dp).fillMaxWidth()
+                    .background(if (on) c.brandGreen else c.surface, RoundedCornerShape(10.dp))
+                    .clickable { kind = i }.padding(horizontal = 12.dp, vertical = 8.dp),
+                color = if (on) androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 14.sp
+            )
+        }
+        androidx.compose.material3.OutlinedTextField(
+            description, { description = it; empty = false },
+            label = { Text(word(W.report_describe)) }, placeholder = { Text(word(W.report_describe_help)) },
+            modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth(), minLines = 4
+        )
+        if (empty) Text(word(W.report_empty), color = c.owedToMe, fontSize = 13.sp)
+        FillButton(word(W.report_send), c.gaveFill) {
+            if (description.isBlank()) { empty = true; return@FillButton }
+            val body = description.trim() + "\n\n" +
+                "Roshan Khata for Windows " + (System.getProperty("jpackage.app-version") ?: "dev") +
+                " \u00b7 " + System.getProperty("os.name") + " " + System.getProperty("os.version") +
+                " \u00b7 Java " + System.getProperty("java.version")
+            val subject = words.text(W.report_subject, words.text(kinds[kind]))
+            fun enc(v: String) = URLEncoder.encode(v, "UTF-8").replace("+", "%20")
+            runCatching { java.awt.Desktop.getDesktop().mail(URI("mailto:innovation313.support@gmail.com?subject=${enc(subject)}&body=${enc(body)}")) }
         }
         Text(word(W.help_still_stuck), Modifier.padding(top = 10.dp), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Text(word(W.help_contact_blurb), color = c.textMuted, fontSize = 13.sp)
