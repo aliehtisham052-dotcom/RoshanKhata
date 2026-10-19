@@ -31,6 +31,15 @@ No account, no server, no ads. Everything stays on the phone.
   APK goes to the `kmp-test` pre-release, never `latest`.
 - `desktop.yml` builds the Windows MSI on GitHub's Windows runner and puts it
   on the `desktop-test` pre-release (not signed yet).
+- The Windows app (`desktop/src/main/kotlin/.../desktop/`) opens maximised with
+  a section rail: Khata (master-detail, newest dealing first, statement
+  print), Cashbook, Cheques (clear = `KhataDao.clearCheque`, one transaction),
+  Plans, Supplier Bills, Expiry, Products, Invoices (these four read-only for
+  now), Khata Report (CSV via shared `LedgerCsv`, PDF via print), Insights,
+  Zakat, Business Profile. Bump `packageVersion` in `desktop/build.gradle.kts`
+  for every MSI the owner installs, or Windows will not upgrade it; the MSIX
+  takes its version from the same line. Material's own colours come from
+  `RoshanTheme` (dark mode once hid typed text).
 
 ### The shared module (KMP)
 
