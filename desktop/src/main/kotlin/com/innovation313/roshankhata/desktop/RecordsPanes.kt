@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -134,12 +135,14 @@ private fun BillState(b: BillSummary) {
 }
 
 @Composable
-fun ProductsPane(dao: KhataDao) {
+fun ProductsPane(dao: KhataDao, words: Words) {
     val c = LocalRoshanColors.current
     val products by remember { dao.observeProducts() }.collectAsState(emptyList())
     var query by remember { mutableStateOf("") }
     val q = query.trim().lowercase()
     val shown = products.filter { NameSearch.matches(it.name, it.company, q) }
+    var buyersOf by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
+    buyersOf?.let { ProductBuyers(dao, words, it) { buyersOf = null } }
     Column(Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = query, onValueChange = { query = it }, singleLine = true,
@@ -148,7 +151,7 @@ fun ProductsPane(dao: KhataDao) {
         )
         RecordList(word(W.tile_products), null, shown.isEmpty(), word(W.no_products)) {
             items(shown, key = { it.id }) { p ->
-                Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+                Column(Modifier.fillMaxWidth().clickable { buyersOf = p }.padding(horizontal = 16.dp, vertical = 12.dp)) {
                     Text(p.name, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     val sub = listOfNotNull(p.company, p.category, p.defaultUnit).filter { it.isNotBlank() }
                     if (sub.isNotEmpty()) Text(sub.joinToString("  ·  "), color = c.textMuted, fontSize = 13.sp)
@@ -390,4 +393,60 @@ fun SupplierRatesPane(dao: KhataDao, reload: Int) {
             }
         }
     }
+}
+
+/**
+ * Who bought a product (KMP Phase 7w), the phone's ProductCustomersActivity:
+ * the same season last year, the last twelve months, or ever (shared
+ * SeasonWindow), and Message opens WhatsApp with the phone's "available
+ * again" note for that customer, sent only when the owner sends it.
+ */
+@Composable
+private fun ProductBuyers(dao: KhataDao, words: Words, product: com.innovation313.roshankhata.data.Product, onClose: () -> Unit) {
+    val c = LocalRoshanColors.current
+    var choice by remember(product.id) { mutableStateOf(0) }
+    var buyers by remember(product.id) { mutableStateOf<List<PartyWithBalance>>(emptyList()) }
+    androidx.compose.runtime.LaunchedEffect(product.id, choice) {
+        val now = System.currentTimeMillis()
+        val w = when (choice) {
+            0 -> com.innovation313.roshankhata.data.SeasonWindow.sameSeasonLastYear(now)
+            1 -> com.innovation313.roshankhata.data.SeasonWindow.lastTwelveMonths(now)
+            else -> com.innovation313.roshankhata.data.SeasonWindow.everything(now)
+        }
+        buyers = withContext(Dispatchers.IO) { dao.customersWhoBought(product.id, w.from, w.to) }
+    }
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onClose,
+        title = { Text(product.name + "  \u00b7  " + word(W.promo_subtitle)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    listOf(W.window_same_season, W.window_last_year, W.window_ever).forEachIndexed { i, label ->
+                        if (i == choice) FillButton(word(label), c.brandGreen) { choice = i }
+                        else androidx.compose.material3.TextButton({ choice = i }) { Text(word(label), color = c.brandGreenText) }
+                    }
+                }
+                if (buyers.isEmpty()) Text(word(W.no_promo_customers), color = c.textMuted)
+                else LazyColumn(Modifier.heightIn(max = 420.dp)) {
+                    items(buyers, key = { it.id }) { b ->
+                        val number = b.phone?.let { com.innovation313.roshankhata.data.WhatsAppNumber.of(it) }
+                        Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(Format.name(b.name), color = c.ink, fontWeight = FontWeight.Bold)
+                                b.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp) }
+                            }
+                            androidx.compose.material3.TextButton(enabled = number != null, onClick = {
+                                val text = words.text(W.promo_message, b.name, product.name)
+                                runCatching {
+                                    java.awt.Desktop.getDesktop().browse(java.net.URI("https://wa.me/$number?text=" +
+                                        java.net.URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
+                                }
+                            }) { Text(word(W.promo_send), color = c.brandGreenText) }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = { androidx.compose.material3.TextButton(onClose) { Text(word(W.ok)) } }
+    )
 }
