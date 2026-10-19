@@ -389,7 +389,19 @@ private fun Book(
                         }
                         OutlinedTextField(
                             value = query,
-                            onValueChange = { query = it },
+                            onValueChange = { typed ->
+                                query = typed
+                                // A customer card held to a USB QR scanner (it types like a keyboard):
+                                // "RK1:" + token opens that customer, as the phone's camera scan does.
+                                com.innovation313.roshankhata.data.QrTag.parse(typed)?.let { token ->
+                                    scope.launch {
+                                        val p = withContext(Dispatchers.IO) { dao.partyByQrToken(token) }
+                                        query = ""
+                                        if (p != null) selected = p.id
+                                        else told = words.text(W.app_name) to words.text(W.qr_no_customer)
+                                    }
+                                }
+                            },
                             placeholder = { Text(word(W.search_parties)) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
@@ -560,9 +572,30 @@ private fun Book(
     // same way already written today (a double click looks like a second sale), and
     // a credit limit about to be passed. Both are warnings, never blocks.
     var confirming by remember { mutableStateOf<Pair<EntryDraft, String>?>(null) }
+    // The open party's own row: its promised payment day (Party.harvestPromise).
+    var partyRow by remember { mutableStateOf<Party?>(null) }
+    LaunchedEffect(forParty?.id, reload) { partyRow = forParty?.let { p -> withContext(Dispatchers.IO) { dao.getParty(p.id) } } }
+    val batchesFor: suspend (String) -> List<com.innovation313.roshankhata.data.BatchOption> = { name ->
+        withContext(Dispatchers.IO) {
+            dao.productByKey(com.innovation313.roshankhata.data.ProductName.key(name))?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+        }
+    }
+    /** After an entry is written: the promised day kept only while money is owed (the phone's saveEntry rule). */
+    suspend fun keepPromise(partyId: Long, d: EntryDraft, after: Double) {
+        if (partyRow?.harvestPromise != null && !Money.isPositive(after)) dao.setHarvestPromise(partyId, null)
+        else if (d.dueTouched) dao.setHarvestPromise(partyId, if (Money.isPositive(after)) d.due else null)
+    }
     fun saveNew(d: EntryDraft) {
+        val before = forParty?.balance ?: 0.0
         scope.launch {
-            withContext(Dispatchers.IO) { dao.insertEntryWithItems(d.entry, listOfNotNull(linked(dao, d.item))) }
+            withContext(Dispatchers.IO) {
+                val id = dao.insertEntryWithItems(d.entry, listOfNotNull(linked(dao, d.item)))
+                // Ticked on the form: the money came with the goods, so its cash "I got" is written, paired.
+                val gotId = if (d.paidNow && d.entry.isGiven && d.entry.rateType == com.innovation313.roshankhata.data.RateType.CASH)
+                    dao.recordCashForSale(id) else null
+                val after = if (gotId != null) before else before + if (d.entry.isGiven) d.entry.amount else -d.entry.amount
+                keepPromise(d.entry.partyId, d, after)
+            }
             entryWay = null; confirming = null
             reload++
         }
@@ -577,6 +610,7 @@ private fun Book(
                 EntryEditor(
                     partyId = forParty.id, partyName = forParty.name, isGiven = way,
                     existing = null, existingItem = null,
+                    isCustomer = partyRow?.isCustomer ?: true, batchesFor = batchesFor, promise = partyRow?.harvestPromise,
                     onSave = { d ->
                         scope.launch {
                             val e = d.entry
@@ -624,12 +658,15 @@ private fun Book(
                 EntryEditor(
                     partyId = e.partyId, partyName = forParty?.name.orEmpty(), isGiven = e.isGiven,
                     existing = e, existingItem = loaded.firstOrNull(),
+                    isCustomer = partyRow?.isCustomer ?: true, batchesFor = batchesFor, promise = partyRow?.harvestPromise,
                     onSave = { d ->
                         scope.launch {
                             withContext(Dispatchers.IO) {
                                 // The phone's edit: the entry and its goods lines, all or nothing.
                                 // Only the first line is on the form; any others the phone wrote stay.
                                 dao.updateEntryWithItems(d.entry, listOfNotNull(linked(dao, d.item)) + loaded.drop(1))
+                                val sign = { x: LedgerEntry -> if (x.isGiven) x.amount else -x.amount }
+                                if (d.dueTouched) keepPromise(e.partyId, d, (forParty?.balance ?: 0.0) - sign(e) + sign(d.entry))
                             }
                             editing = null
                             reload++

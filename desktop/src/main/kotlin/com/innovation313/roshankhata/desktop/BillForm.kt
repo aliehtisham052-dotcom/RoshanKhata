@@ -190,14 +190,14 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
 
 /** One line of the delivery: product, quantity, unit, rate, batch and expiry, with why the last two matter. */
 @Composable
-private fun ItemForm(onAdd: (BillItem) -> Unit) {
+internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
     val c = LocalRoshanColors.current
-    var name by remember { mutableStateOf("") }
-    var qty by remember { mutableStateOf("") }
-    var unit by remember { mutableStateOf("") }
-    var rate by remember { mutableStateOf("") }
-    var batch by remember { mutableStateOf("") }
-    var expiry by remember { mutableStateOf<Long?>(null) }
+    var name by remember { mutableStateOf(existing?.productName.orEmpty()) }
+    var qty by remember { mutableStateOf(existing?.quantity?.let { Calc.trim(it) }.orEmpty()) }
+    var unit by remember { mutableStateOf(existing?.unit.orEmpty()) }
+    var rate by remember { mutableStateOf(existing?.rate?.let { Calc.trim(it) }.orEmpty()) }
+    var batch by remember { mutableStateOf(existing?.batchNumber.orEmpty()) }
+    var expiry by remember { mutableStateOf(existing?.expiryDate) }
     var picking by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
     val needProduct = word(W.enter_product)
@@ -217,19 +217,18 @@ private fun ItemForm(onAdd: (BillItem) -> Unit) {
         }
         Text(word(W.expiry_why), color = c.textMuted, fontSize = 11.sp)
         problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-        FillButton(word(W.add_item), c.brandGreen) {
+        FillButton(word(if (existing == null) W.add_item else W.save), c.brandGreen) {
             val q = Calc.evalAmount(qty)
             when {
                 name.isBlank() -> problem = needProduct
                 q == null -> problem = needQty
                 else -> {
-                    onAdd(
-                        BillItem(
-                            billId = 0, productName = name.trim(), batchNumber = batch.trim().ifEmpty { null },
-                            expiryDate = expiry, quantity = q, unit = unit.trim().ifEmpty { null },
-                            rate = Calc.evalAmount(rate)
-                        )
+                    val line = BillItem(
+                        billId = 0, productName = name.trim(), batchNumber = batch.trim().ifEmpty { null },
+                        expiryDate = expiry, quantity = q, unit = unit.trim().ifEmpty { null },
+                        rate = Calc.evalAmount(rate)
                     )
+                    onAdd(existing?.let { line.copy(id = it.id, billId = it.billId, note = it.note) } ?: line)
                     name = ""; qty = ""; unit = ""; rate = ""; batch = ""; expiry = null
                 }
             }
