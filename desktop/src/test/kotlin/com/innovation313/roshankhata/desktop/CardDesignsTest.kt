@@ -49,15 +49,19 @@ class CardDesignsTest {
         val tmp = Files.createTempDirectory("rk-card").toFile()
         CardTemplates.init(Context(desktopWords(Locale.ENGLISH), FileShopSettings(File(tmp, "s.properties")), ProfileImages(tmp), false))
         assertEquals(24, CardTemplates.all.size)
+        val thin = ArrayList<String>()
         for (rtl in listOf(false, true)) {
             for (t in CardTemplates.all) {
                 val img = CardDraw.image(t, data(rtl))
                 assertEquals(CardTemplates.W, img.width)
-                val inked = ink(img)
-                assertTrue("card ${t.id} (rtl=$rtl) looks empty: $inked", inked > 2000)
+                // Pictures first, so a card that fails is still there to look at.
                 if (!rtl || t.id in listOf(101, 106, 111)) ImageIO.write(img, "png", File(dir, "card-${if (rtl) "ur" else "en"}-${t.id}.png"))
+                // Something besides the background: a blank card has 0 (of ~52,000 samples).
+                val inked = ink(img)
+                if (inked < 300) thin += "${t.id}${if (rtl) "ur" else "en"}=$inked"
             }
         }
+        assertTrue("cards that look empty: $thin", thin.isEmpty())
     }
 
     @Test

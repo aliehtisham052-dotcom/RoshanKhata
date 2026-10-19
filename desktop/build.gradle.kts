@@ -79,3 +79,13 @@ val syncPrintAssets by tasks.registering(Sync::class) {
     into(layout.buildDirectory.dir("printAssets"))
 }
 sourceSets["main"].resources.srcDir(syncPrintAssets)
+
+// A failing test's own message in the log, so the workflow's annotation carries it
+// (the log itself is not readable from outside).
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events("failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStackTraces = false
+    }
+}
