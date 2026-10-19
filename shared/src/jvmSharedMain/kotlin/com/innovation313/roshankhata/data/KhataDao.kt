@@ -510,6 +510,33 @@ interface KhataDao {
     @Query("SELECT * FROM cheques WHERE partyId = :partyId AND isDeleted = 0 ORDER BY dueDate ASC")
     fun observeChequesOfParty(partyId: Long): Flow<List<Cheque>>
 
+    /**
+     * A pending cheque becomes money: the payment posted to the party's
+     * ledger (numbered RK-, as every entry) and the cheque marked cleared
+     * with that entry's id, in ONE transaction — a crash between the two can
+     * never leave a payment without its cheque cleared, or the reverse.
+     * A cheque received is an "I got" (it lowers what they owe); one issued
+     * is an "I gave". Returns the new entry's id, or null when the cheque is
+     * gone or no longer pending (a second click posts nothing).
+     */
+    @Transaction
+    suspend fun clearCheque(chequeId: Long, note: String, now: Long = System.currentTimeMillis()): Long? {
+        val cheque = getCheque(chequeId) ?: return null
+        if (cheque.isDeleted || cheque.status != ChequeStatus.PENDING) return null
+        val entryId = insertEntryNumbered(
+            LedgerEntry(
+                partyId = cheque.partyId,
+                amount = cheque.amount,
+                isGiven = !cheque.isReceived,
+                note = note,
+                entryNumber = "",
+                timestamp = now
+            )
+        )
+        updateCheque(cheque.copy(status = ChequeStatus.CLEARED, settledAt = now, ledgerEntryId = entryId))
+        return entryId
+    }
+
     // ---------- Cashbook ----------
 
     @Insert

@@ -72,9 +72,12 @@ jobs:
           New-Item -ItemType Directory -Force $stage | Out-Null
           Copy-Item "$($app.FullName)\*" $stage -Recurse
           Copy-Item desktop/msix/Assets $stage -Recurse
+          # The MSI's own version (desktop/build.gradle.kts), as the Store's four parts.
+          $ver = [regex]::Match((Get-Content desktop/build.gradle.kts -Raw), 'packageVersion = "([0-9.]+)"').Groups[1].Value
+          if (-not $ver) { Write-Output "::error::packageVersion not found"; exit 1 }
           $m = Get-Content desktop/msix/AppxManifest.xml -Raw
           $m = $m.Replace('@IDENTITY_NAME@', $env:IDENTITY_NAME).Replace('@PUBLISHER@', $env:PUBLISHER)
-          $m = $m.Replace('@PUBLISHER_DISPLAY@', $env:PUBLISHER_DISPLAY).Replace('@VERSION@', '1.0.0.0')
+          $m = $m.Replace('@PUBLISHER_DISPLAY@', $env:PUBLISHER_DISPLAY).Replace('@VERSION@', "$ver.0")
           Set-Content "$stage/AppxManifest.xml" $m -Encoding utf8
           $makeappx = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1
           if (-not $makeappx) { Write-Output "::error::makeappx.exe not found on the runner"; exit 1 }
