@@ -275,6 +275,7 @@ private fun Book(
                 Section.SEASONS -> Box(Modifier.weight(1f)) { SeasonsPane(dao, parties, reload) }
                 Section.HELP -> Box(Modifier.weight(1f)) { HelpPane(words) }
                 Section.REGISTER -> Box(Modifier.weight(1f)) { RegisterPane(dao, words, rtl, shop, reload) }
+                Section.STOCK -> Box(Modifier.weight(1f)) { StockPane(dao, words, rtl, shop, reload) }
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings) { shop = shopName() } }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
