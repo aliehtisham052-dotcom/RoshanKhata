@@ -23,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -89,8 +91,13 @@ import java.util.Locale
  */
 fun main() = application {
     val home = DesktopDatabase.home()
-    val db = remember { DesktopDatabase.open(File(home, "khata.db")) }
-    val settings = remember { FileShopSettings(File(home, "shop.properties")).also { it.refreshDisplay() } }
+    // The open business: its own book and its own shop settings. Switching
+    // closes the old book (DisposableEffect) before the new one is used.
+    val businesses = remember { Businesses(home) }
+    var active by remember { mutableStateOf(businesses.activeId()) }
+    val db = remember(active) { DesktopDatabase.open(businesses.dbFile(active)) }
+    DisposableEffect(db) { onDispose { db.close() } }
+    val settings = remember(active) { FileShopSettings(businesses.settingsFile(active)).also { it.refreshDisplay() } }
     // The app's language: the owner's choice (app.properties), else the computer's.
     val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
@@ -107,7 +114,7 @@ fun main() = application {
         RoshanTheme {
             ProvideWords(words) {
                 CompositionLocalProvider(LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
-                    Book(
+                    key(active) { Book(
                         dao = db.khataDao(),
                         load = { db.khataDao().partiesWithBalanceOnce() },
                         shopName = { settings.businessName() },
@@ -116,8 +123,11 @@ fun main() = application {
                         backup = { file -> backup(file, db, settings) },
                         onLanguage = { tag -> appPrefs.setLanguage(tag); language = tag },
                         rtl = rtl,
-                        words = words
-                    )
+                        words = words,
+                        businesses = businesses,
+                        activeBusiness = active,
+                        onSwitch = { id -> businesses.switchTo(id); active = id }
+                    ) }
                 }
             }
         }
@@ -172,7 +182,10 @@ private fun Book(
     backup: suspend (File) -> Long,
     onLanguage: (String) -> Unit,
     rtl: Boolean,
-    words: Words
+    words: Words,
+    businesses: Businesses,
+    activeBusiness: Long,
+    onSwitch: (Long) -> Unit
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -194,6 +207,8 @@ private fun Book(
     var bin by remember { mutableStateOf(false) }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
     var section by remember { mutableStateOf(Section.KHATA) }
+    var choosingBusiness by remember { mutableStateOf(false) }
+    if (choosingBusiness) BusinessesDialog(businesses, activeBusiness, onSwitch = { choosingBusiness = false; onSwitch(it) }, onClose = { choosingBusiness = false })
     var shop by remember { mutableStateOf(shopName()) }
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
@@ -244,6 +259,8 @@ private fun Book(
                     }
                 }
             }
+            Spacer(Modifier.width(8.dp))
+            HeaderButton(word(W.businesses_title)) { choosingBusiness = true }
             Spacer(Modifier.width(8.dp))
             HeaderButton(word(W.recycle_bin)) { bin = true }
             Spacer(Modifier.width(8.dp))
