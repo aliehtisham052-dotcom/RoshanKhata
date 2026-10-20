@@ -2985,4 +2985,22 @@
     <string name="wifi_pc_failed">শোনা শুরু করা গেল না। এই জানালাটি বন্ধ করে আবার চেষ্টা করুন।</string>
     <string name="poster_save_picture">পোস্টারটি ছবি হিসেবে সংরক্ষণ করুন</string>
     <string name="poster_desktop_flat">কম্পিউটারে ছবিগুলো সমতল (ফ্ল্যাট) আঁকা হয়; ফোন এগুলো ৩ডিতে দেখায়।</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">কম্পিউটারের খাতা নিন</string>
+    <string name="wifi_take_asking">কম্পিউটারের কাছে খাতা চাওয়া হচ্ছে…</string>
+    <string name="wifi_take_refused">কম্পিউটার তার খাতা দেয়নি। এর “ফোন থেকে” জানালাটি খোলা থাকতে হবে; এখন যে কোডটি দেখাচ্ছে সেটিই স্ক্যান করুন।</string>
+    <string name="book_recovered_title">আপনার খাতা মেরামত করা হয়েছে</string>
+    <string name="book_recovered_from">খাতার ফাইলটি নষ্ট হয়ে গিয়েছিল এবং পড়া যায়নি। %1$s-এ তৈরি কপি থেকে এটি আবার গড়া হয়েছে। সেই কপির পরে লেখা কিছু এতে নেই।</string>
+    <string name="book_recovered_none">খাতার ফাইলটি নষ্ট হয়ে গিয়েছিল এবং পড়া যায়নি, আর এই কম্পিউটারে কোনো সংরক্ষিত কপিও পাওয়া যায়নি। খাতা খালি শুরু হচ্ছে: আপনার ফোন বা কোনো ফাইল থেকে ব্যাকআপ ফিরিয়ে আনুন।</string>
+    <string name="book_corrupt_kept">নষ্ট ফাইলটি মোছা হয়নি, রেখে দেওয়া হয়েছে:\n%1$s</string>
+    <string name="update_available">নতুন সংস্করণ প্রস্তুত: %1$s</string>
+    <string name="update_open">ডাউনলোড পাতা খুলুন</string>
+    <string name="auto_backup_note">অ্যাপ খোলা থাকলে আজকের কপি প্রতি ঘণ্টায় আবার লেখা হয়, এখানে এবং বাইরের ফোল্ডারে।</string>
+    <string name="receipt_save_picture">রসিদটি ছবি হিসেবে সংরক্ষণ করুন</string>
+    <string name="report_open_mail">আমার ইমেইল খুলুন</string>
+    <string name="report_copy">রিপোর্ট কপি করুন</string>
+    <string name="report_copied">কপি হয়েছে। এটি হোয়াটসঅ্যাপে বা innovation313.support@gmail.com ঠিকানায় ইমেইলে পেস্ট করুন।</string>
+    <string name="report_no_mail_pc">এই কম্পিউটারে কোনো ইমেইল প্রোগ্রাম নেই। “রিপোর্ট কপি করুন” চেপে হোয়াটসঅ্যাপে বা যেকোনো ইমেইলে innovation313.support@gmail.com ঠিকানায় পাঠান।</string>
+    <string name="report_pc_privacy">আপনার গ্রাহকদের নাম, নম্বর ও বাকি কখনোই পাঠানো হয় না। রিপোর্টের সঙ্গে শুধু অ্যাপের সংস্করণ ও উইন্ডোজের সংস্করণ যায় — নিচে পুরোটা দেখানো আছে, এই কম্পিউটার থেকে কিছু যাওয়ার আগে।</string>
 </resources>

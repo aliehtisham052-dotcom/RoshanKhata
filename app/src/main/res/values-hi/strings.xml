@@ -2985,4 +2985,22 @@
     <string name="wifi_pc_failed">सुनना शुरू नहीं हो सका। यह खिड़की बंद करके दोबारा कोशिश करें।</string>
     <string name="poster_save_picture">पोस्टर को तस्वीर के रूप में सहेजें</string>
     <string name="poster_desktop_flat">कंप्यूटर पर तस्वीरें सपाट (फ़्लैट) बनती हैं; फ़ोन इन्हें 3D में दिखाता है।</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">कंप्यूटर की किताब लें</string>
+    <string name="wifi_take_asking">कंप्यूटर से उसकी किताब माँग रहे हैं…</string>
+    <string name="wifi_take_refused">कंप्यूटर ने अपनी किताब नहीं दी। उसकी “फ़ोन से” वाली खिड़की खुली होनी चाहिए; जो कोड वह अभी दिखा रहा है वही स्कैन करें।</string>
+    <string name="book_recovered_title">आपकी किताब ठीक कर दी गई</string>
+    <string name="book_recovered_from">किताब की फ़ाइल खराब थी और पढ़ी नहीं जा सकी। इसे %1$s की बनी कॉपी से दोबारा बनाया गया है। उस कॉपी के बाद लिखी चीज़ें इसमें नहीं हैं।</string>
+    <string name="book_recovered_none">किताब की फ़ाइल खराब थी और पढ़ी नहीं जा सकी, और इस कंप्यूटर पर कोई सहेजी कॉपी भी नहीं मिली। किताब खाली शुरू हो रही है: अपने फ़ोन या किसी फ़ाइल से बैकअप वापस लाएँ।</string>
+    <string name="book_corrupt_kept">खराब फ़ाइल हटाई नहीं गई, रख ली गई है:\n%1$s</string>
+    <string name="update_available">नया वर्ज़न तैयार है: %1$s</string>
+    <string name="update_open">डाउनलोड पेज खोलें</string>
+    <string name="auto_backup_note">जब तक ऐप खुला रहता है, आज की कॉपी हर घंटे दोबारा लिखी जाती है, यहाँ और बाहर वाले फ़ोल्डर में।</string>
+    <string name="receipt_save_picture">रसीद को तस्वीर के रूप में सहेजें</string>
+    <string name="report_open_mail">मेरा ईमेल खोलें</string>
+    <string name="report_copy">रिपोर्ट कॉपी करें</string>
+    <string name="report_copied">कॉपी हो गई। इसे व्हाट्सऐप या ईमेल में innovation313.support@gmail.com को भेज दें।</string>
+    <string name="report_no_mail_pc">इस कंप्यूटर पर कोई ईमेल प्रोग्राम नहीं है। “रिपोर्ट कॉपी करें” दबाएँ और व्हाट्सऐप या किसी भी ईमेल से innovation313.support@gmail.com को भेज दें।</string>
+    <string name="report_pc_privacy">आपके ग्राहकों के नाम, नंबर और बकाया कभी नहीं भेजे जाते। रिपोर्ट के साथ सिर्फ़ ऐप का वर्ज़न और विंडोज़ का वर्ज़न जाता है — नीचे पूरा दिखाया गया है, इस कंप्यूटर से कुछ जाने से पहले।</string>
 </resources>

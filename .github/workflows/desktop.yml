@@ -112,6 +112,10 @@ jobs:
           gh release view desktop-test >/dev/null 2>&1 || gh release create desktop-test --prerelease \
             --title "Roshan Khata for Windows - test build" --notes "Windows test build. Not signed yet." || true
           gh release upload desktop-test RoshanKhata-Windows-test.msi --clobber
+          # What version this is, for the app's own update check (UpdateCheck reads it once a day).
+          ver=$(grep -oE 'packageVersion = "[0-9.]+"' desktop/build.gradle.kts | grep -oE '[0-9.]+')
+          printf '{"version": "%s", "commit": "%s"}\n' "$ver" "${GITHUB_SHA}" > version.json
+          gh release upload desktop-test version.json --clobber
           [ -f RoshanKhata-Windows-store.msix ] && gh release upload desktop-test RoshanKhata-Windows-store.msix --clobber
           # The statement pictures from StatementPrintTest, to look at (lesson 16).
           for f in desktop/build/statement-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done

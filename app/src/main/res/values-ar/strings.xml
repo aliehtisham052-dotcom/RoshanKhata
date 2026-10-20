@@ -3129,4 +3129,22 @@
     <string name="wifi_pc_failed">تعذّر بدء الاستماع. أغلق هذه النافذة وحاول مرة أخرى.</string>
     <string name="poster_save_picture">احفظ الملصق كصورة</string>
     <string name="poster_desktop_flat">على الحاسوب تُرسم الصور مسطّحة؛ والهاتف يعرضها ثلاثية الأبعاد.</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">خذ دفتر الحاسوب</string>
+    <string name="wifi_take_asking">جارٍ طلب الدفتر من الحاسوب…</string>
+    <string name="wifi_take_refused">لم يعطِ الحاسوب دفتره. يجب أن تكون نافذة «من الهاتف» مفتوحة؛ امسح الرمز الذي يعرضه الآن.</string>
+    <string name="book_recovered_title">تم إصلاح دفترك</string>
+    <string name="book_recovered_from">كان ملف الدفتر تالفًا وتعذّرت قراءته. أُعيد بناؤه من النسخة المحفوظة في %1$s. ما كُتب بعد تلك النسخة ليس فيه.</string>
+    <string name="book_recovered_none">كان ملف الدفتر تالفًا وتعذّرت قراءته، ولم تُوجد نسخة محفوظة على هذا الحاسوب. يبدأ الدفتر فارغًا: استعد نسخة احتياطية من هاتفك أو من ملف.</string>
+    <string name="book_corrupt_kept">احتُفظ بالملف التالف ولم يُحذف:\n%1$s</string>
+    <string name="update_available">إصدار أحدث جاهز: %1$s</string>
+    <string name="update_open">افتح صفحة التنزيل</string>
+    <string name="auto_backup_note">تُعاد كتابة نسخة اليوم كل ساعة ما دام التطبيق مفتوحًا، هنا وفي المجلد الخارجي.</string>
+    <string name="receipt_save_picture">احفظ الإيصال كصورة</string>
+    <string name="report_open_mail">افتح بريدي</string>
+    <string name="report_copy">انسخ التقرير</string>
+    <string name="report_copied">تم النسخ. ألصقه في واتساب أو في بريد إلى innovation313.support@gmail.com.</string>
+    <string name="report_no_mail_pc">لا يوجد برنامج بريد على هذا الحاسوب. استخدم «انسخ التقرير» وألصقه في واتساب أو أي بريد إلى innovation313.support@gmail.com.</string>
+    <string name="report_pc_privacy">أسماء عملائك وأرقامهم وأرصدتهم لا تُرسل أبدًا. لا يذهب مع التقرير سوى إصدار التطبيق وإصدار ويندوز — معروضان أدناه كاملين قبل أن يغادر شيء هذا الحاسوب.</string>
 </resources>

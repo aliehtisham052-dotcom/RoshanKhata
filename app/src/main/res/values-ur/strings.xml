@@ -2941,4 +2941,22 @@
     <string name="wifi_pc_failed">سننا شروع نہیں ہو سکا۔ یہ کھڑکی بند کر کے دوبارہ کوشش کریں۔</string>
     <string name="poster_save_picture">پوسٹر تصویر کے طور پر محفوظ کریں</string>
     <string name="poster_desktop_flat">کمپیوٹر پر تصویریں سادہ (فلیٹ) بنتی ہیں؛ فون پر یہ تھری ڈی میں دکھتی ہیں۔</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">کمپیوٹر کی کتاب لیں</string>
+    <string name="wifi_take_asking">کمپیوٹر سے اس کی کتاب مانگ رہے ہیں…</string>
+    <string name="wifi_take_refused">کمپیوٹر نے اپنی کتاب نہیں دی۔ اس کی “فون سے” والی کھڑکی کھلی ہونی چاہیے؛ جو کوڈ وہ ابھی دکھا رہا ہے وہی اسکین کریں۔</string>
+    <string name="book_recovered_title">آپ کی کتاب درست کر دی گئی</string>
+    <string name="book_recovered_from">کتاب کی فائل خراب تھی اور پڑھی نہیں جا سکی۔ اسے %1$s کی بنی ہوئی نقل سے دوبارہ بنایا گیا ہے۔ اس نقل کے بعد لکھی گئی چیزیں اس میں نہیں ہیں۔</string>
+    <string name="book_recovered_none">کتاب کی فائل خراب تھی اور پڑھی نہیں جا سکی، اور اس کمپیوٹر پر کوئی محفوظ نقل بھی نہیں ملی۔ کتاب خالی شروع ہو رہی ہے: اپنے فون یا کسی فائل سے بیک اپ واپس لائیں۔</string>
+    <string name="book_corrupt_kept">خراب فائل حذف نہیں کی گئی، رکھ لی گئی ہے:\n%1$s</string>
+    <string name="update_available">نیا ورژن تیار ہے: %1$s</string>
+    <string name="update_open">ڈاؤن لوڈ کا صفحہ کھولیں</string>
+    <string name="auto_backup_note">جب تک ایپ کھلی رہتی ہے، آج کی نقل ہر گھنٹے دوبارہ لکھی جاتی ہے، یہاں اور باہر والے فولڈر میں۔</string>
+    <string name="receipt_save_picture">رسید تصویر کے طور پر محفوظ کریں</string>
+    <string name="report_open_mail">میری ای میل کھولیں</string>
+    <string name="report_copy">رپورٹ کاپی کریں</string>
+    <string name="report_copied">کاپی ہو گئی۔ اسے واٹس ایپ یا ای میل میں innovation313.support@gmail.com کو بھیج دیں۔</string>
+    <string name="report_no_mail_pc">اس کمپیوٹر پر کوئی ای میل پروگرام نہیں ہے۔ “رپورٹ کاپی کریں” دبائیں اور واٹس ایپ یا کسی بھی ای میل سے innovation313.support@gmail.com کو بھیج دیں۔</string>
+    <string name="report_pc_privacy">آپ کے گاہکوں کے نام، نمبر اور بقایا کبھی نہیں بھیجے جاتے۔ رپورٹ کے ساتھ صرف ایپ کا ورژن اور ونڈوز کا ورژن جاتا ہے — نیچے پورا دکھایا گیا ہے، اس کمپیوٹر سے کچھ جانے سے پہلے۔</string>
 </resources>

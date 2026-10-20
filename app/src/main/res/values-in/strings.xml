@@ -2938,4 +2938,22 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="wifi_pc_failed">Tidak bisa mulai mendengarkan. Tutup jendela ini dan coba lagi.</string>
     <string name="poster_save_picture">Simpan poster sebagai gambar</string>
     <string name="poster_desktop_flat">Di komputer gambar digambar datar; ponsel menampilkannya dalam 3D.</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">Ambil buku komputer</string>
+    <string name="wifi_take_asking">Meminta buku dari komputer…</string>
+    <string name="wifi_take_refused">Komputer tidak memberikan bukunya. Jendela “Dari ponsel” harus terbuka; pindai kode yang ditampilkannya sekarang.</string>
+    <string name="book_recovered_title">Buku Anda telah diperbaiki</string>
+    <string name="book_recovered_from">Berkas buku rusak dan tidak bisa dibaca. Buku dibangun ulang dari salinan yang dibuat pada %1$s. Apa pun yang ditulis setelah salinan itu tidak ada di dalamnya.</string>
+    <string name="book_recovered_none">Berkas buku rusak dan tidak bisa dibaca, dan tidak ada salinan tersimpan di komputer ini. Buku dimulai kosong: pulihkan cadangan dari ponsel atau berkas.</string>
+    <string name="book_corrupt_kept">Berkas yang rusak disimpan, tidak dihapus:\n%1$s</string>
+    <string name="update_available">Versi lebih baru siap: %1$s</string>
+    <string name="update_open">Buka halaman unduhan</string>
+    <string name="auto_backup_note">Salinan hari ini ditulis ulang setiap jam selama aplikasi terbuka, di sini dan di folder luar.</string>
+    <string name="receipt_save_picture">Simpan struk sebagai gambar</string>
+    <string name="report_open_mail">Buka email saya</string>
+    <string name="report_copy">Salin laporan</string>
+    <string name="report_copied">Tersalin. Tempel ke WhatsApp atau email ke innovation313.support@gmail.com.</string>
+    <string name="report_no_mail_pc">Tidak ada program email di komputer ini. Gunakan “Salin laporan” dan tempel ke WhatsApp atau email apa pun ke innovation313.support@gmail.com.</string>
+    <string name="report_pc_privacy">Nama, nomor, dan saldo pelanggan Anda TIDAK PERNAH dikirim. Hanya versi aplikasi dan versi Windows yang ikut — ditampilkan lengkap di bawah, sebelum apa pun meninggalkan komputer ini.</string>
 </resources>

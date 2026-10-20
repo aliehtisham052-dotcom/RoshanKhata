@@ -99,9 +99,14 @@ object PhoneSync {
     }
 }
 
-/** The window. [onBook] gets the saved file of a book that arrived whole; the caller shows the restore confirmation. */
+/**
+ * The window. [onBook] gets the saved file of a book that arrived whole; the
+ * caller shows the restore confirmation. [give] is this computer's book as
+ * the phone's backup text, for a phone that asks for it (the window being
+ * open is the owner's consent: the secret is on this screen alone).
+ */
 @Composable
-fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, onBook: (File) -> Unit) {
+fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> ByteArray?)? = null, onBook: (File) -> Unit) {
     val c = LocalRoshanColors.current
     val secret = remember { WifiSync.newSecret() }
     val hosts = remember { PhoneSync.lanAddresses() }
@@ -121,7 +126,7 @@ fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, onBook: (File
     LaunchedEffect(server) {
         val s = server ?: run { status = words.text(W.wifi_pc_failed); return@LaunchedEffect }
         if (hosts.isEmpty()) return@LaunchedEffect
-        val book = withContext(Dispatchers.IO) { runCatching { WifiSync.receive(s, secret) { stopped } }.getOrNull() }
+        val book = withContext(Dispatchers.IO) { runCatching { WifiSync.receive(s, secret, { stopped }, give) }.getOrNull() }
         if (book != null && !stopped) {
             val file = withContext(Dispatchers.IO) { runCatching { PhoneSync.saveIncoming(home, book) }.getOrNull() }
             if (file != null) onBook(file) else status = words.text(W.wifi_pc_failed)

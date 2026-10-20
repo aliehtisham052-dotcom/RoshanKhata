@@ -63,6 +63,21 @@ class AppPrefs(private val file: File) {
         save()
     }
 
+    /** The day (yyyy-MM-dd) the daily reminder was last shown (Reminders). */
+    fun remindedDay(): String? = props.getProperty(KEY_REMINDED)
+
+    @Synchronized
+    fun setRemindedDay(day: String) { props.setProperty(KEY_REMINDED, day); save() }
+
+    /** The update check's last answer and when it was asked (UpdateCheck). */
+    fun updateLatest(): String? = props.getProperty(KEY_UPDATE_LATEST)?.takeIf { it.isNotBlank() }
+    fun updateCheckedAt(): Long = props.getProperty(KEY_UPDATE_AT)?.toLongOrNull() ?: 0L
+
+    @Synchronized
+    fun setUpdateLatest(version: String, at: Long) {
+        props.setProperty(KEY_UPDATE_LATEST, version); props.setProperty(KEY_UPDATE_AT, at.toString()); save()
+    }
+
     /** True when the owner has set an App Lock PIN on this computer. */
     fun hasPin(): Boolean = !props.getProperty(KEY_PIN_HASH).isNullOrBlank() && !props.getProperty(KEY_PIN_SALT).isNullOrBlank()
 
@@ -121,6 +136,9 @@ class AppPrefs(private val file: File) {
         const val KEY_INV_RECEIVED = "invoice_received"
         const val KEY_INV_NOTE = "invoice_note"
         const val KEY_INV_DUE = "invoice_due_date"
+        const val KEY_REMINDED = "reminded_day"
+        const val KEY_UPDATE_LATEST = "update_latest"
+        const val KEY_UPDATE_AT = "update_checked_at"
     }
 }
 

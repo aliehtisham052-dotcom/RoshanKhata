@@ -2969,4 +2969,22 @@
     <string name="wifi_pc_failed">ٻڌڻ شروع نه ٿي سگهيو. هي دري بند ڪري ٻيهر ڪوشش ڪريو.</string>
     <string name="poster_save_picture">پوسٽر تصوير طور محفوظ ڪريو</string>
     <string name="poster_desktop_flat">ڪمپيوٽر تي تصويرون سادي (فليٽ) ٺهن ٿيون؛ فون تي اهي ٿري ڊي ۾ ڏسجن ٿيون.</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">ڪمپيوٽر جو کاتو وٺو</string>
+    <string name="wifi_take_asking">ڪمپيوٽر کان سندس کاتو گهري رهيا آهيون…</string>
+    <string name="wifi_take_refused">ڪمپيوٽر پنهنجو کاتو نه ڏنو. سندس “فون مان” واري دري کليل هجڻ گهرجي؛ جيڪو ڪوڊ هو هاڻي ڏيکاري رهيو آهي اهو ئي اسڪين ڪريو.</string>
+    <string name="book_recovered_title">توهان جو کاتو درست ڪيو ويو</string>
+    <string name="book_recovered_from">کاتي جي فائل خراب هئي ۽ پڙهي نه سگهي. ان کي %1$s جي ٺهيل نقل مان ٻيهر ٺاهيو ويو آهي. ان نقل کان پوءِ لکيل شيون ان ۾ ناهن.</string>
+    <string name="book_recovered_none">کاتي جي فائل خراب هئي ۽ پڙهي نه سگهي، ۽ هن ڪمپيوٽر تي ڪا محفوظ نقل به نه ملي. کاتو خالي شروع ٿي رهيو آهي: پنهنجي فون يا ڪنهن فائل مان بيڪ اپ واپس آڻيو.</string>
+    <string name="book_corrupt_kept">خراب فائل ڊاهي نه وئي، رکي وئي آهي:\n%1$s</string>
+    <string name="update_available">نئون ورزن تيار آهي: %1$s</string>
+    <string name="update_open">ڊائونلوڊ جو صفحو کوليو</string>
+    <string name="auto_backup_note">جيستائين ايپ کليل رهي ٿي، اڄ جي نقل هر ڪلاڪ ٻيهر لکجي ٿي، هتي ۽ ٻاهرئين فولڊر ۾.</string>
+    <string name="receipt_save_picture">رسيد تصوير طور محفوظ ڪريو</string>
+    <string name="report_open_mail">منهنجي اي ميل کوليو</string>
+    <string name="report_copy">رپورٽ ڪاپي ڪريو</string>
+    <string name="report_copied">ڪاپي ٿي وئي. ان کي واٽس ايپ يا اي ميل ۾ innovation313.support@gmail.com ڏانهن موڪليو.</string>
+    <string name="report_no_mail_pc">هن ڪمپيوٽر تي ڪو اي ميل پروگرام ناهي. “رپورٽ ڪاپي ڪريو” دٻايو ۽ واٽس ايپ يا ڪنهن به اي ميل مان innovation313.support@gmail.com ڏانهن موڪليو.</string>
+    <string name="report_pc_privacy">توهان جي گراهڪن جا نالا، نمبر ۽ بقايا ڪڏهن به نٿا موڪليا وڃن. رپورٽ سان گڏ صرف ايپ جو ورزن ۽ ونڊوز جو ورزن وڃي ٿو — هيٺ پورو ڏيکاريل آهي، هن ڪمپيوٽر مان ڪجهه وڃڻ کان اڳ.</string>
 </resources>

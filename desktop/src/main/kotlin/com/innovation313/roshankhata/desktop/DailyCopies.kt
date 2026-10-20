@@ -115,6 +115,7 @@ fun DailyCopiesPane(
 
     Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.snapshots_title), word(W.snapshots_subtitle))
+        Text(word(W.auto_backup_note), color = c.textMuted, fontSize = 13.sp)
         OutsideFolderCard(outsideFolder, outsideDir, onFolder)
         if (copies.isEmpty()) {
             Text(word(W.snapshots_empty), color = c.textMuted, fontSize = 15.sp)

@@ -98,22 +98,35 @@ import java.util.Locale
  * and About. Everything it shows comes from the shared module — the
  * database, the backup format, the money format, the words.
  */
-fun main() = application {
+fun main() {
     val home = DesktopDatabase.home()
+    // Any crash is written down before anything else runs (Report a problem shows it).
+    CrashLog.install(home)
+    application { app(home) }
+}
+
+@Composable
+private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // The open business: its own book and its own shop settings. Switching
     // closes the old book (DisposableEffect) before the new one is used.
     val businesses = remember { Businesses(home) }
     var active by remember { mutableStateOf(businesses.activeId()) }
-    val db = remember(active) { DesktopDatabase.open(businesses.dbFile(active)) }
-    DisposableEffect(db) { onDispose { db.close() } }
     val settings = remember(active) { FileShopSettings(businesses.settingsFile(active)).also { it.refreshDisplay() } }
     // Once a day, a checked copy of the open book (the phone's Snapshots); a failure never stops the app.
     val dailyDir = remember(active) { DailyCopies.dir(home, active) }
+    // The app's language: the owner's choice (app.properties), else the computer's.
+    val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
+    // The book, checked first (BookHealth): a damaged file is set aside and the newest good daily copy comes back.
+    val opened = remember(active) {
+        val outside = appPrefs.backupFolder()?.let { DailyCopies.outside(it, active) }
+        BookHealth.open(businesses.dbFile(active), settings, listOfNotNull(dailyDir, outside))
+    }
+    val db = opened.db
+    var recoveryTold by remember(active) { mutableStateOf(opened.corruptKept == null) }
+    DisposableEffect(db) { onDispose { db.close() } }
     // The shop's logo, signature, stamp and payment QR for its invoices, one set per business.
     val images = remember(active) { com.innovation313.roshankhata.desktop.invoice.ProfileImages.forBusiness(home, active) }
     LaunchedEffect(db) { runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir) } }
-    // The app's language: the owner's choice (app.properties), else the computer's.
-    val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
     // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
     var theme by remember { mutableStateOf(appPrefs.theme()) }
@@ -132,6 +145,15 @@ fun main() = application {
     LaunchedEffect(db, outsideDir) {
         if (outsideDir != null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
     }
+    // Auto backup (20 Oct): today's copy, here and in the outside folder, rewritten every hour the
+    // app stays open, so a day's work is never more than an hour behind in the copies.
+    LaunchedEffect(db, outsideDir) {
+        while (true) {
+            kotlinx.coroutines.delay(60L * 60 * 1000)
+            runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir, refresh = true) }
+            if (outsideDir != null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
+        }
+    }
     val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
     val words = remember(locale) { desktopWords(locale) }
     val rtl = BidiPort.isRtlLocale(locale)
@@ -139,6 +161,7 @@ fun main() = application {
     val keys = remember { KeyActions() }
     Window(
         onCloseRequest = {
+            Reminders.remove()
             outsideDir?.let { dir ->
                 runCatching { kotlinx.coroutines.runBlocking { kotlinx.coroutines.withTimeoutOrNull(20_000) { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } } }
             }
@@ -189,6 +212,21 @@ fun main() = application {
                         onTradeChanged = { tradeTick++ },
                         appPrefs = appPrefs
                     ) } }
+                    if (!recoveryTold) {
+                        // The book was damaged and rebuilt (or could not be): said once, before any work.
+                        val from = opened.recoveredFrom
+                        AlertDialog(
+                            onDismissRequest = { recoveryTold = true },
+                            title = { Text(word(W.book_recovered_title)) },
+                            text = {
+                                Text(
+                                    (if (from != null) words.text(W.book_recovered_from, Format.dateTime(from.lastModified()))
+                                    else words.text(W.book_recovered_none)) + "\n\n" + words.text(W.book_corrupt_kept, opened.corruptKept?.absolutePath.orEmpty())
+                                )
+                            },
+                            confirmButton = { TextButton({ recoveryTold = true }) { Text(word(W.ok)) } }
+                        )
+                    }
                 }
             }
         }
@@ -352,6 +390,9 @@ private fun Book(
     }
     if (choosingBusiness) BusinessesDialog(businesses, activeBusiness, onSwitch = { choosingBusiness = false; onSwitch(it) }, onClose = { choosingBusiness = false })
     var shop by remember { mutableStateOf(shopName()) }
+    // The header's backup action, reached from the bell's row too (set where the action is built).
+    var backupHook by remember { mutableStateOf({}) }
+    fun backupNowLater() = backupHook()
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
     LaunchedEffect(reload, section) {
@@ -365,6 +406,25 @@ private fun Book(
         }
         if (newest != null && newest > (lastBackupAt ?: 0L)) lastBackupAt = newest
     }
+    // A newer Windows build on the release page, asked once a day (UpdateCheck); null until known.
+    var newerVersion by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(Unit) { newerVersion = withContext(Dispatchers.IO) { runCatching { UpdateCheck.newer(appPrefs) }.getOrNull() } }
+    // The day's reminder from the tray (Reminders), once the bell's list and the backup's age are known.
+    var reminded by remember { mutableStateOf(false) }
+    LaunchedEffect(alerts, lastBackupAt) {
+        if (reminded) return@LaunchedEffect
+        kotlinx.coroutines.delay(4000)
+        reminded = true
+        runCatching { Reminders.daily(appPrefs, words, alerts, lastBackupAt) }
+    }
+    var reporting by remember { mutableStateOf(false) }
+    // The bell's rows beyond the ledger's own: the backup's age and a newer version (the phone's HomeAlerts adds the same).
+    val backupOld = lastBackupAt == null || System.currentTimeMillis() - lastBackupAt!! > Reminders.BACKUP_WEEK_MS
+    val extraAlerts = listOfNotNull(
+        if (backupOld) ExtraAlert(Section.DAILY, words.text(W.notif_backup_title),
+            lastBackupAt?.let { words.text(W.na_backup, ((System.currentTimeMillis() - it) / (24L * 60 * 60 * 1000)).toInt()) } ?: words.text(W.notif_backup_body)) { backupNowLater() } else null,
+        newerVersion?.let { v -> ExtraAlert(Section.HELP, words.text(W.update_available, v), words.text(W.update_open)) { UpdateCheck.openPage() } }
+    )
 
     Column(Modifier.fillMaxSize().background(c.pageBg)) {
         // What needs the owner today, as the phone's Home: cheques due, stock expiring
@@ -389,6 +449,7 @@ private fun Book(
                     .getOrElse { words.text(W.backup_failed) }
             }
         }
+        backupHook = { backupNow() }
         fun restoreFromFile() {
             val dialog = FileDialog(null as Frame?, words.text(W.restore_from_file), FileDialog.LOAD)
             // Downloads: where a backup sent from the phone (WhatsApp, a browser) lands.
@@ -413,7 +474,7 @@ private fun Book(
             backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.dateTime(it)) } ?: word(W.backup_now),
             onBackup = { backupNow() },
             onPhone = { phoneSync = true },
-            alerts = alerts.size,
+            alerts = alerts.size + extraAlerts.size,
             onAlerts = { showAlerts = true },
             // The phone's More sheet, in its groups: Data, Display, Help.
             menu = listOf(
@@ -432,6 +493,7 @@ private fun Book(
                 MenuLine(word(W.app_lock)) { lockSettings = true },
                 MenuLine(word(W.settings_group_help), null),
                 MenuLine(word(W.help_support)) { section = Section.HELP },
+                MenuLine(word(W.report_problem)) { reporting = true },
                 MenuLine(word(W.about_us)) { about = true }
             ),
             onAddParty = { addParty = true }
@@ -1017,7 +1079,16 @@ private fun Book(
         )
     }
     if (phoneSync) {
-        PhoneSyncDialog(words, home, onClose = { phoneSync = false }) { file ->
+        // The phone may also take this computer's book (Backup → Take the computer's book): the
+        // same text a backup file holds, made fresh when asked.
+        val giveBook: () -> ByteArray? = {
+            runCatching {
+                val out = java.io.StringWriter()
+                kotlinx.coroutines.runBlocking { BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), out) }
+                out.toString().toByteArray(Charsets.UTF_8)
+            }.getOrNull()
+        }
+        PhoneSyncDialog(words, home, onClose = { phoneSync = false }, give = giveBook) { file ->
             phoneSync = false
             // The same confirmation as a backup file chosen by hand: nothing is replaced before the owner's yes.
             scope.launch {
@@ -1111,8 +1182,25 @@ private fun Book(
             }
         }
     }
+    if (reporting) ReportProblemDialog(words, home) { reporting = false }
     receipt?.let { lines ->
-        PrinterChoiceDialog(remember { ThermalReceipt.printers() }, onCancel = { receipt = null }) { printer ->
+        // The receipt as a picture too (the phone's EntryDetail share), for WhatsApp or a folder.
+        val savePicture = {
+            receipt = null
+            val dialog = FileDialog(null as Frame?, words.text(W.receipt_save_picture), FileDialog.SAVE)
+            startIn(dialog, "Pictures")
+            dialog.file = "RoshanKhata_Receipt.png"
+            dialog.isVisible = true
+            val name = dialog.file
+            if (name != null) {
+                val file = File(dialog.directory, if (name.endsWith(".png", true)) name else "$name.png")
+                scope.launch {
+                    val ok = withContext(Dispatchers.IO) { runCatching { javax.imageio.ImageIO.write(ThermalReceipt.image(lines, rtl), "png", file) }.isSuccess }
+                    told = words.text(W.print_receipt) to (if (ok) words.text(W.report_saved_to, file.absolutePath) else words.text(W.backup_failed))
+                }
+            }
+        }
+        PrinterChoiceDialog(remember { ThermalReceipt.printers() }, onCancel = { receipt = null }, onSavePicture = savePicture) { printer ->
             receipt = null
             scope.launch {
                 val ok = withContext(Dispatchers.IO) { ThermalReceipt.send(printer, ThermalReceipt.bytes(lines, rtl)) }
@@ -1243,7 +1331,7 @@ private fun Book(
             title = word(W.home_today),
             state = rememberDialogState(width = 520.dp, height = 600.dp)
         ) {
-            AlertsList(alerts) { s -> showAlerts = false; section = s }
+            AlertsList(alerts, extraAlerts) { s -> showAlerts = false; section = s }
         }
     }
     if (choosingTextSize) {

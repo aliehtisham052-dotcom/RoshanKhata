@@ -2969,4 +2969,22 @@
     <string name="wifi_pc_failed">شروع شنیدن ممکن نشد. این پنجره را ببندید و دوباره تلاش کنید.</string>
     <string name="poster_save_picture">ذخیرهٔ پوستر به‌صورت تصویر</string>
     <string name="poster_desktop_flat">در رایانه تصویرها تخت کشیده می‌شوند؛ گوشی آن‌ها را سه‌بعدی نشان می‌دهد.</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">دفتر رایانه را بگیر</string>
+    <string name="wifi_take_asking">در حال درخواست دفتر از رایانه…</string>
+    <string name="wifi_take_refused">رایانه دفترش را نداد. پنجرهٔ «از گوشی» باید باز باشد؛ کدی را که اکنون نشان می‌دهد اسکن کنید.</string>
+    <string name="book_recovered_title">دفتر شما تعمیر شد</string>
+    <string name="book_recovered_from">فایل دفتر خراب بود و خوانده نشد. از نسخهٔ ساخته‌شده در %1$s دوباره ساخته شد. آنچه پس از آن نسخه نوشته شده در آن نیست.</string>
+    <string name="book_recovered_none">فایل دفتر خراب بود و خوانده نشد، و هیچ نسخهٔ ذخیره‌شده‌ای روی این رایانه پیدا نشد. دفتر خالی شروع می‌شود: پشتیبان را از گوشی یا یک فایل بازگردانید.</string>
+    <string name="book_corrupt_kept">فایل خراب حذف نشد و نگه داشته شد:\n%1$s</string>
+    <string name="update_available">نسخهٔ جدیدتری آماده است: %1$s</string>
+    <string name="update_open">صفحهٔ دانلود را باز کن</string>
+    <string name="auto_backup_note">تا وقتی برنامه باز است، نسخهٔ امروز هر ساعت دوباره نوشته می‌شود، اینجا و در پوشهٔ بیرونی.</string>
+    <string name="receipt_save_picture">ذخیرهٔ رسید به‌صورت تصویر</string>
+    <string name="report_open_mail">ایمیلم را باز کن</string>
+    <string name="report_copy">کپی گزارش</string>
+    <string name="report_copied">کپی شد. آن را در واتساپ یا ایمیلی به innovation313.support@gmail.com بچسبانید.</string>
+    <string name="report_no_mail_pc">روی این رایانه برنامهٔ ایمیلی تنظیم نشده. «کپی گزارش» را بزنید و در واتساپ یا هر ایمیلی به innovation313.support@gmail.com بچسبانید.</string>
+    <string name="report_pc_privacy">نام، شماره و ماندهٔ مشتریان شما هرگز فرستاده نمی‌شود. همراه گزارش فقط نسخهٔ برنامه و نسخهٔ ویندوز می‌رود — پایین به‌طور کامل نشان داده شده، پیش از آنکه چیزی از این رایانه خارج شود.</string>
 </resources>

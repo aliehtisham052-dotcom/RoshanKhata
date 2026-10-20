@@ -71,6 +71,25 @@ class WifiSyncTest {
     }
 
     @Test
+    fun `the phone can take the computer's book, only while the computer gives it`() {
+        val server = ServerSocket(0, 4, InetAddress.getLoopbackAddress())
+        val pcBook = ByteArray(200_000) { (it % 97).toByte() }
+        var giving = false
+        var stop = false
+        val t = thread { WifiSync.receive(server, secret, { stop }) { if (giving) pcBook else null } }
+        val p = WifiSync.Pairing(listOf("127.0.0.1"), server.localPort, secret)
+        assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p))
+        giving = true
+        assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p.copy(secret = WifiSync.newSecret())))
+        val got = WifiSync.pull(p)
+        assertTrue(got is WifiSync.Pulled.Got)
+        assertArrayEquals(pcBook, (got as WifiSync.Pulled.Got).book)
+        stop = true
+        t.join(10_000)
+        server.close()
+    }
+
+    @Test
     fun `no computer listening is unreachable, not a crash`() {
         val port = ServerSocket(0).use { it.localPort }
         assertEquals(WifiSync.Outcome.Unreachable, WifiSync.send(WifiSync.Pairing(listOf("127.0.0.1"), port, secret), ByteArray(10), connectMs = 500))
