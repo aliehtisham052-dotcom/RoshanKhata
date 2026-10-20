@@ -25,6 +25,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
     // The business cards' QR (the phone's own library, pure Java).
     implementation("com.google.zxing:core:3.5.3")
+    // PDFs on the computer (1.8.4): every sheet kept as a file, its pages as pictures
+    // (PdfFiles). Apache 2.0, pure Java; brings fontbox, pdfbox-io and commons-logging.
+    implementation("org.apache.pdfbox:pdfbox:3.0.4")
     testImplementation("junit:junit:4.13.2")
 }
 
@@ -70,12 +73,12 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.8.3"
+            packageVersion = "1.8.4"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
             // java.sql for Room's driver plumbing; jdk.unsupported for SQLite's native loader.
-            modules("java.sql", "jdk.unsupported")
+            modules("java.sql", "jdk.unsupported", "java.logging")
             windows {
                 menu = true
                 menuGroup = "Innovation 313"

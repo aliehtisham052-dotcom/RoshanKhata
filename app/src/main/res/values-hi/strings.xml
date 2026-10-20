@@ -297,6 +297,10 @@
     <!-- App Lock -->
     <string name="app_lock">ऐप लॉक</string>
     <string name="app_lock_pc_explain">इस कंप्यूटर पर रोशन खाता के लिए PIN। यह काउंटर पर दूसरों की नज़र से खाता बचाता है; फ़ाइल को खुद लॉक नहीं करता, इसलिए उठते समय Windows भी लॉक करें (Win + L)।</string>
+    <string name="pc_pdf_save">PDF सेव करें</string>
+    <string name="pc_pdf_open_folder">फ़ोल्डर खोलें</string>
+    <string name="pc_pdf_making">PDF बन रही है…</string>
+    <string name="pc_pdf_failed">PDF सेव नहीं हो सकी: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">4 से 8 अंकों का PIN चुनें</string>
     <string name="lock_pin_again">वही PIN दोबारा लिखें</string>

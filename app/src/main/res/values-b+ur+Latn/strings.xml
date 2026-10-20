@@ -281,6 +281,10 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
 
     <string name="app_lock">App Lock</string>
     <string name="app_lock_pc_explain">Is computer par Roshan Khata ke liye PIN. Ye counter par doosron ki nazar se khata bachata hai; file ko khud lock nahi karta, is liye uthte waqt Windows bhi lock karein (Win + L).</string>
+    <string name="pc_pdf_save">PDF mehfooz karein</string>
+    <string name="pc_pdf_open_folder">Folder kholein</string>
+    <string name="pc_pdf_making">PDF ban rahi hai…</string>
+    <string name="pc_pdf_failed">PDF mehfooz nahi ho saki: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">4 se 8 hindson ka PIN chunein</string>
     <string name="lock_pin_again">Wohi PIN dobara likhein</string>

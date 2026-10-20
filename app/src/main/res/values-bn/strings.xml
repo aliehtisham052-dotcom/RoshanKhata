@@ -297,6 +297,10 @@
     <!-- App Lock -->
     <string name="app_lock">অ্যাপ লক</string>
     <string name="app_lock_pc_explain">এই কম্পিউটারে রোশন খাতার জন্য PIN। এটি কাউন্টারে অন্যদের চোখ থেকে খাতা আড়াল রাখে; ফাইলটি নিজে লক করে না, তাই উঠে যাওয়ার সময় Windows-ও লক করুন (Win + L)।</string>
+    <string name="pc_pdf_save">PDF সেভ করুন</string>
+    <string name="pc_pdf_open_folder">ফোল্ডার খুলুন</string>
+    <string name="pc_pdf_making">PDF তৈরি হচ্ছে…</string>
+    <string name="pc_pdf_failed">PDF সেভ করা গেল না: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">৪ থেকে ৮ অঙ্কের একটি PIN বেছে নিন</string>
     <string name="lock_pin_again">একই PIN আবার লিখুন</string>
