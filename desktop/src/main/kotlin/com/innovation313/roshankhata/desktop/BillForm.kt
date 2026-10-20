@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -98,7 +97,7 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
                 items(shown, key = { it.id }) { p ->
                     Text(
                         Format.name(p.name) + (p.phone?.let { "  ·  " + Format.ltr(it) } ?: ""),
-                        Modifier.fillMaxWidth().clickable { supplierId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp),
+                        Modifier.fillMaxWidth().press { supplierId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp),
                         color = c.ink, fontSize = 14.sp
                     )
                 }

@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -110,7 +109,7 @@ fun DuplicatesPane(dao: KhataDao, parties: List<PartyWithBalance>, onChanged: ()
                         Column(
                             Modifier.fillMaxWidth().padding(top = 6.dp)
                                 .background(if (on) c.brandGreen else c.pageBg, RoundedCornerShape(10.dp))
-                                .clickable { survivor = i }.padding(10.dp)
+                                .press { survivor = i }.padding(10.dp)
                         ) {
                             Text(Format.name(m.name), color = if (on) Color.White else c.ink, fontWeight = FontWeight.Bold)
                             Text(Format.ltr(m.phone?.takeIf { it.isNotBlank() } ?: "—") + "  ·  " + Format.money(m.balance),

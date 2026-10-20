@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,7 +71,7 @@ fun SeasonsPane(dao: KhataDao, parties: List<PartyWithBalance>, reload: Int) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(summaries) { s ->
                     Column(
-                        Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).clickable { open = s.season }.padding(16.dp),
+                        Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).press { open = s.season }.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(seasonName(s.season), color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)

@@ -6,7 +6,6 @@ import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -87,7 +86,7 @@ fun AppHeader(
                 Row(
                     Modifier.clip(RoundedCornerShape(16.dp))
                         .border(2.dp, c.brandGreen, RoundedCornerShape(16.dp))
-                        .clickable(onClick = onShop)
+                        .press(RoundedCornerShape(16.dp), onClick = onShop)
                         .padding(start = 5.dp, top = 5.dp, bottom = 5.dp, end = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -170,7 +169,7 @@ fun AppHeader(
                 // The one filled button: a new party, as the phone's Khata button (Ctrl+N).
                 Row(
                     Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(12.dp)).background(c.brandGreen)
-                        .clickable(onClick = onAddParty).padding(horizontal = 14.dp, vertical = 8.dp),
+                        .press(RoundedCornerShape(12.dp), wash = Color.Black.copy(alpha = 0.18f), onClick = onAddParty).padding(horizontal = 14.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("+", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
@@ -215,9 +214,9 @@ fun OutlineAction(onClick: () -> Unit, content: @Composable () -> Unit) {
     val c = LocalRoshanColors.current
     Row(
         Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(12.dp))
-            .border(BorderStroke(1.dp, Look.line), RoundedCornerShape(12.dp))
+            .border(BorderStroke(1.dp, Look.edge), RoundedCornerShape(12.dp))
             .background(c.surface)
-            .clickable(onClick = onClick)
+            .press(RoundedCornerShape(12.dp), onClick = onClick)
             .padding(horizontal = 11.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) { content() }

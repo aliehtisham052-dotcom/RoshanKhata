@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,7 +83,7 @@ fun RateListPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?) {
                     Text(
                         co ?: word(W.filter_type_all),
                         Modifier.background(if (on) c.brandGreen else c.surface, RoundedCornerShape(16.dp))
-                            .clickable { company = co }.padding(horizontal = 14.dp, vertical = 7.dp),
+                            .press { company = co }.padding(horizontal = 14.dp, vertical = 7.dp),
                         color = if (on) Color.White else c.ink, fontSize = 13.sp
                     )
                 }

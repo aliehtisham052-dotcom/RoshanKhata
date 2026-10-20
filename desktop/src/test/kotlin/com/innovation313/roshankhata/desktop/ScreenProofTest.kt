@@ -88,9 +88,12 @@ class ScreenProofTest {
             }
         }
         try {
-            // Two frames: the first lays out, the second has the pictures loaded.
+            // The first frame lays out, the next loads the pictures; then a second on, so Home's
+            // rise and every eased colour (Motion.kt, 1.8.3) have finished before the picture.
             scene.render(0)
-            val image = scene.render(16_000_000)
+            scene.render(16_000_000)
+            scene.render(500_000_000)
+            val image = scene.render(1_000_000_000)
             val png = image.encodeToData(EncodedImageFormat.PNG)!!.bytes
             return File(dir, "$name.png").also { it.writeBytes(png) }
         } finally {
@@ -138,6 +141,15 @@ class ScreenProofTest {
                 Box(Modifier.fillMaxWidth(0.5f)) { DesignStepper(shown = 3, saved = 1, onShow = {}, onApply = {}) }
             }
         }
-        for (f in listOf(home, khata)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
+        val khataDark = shoot("screen-laptop-khata-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+            Box(Modifier.fillMaxWidth(0.42f)) {
+                KhataControls(
+                    type = PartyType.CUSTOMERS, onType = {}, side = PartySide.TO_GET, onSide = {},
+                    sort = PartySort.RECENT, onSort = {}, whenFilter = PartyWhen.ALL, onWhen = {},
+                    selecting = false, onSelecting = {}
+                )
+            }
+        }
+        for (f in listOf(home, khata, khataDark)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
     }
 }

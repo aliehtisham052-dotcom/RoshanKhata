@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -178,7 +177,7 @@ fun TradePicker(
                                 Modifier.weight(1f).heightIn(min = 118.dp).clip(RoundedCornerShape(16.dp))
                                     .background(if (on) Look.chosen else c.surface)
                                     .border(if (on) 2.dp else 1.dp, if (on) c.brandGreen else Look.line, RoundedCornerShape(16.dp))
-                                    .clickable { chosen = key }.padding(10.dp),
+                                    .press { chosen = key }.padding(10.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {

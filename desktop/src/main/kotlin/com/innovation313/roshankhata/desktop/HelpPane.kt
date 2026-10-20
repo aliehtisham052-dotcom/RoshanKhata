@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -65,7 +64,7 @@ fun HelpPane(words: Words) {
         faqs.forEachIndexed { i, (q, a) ->
             Column(
                 Modifier.widthIn(max = 760.dp).fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp))
-                    .clickable { open = if (open == i) null else i }.padding(14.dp)
+                    .press { open = if (open == i) null else i }.padding(14.dp)
             ) {
                 Text(word(q), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 if (open == i) Text(word(a), Modifier.padding(top = 6.dp), color = c.inkSoft, fontSize = 14.sp)
@@ -83,7 +82,7 @@ fun HelpPane(words: Words) {
                 word(k),
                 Modifier.widthIn(max = 760.dp).fillMaxWidth()
                     .background(if (on) c.brandGreen else c.surface, RoundedCornerShape(10.dp))
-                    .clickable { kind = i }.padding(horizontal = 12.dp, vertical = 8.dp),
+                    .press { kind = i }.padding(horizontal = 12.dp, vertical = 8.dp),
                 color = if (on) androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 14.sp
             )
         }

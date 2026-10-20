@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -121,10 +120,10 @@ fun FilterPill(text: String, on: Boolean, onClick: () -> Unit) {
     Text(
         text,
         Modifier.clip(RoundedCornerShape(17.dp))
-            .background(if (on) c.brandGreen else Color.Transparent)
-            .border(1.dp, if (on) c.brandGreen else Look.line, RoundedCornerShape(17.dp))
-            .clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 5.dp),
-        color = if (on) Color.White else c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold,
+            .background(eased(if (on) Look.pickedFill else Color.Transparent))
+            .border(1.dp, eased(if (on) Look.pickedFill else Look.edge), RoundedCornerShape(17.dp))
+            .press(RoundedCornerShape(17.dp), onClick = onClick).padding(horizontal = 12.dp, vertical = 5.dp),
+        color = eased(if (on) Look.onPicked else c.ink), fontSize = 13.sp, fontWeight = FontWeight.Bold,
         maxLines = 1, softWrap = false
     )
 }
@@ -201,8 +200,8 @@ private fun MenuChip(text: String, active: Boolean, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     Text(
         text,
-        Modifier.clip(RoundedCornerShape(17.dp)).background(if (active) Look.chosen else Color.Transparent)
-            .clickable(onClick = onClick).padding(horizontal = 10.dp, vertical = 5.dp),
+        Modifier.clip(RoundedCornerShape(17.dp)).background(eased(if (active) Look.chosen else Color.Transparent))
+            .press(RoundedCornerShape(17.dp), onClick = onClick).padding(horizontal = 10.dp, vertical = 5.dp),
         color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false
     )
 }

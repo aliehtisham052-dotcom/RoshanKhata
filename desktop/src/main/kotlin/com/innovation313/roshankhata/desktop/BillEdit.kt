@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -204,7 +203,7 @@ fun BatchTraceCard(dao: KhataDao, onBuyers: (Long) -> Unit) {
             if (list.isEmpty()) Text(word(W.trace_no_results), color = c.textMuted, fontSize = 13.sp)
             else Text(plural(WP.trace_results, list.size, list.size), color = c.textMuted, fontSize = 13.sp)
             list.take(20).forEach { b ->
-                Row(Modifier.fillMaxWidth().clickable { onBuyers(b.itemId) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.fillMaxWidth().press { onBuyers(b.itemId) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(b.productName + "  ·  " + word(W.batch_label, b.batchNumber.orEmpty()), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                         Text(
