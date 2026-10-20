@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -68,61 +69,74 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
     var currency by remember(version) { mutableStateOf(settings.currency()) }
     var hijri by remember(version) { mutableStateOf(settings.calendar() == ShopCalendar.Kind.HIJRI) }
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp)) {
-        Column(
-            Modifier.widthIn(max = 720.dp).card().padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            PaneTitle(word(W.business_profile), word(W.business_settings_subtitle))
-            fields.forEach { (label, pair) ->
-                val hint = pair.second
-                Outlined(
-                    value = values.value[label].orEmpty(),
-                    onValueChange = { v -> values.value = values.value + (label to v); saved = false },
-                    label = { Text(word(label)) },
-                    placeholder = hint?.let { h -> { Text(word(h)) } },
-                    singleLine = label != W.invoice_terms && label != W.business_address,
-                    modifier = Modifier.fillMaxWidth()
-                )
+    fun save() {
+        val v = values.value
+        settings.setBusinessName(v[W.business_name])
+        settings.setBusinessNameUrdu(v[W.business_name_urdu])
+        settings.setBusinessAddress(v[W.business_address])
+        settings.setBusinessPhone(v[W.bp_phone])
+        settings.setBusinessEmail(v[W.bp_email])
+        settings.setBankName(v[W.invoice_bank_name_hint])
+        settings.setBankAccountTitle(v[W.invoice_bank_title_hint])
+        settings.setBankIban(v[W.invoice_bank_iban_hint])
+        settings.setBankJazzCash(v[W.invoice_bank_jazzcash_hint])
+        settings.setStrn(v[W.bp_strn])
+        settings.setTermsAndConditions(v[W.invoice_terms])
+        settings.setCurrency(currency)
+        settings.setCalendar(if (hijri) ShopCalendar.Kind.HIJRI else ShopCalendar.Kind.GREGORIAN)
+        // Money signs and dates on screen and on paper follow at once.
+        settings.refreshDisplay()
+        version++
+        saved = true
+        onSaved()
+    }
+    @Composable
+    fun field(label: String, modifier: Modifier, lines: Boolean = true) {
+        val hint = fields[label]?.second
+        FluentField(
+            values.value[label].orEmpty(), { v -> values.value = values.value + (label to v); saved = false }, modifier,
+            label = word(label), placeholder = hint?.let { word(it) }, singleLine = lines
+        )
+    }
+    // The Figma Settings screen: the profile as one card of paired fields, the bank and
+    // paper details as the next, the shop's pictures as the last.
+    FluentPage(word(W.business_profile), word(W.business_settings_subtitle), actions = {
+        if (saved) Text(word(W.profile_saved), color = Look.accent, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+        FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
+    }) {
+        Column(Modifier.fillMaxWidth().card().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            CardTitle(word(W.business_profile))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                field(W.business_name, Modifier.weight(1f))
+                field(W.business_name_urdu, Modifier.weight(1f))
             }
-            Outlined(
-                value = currency,
-                onValueChange = { currency = it; saved = false },
-                label = { Text(word(W.bp_currency)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text(word(W.bp_currency_help), color = c.textMuted, fontSize = 12.sp)
-            Text(word(W.bp_calendar), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-            TwoWay(word(W.calendar_gregorian), word(W.calendar_hijri), !hijri) { gregorian -> hijri = !gregorian; saved = false }
-            Text(word(W.bp_calendar_help), color = c.textMuted, fontSize = 12.sp)
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                if (saved) Text(word(W.profile_saved), color = c.iOwe, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.weight(1f))
-                FillButton(word(W.save), c.brandGreen) {
-                    val v = values.value
-                    settings.setBusinessName(v[W.business_name])
-                    settings.setBusinessNameUrdu(v[W.business_name_urdu])
-                    settings.setBusinessAddress(v[W.business_address])
-                    settings.setBusinessPhone(v[W.bp_phone])
-                    settings.setBusinessEmail(v[W.bp_email])
-                    settings.setBankName(v[W.invoice_bank_name_hint])
-                    settings.setBankAccountTitle(v[W.invoice_bank_title_hint])
-                    settings.setBankIban(v[W.invoice_bank_iban_hint])
-                    settings.setBankJazzCash(v[W.invoice_bank_jazzcash_hint])
-                    settings.setStrn(v[W.bp_strn])
-                    settings.setTermsAndConditions(v[W.invoice_terms])
-                    settings.setCurrency(currency)
-                    settings.setCalendar(if (hijri) ShopCalendar.Kind.HIJRI else ShopCalendar.Kind.GREGORIAN)
-                    // Money signs and dates on screen and on paper follow at once.
-                    settings.refreshDisplay()
-                    version++
-                    saved = true
-                    onSaved()
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                field(W.bp_phone, Modifier.weight(1f))
+                field(W.bp_email, Modifier.weight(1f))
+            }
+            field(W.business_address, Modifier.fillMaxWidth(), lines = false)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FluentField(currency, { currency = it; saved = false }, Modifier.weight(1f), label = word(W.bp_currency), help = word(W.bp_currency_help))
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Text(word(W.bp_calendar), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    TwoWay(word(W.calendar_gregorian), word(W.calendar_hijri), !hijri) { gregorian -> hijri = !gregorian; saved = false }
+                    Text(word(W.bp_calendar_help), color = c.textMuted, fontSize = 12.sp)
                 }
             }
         }
-        Spacer(Modifier.padding(top = 14.dp))
+        Column(Modifier.fillMaxWidth().card().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            CardTitle(word(W.invoice_bank_name_hint))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                field(W.invoice_bank_name_hint, Modifier.weight(1f))
+                field(W.invoice_bank_title_hint, Modifier.weight(1f))
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                field(W.invoice_bank_iban_hint, Modifier.weight(1f))
+                field(W.invoice_bank_jazzcash_hint, Modifier.weight(1f))
+            }
+            field(W.bp_strn, Modifier.fillMaxWidth(0.5f))
+            field(W.invoice_terms, Modifier.fillMaxWidth(), lines = false)
+        }
         ProfilePictures(images)
     }
 }
@@ -163,9 +177,10 @@ private fun ProfilePictures(images: ProfileImages) {
         }
     }
     Column(
-        Modifier.widthIn(max = 720.dp).card().padding(20.dp),
+        Modifier.fillMaxWidth().card().padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        CardTitle(word(W.bp_logo))
         Text(word(W.bp_seals_help), color = c.textMuted, fontSize = 12.sp)
         listOf(
             ProfileImages.Kind.LOGO to (W.bp_logo to W.bp_logo_help), ProfileImages.Kind.SIGNATURE to (W.signature to W.no_signature_yet),
@@ -177,10 +192,10 @@ private fun ProfilePictures(images: ProfileImages) {
                     picture?.let { Image(it, contentDescription = word(texts.first), modifier = Modifier.size(60.dp)) }
                 }
                 Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                    Text(word(texts.first), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                    Text(word(texts.first), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     Text(word(texts.second), color = c.textMuted, fontSize = 12.sp)
                 }
-                TextButton({
+                FluentButton(word(if (picture == null) W.bp_add else W.bp_change), icon = "ic_edit", onClick = {
                     val dialog = java.awt.FileDialog(null as java.awt.Frame?, chooseTitle, java.awt.FileDialog.LOAD)
                     startIn(dialog, "Pictures")
                     dialog.setFilenameFilter { _, name -> name.lowercase().let { it.endsWith(".png") || it.endsWith(".jpg") || it.endsWith(".jpeg") || it.endsWith(".bmp") || it.endsWith(".gif") } }
@@ -193,7 +208,8 @@ private fun ProfilePictures(images: ProfileImages) {
                         failed = false
                         if (img != null) cropping = kind to img
                     }
-                }) { Text(word(if (picture == null) W.bp_add else W.bp_change), color = c.brandGreenText) }
+                })
+                Spacer(Modifier.width(8.dp))
                 if (picture != null) FluentButton(word(W.delete), { images.remove(kind); version++ }, kind = ButtonKind.DANGER)
             }
         }

@@ -86,7 +86,7 @@ fun HelpPane(words: Words) {
                 color = if (on) androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 14.sp
             )
         }
-        androidx.compose.material3.Outlined(
+        Outlined(
             description, { description = it; empty = false },
             label = { Text(word(W.report_describe)) }, placeholder = { Text(word(W.report_describe_help)) },
             modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth(), minLines = 4
