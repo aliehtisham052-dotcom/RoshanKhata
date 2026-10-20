@@ -183,26 +183,38 @@ private fun TodayCard(today: List<EntryWithParty>, parties: List<PartyWithBalanc
             Text(plural(WP.entries_today, today.size, today.size), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
         }
         Rule()
-        if (today.isNotEmpty()) {
+        if (today.isNotEmpty()) BoxWithConstraints(Modifier.fillMaxWidth()) {
+          // On a laptop (the card about 640 dp) the note gives way so a customer's name is whole;
+          // the note then sits under the name instead of in its own column.
+          val roomy = maxWidth >= 720.dp
+          Column {
             val time = remember { DateWords.formatter("h:mm a") }
-            TableHead(listOf(word(W.home_col_time) to 78, word(W.customer) to 0, word(W.invoice_feature_note) to 0, word(W.you_got) to 92, word(W.you_gave) to 92), endAligned = setOf(3, 4))
+            TableHead(
+                if (roomy) listOf(word(W.home_col_time) to 78, word(W.customer) to 0, word(W.invoice_feature_note) to 0, word(W.you_got) to 92, word(W.you_gave) to 92)
+                else listOf(word(W.home_col_time) to 70, word(W.customer) to 0, word(W.you_got) to 88, word(W.you_gave) to 88),
+                endAligned = if (roomy) setOf(3, 4) else setOf(2, 3)
+            )
             today.take(8).forEachIndexed { i, e ->
                 Row(
                     Modifier.fillMaxWidth().press { onCustomer(e.partyId) }.padding(horizontal = 16.dp, vertical = 9.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(time.format(java.util.Date(e.timestamp)), Modifier.width(78.dp), color = c.textMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(time.format(java.util.Date(e.timestamp)), Modifier.width(if (roomy) 78.dp else 70.dp), color = c.textMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Avatar(e.partyName, 28, i)
-                        Text(Format.name(e.partyName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Column {
+                            Text(Format.name(e.partyName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            if (!roomy) e.note?.takeIf { it.isNotBlank() }?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                        }
                     }
-                    Text(e.note?.takeIf { it.isNotBlank() } ?: "—", Modifier.weight(1f), color = c.inkSoft, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    if (roomy) Text(e.note?.takeIf { it.isNotBlank() } ?: "—", Modifier.weight(1f), color = c.inkSoft, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     val amount = if (hidden) masked else Format.money(e.amount)
-                    Text(if (e.isGiven) "—" else amount, Modifier.width(92.dp), color = if (e.isGiven) c.textMuted else Look.accent, fontSize = 14.sp, fontWeight = if (e.isGiven) FontWeight.Normal else FontWeight.SemiBold, textAlign = TextAlign.End, maxLines = 1, softWrap = false)
-                    Text(if (e.isGiven) amount else "—", Modifier.width(92.dp), color = if (e.isGiven) c.owedToMe else c.textMuted, fontSize = 14.sp, fontWeight = if (e.isGiven) FontWeight.SemiBold else FontWeight.Normal, textAlign = TextAlign.End, maxLines = 1, softWrap = false)
+                    Text(if (e.isGiven) "—" else amount, Modifier.width(if (roomy) 92.dp else 88.dp), color = if (e.isGiven) c.textMuted else Look.accent, fontSize = 14.sp, fontWeight = if (e.isGiven) FontWeight.Normal else FontWeight.SemiBold, textAlign = TextAlign.End, maxLines = 1, softWrap = false)
+                    Text(if (e.isGiven) amount else "—", Modifier.width(if (roomy) 92.dp else 88.dp), color = if (e.isGiven) c.owedToMe else c.textMuted, fontSize = 14.sp, fontWeight = if (e.isGiven) FontWeight.SemiBold else FontWeight.Normal, textAlign = TextAlign.End, maxLines = 1, softWrap = false)
                 }
                 Rule()
             }
+          }
         } else {
             // No entry yet today: the customers dealt with last, each opening its page.
             Text(word(W.sort_recent_activity), Modifier.padding(start = 16.dp, top = 10.dp, bottom = 4.dp), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
