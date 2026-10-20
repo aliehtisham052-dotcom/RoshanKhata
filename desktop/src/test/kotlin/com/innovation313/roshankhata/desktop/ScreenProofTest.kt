@@ -48,6 +48,17 @@ class ScreenProofTest {
         PartyWithBalance(6, "Khalid Javed", "03000000006", true, null, 12400.0, now - 6 * day)
     )
 
+    /** Made-up cash sums and today's entries, so the table and the third card are drawn. */
+    private fun figures() = HomeFigures(
+        cashIn = 184500.0, cashOut = 61200.0,
+        today = listOf(
+            com.innovation313.roshankhata.data.EntryWithParty(1, 1, "Muhammad Aslam", 12500.0, false, "Cash received", "E-1", now - 20 * 60 * 1000),
+            com.innovation313.roshankhata.data.EntryWithParty(2, 2, "Ghulam Rasool", 2400.0, true, "Maize seed 10 kg", "E-2", now - 90 * 60 * 1000),
+            com.innovation313.roshankhata.data.EntryWithParty(3, 4, "Sample Seeds Co.", 20000.0, false, "Payment by cheque", "E-3", now - 3 * 60 * 60 * 1000),
+            com.innovation313.roshankhata.data.EntryWithParty(4, 5, "Allah Ditta", 3200.0, true, "Wheat seed 2 bags", "E-4", now - 5 * 60 * 60 * 1000)
+        )
+    )
+
     private fun alerts() = listOf(
         LedgerAlerts.Alert(LedgerAlerts.Kind.CHEQUE, "Cheque", "Ghulam Rasool"),
         LedgerAlerts.Alert(LedgerAlerts.Kind.PLAN, "Plan", "Allah Ditta"),
@@ -58,7 +69,11 @@ class ScreenProofTest {
         name: String, ur: Boolean, dark: Boolean, dir: File,
         width: Int = 1440, height: Int = 900, scale: Float = 1f,
         page: @androidx.compose.runtime.Composable () -> Unit = {
-            HomePane(parties, late = 2, alerts = alerts(), onOpen = {}, onAction = {}, onCustomer = {})
+            HomePane(
+                parties, late = 2, alerts = alerts(), extra = emptyList(),
+                figuresOf = { figures() }, reload = 0, shopName = "Al-Noor Agri Store",
+                onOpen = {}, onAction = {}, onCustomer = {}, onAddParty = {}, onGot = {}
+            )
         }
     ): File {
         // As Main does on choosing a language: the default locale is what Format.ltr and the

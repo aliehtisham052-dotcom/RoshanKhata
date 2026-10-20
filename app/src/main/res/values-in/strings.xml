@@ -88,6 +88,9 @@
     <string name="home_sec_daily">Setiap hari</string>
     <string name="home_sec_business">Usaha</string>
     <string name="home_today">Hari ini</string>
+    <string name="home_cash_in_hand">Kas di tangan</string>
+    <string name="home_quick_actions">Tindakan cepat</string>
+    <string name="home_col_time">Waktu</string>
     <string name="tile_bills">Tagihan</string>
     <string name="tile_expiry">Kedaluwarsa</string>
     <string name="tile_card">Kartu</string>

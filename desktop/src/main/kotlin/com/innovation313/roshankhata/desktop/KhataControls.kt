@@ -113,20 +113,9 @@ fun byType(parties: List<PartyWithBalance>, type: PartyType): List<PartyWithBala
     PartyType.SUPPLIERS -> parties.filter { !it.isCustomer }
 }
 
-/** A pill that is filled when chosen: the phone's tabs and filter chips. */
+/** A pill that is filled when chosen: the phone's tabs and filter chips (Fluent's, 1.10.0). */
 @Composable
-fun FilterPill(text: String, on: Boolean, onClick: () -> Unit) {
-    val c = LocalRoshanColors.current
-    Text(
-        text,
-        Modifier.clip(RoundedCornerShape(17.dp))
-            .background(eased(if (on) Look.pickedFill else Color.Transparent))
-            .border(1.dp, eased(if (on) Look.pickedFill else Look.edge), RoundedCornerShape(17.dp))
-            .press(RoundedCornerShape(17.dp), onClick = onClick).padding(horizontal = 12.dp, vertical = 5.dp),
-        color = eased(if (on) Look.onPicked else c.ink), fontSize = 13.sp, fontWeight = FontWeight.Bold,
-        maxLines = 1, softWrap = false
-    )
-}
+fun FilterPill(text: String, on: Boolean, onClick: () -> Unit) = FluentPill(text, on, onClick)
 
 /**
  * Above the Khata list: the type tabs, the side pills, the sort menu and the
@@ -194,15 +183,15 @@ fun KhataControls(
     }
 }
 
-/** A menu opener in the pills' row: green words, filled softly when a choice is active. */
+/** A menu opener in the pills' row: a quiet pill, tinted when a choice is active. */
 @Composable
 private fun MenuChip(text: String, active: Boolean, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     Text(
         text,
-        Modifier.clip(RoundedCornerShape(17.dp)).background(eased(if (active) Look.chosen else Color.Transparent))
-            .press(RoundedCornerShape(17.dp), onClick = onClick).padding(horizontal = 10.dp, vertical = 5.dp),
-        color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false
+        Modifier.clip(androidx.compose.foundation.shape.CircleShape).background(eased(if (active) Look.accentTint else Look.subtle))
+            .press(androidx.compose.foundation.shape.CircleShape, onClick = onClick).padding(horizontal = 12.dp, vertical = 6.dp),
+        color = if (active) c.brandGreenText else c.ink, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false
     )
 }
 

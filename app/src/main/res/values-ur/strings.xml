@@ -88,6 +88,9 @@
     <string name="home_sec_daily">ہر روز</string>
     <string name="home_sec_business">کاروبار</string>
     <string name="home_today">آج</string>
+    <string name="home_cash_in_hand">نقد ہاتھ میں</string>
+    <string name="home_quick_actions">فوری کام</string>
+    <string name="home_col_time">وقت</string>
     <string name="tile_bills">بل</string>
     <string name="tile_expiry">ایکسپائری</string>
     <string name="tile_card">کارڈ</string>

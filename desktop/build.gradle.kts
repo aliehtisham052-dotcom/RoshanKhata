@@ -73,7 +73,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.9.0"
+            packageVersion = "1.10.0"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
@@ -103,6 +103,12 @@ val syncTileIcons by tasks.registering(Sync::class) {
             // The header's glyphs (20 Oct redesign): the shop, the bell, the eye, the phone.
             "drawable/ic_storefront.xml", "drawable/ic_bell.xml", "drawable/ic_eye_open.xml",
             "drawable/ic_eye_closed.xml", "drawable/ic_phone.xml", "drawable/ic_search.xml",
+            // The Fluent controls' glyphs (1.10.0): plus, more, print, PDF, calendar, close,
+            // check, chevron, the gave/got arrows, edit, share — the phone's own white glyphs.
+            "drawable/ic_add_plain.xml", "drawable/ic_more_vert.xml", "drawable/ic_print.xml",
+            "drawable/ic_pdf_doc.xml", "drawable/ic_calendar.xml", "drawable/ic_close.xml",
+            "drawable/ic_check_plain.xml", "drawable/ic_chevron_down.xml", "drawable/ic_chevron_right.xml",
+            "drawable/ic_arrow_gave.xml", "drawable/ic_arrow_got.xml", "drawable/ic_edit.xml", "drawable/ic_share.xml",
             // The shop-type picker's twenty-five trade icons (TradeKit).
             "drawable/ic_trade_*.xml"
         )

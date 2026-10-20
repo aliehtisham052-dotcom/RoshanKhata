@@ -147,6 +147,35 @@ No account, no server, no ads. Everything stays on the phone.
   to the desktop-test release. Shop pictures (logo, signature, stamp, QR) and
   photos live per computer (the text backup carries none). The MSI's Java
   runtime has only the modules in desktop/build.gradle.kts (no java.prefs).
+  **1.10.0 (20 Oct, the Fluent face):** the window is drawn as Windows 11
+  draws its own, after the owner's Figma mockups (file "Roshan Khata Windows —
+  Fluent redesign", 11 screens, the colourful Home chosen). `Fluent.kt` holds
+  the controls every pane now reaches for: `FluentButton` (32 dp, 4 dp
+  corners; ACCENT / STANDARD / SUBTLE / DANGER), `IconAction`, `FluentPill`,
+  `FluentField` (a label above a 32 dp box, the accent line along its foot
+  while focused; `big` for an amount), `FluentCard`, `PageHeader` (26 sp
+  title, its line, the page's actions on the end side), `StatCard` (the
+  figure cards with a soft gradient of their tint), `Avatar`, `TableHead`,
+  `MonoTile` (a tile glyph in one colour). `Look` (Panes.kt) gained the
+  surfaces — base, layer, layerAlt, subtle, control, strokeCard — the accent
+  (#1A7F50 by day: Figma's #1F8F5C fell short of 4.5:1 for white words;
+  #5FD9A3 by night), the four tints and `ctl`/`card` corners; the edge and
+  chosen colours still pass LookContrastTest. The rail is a NavigationView
+  (224 dp, 36 dp rows, a 3 dp accent bar on the open one, glyphs in ink), the
+  header one flat band on `Look.base` with the shop, 32 dp buttons, the bell's
+  badge and the one accent button; the content area sits on `Look.layerAlt`
+  with its top start corner rounded. Home is the mockup: the day as the title,
+  three figure cards (will get, will give, cash in hand — the cashbook's two
+  sums, `homeFigures`), today's entries as a table (`entriesInRange`; the
+  recent customers when the day has none), the bell's rows and six quick
+  actions beside it; the slides and the tile grids are gone (the rail holds
+  every section). Khata got a page head and card rows (avatar, name, phone ·
+  last dealing, the balance and which way it runs); Add Party and the entry
+  editor use FluentField (the amount big with the currency sign, the day as a
+  date box). Three strings were added in all nine languages
+  (home_cash_in_hand, home_quick_actions, home_col_time). Not yet to the
+  mockups: Invoice, Reports, Settings, the phone-sync dialog and the empty
+  states keep their layouts with the new controls.
   Not on Windows: the posters' 3D heroes and video, voice entry
   (no free offline Urdu recognition), Google Drive sign-in (the backup
   folder can be a Google Drive for Desktop folder instead).

@@ -92,6 +92,9 @@
     <string name="home_sec_daily">Every day</string>
     <string name="home_sec_business">Business</string>
     <string name="home_today">Today</string>
+    <string name="home_cash_in_hand">Cash in hand</string>
+    <string name="home_quick_actions">Quick actions</string>
+    <string name="home_col_time">Time</string>
     <string name="tile_bills">Bills</string>
     <string name="tile_expiry">Expiry</string>
     <string name="tile_card">Card</string>

@@ -1,5 +1,9 @@
 package com.innovation313.roshankhata.desktop
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -119,24 +123,38 @@ fun EntryEditor(
     val goodsTotal = if (q != null && r != null) q * r else null
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(word(if (isGiven) W.you_gave else W.you_got), color = if (isGiven) c.owedToMe else c.iOwe, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Text(Format.name(partyName), color = c.ink, fontSize = 15.sp)
-        OutlinedTextField(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Text(amount?.let { Format.money(it) } ?: "", color = c.textMuted, fontSize = 14.sp)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton({ picking = true }) { Text(word(W.entry_date, Format.dateOnly(at)), color = c.brandGreenText) }
+        // The head (1.10.0, the New entry mockup): which way, the party under it, the amount big with
+        // its figure in words-of-money under it, the day beside it as a Fluent date box.
+        Text(word(if (isGiven) W.you_gave else W.you_got), color = if (isGiven) c.owedToMe else Look.accent, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+        Text(Format.name(partyName), color = c.inkSoft, fontSize = 13.sp)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+            FluentField(
+                amountText, { amountText = it }, Modifier.weight(1.4f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true,
+                help = amount?.let { Format.money(it) } ?: " "
+            )
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text(word(W.date_label), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                Row(
+                    Modifier.fillMaxWidth().height(48.dp).clip(Look.ctl).background(Look.control).border(1.dp, Look.edge, Look.ctl)
+                        .press(Look.ctl) { picking = true }.padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(Format.dateOnly(at), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, maxLines = 1)
+                    Glyph("ic_calendar", c.inkSoft, 16)
+                }
+            }
         }
 
         Text(word(W.goods_section), color = c.ink, fontWeight = FontWeight.Bold)
         // The shop's own words (TradeVocab): a dairy's form says milk and litre, not urea and bag.
         val trade = LocalTrade.current
         Text(trade.goodsHelp(), color = c.textMuted, fontSize = 12.sp)
-        OutlinedTextField(item, { item = it }, label = { Text(trade.itemHint()) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        FluentField(item, { item = it }, Modifier.fillMaxWidth(), placeholder = trade.itemHint())
         if (item.isBlank()) SuggestionRow(trade.starters(), item) { item = it }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(qty, { qty = it }, label = { Text(word(W.quantity_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-            OutlinedTextField(unit, { unit = it }, label = { Text(trade.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))
-            OutlinedTextField(rate, { rate = it }, label = { Text(word(W.entry_rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+            FluentField(qty, { qty = it }, Modifier.weight(1f), placeholder = word(W.quantity_hint))
+            FluentField(unit, { unit = it }, Modifier.weight(1f), placeholder = trade.unitHint())
+            FluentField(rate, { rate = it }, Modifier.weight(1f), placeholder = word(W.entry_rate_hint))
         }
         SuggestionRow(trade.units(), unit) { unit = it }
         // Quantity x rate is offered, never forced: a discount is the owner's to write.
@@ -183,7 +201,7 @@ fun EntryEditor(
                 }
             }
         }
-        OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
+        FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
         if (isSale && !paidNow) {
             // When the money is due: a week, a fortnight, a month, the next harvest ends, or any day.
             TextButton({ choosingDue = true }) {
@@ -200,8 +218,7 @@ fun EntryEditor(
                     PaymentMethod.CASH to W.payment_method_cash, PaymentMethod.BANK to W.payment_method_bank,
                     PaymentMethod.CHEQUE to W.payment_method_cheque, PaymentMethod.ONLINE to W.payment_method_online
                 ).forEach { (m, label) ->
-                    if (m == method) FillButton(word(label), c.brandGreen) { method = null }
-                    else TextButton({ method = m }) { Text(word(label), color = c.brandGreenText) }
+                    FluentPill(word(label), m == method) { method = if (m == method) null else m }
                 }
             }
         }
@@ -216,12 +233,12 @@ fun EntryEditor(
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (onDelete != null) TextButton(onDelete) { Text(word(W.delete), color = c.owedToMe) }
+            if (onDelete != null) FluentButton(word(W.delete), onDelete, kind = ButtonKind.DANGER)
             // The saved entry on the thermal printer (Phase 9e); a new one is printed once saved.
-            if (onPrint != null) TextButton(onPrint) { Text(word(W.print_receipt), color = c.brandGreenText) }
+            if (onPrint != null) FluentButton(word(W.print_receipt), onPrint, icon = "ic_print")
             Spacer(Modifier.weight(1f))
-            TextButton(onCancel) { Text(word(W.cancel)) }
-            FillButton(word(W.save), if (isGiven) c.gaveFill else c.brandGreen, enabled = amount != null) {
+            FluentButton(word(W.cancel), onCancel)
+            FillButton(word(W.save), if (isGiven) c.gaveFill else Look.accent, enabled = amount != null) {
                 val a = amount ?: return@FillButton
                 val base = existing ?: LedgerEntry(partyId = partyId, amount = a, isGiven = isGiven, entryNumber = "")
                 val goods = item.trim().takeIf { it.isNotEmpty() }?.let {

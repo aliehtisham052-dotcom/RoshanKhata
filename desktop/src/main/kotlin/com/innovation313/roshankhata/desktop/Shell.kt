@@ -51,10 +51,11 @@ import com.innovation313.roshankhata.words.word
 class MenuLine(val text: String, val onClick: (() -> Unit)?)
 
 /**
- * The window's header, the phone's Home header made wide (20 Oct redesign):
- * the shop button on the start side (its logo, its name, Profile · Switch
- * shop), then on the end side the backup, the phone, the bell, More and the
- * one green button, Add Party. Eight equal buttons were here before.
+ * The window's header (1.10.0, the Fluent face): one flat 48 dp band on the
+ * page colour — the shop on the start side (its logo, its name, a chevron),
+ * then on the end side the backup, the phone, the bell, More and the one
+ * accent button, Add Party. Every control is 32 dp with 4 dp corners, as
+ * Windows 11 draws its own.
  */
 @Composable
 fun AppHeader(
@@ -76,116 +77,70 @@ fun AppHeader(
     // (their words as the hover tip) and Add Party drops its shortcut pill.
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val roomy = maxWidth >= 1180.dp
-        Column {
+        Row(
+            Modifier.fillMaxWidth().background(Look.base).padding(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // The shop: its logo on the brand green, its name, Profile · Switch shop under it.
             Row(
-                Modifier.fillMaxWidth().background(c.surface).padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                Modifier.clip(Look.ctl).press(Look.ctl, onClick = onShop).padding(start = 4.dp, top = 3.dp, bottom = 3.dp, end = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // The shop button: the phone's shopButton (logo tile with the gold rim, name, Profile · Switch shop).
-                Row(
-                    Modifier.clip(RoundedCornerShape(16.dp))
-                        .border(2.dp, c.brandGreen, RoundedCornerShape(16.dp))
-                        .press(RoundedCornerShape(16.dp), onClick = onShop)
-                        .padding(start = 5.dp, top = 5.dp, bottom = 5.dp, end = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        Modifier.size(38.dp).clip(RoundedCornerShape(11.dp)).background(Look.hero)
-                            .border(2.dp, Look.gold, RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (logo != null) {
-                            Image(logo, contentDescription = null, modifier = Modifier.size(34.dp).clip(RoundedCornerShape(9.dp)), contentScale = ContentScale.Crop)
+                Box(Modifier.size(30.dp).clip(RoundedCornerShape(6.dp)).background(Look.accent), contentAlignment = Alignment.Center) {
+                    if (logo != null) {
+                        Image(logo, contentDescription = null, modifier = Modifier.size(30.dp).clip(RoundedCornerShape(6.dp)), contentScale = ContentScale.Crop)
+                    } else {
+                        Glyph("ic_storefront", Look.onAccent, 18)
+                    }
+                }
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.widthIn(max = if (roomy) 320.dp else 200.dp)) {
+                    Text(shopName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(word(W.shop_sub_switch), color = c.textMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                Spacer(Modifier.width(8.dp))
+                Glyph("ic_chevron_down", c.inkSoft, 14)
+            }
+            Spacer(Modifier.weight(1f))
+            if (roomy) {
+                FluentButton(backupLabel, onBackup, icon = "ic_tile_backup")
+                FluentButton(word(W.wifi_pc_button), onPhone, icon = "ic_phone")
+            } else {
+                IconAction("ic_tile_backup", backupLabel, onBackup)
+                IconAction("ic_phone", word(W.wifi_pc_button), onPhone)
+            }
+            // The bell: what needs the owner today, the phone's own list (LedgerAlerts).
+            Box {
+                IconAction("ic_bell", word(W.na_title), onAlerts, filled = alerts > 0)
+                Badge(alerts, Modifier.align(Alignment.TopEnd).offset(x = 5.dp, y = (-5).dp))
+            }
+            Box {
+                var open by remember { mutableStateOf(false) }
+                IconAction("ic_more_vert", word(W.more_options), { open = true })
+                DropdownMenu(open, onDismissRequest = { open = false }, containerColor = Look.layer) {
+                    menu.forEachIndexed { i, line ->
+                        val go = line.onClick
+                        if (go == null) {
+                            if (i > 0) HorizontalDivider(color = Look.line)
+                            Text(
+                                line.text,
+                                Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 4.dp),
+                                color = c.textMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold
+                            )
                         } else {
-                            Glyph("ic_storefront", Look.gold, 22)
+                            DropdownMenuItem(
+                                text = { Text(line.text, color = c.ink, fontSize = 14.sp) },
+                                onClick = { open = false; go() }
+                            )
                         }
-                    }
-                    Spacer(Modifier.width(10.dp))
-                    Column(Modifier.widthIn(max = if (roomy) 320.dp else 200.dp)) {
-                        Text(shopName, color = c.brandGreenText, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text(word(W.shop_sub_switch), color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    }
-                    Spacer(Modifier.width(10.dp))
-                    Text("▾", color = c.brandGreenText, fontSize = 16.sp)
-                }
-                Spacer(Modifier.weight(1f))
-                Tip(backupLabel, show = !roomy) {
-                    OutlineAction(onClick = onBackup) {
-                        TileGlyph(Section.DAILY)
-                        if (roomy) {
-                            Spacer(Modifier.width(8.dp))
-                            Text(backupLabel, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
-                        }
-                    }
-                }
-                Tip(word(W.wifi_pc_button), show = !roomy) {
-                    OutlineAction(onClick = onPhone) {
-                        Glyph("ic_phone", c.inkSoft, 18)
-                        if (roomy) {
-                            Spacer(Modifier.width(8.dp))
-                            Text(word(W.wifi_pc_button), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
-                        }
-                    }
-                }
-                // The bell: what needs the owner today, the phone's own list (LedgerAlerts).
-                Box {
-                    OutlineAction(onClick = onAlerts) { Glyph("ic_bell", c.brandGreenText, 20) }
-                    if (alerts > 0) {
-                        Text(
-                            if (alerts > 99) "99+" else alerts.toString(),
-                            Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp)
-                                .background(c.gaveFill, RoundedCornerShape(10.dp)).padding(horizontal = 6.dp, vertical = 1.dp),
-                            color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Box {
-                    var open by remember { mutableStateOf(false) }
-                    OutlineAction(onClick = { open = true }) {
-                        Text(word(W.more_options), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
-                        Spacer(Modifier.width(6.dp))
-                        Text("▾", color = c.inkSoft, fontSize = 13.sp)
-                    }
-                    DropdownMenu(open, onDismissRequest = { open = false }) {
-                        menu.forEachIndexed { i, line ->
-                            val go = line.onClick
-                            if (go == null) {
-                                if (i > 0) HorizontalDivider(color = Look.line)
-                                Text(
-                                    line.text,
-                                    Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 4.dp),
-                                    color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold
-                                )
-                            } else {
-                                DropdownMenuItem(
-                                    text = { Text(line.text, color = c.ink, fontSize = 14.sp) },
-                                    onClick = { open = false; go() }
-                                )
-                            }
-                        }
-                    }
-                }
-                // The one filled button: a new party, as the phone's Khata button (Ctrl+N).
-                Row(
-                    Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(12.dp)).background(c.brandGreen)
-                        .press(RoundedCornerShape(12.dp), wash = Color.Black.copy(alpha = 0.18f), onClick = onAddParty).padding(horizontal = 14.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("+", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.width(8.dp))
-                    Text(word(W.add_party), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1)
-                    if (roomy) {
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            "Ctrl N",
-                            Modifier.background(Color.White.copy(alpha = 0.18f), RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 2.dp),
-                            color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Medium
-                        )
                     }
                 }
             }
-            HorizontalDivider(color = Look.line)
+            // The one filled button: a new party, as the phone's Khata button (Ctrl+N).
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                FluentButton(word(W.add_party), onAddParty, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+            }
         }
     }
 }
@@ -208,16 +163,15 @@ private fun Tip(text: String, show: Boolean, content: @Composable () -> Unit) {
     ) { content() }
 }
 
-/** A quiet header button: an outline, the content inside, 40 tall. */
+/** A quiet outlined button with its own content inside: Fluent's standard button, 32 tall. */
 @Composable
 fun OutlineAction(onClick: () -> Unit, content: @Composable () -> Unit) {
-    val c = LocalRoshanColors.current
     Row(
-        Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(12.dp))
-            .border(BorderStroke(1.dp, Look.edge), RoundedCornerShape(12.dp))
-            .background(c.surface)
-            .press(RoundedCornerShape(12.dp), onClick = onClick)
-            .padding(horizontal = 11.dp, vertical = 8.dp),
+        Modifier.heightIn(min = 32.dp).clip(Look.ctl)
+            .border(BorderStroke(1.dp, Look.edge), Look.ctl)
+            .background(Look.control)
+            .press(Look.ctl, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) { content() }
 }

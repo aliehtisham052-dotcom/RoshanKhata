@@ -1,6 +1,5 @@
 package com.innovation313.roshankhata.desktop
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -18,30 +17,28 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.innovation313.roshankhata.data.DateWords
+import com.innovation313.roshankhata.data.EntryWithParty
+import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerAlerts
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyWithBalance
@@ -52,7 +49,9 @@ import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.plural
 import com.innovation313.roshankhata.words.word
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.Calendar
 
 /** A Home tile that is not a page: the phone's Backup and Bin tiles open a window here. */
 enum class HomeAction(val word: String, val icon: String, val tile: String) {
@@ -60,266 +59,243 @@ enum class HomeAction(val word: String, val icon: String, val tile: String) {
     BIN(W.tile_bin, "ic_tile_bin", "tile_bin_bg")
 }
 
+/** What the Home's figures and table are read from, beyond the party list the window already holds. */
+class HomeFigures(val cashIn: Double, val cashOut: Double, val today: List<EntryWithParty>)
+
+/** The book's figures for Home: the cashbook's two sums and today's entries, newest first. */
+suspend fun homeFigures(dao: KhataDao): HomeFigures = withContext(Dispatchers.IO) {
+    val start = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+    HomeFigures(
+        cashIn = runCatching { dao.cashIncomeOnce() }.getOrDefault(0.0),
+        cashOut = runCatching { dao.cashExpenseOnce() }.getOrDefault(0.0),
+        today = runCatching { dao.entriesInRange(start, start + 24L * 60 * 60 * 1000 - 1) }.getOrDefault(emptyList()).sortedByDescending { it.timestamp }
+    )
+}
+
 /**
- * The phone's Home on the computer (20 Oct redesign): the Net balance card
- * with its eye, what the shop will get and give, who is paying late, today's
- * chips, the four slides, and the three grids in the phone's order. On the
- * end side, the customers dealt with most recently. Every figure comes from
- * the same book and the same rules as the phone's MainActivity.
+ * Home (1.10.0, the Figma mockup of 20 Oct, the colourful one): the day as the
+ * page's title, three figure cards — what the shop will get, will give, and
+ * the cash in hand — then today's entries as a table beside what needs a look
+ * today and four quick actions. Every figure comes from the same book and the
+ * same rules as the phone's MainActivity; the eye hides every figure at once.
  */
 @Composable
 fun HomePane(
     parties: List<PartyWithBalance>,
     late: Int,
     alerts: List<LedgerAlerts.Alert>,
+    extra: List<ExtraAlert>,
+    /** The cashbook's sums and today's entries (homeFigures); the proof test hands in made-up ones. */
+    figuresOf: suspend () -> HomeFigures,
+    reload: Int,
+    shopName: String?,
     onOpen: (Section) -> Unit,
     onAction: (HomeAction) -> Unit,
-    onCustomer: (Long) -> Unit
+    onCustomer: (Long) -> Unit,
+    onAddParty: () -> Unit,
+    onGot: () -> Unit
 ) {
     val c = LocalRoshanColors.current
     val get = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
     val give = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+    val owing = parties.count { Money.isPositive(it.balance) }
+    val owed = parties.count { Money.isNegative(it.balance) }
     var hidden by remember { mutableStateOf(false) }
     // The phone's own mask (BalancePrivacy.MASK): no figure, not even its length.
     val masked = "• • • • • •"
+    fun shown(v: Double) = if (hidden) masked else Format.money(v)
+    var figures by remember { mutableStateOf<HomeFigures?>(null) }
+    LaunchedEffect(reload) { figures = figuresOf() }
     // Home rises into place once as it opens (Motion.PAGE ms, a few dp): a welcome, not a show.
     val appear = remember { Animatable(0f) }
     LaunchedEffect(Unit) { appear.animateTo(1f, tween(Motion.PAGE + 100)) }
+    val dayName = remember { DateWords.formatter("EEEE, d MMMM").format(java.util.Date()) }
     Column(
-        Modifier.fillMaxSize()
+        Modifier.fillMaxSize().background(Look.layerAlt)
             .graphicsLayer { alpha = appear.value; translationY = (1f - appear.value) * 12.dp.toPx() }
-            .verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(Format.dateOnly(System.currentTimeMillis()), color = c.inkSoft, fontSize = 13.sp)
+        PageHeader(dayName, shopName ?: word(W.app_name)) {
+            IconAction(if (hidden) "ic_eye_closed" else "ic_eye_open", word(W.net_balance), { hidden = !hidden })
+        }
 
-        // The balance row: Net balance on the phone's dark-green card, then get and give.
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Column(
-                Modifier.weight(2f).heightIn(min = 108.dp).background(Look.hero, RoundedCornerShape(18.dp)).padding(horizontal = 20.dp, vertical = 14.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(word(W.net_balance).uppercase(), Modifier.weight(1f), color = Look.heroLabel, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
-                    Box(
-                        Modifier.size(34.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).press(CircleShape, wash = Color.White.copy(alpha = 0.16f)) { hidden = !hidden },
-                        contentAlignment = Alignment.Center
-                    ) { Glyph(if (hidden) "ic_eye_closed" else "ic_eye_open", Color.White, 20) }
+        // The three figures: will get (red), will give (blue), cash in hand (green).
+        val cash = (figures?.cashIn ?: 0.0) - (figures?.cashOut ?: 0.0)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            StatCard(
+                word(W.you_will_get), shown(get),
+                plural(WP.customer_count, owing, owing) + if (late > 0) " · " + plural(WP.home_paying_late, late, late) else "",
+                c.owedToMe, Look.getTint, "ic_arrow_got", Modifier.weight(1f)
+            ) { onOpen(if (late > 0) Section.FOLLOWUP else Section.KHATA) }
+            StatCard(
+                word(W.you_will_give), shown(give), plural(WP.supplier_count, owed, owed),
+                Look.give, Look.giveTint, "ic_arrow_gave", Modifier.weight(1f)
+            ) { onOpen(Section.KHATA) }
+            StatCard(
+                word(W.home_cash_in_hand), shown(cash),
+                word(W.cash_in) + " " + shown(figures?.cashIn ?: 0.0) + " · " + word(W.cash_out) + " " + shown(figures?.cashOut ?: 0.0),
+                Look.accent, Look.accentTint, "ic_tile_cashbook", Modifier.weight(1f)
+            ) { onOpen(Section.CASHBOOK) }
+        }
+
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            // Beside each other when the window has the room, otherwise one under the other.
+            val wide = maxWidth >= 860.dp
+            if (wide) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    TodayCard(figures?.today ?: emptyList(), parties, hidden, onCustomer, onOpen, Modifier.weight(1f))
+                    Column(Modifier.width(330.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                        NeedsALook(alerts, extra, late, onOpen)
+                        QuickActions(onAddParty, onGot, onOpen, onAction)
+                    }
                 }
-                Spacer(Modifier.height(8.dp))
-                Text(if (hidden) masked else Format.money(get - give), color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, maxLines = 1)
-            }
-            Figure(word(W.you_will_get), if (hidden) masked else Format.money(get), c.owedToMe,
-                plural(WP.customer_count, parties.count { Money.isPositive(it.balance) }, parties.count { Money.isPositive(it.balance) }),
-                Modifier.weight(1f)) { onOpen(Section.KHATA) }
-            Figure(word(W.you_will_give), if (hidden) masked else Format.money(give), c.iOwe, null, Modifier.weight(1f)) { onOpen(Section.KHATA) }
-        }
-
-        // Who is paying later than their habit (the phone's tvHomeLate): a count, never an amount.
-        if (late > 0) {
-            Text(
-                plural(WP.home_paying_late, late, late),
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(c.gaveFill.copy(alpha = 0.12f))
-                    .press { onOpen(Section.FOLLOWUP) }.padding(horizontal = 16.dp, vertical = 12.dp),
-                color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.Bold
-            )
-        }
-
-        // Today: the phone's todayStrip (MainActivity.paintToday), one chip per kind of alert.
-        if (alerts.isNotEmpty()) {
-            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(word(W.home_today), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                alerts.groupBy { it.kind }.forEach { (kind, list) ->
-                    val s = alertSection(kind)
-                    TodayChip(word(W.today_chip, word(alertChipWord(kind)), list.size), s) { onOpen(s) }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    TodayCard(figures?.today ?: emptyList(), parties, hidden, onCustomer, onOpen, Modifier.fillMaxWidth())
+                    NeedsALook(alerts, extra, late, onOpen)
+                    QuickActions(onAddParty, onGot, onOpen, onAction)
                 }
             }
         }
-
-        Slides(onOpen)
-
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Column(Modifier.weight(3f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Heading(word(W.home_sec_daily))
-                val trade = LocalTrade.current
-                TileGrid(Section.entries.filter { it.group == Group.DAILY && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 120, big = true)
-                Spacer(Modifier.height(2.dp))
-                Heading(word(W.home_sec_business))
-                TileGrid(Section.entries.filter { it.group == Group.BUSINESS && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 110, big = false)
-                Spacer(Modifier.height(2.dp))
-                Heading(word(W.home_section_tools))
-                TileGrid(
-                    Section.entries.filter { it.group == Group.TOOLS && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } } +
-                        HomeAction.entries.map { a -> Tile(a.word, a.icon, a.tile) { onAction(a) } },
-                    minWidth = 110, big = false
-                )
-            }
-            Recent(parties, hidden, onCustomer, Modifier.weight(2f))
-        }
     }
 }
-
-@Composable
-private fun Heading(text: String) {
-    Text(text, color = LocalRoshanColors.current.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-}
-
-/** A total on a white card: its label, the figure in its colour, a line under it. */
-@Composable
-private fun Figure(label: String, amount: String, color: Color, under: String?, modifier: Modifier, onClick: () -> Unit) {
-    val c = LocalRoshanColors.current
-    Column(
-        modifier.clip(RoundedCornerShape(18.dp)).background(c.surface).border(1.dp, Look.line, RoundedCornerShape(18.dp))
-            .press(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-        Text(label, color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text(amount, color = color, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, maxLines = 1)
-        under?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
-    }
-}
-
-@Composable
-private fun TodayChip(text: String, s: Section, onClick: () -> Unit) {
-    val c = LocalRoshanColors.current
-    Row(
-        Modifier.clip(RoundedCornerShape(18.dp)).background(c.surface).border(1.dp, Look.edge, RoundedCornerShape(18.dp))
-            .press(onClick = onClick).padding(start = 6.dp, end = 14.dp, top = 6.dp, bottom = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TileBadge(s, 26, 16)
-        Spacer(Modifier.width(8.dp))
-        Text(text, color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
-    }
-}
-
-/** The phone's four Home slides (HomeSlides): a banner each, turning by itself, the dots to pick one. */
-/** The phone's HomeSlides.TURN_MS: a new banner every three seconds. */
-private const val TURN_MS = 3000L
-
-private class Slide(val section: Section, val title: String, val sub: String, val ground: Color)
-
-@Composable
-private fun Slides(onOpen: (Section) -> Unit) {
-    // Grounds deep enough for white text at 4.5:1 or better.
-    val slides = listOf(
-        Slide(Section.CASHFLOW, W.cf_title, W.home_slide_cf, Color(0xFF2E6DB4)),
-        Slide(Section.RATES, W.rate_list_title, W.home_slide_rates, Color(0xFF1F7A4D)),
-        Slide(Section.BUY_RATES, W.sr_title, W.home_slide_cheaper, Color(0xFF8A5F12)),
-        Slide(Section.POSTER, W.poster_title, W.home_slide_poster, Color(0xFF5B4A9E))
-    )
-    var at by remember { mutableIntStateOf(0) }
-    // Keyed on [at]: a click on a dot starts the wait again, as the phone's pager does.
-    LaunchedEffect(at) {
-        delay(TURN_MS)
-        at = (at + 1) % slides.size
-    }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Crossfade(at, animationSpec = tween(450)) { shown ->
-            val s = slides[shown]
-            Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(s.ground)
-                    .press(RoundedCornerShape(20.dp), wash = Color.Black.copy(alpha = 0.12f)) { onOpen(s.section) }.padding(horizontal = 18.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(Modifier.size(42.dp).background(Color.White, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                    tileIcon(s.section.icon)?.let { androidx.compose.foundation.Image(it, contentDescription = null, modifier = Modifier.size(24.dp)) }
-                }
-                Spacer(Modifier.width(14.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(word(s.sub), color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                }
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    word(s.title) + "  →",
-                    Modifier.background(Color.White, RoundedCornerShape(18.dp)).padding(horizontal = 14.dp, vertical = 7.dp),
-                    color = s.ground, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1
-                )
-            }
-        }
-        Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            slides.indices.forEach { i ->
-                Box(
-                    Modifier.size(width = if (i == at) 22.dp else 8.dp, height = 8.dp).clip(RoundedCornerShape(4.dp))
-                        .background(if (i == at) LocalRoshanColors.current.brandGreen else Look.line)
-                        .press { at = i }
-                )
-            }
-        }
-    }
-}
-
-private class Tile(val word: String, val icon: String, val tint: String, val onClick: () -> Unit)
 
 /**
- * Tiles in rows as many as fit [minWidth] each, every tile one width and the
- * last row padded so it lines up (the phone's own rule for its grids).
+ * Today's entries as a table (time, customer, note, got, gave); on a day with
+ * none yet, the customers dealt with most recently, so the card is never bare.
  */
 @Composable
-private fun TileGrid(tiles: List<Tile>, minWidth: Int, big: Boolean) {
+private fun TodayCard(today: List<EntryWithParty>, parties: List<PartyWithBalance>, hidden: Boolean, onCustomer: (Long) -> Unit, onOpen: (Section) -> Unit, modifier: Modifier) {
     val c = LocalRoshanColors.current
-    BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val perRow = maxOf(1, ((maxWidth.value + 10) / (minWidth + 10)).toInt())
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            tiles.chunked(perRow).forEach { row ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    row.forEach { t ->
-                        Column(
-                            Modifier.weight(1f).heightIn(min = if (big) 100.dp else 88.dp).clip(RoundedCornerShape(16.dp))
-                                .background(c.surface).border(1.dp, Look.line, RoundedCornerShape(18.dp))
-                                .press(onClick = t.onClick).padding(horizontal = 6.dp, vertical = 10.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically)
-                        ) {
-                            val disc = if (big) 46 else 38
-                            Box(
-                                Modifier.size(disc.dp).background(TileIcons.color(t.tint, isDark()) ?: c.pageBg, RoundedCornerShape((disc / 4).dp)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                tileIcon(t.icon)?.let { androidx.compose.foundation.Image(it, contentDescription = null, modifier = Modifier.size((disc / 2).dp)) }
-                            }
-                            Text(word(t.word), color = c.ink, fontSize = if (big) 13.sp else 12.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                        }
+    val masked = "• • •"
+    Column(modifier.clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card)) {
+        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(word(W.home_today), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text(plural(WP.entries_today, today.size, today.size), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+        }
+        Rule()
+        if (today.isNotEmpty()) {
+            val time = remember { DateWords.formatter("h:mm a") }
+            TableHead(listOf(word(W.home_col_time) to 64, word(W.customer) to 0, word(W.invoice_feature_note) to 0, word(W.you_got) to 92, word(W.you_gave) to 92), endAligned = setOf(3, 4))
+            today.take(8).forEachIndexed { i, e ->
+                Row(
+                    Modifier.fillMaxWidth().press { onCustomer(e.partyId) }.padding(horizontal = 16.dp, vertical = 9.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(time.format(java.util.Date(e.timestamp)), Modifier.width(64.dp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+                    Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Avatar(e.partyName, 28, i)
+                        Text(Format.name(e.partyName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
-                    repeat(perRow - row.size) { Spacer(Modifier.weight(1f)) }
+                    Text(e.note?.takeIf { it.isNotBlank() } ?: "—", Modifier.weight(1f), color = c.inkSoft, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    val amount = if (hidden) masked else Format.money(e.amount)
+                    Text(if (e.isGiven) "—" else amount, Modifier.width(92.dp), color = if (e.isGiven) c.textMuted else Look.accent, fontSize = 14.sp, fontWeight = if (e.isGiven) FontWeight.Normal else FontWeight.SemiBold, textAlign = TextAlign.End, maxLines = 1, softWrap = false)
+                    Text(if (e.isGiven) amount else "—", Modifier.width(92.dp), color = if (e.isGiven) c.owedToMe else c.textMuted, fontSize = 14.sp, fontWeight = if (e.isGiven) FontWeight.SemiBold else FontWeight.Normal, textAlign = TextAlign.End, maxLines = 1, softWrap = false)
                 }
+                Rule()
+            }
+        } else {
+            // No entry yet today: the customers dealt with last, each opening its page.
+            Text(word(W.sort_recent_activity), Modifier.padding(start = 16.dp, top = 10.dp, bottom = 4.dp), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+            val recent = parties.filter { it.lastActivity > 0 }.sortedByDescending { it.lastActivity }.take(7)
+            if (recent.isEmpty()) Text(word(W.no_parties_yet), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp)
+            recent.forEachIndexed { i, p ->
+                Row(
+                    Modifier.fillMaxWidth().press { onCustomer(p.id) }.padding(horizontal = 16.dp, vertical = 9.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Avatar(p.name, 30, i)
+                    Column(Modifier.weight(1f)) {
+                        Text(Format.name(p.name), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(Format.dateOnly(p.lastActivity), color = c.textMuted, fontSize = 12.sp)
+                    }
+                    Text(if (hidden) masked else Format.customerBalance(p.balance), color = balanceColour(p.balance), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                }
+                Rule()
+            }
+        }
+        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Spacer(Modifier.weight(1f))
+            FluentButton(word(W.nav_cashbook), { onOpen(Section.CASHBOOK) }, kind = ButtonKind.SUBTLE, icon = "ic_chevron_right")
+        }
+    }
+}
+
+/** The bell's rows on Home (the phone's AlertsActivity): late payers, the computer's own rows, then the ledger's. */
+@Composable
+private fun NeedsALook(alerts: List<LedgerAlerts.Alert>, extra: List<ExtraAlert>, late: Int, onOpen: (Section) -> Unit) {
+    val c = LocalRoshanColors.current
+    val count = alerts.size + extra.size + (if (late > 0) 1 else 0)
+    Column(Modifier.fillMaxWidth().clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card)) {
+        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(word(W.na_title), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            if (count > 0) Text(count.toString(), color = c.owedToMe, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        }
+        Rule()
+        if (count == 0) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 13.sp)
+        if (late > 0) {
+            LookRow(plural(WP.home_paying_late, late, late), null, c.owedToMe, Look.getTint, "ic_tile_followup") { onOpen(Section.FOLLOWUP) }
+        }
+        extra.forEach { x -> LookRow(x.title, x.sub, Look.accent, Look.accentTint, x.section.icon, x.onClick) }
+        alerts.forEach { a ->
+            val s = alertSection(a.kind)
+            LookRow(a.title, a.sub, Look.give, Look.giveTint, s.icon) { onOpen(s) }
+        }
+    }
+}
+
+@Composable
+private fun LookRow(title: String, sub: String?, color: Color, tint: Color, icon: String, onClick: () -> Unit) {
+    val c = LocalRoshanColors.current
+    Row(
+        Modifier.fillMaxWidth().press(onClick = onClick).padding(horizontal = 16.dp, vertical = 11.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(Modifier.size(32.dp).background(tint, Look.ctl), contentAlignment = Alignment.Center) { MonoTile(icon, color, 16) }
+        Column(Modifier.weight(1f)) {
+            Text(title, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            if (!sub.isNullOrEmpty()) Text(sub, color = c.inkSoft, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        }
+        Glyph("ic_chevron_right", c.textMuted, 14)
+    }
+    Rule()
+}
+
+/** Four tinted tiles: Add party, You got, Invoice, Poster — the counter's most common moves. */
+@Composable
+private fun QuickActions(onAddParty: () -> Unit, onGot: () -> Unit, onOpen: (Section) -> Unit, onAction: (HomeAction) -> Unit) {
+    val c = LocalRoshanColors.current
+    Column(Modifier.fillMaxWidth().clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(word(W.home_quick_actions), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+        val tiles = listOf(
+            Quick(word(W.add_party), "ic_tile_khata", Look.accent, Look.accentTint, onAddParty),
+            Quick(word(W.you_got), "ic_arrow_got", c.owedToMe, Look.getTint, onGot),
+            Quick(word(W.nav_invoice), "ic_tile_invoice", Look.give, Look.giveTint) { onOpen(Section.INVOICES) },
+            Quick(word(W.poster_title), "ic_tile_poster", Look.warn, Look.warnTint) { onOpen(Section.POSTER) },
+            Quick(word(W.tile_backup), "ic_tile_backup", Look.accent, Look.accentTint) { onAction(HomeAction.BACKUP) },
+            Quick(word(W.calculator), "ic_tile_calc", c.inkSoft, Look.subtle) { onOpen(Section.CALC) }
+        )
+        tiles.chunked(2).forEach { pair ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                pair.forEach { q ->
+                    Row(
+                        Modifier.weight(1f).heightIn(min = 48.dp).clip(Look.ctl).background(q.tint).press(Look.ctl, onClick = q.onClick).padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        MonoTile(q.icon, q.color, 18)
+                        Text(q.word, color = q.color, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    }
+                }
+                if (pair.size == 1) Spacer(Modifier.weight(1f))
             }
         }
     }
 }
 
-/** The customers dealt with last (the Khata list's own default order), each opening its page. */
-@Composable
-private fun Recent(parties: List<PartyWithBalance>, hidden: Boolean, onCustomer: (Long) -> Unit, modifier: Modifier) {
-    val c = LocalRoshanColors.current
-    val recent = parties.filter { it.lastActivity > 0 }.sortedByDescending { it.lastActivity }.take(8)
-    Column(modifier.clip(RoundedCornerShape(20.dp)).background(c.surface).border(1.dp, Look.line, RoundedCornerShape(20.dp))) {
-        Text(word(W.sort_recent_activity), Modifier.padding(horizontal = 18.dp, vertical = 16.dp), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        HorizontalDivider(color = Look.line)
-        if (recent.isEmpty()) Text(word(W.no_parties_yet), Modifier.padding(18.dp), color = c.textMuted, fontSize = 14.sp)
-        recent.forEach { p ->
-            Row(
-                Modifier.fillMaxWidth().press { onCustomer(p.id) }.padding(horizontal = 18.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(Modifier.size(38.dp).clip(CircleShape).background(Look.chosen), contentAlignment = Alignment.Center) {
-                    Text(Format.initials(p.name), color = c.brandGreenText, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                }
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(Format.name(p.name), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(Format.dateOnly(p.lastActivity), color = c.textMuted, fontSize = 12.sp)
-                }
-                Text(
-                    if (hidden) "• • •" else Format.customerBalance(p.balance),
-                    color = balanceColour(p.balance), fontSize = 14.sp, fontWeight = FontWeight.Bold
-                )
-            }
-            HorizontalDivider(color = Look.line)
-        }
-    }
-}
+private class Quick(val word: String, val icon: String, val color: Color, val tint: Color, val onClick: () -> Unit)
 
 /** Where an alert opens: the page that holds it, as the phone's AlertsActivity. */
 fun alertSection(kind: LedgerAlerts.Kind): Section = when (kind) {
@@ -330,15 +306,6 @@ fun alertSection(kind: LedgerAlerts.Kind): Section = when (kind) {
     LedgerAlerts.Kind.CASHFLOW -> Section.CASHFLOW
 }
 
-/** The chip's word for each kind, the phone's (paintToday). */
-private fun alertChipWord(kind: LedgerAlerts.Kind): String = when (kind) {
-    LedgerAlerts.Kind.CHEQUE -> W.nav_cheques
-    LedgerAlerts.Kind.PLAN -> W.na_tag_late
-    LedgerAlerts.Kind.BILL -> W.tile_bills
-    LedgerAlerts.Kind.EXPIRING -> W.tile_expiry
-    LedgerAlerts.Kind.CASHFLOW -> W.today_gap
-}
-
 /** A bell row the computer adds itself (the backup's age, a newer version): its tile, words and what a click does. */
 class ExtraAlert(val section: Section, val title: String, val sub: String, val onClick: () -> Unit)
 
@@ -346,43 +313,12 @@ class ExtraAlert(val section: Section, val title: String, val sub: String, val o
 @Composable
 fun AlertsList(alerts: List<LedgerAlerts.Alert>, extra: List<ExtraAlert> = emptyList(), onOpen: (Section) -> Unit) {
     val c = LocalRoshanColors.current
-    Column(Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(12.dp)) {
-        if (alerts.isEmpty() && extra.isEmpty()) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp)
-        extra.forEach { x ->
-            Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).press { x.onClick() }.padding(horizontal = 10.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TileBadge(x.section, 40, 24)
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(x.title, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                    if (x.sub.isNotEmpty()) Text(x.sub, color = c.textMuted, fontSize = 13.sp)
-                }
-            }
-            HorizontalDivider(color = Look.line)
-        }
+    Column(Modifier.fillMaxSize().background(Look.layer).verticalScroll(rememberScrollState()).padding(8.dp)) {
+        if (alerts.isEmpty() && extra.isEmpty()) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp)
+        extra.forEach { x -> LookRow(x.title, x.sub, Look.accent, Look.accentTint, x.section.icon, x.onClick) }
         alerts.forEach { a ->
             val s = alertSection(a.kind)
-            Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).press { onOpen(s) }.padding(horizontal = 10.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TileBadge(s, 40, 24)
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(a.title, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                    if (a.sub.isNotEmpty()) Text(a.sub, color = c.textMuted, fontSize = 13.sp)
-                }
-                a.tag?.let {
-                    Text(
-                        it,
-                        Modifier.background(c.gaveFill.copy(alpha = 0.14f), RoundedCornerShape(10.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
-                        color = c.owedToMe, fontSize = 12.sp, fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-            HorizontalDivider(color = Look.line)
+            LookRow(a.title, listOfNotNull(a.sub.takeIf { it.isNotEmpty() }, a.tag).joinToString(" · "), Look.give, Look.giveTint, s.icon) { onOpen(s) }
         }
     }
 }
