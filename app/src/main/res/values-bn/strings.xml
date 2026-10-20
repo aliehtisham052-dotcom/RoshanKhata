@@ -1684,6 +1684,7 @@
     <string name="theme_light">লাইট</string>
     <string name="theme_dark">ডার্ক</string>
     <string name="theme_system">ফোনের মতো</string>
+    <string name="theme_system_pc">কম্পিউটারের মতো</string>
     <string name="bp_section_identity">পরিচয়</string>
     <string name="bp_section_paid">পেমেন্ট পাওয়া</string>
     <string name="bp_section_seals">সিল ও স্বাক্ষর</string>

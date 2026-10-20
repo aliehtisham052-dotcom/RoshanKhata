@@ -79,6 +79,8 @@ import com.innovation313.roshankhata.words.desktopWords
 import com.innovation313.roshankhata.words.plural
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.awt.FileDialog
@@ -109,6 +111,8 @@ fun main() = application {
     // The app's language: the owner's choice (app.properties), else the computer's.
     val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
+    // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
+    var theme by remember { mutableStateOf(appPrefs.theme()) }
     // The second place for the copies (USB, Google Drive folder): today's copy there on opening,
     // and again on closing so the day's last work leaves the computer too. A missing stick
     // never stops the app; the Daily copies page says it could not be reached.
@@ -135,7 +139,8 @@ fun main() = application {
         // Opened filling the screen: a laptop's 768 rows otherwise cut off the entry buttons.
         state = rememberWindowState(placement = WindowPlacement.Maximized, width = 1100.dp, height = 740.dp)
     ) {
-        RoshanTheme {
+        val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+        RoshanTheme(dark = when (theme) { ThemeChoice.SYSTEM -> systemDark; ThemeChoice.LIGHT -> false; ThemeChoice.DARK -> true }) {
             ProvideWords(words) {
                 CompositionLocalProvider(LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
                     key(active) { Book(
@@ -147,6 +152,8 @@ fun main() = application {
                         restore = { data -> restore(data, db, settings) },
                         backup = { file -> backup(file, db, settings) },
                         onLanguage = { tag -> appPrefs.setLanguage(tag); language = tag },
+                        theme = theme,
+                        onTheme = { t -> appPrefs.setTheme(t); theme = t },
                         rtl = rtl,
                         words = words,
                         businesses = businesses,
@@ -213,6 +220,8 @@ private fun Book(
     restore: suspend (BackupCodec.ParsedBackup) -> Unit,
     backup: suspend (File) -> Long,
     onLanguage: (String) -> Unit,
+    theme: ThemeChoice,
+    onTheme: (ThemeChoice) -> Unit,
     rtl: Boolean,
     words: Words,
     businesses: Businesses,
@@ -251,7 +260,9 @@ private fun Book(
     // The phone's book over WiFi (Backup → Send to computer on the phone): the QR window is open.
     var phoneSync by remember { mutableStateOf(false) }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
-    var section by remember { mutableStateOf(Section.KHATA) }
+    // Home first, as the phone opens on its Home.
+    var section by remember { mutableStateOf(Section.HOME) }
+    var choosingTheme by remember { mutableStateOf(false) }
     var editingParty by remember { mutableStateOf<Party?>(null) }
     var purging by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
     // The bin keeps things for the days its note promises, then lets them go, as on the phone.
@@ -294,66 +305,82 @@ private fun Book(
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
 
     Column(Modifier.fillMaxSize().background(c.pageBg)) {
-        // The green header, as on the phone: the shop's name and the actions.
-        Row(
-            Modifier.fillMaxWidth().background(c.sectionKhata).padding(horizontal = 20.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                shop ?: word(W.app_name),
-                Modifier.weight(1f),
-                color = c.onDark, fontSize = 20.sp, fontWeight = FontWeight.Bold
-            )
-            HeaderButton(word(W.add_party)) { addParty = true }
-            Spacer(Modifier.width(8.dp))
-            HeaderButton(word(W.backup_now)) {
-                val dialog = FileDialog(null as Frame?, words.text(W.save_backup), FileDialog.SAVE)
-                // The phone's file name and .txt (WhatsApp sends .txt; the content is JSON).
-                // Documents, not the program's own folder: an update or uninstall must not take the backup with it.
-                startIn(dialog, "Documents")
-                dialog.file = "RoshanKhata_Backup_" +
-                    java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(java.util.Date()) + ".txt"
-                dialog.isVisible = true
-                val name = dialog.file ?: return@HeaderButton
-                val file = File(dialog.directory, name)
-                scope.launch {
-                    backedUp = runCatching { backup(file) }
-                        .map { size -> words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt()) }
-                        .getOrElse { words.text(W.backup_failed) }
-                }
+        // What needs the owner today, as the phone's Home: cheques due, stock expiring
+        // inside the warning window, and customers paying later than their habit.
+        val now = remember { System.currentTimeMillis() }
+        val dueCheques by remember { dao.observeDueChequeCount(now) }.collectAsState(0)
+        val expiring by remember { dao.observeExpiringCount(now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
+        val late by remember(reload) { lateCount(dao) }.collectAsState(0)
+        fun backupNow() {
+            val dialog = FileDialog(null as Frame?, words.text(W.save_backup), FileDialog.SAVE)
+            // The phone's file name and .txt (WhatsApp sends .txt; the content is JSON).
+            // Documents, not the program's own folder: an update or uninstall must not take the backup with it.
+            startIn(dialog, "Documents")
+            dialog.file = "RoshanKhata_Backup_" +
+                java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(java.util.Date()) + ".txt"
+            dialog.isVisible = true
+            val name = dialog.file ?: return
+            val file = File(dialog.directory, name)
+            scope.launch {
+                backedUp = runCatching { backup(file) }
+                    .map { size -> words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt()) }
+                    .getOrElse { words.text(W.backup_failed) }
             }
-            Spacer(Modifier.width(8.dp))
-            HeaderButton(word(W.restore_from_file)) {
-                val dialog = FileDialog(null as Frame?, words.text(W.restore_from_file), FileDialog.LOAD)
-                // Downloads: where a backup sent from the phone (WhatsApp, a browser) lands.
-                startIn(dialog, "Downloads")
-                dialog.isVisible = true
-                val name = dialog.file ?: return@HeaderButton
-                val file = File(dialog.directory, name)
-                scope.launch {
-                    val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(file) }
-                    picked = when {
-                        result is BackupCodec.ImportResult.Ok && data != null -> Picked.Ready(file, data, result)
-                        result is BackupCodec.ImportResult.Failed -> Picked.Refused(reasonOf(result, words))
-                        else -> Picked.Refused(words.text(W.backup_err_unreadable))
-                    }
-                }
-            }
-            Spacer(Modifier.width(8.dp))
-            HeaderButton(word(W.wifi_pc_button)) { phoneSync = true }
-            Spacer(Modifier.width(8.dp))
-            HeaderButton(word(W.businesses_title)) { choosingBusiness = true }
-            Spacer(Modifier.width(8.dp))
-            HeaderButton(word(W.recycle_bin)) { bin = true }
-            Spacer(Modifier.width(8.dp))
-            HeaderButton(word(W.language)) { choosingLanguage = true }
-            Spacer(Modifier.width(8.dp))
-            HeaderButton(word(W.about_us)) { about = true }
         }
+        fun restoreFromFile() {
+            val dialog = FileDialog(null as Frame?, words.text(W.restore_from_file), FileDialog.LOAD)
+            // Downloads: where a backup sent from the phone (WhatsApp, a browser) lands.
+            startIn(dialog, "Downloads")
+            dialog.isVisible = true
+            val name = dialog.file ?: return
+            val file = File(dialog.directory, name)
+            scope.launch {
+                val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(file) }
+                picked = when {
+                    result is BackupCodec.ImportResult.Ok && data != null -> Picked.Ready(file, data, result)
+                    result is BackupCodec.ImportResult.Failed -> Picked.Refused(reasonOf(result, words))
+                    else -> Picked.Refused(words.text(W.backup_err_unreadable))
+                }
+            }
+        }
+        // The phone's Home header, made wide: the shop, then backup, phone, bell, More, Add Party.
+        AppHeader(
+            shopName = shop ?: word(W.app_name),
+            logo = Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
+            onShop = { choosingBusiness = true },
+            onBackup = { backupNow() },
+            onPhone = { phoneSync = true },
+            alerts = dueCheques + expiring,
+            onAlerts = { section = Section.HOME },
+            // The phone's More sheet, in its groups: Data, Display, Help.
+            menu = listOf(
+                MenuLine(word(W.settings_group_data), null),
+                MenuLine(word(W.restore_from_file)) { restoreFromFile() },
+                MenuLine(word(W.businesses_title)) { choosingBusiness = true },
+                MenuLine(word(W.recycle_bin)) { bin = true },
+                MenuLine(word(W.snapshots_title)) { section = Section.DAILY },
+                MenuLine(word(W.settings_group_display), null),
+                MenuLine(word(W.language)) { choosingLanguage = true },
+                MenuLine(word(W.theme)) { choosingTheme = true },
+                MenuLine(word(W.business_profile)) { section = Section.SHOP },
+                MenuLine(word(W.settings_group_help), null),
+                MenuLine(word(W.help_support)) { section = Section.HELP },
+                MenuLine(word(W.about_us)) { about = true }
+            ),
+            onAddParty = { addParty = true }
+        )
 
         Row(Modifier.fillMaxSize()) {
-            SectionRail(section, { section = it })
+            SectionRail(section, { section = it }, badges = mapOf(Section.FOLLOWUP to late))
             when (section) {
+                Section.HOME -> Box(Modifier.weight(1f)) {
+                    HomePane(
+                        parties = parties, late = late, dueCheques = dueCheques, expiring = expiring,
+                        onOpen = { section = it },
+                        onAction = { a -> if (a == HomeAction.BACKUP) backupNow() else bin = true },
+                        onCustomer = { id -> selected = id; section = Section.KHATA }
+                    )
+                }
                 Section.CASHBOOK -> Box(Modifier.weight(1f)) { CashbookPane(dao) }
                 Section.CHEQUES -> Box(Modifier.weight(1f)) { ChequesPane(dao, parties, words) { reload++ } }
                 Section.PLANS -> Box(Modifier.weight(1f)) { PlansPane(dao, parties, words) { reload++ } }
@@ -390,11 +417,7 @@ private fun Book(
                             Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
                             Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
                         }
-                        // What needs the owner today, as the phone's Home chips: cheques due
-                        // and stock expiring inside the warning window. Each opens its page.
-                        val now = remember { System.currentTimeMillis() }
-                        val dueCheques by remember { dao.observeDueChequeCount(now) }.collectAsState(0)
-                        val expiring by remember { dao.observeExpiringCount(now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
+                        // Today's cheques and expiring stock: their chips, as on the phone's Home.
                         if (dueCheques > 0 || expiring > 0) {
                             Row(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 if (dueCheques > 0) AlertChip(word(W.today_chip, word(W.nav_cheques), dueCheques)) { section = Section.CHEQUES }
@@ -947,6 +970,27 @@ private fun Book(
             }
         }
     }
+    if (choosingTheme) {
+        DialogWindow(
+            onCloseRequest = { choosingTheme = false },
+            title = word(W.theme),
+            state = rememberDialogState(width = 360.dp, height = 300.dp)
+        ) {
+            Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
+                ThemeChoice.entries.forEach { t ->
+                    Text(
+                        (if (t == theme) "\u2713  " else "     ") + word(t.word),
+                        Modifier.fillMaxWidth()
+                            .clickable { choosingTheme = false; onTheme(t) }
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        color = if (t == theme) c.brandGreenText else c.ink, fontSize = 18.sp,
+                        fontWeight = if (t == theme) FontWeight.Bold else FontWeight.Normal
+                    )
+                    HorizontalDivider(color = c.pageBg)
+                }
+            }
+        }
+    }
     if (about) {
         DialogWindow(
             onCloseRequest = { about = false },
@@ -972,15 +1016,6 @@ private fun Book(
 internal fun startIn(dialog: FileDialog, folder: String) {
     val dir = File(System.getProperty("user.home"), folder)
     if (dir.isDirectory) dialog.directory = dir.absolutePath
-}
-
-@Composable
-private fun HeaderButton(text: String, onClick: () -> Unit) {
-    Box(
-        Modifier.background(Color.White.copy(alpha = 0.14f), RoundedCornerShape(10.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp)
-    ) { Text(text, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium) }
 }
 
 @Composable
@@ -1080,3 +1115,23 @@ class KeyActions {
         return act != null
     }
 }
+
+/**
+ * How many customers who owe are paying later than their own habit — the
+ * phone's Home note (MainActivity.observeLate), the same rule as Follow-up:
+ * a customer who named a day still ahead is not late.
+ */
+private fun lateCount(dao: KhataDao): kotlinx.coroutines.flow.Flow<Int> =
+    dao.observePartiesWithBalance()
+        .combine(dao.observeOwingLedgerPoints()) { parties, points -> parties to points }
+        .combine(dao.observePromises()) { (parties, points), promiseRows ->
+            val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
+            val habits = com.innovation313.roshankhata.data.PaymentHabit.forAll(points)
+            val promises = promiseRows.associate { it.partyId to it.due }
+            val now = System.currentTimeMillis()
+            val tz = java.util.TimeZone.getDefault()
+            habits.keys.count { id ->
+                id in owing && com.innovation313.roshankhata.data.FollowUpRank.lateByHabit(id, habits, promises, now, tz)
+            }
+        }
+        .flowOn(Dispatchers.Default)

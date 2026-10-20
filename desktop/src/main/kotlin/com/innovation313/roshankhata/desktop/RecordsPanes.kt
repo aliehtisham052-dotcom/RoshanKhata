@@ -35,6 +35,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.draw.clip
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.border
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
@@ -338,23 +346,116 @@ fun InvoicesPane(
             }
         }
     }
-    RecordList(word(W.nav_invoice), null, invoices.isEmpty(), word(W.no_invoices), action = word(W.add_invoice) to { adding = true }) {
-        items(invoices, key = { it.id }) { i ->
-            Row(Modifier.fillMaxWidth().clickable { print(i.id) }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(Format.name(i.customerName), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Text(i.invoiceNumber + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 13.sp)
+    // List and page side by side (20 Oct redesign): a click opens the invoice in
+    // its own design beside the list, with its actions; it no longer prints at once.
+    var chosen by remember { mutableStateOf<Long?>(null) }
+    var monthOnly by remember { mutableStateOf(false) }
+    val monthStart = remember {
+        java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.DAY_OF_MONTH, 1); set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0); set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+    val thisMonth = invoices.filter { it.invoiceDate >= monthStart }
+    val shown = if (monthOnly) thisMonth else invoices
+    val open = shown.firstOrNull { it.id == chosen } ?: shown.firstOrNull()
+    Column(Modifier.fillMaxSize().padding(horizontal = 28.dp, vertical = 24.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TileBadge(Section.INVOICES, 48, 28)
+            androidx.compose.foundation.layout.Spacer(Modifier.width(14.dp))
+            Text(word(W.nav_invoice), Modifier.weight(1f), color = c.ink, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold)
+            FillButton("+  " + word(W.add_invoice), c.brandGreen) { adding = true }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            SumCard(word(W.range_this_month), Format.money(thisMonth.sumOf { it.grandTotal }), thisMonth.size.toString(), Modifier.weight(1f))
+            SumCard(word(W.range_all), Format.money(invoices.sumOf { it.grandTotal }), invoices.size.toString(), Modifier.weight(1f))
+        }
+        if (invoices.isEmpty()) {
+            Text(word(W.no_invoices), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
+            return@Column
+        }
+        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+            Column(
+                Modifier.weight(0.55f).fillMaxSize().clip(RoundedCornerShape(20.dp)).background(c.surface)
+                    .border(1.dp, Look.line, RoundedCornerShape(20.dp))
+            ) {
+                Row(Modifier.padding(14.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Chip(word(W.range_all) + " \u00b7 " + invoices.size, !monthOnly) { monthOnly = false }
+                    Chip(word(W.range_this_month) + " \u00b7 " + thisMonth.size, monthOnly) { monthOnly = true }
                 }
-                Text(Format.money(i.grandTotal), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text("  " + word(W.ledger_pdf_button), color = c.brandGreenText, fontSize = 13.sp)
-                androidx.compose.material3.TextButton({
-                    scope.launch {
-                        editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(i.id)?.let { it to dao.invoiceItems(i.id) } }
+                HorizontalDivider(color = Look.line)
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(shown, key = { it.id }) { i ->
+                        val on = i.id == open?.id
+                        Row(
+                            Modifier.fillMaxWidth().background(if (on) Look.chosen else androidx.compose.ui.graphics.Color.Transparent)
+                                .clickable { chosen = i.id }.padding(horizontal = 18.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(Modifier.size(38.dp).clip(androidx.compose.foundation.shape.CircleShape).background(Look.chosen), contentAlignment = Alignment.Center) {
+                                Text(Format.initials(i.customerName), color = c.brandGreenText, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                            }
+                            androidx.compose.foundation.layout.Spacer(Modifier.width(12.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(Format.name(i.customerName), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                                Text(i.invoiceNumber + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp)
+                            }
+                            Text(Format.money(i.grandTotal), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                        }
+                        HorizontalDivider(color = Look.line)
                     }
-                }) { Text(word(W.edit), color = c.brandGreenText) }
-                androidx.compose.material3.TextButton({ deletingInvoice = i }) { Text(word(W.delete), color = c.owedToMe) }
+                }
             }
-            HorizontalDivider(color = c.pageBg)
+            Column(
+                Modifier.weight(0.45f).fillMaxSize().clip(RoundedCornerShape(20.dp)).background(c.surface)
+                    .border(1.dp, Look.line, RoundedCornerShape(20.dp))
+                    .verticalScroll(rememberScrollState()).padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                if (open != null) {
+                    // The saved row (what was received, if the owner recorded it) and its picture in its own design.
+                    var full by remember(open.id) { mutableStateOf<com.innovation313.roshankhata.data.Invoice?>(null) }
+                    var picture by remember(open.id) { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
+                    LaunchedEffect(open.id, open.grandTotal, open.invoiceDate) {
+                        withContext(Dispatchers.IO) {
+                            val inv = dao.getInvoice(open.id)
+                            full = inv
+                            picture = inv?.let { row ->
+                                runCatching {
+                                    com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), row, dao.invoiceItems(open.id))
+                                        ?.picture(0, 1f)?.toComposeImageBitmap()
+                                }.getOrNull()
+                            }
+                        }
+                    }
+                    Text(open.invoiceNumber + "  \u00b7  " + Format.dateOnly(open.invoiceDate), color = c.textMuted, fontSize = 12.sp)
+                    Text(Format.name(open.customerName), color = c.ink, fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
+                    // Received is shown only when the owner recorded it on the invoice: nothing
+                    // recorded is not the same as nothing paid (Invoice.receivedAmount).
+                    full?.receivedAmount?.let { got ->
+                        Text(word(W.invoice_received_line, Format.money(got)), color = c.iOwe, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        val due = open.grandTotal - got
+                        if (Money.isPositive(due)) Text(word(W.invoice_balance_due_line, Format.money(due)), color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                        FillButton(word(W.ledger_pdf_button), c.brandGreen) { print(open.id) }
+                        OutlineAction(onClick = {
+                            scope.launch { editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } } }
+                        }) { Text(word(W.edit), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium) }
+                        androidx.compose.material3.TextButton({ deletingInvoice = open }) { Text(word(W.delete), color = c.owedToMe) }
+                    }
+                    val pic = picture
+                    if (pic == null) {
+                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                    } else {
+                        androidx.compose.foundation.Image(
+                            pic, contentDescription = open.invoiceNumber,
+                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).border(1.dp, Look.line, RoundedCornerShape(10.dp)),
+                            contentScale = androidx.compose.ui.layout.ContentScale.FillWidth
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -746,4 +847,31 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
         }
         if (picking) DayPicker(due, onPick = { due = it; picking = false }, onDismiss = { picking = false })
     }
+}
+
+/** A figure on a white card: what it is, the amount, and how many. */
+@Composable
+private fun SumCard(label: String, amount: String, count: String, modifier: Modifier) {
+    val c = LocalRoshanColors.current
+    Column(
+        modifier.clip(RoundedCornerShape(16.dp)).background(c.surface).border(1.dp, Look.line, RoundedCornerShape(16.dp))
+            .padding(horizontal = 18.dp, vertical = 14.dp)
+    ) {
+        Text(label + "  \u00b7  " + count, color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        Text(amount, Modifier.padding(top = 6.dp), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
+    }
+}
+
+/** A filter pill, filled when on. */
+@Composable
+private fun Chip(text: String, on: Boolean, onClick: () -> Unit) {
+    val c = LocalRoshanColors.current
+    Text(
+        text,
+        Modifier.clip(RoundedCornerShape(17.dp))
+            .background(if (on) c.brandGreen else androidx.compose.ui.graphics.Color.Transparent)
+            .border(1.dp, if (on) c.brandGreen else Look.line, RoundedCornerShape(17.dp))
+            .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 7.dp),
+        color = if (on) androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold
+    )
 }

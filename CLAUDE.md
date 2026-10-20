@@ -31,10 +31,21 @@ No account, no server, no ads. Everything stays on the phone.
   APK goes to the `kmp-test` pre-release, never `latest`.
 - `desktop.yml` builds the Windows MSI on GitHub's Windows runner and puts it
   on the `desktop-test` pre-release (not signed yet).
-- The Windows app (`desktop/src/main/kotlin/.../desktop/`) opens maximised with
-  a scrolling section rail (each section wears the phone's own tile icon,
-  synced from `app/src/main/res` at build time; `TileIconsTest` reads them
-  all): Khata (master-detail, newest dealing first, statement for the whole
+- The Windows app (`desktop/src/main/kotlin/.../desktop/`) opens maximised on
+  **Home** (1.8.0, 20 Oct redesign, `HomePane.kt`): the phone's Home made wide —
+  Net balance card with the eye, get/give, late payers (MainActivity.observeLate's
+  rule), today's chips, the four slides, the three tile grids in the phone's
+  order. The header (`Shell.kt`, `AppHeader`) is the phone's: shop button,
+  Back up now, From phone, bell, More (Data / Display / Help groups, with a
+  Theme choice kept in app.properties), and one green Add Party. The rail is
+  grouped as the phone's Home (Every day, Business, Tools) with the computer's
+  own pages folded under More; colours beyond the shared palette live in
+  `Look` (Panes.kt) and dark is read from the theme (`isDark()`), never only
+  from Windows. Invoices are list + page: a click shows the invoice in its own
+  design beside the list. The scrolling section rail (each section wears the
+  phone's own tile icon, synced from `app/src/main/res` at build time — plus
+  the header glyphs ic_storefront, ic_bell, ic_eye_*, ic_phone, ic_search;
+  `TileIconsTest` reads them all) holds: Khata (master-detail, newest dealing first, statement for the whole
   ledger or a period), Follow-up (WhatsApp reminders via wa.me), Cashbook,
   Cheques, Plans, Staff, Seasons, Schemes, Supplier Bills (new bills via
   `insertSupplierBill`), Expiry, Stock register, Products (edit, who bought),

@@ -1668,6 +1668,7 @@
     <string name="theme_light">روشن</string>
     <string name="theme_dark">تیره</string>
     <string name="theme_system">مطابق گوشی</string>
+    <string name="theme_system_pc">مطابق رایانه</string>
     <string name="bp_section_identity">هویت</string>
     <string name="bp_section_paid">دریافت وجه</string>
     <string name="bp_section_seals">مهر و امضا</string>

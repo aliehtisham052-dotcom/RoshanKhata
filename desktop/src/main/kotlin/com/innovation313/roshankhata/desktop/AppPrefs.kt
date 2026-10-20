@@ -4,8 +4,8 @@ import java.io.File
 import java.util.Properties
 
 /**
- * The Windows app's own choices, for every shop on the computer: for now the
- * language. A properties file next to the book, written in full on each
+ * The Windows app's own choices, for every shop on the computer: the
+ * language, the theme and the second backup folder. A properties file next to the book, written in full on each
  * change through a temporary file, so a crash mid-write leaves the old one.
  */
 class AppPrefs(private val file: File) {
@@ -25,6 +25,16 @@ class AppPrefs(private val file: File) {
         save()
     }
 
+    /** Light, dark, or as Windows is (the phone's Theme choice); SYSTEM when never chosen. */
+    fun theme(): ThemeChoice = props.getProperty(KEY_THEME)
+        ?.let { name -> ThemeChoice.entries.firstOrNull { it.name == name } } ?: ThemeChoice.SYSTEM
+
+    @Synchronized
+    fun setTheme(choice: ThemeChoice) {
+        props.setProperty(KEY_THEME, choice.name)
+        save()
+    }
+
     @Synchronized
     fun setLanguage(tag: String) {
         props.setProperty(KEY_LANGUAGE, tag)
@@ -41,5 +51,13 @@ class AppPrefs(private val file: File) {
     private companion object {
         const val KEY_LANGUAGE = "app_language"
         const val KEY_BACKUP_FOLDER = "backup_folder"
+        const val KEY_THEME = "theme"
     }
+}
+
+/** The phone's three Theme choices (MoreSheet): as the computer is, always light, always dark. */
+enum class ThemeChoice(val word: String) {
+    SYSTEM(com.innovation313.roshankhata.words.W.theme_system_pc),
+    LIGHT(com.innovation313.roshankhata.words.W.theme_light),
+    DARK(com.innovation313.roshankhata.words.W.theme_dark)
 }
