@@ -51,10 +51,10 @@ fun CalculatorPane() {
         listOf("00", "0", ".", "+"),
         listOf("%", "C", "⌫", "=")
     )
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.calculator), null)
-        Column(Modifier.width(420.dp).background(c.surface, RoundedCornerShape(16.dp)).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            OutlinedTextField(text, { text = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+        Column(Modifier.width(420.dp).card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Outlined(text, { text = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
                 textStyle = androidx.compose.ui.text.TextStyle(fontSize = 22.sp, textAlign = TextAlign.End))
             Text(result?.let { Format.money(it) } ?: "", Modifier.fillMaxWidth(), color = c.ink, fontSize = 28.sp,
                 fontWeight = FontWeight.Bold, textAlign = TextAlign.End)

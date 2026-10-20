@@ -176,7 +176,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
     }
 
     Row(Modifier.fillMaxSize()) {
-        Column(Modifier.weight(0.46f).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.weight(0.46f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             PaneTitle(word(W.poster_title), word(W.poster_subtitle))
             Text(word(W.poster_language), color = c.ink, fontWeight = FontWeight.Bold)
             TwoWay("English", "اردو", !ur) { english -> save(); lang = if (english) "en" else "ur" }
@@ -230,7 +230,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             if (settings.businessPhone().isNullOrBlank()) Text(word(W.poster_no_phone), color = c.textMuted, fontSize = 12.sp)
             Text(word(W.poster_desktop_flat), color = c.textMuted, fontSize = 12.sp)
         }
-        Column(Modifier.weight(0.54f).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
+        Column(Modifier.weight(0.54f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             picture?.let {
                 Image(it, contentDescription = word(W.poster_title),
@@ -274,7 +274,7 @@ private fun scaled(img: java.awt.image.BufferedImage, w: Int, h: Int): java.awt.
 
 @Composable
 private fun PosterField(value: String, onChange: (String) -> Unit, label: String, hint: String = "", single: Boolean = true) {
-    OutlinedTextField(
+    Outlined(
         value, onChange, label = { Text(label) }, placeholder = { if (hint.isNotEmpty()) Text(hint) },
         singleLine = single, minLines = if (single) 1 else 2, modifier = Modifier.fillMaxWidth()
     )

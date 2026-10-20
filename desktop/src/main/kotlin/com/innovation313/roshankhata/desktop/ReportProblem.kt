@@ -120,7 +120,7 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
 
     DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.report_problem), state = rememberDialogState(width = 620.dp, height = 760.dp)) {
         Box(Modifier.fillMaxSize().background(c.surface)) {
-            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(word(W.report_problem), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text(word(W.report_problem_sub), color = c.textMuted, fontSize = 13.sp)
                 Text(word(W.report_what_kind), color = c.ink, fontWeight = FontWeight.Bold)
@@ -131,7 +131,7 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
                     }
                 }
                 Text(word(W.report_describe), color = c.ink, fontWeight = FontWeight.Bold)
-                OutlinedTextField(text, { text = it }, placeholder = { Text(word(W.report_hint)) }, minLines = 4, modifier = Modifier.fillMaxWidth().heightIn(min = 110.dp))
+                Outlined(text, { text = it }, placeholder = { Text(word(W.report_hint)) }, minLines = 4, modifier = Modifier.fillMaxWidth().heightIn(min = 110.dp))
                 Text(word(W.report_pc_privacy), color = c.textMuted, fontSize = 12.sp)
                 Text(pcContext() + (crash?.let { "\n" + words.text(W.report_crash_included) + "\n" + it.take(1200) } ?: ""),
                     color = c.textMuted, fontSize = 11.sp)
@@ -148,7 +148,7 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
                         runCatching { Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(subject() + "\n\n" + body()), null) }
                         told = words.text(W.report_copied)
                     }) { Text(word(W.report_copy), color = c.brandGreenText) }
-                    TextButton(onClose) { Text(word(W.close), color = c.brandGreenText) }
+                    FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
                 }
                 told?.let { Text(it, color = c.textMuted, fontSize = 13.sp) }
             }

@@ -84,7 +84,7 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
         ).joinToString("  ")
     }
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.ledger_report_title), period) }
             FillButton(word(W.export_excel), c.brandGreen, enabled = !invalid && entries.isNotEmpty()) {
@@ -122,7 +122,7 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
             OutlinedButton({ picking = false }) {
                 Text(till?.let { Format.dateOnly(it) } ?: word(W.report_end_date), color = c.ink)
             }
-            TextButton({ from = null; till = null }) { Text(word(W.range_all), color = c.brandGreenText) }
+            FluentButton(word(W.range_all), { from = null; till = null }, kind = ButtonKind.SUBTLE)
         }
         if (invalid) {
             Text(word(W.invalid_range), color = c.owedToMe, fontSize = 14.sp)
@@ -138,7 +138,7 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
                 Text(word(W.ledger_report_empty), color = c.textMuted, fontSize = 15.sp)
             } else {
                 // Newest first on screen, for glancing; the files go oldest first, for working.
-                LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
+                LazyColumn(Modifier.fillMaxSize().card()) {
                     items(entries.sortedByDescending { it.timestamp }, key = { it.id }) { e ->
                         Row(
                             Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
@@ -161,7 +161,7 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
                                 Modifier.width(130.dp), color = c.iOwe, fontSize = 15.sp, fontWeight = FontWeight.Bold
                             )
                         }
-                        HorizontalDivider(color = c.pageBg)
+                        Rule()
                     }
                 }
             }

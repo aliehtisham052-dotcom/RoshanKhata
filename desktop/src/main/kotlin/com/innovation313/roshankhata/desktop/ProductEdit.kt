@@ -64,7 +64,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
 
     DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = 560.dp, height = 820.dp)) {
         Column(
-            Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).verticalScroll(rememberScrollState()).padding(20.dp),
+            Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Field(word(W.product_name), name) { name = it; problem = null }
@@ -73,8 +73,8 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             val trade = LocalTrade.current
             SuggestionRow(trade.units(), unit) { unit = it }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(cash, { cash = it }, label = { Text(word(W.sale_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-                OutlinedTextField(credit, { credit = it }, label = { Text(word(W.credit_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+                Outlined(cash, { cash = it }, label = { Text(word(W.sale_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+                Outlined(credit, { credit = it }, label = { Text(word(W.credit_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
             }
             Text(word(W.product_price_help), color = c.textMuted, fontSize = 12.sp)
             Field(word(W.product_type_hint), type) { type = it }
@@ -91,7 +91,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             }
             problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-                TextButton(onClose) { Text(word(W.cancel)) }
+                FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
                 FillButton(word(W.save), c.brandGreen) {
                     val newName = name.trim()
                     if (newName.isEmpty()) { problem = needName; return@FillButton }
@@ -127,4 +127,4 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
 
 @Composable
 private fun Field(label: String, value: String, set: (String) -> Unit) =
-    OutlinedTextField(value, set, label = { Text(label) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+    Outlined(value, set, label = { Text(label) }, singleLine = true, modifier = Modifier.fillMaxWidth())

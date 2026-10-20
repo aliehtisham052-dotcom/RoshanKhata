@@ -84,7 +84,7 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
 
     val now = System.currentTimeMillis()
     val due = rows.count { SchemeMath.status(it.scheme, it.progress, now) == SchemeMath.Status.CLAIM_DUE }
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) {
                 PaneTitle(word(W.schemes_title), if (due > 0) plural(WP.schemes_claims_due, due, due) else word(W.schemes_subtitle))
@@ -126,7 +126,7 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
         AlertDialog(
             onDismissRequest = { claiming = null },
             title = { Text(word(W.scheme_mark_claimed)) },
-            text = { OutlinedTextField(amount, { amount = it }, label = { Text(word(W.scheme_claim_hint)) }, singleLine = true) },
+            text = { Outlined(amount, { amount = it }, label = { Text(word(W.scheme_claim_hint)) }, singleLine = true) },
             confirmButton = {
                 TextButton(enabled = Calc.evalAmount(amount) != null, onClick = {
                     val v = Calc.evalAmount(amount) ?: return@TextButton
@@ -184,7 +184,7 @@ private fun SchemeCard(r: SchemeRow, now: Long, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     val s = r.scheme
     val p = r.progress
-    Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).press(onClick = onClick).padding(16.dp),
+    Column(Modifier.fillMaxWidth().card().press(onClick = onClick).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(s.name, color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
         Text(listOfNotNull(r.supplier, s.company, word(W.scheme_period, Format.dateOnly(s.startDate), Format.dateOnly(s.endDate)))
@@ -242,11 +242,11 @@ private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Schem
     val needSlab = word(W.scheme_need_slab)
     val badDates = word(W.scheme_bad_dates)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        OutlinedTextField(name, { name = it }, label = { Text(word(W.scheme_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Outlined(name, { name = it }, label = { Text(word(W.scheme_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Text(word(W.supplier), color = c.ink, fontWeight = FontWeight.Bold)
         // Any supplier, or one: chosen from the suppliers in the book.
-        Column(Modifier.fillMaxWidth().background(c.pageBg, RoundedCornerShape(10.dp)).padding(6.dp)) {
+        Column(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(6.dp)) {
             (listOf<Party?>(null) + suppliers).forEach { sp ->
                 val on = sp?.id == partyId
                 Text(
@@ -257,14 +257,14 @@ private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Schem
                 )
             }
         }
-        OutlinedTextField(company, { company = it }, label = { Text(word(W.scheme_company_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        Outlined(company, { company = it }, label = { Text(word(W.scheme_company_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton({ picking = true }) { Text(word(W.scheme_from, Format.dateOnly(start)), color = c.brandGreenText) }
             TextButton({ picking = false }) { Text(word(W.scheme_to, Format.dateOnly(end)), color = c.brandGreenText) }
         }
         Text(word(W.scheme_measure), color = c.ink, fontWeight = FontWeight.Bold)
         TwoWay(word(W.scheme_by_value), word(W.scheme_by_qty), !byQty) { value -> byQty = !value; if (!value && kind == SchemeMath.PERCENT) kind = SchemeMath.AMOUNT }
-        if (byQty) OutlinedTextField(unit, { unit = it }, label = { Text(word(W.scheme_unit_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        if (byQty) Outlined(unit, { unit = it }, label = { Text(word(W.scheme_unit_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Text(word(W.scheme_reward), color = c.ink, fontWeight = FontWeight.Bold)
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             // A percentage needs a rupee base: only on a value scheme, as on the phone.
@@ -280,16 +280,16 @@ private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Schem
         Text(word(W.scheme_slabs), color = c.ink, fontWeight = FontWeight.Bold)
         (0..2).forEach { i ->
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(targets.value[i], { v -> targets.value = targets.value.toMutableList().also { it[i] = v } },
+                Outlined(targets.value[i], { v -> targets.value = targets.value.toMutableList().also { it[i] = v } },
                     label = { Text(word(W.scheme_target_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-                OutlinedTextField(rewards.value[i], { v -> rewards.value = rewards.value.toMutableList().also { it[i] = v } },
+                Outlined(rewards.value[i], { v -> rewards.value = rewards.value.toMutableList().also { it[i] = v } },
                     label = { Text(word(W.scheme_reward_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
             }
         }
-        OutlinedTextField(note, { note = it }, label = { Text(word(W.scheme_note_hint)) }, modifier = Modifier.fillMaxWidth())
+        Outlined(note, { note = it }, label = { Text(word(W.scheme_note_hint)) }, modifier = Modifier.fillMaxWidth())
         problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            TextButton(onCancel) { Text(word(W.cancel)) }
+            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
             FillButton(word(W.save), c.brandGreen) {
                 val slabs = (0..2).mapNotNull { i ->
                     val t = Calc.evalAmount(targets.value[i]); val r = Calc.evalAmount(rewards.value[i])

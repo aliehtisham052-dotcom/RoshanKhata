@@ -64,51 +64,53 @@ fun CashbookPane(dao: KhataDao) {
     var closing by remember { mutableStateOf(false) }
     if (closing) DayCloseDialog(dao) { closing = false }
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f)) { PaneTitle(word(W.cashbook), word(W.cashbook_subtitle)) }
-            FillButton(word(W.cash_income), c.iOwe) { adding = true }
-            Spacer(Modifier.width(10.dp))
-            FillButton(word(W.cash_expense), c.gaveFill) { adding = false }
-            Spacer(Modifier.width(10.dp))
-            TextButton({ closing = true }) { Text(word(W.dayclose_button), color = c.brandGreenText) }
+    val last by remember { dao.observeLastDayClose() }.collectAsState(null)
+    FluentPage(
+        word(W.cashbook),
+        last?.let { word(W.dayclose_last, Format.dateOnly(it.closedAt), Format.signedTotal(it.difference)) } ?: word(W.cashbook_subtitle),
+        scroll = false,
+        actions = {
+            FluentButton(word(W.dayclose_button), { closing = true }, icon = "ic_check_plain")
+            FluentButton(word(W.cash_expense), { adding = false }, icon = "ic_arrow_gave", kind = ButtonKind.DANGER)
+            FluentButton(word(W.cash_income), { adding = true }, icon = "ic_arrow_got", kind = ButtonKind.ACCENT)
         }
-        val last by remember { dao.observeLastDayClose() }.collectAsState(null)
-        Text(
-            last?.let { word(W.dayclose_last, Format.dateOnly(it.closedAt), Format.signedTotal(it.difference)) } ?: word(W.dayclose_never),
-            color = c.textMuted, fontSize = 12.sp
-        )
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            TotalCard(word(W.cash_in), Format.money(income), c.iOwe, Modifier.weight(1f))
-            TotalCard(word(W.cash_out), Format.money(expense), c.owedToMe, Modifier.weight(1f))
-            val net = income - expense
-            TotalCard(word(W.cash_net), Format.money(net), if (net < 0) c.owedToMe else c.iOwe, Modifier.weight(1f))
+    ) {
+        val net = income - expense
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            FigureCard(word(W.cash_in), Format.money(income), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
+            FigureCard(word(W.cash_out), Format.money(expense), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
+            FigureCard(word(W.cash_net), Format.money(net), if (net < 0) c.owedToMe else c.ink, Modifier.weight(1f), under = word(W.cashbook_separate_note).take(72), icon = "ic_tile_cashbook", tint = Look.subtle)
         }
-        Text(word(W.cashbook_separate_note), color = c.textMuted, fontSize = 12.sp)
         if (entries.isEmpty()) {
-            Text(word(W.no_cash_entries), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
-        } else {
-            LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
+            EmptyState("ic_tile_cashbook", word(W.no_cash_entries), word(W.cashbook_separate_note), Modifier.weight(1f)) {
+                FluentButton(word(W.cash_income), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+            }
+        } else ListCard(Modifier.weight(1f)) {
+            ListHead(word(W.cashbook), entries.size.toString())
+            TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 70), endAligned = setOf(2))
+            LazyColumn(Modifier.fillMaxSize()) {
                 items(entries, key = { it.id }) { e ->
                     Row(
-                        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        Text(Format.dateTime(e.timestamp), Modifier.width(150.dp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                         Column(Modifier.weight(1f)) {
-                            Text(e.category, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                            e.note?.takeIf { it.isNotBlank() }?.let { Text(it, color = c.inkSoft, fontSize = 13.sp) }
-                            Text(Format.dateTime(e.timestamp), color = c.textMuted, fontSize = 12.sp)
+                            Text(e.category, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                            e.note?.takeIf { it.isNotBlank() }?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }
                         }
                         // A sign as well as a colour: colour alone fails anyone who cannot tell red from green.
                         Text(
                             (if (e.isIncome) "+ " else "− ") + Format.money(e.amount),
-                            color = if (e.isIncome) c.iOwe else c.owedToMe,
-                            fontSize = 16.sp, fontWeight = FontWeight.Bold
+                            Modifier.width(120.dp),
+                            color = if (e.isIncome) Look.accent else c.owedToMe,
+                            fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
                         )
-                        Spacer(Modifier.width(12.dp))
-                        TextButton({ deleting = e }) { Text(word(W.delete), color = c.owedToMe) }
+                        Box(Modifier.width(70.dp), contentAlignment = Alignment.CenterEnd) {
+                            FluentButton(word(W.delete), { deleting = e }, kind = ButtonKind.SUBTLE)
+                        }
                     }
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
             }
         }
@@ -121,7 +123,7 @@ fun CashbookPane(dao: KhataDao) {
             title = word(if (way) W.cash_income else W.cash_expense),
             state = rememberDialogState(width = 480.dp, height = 520.dp)
         ) {
-            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+            Box(Modifier.fillMaxSize()) {
                 CashForm(
                     dao = dao,
                     income = way,
@@ -170,39 +172,13 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
     val needAmount = word(W.enter_valid_amount)
     val needCategory = word(W.enter_category)
 
-    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        TwoWay(word(W.cash_income), word(W.cash_expense), isIncome) { isIncome = it }
-        OutlinedTextField(
-            value = amountText, onValueChange = { amountText = it; problem = null },
-            label = { Text(word(W.amount)) }, singleLine = true, modifier = Modifier.fillMaxWidth()
-        )
-        Text(amount?.let { Format.money(it) } ?: "", color = c.textMuted, fontSize = 14.sp)
-        OutlinedTextField(
-            value = category, onValueChange = { category = it; problem = null },
-            label = { Text(word(W.cash_category_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth()
-        )
-        // The owner's own earlier categories, one click each, so they need not retype them.
-        if (used.isNotEmpty()) {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(used) { u ->
-                    Text(
-                        u,
-                        Modifier.background(c.pageBg, RoundedCornerShape(16.dp))
-                            .press { category = u; problem = null }
-                            .padding(horizontal = 12.dp, vertical = 6.dp),
-                        color = c.ink, fontSize = 13.sp
-                    )
-                }
-            }
-        }
-        OutlinedTextField(
-            value = note, onValueChange = { note = it },
-            label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth()
-        )
-        problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            TextButton(onClick = onCancel) { Text(word(W.cancel)) }
-            FillButton(word(W.save), if (isIncome) c.brandGreen else c.gaveFill) {
+    DialogFrame(
+        word(if (isIncome) W.cash_income else W.cash_expense), word(W.cashbook),
+        onClose = onCancel,
+        footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
+        footer = {
+            FluentButton(word(W.cancel), onCancel)
+            FluentButton(word(W.save), kind = ButtonKind.ACCENT, icon = "ic_check_plain", onClick = {
                 when {
                     amount == null -> problem = needAmount
                     category.isBlank() -> problem = needCategory
@@ -215,8 +191,21 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
                         )
                     )
                 }
+            })
+        }
+    ) {
+        TwoWay(word(W.cash_income), word(W.cash_expense), isIncome) { isIncome = it }
+        FluentField(amountText, { amountText = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ")
+        FluentField(category, { category = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.cash_category_hint))
+        // The owner's own earlier categories, one click each, so they need not retype them.
+        if (used.isNotEmpty()) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(used) { u ->
+                    FluentPill(u, u == category) { category = u; problem = null }
+                }
             }
         }
+        FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
     }
 }
 
@@ -262,11 +251,11 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
         title = { Text(word(W.dayclose_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(opening, { opening = it }, label = { Text(word(W.dayclose_opening)) }, singleLine = true)
+                FluentField(opening, { opening = it }, Modifier.fillMaxWidth(), label = word(W.dayclose_opening))
                 Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.money(expected)),
                     color = c.inkSoft, fontSize = 13.sp)
                 Text(word(W.dayclose_help), color = c.textMuted, fontSize = 12.sp)
-                OutlinedTextField(counted, { counted = it; problem = null }, label = { Text(word(W.dayclose_counted)) }, singleLine = true)
+                FluentField(counted, { counted = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.dayclose_counted), big = true)
                 if (count != null) {
                     val d = com.innovation313.roshankhata.data.DayCloseMath.difference(count, expected)
                     Text(
@@ -278,7 +267,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                         color = if (com.innovation313.roshankhata.data.Money.isPositive(-d)) c.owedToMe else c.iOwe, fontWeight = FontWeight.Bold
                     )
                 }
-                OutlinedTextField(note, { note = it }, label = { Text(word(W.dayclose_note_hint)) }, singleLine = true)
+                FluentField(note, { note = it }, Modifier.fillMaxWidth(), placeholder = word(W.dayclose_note_hint))
                 problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
             }
         },
@@ -298,7 +287,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                 onClose()
             }) { Text(word(W.save)) }
         },
-        dismissButton = { TextButton(onClose) { Text(word(W.cancel)) } }
+        dismissButton = { FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD) }
     )
 }
 

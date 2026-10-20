@@ -70,7 +70,7 @@ fun StaffPane(dao: KhataDao) {
         monthAt = Calendar.getInstance().apply { timeInMillis = from; add(Calendar.MONTH, by) }.timeInMillis
     }
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.staff_title), word(W.staff_subtitle)) }
             FillButton(word(W.staff_add), c.brandGreen) { adding = true }
@@ -88,7 +88,7 @@ fun StaffPane(dao: KhataDao) {
                 items(staff, key = { it.id }) { person ->
                     val mine = marks.filter { it.staffId == person.id }
                     val m = Payroll.month(person.monthlySalary, days, mine.map { it.status }, pays.filter { it.staffId == person.id })
-                    Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Column(Modifier.fillMaxWidth().card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(person.name, color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
                         Text(word(W.staff_salary_line, Format.money(person.monthlySalary)), color = c.inkSoft, fontSize = 13.sp)
                         Text(word(W.staff_counts, m.absent.toString(), m.half.toString(), m.leave.toString()), color = c.inkSoft, fontSize = 13.sp)
@@ -103,11 +103,11 @@ fun StaffPane(dao: KhataDao) {
                             fontSize = 15.sp, fontWeight = FontWeight.Bold
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            TextButton({ marking = person }) { Text(word(W.staff_attendance), color = c.brandGreenText) }
-                            TextButton({ handing = person to Payroll.ADVANCE }) { Text(word(W.staff_advance), color = c.brandGreenText) }
-                            TextButton({ handing = person to Payroll.SALARY }) { Text(word(W.staff_pay), color = c.brandGreenText) }
+                            FluentButton(word(W.staff_attendance), { marking = person }, kind = ButtonKind.SUBTLE)
+                            FluentButton(word(W.staff_advance), { handing = person to Payroll.ADVANCE }, kind = ButtonKind.SUBTLE)
+                            FluentButton(word(W.staff_pay), { handing = person to Payroll.SALARY }, kind = ButtonKind.SUBTLE)
                             TextButton({ editing = person }) { Text(word(W.staff_edit), color = c.ink) }
-                            TextButton({ removing = person }) { Text(word(W.staff_remove), color = c.owedToMe) }
+                            FluentButton(word(W.staff_remove), { removing = person }, kind = ButtonKind.DANGER)
                         }
                     }
                 }
@@ -126,9 +126,9 @@ fun StaffPane(dao: KhataDao) {
             title = { Text(word(if (person == null) W.staff_add else W.staff_edit)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(name, { name = it }, label = { Text(word(W.staff_name)) }, singleLine = true)
-                    OutlinedTextField(phone, { phone = it }, label = { Text(word(W.staff_phone)) }, singleLine = true)
-                    OutlinedTextField(salary, { salary = it }, label = { Text(word(W.staff_salary)) }, singleLine = true)
+                    Outlined(name, { name = it }, label = { Text(word(W.staff_name)) }, singleLine = true)
+                    Outlined(phone, { phone = it }, label = { Text(word(W.staff_phone)) }, singleLine = true)
+                    Outlined(salary, { salary = it }, label = { Text(word(W.staff_salary)) }, singleLine = true)
                     if (bad) Text(word(W.staff_invalid), color = c.owedToMe, fontSize = 13.sp)
                 }
             },
@@ -160,8 +160,8 @@ fun StaffPane(dao: KhataDao) {
             title = { Text(person.name + " · " + word(if (kind == Payroll.ADVANCE) W.staff_advance else W.staff_pay)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(amount, { amount = it }, label = { Text(word(W.staff_amount)) }, singleLine = true)
-                    OutlinedTextField(note, { note = it }, label = { Text(word(W.staff_note)) }, singleLine = true)
+                    Outlined(amount, { amount = it }, label = { Text(word(W.staff_amount)) }, singleLine = true)
+                    Outlined(note, { note = it }, label = { Text(word(W.staff_note)) }, singleLine = true)
                     if (bad) Text(word(W.staff_invalid), color = c.owedToMe, fontSize = 13.sp)
                 }
             },

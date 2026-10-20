@@ -46,10 +46,10 @@ fun HelpPane(words: Words) {
         W.faq_q_percent to W.faq_a_percent,
         W.faq_q_delete to W.faq_a_delete
     )
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         PaneTitle(word(W.help_support), null)
         // The keyboard shortcuts, named with the app's own words for what they do.
-        Column(Modifier.widthIn(max = 760.dp).fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(14.dp)) {
+        Column(Modifier.widthIn(max = 760.dp).fillMaxWidth().card().padding(14.dp)) {
             listOf(
                 "F1" to word(W.nav_khata), "F2" to word(W.you_gave), "F3" to word(W.you_got),
                 "Ctrl + N" to word(W.add_party), "Ctrl + P" to word(W.statement_pdf)
@@ -60,10 +60,10 @@ fun HelpPane(words: Words) {
                 }
             }
         }
-        Text(word(W.help_questions), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(word(W.help_questions), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         faqs.forEachIndexed { i, (q, a) ->
             Column(
-                Modifier.widthIn(max = 760.dp).fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp))
+                Modifier.widthIn(max = 760.dp).fillMaxWidth().card()
                     .press { open = if (open == i) null else i }.padding(14.dp)
             ) {
                 Text(word(q), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
@@ -73,7 +73,7 @@ fun HelpPane(words: Words) {
         // Report a problem (the phone's ReportProblemActivity): the kind, the owner's own
         // words, and the app version and Windows version only — never a customer's
         // name, number or balance. It opens in the owner's own mail app to read first.
-        Text(word(W.report_problem), Modifier.padding(top = 10.dp), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(word(W.report_problem), Modifier.padding(top = 10.dp), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         Text(word(W.report_what_kind), color = c.textMuted, fontSize = 13.sp)
         val kinds = listOf(W.report_kind_wrong_number, W.report_kind_lost, W.report_kind_crash, W.report_kind_confusing, W.report_kind_suggestion, W.report_kind_other)
         kinds.forEachIndexed { i, k ->
@@ -86,7 +86,7 @@ fun HelpPane(words: Words) {
                 color = if (on) androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 14.sp
             )
         }
-        androidx.compose.material3.OutlinedTextField(
+        androidx.compose.material3.Outlined(
             description, { description = it; empty = false },
             label = { Text(word(W.report_describe)) }, placeholder = { Text(word(W.report_describe_help)) },
             modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth(), minLines = 4
@@ -102,7 +102,7 @@ fun HelpPane(words: Words) {
             fun enc(v: String) = URLEncoder.encode(v, "UTF-8").replace("+", "%20")
             runCatching { java.awt.Desktop.getDesktop().mail(URI("mailto:innovation313.support@gmail.com?subject=${enc(subject)}&body=${enc(body)}")) }
         }
-        Text(word(W.help_still_stuck), Modifier.padding(top = 10.dp), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(word(W.help_still_stuck), Modifier.padding(top = 10.dp), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         Text(word(W.help_contact_blurb), color = c.textMuted, fontSize = 13.sp)
         FillButton(word(W.help_email_us), c.brandGreen) {
             val subject = URLEncoder.encode(words.text(W.help_email_subject), "UTF-8").replace("+", "%20")

@@ -138,7 +138,7 @@ fun CropWindowContent(source: BufferedImage, start: Rectangle, onUse: (BufferedI
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            TextButton(onCancel) { Text(word(W.cancel)) }
+            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
             FillButton(word(W.adjust_crop_use), c.brandGreen) {
                 val x = l.toInt().coerceIn(0, source.width - 1)
                 val y = t.toInt().coerceIn(0, source.height - 1)

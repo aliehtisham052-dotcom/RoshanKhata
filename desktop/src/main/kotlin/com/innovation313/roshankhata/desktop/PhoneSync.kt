@@ -148,7 +148,7 @@ fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> 
                     Text(hosts.joinToString("  ·  ") + "  :" + server.localPort, color = c.textMuted, fontSize = 12.sp)
                 }
                 Text(word(W.wifi_pc_firewall), color = c.textMuted, fontSize = 12.sp)
-                TextButton(onClose) { Text(word(W.close), color = c.brandGreenText) }
+                FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
             }
         }
     }

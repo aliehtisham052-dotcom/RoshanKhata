@@ -175,7 +175,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
     }
 
     Row(Modifier.fillMaxSize()) {
-        Column(Modifier.weight(0.42f).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.weight(0.42f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             PaneTitle(word(W.biz_card), word(W.biz_card_sub))
             Text(word(W.biz_card_language), color = c.ink, fontWeight = FontWeight.Bold)
             TwoWay("English", "اردو", !ur) { english -> save(); lang = if (english) "en" else "ur" }
@@ -206,7 +206,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
             }
             Text(word(W.biz_card_note), color = c.textMuted, fontSize = 12.sp)
         }
-        Column(Modifier.weight(0.58f).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.weight(0.58f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             picture?.let {
                 Image(it, contentDescription = word(W.biz_card), modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth().aspectRatio(CardTemplates.W.toFloat() / CardTemplates.H))
             }
@@ -262,7 +262,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
 
 @Composable
 private fun Field(value: String, onChange: (String) -> Unit, label: String, hint: String) {
-    OutlinedTextField(
+    Outlined(
         value, onChange, label = { Text(label) }, placeholder = { Text(hint) }, singleLine = true,
         modifier = Modifier.fillMaxWidth()
     )

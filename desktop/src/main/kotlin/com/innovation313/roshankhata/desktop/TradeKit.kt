@@ -197,12 +197,12 @@ fun TradePicker(
         if (chosen == "OTHER") {
             Text(word(W.trade_other_title), color = c.ink, fontWeight = FontWeight.Bold)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(name, { name = it }, singleLine = true, placeholder = { Text(word(W.trade_other_name_hint)) }, modifier = Modifier.weight(1f))
-                OutlinedTextField(items, { items = it }, singleLine = true, placeholder = { Text(word(W.trade_other_items_hint)) }, modifier = Modifier.weight(1f))
+                Outlined(name, { name = it }, singleLine = true, placeholder = { Text(word(W.trade_other_name_hint)) }, modifier = Modifier.weight(1f))
+                Outlined(items, { items = it }, singleLine = true, placeholder = { Text(word(W.trade_other_items_hint)) }, modifier = Modifier.weight(1f))
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End), verticalAlignment = Alignment.CenterVertically) {
-            if (!mandatory) androidx.compose.material3.TextButton(onCancel) { Text(word(W.cancel)) }
+            if (!mandatory) FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
             val pick = chosen
             FillButton(word(W.save), c.brandGreen, enabled = pick != null && (pick != "OTHER" || name.isNotBlank())) {
                 if (pick != null) onPick(pick, name.trim().ifEmpty { null }, items.trim().ifEmpty { null })

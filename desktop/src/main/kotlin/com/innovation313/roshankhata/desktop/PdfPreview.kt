@@ -222,10 +222,10 @@ private fun PreviewContent(req: Preview.Request) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(req.title, Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            OutlineAction(onClick = { zoom = (zoom - 0.25f).coerceAtLeast(0.5f) }) { Text("−", color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold) }
+            Text(req.title, Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            OutlineAction(onClick = { zoom = (zoom - 0.25f).coerceAtLeast(0.5f) }) { Text("−", color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold) }
             Text("${(zoom * 100).toInt()}%", color = c.inkSoft, fontSize = 13.sp)
-            OutlineAction(onClick = { zoom = (zoom + 0.25f).coerceAtMost(2.5f) }) { Text("+", color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold) }
+            OutlineAction(onClick = { zoom = (zoom + 0.25f).coerceAtMost(2.5f) }) { Text("+", color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold) }
             OutlineAction(onClick = { StatementPrint.printDialog(req.printable, req.title) }) {
                 Text(word(W.print_short), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
             }

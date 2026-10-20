@@ -148,9 +148,7 @@ fun BusinessesDialog(businesses: Businesses, active: Long, onSwitch: (Long) -> U
                 ) {
                     Text(shown(b), Modifier.weight(1f), color = c.ink,
                         fontWeight = FontWeight.Bold)
-                    if (!on) TextButton({ onSwitch(b.id) }) {
-                        Text(word(W.business_switch_open), color = c.brandGreenText)
-                    }
+                    if (!on) FluentButton(word(W.business_switch_open), { onSwitch(b.id) }, kind = ButtonKind.SUBTLE)
                     TextButton({ renaming = b }) {
                         Text(word(W.business_rename), color = c.ink)
                     }
@@ -168,7 +166,7 @@ fun BusinessesDialog(businesses: Businesses, active: Long, onSwitch: (Long) -> U
                     }
                 }
             }
-            OutlinedTextField(
+            Outlined(
                 newName, { newName = it; problem = null }, singleLine = true,
                 label = { Text(word(W.business_name_hint)) },
                 modifier = Modifier.fillMaxWidth()
@@ -190,7 +188,7 @@ fun BusinessesDialog(businesses: Businesses, active: Long, onSwitch: (Long) -> U
         AlertDialog(
             onDismissRequest = { renaming = null },
             title = { Text(word(W.business_rename)) },
-            text = { OutlinedTextField(name, { name = it }, singleLine = true) },
+            text = { Outlined(name, { name = it }, singleLine = true) },
             confirmButton = {
                 TextButton(enabled = name.isNotBlank(), onClick = {
                     businesses.rename(b.id, name)
@@ -214,7 +212,7 @@ fun BusinessesDialog(businesses: Businesses, active: Long, onSwitch: (Long) -> U
                         word(W.business_delete_confirm_body,
                             summary.partyCount, Format.money(summary.netBalance))
                     )
-                    OutlinedTextField(typed, { typed = it }, singleLine = true,
+                    Outlined(typed, { typed = it }, singleLine = true,
                         label = { Text(word(W.business_delete_type_hint, name)) })
                 }
             },

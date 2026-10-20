@@ -59,9 +59,9 @@ fun ZakatPane(dao: KhataDao) {
     val wealth = Zakat.zakatableWealth(inputs = inputs, cashAndStock = stock, includeDoubtful = doubtful)
     val due = Zakat.zakatDue(wealth, nisab)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp)) {
         Column(
-            Modifier.widthIn(max = 760.dp).background(c.surface, RoundedCornerShape(14.dp)).padding(20.dp),
+            Modifier.widthIn(max = 760.dp).card().padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             PaneTitle(word(W.zakat_calculator), word(W.zakat_subtitle))
@@ -70,7 +70,7 @@ fun ZakatPane(dao: KhataDao) {
             Text(word(W.nisab_help), color = c.textMuted, fontSize = 12.sp)
             TwoWay(word(W.nisab_silver), word(W.nisab_gold), !gold) { silver -> gold = !silver }
             TwoWay(word(W.per_tola), word(W.per_gram), perTola) { perTola = it }
-            OutlinedTextField(
+            Outlined(
                 value = priceText, onValueChange = { priceText = it }, singleLine = true,
                 label = { Text(word(if (gold) W.gold_price_hint else W.silver_price_hint)) },
                 modifier = Modifier.fillMaxWidth()
@@ -104,7 +104,7 @@ fun ZakatPane(dao: KhataDao) {
             Text(word(W.include_doubtful_help), color = c.textMuted, fontSize = 12.sp)
 
             ZakatHeading(word(W.cash_stock_section))
-            OutlinedTextField(
+            Outlined(
                 value = stockText, onValueChange = { stockText = it }, singleLine = true,
                 label = { Text(word(W.cash_stock_hint)) }, modifier = Modifier.fillMaxWidth()
             )
@@ -130,5 +130,5 @@ fun ZakatPane(dao: KhataDao) {
 
 @Composable
 private fun ZakatHeading(text: String) {
-    Text(text, Modifier.padding(top = 8.dp), color = LocalRoshanColors.current.brandGreenText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+    Text(text, Modifier.padding(top = 8.dp), color = LocalRoshanColors.current.brandGreenText, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
 }
