@@ -237,7 +237,13 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
         // The selection bar: 3 x 16 dp of accent on the start side, as every Windows 11 app.
         Box(Modifier.width(3.dp).height(16.dp).background(eased(if (on) Look.accent else Color.Transparent), RoundedCornerShape(2.dp)))
         Spacer(Modifier.width(9.dp))
-        MonoTile(s.icon, if (on) c.ink else c.inkSoft, 18)
+        // The phone's tile picture, small, on its own tint (a tinted silhouette made a blob: the
+        // tile vectors carry their rounded ground, so one colour fills the whole square).
+        if (s == Section.HOME) {
+            Box(Modifier.size(22.dp).background(Look.accent, RoundedCornerShape(5.dp)), contentAlignment = Alignment.Center) {
+                tileIcon(s.icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(14.dp)) }
+            }
+        } else TileBadge(s, 22, 14)
         Spacer(Modifier.width(12.dp))
         Text(
             word(s.word),
