@@ -115,7 +115,7 @@ fun byType(parties: List<PartyWithBalance>, type: PartyType): List<PartyWithBala
 
 /** A pill that is filled when chosen: the phone's tabs and filter chips (Fluent's, 1.10.0). */
 @Composable
-fun FilterPill(text: String, on: Boolean, onClick: () -> Unit) = FluentPill(text, on, onClick)
+fun FilterPill(text: String, on: Boolean, onClick: () -> Unit) = FluentPill(text, on, onClick = onClick)
 
 /**
  * Above the Khata list: the type tabs, the side pills, the sort menu and the
