@@ -137,10 +137,11 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
                     color = c.textMuted, fontSize = 11.sp)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     val empty = word(W.report_empty)
+                    val noMail = word(W.report_no_mail_pc)
                     FillButton(word(W.report_open_mail), c.brandGreen) {
                         if (text.isBlank()) { told = empty; return@FillButton }
                         val uri = "mailto:innovation313.support@gmail.com?subject=" + enc(subject()) + "&body=" + enc(body())
-                        told = if (runCatching { java.awt.Desktop.getDesktop().mail(URI(uri)) }.isSuccess) null else word(W.report_no_mail_pc)
+                        told = if (runCatching { java.awt.Desktop.getDesktop().mail(URI(uri)) }.isSuccess) null else noMail
                     }
                     TextButton({
                         if (text.isBlank()) { told = empty; return@TextButton }

@@ -350,7 +350,7 @@ fun AlertsList(alerts: List<LedgerAlerts.Alert>, extra: List<ExtraAlert> = empty
         if (alerts.isEmpty() && extra.isEmpty()) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp)
         extra.forEach { x ->
             Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).press(x.onClick).padding(horizontal = 10.dp, vertical = 12.dp),
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).press { x.onClick() }.padding(horizontal = 10.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TileBadge(x.section, 40, 24)
