@@ -149,10 +149,11 @@ fun HomePane(
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             // Beside each other when the window has the room, otherwise one under the other.
             val wide = maxWidth >= 760.dp
+            val sideWidth = if (maxWidth >= 1000.dp) 330.dp else 290.dp
             if (wide) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     TodayCard(figures?.today ?: emptyList(), parties, hidden, onCustomer, onOpen, Modifier.weight(1f))
-                    Column(Modifier.width(if (maxWidth >= 1000.dp) 330.dp else 290.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Column(Modifier.width(sideWidth), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         NeedsALook(alerts, extra, late, onOpen)
                         QuickActions(onAddParty, onGot, onOpen, onAction)
                     }
