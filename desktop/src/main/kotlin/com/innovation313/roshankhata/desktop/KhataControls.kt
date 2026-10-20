@@ -147,10 +147,10 @@ fun KhataControls(
     onSelecting: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val c = LocalRoshanColors.current
-    // Two short lines, never a wrapped word (the owner's laptop at 150% scale, 20 Oct): the tabs
-    // with date, order and delete on the end side; the side pills under them. A row that is
-    // still too narrow scrolls sideways instead of breaking a label into letters.
+    // Three short lines, never a wrapped word and nothing hidden off the edge (the owner's
+    // laptop, 20 Oct; the list column there is about 370 dp): the tabs and delete, the side
+    // pills, then date and order. A line still too narrow scrolls sideways rather than
+    // breaking a label into letters.
     androidx.compose.foundation.layout.Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(
             Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
@@ -158,6 +158,21 @@ fun KhataControls(
         ) {
             PartyType.entries.forEach { t -> FilterPill(word(t.word), t == type) { onType(t) } }
             Spacer(Modifier.width(10.dp))
+            FilterPill(word(if (selecting) W.cancel else W.delete), selecting) { onSelecting(!selecting) }
+        }
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
+            // A second click on the chosen side clears it, as the phone's chips do.
+            PartySide.entries.filter { it != PartySide.ALL }.forEach { s ->
+                FilterPill(word(s.word), s == side) { onSide(if (s == side) PartySide.ALL else s) }
+            }
+        }
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
             Box {
                 var open by remember { mutableStateOf(false) }
                 MenuChip((if (whenFilter == PartyWhen.ALL) word(W.filter_by_date) else word(whenFilter.word)) + " \u25BE", whenFilter != PartyWhen.ALL) { open = true }
@@ -175,16 +190,6 @@ fun KhataControls(
                         DropdownMenuItem(text = { Choice(word(s.word), s == sort) }, onClick = { open = false; onSort(s) })
                     }
                 }
-            }
-            FilterPill(word(if (selecting) W.cancel else W.delete), selecting) { onSelecting(!selecting) }
-        }
-        Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            // A second click on the chosen side clears it, as the phone's chips do.
-            PartySide.entries.filter { it != PartySide.ALL }.forEach { s ->
-                FilterPill(word(s.word), s == side) { onSide(if (s == side) PartySide.ALL else s) }
             }
         }
     }
