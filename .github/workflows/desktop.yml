@@ -15,6 +15,15 @@ on:
 permissions:
   contents: write
 
+# One run at a time puts files on the shared desktop-test release: four pushes
+# in a minute (20 Oct) ran side by side and two uploaded poster-ur-closed.png
+# at once, and GitHub refused the second (HTTP 422, "already exists") after
+# every test had passed. Later runs wait their turn; none is cancelled, so
+# every commit is still built and tested.
+concurrency:
+  group: desktop-test-release
+  cancel-in-progress: false
+
 jobs:
   msi:
     # Pinned, like the Android build: a runner image change should be chosen, not met.
