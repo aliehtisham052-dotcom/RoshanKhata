@@ -72,7 +72,13 @@ No account, no server, no ads. Everything stays on the phone.
   (`Tour.kt`, the phone's coach words) shows once after trade and name. A shop picture
   (logo, signature, stamp, QR) is cropped before it is kept (`ImageCrop.kt`,
   the phone's Adjust crop: corners resize, inside moves; signature, stamp and
-  QR start at their ink). Esc closes every dialog window (`escCloses`).
+  QR start at their ink). Esc closes every dialog window (`escCloses`). MSI size (1.8.1): ICU4J is
+  gone from the MSI (14.7 MB, used only for plural rules — the computer's own
+  `pluralCategory` covers the nine languages; PluralRulesDesktopTest holds it
+  to ICU4J for 0..10,000, ICU4J is test-only); on the Windows runner a Gradle
+  artifact transform drops sqlite-bundled's Linux/macOS natives (4.7 MB). No
+  ProGuard yet: Room, Compose and reflection would need a run-time smoke test
+  first (lesson 17).
   `ScreenProofTest`
   draws the window (Home, English/Urdu, light/dark, made-up shop) to
   build/screen-proof, put on desktop-test — look at it after any UI change.

@@ -74,8 +74,6 @@ kotlin {
                 api("org.json:json:20250517")
                 // JsonStream on the computer: Gson's JsonReader, which Android's copies.
                 implementation("com.google.code.gson:gson:2.11.0")
-                // Plural rules for the computer's words (the phone uses android.icu).
-                implementation("com.ibm.icu:icu4j:77.1")
                 // The computer's SQLite, packed with the app (Room KMP's bundled driver).
                 api("androidx.sqlite:sqlite-bundled:2.5.1")
             }
@@ -86,7 +84,12 @@ kotlin {
             dependsOn(commonTest)
             dependencies { implementation("junit:junit:4.13.2") }
         }
-        val desktopTest by getting { dependsOn(jvmSharedTest) }
+        val desktopTest by getting {
+            dependsOn(jvmSharedTest)
+            // ICU4J only to hold the computer's own plural rules to it (PluralRulesDesktopTest);
+            // the MSI no longer carries its 14.7 MB (20 Oct).
+            dependencies { implementation("com.ibm.icu:icu4j:77.1") }
+        }
     }
 }
 
