@@ -173,9 +173,26 @@ No account, no server, no ads. Everything stays on the phone.
   last dealing, the balance and which way it runs); Add Party and the entry
   editor use FluentField (the amount big with the currency sign, the day as a
   date box). Three strings were added in all nine languages
-  (home_cash_in_hand, home_quick_actions, home_col_time). Not yet to the
-  mockups: Invoice, Reports, Settings, the phone-sync dialog and the empty
-  states keep their layouts with the new controls.
+  (home_cash_in_hand, home_quick_actions, home_col_time). Phase 2 (the same
+  evening, the owner: one theme on every Windows screen, no generic page):
+  Fluent.kt also holds the frames — `FluentPage` (head + actions, 24/18 dp),
+  `ListCard`/`ListHead`, `EmptyState` (tile on a disc, a line, the one
+  action), `DialogFrame` (a ContentDialog inside a DialogWindow: title,
+  scrolling body, footer band), `FigureCard`, `DateBox`, `PartyPicker`,
+  `Tag`, `Modifier.card()`, and `Outlined` — Material's OutlinedTextField in
+  Fluent's colours and corners for the forms not yet on FluentField (every
+  pane's `OutlinedTextField(` became `Outlined(`). Cashbook and Cheques were
+  rebuilt (figure cards, tables, pills, the forms in DialogFrame with the
+  party picker and the date box); RecordsPanes' `RecordList` (Bills,
+  Products, Expiry, Plans, Purchase rates) is a FluentPage with an empty
+  state; Invoice is list + page on cards with the accent Print; Khata Report
+  has date boxes, period pills, three figure cards and a table; Business
+  Profile is three cards of paired fields. A mechanical pass put every other
+  pane on `.card()`, `Rule()`, 14 sp semibold rows, Fluent pills for its
+  choices and subtle/danger buttons for its text buttons. ScreenProofTest
+  also draws Cashbook, Cheques and the Report from a small temporary book.
+  Still Material-shaped: the AlertDialogs (confirmations, small forms) and
+  the DialogWindows not yet on DialogFrame (bill, scheme, staff, product).
   Not on Windows: the posters' 3D heroes and video, voice entry
   (no free offline Urdu recognition), Google Drive sign-in (the backup
   folder can be a Google Drive for Desktop folder instead).
