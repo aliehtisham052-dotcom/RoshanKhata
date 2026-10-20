@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.desktop
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -78,24 +81,24 @@ fun HomePane(
     var hidden by remember { mutableStateOf(false) }
     // The phone's own mask (BalancePrivacy.MASK): no figure, not even its length.
     val masked = "• • • • • •"
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 28.dp, vertical = 24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text(Format.dateOnly(System.currentTimeMillis()), color = c.inkSoft, fontSize = 13.sp)
 
         // The balance row: Net balance on the phone's dark-green card, then get and give.
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Column(
-                Modifier.weight(2f).heightIn(min = 132.dp).background(Look.hero, RoundedCornerShape(20.dp)).padding(horizontal = 24.dp, vertical = 20.dp),
+                Modifier.weight(2f).heightIn(min = 108.dp).background(Look.hero, RoundedCornerShape(18.dp)).padding(horizontal = 20.dp, vertical = 14.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(word(W.net_balance).uppercase(), Modifier.weight(1f), color = Look.heroLabel, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
                     Box(
-                        Modifier.size(40.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).clickable { hidden = !hidden },
+                        Modifier.size(34.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).clickable { hidden = !hidden },
                         contentAlignment = Alignment.Center
                     ) { Glyph(if (hidden) "ic_eye_closed" else "ic_eye_open", Color.White, 20) }
                 }
-                Spacer(Modifier.height(14.dp))
-                Text(if (hidden) masked else Format.money(get - give), color = Color.White, fontSize = 38.sp, fontWeight = FontWeight.ExtraBold)
+                Spacer(Modifier.height(8.dp))
+                Text(if (hidden) masked else Format.money(get - give), color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, maxLines = 1)
             }
             Figure(word(W.you_will_get), if (hidden) masked else Format.money(get), c.owedToMe,
                 plural(WP.customer_count, parties.count { Money.isPositive(it.balance) }, parties.count { Money.isPositive(it.balance) }),
@@ -115,7 +118,7 @@ fun HomePane(
 
         // Today: the phone's todayStrip (MainActivity.paintToday), one chip per kind of alert.
         if (alerts.isNotEmpty()) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(word(W.home_today), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 alerts.groupBy { it.kind }.forEach { (kind, list) ->
                     val s = alertSection(kind)
@@ -126,20 +129,20 @@ fun HomePane(
 
         Slides(onOpen)
 
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-            Column(Modifier.weight(3f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(Modifier.weight(3f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Heading(word(W.home_sec_daily))
                 val trade = LocalTrade.current
-                TileGrid(Section.entries.filter { it.group == Group.DAILY && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 150, big = true)
-                Spacer(Modifier.height(4.dp))
+                TileGrid(Section.entries.filter { it.group == Group.DAILY && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 120, big = true)
+                Spacer(Modifier.height(2.dp))
                 Heading(word(W.home_sec_business))
-                TileGrid(Section.entries.filter { it.group == Group.BUSINESS && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 130, big = false)
-                Spacer(Modifier.height(4.dp))
+                TileGrid(Section.entries.filter { it.group == Group.BUSINESS && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 110, big = false)
+                Spacer(Modifier.height(2.dp))
                 Heading(word(W.home_section_tools))
                 TileGrid(
                     Section.entries.filter { it.group == Group.TOOLS && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } } +
                         HomeAction.entries.map { a -> Tile(a.word, a.icon, a.tile) { onAction(a) } },
-                    minWidth = 130, big = false
+                    minWidth = 110, big = false
                 )
             }
             Recent(parties, hidden, onCustomer, Modifier.weight(2f))
@@ -149,7 +152,7 @@ fun HomePane(
 
 @Composable
 private fun Heading(text: String) {
-    Text(text, color = LocalRoshanColors.current.ink, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+    Text(text, color = LocalRoshanColors.current.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 }
 
 /** A total on a white card: its label, the figure in its colour, a line under it. */
@@ -157,13 +160,13 @@ private fun Heading(text: String) {
 private fun Figure(label: String, amount: String, color: Color, under: String?, modifier: Modifier, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     Column(
-        modifier.clip(RoundedCornerShape(20.dp)).background(c.surface).border(1.dp, Look.line, RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick).padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier.clip(RoundedCornerShape(18.dp)).background(c.surface).border(1.dp, Look.line, RoundedCornerShape(18.dp))
+            .clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text(label, color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-        Text(amount, color = color, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, maxLines = 1)
-        under?.let { Text(it, color = c.textMuted, fontSize = 12.sp) }
+        Text(label, color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(amount, color = color, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, maxLines = 1)
+        under?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
     }
 }
 
@@ -177,11 +180,14 @@ private fun TodayChip(text: String, s: Section, onClick: () -> Unit) {
     ) {
         TileBadge(s, 26, 16)
         Spacer(Modifier.width(8.dp))
-        Text(text, color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        Text(text, color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
     }
 }
 
 /** The phone's four Home slides (HomeSlides): a banner each, turning by itself, the dots to pick one. */
+/** The phone's HomeSlides.TURN_MS: a new banner every three seconds. */
+private const val TURN_MS = 3000L
+
 private class Slide(val section: Section, val title: String, val sub: String, val ground: Color)
 
 @Composable
@@ -194,30 +200,33 @@ private fun Slides(onOpen: (Section) -> Unit) {
         Slide(Section.POSTER, W.poster_title, W.home_slide_poster, Color(0xFF5B4A9E))
     )
     var at by remember { mutableIntStateOf(0) }
+    // Keyed on [at]: a click on a dot starts the wait again, as the phone's pager does.
     LaunchedEffect(at) {
-        delay(7000)
+        delay(TURN_MS)
         at = (at + 1) % slides.size
     }
-    val s = slides[at]
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(s.ground)
-                .clickable { onOpen(s.section) }.padding(horizontal = 22.dp, vertical = 18.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(Modifier.size(52.dp).background(Color.White, RoundedCornerShape(16.dp)), contentAlignment = Alignment.Center) {
-                tileIcon(s.section.icon)?.let { androidx.compose.foundation.Image(it, contentDescription = null, modifier = Modifier.size(30.dp)) }
+        Crossfade(at, animationSpec = tween(450)) { shown ->
+            val s = slides[shown]
+            Row(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(s.ground)
+                    .clickable { onOpen(s.section) }.padding(horizontal = 18.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(Modifier.size(42.dp).background(Color.White, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
+                    tileIcon(s.section.icon)?.let { androidx.compose.foundation.Image(it, contentDescription = null, modifier = Modifier.size(24.dp)) }
+                }
+                Spacer(Modifier.width(14.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(word(s.sub), color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                }
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    word(s.title) + "  →",
+                    Modifier.background(Color.White, RoundedCornerShape(18.dp)).padding(horizontal = 14.dp, vertical = 7.dp),
+                    color = s.ground, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1
+                )
             }
-            Spacer(Modifier.width(18.dp))
-            Column(Modifier.weight(1f)) {
-                Text(word(s.sub), color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-            }
-            Spacer(Modifier.width(12.dp))
-            Text(
-                word(s.title) + "  →",
-                Modifier.background(Color.White, RoundedCornerShape(21.dp)).padding(horizontal = 18.dp, vertical = 10.dp),
-                color = s.ground, fontSize = 14.sp, fontWeight = FontWeight.Bold
-            )
         }
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -242,26 +251,26 @@ private class Tile(val word: String, val icon: String, val tint: String, val onC
 private fun TileGrid(tiles: List<Tile>, minWidth: Int, big: Boolean) {
     val c = LocalRoshanColors.current
     BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val perRow = maxOf(1, ((maxWidth.value + 14) / (minWidth + 14)).toInt())
-        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        val perRow = maxOf(1, ((maxWidth.value + 10) / (minWidth + 10)).toInt())
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             tiles.chunked(perRow).forEach { row ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     row.forEach { t ->
                         Column(
-                            Modifier.weight(1f).heightIn(min = if (big) 128.dp else 108.dp).clip(RoundedCornerShape(18.dp))
+                            Modifier.weight(1f).heightIn(min = if (big) 100.dp else 88.dp).clip(RoundedCornerShape(16.dp))
                                 .background(c.surface).border(1.dp, Look.line, RoundedCornerShape(18.dp))
-                                .clickable(onClick = t.onClick).padding(horizontal = 8.dp, vertical = 14.dp),
+                                .clickable(onClick = t.onClick).padding(horizontal = 6.dp, vertical = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
+                            verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically)
                         ) {
-                            val disc = if (big) 60 else 46
+                            val disc = if (big) 46 else 38
                             Box(
                                 Modifier.size(disc.dp).background(TileIcons.color(t.tint, isDark()) ?: c.pageBg, RoundedCornerShape((disc / 4).dp)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 tileIcon(t.icon)?.let { androidx.compose.foundation.Image(it, contentDescription = null, modifier = Modifier.size((disc / 2).dp)) }
                             }
-                            Text(word(t.word), color = c.ink, fontSize = if (big) 15.sp else 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center, maxLines = 2)
+                            Text(word(t.word), color = c.ink, fontSize = if (big) 13.sp else 12.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
                         }
                     }
                     repeat(perRow - row.size) { Spacer(Modifier.weight(1f)) }

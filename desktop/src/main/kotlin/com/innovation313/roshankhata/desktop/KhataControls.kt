@@ -3,6 +3,8 @@ package com.innovation313.roshankhata.desktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -121,8 +123,9 @@ fun FilterPill(text: String, on: Boolean, onClick: () -> Unit) {
         Modifier.clip(RoundedCornerShape(17.dp))
             .background(if (on) c.brandGreen else Color.Transparent)
             .border(1.dp, if (on) c.brandGreen else Look.line, RoundedCornerShape(17.dp))
-            .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 7.dp),
-        color = if (on) Color.White else c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold
+            .clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 5.dp),
+        color = if (on) Color.White else c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold,
+        maxLines = 1, softWrap = false
     )
 }
 
@@ -145,64 +148,67 @@ fun KhataControls(
     modifier: Modifier = Modifier
 ) {
     val c = LocalRoshanColors.current
-    androidx.compose.foundation.layout.Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+    // Two short lines, never a wrapped word (the owner's laptop at 150% scale, 20 Oct): the tabs
+    // with date, order and delete on the end side; the side pills under them. A row that is
+    // still too narrow scrolls sideways instead of breaking a label into letters.
+    androidx.compose.foundation.layout.Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
             PartyType.entries.forEach { t -> FilterPill(word(t.word), t == type) { onType(t) } }
+            Spacer(Modifier.width(10.dp))
+            Box {
+                var open by remember { mutableStateOf(false) }
+                MenuChip((if (whenFilter == PartyWhen.ALL) word(W.filter_by_date) else word(whenFilter.word)) + " \u25BE", whenFilter != PartyWhen.ALL) { open = true }
+                DropdownMenu(open, onDismissRequest = { open = false }) {
+                    PartyWhen.entries.forEach { w ->
+                        DropdownMenuItem(text = { Choice(word(w.word), w == whenFilter) }, onClick = { open = false; onWhen(w) })
+                    }
+                }
+            }
+            Box {
+                var open by remember { mutableStateOf(false) }
+                MenuChip(word(W.sort_by) + " \u25BE", sort != PartySort.RECENT) { open = true }
+                DropdownMenu(open, onDismissRequest = { open = false }) {
+                    PartySort.entries.forEach { s ->
+                        DropdownMenuItem(text = { Choice(word(s.word), s == sort) }, onClick = { open = false; onSort(s) })
+                    }
+                }
+            }
+            FilterPill(word(if (selecting) W.cancel else W.delete), selecting) { onSelecting(!selecting) }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
             // A second click on the chosen side clears it, as the phone's chips do.
             PartySide.entries.filter { it != PartySide.ALL }.forEach { s ->
                 FilterPill(word(s.word), s == side) { onSide(if (s == side) PartySide.ALL else s) }
             }
-            Spacer(Modifier.weight(1f))
-            Box {
-                var open by remember { mutableStateOf(false) }
-                Text(
-                    (if (whenFilter == PartyWhen.ALL) word(W.filter_by_date) else word(whenFilter.word)) + " \u25BE",
-                    Modifier.clip(RoundedCornerShape(10.dp))
-                        .background(if (whenFilter == PartyWhen.ALL) Color.Transparent else Look.chosen)
-                        .clickable { open = true }.padding(horizontal = 10.dp, vertical = 7.dp),
-                    color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold
-                )
-                DropdownMenu(open, onDismissRequest = { open = false }) {
-                    PartyWhen.entries.forEach { w ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    (if (w == whenFilter) "\u2713  " else "     ") + word(w.word),
-                                    color = if (w == whenFilter) c.brandGreenText else c.ink, fontSize = 14.sp,
-                                    fontWeight = if (w == whenFilter) FontWeight.Bold else FontWeight.Normal
-                                )
-                            },
-                            onClick = { open = false; onWhen(w) }
-                        )
-                    }
-                }
-            }
-            Box {
-                var open by remember { mutableStateOf(false) }
-                Text(
-                    word(W.sort_by) + " ▾",
-                    Modifier.clip(RoundedCornerShape(10.dp)).clickable { open = true }.padding(horizontal = 10.dp, vertical = 7.dp),
-                    color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold
-                )
-                DropdownMenu(open, onDismissRequest = { open = false }) {
-                    PartySort.entries.forEach { s ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    (if (s == sort) "✓  " else "     ") + word(s.word),
-                                    color = if (s == sort) c.brandGreenText else c.ink, fontSize = 14.sp,
-                                    fontWeight = if (s == sort) FontWeight.Bold else FontWeight.Normal
-                                )
-                            },
-                            onClick = { open = false; onSort(s) }
-                        )
-                    }
-                }
-            }
-            Spacer(Modifier.width(4.dp))
-            FilterPill(word(if (selecting) W.cancel else W.delete), selecting) { onSelecting(!selecting) }
         }
     }
+}
+
+/** A menu opener in the pills' row: green words, filled softly when a choice is active. */
+@Composable
+private fun MenuChip(text: String, active: Boolean, onClick: () -> Unit) {
+    val c = LocalRoshanColors.current
+    Text(
+        text,
+        Modifier.clip(RoundedCornerShape(17.dp)).background(if (active) Look.chosen else Color.Transparent)
+            .clickable(onClick = onClick).padding(horizontal = 10.dp, vertical = 5.dp),
+        color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false
+    )
+}
+
+/** A menu line, ticked when it is the current choice. */
+@Composable
+private fun Choice(text: String, on: Boolean) {
+    val c = LocalRoshanColors.current
+    Text(
+        (if (on) "\u2713  " else "     ") + text,
+        color = if (on) c.brandGreenText else c.ink, fontSize = 14.sp,
+        fontWeight = if (on) FontWeight.Bold else FontWeight.Normal
+    )
 }

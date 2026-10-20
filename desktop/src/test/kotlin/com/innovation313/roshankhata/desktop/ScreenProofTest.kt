@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.ImageComposeScene
@@ -53,14 +54,20 @@ class ScreenProofTest {
         LedgerAlerts.Alert(LedgerAlerts.Kind.EXPIRING, "Expiring", "")
     )
 
-    private fun shoot(name: String, ur: Boolean, dark: Boolean, dir: File): File {
+    private fun shoot(
+        name: String, ur: Boolean, dark: Boolean, dir: File,
+        width: Int = 1440, height: Int = 900, scale: Float = 1f,
+        page: @androidx.compose.runtime.Composable () -> Unit = {
+            HomePane(parties, late = 2, alerts = alerts(), onOpen = {}, onAction = {}, onCustomer = {})
+        }
+    ): File {
         // As Main does on choosing a language: the default locale is what Format.ltr and the
         // dates read their direction from. Without it the Urdu proof showed "Oct 2026 20" even
         // where the app itself is right (20 Oct): the picture must be drawn as the app draws it.
         val before = Locale.getDefault()
         val locale = Locale.forLanguageTag(if (ur) "ur" else "en").also { Locale.setDefault(it) }
         val words = desktopWords(locale)
-        val scene = ImageComposeScene(width = 1440, height = 900, density = Density(1f)) {
+        val scene = ImageComposeScene(width = width, height = height, density = Density(scale)) {
             RoshanTheme(dark = dark) {
                 ProvideWords(words) {
                     CompositionLocalProvider(LocalLayoutDirection provides if (ur) LayoutDirection.Rtl else LayoutDirection.Ltr) {
@@ -73,9 +80,7 @@ class ScreenProofTest {
                             )
                             Row(Modifier.fillMaxSize()) {
                                 SectionRail(Section.HOME, {}, badges = mapOf(Section.FOLLOWUP to 2))
-                                Box(Modifier.weight(1f)) {
-                                    HomePane(parties, late = 2, alerts = alerts(), onOpen = {}, onAction = {}, onCustomer = {})
-                                }
+                                Box(Modifier.weight(1f)) { page() }
                             }
                         }
                     }
@@ -109,5 +114,30 @@ class ScreenProofTest {
             if (f.length() < 15_000) small += "$name=${f.length()}"
         }
         assertTrue("screens that look empty: $small", small.isEmpty())
+    }
+
+    /**
+     * The owner's own laptop (20 Oct photos): 1366 x 768 at Windows' 125%, about
+     * 1093 dp wide. Home, the Khata controls and an invoice's design stepper must
+     * fit there without a word broken across lines ("Filte r by date").
+     */
+    @Test
+    fun `laptop size draws without wrapping`() {
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
+        val dir = File("build/screen-proof").apply { mkdirs() }
+        val home = shoot("screen-laptop-home-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f)
+        val khata = shoot("screen-laptop-khata-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+            Column(Modifier.fillMaxSize()) {
+                Box(Modifier.fillMaxWidth(0.42f)) {
+                    KhataControls(
+                        type = PartyType.ALL, onType = {}, side = PartySide.ALL, onSide = {},
+                        sort = PartySort.RECENT, onSort = {}, whenFilter = PartyWhen.ALL, onWhen = {},
+                        selecting = false, onSelecting = {}
+                    )
+                }
+                Box(Modifier.fillMaxWidth(0.5f)) { DesignStepper(shown = 3, saved = 1, onShow = {}, onApply = {}) }
+            }
+        }
+        for (f in listOf(home, khata)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
     }
 }

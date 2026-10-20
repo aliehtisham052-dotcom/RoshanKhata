@@ -2,6 +2,9 @@ package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -486,7 +490,7 @@ private fun Book(
                         val ofType = byType(parties, partyType)
                         val get = ofType.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
                         val give = ofType.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
-                        Row(Modifier.fillMaxWidth().padding(20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
                             Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
                         }
@@ -532,12 +536,18 @@ private fun Book(
                                 TextButton({ deletingMany = true }, enabled = chosenIds.isNotEmpty()) { Text(word(W.delete), color = c.owedToMe) }
                             }
                         }
-                        Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        // One line however narrow the window: the count never wraps ("1209 custo mers"
+                        // was the owner's photo, 20 Oct); the actions slide sideways instead.
+                        Row(
+                            Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp).horizontalScroll(rememberScrollState()),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 plural(WP.customer_count, shown.size, shown.size),
-                                Modifier.weight(1f).padding(vertical = 10.dp),
-                                color = c.textMuted, fontSize = 13.sp
+                                Modifier.padding(vertical = 8.dp),
+                                color = c.textMuted, fontSize = 13.sp, maxLines = 1, softWrap = false
                             )
+                            Spacer(Modifier.width(12.dp))
                             // The whole book out (Phase 9b): every party to Excel, and every
                             // statement with money on it as one print job.
                             TextButton({
@@ -554,7 +564,7 @@ private fun Book(
                                         withContext(Dispatchers.IO) { file.writeText(BookExport.customersCsv(parties, headers), Charsets.UTF_8) }
                                     }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
                                 }
-                            }, enabled = parties.isNotEmpty()) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp) }
+                            }, enabled = parties.isNotEmpty(), contentPadding = compactButton) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
                             TextButton({
                                 val dialog = FileDialog(null as Frame?, words.text(W.import_csv), FileDialog.LOAD)
                                 startIn(dialog, "Downloads")
@@ -578,7 +588,7 @@ private fun Book(
                                         importing = fresh to (rows.size - fresh.size)
                                     }
                                 }
-                            }) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp) }
+                            }, contentPadding = compactButton) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
                             TextButton({
                                 scope.launch {
                                     val owing = parties.filter { kotlin.math.abs(it.balance) >= 0.005 }.sortedBy { it.name.lowercase() }
@@ -590,8 +600,8 @@ private fun Book(
                                     }
                                     if (sheets.isNotEmpty()) StatementPrint.show(AllStatements(sheets), words.text(W.statement_pdf))
                                 }
-                            }, enabled = parties.any { kotlin.math.abs(it.balance) >= 0.005 }) {
-                                Text(word(W.statement_pdf) + " · " + word(W.filter_type_all), color = c.brandGreenText, fontSize = 13.sp)
+                            }, enabled = parties.any { kotlin.math.abs(it.balance) >= 0.005 }, contentPadding = compactButton) {
+                                Text(word(W.statement_pdf) + " · " + word(W.filter_type_all), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1)
                             }
                         }
                         LazyColumn(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
@@ -1309,12 +1319,15 @@ internal fun startIn(dialog: FileDialog, folder: String) {
 @Composable
 private fun Total(label: String, amount: String, color: Color, modifier: Modifier) {
     val c = LocalRoshanColors.current
-    Column(modifier.background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp)) {
-        Text(label, color = c.textMuted, fontSize = 13.sp)
-        Spacer(Modifier.height(4.dp))
-        Text(amount, color = color, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+    Column(modifier.background(c.surface, RoundedCornerShape(14.dp)).padding(horizontal = 14.dp, vertical = 10.dp)) {
+        Text(label, color = c.textMuted, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Spacer(Modifier.height(2.dp))
+        Text(amount, color = color, fontSize = 20.sp, fontWeight = FontWeight.Bold, maxLines = 1)
     }
 }
+
+/** A text button's padding where several share one line. */
+private val compactButton = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
 
 /** The whole ledger, or a period by two dates (the end date's whole day), before a statement prints. */
 @Composable
@@ -1405,7 +1418,7 @@ private fun AlertChip(text: String, onClick: () -> Unit) {
         text,
         Modifier.background(c.gaveFill.copy(alpha = 0.18f), RoundedCornerShape(16.dp)).clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 6.dp),
-        color = c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.Bold
+        color = c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false
     )
 }
 

@@ -1,12 +1,15 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -69,119 +72,153 @@ fun AppHeader(
     onAddParty: () -> Unit
 ) {
     val c = LocalRoshanColors.current
-    Column {
-        Row(
-            Modifier.fillMaxWidth().background(c.surface).padding(horizontal = 20.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // The shop button: the phone's shopButton (logo tile with the gold rim, name, Profile · Switch shop).
+    // On a laptop's own screen at a big text size the labels did not fit ("From pho…",
+    // the owner's photo, 20 Oct): below [roomy] the side buttons keep only their icons
+    // (their words as the hover tip) and Add Party drops its shortcut pill.
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val roomy = maxWidth >= 1180.dp
+        Column {
             Row(
-                Modifier.clip(RoundedCornerShape(16.dp))
-                    .border(2.dp, c.brandGreen, RoundedCornerShape(16.dp))
-                    .clickable(onClick = onShop)
-                    .padding(start = 6.dp, top = 6.dp, bottom = 6.dp, end = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
+                Modifier.fillMaxWidth().background(c.surface).padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Box(
-                    Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).background(Look.hero)
-                        .border(2.dp, Look.gold, RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center
+                // The shop button: the phone's shopButton (logo tile with the gold rim, name, Profile · Switch shop).
+                Row(
+                    Modifier.clip(RoundedCornerShape(16.dp))
+                        .border(2.dp, c.brandGreen, RoundedCornerShape(16.dp))
+                        .clickable(onClick = onShop)
+                        .padding(start = 5.dp, top = 5.dp, bottom = 5.dp, end = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (logo != null) {
-                        Image(logo, contentDescription = null, modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)), contentScale = ContentScale.Crop)
-                    } else {
-                        Glyph("ic_storefront", Look.gold, 24)
-                    }
-                }
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.widthIn(max = 320.dp)) {
-                    Text(shopName, color = c.brandGreenText, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(word(W.shop_sub_switch), color = c.inkSoft, fontSize = 12.sp, maxLines = 1)
-                }
-                Spacer(Modifier.width(10.dp))
-                Text("▾", color = c.brandGreenText, fontSize = 16.sp)
-            }
-            Spacer(Modifier.weight(1f))
-            OutlineAction(onClick = onBackup) {
-                TileGlyph(Section.DAILY)
-                Spacer(Modifier.width(8.dp))
-                Text(backupLabel, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            }
-            OutlineAction(onClick = onPhone) {
-                Glyph("ic_phone", c.inkSoft, 18)
-                Spacer(Modifier.width(8.dp))
-                Text(word(W.wifi_pc_button), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            }
-            // The bell: what needs the owner today, the phone's own list (LedgerAlerts).
-            Box {
-                OutlineAction(onClick = onAlerts) { Glyph("ic_bell", c.brandGreenText, 20) }
-                if (alerts > 0) {
-                    Text(
-                        if (alerts > 99) "99+" else alerts.toString(),
-                        Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp)
-                            .background(c.gaveFill, RoundedCornerShape(10.dp)).padding(horizontal = 6.dp, vertical = 1.dp),
-                        color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-            Box {
-                var open by remember { mutableStateOf(false) }
-                OutlineAction(onClick = { open = true }) {
-                    Text(word(W.more_options), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                    Spacer(Modifier.width(6.dp))
-                    Text("▾", color = c.inkSoft, fontSize = 13.sp)
-                }
-                DropdownMenu(open, onDismissRequest = { open = false }) {
-                    menu.forEachIndexed { i, line ->
-                        val go = line.onClick
-                        if (go == null) {
-                            if (i > 0) HorizontalDivider(color = Look.line)
-                            Text(
-                                line.text,
-                                Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 4.dp),
-                                color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold
-                            )
+                    Box(
+                        Modifier.size(38.dp).clip(RoundedCornerShape(11.dp)).background(Look.hero)
+                            .border(2.dp, Look.gold, RoundedCornerShape(12.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (logo != null) {
+                            Image(logo, contentDescription = null, modifier = Modifier.size(34.dp).clip(RoundedCornerShape(9.dp)), contentScale = ContentScale.Crop)
                         } else {
-                            DropdownMenuItem(
-                                text = { Text(line.text, color = c.ink, fontSize = 14.sp) },
-                                onClick = { open = false; go() }
-                            )
+                            Glyph("ic_storefront", Look.gold, 22)
+                        }
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Column(Modifier.widthIn(max = if (roomy) 320.dp else 200.dp)) {
+                        Text(shopName, color = c.brandGreenText, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(word(W.shop_sub_switch), color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Text("▾", color = c.brandGreenText, fontSize = 16.sp)
+                }
+                Spacer(Modifier.weight(1f))
+                Tip(backupLabel, show = !roomy) {
+                    OutlineAction(onClick = onBackup) {
+                        TileGlyph(Section.DAILY)
+                        if (roomy) {
+                            Spacer(Modifier.width(8.dp))
+                            Text(backupLabel, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
                         }
                     }
                 }
+                Tip(word(W.wifi_pc_button), show = !roomy) {
+                    OutlineAction(onClick = onPhone) {
+                        Glyph("ic_phone", c.inkSoft, 18)
+                        if (roomy) {
+                            Spacer(Modifier.width(8.dp))
+                            Text(word(W.wifi_pc_button), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+                        }
+                    }
+                }
+                // The bell: what needs the owner today, the phone's own list (LedgerAlerts).
+                Box {
+                    OutlineAction(onClick = onAlerts) { Glyph("ic_bell", c.brandGreenText, 20) }
+                    if (alerts > 0) {
+                        Text(
+                            if (alerts > 99) "99+" else alerts.toString(),
+                            Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp)
+                                .background(c.gaveFill, RoundedCornerShape(10.dp)).padding(horizontal = 6.dp, vertical = 1.dp),
+                            color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Box {
+                    var open by remember { mutableStateOf(false) }
+                    OutlineAction(onClick = { open = true }) {
+                        Text(word(W.more_options), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+                        Spacer(Modifier.width(6.dp))
+                        Text("▾", color = c.inkSoft, fontSize = 13.sp)
+                    }
+                    DropdownMenu(open, onDismissRequest = { open = false }) {
+                        menu.forEachIndexed { i, line ->
+                            val go = line.onClick
+                            if (go == null) {
+                                if (i > 0) HorizontalDivider(color = Look.line)
+                                Text(
+                                    line.text,
+                                    Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 4.dp),
+                                    color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold
+                                )
+                            } else {
+                                DropdownMenuItem(
+                                    text = { Text(line.text, color = c.ink, fontSize = 14.sp) },
+                                    onClick = { open = false; go() }
+                                )
+                            }
+                        }
+                    }
+                }
+                // The one filled button: a new party, as the phone's Khata button (Ctrl+N).
+                Row(
+                    Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(12.dp)).background(c.brandGreen)
+                        .clickable(onClick = onAddParty).padding(horizontal = 14.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("+", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.width(8.dp))
+                    Text(word(W.add_party), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+                    if (roomy) {
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Ctrl N",
+                            Modifier.background(Color.White.copy(alpha = 0.18f), RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 2.dp),
+                            color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
-            // The one filled button: a new party, as the phone's Khata button (Ctrl+N).
-            Row(
-                Modifier.heightIn(min = 44.dp).clip(RoundedCornerShape(12.dp)).background(c.brandGreen)
-                    .clickable(onClick = onAddParty).padding(horizontal = 18.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("+", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.width(8.dp))
-                Text(word(W.add_party), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    "Ctrl N",
-                    Modifier.background(Color.White.copy(alpha = 0.18f), RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 2.dp),
-                    color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Medium
-                )
-            }
+            HorizontalDivider(color = Look.line)
         }
-        HorizontalDivider(color = Look.line)
     }
 }
 
-/** A quiet header button: an outline, the content inside, 44 tall. */
+/** The words of an icon-only button as its hover tip; [show] false leaves the button as it is. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun Tip(text: String, show: Boolean, content: @Composable () -> Unit) {
+    if (!show) { content(); return }
+    val c = LocalRoshanColors.current
+    TooltipArea(
+        tooltip = {
+            Text(
+                text,
+                Modifier.background(c.ink, RoundedCornerShape(8.dp)).padding(horizontal = 10.dp, vertical = 6.dp),
+                color = c.surface, fontSize = 13.sp
+            )
+        },
+        delayMillis = 400
+    ) { content() }
+}
+
+/** A quiet header button: an outline, the content inside, 40 tall. */
 @Composable
 fun OutlineAction(onClick: () -> Unit, content: @Composable () -> Unit) {
     val c = LocalRoshanColors.current
     Row(
-        Modifier.heightIn(min = 44.dp).clip(RoundedCornerShape(12.dp))
+        Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(12.dp))
             .border(BorderStroke(1.dp, Look.line), RoundedCornerShape(12.dp))
             .background(c.surface)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding(horizontal = 11.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) { content() }
 }

@@ -72,7 +72,7 @@ No account, no server, no ads. Everything stays on the phone.
   (`Tour.kt`, the phone's coach words) shows once after trade and name. A shop picture
   (logo, signature, stamp, QR) is cropped before it is kept (`ImageCrop.kt`,
   the phone's Adjust crop: corners resize, inside moves; signature, stamp and
-  QR start at their ink). Esc closes every dialog window (`escCloses`). MSI size (1.8.1): ICU4J is
+  QR start at their ink). Esc closes every dialog window (`escCloses`). Laptop fit (1.8.2, the owner's photos of 1366x768 at 125%, about 1093 dp): no label may wrap letter by letter — pill and chip rows scroll sideways (`horizontalScroll`, `maxLines = 1, softWrap = false`), the header below 1180 dp keeps only icons with hover tips, Home and the rail are tighter; the Home banner turns every 3 s (the phone's TURN_MS) with a cross-fade; an invoice's ten designs are stepped through with ‹ › (`DesignStepper`, Apply keeps one via `updateInvoice`). ScreenProofTest also draws the laptop size. MSI size (1.8.1): ICU4J is
   gone from the MSI (14.7 MB, used only for plural rules — the computer's own
   `pluralCategory` covers the nine languages; PluralRulesDesktopTest holds it
   to ICU4J for 0..10,000, ICU4J is test-only); on the Windows runner a Gradle
