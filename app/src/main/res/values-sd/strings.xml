@@ -1668,6 +1668,7 @@
     <string name="theme_light">روشن</string>
     <string name="theme_dark">اونداهي</string>
     <string name="theme_system">فون مطابق</string>
+    <string name="theme_system_pc">ڪمپيوٽر مطابق</string>
     <string name="bp_section_identity">سڃاڻپ</string>
     <string name="bp_section_paid">ادائگي وصول ڪرڻ</string>
     <string name="bp_section_seals">مهر ۽ صحيح</string>

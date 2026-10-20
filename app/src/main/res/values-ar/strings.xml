@@ -1784,6 +1784,7 @@
     <string name="theme_light">فاتح</string>
     <string name="theme_dark">داكن</string>
     <string name="theme_system">حسب الهاتف</string>
+    <string name="theme_system_pc">حسب الحاسوب</string>
     <string name="bp_section_identity">الهوية</string>
     <string name="bp_section_paid">استلام المدفوعات</string>
     <string name="bp_section_seals">الختم والتوقيع</string>

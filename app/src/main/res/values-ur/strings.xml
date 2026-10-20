@@ -1640,6 +1640,7 @@
     <string name="theme_light">روشن</string>
     <string name="theme_dark">تاریک</string>
     <string name="theme_system">فون کے مطابق</string>
+    <string name="theme_system_pc">کمپیوٹر کے مطابق</string>
     <string name="bp_section_identity">پہچان</string>
     <string name="bp_section_paid">ادائیگی وصول کرنا</string>
     <string name="bp_section_seals">مہر اور دستخط</string>

@@ -1640,6 +1640,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="theme_light">Roshan</string>
     <string name="theme_dark">Tareek</string>
     <string name="theme_system">Phone ke mutabiq</string>
+    <string name="theme_system_pc">Computer ke mutabiq</string>
     <string name="bp_section_identity">Pehchaan</string>
     <string name="bp_section_paid">Paisay wusool karna</string>
     <string name="bp_section_seals">Muhar aur dastkhat</string>

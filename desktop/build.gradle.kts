@@ -32,7 +32,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.7.0"
+            packageVersion = "1.8.0"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
@@ -57,7 +57,12 @@ compose.desktop {
 // time (never by hand), so the computer's sections wear the same pictures.
 val syncTileIcons by tasks.registering(Sync::class) {
     from(rootProject.file("app/src/main/res")) {
-        include("drawable/ic_tile_*.xml", "values/colors.xml", "values-night/colors.xml")
+        include(
+            "drawable/ic_tile_*.xml", "values/colors.xml", "values-night/colors.xml",
+            // The header's glyphs (20 Oct redesign): the shop, the bell, the eye, the phone.
+            "drawable/ic_storefront.xml", "drawable/ic_bell.xml", "drawable/ic_eye_open.xml",
+            "drawable/ic_eye_closed.xml", "drawable/ic_phone.xml", "drawable/ic_search.xml"
+        )
     }
     into(layout.buildDirectory.dir("tileRes/tiles"))
 }

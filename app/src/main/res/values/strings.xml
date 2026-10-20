@@ -1695,6 +1695,7 @@ You can change this any time from this screen.</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">Same as phone</string>
+    <string name="theme_system_pc">Same as computer</string>
     <string name="bp_section_identity">Identity</string>
     <string name="bp_section_paid">Getting paid</string>
     <string name="bp_section_seals">Stamp &amp; signature</string>

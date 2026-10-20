@@ -1684,6 +1684,7 @@
     <string name="theme_light">लाइट</string>
     <string name="theme_dark">डार्क</string>
     <string name="theme_system">फ़ोन जैसा</string>
+    <string name="theme_system_pc">कंप्यूटर जैसा</string>
     <string name="bp_section_identity">पहचान</string>
     <string name="bp_section_paid">भुगतान पाना</string>
     <string name="bp_section_seals">मुहर और दस्तख़त</string>

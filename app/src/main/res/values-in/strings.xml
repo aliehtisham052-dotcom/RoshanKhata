@@ -1648,6 +1648,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="theme_light">Terang</string>
     <string name="theme_dark">Gelap</string>
     <string name="theme_system">Ikuti ponsel</string>
+    <string name="theme_system_pc">Ikuti komputer</string>
     <string name="bp_section_identity">Identitas</string>
     <string name="bp_section_paid">Menerima pembayaran</string>
     <string name="bp_section_seals">Stempel &amp; tanda tangan</string>
