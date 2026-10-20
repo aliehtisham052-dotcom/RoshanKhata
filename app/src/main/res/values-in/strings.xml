@@ -289,6 +289,10 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <!-- App Lock -->
     <string name="app_lock">Kunci Aplikasi</string>
     <string name="app_lock_pc_explain">PIN untuk Roshan Khata di komputer ini. Menjaga buku dari mata orang lain di meja kasir; tidak mengunci berkasnya sendiri, jadi kunci juga Windows (Win + L) saat Anda pergi.</string>
+    <string name="pc_pdf_save">Simpan PDF</string>
+    <string name="pc_pdf_open_folder">Buka folder</string>
+    <string name="pc_pdf_making">Membuat PDF…</string>
+    <string name="pc_pdf_failed">PDF tidak dapat disimpan: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">Pilih PIN 4 sampai 8 angka</string>
     <string name="lock_pin_again">Masukkan PIN yang sama lagi</string>

@@ -1229,6 +1229,8 @@ private fun Book(
             TourWindowContent { appPrefs.setTourSeen(); touring = false }
         }
     }
+    // Every PDF / Statement / Print button opens its sheet here first (1.8.4).
+    PreviewHost()
     if (lockSettings) {
         DialogWindow(onCloseRequest = { lockSettings = false },onPreviewKeyEvent = escCloses { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = 520.dp, height = 460.dp)) {
             AppLockSettings(appPrefs) { lockSettings = false }

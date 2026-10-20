@@ -121,4 +121,5 @@ jobs:
           for f in desktop/build/poster-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           # The window itself (ScreenProofTest): Home in English and Urdu, light and dark.
           for f in desktop/build/screen-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
+          for f in desktop/build/pdf-proof/*.pdf; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           gh release edit desktop-test --notes "Windows test build from ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not signed yet: Windows will warn before installing."

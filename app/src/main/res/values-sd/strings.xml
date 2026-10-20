@@ -290,6 +290,10 @@
     <!-- App Lock -->
     <string name="app_lock">ايپ لاڪ</string>
     <string name="app_lock_pc_explain">هن ڪمپيوٽر تي روشن کاتي لاءِ PIN. اهو ڪائونٽر تي ٻين جي نظر کان کاتو بچائي ٿو؛ فائل کي پاڻ لاڪ نٿو ڪري، تنهنڪري اٿڻ وقت Windows به لاڪ ڪريو (Win + L).</string>
+    <string name="pc_pdf_save">PDF محفوظ ڪريو</string>
+    <string name="pc_pdf_open_folder">فولڊر کوليو</string>
+    <string name="pc_pdf_making">PDF ٺهي رهي آهي…</string>
+    <string name="pc_pdf_failed">PDF محفوظ نه ٿي سگهي: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">4 کان 8 انگن جو PIN چونڊيو</string>
     <string name="lock_pin_again">ساڳيو PIN ٻيهر لکو</string>

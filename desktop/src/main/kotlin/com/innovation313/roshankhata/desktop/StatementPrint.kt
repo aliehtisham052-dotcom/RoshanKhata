@@ -237,17 +237,29 @@ class StatementPrint(
     }
 
     companion object {
-        /** Windows' print dialog for any A4 sheet (a statement, a report), then the print off the window's thread. False when cancelled. */
+        /**
+         * Any sheet the owner asked for (a statement, an invoice, a report): opened in the
+         * app's own preview first (1.8.4, the owner: the print box alone, with no file to keep
+         * or send, was the wrong first step), where it is kept as a PDF or printed.
+         */
         fun show(statement: Printable, jobName: String): Boolean {
+            Preview.open(statement, jobName)
+            return true
+        }
+
+        /** The A4 sheet every Printable here is laid out on: the whole page, no printer margin. */
+        fun a4(): PageFormat = PageFormat().apply {
+            paper = Paper().apply {
+                setSize(595.0, 842.0)
+                setImageableArea(0.0, 0.0, 595.0, 842.0)
+            }
+        }
+
+        /** Windows' print dialog for the sheet, then the print off the window's thread. False when cancelled. */
+        fun printDialog(statement: Printable, jobName: String): Boolean {
             val job = PrinterJob.getPrinterJob()
             job.jobName = jobName
-            val format = job.defaultPage().apply {
-                paper = Paper().apply {
-                    setSize(595.0, 842.0)
-                    setImageableArea(0.0, 0.0, 595.0, 842.0)
-                }
-            }
-            job.setPrintable(statement, job.validatePage(format))
+            job.setPrintable(statement, job.validatePage(a4()))
             if (!job.printDialog()) return false
             Thread({ runCatching { job.print() } }, "statement-print").start()
             return true

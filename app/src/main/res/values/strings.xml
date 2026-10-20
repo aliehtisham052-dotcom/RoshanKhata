@@ -297,6 +297,10 @@ Add your first customer and start your khata.</string>
     <!-- App Lock -->
     <string name="app_lock">App Lock</string>
     <string name="app_lock_pc_explain">A PIN for Roshan Khata on this computer. It keeps the ledger from other eyes at the counter; it does not lock the file itself, so also lock Windows (Win + L) when you step away.</string>
+    <string name="pc_pdf_save">Save PDF</string>
+    <string name="pc_pdf_open_folder">Open folder</string>
+    <string name="pc_pdf_making">Making the PDF…</string>
+    <string name="pc_pdf_failed">Could not save the PDF: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">Choose a PIN of 4 to 8 digits</string>
     <string name="lock_pin_again">Enter the same PIN again</string>

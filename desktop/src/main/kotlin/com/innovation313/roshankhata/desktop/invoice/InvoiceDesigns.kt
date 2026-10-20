@@ -45,7 +45,7 @@ object InvoiceDesigns {
  * and anything larger than the printable area is scaled down to fit, never
  * cut off. The narrow thermal design prints at its true width.
  */
-class DocumentPrint(private val doc: PdfDocument) : Printable {
+class DocumentPrint(val doc: PdfDocument) : Printable {
     override fun print(graphics: Graphics, format: PageFormat, pageIndex: Int): Int {
         val page = doc.finished.getOrNull(pageIndex) ?: return Printable.NO_SUCH_PAGE
         val g = graphics as Graphics2D

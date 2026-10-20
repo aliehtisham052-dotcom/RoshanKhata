@@ -281,6 +281,10 @@
 
     <string name="app_lock">ایپ لاک</string>
     <string name="app_lock_pc_explain">اس کمپیوٹر پر روشن کھاتہ کے لیے PIN۔ یہ کاؤنٹر پر دوسروں کی نظر سے کھاتہ بچاتا ہے؛ فائل کو خود لاک نہیں کرتا، اس لیے اٹھتے وقت Windows بھی لاک کریں (Win + L)۔</string>
+    <string name="pc_pdf_save">پی ڈی ایف محفوظ کریں</string>
+    <string name="pc_pdf_open_folder">فولڈر کھولیں</string>
+    <string name="pc_pdf_making">پی ڈی ایف بن رہی ہے…</string>
+    <string name="pc_pdf_failed">پی ڈی ایف محفوظ نہیں ہو سکی: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">4 سے 8 ہندسوں کا PIN چنیں</string>
     <string name="lock_pin_again">وہی PIN دوبارہ لکھیں</string>

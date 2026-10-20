@@ -290,6 +290,10 @@
     <!-- App Lock -->
     <string name="app_lock">قفل برنامه</string>
     <string name="app_lock_pc_explain">رمز PIN برای روشن کهاته روی این رایانه. دفتر را از چشم دیگران پشت پیشخوان حفظ می‌کند؛ خود فایل را قفل نمی‌کند، پس هنگام رفتن Windows را هم قفل کنید (Win + L).</string>
+    <string name="pc_pdf_save">ذخیره PDF</string>
+    <string name="pc_pdf_open_folder">باز کردن پوشه</string>
+    <string name="pc_pdf_making">در حال ساخت PDF…</string>
+    <string name="pc_pdf_failed">ذخیره PDF ممکن نشد: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">یک PIN چهار تا هشت رقمی انتخاب کنید</string>
     <string name="lock_pin_again">همان PIN را دوباره وارد کنید</string>
