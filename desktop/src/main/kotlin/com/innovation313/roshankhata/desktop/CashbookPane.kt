@@ -79,7 +79,7 @@ fun CashbookPane(dao: KhataDao) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             FigureCard(word(W.cash_in), Format.money(income), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
             FigureCard(word(W.cash_out), Format.money(expense), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
-            FigureCard(word(W.cash_net), Format.money(net), if (net < 0) c.owedToMe else c.ink, Modifier.weight(1f), under = word(W.cashbook_separate_note).take(72), icon = "ic_tile_cashbook", tint = Look.subtle)
+            FigureCard(word(W.cash_net), Format.money(net), if (net < 0) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_tile_cashbook", tint = Look.subtle)
         }
         if (entries.isEmpty()) {
             EmptyState("ic_tile_cashbook", word(W.no_cash_entries), word(W.cashbook_separate_note), Modifier.weight(1f)) {
@@ -87,7 +87,7 @@ fun CashbookPane(dao: KhataDao) {
             }
         } else ListCard(Modifier.weight(1f)) {
             ListHead(word(W.cashbook), entries.size.toString())
-            TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 70), endAligned = setOf(2))
+            TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 32), endAligned = setOf(2))
             LazyColumn(Modifier.fillMaxSize()) {
                 items(entries, key = { it.id }) { e ->
                     Row(
@@ -106,9 +106,7 @@ fun CashbookPane(dao: KhataDao) {
                             color = if (e.isIncome) Look.accent else c.owedToMe,
                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
                         )
-                        Box(Modifier.width(70.dp), contentAlignment = Alignment.CenterEnd) {
-                            FluentButton(word(W.delete), { deleting = e }, kind = ButtonKind.SUBTLE)
-                        }
+                        IconAction("ic_close", word(W.delete), { deleting = e }, Modifier.width(32.dp))
                     }
                     Rule()
                 }

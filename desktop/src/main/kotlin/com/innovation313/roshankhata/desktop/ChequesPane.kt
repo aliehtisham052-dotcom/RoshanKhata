@@ -122,7 +122,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
         } else if (shown.isEmpty()) {
             EmptyState("ic_tile_cheques", word(W.due_summary_all_settled), null, Modifier.weight(1f))
         } else ListCard(Modifier.weight(1f)) {
-            TableHead(listOf(word(W.customer) to 0, word(W.cheque_number_hint) to 160, word(W.pick_due_date) to 170, word(W.amount) to 120), endAligned = setOf(3))
+            TableHead(listOf(word(W.customer) to 0, word(W.cheque_number_hint).substringBefore("(").trim() to 160, word(W.date_label) to 170, word(W.amount) to 120), endAligned = setOf(3))
             LazyColumn(Modifier.fillMaxSize()) {
                 itemsIndexed(shown, key = { _, it -> it.id }) { i, ch -> ChequeRow(ch, i) { acting = ch } }
             }
