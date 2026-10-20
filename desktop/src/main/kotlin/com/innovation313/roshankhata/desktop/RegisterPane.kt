@@ -74,7 +74,7 @@ fun RegisterPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, r
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.register_title), word(W.register_subtitle)) }
-            FillButton(word(W.ledger_pdf_button), c.gaveFill, enabled = sales.isNotEmpty() || purchases.isNotEmpty()) {
+            FluentButton(word(W.ledger_pdf_button), kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = sales.isNotEmpty() || purchases.isNotEmpty(), onClick = {
                 val rows = buildList {
                     add(listOf(words.text(W.pdf_reg_section_sales), "", ""))
                     sales.forEach { s -> add(listOf(Format.dateOnly(s.date) + "  " + saleLine(s), s.quantity?.let { Format.qty(it, s.unit) } ?: "", Format.money(s.amount))) }
@@ -91,7 +91,7 @@ fun RegisterPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, r
                     ) { p, of -> words.text(W.pdf_stmt_page, p, of) },
                     words.text(W.register_title)
                 )
-            }
+            })
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             OutlinedButton({ picking = true }) { Text(Format.dateOnly(from), color = c.ink) }

@@ -249,8 +249,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
                 CardTemplates.all.chunked(3).forEach { row ->
                     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEach { t ->
-                            if (t.id == template) FillButton(word(t.labelRes), c.brandGreen) {}
-                            else TextButton({ template = t.id; save() }) { Text(word(t.labelRes), color = c.brandGreenText) }
+                            FluentPill(word(t.labelRes), t.id == template) { template = t.id; save() }
                         }
                     }
                 }

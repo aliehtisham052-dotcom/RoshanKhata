@@ -187,8 +187,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
                     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEach { o ->
                             val name = word(if (o.title.isEmpty()) W.poster_custom else o.title).trimEnd('!', '！', '۔')
-                            if (o == occasion) FillButton(name, c.brandGreen) {}
-                            else TextButton({ save(); occasion = o }) { Text(name, color = c.brandGreenText) }
+                            FluentPill(name, o == occasion) { save(); occasion = o }
                         }
                     }
                 }

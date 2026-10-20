@@ -56,7 +56,7 @@ fun RateListPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?) {
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.rate_list_title), word(W.rate_list_heading_default)) }
-            FillButton(word(W.ledger_pdf_button), c.gaveFill, enabled = shown.isNotEmpty()) {
+            FluentButton(word(W.ledger_pdf_button), kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = shown.isNotEmpty(), onClick = {
                 val headers = listOfNotNull(
                     words.text(W.name),
                     if (cols.cash) words.text(W.sale_price_hint) else null,
@@ -74,7 +74,7 @@ fun RateListPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?) {
                         (company?.let { "  ·  $it" } ?: ""), headers, table) { p, of -> words.text(W.pdf_stmt_page, p, of) },
                     words.text(W.rate_list_title)
                 )
-            }
+            })
         }
         if (companies.isNotEmpty()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

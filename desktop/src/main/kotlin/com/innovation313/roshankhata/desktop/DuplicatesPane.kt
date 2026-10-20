@@ -70,7 +70,7 @@ fun DuplicatesPane(dao: KhataDao, parties: List<PartyWithBalance>, onChanged: ()
         PaneTitle(word(W.duplicate_customers), word(W.duplicate_customers_subtitle))
         Text(word(W.duplicate_note), color = c.textMuted, fontSize = 12.sp)
         if (groups.isEmpty()) {
-            Text(word(W.no_duplicates), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
+            EmptyState("ic_tile_bin", word(W.no_duplicates), word(W.duplicate_customers_subtitle), Modifier.weight(1f))
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(groups, key = { DuplicateDetector.groupKey(it.members) }) { g ->
