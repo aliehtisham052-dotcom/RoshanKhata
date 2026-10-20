@@ -28,6 +28,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -487,7 +489,7 @@ fun PartyPicker(
     modifier: Modifier = Modifier
 ) {
     val c = LocalRoshanColors.current
-    var search by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+    var search by remember { mutableStateOf("") }
     val chosen = parties.firstOrNull { it.id == chosenId }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(5.dp)) {
         Text(label, color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)

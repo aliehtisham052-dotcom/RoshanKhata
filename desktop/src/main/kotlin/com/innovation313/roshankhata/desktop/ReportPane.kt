@@ -84,81 +84,86 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
         ).joinToString("  ")
     }
 
-    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f)) { PaneTitle(word(W.ledger_report_title), period) }
-            FillButton(word(W.export_excel), c.brandGreen, enabled = !invalid && entries.isNotEmpty()) {
-                val dialog = FileDialog(null as Frame?, words.text(W.export_excel), FileDialog.SAVE)
-                startIn(dialog, "Documents")
-                dialog.file = "RoshanKhata_Report_" + SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(Date()) + ".csv"
-                dialog.isVisible = true
-                val name = dialog.file ?: return@FillButton
-                val file = File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
-                val rows = entries
-                scope.launch {
-                    notice = runCatching {
-                        withContext(Dispatchers.IO) {
-                            val headers = listOf(W.date_label, W.name, W.note_label, W.i_gave, W.i_got).map { words.text(it) }
-                            file.writeText(LedgerCsv.text(rows, headers), Charsets.UTF_8)
-                        }
-                        words.text(W.report_saved_to, file.absolutePath)
-                    }.getOrElse { words.text(W.ledger_report_failed) }
+    fun exportCsv() {
+        val dialog = FileDialog(null as Frame?, words.text(W.export_excel), FileDialog.SAVE)
+        startIn(dialog, "Documents")
+        dialog.file = "RoshanKhata_Report_" + SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(Date()) + ".csv"
+        dialog.isVisible = true
+        val name = dialog.file ?: return
+        val file = File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
+        val rows = entries
+        scope.launch {
+            notice = runCatching {
+                withContext(Dispatchers.IO) {
+                    val headers = listOf(W.date_label, W.name, W.note_label, W.i_gave, W.i_got).map { words.text(it) }
+                    file.writeText(LedgerCsv.text(rows, headers), Charsets.UTF_8)
+                }
+                words.text(W.report_saved_to, file.absolutePath)
+            }.getOrElse { words.text(W.ledger_report_failed) }
+        }
+    }
+    val ready = !invalid && entries.isNotEmpty()
+    // The Figma Reports screen: the period pills and the date boxes in the head, the figure
+    // cards under it, the entries as a table in a card.
+    FluentPage(word(W.ledger_report_title), period, scroll = false, actions = {
+        FluentButton(word(W.export_excel), { exportCsv() }, icon = "ic_tile_backup", enabled = ready)
+        FluentButton(word(W.ledger_pdf_button), {
+            StatementPrint.show(ReportPrint(words, rtl, shopName ?: words.text(W.app_name), period, entries), words.text(W.ledger_report_title))
+        }, kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = ready)
+    }) {
+        Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            // Each box wears the date it holds, so the window is read off the controls.
+            DateBox(word(W.report_start_date), from?.let { Format.dateOnly(it) }, word(W.report_start_date), { picking = true }, Modifier.width(200.dp))
+            DateBox(word(W.report_end_date), till?.let { Format.dateOnly(it) }, word(W.report_end_date), { picking = false }, Modifier.width(200.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text(" ", fontSize = 12.sp)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    FluentPill(word(W.range_all), from == null && till == null) { from = null; till = null }
+                    FluentPill(word(W.range_this_month), false) {
+                        val cal = java.util.Calendar.getInstance().apply { set(java.util.Calendar.DAY_OF_MONTH, 1); set(java.util.Calendar.HOUR_OF_DAY, 0); set(java.util.Calendar.MINUTE, 0); set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0) }
+                        from = cal.timeInMillis; till = null
+                    }
                 }
             }
-            Spacer(Modifier.width(10.dp))
-            FillButton(word(W.ledger_pdf_button), c.gaveFill, enabled = !invalid && entries.isNotEmpty()) {
-                StatementPrint.show(
-                    ReportPrint(words, rtl, shopName ?: words.text(W.app_name), period, entries),
-                    words.text(W.ledger_report_title)
-                )
-            }
-        }
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            // Each button wears the date it holds, so the window is read off the controls.
-            OutlinedButton({ picking = true }) {
-                Text(from?.let { Format.dateOnly(it) } ?: word(W.report_start_date), color = c.ink)
-            }
-            Text("–", color = c.textMuted)
-            OutlinedButton({ picking = false }) {
-                Text(till?.let { Format.dateOnly(it) } ?: word(W.report_end_date), color = c.ink)
-            }
-            FluentButton(word(W.range_all), { from = null; till = null }, kind = ButtonKind.SUBTLE)
         }
         if (invalid) {
             Text(word(W.invalid_range), color = c.owedToMe, fontSize = 14.sp)
         } else {
             val gave = entries.filter { it.isGiven }.sumOf { it.amount }
             val got = entries.filter { !it.isGiven }.sumOf { it.amount }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                TotalCard(word(W.i_gave), Format.money(gave), c.owedToMe, Modifier.weight(1f))
-                TotalCard(word(W.i_got), Format.money(got), c.iOwe, Modifier.weight(1f))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                FigureCard(word(W.i_gave), Format.money(gave), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
+                FigureCard(word(W.i_got), Format.money(got), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
+                FigureCard(word(W.net_balance), Format.money(gave - got), if (gave - got < 0) Look.accent else c.ink, Modifier.weight(1f), under = plural(WP.pdf_stmt_entries, entries.size, entries.size), icon = "ic_tile_backup", tint = Look.subtle)
             }
-            Text(plural(WP.pdf_stmt_entries, entries.size, entries.size), color = c.textMuted, fontSize = 13.sp)
             if (entries.isEmpty()) {
-                Text(word(W.ledger_report_empty), color = c.textMuted, fontSize = 15.sp)
-            } else {
+                EmptyState("ic_tile_backup", word(W.ledger_report_empty), null, Modifier.weight(1f))
+            } else ListCard(Modifier.weight(1f)) {
+                TableHead(listOf(word(W.date_label) to 150, word(W.name) to 0, word(W.i_gave) to 120, word(W.i_got) to 120), endAligned = setOf(2, 3))
                 // Newest first on screen, for glancing; the files go oldest first, for working.
-                LazyColumn(Modifier.fillMaxSize().card()) {
+                LazyColumn(Modifier.fillMaxSize()) {
                     items(entries.sortedByDescending { it.timestamp }, key = { it.id }) { e ->
                         Row(
-                            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 9.dp),
+                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text(Format.dateTime(e.timestamp), Modifier.width(150.dp), color = c.textMuted, fontSize = 13.sp)
+                            Text(Format.dateTime(e.timestamp), Modifier.width(150.dp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Column(Modifier.weight(1f)) {
-                                Text(Format.name(e.partyName), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                                Text(Format.name(e.partyName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 val sub = listOfNotNull(e.entryNumber.takeIf { it.isNotBlank() }, e.note?.takeIf { it.isNotBlank() })
                                 if (sub.isNotEmpty()) {
-                                    Text(sub.joinToString("  ·  "), color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(sub.joinToString("  ·  "), color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 }
                             }
                             Text(
-                                if (e.isGiven) Format.money(e.amount) else "",
-                                Modifier.width(130.dp), color = c.owedToMe, fontSize = 15.sp, fontWeight = FontWeight.Bold
+                                if (e.isGiven) Format.money(e.amount) else "—",
+                                Modifier.width(120.dp), color = if (e.isGiven) c.owedToMe else c.textMuted, fontSize = 14.sp, fontWeight = if (e.isGiven) FontWeight.SemiBold else FontWeight.Normal,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
                             )
                             Text(
-                                if (!e.isGiven) Format.money(e.amount) else "",
-                                Modifier.width(130.dp), color = c.iOwe, fontSize = 15.sp, fontWeight = FontWeight.Bold
+                                if (!e.isGiven) Format.money(e.amount) else "—",
+                                Modifier.width(120.dp), color = if (!e.isGiven) Look.accent else c.textMuted, fontSize = 14.sp, fontWeight = if (!e.isGiven) FontWeight.SemiBold else FontWeight.Normal,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
                             )
                         }
                         Rule()

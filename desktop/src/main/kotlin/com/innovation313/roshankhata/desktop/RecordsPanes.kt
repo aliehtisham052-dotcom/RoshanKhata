@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
@@ -40,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.border
 import androidx.compose.ui.Modifier
@@ -310,7 +312,7 @@ fun InvoicesPane(
     }
     if (adding) {
         DialogWindow(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_invoice), state = rememberDialogState(width = 720.dp, height = 860.dp)) {
-            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+            Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
                     preview = { inv, lines -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.picture(0, 0.8f) },
@@ -329,7 +331,7 @@ fun InvoicesPane(
     }
     editingInvoice?.let { (inv, lines) ->
         DialogWindow(onCloseRequest = { editingInvoice = null },onPreviewKeyEvent = escCloses { editingInvoice = null }, title = word(W.edit), state = rememberDialogState(width = 720.dp, height = 860.dp)) {
-            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+            Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
                     preview = { i, l -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), i, l)?.picture(0, 0.8f) },
@@ -362,60 +364,52 @@ fun InvoicesPane(
     val thisMonth = invoices.filter { it.invoiceDate >= monthStart }
     val shown = if (monthOnly) thisMonth else invoices
     val open = shown.firstOrNull { it.id == chosen } ?: shown.firstOrNull()
-    Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TileBadge(Section.INVOICES, 40, 24)
-            androidx.compose.foundation.layout.Spacer(Modifier.width(12.dp))
-            Text(word(W.nav_invoice), Modifier.weight(1f), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, maxLines = 1)
-            OutlineAction(onClick = { settingFields = true }) {
-                Text(word(W.invoice_settings_title), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
-            }
-            androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
-            FillButton("+  " + word(W.add_invoice), c.brandGreen) { adding = true }
+    FluentPage(
+        word(W.nav_invoice),
+        word(W.range_this_month) + " " + Format.money(thisMonth.sumOf { it.grandTotal }) + " · " + thisMonth.size + "  ·  " + word(W.range_all) + " " + invoices.size,
+        scroll = false,
+        actions = {
+            FluentButton(word(W.invoice_settings_title), { settingFields = true }, icon = "ic_tile_settings")
+            FluentButton(word(W.add_invoice), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            SumCard(word(W.range_this_month), Format.money(thisMonth.sumOf { it.grandTotal }), thisMonth.size.toString(), Modifier.weight(1f))
-            SumCard(word(W.range_all), Format.money(invoices.sumOf { it.grandTotal }), invoices.size.toString(), Modifier.weight(1f))
-        }
+    ) {
         if (invoices.isEmpty()) {
-            Text(word(W.no_invoices), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
-            return@Column
+            EmptyState("ic_tile_invoice", word(W.no_invoices), null, Modifier.weight(1f)) {
+                FluentButton(word(W.add_invoice), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+            }
+            return@FluentPage
         }
-        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Column(
-                Modifier.weight(0.5f).fillMaxSize().clip(RoundedCornerShape(20.dp)).background(c.surface)
-                    .border(1.dp, Look.line, RoundedCornerShape(20.dp))
-            ) {
-                Row(Modifier.padding(14.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            ListCard(Modifier.weight(0.46f).fillMaxSize()) {
+                Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Chip(word(W.range_all) + " \u00b7 " + invoices.size, !monthOnly) { monthOnly = false }
                     Chip(word(W.range_this_month) + " \u00b7 " + thisMonth.size, monthOnly) { monthOnly = true }
                 }
-                HorizontalDivider(color = Look.line)
+                Rule()
                 LazyColumn(Modifier.fillMaxSize()) {
-                    items(shown, key = { it.id }) { i ->
+                    itemsIndexed(shown, key = { _, it -> it.id }) { idx, i ->
                         val on = i.id == open?.id
                         Row(
-                            Modifier.fillMaxWidth().background(eased(if (on) Look.chosen else androidx.compose.ui.graphics.Color.Transparent))
-                                .press { chosen = i.id }.padding(horizontal = 18.dp, vertical = 12.dp),
+                            Modifier.fillMaxWidth().background(eased(if (on) Look.accentTint else androidx.compose.ui.graphics.Color.Transparent))
+                                .press { chosen = i.id }.padding(end = 12.dp, top = 9.dp, bottom = 9.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(Modifier.size(38.dp).clip(androidx.compose.foundation.shape.CircleShape).background(Look.chosen), contentAlignment = Alignment.Center) {
-                                Text(Format.initials(i.customerName), color = c.brandGreenText, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                            }
-                            androidx.compose.foundation.layout.Spacer(Modifier.width(12.dp))
+                            Box(Modifier.width(3.dp).height(22.dp).background(eased(if (on) Look.accent else androidx.compose.ui.graphics.Color.Transparent), Look.ctl))
+                            androidx.compose.foundation.layout.Spacer(Modifier.width(9.dp))
+                            Avatar(i.customerName, 34, idx)
+                            androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
                             Column(Modifier.weight(1f)) {
-                                Text(Format.name(i.customerName), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
-                                Text(Format.ltr(i.invoiceNumber) + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp)
+                                Text(Format.name(i.customerName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                                Text(Format.ltr(i.invoiceNumber) + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp, maxLines = 1)
                             }
-                            Text(Format.money(i.grandTotal), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                            Text(Format.money(i.grandTotal), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                         }
-                        HorizontalDivider(color = Look.line)
+                        Rule()
                     }
                 }
             }
             Column(
-                Modifier.weight(0.5f).fillMaxSize().clip(RoundedCornerShape(20.dp)).background(c.surface)
-                    .border(1.dp, Look.line, RoundedCornerShape(20.dp))
+                Modifier.weight(0.54f).fillMaxSize().card()
                     .verticalScroll(rememberScrollState()).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -439,8 +433,14 @@ fun InvoicesPane(
                             }
                         }
                     }
-                    Text(Format.ltr(open.invoiceNumber) + "  \u00b7  " + Format.dateOnly(open.invoiceDate), color = c.textMuted, fontSize = 12.sp)
-                    Text(Format.name(open.customerName), color = c.ink, fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Avatar(open.customerName, 44, 0)
+                        Column(Modifier.weight(1f)) {
+                            Text(Format.name(open.customerName), color = c.ink, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                            Text(Format.ltr(open.invoiceNumber) + "  \u00b7  " + Format.dateOnly(open.invoiceDate), color = c.textMuted, fontSize = 12.sp)
+                        }
+                        Text(Format.money(open.grandTotal), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                    }
                     // Received is shown only when the owner recorded it on the invoice: nothing
                     // recorded is not the same as nothing paid (Invoice.receivedAmount).
                     full?.receivedAmount?.let { got ->
@@ -448,11 +448,12 @@ fun InvoicesPane(
                         val due = open.grandTotal - got
                         if (Money.isPositive(due)) Text(word(W.invoice_balance_due_line, Format.money(due)), color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                        FillButton(word(W.ledger_pdf_button), c.brandGreen) { print(open.id) }
-                        OutlineAction(onClick = {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        FluentButton(word(W.ledger_pdf_button), { print(open.id) }, kind = ButtonKind.ACCENT, icon = "ic_print")
+                        FluentButton(word(W.edit), {
                             scope.launch { editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } } }
-                        }) { Text(word(W.edit), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium) }
+                        }, icon = "ic_edit")
+                        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
                         FluentButton(word(W.delete), { deletingInvoice = open }, kind = ButtonKind.DANGER)
                     }
                     full?.let { saved ->
@@ -474,7 +475,7 @@ fun InvoicesPane(
                     } else {
                         androidx.compose.foundation.Image(
                             pic, contentDescription = open.invoiceNumber,
-                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).border(1.dp, Look.line, RoundedCornerShape(10.dp)),
+                            modifier = Modifier.fillMaxWidth().clip(Look.ctl).border(1.dp, Look.strokeCard, Look.ctl),
                             contentScale = androidx.compose.ui.layout.ContentScale.FillWidth
                         )
                     }
@@ -496,7 +497,7 @@ fun DesignStepper(shown: Int, saved: Int?, onShow: (Int) -> Unit, onApply: ((Int
     val at = names.indexOfFirst { it.first == shown }.coerceAtLeast(0)
     fun step(by: Int) = onShow(names[(at + by + names.size) % names.size].first)
     Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Look.chosen).padding(horizontal = 6.dp, vertical = 4.dp),
+        Modifier.fillMaxWidth().clip(Look.ctl).background(Look.subtle).padding(horizontal = 6.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         androidx.compose.material3.TextButton({ step(-1) }) { Text("‹", color = c.brandGreenText, fontSize = 22.sp, fontWeight = FontWeight.Bold) }
@@ -628,9 +629,9 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(word(W.record_payment_help, p.partyName), color = c.textMuted, fontSize = 13.sp)
-                    androidx.compose.material3.Outlined(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true)
+                    Outlined(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true)
                     Text(amount?.let { Format.money(it) } ?: "", color = c.textMuted)
-                    androidx.compose.material3.Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, singleLine = true)
+                    Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, singleLine = true)
                     // More than is left: said before Save, still posted in full if the owner goes ahead.
                     if (over) Text(word(W.plan_overpay_warning, Format.money(p.remaining)), color = c.owedToMe, fontSize = 13.sp)
                 }
@@ -860,7 +861,7 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
                     FluentButton(word(W.edit), { partyId = null }, kind = ButtonKind.SUBTLE)
                 }
             } else {
-                androidx.compose.material3.Outlined(search, { search = it }, label = { Text(word(W.cheque_party_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                Outlined(search, { search = it }, label = { Text(word(W.cheque_party_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 val q = search.trim().lowercase()
                 LazyColumn(Modifier.fillMaxWidth().heightIn(max = 150.dp).background(Look.subtle, Look.ctl)) {
                     items(parties.filter { NameSearch.matches(it.name, it.phone, q) }.take(40), key = { it.id }) { p ->
@@ -869,13 +870,13 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
                     }
                 }
             }
-            androidx.compose.material3.Outlined(total, { total = it; problem = null }, label = { Text(word(W.plan_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            androidx.compose.material3.Outlined(each, { each = it }, label = { Text(word(W.plan_installment_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Outlined(total, { total = it; problem = null }, label = { Text(word(W.plan_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Outlined(each, { each = it }, label = { Text(word(W.plan_installment_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
             Row(verticalAlignment = Alignment.CenterVertically) {
                 FluentButton(word(W.plan_pick_next_due), { picking = true }, kind = ButtonKind.SUBTLE)
                 Text(due?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontWeight = FontWeight.Bold)
             }
-            androidx.compose.material3.Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
+            Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
             problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
                 FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
