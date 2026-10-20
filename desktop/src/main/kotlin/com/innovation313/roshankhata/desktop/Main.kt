@@ -115,6 +115,7 @@ fun main() = application {
     // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
     var theme by remember { mutableStateOf(appPrefs.theme()) }
     var textSize by remember { mutableStateOf(appPrefs.textSize()) }
+    var invoiceFields by remember { mutableStateOf(appPrefs.invoiceFields()) }
     // The second place for the copies (USB, Google Drive folder): today's copy there on opening,
     // and again on closing so the day's last work leaves the computer too. A missing stick
     // never stops the app; the Daily copies page says it could not be reached.
@@ -163,6 +164,8 @@ fun main() = application {
                         onTheme = { t -> appPrefs.setTheme(t); theme = t },
                         textSize = textSize,
                         onTextSize = { level -> appPrefs.setTextSize(level); textSize = level },
+                        invoiceFields = invoiceFields,
+                        onInvoiceFields = { f -> appPrefs.setInvoiceFields(f); invoiceFields = f },
                         rtl = rtl,
                         words = words,
                         businesses = businesses,
@@ -233,6 +236,8 @@ private fun Book(
     onTheme: (ThemeChoice) -> Unit,
     textSize: Int,
     onTextSize: (Int) -> Unit,
+    invoiceFields: InvoiceFields,
+    onInvoiceFields: (InvoiceFields) -> Unit,
     rtl: Boolean,
     words: Words,
     businesses: Businesses,
@@ -279,6 +284,7 @@ private fun Book(
     var partyType by remember { mutableStateOf(PartyType.ALL) }
     var partySide by remember { mutableStateOf(PartySide.ALL) }
     var partySort by remember { mutableStateOf(PartySort.RECENT) }
+    var partyWhen by remember { mutableStateOf(PartyWhen.ALL) }
     var selecting by remember { mutableStateOf(false) }
     var chosenIds by remember { mutableStateOf<Set<Long>>(emptySet()) }
     var deletingMany by remember { mutableStateOf(false) }
@@ -428,7 +434,7 @@ private fun Book(
                 Section.EXPIRY -> Box(Modifier.weight(1f)) { ExpiryPane(dao) }
                 Section.BILLS -> Box(Modifier.weight(1f)) { BillsPane(dao, parties, words, home) { reload++ } }
                 Section.PRODUCTS -> Box(Modifier.weight(1f)) { ProductsPane(dao, words) }
-                Section.INVOICES -> Box(Modifier.weight(1f)) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }) }
+                Section.INVOICES -> Box(Modifier.weight(1f)) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }, fields = invoiceFields, onFields = onInvoiceFields) }
                 Section.INSIGHTS -> Box(Modifier.weight(1f)) { InsightsPane(dao, reload) }
                 Section.ZAKAT -> Box(Modifier.weight(1f)) { ZakatPane(dao) }
                 Section.RATES -> Box(Modifier.weight(1f)) { RateListPane(dao, words, rtl, shop) }
@@ -455,6 +461,7 @@ private fun Book(
                             type = partyType, onType = { partyType = it },
                             side = partySide, onSide = { partySide = it },
                             sort = partySort, onSort = { partySort = it },
+                            whenFilter = partyWhen, onWhen = { partyWhen = it },
                             selecting = selecting, onSelecting = { on -> selecting = on; chosenIds = emptySet() },
                             modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
                         )
@@ -496,7 +503,7 @@ private fun Book(
                         LaunchedEffect(searchTick) { if (searchTick > 0) runCatching { searchFocus.requestFocus() } }
                         // The phone's rule (KhataActivity.rank): search, side, type, then the chosen order;
                         // newest dealing first unless the owner picks another.
-                        val shown = parties.shownBy(query, partySide, partyType, partySort)
+                        val shown = parties.shownBy(query, partySide, partyType, partySort, partyWhen.window())
                         if (selecting) {
                             Row(
                                 Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp)
@@ -1127,6 +1134,31 @@ private fun Book(
                 }
             }
         }
+    }
+    // The phone's first-run question (ShopNameActivity): until a name is written the app shows its
+    // own name where the shop's belongs — header, invoices, statements, cards. Asked on each
+    // opening until a name is written; "Later" leaves it for Business Profile.
+    var namingShop by remember { mutableStateOf(shop.isNullOrBlank()) }
+    if (namingShop) {
+        var typed by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { namingShop = false },
+            title = { Text(word(W.shop_name_title)) },
+            text = {
+                OutlinedTextField(
+                    typed, { typed = it }, singleLine = true,
+                    label = { Text(word(W.shop_name_field)) }, placeholder = { Text(word(W.shop_name_hint)) }
+                )
+            },
+            confirmButton = {
+                TextButton(enabled = typed.isNotBlank(), onClick = {
+                    settings.setBusinessName(typed.trim())
+                    shop = shopName()
+                    namingShop = false
+                }) { Text(word(W.save)) }
+            },
+            dismissButton = { TextButton({ namingShop = false }) { Text(word(W.welcome_skip)) } }
+        )
     }
     if (showAlerts) {
         DialogWindow(

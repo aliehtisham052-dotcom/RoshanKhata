@@ -51,7 +51,11 @@ No account, no server, no ads. Everything stays on the phone.
   phone's HomeAlerts calls it and adds its backup and update rows around it);
   the backup chip shows the newest daily copy's time; the open customer shows
   the promised day and season record and has the phone's entry search and
-  newest/oldest order; Ctrl+F jumps to the Khata search. `ScreenProofTest`
+  newest/oldest order; Ctrl+F jumps to the Khata search. Khata also has the
+  phone's date filter (today, yesterday, this week, this month — by last
+  dealing); invoices have the due date and the phone's Invoice settings
+  switches (kept in app.properties; a field already filled always shows);
+  a nameless shop is asked its name on opening (ShopNameActivity's question). `ScreenProofTest`
   draws the window (Home, English/Urdu, light/dark, made-up shop) to
   build/screen-proof, put on desktop-test — look at it after any UI change.
   The scrolling section rail (each section wears the

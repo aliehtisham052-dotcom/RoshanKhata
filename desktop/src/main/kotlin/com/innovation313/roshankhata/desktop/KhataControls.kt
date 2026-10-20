@@ -43,6 +43,32 @@ enum class PartySide(val word: String) {
     ALL(W.range_all), TO_GET(W.you_will_get), TO_GIVE(W.you_will_give), SETTLED(W.settled)
 }
 
+/**
+ * The phone's date filter (DateRangeFilter): who was dealt with today,
+ * yesterday, this week or this month, by their last dealing. The week starts
+ * on the computer's own first day, as the phone's on its calendar.
+ */
+enum class PartyWhen(val word: String) {
+    ALL(W.range_all), TODAY(W.range_today), YESTERDAY(W.range_yesterday), THIS_WEEK(W.range_this_week), THIS_MONTH(W.range_this_month);
+
+    /** The window as from..to, or null for everything. */
+    fun window(now: Long = System.currentTimeMillis()): LongRange? {
+        fun start(c: java.util.Calendar): Long = c.apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0); set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val day = 24L * 60 * 60 * 1000
+        val c = java.util.Calendar.getInstance().apply { timeInMillis = now }
+        return when (this) {
+            ALL -> null
+            TODAY -> start(c).let { it until it + day }
+            YESTERDAY -> start(c.apply { add(java.util.Calendar.DAY_OF_MONTH, -1) }).let { it until it + day }
+            THIS_WEEK -> start(c.apply { set(java.util.Calendar.DAY_OF_WEEK, firstDayOfWeek) })..now
+            THIS_MONTH -> start(c.apply { set(java.util.Calendar.DAY_OF_MONTH, 1) })..now
+        }
+    }
+}
+
 /** The phone's five orders for the Khata list (SortMode); most recent dealing is its default. */
 enum class PartySort(val word: String) {
     RECENT(W.sort_recent_activity), NAME_AZ(W.sort_name_az), NAME_ZA(W.sort_name_za),
@@ -54,9 +80,13 @@ enum class PartySort(val word: String) {
  * then customer or supplier; while searching the chosen order steps aside for
  * the best match first, otherwise the chosen order.
  */
-fun List<PartyWithBalance>.shownBy(query: String, side: PartySide, type: PartyType, sort: PartySort): List<PartyWithBalance> {
+fun List<PartyWithBalance>.shownBy(
+    query: String, side: PartySide, type: PartyType, sort: PartySort, window: LongRange? = null
+): List<PartyWithBalance> {
     val q = query.trim().lowercase()
-    val found = if (q.isEmpty()) this else filter { NameSearch.matches(it.name, it.phone, q) }
+    val searched = if (q.isEmpty()) this else filter { NameSearch.matches(it.name, it.phone, q) }
+    // Days first, as the phone's: "who did I deal with today" is about their last dealing.
+    val found = if (window == null) searched else searched.filter { it.lastActivity in window }
     val bySide = when (side) {
         PartySide.ALL -> found
         PartySide.TO_GET -> found.filter { Money.isPositive(it.balance) }
@@ -108,6 +138,8 @@ fun KhataControls(
     onSide: (PartySide) -> Unit,
     sort: PartySort,
     onSort: (PartySort) -> Unit,
+    whenFilter: PartyWhen,
+    onWhen: (PartyWhen) -> Unit,
     selecting: Boolean,
     onSelecting: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -123,6 +155,30 @@ fun KhataControls(
                 FilterPill(word(s.word), s == side) { onSide(if (s == side) PartySide.ALL else s) }
             }
             Spacer(Modifier.weight(1f))
+            Box {
+                var open by remember { mutableStateOf(false) }
+                Text(
+                    (if (whenFilter == PartyWhen.ALL) word(W.filter_by_date) else word(whenFilter.word)) + " \u25BE",
+                    Modifier.clip(RoundedCornerShape(10.dp))
+                        .background(if (whenFilter == PartyWhen.ALL) Color.Transparent else Look.chosen)
+                        .clickable { open = true }.padding(horizontal = 10.dp, vertical = 7.dp),
+                    color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold
+                )
+                DropdownMenu(open, onDismissRequest = { open = false }) {
+                    PartyWhen.entries.forEach { w ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    (if (w == whenFilter) "\u2713  " else "     ") + word(w.word),
+                                    color = if (w == whenFilter) c.brandGreenText else c.ink, fontSize = 14.sp,
+                                    fontWeight = if (w == whenFilter) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            onClick = { open = false; onWhen(w) }
+                        )
+                    }
+                }
+            }
             Box {
                 var open by remember { mutableStateOf(false) }
                 Text(
