@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,7 +65,7 @@ fun CalculatorPane() {
                         Box(
                             Modifier.weight(1f).height(54.dp)
                                 .background(if (k == "=") c.brandGreen else if (op) c.pageBg else c.pageBg.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
-                                .clickable {
+                                .press {
                                     text = when (k) {
                                         "C" -> ""
                                         "⌫" -> text.dropLast(1)

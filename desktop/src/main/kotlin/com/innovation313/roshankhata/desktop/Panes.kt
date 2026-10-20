@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
@@ -102,14 +101,36 @@ fun isDark(): Boolean = LocalRoshanColors.current.pageBg == RoshanPalette.dark.p
  * the phone's values and values-night.
  */
 object Look {
+    /** Dividers and card edges: quiet on purpose, they only group (no contrast rule for decoration). */
     val line: Color @Composable get() = if (isDark()) Color(0xFF343B36) else Color(0xFFE5E3DC)
+    /**
+     * The edge of something to click (a pill, an outlined button): at least 3:1 on the
+     * page, the card and the rail (WCAG 1.4.11; 1.28:1 before 1.8.3). LookContrastTest holds it.
+     */
+    val edge: Color @Composable get() = if (isDark()) LookPalette.EDGE_DARK else LookPalette.EDGE_LIGHT
+    /** A chosen pill's fill and its words: brand green by day; by night the light green, 8.9:1 on the card. */
+    val pickedFill: Color @Composable get() = if (isDark()) LookPalette.PICKED_DARK else LookPalette.PICKED_LIGHT
+    val onPicked: Color @Composable get() = if (isDark()) LookPalette.ON_PICKED_DARK else Color.White
+    /** What a hovered control is washed with (Motion.kt's [press]). */
+    val hover: Color @Composable get() = if (isDark()) Color.White.copy(alpha = 0.08f) else Color.Black.copy(alpha = 0.05f)
     /** The open section and the chosen row (brand_green_soft, day and night). */
     val chosen: Color @Composable get() = if (isDark()) Color(0xFF1F3528) else Color(0xFFE7F2EA)
-    val rail: Color @Composable get() = if (isDark()) Color(0xFF171A18) else Color(0xFFFBFAF7)
+    val rail: Color @Composable get() = if (isDark()) LookPalette.RAIL_DARK else LookPalette.RAIL_LIGHT
     /** The Net balance card: brand_green_dark with the gold label, as on the phone. */
     val hero = Color(0xFF134228)
     val heroLabel = Color(0xFFE9C46A)
     val gold = Color(0xFFD4A02A)
+}
+
+/** Look's measured colours as plain values, for LookContrastTest. */
+object LookPalette {
+    val EDGE_LIGHT = Color(0xFF878580)
+    val EDGE_DARK = Color(0xFF747D77)
+    val PICKED_LIGHT = Color(0xFF1B5E3A)
+    val PICKED_DARK = Color(0xFF7FD1A3)
+    val ON_PICKED_DARK = Color(0xFF0B2A1A)
+    val RAIL_LIGHT = Color(0xFFFBFAF7)
+    val RAIL_DARK = Color(0xFF171A18)
 }
 
 /** The phone's tile picture on its own tint, [size] across. */
@@ -149,7 +170,7 @@ fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier 
                     HorizontalDivider(color = Look.line)
                     Row(
                         Modifier.fillMaxWidth().padding(top = 6.dp).clip(RoundedCornerShape(10.dp))
-                            .clickable { moreOpen = !open }.padding(horizontal = 10.dp, vertical = 10.dp),
+                            .press { moreOpen = !open }.padding(horizontal = 10.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(word(g.word), Modifier.weight(1f), color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.Bold)
@@ -175,8 +196,8 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
         Modifier.fillMaxWidth()
             .padding(vertical = 2.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(if (on) Look.chosen else Color.Transparent)
-            .clickable(onClick = onClick)
+            .background(eased(if (on) Look.chosen else Color.Transparent))
+            .press(RoundedCornerShape(12.dp), onClick = onClick)
             .padding(horizontal = 8.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

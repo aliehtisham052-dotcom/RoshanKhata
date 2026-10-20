@@ -1,10 +1,10 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -81,7 +82,15 @@ fun HomePane(
     var hidden by remember { mutableStateOf(false) }
     // The phone's own mask (BalancePrivacy.MASK): no figure, not even its length.
     val masked = "• • • • • •"
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    // Home rises into place once as it opens (Motion.PAGE ms, a few dp): a welcome, not a show.
+    val appear = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { appear.animateTo(1f, tween(Motion.PAGE + 100)) }
+    Column(
+        Modifier.fillMaxSize()
+            .graphicsLayer { alpha = appear.value; translationY = (1f - appear.value) * 12.dp.toPx() }
+            .verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
         Text(Format.dateOnly(System.currentTimeMillis()), color = c.inkSoft, fontSize = 13.sp)
 
         // The balance row: Net balance on the phone's dark-green card, then get and give.
@@ -93,7 +102,7 @@ fun HomePane(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(word(W.net_balance).uppercase(), Modifier.weight(1f), color = Look.heroLabel, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
                     Box(
-                        Modifier.size(34.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).clickable { hidden = !hidden },
+                        Modifier.size(34.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).press(CircleShape, wash = Color.White.copy(alpha = 0.16f)) { hidden = !hidden },
                         contentAlignment = Alignment.Center
                     ) { Glyph(if (hidden) "ic_eye_closed" else "ic_eye_open", Color.White, 20) }
                 }
@@ -111,7 +120,7 @@ fun HomePane(
             Text(
                 plural(WP.home_paying_late, late, late),
                 Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(c.gaveFill.copy(alpha = 0.12f))
-                    .clickable { onOpen(Section.FOLLOWUP) }.padding(horizontal = 16.dp, vertical = 12.dp),
+                    .press { onOpen(Section.FOLLOWUP) }.padding(horizontal = 16.dp, vertical = 12.dp),
                 color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.Bold
             )
         }
@@ -161,7 +170,7 @@ private fun Figure(label: String, amount: String, color: Color, under: String?, 
     val c = LocalRoshanColors.current
     Column(
         modifier.clip(RoundedCornerShape(18.dp)).background(c.surface).border(1.dp, Look.line, RoundedCornerShape(18.dp))
-            .clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp),
+            .press(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(label, color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -174,8 +183,8 @@ private fun Figure(label: String, amount: String, color: Color, under: String?, 
 private fun TodayChip(text: String, s: Section, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     Row(
-        Modifier.clip(RoundedCornerShape(18.dp)).background(c.surface).border(1.dp, Look.line, RoundedCornerShape(18.dp))
-            .clickable(onClick = onClick).padding(start = 6.dp, end = 14.dp, top = 6.dp, bottom = 6.dp),
+        Modifier.clip(RoundedCornerShape(18.dp)).background(c.surface).border(1.dp, Look.edge, RoundedCornerShape(18.dp))
+            .press(onClick = onClick).padding(start = 6.dp, end = 14.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         TileBadge(s, 26, 16)
@@ -210,7 +219,7 @@ private fun Slides(onOpen: (Section) -> Unit) {
             val s = slides[shown]
             Row(
                 Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(s.ground)
-                    .clickable { onOpen(s.section) }.padding(horizontal = 18.dp, vertical = 12.dp),
+                    .press(RoundedCornerShape(20.dp), wash = Color.Black.copy(alpha = 0.12f)) { onOpen(s.section) }.padding(horizontal = 18.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(Modifier.size(42.dp).background(Color.White, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
@@ -234,7 +243,7 @@ private fun Slides(onOpen: (Section) -> Unit) {
                 Box(
                     Modifier.size(width = if (i == at) 22.dp else 8.dp, height = 8.dp).clip(RoundedCornerShape(4.dp))
                         .background(if (i == at) LocalRoshanColors.current.brandGreen else Look.line)
-                        .clickable { at = i }
+                        .press { at = i }
                 )
             }
         }
@@ -259,7 +268,7 @@ private fun TileGrid(tiles: List<Tile>, minWidth: Int, big: Boolean) {
                         Column(
                             Modifier.weight(1f).heightIn(min = if (big) 100.dp else 88.dp).clip(RoundedCornerShape(16.dp))
                                 .background(c.surface).border(1.dp, Look.line, RoundedCornerShape(18.dp))
-                                .clickable(onClick = t.onClick).padding(horizontal = 6.dp, vertical = 10.dp),
+                                .press(onClick = t.onClick).padding(horizontal = 6.dp, vertical = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically)
                         ) {
@@ -291,7 +300,7 @@ private fun Recent(parties: List<PartyWithBalance>, hidden: Boolean, onCustomer:
         if (recent.isEmpty()) Text(word(W.no_parties_yet), Modifier.padding(18.dp), color = c.textMuted, fontSize = 14.sp)
         recent.forEach { p ->
             Row(
-                Modifier.fillMaxWidth().clickable { onCustomer(p.id) }.padding(horizontal = 18.dp, vertical = 12.dp),
+                Modifier.fillMaxWidth().press { onCustomer(p.id) }.padding(horizontal = 18.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(Modifier.size(38.dp).clip(CircleShape).background(Look.chosen), contentAlignment = Alignment.Center) {
@@ -339,7 +348,7 @@ fun AlertsList(alerts: List<LedgerAlerts.Alert>, onOpen: (Section) -> Unit) {
         alerts.forEach { a ->
             val s = alertSection(a.kind)
             Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { onOpen(s) }.padding(horizontal = 10.dp, vertical = 12.dp),
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).press { onOpen(s) }.padding(horizontal = 10.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TileBadge(s, 40, 24)

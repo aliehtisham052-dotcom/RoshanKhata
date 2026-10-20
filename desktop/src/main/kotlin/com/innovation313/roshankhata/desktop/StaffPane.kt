@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -203,7 +202,7 @@ fun StaffPane(dao: KhataDao) {
                             word(label),
                             Modifier.fillMaxWidth().padding(vertical = 3.dp)
                                 .background(if (on) c.brandGreen else c.pageBg, RoundedCornerShape(10.dp))
-                                .clickable {
+                                .press {
                                     scope.launch {
                                         withContext(Dispatchers.IO) {
                                             if (status == Payroll.PRESENT) dao.clearAttendance(person.id, day)

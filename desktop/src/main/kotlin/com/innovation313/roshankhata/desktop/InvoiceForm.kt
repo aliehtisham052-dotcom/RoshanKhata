@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.desktop
 
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -108,7 +107,7 @@ fun InvoiceForm(
                     items(hits, key = { it.id }) { p ->
                         Text(
                             Format.name(p.name) + (p.phone?.let { "  ·  " + Format.ltr(it) } ?: ""),
-                            Modifier.fillMaxWidth().clickable { customer = p.name; phone = p.phone.orEmpty() }.padding(horizontal = 12.dp, vertical = 8.dp),
+                            Modifier.fillMaxWidth().press { customer = p.name; phone = p.phone.orEmpty() }.padding(horizontal = 12.dp, vertical = 8.dp),
                             color = c.ink, fontSize = 14.sp
                         )
                     }

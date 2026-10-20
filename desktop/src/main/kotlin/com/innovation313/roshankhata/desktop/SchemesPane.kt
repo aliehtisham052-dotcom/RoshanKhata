@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -115,7 +114,7 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
                         },
                         word(W.scheme_delete) to { deleting = s }
                     ).forEach { (label, go) ->
-                        Text(label, Modifier.fillMaxWidth().clickable { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)
+                        Text(label, Modifier.fillMaxWidth().press { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)
                     }
                 }
             },
@@ -185,7 +184,7 @@ private fun SchemeCard(r: SchemeRow, now: Long, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     val s = r.scheme
     val p = r.progress
-    Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).clickable(onClick = onClick).padding(16.dp),
+    Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).press(onClick = onClick).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(s.name, color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
         Text(listOfNotNull(r.supplier, s.company, word(W.scheme_period, Format.dateOnly(s.startDate), Format.dateOnly(s.endDate)))
@@ -253,7 +252,7 @@ private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Schem
                 Text(
                     sp?.let { Format.name(it.name) } ?: word(W.scheme_any_supplier),
                     Modifier.fillMaxWidth().background(if (on) c.brandGreen else androidx.compose.ui.graphics.Color.Transparent, RoundedCornerShape(8.dp))
-                        .clickable { partyId = sp?.id }.padding(horizontal = 10.dp, vertical = 7.dp),
+                        .press { partyId = sp?.id }.padding(horizontal = 10.dp, vertical = 7.dp),
                     color = if (on) androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 14.sp
                 )
             }

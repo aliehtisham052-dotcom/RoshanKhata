@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -189,7 +188,7 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
                     Text(
                         u,
                         Modifier.background(c.pageBg, RoundedCornerShape(16.dp))
-                            .clickable { category = u; problem = null }
+                            .press { category = u; problem = null }
                             .padding(horizontal = 12.dp, vertical = 6.dp),
                         color = c.ink, fontSize = 13.sp
                     )

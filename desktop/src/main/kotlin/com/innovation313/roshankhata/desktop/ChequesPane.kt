@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -228,7 +227,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
 private fun ActionRow(text: String, color: Color, onClick: () -> Unit) {
     Text(
         text,
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp),
+        Modifier.fillMaxWidth().press(onClick = onClick).padding(vertical = 12.dp),
         color = color, fontSize = 16.sp
     )
 }
@@ -248,7 +247,7 @@ private fun ChequeRow(ch: ChequeWithParty, onClick: () -> Unit) {
     }
     // Settled cheques stay as a record, faded: history, not something to act on.
     Row(
-        Modifier.fillMaxWidth().alpha(if (pending) 1f else 0.6f).clickable(onClick = onClick),
+        Modifier.fillMaxWidth().alpha(if (pending) 1f else 0.6f).press(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(Modifier.width(5.dp).height(64.dp).background(statusColour))
@@ -338,7 +337,7 @@ private fun ChequeEditor(
                 items(shown, key = { it.id }) { p ->
                     Text(
                         Format.name(p.name) + (p.phone?.let { "  ·  " + Format.ltr(it) } ?: ""),
-                        Modifier.fillMaxWidth().clickable { partyId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 9.dp),
+                        Modifier.fillMaxWidth().press { partyId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 9.dp),
                         color = c.ink, fontSize = 14.sp
                     )
                 }

@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.PaddingValues
@@ -440,284 +439,287 @@ private fun Book(
 
         Row(Modifier.fillMaxSize()) {
             SectionRail(section, { section = it }, badges = mapOf(Section.FOLLOWUP to late))
-            when (section) {
-                Section.HOME -> Box(Modifier.weight(1f)) {
-                    HomePane(
-                        parties = parties, late = late, alerts = alerts,
-                        onOpen = { section = it },
-                        onAction = { a -> if (a == HomeAction.BACKUP) backupNow() else bin = true },
-                        onCustomer = { id -> selected = id; section = Section.KHATA }
-                    )
-                }
-                Section.CASHBOOK -> Box(Modifier.weight(1f)) { CashbookPane(dao) }
-                Section.CHEQUES -> Box(Modifier.weight(1f)) { ChequesPane(dao, parties, words) { reload++ } }
-                Section.PLANS -> Box(Modifier.weight(1f)) { PlansPane(dao, parties, words) { reload++ } }
-                Section.EXPIRY -> Box(Modifier.weight(1f)) { ExpiryPane(dao) }
-                Section.BILLS -> Box(Modifier.weight(1f)) { BillsPane(dao, parties, words, home) { reload++ } }
-                Section.PRODUCTS -> Box(Modifier.weight(1f)) { ProductsPane(dao, words) }
-                Section.INVOICES -> Box(Modifier.weight(1f)) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }, fields = invoiceFields, onFields = onInvoiceFields) }
-                Section.INSIGHTS -> Box(Modifier.weight(1f)) { InsightsPane(dao, reload) }
-                Section.ZAKAT -> Box(Modifier.weight(1f)) { ZakatPane(dao) }
-                Section.RATES -> Box(Modifier.weight(1f)) { RateListPane(dao, words, rtl, shop) }
-                Section.STAFF -> Box(Modifier.weight(1f)) { StaffPane(dao) }
-                Section.FOLLOWUP -> Box(Modifier.weight(1f)) { FollowUpPane(dao, parties, words, shop) }
-                Section.CALC -> Box(Modifier.weight(1f)) { CalculatorPane() }
-                Section.SCHEMES -> Box(Modifier.weight(1f)) { SchemesPane(dao, reload) }
-                Section.CASHFLOW -> Box(Modifier.weight(1f)) { CashFlowPane(dao, reload) }
-                Section.BUY_RATES -> Box(Modifier.weight(1f)) { SupplierRatesPane(dao, reload) }
-                Section.DUPLICATES -> Box(Modifier.weight(1f)) { DuplicatesPane(dao, parties) { reload++ } }
-                Section.SEASONS -> Box(Modifier.weight(1f)) { SeasonsPane(dao, parties, reload) }
-                Section.HELP -> Box(Modifier.weight(1f)) { HelpPane(words) }
-                Section.REGISTER -> Box(Modifier.weight(1f)) { RegisterPane(dao, words, rtl, shop, reload) }
-                Section.STOCK -> Box(Modifier.weight(1f)) { StockPane(dao, words, rtl, shop, reload) }
-                Section.DAILY -> Box(Modifier.weight(1f)) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder) { shop = shopName(); reload++ } }
-                Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
-                Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings, images) { shop = shopName() } }
-                Section.CARD -> Box(Modifier.weight(1f)) { BusinessCardPane(settings, images, home, activeBusiness, words) }
-                Section.POSTER -> Box(Modifier.weight(1f)) { PosterPane(settings, images, home, activeBusiness, words) }
-                Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
-                    // The book on the left, as the phone's Khata list.
-                    Column(Modifier.weight(0.42f).fillMaxSize()) {
-                        KhataControls(
-                            type = partyType, onType = { partyType = it },
-                            side = partySide, onSide = { partySide = it },
-                            sort = partySort, onSort = { partySort = it },
-                            whenFilter = partyWhen, onWhen = { partyWhen = it },
-                            selecting = selecting, onSelecting = { on -> selecting = on; chosenIds = emptySet() },
-                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
+            // A page eases in over the last (Motion.PAGE ms) instead of snapping, as Windows' own apps do.
+            androidx.compose.animation.Crossfade(section, Modifier.weight(1f), androidx.compose.animation.core.tween(Motion.PAGE), label = "page") { page ->
+                when (page) {
+                    Section.HOME -> Box(Modifier.fillMaxSize()) {
+                        HomePane(
+                            parties = parties, late = late, alerts = alerts,
+                            onOpen = { section = it },
+                            onAction = { a -> if (a == HomeAction.BACKUP) backupNow() else bin = true },
+                            onCustomer = { id -> selected = id; section = Section.KHATA }
                         )
-                        // Totals: what the shop will get, and what it will give, on the open tab.
-                        val ofType = byType(parties, partyType)
-                        val get = ofType.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-                        val give = ofType.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
-                        Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
-                            Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
-                        }
-                        // Today's cheques and expiring stock: their chips, as on the phone's Home.
-                        if (dueCheques > 0 || expiring > 0) {
-                            Row(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                if (dueCheques > 0) AlertChip(word(W.today_chip, word(W.nav_cheques), dueCheques)) { section = Section.CHEQUES }
-                                if (expiring > 0) AlertChip(word(W.today_chip, word(W.tile_expiry), expiring)) { section = Section.EXPIRY }
-                            }
-                        }
-                        OutlinedTextField(
-                            value = query,
-                            onValueChange = { typed ->
-                                query = typed
-                                // A customer card held to a USB QR scanner (it types like a keyboard):
-                                // "RK1:" + token opens that customer, as the phone's camera scan does.
-                                com.innovation313.roshankhata.data.QrTag.parse(typed)?.let { token ->
-                                    scope.launch {
-                                        val p = withContext(Dispatchers.IO) { dao.partyByQrToken(token) }
-                                        query = ""
-                                        if (p != null) selected = p.id
-                                        else told = words.text(W.app_name) to words.text(W.qr_no_customer)
-                                    }
-                                }
-                            },
-                            placeholder = { Text(word(W.search_parties) + "   (Ctrl F)") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
-                                .focusRequester(searchFocus)
-                        )
-                        LaunchedEffect(searchTick) { if (searchTick > 0) runCatching { searchFocus.requestFocus() } }
-                        // The phone's rule (KhataActivity.rank): search, side, type, then the chosen order;
-                        // newest dealing first unless the owner picks another.
-                        val shown = parties.shownBy(query, partySide, partyType, partySort, partyWhen.window())
-                        if (selecting) {
-                            Row(
-                                Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp)
-                                    .background(Look.chosen, RoundedCornerShape(12.dp)).padding(horizontal = 12.dp, vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(word(W.selected_count, chosenIds.size), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                                TextButton({ chosenIds = shown.map { it.id }.toSet() }) { Text(word(W.select_all), color = c.brandGreenText) }
-                                TextButton({ deletingMany = true }, enabled = chosenIds.isNotEmpty()) { Text(word(W.delete), color = c.owedToMe) }
-                            }
-                        }
-                        // One line however narrow the window: the count never wraps ("1209 custo mers"
-                        // was the owner's photo, 20 Oct); the actions slide sideways instead.
-                        Row(
-                            Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp).horizontalScroll(rememberScrollState()),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                plural(WP.customer_count, shown.size, shown.size),
-                                Modifier.padding(vertical = 8.dp),
-                                color = c.textMuted, fontSize = 13.sp, maxLines = 1, softWrap = false
+                    }
+                    Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao) }
+                    Section.CHEQUES -> Box(Modifier.fillMaxSize()) { ChequesPane(dao, parties, words) { reload++ } }
+                    Section.PLANS -> Box(Modifier.fillMaxSize()) { PlansPane(dao, parties, words) { reload++ } }
+                    Section.EXPIRY -> Box(Modifier.fillMaxSize()) { ExpiryPane(dao) }
+                    Section.BILLS -> Box(Modifier.fillMaxSize()) { BillsPane(dao, parties, words, home) { reload++ } }
+                    Section.PRODUCTS -> Box(Modifier.fillMaxSize()) { ProductsPane(dao, words) }
+                    Section.INVOICES -> Box(Modifier.fillMaxSize()) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }, fields = invoiceFields, onFields = onInvoiceFields) }
+                    Section.INSIGHTS -> Box(Modifier.fillMaxSize()) { InsightsPane(dao, reload) }
+                    Section.ZAKAT -> Box(Modifier.fillMaxSize()) { ZakatPane(dao) }
+                    Section.RATES -> Box(Modifier.fillMaxSize()) { RateListPane(dao, words, rtl, shop) }
+                    Section.STAFF -> Box(Modifier.fillMaxSize()) { StaffPane(dao) }
+                    Section.FOLLOWUP -> Box(Modifier.fillMaxSize()) { FollowUpPane(dao, parties, words, shop) }
+                    Section.CALC -> Box(Modifier.fillMaxSize()) { CalculatorPane() }
+                    Section.SCHEMES -> Box(Modifier.fillMaxSize()) { SchemesPane(dao, reload) }
+                    Section.CASHFLOW -> Box(Modifier.fillMaxSize()) { CashFlowPane(dao, reload) }
+                    Section.BUY_RATES -> Box(Modifier.fillMaxSize()) { SupplierRatesPane(dao, reload) }
+                    Section.DUPLICATES -> Box(Modifier.fillMaxSize()) { DuplicatesPane(dao, parties) { reload++ } }
+                    Section.SEASONS -> Box(Modifier.fillMaxSize()) { SeasonsPane(dao, parties, reload) }
+                    Section.HELP -> Box(Modifier.fillMaxSize()) { HelpPane(words) }
+                    Section.REGISTER -> Box(Modifier.fillMaxSize()) { RegisterPane(dao, words, rtl, shop, reload) }
+                    Section.STOCK -> Box(Modifier.fillMaxSize()) { StockPane(dao, words, rtl, shop, reload) }
+                    Section.DAILY -> Box(Modifier.fillMaxSize()) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder) { shop = shopName(); reload++ } }
+                    Section.REPORT -> Box(Modifier.fillMaxSize()) { ReportPane(dao, words, rtl, shop, reload) }
+                    Section.SHOP -> Box(Modifier.fillMaxSize()) { ShopDetailsPane(settings, images) { shop = shopName() } }
+                    Section.CARD -> Box(Modifier.fillMaxSize()) { BusinessCardPane(settings, images, home, activeBusiness, words) }
+                    Section.POSTER -> Box(Modifier.fillMaxSize()) { PosterPane(settings, images, home, activeBusiness, words) }
+                    Section.KHATA -> Row(Modifier.fillMaxSize()) {
+                        // The book on the left, as the phone's Khata list.
+                        Column(Modifier.weight(0.42f).fillMaxSize()) {
+                            KhataControls(
+                                type = partyType, onType = { partyType = it },
+                                side = partySide, onSide = { partySide = it },
+                                sort = partySort, onSort = { partySort = it },
+                                whenFilter = partyWhen, onWhen = { partyWhen = it },
+                                selecting = selecting, onSelecting = { on -> selecting = on; chosenIds = emptySet() },
+                                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
                             )
-                            Spacer(Modifier.width(12.dp))
-                            // The whole book out (Phase 9b): every party to Excel, and every
-                            // statement with money on it as one print job.
-                            TextButton({
-                                val dialog = FileDialog(null as Frame?, words.text(W.export_excel), FileDialog.SAVE)
-                                startIn(dialog, "Documents")
-                                dialog.file = "RoshanKhata_Customers_" +
-                                    java.text.SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(java.util.Date()) + ".csv"
-                                dialog.isVisible = true
-                                val name = dialog.file ?: return@TextButton
-                                val file = File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
-                                val headers = listOf(words.text(W.name), words.text(W.bp_phone), words.text(W.net_balance))
-                                scope.launch {
-                                    told = words.text(W.export_excel) to runCatching {
-                                        withContext(Dispatchers.IO) { file.writeText(BookExport.customersCsv(parties, headers), Charsets.UTF_8) }
-                                    }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
-                                }
-                            }, enabled = parties.isNotEmpty(), contentPadding = compactButton) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
-                            TextButton({
-                                val dialog = FileDialog(null as Frame?, words.text(W.import_csv), FileDialog.LOAD)
-                                startIn(dialog, "Downloads")
-                                dialog.isVisible = true
-                                val name = dialog.file ?: return@TextButton
-                                val file = File(dialog.directory, name)
-                                scope.launch {
-                                    val rows = withContext(Dispatchers.IO) {
-                                        runCatching { com.innovation313.roshankhata.data.CsvImport.parse(file.readText(Charsets.UTF_8)) }.getOrDefault(emptyList())
-                                    }
-                                    if (rows.isEmpty()) {
-                                        told = words.text(W.import_csv) to words.text(W.import_csv_empty)
-                                    } else {
-                                        // Already in the book, or twice in the file: brought in once, never doubled.
-                                        val seen = parties.toMutableList()
-                                        val fresh = rows.filter { r ->
-                                            !com.innovation313.roshankhata.data.CsvImport.alreadyIn(r, seen).also { dup ->
-                                                if (!dup) seen += PartyWithBalance(0, r.name, r.phone, true, null, 0.0)
-                                            }
-                                        }
-                                        importing = fresh to (rows.size - fresh.size)
-                                    }
-                                }
-                            }, contentPadding = compactButton) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
-                            TextButton({
-                                scope.launch {
-                                    val owing = parties.filter { kotlin.math.abs(it.balance) >= 0.005 }.sortedBy { it.name.lowercase() }
-                                    val sheets = withContext(Dispatchers.IO) {
-                                        owing.map { p ->
-                                            StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), p.name, p.phone,
-                                                dao.latestEntriesWithItems(p.id, Int.MAX_VALUE))
-                                        }
-                                    }
-                                    if (sheets.isNotEmpty()) StatementPrint.show(AllStatements(sheets), words.text(W.statement_pdf))
-                                }
-                            }, enabled = parties.any { kotlin.math.abs(it.balance) >= 0.005 }, contentPadding = compactButton) {
-                                Text(word(W.statement_pdf) + " · " + word(W.filter_type_all), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1)
+                            // Totals: what the shop will get, and what it will give, on the open tab.
+                            val ofType = byType(parties, partyType)
+                            val get = ofType.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
+                            val give = ofType.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+                            Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
+                                Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
                             }
-                        }
-                        LazyColumn(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
-                            items(shown, key = { it.id }) { p ->
-                                val ticked = p.id in chosenIds
-                                Row(
-                                    Modifier.fillMaxWidth()
-                                        .background(if (p.id == selected || ticked) Look.chosen else c.surface)
-                                        .clickable {
-                                            if (selecting) chosenIds = if (ticked) chosenIds - p.id else chosenIds + p.id
-                                            else selected = p.id
+                            // Today's cheques and expiring stock: their chips, as on the phone's Home.
+                            if (dueCheques > 0 || expiring > 0) {
+                                Row(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    if (dueCheques > 0) AlertChip(word(W.today_chip, word(W.nav_cheques), dueCheques)) { section = Section.CHEQUES }
+                                    if (expiring > 0) AlertChip(word(W.today_chip, word(W.tile_expiry), expiring)) { section = Section.EXPIRY }
+                                }
+                            }
+                            OutlinedTextField(
+                                value = query,
+                                onValueChange = { typed ->
+                                    query = typed
+                                    // A customer card held to a USB QR scanner (it types like a keyboard):
+                                    // "RK1:" + token opens that customer, as the phone's camera scan does.
+                                    com.innovation313.roshankhata.data.QrTag.parse(typed)?.let { token ->
+                                        scope.launch {
+                                            val p = withContext(Dispatchers.IO) { dao.partyByQrToken(token) }
+                                            query = ""
+                                            if (p != null) selected = p.id
+                                            else told = words.text(W.app_name) to words.text(W.qr_no_customer)
                                         }
-                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    }
+                                },
+                                placeholder = { Text(word(W.search_parties) + "   (Ctrl F)") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+                                    .focusRequester(searchFocus)
+                            )
+                            LaunchedEffect(searchTick) { if (searchTick > 0) runCatching { searchFocus.requestFocus() } }
+                            // The phone's rule (KhataActivity.rank): search, side, type, then the chosen order;
+                            // newest dealing first unless the owner picks another.
+                            val shown = parties.shownBy(query, partySide, partyType, partySort, partyWhen.window())
+                            if (selecting) {
+                                Row(
+                                    Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp)
+                                        .background(Look.chosen, RoundedCornerShape(12.dp)).padding(horizontal = 12.dp, vertical = 4.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    if (selecting) {
-                                        androidx.compose.material3.Checkbox(
-                                            checked = ticked,
-                                            onCheckedChange = { on -> chosenIds = if (on) chosenIds + p.id else chosenIds - p.id }
-                                        )
-                                    }
-                                    // The customer's face, when the computer has it (Photos: never on a statement).
-                                    Photos.bitmap(p.photoPath, 96)?.let { face ->
-                                        androidx.compose.foundation.Image(
-                                            face, contentDescription = null,
-                                            modifier = Modifier.padding(end = 10.dp).size(36.dp).clip(androidx.compose.foundation.shape.CircleShape),
-                                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                                        )
-                                    }
-                                    Column(Modifier.weight(1f)) {
-                                        Text(Format.name(p.name), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                                        p.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 13.sp) }
-                                    }
-                                    Text(
-                                        Format.customerBalance(p.balance),
-                                        color = balanceColour(p.balance),
-                                        fontSize = 16.sp, fontWeight = FontWeight.Bold
-                                    )
+                                    Text(word(W.selected_count, chosenIds.size), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    TextButton({ chosenIds = shown.map { it.id }.toSet() }) { Text(word(W.select_all), color = c.brandGreenText) }
+                                    TextButton({ deletingMany = true }, enabled = chosenIds.isNotEmpty()) { Text(word(W.delete), color = c.owedToMe) }
                                 }
-                                HorizontalDivider(color = c.pageBg)
                             }
-                        }
-                    }
-                    // The chosen customer's page on the right: the shared ledger screen.
-                    val party = parties.firstOrNull { it.id == selected }
-                    Box(Modifier.weight(0.58f).fillMaxSize()) {
-                        if (party != null) Column(Modifier.fillMaxSize()) {
-                            val entries by remember(party.id, reload) { dao.observeEntries(party.id) }.collectAsState(emptyList())
-                            // The phone's reminder bar: a WhatsApp reminder to a customer who owes, in the
-                            // phone's own gentle words and with the day they promised, if any.
-                            val number = party.phone?.let { com.innovation313.roshankhata.data.WhatsAppNumber.of(it) }
-                            if (number != null && Money.isPositive(party.balance)) {
-                                Row(
-                                    Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    OutlineAction(onClick = {
-                                        scope.launch {
-                                            val promised = withContext(Dispatchers.IO) { dao.getParty(party.id)?.harvestPromise }
-                                            val text = reminderText(words, party.name, party.balance, promised, shopName())
-                                            runCatching {
-                                                java.awt.Desktop.getDesktop().browse(java.net.URI("https://wa.me/$number?text=" +
-                                                    java.net.URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
+                            // One line however narrow the window: the count never wraps ("1209 custo mers"
+                            // was the owner's photo, 20 Oct); the actions slide sideways instead.
+                            Row(
+                                Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp).horizontalScroll(rememberScrollState()),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    plural(WP.customer_count, shown.size, shown.size),
+                                    Modifier.padding(vertical = 8.dp),
+                                    color = c.textMuted, fontSize = 13.sp, maxLines = 1, softWrap = false
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                // The whole book out (Phase 9b): every party to Excel, and every
+                                // statement with money on it as one print job.
+                                TextButton({
+                                    val dialog = FileDialog(null as Frame?, words.text(W.export_excel), FileDialog.SAVE)
+                                    startIn(dialog, "Documents")
+                                    dialog.file = "RoshanKhata_Customers_" +
+                                        java.text.SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(java.util.Date()) + ".csv"
+                                    dialog.isVisible = true
+                                    val name = dialog.file ?: return@TextButton
+                                    val file = File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
+                                    val headers = listOf(words.text(W.name), words.text(W.bp_phone), words.text(W.net_balance))
+                                    scope.launch {
+                                        told = words.text(W.export_excel) to runCatching {
+                                            withContext(Dispatchers.IO) { file.writeText(BookExport.customersCsv(parties, headers), Charsets.UTF_8) }
+                                        }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
+                                    }
+                                }, enabled = parties.isNotEmpty(), contentPadding = compactButton) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
+                                TextButton({
+                                    val dialog = FileDialog(null as Frame?, words.text(W.import_csv), FileDialog.LOAD)
+                                    startIn(dialog, "Downloads")
+                                    dialog.isVisible = true
+                                    val name = dialog.file ?: return@TextButton
+                                    val file = File(dialog.directory, name)
+                                    scope.launch {
+                                        val rows = withContext(Dispatchers.IO) {
+                                            runCatching { com.innovation313.roshankhata.data.CsvImport.parse(file.readText(Charsets.UTF_8)) }.getOrDefault(emptyList())
+                                        }
+                                        if (rows.isEmpty()) {
+                                            told = words.text(W.import_csv) to words.text(W.import_csv_empty)
+                                        } else {
+                                            // Already in the book, or twice in the file: brought in once, never doubled.
+                                            val seen = parties.toMutableList()
+                                            val fresh = rows.filter { r ->
+                                                !com.innovation313.roshankhata.data.CsvImport.alreadyIn(r, seen).also { dup ->
+                                                    if (!dup) seen += PartyWithBalance(0, r.name, r.phone, true, null, 0.0)
+                                                }
+                                            }
+                                            importing = fresh to (rows.size - fresh.size)
+                                        }
+                                    }
+                                }, contentPadding = compactButton) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
+                                TextButton({
+                                    scope.launch {
+                                        val owing = parties.filter { kotlin.math.abs(it.balance) >= 0.005 }.sortedBy { it.name.lowercase() }
+                                        val sheets = withContext(Dispatchers.IO) {
+                                            owing.map { p ->
+                                                StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), p.name, p.phone,
+                                                    dao.latestEntriesWithItems(p.id, Int.MAX_VALUE))
                                             }
                                         }
-                                    }) {
-                                        Text(word(W.remind_whatsapp) + "  \u00b7  " + word(W.send_reminder), color = c.brandGreenText, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                        if (sheets.isNotEmpty()) StatementPrint.show(AllStatements(sheets), words.text(W.statement_pdf))
+                                    }
+                                }, enabled = parties.any { kotlin.math.abs(it.balance) >= 0.005 }, contentPadding = compactButton) {
+                                    Text(word(W.statement_pdf) + " · " + word(W.filter_type_all), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1)
+                                }
+                            }
+                            LazyColumn(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
+                                items(shown, key = { it.id }) { p ->
+                                    val ticked = p.id in chosenIds
+                                    Row(
+                                        Modifier.fillMaxWidth()
+                                            .background(eased(if (p.id == selected || ticked) Look.chosen else c.surface))
+                                            .press {
+                                                if (selecting) chosenIds = if (ticked) chosenIds - p.id else chosenIds + p.id
+                                                else selected = p.id
+                                            }
+                                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        if (selecting) {
+                                            androidx.compose.material3.Checkbox(
+                                                checked = ticked,
+                                                onCheckedChange = { on -> chosenIds = if (on) chosenIds + p.id else chosenIds - p.id }
+                                            )
+                                        }
+                                        // The customer's face, when the computer has it (Photos: never on a statement).
+                                        Photos.bitmap(p.photoPath, 96)?.let { face ->
+                                            androidx.compose.foundation.Image(
+                                                face, contentDescription = null,
+                                                modifier = Modifier.padding(end = 10.dp).size(36.dp).clip(androidx.compose.foundation.shape.CircleShape),
+                                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                            )
+                                        }
+                                        Column(Modifier.weight(1f)) {
+                                            Text(Format.name(p.name), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                                            p.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 13.sp) }
+                                        }
+                                        Text(
+                                            Format.customerBalance(p.balance),
+                                            color = balanceColour(p.balance),
+                                            fontSize = 16.sp, fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                    HorizontalDivider(color = c.pageBg)
+                                }
+                            }
+                        }
+                        // The chosen customer's page on the right: the shared ledger screen.
+                        val party = parties.firstOrNull { it.id == selected }
+                        Box(Modifier.weight(0.58f).fillMaxSize()) {
+                            if (party != null) Column(Modifier.fillMaxSize()) {
+                                val entries by remember(party.id, reload) { dao.observeEntries(party.id) }.collectAsState(emptyList())
+                                // The phone's reminder bar: a WhatsApp reminder to a customer who owes, in the
+                                // phone's own gentle words and with the day they promised, if any.
+                                val number = party.phone?.let { com.innovation313.roshankhata.data.WhatsAppNumber.of(it) }
+                                if (number != null && Money.isPositive(party.balance)) {
+                                    Row(
+                                        Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 12.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        OutlineAction(onClick = {
+                                            scope.launch {
+                                                val promised = withContext(Dispatchers.IO) { dao.getParty(party.id)?.harvestPromise }
+                                                val text = reminderText(words, party.name, party.balance, promised, shopName())
+                                                runCatching {
+                                                    java.awt.Desktop.getDesktop().browse(java.net.URI("https://wa.me/$number?text=" +
+                                                        java.net.URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
+                                                }
+                                            }
+                                        }) {
+                                            Text(word(W.remind_whatsapp) + "  \u00b7  " + word(W.send_reminder), color = c.brandGreenText, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                        }
                                     }
                                 }
-                            }
-                            // The phone's season record and promised day under the name (PartyDetail.refreshSeasonRecord).
-                            val record = seasonRecord(dao, party, reload)
-                            if (record.isNotEmpty()) {
-                                Text(
-                                    record,
+                                // The phone's season record and promised day under the name (PartyDetail.refreshSeasonRecord).
+                                val record = seasonRecord(dao, party, reload)
+                                if (record.isNotEmpty()) {
+                                    Text(
+                                        record,
+                                        Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 10.dp),
+                                        color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                // The phone's entry search (notes or goods) and its newest / oldest order.
+                                var entryQuery by remember(party.id) { mutableStateOf("") }
+                                var oldestFirst by remember(party.id) { mutableStateOf(false) }
+                                Row(
                                     Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 10.dp),
-                                    color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold
-                                )
-                            }
-                            // The phone's entry search (notes or goods) and its newest / oldest order.
-                            var entryQuery by remember(party.id) { mutableStateOf("") }
-                            var oldestFirst by remember(party.id) { mutableStateOf(false) }
-                            Row(
-                                Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                OutlinedTextField(
-                                    value = entryQuery, onValueChange = { entryQuery = it },
-                                    placeholder = { Text(word(W.search_entries)) }, singleLine = true,
+                                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    OutlinedTextField(
+                                        value = entryQuery, onValueChange = { entryQuery = it },
+                                        placeholder = { Text(word(W.search_entries)) }, singleLine = true,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    FilterPill(word(W.sort_newest), !oldestFirst) { oldestFirst = false }
+                                    FilterPill(word(W.sort_oldest), oldestFirst) { oldestFirst = true }
+                                }
+                                val eq = entryQuery.trim().lowercase()
+                                val shownEntries = entries
+                                    .filter { e ->
+                                        eq.isEmpty() || (e.note?.lowercase()?.contains(eq) == true) ||
+                                            e.entryNumber.lowercase().contains(eq) || Format.money(e.amount).contains(eq)
+                                    }
+                                    .let { list -> if (oldestFirst) list.sortedBy { it.timestamp } else list.sortedByDescending { it.timestamp } }
+                                PartyLedgerScreen(
+                                    name = party.name,
+                                    phone = party.phone,
+                                    balance = party.balance,
+                                    entries = shownEntries,
+                                    onGave = { entryWay = true },
+                                    onGot = { entryWay = false },
+                                    onEntry = { editing = it },
+                                    onDeleteParty = { deletingParty = party },
+                                    onEditParty = {
+                                        scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } }
+                                    },
+                                    onStatement = { statementFor = party },
                                     modifier = Modifier.weight(1f)
                                 )
-                                FilterPill(word(W.sort_newest), !oldestFirst) { oldestFirst = false }
-                                FilterPill(word(W.sort_oldest), oldestFirst) { oldestFirst = true }
                             }
-                            val eq = entryQuery.trim().lowercase()
-                            val shownEntries = entries
-                                .filter { e ->
-                                    eq.isEmpty() || (e.note?.lowercase()?.contains(eq) == true) ||
-                                        e.entryNumber.lowercase().contains(eq) || Format.money(e.amount).contains(eq)
-                                }
-                                .let { list -> if (oldestFirst) list.sortedBy { it.timestamp } else list.sortedByDescending { it.timestamp } }
-                            PartyLedgerScreen(
-                                name = party.name,
-                                phone = party.phone,
-                                balance = party.balance,
-                                entries = shownEntries,
-                                onGave = { entryWay = true },
-                                onGot = { entryWay = false },
-                                onEntry = { editing = it },
-                                onDeleteParty = { deletingParty = party },
-                                onEditParty = {
-                                    scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } }
-                                },
-                                onStatement = { statementFor = party },
-                                modifier = Modifier.weight(1f)
-                            )
                         }
                     }
                 }
@@ -1158,7 +1160,7 @@ private fun Book(
                     Text(
                         lang.nativeName,
                         Modifier.fillMaxWidth()
-                            .clickable { choosingLanguage = false; onLanguage(lang.tag) }
+                            .press { choosingLanguage = false; onLanguage(lang.tag) }
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         color = c.ink, fontSize = 18.sp
                     )
@@ -1254,7 +1256,7 @@ private fun Book(
                     Text(
                         (if (level == textSize) "\u2713  " else "     ") + word(name),
                         Modifier.fillMaxWidth()
-                            .clickable { choosingTextSize = false; onTextSize(level) }
+                            .press { choosingTextSize = false; onTextSize(level) }
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         color = if (level == textSize) c.brandGreenText else c.ink,
                         // Each line in its own size, so the owner sees what it will look like.
@@ -1278,7 +1280,7 @@ private fun Book(
                     Text(
                         (if (t == theme) "\u2713  " else "     ") + word(t.word),
                         Modifier.fillMaxWidth()
-                            .clickable { choosingTheme = false; onTheme(t) }
+                            .press { choosingTheme = false; onTheme(t) }
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         color = if (t == theme) c.brandGreenText else c.ink, fontSize = 18.sp,
                         fontWeight = if (t == theme) FontWeight.Bold else FontWeight.Normal
@@ -1416,7 +1418,7 @@ private fun AlertChip(text: String, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     Text(
         text,
-        Modifier.background(c.gaveFill.copy(alpha = 0.18f), RoundedCornerShape(16.dp)).clickable(onClick = onClick)
+        Modifier.background(c.gaveFill.copy(alpha = 0.18f), RoundedCornerShape(16.dp)).press(RoundedCornerShape(16.dp), onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 6.dp),
         color = c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false
     )

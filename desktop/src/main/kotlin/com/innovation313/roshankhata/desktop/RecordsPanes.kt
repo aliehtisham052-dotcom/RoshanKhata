@@ -13,7 +13,6 @@ import com.innovation313.roshankhata.words.Words
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -154,7 +153,7 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
     }
     RecordList(word(W.supplier_bills), word(W.bill_ledger_note), bills.isEmpty(), word(W.no_bills), action = word(W.add_bill) to { adding = true }) {
         items(bills, key = { it.id }) { b ->
-            Column(Modifier.fillMaxWidth().clickable { open = if (open == b.id) null else b.id }.padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Column(Modifier.fillMaxWidth().press { open = if (open == b.id) null else b.id }.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(Format.name(b.partyName), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -245,7 +244,7 @@ fun ProductsPane(dao: KhataDao, words: Words) {
         )
         RecordList(word(W.tile_products), null, shown.isEmpty(), word(W.no_products)) {
             items(shown, key = { it.id }) { p ->
-                Column(Modifier.fillMaxWidth().clickable { buyersOf = p }.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                Column(Modifier.fillMaxWidth().press { buyersOf = p }.padding(horizontal = 16.dp, vertical = 12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text(p.name, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -403,8 +402,8 @@ fun InvoicesPane(
                     items(shown, key = { it.id }) { i ->
                         val on = i.id == open?.id
                         Row(
-                            Modifier.fillMaxWidth().background(if (on) Look.chosen else androidx.compose.ui.graphics.Color.Transparent)
-                                .clickable { chosen = i.id }.padding(horizontal = 18.dp, vertical = 12.dp),
+                            Modifier.fillMaxWidth().background(eased(if (on) Look.chosen else androidx.compose.ui.graphics.Color.Transparent))
+                                .press { chosen = i.id }.padding(horizontal = 18.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(Modifier.size(38.dp).clip(androidx.compose.foundation.shape.CircleShape).background(Look.chosen), contentAlignment = Alignment.Center) {
@@ -555,7 +554,7 @@ fun ExpiryPane(dao: KhataDao) {
         item(key = "trace") { BatchTraceCard(dao) { buyersOf = it } }
         if (batches.isEmpty()) item(key = "none") { Text(word(W.no_expiring), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp) }
         items(batches, key = { it.itemId }) { b ->
-            Row(Modifier.fillMaxWidth().clickable { buyersOf = b.itemId }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().press { buyersOf = b.itemId }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(b.productName, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     Text(
@@ -616,7 +615,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                         add(word(W.delete_plan) to { deleting = p })
                     }
                     actions.forEach { (label, go) ->
-                        Text(label, Modifier.fillMaxWidth().clickable { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)
+                        Text(label, Modifier.fillMaxWidth().press { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)
                     }
                 }
             },
@@ -674,7 +673,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
     RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(W.no_plans), action = word(W.add_plan) to { adding = true }) {
         items(plans, key = { it.id }) { p ->
             Column(
-                Modifier.fillMaxWidth().alpha(if (p.isClosed) 0.6f else 1f).clickable { acting = p }.padding(horizontal = 16.dp, vertical = 12.dp),
+                Modifier.fillMaxWidth().alpha(if (p.isClosed) 0.6f else 1f).press { acting = p }.padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -873,7 +872,7 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
                 LazyColumn(Modifier.fillMaxWidth().heightIn(max = 150.dp).background(c.pageBg, RoundedCornerShape(10.dp))) {
                     items(parties.filter { NameSearch.matches(it.name, it.phone, q) }.take(40), key = { it.id }) { p ->
                         Text(Format.name(p.name) + "  \u00b7  " + Format.money(p.balance),
-                            Modifier.fillMaxWidth().clickable { partyId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp), color = c.ink, fontSize = 14.sp)
+                            Modifier.fillMaxWidth().press { partyId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp), color = c.ink, fontSize = 14.sp)
                     }
                 }
             }
@@ -928,9 +927,9 @@ private fun Chip(text: String, on: Boolean, onClick: () -> Unit) {
     Text(
         text,
         Modifier.clip(RoundedCornerShape(17.dp))
-            .background(if (on) c.brandGreen else androidx.compose.ui.graphics.Color.Transparent)
-            .border(1.dp, if (on) c.brandGreen else Look.line, RoundedCornerShape(17.dp))
-            .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 7.dp),
-        color = if (on) androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold
+            .background(eased(if (on) Look.pickedFill else androidx.compose.ui.graphics.Color.Transparent))
+            .border(1.dp, eased(if (on) Look.pickedFill else Look.edge), RoundedCornerShape(17.dp))
+            .press(RoundedCornerShape(17.dp), onClick = onClick).padding(horizontal = 14.dp, vertical = 7.dp),
+        color = eased(if (on) Look.onPicked else c.ink), fontSize = 13.sp, fontWeight = FontWeight.Bold
     )
 }
