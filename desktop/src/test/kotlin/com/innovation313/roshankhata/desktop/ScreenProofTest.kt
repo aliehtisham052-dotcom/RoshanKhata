@@ -20,6 +20,7 @@ import com.innovation313.roshankhata.words.ProvideWords
 import com.innovation313.roshankhata.words.desktopWords
 import org.jetbrains.skia.EncodedImageFormat
 import org.junit.Assert.assertTrue
+import org.junit.Assume
 import org.junit.Test
 import java.io.File
 import java.util.Locale
@@ -89,6 +90,10 @@ class ScreenProofTest {
 
     @Test
     fun `home draws in English and Urdu, light and dark`() {
+        // Windows only: the pictures are for the Windows app and desktop.yml (Windows) publishes
+        // them. On the Ubuntu runner Skia's native renderer crashed the test JVM with a SIGSEGV
+        // in libstdc++ (Android CI, 20 Oct), taking every other desktop test down with it.
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
         val dir = File("build/screen-proof").apply { mkdirs() }
         val small = ArrayList<String>()
         for (ur in listOf(false, true)) for (dark in listOf(false, true)) {
