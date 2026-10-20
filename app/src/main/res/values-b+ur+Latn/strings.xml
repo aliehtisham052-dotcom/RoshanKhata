@@ -280,6 +280,14 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="no_entries_to_export">Abhi statement mein dalne ke liye koi entry nahi.</string>
 
     <string name="app_lock">App Lock</string>
+    <string name="app_lock_pc_explain">Is computer par Roshan Khata ke liye PIN. Ye counter par doosron ki nazar se khata bachata hai; file ko khud lock nahi karta, is liye uthte waqt Windows bhi lock karein (Win + L).</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">4 se 8 hindson ka PIN chunein</string>
+    <string name="lock_pin_again">Wohi PIN dobara likhein</string>
+    <string name="lock_pin_wrong">Ghalat PIN. Dobara koshish karein.</string>
+    <string name="lock_pin_mismatch">Dono PIN aik jaise nahi hain.</string>
+    <string name="lock_pin_wait">Bohat zyada koshishen. %1$d second intezar karein.</string>
+    <string name="lock_unlock">Kholein</string>
     <string name="lock_title">Roshan Khata Kholein</string>
     <string name="lock_subtitle">Aap ka khata niji hai. Tasdeeq karein ke ye aap hain.</string>
     <string name="app_lock_enabled">App Lock on hai. Har baar app kholne par tasdeeq maangi jayegi.</string>

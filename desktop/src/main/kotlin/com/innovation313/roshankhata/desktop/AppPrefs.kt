@@ -54,6 +54,31 @@ class AppPrefs(private val file: File) {
 
     private fun flag(key: String): Boolean = props.getProperty(key)?.toBooleanStrictOrNull() ?: true
 
+    /** True when the owner has set an App Lock PIN on this computer. */
+    fun hasPin(): Boolean = !props.getProperty(KEY_PIN_HASH).isNullOrBlank() && !props.getProperty(KEY_PIN_SALT).isNullOrBlank()
+
+    /** The typed PIN against the kept hash; false when there is none. */
+    fun pinMatches(pin: String): Boolean {
+        val hash = props.getProperty(KEY_PIN_HASH) ?: return false
+        val salt = props.getProperty(KEY_PIN_SALT) ?: return false
+        return runCatching { PinHash.matches(pin, salt, hash) }.getOrDefault(false)
+    }
+
+    /** Keeps a salted PBKDF2 hash of [pin], never the PIN itself. */
+    @Synchronized
+    fun setPin(pin: String) {
+        val salt = PinHash.salt()
+        props.setProperty(KEY_PIN_SALT, salt)
+        props.setProperty(KEY_PIN_HASH, PinHash.hash(pin, salt))
+        save()
+    }
+
+    @Synchronized
+    fun clearPin() {
+        props.remove(KEY_PIN_HASH); props.remove(KEY_PIN_SALT)
+        save()
+    }
+
     @Synchronized
     fun setTheme(choice: ThemeChoice) {
         props.setProperty(KEY_THEME, choice.name)
@@ -78,6 +103,8 @@ class AppPrefs(private val file: File) {
         const val KEY_BACKUP_FOLDER = "backup_folder"
         const val KEY_THEME = "theme"
         const val KEY_TEXT_SIZE = "text_size"
+        const val KEY_PIN_HASH = "app_lock_hash"
+        const val KEY_PIN_SALT = "app_lock_salt"
         const val KEY_INV_DISCOUNT = "invoice_discount"
         const val KEY_INV_TAX = "invoice_tax"
         const val KEY_INV_CHARGE = "invoice_extra_charge"

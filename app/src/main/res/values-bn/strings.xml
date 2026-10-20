@@ -296,6 +296,14 @@
 
     <!-- App Lock -->
     <string name="app_lock">অ্যাপ লক</string>
+    <string name="app_lock_pc_explain">এই কম্পিউটারে রোশন খাতার জন্য PIN। এটি কাউন্টারে অন্যদের চোখ থেকে খাতা আড়াল রাখে; ফাইলটি নিজে লক করে না, তাই উঠে যাওয়ার সময় Windows-ও লক করুন (Win + L)।</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">৪ থেকে ৮ অঙ্কের একটি PIN বেছে নিন</string>
+    <string name="lock_pin_again">একই PIN আবার লিখুন</string>
+    <string name="lock_pin_wrong">ভুল PIN। আবার চেষ্টা করুন।</string>
+    <string name="lock_pin_mismatch">দুটি PIN এক নয়।</string>
+    <string name="lock_pin_wait">অনেকবার চেষ্টা হয়েছে। %1$d সেকেন্ড অপেক্ষা করুন।</string>
+    <string name="lock_unlock">খুলুন</string>
     <string name="lock_title">রোশন খাতা খুলুন</string>
     <string name="lock_subtitle">আপনার খাতা ব্যক্তিগত। নিশ্চিত করুন এটি আপনিই।</string>
     <string name="app_lock_enabled">অ্যাপ লক চালু আছে। প্রতিবার অ্যাপ খুললে নিশ্চিত করতে বলা হবে।</string>

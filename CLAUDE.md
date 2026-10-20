@@ -61,7 +61,12 @@ No account, no server, no ads. Everything stays on the phone.
   change it); `LocalTrade` gives every form the phone's TradeVocab words from
   strings.xml — item and unit hints, starter goods and unit pills, product
   types — and TradeFeatures' switches: Seasons only for agri, Stock register
-  and Register only for agri/medical, harvest-day choices only for agri. `ScreenProofTest`
+  and Register only for agri/medical, harvest-day choices only for agri. App Lock on Windows
+  (`AppLock.kt`, More → Security): the owner's 4-8 digit PIN, kept only as a
+  salted PBKDF2 hash in app.properties; nothing of the book is composed until
+  it is typed; five misses wait 30 s. Unlike the phone (Android's own screen
+  lock) it is the app's PIN, because a JVM cannot reach Windows Hello; it
+  hides the ledger, it does not encrypt the file — the screen says so. `ScreenProofTest`
   draws the window (Home, English/Urdu, light/dark, made-up shop) to
   build/screen-proof, put on desktop-test — look at it after any UI change.
   The scrolling section rail (each section wears the

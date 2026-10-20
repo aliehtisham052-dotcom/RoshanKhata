@@ -289,6 +289,14 @@
 
     <!-- App Lock -->
     <string name="app_lock">ايپ لاڪ</string>
+    <string name="app_lock_pc_explain">هن ڪمپيوٽر تي روشن کاتي لاءِ PIN. اهو ڪائونٽر تي ٻين جي نظر کان کاتو بچائي ٿو؛ فائل کي پاڻ لاڪ نٿو ڪري، تنهنڪري اٿڻ وقت Windows به لاڪ ڪريو (Win + L).</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">4 کان 8 انگن جو PIN چونڊيو</string>
+    <string name="lock_pin_again">ساڳيو PIN ٻيهر لکو</string>
+    <string name="lock_pin_wrong">غلط PIN. ٻيهر ڪوشش ڪريو.</string>
+    <string name="lock_pin_mismatch">ٻئي PIN هڪجهڙا ناهن.</string>
+    <string name="lock_pin_wait">تمام گهڻيون ڪوششون. %1$d سيڪنڊ انتظار ڪريو.</string>
+    <string name="lock_unlock">کوليو</string>
     <string name="lock_title">روشن کاتو کوليو</string>
     <string name="lock_subtitle">توهان جو کاتو خانگي آهي. تصديق ڪريو ته اهو توهان آهيو.</string>
     <string name="app_lock_enabled">ايپ لاڪ آن آهي. هر ڀيري ايپ کولڻ وقت تصديق گهري ويندي.</string>

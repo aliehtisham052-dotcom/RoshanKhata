@@ -312,6 +312,14 @@
     <string name="no_entries_to_export">لا قيود لوضعها في كشف بعد.</string>
 
     <string name="app_lock">قفل التطبيق</string>
+    <string name="app_lock_pc_explain">رمز PIN لروشن كهاته على هذا الحاسوب. يحمي الدفتر من أعين الآخرين عند المنضدة؛ ولا يقفل الملف نفسه، لذا اقفل Windows أيضًا (Win + L) عند ابتعادك.</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">اختر رمز PIN من 4 إلى 8 أرقام</string>
+    <string name="lock_pin_again">أدخل الرمز نفسه مرة أخرى</string>
+    <string name="lock_pin_wrong">رمز خاطئ. حاول مرة أخرى.</string>
+    <string name="lock_pin_mismatch">الرمزان غير متطابقين.</string>
+    <string name="lock_pin_wait">محاولات كثيرة. انتظر %1$d ثانية.</string>
+    <string name="lock_unlock">فتح</string>
     <string name="lock_title">فتح روشن كهاتا</string>
     <string name="lock_subtitle">دفترك خاص. أكّد أنك أنت.</string>
     <string name="app_lock_enabled">قفل التطبيق مفعّل. سيُطلب التأكيد عند كل فتح.</string>

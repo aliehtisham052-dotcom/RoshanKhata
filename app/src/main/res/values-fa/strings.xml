@@ -289,6 +289,14 @@
 
     <!-- App Lock -->
     <string name="app_lock">قفل برنامه</string>
+    <string name="app_lock_pc_explain">رمز PIN برای روشن کهاته روی این رایانه. دفتر را از چشم دیگران پشت پیشخوان حفظ می‌کند؛ خود فایل را قفل نمی‌کند، پس هنگام رفتن Windows را هم قفل کنید (Win + L).</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">یک PIN چهار تا هشت رقمی انتخاب کنید</string>
+    <string name="lock_pin_again">همان PIN را دوباره وارد کنید</string>
+    <string name="lock_pin_wrong">PIN اشتباه است. دوباره تلاش کنید.</string>
+    <string name="lock_pin_mismatch">دو PIN یکسان نیستند.</string>
+    <string name="lock_pin_wait">تلاش‌های زیاد. %1$d ثانیه صبر کنید.</string>
+    <string name="lock_unlock">باز کردن</string>
     <string name="lock_title">باز کردن روشن خاتا</string>
     <string name="lock_subtitle">دفتر شما خصوصی است. هویت خود را تأیید کنید.</string>
     <string name="app_lock_enabled">قفل برنامه روشن است. هر بار هنگام باز کردن برنامه تأیید خواسته می‌شود.</string>

@@ -280,6 +280,14 @@
     <string name="no_entries_to_export">ابھی اسٹیٹمنٹ میں ڈالنے کے لیے کوئی اندراج نہیں۔</string>
 
     <string name="app_lock">ایپ لاک</string>
+    <string name="app_lock_pc_explain">اس کمپیوٹر پر روشن کھاتہ کے لیے PIN۔ یہ کاؤنٹر پر دوسروں کی نظر سے کھاتہ بچاتا ہے؛ فائل کو خود لاک نہیں کرتا، اس لیے اٹھتے وقت Windows بھی لاک کریں (Win + L)۔</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">4 سے 8 ہندسوں کا PIN چنیں</string>
+    <string name="lock_pin_again">وہی PIN دوبارہ لکھیں</string>
+    <string name="lock_pin_wrong">غلط PIN۔ دوبارہ کوشش کریں۔</string>
+    <string name="lock_pin_mismatch">دونوں PIN ایک جیسے نہیں ہیں۔</string>
+    <string name="lock_pin_wait">بہت زیادہ کوششیں۔ %1$d سیکنڈ انتظار کریں۔</string>
+    <string name="lock_unlock">کھولیں</string>
     <string name="lock_title">روشن کھاتہ کھولیں</string>
     <string name="lock_subtitle">آپ کا کھاتہ نجی ہے۔ تصدیق کریں کہ یہ آپ ہیں۔</string>
     <string name="app_lock_enabled">ایپ لاک آن ہے۔ ہر بار ایپ کھولنے پر تصدیق مانگی جائے گی۔</string>
