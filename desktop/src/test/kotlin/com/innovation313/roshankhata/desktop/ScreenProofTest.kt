@@ -54,7 +54,12 @@ class ScreenProofTest {
     )
 
     private fun shoot(name: String, ur: Boolean, dark: Boolean, dir: File): File {
-        val words = desktopWords(Locale.forLanguageTag(if (ur) "ur" else "en"))
+        // As Main does on choosing a language: the default locale is what Format.ltr and the
+        // dates read their direction from. Without it the Urdu proof showed "Oct 2026 20" even
+        // where the app itself is right (20 Oct): the picture must be drawn as the app draws it.
+        val before = Locale.getDefault()
+        val locale = Locale.forLanguageTag(if (ur) "ur" else "en").also { Locale.setDefault(it) }
+        val words = desktopWords(locale)
         val scene = ImageComposeScene(width = 1440, height = 900, density = Density(1f)) {
             RoshanTheme(dark = dark) {
                 ProvideWords(words) {
@@ -85,6 +90,7 @@ class ScreenProofTest {
             return File(dir, "$name.png").also { it.writeBytes(png) }
         } finally {
             scene.close()
+            Locale.setDefault(before)
         }
     }
 
