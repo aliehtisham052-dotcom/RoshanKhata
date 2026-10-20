@@ -329,7 +329,8 @@ private fun Book(
     keys.khata = { section = Section.KHATA }
     keys.search = { section = Section.KHATA; searchTick++ }
     statementFor?.let { party ->
-        StatementRangeDialog(party.name, onCancel = { statementFor = null }) { from, till ->
+        val partyEntries by remember(party.id, reload) { dao.observeEntries(party.id) }.collectAsState(emptyList())
+        StatementRangeDialog(party.name, partyEntries, onCancel = { statementFor = null }) { from, till ->
             statementFor = null
             scope.launch {
                 val all = withContext(Dispatchers.IO) { dao.latestEntriesWithItems(party.id, Int.MAX_VALUE) }
@@ -1198,6 +1199,17 @@ private fun Book(
             dismissButton = { TextButton({ namingShop = false }) { Text(word(W.welcome_skip)) } }
         )
     }
+    // The phone's first-run walkthrough, once, after the trade and the name are settled.
+    var touring by remember { mutableStateOf(!appPrefs.tourSeen()) }
+    if (touring && !choosingTrade && !namingShop) {
+        DialogWindow(
+            onCloseRequest = { appPrefs.setTourSeen(); touring = false },
+            title = word(W.app_name),
+            state = rememberDialogState(width = 620.dp, height = 420.dp)
+        ) {
+            TourWindowContent { appPrefs.setTourSeen(); touring = false }
+        }
+    }
     if (lockSettings) {
         DialogWindow(onCloseRequest = { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = 520.dp, height = 460.dp)) {
             AppLockSettings(appPrefs) { lockSettings = false }
@@ -1295,7 +1307,13 @@ private fun Total(label: String, amount: String, color: Color, modifier: Modifie
 
 /** The whole ledger, or a period by two dates (the end date's whole day), before a statement prints. */
 @Composable
-private fun StatementRangeDialog(partyName: String, onCancel: () -> Unit, onPrint: (from: Long?, till: Long?) -> Unit) {
+private fun StatementRangeDialog(
+    partyName: String,
+    /** The customer's entries, for the phone's Report screen figures before any PDF exists. */
+    entries: List<LedgerEntry>,
+    onCancel: () -> Unit,
+    onPrint: (from: Long?, till: Long?) -> Unit
+) {
     val c = LocalRoshanColors.current
     var from by remember { mutableStateOf<Long?>(null) }
     var till by remember { mutableStateOf<Long?>(null) }
@@ -1317,6 +1335,30 @@ private fun StatementRangeDialog(partyName: String, onCancel: () -> Unit, onPrin
                     color = c.ink
                 )
                 if (bad) Text(word(W.invalid_range), color = c.owedToMe)
+                // The phone's Report screen (ReportActivity): what was given and got in the window and
+                // its net, then the closing balance of the WHOLE account — a part-period total is not
+                // what the customer owes.
+                if (!bad) {
+                    val f = from; val t = till
+                    val window = if (f == null || t == null) null else f..(t + day - 1)
+                    val inWindow = entries.filter { window == null || it.timestamp in window }
+                    val gave = inWindow.filter { it.isGiven }.sumOf { it.amount }
+                    val got = inWindow.filter { !it.isGiven }.sumOf { it.amount }
+                    val closing = entries.sumOf { if (it.isGiven) it.amount else -it.amount }
+                    androidx.compose.foundation.layout.Spacer(Modifier.height(10.dp))
+                    if (window != null && inWindow.isEmpty()) {
+                        Text(word(W.no_entries_in_range), color = c.textMuted)
+                    } else {
+                        Row { Text(word(W.i_gave), Modifier.weight(1f), color = c.inkSoft); Text(Format.money(gave), color = c.owedToMe, fontWeight = FontWeight.Bold) }
+                        Row { Text(word(W.i_got), Modifier.weight(1f), color = c.inkSoft); Text(Format.money(got), color = c.iOwe, fontWeight = FontWeight.Bold) }
+                        Row { Text(word(W.net_change), Modifier.weight(1f), color = c.inkSoft); Text(Format.customerBalance(gave - got), color = balanceColour(gave - got), fontWeight = FontWeight.Bold) }
+                    }
+                    androidx.compose.foundation.layout.Spacer(Modifier.height(8.dp))
+                    Text(
+                        word(if (window == null) W.closing_note_all else W.closing_note_range, Format.customerBalance(closing)),
+                        color = c.ink, fontSize = 13.sp
+                    )
+                }
             }
         },
         confirmButton = {
