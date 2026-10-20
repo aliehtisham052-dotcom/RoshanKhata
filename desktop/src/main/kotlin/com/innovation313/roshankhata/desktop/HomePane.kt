@@ -111,7 +111,12 @@ fun HomePane(
     // Home rises into place once as it opens (Motion.PAGE ms, a few dp): a welcome, not a show.
     val appear = remember { Animatable(0f) }
     LaunchedEffect(Unit) { appear.animateTo(1f, tween(Motion.PAGE + 100)) }
-    val dayName = remember { DateWords.formatter("EEEE, d MMMM").format(java.util.Date()) }
+    // The day as the title. The weekday's name comes from the JDK's locale, which has none of the
+    // app's Urdu/Sindhi month tables: in a right-to-left language the day and month alone.
+    val dayName = remember {
+        val rtl = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(java.util.Locale.getDefault())
+        DateWords.formatter(if (rtl) "d MMMM" else "EEEE, d MMMM").format(java.util.Date())
+    }
     Column(
         Modifier.fillMaxSize().background(Look.layerAlt)
             .graphicsLayer { alpha = appear.value; translationY = (1f - appear.value) * 12.dp.toPx() }
@@ -127,7 +132,7 @@ fun HomePane(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             StatCard(
                 word(W.you_will_get), shown(get),
-                plural(WP.customer_count, owing, owing) + if (late > 0) " · " + plural(WP.home_paying_late, late, late) else "",
+                if (late > 0) plural(WP.home_paying_late, late, late) else plural(WP.customer_count, owing, owing),
                 c.owedToMe, Look.getTint, "ic_arrow_got", Modifier.weight(1f)
             ) { onOpen(if (late > 0) Section.FOLLOWUP else Section.KHATA) }
             StatCard(
@@ -143,11 +148,11 @@ fun HomePane(
 
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             // Beside each other when the window has the room, otherwise one under the other.
-            val wide = maxWidth >= 860.dp
+            val wide = maxWidth >= 760.dp
             if (wide) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     TodayCard(figures?.today ?: emptyList(), parties, hidden, onCustomer, onOpen, Modifier.weight(1f))
-                    Column(Modifier.width(330.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Column(Modifier.width(if (maxWidth >= 1000.dp) 330.dp else 290.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         NeedsALook(alerts, extra, late, onOpen)
                         QuickActions(onAddParty, onGot, onOpen, onAction)
                     }
@@ -179,13 +184,13 @@ private fun TodayCard(today: List<EntryWithParty>, parties: List<PartyWithBalanc
         Rule()
         if (today.isNotEmpty()) {
             val time = remember { DateWords.formatter("h:mm a") }
-            TableHead(listOf(word(W.home_col_time) to 64, word(W.customer) to 0, word(W.invoice_feature_note) to 0, word(W.you_got) to 92, word(W.you_gave) to 92), endAligned = setOf(3, 4))
+            TableHead(listOf(word(W.home_col_time) to 78, word(W.customer) to 0, word(W.invoice_feature_note) to 0, word(W.you_got) to 92, word(W.you_gave) to 92), endAligned = setOf(3, 4))
             today.take(8).forEachIndexed { i, e ->
                 Row(
                     Modifier.fillMaxWidth().press { onCustomer(e.partyId) }.padding(horizontal = 16.dp, vertical = 9.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(time.format(java.util.Date(e.timestamp)), Modifier.width(64.dp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+                    Text(time.format(java.util.Date(e.timestamp)), Modifier.width(78.dp), color = c.textMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Avatar(e.partyName, 28, i)
                         Text(Format.name(e.partyName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
