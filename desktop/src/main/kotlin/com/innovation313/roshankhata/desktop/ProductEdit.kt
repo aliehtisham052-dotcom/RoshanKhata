@@ -62,7 +62,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     val needName = word(W.enter_name)
     val words = com.innovation313.roshankhata.words.LocalWords.current
 
-    DialogWindow(onCloseRequest = onClose, title = product.name, state = rememberDialogState(width = 560.dp, height = 820.dp)) {
+    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = 560.dp, height = 820.dp)) {
         Column(
             Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).verticalScroll(rememberScrollState()).padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)

@@ -130,7 +130,7 @@ fun BusinessesDialog(businesses: Businesses, active: Long, onSwitch: (Long) -> U
         FileShopSettings(businesses.settingsFile(b.id)).businessName() ?: b.name ?: "Roshan Khata"
 
     DialogWindow(
-        onCloseRequest = onClose,
+        onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose),
         title = word(W.businesses_title),
         state = rememberDialogState(width = 520.dp, height = 640.dp)
     ) {

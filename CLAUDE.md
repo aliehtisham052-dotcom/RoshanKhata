@@ -69,7 +69,10 @@ No account, no server, no ads. Everything stays on the phone.
   hides the ledger, it does not encrypt the file — the screen says so. A customer's
   statement dialog shows the phone's Report figures first (gave, got, net in
   the window; the whole account's closing balance). A first-run walkthrough
-  (`Tour.kt`, the phone's coach words) shows once after trade and name.
+  (`Tour.kt`, the phone's coach words) shows once after trade and name. A shop picture
+  (logo, signature, stamp, QR) is cropped before it is kept (`ImageCrop.kt`,
+  the phone's Adjust crop: corners resize, inside moves; signature, stamp and
+  QR start at their ink). Esc closes every dialog window (`escCloses`).
   `ScreenProofTest`
   draws the window (Home, English/Urdu, light/dark, made-up shop) to
   build/screen-proof, put on desktop-test — look at it after any UI change.

@@ -118,6 +118,7 @@ fun CashbookPane(dao: KhataDao) {
     adding?.let { way ->
         DialogWindow(
             onCloseRequest = { adding = null },
+            onPreviewKeyEvent = escCloses { adding = null },
             title = word(if (way) W.cash_income else W.cash_expense),
             state = rememberDialogState(width = 480.dp, height = 520.dp)
         ) {

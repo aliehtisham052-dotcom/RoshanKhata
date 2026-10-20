@@ -182,6 +182,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
     form?.let { f ->
         DialogWindow(
             onCloseRequest = { form = null },
+            onPreviewKeyEvent = escCloses { form = null },
             title = word(if (f.existing == null) W.add_cheque else W.edit_cheque),
             state = rememberDialogState(width = 520.dp, height = 760.dp)
         ) {

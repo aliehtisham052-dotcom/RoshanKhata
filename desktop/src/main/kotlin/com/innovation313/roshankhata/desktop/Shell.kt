@@ -34,6 +34,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -194,4 +196,11 @@ fun Glyph(icon: String, tint: Color, size: Int) {
 @Composable
 private fun TileGlyph(s: Section) {
     tileIcon(s.icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(20.dp)) }
+}
+
+/** Esc closes a window, as every Windows dialog does; [close] is the window's own close. */
+fun escCloses(close: () -> Unit): (androidx.compose.ui.input.key.KeyEvent) -> Boolean = { e ->
+    if (e.type == androidx.compose.ui.input.key.KeyEventType.KeyDown && e.key == androidx.compose.ui.input.key.Key.Escape) {
+        close(); true
+    } else false
 }

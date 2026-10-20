@@ -797,6 +797,7 @@ private fun Book(
     if (way != null && forParty != null) {
         DialogWindow(
             onCloseRequest = { entryWay = null },
+            onPreviewKeyEvent = escCloses { entryWay = null },
             title = word(if (way) W.you_gave else W.you_got),
             state = rememberDialogState(width = 520.dp, height = 760.dp)
         ) {
@@ -845,6 +846,7 @@ private fun Book(
         val loaded = items
         if (loaded != null) DialogWindow(
             onCloseRequest = { editing = null },
+            onPreviewKeyEvent = escCloses { editing = null },
             title = word(W.edit),
             state = rememberDialogState(width = 520.dp, height = 760.dp)
         ) {
@@ -1019,6 +1021,7 @@ private fun Book(
     if (bin) {
         DialogWindow(
             onCloseRequest = { bin = false },
+            onPreviewKeyEvent = escCloses { bin = false },
             title = word(W.recycle_bin),
             state = rememberDialogState(width = 560.dp, height = 640.dp)
         ) {
@@ -1071,6 +1074,7 @@ private fun Book(
         val existing = editingParty
         DialogWindow(
             onCloseRequest = { addParty = false; editingParty = null },
+            onPreviewKeyEvent = escCloses { addParty = false; editingParty = null },
             title = word(if (existing == null) W.add_party else W.edit_party),
             state = rememberDialogState(width = 500.dp, height = 680.dp)
         ) {
@@ -1135,6 +1139,7 @@ private fun Book(
     if (choosingLanguage) {
         DialogWindow(
             onCloseRequest = { choosingLanguage = false },
+            onPreviewKeyEvent = escCloses { choosingLanguage = false },
             title = word(W.language),
             state = rememberDialogState(width = 360.dp, height = 560.dp)
         ) {
@@ -1161,6 +1166,7 @@ private fun Book(
     if (choosingTrade) {
         DialogWindow(
             onCloseRequest = { if (!tradeMandatory) choosingTrade = false },
+            onPreviewKeyEvent = escCloses { if (!tradeMandatory) choosingTrade = false },
             title = word(W.trade_pick_title),
             state = rememberDialogState(width = 900.dp, height = 760.dp)
         ) {
@@ -1204,6 +1210,7 @@ private fun Book(
     if (touring && !choosingTrade && !namingShop) {
         DialogWindow(
             onCloseRequest = { appPrefs.setTourSeen(); touring = false },
+            onPreviewKeyEvent = escCloses { appPrefs.setTourSeen(); touring = false },
             title = word(W.app_name),
             state = rememberDialogState(width = 620.dp, height = 420.dp)
         ) {
@@ -1211,13 +1218,14 @@ private fun Book(
         }
     }
     if (lockSettings) {
-        DialogWindow(onCloseRequest = { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = 520.dp, height = 460.dp)) {
+        DialogWindow(onCloseRequest = { lockSettings = false },onPreviewKeyEvent = escCloses { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = 520.dp, height = 460.dp)) {
             AppLockSettings(appPrefs) { lockSettings = false }
         }
     }
     if (showAlerts) {
         DialogWindow(
             onCloseRequest = { showAlerts = false },
+            onPreviewKeyEvent = escCloses { showAlerts = false },
             title = word(W.home_today),
             state = rememberDialogState(width = 520.dp, height = 600.dp)
         ) {
@@ -1227,6 +1235,7 @@ private fun Book(
     if (choosingTextSize) {
         DialogWindow(
             onCloseRequest = { choosingTextSize = false },
+            onPreviewKeyEvent = escCloses { choosingTextSize = false },
             title = word(W.text_size),
             state = rememberDialogState(width = 360.dp, height = 340.dp)
         ) {
@@ -1250,6 +1259,7 @@ private fun Book(
     if (choosingTheme) {
         DialogWindow(
             onCloseRequest = { choosingTheme = false },
+            onPreviewKeyEvent = escCloses { choosingTheme = false },
             title = word(W.theme),
             state = rememberDialogState(width = 360.dp, height = 300.dp)
         ) {
@@ -1271,6 +1281,7 @@ private fun Book(
     if (about) {
         DialogWindow(
             onCloseRequest = { about = false },
+            onPreviewKeyEvent = escCloses { about = false },
             title = word(W.about_us),
             state = rememberDialogState(width = 520.dp, height = 680.dp)
         ) {
