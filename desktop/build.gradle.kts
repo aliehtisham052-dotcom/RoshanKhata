@@ -6,6 +6,9 @@
 // an MSI by GitHub's Windows runner (desktop.yml); the MSI becomes an MSIX for
 // the Microsoft Store with Microsoft's free MSIX Packaging Tool.
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 plugins {
     kotlin("jvm")
@@ -36,12 +39,12 @@ abstract class WindowsOnlySqlite : TransformAction<TransformParameters.None> {
         val file = input.get().asFile
         if (!file.name.startsWith("sqlite-bundled")) { outputs.file(input); return }
         val out = outputs.file(file.nameWithoutExtension + "-windows.jar")
-        java.util.zip.ZipInputStream(file.inputStream().buffered()).use { zin ->
-            java.util.zip.ZipOutputStream(out.outputStream().buffered()).use { zout ->
+        ZipInputStream(file.inputStream().buffered()).use { zin ->
+            ZipOutputStream(out.outputStream().buffered()).use { zout ->
                 while (true) {
                     val e = zin.nextEntry ?: break
                     val keep = !e.name.startsWith("natives/") || e.name == "natives/" || e.name.startsWith("natives/windows_x64")
-                    if (keep) { zout.putNextEntry(java.util.zip.ZipEntry(e.name)); zin.copyTo(zout); zout.closeEntry() }
+                    if (keep) { zout.putNextEntry(ZipEntry(e.name)); zin.copyTo(zout); zout.closeEntry() }
                 }
             }
         }
