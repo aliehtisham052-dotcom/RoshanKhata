@@ -273,8 +273,7 @@ private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Schem
                 SchemeMath.AMOUNT to W.scheme_reward_amount,
                 SchemeMath.UNITS to W.scheme_reward_units
             ).forEach { (k, label) ->
-                if (k == kind) FillButton(word(label), c.brandGreen) { kind = k }
-                else TextButton({ kind = k }) { Text(word(label), color = c.brandGreenText) }
+                FluentPill(word(label), k == kind) { kind = k }
             }
         }
         Text(word(W.scheme_slabs), color = c.ink, fontWeight = FontWeight.Bold)

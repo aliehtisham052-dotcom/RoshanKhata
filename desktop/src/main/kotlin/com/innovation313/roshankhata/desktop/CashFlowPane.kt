@@ -71,8 +71,7 @@ fun CashFlowPane(dao: KhataDao, reload: Int) {
         PaneTitle(word(W.cf_title), word(W.cf_subtitle))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf(30, 60, 90).forEach { d ->
-                if (d == days) FillButton(word(W.cf_days, d.toString()), c.brandGreen) { days = d }
-                else TextButton({ days = d }) { Text(word(W.cf_days, d.toString()), color = c.brandGreenText) }
+                FluentPill(word(W.cf_days, d.toString()), d == days) { days = d }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {

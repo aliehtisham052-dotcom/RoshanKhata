@@ -62,7 +62,7 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.inspector_title), word(W.inspector_subtitle)) }
-            FillButton(word(W.ledger_pdf_button), c.gaveFill, enabled = batches.isNotEmpty()) {
+            FluentButton(word(W.ledger_pdf_button), kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = batches.isNotEmpty(), onClick = {
                 val rows = batches.map { b ->
                     listOf(
                         b.productName + (b.batchNumber?.let { "  ·  " + words.text(W.pdf_reg_batch, it) } ?: ""),
@@ -76,13 +76,12 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
                     ) { p, of -> words.text(W.pdf_stmt_page, p, of) },
                     words.text(W.inspector_title)
                 )
-            }
+            })
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(word(W.inspector_window_title), color = c.textMuted, fontSize = 12.sp)
             listOf(30 to W.inspector_window_30, 60 to W.inspector_window_60, 90 to W.inspector_window_90).forEach { (d, label) ->
-                if (d == window) FillButton(word(label), c.brandGreen) { window = d }
-                else TextButton({ window = d }) { Text(word(label), color = c.brandGreenText) }
+                FluentPill(word(label), d == window) { window = d }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
