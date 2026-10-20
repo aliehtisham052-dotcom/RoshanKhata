@@ -121,7 +121,7 @@ fun Badge(count: Int, modifier: Modifier = Modifier) {
 
 /** A choice pill: 28 tall, round, filled with the accent when [on]. */
 @Composable
-fun FluentPill(text: String, on: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun FluentPill(text: String, on: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     Text(
         text,
