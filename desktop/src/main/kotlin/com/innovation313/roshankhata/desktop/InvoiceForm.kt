@@ -119,13 +119,13 @@ fun InvoiceForm(
         OutlinedTextField(phone, { phone = it }, label = { Text(word(W.invoice_phone_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton({ picking = true }) { Text(word(W.pick_invoice_date), color = c.brandGreenText) }
-            Text(Format.ltr(Format.dateOnly(date)), color = c.ink, fontWeight = FontWeight.Bold)
+            Text(Format.dateOnly(date), color = c.ink, fontWeight = FontWeight.Bold)
         }
         // The phone's optional due date: printed on the designs that carry one.
         if (showDue) Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton({ pickingDue = true }) { Text(word(W.invoice_due_date_hint), color = c.brandGreenText) }
             due?.let { d ->
-                Text(Format.ltr(Format.dateOnly(d)), color = c.ink, fontWeight = FontWeight.Bold)
+                Text(Format.dateOnly(d), color = c.ink, fontWeight = FontWeight.Bold)
                 TextButton({ due = null }) { Text("\u2715", color = c.textMuted) }
             }
         }
