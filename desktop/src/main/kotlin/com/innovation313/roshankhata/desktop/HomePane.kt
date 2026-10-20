@@ -79,7 +79,7 @@ fun HomePane(
     // The phone's own mask (BalancePrivacy.MASK): no figure, not even its length.
     val masked = "• • • • • •"
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 28.dp, vertical = 24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Text(Format.ltr(Format.dateOnly(System.currentTimeMillis())), color = c.inkSoft, fontSize = 13.sp)
+        Text(Format.dateOnly(System.currentTimeMillis()), color = c.inkSoft, fontSize = 13.sp)
 
         // The balance row: Net balance on the phone's dark-green card, then get and give.
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -290,7 +290,7 @@ private fun Recent(parties: List<PartyWithBalance>, hidden: Boolean, onCustomer:
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(Format.name(p.name), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(Format.ltr(Format.dateOnly(p.lastActivity)), color = c.textMuted, fontSize = 12.sp)
+                    Text(Format.dateOnly(p.lastActivity), color = c.textMuted, fontSize = 12.sp)
                 }
                 Text(
                     if (hidden) "• • •" else Format.customerBalance(p.balance),

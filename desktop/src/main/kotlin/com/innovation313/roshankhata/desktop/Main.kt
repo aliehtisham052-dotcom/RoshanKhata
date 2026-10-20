@@ -393,7 +393,7 @@ private fun Book(
             shopName = shop ?: word(W.app_name),
             logo = Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
             onShop = { choosingBusiness = true },
-            backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.ltr(Format.dateTime(it))) } ?: word(W.backup_now),
+            backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.dateTime(it)) } ?: word(W.backup_now),
             onBackup = { backupNow() },
             onPhone = { phoneSync = true },
             alerts = alerts.size,
@@ -1387,6 +1387,6 @@ private fun seasonRecord(dao: KhataDao, party: PartyWithBalance, reload: Int): S
             if (d > 0) plural(WP.season_rec_after, d, n, d) else word(W.season_rec_before, n)
         }
     }
-    return listOfNotNull(promise?.let { word(W.harvest_promise_header, Format.ltr(Format.dateOnly(it))) })
+    return listOfNotNull(promise?.let { word(W.harvest_promise_header, Format.dateOnly(it)) })
         .plus(seasons).joinToString("  \u00b7  ")
 }
