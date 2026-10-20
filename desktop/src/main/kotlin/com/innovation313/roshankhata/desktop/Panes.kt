@@ -36,6 +36,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.screens.LocalRoshanColors
@@ -134,8 +135,8 @@ fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier 
     var moreOpen by remember { mutableStateOf(false) }
     // Scrolls: twenty-eight sections outgrow a 768-row laptop at 125% display scale.
     Column(
-        modifier.width(240.dp).fillMaxHeight().background(Look.rail).verticalScroll(rememberScrollState())
-            .padding(horizontal = 10.dp, vertical = 14.dp)
+        modifier.width(212.dp).fillMaxHeight().background(Look.rail).verticalScroll(rememberScrollState())
+            .padding(horizontal = 8.dp, vertical = 10.dp)
     ) {
         Group.entries.forEach { g ->
             val trade = LocalTrade.current
@@ -158,7 +159,7 @@ fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier 
                 }
                 else -> Text(
                     word(g.word),
-                    Modifier.padding(start = 10.dp, top = 16.dp, bottom = 6.dp),
+                    Modifier.padding(start = 10.dp, top = 12.dp, bottom = 4.dp),
                     color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.6.sp
                 )
             }
@@ -176,25 +177,26 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
             .clip(RoundedCornerShape(12.dp))
             .background(if (on) Look.chosen else Color.Transparent)
             .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 6.dp),
+            .padding(horizontal = 8.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (s == Section.HOME) {
             // Home is the shop itself: the phone's storefront on brand green.
-            Box(Modifier.size(32.dp).background(c.brandGreen, RoundedCornerShape(9.dp)), contentAlignment = Alignment.Center) {
-                tileIcon(s.icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(20.dp)) }
+            Box(Modifier.size(28.dp).background(c.brandGreen, RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+                tileIcon(s.icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(18.dp)) }
             }
         } else {
-            TileBadge(s, 32, 20)
+            TileBadge(s, 28, 18)
         }
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(10.dp))
         Text(
             word(s.word),
             Modifier.weight(1f),
             color = if (on) c.brandGreenText else c.ink,
             fontSize = 14.sp,
             fontWeight = if (on) FontWeight.Bold else FontWeight.Medium,
-            maxLines = 2
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         if (badge > 0) {
             Text(

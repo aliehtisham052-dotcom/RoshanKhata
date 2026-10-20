@@ -90,7 +90,6 @@ fun InvoiceForm(
     val showNote = fields.note || !existing?.note.isNullOrBlank()
     val showDue = fields.dueDate || existing?.dueDate != null
     var templateId by remember { mutableStateOf(existing?.templateId ?: 1) }
-    var designMenu by remember { mutableStateOf(false) }
     var picture by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
     var picking by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
@@ -130,17 +129,8 @@ fun InvoiceForm(
             }
         }
 
-        // The design: the phone's ten, by name, and the first page as it will print.
-        androidx.compose.foundation.layout.Box {
-            TextButton({ designMenu = true }) {
-                Text(word(com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.NAMES.first { it.first == templateId }.second), color = c.brandGreenText)
-            }
-            androidx.compose.material3.DropdownMenu(designMenu, { designMenu = false }) {
-                com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.NAMES.forEach { (id, name) ->
-                    androidx.compose.material3.DropdownMenuItem(text = { Text(word(name)) }, onClick = { templateId = id; designMenu = false })
-                }
-            }
-        }
+        // The design: the phone's ten, stepped through with ‹ ›, and the first page as it will print.
+        DesignStepper(shown = templateId, saved = null, onShow = { templateId = it })
         if (preview != null) {
             androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, due, lines, discount, tax, chargeLabel, charge, received, note) {
                 kotlinx.coroutines.delay(400)

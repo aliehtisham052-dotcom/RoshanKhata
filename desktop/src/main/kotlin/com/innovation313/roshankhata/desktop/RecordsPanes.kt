@@ -370,13 +370,13 @@ fun InvoicesPane(
     val thisMonth = invoices.filter { it.invoiceDate >= monthStart }
     val shown = if (monthOnly) thisMonth else invoices
     val open = shown.firstOrNull { it.id == chosen } ?: shown.firstOrNull()
-    Column(Modifier.fillMaxSize().padding(horizontal = 28.dp, vertical = 24.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TileBadge(Section.INVOICES, 48, 28)
-            androidx.compose.foundation.layout.Spacer(Modifier.width(14.dp))
-            Text(word(W.nav_invoice), Modifier.weight(1f), color = c.ink, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold)
+            TileBadge(Section.INVOICES, 40, 24)
+            androidx.compose.foundation.layout.Spacer(Modifier.width(12.dp))
+            Text(word(W.nav_invoice), Modifier.weight(1f), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, maxLines = 1)
             OutlineAction(onClick = { settingFields = true }) {
-                Text(word(W.invoice_settings_title), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Text(word(W.invoice_settings_title), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
             }
             androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
             FillButton("+  " + word(W.add_invoice), c.brandGreen) { adding = true }
@@ -389,9 +389,9 @@ fun InvoicesPane(
             Text(word(W.no_invoices), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
             return@Column
         }
-        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Column(
-                Modifier.weight(0.55f).fillMaxSize().clip(RoundedCornerShape(20.dp)).background(c.surface)
+                Modifier.weight(0.5f).fillMaxSize().clip(RoundedCornerShape(20.dp)).background(c.surface)
                     .border(1.dp, Look.line, RoundedCornerShape(20.dp))
             ) {
                 Row(Modifier.padding(14.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -422,22 +422,26 @@ fun InvoicesPane(
                 }
             }
             Column(
-                Modifier.weight(0.45f).fillMaxSize().clip(RoundedCornerShape(20.dp)).background(c.surface)
+                Modifier.weight(0.5f).fillMaxSize().clip(RoundedCornerShape(20.dp)).background(c.surface)
                     .border(1.dp, Look.line, RoundedCornerShape(20.dp))
-                    .verticalScroll(rememberScrollState()).padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                    .verticalScroll(rememberScrollState()).padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (open != null) {
                     // The saved row (what was received, if the owner recorded it) and its picture in its own design.
                     var full by remember(open.id) { mutableStateOf<com.innovation313.roshankhata.data.Invoice?>(null) }
                     var picture by remember(open.id) { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
-                    LaunchedEffect(open.id, open.grandTotal, open.invoiceDate) {
+                    // The design on show: the saved one until the owner steps through the
+                    // phone's ten (only one could be seen before, 20 Oct); Apply keeps it.
+                    var look by remember(open.id) { mutableStateOf<Int?>(null) }
+                    LaunchedEffect(open.id, open.grandTotal, open.invoiceDate, look) {
+                        picture = null
                         withContext(Dispatchers.IO) {
                             val inv = dao.getInvoice(open.id)
                             full = inv
                             picture = inv?.let { row ->
                                 runCatching {
-                                    com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), row, dao.invoiceItems(open.id))
+                                    com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), row.copy(templateId = look ?: row.templateId), dao.invoiceItems(open.id))
                                         ?.picture(0, 1f)?.toComposeImageBitmap()
                                 }.getOrNull()
                             }
@@ -459,6 +463,19 @@ fun InvoicesPane(
                         }) { Text(word(W.edit), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium) }
                         androidx.compose.material3.TextButton({ deletingInvoice = open }) { Text(word(W.delete), color = c.owedToMe) }
                     }
+                    full?.let { saved ->
+                        DesignStepper(
+                            shown = look ?: saved.templateId,
+                            saved = saved.templateId,
+                            onShow = { look = it },
+                            onApply = { t ->
+                                scope.launch {
+                                    withContext(Dispatchers.IO) { dao.updateInvoice(saved.copy(templateId = t)) }
+                                    full = saved.copy(templateId = t)
+                                }
+                            }
+                        )
+                    }
                     val pic = picture
                     if (pic == null) {
                         LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -472,6 +489,33 @@ fun InvoicesPane(
                 }
             }
         }
+    }
+}
+
+/**
+ * The phone's ten invoice designs, one at a time beside an invoice: ‹ and ›
+ * step through them (wrapping round), the name and "3 of 10" between, and
+ * Apply when the one on show is not the saved one.
+ */
+@Composable
+fun DesignStepper(shown: Int, saved: Int?, onShow: (Int) -> Unit, onApply: ((Int) -> Unit)? = null) {
+    val c = LocalRoshanColors.current
+    val names = com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.NAMES
+    val at = names.indexOfFirst { it.first == shown }.coerceAtLeast(0)
+    fun step(by: Int) = onShow(names[(at + by + names.size) % names.size].first)
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Look.chosen).padding(horizontal = 6.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material3.TextButton({ step(-1) }) { Text("‹", color = c.brandGreenText, fontSize = 22.sp, fontWeight = FontWeight.Bold) }
+        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(word(names[at].second), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+            Text(word(W.invoice_design_position, at + 1, names.size), color = c.textMuted, fontSize = 12.sp, maxLines = 1)
+        }
+        if (onApply != null && shown != saved) {
+            androidx.compose.material3.TextButton({ onApply(shown) }) { Text(word(W.invoice_more_apply), color = c.brandGreenText, fontWeight = FontWeight.Bold, maxLines = 1) }
+        }
+        androidx.compose.material3.TextButton({ step(1) }) { Text("›", color = c.brandGreenText, fontSize = 22.sp, fontWeight = FontWeight.Bold) }
     }
 }
 
