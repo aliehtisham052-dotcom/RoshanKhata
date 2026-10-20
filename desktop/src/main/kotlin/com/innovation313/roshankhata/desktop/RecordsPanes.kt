@@ -398,7 +398,7 @@ fun InvoicesPane(
                             androidx.compose.foundation.layout.Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)) {
                                 Text(Format.name(i.customerName), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
-                                Text(i.invoiceNumber + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp)
+                                Text(Format.ltr(i.invoiceNumber) + "  \u00b7  " + Format.ltr(Format.dateOnly(i.invoiceDate)), color = c.textMuted, fontSize = 12.sp)
                             }
                             Text(Format.money(i.grandTotal), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                         }
@@ -428,7 +428,7 @@ fun InvoicesPane(
                             }
                         }
                     }
-                    Text(open.invoiceNumber + "  \u00b7  " + Format.dateOnly(open.invoiceDate), color = c.textMuted, fontSize = 12.sp)
+                    Text(Format.ltr(open.invoiceNumber) + "  \u00b7  " + Format.ltr(Format.dateOnly(open.invoiceDate)), color = c.textMuted, fontSize = 12.sp)
                     Text(Format.name(open.customerName), color = c.ink, fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
                     // Received is shown only when the owner recorded it on the invoice: nothing
                     // recorded is not the same as nothing paid (Invoice.receivedAmount).
