@@ -167,4 +167,42 @@ class ScreenProofTest {
         }
         for (f in listOf(home, khata, khataDark)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
     }
+
+    /**
+     * The pages rebuilt on the Figma rhythm (1.10.0 Phase 2), drawn from a small
+     * book in a temporary folder: Cashbook, Cheques and the Khata Report, so the
+     * tables, the figure cards and the pills are looked at before the owner installs.
+     */
+    @Test
+    fun `cashbook, cheques and the report draw on the rhythm`() {
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
+        val dir = File("build/screen-proof").apply { mkdirs() }
+        val home = java.nio.file.Files.createTempDirectory("rk-proof").toFile()
+        val db = com.innovation313.roshankhata.data.DesktopDatabase.open(home.resolve("khata.db"))
+        val dao = db.khataDao()
+        kotlinx.coroutines.runBlocking {
+            val a = dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Muhammad Aslam", phone = "03000000001", isCustomer = true))
+            val b = dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Ghulam Rasool", phone = "03000000002", isCustomer = true))
+            val sup = dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Sample Seeds Co.", phone = "03000000004", isCustomer = false))
+            dao.insertEntry(com.innovation313.roshankhata.data.LedgerEntry(partyId = a, amount = 12500.0, isGiven = true, note = "3 bags DAP", entryNumber = "E-1", timestamp = now - 2 * day))
+            dao.insertEntry(com.innovation313.roshankhata.data.LedgerEntry(partyId = a, amount = 5000.0, isGiven = false, note = "Cash received", entryNumber = "E-2", timestamp = now - day))
+            dao.insertEntry(com.innovation313.roshankhata.data.LedgerEntry(partyId = b, amount = 2400.0, isGiven = true, note = "Maize seed 10 kg", entryNumber = "E-3", timestamp = now - 3 * 60 * 60 * 1000))
+            dao.insertCheque(com.innovation313.roshankhata.data.Cheque(partyId = a, amount = 20000.0, isReceived = true, chequeNumber = "0048213", bankName = "HBL", dueDate = now + day))
+            dao.insertCheque(com.innovation313.roshankhata.data.Cheque(partyId = b, amount = 7500.0, isReceived = true, chequeNumber = "118822", bankName = "MCB", dueDate = now - 2 * day))
+            dao.insertCheque(com.innovation313.roshankhata.data.Cheque(partyId = sup, amount = 48000.0, isReceived = false, chequeNumber = "772201", bankName = "UBL", dueDate = now + 5 * day))
+            dao.insertCashEntry(com.innovation313.roshankhata.data.CashEntry(amount = 12500.0, isIncome = true, category = "Counter sale", note = "Walk-in", timestamp = now - 60 * 60 * 1000))
+            dao.insertCashEntry(com.innovation313.roshankhata.data.CashEntry(amount = 3200.0, isIncome = false, category = "Rent", note = null, timestamp = now - 5 * 60 * 60 * 1000))
+            dao.insertCashEntry(com.innovation313.roshankhata.data.CashEntry(amount = 1850.0, isIncome = false, category = "Wages", note = "Helper", timestamp = now - day))
+        }
+        val words = desktopWords(Locale.ENGLISH)
+        val partiesNow = kotlinx.coroutines.runBlocking { dao.partiesWithBalanceOnce() }
+        try {
+            shoot("screen-laptop-cashbook-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) { CashbookPane(dao) }
+            shoot("screen-laptop-cheques-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) { ChequesPane(dao, partiesNow, words) {} }
+            shoot("screen-laptop-report-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) { ReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) }
+        } finally {
+            db.close()
+            home.deleteRecursively()
+        }
+    }
 }
