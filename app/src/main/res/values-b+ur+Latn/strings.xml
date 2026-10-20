@@ -88,6 +88,9 @@
     <string name="home_sec_daily">Har roz</string>
     <string name="home_sec_business">Karobar</string>
     <string name="home_today">Aaj</string>
+    <string name="home_cash_in_hand">Naqad haath mein</string>
+    <string name="home_quick_actions">Fori kaam</string>
+    <string name="home_col_time">Waqt</string>
     <string name="tile_bills">Bill</string>
     <string name="tile_expiry">Expiry</string>
     <string name="tile_card">Card</string>

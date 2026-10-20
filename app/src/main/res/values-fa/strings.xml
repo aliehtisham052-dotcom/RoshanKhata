@@ -88,6 +88,9 @@
     <string name="home_sec_daily">هر روز</string>
     <string name="home_sec_business">کسب‌وکار</string>
     <string name="home_today">امروز</string>
+    <string name="home_cash_in_hand">نقد در دست</string>
+    <string name="home_quick_actions">کارهای سریع</string>
+    <string name="home_col_time">زمان</string>
     <string name="tile_bills">صورت‌حساب</string>
     <string name="tile_expiry">انقضا</string>
     <string name="tile_card">کارت</string>

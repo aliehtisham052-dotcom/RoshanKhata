@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -38,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
@@ -426,7 +428,7 @@ private fun Book(
         newerVersion?.let { v -> ExtraAlert(Section.HELP, words.text(W.update_available, v), words.text(W.update_open)) { UpdateCheck.openPage() } }
     )
 
-    Column(Modifier.fillMaxSize().background(c.pageBg)) {
+    Column(Modifier.fillMaxSize().background(Look.base)) {
         // What needs the owner today, as the phone's Home: cheques due, stock expiring
         // inside the warning window, and customers paying later than their habit.
         val now = remember { System.currentTimeMillis() }
@@ -502,14 +504,25 @@ private fun Book(
         Row(Modifier.fillMaxSize()) {
             SectionRail(section, { section = it }, badges = mapOf(Section.FOLLOWUP to late))
             // A page eases in over the last (Motion.PAGE ms) instead of snapping, as Windows' own apps do.
-            androidx.compose.animation.Crossfade(section, Modifier.weight(1f), androidx.compose.animation.core.tween(Motion.PAGE), label = "page") { page ->
+            // The content area (Fluent's layer-alt, 1.10.0): a shade lighter than the base,
+            // its top start corner rounded against the rail, as Windows 11's own NavigationView.
+            androidx.compose.animation.Crossfade(
+                section,
+                Modifier.weight(1f).fillMaxSize().clip(RoundedCornerShape(topStart = 8.dp)).background(Look.layerAlt)
+                    .border(1.dp, Look.strokeCard, RoundedCornerShape(topStart = 8.dp)),
+                androidx.compose.animation.core.tween(Motion.PAGE), label = "page"
+            ) { page ->
                 when (page) {
                     Section.HOME -> Box(Modifier.fillMaxSize()) {
                         HomePane(
-                            parties = parties, late = late, alerts = alerts,
+                            parties = parties, late = late, alerts = alerts, extra = extraAlerts,
+                            figuresOf = { homeFigures(dao) }, reload = reload, shopName = shop,
                             onOpen = { section = it },
                             onAction = { a -> if (a == HomeAction.BACKUP) backupNow() else bin = true },
-                            onCustomer = { id -> selected = id; section = Section.KHATA }
+                            onCustomer = { id -> selected = id; section = Section.KHATA },
+                            onAddParty = { addParty = true },
+                            // You got: the Khata page with its F3 (the page fills keys.got in once it is open).
+                            onGot = { section = Section.KHATA }
                         )
                     }
                     Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao) }
@@ -538,7 +551,18 @@ private fun Book(
                     Section.SHOP -> Box(Modifier.fillMaxSize()) { ShopDetailsPane(settings, images) { shop = shopName() } }
                     Section.CARD -> Box(Modifier.fillMaxSize()) { BusinessCardPane(settings, images, home, activeBusiness, words) }
                     Section.POSTER -> Box(Modifier.fillMaxSize()) { PosterPane(settings, images, home, activeBusiness, words) }
-                    Section.KHATA -> Row(Modifier.fillMaxSize()) {
+                    Section.KHATA -> Column(Modifier.fillMaxSize()) {
+                        // The page's head (1.10.0): the count and the two totals in one line, Add Party on the end side.
+                        val allGet = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
+                        val allGive = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+                        PageHeader(
+                            word(W.nav_khata),
+                            plural(WP.customer_count, parties.size, parties.size) + " · " + word(W.you_will_get) + " " + Format.money(allGet) + " · " + word(W.you_will_give) + " " + Format.money(allGive),
+                            Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
+                        ) {
+                            FluentButton(word(W.add_party), { addParty = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+                        }
+                        Row(Modifier.fillMaxSize()) {
                         // The book on the left, as the phone's Khata list.
                         Column(Modifier.weight(0.42f).fillMaxSize()) {
                             KhataControls(
@@ -547,7 +571,7 @@ private fun Book(
                                 sort = partySort, onSort = { partySort = it },
                                 whenFilter = partyWhen, onWhen = { partyWhen = it },
                                 selecting = selecting, onSelecting = { on -> selecting = on; chosenIds = emptySet() },
-                                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
+                                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)
                             )
                             // Totals: what the shop will get, and what it will give, on the open tab.
                             val ofType = byType(parties, partyType)
@@ -564,7 +588,7 @@ private fun Book(
                                     if (expiring > 0) AlertChip(word(W.today_chip, word(W.tile_expiry), expiring)) { section = Section.EXPIRY }
                                 }
                             }
-                            OutlinedTextField(
+                            FluentField(
                                 value = query,
                                 onValueChange = { typed ->
                                     query = typed
@@ -579,8 +603,9 @@ private fun Book(
                                         }
                                     }
                                 },
-                                placeholder = { Text(word(W.search_parties) + "   (Ctrl F)") },
-                                singleLine = true,
+                                placeholder = word(W.search_parties),
+                                leadingIcon = "ic_search",
+                                trailing = { KeyCap("Ctrl F") },
                                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
                                     .focusRequester(searchFocus)
                             )
@@ -667,19 +692,27 @@ private fun Book(
                                     Text(word(W.statement_pdf) + " · " + word(W.filter_type_all), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1)
                                 }
                             }
-                            LazyColumn(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
-                                items(shown, key = { it.id }) { p ->
+                            // The list as a Fluent card (1.10.0): the open row tinted with a 3 dp accent bar,
+                            // the name and its phone · last dealing, the balance and which way it runs.
+                            LazyColumn(
+                                Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+                                    .clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card)
+                            ) {
+                                itemsIndexed(shown, key = { _, it -> it.id }) { i, p ->
                                     val ticked = p.id in chosenIds
+                                    val open = p.id == selected || ticked
                                     Row(
                                         Modifier.fillMaxWidth()
-                                            .background(eased(if (p.id == selected || ticked) Look.chosen else c.surface))
+                                            .background(eased(if (open) Look.accentTint else Color.Transparent))
                                             .press {
                                                 if (selecting) chosenIds = if (ticked) chosenIds - p.id else chosenIds + p.id
                                                 else selected = p.id
                                             }
-                                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                                            .padding(end = 12.dp, top = 9.dp, bottom = 9.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
+                                        Box(Modifier.width(3.dp).height(22.dp).background(eased(if (open) Look.accent else Color.Transparent), RoundedCornerShape(2.dp)))
+                                        Spacer(Modifier.width(9.dp))
                                         if (selecting) {
                                             androidx.compose.material3.Checkbox(
                                                 checked = ticked,
@@ -687,24 +720,39 @@ private fun Book(
                                             )
                                         }
                                         // The customer's face, when the computer has it (Photos: never on a statement).
-                                        Photos.bitmap(p.photoPath, 96)?.let { face ->
+                                        val face = Photos.bitmap(p.photoPath, 96)
+                                        if (face != null) {
                                             androidx.compose.foundation.Image(
                                                 face, contentDescription = null,
-                                                modifier = Modifier.padding(end = 10.dp).size(36.dp).clip(androidx.compose.foundation.shape.CircleShape),
+                                                modifier = Modifier.size(34.dp).clip(androidx.compose.foundation.shape.CircleShape),
                                                 contentScale = androidx.compose.ui.layout.ContentScale.Crop
                                             )
-                                        }
+                                        } else Avatar(p.name, 34, i)
+                                        Spacer(Modifier.width(10.dp))
                                         Column(Modifier.weight(1f)) {
-                                            Text(Format.name(p.name), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                                            p.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 13.sp) }
+                                            Text(Format.name(p.name), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                            Text(
+                                                listOfNotNull(p.phone?.let { Format.ltr(it) }, p.lastActivity.takeIf { it > 0 }?.let { Format.dateOnly(it) }).joinToString(" · "),
+                                                color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
+                                            )
                                         }
-                                        Text(
-                                            Format.customerBalance(p.balance),
-                                            color = balanceColour(p.balance),
-                                            fontSize = 16.sp, fontWeight = FontWeight.Bold
-                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Column(horizontalAlignment = Alignment.End) {
+                                            Text(
+                                                if (kotlin.math.abs(p.balance) < 0.005) "—" else Format.money(kotlin.math.abs(p.balance)),
+                                                color = balanceColour(p.balance), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false
+                                            )
+                                            Text(
+                                                when {
+                                                    Money.isPositive(p.balance) -> word(W.you_will_get)
+                                                    Money.isNegative(p.balance) -> word(W.you_will_give)
+                                                    else -> word(W.settled)
+                                                },
+                                                color = c.textMuted, fontSize = 11.sp, maxLines = 1, softWrap = false
+                                            )
+                                        }
                                     }
-                                    HorizontalDivider(color = c.pageBg)
+                                    HorizontalDivider(color = Look.line)
                                 }
                             }
                         }
@@ -782,6 +830,7 @@ private fun Book(
                                     modifier = Modifier.weight(1f)
                                 )
                             }
+                        }
                         }
                     }
                 }
@@ -1411,10 +1460,10 @@ internal fun startIn(dialog: FileDialog, folder: String) {
 @Composable
 private fun Total(label: String, amount: String, color: Color, modifier: Modifier) {
     val c = LocalRoshanColors.current
-    Column(modifier.background(c.surface, RoundedCornerShape(14.dp)).padding(horizontal = 14.dp, vertical = 10.dp)) {
-        Text(label, color = c.textMuted, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    Column(modifier.clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card).padding(horizontal = 14.dp, vertical = 10.dp)) {
+        Text(label, color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Spacer(Modifier.height(2.dp))
-        Text(amount, color = color, fontSize = 20.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+        Text(amount, color = color, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
     }
 }
 
@@ -1508,9 +1557,9 @@ private fun AlertChip(text: String, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     Text(
         text,
-        Modifier.background(c.gaveFill.copy(alpha = 0.18f), RoundedCornerShape(16.dp)).press(RoundedCornerShape(16.dp), onClick = onClick)
+        Modifier.clip(androidx.compose.foundation.shape.CircleShape).background(Look.getTint).press(androidx.compose.foundation.shape.CircleShape, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 6.dp),
-        color = c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false
+        color = c.owedToMe, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false
     )
 }
 

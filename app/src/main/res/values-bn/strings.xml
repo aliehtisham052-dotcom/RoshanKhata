@@ -92,6 +92,9 @@
     <string name="home_sec_daily">প্রতিদিন</string>
     <string name="home_sec_business">ব্যবসা</string>
     <string name="home_today">আজ</string>
+    <string name="home_cash_in_hand">হাতে নগদ</string>
+    <string name="home_quick_actions">দ্রুত কাজ</string>
+    <string name="home_col_time">সময়</string>
     <string name="tile_bills">বিল</string>
     <string name="tile_expiry">মেয়াদ</string>
     <string name="tile_card">কার্ড</string>

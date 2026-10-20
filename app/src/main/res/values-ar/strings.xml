@@ -104,6 +104,9 @@
     <string name="home_sec_daily">كل يوم</string>
     <string name="home_sec_business">النشاط</string>
     <string name="home_today">اليوم</string>
+    <string name="home_cash_in_hand">النقد في اليد</string>
+    <string name="home_quick_actions">إجراءات سريعة</string>
+    <string name="home_col_time">الوقت</string>
     <string name="tile_bills">الفواتير</string>
     <string name="tile_expiry">الانتهاء</string>
     <string name="tile_card">البطاقة</string>
