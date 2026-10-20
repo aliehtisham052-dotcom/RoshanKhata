@@ -137,7 +137,31 @@ private fun ProfilePictures(images: ProfileImages) {
     val c = LocalRoshanColors.current
     var version by remember { mutableStateOf(0) }
     var failed by remember { mutableStateOf(false) }
+    var unreadable by remember { mutableStateOf(false) }
+    // A chosen picture waiting for the owner's crop (the phone's ImageCropActivity).
+    var cropping by remember { mutableStateOf<Pair<ProfileImages.Kind, java.awt.image.BufferedImage>?>(null) }
     val chooseTitle = word(W.bp_add)
+    cropping?.let { (kind, img) ->
+        androidx.compose.ui.window.DialogWindow(
+            onCloseRequest = { cropping = null },
+            onPreviewKeyEvent = escCloses { cropping = null },
+            title = word(W.adjust_crop_title),
+            state = androidx.compose.ui.window.rememberDialogState(width = 760.dp, height = 720.dp)
+        ) {
+            // A logo is kept whole to start; a signature, stamp or QR starts at its ink.
+            val start = remember(img) { if (kind == ProfileImages.Kind.LOGO) java.awt.Rectangle(0, 0, img.width, img.height) else InkBounds.of(img) }
+            CropWindowContent(img, start, onUse = { cut ->
+                cropping = null
+                failed = runCatching {
+                    val tmp = java.io.File.createTempFile("rk-crop", ".png")
+                    try {
+                        javax.imageio.ImageIO.write(cut, "png", tmp) && images.set(kind, tmp)
+                    } finally { tmp.delete() }
+                }.getOrDefault(false).not()
+                version++
+            }, onCancel = { cropping = null })
+        }
+    }
     Column(
         Modifier.widthIn(max = 720.dp).background(c.surface, RoundedCornerShape(14.dp)).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -164,13 +188,16 @@ private fun ProfilePictures(images: ProfileImages) {
                     dialog.isVisible = true
                     val name = dialog.file
                     if (name != null) {
-                        failed = !images.set(kind, java.io.File(dialog.directory, name))
-                        version++
+                        val img = runCatching { javax.imageio.ImageIO.read(java.io.File(dialog.directory, name)) }.getOrNull()
+                        unreadable = img == null
+                        failed = false
+                        if (img != null) cropping = kind to img
                     }
                 }) { Text(word(if (picture == null) W.bp_add else W.bp_change), color = c.brandGreenText) }
                 if (picture != null) TextButton({ images.remove(kind); version++ }) { Text(word(W.delete), color = c.owedToMe) }
             }
         }
-        if (failed) Text(word(W.bp_logo_save_failed), color = c.owedToMe, fontSize = 13.sp)
+        if (failed) Text(word(W.crop_save_failed), color = c.owedToMe, fontSize = 13.sp)
+        if (unreadable) Text(word(W.crop_load_failed), color = c.owedToMe, fontSize = 13.sp)
     }
 }

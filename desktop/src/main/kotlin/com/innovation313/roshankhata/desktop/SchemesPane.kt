@@ -155,6 +155,7 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
         val existing = form
         DialogWindow(
             onCloseRequest = { adding = false; form = null },
+            onPreviewKeyEvent = escCloses { adding = false; form = null },
             title = word(if (existing == null) W.schemes_add else W.scheme_edit),
             state = rememberDialogState(width = 560.dp, height = 820.dp)
         ) {
