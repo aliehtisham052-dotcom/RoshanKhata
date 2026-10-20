@@ -679,9 +679,9 @@
     <string name="bill_saved_credit">بل محفوظ ٿيو ۽ کاتي ۾ داخل ٿيو</string>
     <string name="enter_supplier">مهرباني ڪري سپلائر چونڊيو</string>
     <string name="enter_product">مهرباني ڪري پراڊڪٽ جو نالو لکو</string>
-    <string name="bill_deleted">بل هٽيو. کاتي جي داخلا رهندي — مال واقعي آيو هو ۽ توهان واقعي ان جا ڏيڻا آهيو.</string>
+    <string name="bill_deleted">بل هٽيو. جيڪڏهن اهو اڌار جو بل هو ته ان جي کاتي جي داخلا به ردي جي ٽوڪري ۾ هلي وئي — غلطي هجي ته 30 ڏينهن اندر اتان واپس آڻي سگهو ٿا.</string>
     <string name="delete_bill">بل هٽايو</string>
-    <string name="delete_bill_confirm">بل ۽ ان جا بيچ رڪارڊ هٽي ويندا، پر کاتي جي داخلا رهندي. مال واقعي آيو هو ۽ پئسا واقعي ڏيڻا آهن — ڪاغذ هٽائڻ سان اهو ختم نٿو ٿئي.</string>
+    <string name="delete_bill_confirm">بل ۽ ان جا بيچ رڪارڊ هٽي ويندا. جيڪڏهن اهو اڌار جو بل آهي ته ان جي کاتي جي داخلا (جيڪي پئسا توهان هن سپلائر کي ڏيڻا آهن) به ردي جي ٽوڪري ۾ هلي ويندي، ۽ ڏيڻي رقم ايتري گهٽجي ويندي. اها داخلا 30 ڏينهن اندر ردي جي ٽوڪري مان واپس آڻي سگهجي ٿي.</string>
     <string name="bill_actions">بل</string>
     <string name="view_items">شيون ۽ بيچ ڏسو</string>
 
@@ -2937,4 +2937,23 @@
     <string name="import_csv_go">انهن کي آڻيو</string>
     <string name="import_csv_done">گراهڪ شامل ٿيا: %1$d</string>
     <string name="import_csv_empty">هن فائل مان ڪو به گراهڪ پڙهي نه سگهيو. ان ۾ گهٽ ۾ گهٽ نالن جو هڪ ڪالم هجڻ گهرجي.</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">ڪمپيوٽر ڏانهن موڪليو (وائي فائي)</string>
+    <string name="wifi_send_explain">ڪمپيوٽر تي روشن کاتو کوليو ۽ “فون مان” دٻايو، پوءِ اتي ڏيکاريل ڪوڊ اسڪين ڪريو. ٻئي هڪ ئي وائي فائي تي هجن. ڪجهه به انٽرنيٽ تي نٿو وڃي.</string>
+    <string name="wifi_send_button">ڪمپيوٽر جو ڪوڊ اسڪين ڪريو</string>
+    <string name="wifi_send_not_computer">هي روشن کاتي ڪمپيوٽر جو ڪوڊ ناهي.</string>
+    <string name="wifi_send_sending">ڪمپيوٽر ڏانهن موڪلي رهيا آهيون…</string>
+    <string name="wifi_send_done">موڪليو ويو. ڪمپيوٽر تي ڏسي اتي تصديق ڪريو ته کاتو اچي ويندو.</string>
+    <string name="wifi_send_refused">ڪمپيوٽر نه ورتو. ان جي “فون مان” واري دري بند ڪري ٻيهر کوليو ۽ نئون ڪوڊ اسڪين ڪريو.</string>
+    <string name="wifi_send_unreachable">ڪمپيوٽر تائين پهچي نه سگهياسين. ڏسو ته ٻئي هڪ ئي وائي فائي تي آهن، ڪمپيوٽر تي “فون مان” واري دري کليل آهي، ۽ ونڊوز روشن کاتي کي نيٽ ورڪ جي اجازت ڏني آهي.</string>
+    <string name="wifi_pc_button">فون مان</string>
+    <string name="wifi_pc_title">توهان جي فون مان، وائي فائي ذريعي</string>
+    <string name="wifi_pc_steps">فون تي: بيڪ اپ ← ڪمپيوٽر جو ڪوڊ اسڪين ڪريو، ۽ هن ڪوڊ تي رکو. ٻئي هڪ ئي وائي فائي تي هجن. ڪجهه به انٽرنيٽ تي نٿو وڃي، ۽ توهان جي ها کان سواءِ هتي ڪجهه نٿو بدلجي.</string>
+    <string name="wifi_pc_waiting">فون جو انتظار آهي…</string>
+    <string name="wifi_pc_no_network">هي ڪمپيوٽر ڪنهن نيٽ ورڪ تي ناهي. ان کي دڪان جي وائي فائي سان ڳنڍيو ۽ هي دري ٻيهر کوليو.</string>
+    <string name="wifi_pc_firewall">جيڪڏهن ونڊوز پڇي ته روشن کاتي کي پرائيويٽ نيٽ ورڪ جي اجازت ڏيو.</string>
+    <string name="wifi_pc_failed">ٻڌڻ شروع نه ٿي سگهيو. هي دري بند ڪري ٻيهر ڪوشش ڪريو.</string>
+    <string name="poster_save_picture">پوسٽر تصوير طور محفوظ ڪريو</string>
+    <string name="poster_desktop_flat">ڪمپيوٽر تي تصويرون سادي (فليٽ) ٺهن ٿيون؛ فون تي اهي ٿري ڊي ۾ ڏسجن ٿيون.</string>
 </resources>

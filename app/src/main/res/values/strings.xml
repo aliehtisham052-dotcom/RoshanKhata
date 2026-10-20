@@ -688,9 +688,9 @@ Add your first customer and start your khata.</string>
     <string name="bill_saved_credit">Bill saved and posted to your ledger</string>
     <string name="enter_supplier">Please choose a supplier</string>
     <string name="enter_product">Please enter a product name</string>
-    <string name="bill_deleted">Bill deleted. The ledger entry stays — the stock really did arrive and you really do owe for it.</string>
+    <string name="bill_deleted">Bill deleted. If it was a credit bill, its ledger entry went to the Recycle Bin with it — restore it from there within 30 days if this was a mistake.</string>
     <string name="delete_bill">Delete bill</string>
-    <string name="delete_bill_confirm">The bill and its batch records will be removed, but the ledger entry stays. The stock really did arrive and the money is really owed — deleting the paperwork does not undo that.</string>
+    <string name="delete_bill_confirm">The bill and its batch records will be removed. If it is a credit bill, its ledger entry (what you owe this supplier) also goes to the Recycle Bin, so the amount owed drops by this bill. You can restore the entry from the Recycle Bin within 30 days.</string>
     <string name="bill_actions">Bill</string>
     <string name="view_items">View items and batches</string>
 
@@ -3123,4 +3123,23 @@ You can change this any time from this screen.</string>
     <string name="import_csv_go">Bring them in</string>
     <string name="import_csv_done">Customers added: %1$d</string>
     <string name="import_csv_empty">No customers could be read from this file. It needs at least a column of names.</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">Send to computer (WiFi)</string>
+    <string name="wifi_send_explain">On the computer, open Roshan Khata and press “From phone”, then scan the code it shows. Both must be on the same WiFi. Nothing goes to the internet.</string>
+    <string name="wifi_send_button">Scan the computer’s code</string>
+    <string name="wifi_send_not_computer">This is not a Roshan Khata computer code.</string>
+    <string name="wifi_send_sending">Sending to the computer…</string>
+    <string name="wifi_send_done">Sent. Check it on the computer and confirm there to load it.</string>
+    <string name="wifi_send_refused">The computer did not take it. Close its “From phone” window, open it again and scan the new code.</string>
+    <string name="wifi_send_unreachable">Could not reach the computer. Check that both are on the same WiFi, that its “From phone” window is open, and that Windows allowed Roshan Khata on the network.</string>
+    <string name="wifi_pc_button">From phone</string>
+    <string name="wifi_pc_title">From your phone, over WiFi</string>
+    <string name="wifi_pc_steps">On the phone: Backup → Scan the computer’s code, and point it at this code. Both must be on the same WiFi. Nothing goes to the internet, and nothing here is replaced until you say yes.</string>
+    <string name="wifi_pc_waiting">Waiting for the phone…</string>
+    <string name="wifi_pc_no_network">This computer is not on a network. Connect it to the shop’s WiFi and open this window again.</string>
+    <string name="wifi_pc_firewall">If Windows asks, allow Roshan Khata on private networks.</string>
+    <string name="wifi_pc_failed">Could not start listening. Close this window and try again.</string>
+    <string name="poster_save_picture">Save the poster as a picture</string>
+    <string name="poster_desktop_flat">On the computer the pictures are drawn flat; the phone shows them in 3D.</string>
 </resources>

@@ -23,6 +23,9 @@ on:
       - 'scripts/check_pdf_rtl.py'
       - 'scripts/check_icon_direction.py'
       - 'app/src/main/java/**'
+      # The computer's copies of the phone's designs (gen_desktop_*.py --check).
+      - 'scripts/gen_desktop_*.py'
+      - 'desktop/src/main/kotlin/**'
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
@@ -40,6 +43,9 @@ on:
       - 'scripts/check_pdf_rtl.py'
       - 'scripts/check_icon_direction.py'
       - 'app/src/main/java/**'
+      # The computer's copies of the phone's designs (gen_desktop_*.py --check).
+      - 'scripts/gen_desktop_*.py'
+      - 'desktop/src/main/kotlin/**'
 
 jobs:
   parity:
@@ -60,3 +66,5 @@ jobs:
         run: python3 scripts/gen_desktop_invoice.py --check
       - name: The computer's business cards are the phone's (generated copies up to date)
         run: python3 scripts/gen_desktop_cards.py --check
+      - name: The computer's posters are the phone's (generated copies up to date)
+        run: python3 scripts/gen_desktop_poster.py --check

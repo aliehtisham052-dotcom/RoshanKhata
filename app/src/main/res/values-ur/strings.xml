@@ -658,9 +658,9 @@
     <string name="bill_saved_credit">بل محفوظ ہو کر کھاتے میں درج ہو گیا</string>
     <string name="enter_supplier">براہِ کرم سپلائر چنیں</string>
     <string name="enter_product">براہِ کرم مصنوعات کا نام لکھیں</string>
-    <string name="bill_deleted">بل حذف ہو گیا۔ کھاتے کا اندراج رہے گا — مال واقعی آیا تھا اور رقم واقعی واجب ہے۔</string>
+    <string name="bill_deleted">بل حذف ہو گیا۔ اگر یہ ادھار کا بل تھا تو اس کا کھاتے کا اندراج بھی ری سائیکل بن میں چلا گیا — غلطی ہو تو 30 دن کے اندر وہاں سے واپس لا سکتے ہیں۔</string>
     <string name="delete_bill">بل حذف کریں</string>
-    <string name="delete_bill_confirm">بل اور اس کے بیچ ریکارڈ ہٹ جائیں گے، لیکن کھاتے کا اندراج رہے گا۔ مال واقعی آیا تھا اور رقم واقعی واجب ہے — کاغذ حذف کرنے سے یہ واپس نہیں ہوتا۔</string>
+    <string name="delete_bill_confirm">بل اور اس کے بیچ ریکارڈ ہٹ جائیں گے۔ اگر یہ ادھار کا بل ہے تو اس کا کھاتے کا اندراج (جو رقم آپ نے اس سپلائر کو دینی ہے) بھی ری سائیکل بن میں چلا جائے گا، اور واجب رقم اتنی کم ہو جائے گی۔ یہ اندراج 30 دن کے اندر ری سائیکل بن سے واپس لایا جا سکتا ہے۔</string>
     <string name="bill_actions">بل</string>
     <string name="view_items">چیزیں اور بیچ دیکھیں</string>
 
@@ -2909,4 +2909,23 @@
     <string name="import_csv_go">انہیں لے آئیں</string>
     <string name="import_csv_done">گاہک شامل ہوئے: %1$d</string>
     <string name="import_csv_empty">اس فائل سے کوئی گاہک نہیں پڑھا جا سکا۔ اس میں کم از کم ناموں کا ایک کالم ہونا چاہیے۔</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">کمپیوٹر کو بھیجیں (وائی فائی)</string>
+    <string name="wifi_send_explain">کمپیوٹر پر روشن کھاتہ کھولیں اور “فون سے” دبائیں، پھر وہاں دکھنے والا کوڈ اسکین کریں۔ دونوں ایک ہی وائی فائی پر ہوں۔ کچھ بھی انٹرنیٹ پر نہیں جاتا۔</string>
+    <string name="wifi_send_button">کمپیوٹر کا کوڈ اسکین کریں</string>
+    <string name="wifi_send_not_computer">یہ روشن کھاتہ کمپیوٹر کا کوڈ نہیں ہے۔</string>
+    <string name="wifi_send_sending">کمپیوٹر کو بھیج رہے ہیں…</string>
+    <string name="wifi_send_done">بھیج دیا۔ کمپیوٹر پر دیکھ کر وہیں تصدیق کریں تو کھاتہ آ جائے گا۔</string>
+    <string name="wifi_send_refused">کمپیوٹر نے نہیں لیا۔ اس کی “فون سے” والی کھڑکی بند کر کے دوبارہ کھولیں اور نیا کوڈ اسکین کریں۔</string>
+    <string name="wifi_send_unreachable">کمپیوٹر تک نہیں پہنچ سکے۔ دیکھیں کہ دونوں ایک ہی وائی فائی پر ہیں، کمپیوٹر پر “فون سے” والی کھڑکی کھلی ہے، اور ونڈوز نے روشن کھاتہ کو نیٹ ورک کی اجازت دی ہے۔</string>
+    <string name="wifi_pc_button">فون سے</string>
+    <string name="wifi_pc_title">آپ کے فون سے، وائی فائی کے ذریعے</string>
+    <string name="wifi_pc_steps">فون پر: بیک اپ ← کمپیوٹر کا کوڈ اسکین کریں، اور اس کوڈ پر رکھیں۔ دونوں ایک ہی وائی فائی پر ہوں۔ کچھ بھی انٹرنیٹ پر نہیں جاتا، اور آپ کی ہاں کے بغیر یہاں کچھ نہیں بدلتا۔</string>
+    <string name="wifi_pc_waiting">فون کا انتظار ہے…</string>
+    <string name="wifi_pc_no_network">یہ کمپیوٹر کسی نیٹ ورک پر نہیں ہے۔ اسے دکان کے وائی فائی سے جوڑیں اور یہ کھڑکی دوبارہ کھولیں۔</string>
+    <string name="wifi_pc_firewall">اگر ونڈوز پوچھے تو روشن کھاتہ کو پرائیویٹ نیٹ ورک کی اجازت دیں۔</string>
+    <string name="wifi_pc_failed">سننا شروع نہیں ہو سکا۔ یہ کھڑکی بند کر کے دوبارہ کوشش کریں۔</string>
+    <string name="poster_save_picture">پوسٹر تصویر کے طور پر محفوظ کریں</string>
+    <string name="poster_desktop_flat">کمپیوٹر پر تصویریں سادہ (فلیٹ) بنتی ہیں؛ فون پر یہ تھری ڈی میں دکھتی ہیں۔</string>
 </resources>

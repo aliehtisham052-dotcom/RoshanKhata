@@ -31,6 +31,10 @@ import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.DriveFeature
 import com.innovation313.roshankhata.data.EraseAll
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.data.WifiSync
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -103,6 +107,8 @@ class BackupActivity : BaseActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnEraseAll).setOnClickListener { confirmEraseAll() }
+
+        findViewById<MaterialButton>(R.id.btnSendToComputer).setOnClickListener { scanComputer() }
 
         if (DriveFeature.ENABLED) {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
@@ -219,6 +225,57 @@ class BackupActivity : BaseActivity() {
                 .setPositiveButton(R.string.share_copy) { _, _ ->
                     if (shareFile != null) shareBackup(shareFile)
                 }
+                .show()
+        }
+    }
+
+    /**
+     * To the computer over WiFi (20 Oct): scan the code the Windows app shows
+     * (its window "From phone"), then send this book there, sealed with the
+     * code's secret (data/WifiSync). The scanner is Play services' own, as
+     * for customer cards, so the app still asks for no camera permission.
+     * Cancelling the scanner says nothing.
+     */
+    private fun scanComputer() {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+        GmsBarcodeScanning.getClient(this, options).startScan()
+            .addOnSuccessListener { barcode ->
+                val pairing = WifiSync.parsePairing(barcode.rawValue)
+                if (pairing == null) {
+                    Toast.makeText(this, R.string.wifi_send_not_computer, Toast.LENGTH_LONG).show()
+                    return@addOnSuccessListener
+                }
+                sendToComputer(pairing)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun sendToComputer(pairing: WifiSync.Pairing) {
+        Toast.makeText(this, R.string.wifi_send_sending, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val outcome = withContext(Dispatchers.IO) {
+                // The same streamed backup file every other path uses (P6), then its bytes.
+                val file = try { Backup.exportToCache(this@BackupActivity, dao) } catch (e: Exception) { null }
+                    ?: return@withContext null
+                if (file.length() > WifiSync.MAX_BYTES) return@withContext WifiSync.Outcome.Refused(WifiSync.TOO_BIG)
+                try { WifiSync.send(pairing, file.readBytes()) } catch (e: Exception) { WifiSync.Outcome.Unreachable }
+            }
+            if (isFinishing || isDestroyed) return@launch
+            val message = when (outcome) {
+                null -> getString(R.string.backup_failed)
+                is WifiSync.Outcome.Sent -> getString(R.string.wifi_send_done)
+                is WifiSync.Outcome.Refused -> getString(R.string.wifi_send_refused)
+                WifiSync.Outcome.Unreachable -> getString(R.string.wifi_send_unreachable)
+            }
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.wifi_send_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, null)
                 .show()
         }
     }

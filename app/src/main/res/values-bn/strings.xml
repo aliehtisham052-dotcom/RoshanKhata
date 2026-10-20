@@ -683,9 +683,9 @@
     <string name="bill_saved_credit">বিল সেভ হয়েছে এবং খাতায় উঠেছে</string>
     <string name="enter_supplier">অনুগ্রহ করে সরবরাহকারী বেছে নিন</string>
     <string name="enter_product">অনুগ্রহ করে পণ্যের নাম লিখুন</string>
-    <string name="bill_deleted">বিল মুছে ফেলা হয়েছে। খাতার এন্ট্রি থাকবে — মাল সত্যিই এসেছিল এবং তার দাম আপনাকে দিতেই হবে।</string>
+    <string name="bill_deleted">বিল মুছে ফেলা হয়েছে। এটি বাকির বিল হলে এর খাতার এন্ট্রিও রিসাইকেল বিনে চলে গেছে — ভুল হলে ৩০ দিনের মধ্যে সেখান থেকে ফিরিয়ে আনতে পারেন।</string>
     <string name="delete_bill">বিল মুছুন</string>
-    <string name="delete_bill_confirm">বিল ও এর ব্যাচ রেকর্ড সরে যাবে, কিন্তু খাতার এন্ট্রি থাকবে। মাল সত্যিই এসেছিল এবং টাকা সত্যিই দেনা — কাগজ মুছলে তা বদলায় না।</string>
+    <string name="delete_bill_confirm">বিল ও এর ব্যাচ রেকর্ড সরে যাবে। এটি বাকির বিল হলে এর খাতার এন্ট্রিও (এই সরবরাহকারীকে আপনার যা দেনা) রিসাইকেল বিনে যাবে, ফলে দেনা এই বিলের পরিমাণ কমে যাবে। এন্ট্রিটি ৩০ দিনের মধ্যে রিসাইকেল বিন থেকে ফিরিয়ে আনা যাবে।</string>
     <string name="bill_actions">বিল</string>
     <string name="view_items">পণ্য ও ব্যাচ দেখুন</string>
 
@@ -2953,4 +2953,23 @@
     <string name="import_csv_go">তাদের নিয়ে আসুন</string>
     <string name="import_csv_done">গ্রাহক যোগ হলো: %1$d</string>
     <string name="import_csv_empty">এই ফাইল থেকে কোনো গ্রাহক পড়া যায়নি। এতে অন্তত নামের একটি কলাম থাকতে হবে।</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">কম্পিউটারে পাঠান (ওয়াই-ফাই)</string>
+    <string name="wifi_send_explain">কম্পিউটারে রোশন খাতা খুলে “ফোন থেকে” চাপুন, তারপর সেখানে দেখানো কোডটি স্ক্যান করুন। দুটোই একই ওয়াই-ফাইতে থাকতে হবে। কিছুই ইন্টারনেটে যায় না।</string>
+    <string name="wifi_send_button">কম্পিউটারের কোড স্ক্যান করুন</string>
+    <string name="wifi_send_not_computer">এটি রোশন খাতা কম্পিউটারের কোড নয়।</string>
+    <string name="wifi_send_sending">কম্পিউটারে পাঠানো হচ্ছে…</string>
+    <string name="wifi_send_done">পাঠানো হয়েছে। কম্পিউটারে দেখে সেখানেই নিশ্চিত করুন, তাহলে খাতা চলে আসবে।</string>
+    <string name="wifi_send_refused">কম্পিউটার এটি নেয়নি। “ফোন থেকে” জানালাটি বন্ধ করে আবার খুলুন এবং নতুন কোড স্ক্যান করুন।</string>
+    <string name="wifi_send_unreachable">কম্পিউটারে পৌঁছানো গেল না। দেখুন দুটোই একই ওয়াই-ফাইতে আছে, কম্পিউটারে “ফোন থেকে” জানালাটি খোলা আছে, এবং উইন্ডোজ রোশন খাতাকে নেটওয়ার্কের অনুমতি দিয়েছে।</string>
+    <string name="wifi_pc_button">ফোন থেকে</string>
+    <string name="wifi_pc_title">আপনার ফোন থেকে, ওয়াই-ফাইয়ে</string>
+    <string name="wifi_pc_steps">ফোনে: ব্যাকআপ → কম্পিউটারের কোড স্ক্যান করুন, এবং এই কোডের দিকে ধরুন। দুটোই একই ওয়াই-ফাইতে থাকতে হবে। কিছুই ইন্টারনেটে যায় না, আর আপনার হ্যাঁ ছাড়া এখানে কিছুই বদলায় না।</string>
+    <string name="wifi_pc_waiting">ফোনের অপেক্ষায়…</string>
+    <string name="wifi_pc_no_network">এই কম্পিউটার কোনো নেটওয়ার্কে নেই। দোকানের ওয়াই-ফাইতে যুক্ত করে এই জানালাটি আবার খুলুন।</string>
+    <string name="wifi_pc_firewall">উইন্ডোজ জিজ্ঞেস করলে রোশন খাতাকে প্রাইভেট নেটওয়ার্কে অনুমতি দিন।</string>
+    <string name="wifi_pc_failed">শোনা শুরু করা গেল না। এই জানালাটি বন্ধ করে আবার চেষ্টা করুন।</string>
+    <string name="poster_save_picture">পোস্টারটি ছবি হিসেবে সংরক্ষণ করুন</string>
+    <string name="poster_desktop_flat">কম্পিউটারে ছবিগুলো সমতল (ফ্ল্যাট) আঁকা হয়; ফোন এগুলো ৩ডিতে দেখায়।</string>
 </resources>

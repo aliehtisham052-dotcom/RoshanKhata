@@ -667,9 +667,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="bill_saved_credit">Tagihan disimpan dan dicatat ke buku Anda</string>
     <string name="enter_supplier">Silakan pilih pemasok</string>
     <string name="enter_product">Masukkan nama produk</string>
-    <string name="bill_deleted">Tagihan dihapus. Catatan di buku tetap ada — stoknya memang sudah datang dan Anda memang berutang atasnya.</string>
+    <string name="bill_deleted">Tagihan dihapus. Jika ini tagihan kredit, catatan bukunya ikut masuk Tempat Sampah — pulihkan dari sana dalam 30 hari jika ini keliru.</string>
     <string name="delete_bill">Hapus tagihan</string>
-    <string name="delete_bill_confirm">Tagihan dan catatan batch-nya akan dihapus, tetapi catatan di buku tetap ada. Stoknya memang sudah datang dan uangnya memang terutang — menghapus dokumen tidak membatalkan hal itu.</string>
+    <string name="delete_bill_confirm">Tagihan dan catatan batch-nya akan dihapus. Jika ini tagihan kredit, catatan bukunya (utang Anda kepada pemasok ini) juga masuk Tempat Sampah, sehingga utang berkurang sebesar tagihan ini. Catatan itu bisa dipulihkan dari Tempat Sampah dalam 30 hari.</string>
     <string name="bill_actions">Tagihan</string>
     <string name="view_items">Lihat barang dan batch</string>
 
@@ -2906,4 +2906,23 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="import_csv_go">Masukkan mereka</string>
     <string name="import_csv_done">Pelanggan ditambahkan: %1$d</string>
     <string name="import_csv_empty">Tidak ada pelanggan yang dapat dibaca dari file ini. File perlu setidaknya satu kolom nama.</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">Kirim ke komputer (WiFi)</string>
+    <string name="wifi_send_explain">Di komputer, buka Roshan Khata dan tekan “Dari ponsel”, lalu pindai kode yang muncul. Keduanya harus di WiFi yang sama. Tidak ada yang dikirim ke internet.</string>
+    <string name="wifi_send_button">Pindai kode komputer</string>
+    <string name="wifi_send_not_computer">Ini bukan kode komputer Roshan Khata.</string>
+    <string name="wifi_send_sending">Mengirim ke komputer…</string>
+    <string name="wifi_send_done">Terkirim. Periksa di komputer dan konfirmasi di sana untuk memuatnya.</string>
+    <string name="wifi_send_refused">Komputer tidak menerimanya. Tutup jendela “Dari ponsel”, buka lagi, lalu pindai kode yang baru.</string>
+    <string name="wifi_send_unreachable">Komputer tidak terjangkau. Pastikan keduanya di WiFi yang sama, jendela “Dari ponsel” di komputer terbuka, dan Windows mengizinkan Roshan Khata di jaringan.</string>
+    <string name="wifi_pc_button">Dari ponsel</string>
+    <string name="wifi_pc_title">Dari ponsel Anda, lewat WiFi</string>
+    <string name="wifi_pc_steps">Di ponsel: Cadangan → Pindai kode komputer, lalu arahkan ke kode ini. Keduanya harus di WiFi yang sama. Tidak ada yang dikirim ke internet, dan tidak ada yang diganti di sini sebelum Anda setuju.</string>
+    <string name="wifi_pc_waiting">Menunggu ponsel…</string>
+    <string name="wifi_pc_no_network">Komputer ini tidak terhubung ke jaringan. Hubungkan ke WiFi toko lalu buka jendela ini lagi.</string>
+    <string name="wifi_pc_firewall">Jika Windows bertanya, izinkan Roshan Khata di jaringan pribadi.</string>
+    <string name="wifi_pc_failed">Tidak bisa mulai mendengarkan. Tutup jendela ini dan coba lagi.</string>
+    <string name="poster_save_picture">Simpan poster sebagai gambar</string>
+    <string name="poster_desktop_flat">Di komputer gambar digambar datar; ponsel menampilkannya dalam 3D.</string>
 </resources>

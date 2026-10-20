@@ -658,9 +658,9 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="bill_saved_credit">Bill mehfooz ho kar khate mein darj ho gaya</string>
     <string name="enter_supplier">Meherbani kar ke supplier chunein</string>
     <string name="enter_product">Meherbani kar ke product ka naam likhein</string>
-    <string name="bill_deleted">Bill delete ho gaya. Khate ki entry rahegi — maal waqai aaya tha aur raqam waqai wajib hai.</string>
+    <string name="bill_deleted">Bill delete ho gaya. Agar ye udhar ka bill tha to is ki khate wali entry bhi Recycle Bin mein chali gayi — ghalti ho to 30 din ke andar wahan se wapas la sakte hain.</string>
     <string name="delete_bill">Bill delete karein</string>
-    <string name="delete_bill_confirm">Bill aur is ke batch record hat jayenge, lekin khate ki entry rahegi. Maal waqai aaya tha aur raqam waqai wajib hai — kaghaz delete karne se ye wapas nahi hota.</string>
+    <string name="delete_bill_confirm">Bill aur is ke batch record hat jayenge. Agar ye udhar ka bill hai to is ki khate wali entry (jo raqam aap ne is supplier ko deni hai) bhi Recycle Bin mein chali jayegi, aur wajib raqam itni kam ho jayegi. Ye entry 30 din ke andar Recycle Bin se wapas la sakte hain.</string>
     <string name="bill_actions">Bill</string>
     <string name="view_items">Cheezein aur batch dekhein</string>
 
@@ -2909,4 +2909,23 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="import_csv_go">Inhein le aayein</string>
     <string name="import_csv_done">Customers shamil huay: %1$d</string>
     <string name="import_csv_empty">Is file se koi customer nahi parha ja saka. Is mein kam az kam naamon ka aik column hona chahiye.</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">Computer ko bhejein (WiFi)</string>
+    <string name="wifi_send_explain">Computer par Roshan Khata kholein aur “Phone se” dabayein, phir wahan dikhne wala code scan karein. Dono aik hi WiFi par hon. Kuch bhi internet par nahi jata.</string>
+    <string name="wifi_send_button">Computer ka code scan karein</string>
+    <string name="wifi_send_not_computer">Ye Roshan Khata computer ka code nahi hai.</string>
+    <string name="wifi_send_sending">Computer ko bhej rahe hain…</string>
+    <string name="wifi_send_done">Bhej diya. Computer par dekh kar wahin tasdeeq karein to khata aa jayega.</string>
+    <string name="wifi_send_refused">Computer ne nahi liya. Us ki “Phone se” wali khirki band kar ke dobara kholein aur naya code scan karein.</string>
+    <string name="wifi_send_unreachable">Computer tak nahi pohanch sake. Dekhein ke dono aik hi WiFi par hain, computer par “Phone se” wali khirki khuli hai, aur Windows ne Roshan Khata ko network ki ijazat di hai.</string>
+    <string name="wifi_pc_button">Phone se</string>
+    <string name="wifi_pc_title">Aap ke phone se, WiFi ke zariye</string>
+    <string name="wifi_pc_steps">Phone par: Backup → Computer ka code scan karein, aur is code par rakhein. Dono aik hi WiFi par hon. Kuch bhi internet par nahi jata, aur aap ki haan ke baghair yahan kuch nahi badalta.</string>
+    <string name="wifi_pc_waiting">Phone ka intezar hai…</string>
+    <string name="wifi_pc_no_network">Ye computer kisi network par nahi hai. Ise dukaan ke WiFi se joRein aur ye khirki dobara kholein.</string>
+    <string name="wifi_pc_firewall">Agar Windows poochhe to Roshan Khata ko private network ki ijazat dein.</string>
+    <string name="wifi_pc_failed">Sunna shuru nahi ho saka. Ye khirki band kar ke dobara koshish karein.</string>
+    <string name="poster_save_picture">Poster tasveer ke taur par mehfooz karein</string>
+    <string name="poster_desktop_flat">Computer par tasveerein saada (flat) banti hain; phone par ye 3D mein dikhti hain.</string>
 </resources>
