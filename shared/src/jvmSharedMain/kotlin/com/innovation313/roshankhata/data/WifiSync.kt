@@ -34,6 +34,14 @@ import javax.crypto.spec.SecretKeySpec
  *
  * The frame: "RKS1", a 12-byte nonce, the sealed bytes' length (4 bytes),
  * the sealed bytes. The answer: one byte, [OK], [BAD] or [TOO_BIG].
+ *
+ * The other way (20 Oct, later the same day): the phone may ASK the computer
+ * for its book with a "RKG1" frame carrying the sealed word "pull". The
+ * computer answers with its own book sealed the same way (length, bytes),
+ * or a length of 0 when it will not give it. Still a whole copy, never a
+ * merge; the phone shows its usual restore confirmation before anything is
+ * replaced. The computer gives its book only while its window is open:
+ * the secret on the screen is the owner's consent.
  */
 object WifiSync {
 
@@ -44,6 +52,8 @@ object WifiSync {
     const val TOO_BIG: Int = 3
 
     private val MAGIC = "RKS1".toByteArray(Charsets.US_ASCII)
+    private val MAGIC_GET = "RKG1".toByteArray(Charsets.US_ASCII)
+    private val PULL = "pull".toByteArray(Charsets.US_ASCII)
     private const val NONCE = 12
     private const val TAG_BITS = 128
 
@@ -58,6 +68,14 @@ object WifiSync {
         data class Refused(val why: Int) : Outcome
         /** No address answered. */
         object Unreachable : Outcome
+    }
+
+    /** How a pull ended. */
+    sealed interface Pulled {
+        data class Got(val book: ByteArray) : Pulled
+        /** A computer answered but gave nothing (its window is not open to giving, or the secret is wrong). */
+        object Refused : Pulled
+        object Unreachable : Pulled
     }
 
     /** 32 random bytes, as 64 hex digits (no Base64: the phone runs from Android 7). */
@@ -149,41 +167,94 @@ object WifiSync {
     }
 
     /**
+     * Phone side: asks the computer for its book. Blocking; call off the main thread.
+     * The answer is sealed with the same secret, so only the computer that
+     * showed the code can have written it.
+     */
+    fun pull(p: Pairing, connectMs: Int = 3000, readMs: Int = 120_000): Pulled {
+        val ask = seal(p.secret, PULL)
+        for (host in p.hosts) {
+            val socket = Socket()
+            try {
+                socket.connect(InetSocketAddress(host, p.port), connectMs)
+            } catch (e: IOException) {
+                runCatching { socket.close() }
+                continue
+            }
+            socket.use { s ->
+                s.soTimeout = readMs
+                val out = DataOutputStream(s.getOutputStream().buffered())
+                out.write(MAGIC_GET)
+                out.writeInt(ask.size)
+                out.write(ask)
+                out.flush()
+                val input = DataInputStream(s.getInputStream().buffered())
+                val n = try { input.readInt() } catch (e: IOException) { return Pulled.Refused }
+                if (n <= 0 || n > MAX_BYTES + NONCE + TAG_BITS / 8) return Pulled.Refused
+                val sealed = ByteArray(n)
+                try { input.readFully(sealed) } catch (e: IOException) { return Pulled.Refused }
+                return open(p.secret, sealed)?.let { Pulled.Got(it) } ?: Pulled.Refused
+            }
+        }
+        return Pulled.Unreachable
+    }
+
+    /**
      * Computer side: waits on [server] until a phone sends a book that opens
      * with [secret], and returns it. A connection that is not ours, or not
      * sealed with this secret, is answered [BAD] and the wait goes on.
+     * A phone asking for the computer's book ("RKG1") is given [give]'s
+     * bytes, sealed, when [give] is set, and the wait goes on; with no
+     * [give] it is answered with a length of 0.
      * Returns null when [stop] says so (checked every second) or the socket closes.
      */
-    fun receive(server: ServerSocket, secret: String, stop: () -> Boolean = { false }): ByteArray? {
+    fun receive(server: ServerSocket, secret: String, stop: () -> Boolean = { false }, give: (() -> ByteArray?)? = null): ByteArray? {
         server.soTimeout = 1000
         while (!stop()) {
             val s = try { server.accept() } catch (e: SocketTimeoutException) { continue } catch (e: IOException) { return null }
             s.use {
                 it.soTimeout = 60_000
-                val result = runCatching { readOne(it, secret) }.getOrNull()
-                val code = when {
-                    result == null -> BAD
-                    result.isFailure -> TOO_BIG
-                    else -> OK
+                val frame = runCatching { readOne(it, secret) }.getOrNull()
+                when (frame) {
+                    is Frame.Ask -> {
+                        val book = give?.invoke()
+                        val out = DataOutputStream(it.getOutputStream().buffered())
+                        runCatching {
+                            if (book == null) out.writeInt(0) else { val sealed = seal(secret, book); out.writeInt(sealed.size); out.write(sealed) }
+                            out.flush()
+                        }
+                    }
+                    is Frame.Book -> {
+                        runCatching { it.getOutputStream().apply { write(OK); flush() } }
+                        return frame.bytes
+                    }
+                    Frame.TooBig -> runCatching { it.getOutputStream().apply { write(TOO_BIG); flush() } }
+                    null -> runCatching { it.getOutputStream().apply { write(BAD); flush() } }
                 }
-                runCatching { it.getOutputStream().apply { write(code); flush() } }
-                result?.getOrNull()?.let { book -> return book }
             }
         }
         return null
     }
 
-    /** One frame: null when it is not ours or will not open; a failure when it is too big. */
-    private fun readOne(s: Socket, secret: String): Result<ByteArray>? {
+    private sealed interface Frame {
+        class Book(val bytes: ByteArray) : Frame
+        object Ask : Frame
+        object TooBig : Frame
+    }
+
+    /** One frame: null when it is not ours or will not open. */
+    private fun readOne(s: Socket, secret: String): Frame? {
         val input = DataInputStream(s.getInputStream().buffered())
         val magic = ByteArray(MAGIC.size)
         input.readFully(magic)
-        if (!magic.contentEquals(MAGIC)) return null
+        val ask = magic.contentEquals(MAGIC_GET)
+        if (!ask && !magic.contentEquals(MAGIC)) return null
         val n = input.readInt()
         if (n <= 0) return null
-        if (n > MAX_BYTES + NONCE + TAG_BITS / 8) return Result.failure(IOException("too big"))
+        if (n > MAX_BYTES + NONCE + TAG_BITS / 8) return Frame.TooBig
         val sealed = ByteArray(n)
         input.readFully(sealed)
-        return open(secret, sealed)?.let { Result.success(it) }
+        val plain = open(secret, sealed) ?: return null
+        return if (ask) (if (plain.contentEquals(PULL)) Frame.Ask else null) else Frame.Book(plain)
     }
 }

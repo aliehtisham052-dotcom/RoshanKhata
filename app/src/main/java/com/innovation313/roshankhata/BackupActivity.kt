@@ -108,7 +108,8 @@ class BackupActivity : BaseActivity() {
 
         findViewById<MaterialButton>(R.id.btnEraseAll).setOnClickListener { confirmEraseAll() }
 
-        findViewById<MaterialButton>(R.id.btnSendToComputer).setOnClickListener { scanComputer() }
+        findViewById<MaterialButton>(R.id.btnSendToComputer).setOnClickListener { scanComputer(take = false) }
+        findViewById<MaterialButton>(R.id.btnTakeFromComputer).setOnClickListener { scanComputer(take = true) }
 
         if (DriveFeature.ENABLED) {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
@@ -236,7 +237,7 @@ class BackupActivity : BaseActivity() {
      * for customer cards, so the app still asks for no camera permission.
      * Cancelling the scanner says nothing.
      */
-    private fun scanComputer() {
+    private fun scanComputer(take: Boolean) {
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
             .enableAutoZoom()
@@ -248,7 +249,7 @@ class BackupActivity : BaseActivity() {
                     Toast.makeText(this, R.string.wifi_send_not_computer, Toast.LENGTH_LONG).show()
                     return@addOnSuccessListener
                 }
-                sendToComputer(pairing)
+                if (take) takeFromComputer(pairing) else sendToComputer(pairing)
             }
             .addOnFailureListener {
                 Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_LONG).show()
@@ -278,6 +279,36 @@ class BackupActivity : BaseActivity() {
                 .setPositiveButton(R.string.ok, null)
                 .show()
         }
+    }
+
+    /**
+     * The computer's book onto this phone (20 Oct): asked for over the same
+     * pairing, then through the same parse-and-confirm as a chosen file, so
+     * nothing here is replaced before the owner has read what is in it.
+     */
+    private fun takeFromComputer(pairing: WifiSync.Pairing) {
+        Toast.makeText(this, R.string.wifi_take_asking, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val pulled = withContext(Dispatchers.IO) {
+                try { WifiSync.pull(pairing) } catch (e: Exception) { WifiSync.Pulled.Unreachable }
+            }
+            if (isFinishing || isDestroyed) return@launch
+            when (pulled) {
+                is WifiSync.Pulled.Got -> {
+                    val file = withContext(Dispatchers.IO) {
+                        File(File(cacheDir, "backups").apply { mkdirs() }, "from_computer.txt").also { it.writeBytes(pulled.book) }
+                    }
+                    val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(file) }
+                    handleParseResult(result, data)
+                }
+                WifiSync.Pulled.Refused -> tell(R.string.wifi_take_refused)
+                WifiSync.Pulled.Unreachable -> tell(R.string.wifi_send_unreachable)
+            }
+        }
+    }
+
+    private fun tell(message: Int) {
+        MaterialAlertDialogBuilder(this).setTitle(R.string.wifi_send_title).setMessage(message).setPositiveButton(R.string.ok, null).show()
     }
 
     private fun shareBackup(file: File) {

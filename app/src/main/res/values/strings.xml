@@ -3155,4 +3155,22 @@ You can change this any time from this screen.</string>
     <string name="wifi_pc_failed">Could not start listening. Close this window and try again.</string>
     <string name="poster_save_picture">Save the poster as a picture</string>
     <string name="poster_desktop_flat">On the computer the pictures are drawn flat; the phone shows them in 3D.</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">Take the computer’s book</string>
+    <string name="wifi_take_asking">Asking the computer for its book…</string>
+    <string name="wifi_take_refused">The computer did not give its book. Its “From phone” window must be open; scan the code it shows now.</string>
+    <string name="book_recovered_title">Your book was repaired</string>
+    <string name="book_recovered_from">The book’s file was damaged and could not be read. It was rebuilt from the copy made on %1$s. Anything written after that copy is not in it.</string>
+    <string name="book_recovered_none">The book’s file was damaged and could not be read, and no saved copy could be found on this computer. The book starts empty: restore a backup from your phone or a file.</string>
+    <string name="book_corrupt_kept">The damaged file was kept, not deleted:\n%1$s</string>
+    <string name="update_available">A newer version is ready: %1$s</string>
+    <string name="update_open">Open the download page</string>
+    <string name="auto_backup_note">Today’s copy is rewritten every hour while the app is open, here and in the outside folder.</string>
+    <string name="receipt_save_picture">Save the receipt as a picture</string>
+    <string name="report_open_mail">Open my email</string>
+    <string name="report_copy">Copy the report</string>
+    <string name="report_copied">Copied. Paste it into WhatsApp or an email to innovation313.support@gmail.com.</string>
+    <string name="report_no_mail_pc">No email program is set up on this computer. Use “Copy the report” and paste it into WhatsApp or any email to innovation313.support@gmail.com.</string>
+    <string name="report_pc_privacy">Your customers’ names, numbers and balances are NEVER sent. Only the app version and your Windows version go with the report — shown below, in full, before anything leaves this computer.</string>
 </resources>

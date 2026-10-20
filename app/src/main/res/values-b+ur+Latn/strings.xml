@@ -2941,4 +2941,22 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="wifi_pc_failed">Sunna shuru nahi ho saka. Ye khirki band kar ke dobara koshish karein.</string>
     <string name="poster_save_picture">Poster tasveer ke taur par mehfooz karein</string>
     <string name="poster_desktop_flat">Computer par tasveerein saada (flat) banti hain; phone par ye 3D mein dikhti hain.</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">Computer ki kitaab lein</string>
+    <string name="wifi_take_asking">Computer se us ki kitaab maang rahe hain…</string>
+    <string name="wifi_take_refused">Computer ne apni kitaab nahi di. Us ki “Phone se” wali khirki khuli honi chahiye; jo code wo abhi dikha raha hai wahi scan karein.</string>
+    <string name="book_recovered_title">Aap ki kitaab durust kar di gayi</string>
+    <string name="book_recovered_from">Kitaab ki file kharab thi aur parhi nahi ja saki. Ise %1$s ki bani hui naqal se dobara banaya gaya hai. Us naqal ke baad likhi gayi cheezein is mein nahi hain.</string>
+    <string name="book_recovered_none">Kitaab ki file kharab thi aur parhi nahi ja saki, aur is computer par koi mehfooz naqal bhi nahi mili. Kitaab khaali shuru ho rahi hai: apne phone ya kisi file se backup wapas layein.</string>
+    <string name="book_corrupt_kept">Kharab file delete nahi ki gayi, rakh li gayi hai:\n%1$s</string>
+    <string name="update_available">Naya version tayyar hai: %1$s</string>
+    <string name="update_open">Download ka safha kholein</string>
+    <string name="auto_backup_note">Jab tak app khuli rehti hai, aaj ki naqal har ghante dobara likhi jati hai, yahan aur bahar wale folder mein.</string>
+    <string name="receipt_save_picture">Raseed tasveer ke taur par mehfooz karein</string>
+    <string name="report_open_mail">Meri email kholein</string>
+    <string name="report_copy">Report copy karein</string>
+    <string name="report_copied">Copy ho gayi. Ise WhatsApp ya email mein innovation313.support@gmail.com ko bhej dein.</string>
+    <string name="report_no_mail_pc">Is computer par koi email program nahi hai. “Report copy karein” dabayein aur WhatsApp ya kisi bhi email se innovation313.support@gmail.com ko bhej dein.</string>
+    <string name="report_pc_privacy">Aap ke gahakon ke naam, number aur baqaya kabhi nahi bheje jate. Report ke saath sirf app ka version aur Windows ka version jata hai — neeche poora dikhaya gaya hai, is computer se kuch jane se pehle.</string>
 </resources>

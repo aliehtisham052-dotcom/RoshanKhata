@@ -339,12 +339,29 @@ private fun alertChipWord(kind: LedgerAlerts.Kind): String = when (kind) {
     LedgerAlerts.Kind.CASHFLOW -> W.today_gap
 }
 
+/** A bell row the computer adds itself (the backup's age, a newer version): its tile, words and what a click does. */
+class ExtraAlert(val section: Section, val title: String, val sub: String, val onClick: () -> Unit)
+
 /** The bell's list (the phone's AlertsActivity): each alert on its page's tile, a click opens the page. */
 @Composable
-fun AlertsList(alerts: List<LedgerAlerts.Alert>, onOpen: (Section) -> Unit) {
+fun AlertsList(alerts: List<LedgerAlerts.Alert>, extra: List<ExtraAlert> = emptyList(), onOpen: (Section) -> Unit) {
     val c = LocalRoshanColors.current
     Column(Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(12.dp)) {
-        if (alerts.isEmpty()) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp)
+        if (alerts.isEmpty() && extra.isEmpty()) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp)
+        extra.forEach { x ->
+            Row(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).press(x.onClick).padding(horizontal = 10.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TileBadge(x.section, 40, 24)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(x.title, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                    if (x.sub.isNotEmpty()) Text(x.sub, color = c.textMuted, fontSize = 13.sp)
+                }
+            }
+            HorizontalDivider(color = Look.line)
+        }
         alerts.forEach { a ->
             val s = alertSection(a.kind)
             Row(

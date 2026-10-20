@@ -128,7 +128,22 @@ No account, no server, no ads. Everything stays on the phone.
   "From phone" window shows a QR (its LAN addresses, a port, a fresh secret);
   the phone's Backup screen scans it and sends its backup sealed with
   AES-GCM over a plain socket (no HTTP: Android blocks clear text); the
-  computer hands it to the usual restore confirmation. One way only. Proof pictures of every design go
+  computer hands it to the usual restore confirmation. The other way (later
+  20 Oct) is a pull: the phone's Backup screen asks the computer ("RKG1"
+  frame) and gets its book sealed the same way, then shows its own restore
+  confirmation — a whole copy each way, never a merge.
+  **1.9.0 (20 Oct, the shortfall list):** `BookHealth` runs SQLite's
+  quick_check before Room opens the book; a bad file is kept as
+  `khata.db.corrupt-<time>` and the book is rebuilt from the newest daily
+  copy that parses (own folder, then the outside one), told once in a
+  dialog. `Reminders` says the bell's rows and a week-old backup once a day
+  as a Windows tray notification (the phone's ReminderWorker). `UpdateCheck`
+  reads `version.json` from the desktop-test release once a day (desktop.yml
+  writes it) and puts a newer version in the bell. Today's daily copy is
+  rewritten every hour while the app is open. A receipt can be saved as a
+  PNG from the printer choice. More → Report a problem (`ReportProblem.kt`,
+  with `CrashLog` writing uncaught exceptions to `logs/errors.log`) opens
+  the mail program or copies the report. Proof pictures of every design go
   to the desktop-test release. Shop pictures (logo, signature, stamp, QR) and
   photos live per computer (the text backup carries none). The MSI's Java
   runtime has only the modules in desktop/build.gradle.kts (no java.prefs).
