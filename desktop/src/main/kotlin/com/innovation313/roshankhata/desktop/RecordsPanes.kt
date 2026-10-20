@@ -137,7 +137,7 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
         )
     }
     if (adding) {
-        DialogWindow(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_bill), state = rememberDialogState(width = 640.dp, height = 860.dp)) {
+        DialogWindow(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_bill), state = rememberDialogState(width = 700.dp, height = 820.dp)) {
             Box(Modifier.fillMaxSize()) {
                 BillForm(
                     parties = parties,

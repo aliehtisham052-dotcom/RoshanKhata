@@ -76,30 +76,57 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
     val needSupplier = word(W.enter_supplier)
     val needAmount = word(W.enter_valid_amount)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(word(W.add_bill), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        val chosen = parties.firstOrNull { it.id == supplierId }
-        if (chosen != null) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(Format.name(chosen.name), Modifier.weight(1f), color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-                FluentButton(word(W.edit), { supplierId = null }, kind = ButtonKind.SUBTLE)
+    val chosen = parties.firstOrNull { it.id == supplierId }
+    fun saveNow() {
+        val typed = search.trim()
+        when {
+            supplierId == null && typed.isEmpty() -> problem = needSupplier
+            total == null -> problem = needAmount
+            else -> {
+                // A typed name that is already in the book is that party, not a twin.
+                val existing = supplierId ?: parties.firstOrNull { it.name.trim().equals(typed, ignoreCase = true) }?.id
+                onSave(
+                    NewBill(
+                        supplierId = existing,
+                        newSupplierName = if (existing == null) typed else null,
+                        billNumber = number.trim().ifEmpty { null },
+                        total = total,
+                        billDate = billDate,
+                        dueDate = dueDate,
+                        paidCash = paidCash,
+                        note = note.trim().ifEmpty { null },
+                        items = items
+                    )
+                )
             }
+        }
+    }
+    DialogFrame(
+        word(W.add_bill), word(W.bill_ledger_note).take(90),
+        onClose = onCancel,
+        footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
+        footer = {
+            FluentButton(word(W.cancel), onCancel)
+            FluentButton(word(W.save), { saveNow() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
+        }
+    ) {
+        if (chosen != null) {
+            PartyPicker(parties, supplierId, { supplierId = it; problem = null }, word(W.supplier), word(W.bill_supplier_hint), Modifier.fillMaxWidth())
             if (chosen.isCustomer) Text(word(W.bill_to_customer_warn, chosen.name), color = c.owedToMe, fontSize = 12.sp)
         } else {
-            Outlined(
-                search, { search = it; problem = null }, label = { Text(word(W.bill_supplier_hint)) },
-                singleLine = true, modifier = Modifier.fillMaxWidth()
-            )
+            // Typed, not only picked: a supplier not yet in the book is made on save (NewBill.newSupplierName).
+            FluentField(search, { search = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.supplier), placeholder = word(W.bill_supplier_hint), leadingIcon = "ic_search")
             val q = search.trim().lowercase()
             // Suppliers first: a bill is almost always from one.
             val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }.sortedBy { it.isCustomer }.take(50)
-            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 160.dp).background(Look.subtle, Look.ctl)) {
+            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 160.dp).card()) {
                 items(shown, key = { it.id }) { p ->
                     Text(
                         Format.name(p.name) + (p.phone?.let { "  ·  " + Format.ltr(it) } ?: ""),
                         Modifier.fillMaxWidth().press { supplierId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp),
                         color = c.ink, fontSize = 14.sp
                     )
+                    Rule()
                 }
             }
             val typed = search.trim()
@@ -107,27 +134,27 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
                 Text(word(W.bill_new_supplier_msg, typed), color = c.textMuted, fontSize = 12.sp)
             }
         }
-        Outlined(number, { number = it }, label = { Text(word(W.bill_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Outlined(totalText, { totalText = it; problem = null }, label = { Text(word(W.bill_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Text(total?.let { Format.money(it) } ?: "", color = c.textMuted, fontSize = 14.sp)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            FluentButton(word(W.pick_bill_date), { picking = 0 }, kind = ButtonKind.SUBTLE)
-            Text(Format.dateOnly(billDate), color = c.ink, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.width(20.dp))
-            FluentButton(word(W.bill_due_date), { picking = 1 }, kind = ButtonKind.SUBTLE)
-            Text(dueDate?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontWeight = FontWeight.Bold)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+            FluentField(totalText, { totalText = it; problem = null }, Modifier.weight(1.3f), label = word(W.bill_total_hint), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = total?.let { Format.money(it) } ?: " ")
+            FluentField(number, { number = it }, Modifier.weight(1f), label = word(W.bill_number_hint))
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            DateBox(word(W.pick_bill_date), Format.dateOnly(billDate), word(W.pick_bill_date), { picking = 0 }, Modifier.weight(1f))
+            DateBox(word(W.bill_due_date), dueDate?.let { Format.dateOnly(it) }, word(W.bill_due_date), { picking = 1 }, Modifier.weight(1f))
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(paidCash, { paidCash = it })
-            Text(word(W.bill_paid_cash), color = c.ink, fontSize = 14.sp)
+            Column {
+                Text(word(W.bill_paid_cash), color = c.ink, fontSize = 14.sp)
+                Text(word(W.bill_paid_cash_help), color = c.textMuted, fontSize = 12.sp)
+            }
         }
-        Text(word(W.bill_paid_cash_help), color = c.textMuted, fontSize = 12.sp)
         // What Save will do to the khata, said before it is done.
         val who = chosen?.name ?: search.trim()
         if (!paidCash && total != null && who.isNotEmpty()) {
             Text(word(W.bill_credit_note, Format.money(total), who), color = c.owedToMe, fontSize = 13.sp)
         }
-        Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
+        FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
 
         Text(word(W.bill_items_title), Modifier.padding(top = 6.dp), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         items.forEachIndexed { i, it ->
@@ -144,39 +171,10 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
                         color = c.inkSoft, fontSize = 12.sp
                     )
                 }
-                TextButton({ items = items.filterIndexed { j, _ -> j != i } }) { Text(word(W.delete), color = c.owedToMe) }
+                FluentButton(word(W.delete), { items = items.filterIndexed { j, _ -> j != i } }, kind = ButtonKind.DANGER)
             }
         }
         ItemForm { items = items + it }
-
-        problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
-            FillButton(word(W.save), c.brandGreen) {
-                val typed = search.trim()
-                when {
-                    supplierId == null && typed.isEmpty() -> problem = needSupplier
-                    total == null -> problem = needAmount
-                    else -> {
-                        // A typed name that is already in the book is that party, not a twin.
-                        val existing = supplierId ?: parties.firstOrNull { it.name.trim().equals(typed, ignoreCase = true) }?.id
-                        onSave(
-                            NewBill(
-                                supplierId = existing,
-                                newSupplierName = if (existing == null) typed else null,
-                                billNumber = number.trim().ifEmpty { null },
-                                total = total,
-                                billDate = billDate,
-                                dueDate = dueDate,
-                                paidCash = paidCash,
-                                note = note.trim().ifEmpty { null },
-                                items = items
-                            )
-                        )
-                    }
-                }
-            }
-        }
     }
     picking?.let { which ->
         DayPicker(
