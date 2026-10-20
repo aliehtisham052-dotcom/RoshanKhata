@@ -274,7 +274,7 @@ private fun InvoiceLineForm(onAdd: (InvoiceItem) -> Unit) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(name, { name = it }, label = { Text(word(W.invoice_item_name_hint)) }, singleLine = true, modifier = Modifier.weight(2f))
         OutlinedTextField(qty, { qty = it }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-        OutlinedTextField(unit, { unit = it }, label = { Text(word(W.invoice_row_unit_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+        OutlinedTextField(unit, { unit = it }, label = { Text(LocalTrade.current.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))
         OutlinedTextField(rate, { rate = it }, label = { Text(word(W.invoice_item_rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
     }
     val q = Calc.evalAmount(qty)
