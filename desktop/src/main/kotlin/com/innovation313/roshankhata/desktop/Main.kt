@@ -116,6 +116,9 @@ fun main() = application {
     var theme by remember { mutableStateOf(appPrefs.theme()) }
     var textSize by remember { mutableStateOf(appPrefs.textSize()) }
     var invoiceFields by remember { mutableStateOf(appPrefs.invoiceFields()) }
+    // The shop's trade (its words, units and which pages show), re-read when the owner changes it.
+    var tradeTick by remember { mutableIntStateOf(0) }
+    val trade = remember(active, tradeTick) { TradeKit.of(settings.tradeKey(), settings.otherTradeItems()) }
     // The second place for the copies (USB, Google Drive folder): today's copy there on opening,
     // and again on closing so the day's last work leaves the computer too. A missing stick
     // never stops the app; the Daily copies page says it could not be reached.
@@ -151,7 +154,7 @@ fun main() = application {
                     LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
                     androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(screen.density, screen.fontScale * TEXT_FACTORS[textSize])
                 ) {
-                    key(active) { Book(
+                    key(active) { CompositionLocalProvider(LocalTrade provides trade) { Book(
                         keys = keys,
                         dao = db.khataDao(),
                         load = { db.khataDao().partiesWithBalanceOnce() },
@@ -176,8 +179,9 @@ fun main() = application {
                         home = home,
                         outsideFolder = outsideFolder,
                         outsideDir = outsideDir,
-                        onBackupFolder = { f -> appPrefs.setBackupFolder(f); outsideFolder = f }
-                    ) }
+                        onBackupFolder = { f -> appPrefs.setBackupFolder(f); outsideFolder = f },
+                        onTradeChanged = { tradeTick++ }
+                    ) } }
                 }
             }
         }
@@ -248,7 +252,8 @@ private fun Book(
     home: File,
     outsideFolder: File?,
     outsideDir: File?,
-    onBackupFolder: (File?) -> Unit
+    onBackupFolder: (File?) -> Unit,
+    onTradeChanged: () -> Unit
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -280,6 +285,8 @@ private fun Book(
     var section by remember { mutableStateOf(Section.HOME) }
     var choosingTheme by remember { mutableStateOf(false) }
     var choosingTextSize by remember { mutableStateOf(false) }
+    // A book that never chose its trade is asked before anything else (see the picker below).
+    var choosingTrade by remember { mutableStateOf(Trades.of(settings.tradeKey()) == null) }
     // The Khata list's tabs, side, order and the several-at-once delete (the phone's KhataActivity).
     var partyType by remember { mutableStateOf(PartyType.ALL) }
     var partySide by remember { mutableStateOf(PartySide.ALL) }
@@ -410,6 +417,7 @@ private fun Book(
                 MenuLine(word(W.theme)) { choosingTheme = true },
                 MenuLine(word(W.text_size)) { choosingTextSize = true },
                 MenuLine(word(W.business_profile)) { section = Section.SHOP },
+                MenuLine(word(W.trade_kicker_change)) { choosingTrade = true },
                 MenuLine(word(W.settings_group_help), null),
                 MenuLine(word(W.help_support)) { section = Section.HELP },
                 MenuLine(word(W.about_us)) { about = true }
@@ -1138,8 +1146,30 @@ private fun Book(
     // The phone's first-run question (ShopNameActivity): until a name is written the app shows its
     // own name where the shop's belongs — header, invoices, statements, cards. Asked on each
     // opening until a name is written; "Later" leaves it for Business Profile.
+    // The phone's first run, step 2 before the name (ShopTypeActivity): the shop's trade, now
+    // required (the owner, 20 Oct) — every unit, example and suggestion follows it.
+    val tradeMandatory = Trades.of(settings.tradeKey()) == null
+    if (choosingTrade) {
+        DialogWindow(
+            onCloseRequest = { if (!tradeMandatory) choosingTrade = false },
+            title = word(W.trade_pick_title),
+            state = rememberDialogState(width = 900.dp, height = 760.dp)
+        ) {
+            TradePicker(
+                current = settings.tradeKey(), otherName = settings.otherTradeName(), otherItems = settings.otherTradeItems(),
+                mandatory = tradeMandatory,
+                onPick = { key, otherName, otherItems ->
+                    settings.setTradeKey(key)
+                    if (key == "OTHER") settings.setOtherTrade(otherName, otherItems)
+                    choosingTrade = false
+                    onTradeChanged()
+                },
+                onCancel = { choosingTrade = false }
+            )
+        }
+    }
     var namingShop by remember { mutableStateOf(shop.isNullOrBlank()) }
-    if (namingShop) {
+    if (namingShop && !choosingTrade) {
         var typed by remember { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { namingShop = false },

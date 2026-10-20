@@ -55,7 +55,13 @@ No account, no server, no ads. Everything stays on the phone.
   phone's date filter (today, yesterday, this week, this month — by last
   dealing); invoices have the due date and the phone's Invoice settings
   switches (kept in app.properties; a field already filled always shows);
-  a nameless shop is asked its name on opening (ShopNameActivity's question). `ScreenProofTest`
+  a nameless shop is asked its name on opening (ShopNameActivity's question). The shop's trade
+  (`TradeKit.kt`) is required on Windows (the owner, 20 Oct): a book with none
+  gets the phone's 25-card picker before anything else (More → Shop type to
+  change it); `LocalTrade` gives every form the phone's TradeVocab words from
+  strings.xml — item and unit hints, starter goods and unit pills, product
+  types — and TradeFeatures' switches: Seasons only for agri, Stock register
+  and Register only for agri/medical, harvest-day choices only for agri. `ScreenProofTest`
   draws the window (Home, English/Urdu, light/dark, made-up shop) to
   build/screen-proof, put on desktop-test — look at it after any UI change.
   The scrolling section rail (each section wears the

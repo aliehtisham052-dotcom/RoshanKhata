@@ -138,7 +138,8 @@ fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier 
             .padding(horizontal = 10.dp, vertical = 14.dp)
     ) {
         Group.entries.forEach { g ->
-            val inGroup = Section.entries.filter { it.group == g }
+            val trade = LocalTrade.current
+            val inGroup = Section.entries.filter { it.group == g && trade.shows(it) }
             when (g) {
                 Group.HOME -> {}
                 Group.MORE -> {

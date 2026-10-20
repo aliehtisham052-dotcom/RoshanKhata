@@ -61,7 +61,9 @@ val syncTileIcons by tasks.registering(Sync::class) {
             "drawable/ic_tile_*.xml", "values/colors.xml", "values-night/colors.xml",
             // The header's glyphs (20 Oct redesign): the shop, the bell, the eye, the phone.
             "drawable/ic_storefront.xml", "drawable/ic_bell.xml", "drawable/ic_eye_open.xml",
-            "drawable/ic_eye_closed.xml", "drawable/ic_phone.xml", "drawable/ic_search.xml"
+            "drawable/ic_eye_closed.xml", "drawable/ic_phone.xml", "drawable/ic_search.xml",
+            // The shop-type picker's twenty-five trade icons (TradeKit).
+            "drawable/ic_trade_*.xml"
         )
     }
     into(layout.buildDirectory.dir("tileRes/tiles"))

@@ -129,14 +129,15 @@ fun HomePane(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             Column(Modifier.weight(3f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Heading(word(W.home_sec_daily))
-                TileGrid(Section.entries.filter { it.group == Group.DAILY }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 150, big = true)
+                val trade = LocalTrade.current
+                TileGrid(Section.entries.filter { it.group == Group.DAILY && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 150, big = true)
                 Spacer(Modifier.height(4.dp))
                 Heading(word(W.home_sec_business))
-                TileGrid(Section.entries.filter { it.group == Group.BUSINESS }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 130, big = false)
+                TileGrid(Section.entries.filter { it.group == Group.BUSINESS && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } }, minWidth = 130, big = false)
                 Spacer(Modifier.height(4.dp))
                 Heading(word(W.home_section_tools))
                 TileGrid(
-                    Section.entries.filter { it.group == Group.TOOLS }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } } +
+                    Section.entries.filter { it.group == Group.TOOLS && trade.shows(it) }.map { s -> Tile(s.word, s.icon, s.tile) { onOpen(s) } } +
                         HomeAction.entries.map { a -> Tile(a.word, a.icon, a.tile) { onAction(a) } },
                     minWidth = 130, big = false
                 )

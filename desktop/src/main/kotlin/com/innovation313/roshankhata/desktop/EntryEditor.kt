@@ -128,13 +128,17 @@ fun EntryEditor(
         }
 
         Text(word(W.goods_section), color = c.ink, fontWeight = FontWeight.Bold)
-        Text(word(W.goods_help), color = c.textMuted, fontSize = 12.sp)
-        OutlinedTextField(item, { item = it }, label = { Text(word(W.item_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        // The shop's own words (TradeVocab): a dairy's form says milk and litre, not urea and bag.
+        val trade = LocalTrade.current
+        Text(trade.goodsHelp(), color = c.textMuted, fontSize = 12.sp)
+        OutlinedTextField(item, { item = it }, label = { Text(trade.itemHint()) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        if (item.isBlank()) SuggestionRow(trade.starters(), item) { item = it }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(qty, { qty = it }, label = { Text(word(W.quantity_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-            OutlinedTextField(unit, { unit = it }, label = { Text(word(W.unit_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+            OutlinedTextField(unit, { unit = it }, label = { Text(trade.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))
             OutlinedTextField(rate, { rate = it }, label = { Text(word(W.entry_rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
         }
+        SuggestionRow(trade.units(), unit) { unit = it }
         // Quantity x rate is offered, never forced: a discount is the owner's to write.
         if (goodsTotal != null && goodsTotal > 0 && goodsTotal != amount) {
             TextButton({ amountText = Calc.trim(goodsTotal) }) {
@@ -278,7 +282,8 @@ private fun DueDialog(partyName: String, current: Long?, onPick: (Long?) -> Unit
     }.timeInMillis
     val quick = listOf(7, 15, 30).map { d -> word(W.entry_due_in_days, d.toString(), Format.dateOnly(endOfDay(now, d))) to endOfDay(now, d) }
     val y = Calendar.getInstance().get(Calendar.YEAR)
-    val harvests = listOf(
+    // Harvest days only for a shop that sells into crop seasons (TradeFeatures.seasons).
+    val harvests = if (!LocalTrade.current.seasons) emptyList<Pair<String, Long>>() else listOf(
         SeasonBook.Season(SeasonBook.Crop.RABI, y - 1), SeasonBook.Season(SeasonBook.Crop.KHARIF, y),
         SeasonBook.Season(SeasonBook.Crop.RABI, y), SeasonBook.Season(SeasonBook.Crop.KHARIF, y + 1)
     ).map { it to SeasonBook.harvestEnd(it) }.filter { it.second > now }.sortedBy { it.second }.take(2)

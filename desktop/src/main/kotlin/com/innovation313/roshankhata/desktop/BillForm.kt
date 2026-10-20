@@ -206,7 +206,7 @@ internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
         OutlinedTextField(name, { name = it; problem = null }, label = { Text(word(W.product_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(qty, { qty = it; problem = null }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-            OutlinedTextField(unit, { unit = it }, label = { Text(word(W.unit_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+            OutlinedTextField(unit, { unit = it }, label = { Text(LocalTrade.current.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))
             OutlinedTextField(rate, { rate = it }, label = { Text(word(W.rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
         }
         OutlinedTextField(batch, { batch = it }, label = { Text(word(W.batch_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())

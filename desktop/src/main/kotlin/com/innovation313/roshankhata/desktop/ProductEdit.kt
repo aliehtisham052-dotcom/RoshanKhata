@@ -70,17 +70,25 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             Field(word(W.product_name), name) { name = it; problem = null }
             Field(word(W.company_optional), company) { company = it }
             Field(word(W.unit_optional), unit) { unit = it }
+            val trade = LocalTrade.current
+            SuggestionRow(trade.units(), unit) { unit = it }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(cash, { cash = it }, label = { Text(word(W.sale_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
                 OutlinedTextField(credit, { credit = it }, label = { Text(word(W.credit_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
             }
             Text(word(W.product_price_help), color = c.textMuted, fontSize = 12.sp)
-            Text(word(W.compliance_section), Modifier.padding(top = 8.dp), color = c.ink, fontWeight = FontWeight.Bold)
-            Text(word(W.compliance_explain), color = c.textMuted, fontSize = 12.sp)
             Field(word(W.product_type_hint), type) { type = it }
-            Field(word(W.technical_name_hint), technical) { technical = it }
-            Field(word(W.formulation_hint), formulation) { formulation = it }
-            Field(word(W.registration_number_hint), registration) { registration = it }
+            SuggestionRow(trade.types(), type) { type = it }
+            // The inspector's details (technical name, formulation, registration) belong to the
+            // trades an inspector visits (TradeFeatures.inspectorReports); a value already
+            // written stays and is saved as it was.
+            if (trade.inspector || technical.isNotBlank() || formulation.isNotBlank() || registration.isNotBlank()) {
+                Text(word(W.compliance_section), Modifier.padding(top = 8.dp), color = c.ink, fontWeight = FontWeight.Bold)
+                Text(word(W.compliance_explain), color = c.textMuted, fontSize = 12.sp)
+                Field(word(W.technical_name_hint), technical) { technical = it }
+                Field(word(W.formulation_hint), formulation) { formulation = it }
+                Field(word(W.registration_number_hint), registration) { registration = it }
+            }
             problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
                 TextButton(onClose) { Text(word(W.cancel)) }
