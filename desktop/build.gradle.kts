@@ -25,6 +25,41 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 }
 
+// Only Windows' SQLite in the MSI (20 Oct): androidx.sqlite:sqlite-bundled carries its native
+// library for five systems (Linux x64/arm64, macOS x64/arm64, Windows x64), 4.7 MB of them never
+// loaded on Windows. On the Windows runner, which builds the MSI and runs the tests there, the
+// app's runtime classpath gets a copy of that jar with the other systems' natives left out;
+// every other jar passes through untouched. The Linux CI keeps the whole jar for its tests.
+abstract class WindowsOnlySqlite : TransformAction<TransformParameters.None> {
+    @get:InputArtifact abstract val input: Provider<FileSystemLocation>
+    override fun transform(outputs: TransformOutputs) {
+        val file = input.get().asFile
+        if (!file.name.startsWith("sqlite-bundled")) { outputs.file(input); return }
+        val out = outputs.file(file.nameWithoutExtension + "-windows.jar")
+        java.util.zip.ZipInputStream(file.inputStream().buffered()).use { zin ->
+            java.util.zip.ZipOutputStream(out.outputStream().buffered()).use { zout ->
+                while (true) {
+                    val e = zin.nextEntry ?: break
+                    val keep = !e.name.startsWith("natives/") || e.name == "natives/" || e.name.startsWith("natives/windows_x64")
+                    if (keep) { zout.putNextEntry(java.util.zip.ZipEntry(e.name)); zin.copyTo(zout); zout.closeEntry() }
+                }
+            }
+        }
+    }
+}
+if (System.getProperty("os.name").orEmpty().startsWith("Windows")) {
+    val windowsNatives = Attribute.of("roshankhata.windowsNatives", Boolean::class.javaObjectType)
+    dependencies {
+        attributesSchema { attribute(windowsNatives) }
+        artifactTypes.getByName("jar") { attributes.attribute(windowsNatives, false) }
+        registerTransform(WindowsOnlySqlite::class) {
+            from.attribute(windowsNatives, false).attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, "jar")
+            to.attribute(windowsNatives, true).attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, "jar")
+        }
+    }
+    configurations.named("runtimeClasspath") { attributes.attribute(windowsNatives, true) }
+}
+
 compose.desktop {
     application {
         mainClass = "com.innovation313.roshankhata.desktop.MainKt"
@@ -32,7 +67,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.8.0"
+            packageVersion = "1.8.1"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
