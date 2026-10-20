@@ -65,7 +65,9 @@ fun InvoiceForm(
     existing: Invoice? = null,
     existingLines: List<InvoiceItem> = emptyList(),
     /** The chosen design drawn with what is typed so far (its first page), or null. */
-    preview: (suspend (Invoice, List<InvoiceItem>) -> java.awt.image.BufferedImage?)? = null
+    preview: (suspend (Invoice, List<InvoiceItem>) -> java.awt.image.BufferedImage?)? = null,
+    /** The optional fields the shop uses (Invoice settings); one already filled on this invoice always shows. */
+    fields: InvoiceFields = InvoiceFields()
 ) {
     val c = LocalRoshanColors.current
     fun pad(v: Double?) = v?.takeIf { it != 0.0 }?.let { Calc.trim(it) }.orEmpty()
@@ -79,6 +81,14 @@ fun InvoiceForm(
     var charge by remember { mutableStateOf(pad(existing?.additionalChargeAmount)) }
     var received by remember { mutableStateOf(pad(existing?.receivedAmount)) }
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
+    var due by remember { mutableStateOf(existing?.dueDate) }
+    var pickingDue by remember { mutableStateOf(false) }
+    val showDiscount = fields.discount || existing?.discountPercent != null
+    val showTax = fields.tax || existing?.taxPercent != null
+    val showCharge = fields.charge || existing?.additionalChargeAmount != null
+    val showReceived = fields.received || existing?.receivedAmount != null
+    val showNote = fields.note || !existing?.note.isNullOrBlank()
+    val showDue = fields.dueDate || existing?.dueDate != null
     var templateId by remember { mutableStateOf(existing?.templateId ?: 1) }
     var designMenu by remember { mutableStateOf(false) }
     var picture by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
@@ -109,7 +119,15 @@ fun InvoiceForm(
         OutlinedTextField(phone, { phone = it }, label = { Text(word(W.invoice_phone_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton({ picking = true }) { Text(word(W.pick_invoice_date), color = c.brandGreenText) }
-            Text(Format.dateOnly(date), color = c.ink, fontWeight = FontWeight.Bold)
+            Text(Format.ltr(Format.dateOnly(date)), color = c.ink, fontWeight = FontWeight.Bold)
+        }
+        // The phone's optional due date: printed on the designs that carry one.
+        if (showDue) Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton({ pickingDue = true }) { Text(word(W.invoice_due_date_hint), color = c.brandGreenText) }
+            due?.let { d ->
+                Text(Format.ltr(Format.dateOnly(d)), color = c.ink, fontWeight = FontWeight.Bold)
+                TextButton({ due = null }) { Text("\u2715", color = c.textMuted) }
+            }
         }
 
         // The design: the phone's ten, by name, and the first page as it will print.
@@ -124,7 +142,7 @@ fun InvoiceForm(
             }
         }
         if (preview != null) {
-            androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, lines, discount, tax, chargeLabel, charge, received, note) {
+            androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, due, lines, discount, tax, chargeLabel, charge, received, note) {
                 kotlinx.coroutines.delay(400)
                 val draft = (existing ?: Invoice(customerName = "")).copy(
                     templateId = templateId, customerName = customer.trim().ifEmpty { "\u2014" }, customerPhone = phone.trim().ifEmpty { null },
@@ -132,6 +150,7 @@ fun InvoiceForm(
                     discountPercent = Calc.evalPad(discount)?.takeIf { it != 0.0 },
                     additionalChargeLabel = chargeLabel.trim().ifEmpty { null }, additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
                     receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 }, note = note.trim().ifEmpty { null },
+                    dueDate = due,
                     invoiceNumber = existing?.invoiceNumber ?: "INV-\u2026"
                 )
                 picture = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
@@ -157,16 +176,16 @@ fun InvoiceForm(
         }
         InvoiceLineForm { lines = lines + it; problem = null }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(discount, { discount = it }, label = { Text(word(W.invoice_discount_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f))
-            OutlinedTextField(tax, { tax = it }, label = { Text(word(W.invoice_tax_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f))
+        if (showDiscount || showTax) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (showDiscount) OutlinedTextField(discount, { discount = it }, label = { Text(word(W.invoice_discount_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f))
+            if (showTax) OutlinedTextField(tax, { tax = it }, label = { Text(word(W.invoice_tax_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f))
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (showCharge) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(chargeLabel, { chargeLabel = it }, label = { Text(word(W.invoice_feature_extra_charge)) }, singleLine = true, modifier = Modifier.weight(1f))
             OutlinedTextField(charge, { charge = it }, label = { Text(word(W.invoice_charge_amount_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
         }
-        OutlinedTextField(received, { received = it }, label = { Text(word(W.invoice_received_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(note, { note = it }, label = { Text(word(W.invoice_note_label)) }, modifier = Modifier.fillMaxWidth())
+        if (showReceived) OutlinedTextField(received, { received = it }, label = { Text(word(W.invoice_received_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        if (showNote) OutlinedTextField(note, { note = it }, label = { Text(word(W.invoice_note_label)) }, modifier = Modifier.fillMaxWidth())
 
         Column(Modifier.fillMaxWidth().background(c.pageBg, RoundedCornerShape(10.dp)).padding(12.dp)) {
             SumLine(word(W.invoice_sum_items), Format.money(t.subtotal))
@@ -197,7 +216,8 @@ fun InvoiceForm(
                             additionalChargeLabel = chargeLabel.trim().ifEmpty { null },
                             additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
                             receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 },
-                            note = note.trim().ifEmpty { null }
+                            note = note.trim().ifEmpty { null },
+                            dueDate = due
                         ),
                         lines
                     )
@@ -206,6 +226,33 @@ fun InvoiceForm(
         }
     }
     if (picking) DayPicker(date, onPick = { date = it; picking = false }, onDismiss = { picking = false })
+    if (pickingDue) DayPicker(due ?: date, onPick = { due = it; pickingDue = false }, onDismiss = { pickingDue = false })
+}
+
+/** The phone's Invoice settings: which optional fields the invoice form shows. Applies at once, no Save. */
+@Composable
+fun InvoiceFieldsSettings(fields: InvoiceFields, onChange: (InvoiceFields) -> Unit) {
+    val c = LocalRoshanColors.current
+    Column(Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(word(W.invoice_settings_subtitle), color = c.textMuted, fontSize = 13.sp)
+        listOf(
+            Triple(W.invoice_feature_discount, W.invoice_feature_discount_desc, fields.discount) to { on: Boolean -> fields.copy(discount = on) },
+            Triple(W.invoice_feature_tax, W.invoice_feature_tax_desc, fields.tax) to { on: Boolean -> fields.copy(tax = on) },
+            Triple(W.invoice_feature_extra_charge, W.invoice_feature_extra_charge_desc, fields.charge) to { on: Boolean -> fields.copy(charge = on) },
+            Triple(W.invoice_feature_received, W.invoice_feature_received_desc, fields.received) to { on: Boolean -> fields.copy(received = on) },
+            Triple(W.invoice_feature_note, W.invoice_feature_note_desc, fields.note) to { on: Boolean -> fields.copy(note = on) },
+            Triple(W.invoice_feature_due_date, W.invoice_feature_due_date_desc, fields.dueDate) to { on: Boolean -> fields.copy(dueDate = on) }
+        ).forEach { (row, change) ->
+            val (title, desc, on) = row
+            Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(word(title), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                    Text(word(desc), color = c.textMuted, fontSize = 13.sp)
+                }
+                androidx.compose.material3.Switch(checked = on, onCheckedChange = { onChange(change(it)) })
+            }
+        }
+    }
 }
 
 @Composable

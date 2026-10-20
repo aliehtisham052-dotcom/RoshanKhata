@@ -38,6 +38,22 @@ class AppPrefs(private val file: File) {
         save()
     }
 
+    /** Which optional invoice fields the shop uses (the phone's InvoiceFeatureSettings); all on until turned off. */
+    fun invoiceFields(): InvoiceFields = InvoiceFields(
+        discount = flag(KEY_INV_DISCOUNT), tax = flag(KEY_INV_TAX), charge = flag(KEY_INV_CHARGE),
+        received = flag(KEY_INV_RECEIVED), note = flag(KEY_INV_NOTE), dueDate = flag(KEY_INV_DUE)
+    )
+
+    @Synchronized
+    fun setInvoiceFields(f: InvoiceFields) {
+        listOf(KEY_INV_DISCOUNT to f.discount, KEY_INV_TAX to f.tax, KEY_INV_CHARGE to f.charge,
+            KEY_INV_RECEIVED to f.received, KEY_INV_NOTE to f.note, KEY_INV_DUE to f.dueDate)
+            .forEach { (k, on) -> props.setProperty(k, on.toString()) }
+        save()
+    }
+
+    private fun flag(key: String): Boolean = props.getProperty(key)?.toBooleanStrictOrNull() ?: true
+
     @Synchronized
     fun setTheme(choice: ThemeChoice) {
         props.setProperty(KEY_THEME, choice.name)
@@ -62,6 +78,12 @@ class AppPrefs(private val file: File) {
         const val KEY_BACKUP_FOLDER = "backup_folder"
         const val KEY_THEME = "theme"
         const val KEY_TEXT_SIZE = "text_size"
+        const val KEY_INV_DISCOUNT = "invoice_discount"
+        const val KEY_INV_TAX = "invoice_tax"
+        const val KEY_INV_CHARGE = "invoice_extra_charge"
+        const val KEY_INV_RECEIVED = "invoice_received"
+        const val KEY_INV_NOTE = "invoice_note"
+        const val KEY_INV_DUE = "invoice_due_date"
     }
 }
 
@@ -81,4 +103,14 @@ val TEXT_SIZE_WORDS = listOf(
     com.innovation313.roshankhata.words.W.text_size_normal,
     com.innovation313.roshankhata.words.W.text_size_large,
     com.innovation313.roshankhata.words.W.text_size_largest
+)
+
+/** The invoice form's optional fields, each on or off (the phone's Invoice settings screen). */
+data class InvoiceFields(
+    val discount: Boolean = true,
+    val tax: Boolean = true,
+    val charge: Boolean = true,
+    val received: Boolean = true,
+    val note: Boolean = true,
+    val dueDate: Boolean = true
 )

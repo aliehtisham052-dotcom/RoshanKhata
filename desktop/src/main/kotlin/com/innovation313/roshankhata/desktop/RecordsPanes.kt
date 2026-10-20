@@ -271,11 +271,20 @@ fun InvoicesPane(
     shopName: String?,
     shopLine: String?,
     /** What the phone's ten designs draw with: the words, the shop and its pictures (Phase 10). */
-    designs: () -> com.innovation313.roshankhata.desktop.invoice.Context
+    designs: () -> com.innovation313.roshankhata.desktop.invoice.Context,
+    /** The optional invoice fields the shop uses, and the switches to change them (Invoice settings). */
+    fields: InvoiceFields = InvoiceFields(),
+    onFields: (InvoiceFields) -> Unit = {}
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val invoices by remember { dao.observeInvoices() }.collectAsState(emptyList())
+    var settingFields by remember { mutableStateOf(false) }
+    if (settingFields) {
+        DialogWindow(onCloseRequest = { settingFields = false }, title = word(W.invoice_settings_title), state = rememberDialogState(width = 520.dp, height = 640.dp)) {
+            InvoiceFieldsSettings(fields, onFields)
+        }
+    }
     var adding by remember { mutableStateOf(false) }
     // A saved invoice opened to correct it: the row and its live lines.
     var editingInvoice by remember { mutableStateOf<Pair<com.innovation313.roshankhata.data.Invoice, List<com.innovation313.roshankhata.data.InvoiceItem>>?>(null) }
@@ -313,6 +322,7 @@ fun InvoicesPane(
                 InvoiceForm(
                     parties = parties,
                     preview = { inv, lines -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.picture(0, 0.8f) },
+                    fields = fields,
                     onSave = { inv, lines ->
                         adding = false
                         scope.launch {
@@ -333,6 +343,7 @@ fun InvoicesPane(
                     preview = { i, l -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), i, l)?.picture(0, 0.8f) },
                     existing = inv,
                     existingLines = lines,
+                    fields = fields,
                     onSave = { updated, newLines ->
                         editingInvoice = null
                         scope.launch {
@@ -364,6 +375,10 @@ fun InvoicesPane(
             TileBadge(Section.INVOICES, 48, 28)
             androidx.compose.foundation.layout.Spacer(Modifier.width(14.dp))
             Text(word(W.nav_invoice), Modifier.weight(1f), color = c.ink, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold)
+            OutlineAction(onClick = { settingFields = true }) {
+                Text(word(W.invoice_settings_title), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            }
+            androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
             FillButton("+  " + word(W.add_invoice), c.brandGreen) { adding = true }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
