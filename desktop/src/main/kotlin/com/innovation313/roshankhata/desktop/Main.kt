@@ -113,6 +113,7 @@ fun main() = application {
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
     // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
     var theme by remember { mutableStateOf(appPrefs.theme()) }
+    var textSize by remember { mutableStateOf(appPrefs.textSize()) }
     // The second place for the copies (USB, Google Drive folder): today's copy there on opening,
     // and again on closing so the day's last work leaves the computer too. A missing stick
     // never stops the app; the Daily copies page says it could not be reached.
@@ -142,7 +143,12 @@ fun main() = application {
         val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
         RoshanTheme(dark = when (theme) { ThemeChoice.SYSTEM -> systemDark; ThemeChoice.LIGHT -> false; ThemeChoice.DARK -> true }) {
             ProvideWords(words) {
-                CompositionLocalProvider(LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+                // The owner's text size on top of Windows' own scale, as the phone multiplies its own.
+                val screen = androidx.compose.ui.platform.LocalDensity.current
+                CompositionLocalProvider(
+                    LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
+                    androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(screen.density, screen.fontScale * TEXT_FACTORS[textSize])
+                ) {
                     key(active) { Book(
                         keys = keys,
                         dao = db.khataDao(),
@@ -154,6 +160,8 @@ fun main() = application {
                         onLanguage = { tag -> appPrefs.setLanguage(tag); language = tag },
                         theme = theme,
                         onTheme = { t -> appPrefs.setTheme(t); theme = t },
+                        textSize = textSize,
+                        onTextSize = { level -> appPrefs.setTextSize(level); textSize = level },
                         rtl = rtl,
                         words = words,
                         businesses = businesses,
@@ -222,6 +230,8 @@ private fun Book(
     onLanguage: (String) -> Unit,
     theme: ThemeChoice,
     onTheme: (ThemeChoice) -> Unit,
+    textSize: Int,
+    onTextSize: (Int) -> Unit,
     rtl: Boolean,
     words: Words,
     businesses: Businesses,
@@ -263,6 +273,14 @@ private fun Book(
     // Home first, as the phone opens on its Home.
     var section by remember { mutableStateOf(Section.HOME) }
     var choosingTheme by remember { mutableStateOf(false) }
+    var choosingTextSize by remember { mutableStateOf(false) }
+    // The Khata list's tabs, side, order and the several-at-once delete (the phone's KhataActivity).
+    var partyType by remember { mutableStateOf(PartyType.ALL) }
+    var partySide by remember { mutableStateOf(PartySide.ALL) }
+    var partySort by remember { mutableStateOf(PartySort.RECENT) }
+    var selecting by remember { mutableStateOf(false) }
+    var chosenIds by remember { mutableStateOf<Set<Long>>(emptySet()) }
+    var deletingMany by remember { mutableStateOf(false) }
     var editingParty by remember { mutableStateOf<Party?>(null) }
     var purging by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
     // The bin keeps things for the days its note promises, then lets them go, as on the phone.
@@ -362,6 +380,7 @@ private fun Book(
                 MenuLine(word(W.settings_group_display), null),
                 MenuLine(word(W.language)) { choosingLanguage = true },
                 MenuLine(word(W.theme)) { choosingTheme = true },
+                MenuLine(word(W.text_size)) { choosingTextSize = true },
                 MenuLine(word(W.business_profile)) { section = Section.SHOP },
                 MenuLine(word(W.settings_group_help), null),
                 MenuLine(word(W.help_support)) { section = Section.HELP },
@@ -410,9 +429,17 @@ private fun Book(
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
                     // The book on the left, as the phone's Khata list.
                     Column(Modifier.weight(0.42f).fillMaxSize()) {
-                        // Totals: what the shop will get, and what it will give.
-                        val get = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-                        val give = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+                        KhataControls(
+                            type = partyType, onType = { partyType = it },
+                            side = partySide, onSide = { partySide = it },
+                            sort = partySort, onSort = { partySort = it },
+                            selecting = selecting, onSelecting = { on -> selecting = on; chosenIds = emptySet() },
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
+                        )
+                        // Totals: what the shop will get, and what it will give, on the open tab.
+                        val ofType = byType(parties, partyType)
+                        val get = ofType.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
+                        val give = ofType.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
                         Row(Modifier.fillMaxWidth().padding(20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                             Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
                             Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
@@ -443,10 +470,20 @@ private fun Book(
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
                         )
-                        val q = query.trim().lowercase()
-                        // Newest dealing first, as the phone's default (SortMode.RECENT): the customer
-                        // just served is at the top, not buried under A-Z.
-                        val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }.sortedByDescending { it.lastActivity }
+                        // The phone's rule (KhataActivity.rank): search, side, type, then the chosen order;
+                        // newest dealing first unless the owner picks another.
+                        val shown = parties.shownBy(query, partySide, partyType, partySort)
+                        if (selecting) {
+                            Row(
+                                Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp)
+                                    .background(Look.chosen, RoundedCornerShape(12.dp)).padding(horizontal = 12.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(word(W.selected_count, chosenIds.size), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                TextButton({ chosenIds = shown.map { it.id }.toSet() }) { Text(word(W.select_all), color = c.brandGreenText) }
+                                TextButton({ deletingMany = true }, enabled = chosenIds.isNotEmpty()) { Text(word(W.delete), color = c.owedToMe) }
+                            }
+                        }
                         Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 plural(WP.customer_count, shown.size, shown.size),
@@ -511,13 +548,23 @@ private fun Book(
                         }
                         LazyColumn(Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
                             items(shown, key = { it.id }) { p ->
+                                val ticked = p.id in chosenIds
                                 Row(
                                     Modifier.fillMaxWidth()
-                                        .background(if (p.id == selected) c.brandGreen.copy(alpha = 0.28f) else c.surface)
-                                        .clickable { selected = p.id }
+                                        .background(if (p.id == selected || ticked) Look.chosen else c.surface)
+                                        .clickable {
+                                            if (selecting) chosenIds = if (ticked) chosenIds - p.id else chosenIds + p.id
+                                            else selected = p.id
+                                        }
                                         .padding(horizontal = 16.dp, vertical = 12.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    if (selecting) {
+                                        androidx.compose.material3.Checkbox(
+                                            checked = ticked,
+                                            onCheckedChange = { on -> chosenIds = if (on) chosenIds + p.id else chosenIds - p.id }
+                                        )
+                                    }
                                     // The customer's face, when the computer has it (Photos: never on a statement).
                                     Photos.bitmap(p.photoPath, 96)?.let { face ->
                                         androidx.compose.foundation.Image(
@@ -543,8 +590,30 @@ private fun Book(
                     // The chosen customer's page on the right: the shared ledger screen.
                     val party = parties.firstOrNull { it.id == selected }
                     Box(Modifier.weight(0.58f).fillMaxSize()) {
-                        if (party != null) {
+                        if (party != null) Column(Modifier.fillMaxSize()) {
                             val entries by remember(party.id, reload) { dao.observeEntries(party.id) }.collectAsState(emptyList())
+                            // The phone's reminder bar: a WhatsApp reminder to a customer who owes, in the
+                            // phone's own gentle words and with the day they promised, if any.
+                            val number = party.phone?.let { com.innovation313.roshankhata.data.WhatsAppNumber.of(it) }
+                            if (number != null && Money.isPositive(party.balance)) {
+                                Row(
+                                    Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 12.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    OutlineAction(onClick = {
+                                        scope.launch {
+                                            val promised = withContext(Dispatchers.IO) { dao.getParty(party.id)?.harvestPromise }
+                                            val text = reminderText(words, party.name, party.balance, promised, shopName())
+                                            runCatching {
+                                                java.awt.Desktop.getDesktop().browse(java.net.URI("https://wa.me/$number?text=" +
+                                                    java.net.URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
+                                            }
+                                        }
+                                    }) {
+                                        Text(word(W.remind_whatsapp) + "  \u00b7  " + word(W.send_reminder), color = c.brandGreenText, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                            }
                             PartyLedgerScreen(
                                 name = party.name,
                                 phone = party.phone,
@@ -557,7 +626,8 @@ private fun Book(
                                 onEditParty = {
                                     scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } }
                                 },
-                                onStatement = { statementFor = party }
+                                onStatement = { statementFor = party },
+                                modifier = Modifier.weight(1f)
                             )
                         }
                     }
@@ -798,6 +868,39 @@ private fun Book(
             }
         )
     }
+    if (deletingMany) {
+        val gone = parties.filter { it.id in chosenIds }
+        val owing = gone.filter { !Money.isZero(it.balance) }
+        AlertDialog(
+            onDismissRequest = { deletingMany = false },
+            title = { Text(plural(WP.delete_parties_title, gone.size, gone.size)) },
+            text = {
+                Text(
+                    plural(WP.delete_parties_confirm, gone.size, gone.size) + if (owing.isEmpty()) "" else "\n\n" + plural(
+                        WP.delete_parties_owing, owing.size, owing.size,
+                        Format.money(owing.filter { Money.isPositive(it.balance) }.sumOf { it.balance }),
+                        Format.money(owing.filter { Money.isNegative(it.balance) }.sumOf { -it.balance })
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deletingMany = false
+                        scope.launch {
+                            // The phone's bulk delete: every one and their entries, one timestamp, one transaction.
+                            withContext(Dispatchers.IO) { dao.softDeleteParties(gone.map { it.id }) }
+                            if (selected?.let { it in chosenIds } == true) selected = null
+                            chosenIds = emptySet(); selecting = false
+                            reload++
+                        }
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
+                ) { Text(word(W.delete)) }
+            },
+            dismissButton = { TextButton({ deletingMany = false }) { Text(word(W.cancel)) } }
+        )
+    }
     deletingParty?.let { p ->
         AlertDialog(
             onDismissRequest = { deletingParty = null },
@@ -964,6 +1067,29 @@ private fun Book(
                             .clickable { choosingLanguage = false; onLanguage(lang.tag) }
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         color = c.ink, fontSize = 18.sp
+                    )
+                    HorizontalDivider(color = c.pageBg)
+                }
+            }
+        }
+    }
+    if (choosingTextSize) {
+        DialogWindow(
+            onCloseRequest = { choosingTextSize = false },
+            title = word(W.text_size),
+            state = rememberDialogState(width = 360.dp, height = 340.dp)
+        ) {
+            Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
+                TEXT_SIZE_WORDS.forEachIndexed { level, name ->
+                    Text(
+                        (if (level == textSize) "\u2713  " else "     ") + word(name),
+                        Modifier.fillMaxWidth()
+                            .clickable { choosingTextSize = false; onTextSize(level) }
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        color = if (level == textSize) c.brandGreenText else c.ink,
+                        // Each line in its own size, so the owner sees what it will look like.
+                        fontSize = (16 * TEXT_FACTORS[level]).sp,
+                        fontWeight = if (level == textSize) FontWeight.Bold else FontWeight.Normal
                     )
                     HorizontalDivider(color = c.pageBg)
                 }

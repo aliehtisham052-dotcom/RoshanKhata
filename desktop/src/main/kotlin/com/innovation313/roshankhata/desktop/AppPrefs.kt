@@ -29,6 +29,15 @@ class AppPrefs(private val file: File) {
     fun theme(): ThemeChoice = props.getProperty(KEY_THEME)
         ?.let { name -> ThemeChoice.entries.firstOrNull { it.name == name } } ?: ThemeChoice.SYSTEM
 
+    /** The owner's text size, 0..3 (the phone's TextSize: small, normal, large, largest); normal when never chosen. */
+    fun textSize(): Int = props.getProperty(KEY_TEXT_SIZE)?.toIntOrNull()?.coerceIn(0, TEXT_FACTORS.lastIndex) ?: 1
+
+    @Synchronized
+    fun setTextSize(level: Int) {
+        props.setProperty(KEY_TEXT_SIZE, level.coerceIn(0, TEXT_FACTORS.lastIndex).toString())
+        save()
+    }
+
     @Synchronized
     fun setTheme(choice: ThemeChoice) {
         props.setProperty(KEY_THEME, choice.name)
@@ -52,6 +61,7 @@ class AppPrefs(private val file: File) {
         const val KEY_LANGUAGE = "app_language"
         const val KEY_BACKUP_FOLDER = "backup_folder"
         const val KEY_THEME = "theme"
+        const val KEY_TEXT_SIZE = "text_size"
     }
 }
 
@@ -61,3 +71,14 @@ enum class ThemeChoice(val word: String) {
     LIGHT(com.innovation313.roshankhata.words.W.theme_light),
     DARK(com.innovation313.roshankhata.words.W.theme_dark)
 }
+
+/** The phone's text-size steps (TextSize.FACTORS), the same four on the computer. */
+val TEXT_FACTORS = floatArrayOf(0.90f, 1.00f, 1.15f, 1.30f)
+
+/** Their names, in the same order. */
+val TEXT_SIZE_WORDS = listOf(
+    com.innovation313.roshankhata.words.W.text_size_small,
+    com.innovation313.roshankhata.words.W.text_size_normal,
+    com.innovation313.roshankhata.words.W.text_size_large,
+    com.innovation313.roshankhata.words.W.text_size_largest
+)
