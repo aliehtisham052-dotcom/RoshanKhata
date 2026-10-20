@@ -66,7 +66,11 @@ No account, no server, no ads. Everything stays on the phone.
   salted PBKDF2 hash in app.properties; nothing of the book is composed until
   it is typed; five misses wait 30 s. Unlike the phone (Android's own screen
   lock) it is the app's PIN, because a JVM cannot reach Windows Hello; it
-  hides the ledger, it does not encrypt the file — the screen says so. `ScreenProofTest`
+  hides the ledger, it does not encrypt the file — the screen says so. A customer's
+  statement dialog shows the phone's Report figures first (gave, got, net in
+  the window; the whole account's closing balance). A first-run walkthrough
+  (`Tour.kt`, the phone's coach words) shows once after trade and name.
+  `ScreenProofTest`
   draws the window (Home, English/Urdu, light/dark, made-up shop) to
   build/screen-proof, put on desktop-test — look at it after any UI change.
   The scrolling section rail (each section wears the
