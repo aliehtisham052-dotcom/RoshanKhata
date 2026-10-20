@@ -1246,11 +1246,12 @@ class BillsActivity : BaseActivity() {
     }
 
     /**
-     * Deleting a bill removes the paperwork, NOT the ledger entry.
-     *
-     * The stock really did arrive and the money really is owed. Unwinding the
-     * ledger because a document was tidied away would erase a real debt to a
-     * real supplier — who would still, quite rightly, expect to be paid.
+     * Deleting a bill takes a credit bill's own ledger entry with it — to the
+     * Recycle Bin, not away for good. A debt with no bill behind it reads as a
+     * phantom amount owed, so the two leave together; the bin keeps the entry
+     * restorable for RecycleBinActivity.RETENTION_DAYS in case the delete was
+     * a mistake. The dialog and the toast say exactly this (they once claimed
+     * the entry stayed, which the code had stopped doing).
      */
     private fun confirmDeleteBill(bill: BillSummary) {
         MaterialAlertDialogBuilder(this)

@@ -62,15 +62,26 @@ No account, no server, no ads. Everything stays on the phone.
   the payment day (Party.harvestPromise); Expiring traces a batch to its buyers.
   A customer card's QR typed by a USB scanner opens that customer.
   **The phone's printed designs run unchanged on the computer**: invoices
-  (InvoicePdfExport, InvoiceTemplateKit) and business cards (CardTemplates,
-  CardGlyphs, CardLogo) are COPIED by `scripts/gen_desktop_invoice.py` and
-  `scripts/gen_desktop_cards.py` (Strings CI fails if stale — re-run after
+  (InvoicePdfExport, InvoiceTemplateKit), business cards (CardTemplates,
+  CardGlyphs, CardLogo) and posters (PosterKit, PosterDesigns, PosterFlat,
+  PosterGlyphs, PosterNewStock, PosterWords, PosterMotion, poster3d's Hero,
+  CoinFace, SealFace, data's Poster and PosterFields) are COPIED by
+  `scripts/gen_desktop_invoice.py`, `gen_desktop_cards.py` and
+  `gen_desktop_poster.py` (Strings CI fails if stale — re-run after
   touching the phone's files) and drawn on `desktop/.../gfx`, a small
-  android.graphics stand-in over Java2D. Proof pictures of every design go
+  android.graphics stand-in over Java2D (StaticLayout, shadows and blur,
+  Path.op, SweepGradient, PathParser, drawBitmapMesh, Canvas(bitmap) since
+  20 Oct). Posters are drawn flat on the computer (the 3D heroes are
+  Filament's); proof pictures go to desktop-test (PosterDesignsTest).
+  **Phone to computer over WiFi** (`data/WifiSync`, shared): the computer's
+  "From phone" window shows a QR (its LAN addresses, a port, a fresh secret);
+  the phone's Backup screen scans it and sends its backup sealed with
+  AES-GCM over a plain socket (no HTTP: Android blocks clear text); the
+  computer hands it to the usual restore confirmation. One way only. Proof pictures of every design go
   to the desktop-test release. Shop pictures (logo, signature, stamp, QR) and
   photos live per computer (the text backup carries none). The MSI's Java
   runtime has only the modules in desktop/build.gradle.kts (no java.prefs).
-  Not on Windows: Poster (Filament 3D heroes, StaticLayout), voice entry
+  Not on Windows: the posters' 3D heroes and video, voice entry
   (no free offline Urdu recognition), Google Drive sign-in (the backup
   folder can be a Google Drive for Desktop folder instead).
 

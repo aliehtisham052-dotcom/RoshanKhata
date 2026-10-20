@@ -248,6 +248,8 @@ private fun Book(
     var receipt by remember { mutableStateOf<List<ThermalReceipt.Line>?>(null) }
     var halves by remember { mutableStateOf<Pair<LedgerEntry, LedgerEntry>?>(null) }
     var bin by remember { mutableStateOf(false) }
+    // The phone's book over WiFi (Backup → Send to computer on the phone): the QR window is open.
+    var phoneSync by remember { mutableStateOf(false) }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
     var section by remember { mutableStateOf(Section.KHATA) }
     var editingParty by remember { mutableStateOf<Party?>(null) }
@@ -338,6 +340,8 @@ private fun Book(
                 }
             }
             Spacer(Modifier.width(8.dp))
+            HeaderButton(word(W.wifi_pc_button)) { phoneSync = true }
+            Spacer(Modifier.width(8.dp))
             HeaderButton(word(W.businesses_title)) { choosingBusiness = true }
             Spacer(Modifier.width(8.dp))
             HeaderButton(word(W.recycle_bin)) { bin = true }
@@ -375,6 +379,7 @@ private fun Book(
                 Section.REPORT -> Box(Modifier.weight(1f)) { ReportPane(dao, words, rtl, shop, reload) }
                 Section.SHOP -> Box(Modifier.weight(1f)) { ShopDetailsPane(settings, images) { shop = shopName() } }
                 Section.CARD -> Box(Modifier.weight(1f)) { BusinessCardPane(settings, images, home, activeBusiness, words) }
+                Section.POSTER -> Box(Modifier.weight(1f)) { PosterPane(settings, images, home, activeBusiness, words) }
                 Section.KHATA -> Row(Modifier.weight(1f).fillMaxSize()) {
                     // The book on the left, as the phone's Khata list.
                     Column(Modifier.weight(0.42f).fillMaxSize()) {
@@ -791,6 +796,20 @@ private fun Book(
             },
             dismissButton = { TextButton({ deletingParty = null }) { Text(word(W.cancel)) } }
         )
+    }
+    if (phoneSync) {
+        PhoneSyncDialog(words, home, onClose = { phoneSync = false }) { file ->
+            phoneSync = false
+            // The same confirmation as a backup file chosen by hand: nothing is replaced before the owner's yes.
+            scope.launch {
+                val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(file) }
+                picked = when {
+                    result is BackupCodec.ImportResult.Ok && data != null -> Picked.Ready(file, data, result)
+                    result is BackupCodec.ImportResult.Failed -> Picked.Refused(reasonOf(result, words))
+                    else -> Picked.Refused(words.text(W.backup_err_unreadable))
+                }
+            }
+        }
     }
     if (bin) {
         DialogWindow(

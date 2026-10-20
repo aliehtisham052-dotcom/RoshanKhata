@@ -32,7 +32,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.6.0"
+            packageVersion = "1.7.0"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
@@ -71,7 +71,9 @@ val syncPrintAssets by tasks.registering(Sync::class) {
             "sora_variable.ttf", "manrope_regular.ttf", "manrope_bold.ttf", "playfair_display_variable.ttf",
             "ibm_plex_mono_regular.ttf", "ibm_plex_mono_bold.ttf",
             // Urdu business cards are set in Nastaliq, as on the phone.
-            "noto_nastaliq_urdu.ttf"
+            "noto_nastaliq_urdu.ttf",
+            // The posters' Arabic-script greetings (عید مبارک), in calligraphy.
+            "aref_ruqaa_bold.ttf"
         )
         into("fonts")
     }

@@ -722,9 +722,9 @@
     <string name="bill_saved_credit">حُفظت الفاتورة وقُيدت في دفترك</string>
     <string name="enter_supplier">يرجى اختيار مورّد</string>
     <string name="enter_product">يرجى إدخال اسم المنتج</string>
-    <string name="bill_deleted">حُذفت الفاتورة. قيد الدفتر يبقى — البضاعة وصلت فعلًا والمبلغ مستحق فعلًا.</string>
+    <string name="bill_deleted">حُذفت الفاتورة. إن كانت فاتورة آجلة فقد ذهب قيدها في الدفتر إلى سلة المحذوفات معها — يمكنك استعادته من هناك خلال 30 يومًا إن كان ذلك خطأً.</string>
     <string name="delete_bill">حذف الفاتورة</string>
-    <string name="delete_bill_confirm">ستُزال الفاتورة وسجلات دُفعاتها، لكن قيد الدفتر يبقى. البضاعة وصلت فعلًا والمال مستحق فعلًا — حذف الورق لا يلغي ذلك.</string>
+    <string name="delete_bill_confirm">ستُزال الفاتورة وسجلات دُفعاتها. إن كانت فاتورة آجلة فسيذهب قيدها في الدفتر (ما تدين به لهذا المورّد) إلى سلة المحذوفات أيضًا، فينقص المبلغ المستحق بقيمة هذه الفاتورة. يمكن استعادة القيد من سلة المحذوفات خلال 30 يومًا.</string>
     <string name="bill_actions">الفاتورة</string>
     <string name="view_items">عرض الأصناف والدُفعات</string>
 
@@ -3097,4 +3097,23 @@
     <string name="import_csv_go">أضفهم</string>
     <string name="import_csv_done">تمت إضافة العملاء: %1$d</string>
     <string name="import_csv_empty">تعذّر قراءة أي عميل من هذا الملف. يجب أن يحتوي على عمود للأسماء على الأقل.</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">أرسل إلى الحاسوب (واي فاي)</string>
+    <string name="wifi_send_explain">افتح روشن كهاتا على الحاسوب واضغط «من الهاتف»، ثم امسح الرمز الذي يظهر. يجب أن يكونا على شبكة الواي فاي نفسها. لا يذهب شيء إلى الإنترنت.</string>
+    <string name="wifi_send_button">امسح رمز الحاسوب</string>
+    <string name="wifi_send_not_computer">هذا ليس رمز حاسوب روشن كهاتا.</string>
+    <string name="wifi_send_sending">جارٍ الإرسال إلى الحاسوب…</string>
+    <string name="wifi_send_done">أُرسل. راجعه على الحاسوب وأكّد هناك لتحميله.</string>
+    <string name="wifi_send_refused">لم يقبله الحاسوب. أغلق نافذة «من الهاتف» وافتحها من جديد وامسح الرمز الجديد.</string>
+    <string name="wifi_send_unreachable">تعذّر الوصول إلى الحاسوب. تأكد أنهما على شبكة الواي فاي نفسها، وأن نافذة «من الهاتف» مفتوحة، وأن ويندوز سمح لروشن كهاتا بالشبكة.</string>
+    <string name="wifi_pc_button">من الهاتف</string>
+    <string name="wifi_pc_title">من هاتفك عبر الواي فاي</string>
+    <string name="wifi_pc_steps">على الهاتف: النسخ الاحتياطي ← امسح رمز الحاسوب، ووجّهه إلى هذا الرمز. يجب أن يكونا على شبكة الواي فاي نفسها. لا يذهب شيء إلى الإنترنت، ولا يُستبدل شيء هنا قبل موافقتك.</string>
+    <string name="wifi_pc_waiting">بانتظار الهاتف…</string>
+    <string name="wifi_pc_no_network">هذا الحاسوب غير متصل بشبكة. صِله بشبكة واي فاي المتجر وافتح هذه النافذة من جديد.</string>
+    <string name="wifi_pc_firewall">إن سألك ويندوز، فاسمح لروشن كهاتا على الشبكات الخاصة.</string>
+    <string name="wifi_pc_failed">تعذّر بدء الاستماع. أغلق هذه النافذة وحاول مرة أخرى.</string>
+    <string name="poster_save_picture">احفظ الملصق كصورة</string>
+    <string name="poster_desktop_flat">على الحاسوب تُرسم الصور مسطّحة؛ والهاتف يعرضها ثلاثية الأبعاد.</string>
 </resources>

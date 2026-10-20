@@ -134,13 +134,39 @@ class LinearGradient(
 open class PathEffect
 class DashPathEffect(val intervals: FloatArray, val phase: Float) : PathEffect()
 
-class Bitmap(val image: BufferedImage) {
-    val width: Int get() = image.width
-    val height: Int get() = image.height
-    val isRecycled: Boolean get() = false
+/**
+ * A picture. One made by [createBitmap] can be drawn into with Canvas(bitmap),
+ * as on Android (the posters' flag, coin face and neon glow are drawn that
+ * way): what such a canvas records is played onto the picture the moment
+ * the picture is read, so it is always up to date when it is drawn.
+ */
+class Bitmap(private val img: BufferedImage) {
+    internal val painters = mutableListOf<Canvas>()
+    val image: BufferedImage get() { painters.forEach { it.flushInto(img) }; return img }
+    val width: Int get() = img.width
+    val height: Int get() = img.height
+    var isRecycled: Boolean = false
+        private set
+    fun recycle() { isRecycled = true }
+
+    enum class Config { ARGB_8888 }
+
+    companion object {
+        fun createBitmap(width: Int, height: Int, config: Config): Bitmap =
+            Bitmap(BufferedImage(width.coerceAtLeast(1), height.coerceAtLeast(1), BufferedImage.TYPE_INT_ARGB))
+    }
 }
 
-class Paint(flags: Int = 0) {
+/** android.graphics.PointF. */
+class PointF(@JvmField var x: Float = 0f, @JvmField var y: Float = 0f)
+
+/** A blur on what a paint draws (android.graphics.BlurMaskFilter); only NORMAL is drawn differently from none. */
+open class MaskFilter
+class BlurMaskFilter(val radius: Float, val style: Blur) : MaskFilter() {
+    enum class Blur { NORMAL, SOLID, OUTER, INNER }
+}
+
+open class Paint(flags: Int = 0) {
     enum class Align { LEFT, CENTER, RIGHT }
     enum class Style { FILL, STROKE, FILL_AND_STROKE }
     enum class Cap { BUTT, ROUND, SQUARE }
@@ -172,17 +198,49 @@ class Paint(flags: Int = 0) {
     var isFilterBitmap: Boolean = flags and FILTER_BITMAP_FLAG != 0
     var strokeCap: Cap = Cap.BUTT
     var strokeJoin: Join = Join.MITER
+    var maskFilter: MaskFilter? = null
+    var textLocale: java.util.Locale = java.util.Locale.getDefault()
 
-    constructor(other: Paint) : this() {
+    /** A soft shadow under what is drawn (setShadowLayer); radius 0 is none. */
+    var shadowRadius = 0f
+        private set
+    var shadowDx = 0f
+        private set
+    var shadowDy = 0f
+        private set
+    var shadowColor = 0
+        private set
+
+    fun setShadowLayer(radius: Float, dx: Float, dy: Float, shadowColor: Int) {
+        shadowRadius = radius; shadowDx = dx; shadowDy = dy; this.shadowColor = shadowColor
+    }
+
+    fun clearShadowLayer() = setShadowLayer(0f, 0f, 0f, 0)
+
+    constructor(other: Paint) : this() { set(other) }
+
+    /** Everything [other] has, copied into this paint (Android's Paint.set). */
+    fun set(other: Paint) {
         isAntiAlias = other.isAntiAlias; color = other.color; textSize = other.textSize; textAlign = other.textAlign
         typeface = other.typeface; isFakeBoldText = other.isFakeBoldText; shader = other.shader
         strokeWidth = other.strokeWidth; style = other.style; pathEffect = other.pathEffect
         letterSpacing = other.letterSpacing; isFilterBitmap = other.isFilterBitmap; strokeCap = other.strokeCap
-        strokeJoin = other.strokeJoin
+        strokeJoin = other.strokeJoin; maskFilter = other.maskFilter; textLocale = other.textLocale
+        setShadowLayer(other.shadowRadius, other.shadowDx, other.shadowDy, other.shadowColor)
     }
 
     fun measureText(text: String): Float = Text.advance(text, this)
     fun measureText(text: CharSequence, start: Int, end: Int): Float = Text.advance(text.subSequence(start, end).toString(), this)
+
+    /** Android's getTextBounds: the ink of [text] about its baseline at x = 0 (top negative), rounded outward. */
+    fun getTextBounds(text: String, start: Int, end: Int, bounds: Rect) {
+        val b = Text.layout(text.substring(start, end), this)?.bounds
+        if (b == null) { bounds.left = 0; bounds.top = 0; bounds.right = 0; bounds.bottom = 0; return }
+        bounds.left = kotlin.math.floor(b.minX).toInt()
+        bounds.top = kotlin.math.floor(b.minY).toInt()
+        bounds.right = kotlin.math.ceil(b.maxX).toInt()
+        bounds.bottom = kotlin.math.ceil(b.maxY).toInt()
+    }
 
     val fontMetrics: FontMetrics
         get() {
@@ -196,6 +254,184 @@ class Paint(flags: Int = 0) {
     companion object {
         const val ANTI_ALIAS_FLAG = 1
         const val FILTER_BITMAP_FLAG = 2
+    }
+}
+
+/** android.text.TextPaint: a Paint for a [StaticLayout]. */
+class TextPaint : Paint {
+    constructor(flags: Int = 0) : super(flags)
+    constructor(other: Paint) : super(other)
+}
+
+/** A sweep of colours around a centre, clockwise from three o'clock (android.graphics.SweepGradient). */
+class SweepGradient(
+    private val cx: Float, private val cy: Float, private val colors: IntArray, private val positions: FloatArray?
+) : Shader() {
+    override fun awt(): java.awt.Paint = SweepPaint(cx, cy, colors, positions ?: FloatArray(colors.size) { i ->
+        if (colors.size == 1) 0f else i / (colors.size - 1f)
+    })
+}
+
+private class SweepPaint(val cx: Float, val cy: Float, val colors: IntArray, val stops: FloatArray) : java.awt.Paint {
+    override fun getTransparency() = java.awt.Transparency.TRANSLUCENT
+
+    override fun createContext(
+        cm: java.awt.image.ColorModel?, deviceBounds: java.awt.Rectangle?, userBounds: Rectangle2D?,
+        xform: AffineTransform, hints: RenderingHints?
+    ): java.awt.PaintContext {
+        val inverse = runCatching { xform.createInverse() }.getOrDefault(AffineTransform())
+        val model = java.awt.image.ColorModel.getRGBdefault()
+        return object : java.awt.PaintContext {
+            override fun dispose() {}
+            override fun getColorModel() = model
+            override fun getRaster(x: Int, y: Int, w: Int, h: Int): java.awt.image.Raster {
+                val raster = model.createCompatibleWritableRaster(w, h)
+                val row = IntArray(w)
+                val pt = Point2D.Double()
+                for (j in 0 until h) {
+                    for (i in 0 until w) {
+                        pt.setLocation(x + i + 0.5, y + j + 0.5)
+                        inverse.transform(pt, pt)
+                        var a = kotlin.math.atan2(pt.y - cy, pt.x - cx) / (2 * Math.PI)
+                        if (a < 0) a += 1.0
+                        row[i] = colourAt(a.toFloat())
+                    }
+                    raster.setDataElements(0, j, w, 1, row)
+                }
+                return raster
+            }
+        }
+    }
+
+    private fun colourAt(t: Float): Int {
+        if (t <= stops.first()) return colors.first()
+        for (k in 1 until stops.size) {
+            if (t <= stops[k]) {
+                val span = (stops[k] - stops[k - 1]).takeIf { it > 0f } ?: return colors[k]
+                val f = (t - stops[k - 1]) / span
+                val a = colors[k - 1]
+                val b = colors[k]
+                fun ch(shift: Int) = ((((a ushr shift) and 0xFF) * (1 - f)) + (((b ushr shift) and 0xFF) * f)).toInt().coerceIn(0, 255)
+                return (ch(24) shl 24) or (ch(16) shl 16) or (ch(8) shl 8) or ch(0)
+            }
+        }
+        return colors.last()
+    }
+}
+
+/**
+ * android.text.Layout's few pieces the posters use. A layout is a block of
+ * wrapped lines, each aligned in the block's width.
+ */
+open class Layout {
+    enum class Alignment { ALIGN_NORMAL, ALIGN_OPPOSITE, ALIGN_CENTER }
+}
+
+class TextDirectionHeuristic internal constructor(val rtl: Boolean)
+
+object TextDirectionHeuristics {
+    val LTR = TextDirectionHeuristic(false)
+    val RTL = TextDirectionHeuristic(true)
+    val FIRSTSTRONG_LTR = TextDirectionHeuristic(false)
+}
+
+/**
+ * android.text.StaticLayout on Java2D: words wrapped greedily into [width]
+ * (a word wider than the line is broken by letters, as Android does), line
+ * height from the face's ascent and descent times the spacing (none added
+ * after the last line, as Android's), each line aligned by [alignment] and
+ * the reading direction. The paint is kept by reference, as Android's is: a
+ * shader or shadow set on it after the layout is built is what is drawn.
+ */
+class StaticLayout private constructor(
+    private val text: String,
+    val paint: TextPaint,
+    val width: Int,
+    private val alignment: Layout.Alignment,
+    private val rtl: Boolean,
+    private val spacingAdd: Float,
+    private val spacingMult: Float
+) : Layout() {
+    private val lines: List<String>
+    private val ascent: Float
+    private val descent: Float
+    private val extra: Float
+
+    init {
+        val fm = paint.fontMetrics
+        ascent = fm.ascent
+        descent = fm.descent
+        extra = (descent - ascent) * (spacingMult - 1f) + spacingAdd
+        lines = wrap()
+    }
+
+    val lineCount: Int get() = lines.size
+
+    /** The block's height: every line's box, the spacing between them but not after the last. */
+    val height: Int get() = kotlin.math.ceil((descent - ascent) * lines.size + extra * (lines.size - 1).coerceAtLeast(0)).toInt()
+
+    fun getLineWidth(line: Int): Float = paint.measureText(lines[line])
+
+    private fun fits(s: String) = paint.measureText(s) <= width + 0.5f
+
+    private fun wrap(): List<String> {
+        val out = ArrayList<String>()
+        for (para in text.split('\n')) {
+            val words = para.split(' ').filter { it.isNotEmpty() }
+            if (words.isEmpty()) { out += ""; continue }
+            var line = ""
+            for (w in words) {
+                val tried = if (line.isEmpty()) w else "$line $w"
+                if (fits(tried)) { line = tried; continue }
+                if (line.isNotEmpty()) out += line
+                if (fits(w)) { line = w; continue }
+                // A word longer than the line: as many letters as fit, then the rest.
+                var rest = w
+                while (rest.isNotEmpty() && !fits(rest)) {
+                    var n = rest.length - 1
+                    while (n > 1 && !fits(rest.substring(0, n))) n--
+                    out += rest.substring(0, n)
+                    rest = rest.substring(n)
+                }
+                line = rest
+            }
+            out += line
+        }
+        return out
+    }
+
+    fun draw(c: Canvas) {
+        val p = TextPaint(paint).apply { textAlign = Paint.Align.LEFT }
+        var top = 0f
+        for (line in lines) {
+            val w = paint.measureText(line)
+            val x = when (alignment) {
+                Layout.Alignment.ALIGN_CENTER -> (width - w) / 2f
+                Layout.Alignment.ALIGN_NORMAL -> if (rtl) width - w else 0f
+                Layout.Alignment.ALIGN_OPPOSITE -> if (rtl) 0f else width - w
+            }
+            if (line.isNotEmpty()) c.drawText(line, x, top - ascent, p)
+            top += (descent - ascent) + extra
+        }
+    }
+
+    class Builder private constructor(private val text: String, private val paint: TextPaint, private val width: Int) {
+        private var alignment = Layout.Alignment.ALIGN_NORMAL
+        private var rtl = false
+        private var add = 0f
+        private var mult = 1f
+
+        fun setAlignment(a: Layout.Alignment) = apply { alignment = a }
+        fun setTextDirection(d: TextDirectionHeuristic) = apply { rtl = d.rtl }
+        @Suppress("UNUSED_PARAMETER")
+        fun setIncludePad(include: Boolean) = this
+        fun setLineSpacing(spacingAdd: Float, spacingMult: Float) = apply { add = spacingAdd; mult = spacingMult }
+        fun build() = StaticLayout(text, paint, width, alignment, rtl, add, mult)
+
+        companion object {
+            fun obtain(source: CharSequence, start: Int, end: Int, paint: TextPaint, width: Int) =
+                Builder(source.subSequence(start, end).toString(), paint, width)
+        }
     }
 }
 
@@ -235,13 +471,39 @@ internal object Text {
 }
 
 /** android.graphics.Path on a Path2D, with Android's arc angles (degrees, clockwise from three o'clock). */
-class Path {
+class Path() {
     enum class Direction { CW, CCW }
     enum class FillType { WINDING, EVEN_ODD }
+    enum class Op { DIFFERENCE, INTERSECT, UNION, XOR, REVERSE_DIFFERENCE }
 
     internal val p = Path2D.Float()
     var fillType: FillType = FillType.WINDING
         set(value) { field = value; p.windingRule = if (value == FillType.EVEN_ODD) Path2D.WIND_EVEN_ODD else Path2D.WIND_NON_ZERO }
+
+    /** A copy of [src] (Android's Path(Path)). */
+    constructor(src: Path) : this() {
+        p.append(src.p, false)
+        fillType = src.fillType
+    }
+
+    /** This path combined with [other] as areas (Android's Path.op); the result is kept here. */
+    fun op(other: Path, op: Op): Boolean {
+        val a = java.awt.geom.Area(p)
+        val b = java.awt.geom.Area(other.p)
+        when (op) {
+            Op.DIFFERENCE -> a.subtract(b)
+            Op.INTERSECT -> a.intersect(b)
+            Op.UNION -> a.add(b)
+            Op.XOR -> a.exclusiveOr(b)
+            Op.REVERSE_DIFFERENCE -> { b.subtract(a); a.reset(); a.add(b) }
+        }
+        p.reset()
+        p.append(a, false)
+        return true
+    }
+
+    /** Every point of this path through [m]. */
+    fun transform(m: Matrix) = p.transform(m.at)
 
     private fun started() = p.currentPoint != null
 
@@ -268,10 +530,81 @@ class Path {
     }
 }
 
+/**
+ * androidx.core.graphics.PathParser: SVG path data ("M6.62,10.79c1.44,2.83 …")
+ * to a Path. Every command but the elliptical arc (A), which none of the
+ * app's icons use; one is refused rather than drawn wrong.
+ */
+object PathParser {
+    private val token = Regex("""[A-Za-z]|[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?""")
+
+    fun createPathFromPathData(data: String): Path {
+        val t = token.findAll(data).map { it.value }.toList()
+        val out = Path()
+        var i = 0
+        var cmd = ' '
+        var x = 0f; var y = 0f
+        var sx = 0f; var sy = 0f
+        var cx = 0f; var cy = 0f // the last control point, for S and T
+        var last = ' '
+        fun num(): Float = t[i++].toFloat()
+        fun more() = i < t.size && !t[i][0].isLetter()
+        while (i < t.size) {
+            if (t[i][0].isLetter()) { cmd = t[i][0]; i++ }
+            val rel = cmd.isLowerCase()
+            val ox = if (rel) x else 0f
+            val oy = if (rel) y else 0f
+            when (cmd.uppercaseChar()) {
+                'M' -> {
+                    x = ox + num(); y = oy + num(); out.moveTo(x, y); sx = x; sy = y
+                    cmd = if (rel) 'l' else 'L'
+                }
+                'L' -> { x = ox + num(); y = oy + num(); out.lineTo(x, y) }
+                'H' -> { x = (if (rel) x else 0f) + num(); out.lineTo(x, y) }
+                'V' -> { y = (if (rel) y else 0f) + num(); out.lineTo(x, y) }
+                'C' -> {
+                    val x1 = ox + num(); val y1 = oy + num()
+                    cx = ox + num(); cy = oy + num()
+                    x = ox + num(); y = oy + num()
+                    out.cubicTo(x1, y1, cx, cy, x, y)
+                }
+                'S' -> {
+                    val x1 = if (last.uppercaseChar() == 'C' || last.uppercaseChar() == 'S') 2 * x - cx else x
+                    val y1 = if (last.uppercaseChar() == 'C' || last.uppercaseChar() == 'S') 2 * y - cy else y
+                    cx = ox + num(); cy = oy + num()
+                    x = ox + num(); y = oy + num()
+                    out.cubicTo(x1, y1, cx, cy, x, y)
+                }
+                'Q' -> {
+                    cx = ox + num(); cy = oy + num()
+                    x = ox + num(); y = oy + num()
+                    out.quadTo(cx, cy, x, y)
+                }
+                'T' -> {
+                    cx = if (last.uppercaseChar() == 'Q' || last.uppercaseChar() == 'T') 2 * x - cx else x
+                    cy = if (last.uppercaseChar() == 'Q' || last.uppercaseChar() == 'T') 2 * y - cy else y
+                    x = ox + num(); y = oy + num()
+                    out.quadTo(cx, cy, x, y)
+                }
+                'Z' -> { out.close(); x = sx; y = sy }
+                else -> throw IllegalArgumentException("path command '$cmd' is not supported")
+            }
+            last = cmd
+            if (cmd.uppercaseChar() == 'Z' && more()) throw IllegalArgumentException("numbers after Z")
+        }
+        return out
+    }
+}
+
 /** android.graphics.Matrix, as far as the cards need it: map a box through the canvas's transform. */
 class Matrix {
     internal var at = AffineTransform()
     fun reset() { at = AffineTransform() }
+    fun setScale(sx: Float, sy: Float) { at = AffineTransform.getScaleInstance(sx.toDouble(), sy.toDouble()) }
+    fun setTranslate(dx: Float, dy: Float) { at = AffineTransform.getTranslateInstance(dx.toDouble(), dy.toDouble()) }
+    /** Then move by (dx, dy): Android's postTranslate, applied after what the matrix already does. */
+    fun postTranslate(dx: Float, dy: Float): Boolean { at.preConcatenate(AffineTransform.getTranslateInstance(dx.toDouble(), dy.toDouble())); return true }
+    fun postScale(sx: Float, sy: Float): Boolean { at.preConcatenate(AffineTransform.getScaleInstance(sx.toDouble(), sy.toDouble())); return true }
     fun mapRect(r: RectF): Boolean {
         val b = at.createTransformedShape(Rectangle2D.Float(r.left, r.top, r.width(), r.height())).bounds2D
         r.set(b.minX.toFloat(), b.minY.toFloat(), b.maxX.toFloat(), b.maxY.toFloat())
@@ -318,6 +651,19 @@ open class Canvas(val width: Int = 0, val height: Int = 0) {
     private var current = AffineTransform()
     private val saved = ArrayDeque<AffineTransform>()
 
+    // Drawing into a picture (Canvas(bitmap)): what is recorded is played onto it when it is read.
+    private var intoPicture: Replay? = null
+    private var played = 0
+
+    /** A canvas that draws into [bitmap], as Android's Canvas(Bitmap). */
+    constructor(bitmap: Bitmap) : this(bitmap.width, bitmap.height) { bitmap.painters += this }
+
+    internal fun flushInto(img: BufferedImage) {
+        if (played >= ops.size) return
+        val r = intoPicture ?: Replay(img.createGraphics()).also { intoPicture = it }
+        while (played < ops.size) { ops[played](r); played++ }
+    }
+
     /** Returns the count to hand to [restoreToCount], as Android does. */
     open fun save(): Int { val before = depth; depth++; saved.addLast(AffineTransform(current)); ops += { it.push() }; return before }
     open fun restore() { if (depth > 1) { depth--; saved.removeLastOrNull()?.let { current = it }; ops += { it.pop() } } }
@@ -347,6 +693,72 @@ open class Canvas(val width: Int = 0, val height: Int = 0) {
     fun clipRect(r: Rect): Boolean = clipRect(RectF(r))
     fun clipRect(left: Int, top: Int, right: Int, bottom: Int): Boolean = clipRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
     open fun clipPath(path: Path): Boolean { val shape = Path2D.Float(path.p); ops += { it.g.clip(shape) }; return true }
+
+    /** Everything but [r] stays drawable (Android's clipOutRect). */
+    open fun clipOutRect(r: RectF): Boolean {
+        val hole = Rectangle2D.Float(r.left, r.top, r.width(), r.height())
+        ops += { rp ->
+            val area = java.awt.geom.Area(rp.g.clip ?: Rectangle2D.Float(-100_000f, -100_000f, 200_000f, 200_000f))
+            area.subtract(java.awt.geom.Area(hole))
+            rp.g.clip = area
+        }
+        return true
+    }
+
+    /**
+     * A picture bent over a grid of [meshWidth] x [meshHeight] cells (Android's
+     * drawBitmapMesh: the posters' waving flag). Each cell is two triangles,
+     * each a straight piece of the picture; a vertex colour darkens its
+     * corner of the picture as Android's multiply does for greys.
+     */
+    open fun drawBitmapMesh(
+        bitmap: Bitmap, meshWidth: Int, meshHeight: Int, verts: FloatArray, vertOffset: Int,
+        colors: IntArray?, colorOffset: Int, paint: Paint?
+    ) {
+        val v = verts.copyOf()
+        val cols = colors?.copyOf()
+        ops += { r ->
+            val g = r.g
+            val img = bitmap.image
+            val clip = g.clip
+            val comp = g.composite
+            g.composite = AlphaComposite.SrcOver
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+            fun at(i: Int, j: Int) = j * (meshWidth + 1) + i
+            fun tri(a: Int, b: Int, c: Int, ai: Int, aj: Int, bi: Int, bj: Int, ci: Int, cj: Int) {
+                val sx0 = ai * img.width.toDouble() / meshWidth; val sy0 = aj * img.height.toDouble() / meshHeight
+                val sx1 = bi * img.width.toDouble() / meshWidth; val sy1 = bj * img.height.toDouble() / meshHeight
+                val sx2 = ci * img.width.toDouble() / meshWidth; val sy2 = cj * img.height.toDouble() / meshHeight
+                val dx0 = v[vertOffset + a * 2].toDouble(); val dy0 = v[vertOffset + a * 2 + 1].toDouble()
+                val dx1 = v[vertOffset + b * 2].toDouble(); val dy1 = v[vertOffset + b * 2 + 1].toDouble()
+                val dx2 = v[vertOffset + c * 2].toDouble(); val dy2 = v[vertOffset + c * 2 + 1].toDouble()
+                val s00 = sx1 - sx0; val s01 = sx2 - sx0; val s10 = sy1 - sy0; val s11 = sy2 - sy0
+                val det = s00 * s11 - s01 * s10
+                if (kotlin.math.abs(det) < 1e-9) return
+                val i00 = s11 / det; val i01 = -s01 / det; val i10 = -s10 / det; val i11 = s00 / det
+                val d00 = dx1 - dx0; val d01 = dx2 - dx0; val d10 = dy1 - dy0; val d11 = dy2 - dy0
+                val m00 = d00 * i00 + d01 * i10; val m01 = d00 * i01 + d01 * i11
+                val m10 = d10 * i00 + d11 * i10; val m11 = d10 * i01 + d11 * i11
+                val tx = dx0 - (m00 * sx0 + m01 * sy0); val ty = dy0 - (m10 * sx0 + m11 * sy0)
+                val shape = Path2D.Double().apply { moveTo(dx0, dy0); lineTo(dx1, dy1); lineTo(dx2, dy2); closePath() }
+                g.clip = clip
+                g.clip(shape)
+                g.drawImage(img, AffineTransform(m00, m10, m01, m11, tx, ty), null)
+                if (cols != null) {
+                    fun grey(k: Int) = (cols[colorOffset + k] shr 16) and 0xFF
+                    val dark = 255 - (grey(a) + grey(b) + grey(c)) / 3
+                    if (dark > 0) { g.color = java.awt.Color(0, 0, 0, dark.coerceAtMost(255)); g.fill(shape) }
+                }
+            }
+            for (j in 0 until meshHeight) for (i in 0 until meshWidth) {
+                tri(at(i, j), at(i + 1, j), at(i, j + 1), i, j, i + 1, j, i, j + 1)
+                tri(at(i + 1, j), at(i + 1, j + 1), at(i, j + 1), i + 1, j, i + 1, j + 1, i, j + 1)
+            }
+            g.clip = clip
+            g.composite = comp
+        }
+    }
 
     open fun drawColor(color: Int) {
         ops += { r ->
@@ -400,14 +812,27 @@ open class Canvas(val width: Int = 0, val height: Int = 0) {
                     Paint.Align.CENTER -> x - w / 2f
                     Paint.Align.RIGHT -> x - w
                 }
-                setup(r.g, p)
-                if (p.style == Paint.Style.STROKE) {
-                    r.g.stroke = stroke(p)
-                    r.g.draw(layout.getOutline(AffineTransform.getTranslateInstance(left.toDouble(), y.toDouble())))
+                val blur = (p.maskFilter as? BlurMaskFilter)?.radius ?: 0f
+                if (!hasShadow(p) && blur <= 0f) {
+                    glyphs(r.g, layout, left, y, p)
                 } else {
-                    layout.draw(r.g, left, y)
+                    val box = layout.getOutline(AffineTransform.getTranslateInstance(left.toDouble(), y.toDouble())).bounds2D
+                    val pad = if (p.style == Paint.Style.FILL) 0f else p.strokeWidth
+                    if (hasShadow(p)) soft(r.g, box, pad, p.shadowRadius, p.shadowDx, p.shadowDy) { glyphs(it, layout, left, y, shadowOf(p)) }
+                    if (blur > 0f) soft(r.g, box, pad, blur, 0f, 0f) { glyphs(it, layout, left, y, p) }
+                    else glyphs(r.g, layout, left, y, p)
                 }
             }
+        }
+    }
+
+    private fun glyphs(g: Graphics2D, layout: TextLayout, left: Float, y: Float, p: Paint) {
+        setup(g, p)
+        if (p.style == Paint.Style.STROKE) {
+            g.stroke = stroke(p)
+            g.draw(layout.getOutline(AffineTransform.getTranslateInstance(left.toDouble(), y.toDouble())))
+        } else {
+            layout.draw(g, left, y)
         }
     }
 
@@ -442,10 +867,76 @@ open class Canvas(val width: Int = 0, val height: Int = 0) {
     private fun shape(s: java.awt.Shape, paint: Paint) {
         val p = Paint(paint)
         ops += { r ->
-            setup(r.g, p)
-            if (p.style == Paint.Style.FILL || p.style == Paint.Style.FILL_AND_STROKE) r.g.fill(s)
-            if (p.style == Paint.Style.STROKE || p.style == Paint.Style.FILL_AND_STROKE) { r.g.stroke = stroke(p); r.g.draw(s) }
+            val blur = (p.maskFilter as? BlurMaskFilter)?.radius ?: 0f
+            if (!hasShadow(p) && blur <= 0f) {
+                paintShape(r.g, s, p)
+            } else {
+                val pad = if (p.style == Paint.Style.FILL) 0f else p.strokeWidth
+                if (hasShadow(p)) soft(r.g, s.bounds2D, pad, p.shadowRadius, p.shadowDx, p.shadowDy) { paintShape(it, s, shadowOf(p)) }
+                if (blur > 0f) soft(r.g, s.bounds2D, pad, blur, 0f, 0f) { paintShape(it, s, p) }
+                else paintShape(r.g, s, p)
+            }
         }
+    }
+
+    private fun paintShape(g: Graphics2D, s: java.awt.Shape, p: Paint) {
+        setup(g, p)
+        if (p.style == Paint.Style.FILL || p.style == Paint.Style.FILL_AND_STROKE) g.fill(s)
+        if (p.style == Paint.Style.STROKE || p.style == Paint.Style.FILL_AND_STROKE) { g.stroke = stroke(p); g.draw(s) }
+    }
+
+    private fun hasShadow(p: Paint) = p.shadowRadius > 0f && Color.alpha(p.shadowColor) > 0
+
+    /** The paint a shadow is drawn with: the shadow's colour, faded with the paint's own alpha, no shader, no blur. */
+    private fun shadowOf(p: Paint) = Paint(p).apply {
+        shader = null
+        maskFilter = null
+        clearShadowLayer()
+        val a = Color.alpha(p.shadowColor) * (if (p.shader == null) p.alpha else 255) / 255
+        color = (p.shadowColor and 0x00FFFFFF) or (a shl 24)
+    }
+
+    /**
+     * Draws [draw] soft: into a picture off to the side, in device pixels,
+     * blurred (a Gaussian of Android's sigma for [radius], by three box
+     * passes), and laid on at ([dx], [dy]). [box] is what is drawn, in this
+     * canvas's units; [pad] its stroke. Kept to the clip, so a glow over a
+     * whole poster does not make a picture larger than the poster.
+     */
+    private fun soft(g: Graphics2D, box: Rectangle2D, pad: Float, radius: Float, dx: Float, dy: Float, draw: (Graphics2D) -> Unit) {
+        val t = g.transform
+        val k = kotlin.math.sqrt(kotlin.math.abs(t.determinant)).toFloat().coerceAtLeast(1e-3f)
+        val sigma = (0.57735f * radius + 0.5f) * k
+        val margin = sigma * 3f + pad * k + 2f
+        val shifted = Rectangle2D.Double(box.x + dx, box.y + dy, box.width, box.height)
+        val dev = t.createTransformedShape(shifted).bounds2D
+        var x0 = kotlin.math.floor(dev.minX - margin).toInt()
+        var y0 = kotlin.math.floor(dev.minY - margin).toInt()
+        var x1 = kotlin.math.ceil(dev.maxX + margin).toInt()
+        var y1 = kotlin.math.ceil(dev.maxY + margin).toInt()
+        g.clip?.let { c ->
+            val cb = t.createTransformedShape(c).bounds2D
+            x0 = maxOf(x0, kotlin.math.floor(cb.minX - margin).toInt()); y0 = maxOf(y0, kotlin.math.floor(cb.minY - margin).toInt())
+            x1 = minOf(x1, kotlin.math.ceil(cb.maxX + margin).toInt()); y1 = minOf(y1, kotlin.math.ceil(cb.maxY + margin).toInt())
+        }
+        val w = x1 - x0
+        val h = y1 - y0
+        if (w <= 0 || h <= 0 || w.toLong() * h > 40_000_000L) return
+        val img = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB_PRE)
+        val og = img.createGraphics()
+        og.transform = AffineTransform.getTranslateInstance(-x0.toDouble(), -y0.toDouble()).apply {
+            concatenate(t)
+            translate(dx.toDouble(), dy.toDouble())
+        }
+        draw(og)
+        og.dispose()
+        Blur.gaussian(img, sigma)
+        val comp = g.composite
+        g.transform = AffineTransform()
+        g.composite = AlphaComposite.SrcOver
+        g.drawImage(img, x0, y0, null)
+        g.transform = t
+        g.composite = comp
     }
 
     private fun setup(g: Graphics2D, p: Paint) {
@@ -519,5 +1010,83 @@ class PdfDocument {
         page.canvas.replay(g)
         g.dispose()
         return img
+    }
+}
+
+/** A Gaussian blur of a premultiplied picture, in place: three box passes each way, the standard close match. */
+internal object Blur {
+    fun gaussian(img: BufferedImage, sigma: Float) {
+        if (sigma < 0.6f) return
+        val w = img.width
+        val h = img.height
+        val px = img.getRGB(0, 0, w, h, null, 0, w)
+        val ch = Array(4) { IntArray(w * h) }
+        // getRGB gives non-premultiplied ARGB; blur premultiplied so edges do not darken.
+        for (i in px.indices) {
+            val c = px[i]
+            val a = c ushr 24
+            ch[0][i] = a
+            ch[1][i] = ((c shr 16) and 0xFF) * a / 255
+            ch[2][i] = ((c shr 8) and 0xFF) * a / 255
+            ch[3][i] = (c and 0xFF) * a / 255
+        }
+        val tmp = IntArray(w * h)
+        for (size in boxes(sigma)) {
+            val r = (size - 1) / 2
+            for (c in ch) {
+                horizontal(c, tmp, w, h, r)
+                vertical(tmp, c, w, h, r)
+            }
+        }
+        for (i in px.indices) {
+            val a = ch[0][i].coerceIn(0, 255)
+            if (a == 0) { px[i] = 0; continue }
+            val rr = (ch[1][i] * 255 / a).coerceIn(0, 255)
+            val gg = (ch[2][i] * 255 / a).coerceIn(0, 255)
+            val bb = (ch[3][i] * 255 / a).coerceIn(0, 255)
+            px[i] = (a shl 24) or (rr shl 16) or (gg shl 8) or bb
+        }
+        img.setRGB(0, 0, w, h, px, 0, w)
+    }
+
+    private fun boxes(sigma: Float): IntArray {
+        val n = 3
+        val ideal = kotlin.math.sqrt(12.0 * sigma * sigma / n + 1)
+        var wl = kotlin.math.floor(ideal).toInt()
+        if (wl % 2 == 0) wl--
+        val wu = wl + 2
+        val m = Math.round((12.0 * sigma * sigma - n * wl * wl - 4.0 * n * wl - 3.0 * n) / (-4.0 * wl - 4.0)).toInt()
+        return IntArray(n) { if (it < m) wl else wu }
+    }
+
+    private fun horizontal(src: IntArray, dst: IntArray, w: Int, h: Int, r: Int) {
+        val div = 2 * r + 1
+        for (y in 0 until h) {
+            val row = y * w
+            var sum = 0
+            for (i in -r..r) if (i in 0 until w) sum += src[row + i]
+            for (x in 0 until w) {
+                dst[row + x] = sum / div
+                val out = x - r
+                val inn = x + r + 1
+                if (out >= 0) sum -= src[row + out]
+                if (inn < w) sum += src[row + inn]
+            }
+        }
+    }
+
+    private fun vertical(src: IntArray, dst: IntArray, w: Int, h: Int, r: Int) {
+        val div = 2 * r + 1
+        for (x in 0 until w) {
+            var sum = 0
+            for (i in -r..r) if (i in 0 until h) sum += src[i * w + x]
+            for (y in 0 until h) {
+                dst[y * w + x] = sum / div
+                val out = y - r
+                val inn = y + r + 1
+                if (out >= 0) sum -= src[out * w + x]
+                if (inn < h) sum += src[inn * w + x]
+            }
+        }
     }
 }

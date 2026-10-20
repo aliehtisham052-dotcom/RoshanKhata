@@ -55,7 +55,8 @@ class CardDesignsTest {
                 val img = CardDraw.image(t, data(rtl))
                 assertEquals(CardTemplates.W, img.width)
                 // Pictures first, so a card that fails is still there to look at.
-                if (!rtl || t.id in listOf(101, 106, 111)) ImageIO.write(img, "png", File(dir, "card-${if (rtl) "ur" else "en"}-${t.id}.png"))
+                // Every Urdu card too (20 Oct): a Nastaliq tagline once rose out of its pill on some designs.
+                ImageIO.write(img, "png", File(dir, "card-${if (rtl) "ur" else "en"}-${t.id}.png"))
                 // Something besides the background: a blank card has 0 (of ~52,000 samples).
                 val inked = ink(img)
                 if (inked < 300) thin += "${t.id}${if (rtl) "ur" else "en"}=$inked"

@@ -683,9 +683,9 @@
     <string name="bill_saved_credit">बिल सेव हुआ और खाते में दर्ज हुआ</string>
     <string name="enter_supplier">कृपया सप्लायर चुनें</string>
     <string name="enter_product">कृपया प्रोडक्ट का नाम लिखें</string>
-    <string name="bill_deleted">बिल मिटा दिया। खाते की एंट्री रहेगी — माल सच में आया था और उसका पैसा आपको देना ही है।</string>
+    <string name="bill_deleted">बिल मिटा दिया। अगर यह उधार का बिल था तो इसकी खाते की एंट्री भी रीसायकल बिन में चली गई — गलती हो तो 30 दिन के अंदर वहाँ से वापस ला सकते हैं।</string>
     <string name="delete_bill">बिल मिटाएँ</string>
-    <string name="delete_bill_confirm">बिल और उसके बैच रिकॉर्ड हट जाएँगे, पर खाते की एंट्री रहेगी। माल सच में आया था और पैसा सच में देना है — काग़ज़ मिटाने से वह नहीं बदलता।</string>
+    <string name="delete_bill_confirm">बिल और उसके बैच रिकॉर्ड हट जाएँगे। अगर यह उधार का बिल है तो इसकी खाते की एंट्री (जो रकम आपको इस सप्लायर को देनी है) भी रीसायकल बिन में चली जाएगी, और देनी वाली रकम इतनी कम हो जाएगी। यह एंट्री 30 दिन के अंदर रीसायकल बिन से वापस लाई जा सकती है।</string>
     <string name="bill_actions">बिल</string>
     <string name="view_items">चीज़ें और बैच देखें</string>
 
@@ -2953,4 +2953,23 @@
     <string name="import_csv_go">उन्हें ले आएँ</string>
     <string name="import_csv_done">ग्राहक जोड़े गए: %1$d</string>
     <string name="import_csv_empty">इस फ़ाइल से कोई ग्राहक नहीं पढ़ा जा सका। इसमें कम से कम नामों का एक कॉलम होना चाहिए।</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">कंप्यूटर को भेजें (वाई-फ़ाई)</string>
+    <string name="wifi_send_explain">कंप्यूटर पर रोशन खाता खोलें और “फ़ोन से” दबाएँ, फिर वहाँ दिखने वाला कोड स्कैन करें। दोनों एक ही वाई-फ़ाई पर हों। कुछ भी इंटरनेट पर नहीं जाता।</string>
+    <string name="wifi_send_button">कंप्यूटर का कोड स्कैन करें</string>
+    <string name="wifi_send_not_computer">यह रोशन खाता कंप्यूटर का कोड नहीं है।</string>
+    <string name="wifi_send_sending">कंप्यूटर को भेज रहे हैं…</string>
+    <string name="wifi_send_done">भेज दिया। कंप्यूटर पर देखकर वहीं पुष्टि करें तो खाता आ जाएगा।</string>
+    <string name="wifi_send_refused">कंप्यूटर ने नहीं लिया। उसकी “फ़ोन से” वाली खिड़की बंद करके दोबारा खोलें और नया कोड स्कैन करें।</string>
+    <string name="wifi_send_unreachable">कंप्यूटर तक नहीं पहुँच सके। देखें कि दोनों एक ही वाई-फ़ाई पर हैं, कंप्यूटर पर “फ़ोन से” वाली खिड़की खुली है, और विंडोज़ ने रोशन खाता को नेटवर्क की अनुमति दी है।</string>
+    <string name="wifi_pc_button">फ़ोन से</string>
+    <string name="wifi_pc_title">आपके फ़ोन से, वाई-फ़ाई के ज़रिए</string>
+    <string name="wifi_pc_steps">फ़ोन पर: बैकअप → कंप्यूटर का कोड स्कैन करें, और इस कोड पर रखें। दोनों एक ही वाई-फ़ाई पर हों। कुछ भी इंटरनेट पर नहीं जाता, और आपकी हाँ के बिना यहाँ कुछ नहीं बदलता।</string>
+    <string name="wifi_pc_waiting">फ़ोन का इंतज़ार है…</string>
+    <string name="wifi_pc_no_network">यह कंप्यूटर किसी नेटवर्क पर नहीं है। इसे दुकान के वाई-फ़ाई से जोड़ें और यह खिड़की दोबारा खोलें।</string>
+    <string name="wifi_pc_firewall">अगर विंडोज़ पूछे, तो रोशन खाता को प्राइवेट नेटवर्क की अनुमति दें।</string>
+    <string name="wifi_pc_failed">सुनना शुरू नहीं हो सका। यह खिड़की बंद करके दोबारा कोशिश करें।</string>
+    <string name="poster_save_picture">पोस्टर को तस्वीर के रूप में सहेजें</string>
+    <string name="poster_desktop_flat">कंप्यूटर पर तस्वीरें सपाट (फ़्लैट) बनती हैं; फ़ोन इन्हें 3D में दिखाता है।</string>
 </resources>

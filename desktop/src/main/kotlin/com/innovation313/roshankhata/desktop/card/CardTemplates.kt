@@ -11,6 +11,7 @@ import com.innovation313.roshankhata.desktop.gfx.LinearGradient
 import com.innovation313.roshankhata.desktop.gfx.Paint
 import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.RadialGradient
+import com.innovation313.roshankhata.desktop.gfx.Rect
 import com.innovation313.roshankhata.desktop.gfx.RectF
 import com.innovation313.roshankhata.desktop.gfx.Shader
 import com.innovation313.roshankhata.desktop.gfx.Typeface
@@ -144,6 +145,24 @@ object CardTemplates {
     }
 
     /**
+     * The paint [text] really sets [s] with. Latin keeps [p]. Arabic script
+     * gets Nastaliq: it reads a size smaller than Latin set at the same size,
+     * so it starts a step larger and comes down only as far as the width [p]
+     * measured for the line.
+     */
+    private fun scriptPaint(s: String, p: Paint): Paint {
+        if (!arabicScript(s)) return p
+        val tf = urduTf
+        val paint = Paint(p).apply {
+            letterSpacing = 0f
+            if (tf != null) { typeface = tf; isFakeBoldText = false; textSize = p.textSize * NASTALIQ_STEP }
+        }
+        val room = p.measureText(s)
+        while (paint.measureText(s) > room && paint.textSize > 14f) paint.textSize -= 1f
+        return paint
+    }
+
+    /**
      * Every word on every card goes through here.
      *
      * Urdu is set in Nastaliq, never letter-spaced (spacing breaks the joins),
@@ -155,18 +174,7 @@ object CardTemplates {
     private fun text(c: Canvas, raw: String, x: Float, y: Float, p: Paint) {
         if (raw.isEmpty()) return
         val s = if (mirrored && raw == "\u2192") "\u2190" else raw
-        var paint = p
-        if (arabicScript(s)) {
-            val tf = urduTf
-            paint = Paint(p).apply {
-                letterSpacing = 0f
-                // Nastaliq reads a size smaller than Latin set at the same size; it
-                // starts a step larger and comes down only as far as its line needs.
-                if (tf != null) { typeface = tf; isFakeBoldText = false; textSize = p.textSize * NASTALIQ_STEP }
-            }
-            val room = p.measureText(s)
-            while (paint.measureText(s) > room && paint.textSize > 14f) paint.textSize -= 1f
-        }
+        val paint = scriptPaint(s, p)
         if (!mirrored) {
             c.drawText(s, x, y, paint)
             return
@@ -339,10 +347,35 @@ object CardTemplates {
         val w = p.measureText(shown) + size * 1.4f
         val h = size * 1.7f
         val left = if (alignRight) x - w else x
-        c.drawRoundRect(RectF(left, y, left + w, y + h), h / 2, h / 2, fill(bg))
-        text(c, shown, left + size * 0.7f, y + h * 0.68f, p)
+        if (!arabicScript(shown)) {
+            c.drawRoundRect(RectF(left, y, left + w, y + h), h / 2, h / 2, fill(bg))
+            text(c, shown, left + size * 0.7f, y + h * 0.68f, p)
+            return w
+        }
+        // Nastaliq climbs far above Latin: the strokes of گ and ک reach almost
+        // twice the type size over the line. A pill sized for Latin let them
+        // leave it, onto a background the colour of the text itself, and گھر
+        // read as لھر (20 Oct). So the pill is sized to the ink, centred where
+        // the Latin pill sits, and the type comes down a step at a time (never
+        // below MIN_READABLE) before the pill grows past half again its height.
+        val pad = size * 0.2f
+        var tp = p
+        var ink = inkBounds(shown, tp)
+        while (ink.height() + 2 * pad > h * 1.5f && tp.textSize > MIN_READABLE) {
+            tp = paint(tp.textSize - 1f, fg, bold = true)
+            ink = inkBounds(shown, tp)
+        }
+        val ph = max(h, ink.height() + 2 * pad)
+        val top = y + h / 2 - ph / 2
+        c.drawRoundRect(RectF(left, top, left + w, top + ph), ph / 2, ph / 2, fill(bg))
+        val tw = scriptPaint(shown, tp).measureText(shown)
+        text(c, shown, left + (w - tw) / 2, top + (ph - ink.height()) / 2 - ink.top, tp)
         return w
     }
+
+    /** The ink [text] would lay down for [s] with [p], about its baseline (top is negative). */
+    private fun inkBounds(s: String, p: Paint): Rect =
+        Rect().also { scriptPaint(s, p).getTextBounds(s, 0, s.length, it) }
 
     // ---------- glyphs ----------
 

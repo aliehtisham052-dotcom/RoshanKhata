@@ -679,9 +679,9 @@
     <string name="bill_saved_credit">فاکتور ذخیره و در دفتر شما ثبت شد</string>
     <string name="enter_supplier">لطفاً تأمین‌کننده‌ای انتخاب کنید</string>
     <string name="enter_product">لطفاً نام محصولی وارد کنید</string>
-    <string name="bill_deleted">فاکتور حذف شد. ثبت دفتر می‌ماند — کالا واقعاً رسیده و شما واقعاً بدهکار آن هستید.</string>
+    <string name="bill_deleted">فاکتور حذف شد. اگر فاکتور نسیه بود، ثبت دفتر آن هم به سطل بازیافت رفت — اگر اشتباه بود تا ۳۰ روز می‌توانید آن را از آنجا برگردانید.</string>
     <string name="delete_bill">حذف فاکتور</string>
-    <string name="delete_bill_confirm">فاکتور و سوابق بچ آن حذف می‌شود، اما ثبت دفتر می‌ماند. کالا واقعاً رسیده و پول واقعاً بدهکاری است — حذف کاغذها آن را برنمی‌گرداند.</string>
+    <string name="delete_bill_confirm">فاکتور و سوابق بچ آن حذف می‌شود. اگر فاکتور نسیه باشد، ثبت دفتر آن (بدهی شما به این تأمین‌کننده) هم به سطل بازیافت می‌رود و مبلغ بدهی به اندازهٔ این فاکتور کم می‌شود. این ثبت را تا ۳۰ روز می‌توانید از سطل بازیافت برگردانید.</string>
     <string name="bill_actions">فاکتور</string>
     <string name="view_items">دیدن اقلام و بچ‌ها</string>
 
@@ -2937,4 +2937,23 @@
     <string name="import_csv_go">اضافه‌شان کن</string>
     <string name="import_csv_done">مشتریان اضافه شدند: %1$d</string>
     <string name="import_csv_empty">هیچ مشتری‌ای از این فایل خوانده نشد. فایل باید دست‌کم یک ستون نام داشته باشد.</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">ارسال به رایانه (وای‌فای)</string>
+    <string name="wifi_send_explain">در رایانه روشن خاتا را باز کنید و «از گوشی» را بزنید، سپس کدی را که نشان می‌دهد اسکن کنید. هر دو باید روی یک وای‌فای باشند. چیزی به اینترنت نمی‌رود.</string>
+    <string name="wifi_send_button">اسکن کد رایانه</string>
+    <string name="wifi_send_not_computer">این کد رایانهٔ روشن خاتا نیست.</string>
+    <string name="wifi_send_sending">در حال ارسال به رایانه…</string>
+    <string name="wifi_send_done">ارسال شد. در رایانه بررسی و همان‌جا تأیید کنید تا بارگذاری شود.</string>
+    <string name="wifi_send_refused">رایانه آن را نپذیرفت. پنجرهٔ «از گوشی» را ببندید، دوباره باز کنید و کد جدید را اسکن کنید.</string>
+    <string name="wifi_send_unreachable">به رایانه نرسید. بررسی کنید هر دو روی یک وای‌فای باشند، پنجرهٔ «از گوشی» باز باشد و ویندوز به روشن خاتا اجازهٔ شبکه داده باشد.</string>
+    <string name="wifi_pc_button">از گوشی</string>
+    <string name="wifi_pc_title">از گوشی شما، با وای‌فای</string>
+    <string name="wifi_pc_steps">در گوشی: پشتیبان ← اسکن کد رایانه، و آن را روی این کد بگیرید. هر دو باید روی یک وای‌فای باشند. چیزی به اینترنت نمی‌رود و تا شما تأیید نکنید چیزی اینجا جایگزین نمی‌شود.</string>
+    <string name="wifi_pc_waiting">در انتظار گوشی…</string>
+    <string name="wifi_pc_no_network">این رایانه به شبکه وصل نیست. آن را به وای‌فای مغازه وصل کنید و این پنجره را دوباره باز کنید.</string>
+    <string name="wifi_pc_firewall">اگر ویندوز پرسید، به روشن خاتا در شبکه‌های خصوصی اجازه دهید.</string>
+    <string name="wifi_pc_failed">شروع شنیدن ممکن نشد. این پنجره را ببندید و دوباره تلاش کنید.</string>
+    <string name="poster_save_picture">ذخیرهٔ پوستر به‌صورت تصویر</string>
+    <string name="poster_desktop_flat">در رایانه تصویرها تخت کشیده می‌شوند؛ گوشی آن‌ها را سه‌بعدی نشان می‌دهد.</string>
 </resources>

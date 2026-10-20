@@ -109,4 +109,5 @@ jobs:
           # The ten invoice designs from InvoiceDesignsTest, to look at as well.
           for f in desktop/build/invoice-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           for f in desktop/build/card-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
+          for f in desktop/build/poster-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           gh release edit desktop-test --notes "Windows test build from ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not signed yet: Windows will warn before installing."
