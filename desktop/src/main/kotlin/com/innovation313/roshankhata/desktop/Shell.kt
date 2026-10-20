@@ -57,6 +57,8 @@ fun AppHeader(
     shopName: String,
     logo: ImageBitmap?,
     onShop: () -> Unit,
+    /** "Last backup …" with the time of the newest copy, or Back up now when there is none. */
+    backupLabel: String,
     onBackup: () -> Unit,
     onPhone: () -> Unit,
     alerts: Int,
@@ -102,14 +104,14 @@ fun AppHeader(
             OutlineAction(onClick = onBackup) {
                 TileGlyph(Section.DAILY)
                 Spacer(Modifier.width(8.dp))
-                Text(word(W.backup_now), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Text(backupLabel, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
             }
             OutlineAction(onClick = onPhone) {
                 Glyph("ic_phone", c.inkSoft, 18)
                 Spacer(Modifier.width(8.dp))
                 Text(word(W.wifi_pc_button), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
             }
-            // The bell: what needs the owner today (cheques due, stock expiring), as the phone's.
+            // The bell: what needs the owner today, the phone's own list (LedgerAlerts).
             Box {
                 OutlineAction(onClick = onAlerts) { Glyph("ic_bell", c.brandGreenText, 20) }
                 if (alerts > 0) {

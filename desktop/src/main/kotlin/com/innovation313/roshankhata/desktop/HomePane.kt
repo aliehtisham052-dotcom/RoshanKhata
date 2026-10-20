@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.innovation313.roshankhata.data.LedgerAlerts
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.screens.LocalRoshanColors
@@ -66,8 +67,7 @@ enum class HomeAction(val word: String, val icon: String, val tile: String) {
 fun HomePane(
     parties: List<PartyWithBalance>,
     late: Int,
-    dueCheques: Int,
-    expiring: Int,
+    alerts: List<LedgerAlerts.Alert>,
     onOpen: (Section) -> Unit,
     onAction: (HomeAction) -> Unit,
     onCustomer: (Long) -> Unit
@@ -113,12 +113,14 @@ fun HomePane(
             )
         }
 
-        // Today: the phone's todayStrip chips, each opening its page.
-        if (dueCheques > 0 || expiring > 0) {
+        // Today: the phone's todayStrip (MainActivity.paintToday), one chip per kind of alert.
+        if (alerts.isNotEmpty()) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(word(W.home_today), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                if (dueCheques > 0) TodayChip(word(W.today_chip, word(W.nav_cheques), dueCheques), Section.CHEQUES) { onOpen(Section.CHEQUES) }
-                if (expiring > 0) TodayChip(word(W.today_chip, word(W.tile_expiry), expiring), Section.EXPIRY) { onOpen(Section.EXPIRY) }
+                alerts.groupBy { it.kind }.forEach { (kind, list) ->
+                    val s = alertSection(kind)
+                    TodayChip(word(W.today_chip, word(alertChipWord(kind)), list.size), s) { onOpen(s) }
+                }
             }
         }
 
@@ -294,6 +296,55 @@ private fun Recent(parties: List<PartyWithBalance>, hidden: Boolean, onCustomer:
                     if (hidden) "• • •" else Format.customerBalance(p.balance),
                     color = balanceColour(p.balance), fontSize = 14.sp, fontWeight = FontWeight.Bold
                 )
+            }
+            HorizontalDivider(color = Look.line)
+        }
+    }
+}
+
+/** Where an alert opens: the page that holds it, as the phone's AlertsActivity. */
+fun alertSection(kind: LedgerAlerts.Kind): Section = when (kind) {
+    LedgerAlerts.Kind.CHEQUE -> Section.CHEQUES
+    LedgerAlerts.Kind.PLAN -> Section.PLANS
+    LedgerAlerts.Kind.BILL -> Section.BILLS
+    LedgerAlerts.Kind.EXPIRING -> Section.EXPIRY
+    LedgerAlerts.Kind.CASHFLOW -> Section.CASHFLOW
+}
+
+/** The chip's word for each kind, the phone's (paintToday). */
+private fun alertChipWord(kind: LedgerAlerts.Kind): String = when (kind) {
+    LedgerAlerts.Kind.CHEQUE -> W.nav_cheques
+    LedgerAlerts.Kind.PLAN -> W.na_tag_late
+    LedgerAlerts.Kind.BILL -> W.tile_bills
+    LedgerAlerts.Kind.EXPIRING -> W.tile_expiry
+    LedgerAlerts.Kind.CASHFLOW -> W.today_gap
+}
+
+/** The bell's list (the phone's AlertsActivity): each alert on its page's tile, a click opens the page. */
+@Composable
+fun AlertsList(alerts: List<LedgerAlerts.Alert>, onOpen: (Section) -> Unit) {
+    val c = LocalRoshanColors.current
+    Column(Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(12.dp)) {
+        if (alerts.isEmpty()) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp)
+        alerts.forEach { a ->
+            val s = alertSection(a.kind)
+            Row(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { onOpen(s) }.padding(horizontal = 10.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TileBadge(s, 40, 24)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(a.title, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                    if (a.sub.isNotEmpty()) Text(a.sub, color = c.textMuted, fontSize = 13.sp)
+                }
+                a.tag?.let {
+                    Text(
+                        it,
+                        Modifier.background(c.gaveFill.copy(alpha = 0.14f), RoundedCornerShape(10.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
+                        color = c.owedToMe, fontSize = 12.sp, fontWeight = FontWeight.Bold
+                    )
+                }
             }
             HorizontalDivider(color = Look.line)
         }

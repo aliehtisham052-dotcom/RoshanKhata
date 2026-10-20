@@ -46,7 +46,15 @@ No account, no server, no ads. Everything stays on the phone.
   Suppliers), side pills, its five orders and a several-at-once delete
   (`KhataControls.kt`, KhataActivity.rank's rule); the open customer has the
   WhatsApp reminder; More → Text size has the phone's four steps (a font
-  scale over Windows' own). The scrolling section rail (each section wears the
+  scale over Windows' own). The bell and Home's chips come from
+  `LedgerAlerts` (:shared — cheques, plans, bills, expiry, cash gap; the
+  phone's HomeAlerts calls it and adds its backup and update rows around it);
+  the backup chip shows the newest daily copy's time; the open customer shows
+  the promised day and season record and has the phone's entry search and
+  newest/oldest order; Ctrl+F jumps to the Khata search. `ScreenProofTest`
+  draws the window (Home, English/Urdu, light/dark, made-up shop) to
+  build/screen-proof, put on desktop-test — look at it after any UI change.
+  The scrolling section rail (each section wears the
   phone's own tile icon, synced from `app/src/main/res` at build time — plus
   the header glyphs ic_storefront, ic_bell, ic_eye_*, ic_phone, ic_search;
   `TileIconsTest` reads them all) holds: Khata (master-detail, newest dealing first, statement for the whole
