@@ -42,7 +42,11 @@ No account, no server, no ads. Everything stays on the phone.
   own pages folded under More; colours beyond the shared palette live in
   `Look` (Panes.kt) and dark is read from the theme (`isDark()`), never only
   from Windows. Invoices are list + page: a click shows the invoice in its own
-  design beside the list. The scrolling section rail (each section wears the
+  design beside the list. Khata has the phone's tabs (All / Customers /
+  Suppliers), side pills, its five orders and a several-at-once delete
+  (`KhataControls.kt`, KhataActivity.rank's rule); the open customer has the
+  WhatsApp reminder; More → Text size has the phone's four steps (a font
+  scale over Windows' own). The scrolling section rail (each section wears the
   phone's own tile icon, synced from `app/src/main/res` at build time — plus
   the header glyphs ic_storefront, ic_bell, ic_eye_*, ic_phone, ic_search;
   `TileIconsTest` reads them all) holds: Khata (master-detail, newest dealing first, statement for the whole
