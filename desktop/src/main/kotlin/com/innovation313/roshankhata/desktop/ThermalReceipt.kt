@@ -134,6 +134,6 @@ fun PrinterChoiceDialog(names: List<String>, onCancel: () -> Unit, onSavePicture
             }
         },
         confirmButton = {},
-        dismissButton = { TextButton(onCancel) { Text(word(W.cancel)) } }
+        dismissButton = { FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD) }
     )
 }

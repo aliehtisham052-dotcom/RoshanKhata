@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -91,22 +92,39 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
         }
     }
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            val pending = cheques.count { it.status == ChequeStatus.PENDING }
-            val summary = when {
-                cheques.isEmpty() -> word(W.due_summary_empty)
-                pending == 0 -> word(W.due_summary_all_settled)
-                else -> word(W.due_summary_pending, pending)
-            }
-            Box(Modifier.weight(1f)) { PaneTitle(word(W.cheques), summary) }
-            FillButton(word(W.add_cheque), c.brandGreen) { form = ChequeForm(null) }
+    val pending = cheques.count { it.status == ChequeStatus.PENDING }
+    val summary = when {
+        cheques.isEmpty() -> word(W.due_summary_empty)
+        pending == 0 -> word(W.due_summary_all_settled)
+        else -> word(W.due_summary_pending, pending)
+    }
+    // The Figma screen's three pills: pending, cleared, bounced (cancelled rides with bounced).
+    var shownStatus by remember { mutableStateOf(ChequeStatus.PENDING) }
+    val shown = cheques.filter { ch ->
+        when (shownStatus) {
+            ChequeStatus.PENDING -> ch.status == ChequeStatus.PENDING
+            ChequeStatus.CLEARED -> ch.status == ChequeStatus.CLEARED
+            else -> ch.status == ChequeStatus.BOUNCED || ch.status == ChequeStatus.CANCELLED
+        }
+    }
+    FluentPage(word(W.cheques), summary, scroll = false, actions = {
+        FluentButton(word(W.add_cheque), { form = ChequeForm(null) }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+    }) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FluentPill(word(W.cheque_pending) + " · " + pending, shownStatus == ChequeStatus.PENDING) { shownStatus = ChequeStatus.PENDING }
+            FluentPill(word(W.cheque_cleared), shownStatus == ChequeStatus.CLEARED) { shownStatus = ChequeStatus.CLEARED }
+            FluentPill(word(W.cheque_bounced), shownStatus == ChequeStatus.BOUNCED) { shownStatus = ChequeStatus.BOUNCED }
         }
         if (cheques.isEmpty()) {
-            Text(word(W.no_cheques), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
-        } else {
-            LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
-                items(cheques, key = { it.id }) { ch -> ChequeRow(ch) { acting = ch } }
+            EmptyState("ic_tile_cheques", word(W.no_cheques), word(W.cheque_not_money_yet), Modifier.weight(1f)) {
+                FluentButton(word(W.add_cheque), { form = ChequeForm(null) }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+            }
+        } else if (shown.isEmpty()) {
+            EmptyState("ic_tile_cheques", word(W.due_summary_all_settled), null, Modifier.weight(1f))
+        } else ListCard(Modifier.weight(1f)) {
+            TableHead(listOf(word(W.customer) to 0, word(W.cheque_number_hint) to 160, word(W.pick_due_date) to 170, word(W.amount) to 120), endAligned = setOf(3))
+            LazyColumn(Modifier.fillMaxSize()) {
+                itemsIndexed(shown, key = { _, it -> it.id }) { i, ch -> ChequeRow(ch, i) { acting = ch } }
             }
         }
     }
@@ -183,9 +201,9 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
             onCloseRequest = { form = null },
             onPreviewKeyEvent = escCloses { form = null },
             title = word(if (f.existing == null) W.add_cheque else W.edit_cheque),
-            state = rememberDialogState(width = 520.dp, height = 760.dp)
+            state = rememberDialogState(width = 620.dp, height = 640.dp)
         ) {
-            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+            Box(Modifier.fillMaxSize()) {
                 ChequeEditor(
                     existing = f.existing,
                     parties = parties,
@@ -236,29 +254,33 @@ private fun ActionRow(text: String, color: Color, onClick: () -> Unit) {
 private class ChequeForm(val existing: ChequeWithParty?)
 
 @Composable
-private fun ChequeRow(ch: ChequeWithParty, onClick: () -> Unit) {
+private fun ChequeRow(ch: ChequeWithParty, index: Int, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
     val pending = ch.status == ChequeStatus.PENDING
-    val (statusWord, statusColour) = when (ch.status) {
-        ChequeStatus.PENDING -> W.cheque_pending to c.ink
-        ChequeStatus.CLEARED -> W.cheque_cleared to c.iOwe
-        ChequeStatus.BOUNCED -> W.cheque_bounced to c.owedToMe
-        else -> W.cheque_cancelled to c.textMuted
+    val (statusWord, statusColour, statusTint) = when (ch.status) {
+        ChequeStatus.PENDING -> Triple(W.cheque_pending, Look.warn, Look.warnTint)
+        ChequeStatus.CLEARED -> Triple(W.cheque_cleared, Look.accent, Look.accentTint)
+        ChequeStatus.BOUNCED -> Triple(W.cheque_bounced, c.owedToMe, Look.getTint)
+        else -> Triple(W.cheque_cancelled, c.textMuted, Look.subtle)
     }
     // Settled cheques stay as a record, faded: history, not something to act on.
     Row(
-        Modifier.fillMaxWidth().alpha(if (pending) 1f else 0.6f).press(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically
+        Modifier.fillMaxWidth().alpha(if (pending) 1f else 0.7f).press(onClick = onClick).padding(horizontal = 16.dp, vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Box(Modifier.width(5.dp).height(64.dp).background(statusColour))
-        Column(Modifier.weight(1f).padding(horizontal = 14.dp, vertical = 10.dp)) {
-            Text(Format.name(ch.partyName), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            val detail = buildList {
-                add(word(if (ch.isReceived) W.cheque_received else W.cheque_issued))
-                ch.chequeNumber?.takeIf { it.isNotBlank() }?.let { add("#$it") }
-                ch.bankName?.takeIf { it.isNotBlank() }?.let { add(it) }
-            }.joinToString(" · ")
-            Text(detail, color = c.inkSoft, fontSize = 13.sp)
+        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Avatar(ch.partyName, 32, index)
+            Column {
+                Text(Format.name(ch.partyName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                Text(word(if (ch.isReceived) W.cheque_received else W.cheque_issued), color = c.textMuted, fontSize = 12.sp, maxLines = 1)
+            }
+        }
+        Column(Modifier.width(160.dp)) {
+            Text(ch.chequeNumber?.takeIf { it.isNotBlank() }?.let { "#$it" } ?: "—", color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            ch.bankName?.takeIf { it.isNotBlank() }?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }
+        }
+        Column(Modifier.width(170.dp)) {
+            Text(Format.dateOnly(ch.dueDate), color = c.ink, fontSize = 13.sp, maxLines = 1)
             if (pending) {
                 // The due date is what sends the owner to the bank today.
                 val days = daysUntil(ch.dueDate)
@@ -267,21 +289,18 @@ private fun ChequeRow(ch: ChequeWithParty, onClick: () -> Unit) {
                         days == 0 -> word(W.due_today)
                         days > 0 -> plural(WP.due_in_days, days, days)
                         else -> plural(WP.overdue_by_days, -days, -days)
-                    } + "  ·  " + Format.dateOnly(ch.dueDate),
-                    color = if (days <= 0) c.owedToMe else c.ink, fontSize = 13.sp
+                    },
+                    color = if (days <= 0) c.owedToMe else c.textMuted, fontSize = 12.sp, fontWeight = if (days <= 0) FontWeight.SemiBold else FontWeight.Normal, maxLines = 1
                 )
-            }
+            } else Tag(word(statusWord), statusColour, statusTint)
         }
-        Column(Modifier.padding(horizontal = 16.dp), horizontalAlignment = Alignment.End) {
-            Text(
-                Format.money(ch.amount),
-                color = if (ch.isReceived) c.iOwe else c.owedToMe,
-                fontSize = 16.sp, fontWeight = FontWeight.Bold
-            )
-            Text(word(statusWord), color = statusColour, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-        }
+        Text(
+            Format.money(ch.amount), Modifier.width(120.dp),
+            color = if (ch.isReceived) Look.accent else c.owedToMe,
+            fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
+        )
     }
-    HorizontalDivider(color = c.pageBg)
+    Rule()
 }
 
 /** Whole days from today to [due], negative once overdue. */
@@ -315,62 +334,13 @@ private fun ChequeEditor(
     val needAmount = word(W.enter_valid_amount)
     val needDate = word(W.pick_date_first)
 
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        // Who: picked from the book, so the cheque lands on a real party.
-        val chosen = parties.firstOrNull { it.id == partyId }
-        if (chosen != null) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(Format.name(chosen.name), Modifier.weight(1f), color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-                TextButton({ partyId = null }) { Text(word(W.edit), color = c.brandGreenText) }
-            }
-        } else {
-            OutlinedTextField(
-                value = search, onValueChange = { search = it; problem = null },
-                label = { Text(word(W.cheque_party_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth()
-            )
-            val q = search.trim().lowercase()
-            val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }.take(50)
-            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 180.dp).background(c.pageBg, RoundedCornerShape(10.dp))) {
-                items(shown, key = { it.id }) { p ->
-                    Text(
-                        Format.name(p.name) + (p.phone?.let { "  ·  " + Format.ltr(it) } ?: ""),
-                        Modifier.fillMaxWidth().press { partyId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 9.dp),
-                        color = c.ink, fontSize = 14.sp
-                    )
-                }
-            }
-        }
-        TwoWay(word(W.cheque_received), word(W.cheque_issued), received) { received = it }
-        OutlinedTextField(
-            value = amountText, onValueChange = { amountText = it; problem = null },
-            label = { Text(word(W.amount)) }, singleLine = true, modifier = Modifier.fillMaxWidth()
-        )
-        Text(amount?.let { Format.money(it) } ?: "", color = c.textMuted, fontSize = 14.sp)
-        OutlinedTextField(
-            value = number, onValueChange = { number = it },
-            label = { Text(word(W.cheque_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = bank, onValueChange = { bank = it },
-            label = { Text(word(W.bank_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth()
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton({ picking = true }) { Text(word(W.pick_due_date), color = c.brandGreenText) }
-            Spacer(Modifier.width(8.dp))
-            Text(due?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-        }
-        OutlinedTextField(
-            value = note, onValueChange = { note = it },
-            label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth()
-        )
-        Text(word(W.cheque_not_money_yet), color = c.textMuted, fontSize = 12.sp)
-        problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            TextButton(onClick = onCancel) { Text(word(W.cancel)) }
-            FillButton(word(W.save), c.brandGreen) {
+    DialogFrame(
+        word(if (existing == null) W.add_cheque else W.edit_cheque), word(W.cheque_not_money_yet),
+        onClose = onCancel,
+        footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
+        footer = {
+            FluentButton(word(W.cancel), onCancel)
+            FluentButton(word(W.save), kind = ButtonKind.ACCENT, icon = "ic_check_plain", onClick = {
                 val pid = partyId
                 val date = due
                 when {
@@ -389,8 +359,21 @@ private fun ChequeEditor(
                         )
                     )
                 }
-            }
+            })
         }
+    ) {
+        TwoWay(word(W.cheque_received), word(W.cheque_issued), received) { received = it }
+        // Who: picked from the book, so the cheque lands on a real party.
+        PartyPicker(parties, partyId, { partyId = it; problem = null }, word(W.customer), word(W.cheque_party_hint), Modifier.fillMaxWidth())
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+            FluentField(amountText, { amountText = it; problem = null }, Modifier.weight(1f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ")
+            DateBox(word(W.pick_due_date), due?.let { Format.dateOnly(it) }, word(W.pick_due_date), { picking = true }, Modifier.weight(1f), tall = true)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FluentField(bank, { bank = it }, Modifier.weight(1f), label = word(W.bank_name_hint))
+            FluentField(number, { number = it }, Modifier.weight(1f), label = word(W.cheque_number_hint))
+        }
+        FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
     }
 
     if (picking) {

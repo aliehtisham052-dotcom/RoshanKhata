@@ -109,6 +109,6 @@ fun PhotoDialog(title: String, path: String?, onClose: () -> Unit) {
                 else Text(word(W.bill_photo_missing))
             }
         },
-        confirmButton = { TextButton(onClose) { Text(word(W.close)) } }
+        confirmButton = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }
     )
 }

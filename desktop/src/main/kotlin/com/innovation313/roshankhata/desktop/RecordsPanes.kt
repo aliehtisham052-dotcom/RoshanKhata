@@ -136,7 +136,7 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
     }
     if (adding) {
         DialogWindow(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_bill), state = rememberDialogState(width = 640.dp, height = 860.dp)) {
-            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+            Box(Modifier.fillMaxSize()) {
                 BillForm(
                     parties = parties,
                     onSave = { b ->
@@ -151,40 +151,36 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
             }
         }
     }
-    RecordList(word(W.supplier_bills), word(W.bill_ledger_note), bills.isEmpty(), word(W.no_bills), action = word(W.add_bill) to { adding = true }) {
+    RecordList(word(W.supplier_bills), word(W.bill_ledger_note), bills.isEmpty(), word(W.no_bills), action = word(W.add_bill) to { adding = true }, emptyIcon = "ic_tile_bills") {
         items(bills, key = { it.id }) { b ->
             Column(Modifier.fillMaxWidth().press { open = if (open == b.id) null else b.id }.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text(Format.name(b.partyName), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(Format.name(b.partyName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                         Text(
                             listOfNotNull(b.billNumber?.takeIf { it.isNotBlank() }?.let { "#$it" }, Format.dateOnly(b.billDate)).joinToString("  ·  "),
                             color = c.textMuted, fontSize = 13.sp
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text(Format.money(b.totalAmount), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(Format.money(b.totalAmount), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                         BillState(b)
                     }
                 }
                 if (open == b.id) {
                     Row {
-                        androidx.compose.material3.TextButton({ editingBill = b }) { Text(word(W.edit_bill), color = c.brandGreenText) }
-                        androidx.compose.material3.TextButton({ lineFor = b.id to null }) { Text(word(W.add_item), color = c.brandGreenText) }
-                        androidx.compose.material3.TextButton({ deletingBill = b }) { Text(word(W.delete_bill), color = c.owedToMe) }
+                        FluentButton(word(W.edit_bill), { editingBill = b }, kind = ButtonKind.SUBTLE)
+                        FluentButton(word(W.add_item), { lineFor = b.id to null }, kind = ButtonKind.SUBTLE)
+                        FluentButton(word(W.delete_bill), { deletingBill = b }, kind = ButtonKind.DANGER)
                     }
                     var path by remember(b.id, photoVersion) { mutableStateOf<String?>(null) }
                     androidx.compose.runtime.LaunchedEffect(b.id, photoVersion) { path = billPhoto(b.id) }
                     Row {
-                        if (path != null) androidx.compose.material3.TextButton({ photoOf = billLabel to path }) {
-                            Text(word(W.view_bill_photo), color = c.brandGreenText)
-                        }
-                        androidx.compose.material3.TextButton({ attach(b) }) {
-                            Text(word(if (path == null) W.add_bill_photo else W.bill_photo_attached), color = c.brandGreenText)
-                        }
+                        if (path != null) FluentButton(word(W.view_bill_photo), { photoOf = billLabel to path }, kind = ButtonKind.SUBTLE)
+                        FluentButton(word(if (path == null) W.add_bill_photo else W.bill_photo_attached), { attach(b) }, kind = ButtonKind.SUBTLE)
                     }
                     val lines by remember(b.id) { dao.observeBillItems(b.id) }.collectAsState(emptyList())
-                    Column(Modifier.padding(top = 8.dp).fillMaxWidth().background(c.pageBg, RoundedCornerShape(10.dp)).padding(10.dp)) {
+                    Column(Modifier.padding(top = 8.dp).fillMaxWidth().background(Look.subtle, Look.ctl).padding(10.dp)) {
                         lines.forEach { l ->
                             val detail = listOfNotNull(
                                 Format.qty(l.quantity, l.unit),
@@ -197,15 +193,15 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
                                     Text(l.productName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                                     Text(detail, color = c.inkSoft, fontSize = 12.sp)
                                 }
-                                androidx.compose.material3.TextButton({ buyersOf = l.id }) { Text(word(W.batch_buyers_action), color = c.brandGreenText, fontSize = 12.sp) }
-                                androidx.compose.material3.TextButton({ lineFor = b.id to l }) { Text(word(W.edit), color = c.brandGreenText, fontSize = 12.sp) }
-                                androidx.compose.material3.TextButton({ deletingLine = l }) { Text(word(W.delete), color = c.owedToMe, fontSize = 12.sp) }
+                                FluentButton(word(W.batch_buyers_action), { buyersOf = l.id }, kind = ButtonKind.SUBTLE)
+                                FluentButton(word(W.edit), { lineFor = b.id to l }, kind = ButtonKind.SUBTLE)
+                                FluentButton(word(W.delete), { deletingLine = l }, kind = ButtonKind.DANGER)
                             }
                         }
                     }
                 }
             }
-            HorizontalDivider(color = c.pageBg)
+            Rule()
         }
     }
 }
@@ -237,25 +233,22 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     var editing by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
     editing?.let { ProductEditDialog(dao, it) { editing = null } }
     Column(Modifier.fillMaxSize()) {
-        OutlinedTextField(
-            value = query, onValueChange = { query = it }, singleLine = true,
-            placeholder = { Text(word(W.tile_products)) },
-            modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 20.dp)
-        )
-        RecordList(word(W.tile_products), null, shown.isEmpty(), word(W.no_products)) {
+        RecordList(word(W.tile_products), word(W.products_subtitle), shown.isEmpty() && q.isNotEmpty(), word(W.no_products), emptyIcon = "ic_tile_products",
+            head = { FluentField(query, { query = it }, Modifier.fillMaxWidth(0.5f), placeholder = word(W.tile_products), leadingIcon = "ic_search") }) {
+            if (shown.isEmpty()) item(key = "none") { Text(word(W.no_products), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp) }
             items(shown, key = { it.id }) { p ->
                 Column(Modifier.fillMaxWidth().press { buyersOf = p }.padding(horizontal = 16.dp, vertical = 12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text(p.name, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            Text(p.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             val sub = listOfNotNull(p.company, p.category, p.defaultUnit).filter { it.isNotBlank() }
                             if (sub.isNotEmpty()) Text(sub.joinToString("  ·  "), color = c.textMuted, fontSize = 13.sp)
                         }
                         p.salePrice?.let { Text(Format.money(it), color = c.ink, fontSize = 14.sp) }
-                        androidx.compose.material3.TextButton({ editing = p }) { Text(word(W.edit), color = c.brandGreenText) }
+                        FluentButton(word(W.edit), { editing = p }, kind = ButtonKind.SUBTLE)
                     }
                 }
-                HorizontalDivider(color = c.pageBg)
+                Rule()
             }
         }
     }
@@ -460,7 +453,7 @@ fun InvoicesPane(
                         OutlineAction(onClick = {
                             scope.launch { editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } } }
                         }) { Text(word(W.edit), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium) }
-                        androidx.compose.material3.TextButton({ deletingInvoice = open }) { Text(word(W.delete), color = c.owedToMe) }
+                        FluentButton(word(W.delete), { deletingInvoice = open }, kind = ButtonKind.DANGER)
                     }
                     full?.let { saved ->
                         DesignStepper(
@@ -518,7 +511,7 @@ fun DesignStepper(shown: Int, saved: Int?, onShow: (Int) -> Unit, onApply: ((Int
     }
 }
 
-/** A titled list on a rounded card, or the empty line when there is nothing yet. */
+/** A titled list on a Fluent card (the Figma rhythm), or the empty state with its one action when there is nothing yet. */
 @Composable
 private fun RecordList(
     title: String,
@@ -526,18 +519,20 @@ private fun RecordList(
     empty: Boolean,
     emptyText: String,
     action: Pair<String, () -> Unit>? = null,
+    emptyIcon: String = "ic_tile_bills",
+    head: (@Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit)? = null,
     rows: androidx.compose.foundation.lazy.LazyListScope.() -> Unit
 ) {
-    val c = LocalRoshanColors.current
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f)) { PaneTitle(title, subtitle) }
-            action?.let { (label, go) -> FillButton(label, c.brandGreen, onClick = go) }
-        }
+    FluentPage(title, subtitle, scroll = false, actions = {
+        action?.let { (label, go) -> FluentButton(label, go, kind = ButtonKind.ACCENT, icon = "ic_add_plain") }
+    }) {
+        head?.invoke(this)
         if (empty) {
-            Text(emptyText, Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
-        } else {
-            LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp)), content = rows)
+            EmptyState(emptyIcon, emptyText, null, Modifier.weight(1f)) {
+                action?.let { (label, go) -> FluentButton(label, go, kind = ButtonKind.ACCENT, icon = "ic_add_plain") }
+            }
+        } else ListCard(Modifier.weight(1f)) {
+            LazyColumn(Modifier.fillMaxSize(), content = rows)
         }
     }
 }
@@ -550,13 +545,13 @@ fun ExpiryPane(dao: KhataDao) {
     val batches by remember { dao.observeExpiringBatches(cutoff) }.collectAsState(emptyList())
     var buyersOf by remember { mutableStateOf<Long?>(null) }
     buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
-    RecordList(word(W.expiring_stock), word(W.expiring_subtitle), false, word(W.no_expiring)) {
+    RecordList(word(W.expiring_stock), word(W.expiring_subtitle), false, word(W.no_expiring), emptyIcon = "ic_tile_expiring") {
         item(key = "trace") { BatchTraceCard(dao) { buyersOf = it } }
         if (batches.isEmpty()) item(key = "none") { Text(word(W.no_expiring), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp) }
         items(batches, key = { it.itemId }) { b ->
             Row(Modifier.fillMaxWidth().press { buyersOf = b.itemId }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text(b.productName, color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(b.productName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     Text(
                         (b.batchNumber?.takeIf { it.isNotBlank() }?.let { word(W.batch_label, it) } ?: word(W.batch_none)) +
                             "  ·  " + Format.qty(b.quantity, b.unit),
@@ -580,7 +575,7 @@ fun ExpiryPane(dao: KhataDao) {
                     Text(Format.dateOnly(b.expiryDate), color = c.textMuted, fontSize = 12.sp)
                 }
             }
-            HorizontalDivider(color = c.pageBg)
+            Rule()
         }
     }
 }
@@ -633,9 +628,9 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(word(W.record_payment_help, p.partyName), color = c.textMuted, fontSize = 13.sp)
-                    androidx.compose.material3.OutlinedTextField(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true)
+                    androidx.compose.material3.Outlined(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true)
                     Text(amount?.let { Format.money(it) } ?: "", color = c.textMuted)
-                    androidx.compose.material3.OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, singleLine = true)
+                    androidx.compose.material3.Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, singleLine = true)
                     // More than is left: said before Save, still posted in full if the owner goes ahead.
                     if (over) Text(word(W.plan_overpay_warning, Format.money(p.remaining)), color = c.owedToMe, fontSize = 13.sp)
                 }
@@ -670,14 +665,14 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
             dismissButton = { androidx.compose.material3.TextButton({ deleting = null }) { Text(word(W.cancel)) } }
         )
     }
-    RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(W.no_plans), action = word(W.add_plan) to { adding = true }) {
+    RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(W.no_plans), action = word(W.add_plan) to { adding = true }, emptyIcon = "ic_tile_plans") {
         items(plans, key = { it.id }) { p ->
             Column(
                 Modifier.fillMaxWidth().alpha(if (p.isClosed) 0.6f else 1f).press { acting = p }.padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(Format.name(p.partyName), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(Format.name(p.partyName), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     Text(word(if (p.isClosed) W.plan_closed else W.plan_open), color = if (p.isClosed) c.iOwe else c.ink, fontSize = 13.sp)
                 }
                 LinearProgressIndicator(
@@ -704,7 +699,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                     )
                 }
             }
-            HorizontalDivider(color = c.pageBg)
+            Rule()
         }
     }
 }
@@ -760,17 +755,16 @@ fun SupplierRatesPane(dao: KhataDao, reload: Int) {
     }
     val shown = if (watchOnly) rows.filter { it.needsLook } else rows
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.padding(start = 20.dp, top = 20.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            listOf(true to W.sr_watch, false to W.filter_type_all).forEach { (watch, label) ->
-                if (watch == watchOnly) FillButton(word(label), c.brandGreen) { watchOnly = watch }
-                else androidx.compose.material3.TextButton({ watchOnly = watch }) { Text(word(label), color = c.brandGreenText) }
-            }
-        }
-        RecordList(word(W.sr_title), word(W.sr_subtitle), shown.isEmpty(), word(if (rows.isEmpty()) W.sr_none else W.sr_nothing_to_watch)) {
+        RecordList(word(W.sr_title), word(W.sr_subtitle), shown.isEmpty(), word(if (rows.isEmpty()) W.sr_none else W.sr_nothing_to_watch), emptyIcon = "ic_tile_supplier_rates",
+            head = {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(true to W.sr_watch, false to W.filter_type_all).forEach { (watch, label) -> FluentPill(word(label), watch == watchOnly) { watchOnly = watch } }
+                }
+            }) {
             items(shown) { r ->
                 Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     val unit = com.innovation313.roshankhata.data.UnitWords.label(r.unit).takeIf { it.isNotEmpty() }
-                    Text(listOfNotNull(r.name, unit).joinToString(" · "), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(listOfNotNull(r.name, unit).joinToString(" · "), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     Text(word(W.sr_last, Format.money(r.last.rate), r.last.supplierName, com.innovation313.roshankhata.data.DateWords.format("d MMM yyyy", r.last.date)),
                         color = c.inkSoft, fontSize = 13.sp)
                     val pct = String.format(java.util.Locale.US, "%.1f%%", kotlin.math.abs(r.percent))
@@ -781,7 +775,7 @@ fun SupplierRatesPane(dao: KhataDao, reload: Int) {
                             color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     }
                 }
-                HorizontalDivider(color = c.pageBg)
+                Rule()
             }
         }
     }
@@ -814,8 +808,7 @@ private fun ProductBuyers(dao: KhataDao, words: Words, product: com.innovation31
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     listOf(W.window_same_season, W.window_last_year, W.window_ever).forEachIndexed { i, label ->
-                        if (i == choice) FillButton(word(label), c.brandGreen) { choice = i }
-                        else androidx.compose.material3.TextButton({ choice = i }) { Text(word(label), color = c.brandGreenText) }
+                        FluentPill(word(label), i == choice) { choice = i }
                     }
                 }
                 if (buyers.isEmpty()) Text(word(W.no_promo_customers), color = c.textMuted)
@@ -839,7 +832,7 @@ private fun ProductBuyers(dao: KhataDao, words: Words, product: com.innovation31
                 }
             }
         },
-        confirmButton = { androidx.compose.material3.TextButton(onClose) { Text(word(W.ok)) } }
+        confirmButton = { FluentButton(word(W.ok), onClose, kind = ButtonKind.STANDARD) }
     )
 }
 
@@ -864,28 +857,28 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
             if (chosen != null) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(Format.name(chosen.name) + "  \u00b7  " + Format.money(chosen.balance), Modifier.weight(1f), color = c.ink, fontWeight = FontWeight.Bold)
-                    androidx.compose.material3.TextButton({ partyId = null }) { Text(word(W.edit), color = c.brandGreenText) }
+                    FluentButton(word(W.edit), { partyId = null }, kind = ButtonKind.SUBTLE)
                 }
             } else {
-                androidx.compose.material3.OutlinedTextField(search, { search = it }, label = { Text(word(W.cheque_party_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                androidx.compose.material3.Outlined(search, { search = it }, label = { Text(word(W.cheque_party_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 val q = search.trim().lowercase()
-                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 150.dp).background(c.pageBg, RoundedCornerShape(10.dp))) {
+                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 150.dp).background(Look.subtle, Look.ctl)) {
                     items(parties.filter { NameSearch.matches(it.name, it.phone, q) }.take(40), key = { it.id }) { p ->
                         Text(Format.name(p.name) + "  \u00b7  " + Format.money(p.balance),
                             Modifier.fillMaxWidth().press { partyId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp), color = c.ink, fontSize = 14.sp)
                     }
                 }
             }
-            androidx.compose.material3.OutlinedTextField(total, { total = it; problem = null }, label = { Text(word(W.plan_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            androidx.compose.material3.OutlinedTextField(each, { each = it }, label = { Text(word(W.plan_installment_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            androidx.compose.material3.Outlined(total, { total = it; problem = null }, label = { Text(word(W.plan_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            androidx.compose.material3.Outlined(each, { each = it }, label = { Text(word(W.plan_installment_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
             Row(verticalAlignment = Alignment.CenterVertically) {
-                androidx.compose.material3.TextButton({ picking = true }) { Text(word(W.plan_pick_next_due), color = c.brandGreenText) }
+                FluentButton(word(W.plan_pick_next_due), { picking = true }, kind = ButtonKind.SUBTLE)
                 Text(due?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontWeight = FontWeight.Bold)
             }
-            androidx.compose.material3.OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
+            androidx.compose.material3.Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
             problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-                androidx.compose.material3.TextButton(onCancel) { Text(word(W.cancel)) }
+                FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
                 FillButton(word(W.save), c.brandGreen) {
                     val pid = partyId
                     val t = com.innovation313.roshankhata.ui.Calc.evalAmount(total)
@@ -910,26 +903,9 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
 /** A figure on a white card: what it is, the amount, and how many. */
 @Composable
 private fun SumCard(label: String, amount: String, count: String, modifier: Modifier) {
-    val c = LocalRoshanColors.current
-    Column(
-        modifier.clip(RoundedCornerShape(16.dp)).background(c.surface).border(1.dp, Look.line, RoundedCornerShape(16.dp))
-            .padding(horizontal = 18.dp, vertical = 14.dp)
-    ) {
-        Text(label + "  \u00b7  " + count, color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-        Text(amount, Modifier.padding(top = 6.dp), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
-    }
+    FigureCard(label, amount, LocalRoshanColors.current.ink, modifier, under = count)
 }
 
 /** A filter pill, filled when on. */
 @Composable
-private fun Chip(text: String, on: Boolean, onClick: () -> Unit) {
-    val c = LocalRoshanColors.current
-    Text(
-        text,
-        Modifier.clip(RoundedCornerShape(17.dp))
-            .background(eased(if (on) Look.pickedFill else androidx.compose.ui.graphics.Color.Transparent))
-            .border(1.dp, eased(if (on) Look.pickedFill else Look.edge), RoundedCornerShape(17.dp))
-            .press(RoundedCornerShape(17.dp), onClick = onClick).padding(horizontal = 14.dp, vertical = 7.dp),
-        color = eased(if (on) Look.onPicked else c.ink), fontSize = 13.sp, fontWeight = FontWeight.Bold
-    )
-}
+private fun Chip(text: String, on: Boolean, onClick: () -> Unit) = FluentPill(text, on, onClick = onClick)

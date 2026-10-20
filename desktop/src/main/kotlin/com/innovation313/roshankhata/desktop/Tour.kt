@@ -74,7 +74,7 @@ fun TourWindowContent(onDone: () -> Unit) {
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End), verticalAlignment = Alignment.CenterVertically) {
-            if (at < steps.lastIndex) TextButton(onDone) { Text(word(W.coach_skip)) }
+            if (at < steps.lastIndex) FluentButton(word(W.coach_skip), onDone, kind = ButtonKind.STANDARD)
             FillButton(word(if (at < steps.lastIndex) W.coach_next else W.coach_done), c.brandGreen) {
                 if (at < steps.lastIndex) at++ else onDone()
             }

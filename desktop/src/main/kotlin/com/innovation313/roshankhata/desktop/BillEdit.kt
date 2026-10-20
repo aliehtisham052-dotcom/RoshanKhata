@@ -72,21 +72,21 @@ fun BillEditDialog(dao: KhataDao, words: Words, billId: Long, supplierName: Stri
     val amount = Calc.evalAmount(total)
     DialogWindow(onCloseRequest = onDone, onPreviewKeyEvent = escCloses(onDone), title = word(W.edit_bill), state = rememberDialogState(width = 520.dp, height = 640.dp)) {
         Column(
-            Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(20.dp),
+            Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(word(W.edit_bill), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(Format.name(supplierName), color = c.ink, fontSize = 15.sp)
-            OutlinedTextField(number, { number = it }, label = { Text(word(W.bill_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(total, { total = it }, label = { Text(word(W.bill_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Outlined(number, { number = it }, label = { Text(word(W.bill_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Outlined(total, { total = it }, label = { Text(word(W.bill_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
             Text(amount?.let { Format.money(it) } ?: word(W.enter_valid_amount), color = if (amount == null) c.owedToMe else c.textMuted, fontSize = 13.sp)
             TextButton({ picking = 0 }) { Text(word(W.bill_date_set, Format.dateOnly(billDate)), color = c.brandGreenText) }
             TextButton({ picking = 1 }) { Text(dueDate?.let { word(W.due_date_set, Format.dateOnly(it)) } ?: word(W.pick_due_date), color = c.brandGreenText) }
-            OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
+            Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
             Text(word(W.edit_bill_cash_locked), color = c.textMuted, fontSize = 12.sp)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Spacer(Modifier.weight(1f))
-                TextButton(onDone) { Text(word(W.cancel)) }
+                FluentButton(word(W.cancel), onDone, kind = ButtonKind.STANDARD)
                 FillButton(word(W.save), c.brandGreen, enabled = amount != null && amount > 0) {
                     val a = amount ?: return@FillButton
                     val num = number.trim().ifEmpty { null }
@@ -119,14 +119,14 @@ fun BillLineDialog(dao: KhataDao, billId: Long, existing: BillItem?, onDone: () 
         title = word(if (existing == null) W.add_item else W.edit_item),
         state = rememberDialogState(width = 560.dp, height = 560.dp)
     ) {
-        Column(Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(20.dp)) {
+        Column(Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp)) {
             ItemForm(existing) { line ->
                 scope.launch {
                     withContext(Dispatchers.IO) { dao.saveBillLine(billId, line) }
                     onDone()
                 }
             }
-            TextButton(onDone) { Text(word(W.cancel)) }
+            FluentButton(word(W.cancel), onDone, kind = ButtonKind.STANDARD)
         }
     }
 }
@@ -167,13 +167,13 @@ fun BatchBuyersDialog(dao: KhataDao, billItemId: Long, onClose: () -> Unit) {
                                 Text(Format.dateOnly(b.lastAt), color = c.textMuted, fontSize = 12.sp)
                             }
                         }
-                        HorizontalDivider(color = c.pageBg)
+                        Rule()
                     }
                 }
                 if (untagged > 0) Text(plural(WP.batch_buyers_untagged, untagged, untagged), color = c.owedToMe, fontSize = 13.sp)
             }
         },
-        confirmButton = { TextButton(onClose) { Text(word(W.close)) } }
+        confirmButton = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }
     )
 }
 
@@ -194,11 +194,11 @@ fun BatchTraceCard(dao: KhataDao, onBuyers: (Long) -> Unit) {
             withContext(Dispatchers.IO) { runCatching { dao.findByBatch(q) }.getOrDefault(emptyList()) }
         }
     }
-    Column(Modifier.fillMaxWidth().background(c.surface, androidx.compose.foundation.shape.RoundedCornerShape(14.dp)).padding(14.dp),
+    Column(Modifier.fillMaxWidth().card().padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(word(W.trace_batch), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(word(W.trace_batch), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         Text(word(W.trace_batch_help), color = c.textMuted, fontSize = 12.sp)
-        OutlinedTextField(query, { query = it }, placeholder = { Text(word(W.trace_batch_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        Outlined(query, { query = it }, placeholder = { Text(word(W.trace_batch_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         found?.let { list ->
             if (list.isEmpty()) Text(word(W.trace_no_results), color = c.textMuted, fontSize = 13.sp)
             else Text(plural(WP.trace_results, list.size, list.size), color = c.textMuted, fontSize = 13.sp)

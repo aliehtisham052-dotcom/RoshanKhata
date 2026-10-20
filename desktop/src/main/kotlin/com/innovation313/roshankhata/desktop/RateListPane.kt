@@ -53,7 +53,7 @@ fun RateListPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?) {
     val shown = RateList.visible(rows, cols)
     val unpriced = RateList.unpricedCount(products)
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.rate_list_title), word(W.rate_list_heading_default)) }
             FillButton(word(W.ledger_pdf_button), c.gaveFill, enabled = shown.isNotEmpty()) {
@@ -93,14 +93,14 @@ fun RateListPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?) {
         if (shown.isEmpty()) {
             Text(word(W.rate_list_none), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
         } else {
-            LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
+            LazyColumn(Modifier.fillMaxSize().card()) {
                 item {
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
                         Text(word(W.name), Modifier.weight(1f), color = c.textMuted, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         if (cols.cash) Text(word(W.sale_price_hint), Modifier.width(130.dp), color = c.textMuted, fontSize = 13.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
                         if (cols.credit) Text(word(W.credit_price_hint), Modifier.width(130.dp), color = c.textMuted, fontSize = 13.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
                     }
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
                 items(shown, key = { it.productId }) { r ->
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -112,7 +112,7 @@ fun RateListPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?) {
                         if (cols.cash) Text(r.cash?.let { Format.money(it) } ?: "–", Modifier.width(130.dp), color = c.ink, fontSize = 15.sp, textAlign = TextAlign.End)
                         if (cols.credit) Text(r.credit?.let { Format.money(it) } ?: "–", Modifier.width(130.dp), color = c.owedToMe, fontSize = 15.sp, textAlign = TextAlign.End)
                     }
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
             }
         }

@@ -59,7 +59,7 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
     val ordered = remember(debtors, habits, promises) { FollowUpRank.order(debtors, habits, promises, now, tz) }
     val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, emptySet()) }
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.followup_title), word(W.followup_subtitle))
         if (ordered.isEmpty()) {
             Text(word(W.followup_empty), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
@@ -70,11 +70,11 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
                 if (today > 0) "  ·  " + plural(WP.followup_today, today, today) else "",
             color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold
         )
-        LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
+        LazyColumn(Modifier.fillMaxSize().card()) {
             items(ordered, key = { it.id }) { p ->
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text(Format.name(p.name), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(Format.name(p.name), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                         val days = ((now - p.lastActivity) / (24L * 60 * 60 * 1000)).toInt()
                         Text(
                             if (days <= 0) word(W.followup_today) else plural(WP.followup_last_ago, days, days),
@@ -95,7 +95,7 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
                                 fontWeight = if (urgent) FontWeight.Bold else FontWeight.Normal)
                         }
                     }
-                    Text(Format.money(p.balance), color = c.owedToMe, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(Format.money(p.balance), color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     val number = p.phone?.let { WhatsAppNumber.of(it) }
                     TextButton(enabled = number != null, onClick = {
                         val text = reminderText(words, p.name, p.balance, promises[p.id], shopName)
@@ -104,7 +104,7 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
                         }
                     }) { Text(if (number != null) word(W.promo_send) else "–", color = c.brandGreenText) }
                 }
-                HorizontalDivider(color = c.pageBg)
+                Rule()
             }
         }
     }

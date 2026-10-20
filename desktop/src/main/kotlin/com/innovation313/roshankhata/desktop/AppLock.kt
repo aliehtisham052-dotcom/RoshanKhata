@@ -80,7 +80,7 @@ object PinHash {
 /** A PIN box: digits only, hidden as typed, Enter to go. */
 @Composable
 private fun PinField(value: String, label: String, onChange: (String) -> Unit, onEnter: () -> Unit) {
-    OutlinedTextField(
+    Outlined(
         value = value,
         onValueChange = { typed -> onChange(typed.filter { it in '0'..'9' }.take(8)) },
         label = { Text(label) },
@@ -165,7 +165,7 @@ fun AppLockSettings(prefs: AppPrefs, onDone: () -> Unit) {
         }
         problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
         androidx.compose.foundation.layout.Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            TextButton(onDone) { Text(word(W.cancel)) }
+            FluentButton(word(W.cancel), onDone, kind = ButtonKind.STANDARD)
             FillButton(word(if (on) W.app_lock_turn_off else W.app_lock_turn_on), if (on) c.gaveFill else c.brandGreen) { go() }
         }
     }

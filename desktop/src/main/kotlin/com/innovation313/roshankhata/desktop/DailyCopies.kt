@@ -113,23 +113,23 @@ fun DailyCopiesPane(
     val damagedBody = word(W.snapshot_unhealthy_body)
     val failed = word(W.snapshot_restore_failed)
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.snapshots_title), word(W.snapshots_subtitle))
         Text(word(W.auto_backup_note), color = c.textMuted, fontSize = 13.sp)
         OutsideFolderCard(outsideFolder, outsideDir, onFolder)
         if (copies.isEmpty()) {
             Text(word(W.snapshots_empty), color = c.textMuted, fontSize = 15.sp)
         } else {
-            LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
+            LazyColumn(Modifier.fillMaxSize().card()) {
                 items(copies, key = { it.name }) { f ->
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text(Format.dateTime(f.lastModified()), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                             Text(word(W.snapshot_size_kb, (f.length() / 1024).toInt()), color = c.textMuted, fontSize = 12.sp)
                         }
-                        TextButton({ asking = f }) { Text(word(W.snapshot_restore_action), color = c.brandGreenText) }
+                        FluentButton(word(W.snapshot_restore_action), { asking = f }, kind = ButtonKind.SUBTLE)
                     }
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
             }
         }
@@ -194,10 +194,10 @@ private fun OutsideFolderCard(folder: File?, dir: File?, onFolder: (File?) -> Un
         }
     }
     Column(
-        Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp),
+        Modifier.fillMaxWidth().card().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text(word(W.auto_folder_title), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(word(W.auto_folder_title), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         Text(word(W.auto_folder_help), color = c.textMuted, fontSize = 13.sp)
         when {
             folder == null -> Text(word(W.auto_folder_none), color = c.textMuted, fontSize = 13.sp)
@@ -211,7 +211,7 @@ private fun OutsideFolderCard(folder: File?, dir: File?, onFolder: (File?) -> Un
             FillButton(chooseTitle, c.brandGreen) {
                 chooseFolder(chooseTitle, folder)?.let(onFolder)
             }
-            if (folder != null) TextButton({ onFolder(null) }) { Text(word(W.auto_folder_stop), color = c.owedToMe) }
+            if (folder != null) FluentButton(word(W.auto_folder_stop), { onFolder(null) }, kind = ButtonKind.DANGER)
         }
     }
 }

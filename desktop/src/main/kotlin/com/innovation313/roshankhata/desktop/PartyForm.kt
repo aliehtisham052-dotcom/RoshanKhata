@@ -58,7 +58,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
     }
     val similar = DuplicateDetector.matchExisting(name.trim(), phone.trim().ifEmpty { null }, others)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(word(if (existing == null) W.add_party else W.edit_party), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
         TwoWay(word(W.customer), word(W.supplier), customer) { customer = it }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -91,7 +91,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
                         if (Photos.save(src, target, max = 600)) { photo = target.absolutePath; photoVersion++; photoFailed = false } else photoFailed = true
                     }
                 }) { Text(word(if (bmp == null) W.set_photo else W.change_photo), color = c.brandGreenText) }
-                if (photo != null) TextButton({ photo = null }) { Text(word(W.remove_photo), color = c.owedToMe) }
+                if (photo != null) FluentButton(word(W.remove_photo), { photo = null }, kind = ButtonKind.DANGER)
             }
             if (photoFailed) Text(word(W.photo_save_failed), color = c.owedToMe, fontSize = 12.sp)
             Text(word(W.photo_privacy_note), color = c.textMuted, fontSize = 11.sp)

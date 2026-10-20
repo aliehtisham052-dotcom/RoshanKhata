@@ -71,7 +71,7 @@ fun RegisterPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, r
     fun saleLine(s: SaleRegisterRow) = listOfNotNull(s.partyName, s.itemName, s.batchNumber?.let { words.text(W.pdf_reg_batch, it) }).joinToString(" · ")
     fun buyLine(p: PurchaseRegisterRow) = listOfNotNull(p.supplierName, p.itemName, p.batchNumber?.let { words.text(W.pdf_reg_batch, it) }).joinToString(" · ")
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.register_title), word(W.register_subtitle)) }
             FillButton(word(W.ledger_pdf_button), c.gaveFill, enabled = sales.isNotEmpty() || purchases.isNotEmpty()) {
@@ -97,7 +97,7 @@ fun RegisterPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, r
             OutlinedButton({ picking = true }) { Text(Format.dateOnly(from), color = c.ink) }
             Text("–", color = c.textMuted)
             OutlinedButton({ picking = false }) { Text(Format.dateOnly(till), color = c.ink) }
-            TextButton({ from = monthStart; till = monthEnd - 24L * 60 * 60 * 1000 }) { Text(word(W.range_this_month), color = c.brandGreenText) }
+            FluentButton(word(W.range_this_month), { from = monthStart; till = monthEnd - 24L * 60 * 60 * 1000 }, kind = ButtonKind.SUBTLE)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             TotalCard(word(W.pdf_reg_total_sales), Format.money(salesTotal), c.owedToMe, Modifier.weight(1f))
@@ -107,7 +107,7 @@ fun RegisterPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, r
         if (sales.isEmpty() && purchases.isEmpty()) {
             Text(word(W.register_empty), color = c.textMuted, fontSize = 15.sp)
         } else {
-            LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
+            LazyColumn(Modifier.fillMaxSize().card()) {
                 item { RegHeading(word(W.pdf_reg_section_sales)) }
                 if (sales.isEmpty()) item { RegNote(word(W.pdf_reg_no_sales)) }
                 items(sales) { s -> RegLine(Format.dateOnly(s.date), saleLine(s), s.quantity?.let { Format.qty(it, s.unit) }, Format.money(s.amount)) }
@@ -139,5 +139,5 @@ private fun RegLine(date: String, what: String, qty: String?, amount: String) {
         Text(qty ?: "", Modifier.padding(horizontal = 12.dp), color = c.inkSoft, fontSize = 13.sp)
         Text(amount, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
-    HorizontalDivider(color = c.pageBg)
+    Rule()
 }

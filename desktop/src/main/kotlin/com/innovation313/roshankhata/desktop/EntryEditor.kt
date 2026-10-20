@@ -122,7 +122,7 @@ fun EntryEditor(
     val r = Calc.evalAmount(rate)
     val goodsTotal = if (q != null && r != null) q * r else null
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         // The head (1.10.0, the New entry mockup): which way, the party under it, the amount big with
         // its figure in words-of-money under it, the day beside it as a Fluent date box.
         Text(word(if (isGiven) W.you_gave else W.you_got), color = if (isGiven) c.owedToMe else Look.accent, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
@@ -313,12 +313,12 @@ private fun DueDialog(partyName: String, current: Long?, onPick: (Long?) -> Unit
                 (quick + harvests).forEach { (label, at) ->
                     TextButton({ onPick(at) }) { Text(label, color = c.ink) }
                 }
-                TextButton({ other = true }) { Text(word(W.harvest_promise_other_date), color = c.brandGreenText) }
-                if (current != null) TextButton({ onPick(null) }) { Text(word(W.harvest_promise_remove), color = c.owedToMe) }
+                FluentButton(word(W.harvest_promise_other_date), { other = true }, kind = ButtonKind.SUBTLE)
+                if (current != null) FluentButton(word(W.harvest_promise_remove), { onPick(null) }, kind = ButtonKind.DANGER)
             }
         },
         confirmButton = {},
-        dismissButton = { TextButton(onDismiss) { Text(word(W.cancel)) } }
+        dismissButton = { FluentButton(word(W.cancel), onDismiss, kind = ButtonKind.STANDARD) }
     )
     if (other) DayPicker(current ?: now, onPick = { day -> other = false; onPick(endOfDay(day)) }, onDismiss = { other = false })
 }

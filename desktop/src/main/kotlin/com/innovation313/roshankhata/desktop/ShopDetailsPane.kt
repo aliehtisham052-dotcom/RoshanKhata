@@ -68,15 +68,15 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
     var currency by remember(version) { mutableStateOf(settings.currency()) }
     var hijri by remember(version) { mutableStateOf(settings.calendar() == ShopCalendar.Kind.HIJRI) }
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp)) {
         Column(
-            Modifier.widthIn(max = 720.dp).background(c.surface, RoundedCornerShape(14.dp)).padding(20.dp),
+            Modifier.widthIn(max = 720.dp).card().padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             PaneTitle(word(W.business_profile), word(W.business_settings_subtitle))
             fields.forEach { (label, pair) ->
                 val hint = pair.second
-                OutlinedTextField(
+                Outlined(
                     value = values.value[label].orEmpty(),
                     onValueChange = { v -> values.value = values.value + (label to v); saved = false },
                     label = { Text(word(label)) },
@@ -85,7 +85,7 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-            OutlinedTextField(
+            Outlined(
                 value = currency,
                 onValueChange = { currency = it; saved = false },
                 label = { Text(word(W.bp_currency)) },
@@ -163,7 +163,7 @@ private fun ProfilePictures(images: ProfileImages) {
         }
     }
     Column(
-        Modifier.widthIn(max = 720.dp).background(c.surface, RoundedCornerShape(14.dp)).padding(20.dp),
+        Modifier.widthIn(max = 720.dp).card().padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(word(W.bp_seals_help), color = c.textMuted, fontSize = 12.sp)
@@ -173,7 +173,7 @@ private fun ProfilePictures(images: ProfileImages) {
         ).forEach { (kind, texts) ->
             val picture = remember(version, kind) { images.load(kind)?.image?.toComposeImageBitmap() }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(64.dp).background(c.pageBg, RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+                Box(Modifier.size(64.dp).background(Look.subtle, Look.ctl), contentAlignment = Alignment.Center) {
                     picture?.let { Image(it, contentDescription = word(texts.first), modifier = Modifier.size(60.dp)) }
                 }
                 Column(Modifier.weight(1f).padding(start = 12.dp)) {
@@ -194,7 +194,7 @@ private fun ProfilePictures(images: ProfileImages) {
                         if (img != null) cropping = kind to img
                     }
                 }) { Text(word(if (picture == null) W.bp_add else W.bp_change), color = c.brandGreenText) }
-                if (picture != null) TextButton({ images.remove(kind); version++ }) { Text(word(W.delete), color = c.owedToMe) }
+                if (picture != null) FluentButton(word(W.delete), { images.remove(kind); version++ }, kind = ButtonKind.DANGER)
             }
         }
         if (failed) Text(word(W.crop_save_failed), color = c.owedToMe, fontSize = 13.sp)

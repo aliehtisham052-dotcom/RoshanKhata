@@ -799,7 +799,7 @@ private fun Book(
                                     Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    OutlinedTextField(
+                                    Outlined(
                                         value = entryQuery, onValueChange = { entryQuery = it },
                                         placeholder = { Text(word(W.search_entries)) }, singleLine = true,
                                         modifier = Modifier.weight(1f)
@@ -1301,7 +1301,7 @@ private fun Book(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         color = c.ink, fontSize = 18.sp
                     )
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
             }
         }
@@ -1339,7 +1339,7 @@ private fun Book(
             onDismissRequest = { namingShop = false },
             title = { Text(word(W.shop_name_title)) },
             text = {
-                OutlinedTextField(
+                Outlined(
                     typed, { typed = it }, singleLine = true,
                     label = { Text(word(W.shop_name_field)) }, placeholder = { Text(word(W.shop_name_hint)) }
                 )
@@ -1402,7 +1402,7 @@ private fun Book(
                         fontSize = (16 * TEXT_FACTORS[level]).sp,
                         fontWeight = if (level == textSize) FontWeight.Bold else FontWeight.Normal
                     )
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
             }
         }
@@ -1424,7 +1424,7 @@ private fun Book(
                         color = if (t == theme) c.brandGreenText else c.ink, fontSize = 18.sp,
                         fontWeight = if (t == theme) FontWeight.Bold else FontWeight.Normal
                     )
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
             }
         }
@@ -1535,7 +1535,7 @@ private fun StatementRangeDialog(
         dismissButton = {
             Row {
                 TextButton({ from = null; till = null }) { Text(word(W.range_all)) }
-                TextButton(onCancel) { Text(word(W.cancel)) }
+                FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
             }
         }
     )
