@@ -54,6 +54,15 @@ class AppPrefs(private val file: File) {
 
     private fun flag(key: String): Boolean = props.getProperty(key)?.toBooleanStrictOrNull() ?: true
 
+    /** The first-run walkthrough has been seen (or skipped) on this computer. */
+    fun tourSeen(): Boolean = props.getProperty(KEY_TOUR) == "true"
+
+    @Synchronized
+    fun setTourSeen() {
+        props.setProperty(KEY_TOUR, "true")
+        save()
+    }
+
     /** True when the owner has set an App Lock PIN on this computer. */
     fun hasPin(): Boolean = !props.getProperty(KEY_PIN_HASH).isNullOrBlank() && !props.getProperty(KEY_PIN_SALT).isNullOrBlank()
 
@@ -103,6 +112,7 @@ class AppPrefs(private val file: File) {
         const val KEY_BACKUP_FOLDER = "backup_folder"
         const val KEY_THEME = "theme"
         const val KEY_TEXT_SIZE = "text_size"
+        const val KEY_TOUR = "tour_seen"
         const val KEY_PIN_HASH = "app_lock_hash"
         const val KEY_PIN_SALT = "app_lock_salt"
         const val KEY_INV_DISCOUNT = "invoice_discount"
