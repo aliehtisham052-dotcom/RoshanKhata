@@ -79,6 +79,7 @@ import com.innovation313.roshankhata.words.desktopWords
 import com.innovation313.roshankhata.words.plural
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
+import androidx.compose.ui.focus.focusRequester
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -281,6 +282,14 @@ private fun Book(
     var selecting by remember { mutableStateOf(false) }
     var chosenIds by remember { mutableStateOf<Set<Long>>(emptySet()) }
     var deletingMany by remember { mutableStateOf(false) }
+    // The bell's list (LedgerAlerts, the phone's own rules) and its window.
+    var alerts by remember { mutableStateOf<List<com.innovation313.roshankhata.data.LedgerAlerts.Alert>>(emptyList()) }
+    var showAlerts by remember { mutableStateOf(false) }
+    // The newest backup this computer holds: a daily copy, or one saved by hand this session.
+    var lastBackupAt by remember { mutableStateOf<Long?>(null) }
+    // Ctrl+F: the Khata page's search box takes the typing.
+    var searchTick by remember { mutableIntStateOf(0) }
+    val searchFocus = remember { androidx.compose.ui.focus.FocusRequester() }
     var editingParty by remember { mutableStateOf<Party?>(null) }
     var purging by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
     // The bin keeps things for the days its note promises, then lets them go, as on the phone.
@@ -299,6 +308,7 @@ private fun Book(
     keys.newParty = { addParty = true }
     keys.statement = { parties.firstOrNull { it.id == selected }?.let { statementFor = it } }
     keys.khata = { section = Section.KHATA }
+    keys.search = { section = Section.KHATA; searchTick++ }
     statementFor?.let { party ->
         StatementRangeDialog(party.name, onCancel = { statementFor = null }) { from, till ->
             statementFor = null
@@ -321,6 +331,17 @@ private fun Book(
     var shop by remember { mutableStateOf(shopName()) }
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
+    LaunchedEffect(reload, section) {
+        alerts = withContext(Dispatchers.IO) {
+            runCatching { com.innovation313.roshankhata.data.LedgerAlerts.compute(words, dao) { Format.money(it) } }.getOrDefault(emptyList())
+        }
+    }
+    LaunchedEffect(reload, outsideDir) {
+        val newest = withContext(Dispatchers.IO) {
+            (DailyCopies.list(dailyDir) + (outsideDir?.let { DailyCopies.list(it) } ?: emptyList())).maxOfOrNull { it.lastModified() }
+        }
+        if (newest != null && newest > (lastBackupAt ?: 0L)) lastBackupAt = newest
+    }
 
     Column(Modifier.fillMaxSize().background(c.pageBg)) {
         // What needs the owner today, as the phone's Home: cheques due, stock expiring
@@ -341,7 +362,7 @@ private fun Book(
             val file = File(dialog.directory, name)
             scope.launch {
                 backedUp = runCatching { backup(file) }
-                    .map { size -> words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt()) }
+                    .map { size -> lastBackupAt = System.currentTimeMillis(); words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt()) }
                     .getOrElse { words.text(W.backup_failed) }
             }
         }
@@ -366,10 +387,11 @@ private fun Book(
             shopName = shop ?: word(W.app_name),
             logo = Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
             onShop = { choosingBusiness = true },
+            backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.dateTime(it)) } ?: word(W.backup_now),
             onBackup = { backupNow() },
             onPhone = { phoneSync = true },
-            alerts = dueCheques + expiring,
-            onAlerts = { section = Section.HOME },
+            alerts = alerts.size,
+            onAlerts = { showAlerts = true },
             // The phone's More sheet, in its groups: Data, Display, Help.
             menu = listOf(
                 MenuLine(word(W.settings_group_data), null),
@@ -394,7 +416,7 @@ private fun Book(
             when (section) {
                 Section.HOME -> Box(Modifier.weight(1f)) {
                     HomePane(
-                        parties = parties, late = late, dueCheques = dueCheques, expiring = expiring,
+                        parties = parties, late = late, alerts = alerts,
                         onOpen = { section = it },
                         onAction = { a -> if (a == HomeAction.BACKUP) backupNow() else bin = true },
                         onCustomer = { id -> selected = id; section = Section.KHATA }
@@ -466,10 +488,12 @@ private fun Book(
                                     }
                                 }
                             },
-                            placeholder = { Text(word(W.search_parties)) },
+                            placeholder = { Text(word(W.search_parties) + "   (Ctrl F)") },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+                                .focusRequester(searchFocus)
                         )
+                        LaunchedEffect(searchTick) { if (searchTick > 0) runCatching { searchFocus.requestFocus() } }
                         // The phone's rule (KhataActivity.rank): search, side, type, then the chosen order;
                         // newest dealing first unless the owner picks another.
                         val shown = parties.shownBy(query, partySide, partyType, partySort)
@@ -614,11 +638,42 @@ private fun Book(
                                     }
                                 }
                             }
+                            // The phone's season record and promised day under the name (PartyDetail.refreshSeasonRecord).
+                            val record = seasonRecord(dao, party, reload)
+                            if (record.isNotEmpty()) {
+                                Text(
+                                    record,
+                                    Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 10.dp),
+                                    color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold
+                                )
+                            }
+                            // The phone's entry search (notes or goods) and its newest / oldest order.
+                            var entryQuery by remember(party.id) { mutableStateOf("") }
+                            var oldestFirst by remember(party.id) { mutableStateOf(false) }
+                            Row(
+                                Modifier.fillMaxWidth().background(c.surface).padding(start = 20.dp, end = 20.dp, top = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                OutlinedTextField(
+                                    value = entryQuery, onValueChange = { entryQuery = it },
+                                    placeholder = { Text(word(W.search_entries)) }, singleLine = true,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                FilterPill(word(W.sort_newest), !oldestFirst) { oldestFirst = false }
+                                FilterPill(word(W.sort_oldest), oldestFirst) { oldestFirst = true }
+                            }
+                            val eq = entryQuery.trim().lowercase()
+                            val shownEntries = entries
+                                .filter { e ->
+                                    eq.isEmpty() || (e.note?.lowercase()?.contains(eq) == true) ||
+                                        e.entryNumber.lowercase().contains(eq) || Format.money(e.amount).contains(eq)
+                                }
+                                .let { list -> if (oldestFirst) list.sortedBy { it.timestamp } else list.sortedByDescending { it.timestamp } }
                             PartyLedgerScreen(
                                 name = party.name,
                                 phone = party.phone,
                                 balance = party.balance,
-                                entries = entries.sortedByDescending { it.timestamp },
+                                entries = shownEntries,
                                 onGave = { entryWay = true },
                                 onGot = { entryWay = false },
                                 onEntry = { editing = it },
@@ -1073,6 +1128,15 @@ private fun Book(
             }
         }
     }
+    if (showAlerts) {
+        DialogWindow(
+            onCloseRequest = { showAlerts = false },
+            title = word(W.home_today),
+            state = rememberDialogState(width = 520.dp, height = 600.dp)
+        ) {
+            AlertsList(alerts) { s -> showAlerts = false; section = s }
+        }
+    }
     if (choosingTextSize) {
         DialogWindow(
             onCloseRequest = { choosingTextSize = false },
@@ -1224,6 +1288,7 @@ class KeyActions {
     var newParty: () -> Unit = {}
     var statement: () -> Unit = {}
     var khata: () -> Unit = {}
+    var search: () -> Unit = {}
 
     fun handle(e: androidx.compose.ui.input.key.KeyEvent): Boolean {
         if (e.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return false
@@ -1235,6 +1300,7 @@ class KeyActions {
             k == androidx.compose.ui.input.key.Key.F3 -> got
             ctrl && k == androidx.compose.ui.input.key.Key.N -> newParty
             ctrl && k == androidx.compose.ui.input.key.Key.P -> statement
+            ctrl && k == androidx.compose.ui.input.key.Key.F -> search
             else -> null
         }
         act?.invoke()
@@ -1261,3 +1327,34 @@ private fun lateCount(dao: KhataDao): kotlinx.coroutines.flow.Flow<Int> =
             }
         }
         .flowOn(Dispatchers.Default)
+
+/**
+ * The open customer's promised day and last seasons, in the phone's words
+ * (PartyDetail.refreshSeasonRecord, SeasonText.record): customers only, the
+ * three newest seasons, "cleared by harvest", "cleared N days after" or "due".
+ */
+@Composable
+private fun seasonRecord(dao: KhataDao, party: PartyWithBalance, reload: Int): String {
+    var rows by remember(party.id, reload) { mutableStateOf<List<com.innovation313.roshankhata.data.SeasonBook.PartySeason>>(emptyList()) }
+    var promise by remember(party.id, reload) { mutableStateOf<Long?>(null) }
+    LaunchedEffect(party.id, reload) {
+        withContext(Dispatchers.IO) {
+            val p = dao.getParty(party.id)
+            promise = p?.harvestPromise
+            rows = if (p?.isCustomer == true) runCatching {
+                com.innovation313.roshankhata.data.SeasonBook.book(dao.seasonLinesOf(party.id))
+            }.getOrDefault(emptyList()) else emptyList()
+        }
+    }
+    val seasons = rows.sortedByDescending { it.season }.take(3).map { r ->
+        val n = seasonName(r.season)
+        val at = r.clearedAt
+        if (at == null) word(W.season_rec_due, n, Format.money(r.outstanding))
+        else {
+            val d = com.innovation313.roshankhata.data.SeasonBook.daysBetween(com.innovation313.roshankhata.data.SeasonBook.harvestEnd(r.season), at)
+            if (d > 0) plural(WP.season_rec_after, d, n, d) else word(W.season_rec_before, n)
+        }
+    }
+    return listOfNotNull(promise?.let { word(W.harvest_promise_header, Format.dateOnly(it)) })
+        .plus(seasons).joinToString("  \u00b7  ")
+}
