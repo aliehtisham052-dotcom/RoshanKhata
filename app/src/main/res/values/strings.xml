@@ -296,6 +296,14 @@ Add your first customer and start your khata.</string>
 
     <!-- App Lock -->
     <string name="app_lock">App Lock</string>
+    <string name="app_lock_pc_explain">A PIN for Roshan Khata on this computer. It keeps the ledger from other eyes at the counter; it does not lock the file itself, so also lock Windows (Win + L) when you step away.</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">Choose a PIN of 4 to 8 digits</string>
+    <string name="lock_pin_again">Enter the same PIN again</string>
+    <string name="lock_pin_wrong">Wrong PIN. Try again.</string>
+    <string name="lock_pin_mismatch">The two PINs are not the same.</string>
+    <string name="lock_pin_wait">Too many tries. Wait %1$d seconds.</string>
+    <string name="lock_unlock">Unlock</string>
     <string name="lock_title">Unlock Roshan Khata</string>
     <string name="lock_subtitle">Your ledger is private. Confirm it is you.</string>
     <string name="app_lock_enabled">App Lock is on. You will be asked to confirm each time you open the app.</string>

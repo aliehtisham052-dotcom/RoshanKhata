@@ -288,6 +288,14 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
 
     <!-- App Lock -->
     <string name="app_lock">Kunci Aplikasi</string>
+    <string name="app_lock_pc_explain">PIN untuk Roshan Khata di komputer ini. Menjaga buku dari mata orang lain di meja kasir; tidak mengunci berkasnya sendiri, jadi kunci juga Windows (Win + L) saat Anda pergi.</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">Pilih PIN 4 sampai 8 angka</string>
+    <string name="lock_pin_again">Masukkan PIN yang sama lagi</string>
+    <string name="lock_pin_wrong">PIN salah. Coba lagi.</string>
+    <string name="lock_pin_mismatch">Kedua PIN tidak sama.</string>
+    <string name="lock_pin_wait">Terlalu banyak percobaan. Tunggu %1$d detik.</string>
+    <string name="lock_unlock">Buka</string>
     <string name="lock_title">Buka Roshan Khata</string>
     <string name="lock_subtitle">Buku Anda bersifat pribadi. Pastikan ini memang Anda.</string>
     <string name="app_lock_enabled">Kunci Aplikasi aktif. Anda akan diminta konfirmasi setiap kali membuka aplikasi.</string>

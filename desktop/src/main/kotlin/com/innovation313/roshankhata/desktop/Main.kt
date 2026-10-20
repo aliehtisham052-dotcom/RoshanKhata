@@ -116,6 +116,8 @@ fun main() = application {
     var theme by remember { mutableStateOf(appPrefs.theme()) }
     var textSize by remember { mutableStateOf(appPrefs.textSize()) }
     var invoiceFields by remember { mutableStateOf(appPrefs.invoiceFields()) }
+    // App Lock: with a PIN set, nothing of the book is composed until it is typed (LockScreen).
+    var unlocked by remember { mutableStateOf(!appPrefs.hasPin()) }
     // The shop's trade (its words, units and which pages show), re-read when the owner changes it.
     var tradeTick by remember { mutableIntStateOf(0) }
     val trade = remember(active, tradeTick) { TradeKit.of(settings.tradeKey(), settings.otherTradeItems()) }
@@ -154,7 +156,8 @@ fun main() = application {
                     LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
                     androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(screen.density, screen.fontScale * TEXT_FACTORS[textSize])
                 ) {
-                    key(active) { CompositionLocalProvider(LocalTrade provides trade) { Book(
+                    if (!unlocked) LockScreen(appPrefs) { unlocked = true }
+                    else key(active) { CompositionLocalProvider(LocalTrade provides trade) { Book(
                         keys = keys,
                         dao = db.khataDao(),
                         load = { db.khataDao().partiesWithBalanceOnce() },
@@ -180,7 +183,8 @@ fun main() = application {
                         outsideFolder = outsideFolder,
                         outsideDir = outsideDir,
                         onBackupFolder = { f -> appPrefs.setBackupFolder(f); outsideFolder = f },
-                        onTradeChanged = { tradeTick++ }
+                        onTradeChanged = { tradeTick++ },
+                        appPrefs = appPrefs
                     ) } }
                 }
             }
@@ -253,7 +257,8 @@ private fun Book(
     outsideFolder: File?,
     outsideDir: File?,
     onBackupFolder: (File?) -> Unit,
-    onTradeChanged: () -> Unit
+    onTradeChanged: () -> Unit,
+    appPrefs: AppPrefs
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -285,6 +290,7 @@ private fun Book(
     var section by remember { mutableStateOf(Section.HOME) }
     var choosingTheme by remember { mutableStateOf(false) }
     var choosingTextSize by remember { mutableStateOf(false) }
+    var lockSettings by remember { mutableStateOf(false) }
     // A book that never chose its trade is asked before anything else (see the picker below).
     var choosingTrade by remember { mutableStateOf(Trades.of(settings.tradeKey()) == null) }
     // The Khata list's tabs, side, order and the several-at-once delete (the phone's KhataActivity).
@@ -418,6 +424,8 @@ private fun Book(
                 MenuLine(word(W.text_size)) { choosingTextSize = true },
                 MenuLine(word(W.business_profile)) { section = Section.SHOP },
                 MenuLine(word(W.trade_kicker_change)) { choosingTrade = true },
+                MenuLine(word(W.settings_group_security), null),
+                MenuLine(word(W.app_lock)) { lockSettings = true },
                 MenuLine(word(W.settings_group_help), null),
                 MenuLine(word(W.help_support)) { section = Section.HELP },
                 MenuLine(word(W.about_us)) { about = true }
@@ -1189,6 +1197,11 @@ private fun Book(
             },
             dismissButton = { TextButton({ namingShop = false }) { Text(word(W.welcome_skip)) } }
         )
+    }
+    if (lockSettings) {
+        DialogWindow(onCloseRequest = { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = 520.dp, height = 460.dp)) {
+            AppLockSettings(appPrefs) { lockSettings = false }
+        }
     }
     if (showAlerts) {
         DialogWindow(
