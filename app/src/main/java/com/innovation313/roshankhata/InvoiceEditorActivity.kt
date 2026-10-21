@@ -667,12 +667,47 @@ class InvoiceEditorActivity : BaseActivity() {
 
         fun inMoney() = kind.checkedButtonId == R.id.btnDiscountAmount
 
+        // The money boxes on the app's own calculator pad (21 Oct), one pad
+        // pinned above Apply, typing into whichever has the focus. The
+        // discount takes it only while it is in money: "10" against the %
+        // switch is a rate, not a sum, and the phone's keyboard stays for it.
+        // Money boxes are read with CalcPad.figure, which works a sum out and
+        // keeps a zero ("None" received writes 0).
+        val padBinding = com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.moreKeypad),
+            fields = listOf(etDiscount, etChargeAmount, etReceived),
+            results = mapOf(
+                etDiscount to view.findViewById<TextView>(R.id.tvDiscountResult),
+                etChargeAmount to view.findViewById<TextView>(R.id.tvChargeResult),
+                etReceived to view.findViewById<TextView>(R.id.tvReceivedResult)
+            ),
+            usesPad = { it !== etDiscount || inMoney() }
+        )
+        // In % the phone's keyboard comes back for the discount: its number
+        // pad with the decimal point, as before. setRawInputType keeps the
+        // pad's characters in the box's digits filter (inputType = would not).
+        fun discountKeyboard() {
+            etDiscount.setRawInputType(
+                if (inMoney()) android.text.InputType.TYPE_CLASS_PHONE
+                else android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            )
+            if (etDiscount.isFocused) {
+                (getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
+                    ?.restartInput(etDiscount)
+            }
+        }
+        discountKeyboard()
+        fun discountValue(): Double? =
+            if (inMoney()) com.innovation313.roshankhata.ui.CalcPad.figure(etDiscount.text)
+            else Digits.parse(etDiscount.text)
+
         /** What the invoice would be with the sheet as it stands, before Apply. */
         fun trial(): Invoice {
             val base = draft()
-            val disc = if (useDiscount) Digits.parse(etDiscount.text) else null
+            val disc = if (useDiscount) discountValue() else null
             val label = if (useCharge) etChargeLabel.text.toString().trim().ifEmpty { null } else base.additionalChargeLabel
-            val charge = if (useCharge) Digits.parse(etChargeAmount.text) else base.additionalChargeAmount
+            val charge = if (useCharge) com.innovation313.roshankhata.ui.CalcPad.figure(etChargeAmount.text) else base.additionalChargeAmount
             val hasCharge = label != null && charge != null
             return base.copy(
                 discountPercent = if (!useDiscount) base.discountPercent else if (inMoney()) null else disc,
@@ -680,7 +715,7 @@ class InvoiceEditorActivity : BaseActivity() {
                 taxPercent = if (useTax) Digits.parse(etTax.text) else base.taxPercent,
                 additionalChargeLabel = if (hasCharge) label else null,
                 additionalChargeAmount = if (hasCharge) charge else null,
-                receivedAmount = if (useReceived) Digits.parse(etReceived.text) else base.receivedAmount,
+                receivedAmount = if (useReceived) com.innovation313.roshankhata.ui.CalcPad.figure(etReceived.text) else base.receivedAmount,
             )
         }
 
@@ -712,7 +747,7 @@ class InvoiceEditorActivity : BaseActivity() {
         }
         applyDiscountHint()
         kind.addOnButtonCheckedListener { _, _, checked ->
-            if (checked) { applyDiscountHint(); renderSum() }
+            if (checked) { applyDiscountHint(); discountKeyboard(); padBinding.refresh(); renderSum() }
         }
         val watcher = object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -735,16 +770,16 @@ class InvoiceEditorActivity : BaseActivity() {
             // than being read (and possibly cleared) from a view that was never
             // shown: turning Tax off should not erase a tax figure already set.
             if (useDiscount) {
-                val value = Digits.parse(etDiscount.text)
+                val value = discountValue()
                 if (inMoney()) { discountAmount = value; discountPercent = null }
                 else { discountPercent = value; discountAmount = null }
             }
             if (useTax) taxPercent = Digits.parse(etTax.text)
             if (useCharge) {
                 chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
-                chargeAmount = Digits.parse(etChargeAmount.text)
+                chargeAmount = com.innovation313.roshankhata.ui.CalcPad.figure(etChargeAmount.text)
             }
-            if (useReceived) receivedAmount = Digits.parse(etReceived.text)
+            if (useReceived) receivedAmount = com.innovation313.roshankhata.ui.CalcPad.figure(etReceived.text)
             if (useNote) note = etNote.text.toString().trim().ifEmpty { null }
             refreshTotals()
             sheet.dismiss()

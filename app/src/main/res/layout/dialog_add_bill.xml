@@ -100,8 +100,34 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="@string/bill_total_hint"
+            android:digits="0123456789.+−×÷*/-%"
             android:importantForAutofill="no"
-            android:inputType="numberDecimal" />
+            android:inputType="phone" />
+
+        <!-- The total is written on the app's calculator pad (21 Oct), shown
+             while the total has the focus (CalcPad.bindAll); the running
+             total of a sum sits under the box. -->
+        <TextView
+            android:id="@+id/tvBillTotalResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textColor="@color/brand_green_text"
+            android:textDirection="ltr"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/billKeypad"
+            layout="@layout/view_calculator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBillDate"
