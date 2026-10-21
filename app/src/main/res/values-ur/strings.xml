@@ -3022,4 +3022,21 @@
     <string name="cash_category_sale">سیل</string>
     <string name="pos_sales_title">سیلز</string>
     <string name="pos_keys_help">F2 آئٹم · F4 مقدار · F6 رعایت · F8 گاہک · F9 ادائیگی · F12 مکمل</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">بارکوڈ (اختیاری)</string>
+    <string name="product_cost_hint">خرید قیمت (اختیاری)</string>
+    <string name="product_low_stock_hint">اسٹاک اس پر خبردار کرے (اختیاری)</string>
+    <string name="product_barcode_taken">یہ بارکوڈ پہلے ہی %1$s پر ہے</string>
+    <string name="na_low_stock">%1$s آئٹمز کا اسٹاک کم ہے</string>
+    <string name="products_export">CSV ایکسپورٹ</string>
+    <string name="products_import">CSV امپورٹ</string>
+    <string name="products_labels">لیبل پرنٹ کریں</string>
+    <string name="products_import_plan">%1$d نئی پروڈکٹس، %2$d اپڈیٹ</string>
+    <string name="products_import_clash">%1$d قطاروں کا بارکوڈ کسی اور پروڈکٹ پر پہلے سے ہے — وہ کوڈ چھوڑ دیے جائیں گے</string>
+    <string name="products_import_none">اس فائل میں کوئی پروڈکٹ نہیں ملی</string>
+    <string name="products_imported">%1$d پروڈکٹس شامل، %2$d اپڈیٹ</string>
+    <string name="products_labels_assign">%1$d پروڈکٹس کا بارکوڈ نہیں — انہیں دکان کا اپنا (EAN-13) دے کر پرنٹ کریں؟</string>
+    <string name="products_labels_none">لیبل پرنٹ کرنے کے لیے کوئی پروڈکٹ نہیں</string>
+    <string name="label_sheet_title">بارکوڈ لیبل</string>
 </resources>

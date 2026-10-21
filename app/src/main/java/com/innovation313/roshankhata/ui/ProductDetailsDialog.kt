@@ -125,6 +125,18 @@ object ProductDetailsDialog {
         val etCreditPrice = field(R.id.etCreditPrice).apply {
             setText(product.creditPrice?.let { Format.plain(it) } ?: "")
         }
+        // The counter (POS Phase 2): barcode (typed, or read by the camera), cost, warning level.
+        val etBarcode = field(R.id.etBarcode).apply { setText(product.barcode ?: "") }
+        val etCostPrice = field(R.id.etCostPrice).apply { setText(product.costPrice?.let { Format.plain(it) } ?: "") }
+        val etLowStock = field(R.id.etLowStock).apply { setText(product.lowStockLevel?.let { Format.plain(it) } ?: "") }
+        view.findViewById<View>(R.id.btnScanBarcode).setOnClickListener {
+            val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
+                .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_ALL_FORMATS)
+                .enableAutoZoom().build()
+            com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(activity, options).startScan()
+                .addOnSuccessListener { b -> b.rawValue?.trim()?.takeIf { it.isNotEmpty() }?.let { etBarcode.setText(it) } }
+                .addOnFailureListener { Toast.makeText(activity, R.string.qr_scan_failed, Toast.LENGTH_LONG).show() }
+        }
 
         // Said when anything came from the bill, so a guessed box is never
         // mistaken for one the owner filled himself.
@@ -182,7 +194,10 @@ object ProductDetailsDialog {
                     // A cleared box means "I do not quote a rate for this",
                     // which is a null and not a zero. Zero is a price.
                     salePrice = Digits.parse(typed(etSalePrice)),
-                    creditPrice = Digits.parse(typed(etCreditPrice))
+                    creditPrice = Digits.parse(typed(etCreditPrice)),
+                    barcode = typed(etBarcode),
+                    costPrice = Digits.parse(typed(etCostPrice)),
+                    lowStockLevel = Digits.parse(typed(etLowStock))
                 )
 
                 // AppScope for the write itself: leaving the screen right
@@ -210,6 +225,17 @@ object ProductDetailsDialog {
                         return@launch
                     }
 
+                    // A barcode names one product: the same code on two would ring the wrong one up.
+                    val codeClash = updated.barcode?.let { dao.productByBarcode(it) }
+                    if (codeClash != null && codeClash.id != product.id) {
+                        activity.runOnUiThread {
+                            if (!activity.isFinishing) {
+                                Toast.makeText(activity, activity.getString(R.string.product_barcode_taken, codeClash.name), Toast.LENGTH_LONG).show()
+                            }
+                            onDismissed()
+                        }
+                        return@launch
+                    }
                     dao.updateProduct(updated)
                     activity.runOnUiThread { if (!activity.isFinishing) onSaved() }
                 }

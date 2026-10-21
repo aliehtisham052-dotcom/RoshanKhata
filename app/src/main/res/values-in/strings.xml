@@ -3019,4 +3019,21 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="cash_category_sale">Penjualan</string>
     <string name="pos_sales_title">Penjualan</string>
     <string name="pos_keys_help">F2 barang · F4 jml · F6 diskon · F8 pelanggan · F9 bayar · F12 selesai</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">Barcode (opsional)</string>
+    <string name="product_cost_hint">Harga beli (opsional)</string>
+    <string name="product_low_stock_hint">Peringatan saat stok (opsional)</string>
+    <string name="product_barcode_taken">Barcode itu sudah dipakai %1$s</string>
+    <string name="na_low_stock">%1$s barang stoknya menipis</string>
+    <string name="products_export">Ekspor CSV</string>
+    <string name="products_import">Impor CSV</string>
+    <string name="products_labels">Cetak label</string>
+    <string name="products_import_plan">%1$d produk baru, %2$d diperbarui</string>
+    <string name="products_import_clash">%1$d baris memakai barcode produk lain — kode itu dilewati</string>
+    <string name="products_import_none">Tidak ada produk di file itu</string>
+    <string name="products_imported">%1$d produk ditambahkan, %2$d diperbarui</string>
+    <string name="products_labels_assign">%1$d produk belum punya barcode — beri barcode toko (EAN-13) lalu cetak?</string>
+    <string name="products_labels_none">Tidak ada produk untuk dicetak labelnya</string>
+    <string name="label_sheet_title">Label barcode</string>
 </resources>

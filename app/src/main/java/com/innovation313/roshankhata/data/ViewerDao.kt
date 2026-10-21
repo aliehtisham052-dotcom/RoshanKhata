@@ -153,6 +153,8 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun voidSale(saleId: Long, reason: String, user: String?): Boolean = refused()
     override suspend fun holdSale(sale: Sale, items: List<SaleItem>): Long = refused()
     override suspend fun dropHeldSale(id: Long, now: Long): Unit = refused()
+    override suspend fun importProducts(plan: ProductCsv.Plan): Pair<Int, Int> = refused()
+    override suspend fun assignInternalBarcodes(ids: List<Long>): List<Product> = refused()
     override suspend fun wipeSalePayments(): Unit = refused()
     override suspend fun wipeSaleItems(): Unit = refused()
     override suspend fun wipeSales(): Unit = refused()

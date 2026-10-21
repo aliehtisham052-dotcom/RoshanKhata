@@ -136,6 +136,67 @@
             android:textColor="@color/ink_soft"
             android:textSize="11sp" />
 
+        <!-- The counter (POS Phase 2): the pack's barcode (the camera reads it),
+             what the unit costs the shop, and the stock level that warns. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etBarcode"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/product_barcode_hint"
+                android:importantForAutofill="no"
+                android:inputType="textVisiblePassword" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnScanBarcode"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/pos_scan" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etCostPrice"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/product_cost_hint"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/etLowStock"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="@string/product_low_stock_hint"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
         <!-- The product type is every trade's (its list is the trade's own).
              The inspection details below are only for the trades an
              inspector visits - agriculture and medical - and

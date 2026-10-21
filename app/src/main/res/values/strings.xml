@@ -3236,4 +3236,21 @@ You can change this any time from this screen.</string>
     <string name="cash_category_sale">Sale</string>
     <string name="pos_sales_title">Sales</string>
     <string name="pos_keys_help">F2 item · F4 qty · F6 discount · F8 customer · F9 pay · F12 complete</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">Barcode (optional)</string>
+    <string name="product_cost_hint">Cost price (optional)</string>
+    <string name="product_low_stock_hint">Warn at stock (optional)</string>
+    <string name="product_barcode_taken">That barcode is already on %1$s</string>
+    <string name="na_low_stock">%1$s items low on stock</string>
+    <string name="products_export">Export CSV</string>
+    <string name="products_import">Import CSV</string>
+    <string name="products_labels">Print labels</string>
+    <string name="products_import_plan">%1$d new products, %2$d updated</string>
+    <string name="products_import_clash">%1$d rows carry a barcode another product already has — those codes are skipped</string>
+    <string name="products_import_none">No products found in that file</string>
+    <string name="products_imported">%1$d products added, %2$d updated</string>
+    <string name="products_labels_assign">%1$d products have no barcode — give them one of the shop’s own (EAN-13) and print?</string>
+    <string name="products_labels_none">No products to print labels for</string>
+    <string name="label_sheet_title">Barcode labels</string>
 </resources>
