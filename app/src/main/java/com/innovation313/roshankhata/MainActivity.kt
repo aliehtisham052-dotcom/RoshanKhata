@@ -130,6 +130,9 @@ class MainActivity : BaseActivity() {
         val daily = listOf(
             Feature(R.drawable.ic_tile_khata, R.string.nav_khata, KhataActivity::class.java,
                 R.color.tile_khata_bg, R.color.section_khata),
+            // The counter (POS Phase 1, 21 Oct): scan, ring up, take the money.
+            Feature(R.drawable.ic_tile_invoice, R.string.pos_title, CounterSaleActivity::class.java,
+                R.color.tile_cashbook_bg, R.color.section_cashbook),
             Feature(R.drawable.ic_tile_cashbook, R.string.nav_cashbook, CashbookActivity::class.java,
                 R.color.tile_cashbook_bg, R.color.section_cashbook),
             Feature(R.drawable.ic_tile_cheques, R.string.nav_cheques, ChequesActivity::class.java,

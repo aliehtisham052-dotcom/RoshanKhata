@@ -174,7 +174,7 @@ class ScreenProofTest {
      * tables, the figure cards and the pills are looked at before the owner installs.
      */
     @Test
-    fun `cashbook, cheques and the report draw on the rhythm`() {
+    fun `cashbook, cheques, the report and the counter draw on the rhythm`() {
         Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
         val dir = File("build/screen-proof").apply { mkdirs() }
         val home = java.nio.file.Files.createTempDirectory("rk-proof").toFile()
@@ -193,6 +193,17 @@ class ScreenProofTest {
             dao.insertCashEntry(com.innovation313.roshankhata.data.CashEntry(amount = 12500.0, isIncome = true, category = "Counter sale", note = "Walk-in", timestamp = now - 60 * 60 * 1000))
             dao.insertCashEntry(com.innovation313.roshankhata.data.CashEntry(amount = 3200.0, isIncome = false, category = "Rent", note = null, timestamp = now - 5 * 60 * 60 * 1000))
             dao.insertCashEntry(com.innovation313.roshankhata.data.CashEntry(amount = 1850.0, isIncome = false, category = "Wages", note = "Helper", timestamp = now - day))
+            // The counter (POS Phase 1): products with prices and a barcode, one ticket already rung up.
+            val dap = dao.insertProduct(com.innovation313.roshankhata.data.Product(name = "DAP", nameKey = "dap", normalisedName = "dap", category = "Fertilizer", company = "Engro", defaultUnit = "bag", salePrice = 3500.0, creditPrice = 3700.0, barcode = "8901234567890"))
+            val conf = dao.insertProduct(com.innovation313.roshankhata.data.Product(name = "Confidor", nameKey = "confidor", normalisedName = "confidor", category = "Pesticide", company = "Bayer", defaultUnit = "bottle", salePrice = 875.0))
+            dao.postSale(
+                com.innovation313.roshankhata.data.Sale(partyId = a, customerName = "Muhammad Aslam", timestamp = now - 40 * 60 * 1000, subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+                listOf(
+                    com.innovation313.roshankhata.data.SaleItem(saleId = 0, productId = dap, itemName = "DAP", quantity = 3.0, unit = "bag", rate = 3700.0),
+                    com.innovation313.roshankhata.data.SaleItem(saleId = 0, productId = conf, itemName = "Confidor", quantity = 2.0, unit = "bottle", rate = 875.0)
+                ),
+                listOf(com.innovation313.roshankhata.data.SalePayment(saleId = 0, method = com.innovation313.roshankhata.data.PaymentMethod.CASH, amount = 10000.0))
+            )
         }
         val words = desktopWords(Locale.ENGLISH)
         val partiesNow = kotlinx.coroutines.runBlocking { dao.partiesWithBalanceOnce() }
@@ -200,6 +211,12 @@ class ScreenProofTest {
             shoot("screen-laptop-cashbook-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) { CashbookPane(dao) }
             shoot("screen-laptop-cheques-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) { ChequesPane(dao, partiesNow, words) {} }
             shoot("screen-laptop-report-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) { ReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) }
+            shoot("screen-laptop-counter-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+                CounterSalePane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", currency = "Rs", reload = 0, onChanged = {}, onReceipt = {}, keys = KeyActions())
+            }
+            shoot("screen-counter-en-dark", ur = false, dark = true, dir = dir, width = 1600, height = 900, scale = 1f) {
+                CounterSalePane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", currency = "Rs", reload = 0, onChanged = {}, onReceipt = {}, keys = KeyActions())
+            }
         } finally {
             db.close()
             home.deleteRecursively()

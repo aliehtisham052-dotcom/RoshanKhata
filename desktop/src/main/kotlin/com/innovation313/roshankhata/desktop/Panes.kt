@@ -64,6 +64,7 @@ enum class Group(val word: String) {
 enum class Section(val word: String, val icon: String, val tile: String, val group: Group) {
     HOME(W.nav_home, "ic_storefront", "brand_green", Group.HOME),
     KHATA(W.nav_khata, "ic_tile_khata", "tile_khata_bg", Group.DAILY),
+    COUNTER(W.pos_title, "ic_tile_invoice", "tile_cashbook_bg", Group.DAILY),
     CASHBOOK(W.nav_cashbook, "ic_tile_cashbook", "tile_cashbook_bg", Group.DAILY),
     CHEQUES(W.nav_cheques, "ic_tile_cheques", "tile_cheques_bg", Group.DAILY),
     BILLS(W.supplier_bills, "ic_tile_bills", "tile_bills_bg", Group.DAILY),

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -196,9 +197,9 @@ class SalesDaoTest {
         assertEquals("", dao.getSale(held)!!.saleNumber)
         assertEquals(0.0, dao.partiesWithBalanceOnce().single().balance, 0.001)
         assertTrue(Stock.of(dao).all { it.soldQty == 0.0 })
-        assertEquals(1, dao.observeHeldCount().firstValue())
+        assertEquals(1, dao.observeHeldCount().first())
         dao.dropHeldSale(held)
-        assertEquals(0, dao.observeHeldCount().firstValue())
+        assertEquals(0, dao.observeHeldCount().first())
     }
 
     @Test
@@ -233,11 +234,10 @@ class SalesDaoTest {
             val back = other.khataDao().getSale(id)!!
             assertEquals("S-000001", back.saleNumber)
             assertEquals(12_000.0, other.khataDao().partiesWithBalanceOnce().single().balance, 0.001)
-            assertEquals(1, other.khataDao().observeHeldCount().firstValue())
+            assertEquals(1, other.khataDao().observeHeldCount().first())
         } finally {
             other.close()
         }
     }
 
-    private suspend fun <T> kotlinx.coroutines.flow.Flow<T>.firstValue(): T = kotlinx.coroutines.flow.first()
 }
