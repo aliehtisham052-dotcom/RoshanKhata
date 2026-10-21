@@ -124,6 +124,12 @@ object PdfBranding {
         return start + total
     }
 
+    /** The button's word in the document's language, as the phone's (21 Oct 2026). */
+    private fun downloadWord(context: Context): String =
+        context.getString("ledger_report_download").uppercase(java.util.Locale.ROOT)
+
+    private fun latin(word: String): Boolean = word.all { it.code < 0x0250 }
+
     @Suppress("UNUSED_PARAMETER")
     fun drawDownloadBanner(context: Context, doc: PdfDocument, canvas: Canvas, left: Float, top: Float, width: Float): Float {
         val right = left + width
@@ -142,8 +148,9 @@ object PdfBranding {
         val pillH = 20f
         val pill = RectF(right - 10f - pillW, top + (BANNER_HEIGHT - pillH) / 2f, right - 10f, top + (BANNER_HEIGHT + pillH) / 2f)
         canvas.drawRoundRect(pill, 10f, 10f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
-        val label = paint(Color.WHITE, 8.5f, bold = true).apply { letterSpacing = 0.08f; textAlign = Paint.Align.CENTER }
-        PdfRtl.drawText(canvas, "DOWNLOAD", pill.centerX(), pill.centerY() + 3f, label)
+        val word = downloadWord(context)
+        val label = paint(Color.WHITE, 8.5f, bold = true).apply { letterSpacing = if (latin(word)) 0.08f else 0f; textAlign = Paint.Align.CENTER }
+        PdfRtl.drawText(canvas, word, pill.centerX(), pill.centerY() + 3f, label)
         return bottom
     }
 
@@ -158,7 +165,8 @@ object PdfBranding {
         drawBrandLine(canvas, cx, top + 14f, 7.5f, 7f, BRAND_GREEN, SOFT, centered = true)
         val pill = RectF(cx - 42f, top + 20f, cx + 42f, top + 35f)
         canvas.drawRoundRect(pill, 7.5f, 7.5f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
-        PdfRtl.drawText(canvas, "DOWNLOAD", cx, pill.centerY() + 2.6f, paint(Color.WHITE, 7f, bold = true).apply { letterSpacing = 0.08f; textAlign = Paint.Align.CENTER })
+        val word = downloadWord(context)
+        PdfRtl.drawText(canvas, word, cx, pill.centerY() + 2.6f, paint(Color.WHITE, 7f, bold = true).apply { letterSpacing = if (latin(word)) 0.08f else 0f; textAlign = Paint.Align.CENTER })
         return bottom
     }
 }
