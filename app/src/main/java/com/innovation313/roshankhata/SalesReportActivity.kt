@@ -24,14 +24,39 @@ class SalesReportActivity : BaseActivity() {
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
             setNavigationOnClickListener { finish() }
             menu.add(R.string.share).setOnMenuItemClickListener { share(); true }
+            // Dues by age (21 Oct 2026): who owes what, and for how long.
+            menu.add(R.string.aging_title).setOnMenuItemClickListener { startActivity(Intent(this@SalesReportActivity, AgingActivity::class.java)); true }
         }
         val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
             android.content.res.Configuration.UI_MODE_NIGHT_YES
         val words = AndroidWords(this)
         val dao = KhataDatabase.get(this).khataDao()
         findViewById<ComposeView>(R.id.reportCompose).setContent {
-            RoshanTheme(dark = dark) { ProvideWords(words) { SalesReportScreen(dao, onReport = { latest = it }) } }
+            RoshanTheme(dark = dark) { ProvideWords(words) { SalesReportScreen(dao, onReport = { latest = it }, pickRange = { current, picked -> pickRange(current, picked) }) } }
         }
+    }
+
+    /**
+     * The report's own first and last day (21 Oct 2026): Material's range
+     * picker. It speaks UTC midnights; the report wants this phone's days,
+     * so each end is turned into the local start of the day it names.
+     */
+    private fun pickRange(current: Pair<Long, Long>?, picked: (Pair<Long, Long>) -> Unit) {
+        fun toUtc(local: Long): Long {
+            val day = com.innovation313.roshankhata.data.DayCloseMath.dayOf(local)
+            return day * 24L * 60 * 60 * 1000
+        }
+        fun toLocal(utc: Long): Long = com.innovation313.roshankhata.data.DayCloseMath.startOf(Math.floorDiv(utc, 24L * 60 * 60 * 1000))
+        val builder = com.google.android.material.datepicker.MaterialDatePicker.Builder.dateRangePicker()
+            .setTitleText(R.string.srep_period_custom)
+        current?.let { builder.setSelection(androidx.core.util.Pair(toUtc(it.first), toUtc(it.second))) }
+        val picker = builder.build()
+        picker.addOnPositiveButtonClickListener { sel ->
+            val a = sel.first ?: return@addOnPositiveButtonClickListener
+            val b = sel.second ?: a
+            picked(toLocal(a) to toLocal(b))
+        }
+        picker.show(supportFragmentManager, "report_range")
     }
 
     private fun share() {

@@ -3328,4 +3328,18 @@
     <string name="printer_logo">ऊपर दुकान का लोगो</string>
     <string name="printer_drawer">नकद बिक्री पर कैश दराज़ खोलें</string>
     <string name="printer_drawer_help">रसीद प्रिंटर से जुड़ी कैश दराज़ के लिए। जिस प्रिंटर के साथ दराज़ न हो, वह इसे अनदेखा कर देता है।</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">तारीख़ें चुनें</string>
+    <string name="srep_chart">समय के साथ बिक्री</string>
+    <string name="srep_chart_top">सबसे ज़्यादा: %1$s</string>
+    <string name="aging_title">बाक़ी रक़म, अवधि के हिसाब से</string>
+    <string name="aging_help">जो अभी बाक़ी है, इस हिसाब से कि कितने समय पहले दिया गया। भुगतान पहले पुराना हिसाब साफ़ करता है; 90 दिन से पुरानी रक़म पर फ़ोन ज़रूर करें।</string>
+    <string name="aging_0_30">0–30 दिन</string>
+    <string name="aging_31_60">31–60 दिन</string>
+    <string name="aging_61_90">61–90 दिन</string>
+    <string name="aging_90">90 दिन से ज़्यादा</string>
+    <string name="aging_none">कोई रक़म बाक़ी नहीं</string>
+    <string name="aging_oldest">सबसे पुरानी: %1$s</string>
+    <string name="aging_total">कुल</string>
 </resources>

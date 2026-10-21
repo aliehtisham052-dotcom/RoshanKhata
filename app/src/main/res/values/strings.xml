@@ -3498,4 +3498,18 @@ You can change this any time from this screen.</string>
     <string name="printer_logo">Shop logo at the top</string>
     <string name="printer_drawer">Open the cash drawer on cash sales</string>
     <string name="printer_drawer_help">For a cash drawer plugged into the receipt printer. A printer without one ignores it.</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">Choose dates</string>
+    <string name="srep_chart">Sales over time</string>
+    <string name="srep_chart_top">Highest: %1$s</string>
+    <string name="aging_title">Dues by age</string>
+    <string name="aging_help">What is still owed, by how long ago it was given. A payment clears the oldest first; anything over 90 days needs a call.</string>
+    <string name="aging_0_30">0–30 days</string>
+    <string name="aging_31_60">31–60 days</string>
+    <string name="aging_61_90">61–90 days</string>
+    <string name="aging_90">Over 90 days</string>
+    <string name="aging_none">Nothing is owed</string>
+    <string name="aging_oldest">Oldest: %1$s</string>
+    <string name="aging_total">Total</string>
 </resources>

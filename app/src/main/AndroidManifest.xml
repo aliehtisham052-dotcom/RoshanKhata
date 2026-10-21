@@ -289,6 +289,11 @@
             android:parentActivityName=".StaffActivity" />
 
         <activity
+            android:name=".AgingActivity"
+            android:exported="false"
+            android:parentActivityName=".FollowUpActivity" />
+
+        <activity
             android:name=".ShiftActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"

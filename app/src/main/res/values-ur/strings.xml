@@ -3284,4 +3284,18 @@
     <string name="printer_logo">اوپر دکان کا لوگو</string>
     <string name="printer_drawer">نقد فروخت پر کیش دراز کھولیں</string>
     <string name="printer_drawer_help">رسید پرنٹر میں لگی کیش دراز کے لیے۔ جس پرنٹر کے ساتھ دراز نہ ہو وہ اسے نظر انداز کر دیتا ہے۔</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">تاریخیں چنیں</string>
+    <string name="srep_chart">وقت کے ساتھ فروخت</string>
+    <string name="srep_chart_top">سب سے زیادہ: %1$s</string>
+    <string name="aging_title">باقی رقم، مدت کے حساب سے</string>
+    <string name="aging_help">جو ابھی باقی ہے، اس حساب سے کہ کتنا عرصہ پہلے دیا گیا۔ ادائیگی پہلے پرانا حساب صاف کرتی ہے؛ 90 دن سے پرانی رقم پر فون ضرور کریں۔</string>
+    <string name="aging_0_30">0–30 دن</string>
+    <string name="aging_31_60">31–60 دن</string>
+    <string name="aging_61_90">61–90 دن</string>
+    <string name="aging_90">90 دن سے زیادہ</string>
+    <string name="aging_none">کوئی رقم باقی نہیں</string>
+    <string name="aging_oldest">سب سے پرانی: %1$s</string>
+    <string name="aging_total">کل</string>
 </resources>

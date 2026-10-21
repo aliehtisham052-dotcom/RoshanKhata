@@ -3472,4 +3472,18 @@
     <string name="printer_logo">شعار المتجر في الأعلى</string>
     <string name="printer_drawer">افتح درج النقود عند البيع النقدي</string>
     <string name="printer_drawer_help">لدرج نقود موصول بطابعة الإيصالات. الطابعة التي لا درج لها تتجاهل ذلك.</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">اختر التواريخ</string>
+    <string name="srep_chart">المبيعات عبر الزمن</string>
+    <string name="srep_chart_top">الأعلى: %1$s</string>
+    <string name="aging_title">المستحقات حسب العمر</string>
+    <string name="aging_help">ما زال مستحقًا، بحسب متى أُعطي. الدفعة تسدّد الأقدم أولًا؛ وأي مبلغ تجاوز 90 يومًا يستحق اتصالًا.</string>
+    <string name="aging_0_30">0–30 يومًا</string>
+    <string name="aging_31_60">31–60 يومًا</string>
+    <string name="aging_61_90">61–90 يومًا</string>
+    <string name="aging_90">أكثر من 90 يومًا</string>
+    <string name="aging_none">لا شيء مستحق</string>
+    <string name="aging_oldest">الأقدم: %1$s</string>
+    <string name="aging_total">الإجمالي</string>
 </resources>

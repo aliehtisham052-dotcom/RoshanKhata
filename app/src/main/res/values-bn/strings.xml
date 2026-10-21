@@ -3328,4 +3328,18 @@
     <string name="printer_logo">ওপরে দোকানের লোগো</string>
     <string name="printer_drawer">নগদ বিক্রিতে ক্যাশ ড্রয়ার খুলুন</string>
     <string name="printer_drawer_help">রসিদ প্রিন্টারে লাগানো ক্যাশ ড্রয়ারের জন্য। যে প্রিন্টারে ড্রয়ার নেই সেটি এটি উপেক্ষা করে।</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">তারিখ বেছে নিন</string>
+    <string name="srep_chart">সময়ের সাথে বিক্রি</string>
+    <string name="srep_chart_top">সর্বোচ্চ: %1$s</string>
+    <string name="aging_title">বকেয়া, সময় অনুযায়ী</string>
+    <string name="aging_help">যা এখনও বাকি, কত আগে দেওয়া হয়েছিল সেই হিসেবে। পেমেন্ট আগে পুরোনো হিসাব মেটায়; ৯০ দিনের বেশি পুরোনো টাকার জন্য অবশ্যই ফোন করুন।</string>
+    <string name="aging_0_30">০–৩০ দিন</string>
+    <string name="aging_31_60">৩১–৬০ দিন</string>
+    <string name="aging_61_90">৬১–৯০ দিন</string>
+    <string name="aging_90">৯০ দিনের বেশি</string>
+    <string name="aging_none">কিছুই বাকি নেই</string>
+    <string name="aging_oldest">সবচেয়ে পুরোনো: %1$s</string>
+    <string name="aging_total">মোট</string>
 </resources>

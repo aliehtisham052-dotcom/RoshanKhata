@@ -3455,6 +3455,10 @@ interface KhataDao {
     )
     suspend fun purchasesOfProduct(productId: Long): List<Cost.Purchase>
 
+    /** Every live khata entry as [Aging] needs it, newest first. */
+    @Query("SELECT partyId, amount, isGiven, timestamp FROM transactions WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC")
+    suspend fun agingMoves(): List<AgingMove>
+
     /** Cash taken on [user]'s counter sales (null = the owner's) in [from, to): a shift's drawer ([ShiftMath]). */
     @Query(
         "SELECT COALESCE(SUM(p.amount), 0) FROM sale_payments p JOIN sales s ON s.id = p.saleId " +

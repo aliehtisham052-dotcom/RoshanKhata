@@ -77,8 +77,50 @@ class SalesReport(val from: Long, val to: Long, val lines: List<SoldLine>, val e
     /** Gross profit less the cashbook's expenses in the window (the walk-ins' refunds are not expenses — they are the returns). */
     val netProfit: Double get() = LineMath.round(grossProfit - expenses)
 
+    /** One bar of the report's chart: its label, where its slice of time starts, and what sold in it. */
+    data class Bar(val label: String, val from: Long, val revenue: Double)
+
+    /**
+     * The report's chart (21 Oct 2026): by hour for a window of one day, by
+     * day up to [DAILY_BARS] days, by month beyond — every slice of the
+     * window present and an empty one as zero, so a gap in the chart is a
+     * day nothing sold, never a missing day. Summed from the same lines.
+     */
+    fun bars(tz: java.util.TimeZone = java.util.TimeZone.getDefault()): List<Bar> {
+        val firstDay = DayCloseMath.dayOf(from, tz)
+        val lastDay = DayCloseMath.dayOf(maxOf(from, to - 1), tz)
+        val days = (lastDay - firstDay + 1).toInt()
+        fun cal(ms: Long) = Calendar.getInstance(tz).apply { timeInMillis = ms }
+        return when {
+            days <= 1 -> {
+                val sums = DoubleArray(24)
+                lines.forEach { sums[cal(it.timestamp).get(Calendar.HOUR_OF_DAY)] += it.revenue }
+                val dayStart = DayCloseMath.startOf(firstDay, tz)
+                (0 until 24).map { h -> Bar("%02d".format(Digits.FIGURES, h), dayStart + h * 3_600_000L, LineMath.round(sums[h])) }
+            }
+            days <= DAILY_BARS -> {
+                val sums = DoubleArray(days)
+                lines.forEach { l -> val i = (DayCloseMath.dayOf(l.timestamp, tz) - firstDay).toInt(); if (i in 0 until days) sums[i] += l.revenue }
+                (0 until days).map { i -> val start = DayCloseMath.startOf(firstDay + i, tz); Bar(DateWords.format("d MMM", start), start, LineMath.round(sums[i])) }
+            }
+            else -> {
+                fun monthOf(ms: Long) = cal(ms).let { it.get(Calendar.YEAR) * 12 + it.get(Calendar.MONTH) }
+                val first = monthOf(from)
+                val sums = DoubleArray(monthOf(maxOf(from, to - 1)) - first + 1)
+                lines.forEach { l -> val i = monthOf(l.timestamp) - first; if (i in sums.indices) sums[i] += l.revenue }
+                sums.indices.map { i ->
+                    val m = first + i
+                    val start = Calendar.getInstance(tz).apply { clear(); set(m / 12, m % 12, 1) }.timeInMillis
+                    Bar(DateWords.format("MMM yyyy", start), start, LineMath.round(sums[i]))
+                }
+            }
+        }
+    }
+
     companion object {
         const val DEAD_DAYS = 90
+        /** Up to this many days the chart has a bar a day; past it, a bar a month. */
+        const val DAILY_BARS = 62
 
         suspend fun compute(dao: KhataDao, from: Long, to: Long): SalesReport {
             val lines = dao.soldLinesBetween(from, to)

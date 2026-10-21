@@ -3281,4 +3281,18 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="printer_logo">Logo toko di atas</string>
     <string name="printer_drawer">Buka laci kas pada penjualan tunai</string>
     <string name="printer_drawer_help">Untuk laci kas yang tersambung ke printer struk. Printer tanpa laci akan mengabaikannya.</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">Pilih tanggal</string>
+    <string name="srep_chart">Penjualan dari waktu ke waktu</string>
+    <string name="srep_chart_top">Tertinggi: %1$s</string>
+    <string name="aging_title">Tagihan menurut umur</string>
+    <string name="aging_help">Yang masih terutang, menurut berapa lama diberikan. Pembayaran melunasi yang paling lama dulu; yang lebih dari 90 hari perlu ditelepon.</string>
+    <string name="aging_0_30">0–30 hari</string>
+    <string name="aging_31_60">31–60 hari</string>
+    <string name="aging_61_90">61–90 hari</string>
+    <string name="aging_90">Lebih dari 90 hari</string>
+    <string name="aging_none">Tidak ada yang terutang</string>
+    <string name="aging_oldest">Terlama: %1$s</string>
+    <string name="aging_total">Total</string>
 </resources>

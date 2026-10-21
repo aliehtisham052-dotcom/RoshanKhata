@@ -3284,4 +3284,18 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="printer_logo">Upar dukaan ka logo</string>
     <string name="printer_drawer">Naqd sale par cash daraz kholein</string>
     <string name="printer_drawer_help">Raseed printer mein lagi cash daraz ke liye. Jis printer ke saath daraz na ho woh ise nazar andaz kar deta hai.</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">Tareekhein chunein</string>
+    <string name="srep_chart">Waqt ke saath farokht</string>
+    <string name="srep_chart_top">Sab se zyada: %1$s</string>
+    <string name="aging_title">Baqaya raqam, muddat ke hisaab se</string>
+    <string name="aging_help">Jo abhi baqi hai, is hisaab se ke kitna arsa pehle diya gaya. Adaigi pehle purana hisaab saaf karti hai; 90 din se purani raqam par phone zaroor karein.</string>
+    <string name="aging_0_30">0–30 din</string>
+    <string name="aging_31_60">31–60 din</string>
+    <string name="aging_61_90">61–90 din</string>
+    <string name="aging_90">90 din se zyada</string>
+    <string name="aging_none">Koi raqam baqi nahi</string>
+    <string name="aging_oldest">Sab se purani: %1$s</string>
+    <string name="aging_total">Kul</string>
 </resources>
