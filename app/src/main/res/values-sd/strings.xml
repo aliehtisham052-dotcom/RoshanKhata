@@ -2823,7 +2823,7 @@
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">ڪارڊ جي ٻولي</string>
-    <string name="biz_card_language_note">اردو ڪارڊ سڄو اردو ۾ ۽ ساڄي کان کاٻي هوندو آهي. هر ٻوليءَ جو نالو، مالڪ ۽ پتو الڳ رهي ٿو؛ نمبر، اي ميل ۽ ويب سائيٽ ٻنهي تي ساڳيا آهن.</string>
+    <string name="biz_card_language_note">هر ٻوليءَ جو پنهنجو ڪارڊ ٺهي ٿو. اردو، سنڌي، عربي ۽ فارسي ڪارڊ ساڄي کان کاٻي پڙهيا وڃن ٿا. هر ٻوليءَ جو نالو، مالڪ ۽ پتو الڳ رهي ٿو؛ نمبر، اي ميل ۽ ويب سائيٽ هر ڪارڊ تي ساڳيا آهن.</string>
     <string name="poster_step_design">ڊزائن</string>
     <string name="poster_step_words">لکت</string>
     <string name="poster_step_send">موڪليو</string>

@@ -2839,7 +2839,7 @@
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">कार्ड की भाषा</string>
-    <string name="biz_card_language_note">उर्दू कार्ड पूरा उर्दू में और दाएँ से बाएँ होता है। हर भाषा का नाम, मालिक और पता अलग रहता है; नंबर, ईमेल और वेबसाइट दोनों पर एक ही हैं।</string>
+    <string name="biz_card_language_note">हर भाषा का अपना कार्ड बनता है। उर्दू, सिंधी, अरबी और फ़ारसी कार्ड दाएँ से बाएँ पढ़े जाते हैं। हर भाषा का नाम, मालिक और पता अलग रहता है; नंबर, ईमेल और वेबसाइट हर कार्ड पर एक ही हैं।</string>
     <string name="poster_step_design">डिज़ाइन</string>
     <string name="poster_step_words">लिखाई</string>
     <string name="poster_step_send">भेजें</string>

@@ -2792,7 +2792,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">Bahasa kartu</string>
-    <string name="biz_card_language_note">Kartu Urdu sepenuhnya berbahasa Urdu dan dibaca dari kanan ke kiri. Tiap bahasa punya nama, pemilik, dan alamatnya sendiri; nomor, email, dan situs web sama di keduanya.</string>
+    <string name="biz_card_language_note">Setiap bahasa punya kartunya sendiri. Kartu Urdu, Sindhi, Arab, dan Persia dibaca dari kanan ke kiri. Setiap bahasa menyimpan nama, pemilik, dan alamatnya sendiri; nomor, email, dan situs web sama di setiap kartu.</string>
     <string name="poster_step_design">Desain</string>
     <string name="poster_step_words">Kata-kata</string>
     <string name="poster_step_send">Kirim</string>

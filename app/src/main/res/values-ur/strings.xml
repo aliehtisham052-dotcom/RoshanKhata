@@ -2795,7 +2795,7 @@
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">کارڈ کی زبان</string>
-    <string name="biz_card_language_note">اردو کارڈ پورا اردو میں اور دائیں سے بائیں ہوتا ہے۔ ہر زبان کا نام، مالک اور پتا الگ رہتا ہے؛ نمبر، ای میل اور ویب سائٹ دونوں پر ایک ہی ہیں۔</string>
+    <string name="biz_card_language_note">ہر زبان کا اپنا کارڈ بنتا ہے۔ اردو، سندھی، عربی اور فارسی کارڈ دائیں سے بائیں ہوتے ہیں۔ ہر زبان کا نام، مالک اور پتا الگ رہتا ہے؛ نمبر، ای میل اور ویب سائٹ ہر کارڈ پر ایک ہی ہیں۔</string>
     <string name="poster_step_design">ڈیزائن</string>
     <string name="poster_step_words">لکھائی</string>
     <string name="poster_step_send">بھیجیں</string>

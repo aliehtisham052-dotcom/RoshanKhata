@@ -2983,7 +2983,7 @@
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">لغة البطاقة</string>
-    <string name="biz_card_language_note">البطاقة الأردية كلها بالأردية وتُقرأ من اليمين إلى اليسار. لكل لغة اسمها ومالكها وعنوانها؛ الأرقام والبريد والموقع واحدة في الاثنتين.</string>
+    <string name="biz_card_language_note">لكل لغة بطاقتها الخاصة. بطاقات الأردية والسندية والعربية والفارسية تُقرأ من اليمين إلى اليسار. لكل لغة اسمها ومالكها وعنوانها؛ أما الأرقام والبريد الإلكتروني والموقع فهي نفسها على كل بطاقة.</string>
     <string name="poster_step_design">التصميم</string>
     <string name="poster_step_words">الكلمات</string>
     <string name="poster_step_send">الإرسال</string>

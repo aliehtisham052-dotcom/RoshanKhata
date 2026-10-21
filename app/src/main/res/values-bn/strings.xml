@@ -2839,7 +2839,7 @@
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">কার্ডের ভাষা</string>
-    <string name="biz_card_language_note">উর্দু কার্ড পুরোটাই উর্দুতে এবং ডান থেকে বাঁয়ে পড়া হয়। প্রতিটি ভাষার নিজস্ব নাম, মালিক ও ঠিকানা থাকে; নম্বর, ইমেল ও ওয়েবসাইট দুটোতেই এক।</string>
+    <string name="biz_card_language_note">প্রতিটি ভাষার নিজস্ব কার্ড হয়। উর্দু, সিন্ধি, আরবি ও ফারসি কার্ড ডান থেকে বাঁয়ে পড়া হয়। প্রতিটি ভাষার নাম, মালিক ও ঠিকানা আলাদা থাকে; নম্বর, ইমেল ও ওয়েবসাইট সব কার্ডে একই।</string>
     <string name="poster_step_design">ডিজাইন</string>
     <string name="poster_step_words">লেখা</string>
     <string name="poster_step_send">পাঠান</string>
