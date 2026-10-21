@@ -3137,4 +3137,39 @@
     <string name="audit_restore">دفتر بازیابی شد</string>
     <string name="audit_export">خروجی</string>
     <string name="audit_by">توسط %1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">شمارش موجودی</string>
+    <string name="stock_count_help">آنچه در قفسه است بنویسید؛ فقط اختلاف‌ها ثبت می‌شود، با رقم دفتر کنارش</string>
+    <string name="stock_counted_hint">شمرده‌شده</string>
+    <string name="stock_count_saved">%1$d اصلاح ثبت شد</string>
+    <string name="stock_adjust">اصلاح موجودی</string>
+    <string name="adjust_qty_hint">تعداد (+ ورود، − خروج)</string>
+    <string name="adjust_reason">دلیل</string>
+    <string name="adjust_reason_count">شمارش</string>
+    <string name="adjust_reason_damage">آسیب‌دیده</string>
+    <string name="adjust_reason_expired">منقضی / دور ریخته</string>
+    <string name="adjust_reason_theft">سرقت / گمشده</string>
+    <string name="adjust_reason_other">دیگر</string>
+    <string name="stock_valuation">ارزش موجودی</string>
+    <string name="stock_valuation_known">%1$s از %2$s کالا قیمت خرید دارند</string>
+    <string name="stock_low_title">موجودی کم</string>
+    <string name="stock_adjustments">اصلاح‌ها</string>
+    <string name="po_title">سفارش‌های خرید</string>
+    <string name="po_new">سفارش جدید</string>
+    <string name="po_supplier">تأمین‌کننده</string>
+    <string name="po_send">ارسال در واتساپ</string>
+    <string name="po_mark_sent">علامت ارسال‌شده</string>
+    <string name="po_receive">کالا رسید</string>
+    <string name="po_close">بستن سفارش</string>
+    <string name="po_status_draft">پیش‌نویس</string>
+    <string name="po_status_sent">ارسال‌شده</string>
+    <string name="po_status_received">دریافت‌شده</string>
+    <string name="po_status_closed">بسته</string>
+    <string name="po_none">هنوز سفارشی نیست</string>
+    <string name="po_lines_empty">کالاهای سفارش را اضافه کنید</string>
+    <string name="po_message_head">سفارش %1$s — %2$s</string>
+    <string name="po_from_low">سفارش موجودی کم</string>
+    <string name="po_book">دفتر</string>
+    <string name="inventory_title">موجودی فعلی</string>
 </resources>

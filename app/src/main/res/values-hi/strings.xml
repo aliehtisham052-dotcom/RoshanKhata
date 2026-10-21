@@ -3153,4 +3153,39 @@
     <string name="audit_restore">बही बहाल</string>
     <string name="audit_export">निर्यात</string>
     <string name="audit_by">%1$s ने</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">स्टॉक गिनें</string>
+    <string name="stock_count_help">शेल्फ़ पर जो है वह लिखें; सिर्फ़ अंतर लिखा जाएगा, साथ में बही का आँकड़ा</string>
+    <string name="stock_counted_hint">गिना</string>
+    <string name="stock_count_saved">%1$d सुधार लिखे गए</string>
+    <string name="stock_adjust">स्टॉक सुधारें</string>
+    <string name="adjust_qty_hint">मात्रा (+ अंदर, − बाहर)</string>
+    <string name="adjust_reason">कारण</string>
+    <string name="adjust_reason_count">गिनती</string>
+    <string name="adjust_reason_damage">खराब</string>
+    <string name="adjust_reason_expired">एक्सपायर / फेंका</string>
+    <string name="adjust_reason_theft">चोरी / गुम</string>
+    <string name="adjust_reason_other">अन्य</string>
+    <string name="stock_valuation">स्टॉक का मूल्य</string>
+    <string name="stock_valuation_known">%2$s में से %1$s उत्पादों की लागत पता है</string>
+    <string name="stock_low_title">कम स्टॉक</string>
+    <string name="stock_adjustments">सुधार</string>
+    <string name="po_title">खरीद ऑर्डर</string>
+    <string name="po_new">नया ऑर्डर</string>
+    <string name="po_supplier">सप्लायर</string>
+    <string name="po_send">WhatsApp पर भेजें</string>
+    <string name="po_mark_sent">भेजा चिह्नित करें</string>
+    <string name="po_receive">माल आ गया</string>
+    <string name="po_close">ऑर्डर बंद</string>
+    <string name="po_status_draft">ड्राफ़्ट</string>
+    <string name="po_status_sent">भेजा</string>
+    <string name="po_status_received">मिला</string>
+    <string name="po_status_closed">बंद</string>
+    <string name="po_none">अभी कोई ऑर्डर नहीं</string>
+    <string name="po_lines_empty">ऑर्डर के आइटम जोड़ें</string>
+    <string name="po_message_head">ऑर्डर %1$s — %2$s</string>
+    <string name="po_from_low">कम स्टॉक का ऑर्डर</string>
+    <string name="po_book">बही</string>
+    <string name="inventory_title">मौजूदा स्टॉक</string>
 </resources>

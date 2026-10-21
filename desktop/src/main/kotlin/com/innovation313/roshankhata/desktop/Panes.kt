@@ -71,6 +71,8 @@ enum class Section(val word: String, val icon: String, val tile: String, val gro
     PLANS(W.nav_plans, "ic_tile_plans", "tile_plans_bg", Group.DAILY),
     EXPIRY(W.tile_expiry, "ic_tile_expiring", "tile_stock_bg", Group.DAILY),
     PRODUCTS(W.tile_products, "ic_tile_products", "tile_bills_bg", Group.BUSINESS),
+    INVENTORY(W.inventory_title, "ic_tile_expiring", "tile_stock_bg", Group.BUSINESS),
+    ORDERS(W.po_title, "ic_tile_bills", "tile_bills_bg", Group.BUSINESS),
     INVOICES(W.nav_invoice, "ic_tile_invoice", "tile_invoice_bg", Group.BUSINESS),
     RATES(W.rate_list_title, "ic_tile_price_list", "tile_calc_bg", Group.BUSINESS),
     BUY_RATES(W.sr_title, "ic_tile_supplier_rates", "tile_zakat_bg", Group.BUSINESS),

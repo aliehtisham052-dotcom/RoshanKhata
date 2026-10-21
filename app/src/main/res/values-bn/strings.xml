@@ -3153,4 +3153,39 @@
     <string name="audit_restore">খাতা পুনরুদ্ধার</string>
     <string name="audit_export">রপ্তানি</string>
     <string name="audit_by">%1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">স্টক গণনা</string>
+    <string name="stock_count_help">তাকে যা আছে লিখুন; শুধু পার্থক্য লেখা হবে, পাশে খাতার সংখ্যা</string>
+    <string name="stock_counted_hint">গোনা</string>
+    <string name="stock_count_saved">%1$d সংশোধন লেখা হলো</string>
+    <string name="stock_adjust">স্টক সংশোধন</string>
+    <string name="adjust_qty_hint">পরিমাণ (+ ভেতরে, − বাইরে)</string>
+    <string name="adjust_reason">কারণ</string>
+    <string name="adjust_reason_count">গণনা</string>
+    <string name="adjust_reason_damage">নষ্ট</string>
+    <string name="adjust_reason_expired">মেয়াদোত্তীর্ণ / ফেলা</string>
+    <string name="adjust_reason_theft">চুরি / হারানো</string>
+    <string name="adjust_reason_other">অন্য</string>
+    <string name="stock_valuation">স্টকের মূল্য</string>
+    <string name="stock_valuation_known">%2$s-এর মধ্যে %1$s পণ্যের খরচ জানা</string>
+    <string name="stock_low_title">কম স্টক</string>
+    <string name="stock_adjustments">সংশোধন</string>
+    <string name="po_title">ক্রয় অর্ডার</string>
+    <string name="po_new">নতুন অর্ডার</string>
+    <string name="po_supplier">সরবরাহকারী</string>
+    <string name="po_send">WhatsApp-এ পাঠান</string>
+    <string name="po_mark_sent">পাঠানো চিহ্নিত</string>
+    <string name="po_receive">মাল এসেছে</string>
+    <string name="po_close">অর্ডার বন্ধ</string>
+    <string name="po_status_draft">খসড়া</string>
+    <string name="po_status_sent">পাঠানো</string>
+    <string name="po_status_received">গৃহীত</string>
+    <string name="po_status_closed">বন্ধ</string>
+    <string name="po_none">এখনো কোনো অর্ডার নেই</string>
+    <string name="po_lines_empty">অর্ডারের আইটেম যোগ করুন</string>
+    <string name="po_message_head">অর্ডার %1$s — %2$s</string>
+    <string name="po_from_low">কম স্টকের অর্ডার</string>
+    <string name="po_book">খাতা</string>
+    <string name="inventory_title">বর্তমান স্টক</string>
 </resources>

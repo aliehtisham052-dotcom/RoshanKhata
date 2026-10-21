@@ -737,7 +737,14 @@ val MIGRATION_33_34 = object : Migration(33, 34) {
     }
 }
 
-// KHATA_DB_VERSION (34) moved to the shared module with the database class (KMP Phase 3).
+/** v35 (21 Oct 2026): stock adjustments and purchase orders (POS Phase 6), the shared [Schema35] list. */
+val MIGRATION_34_35 = object : Migration(34, 35) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema35.statements) db.execSQL(sql)
+    }
+}
+
+// KHATA_DB_VERSION (35) moved to the shared module with the database class (KMP Phase 3).
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -773,5 +780,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_30_31,
     MIGRATION_31_32,
     MIGRATION_32_33,
-    MIGRATION_33_34
+    MIGRATION_33_34,
+    MIGRATION_34_35
 )

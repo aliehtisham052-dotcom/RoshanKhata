@@ -34,7 +34,9 @@ import com.innovation313.roshankhata.ui.customerBalanceColour
 import com.innovation313.roshankhata.ui.signedTotalColourOnDark
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * The cashbook: business money with no customer attached.
@@ -195,7 +197,7 @@ class CashbookActivity : BaseActivity() {
             val from = DayCloseMath.startOf(day)
             val report = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.ZReport.compute(dao, from, from + 24L * 60 * 60 * 1000) }
             val words = com.innovation313.roshankhata.data.AndroidWords(this@CashbookActivity)
-            val lines = report.lines(words) { Format.money(it) }
+            val lines: List<Pair<String, String>> = report.lines(words) { v: Double -> Format.money(v) }
             val text = Format.dateOnly(now) + "\n" +
                 lines.joinToString("\n") { (k, v) -> "$k: $v" } +
                 (if (report.counted == null) "\n\n" + getString(R.string.z_no_close) else "")

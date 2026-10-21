@@ -3297,4 +3297,39 @@
     <string name="audit_restore">استُعيد الدفتر</string>
     <string name="audit_export">تصدير</string>
     <string name="audit_by">بواسطة %1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">جرد المخزون</string>
+    <string name="stock_count_help">اكتب ما على الرف؛ تُسجَّل الفروق فقط، مع رقم الدفتر بجانبها</string>
+    <string name="stock_counted_hint">المعدود</string>
+    <string name="stock_count_saved">سُجّل %1$d تصحيحات</string>
+    <string name="stock_adjust">تعديل المخزون</string>
+    <string name="adjust_qty_hint">الكمية (+ داخل، − خارج)</string>
+    <string name="adjust_reason">السبب</string>
+    <string name="adjust_reason_count">جرد</string>
+    <string name="adjust_reason_damage">تالف</string>
+    <string name="adjust_reason_expired">منتهٍ / مُتلَف</string>
+    <string name="adjust_reason_theft">سرقة / فقد</string>
+    <string name="adjust_reason_other">أخرى</string>
+    <string name="stock_valuation">قيمة المخزون</string>
+    <string name="stock_valuation_known">%1$s من %2$s منتجات لها تكلفة</string>
+    <string name="stock_low_title">مخزون منخفض</string>
+    <string name="stock_adjustments">التصحيحات</string>
+    <string name="po_title">أوامر الشراء</string>
+    <string name="po_new">أمر جديد</string>
+    <string name="po_supplier">المورّد</string>
+    <string name="po_send">إرسال عبر واتساب</string>
+    <string name="po_mark_sent">تعليم كمُرسَل</string>
+    <string name="po_receive">وصلت البضاعة</string>
+    <string name="po_close">إغلاق الأمر</string>
+    <string name="po_status_draft">مسودة</string>
+    <string name="po_status_sent">مُرسَل</string>
+    <string name="po_status_received">مستلَم</string>
+    <string name="po_status_closed">مغلق</string>
+    <string name="po_none">لا أوامر بعد</string>
+    <string name="po_lines_empty">أضف الأصناف المطلوبة</string>
+    <string name="po_message_head">أمر %1$s — %2$s</string>
+    <string name="po_from_low">اطلب المخزون المنخفض</string>
+    <string name="po_book">الدفتر</string>
+    <string name="inventory_title">المخزون الحالي</string>
 </resources>

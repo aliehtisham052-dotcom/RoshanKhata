@@ -140,15 +140,21 @@ class ProductsActivity : BaseActivity() {
             android.widget.PopupMenu(this, v).apply {
                 menu.add(0, 1, 0, R.string.products_export)
                 menu.add(0, 2, 1, R.string.products_import)
+                menu.add(0, 3, 2, R.string.stock_count_title)
+                menu.add(0, 4, 3, R.string.stock_valuation)
                 setOnMenuItemClickListener { item ->
                     val ok = when (item.itemId) {
                         1 -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.EXPORT)
+                        3 -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST)
+                        4 -> true
                         else -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
                     }
-                    if (!ok) { Toast.makeText(this, R.string.access_denied, Toast.LENGTH_LONG).show(); return@setOnMenuItemClickListener true }
+                    if (!ok) { Toast.makeText(this@ProductsActivity, R.string.access_denied, Toast.LENGTH_LONG).show(); return@setOnMenuItemClickListener true }
                     when (item.itemId) {
                         1 -> saveCsv.launch("RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv")
                         2 -> pickCsv.launch(arrayOf("text/*", "text/csv", "text/comma-separated-values", "application/octet-stream", "*/*"))
+                        3 -> countStock()
+                        4 -> showValuation()
                     }
                     true
                 }
@@ -174,6 +180,46 @@ class ProductsActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         refresh()
+    }
+
+    /** A stock count (POS Phase 6): the shared form in a dialog; only the differences are written. */
+    private fun countStock() {
+        lifecycleScope.launch {
+            val draft = com.innovation313.roshankhata.screens.CountDraft(withContext(Dispatchers.IO) { Stock.of(dao) })
+            val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+            val words = com.innovation313.roshankhata.data.AndroidWords(this@ProductsActivity)
+            val view = androidx.compose.ui.platform.ComposeView(this@ProductsActivity)
+            val dialog = MaterialAlertDialogBuilder(this@ProductsActivity).setTitle(R.string.stock_count_title).setView(view).create()
+            view.setContent {
+                com.innovation313.roshankhata.screens.RoshanTheme(dark = dark) {
+                    com.innovation313.roshankhata.words.ProvideWords(words) {
+                        com.innovation313.roshankhata.screens.StockCountForm(draft, onCancel = { dialog.dismiss() }, onSave = {
+                            lifecycleScope.launch {
+                                val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }) }.getOrDefault(0) }
+                                Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.string(resources, R.string.stock_count_saved, n), Toast.LENGTH_LONG).show()
+                                dialog.dismiss(); refresh()
+                            }
+                        })
+                    }
+                }
+            }
+            dialog.show()
+        }
+    }
+
+    /** What the shelf is worth: cost price, else the last purchase rate; nothing guessed. */
+    private fun showValuation() {
+        lifecycleScope.launch {
+            val v = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.Valuation.compute(dao) }
+            val lines = v.rows.filter { it.value != null }.sortedByDescending { it.value }.take(40).joinToString("\n") {
+                it.name + ": " + com.innovation313.roshankhata.ui.Calc.trim(it.onHand ?: 0.0) + (it.unit?.let { u -> " $u" } ?: "") + " × " + com.innovation313.roshankhata.ui.Format.money(it.cost ?: 0.0) + " = " + com.innovation313.roshankhata.ui.Format.money(it.value ?: 0.0)
+            }
+            MaterialAlertDialogBuilder(this@ProductsActivity)
+                .setTitle(getString(R.string.stock_valuation) + " · " + com.innovation313.roshankhata.ui.Format.money(v.total))
+                .setMessage(com.innovation313.roshankhata.data.Digits.string(resources, R.string.stock_valuation_known, v.known, v.rows.size) + "\n\n" + lines)
+                .setPositiveButton(R.string.close, null)
+                .show()
+        }
     }
 
     private fun refresh() {

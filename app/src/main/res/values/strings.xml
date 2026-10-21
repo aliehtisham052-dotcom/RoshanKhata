@@ -3323,4 +3323,39 @@ You can change this any time from this screen.</string>
     <string name="audit_restore">Book restored</string>
     <string name="audit_export">Exported</string>
     <string name="audit_by">by %1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">Count stock</string>
+    <string name="stock_count_help">Type what is on the shelf; only the differences are written, each with the book figure beside it</string>
+    <string name="stock_counted_hint">Counted</string>
+    <string name="stock_count_saved">%1$d corrections written</string>
+    <string name="stock_adjust">Adjust stock</string>
+    <string name="adjust_qty_hint">Quantity (+ in, − out)</string>
+    <string name="adjust_reason">Reason</string>
+    <string name="adjust_reason_count">Count</string>
+    <string name="adjust_reason_damage">Damaged</string>
+    <string name="adjust_reason_expired">Expired / thrown out</string>
+    <string name="adjust_reason_theft">Theft / lost</string>
+    <string name="adjust_reason_other">Other</string>
+    <string name="stock_valuation">Stock value</string>
+    <string name="stock_valuation_known">%1$s of %2$s products have a cost</string>
+    <string name="stock_low_title">Low stock</string>
+    <string name="stock_adjustments">Corrections</string>
+    <string name="po_title">Purchase orders</string>
+    <string name="po_new">New order</string>
+    <string name="po_supplier">Supplier</string>
+    <string name="po_send">Send on WhatsApp</string>
+    <string name="po_mark_sent">Mark sent</string>
+    <string name="po_receive">Goods arrived</string>
+    <string name="po_close">Close order</string>
+    <string name="po_status_draft">Draft</string>
+    <string name="po_status_sent">Sent</string>
+    <string name="po_status_received">Received</string>
+    <string name="po_status_closed">Closed</string>
+    <string name="po_none">No orders yet</string>
+    <string name="po_lines_empty">Add the items to order</string>
+    <string name="po_message_head">Order %1$s — %2$s</string>
+    <string name="po_from_low">Order the low stock</string>
+    <string name="po_book">Book</string>
+    <string name="inventory_title">Stock on hand</string>
 </resources>
