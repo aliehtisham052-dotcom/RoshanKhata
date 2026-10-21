@@ -363,6 +363,61 @@
             </LinearLayout>
 
             <!--
+              Live sync with the computer over the shop's WiFi (22 Oct 2026,
+              Marhala 1): joined once with the computer's live code, then the
+              same book on both, a round every few seconds while the app is open.
+            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_profile_card"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="12dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_title"
+                    android:textColor="@color/ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/live_explain"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvLiveStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/live_status_off"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLiveJoin"
+                    style="@style/BackupOutlineButton"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/live_join" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLiveStop"
+                    style="@style/BackupOutlineButton"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/live_stop"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!--
               The way out, at the very end of the data screen: the complete
               erase Play's Data Safety form asks about, guarded the same way
               a business delete is — typed confirmation, never a bare Yes.

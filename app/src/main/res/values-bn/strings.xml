@@ -3499,4 +3499,23 @@
         <item quantity="one">অনেক বেশি চেষ্টা। %d সেকেন্ড অপেক্ষা করুন।</item>
         <item quantity="other">অনেক বেশি চেষ্টা। %d সেকেন্ড অপেক্ষা করুন।</item>
     </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">কম্পিউটারের সাথে লাইভ সিঙ্ক</string>
+    <string name="live_explain">ফোন আর কম্পিউটার একই খাতা রাখে, যা প্রতি কয়েক সেকেন্ডে হালনাগাদ হয় যখন দুটোই দোকানের ওয়াই-ফাইতে থাকে এবং রোশন খাতা খোলা থাকে। কিছুই ইন্টারনেটে যায় না।</string>
+    <string name="live_join">কম্পিউটারের সাথে যুক্ত করুন</string>
+    <string name="live_stop">লাইভ সিঙ্ক বন্ধ করুন</string>
+    <string name="live_stop_confirm">এই ডিভাইসে লাইভ সিঙ্ক বন্ধ করবেন? খাতা ঠিক যেমন আছে তেমনই থাকবে।</string>
+    <string name="live_status_off">লাইভ সিঙ্ক বন্ধ।</string>
+    <string name="live_status_not_paired">লাইভ সিঙ্ক চালু। এখনও কোনো কম্পিউটার যুক্ত হয়নি।</string>
+    <string name="live_status_waiting">খাতা কম্পিউটারে পৌঁছেছে। যুক্ত করা শেষ করতে সেখানে হ্যাঁ চাপুন।</string>
+    <string name="live_status_live">%1$s এর সাথে লাইভ। শেষ হালনাগাদ: %2$s</string>
+    <string name="live_status_unreachable">কম্পিউটার সাড়া দিচ্ছে না। দুটো কি একই ওয়াই-ফাইতে আছে, আর সেখানে কি রোশন খাতা খোলা?</string>
+    <string name="live_status_halted">লাইভ সিঙ্ক আপাতত থামানো। আপনার খাতা নিরাপদ এবং সবসময়ের মতো চলে।</string>
+    <string name="live_status_failed">লাইভ সিঙ্ক থেমে গেছে: %1$s</string>
+    <string name="live_mismatch">দুটো খাতা মিলছে না। নতুন কপির জন্য আবার যুক্ত করুন।</string>
+    <string name="live_sent">পাঠানো হয়েছে। কম্পিউটারে হ্যাঁ চাপুন, যাতে তার খাতা এই ফোনের খাতা দিয়ে বদলে যায়।</string>
+    <string name="live_not_live_code">এটি লাইভ সিঙ্কের কোড নয়। কম্পিউটারে লাইভ সিঙ্ক খুলে সেখানে দেখানো কোডটি স্ক্যান করুন।</string>
+    <string name="live_pc_steps">ফোনে ব্যাকআপ → কম্পিউটারের সাথে লাইভ সিঙ্ক → কম্পিউটারের সাথে যুক্ত করুন খুলে এই কোডটি স্ক্যান করুন। আপনার হ্যাঁ-র পর কম্পিউটারের খাতা ফোনের খাতা দিয়ে বদলে যাবে, আর তারপর দুটো একই থাকবে।</string>
+    <string name="live_pc_none">এখনও কোনো ফোন যুক্ত হয়নি।</string>
+    <string name="live_conflicts">দুটোতে একসাথে বদল (একটি রাখা হয়েছে, অন্যটি সংরক্ষিত): %1$d</string>
 </resources>

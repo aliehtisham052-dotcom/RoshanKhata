@@ -3483,4 +3483,23 @@
         <item quantity="one">تلاش‌های زیاد. %d ثانیه صبر کنید.</item>
         <item quantity="other">تلاش‌های زیاد. %d ثانیه صبر کنید.</item>
     </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">همگام‌سازی زنده با رایانه</string>
+    <string name="live_explain">گوشی و رایانه یک دفتر را نگه می‌دارند که هر چند ثانیه به‌روز می‌شود، وقتی هر دو روی وای‌فای مغازه باشند و روشن کهاته باز باشد. هیچ چیز به اینترنت نمی‌رود.</string>
+    <string name="live_join">اتصال به رایانه</string>
+    <string name="live_stop">خاموش کردن همگام‌سازی زنده</string>
+    <string name="live_stop_confirm">همگام‌سازی زنده روی این دستگاه خاموش شود؟ دفتر دقیقاً همان‌طور می‌ماند.</string>
+    <string name="live_status_off">همگام‌سازی زنده خاموش است.</string>
+    <string name="live_status_not_paired">همگام‌سازی زنده روشن است. هنوز هیچ رایانه‌ای وصل نشده.</string>
+    <string name="live_status_waiting">دفتر به رایانه رسید. برای تمام شدن اتصال، آنجا «بله» را بزنید.</string>
+    <string name="live_status_live">زنده با %1$s. آخرین به‌روزرسانی: %2$s</string>
+    <string name="live_status_unreachable">رایانه پاسخ نمی‌دهد. آیا هر دو روی یک وای‌فای هستند و روشن کهاته روی آن باز است؟</string>
+    <string name="live_status_halted">همگام‌سازی زنده فعلاً متوقف است. دفتر شما امن است و مثل همیشه کار می‌کند.</string>
+    <string name="live_status_failed">همگام‌سازی زنده متوقف شد: %1$s</string>
+    <string name="live_mismatch">دو دفتر با هم نمی‌خوانند. برای یک نسخهٔ تازه دوباره وصل کنید.</string>
+    <string name="live_sent">فرستاده شد. روی رایانه «بله» را بزنید تا دفترش با دفتر این گوشی جایگزین شود.</string>
+    <string name="live_not_live_code">این کد همگام‌سازی زنده نیست. روی رایانه همگام‌سازی زنده را باز کنید و کدی را که نشان می‌دهد اسکن کنید.</string>
+    <string name="live_pc_steps">روی گوشی پشتیبان‌گیری ← همگام‌سازی زنده با رایانه ← اتصال به رایانه را باز کنید و این کد را اسکن کنید. پس از تأیید شما، دفتر رایانه با دفتر گوشی جایگزین می‌شود و از آن پس هر دو یکسان می‌مانند.</string>
+    <string name="live_pc_none">هنوز هیچ گوشی‌ای وصل نشده.</string>
+    <string name="live_conflicts">تغییر هم‌زمان روی هر دو (یکی نگه داشته شد، دیگری ذخیره شد): %1$d</string>
 </resources>
