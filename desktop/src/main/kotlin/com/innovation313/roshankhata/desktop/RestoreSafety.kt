@@ -43,8 +43,9 @@ fun rememberLoss(dao: KhataDao, data: BackupCodec.ParsedBackup): RestoreCheck.Lo
     LaunchedEffect(data) {
         loss = withContext(Dispatchers.IO) {
             // A check that cannot run must not stop a restore the owner needs (a damaged book is
-            // exactly when one is restored): it reports nothing lost, and the copy below still keeps the book.
-            runCatching { RestoreCheck.of(dao, data) }.getOrNull() ?: RestoreCheck.Loss(0, 0, 0, 0, 0, 0, 0, 0, 0, null, null)
+            // exactly when one is restored) — but it is not "nothing lost" either: it says it could not
+            // count, and the owner ticks before replacing. The copy below still keeps the book first.
+            runCatching { RestoreCheck.of(dao, data) }.getOrNull() ?: RestoreCheck.UNKNOWN
         }
     }
     return loss

@@ -306,7 +306,19 @@ object SaleMath {
     /** Why a ticket cannot be posted; the screen words each one. */
     enum class Problem {
         NO_LINES, BAD_QUANTITY, BAD_RATE, BAD_DISCOUNT, BAD_PAYMENT, BAD_METHOD,
-        OVERPAID, WALK_IN_UNPAID, EMPTY_NAME
+        OVERPAID, WALK_IN_UNPAID, EMPTY_NAME,
+        /** The counter's own (21 Oct 2026): a figure typed that is not one, caught before it counts as nothing. */
+        RATE_MISSING, UNREADABLE_DISCOUNT, BAD_TAX, UNREADABLE_PAYMENT
+    }
+
+    /** Why a posted ticket may not be voided (21 Oct 2026); null from [KhataDao.voidRefusal] when it may. */
+    enum class VoidRefusal {
+        /** Not a posted ticket (held, already void, binned). */
+        NOT_DONE,
+        /** Goods from it have come back: voiding would give them back twice. */
+        HAS_RETURNS,
+        /** Its day has been closed: the closed day's figures stay as counted; a return is dated today. */
+        DAY_CLOSED
     }
 
     /**

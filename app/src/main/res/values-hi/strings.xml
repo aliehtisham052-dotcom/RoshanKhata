@@ -3391,4 +3391,20 @@
     <string name="merge_unrelated">इस कॉपी में इस खाते से कुछ साझा नहीं — यह कोई और खाता है। यह सिर्फ़ इसकी जगह ले सकती है।</string>
     <string name="merge_not_carried">नहीं जुड़ते: किस्त प्लान, सीज़न, स्कीमें, हाज़िरी और दिन की बंदी।</string>
     <string name="audit_book_merged">कॉपी जोड़ी गई</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">खाता खुल रहा है…</string>
+    <string name="book_cannot_open">खाता नहीं खुल सका, और उसमें कुछ नहीं बदला गया। जो दूसरा प्रोग्राम इसे इस्तेमाल कर रहा हो उसे बंद करें (या कंप्यूटर फिर से चालू करें), फिर रोशन खाता दोबारा खोलें।</string>
+    <string name="book_set_aside_note">खराब खाता यहाँ अलग रखा गया है, मिटाया नहीं गया: %1$s</string>
+    <string name="restore_keep_failed">यह खाता पहले सुरक्षित नहीं हो सका, इसलिए कुछ नहीं बदला गया। देखें कि डिस्क में जगह है, फिर दोबारा कोशिश करें।</string>
+    <string name="restore_loss_unknown">क्या खोएगा यह गिना नहीं जा सका। तभी बदलें जब आपको यकीन हो कि यही कॉपी चाहिए।</string>
+    <string name="clock_behind_title">कंप्यूटर की तारीख गलत लगती है</string>
+    <string name="clock_behind_body">सबसे नई रोज़ाना कॉपी %1$s की है, पर यह कंप्यूटर आज की तारीख %2$s बता रहा है। Windows में सही तारीख और समय लगाएँ। तब तक कोई पुरानी कॉपी नहीं मिटाई जाएगी।</string>
+    <string name="pos_void_has_returns">इस बिक्री का माल पहले ही वापस हो चुका है। वापसी वाली बिक्री रद्द नहीं हो सकती; बाकी माल की वापसी करें।</string>
+    <string name="pos_void_day_closed">इस बिक्री का दिन बंद हो चुका है। रद्द करने के बजाय वापसी करें।</string>
+    <string name="pos_err_rate_missing">एक लाइन का रेट नहीं लिखा।</string>
+    <string name="pos_err_tax">टैक्स पढ़ा नहीं जा सका।</string>
+    <string name="pos_err_payment_unread">एक भुगतान की रकम पढ़ी नहीं जा सकी।</string>
+    <string name="pos_err_discount_unread">एक छूट पढ़ी नहीं जा सकी।</string>
+    <string name="pos_price_needs_pin">रेट लिस्ट से हटकर रेट पर बेचना</string>
 </resources>

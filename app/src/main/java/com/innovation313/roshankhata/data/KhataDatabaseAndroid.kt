@@ -116,4 +116,7 @@ fun KhataDatabase.Companion.closeActive() {
         KhataDatabaseHolder.instance = null
         KhataDatabaseHolder.instanceFile = null
     }
+    // Another book is about to be opened (a business switch, a restore, the viewer's copy):
+    // a sign-in belongs to the book it was made in.
+    Access.signOut()
 }

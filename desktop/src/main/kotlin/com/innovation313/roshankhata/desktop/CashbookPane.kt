@@ -82,7 +82,8 @@ fun CashbookPane(dao: KhataDao) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             FigureCard(word(W.cash_in), Format.money(income), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
             FigureCard(word(W.cash_out), Format.money(expense), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
-            FigureCard(word(W.cash_net), Format.money(net), if (net < 0) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_tile_cashbook", tint = Look.subtle)
+            // With its sign (21 Oct 2026): more out than in printed as a plain, positive figure.
+            FigureCard(word(W.cash_net), Format.signedTotal(net), if (net < 0) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_tile_cashbook", tint = Look.subtle)
         }
         if (entries.isEmpty()) {
             EmptyState("ic_tile_cashbook", word(W.no_cash_entries), word(W.cashbook_separate_note), Modifier.weight(1f)) {

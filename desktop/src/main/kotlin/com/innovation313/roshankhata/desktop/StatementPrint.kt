@@ -68,9 +68,47 @@ class StatementPrint(
     // A4 in points, the phone's margins.
     private val pageW = 595.0
     private val margin = 36.0
-    // One row fewer on the first page when the opening balance takes a line.
-    private val rowsFirstPage get() = if (periodFrom != null) 19 else 20
-    private val rowsPerPage = 26
+
+    /**
+     * Which rows each page holds, worked out from where they are drawn
+     * (21 Oct 2026). The counts were fixed — 20 rows on the first page, 26 on
+     * the others — but a row is 36 pt and the table starts low on the page, so
+     * only 17-18 and 19-20 of them fit: the rest were drawn below the paper and
+     * a customer's statement silently left entries out, its balance jumping,
+     * and on a long last page the closing box was cut off too. Now each page
+     * takes what fits above its bottom margin, and the closing box gets a page
+     * of its own when it would not fit under the last rows.
+     */
+    val pages: List<IntRange> by lazy { layoutPages(rows.size) }
+
+    /** The rows each page holds for [count] rows (an empty last range is a page for the closing box alone). */
+    fun layoutPages(count: Int): List<IntRange> {
+        val out = ArrayList<IntRange>()
+        var i = 0
+        do {
+            val cap = rowsThatFit(out.isEmpty())
+            val end = minOf(count, i + cap)
+            out += i until end
+            i = end
+        } while (i < count)
+        if (out.last().count() > rowsThatFit(out.size == 1, withClosing = true)) out += count until count
+        return out
+    }
+
+    /** The first row's baseline on a page, and the room under the table for rows (and the closing box). */
+    fun firstRowY(firstPage: Boolean): Double = if (firstPage) (if (periodFrom != null) 214.0 else 190.0) else 132.0
+
+    /**
+     * How many rows fit on a page: each row's last line, 20 pt under its
+     * baseline, stays above the bottom margin. [withClosing]: how many may
+     * stand above the closing box (8 pt and 52 pt under the last row's 36).
+     */
+    fun rowsThatFit(firstPage: Boolean, withClosing: Boolean = false): Int {
+        val y0 = firstRowY(firstPage)
+        val bottom = PAGE_H - margin
+        return if (withClosing) kotlin.math.floor((bottom - y0 - CLOSING_H) / ROW_H).toInt().coerceAtLeast(0)
+        else (kotlin.math.floor((bottom - y0 - ROW_BOTTOM) / ROW_H).toInt() + 1).coerceAtLeast(1)
+    }
 
     private val navy = Color(0x1B, 0x2A, 0x4A)
     private val gold = Color(0xC9, 0xA2, 0x4A)
@@ -79,8 +117,7 @@ class StatementPrint(
     private val muted = Color(0x6B, 0x6B, 0x66)
     private val line = Color(0xE4, 0xE2, 0xDC)
 
-    fun pageCount(): Int =
-        if (rows.size <= rowsFirstPage) 1 else 1 + (rows.size - rowsFirstPage + rowsPerPage - 1) / rowsPerPage
+    fun pageCount(): Int = pages.size
 
     /**
      * Text at [x] measured from the start side: from the left in English, from
@@ -187,9 +224,8 @@ class StatementPrint(
             g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
             y += 16
         }
-        val from = if (first) 0 else rowsFirstPage + (pageIndex - 1) * rowsPerPage
-        val until = minOf(rows.size, if (first) rowsFirstPage else from + rowsPerPage)
-        for (row in rows.subList(minOf(from, rows.size), until)) {
+        val range = pages[pageIndex]
+        for (row in rows.subList(range.first.coerceAtMost(rows.size), (range.last + 1).coerceIn(0, rows.size))) {
             val e = row.e.entry
             g.font = Font(Font.DIALOG, Font.PLAIN, 10)
             g.color = Color.BLACK
@@ -237,6 +273,13 @@ class StatementPrint(
     }
 
     companion object {
+        /** A4's height, a row's height, and how far a row's last line runs under its baseline. */
+        const val PAGE_H = 842.0
+        const val ROW_H = 36.0
+        const val ROW_BOTTOM = 20.0
+        /** The closing box under the last row: 8 pt of space and the 52 pt box. */
+        const val CLOSING_H = 60.0
+
         /**
          * Any sheet the owner asked for (a statement, an invoice, a report): opened in the
          * app's own preview first (1.8.4, the owner: the print box alone, with no file to keep

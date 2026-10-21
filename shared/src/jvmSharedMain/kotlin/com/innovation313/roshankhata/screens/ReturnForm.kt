@@ -51,24 +51,42 @@ import com.innovation313.roshankhata.words.word
  * dialog frame; the host posts it ([ReturnDraft.toReturn]).
  */
 class ReturnDraft(val sale: SaleWithLines, returnedSoFar: Map<Long, Double>) {
-    class Line(val item: com.innovation313.roshankhata.data.SaleItem, val left: Double) {
+    /**
+     * What each rupee of the sold lines came to in the end (21 Oct 2026): the
+     * ticket's discount (with any points spent), the tax added on top and the
+     * round-off, spread over the lines by their worth — what the customer
+     * actually paid for each. A return gives back that, not the shelf price:
+     * two bottles at 1,250 with 250 off the ticket come back at 1,125 each,
+     * and 10,000 of goods with 17% tax on top at 11,700. Until then the line
+     * price came back, so a discounted walk-in was refunded more than he paid.
+     */
+    val share: Double = sale.sale.subtotal.takeIf { it > 0.0 }?.let { sale.sale.grandTotal / it } ?: 1.0
+
+    class Line(val item: com.innovation313.roshankhata.data.SaleItem, val left: Double, private val share: Double = 1.0) {
         var qty by mutableStateOf("")
         val qtyValue: Double get() = Calc.evalAmount(qty) ?: 0.0
-        /** Per unit as sold, the line's discount spread over it. */
-        val rate: Double get() = if (item.quantity > 0.0) com.innovation313.roshankhata.data.LineMath.round(item.lineTotal / item.quantity) else item.rate
+        /** Per unit as paid for: the line's own discount and its share of the ticket's spread over it. */
+        val rate: Double get() = if (item.quantity > 0.0) item.lineTotal * share / item.quantity else item.rate * share
         val total: Double get() = com.innovation313.roshankhata.data.SaleMath.lineTotal(qtyValue, rate)
     }
 
     val lines: SnapshotStateList<Line> = mutableStateListOf<Line>().apply {
-        sale.items.forEach { add(Line(it, it.quantity - (returnedSoFar[it.id] ?: 0.0))) }
+        sale.items.forEach { add(Line(it, it.quantity - (returnedSoFar[it.id] ?: 0.0), share)) }
     }
     var reason by mutableStateOf("")
+    /** Being posted: the button waits, so a double tap never writes the return twice (21 Oct 2026). */
+    var posting by mutableStateOf(false)
     var refundMethod by mutableStateOf(if (sale.sale.partyId != null) SaleReturn.ACCOUNT else PaymentMethod.CASH)
     var refundText by mutableStateOf("")
 
     val hasParty: Boolean get() = sale.sale.partyId != null
     val total: Double get() = ReturnMath.total(toItems())
-    val refund: Double get() = if (refundMethod == SaleReturn.ACCOUNT) 0.0 else (Calc.evalAmount(refundText) ?: total)
+    /**
+     * The money handed back: what is typed, or the whole return when the box is
+     * empty. Something typed that is not a figure is refused below, not taken
+     * as the whole (21 Oct 2026: "1,2o0" refunded the full total unseen).
+     */
+    val refund: Double get() = if (refundMethod == SaleReturn.ACCOUNT) 0.0 else if (refundText.isBlank()) total else (Calc.evalAmount(refundText) ?: -1.0)
 
     fun toItems(): List<SaleReturnItem> = lines.filter { it.qtyValue > 0.0 }.map { l ->
         SaleReturnItem(
@@ -127,7 +145,7 @@ fun ReturnForm(draft: ReturnDraft, onPost: () -> Unit, onCancel: () -> Unit, mod
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = onCancel) { Text(word(W.cancel), color = c.ink) }
             Spacer(Modifier.weight(1f))
-            Button(onClick = onPost, enabled = problem == null, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) {
+            Button(onClick = { if (!draft.posting) onPost() }, enabled = problem == null && !draft.posting, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) {
                 Text(word(W.pos_return), color = Color.White, fontWeight = FontWeight.Bold)
             }
         }

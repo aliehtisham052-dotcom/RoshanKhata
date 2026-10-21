@@ -128,9 +128,14 @@ object Access {
         ownerIn = on
     }
 
-    /** Whether this discount on this subtotal needs a manager's PIN from whoever is signed in. */
-    fun discountNeedsOverride(discount: Double, subtotal: Double): Boolean =
-        !can(Permission.DISCOUNT_ANY) && subtotal > 0.0 && discount > subtotal * CASHIER_DISCOUNT_CAP + 0.005
+    /**
+     * Whether this discount needs a manager's PIN from whoever is signed in.
+     * [gross] is the goods before any discount (21 Oct 2026): measured on
+     * what was left after the lines' own discounts, a 100% line discount left
+     * nothing to measure on and went through with no PIN.
+     */
+    fun discountNeedsOverride(discount: Double, gross: Double): Boolean =
+        !can(Permission.DISCOUNT_ANY) && discount > 0.005 && discount > gross.coerceAtLeast(0.0) * CASHIER_DISCOUNT_CAP + 0.005
 
     // ---- The owner's PIN (in the book) ----
 

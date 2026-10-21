@@ -139,10 +139,12 @@ fun HomePane(
                 word(W.you_will_give), shown(give), plural(WP.supplier_count, owed, owed),
                 Look.give, Look.giveTint, "ic_arrow_gave", Modifier.weight(1f)
             ) { onOpen(Section.KHATA) }
+            // A shortfall carries its minus and the "give" colour (21 Oct 2026): more out than in
+            // printed as a green, positive "cash in hand".
             StatCard(
-                word(W.home_cash_in_hand), shown(cash),
+                word(W.home_cash_in_hand), if (hidden) masked else Format.signedIfNegative(cash),
                 word(W.cash_in) + " " + shown(figures?.cashIn ?: 0.0) + " · " + word(W.cash_out) + " " + shown(figures?.cashOut ?: 0.0),
-                Look.accent, Look.accentTint, "ic_tile_cashbook", Modifier.weight(1f)
+                if (cash < 0) c.owedToMe else Look.accent, if (cash < 0) Look.getTint else Look.accentTint, "ic_tile_cashbook", Modifier.weight(1f)
             ) { onOpen(Section.CASHBOOK) }
         }
 

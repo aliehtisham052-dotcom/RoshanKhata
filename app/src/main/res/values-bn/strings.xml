@@ -3391,4 +3391,20 @@
     <string name="merge_unrelated">এই কপির সাথে এই খাতার কিছুই মেলে না — এটি অন্য খাতা। এটি শুধু এর জায়গা নিতে পারে।</string>
     <string name="merge_not_carried">যোগ হয় না: কিস্তির পরিকল্পনা, মৌসুম, স্কিম, হাজিরা আর দিনের হিসাব বন্ধ।</string>
     <string name="audit_book_merged">কপি যোগ করা হয়েছে</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">খাতা খোলা হচ্ছে…</string>
+    <string name="book_cannot_open">খাতা খোলা যায়নি, এবং এতে কিছুই বদলানো হয়নি। অন্য যে প্রোগ্রাম এটি ব্যবহার করছে তা বন্ধ করুন (বা কম্পিউটার আবার চালু করুন), তারপর রোশন খাতা আবার খুলুন।</string>
+    <string name="book_set_aside_note">একটি নষ্ট খাতা এখানে আলাদা রাখা হয়েছে, মুছে ফেলা হয়নি: %1$s</string>
+    <string name="restore_keep_failed">এই খাতাটি আগে সংরক্ষণ করা যায়নি, তাই কিছুই বদলানো হয়নি। ডিস্কে জায়গা আছে কিনা দেখুন, তারপর আবার চেষ্টা করুন।</string>
+    <string name="restore_loss_unknown">কী হারাবে তা গোনা যায়নি। এই কপিটিই চান বলে নিশ্চিত হলে তবেই বদলান।</string>
+    <string name="clock_behind_title">কম্পিউটারের তারিখ ভুল মনে হচ্ছে</string>
+    <string name="clock_behind_body">সবচেয়ে নতুন দৈনিক কপিটি %1$s তারিখের, কিন্তু এই কম্পিউটার বলছে আজ %2$s। Windows-এ সঠিক তারিখ ও সময় দিন। ততক্ষণ কোনো পুরোনো কপি মুছবে না।</string>
+    <string name="pos_void_has_returns">এই বিক্রির মাল আগেই ফেরত হয়েছে। ফেরত থাকা বিক্রি বাতিল করা যায় না; বাকি মালের ফেরত করুন।</string>
+    <string name="pos_void_day_closed">এই বিক্রির দিন বন্ধ হয়ে গেছে। বাতিল না করে ফেরত করুন।</string>
+    <string name="pos_err_rate_missing">একটি লাইনে দর লেখা নেই।</string>
+    <string name="pos_err_tax">কর পড়া যায়নি।</string>
+    <string name="pos_err_payment_unread">একটি পেমেন্টের টাকা পড়া যায়নি।</string>
+    <string name="pos_err_discount_unread">একটি ছাড় পড়া যায়নি।</string>
+    <string name="pos_price_needs_pin">দর তালিকার বাইরে দরে বিক্রি</string>
 </resources>

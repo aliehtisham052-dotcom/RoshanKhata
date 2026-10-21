@@ -42,7 +42,7 @@ class StatementPrintTest {
         val locale = Locale.forLanguageTag(tag)
         Locale.setDefault(locale)
         try {
-            val s = StatementPrint(desktopWords(locale), tag == "ur", "Bhatti Traders", "Ali Raza", "0300 1234567", rows)
+            val s = StatementPrint(desktopWords(locale), tag == "ur", "Al-Noor Seeds", "Ali Raza", "0300 1234567", rows)
             val pages = ArrayList<BufferedImage>()
             var i = 0
             while (true) {
@@ -66,10 +66,35 @@ class StatementPrintTest {
     @Test
     fun `a statement prints every entry over the right number of pages`() {
         assertEquals(1, render("en", entries(5)).size)
-        assertEquals(1, render("en", entries(20)).size)
-        assertEquals(2, render("en", entries(21)).size)
-        assertEquals(3, render("en", entries(20 + 26 + 1)).size)
         assertEquals(1, render("en", emptyList()).size)
+        val long = entries(61)
+        val s = StatementPrint(desktopWords(Locale.ENGLISH), false, "Al-Noor Seeds", "Ali Raza", null, long)
+        assertEquals(s.pageCount(), render("en", long).size)
+    }
+
+    /**
+     * 21 Oct 2026: the page counts were fixed numbers (20 rows, then 26) that
+     * did not fit the paper, and entries were drawn below it — a 60-entry
+     * statement lost seven. Here every row is on a page exactly once, every
+     * page's rows end above the bottom margin, and the closing box fits.
+     */
+    @Test
+    fun `every entry is on a page and nothing runs off the paper`() {
+        val bottom = StatementPrint.PAGE_H - 36.0
+        for (period in listOf<Long?>(null, 1_759_000_000_000L)) for (n in listOf(0, 1, 15, 16, 17, 18, 35, 36, 37, 60, 61, 200)) {
+            val s = StatementPrint(desktopWords(Locale.ENGLISH), false, "Al-Noor Seeds", "Ali Raza", null, entries(n), periodFrom = period)
+            val pages = s.pages
+            assertEquals((0 until n).toList(), pages.flatMap { it.toList() })
+            pages.forEachIndexed { i, r ->
+                if (!r.isEmpty()) {
+                    val lastBottom = s.firstRowY(i == 0) + (r.count() - 1) * StatementPrint.ROW_H + StatementPrint.ROW_BOTTOM
+                    assertTrue("n=$n page ${i + 1} runs off the paper ($lastBottom)", lastBottom <= bottom)
+                }
+            }
+            val closingBottom = s.firstRowY(pages.size == 1) + pages.last().count() * StatementPrint.ROW_H + StatementPrint.CLOSING_H
+            assertTrue("n=$n the closing box runs off the paper ($closingBottom)", closingBottom <= bottom)
+            assertEquals(pages.size, s.pageCount())
+        }
     }
 
     @Test

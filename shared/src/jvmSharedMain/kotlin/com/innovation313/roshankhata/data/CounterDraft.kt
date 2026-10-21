@@ -34,7 +34,9 @@ class CounterDraft {
         /** The line's tax rate in percent, from its product; null = none of its own. */
         val taxRate: Double? = null,
         /** Whether the line's price already holds its tax (the book's setting when it was rung up). */
-        val taxIncluded: Boolean = false
+        val taxIncluded: Boolean = false,
+        /** A weighed item off the scale's label: its own line, never added to by a scan. */
+        val weighed: Boolean = false
     ) {
         var name by mutableStateOf(name)
         var qty by mutableStateOf(qty)
@@ -43,9 +45,22 @@ class CounterDraft {
         var discount by mutableStateOf(discount)
 
         val qtyValue: Double get() = Calc.evalAmount(qty) ?: 0.0
-        val rateValue: Double get() = Calc.evalAmount(rate) ?: 0.0
-        val discountValue: Double get() = Calc.evalAmount(discount) ?: 0.0
+        /** The rate as typed; a rate of 0 is written "0" (a free item), never left empty. */
+        val rateValue: Double get() = Calc.evalPad(rate) ?: 0.0
+        /** Before any discount: what the line's quantity comes to at its rate. */
+        val grossValue: Double get() = SaleMath.lineTotal(qtyValue, rateValue)
+        /** In rupees, or "10%" of the line. */
+        val discountValue: Double get() = Calc.evalDiscount(discount, grossValue) ?: 0.0
         val total: Double get() = SaleMath.lineTotal(qtyValue, rateValue, discountValue)
+
+        /**
+         * No rate, or a rate that is not a figure (21 Oct 2026): until then it
+         * counted as 0 and the ticket posted with the goods given away — a
+         * typed "1,250" or a forgotten rate on a typed item. Now the ticket
+         * waits; a free item is written as 0.
+         */
+        val rateMissing: Boolean get() = Calc.evalPad(rate) == null
+        val discountUnreadable: Boolean get() = discount.isNotBlank() && Calc.evalDiscount(discount, grossValue) == null
 
         /** The quantity in the product's own unit (a carton of 12 is 12). */
         val baseQty: Double get() = qtyValue * Units.factor(product, unit)
@@ -88,6 +103,8 @@ class CounterDraft {
         var amount by mutableStateOf(amount)
         var reference by mutableStateOf(reference)
         val amountValue: Double get() = Calc.evalAmount(amount) ?: 0.0
+        /** Something typed that is not a figure: it would have gone on the account unseen. */
+        val unreadable: Boolean get() = amount.isNotBlank() && Calc.evalAmount(amount) == null
         fun toPayment() = SalePayment(
             saleId = 0, method = method, amount = amountValue, reference = reference.trim().ifBlank { null }
         )
@@ -120,10 +137,19 @@ class CounterDraft {
     val hasParty: Boolean get() = partyId != null
     val isEmpty: Boolean get() = lines.isEmpty() && payments.isEmpty() && !hasParty
 
+    /** The lines' own totals added up, before the ticket's discount: what "10%" off the ticket is a share of. */
+    val linesTotal: Double get() = LineMath.round(lines.sumOf { it.total })
+
+    /** The cashier's discount on the whole ticket, in rupees or "10%" of it (21 Oct 2026). */
+    val handTyped: Double get() = Calc.evalDiscount(discount, linesTotal) ?: 0.0
+
+    /** The ticket's tax %: "17" and "17%" alike (until 21 Oct "17%" meant 0.17%). */
+    val taxValue: Double? get() = Calc.evalPercent(taxPercent)
+
     val totals: SaleMath.Totals
         get() = SaleMath.totals(
-            lines.map { it.toItem() }, LineMath.round((Calc.evalAmount(discount) ?: 0.0) + pointsValue),
-            Calc.evalAmount(taxPercent), roundToWhole
+            lines.map { it.toItem() }, LineMath.round(handTyped + pointsValue),
+            taxValue, roundToWhole
         )
 
     /** The discount the cashier gave, without the points: what the cashier's cap is measured on. */
@@ -134,21 +160,52 @@ class CounterDraft {
         get() {
             val rule = loyalty ?: return 0.0
             if (!hasParty) return 0.0
-            val before = SaleMath.totals(lines.map { it.toItem() }, Calc.evalAmount(discount) ?: 0.0, Calc.evalAmount(taxPercent), roundToWhole)
+            val before = SaleMath.totals(lines.map { it.toItem() }, handTyped, taxValue, roundToWhole)
             return rule.maxSpend(pointsBalance, LineMath.round(before.subtotal - before.discount))
         }
 
     /** Spend the customer's points on this ticket (as many as it allows), or none. */
     fun usePoints(on: Boolean) { pointsUsed = if (on) pointsMax else 0.0 }
 
+    /** What the customer handed over, as typed (cash may be more than the ticket: see [change]). */
     val paid: Double get() = SaleMath.paid(payments.map { it.toPayment() })
 
-    /** What is still owed on the ticket after the payments typed so far. */
+    /** What is still owed on the ticket after the payments typed so far; below zero, the change. */
     val remaining: Double get() = LineMath.round(totals.grandTotal - paid)
 
-    /** The first reason the ticket cannot be posted as it stands, or null. */
+    /**
+     * Cash handed back (21 Oct 2026): what was handed over beyond the ticket,
+     * when cash covers it — 5,000 in notes for a 4,350 ticket is 650 change.
+     * Until then a ticket paid with more than it came to could not be posted
+     * at all ("Paid more than the total") while the screen showed the change.
+     * Money paid by bank, cheque or online beyond the ticket is still refused:
+     * there is no change to give from a transfer.
+     */
+    val change: Double
+        get() {
+            val over = LineMath.round(paid - totals.grandTotal)
+            if (over <= 0.005) return 0.0
+            val cash = LineMath.round(payments.filter { it.method == PaymentMethod.CASH }.sumOf { it.amountValue })
+            return if (cash + 0.005 >= over) over else 0.0
+        }
+
+    /** A ticket being posted right now: the buttons and keys wait, so one sale is never written twice. */
+    var posting by mutableStateOf(false)
+
+    /**
+     * The first reason the ticket cannot be posted as it stands, or null: a
+     * figure that is not a figure first (21 Oct 2026 — until then a rate,
+     * discount, tax or payment that did not read counted as nothing), then
+     * the sale's own checks on what will be written.
+     */
     val problem: SaleMath.Problem?
-        get() = SaleMath.check(lines.map { it.toItem() }, payments.map { it.toPayment() }, totals.grandTotal, hasParty)
+        get() = when {
+            lines.any { it.rateMissing } -> SaleMath.Problem.RATE_MISSING
+            lines.any { it.discountUnreadable } || (discount.isNotBlank() && Calc.evalDiscount(discount, linesTotal) == null) -> SaleMath.Problem.UNREADABLE_DISCOUNT
+            taxPercent.isNotBlank() && taxValue == null -> SaleMath.Problem.BAD_TAX
+            payments.any { it.unreadable } -> SaleMath.Problem.UNREADABLE_PAYMENT
+            else -> SaleMath.check(lines.map { it.toItem() }, toPayments(), totals.grandTotal, hasParty)
+        }
 
     /**
      * The customer's account after this ticket, where it would pass the
@@ -166,9 +223,40 @@ class CounterDraft {
 
     fun setParty(id: Long?, name: String?) {
         if (id != partyId) { pointsUsed = 0.0; pointsBalance = 0.0 }
+        val before = lines.map { it to listRate(it) }
         partyId = id
         partyName = name
+        // Lines still at the old list price follow the ticket to its new one (the cash price for a
+        // walk-in, the credit price on an account): a customer chosen after the scanning is the
+        // usual order at a counter, and a line left at the walk-in price would read as repriced.
+        for ((l, old) in before) {
+            if (old != null && kotlin.math.abs(l.rateValue - old) <= 0.005) listRate(l)?.let { l.rate = Calc.trim(it) }
+        }
     }
+
+    /** The price the counter rings [line] up at, in its unit; null for an item typed in by hand. */
+    fun listRate(line: Line): Double? = line.product?.let { p -> Units.rateFor(p, line.unit, unitRate(p)) }
+
+    /**
+     * Lines whose price is not the product's own (21 Oct 2026): changed on the
+     * ticket, or an item typed in by hand. Until then anyone at the counter
+     * could sell a 3,500 bag for 0 with nothing written down; now these need
+     * the price permission (or a manager's PIN), and each is logged. A weighed
+     * line's price comes off the scale's label.
+     */
+    val repriced: List<Line>
+        get() = lines.filter { l -> !l.weighed && (listRate(l)?.let { kotlin.math.abs(l.rateValue - it) > 0.005 } ?: true) }
+
+    /** What the repriced lines were and became, for the audit log. */
+    fun repricedDetail(): String = repriced.joinToString("; ") { l ->
+        l.name.trim() + ": " + (listRate(l)?.let { Calc.trim(it) } ?: "-") + " > " + Calc.trim(l.rateValue)
+    }
+
+    /** The goods at their rates before any discount: what the cashier's discount cap is measured on. */
+    val grossTotal: Double get() = LineMath.round(lines.sumOf { it.grossValue })
+
+    /** Every discount the cashier gave on this ticket, the lines' and the ticket's (not the points). */
+    val allDiscounts: Double get() = LineMath.round(handDiscount + lines.sumOf { it.discountValue })
 
     /**
      * A product rung up. The same product again adds one to its line rather
@@ -177,7 +265,9 @@ class CounterDraft {
      * on an account and one is set; the owner may change it on the line.
      */
     fun add(product: Product, onHand: Double? = null, qty: Double = 1.0): Line {
-        lines.firstOrNull { it.productId == product.id }?.let {
+        // Only onto a line in the product's own unit (21 Oct 2026): one more bottle scanned onto a
+        // line switched to cartons made it a whole carton more, and a weighed line a kilo more.
+        lines.firstOrNull { it.productId == product.id && !it.weighed && it.unit == product.defaultUnit }?.let {
             it.qty = Calc.trim(it.qtyValue + qty)
             return it
         }
@@ -197,7 +287,7 @@ class CounterDraft {
     fun addWeighed(w: ScaleCode.Line, onHand: Double? = null): Line {
         val line = Line(
             w.product.id, w.product.name, Calc.trim(w.quantity), w.product.defaultUnit, Calc.trim(w.rate), onHand = onHand,
-            product = w.product, taxRate = w.product.taxRate, taxIncluded = pricesIncludeTax
+            product = w.product, taxRate = w.product.taxRate, taxIncluded = pricesIncludeTax, weighed = true
         )
         lines += line
         return line
@@ -263,14 +353,31 @@ class CounterDraft {
     fun toSale(createdBy: String? = Access.userName, timestamp: Long = System.currentTimeMillis()) = Sale(
         partyId = partyId, customerName = partyName?.trim()?.ifBlank { null },
         // The points spent are part of the ticket's discount (postSale checks them against the customer's points).
-        timestamp = timestamp, subtotal = totals.subtotal, discountAmount = LineMath.round((Calc.evalAmount(discount) ?: 0.0) + pointsValue),
-        taxPercent = Calc.evalAmount(taxPercent)?.takeIf { it > 0.0 }, taxAmount = totals.tax,
-        roundOff = totals.roundOff, grandTotal = totals.grandTotal, paidTotal = paid,
+        timestamp = timestamp, subtotal = totals.subtotal, discountAmount = LineMath.round(handTyped + pointsValue),
+        taxPercent = taxValue?.takeIf { it > 0.0 }, taxAmount = totals.tax,
+        roundOff = totals.roundOff, grandTotal = totals.grandTotal, paidTotal = SaleMath.paid(toPayments()),
         note = note.trim().ifBlank { null }, createdBy = createdBy
     )
 
     fun toItems(): List<SaleItem> = lines.map { it.toItem() }
-    fun toPayments(): List<SalePayment> = payments.map { it.toPayment() }.filter { it.amount > 0.0 }
+    /**
+     * The payments as the sale keeps them: the change comes off the cash,
+     * the last cash payment first, so the book holds what stayed in the
+     * drawer (5,000 handed over, 650 back: 4,350 cash).
+     */
+    fun toPayments(): List<SalePayment> {
+        val list = payments.map { it.toPayment() }.filter { it.amount > 0.0 }.toMutableList()
+        var give = change
+        for (i in list.indices.reversed()) {
+            if (give <= 0.005) break
+            val p = list[i]
+            if (p.method != PaymentMethod.CASH) continue
+            val take = minOf(p.amount, give)
+            list[i] = p.copy(amount = LineMath.round(p.amount - take))
+            give = LineMath.round(give - take)
+        }
+        return list.filter { it.amount > 0.0 }
+    }
 
     companion object {
         /**

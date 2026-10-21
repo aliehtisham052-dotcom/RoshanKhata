@@ -37,11 +37,20 @@ object RestoreCheck {
         val parties: Int,
         /** The newest entry, sale or cashbook row here, and in the copy; null when there is none. */
         val newestHere: Long?,
-        val newestThere: Long?
+        val newestThere: Long?,
+        /**
+         * The count could not be made (21 Oct 2026). It used to read as "nothing
+         * lost" and the replace went ahead unticked; now it is said, and the
+         * owner ticks that they accept not knowing.
+         */
+        val unknown: Boolean = false
     ) {
         val total: Int get() = entries + changed + cash + sales + returns + cheques + bills + invoices + parties
-        val none: Boolean get() = total == 0
+        val none: Boolean get() = !unknown && total == 0
     }
+
+    /** What is said when the count could not be made. */
+    val UNKNOWN = Loss(0, 0, 0, 0, 0, 0, 0, 0, 0, null, null, unknown = true)
 
     private const val PAGE = 2_000
 
@@ -138,6 +147,7 @@ object RestoreCheck {
      * screen does.
      */
     fun lines(loss: Loss, words: Words, date: (Long) -> String): List<String> = buildList {
+        if (loss.unknown) add(words.text(W.restore_loss_unknown))
         if (loss.entries > 0) add(words.text(W.restore_loss_entries, loss.entries))
         if (loss.changed > 0) add(words.text(W.restore_loss_changed, loss.changed))
         if (loss.sales > 0) add(words.text(W.restore_loss_sales, loss.sales))

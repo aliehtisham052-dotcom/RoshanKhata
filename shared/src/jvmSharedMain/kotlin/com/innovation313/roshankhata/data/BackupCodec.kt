@@ -734,6 +734,10 @@ object BackupCodec {
         )
         // The restore itself is the first row of the restored log (POS Phase 5).
         dao.log(AuditAction.RESTORE, Access.userName, detail = data.businessName)
+        // The book's PINs came with it (book_settings), so a sign-in made in the old book does not
+        // carry into this one (21 Oct 2026: a copy whose owner PIN someone knew made them the owner,
+        // and they stayed the owner after the real book came back). Phone and computer alike.
+        Access.signOut()
     }
 
     // ---------- Mapping ----------

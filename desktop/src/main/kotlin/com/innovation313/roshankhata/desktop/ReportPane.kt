@@ -134,7 +134,9 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 FigureCard(word(W.i_gave), Format.money(gave), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
                 FigureCard(word(W.i_got), Format.money(got), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
-                FigureCard(word(W.net_balance), Format.money(gave - got), if (gave - got < 0) Look.accent else c.ink, Modifier.weight(1f), under = plural(WP.pdf_stmt_entries, entries.size, entries.size), icon = "ic_tile_backup", tint = Look.subtle)
+                // The owner's rule (21 Sep 2026, the phone's report): never one figure netted across
+                // different people — gave and got stand apart, and the third card counts the entries.
+                FigureCard(word(W.pdf_rep_entry_count), entries.size.toString(), c.ink, Modifier.weight(1f), icon = "ic_tile_backup", tint = Look.subtle)
             }
             if (entries.isEmpty()) {
                 EmptyState("ic_tile_backup", word(W.ledger_report_empty), null, Modifier.weight(1f))

@@ -3375,4 +3375,20 @@
     <string name="merge_unrelated">این نسخه با این دفتر هیچ اشتراکی ندارد — دفتر دیگری است. فقط می‌تواند جای آن را بگیرد.</string>
     <string name="merge_not_carried">ادغام نمی‌شوند: طرح‌های قسطی، فصل‌ها، طرح‌های تشویقی، حضور و بستن روزها.</string>
     <string name="audit_book_merged">نسخه ادغام شد</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">در حال باز کردن دفتر…</string>
+    <string name="book_cannot_open">دفتر باز نشد و چیزی در آن تغییر نکرد. هر برنامهٔ دیگری را که ممکن است از آن استفاده کند ببندید (یا رایانه را دوباره راه‌اندازی کنید)، سپس روشن کھاتہ را دوباره باز کنید.</string>
+    <string name="book_set_aside_note">یک دفتر آسیب‌دیده اینجا کنار گذاشته شد، پاک نشد: %1$s</string>
+    <string name="restore_keep_failed">این دفتر نخست نگه داشته نشد، پس چیزی جایگزین نشد. مطمئن شوید دیسک جای خالی دارد و دوباره تلاش کنید.</string>
+    <string name="restore_loss_unknown">آنچه از دست می‌رود شمرده نشد. فقط وقتی جایگزین کنید که مطمئنید همین نسخه را می‌خواهید.</string>
+    <string name="clock_behind_title">تاریخ رایانه نادرست به نظر می‌رسد</string>
+    <string name="clock_behind_body">جدیدترین نسخهٔ روزانه برای %1$s است، اما این رایانه امروز را %2$s می‌داند. تاریخ و ساعت درست را در ویندوز تنظیم کنید. تا آن زمان هیچ نسخهٔ قدیمی پاک نمی‌شود.</string>
+    <string name="pos_void_has_returns">کالاهای این فروش قبلاً برگشت داده شده‌اند. فروشی که برگشتی دارد باطل نمی‌شود؛ به جای آن برای باقی‌مانده برگشت ثبت کنید.</string>
+    <string name="pos_void_day_closed">روزِ این فروش بسته شده است. به جای باطل کردن، برگشت ثبت کنید.</string>
+    <string name="pos_err_rate_missing">یک ردیف نرخ ندارد.</string>
+    <string name="pos_err_tax">مالیات خوانده نشد.</string>
+    <string name="pos_err_payment_unread">مبلغ یک پرداخت خوانده نشد.</string>
+    <string name="pos_err_discount_unread">یک تخفیف خوانده نشد.</string>
+    <string name="pos_price_needs_pin">فروش با نرخی جز نرخ فهرست</string>
 </resources>

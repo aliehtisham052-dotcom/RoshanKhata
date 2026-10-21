@@ -87,6 +87,27 @@ object TextReceipt {
      * setting is on.
      */
     fun print(activity: Activity, scope: LifecycleCoroutineScope, text: String, cash: Boolean = false) {
+        // Android 12 and later ask the owner before any paired printer may be listed (21 Oct 2026:
+        // the counter and the cashbook went straight to the list, and the app closed on a
+        // SecurityException; only an entry's receipt asked). Asked here once, then the print goes on.
+        if (android.os.Build.VERSION.SDK_INT >= 31 &&
+            activity.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            val host = activity as? androidx.activity.ComponentActivity
+            if (host == null) { Toast.makeText(activity, R.string.print_permission, Toast.LENGTH_LONG).show(); return }
+            var launcher: androidx.activity.result.ActivityResultLauncher<String>? = null
+            launcher = host.activityResultRegistry.register(
+                "receipt-bt-" + System.nanoTime(),
+                androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+            ) { granted ->
+                launcher?.unregister()
+                if (activity.isFinishing) return@register
+                if (granted) print(activity, scope, text, cash)
+                else Toast.makeText(activity, R.string.print_permission, Toast.LENGTH_LONG).show()
+            }
+            launcher.launch(android.Manifest.permission.BLUETOOTH_CONNECT)
+            return
+        }
         val adapter = ReceiptPrinter.adapter(activity)
         if (adapter == null) { Toast.makeText(activity, R.string.print_no_bluetooth, Toast.LENGTH_LONG).show(); return }
         if (!adapter.isEnabled) { Toast.makeText(activity, R.string.print_bluetooth_off, Toast.LENGTH_LONG).show(); return }

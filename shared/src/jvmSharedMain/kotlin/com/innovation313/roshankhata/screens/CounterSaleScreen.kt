@@ -282,7 +282,7 @@ fun CounterSaleScreen(
                 OutlinedButton(onClick = { paying = false }) { Text(word(W.cancel), color = c.ink) }
                 Spacer(Modifier.weight(1f))
                 Button(
-                    onClick = { onComplete(); paying = false }, enabled = problem == null,
+                    onClick = { onComplete(); paying = false }, enabled = problem == null && !draft.posting,
                     colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.testTag("posComplete")
                 ) { Text(word(W.pos_post), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp) }
             }
@@ -319,4 +319,8 @@ fun problemWord(p: SaleMath.Problem): String = when (p) {
     SaleMath.Problem.OVERPAID -> W.pos_err_overpaid
     SaleMath.Problem.WALK_IN_UNPAID -> W.pos_err_walk_in_unpaid
     SaleMath.Problem.EMPTY_NAME -> W.pos_err_empty_name
+    SaleMath.Problem.RATE_MISSING -> W.pos_err_rate_missing
+    SaleMath.Problem.UNREADABLE_DISCOUNT -> W.pos_err_discount_unread
+    SaleMath.Problem.BAD_TAX -> W.pos_err_tax
+    SaleMath.Problem.UNREADABLE_PAYMENT -> W.pos_err_payment_unread
 }

@@ -3347,4 +3347,20 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="merge_unrelated">Is copy mein is khate se kuch mushtarik nahi — yeh koi aur khata hai. Yeh sirf is ki jagah le sakti hai.</string>
     <string name="merge_not_carried">Shamil nahi hote: qist plan, season, schemes, haazri aur din ki bandish.</string>
     <string name="audit_book_merged">Copy shamil ki gayi</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">Khata khul raha hai…</string>
+    <string name="book_cannot_open">Khata nahin khul saka, aur us mein kuch nahin badla gaya. Jo doosra program isay istemal kar raha ho usay band karen (ya computer dobara chalayen), phir Roshan Khata dobara kholen.</string>
+    <string name="book_set_aside_note">Kharab khata yahan alag rakha gaya hai, mitaya nahin gaya: %1$s</string>
+    <string name="restore_keep_failed">Yeh khata pehle mehfooz nahin ho saka, is liye kuch nahin badla gaya. Dekhen ke disk mein jagah hai, phir dobara koshish karen.</string>
+    <string name="restore_loss_unknown">Kya zaaya hoga yeh gina nahin ja saka. Tabhi badlen jab aap ko yaqeen ho ke yahi copy chahiye.</string>
+    <string name="clock_behind_title">Computer ki tareekh ghalat lagti hai</string>
+    <string name="clock_behind_body">Sab se nayi rozana copy %1$s ki hai, magar yeh computer aaj ki tareekh %2$s bata raha hai. Windows mein sahi tareekh aur waqt lagayen. Tab tak koi purani copy nahin mitayi jayegi.</string>
+    <string name="pos_void_has_returns">Is bikri ka maal pehle hi wapas ho chuka hai. Wapsi wali bikri mansookh nahin ho sakti; baqi maal ki wapsi karen.</string>
+    <string name="pos_void_day_closed">Is bikri ka din band ho chuka hai. Mansookh karne ke bajaye wapsi karen.</string>
+    <string name="pos_err_rate_missing">Ek line ka rate nahin likha.</string>
+    <string name="pos_err_tax">Tax parha nahin ja saka.</string>
+    <string name="pos_err_payment_unread">Ek adaigi ki raqam parhi nahin ja saki.</string>
+    <string name="pos_err_discount_unread">Ek riayat parhi nahin ja saki.</string>
+    <string name="pos_price_needs_pin">Rate list se hat kar rate par bechna</string>
 </resources>

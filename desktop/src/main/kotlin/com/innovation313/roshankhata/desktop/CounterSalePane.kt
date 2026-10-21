@@ -209,60 +209,100 @@ fun CounterSalePane(
             SaleMath.Problem.OVERPAID -> W.pos_err_overpaid
             SaleMath.Problem.WALK_IN_UNPAID -> W.pos_err_walk_in_unpaid
             SaleMath.Problem.EMPTY_NAME -> W.pos_err_empty_name
+            SaleMath.Problem.RATE_MISSING -> W.pos_err_rate_missing
+            SaleMath.Problem.UNREADABLE_DISCOUNT -> W.pos_err_discount_unread
+            SaleMath.Problem.BAD_TAX -> W.pos_err_tax
+            SaleMath.Problem.UNREADABLE_PAYMENT -> W.pos_err_payment_unread
         }
     )
 
-    fun complete(print: Boolean, allowedBy: String? = null) {
+    /**
+     * Ring the ticket up. Each check that a cashier may not pass alone waits
+     * for its own manager's PIN (21 Oct 2026: one PIN given for a discount
+     * also let the ticket past the customer's credit limit unseen): a price
+     * changed on the ticket or an item typed in by hand, a discount past the
+     * cap (measured on the goods before any discount), the credit limit.
+     * While a ticket is being written the buttons and F12 wait, so a double
+     * click or a held-down key never posts it twice.
+     */
+    fun complete(print: Boolean, priceBy: String? = null, discountBy: String? = null, creditBy: String? = null) {
+        if (draft.posting) return
         val problem = draft.problem
         if (problem != null) { told = problemWords(problem); return }
+        val access = com.innovation313.roshankhata.data.Access
+        val repriced = draft.repriced
+        if (priceBy == null && repriced.isNotEmpty() && !access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)) {
+            told = words.text(W.pos_price_needs_pin)
+            override = words.text(W.pos_price_needs_pin) to { by -> complete(print, by, discountBy, creditBy) }
+            return
+        }
         // A cashier's discount past the cap waits for a manager's PIN (POS Phase 5).
-        val lineDiscounts = draft.lines.sumOf { it.discountValue }
-        if (allowedBy == null && com.innovation313.roshankhata.data.Access.discountNeedsOverride(draft.handDiscount + lineDiscounts, draft.totals.subtotal)) {
-            told = words.text(W.access_discount_cap, Format.money(draft.totals.subtotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
-            override = words.text(W.pos_discount) to { by -> complete(print, by) }
+        val discounts = draft.allDiscounts
+        if (discountBy == null && access.discountNeedsOverride(discounts, draft.grossTotal)) {
+            told = words.text(W.access_discount_cap, Format.money(draft.grossTotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
+            override = words.text(W.pos_discount) to { by -> complete(print, priceBy, by, creditBy) }
             return
         }
         // Past the customer's credit limit (POS Phase 9): a manager's PIN, and the log says so.
         val party = parties.firstOrNull { it.id == draft.partyId }
         val over = draft.creditOver(party?.balance, party?.creditLimit)
-        if (over != null && allowedBy == null && !com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER)) {
+        if (over != null && creditBy == null && !access.can(com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER)) {
             told = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second))
-            override = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second)) to { by -> complete(print, by) }
+            override = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second)) to { by -> complete(print, priceBy, discountBy, by) }
             return
         }
-        if (over != null && allowedBy == null) told = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second))
+        if (over != null && creditBy == null) told = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second))
+        val change = draft.change
+        val priceDetail = if (repriced.isNotEmpty()) draft.repricedDetail() else null
+        draft.posting = true
         scope.launch {
-            if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = Format.money(draft.handDiscount + lineDiscounts)) }
-            val result = withContext(Dispatchers.IO) {
-                runCatching {
-                    val id = Counter.post(dao, draft)
-                    val sale = dao.saleWithLines(id)!!
-                    Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
-                        com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
+            try {
+                withContext(Dispatchers.IO) {
+                    if (discountBy != null) dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, discountBy, detail = Format.money(discounts))
+                    // Every price that is not the product's own is written down, with who allowed it.
+                    if (priceDetail != null) dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, priceBy ?: access.userName, detail = priceDetail)
                 }
-            }
-            result.onSuccess { (sale, party, points) ->
-                told = words.text(W.pos_posted, sale.sale.saleNumber)
-                // Cash in the drawer: the drawer opens with the receipt, or alone when none is printed.
-                val cash = sale.payments.any { it.method == PaymentMethod.CASH && it.amount > 0.0 }
-                if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, party, points), cash))
-                else if (cash) onDrawer()
-                draft.clear()
-                tick++
-                onChanged()
-            }.onFailure { e ->
-                told = if (e is Counter.ExpiredStock) words.text(W.pos_expired_stock, e.item, Calc.trim(e.fresh))
-                    else e.message ?: words.text(W.backup_failed)
+                val result = withContext(Dispatchers.IO) {
+                    runCatching {
+                        val id = Counter.post(dao, draft)
+                        val sale = dao.saleWithLines(id)!!
+                        Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
+                            com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
+                    }
+                }
+                result.onSuccess { (sale, party, points) ->
+                    // The change to hand back, said with the sale (21 Oct 2026).
+                    told = words.text(W.pos_posted, sale.sale.saleNumber) +
+                        (if (change > 0.005) "  ·  " + words.text(W.pos_change) + " " + Format.money(change) else "")
+                    // Cash in the drawer: the drawer opens with the receipt, or alone when none is printed.
+                    val cash = sale.payments.any { it.method == PaymentMethod.CASH && it.amount > 0.0 }
+                    if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, party, points), cash))
+                    else if (cash) onDrawer()
+                    draft.clear()
+                    tick++
+                    onChanged()
+                }.onFailure { e ->
+                    told = if (e is Counter.ExpiredStock) words.text(W.pos_expired_stock, e.item, Calc.trim(e.fresh))
+                        else e.message ?: words.text(W.backup_failed)
+                }
+            } finally {
+                draft.posting = false
             }
         }
     }
 
+    /** Park the ticket; it is cleared only once it is safely held (21 Oct 2026: a failed hold lost it). */
     fun hold() {
-        if (draft.lines.isEmpty()) return
+        if (draft.lines.isEmpty() || draft.posting) return
+        draft.posting = true
         scope.launch {
-            withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, draft) } }
-            draft.clear()
-            tick++
+            try {
+                val held = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, draft) } }
+                held.onSuccess { draft.clear(); tick++ }
+                    .onFailure { e -> told = e.message ?: words.text(W.backup_failed) }
+            } finally {
+                draft.posting = false
+            }
         }
     }
 
@@ -479,11 +519,11 @@ fun CounterSalePane(
             if (problem != null && draft.lines.isNotEmpty()) Text(problemWords(problem), color = c.textMuted, fontSize = 12.sp)
             // Two wide buttons side by side on a desktop; one under the other on a laptop (1093 dp cut "Complete s").
             if (narrow) Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FluentButton(word(W.pos_post), { complete(false) }, Modifier.fillMaxWidth(), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = problem == null, tall = true)
-                FluentButton(word(W.pos_post_and_print), { complete(true) }, Modifier.fillMaxWidth(), kind = ButtonKind.STANDARD, icon = "ic_print", enabled = problem == null, tall = true)
+                FluentButton(word(W.pos_post), { complete(false) }, Modifier.fillMaxWidth(), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = problem == null && !draft.posting, tall = true)
+                FluentButton(word(W.pos_post_and_print), { complete(true) }, Modifier.fillMaxWidth(), kind = ButtonKind.STANDARD, icon = "ic_print", enabled = problem == null && !draft.posting, tall = true)
             } else Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FluentButton(word(W.pos_post), { complete(false) }, Modifier.weight(1f), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = problem == null, tall = true)
-                FluentButton(word(W.pos_post_and_print), { complete(true) }, kind = ButtonKind.STANDARD, icon = "ic_print", enabled = problem == null, tall = true)
+                FluentButton(word(W.pos_post), { complete(false) }, Modifier.weight(1f), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = problem == null && !draft.posting, tall = true)
+                FluentButton(word(W.pos_post_and_print), { complete(true) }, kind = ButtonKind.STANDARD, icon = "ic_print", enabled = problem == null && !draft.posting, tall = true)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) { KeyCap("F12") }
         }
@@ -533,13 +573,17 @@ fun CounterSalePane(
         DialogWindow(onCloseRequest = { returning = null }, onPreviewKeyEvent = escCloses { returning = null }, title = word(W.pos_return_title), state = rememberDialogState(width = 620.dp, height = 720.dp)) {
             DialogFrame(word(W.pos_return_title), subtitle = draft.sale.sale.saleNumber, onClose = { returning = null }, scroll = false, footer = {}) {
                 com.innovation313.roshankhata.screens.ReturnForm(draft, onCancel = { returning = null }, message = problem, onPost = {
+                    // The form calls this only while nothing is being posted (ReturnDraft.posting).
+                    draft.posting = true
                     scope.launch {
-                        val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
-                        r.onSuccess { id ->
-                            val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
-                            told = words.text(W.pos_return_posted, number)
-                            returning = null; tick++; onChanged()
-                        }.onFailure { problem = it.message }
+                        try {
+                            val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
+                            r.onSuccess { id ->
+                                val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
+                                told = words.text(W.pos_return_posted, number)
+                                returning = null; tick++; onChanged()
+                            }.onFailure { problem = it.message }
+                        } finally { draft.posting = false }
                     }
                 })
             }
@@ -552,8 +596,10 @@ fun CounterSalePane(
                 FluentButton(word(W.cancel), { voidingReturn = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.pos_void_return), {
                     scope.launch {
-                        withContext(Dispatchers.IO) { runCatching { dao.voidReturn(r.id, reason) } }
+                        val ok = withContext(Dispatchers.IO) { runCatching { dao.voidReturn(r.id, reason) }.getOrDefault(false) }
                         voidingReturn = null; tick++; onChanged()
+                        // Said only when it happened (21 Oct 2026: the screen said "voided" either way).
+                        told = if (ok) words.text(W.pos_voided) + " " + r.returnNumber else words.text(W.backup_failed)
                     }
                 }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())
             }) {
@@ -568,9 +614,17 @@ fun CounterSalePane(
                 FluentButton(word(W.cancel), { voiding = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.pos_void), {
                     scope.launch {
-                        withContext(Dispatchers.IO) { runCatching { dao.voidSale(s.id, reason) } }
+                        // A ticket with goods already back, or from a day that is closed, is not voided:
+                        // a return is the way (21 Oct 2026), and the screen says which.
+                        val refusal = withContext(Dispatchers.IO) { runCatching { dao.voidRefusal(s.id) }.getOrNull() }
+                        val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidSale(s.id, reason) }.getOrDefault(false) }
                         voiding = null; tick++; onChanged()
-                        told = words.text(W.pos_voided) + " " + s.saleNumber
+                        told = when {
+                            ok -> words.text(W.pos_voided) + " " + s.saleNumber
+                            refusal == SaleMath.VoidRefusal.HAS_RETURNS -> words.text(W.pos_void_has_returns)
+                            refusal == SaleMath.VoidRefusal.DAY_CLOSED -> words.text(W.pos_void_day_closed)
+                            else -> words.text(W.backup_failed)
+                        }
                     }
                 }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())
             }) {

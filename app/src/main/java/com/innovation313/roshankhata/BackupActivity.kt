@@ -386,7 +386,9 @@ class BackupActivity : BaseActivity() {
         // asked (21 Oct 2026): a phone's newer work must never vanish under an
         // older copy without the owner being told, in figures.
         lifecycleScope.launch {
-            val loss = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, data) }.getOrNull() }
+            val loss = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, data) }.getOrNull()
+                // A count that could not be made is said, and ticked, never read as "nothing lost".
+                ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN }
             if (!isFinishing) askRestore(counts, data, driveAccount, loss)
         }
     }
@@ -482,8 +484,9 @@ class BackupActivity : BaseActivity() {
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
                 runCatching {
-                    // This book as it stands, kept first (Daily copies), so the merge can be undone.
-                    com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
+                    // This book as it stands, kept first (Daily copies), so the merge can be undone;
+                    // nothing is merged unless it was.
+                    if (!com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)) error(getString(R.string.restore_keep_failed))
                     dao.mergeBook(data, shop)
                 }
             }
@@ -500,10 +503,19 @@ class BackupActivity : BaseActivity() {
         Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
+            val kept = withContext(Dispatchers.IO) {
                 // This book as it stands, kept first (Daily copies), so the restore can be undone.
+                // No copy, no restore (21 Oct 2026).
                 com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
-                Backup.restore(this@BackupActivity, dao, data)
+                    .also { if (it) Backup.restore(this@BackupActivity, dao, data) }
+            }
+            if (!kept) {
+                if (!isFinishing) MaterialAlertDialogBuilder(this@BackupActivity)
+                    .setTitle(R.string.restore_warning_title)
+                    .setMessage(R.string.restore_keep_failed)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+                return@launch
             }
 
             // Images, only on the Drive route and only if an archive is there.
@@ -1128,11 +1140,12 @@ class BackupActivity : BaseActivity() {
                 if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += label; continue }
 
                 val liveDao = KhataDatabase.get(this@BackupActivity).khataDao()
-                withContext(Dispatchers.IO) {
-                    // Each shop's own book kept first, as a single restore does.
+                val kept = withContext(Dispatchers.IO) {
+                    // Each shop's own book kept first, as a single restore does; not replaced unless kept.
                     com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
-                    Backup.restore(this@BackupActivity, liveDao, data)
+                        .also { if (it) Backup.restore(this@BackupActivity, liveDao, data) }
                 }
+                if (!kept) { failed += label; continue }
 
                 // Images for this shop, from this shop's own archive. A shop
                 // without one is restored without photos, not failed.

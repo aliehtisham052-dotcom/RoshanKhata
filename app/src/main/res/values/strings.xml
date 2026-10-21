@@ -3561,4 +3561,20 @@ You can change this any time from this screen.</string>
     <string name="merge_unrelated">This copy shares nothing with this book — it is another book. It can only replace this one.</string>
     <string name="merge_not_carried">Not merged: payment plans, seasons, schemes, attendance and day closes.</string>
     <string name="audit_book_merged">Copy merged in</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">Opening the book…</string>
+    <string name="book_cannot_open">The book could not be opened, and nothing in it was changed. Close any other program that may be using it (or restart the computer), then open Roshan Khata again.</string>
+    <string name="book_set_aside_note">A damaged book was set aside here, not deleted: %1$s</string>
+    <string name="restore_keep_failed">This book could not be kept first, so nothing was replaced. Check that the disk has free space and try again.</string>
+    <string name="restore_loss_unknown">What would be lost could not be counted. Replace only if you are sure this copy is the one you want.</string>
+    <string name="clock_behind_title">The computer\'s date looks wrong</string>
+    <string name="clock_behind_body">The newest daily copy is for %1$s, but this computer says today is %2$s. Set the right date and time in Windows. Until then no old copy is deleted.</string>
+    <string name="pos_void_has_returns">Goods from this sale have already been returned. A sale with returns cannot be voided; make a return for the rest instead.</string>
+    <string name="pos_void_day_closed">This sale\'s day has been closed. Make a return instead of voiding it.</string>
+    <string name="pos_err_rate_missing">A line has no rate.</string>
+    <string name="pos_err_tax">The tax could not be read.</string>
+    <string name="pos_err_payment_unread">A payment amount could not be read.</string>
+    <string name="pos_err_discount_unread">A discount could not be read.</string>
+    <string name="pos_price_needs_pin">Selling at a rate other than the price list</string>
 </resources>

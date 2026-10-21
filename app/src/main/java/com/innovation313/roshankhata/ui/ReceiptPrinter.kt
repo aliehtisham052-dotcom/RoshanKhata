@@ -29,8 +29,9 @@ object ReceiptPrinter {
 
     @SuppressLint("MissingPermission")
     fun paired(context: Context): List<BluetoothDevice> =
-        adapter(context)?.bondedDevices?.toList().orEmpty()
-            .sortedBy { (it.name ?: it.address).lowercase() }
+        // Without the Bluetooth permission Android throws here; no printers is the honest answer, not a crash.
+        runCatching { adapter(context)?.bondedDevices?.toList().orEmpty().sortedBy { (it.name ?: it.address).lowercase() } }
+            .getOrDefault(emptyList())
 
     @SuppressLint("MissingPermission")
     fun label(device: BluetoothDevice): String = device.name?.takeIf { it.isNotBlank() } ?: device.address
