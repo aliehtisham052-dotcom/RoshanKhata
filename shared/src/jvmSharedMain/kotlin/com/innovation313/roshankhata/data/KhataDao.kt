@@ -1905,8 +1905,13 @@ interface KhataDao {
         sales: List<Sale> = emptyList(),
         saleItems: List<SaleItem> = emptyList(),
         salePayments: List<SalePayment> = emptyList(),
-        audit: List<AuditLog> = emptyList()
+        audit: List<AuditLog> = emptyList(),
+        // Returns (v33). Additive.
+        returns: List<SaleReturn> = emptyList(),
+        returnItems: List<SaleReturnItem> = emptyList()
     ) {
+        wipeReturnItems()
+        wipeReturns()
         // Sale rows before the sale (cascade), the sale before its entries' saleId means anything.
         wipeSalePayments()
         wipeSaleItems()
@@ -1963,6 +1968,8 @@ interface KhataDao {
         restoreSaleItems(saleItems)
         restoreSalePayments(salePayments)
         restoreAudit(audit)
+        restoreReturns(returns)
+        restoreReturnItems(returnItems)
     }
 
 
@@ -2824,4 +2831,164 @@ interface KhataDao {
 
     @Insert
     suspend fun restoreAudit(items: List<AuditLog>)
+
+    // ---------- Returns (POS Phase 3, v33) ----------
+
+    @Insert
+    suspend fun insertReturn(ret: SaleReturn): Long
+
+    @Insert
+    suspend fun insertReturnItems(items: List<SaleReturnItem>)
+
+    @Update
+    suspend fun updateReturn(ret: SaleReturn)
+
+    @Query("SELECT * FROM sale_returns WHERE id = :id")
+    suspend fun getReturn(id: Long): SaleReturn?
+
+    @Query("SELECT * FROM sale_return_items WHERE returnId = :id AND isDeleted = 0 ORDER BY lineNo ASC, id ASC")
+    suspend fun returnItems(id: Long): List<SaleReturnItem>
+
+    @Transaction
+    suspend fun returnWithLines(id: Long): SaleReturnWithLines? {
+        val r = getReturn(id) ?: return null
+        return SaleReturnWithLines(r, returnItems(id))
+    }
+
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTR(returnNumber, 3) AS INTEGER)), 0) FROM sale_returns WHERE returnNumber LIKE 'R-%'")
+    suspend fun highestReturnNumber(): Int
+
+    /** How much of each of a sale's lines has already come back (posted returns only). */
+    @Query(
+        "SELECT ri.saleItemId AS saleItemId, SUM(ri.quantity) AS qty FROM sale_return_items ri " +
+        "JOIN sale_returns r ON r.id = ri.returnId " +
+        "WHERE r.saleId = :saleId AND r.status = 'done' AND r.isDeleted = 0 AND ri.isDeleted = 0 AND ri.saleItemId IS NOT NULL " +
+        "GROUP BY ri.saleItemId"
+    )
+    suspend fun returnedOfSale(saleId: Long): List<ReturnedQty>
+
+    @Query(
+        """
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.status
+        FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
+        WHERE r.isDeleted = 0 ORDER BY r.timestamp DESC, r.id DESC
+        """
+    )
+    fun observeReturns(): Flow<List<ReturnSummary>>
+
+    /** Goods that came back from WALK-INS on counter returns, per product (a customer's are on the khata "I got"). */
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, MIN(i.unit) AS unit " +
+        "FROM sale_return_items i JOIN sale_returns r ON r.id = i.returnId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND r.isDeleted = 0 AND r.status = 'done' " +
+        "AND r.ledgerEntryId IS NULL GROUP BY i.productId"
+    )
+    suspend fun walkInReturnedPerProduct(): List<Stock.ProductQty>
+
+    /**
+     * Goods back over the counter. [ret]'s total is recomputed from the
+     * lines; the checks in [ReturnMath.check] run again (a line may not come
+     * back more times than it was sold); then, in this one transaction:
+     *
+     *  - the return and its lines are written, numbered R-;
+     *  - a customer's return becomes a khata "I got" of the total with the
+     *    goods as its lines (the stock and the statement see it as goods
+     *    back), and money handed back an "I gave" in that method; what is
+     *    not handed back stays as credit on the account;
+     *  - a walk-in's refund is cashbook money out with its method;
+     *  - one audit row.
+     *
+     * Throws IllegalArgumentException on a return that fails its checks.
+     */
+    @Transaction
+    suspend fun postReturn(ret: SaleReturn, items: List<SaleReturnItem>): Long {
+        val lines = items.filter { !it.isDeleted }
+        val total = ReturnMath.total(lines)
+        val hasParty = ret.partyId != null
+        val refund = LineMath.round(ret.refundAmount)
+        val soldLeft: Map<Long, Double> = ret.saleId?.let { sid ->
+            val back = returnedOfSale(sid).associate { it.saleItemId to it.qty }
+            saleItems(sid).associate { it.id to it.quantity - (back[it.id] ?: 0.0) }
+        } ?: emptyMap()
+        ReturnMath.check(lines, ret.refundMethod, refund, total, hasParty, ret.reason, soldLeft)?.let {
+            throw IllegalArgumentException("return refused: $it")
+        }
+        val number = ReturnNumber.next(highestReturnNumber())
+        val id = insertReturn(
+            ret.copy(
+                id = 0, returnNumber = number, total = total, refundAmount = refund, status = SaleStatus.DONE,
+                reason = ret.reason.trim(), ledgerEntryId = null, refundEntryId = null, refundCashId = null,
+                voidReason = null, voidedAt = null, isDeleted = false, deletedAt = null
+            )
+        )
+        insertReturnItems(lines.mapIndexed { i, l -> l.copy(id = 0, returnId = id, lineNo = i, isDeleted = false) })
+        var ledgerId: Long? = null
+        var refundEntryId: Long? = null
+        var refundCashId: Long? = null
+        if (hasParty) {
+            val partyId = ret.partyId!!
+            ledgerId = insertEntryWithItems(
+                LedgerEntry(
+                    partyId = partyId, amount = total, isGiven = false, note = "$number · " + ret.reason.trim(),
+                    entryNumber = "", timestamp = ret.timestamp, createdBy = ret.createdBy, saleId = ret.saleId
+                ),
+                lines.map { l ->
+                    EntryItem(entryId = 0, itemName = l.itemName, quantity = l.quantity, unit = l.unit, rate = l.rate, productId = l.productId, billItemId = l.billItemId)
+                }
+            )
+            if (refund > 0.005 && ret.refundMethod != SaleReturn.ACCOUNT) {
+                refundEntryId = insertEntryNumbered(
+                    LedgerEntry(
+                        partyId = partyId, amount = refund, isGiven = true, note = number, entryNumber = "",
+                        timestamp = ret.timestamp + 1, paymentMethod = ret.refundMethod, pairedEntryId = ledgerId,
+                        createdBy = ret.createdBy, saleId = ret.saleId
+                    )
+                )
+            }
+        } else if (refund > 0.005) {
+            refundCashId = insertCashEntry(
+                CashEntry(
+                    amount = refund, isIncome = false, category = CashCategory.RETURN, note = number,
+                    timestamp = ret.timestamp, paymentMethod = ret.refundMethod, saleId = ret.saleId
+                )
+            )
+        }
+        updateReturn(getReturn(id)!!.copy(ledgerEntryId = ledgerId, refundEntryId = refundEntryId, refundCashId = refundCashId))
+        insertAudit(AuditLog(user = ret.createdBy, action = AuditAction.RETURN_POSTED, refTable = "sale_returns", refId = id,
+            detail = "$number ${"%.2f".format(Digits.FIGURES, total)}"))
+        return id
+    }
+
+    /** A posted return taken back: its rows binned, its number kept. False unless it is a posted one. */
+    @Transaction
+    suspend fun voidReturn(id: Long, reason: String, user: String? = null): Boolean {
+        val r = getReturn(id) ?: return false
+        if (r.status != SaleStatus.DONE || r.isDeleted) return false
+        require(reason.isNotBlank()) { "a void needs its reason" }
+        val now = System.currentTimeMillis()
+        r.ledgerEntryId?.let { softDeleteEntry(it, now) }
+        r.refundEntryId?.let { softDeleteEntry(it, now) }
+        r.refundCashId?.let { softDeleteCashEntry(it, now) }
+        updateReturn(r.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
+        insertAudit(AuditLog(user = user, action = AuditAction.RETURN_VOIDED, refTable = "sale_returns", refId = id, detail = "${r.returnNumber} ${reason.trim()}"))
+        return true
+    }
+
+    @Query("SELECT * FROM sale_returns ORDER BY id")
+    suspend fun allReturnsForBackup(): List<SaleReturn>
+
+    @Query("SELECT * FROM sale_return_items ORDER BY id")
+    suspend fun allReturnItemsForBackup(): List<SaleReturnItem>
+
+    @Query("DELETE FROM sale_return_items")
+    suspend fun wipeReturnItems()
+
+    @Query("DELETE FROM sale_returns")
+    suspend fun wipeReturns()
+
+    @Insert
+    suspend fun restoreReturns(items: List<SaleReturn>)
+
+    @Insert
+    suspend fun restoreReturnItems(items: List<SaleReturnItem>)
 }

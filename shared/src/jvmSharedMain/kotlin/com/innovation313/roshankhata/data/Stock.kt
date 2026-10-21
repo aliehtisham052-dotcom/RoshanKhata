@@ -101,7 +101,9 @@ object Stock {
          * is the khata side's where both have one, so a disagreement still
          * shows as one.
          */
-        walkIn: List<ProductQty> = emptyList()
+        walkIn: List<ProductQty> = emptyList(),
+        /** Walk-ins' goods back over the counter (POS Phase 3), added to [returned] the same way. */
+        walkInReturned: List<ProductQty> = emptyList()
     ): List<ProductStock> {
         val boughtBy = bought.associateBy { it.productId }
         val soldBy = HashMap(sold.associateBy { it.productId })
@@ -109,7 +111,11 @@ object Stock {
             val s = soldBy[w.productId]
             soldBy[w.productId] = if (s == null) w else ProductQty(w.productId, s.qty + w.qty, s.unit ?: w.unit)
         }
-        val returnedBy = returned.associateBy { it.productId }
+        val returnedBy = HashMap(returned.associateBy { it.productId })
+        for (w in walkInReturned) {
+            val r = returnedBy[w.productId]
+            returnedBy[w.productId] = if (r == null) w else ProductQty(w.productId, r.qty + w.qty, r.unit ?: w.unit)
+        }
 
         return products.map { p ->
             val b = boughtBy[p.id]
@@ -150,6 +156,7 @@ object Stock {
         bought = dao.boughtPerProduct(),
         sold = dao.soldPerProduct(),
         returned = dao.returnedPerProduct(),
-        walkIn = dao.walkInSoldPerProduct()
+        walkIn = dao.walkInSoldPerProduct(),
+        walkInReturned = dao.walkInReturnedPerProduct()
     )
 }

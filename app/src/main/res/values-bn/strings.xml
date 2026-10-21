@@ -3083,4 +3083,24 @@
     <string name="products_labels_assign">%1$d পণ্যের বারকোড নেই — দোকানের নিজস্ব (EAN-13) দিয়ে প্রিন্ট করবেন?</string>
     <string name="products_labels_none">লেবেল প্রিন্টের জন্য কোনো পণ্য নেই</string>
     <string name="label_sheet_title">বারকোড লেবেল</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">ফেরত</string>
+    <string name="pos_return_title">মাল ফেরত</string>
+    <string name="pos_return_reason">ফেরতের কারণ</string>
+    <string name="pos_return_refund">টাকা ফেরত</string>
+    <string name="pos_refund_account">খাতায় রাখুন</string>
+    <string name="pos_return_qty_help">বিক্রি %1$s · এ পর্যন্ত ফেরত %2$s</string>
+    <string name="pos_return_posted">ফেরত %1$s সংরক্ষিত</string>
+    <string name="pos_returns">ফেরতসমূহ</string>
+    <string name="pos_err_over_sold">বিক্রির চেয়ে বেশি ফেরত আসছে</string>
+    <string name="pos_err_walk_in_cash">সাধারণ ক্রেতাকে পুরো টাকা নগদে ফেরত দেওয়া হয়</string>
+    <string name="pos_err_reason">কারণ দরকার</string>
+    <string name="pos_err_refund">ফেরত টাকা মালের দামের চেয়ে বেশি</string>
+    <string name="pos_return_no_receipt">রসিদ নেই</string>
+    <string name="pos_exchange">বদল: আবার বিক্রি</string>
+    <string name="pos_return_of">%1$s-এর ফেরত</string>
+    <string name="cash_category_return">ফেরত</string>
+    <string name="pos_recent_sales">সাম্প্রতিক বিক্রি</string>
+    <string name="pos_void_return">ফেরত বাতিল</string>
 </resources>

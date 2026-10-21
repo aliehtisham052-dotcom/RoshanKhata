@@ -3039,4 +3039,24 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="products_labels_assign">%1$d products ka barcode nahi — unhein dukan ka apna (EAN-13) de kar print karein?</string>
     <string name="products_labels_none">Label print karne ke liye koi product nahi</string>
     <string name="label_sheet_title">Barcode label</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">Wapsi</string>
+    <string name="pos_return_title">Samaan wapas</string>
+    <string name="pos_return_reason">Wapsi ki wajah</string>
+    <string name="pos_return_refund">Raqam wapsi</string>
+    <string name="pos_refund_account">Khate mein rakhein</string>
+    <string name="pos_return_qty_help">Bika %1$s · ab tak wapas %2$s</string>
+    <string name="pos_return_posted">Wapsi %1$s mehfooz ho gayi</string>
+    <string name="pos_returns">Wapsiyan</string>
+    <string name="pos_err_over_sold">Jitna bika us se zyada wapas aa raha hai</string>
+    <string name="pos_err_walk_in_cash">Aam gahak ko poori raqam naqad/bank wapas hoti hai</string>
+    <string name="pos_err_reason">Wajah zaroori hai</string>
+    <string name="pos_err_refund">Wapsi ki raqam samaan ki qeemat se zyada hai</string>
+    <string name="pos_return_no_receipt">Raseed nahi</string>
+    <string name="pos_exchange">Tabadla: dobara bechein</string>
+    <string name="pos_return_of">%1$s ki wapsi</string>
+    <string name="cash_category_return">Wapsi</string>
+    <string name="pos_recent_sales">Haliya sales</string>
+    <string name="pos_void_return">Wapsi mansookh</string>
 </resources>

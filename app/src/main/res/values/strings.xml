@@ -3253,4 +3253,24 @@ You can change this any time from this screen.</string>
     <string name="products_labels_assign">%1$d products have no barcode — give them one of the shop’s own (EAN-13) and print?</string>
     <string name="products_labels_none">No products to print labels for</string>
     <string name="label_sheet_title">Barcode labels</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">Return</string>
+    <string name="pos_return_title">Goods back</string>
+    <string name="pos_return_reason">Reason for return</string>
+    <string name="pos_return_refund">Refund</string>
+    <string name="pos_refund_account">Keep on account</string>
+    <string name="pos_return_qty_help">Sold %1$s · back so far %2$s</string>
+    <string name="pos_return_posted">Return %1$s saved</string>
+    <string name="pos_returns">Returns</string>
+    <string name="pos_err_over_sold">More than was sold is coming back</string>
+    <string name="pos_err_walk_in_cash">A walk-in customer is refunded in full, in money</string>
+    <string name="pos_err_reason">A reason is needed</string>
+    <string name="pos_err_refund">The refund is more than the goods are worth</string>
+    <string name="pos_return_no_receipt">No receipt</string>
+    <string name="pos_exchange">Exchange: sell again</string>
+    <string name="pos_return_of">Return of %1$s</string>
+    <string name="cash_category_return">Return</string>
+    <string name="pos_recent_sales">Recent sales</string>
+    <string name="pos_void_return">Void return</string>
 </resources>

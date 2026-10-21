@@ -3067,4 +3067,24 @@
     <string name="products_labels_assign">%1$d پروڊڪٽس جو بارڪوڊ ناهي — انهن کي دڪان جو پنهنجو (EAN-13) ڏئي پرنٽ ڪريو؟</string>
     <string name="products_labels_none">ليبل پرنٽ ڪرڻ لاءِ ڪا پروڊڪٽ ناهي</string>
     <string name="label_sheet_title">بارڪوڊ ليبل</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">واپسي</string>
+    <string name="pos_return_title">سامان واپس</string>
+    <string name="pos_return_reason">واپسي جو سبب</string>
+    <string name="pos_return_refund">رقم واپسي</string>
+    <string name="pos_refund_account">کاتي ۾ رکو</string>
+    <string name="pos_return_qty_help">وڪيو %1$s · هيستائين واپس %2$s</string>
+    <string name="pos_return_posted">واپسي %1$s محفوظ ٿي</string>
+    <string name="pos_returns">واپسيون</string>
+    <string name="pos_err_over_sold">جيترو وڪيو ان کان وڌيڪ واپس اچي رهيو آهي</string>
+    <string name="pos_err_walk_in_cash">عام گراهڪ کي پوري رقم نقد/بئنڪ واپس ٿئي ٿي</string>
+    <string name="pos_err_reason">سبب ضروري آهي</string>
+    <string name="pos_err_refund">واپسي جي رقم سامان جي قيمت کان وڌيڪ آهي</string>
+    <string name="pos_return_no_receipt">رسيد ناهي</string>
+    <string name="pos_exchange">بدلو: ٻيهر وڪرو</string>
+    <string name="pos_return_of">%1$s جي واپسي</string>
+    <string name="cash_category_return">واپسي</string>
+    <string name="pos_recent_sales">تازا وڪرا</string>
+    <string name="pos_void_return">واپسي منسوخ</string>
 </resources>

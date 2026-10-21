@@ -26,7 +26,8 @@ object BackupCodec {
      * same rule the database migration uses (EntryItem.fromLegacy), so the
      * restored book matches one that was migrated on the phone. 8 (21 Oct
      * 2026) added the counter: sales, saleItems, salePayments, auditLog, and
-     * the saleId / paymentMethod / barcode columns on the old tables.
+     * the saleId / paymentMethod / barcode columns on the old tables; 9 the
+     * returns (saleReturns, saleReturnItems).
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -35,7 +36,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 8
+    const val FORMAT_VERSION = 9
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -180,6 +181,8 @@ object BackupCodec {
         root.put("saleItems", JSONArray().apply { dao.allSaleItemsForBackup().forEach { put(saleItemToJson(it)) } })
         root.put("salePayments", JSONArray().apply { dao.allSalePaymentsForBackup().forEach { put(salePaymentToJson(it)) } })
         root.put("auditLog", JSONArray().apply { dao.allAuditForBackup().forEach { put(auditToJson(it)) } })
+        root.put("saleReturns", JSONArray().apply { dao.allReturnsForBackup().forEach { put(returnToJson(it)) } })
+        root.put("saleReturnItems", JSONArray().apply { dao.allReturnItemsForBackup().forEach { put(returnItemToJson(it)) } })
 
         // The Business Profile — TEXT ONLY. The three image flags
         // (QR/signature/stamp saved) are deliberately excluded: restoring a
@@ -467,6 +470,12 @@ object BackupCodec {
             val audit = root.optJSONArray("auditLog")?.let { arr ->
                 (0 until arr.length()).map { jsonToAudit(arr.getJSONObject(it)) }
             } ?: emptyList()
+            val returns = root.optJSONArray("saleReturns")?.let { arr ->
+                (0 until arr.length()).map { jsonToReturn(arr.getJSONObject(it)) }
+            } ?: emptyList()
+            val returnItems = root.optJSONArray("saleReturnItems")?.let { arr ->
+                (0 until arr.length()).map { jsonToReturnItem(arr.getJSONObject(it)) }
+            } ?: emptyList()
 
             // Business Profile is a single optional object, not an array. Null
             // in an older file, or in one written before the owner set any
@@ -498,7 +507,9 @@ object BackupCodec {
             val entryIds = entries.map { it.id }.toSet()
             // A sale line or payment cascades off its sale, as an invoice line does.
             val saleIds = sales.map { it.id }.toSet()
+            val returnIds = returns.map { it.id }.toSet()
             val orphans =
+                returnItems.count { it.returnId !in returnIds } +
                 saleItems.count { it.saleId !in saleIds } +
                 salePayments.count { it.saleId !in saleIds } + entries.count { it.productId != null && it.productId !in productIds } +
                 entryItems.count { it.entryId !in entryIds } +
@@ -541,7 +552,9 @@ object BackupCodec {
                 sales = sales,
                 saleItems = saleItems,
                 salePayments = salePayments,
-                audit = audit
+                audit = audit,
+                returns = returns,
+                returnItems = returnItems
             )
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
@@ -579,7 +592,10 @@ object BackupCodec {
         val sales: List<Sale> = emptyList(),
         val saleItems: List<SaleItem> = emptyList(),
         val salePayments: List<SalePayment> = emptyList(),
-        val audit: List<AuditLog> = emptyList()
+        val audit: List<AuditLog> = emptyList(),
+        /** Returns (format 9). */
+        val returns: List<SaleReturn> = emptyList(),
+        val returnItems: List<SaleReturnItem> = emptyList()
     )
 
     /**
@@ -641,7 +657,9 @@ object BackupCodec {
             sales = data.sales,
             saleItems = data.saleItems,
             salePayments = data.salePayments,
-            audit = data.audit
+            audit = data.audit,
+            returns = data.returns,
+            returnItems = data.returnItems
         )
     }
 
@@ -1225,5 +1243,41 @@ object BackupCodec {
         id = o.getLong("id"), timestamp = o.getLong("timestamp"), user = o.optNullableString("user"),
         action = o.optString("action", ""), refTable = o.optNullableString("refTable"),
         refId = o.optNullableLong("refId"), detail = o.optNullableString("detail")
+    )
+
+    // ---------- Returns (format 9) ----------
+
+    private fun returnToJson(r: SaleReturn) = JSONObject().apply {
+        put("id", r.id); put("returnNumber", r.returnNumber); put("saleId", r.saleId ?: JSONObject.NULL)
+        put("partyId", r.partyId ?: JSONObject.NULL); put("customerName", r.customerName ?: JSONObject.NULL)
+        put("timestamp", r.timestamp); put("total", r.total); put("refundMethod", r.refundMethod); put("refundAmount", r.refundAmount)
+        put("reason", r.reason); put("note", r.note ?: JSONObject.NULL); put("status", r.status)
+        put("ledgerEntryId", r.ledgerEntryId ?: JSONObject.NULL); put("refundEntryId", r.refundEntryId ?: JSONObject.NULL)
+        put("refundCashId", r.refundCashId ?: JSONObject.NULL); put("createdBy", r.createdBy ?: JSONObject.NULL)
+        put("voidReason", r.voidReason ?: JSONObject.NULL); put("voidedAt", r.voidedAt ?: JSONObject.NULL)
+        put("isDeleted", r.isDeleted); put("deletedAt", r.deletedAt ?: JSONObject.NULL)
+    }
+
+    private fun jsonToReturn(o: JSONObject) = SaleReturn(
+        id = o.getLong("id"), returnNumber = o.optString("returnNumber", ""), saleId = o.optNullableLong("saleId"),
+        partyId = o.optNullableLong("partyId"), customerName = o.optNullableString("customerName"),
+        timestamp = o.getLong("timestamp"), total = o.getDouble("total"), refundMethod = o.optString("refundMethod", SaleReturn.ACCOUNT),
+        refundAmount = o.optDouble("refundAmount", 0.0), reason = o.optString("reason", ""), note = o.optNullableString("note"),
+        status = o.optString("status", SaleStatus.DONE), ledgerEntryId = o.optNullableLong("ledgerEntryId"),
+        refundEntryId = o.optNullableLong("refundEntryId"), refundCashId = o.optNullableLong("refundCashId"),
+        createdBy = o.optNullableString("createdBy"), voidReason = o.optNullableString("voidReason"),
+        voidedAt = o.optNullableLong("voidedAt"), isDeleted = o.optBoolean("isDeleted", false), deletedAt = o.optNullableLong("deletedAt")
+    )
+
+    private fun returnItemToJson(i: SaleReturnItem) = JSONObject().apply {
+        put("id", i.id); put("returnId", i.returnId); put("lineNo", i.lineNo); put("saleItemId", i.saleItemId ?: JSONObject.NULL)
+        put("productId", i.productId ?: JSONObject.NULL); put("itemName", i.itemName); put("quantity", i.quantity)
+        put("unit", i.unit ?: JSONObject.NULL); put("rate", i.rate); put("billItemId", i.billItemId ?: JSONObject.NULL); put("isDeleted", i.isDeleted)
+    }
+
+    private fun jsonToReturnItem(o: JSONObject) = SaleReturnItem(
+        id = o.getLong("id"), returnId = o.getLong("returnId"), lineNo = o.optInt("lineNo", 0), saleItemId = o.optNullableLong("saleItemId"),
+        productId = o.optNullableLong("productId"), itemName = o.optString("itemName", ""), quantity = o.getDouble("quantity"),
+        unit = o.optNullableString("unit"), rate = o.getDouble("rate"), billItemId = o.optNullableLong("billItemId"), isDeleted = o.optBoolean("isDeleted", false)
     )
 }
