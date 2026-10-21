@@ -2047,18 +2047,28 @@ interface KhataDao {
     // 50,000 raised this month's "sales" by 50,000 and the 12-month chart
     // with it. The same rule the season and recall lists already follow.
 
-    /** Total value of sales between two timestamps. */
-    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM transactions t " +
+    // Not a sale (21 Oct 2026, the critical review): a Qarz-e-Hasna loan, and the cash handed back
+    // for a return (sale_returns.refundEntryId). And the counter's walk-in tickets ARE sales, though
+    // they never touch a customer's khata: they are added from the sales table.
+
+    /** Total value of sales between two timestamps: khata sales and the counter's walk-in tickets. */
+    @Query("SELECT (SELECT COALESCE(SUM(t.amount), 0) FROM transactions t " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
-           "AND t.timestamp >= :from AND t.timestamp < :to")
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
+           "AND t.timestamp >= :from AND t.timestamp < :to) + " +
+           "(SELECT COALESCE(SUM(grandTotal), 0) FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL " +
+           "AND timestamp >= :from AND timestamp < :to)")
     suspend fun salesTotalBetween(from: Long, to: Long): Double
 
-    /** How many sales (entry count) between two timestamps. */
-    @Query("SELECT COUNT(*) FROM transactions t " +
+    /** How many sales (entry count, and walk-in tickets) between two timestamps. */
+    @Query("SELECT (SELECT COUNT(*) FROM transactions t " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
-           "AND t.timestamp >= :from AND t.timestamp < :to")
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
+           "AND t.timestamp >= :from AND t.timestamp < :to) + " +
+           "(SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL " +
+           "AND timestamp >= :from AND timestamp < :to)")
     suspend fun salesCountBetween(from: Long, to: Long): Int
 
     /**
@@ -2087,7 +2097,8 @@ interface KhataDao {
     /** Every sale and return line in [from, to), with what [Profit] needs to cost it. */
     @Query("SELECT ei.productId AS productId, ei.itemName AS itemName, ei.quantity AS quantity, " +
            "ei.unit AS unit, ei.rate AS rate, ei.isBonus AS isBonus, ei.billItemId AS billItemId, " +
-           "t.timestamp AS timestamp, t.isGiven AS isGiven " +
+           "t.timestamp AS timestamp, t.isGiven AS isGiven, t.amount AS entryAmount, " +
+           "(SELECT SUM(x.quantity * x.rate) FROM entry_items x WHERE x.entryId = t.id AND x.rate IS NOT NULL AND x.quantity IS NOT NULL) AS entryLinesTotal " +
            "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
            "JOIN parties p ON p.id = t.partyId " +
            "WHERE t.isDeleted = 0 AND p.isCustomer = 1 " +
@@ -2128,7 +2139,8 @@ interface KhataDao {
     /** Top customers by total purchases in a period. */
     @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
            "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "GROUP BY t.partyId ORDER BY total DESC LIMIT :limit")
     suspend fun topCustomersBetween(from: Long, to: Long, limit: Int): List<CustomerStat>
@@ -3364,13 +3376,30 @@ interface KhataDao {
         SELECT s.id AS saleId, s.timestamp AS timestamp, s.customerName AS customerName, s.createdBy AS createdBy,
                s.taxPercent AS taxPercent, i.productId AS productId, i.itemName AS itemName, p.category AS category,
                i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate,
-               i.taxRate AS taxRate, i.taxAmount AS taxAmount, i.taxIncluded AS taxIncluded
+               i.taxRate AS taxRate, i.taxAmount AS taxAmount, i.taxIncluded AS taxIncluded,
+               s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
         FROM sale_items i JOIN sales s ON s.id = i.saleId LEFT JOIN products p ON p.id = i.productId
         WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.timestamp >= :from AND s.timestamp < :to
         ORDER BY s.timestamp ASC, i.lineNo ASC
         """
     )
     suspend fun soldLinesBetween(from: Long, to: Long): List<SoldLine>
+
+    /**
+     * What the goods that came back in [from, to) had cost, where their sale
+     * line knew its cost (21 Oct 2026): a bag returned is back on the shelf, so
+     * the report takes off the margin lost, not the whole refund as if the bag
+     * had vanished.
+     */
+    @Query(
+        """
+        SELECT COALESCE(SUM(ri.quantity * si.costRate), 0)
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
+        WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND si.costRate IS NOT NULL
+          AND r.timestamp >= :from AND r.timestamp < :to
+        """
+    )
+    suspend fun returnedCostBetween(from: Long, to: Long): Double
 
     /** Cashbook money out that is an expense — not a walk-in's refund (category Return), which is a return. */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND category != 'Return' AND timestamp > :from AND timestamp <= :to")

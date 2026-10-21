@@ -47,8 +47,22 @@ object Profit {
         val billItemId: Long?,
         val timestamp: Long,
         /** 1 = goods went out (a sale); 0 = goods came back (a return). */
-        val isGiven: Boolean
-    )
+        val isGiven: Boolean,
+        /**
+         * The entry's own amount and its priced lines' total (21 Oct 2026): an
+         * entry written for less than its goods (a discount, a round-off) gave
+         * that discount, and profit counted the goods at full price.
+         */
+        val entryAmount: Double? = null,
+        val entryLinesTotal: Double? = null
+    ) {
+        /** What the entry actually charged for each rupee of its goods: never more than 1 (freight on top is not profit). */
+        val charged: Double get() {
+            val lines = entryLinesTotal ?: return 1.0
+            val amount = entryAmount ?: return 1.0
+            return if (lines > 0.0 && amount < lines) (amount / lines).coerceIn(0.0, 1.0) else 1.0
+        }
+    }
 
     /** One priced supplier-bill line as the DAO reads it. */
     data class PurchaseLine(
@@ -165,7 +179,7 @@ object Profit {
             if (cost == null) { skipped++; continue }
 
             val sign = if (line.isGiven) 1.0 else -1.0
-            val revenue = sign * qty * rate
+            val revenue = sign * qty * rate * line.charged
             val lineCost = sign * qty * cost
             gross += revenue - lineCost
             covered += revenue
