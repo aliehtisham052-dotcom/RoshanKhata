@@ -3137,4 +3137,39 @@
     <string name="audit_restore">ڪتاب بحال</string>
     <string name="audit_export">ايڪسپورٽ</string>
     <string name="audit_by">%1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">اسٽاڪ ڳڻيو</string>
+    <string name="stock_count_help">شيلف تي جيڪو آهي اهو لکو؛ رڳو فرق لکيو ويندو، ساڻ ڪتاب جو انگ</string>
+    <string name="stock_counted_hint">ڳڻيو</string>
+    <string name="stock_count_saved">%1$d درستيون لکيون ويون</string>
+    <string name="stock_adjust">اسٽاڪ درست ڪريو</string>
+    <string name="adjust_qty_hint">مقدار (+ اندر، − ٻاهر)</string>
+    <string name="adjust_reason">سبب</string>
+    <string name="adjust_reason_count">ڳڻپ</string>
+    <string name="adjust_reason_damage">خراب</string>
+    <string name="adjust_reason_expired">ايڪسپائر / اڇليو</string>
+    <string name="adjust_reason_theft">چوري / گم</string>
+    <string name="adjust_reason_other">ٻيو</string>
+    <string name="stock_valuation">اسٽاڪ جي ماليت</string>
+    <string name="stock_valuation_known">%2$s مان %1$s پروڊڪٽس جي لاڳت معلوم</string>
+    <string name="stock_low_title">گهٽ اسٽاڪ</string>
+    <string name="stock_adjustments">درستيون</string>
+    <string name="po_title">خريد آرڊر</string>
+    <string name="po_new">نئون آرڊر</string>
+    <string name="po_supplier">سپلائر</string>
+    <string name="po_send">واٽس ايپ تي موڪليو</string>
+    <string name="po_mark_sent">موڪليل نشان</string>
+    <string name="po_receive">مال اچي ويو</string>
+    <string name="po_close">آرڊر بند</string>
+    <string name="po_status_draft">مسودو</string>
+    <string name="po_status_sent">موڪليو</string>
+    <string name="po_status_received">مليو</string>
+    <string name="po_status_closed">بند</string>
+    <string name="po_none">اڃا ڪو آرڊر ناهي</string>
+    <string name="po_lines_empty">آرڊر جون شيون شامل ڪريو</string>
+    <string name="po_message_head">آرڊر %1$s — %2$s</string>
+    <string name="po_from_low">گهٽ اسٽاڪ جو آرڊر</string>
+    <string name="po_book">ڪتاب</string>
+    <string name="inventory_title">موجود اسٽاڪ</string>
 </resources>

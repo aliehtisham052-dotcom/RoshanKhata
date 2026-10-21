@@ -3106,4 +3106,39 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="audit_restore">Buku dipulihkan</string>
     <string name="audit_export">Diekspor</string>
     <string name="audit_by">oleh %1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">Hitung stok</string>
+    <string name="stock_count_help">Tulis yang ada di rak; hanya selisih yang dicatat, dengan angka buku di sampingnya</string>
+    <string name="stock_counted_hint">Dihitung</string>
+    <string name="stock_count_saved">%1$d koreksi dicatat</string>
+    <string name="stock_adjust">Sesuaikan stok</string>
+    <string name="adjust_qty_hint">Jumlah (+ masuk, − keluar)</string>
+    <string name="adjust_reason">Alasan</string>
+    <string name="adjust_reason_count">Penghitungan</string>
+    <string name="adjust_reason_damage">Rusak</string>
+    <string name="adjust_reason_expired">Kedaluwarsa / dibuang</string>
+    <string name="adjust_reason_theft">Hilang / dicuri</string>
+    <string name="adjust_reason_other">Lainnya</string>
+    <string name="stock_valuation">Nilai stok</string>
+    <string name="stock_valuation_known">%1$s dari %2$s produk punya harga beli</string>
+    <string name="stock_low_title">Stok menipis</string>
+    <string name="stock_adjustments">Koreksi</string>
+    <string name="po_title">Pesanan pembelian</string>
+    <string name="po_new">Pesanan baru</string>
+    <string name="po_supplier">Pemasok</string>
+    <string name="po_send">Kirim lewat WhatsApp</string>
+    <string name="po_mark_sent">Tandai terkirim</string>
+    <string name="po_receive">Barang tiba</string>
+    <string name="po_close">Tutup pesanan</string>
+    <string name="po_status_draft">Draf</string>
+    <string name="po_status_sent">Terkirim</string>
+    <string name="po_status_received">Diterima</string>
+    <string name="po_status_closed">Ditutup</string>
+    <string name="po_none">Belum ada pesanan</string>
+    <string name="po_lines_empty">Tambahkan barang yang dipesan</string>
+    <string name="po_message_head">Pesanan %1$s — %2$s</string>
+    <string name="po_from_low">Pesan stok yang menipis</string>
+    <string name="po_book">Buku</string>
+    <string name="inventory_title">Stok saat ini</string>
 </resources>

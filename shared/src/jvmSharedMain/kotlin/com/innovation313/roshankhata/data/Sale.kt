@@ -339,4 +339,7 @@ object AuditAction {
     const val SIGN_IN = "sign_in"
     const val RESTORE = "restore"
     const val EXPORT = "export"
+    const val STOCK_COUNT = "stock_count"
+    const val STOCK_ADJUSTED = "stock_adjusted"
+    const val ORDER_RECEIVED = "order_received"
 }

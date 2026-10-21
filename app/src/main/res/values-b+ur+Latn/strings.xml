@@ -3109,4 +3109,39 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="audit_restore">Kitab bahal</string>
     <string name="audit_export">Export</string>
     <string name="audit_by">%1$s ne</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">Stock ginein</string>
+    <string name="stock_count_help">Shelf par jo hai wo likhein; sirf farq likha jayega, sath kitab ka hindsa</string>
+    <string name="stock_counted_hint">Gina</string>
+    <string name="stock_count_saved">%1$d durustgiyan likhi gayin</string>
+    <string name="stock_adjust">Stock durust karein</string>
+    <string name="adjust_qty_hint">Miqdar (+ andar, − bahar)</string>
+    <string name="adjust_reason">Wajah</string>
+    <string name="adjust_reason_count">Ginti</string>
+    <string name="adjust_reason_damage">Kharab</string>
+    <string name="adjust_reason_expired">Expire / phenka</string>
+    <string name="adjust_reason_theft">Chori / gum</string>
+    <string name="adjust_reason_other">Deegar</string>
+    <string name="stock_valuation">Stock ki maliyat</string>
+    <string name="stock_valuation_known">%2$s mein se %1$s products ki lagat maloom</string>
+    <string name="stock_low_title">Kam stock</string>
+    <string name="stock_adjustments">Durustgiyan</string>
+    <string name="po_title">Khareed order</string>
+    <string name="po_new">Naya order</string>
+    <string name="po_supplier">Supplier</string>
+    <string name="po_send">WhatsApp par bhejein</string>
+    <string name="po_mark_sent">Bheja hua nishan</string>
+    <string name="po_receive">Maal aa gaya</string>
+    <string name="po_close">Order band</string>
+    <string name="po_status_draft">Masooda</string>
+    <string name="po_status_sent">Bheja</string>
+    <string name="po_status_received">Mausool</string>
+    <string name="po_status_closed">Band</string>
+    <string name="po_none">Abhi koi order nahi</string>
+    <string name="po_lines_empty">Order ke item shamil karein</string>
+    <string name="po_message_head">Order %1$s — %2$s</string>
+    <string name="po_from_low">Kam stock ka order</string>
+    <string name="po_book">Kitab</string>
+    <string name="inventory_title">Maujooda stock</string>
 </resources>

@@ -103,9 +103,15 @@ object Stock {
          */
         walkIn: List<ProductQty> = emptyList(),
         /** Walk-ins' goods back over the counter (POS Phase 3), added to [returned] the same way. */
-        walkInReturned: List<ProductQty> = emptyList()
+        walkInReturned: List<ProductQty> = emptyList(),
+        /** Corrections to the shelf (POS Phase 6), signed; added to the bought side so a count sets the figure. */
+        adjusted: List<ProductQty> = emptyList()
     ): List<ProductStock> {
-        val boughtBy = bought.associateBy { it.productId }
+        val boughtBy = HashMap(bought.associateBy { it.productId })
+        for (a in adjusted) {
+            val b = boughtBy[a.productId]
+            boughtBy[a.productId] = if (b == null) a else ProductQty(a.productId, b.qty + a.qty, b.unit ?: a.unit)
+        }
         val soldBy = HashMap(sold.associateBy { it.productId })
         for (w in walkIn) {
             val s = soldBy[w.productId]
@@ -157,6 +163,7 @@ object Stock {
         sold = dao.soldPerProduct(),
         returned = dao.returnedPerProduct(),
         walkIn = dao.walkInSoldPerProduct(),
-        walkInReturned = dao.walkInReturnedPerProduct()
+        walkInReturned = dao.walkInReturnedPerProduct(),
+        adjusted = dao.adjustedPerProduct()
     )
 }

@@ -28,7 +28,8 @@ object BackupCodec {
      * 2026) added the counter: sales, saleItems, salePayments, auditLog, and
      * the saleId / paymentMethod / barcode columns on the old tables; 9 the
      * returns (saleReturns, saleReturnItems); 10 the staff logins (role and
-     * the PIN's hash on each staff row — never the PIN).
+     * the PIN's hash on each staff row — never the PIN); 11 stock adjustments
+     * and purchase orders.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -37,7 +38,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 10
+    const val FORMAT_VERSION = 11
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -185,6 +186,9 @@ object BackupCodec {
         root.put("auditLog", JSONArray().apply { dao.allAuditForBackup().forEach { put(auditToJson(it)) } })
         root.put("saleReturns", JSONArray().apply { dao.allReturnsForBackup().forEach { put(returnToJson(it)) } })
         root.put("saleReturnItems", JSONArray().apply { dao.allReturnItemsForBackup().forEach { put(returnItemToJson(it)) } })
+        root.put("stockAdjustments", JSONArray().apply { dao.allAdjustmentsForBackup().forEach { put(adjustmentToJson(it)) } })
+        root.put("purchaseOrders", JSONArray().apply { dao.allOrdersForBackup().forEach { put(orderToJson(it)) } })
+        root.put("purchaseOrderItems", JSONArray().apply { dao.allOrderItemsForBackup().forEach { put(orderItemToJson(it)) } })
 
         // The Business Profile — TEXT ONLY. The three image flags
         // (QR/signature/stamp saved) are deliberately excluded: restoring a
@@ -480,6 +484,15 @@ object BackupCodec {
             val returnItems = root.optJSONArray("saleReturnItems")?.let { arr ->
                 (0 until arr.length()).map { jsonToReturnItem(arr.getJSONObject(it)) }
             } ?: emptyList()
+            val adjustments = root.optJSONArray("stockAdjustments")?.let { arr ->
+                (0 until arr.length()).map { jsonToAdjustment(arr.getJSONObject(it)) }
+            } ?: emptyList()
+            val orders = root.optJSONArray("purchaseOrders")?.let { arr ->
+                (0 until arr.length()).map { jsonToOrder(arr.getJSONObject(it)) }
+            } ?: emptyList()
+            val orderItems = root.optJSONArray("purchaseOrderItems")?.let { arr ->
+                (0 until arr.length()).map { jsonToOrderItem(arr.getJSONObject(it)) }
+            } ?: emptyList()
 
             // Business Profile is a single optional object, not an array. Null
             // in an older file, or in one written before the owner set any
@@ -512,7 +525,11 @@ object BackupCodec {
             // A sale line or payment cascades off its sale, as an invoice line does.
             val saleIds = sales.map { it.id }.toSet()
             val returnIds = returns.map { it.id }.toSet()
+            val orderIds = orders.map { it.id }.toSet()
             val orphans =
+                orderItems.count { it.orderId !in orderIds } +
+                orders.count { it.partyId !in partyIds } +
+                adjustments.count { it.productId !in productIds } +
                 returnItems.count { it.returnId !in returnIds } +
                 saleItems.count { it.saleId !in saleIds } +
                 salePayments.count { it.saleId !in saleIds } + entries.count { it.productId != null && it.productId !in productIds } +
@@ -558,7 +575,10 @@ object BackupCodec {
                 salePayments = salePayments,
                 audit = audit,
                 returns = returns,
-                returnItems = returnItems
+                returnItems = returnItems,
+                adjustments = adjustments,
+                orders = orders,
+                orderItems = orderItems
             )
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
@@ -599,7 +619,11 @@ object BackupCodec {
         val audit: List<AuditLog> = emptyList(),
         /** Returns (format 9). */
         val returns: List<SaleReturn> = emptyList(),
-        val returnItems: List<SaleReturnItem> = emptyList()
+        val returnItems: List<SaleReturnItem> = emptyList(),
+        /** Stock adjustments and purchase orders (format 11). */
+        val adjustments: List<StockAdjustment> = emptyList(),
+        val orders: List<PurchaseOrder> = emptyList(),
+        val orderItems: List<PurchaseOrderItem> = emptyList()
     )
 
     /**
@@ -663,7 +687,10 @@ object BackupCodec {
             salePayments = data.salePayments,
             audit = data.audit,
             returns = data.returns,
-            returnItems = data.returnItems
+            returnItems = data.returnItems,
+            adjustments = data.adjustments,
+            orders = data.orders,
+            orderItems = data.orderItems
         )
         // The restore itself is the first row of the restored log (POS Phase 5).
         dao.log(AuditAction.RESTORE, Access.userName, detail = data.businessName)
@@ -1285,5 +1312,45 @@ object BackupCodec {
         id = o.getLong("id"), returnId = o.getLong("returnId"), lineNo = o.optInt("lineNo", 0), saleItemId = o.optNullableLong("saleItemId"),
         productId = o.optNullableLong("productId"), itemName = o.optString("itemName", ""), quantity = o.getDouble("quantity"),
         unit = o.optNullableString("unit"), rate = o.getDouble("rate"), billItemId = o.optNullableLong("billItemId"), isDeleted = o.optBoolean("isDeleted", false)
+    )
+
+    // ---------- Stock adjustments and purchase orders (format 11) ----------
+
+    private fun adjustmentToJson(a: StockAdjustment) = JSONObject().apply {
+        put("id", a.id); put("productId", a.productId); put("timestamp", a.timestamp); put("quantity", a.quantity)
+        put("unit", a.unit ?: JSONObject.NULL); put("reason", a.reason); put("note", a.note ?: JSONObject.NULL)
+        put("bookQty", a.bookQty ?: JSONObject.NULL); put("countedQty", a.countedQty ?: JSONObject.NULL)
+        put("createdBy", a.createdBy ?: JSONObject.NULL); put("isDeleted", a.isDeleted)
+    }
+
+    private fun jsonToAdjustment(o: JSONObject) = StockAdjustment(
+        id = o.getLong("id"), productId = o.getLong("productId"), timestamp = o.getLong("timestamp"), quantity = o.getDouble("quantity"),
+        unit = o.optNullableString("unit"), reason = o.optString("reason", AdjustReason.OTHER), note = o.optNullableString("note"),
+        bookQty = o.optNullableDouble("bookQty"), countedQty = o.optNullableDouble("countedQty"),
+        createdBy = o.optNullableString("createdBy"), isDeleted = o.optBoolean("isDeleted", false)
+    )
+
+    private fun orderToJson(p: PurchaseOrder) = JSONObject().apply {
+        put("id", p.id); put("orderNumber", p.orderNumber); put("partyId", p.partyId); put("timestamp", p.timestamp)
+        put("status", p.status); put("note", p.note ?: JSONObject.NULL); put("billId", p.billId ?: JSONObject.NULL)
+        put("createdBy", p.createdBy ?: JSONObject.NULL); put("isDeleted", p.isDeleted)
+    }
+
+    private fun jsonToOrder(o: JSONObject) = PurchaseOrder(
+        id = o.getLong("id"), orderNumber = o.optString("orderNumber", ""), partyId = o.getLong("partyId"), timestamp = o.getLong("timestamp"),
+        status = o.optString("status", OrderStatus.DRAFT), note = o.optNullableString("note"), billId = o.optNullableLong("billId"),
+        createdBy = o.optNullableString("createdBy"), isDeleted = o.optBoolean("isDeleted", false)
+    )
+
+    private fun orderItemToJson(i: PurchaseOrderItem) = JSONObject().apply {
+        put("id", i.id); put("orderId", i.orderId); put("lineNo", i.lineNo); put("productId", i.productId ?: JSONObject.NULL)
+        put("itemName", i.itemName); put("quantity", i.quantity); put("unit", i.unit ?: JSONObject.NULL)
+        put("rate", i.rate ?: JSONObject.NULL); put("isDeleted", i.isDeleted)
+    }
+
+    private fun jsonToOrderItem(o: JSONObject) = PurchaseOrderItem(
+        id = o.getLong("id"), orderId = o.getLong("orderId"), lineNo = o.optInt("lineNo", 0), productId = o.optNullableLong("productId"),
+        itemName = o.optString("itemName", ""), quantity = o.getDouble("quantity"), unit = o.optNullableString("unit"),
+        rate = o.optNullableDouble("rate"), isDeleted = o.optBoolean("isDeleted", false)
     )
 }

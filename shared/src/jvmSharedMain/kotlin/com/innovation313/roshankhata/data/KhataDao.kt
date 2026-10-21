@@ -1911,8 +1911,15 @@ interface KhataDao {
         audit: List<AuditLog> = emptyList(),
         // Returns (v33). Additive.
         returns: List<SaleReturn> = emptyList(),
-        returnItems: List<SaleReturnItem> = emptyList()
+        returnItems: List<SaleReturnItem> = emptyList(),
+        // Stock adjustments and purchase orders (v35). Additive.
+        adjustments: List<StockAdjustment> = emptyList(),
+        orders: List<PurchaseOrder> = emptyList(),
+        orderItems: List<PurchaseOrderItem> = emptyList()
     ) {
+        wipeOrderItems()
+        wipeOrders()
+        wipeAdjustments()
         wipeReturnItems()
         wipeReturns()
         // Sale rows before the sale (cascade), the sale before its entries' saleId means anything.
@@ -1973,6 +1980,9 @@ interface KhataDao {
         restoreAudit(audit)
         restoreReturns(returns)
         restoreReturnItems(returnItems)
+        restoreAdjustments(adjustments)
+        restoreOrders(orders)
+        restoreOrderItems(orderItems)
     }
 
 
@@ -3014,4 +3024,161 @@ interface KhataDao {
 
     @Insert
     suspend fun restoreReturnItems(items: List<SaleReturnItem>)
+
+    // ---------- Stock adjustments and purchase orders (POS Phase 6, v35) ----------
+
+    @Insert
+    suspend fun insertAdjustment(a: StockAdjustment): Long
+
+    @Query("SELECT productId AS productId, SUM(quantity) AS qty, MIN(unit) AS unit FROM stock_adjustments WHERE isDeleted = 0 GROUP BY productId")
+    suspend fun adjustedPerProduct(): List<Stock.ProductQty>
+
+    @Query("SELECT * FROM stock_adjustments WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    fun observeAdjustments(limit: Int): Flow<List<StockAdjustment>>
+
+    /**
+     * A stock count written down (POS Phase 6): for every product counted,
+     * the difference between the shelf as the book had it and as it was
+     * found becomes one adjustment (reason count, book and counted figures
+     * kept on the row). Products whose count matches the book get no row.
+     * One transaction, one audit row. Returns how many rows were written.
+     */
+    @Transaction
+    suspend fun recordCount(counts: Map<Long, Double>, note: String?, user: String? = Access.userName): Int {
+        val stock = Stock.of(this).associateBy { it.productId }
+        var n = 0
+        val now = System.currentTimeMillis()
+        for ((productId, counted) in counts) {
+            val s = stock[productId] ?: continue
+            val book = s.onHand ?: 0.0
+            val diff = LineMath.round(counted - book)
+            if (kotlin.math.abs(diff) < 0.0005) continue
+            insertAdjustment(StockAdjustment(productId = productId, timestamp = now, quantity = diff, unit = s.unit,
+                reason = AdjustReason.COUNT, note = note, bookQty = book, countedQty = counted, createdBy = user))
+            n++
+        }
+        insertAudit(AuditLog(user = user, action = AuditAction.STOCK_COUNT, detail = n.toString()))
+        return n
+    }
+
+    /** One correction with its reason (damage, expired, theft…), logged. */
+    @Transaction
+    suspend fun adjustStock(productId: Long, quantity: Double, reason: String, note: String?, user: String? = Access.userName): Long {
+        require(reason in AdjustReason.ALL) { "unknown reason" }
+        require(quantity != 0.0 && !quantity.isNaN()) { "nothing to adjust" }
+        val unit = productById(productId)?.defaultUnit
+        val id = insertAdjustment(StockAdjustment(productId = productId, quantity = quantity, unit = unit, reason = reason, note = note, createdBy = user))
+        insertAudit(AuditLog(user = user, action = AuditAction.STOCK_ADJUSTED, refTable = "stock_adjustments", refId = id,
+            detail = "$reason ${"%.2f".format(Digits.FIGURES, quantity)}"))
+        return id
+    }
+
+    @Insert
+    suspend fun insertOrder(o: PurchaseOrder): Long
+
+    @Insert
+    suspend fun insertOrderItems(items: List<PurchaseOrderItem>)
+
+    @Update
+    suspend fun updateOrder(o: PurchaseOrder)
+
+    @Query("SELECT * FROM purchase_orders WHERE id = :id")
+    suspend fun getOrder(id: Long): PurchaseOrder?
+
+    @Query("SELECT * FROM purchase_order_items WHERE orderId = :id AND isDeleted = 0 ORDER BY lineNo ASC, id ASC")
+    suspend fun orderItems(id: Long): List<PurchaseOrderItem>
+
+    @Query("UPDATE purchase_order_items SET isDeleted = 1 WHERE orderId = :id")
+    suspend fun softDeleteOrderItems(id: Long)
+
+    @Transaction
+    suspend fun orderWithLines(id: Long): PurchaseOrderWithLines? {
+        val o = getOrder(id) ?: return null
+        return PurchaseOrderWithLines(o, orderItems(id))
+    }
+
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTR(orderNumber, 4) AS INTEGER)), 0) FROM purchase_orders WHERE orderNumber LIKE 'PO-%'")
+    suspend fun highestOrderNumber(): Int
+
+    @Query(
+        """
+        SELECT o.id, o.orderNumber, o.partyId, p.name AS partyName, o.timestamp, o.status,
+               (SELECT COUNT(*) FROM purchase_order_items i WHERE i.orderId = o.id AND i.isDeleted = 0) AS itemCount
+        FROM purchase_orders o JOIN parties p ON p.id = o.partyId
+        WHERE o.isDeleted = 0 ORDER BY o.timestamp DESC, o.id DESC
+        """
+    )
+    fun observeOrders(): Flow<List<OrderSummary>>
+
+    /** A new order, numbered PO-, or a draft's lines replaced. Returns the id. */
+    @Transaction
+    suspend fun saveOrder(order: PurchaseOrder, items: List<PurchaseOrderItem>): Long {
+        val lines = items.filter { !it.isDeleted && it.itemName.isNotBlank() && it.quantity > 0.0 }
+        require(lines.isNotEmpty()) { "an order needs lines" }
+        val id = if (order.id == 0L) {
+            insertOrder(order.copy(orderNumber = OrderNumber.next(highestOrderNumber()), status = OrderStatus.DRAFT, billId = null, isDeleted = false))
+        } else {
+            val have = getOrder(order.id) ?: throw IllegalArgumentException("no such order")
+            require(have.status == OrderStatus.DRAFT) { "only a draft is edited" }
+            updateOrder(have.copy(partyId = order.partyId, note = order.note))
+            softDeleteOrderItems(order.id)
+            order.id
+        }
+        insertOrderItems(lines.mapIndexed { i, l -> l.copy(id = 0, orderId = id, lineNo = i, isDeleted = false) })
+        return id
+    }
+
+    @Query("UPDATE purchase_orders SET status = :status WHERE id = :id")
+    suspend fun setOrderStatus(id: Long, status: String)
+
+    @Query("UPDATE purchase_orders SET isDeleted = 1 WHERE id = :id AND status = 'draft'")
+    suspend fun dropDraftOrder(id: Long)
+
+    /**
+     * The goods arrived: the order becomes a supplier bill with the lines
+     * as received ([received]: per order line, the quantity and rate that
+     * came, batch and expiry where known), through [insertSupplierBill] —
+     * the same write a bill typed by hand makes — and the order is marked
+     * received with the bill's id. One transaction. Returns the bill's id.
+     */
+    @Transaction
+    suspend fun receiveOrder(orderId: Long, bill: SupplierBill, received: List<BillItem>, entry: LedgerEntry?): Long {
+        val o = getOrder(orderId) ?: throw IllegalArgumentException("no such order")
+        require(o.status == OrderStatus.DRAFT || o.status == OrderStatus.SENT) { "already received" }
+        insertSupplierBill(entry, bill.copy(partyId = o.partyId), received)
+        val billId = latestBillId()
+        updateOrder(o.copy(status = OrderStatus.RECEIVED, billId = billId))
+        insertAudit(AuditLog(user = Access.userName, action = AuditAction.ORDER_RECEIVED, refTable = "purchase_orders", refId = orderId, detail = o.orderNumber))
+        return billId
+    }
+
+    @Query("SELECT MAX(id) FROM supplier_bills")
+    suspend fun latestBillId(): Long
+
+    @Query("SELECT * FROM stock_adjustments ORDER BY id")
+    suspend fun allAdjustmentsForBackup(): List<StockAdjustment>
+
+    @Query("SELECT * FROM purchase_orders ORDER BY id")
+    suspend fun allOrdersForBackup(): List<PurchaseOrder>
+
+    @Query("SELECT * FROM purchase_order_items ORDER BY id")
+    suspend fun allOrderItemsForBackup(): List<PurchaseOrderItem>
+
+    @Query("DELETE FROM stock_adjustments")
+    suspend fun wipeAdjustments()
+
+    @Query("DELETE FROM purchase_order_items")
+    suspend fun wipeOrderItems()
+
+    @Query("DELETE FROM purchase_orders")
+    suspend fun wipeOrders()
+
+    @Insert
+    suspend fun restoreAdjustments(items: List<StockAdjustment>)
+
+    @Insert
+    suspend fun restoreOrders(items: List<PurchaseOrder>)
+
+    @Insert
+    suspend fun restoreOrderItems(items: List<PurchaseOrderItem>)
 }
