@@ -736,24 +736,13 @@ class PartyDetailActivity : BaseActivity() {
 
         // The running total, shown as the sum is typed rather than waiting on
         // the equals key — the Calculator screen answers as you go, and this
-        // pad looked broken beside it.
+        // pad looked broken beside it. CalcPad, so the Edit dialog's pad
+        // shows the same.
         val tvResult = view.findViewById<android.widget.TextView>(R.id.tvAmountResult)
         // Set once the dialog exists (header, SAVE, preview); called on every
         // change to the amount alongside showResult().
         var onAmountChanged: () -> Unit = {}
-        fun showResult() {
-            val text = etAmount.text.toString()
-            // Nothing to total until there is arithmetic in the box: a plain
-            // "3500" repeated underneath as "Rs 3,500" is noise.
-            val isSum = text.any { it in "+-\u2212*\u00d7/\u00f7%" }
-            val value = if (isSum) Calc.evalPad(text) else null
-            if (value == null) {
-                tvResult.visibility = android.view.View.GONE
-            } else {
-                tvResult.text = Format.money(value)
-                tvResult.visibility = android.view.View.VISIBLE
-            }
-        }
+        fun showResult() = com.innovation313.roshankhata.ui.CalcPad.showTotal(etAmount, tvResult)
 
         etAmount.addTextChangedListener(object : android.text.TextWatcher {
             override fun afterTextChanged(s: android.text.Editable?) {
@@ -764,44 +753,13 @@ class PartyDetailActivity : BaseActivity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, cc: Int) {}
         })
 
-        // Full calculator pad. Digits, 00, and the dot append; operators append;
-        // ⌫ deletes the last character; C clears; = evaluates in place.
-        fun append(ch: String) { etAmount.append(ch); etAmount.setSelection(etAmount.text.length) }
-        fun key(id: Int, ch: String) = view.findViewById<android.widget.Button>(id).setOnClickListener { append(ch) }
+        // Full calculator pad: digits, 00 and the dot append; operators
+        // append; ⌫ — on the pad, where the thumb is, and the small one inside
+        // the amount box — deletes the last character; C clears; = works the
+        // sum out in place. One binding with the Edit dialog's pad (CalcPad),
+        // so the two never become different calculators.
+        com.innovation313.roshankhata.ui.CalcPad.bind(view, etAmount)
 
-        key(R.id.calc0, "0"); key(R.id.calc00, "00"); key(R.id.calc1, "1")
-        key(R.id.calc2, "2"); key(R.id.calc3, "3"); key(R.id.calc4, "4")
-        key(R.id.calc5, "5"); key(R.id.calc6, "6"); key(R.id.calc7, "7")
-        key(R.id.calc8, "8"); key(R.id.calc9, "9"); key(R.id.calcDot, ".")
-        key(R.id.calcPlus, "+"); key(R.id.calcMinus, "\u2212")
-        key(R.id.calcTimes, "\u00d7"); key(R.id.calcDivide, "\u00f7")
-        key(R.id.calcPercent, "%")
-
-        view.findViewById<android.widget.Button>(R.id.calcClear).setOnClickListener {
-            etAmount.setText("")
-        }
-        // Two backspaces, one behaviour: the key on the pad, where the thumb
-        // is, and the small one inside the amount box.
-        val backspace = android.view.View.OnClickListener {
-            val t = etAmount.text
-            if (t.isNotEmpty()) etAmount.text.delete(t.length - 1, t.length)
-        }
-        view.findViewById<android.widget.Button>(R.id.calcBack).setOnClickListener(backspace)
-        view.findViewById<android.widget.Button>(R.id.calcBackKey).setOnClickListener(backspace)
-
-        view.findViewById<android.widget.Button>(R.id.calcEquals).setOnClickListener {
-            // evalPad, not eval: it translates the pad's × ÷ − and resolves a
-            // percentage before the arithmetic runs, so "1200-15%" comes out
-            // as 1020 rather than as nothing at all. Written back as a
-            // magnitude (abs), same as everywhere else this box is read —
-            // "7926-35554" must land back in the box as 27628, not -27628;
-            // a minus sign has no meaning in an amount field.
-            val result = Calc.evalPad(etAmount.text.toString())
-            if (result != null) {
-                etAmount.setText(Calc.trim(kotlin.math.abs(result)))
-                etAmount.setSelection(etAmount.text.length)
-            }
-        }
         // ---- Quick shares of the outstanding balance ----
         //
         // Only for money coming IN, and only when there is something owed to
