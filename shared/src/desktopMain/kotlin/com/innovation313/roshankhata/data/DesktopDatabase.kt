@@ -35,8 +35,15 @@ object DesktopDatabase {
         }
     }
 
+    /** 33 → 34: staff logins (POS Phase 5, 21 Oct 2026). */
+    private val MIGRATION_33_34 = object : Migration(33, 34) {
+        override fun migrate(connection: SQLiteConnection) {
+            for (sql in Schema34.statements) connection.execSQL(sql)
+        }
+    }
+
     /** Every migration a computer's book may need, in order. */
-    val MIGRATIONS = arrayOf<Migration>(MIGRATION_31_32, MIGRATION_32_33)
+    val MIGRATIONS = arrayOf<Migration>(MIGRATION_31_32, MIGRATION_32_33, MIGRATION_33_34)
 
     fun open(file: File): KhataDatabase {
         file.parentFile?.mkdirs()

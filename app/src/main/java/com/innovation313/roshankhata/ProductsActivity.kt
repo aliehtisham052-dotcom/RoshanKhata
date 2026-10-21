@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.string
 import com.innovation313.roshankhata.data.get
 
 import com.innovation313.roshankhata.data.quantity
@@ -78,15 +79,15 @@ class ProductsActivity : BaseActivity() {
                 }.getOrNull()
             }
             if (plan == null) { Toast.makeText(this@ProductsActivity, R.string.products_import_none, Toast.LENGTH_LONG).show(); return@launch }
-            val lines = getString(R.string.products_import_plan, plan.toAdd.size, plan.toUpdate.size) +
-                (if (plan.barcodeClashes > 0) "\n\n" + getString(R.string.products_import_clash, plan.barcodeClashes) else "")
+            val lines = com.innovation313.roshankhata.data.Digits.string(resources, R.string.products_import_plan, plan.toAdd.size, plan.toUpdate.size) +
+                (if (plan.barcodeClashes > 0) "\n\n" + com.innovation313.roshankhata.data.Digits.string(resources, R.string.products_import_clash, plan.barcodeClashes) else "")
             MaterialAlertDialogBuilder(this@ProductsActivity)
                 .setTitle(R.string.products_import)
                 .setMessage(lines)
                 .setPositiveButton(R.string.save) { _, _ ->
                     lifecycleScope.launch {
                         val (added, updated) = withContext(Dispatchers.IO) { dao.importProducts(plan) }
-                        Toast.makeText(this@ProductsActivity, getString(R.string.products_imported, added, updated), Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.string(resources, R.string.products_imported, added, updated), Toast.LENGTH_LONG).show()
                         refresh()
                     }
                 }
@@ -140,6 +141,11 @@ class ProductsActivity : BaseActivity() {
                 menu.add(0, 1, 0, R.string.products_export)
                 menu.add(0, 2, 1, R.string.products_import)
                 setOnMenuItemClickListener { item ->
+                    val ok = when (item.itemId) {
+                        1 -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.EXPORT)
+                        else -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
+                    }
+                    if (!ok) { Toast.makeText(this, R.string.access_denied, Toast.LENGTH_LONG).show(); return@setOnMenuItemClickListener true }
                     when (item.itemId) {
                         1 -> saveCsv.launch("RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv")
                         2 -> pickCsv.launch(arrayOf("text/*", "text/csv", "text/comma-separated-values", "application/octet-stream", "*/*"))

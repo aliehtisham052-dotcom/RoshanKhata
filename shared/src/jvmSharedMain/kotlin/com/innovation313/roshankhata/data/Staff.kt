@@ -22,8 +22,43 @@ data class Staff(
     val monthlySalary: Double,
     /** False once the owner removes them from the list; their records stay. */
     val isActive: Boolean = true,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+
+    // ---- Logins (POS Phase 5, v34) ----
+
+    /**
+     * What this person may do at the counter, one of [Role]; null = on the
+     * payroll only, no login. Stored as a key, never a translated word.
+     */
+    val role: String? = null,
+
+    /** The PIN they sign in with, as a salted hash ([PinHash]) — never the PIN. Null = no PIN set. */
+    val pinHash: String? = null,
+    val pinSalt: String? = null
 )
+
+/**
+ * Who may do what (POS Phase 5). The owner is not a staff row: the book is
+ * theirs, and on the computer the App Lock PIN is theirs. A manager may do
+ * everything at the counter the owner can, short of the settings and the
+ * book itself; a cashier rings up and takes money, and asks for a manager
+ * when something must be undone or marked down.
+ */
+object Role {
+    const val MANAGER = "manager"
+    const val CASHIER = "cashier"
+    val ALL = listOf(MANAGER, CASHIER)
+}
+
+/** What version 34 adds (staff logins), as the SQL both migrations run — see [Schema32]. */
+object Schema34 {
+    val statements: List<String> = listOf(
+        "ALTER TABLE staff ADD COLUMN role TEXT",
+        "ALTER TABLE staff ADD COLUMN pinHash TEXT",
+        "ALTER TABLE staff ADD COLUMN pinSalt TEXT"
+    )
+    val newColumns = mapOf("staff" to listOf("role", "pinHash", "pinSalt"))
+}
 
 /**
  * One marked day. A day with no row is a day present — the owner marks only

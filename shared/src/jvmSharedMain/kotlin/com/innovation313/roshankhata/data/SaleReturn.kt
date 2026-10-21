@@ -104,6 +104,7 @@ data class ReturnSummary(
     val timestamp: Long,
     val total: Double,
     val refundMethod: String,
+    val refundAmount: Double,
     val status: String
 )
 

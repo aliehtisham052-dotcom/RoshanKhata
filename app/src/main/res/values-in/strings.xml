@@ -3073,4 +3073,37 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="z_no_close">Hari belum ditutup — hitung laci untuk melihat selisih</string>
     <string name="z_variance_reason">Beri alasan selisihnya</string>
     <string name="z_yesterday_open">Laci kemarin belum dihitung</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">Login kasir</string>
+    <string name="staff_role_none">Tanpa login</string>
+    <string name="staff_role_manager">Manajer</string>
+    <string name="staff_role_cashier">Kasir</string>
+    <string name="staff_pin">PIN (4–8 digit)</string>
+    <string name="staff_pin_keep">Kosongkan untuk mempertahankan PIN</string>
+    <string name="staff_pin_invalid">PIN 4 sampai 8 digit</string>
+    <string name="access_owner">Pemilik</string>
+    <string name="access_who">Siapa di kasir?</string>
+    <string name="access_sign_in">Masuk</string>
+    <string name="access_sign_out">Keluar</string>
+    <string name="access_wrong_pin">PIN salah</string>
+    <string name="access_override_title">Perlu PIN manajer</string>
+    <string name="access_override_help">Kasir tidak bisa melakukan ini sendiri. Manajer atau pemilik mengetik PIN-nya untuk mengizinkan.</string>
+    <string name="access_denied">Tidak diizinkan untuk kasir</string>
+    <string name="access_discount_cap">Kasir boleh memberi diskon hingga %1$s tanpa manajer</string>
+    <string name="audit_title">Siapa melakukan apa</string>
+    <string name="audit_subtitle">Setiap penjualan, pembatalan, retur, perubahan harga, login dan pemulihan — terbaru dulu</string>
+    <string name="audit_empty">Belum ada catatan</string>
+    <string name="audit_sale_posted">Penjualan</string>
+    <string name="audit_sale_voided">Penjualan dibatalkan</string>
+    <string name="audit_sale_held">Nota ditahan</string>
+    <string name="audit_return_posted">Retur</string>
+    <string name="audit_return_voided">Retur dibatalkan</string>
+    <string name="audit_discount_override">Diskon diizinkan</string>
+    <string name="audit_manager_override">Diizinkan manajer</string>
+    <string name="audit_price_changed">Harga diubah</string>
+    <string name="audit_sign_in">Masuk</string>
+    <string name="audit_restore">Buku dipulihkan</string>
+    <string name="audit_export">Diekspor</string>
+    <string name="audit_by">oleh %1$s</string>
 </resources>

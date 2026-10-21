@@ -88,7 +88,9 @@ fun CounterSalePane(
     reload: Int,
     onChanged: () -> Unit,
     onReceipt: (List<ThermalReceipt.Line>) -> Unit,
-    keys: KeyActions
+    keys: KeyActions,
+    /** The owner's App Lock PIN check, for a manager's override; null when none is set. */
+    ownerPin: ((String) -> Boolean)? = null
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -115,6 +117,14 @@ fun CounterSalePane(
     var showHeld by remember { mutableStateOf(false) }
     var reporting by remember { mutableStateOf(false) }
     if (reporting) ZReportDialog(dao, onReceipt = onReceipt) { reporting = false }
+    // Who is at the counter (POS Phase 5), and the manager's PIN for what a cashier may not do alone.
+    var signingIn by remember { mutableStateOf(false) }
+    if (signingIn) SignInDialog(dao) { signingIn = false }
+    var override by remember { mutableStateOf<Pair<String, (String) -> Unit>?>(null) }
+    override?.let { (what, then) -> OverrideDialog(dao, what, ownerPin, onClose = { override = null }) { by -> then(by) } }
+    fun allowed(p: com.innovation313.roshankhata.data.Access.Permission, what: String, then: (String?) -> Unit) {
+        if (com.innovation313.roshankhata.data.Access.can(p)) then(null) else override = what to { by -> then(by) }
+    }
     val searchFocus = remember { FocusRequester() }
     val discountFocus = remember { FocusRequester() }
     val qtyFocus = remember { FocusRequester() }
@@ -155,10 +165,18 @@ fun CounterSalePane(
         }
     )
 
-    fun complete(print: Boolean) {
+    fun complete(print: Boolean, allowedBy: String? = null) {
         val problem = draft.problem
         if (problem != null) { told = problemWords(problem); return }
+        // A cashier's discount past the cap waits for a manager's PIN (POS Phase 5).
+        val lineDiscounts = draft.lines.sumOf { it.discountValue }
+        if (allowedBy == null && com.innovation313.roshankhata.data.Access.discountNeedsOverride(draft.totals.discount + lineDiscounts, draft.totals.subtotal)) {
+            told = words.text(W.access_discount_cap, Format.money(draft.totals.subtotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
+            override = words.text(W.pos_discount) to { by -> complete(print, by) }
+            return
+        }
         scope.launch {
+            if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = Format.money(draft.totals.discount + lineDiscounts)) }
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     val id = Counter.post(dao, draft)
@@ -203,6 +221,7 @@ fun CounterSalePane(
         // ---- The start side: the item box and the ticket ----
         Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             PageHeader(word(W.pos_title), word(W.pos_keys_help), actions = {
+                FluentPill(com.innovation313.roshankhata.data.Access.current?.let { Format.name(it.name) } ?: word(W.access_owner), com.innovation313.roshankhata.data.Access.current != null) { signingIn = true }
                 if (held.isNotEmpty()) {
                     FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
                 }
@@ -277,14 +296,18 @@ fun CounterSalePane(
                     }
                 }
             }
-            RecentSales(recent.take(8), words, onVoid = { voiding = it }, onReturn = { s ->
-                scope.launch {
-                    val full = withContext(Dispatchers.IO) { dao.saleWithLines(s.id) } ?: return@launch
-                    val back = withContext(Dispatchers.IO) { dao.returnedOfSale(s.id) }.associate { it.saleItemId to it.qty }
-                    returning = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
-                }
-            })
-            RecentReturns(returns.take(6), words, onVoid = { voidingReturn = it })
+            RecentSales(recent.take(8), words,
+                onVoid = { s -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void) + " " + s.saleNumber) { voiding = s } },
+                onReturn = { s ->
+                    allowed(com.innovation313.roshankhata.data.Access.Permission.RETURN, words.text(W.pos_return) + " " + s.saleNumber) {
+                        scope.launch {
+                            val full = withContext(Dispatchers.IO) { dao.saleWithLines(s.id) } ?: return@launch
+                            val back = withContext(Dispatchers.IO) { dao.returnedOfSale(s.id) }.associate { it.saleItemId to it.qty }
+                            returning = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
+                        }
+                    }
+                })
+            RecentReturns(returns.take(6), words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { voidingReturn = r } })
         }
 
         // ---- The end side: who, how much, how paid, the button ----
