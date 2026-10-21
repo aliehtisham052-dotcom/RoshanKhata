@@ -3172,4 +3172,5 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="srep_period_month">Bulan ini</string>
     <string name="srep_none">Tidak ada penjualan pada periode ini</string>
     <string name="srep_no_category">Tanpa kategori</string>
+    <string name="pos_credit_limit">Batas kredit %1$s — penjualan ini membawa akun ke %2$s</string>
 </resources>

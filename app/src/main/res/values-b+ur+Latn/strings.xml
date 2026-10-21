@@ -3175,4 +3175,5 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="srep_period_month">Is mahine</string>
     <string name="srep_none">Is muddat mein koi sale nahi</string>
     <string name="srep_no_category">Baghair category</string>
+    <string name="pos_credit_limit">Credit had %1$s — is sale se khata %2$s ho jayega</string>
 </resources>

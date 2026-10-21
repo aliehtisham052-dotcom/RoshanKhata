@@ -3203,4 +3203,5 @@
     <string name="srep_period_month">این ماه</string>
     <string name="srep_none">در این بازه فروشی نیست</string>
     <string name="srep_no_category">بدون دسته</string>
+    <string name="pos_credit_limit">سقف اعتبار %1$s — با این فروش حساب به %2$s می‌رسد</string>
 </resources>

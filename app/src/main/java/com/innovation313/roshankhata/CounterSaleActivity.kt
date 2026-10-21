@@ -128,6 +128,16 @@ class CounterSaleActivity : BaseActivity() {
             com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.DISCOUNT_ANY, getString(R.string.pos_discount)) { by -> complete(by) }
             return
         }
+        // Past the customer's credit limit (POS Phase 9): a manager's PIN.
+        val party = parties.firstOrNull { it.id == draft.partyId }
+        val over = draft.creditOver(party?.balance, party?.creditLimit)
+        if (over != null && allowedBy == null && !com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER)) {
+            val what = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
+            message = what
+            com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER, what) { by -> complete(by) }
+            return
+        }
+        if (over != null && allowedBy == null) message = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
         lifecycleScope.launch {
             if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = com.innovation313.roshankhata.ui.Format.money(draft.totals.discount + lineDiscounts)) }
             val result = withContext(Dispatchers.IO) {
@@ -150,6 +160,8 @@ class CounterSaleActivity : BaseActivity() {
                     .setPositiveButton(R.string.share) { _, _ ->
                         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.pos_receipt)))
                     }
+                    // The paired Bluetooth receipt printer (POS Phase 8), the ticket as a picture the roll's width.
+                    .setNeutralButton(R.string.print_receipt) { _, _ -> com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text) }
                     .setNegativeButton(R.string.close, null)
                     .show()
             }.onFailure { message = it.message ?: getString(R.string.backup_failed) }

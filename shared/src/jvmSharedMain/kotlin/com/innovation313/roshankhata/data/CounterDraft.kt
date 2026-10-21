@@ -88,6 +88,17 @@ class CounterDraft {
     val problem: SaleMath.Problem?
         get() = SaleMath.check(lines.map { it.toItem() }, payments.map { it.toPayment() }, totals.grandTotal, hasParty)
 
+    /**
+     * The customer's account after this ticket, where it would pass the
+     * credit limit the owner set (POS Phase 9): the limit and the balance it
+     * would reach, or null when there is no limit or it is kept.
+     */
+    fun creditOver(balanceNow: Double?, creditLimit: Double?): Pair<Double, Double>? {
+        if (!hasParty || creditLimit == null || balanceNow == null) return null
+        val after = LineMath.round(balanceNow + remaining)
+        return if (after > creditLimit + 0.005) creditLimit to after else null
+    }
+
     /** The ticket's lines that would sell more than the shelf holds. */
     val short: List<Line> get() = lines.filter { it.shortBy != null }
 
