@@ -112,6 +112,22 @@ class AccessTest {
     }
 
     @Test
+    fun aCashiersOwnRightPinDoesNotClearMissesAtTheOwnersPin() {
+        // 21 Oct 2026: four guesses at the owner's PIN, the cashier's own PIN, four more... without end.
+        Access.store = Prefs()
+        val now = 5_000_000L
+        val owner = Access.OWNER
+        val cashier = "staff:7"
+        repeat(4) { Access.tryPin("0000", now, account = owner) { it == "1234" } }
+        assertEquals(true, Access.tryPin("5555", now, account = cashier) { it == "5555" })
+        assertEquals(false, Access.tryPin("0001", now, account = owner) { it == "1234" })
+        assertEquals("the fifth miss at the owner's PIN waits", 30_000L, Access.waitMillis(now, owner))
+        assertNull(Access.tryPin("1234", now + 1_000, account = owner) { it == "1234" })
+        assertEquals("the cashier is not kept waiting by it", 0L, Access.waitMillis(now, cashier))
+        assertEquals(true, Access.tryPin("5555", now + 1_000, account = cashier) { it == "5555" })
+    }
+
+    @Test
     fun aRecoveryCodeIsEightPlainCharactersAndTypedLooselyStillMatches() {
         val code = RecoveryCode.next()
         assertTrue(code, Regex("[A-Z2-9]{4}-[A-Z2-9]{4}").matches(code))

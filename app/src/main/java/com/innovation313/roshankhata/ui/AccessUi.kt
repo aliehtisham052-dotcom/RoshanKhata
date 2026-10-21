@@ -67,15 +67,15 @@ object AccessUi {
      * wait after wrong PINs in force. [ok] on the main thread when it is
      * right; [failed] when it is wrong or the phone is waiting.
      */
-    private fun check(activity: Activity, dao: KhataDao, pin: String, matches: (String) -> Boolean, failed: () -> Unit = {}, ok: () -> Unit) {
+    private fun check(activity: Activity, dao: KhataDao, pin: String, account: String, matches: (String) -> Boolean, failed: () -> Unit = {}, ok: () -> Unit) {
         AppScope.launch {
             val result = withContext(Dispatchers.Default) {
-                Access.tryPin(pin, onWait = { log(dao, AuditAction.PIN_WAIT, Access.userName) }, check = matches)
+                Access.tryPin(pin, onWait = { log(dao, AuditAction.PIN_WAIT, Access.userName, account) }, account = account, check = matches)
             }
             activity.runOnUiThread {
                 if (activity.isFinishing) return@runOnUiThread
                 when (result) {
-                    null -> { toast(activity, Digits.string(activity.resources, R.string.lock_pin_wait, Access.waitSeconds())); failed() }
+                    null -> { toast(activity, Digits.string(activity.resources, R.string.lock_pin_wait, Access.waitSeconds(account = account))); failed() }
                     false -> { toast(activity, activity.getString(R.string.access_wrong_pin)); failed() }
                     true -> ok()
                 }
@@ -108,7 +108,7 @@ object AccessUi {
                             }
                             askPin(activity, activity.getString(R.string.access_owner), onCancel = again,
                                 forgot = { recover(activity, dao, then = { Access.signInOwner(); done() }, cancelled = again) }) { pin ->
-                                check(activity, dao, pin, { owner.matches(it) }, failed = again) {
+                                check(activity, dao, pin, Access.OWNER, { owner.matches(it) }, failed = again) {
                                     Access.signInOwner()
                                     log(dao, AuditAction.SIGN_IN, Access.OWNER)
                                     done()
@@ -118,7 +118,7 @@ object AccessUi {
                         }
                         val s = staff[i - 1]
                         askPin(activity, s.name, onCancel = again) { pin ->
-                            check(activity, dao, pin, { Access.pinMatches(s, it) }, failed = again) {
+                            check(activity, dao, pin, Access.account(s), { Access.pinMatches(s, it) }, failed = again) {
                                 Access.signIn(s)
                                 log(dao, AuditAction.SIGN_IN, s.name)
                                 done()
@@ -168,7 +168,7 @@ object AccessUi {
                         val isOwner = owner != null && i == 0
                         val m = if (isOwner) null else managers[i - (if (owner != null) 1 else 0)]
                         askPin(activity, names[i], onCancel = cancelled) { pin ->
-                            check(activity, dao, pin, { typed -> Access.override(managers, m?.id, typed, owner?.let { o -> { p: String -> o.matches(p) } }) != null }, failed = cancelled) {
+                            check(activity, dao, pin, Access.account(m), { typed -> Access.override(managers, m?.id, typed, owner?.let { o -> { p: String -> o.matches(p) } }) != null }, failed = cancelled) {
                                 val by = if (isOwner) Access.OWNER else m!!.name
                                 log(dao, AuditAction.MANAGER_OVERRIDE, by, what)
                                 then(by)
@@ -223,7 +223,10 @@ object AccessUi {
         "AuditActivity" to Access.Permission.REPORTS,
         "AgingActivity" to Access.Permission.REPORTS,
         // The helper's-phone screen loads another book and sends this one away whole (21 Oct 2026).
-        "ViewerActivity" to Access.Permission.BACKUP
+        "ViewerActivity" to Access.Permission.BACKUP,
+        // Every entry of every customer out as a report, and the phone's contacts in (21 Oct 2026).
+        "LedgerReportActivity" to Access.Permission.REPORTS,
+        "ImportContactsActivity" to Access.Permission.EDIT_BOOK
     )
 
     /** What [screen] needs, or null when anyone signed in may open it. */
@@ -314,12 +317,12 @@ object AccessUi {
             .setPositiveButton(R.string.ok) { _, _ ->
                 val code = input.text.toString()
                 AppScope.launch {
-                    val waitFirst = Access.waitMillis() > 0L
+                    val waitFirst = Access.waitMillis(account = Access.OWNER) > 0L
                     val right = !waitFirst && withContext(Dispatchers.Default) { Access.recoveryMatches(dao, code) }
-                    if (!waitFirst && Access.pinTried(right)) log(dao, AuditAction.PIN_WAIT, Access.userName)
+                    if (!waitFirst && Access.pinTried(right, account = Access.OWNER)) log(dao, AuditAction.PIN_WAIT, Access.userName, Access.OWNER)
                     activity.runOnUiThread {
                         when {
-                            waitFirst -> { toast(activity, Digits.string(activity.resources, R.string.lock_pin_wait, Access.waitSeconds())); cancelled() }
+                            waitFirst -> { toast(activity, Digits.string(activity.resources, R.string.lock_pin_wait, Access.waitSeconds(account = Access.OWNER))); cancelled() }
                             !right -> { toast(activity, activity.getString(R.string.access_recovery_wrong)); cancelled() }
                             else -> newOwnerPin(activity, dao, cancelled = cancelled) { then() }
                         }
@@ -386,7 +389,7 @@ object AccessUi {
                 if (owner == null) { newOwnerPin(activity, dao, cancelled = { done(false) }) { done(true) }; return@runOnUiThread }
                 askPin(activity, activity.getString(R.string.access_owner_pin_current), onCancel = { done(true) },
                     forgot = { recover(activity, dao, then = { done(true) }, cancelled = { done(true) }) }) { pin ->
-                    check(activity, dao, pin, { owner.matches(it) }, failed = { done(true) }) {
+                    check(activity, dao, pin, Access.OWNER, { owner.matches(it) }, failed = { done(true) }) {
                         newOwnerPin(activity, dao, cancelled = { done(true) }) { done(true) }
                     }
                 }
@@ -419,8 +422,10 @@ object AccessUi {
     fun counterMode(activity: Activity, on: Boolean, done: () -> Unit) {
         val dao = dao(activity)
         val flip = { pin: String, owner: Access.OwnerPin ->
-            check(activity, dao, pin, { owner.matches(it) }) {
+            check(activity, dao, pin, Access.OWNER, { owner.matches(it) }) {
                 Access.switchCounterMode(on)
+                // The book remembers it too, so a copy of this book opened on a computer knows (21 Oct 2026).
+                AppScope.launch { withContext(Dispatchers.IO) { runCatching { Access.recordCounterMode(dao, on) } } }
                 log(dao, if (on) AuditAction.COUNTER_ON else AuditAction.COUNTER_OFF, Access.OWNER)
                 toast(activity, activity.getString(if (on) R.string.access_counter_now_on else R.string.access_counter_now_off))
                 done()

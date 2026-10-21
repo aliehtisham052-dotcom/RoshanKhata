@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.innovation313.roshankhata.screens.calcKeys
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -191,7 +192,12 @@ fun FluentField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     enabled: Boolean = true,
     /** Shown as dots (a PIN). */
-    password: Boolean = false
+    password: Boolean = false,
+    /**
+     * Calc mode (21 Oct 2026): the running total under the box while it holds
+     * a sum, worked out on Enter / "=" and when the cursor leaves.
+     */
+    calc: com.innovation313.roshankhata.screens.CalcKind? = null
 ) {
     val c = LocalRoshanColors.current
     val source = remember { MutableInteractionSource() }
@@ -216,7 +222,9 @@ fun FluentField(
                     BasicTextField(
                         value = value,
                         onValueChange = onValueChange,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().then(
+                            if (calc != null) Modifier.calcKeys({ value }, calc, onValueChange) else Modifier
+                        ),
                         textStyle = TextStyle(color = c.ink, fontSize = if (big) 22.sp else 14.sp, fontWeight = if (big) FontWeight.SemiBold else FontWeight.Normal),
                         cursorBrush = SolidColor(Look.accent),
                         singleLine = singleLine,
@@ -233,7 +241,11 @@ fun FluentField(
             // Fluent's focus line: 2 dp of accent along the foot of the box.
             Box(Modifier.fillMaxWidth().height(2.dp).background(eased(if (focused) Look.accent else Color.Transparent)))
         }
-        help?.let { Text(it, color = c.textMuted, fontSize = 12.sp) }
+        // While the box holds a sum, its total takes the help line's place (a box whose help is
+        // already its figure would otherwise say it twice).
+        val sumLine = calc?.let { com.innovation313.roshankhata.screens.CalcText.line(value, it) }
+        if (sumLine != null) Text(sumLine, color = Look.accent, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        else help?.let { Text(it, color = c.textMuted, fontSize = 12.sp) }
     }
 }
 
@@ -585,13 +597,19 @@ fun Outlined(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
-    minLines: Int = 1
+    minLines: Int = 1,
+    /** Calc mode, as on [FluentField]: the running total, worked out on Enter / "=" / leaving. */
+    calc: com.innovation313.roshankhata.screens.CalcKind? = null
 ) {
     val c = LocalRoshanColors.current
+    val sumLine = calc?.let { com.innovation313.roshankhata.screens.CalcText.line(value, it) }
     androidx.compose.material3.OutlinedTextField(
-        value = value, onValueChange = onValueChange, modifier = modifier, enabled = enabled, readOnly = readOnly,
+        value = value, onValueChange = onValueChange,
+        modifier = if (calc != null) modifier.calcKeys({ value }, calc, onValueChange) else modifier,
+        enabled = enabled, readOnly = readOnly,
         textStyle = textStyle, label = label, placeholder = placeholder, leadingIcon = leadingIcon, trailingIcon = trailingIcon,
-        supportingText = supportingText, isError = isError, visualTransformation = visualTransformation,
+        supportingText = supportingText ?: sumLine?.let { line -> { Text(line, color = Look.accent, fontWeight = FontWeight.SemiBold, maxLines = 1) } },
+        isError = isError, visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions, keyboardActions = keyboardActions, singleLine = singleLine, maxLines = maxLines, minLines = minLines,
         shape = Look.ctl,
         colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(

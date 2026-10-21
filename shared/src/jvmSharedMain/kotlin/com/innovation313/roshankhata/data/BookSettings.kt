@@ -43,6 +43,18 @@ object BookSettings {
     /** "1" when the counter refuses to sell more than the shelf holds (else it warns). */
     const val BLOCK_NEGATIVE_STOCK = "block_negative_stock"
 
+    /**
+     * Counter mode as the book remembers it (21 Oct 2026, the critical
+     * review): "1" once any device has been a counter for this book, and the
+     * devices the owner has since made their own (comma-separated ids, see
+     * [Access.deviceId]). A computer whose own settings file says "not a
+     * counter" is still a counter while the book says so and it is not one of
+     * the owner's — a settings file anyone at the till can edit no longer
+     * decides who the owner is.
+     */
+    const val COUNTER_USED = "counter_used"
+    const val OWNER_DEVICES = "owner_devices"
+
     fun isOn(v: String?): Boolean = v == "1"
 }
 

@@ -86,7 +86,8 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
         }
     }
     fun who(user: String?) = user?.let { Format.name(it) } ?: words.text(W.access_owner)
-    fun amount(text: String): Double? = Digits.parse(text.replace(",", ""))?.takeIf { it >= 0.0 }
+    // Sums as every money box takes them (21 Oct 2026: "5000+1200" here was refused).
+    fun amount(text: String): Double? = com.innovation313.roshankhata.ui.Calc.evalPad(text)?.takeIf { it >= 0.0 }
 
     Column(
         modifier.fillMaxWidth().background(c.pageBg).verticalScroll(rememberScrollState()).padding(12.dp),
@@ -100,11 +101,7 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
             if (closing == null) {
                 Text(word(W.shift_none), color = c.textMuted, fontSize = 13.sp)
                 Text(word(W.shift_float_help), color = c.inkSoft, fontSize = 13.sp)
-                OutlinedTextField(
-                    floatText, { floatText = it }, Modifier.fillMaxWidth(), singleLine = true,
-                    label = { Text(word(W.dc_opening)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                )
+                CalcField(floatText, { floatText = it }, Modifier.fillMaxWidth(), label = word(W.dc_opening))
                 val float = amount(floatText)
                 Button(
                     onClick = {
@@ -128,11 +125,7 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
                 Figure(word(W.shift_cash_refunds), if (back > 0.0) "−" + Format.money(back) else Format.money(0.0))
                 HorizontalDivider(color = c.pageBg)
                 Figure(word(W.z_expected), Format.money(expected), bold = true)
-                OutlinedTextField(
-                    countedText, { countedText = it }, Modifier.fillMaxWidth(), singleLine = true,
-                    label = { Text(word(W.dc_counted)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                )
+                CalcField(countedText, { countedText = it }, Modifier.fillMaxWidth(), label = word(W.dc_counted))
                 val counted = amount(countedText)
                 val difference = counted?.let { LineMath.round(it - expected) }
                 if (difference != null && kotlin.math.abs(difference) > 0.005) {

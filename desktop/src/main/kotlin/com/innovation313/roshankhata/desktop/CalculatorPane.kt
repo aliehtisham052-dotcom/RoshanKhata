@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.innovation313.roshankhata.screens.calcKeys
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,9 +55,11 @@ fun CalculatorPane() {
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.calculator), null)
         Column(Modifier.width(420.dp).card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Outlined(text, { text = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+            // Enter or "=" from the keyboard works it out, as the pad's own "=" does (21 Oct 2026).
+            Outlined(text, { text = it }, singleLine = true,
+                modifier = Modifier.fillMaxWidth().calcKeys({ text }, com.innovation313.roshankhata.screens.CalcKind.MONEY) { text = it },
                 textStyle = androidx.compose.ui.text.TextStyle(fontSize = 22.sp, textAlign = TextAlign.End))
-            Text(result?.let { Format.money(it) } ?: "", Modifier.fillMaxWidth(), color = c.ink, fontSize = 28.sp,
+            Text(result?.let { Format.signedIfNegative(it) } ?: "", Modifier.fillMaxWidth(), color = c.ink, fontSize = 28.sp,
                 fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
             keys.forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

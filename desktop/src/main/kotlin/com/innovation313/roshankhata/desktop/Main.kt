@@ -438,6 +438,9 @@ private fun Book(
     val searchFocus = remember { androidx.compose.ui.focus.FocusRequester() }
     var editingParty by remember { mutableStateOf<Party?>(null) }
     var purging by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
+    // Whether this computer is a counter is the book's word as well as the settings file's
+    // (21 Oct 2026): read each time the book opens or comes back from a copy.
+    LaunchedEffect(reload) { withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Access.applyBook(dao) } } }
     // The bin keeps things for the days its note promises, then lets them go, as on the phone.
     // Counted from the book's own newest work when the clock reads later than that (21 Oct 2026):
     // a clock that jumped years ahead emptied the whole bin at the next start.
@@ -549,7 +552,10 @@ private fun Book(
         val dueCheques by remember { dao.observeDueChequeCount(now) }.collectAsState(0)
         val expiring by remember { dao.observeExpiringCount(now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
         val late by remember(reload) { lateCount(dao) }.collectAsState(0)
-        fun backupNow() {
+        // The whole book out is an export wherever it is asked for — the header, Home's quick action,
+        // the bell's row (21 Oct 2026: only the header's button asked a cashier for the PIN) — and
+        // the audit log says who took it.
+        fun backupNow() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) backup@{
             val dialog = FileDialog(null as Frame?, words.text(W.save_backup), FileDialog.SAVE)
             // The phone's file name and .txt (WhatsApp sends .txt; the content is JSON).
             // Documents, not the program's own folder: an update or uninstall must not take the backup with it.
@@ -557,11 +563,15 @@ private fun Book(
             dialog.file = "RoshanKhata_Backup_" +
                 java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(java.util.Date()) + ".txt"
             dialog.isVisible = true
-            val name = dialog.file ?: return
+            val name = dialog.file ?: return@backup
             val file = File(dialog.directory, name)
             scope.launch {
                 backedUp = runCatching { backup(file) }
-                    .map { size -> lastBackupAt = System.currentTimeMillis(); words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt()) }
+                    .map { size ->
+                        lastBackupAt = System.currentTimeMillis()
+                        withContext(Dispatchers.IO) { runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = file.name) } }
+                        words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt())
+                    }
                     .getOrElse { words.text(W.backup_failed) }
             }
         }
@@ -588,7 +598,7 @@ private fun Book(
             logo = Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
             onShop = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
             backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.dateTime(it)) } ?: word(W.backup_now),
-            onBackup = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) { backupNow() } },
+            onBackup = { backupNow() },
             onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { phoneSync = true } },
             alerts = alerts.size + extraAlerts.size,
             onAlerts = { showAlerts = true },
@@ -777,21 +787,24 @@ private fun Book(
                                 Spacer(Modifier.width(12.dp))
                                 // The whole book out (Phase 9b): every party to Excel, and every
                                 // statement with money on it as one print job.
-                                TextButton({
+                                TextButton({ Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) excel@{
                                     val dialog = FileDialog(null as Frame?, words.text(W.export_excel), FileDialog.SAVE)
                                     startIn(dialog, "Documents")
                                     dialog.file = "RoshanKhata_Customers_" +
                                         java.text.SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(java.util.Date()) + ".csv"
                                     dialog.isVisible = true
-                                    val name = dialog.file ?: return@TextButton
+                                    val name = dialog.file ?: return@excel
                                     val file = File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
                                     val headers = listOf(words.text(W.name), words.text(W.bp_phone), words.text(W.net_balance))
                                     scope.launch {
                                         told = words.text(W.export_excel) to runCatching {
-                                            withContext(Dispatchers.IO) { file.writeText(BookExport.customersCsv(parties, headers), Charsets.UTF_8) }
+                                            withContext(Dispatchers.IO) {
+                                                file.writeText(BookExport.customersCsv(parties, headers), Charsets.UTF_8)
+                                                dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = file.name)
+                                            }
                                         }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
                                     }
-                                }, enabled = parties.isNotEmpty(), contentPadding = compactButton) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
+                                } }, enabled = parties.isNotEmpty(), contentPadding = compactButton) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
                                 TextButton({
                                     val dialog = FileDialog(null as Frame?, words.text(W.import_csv), FileDialog.LOAD)
                                     startIn(dialog, "Downloads")
@@ -816,7 +829,7 @@ private fun Book(
                                         }
                                     }
                                 }, contentPadding = compactButton) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
-                                TextButton({
+                                TextButton({ Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) {
                                     scope.launch {
                                         val owing = parties.filter { kotlin.math.abs(it.balance) >= 0.005 }.sortedBy { it.name.lowercase() }
                                         val sheets = withContext(Dispatchers.IO) {
@@ -825,9 +838,12 @@ private fun Book(
                                                     dao.latestEntriesWithItems(p.id, Int.MAX_VALUE))
                                             }
                                         }
-                                        if (sheets.isNotEmpty()) StatementPrint.show(AllStatements(sheets), words.text(W.statement_pdf))
+                                        if (sheets.isNotEmpty()) {
+                                            withContext(Dispatchers.IO) { runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = words.text(W.statement_pdf)) } }
+                                            StatementPrint.show(AllStatements(sheets), words.text(W.statement_pdf))
+                                        }
                                     }
-                                }, enabled = parties.any { kotlin.math.abs(it.balance) >= 0.005 }, contentPadding = compactButton) {
+                                } }, enabled = parties.any { kotlin.math.abs(it.balance) >= 0.005 }, contentPadding = compactButton) {
                                     Text(word(W.statement_pdf) + " · " + word(W.filter_type_all), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1)
                                 }
                             }

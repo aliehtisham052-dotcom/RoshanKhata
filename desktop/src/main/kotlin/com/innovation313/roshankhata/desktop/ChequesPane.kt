@@ -366,7 +366,7 @@ private fun ChequeEditor(
         // Who: picked from the book, so the cheque lands on a real party.
         PartyPicker(parties, partyId, { partyId = it; problem = null }, word(W.customer), word(W.cheque_party_hint), Modifier.fillMaxWidth())
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
-            FluentField(amountText, { amountText = it; problem = null }, Modifier.weight(1f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ")
+            FluentField(amountText, { amountText = it; problem = null }, Modifier.weight(1f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             DateBox(word(W.pick_due_date), due?.let { Format.dateOnly(it) }, word(W.pick_due_date), { picking = true }, Modifier.weight(1f), tall = true)
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {

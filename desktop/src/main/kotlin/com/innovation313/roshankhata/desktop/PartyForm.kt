@@ -97,7 +97,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
             Text(word(W.photo_privacy_note), color = c.textMuted, fontSize = 11.sp)
         }
         if (existing != null) {
-            FluentField(limit, { limit = it }, Modifier.fillMaxWidth(), label = word(W.credit_limit), placeholder = word(W.credit_limit_hint), help = word(W.credit_limit_help))
+            FluentField(limit, { limit = it }, Modifier.fillMaxWidth(), label = word(W.credit_limit), placeholder = word(W.credit_limit_hint), help = word(W.credit_limit_help), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
             FluentButton(word(W.cancel), onCancel)
