@@ -24,7 +24,11 @@ import androidx.room.RoomDatabase
         Scheme::class,
         Staff::class,
         StaffAttendance::class,
-        StaffPayment::class
+        StaffPayment::class,
+        Sale::class,
+        SaleItem::class,
+        SalePayment::class,
+        AuditLog::class
     ],
     version = KHATA_DB_VERSION,
     exportSchema = true
@@ -75,11 +79,13 @@ expect object KhataDatabaseConstructor : RoomDatabaseConstructor<KhataDatabase> 
 }
 
 /**
- * The schema version (31 since 13 Oct 2026). Moved here from Migrations.kt
+ * The schema version (32 since 21 Oct 2026: the counter — sales, sale_items,
+ * sale_payments, audit_log; saleId on transactions and cashbook,
+ * paymentMethod on cashbook, barcode/costPrice/lowStockLevel on products). Moved here from Migrations.kt
  * with the database class (KMP Phase 3); the Android migrations stay in the
  * app and still end at this number.
  */
-const val KHATA_DB_VERSION = 31
+const val KHATA_DB_VERSION = 32
 
 object EntryNumber {
     fun next(existingCount: Int): String =

@@ -24,7 +24,6 @@ import com.innovation313.roshankhata.ui.ProductAdapter
 import com.innovation313.roshankhata.ui.ProductDetailsDialog
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -116,13 +115,7 @@ class ProductsActivity : BaseActivity() {
 
     private fun refresh() {
         lifecycleScope.launch {
-            val products = dao.observeProducts().first()
-            val stock = Stock.combine(
-                products = products,
-                bought = dao.boughtPerProduct(),
-                sold = dao.soldPerProduct(),
-                returned = dao.returnedPerProduct()
-            ).sortedBy { it.name.lowercase() }
+            val stock = Stock.of(dao).sortedBy { it.name.lowercase() }
 
             allStock = stock
             show()

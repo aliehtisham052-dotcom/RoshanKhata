@@ -29,8 +29,30 @@ data class CashEntry(
     val timestamp: Long = System.currentTimeMillis(),
 
     val isDeleted: Boolean = false,
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
+
+    /**
+     * How the money moved, one of [PaymentMethod]'s keys, when it is known
+     * (POS Phase 1, v32). Null on every row written before, and on any row
+     * the owner did not say — which the drawer count treats as cash, as it
+     * always has. A walk-in's bank transfer is written here as "bank" so the
+     * evening's count does not look for it in the drawer.
+     */
+    val paymentMethod: String? = null,
+
+    /** The counter sale that posted this row, if one did; see [LedgerEntry.saleId]. */
+    val saleId: Long? = null
 )
+
+/**
+ * The one category the app writes itself (POS Phase 1): a walk-in counter
+ * sale's money. A fixed key, not a translated word, so a cashbook restored
+ * in another language still knows which rows the counter wrote; the screens
+ * show it in the app's language (W.cash_category_sale).
+ */
+object CashCategory {
+    const val SALE = "Sale"
+}
 
 /** Totals over a window, for the cashbook header. */
 data class CashTotals(

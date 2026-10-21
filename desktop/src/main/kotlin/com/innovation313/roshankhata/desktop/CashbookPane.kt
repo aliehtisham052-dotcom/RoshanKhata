@@ -230,8 +230,8 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
             val from = last?.closedAt ?: 0L
             DayFigures(
                 now = now,
-                cbIn = dao.cashbookTotalBetween(true, from, now),
-                cbOut = dao.cashbookTotalBetween(false, from, now),
+                cbIn = dao.cashbookCashBetween(true, from, now),
+                cbOut = dao.cashbookCashBetween(false, from, now),
                 kIn = dao.khataCashBetween(false, from, now),
                 kOut = dao.khataCashBetween(true, from, now)
             ) to last?.counted

@@ -94,10 +94,21 @@ object Stock {
         products: List<Product>,
         bought: List<ProductQty>,
         sold: List<ProductQty>,
-        returned: List<ProductQty>
+        returned: List<ProductQty>,
+        /**
+         * Walk-in counter sales (POS Phase 1): goods that left with no khata
+         * entry to count them. Added to [sold] product by product; the unit
+         * is the khata side's where both have one, so a disagreement still
+         * shows as one.
+         */
+        walkIn: List<ProductQty> = emptyList()
     ): List<ProductStock> {
         val boughtBy = bought.associateBy { it.productId }
-        val soldBy = sold.associateBy { it.productId }
+        val soldBy = HashMap(sold.associateBy { it.productId })
+        for (w in walkIn) {
+            val s = soldBy[w.productId]
+            soldBy[w.productId] = if (s == null) w else ProductQty(w.productId, s.qty + w.qty, s.unit ?: w.unit)
+        }
         val returnedBy = returned.associateBy { it.productId }
 
         return products.map { p ->
@@ -127,5 +138,18 @@ object Stock {
         val productId: Long,
         val qty: Double,
         val unit: String?
+    )
+
+    /**
+     * Every product's stock as the book stands now: the four sums the
+     * database keeps apart (bought, sold on khata, returned, sold to
+     * walk-ins), married here. The one call every stock screen makes.
+     */
+    suspend fun of(dao: KhataDao): List<ProductStock> = combine(
+        products = dao.productsOnce(),
+        bought = dao.boughtPerProduct(),
+        sold = dao.soldPerProduct(),
+        returned = dao.returnedPerProduct(),
+        walkIn = dao.walkInSoldPerProduct()
     )
 }

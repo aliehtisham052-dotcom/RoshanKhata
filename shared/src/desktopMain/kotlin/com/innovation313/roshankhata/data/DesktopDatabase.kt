@@ -1,6 +1,9 @@
 package com.innovation313.roshankhata.data
 
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import java.io.File
@@ -10,16 +13,30 @@ import java.io.File
  * schema 31), in one SQLite file. SQLite itself comes bundled with the app
  * (BundledSQLiteDriver), so nothing has to be installed on the computer.
  *
- * A new file starts at the current schema; there is no older computer book
- * to migrate yet. A phone's book arrives through a backup (BackupCodec).
+ * A new file starts at the current schema. The computer's first books were
+ * written at 31 (18 Oct 2026), so every step from there is migrated here,
+ * with the same SQL the phone runs (the shared Schema lists): a book the
+ * owner already keeps must open on the next version, never be rebuilt.
+ * A phone's book arrives through a backup (BackupCodec).
  */
 object DesktopDatabase {
+
+    /** 31 → 32: the counter (POS Phase 1, 21 Oct 2026). */
+    private val MIGRATION_31_32 = object : Migration(31, 32) {
+        override fun migrate(connection: SQLiteConnection) {
+            for (sql in Schema32.statements) connection.execSQL(sql)
+        }
+    }
+
+    /** Every migration a computer's book may need, in order. */
+    val MIGRATIONS = arrayOf<Migration>(MIGRATION_31_32)
 
     fun open(file: File): KhataDatabase {
         file.parentFile?.mkdirs()
         return Room.databaseBuilder<KhataDatabase>(name = file.absolutePath)
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
+            .addMigrations(*MIGRATIONS)
             .build()
     }
 
