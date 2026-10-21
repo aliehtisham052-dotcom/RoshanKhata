@@ -24,7 +24,7 @@ class PlanScheduleTest {
     }
 
     @Test
-    fun `no day agreed: a month from today`() {
+    fun `no day agreed - a month from today`() {
         assertEquals(day(2026, 11, 21), PlanSchedule.suggestNext(null, day(2026, 10, 21) + 5_000))
     }
 }
