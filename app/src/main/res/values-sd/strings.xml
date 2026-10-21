@@ -3391,4 +3391,13 @@
     <string name="pos_err_payment_unread">هڪ ادائگي جي رقم پڙهي نه سگهي.</string>
     <string name="pos_err_discount_unread">هڪ رعايت پڙهي نه سگهي.</string>
     <string name="pos_price_needs_pin">ريٽ لسٽ کان هٽي ريٽ تي وڪڻڻ</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">داخلا بدلائي وئي</string>
+    <string name="audit_entry_deleted">داخلا ميٽي وئي</string>
+    <string name="audit_cash_added">ڪيش بڪ ۾ داخلا</string>
+    <string name="audit_cash_edited">ڪيش بڪ جي داخلا بدلائي</string>
+    <string name="audit_cash_deleted">ڪيش بڪ جي داخلا ميٽي</string>
+    <string name="audit_party_deleted">گراهڪ ميٽيو ويو</string>
+    <string name="audit_day_closed">ڏينهن بند ڪيو ويو</string>
 </resources>

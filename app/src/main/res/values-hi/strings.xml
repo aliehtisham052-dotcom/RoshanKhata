@@ -3407,4 +3407,13 @@
     <string name="pos_err_payment_unread">एक भुगतान की रकम पढ़ी नहीं जा सकी।</string>
     <string name="pos_err_discount_unread">एक छूट पढ़ी नहीं जा सकी।</string>
     <string name="pos_price_needs_pin">रेट लिस्ट से हटकर रेट पर बेचना</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">एंट्री बदली गई</string>
+    <string name="audit_entry_deleted">एंट्री मिटाई गई</string>
+    <string name="audit_cash_added">कैशबुक में एंट्री</string>
+    <string name="audit_cash_edited">कैशबुक की एंट्री बदली</string>
+    <string name="audit_cash_deleted">कैशबुक की एंट्री मिटाई</string>
+    <string name="audit_party_deleted">ग्राहक मिटाया गया</string>
+    <string name="audit_day_closed">दिन बंद किया गया</string>
 </resources>

@@ -1,5 +1,9 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.audit
+import com.innovation313.roshankhata.data.auditAmount
+import com.innovation313.roshankhata.data.AuditAction as AuditActs
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -191,6 +195,23 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // App Lock: with a PIN set, nothing of the book is composed until it is typed (LockScreen).
     // A counter computer opens on its own sign-in (CounterGate), a PIN already: App Lock is not asked as well.
     var unlocked by remember { mutableStateOf(!appPrefs.hasPin() || com.innovation313.roshankhata.data.Access.counterMode) }
+    // And it comes back by itself after a while with nothing typed or clicked in any of the app's
+    // windows (21 Oct 2026: it was asked once at the start, then the book stayed open all day).
+    // Java's own event hook sees the dialog windows too, so typing in a long form keeps it open.
+    val lastInput = remember { java.util.concurrent.atomic.AtomicLong(System.currentTimeMillis()) }
+    DisposableEffect(Unit) {
+        val listener = java.awt.event.AWTEventListener { lastInput.set(System.currentTimeMillis()) }
+        val toolkit = java.awt.Toolkit.getDefaultToolkit()
+        toolkit.addAWTEventListener(listener, java.awt.AWTEvent.KEY_EVENT_MASK or java.awt.AWTEvent.MOUSE_EVENT_MASK or java.awt.AWTEvent.MOUSE_WHEEL_EVENT_MASK)
+        onDispose { toolkit.removeAWTEventListener(listener) }
+    }
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(30_000)
+            val idle = System.currentTimeMillis() - lastInput.get()
+            if (unlocked && appPrefs.hasPin() && !com.innovation313.roshankhata.data.Access.counterMode && idle > APP_LOCK_IDLE_MS) unlocked = false
+        }
+    }
     // The shop's trade (its words, units and which pages show), re-read when the owner changes it.
     var tradeTick by remember { mutableIntStateOf(0) }
     val trade = remember(active, tradeTick) { TradeKit.of(settings.tradeKey(), settings.otherTradeItems()) }
@@ -330,6 +351,9 @@ private suspend fun restore(
     BackupCodec.restoreLedger(db.khataDao(), data)
     data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
 }
+
+/** App Lock returns after this long with no key or click (15 minutes, a shop's quiet spell). */
+private const val APP_LOCK_IDLE_MS = 15 * 60_000L
 
 private fun reasonOf(failed: BackupCodec.ImportResult.Failed, words: Words): String {
     val text = when (failed.why) {
@@ -761,7 +785,11 @@ private fun Book(
                             LaunchedEffect(searchTick) { if (searchTick > 0) runCatching { searchFocus.requestFocus() } }
                             // The phone's rule (KhataActivity.rank): search, side, type, then the chosen order;
                             // newest dealing first unless the owner picks another.
-                            val shown = parties.shownBy(query, partySide, partyType, partySort, partyWhen.window())
+                            // Worked out once per change, not on every redraw (21 Oct 2026: a few thousand
+                            // customers made each key in the search box wait for the whole list).
+                            val shown = remember(parties, query, partySide, partyType, partySort, partyWhen) {
+                                parties.shownBy(query, partySide, partyType, partySort, partyWhen.window())
+                            }
                             if (selecting) {
                                 Row(
                                     Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp)
@@ -1114,7 +1142,7 @@ private fun Book(
             onCloseRequest = { entryWay = null },
             onPreviewKeyEvent = escCloses { entryWay = null },
             title = word(if (way) W.you_gave else W.you_got),
-            state = rememberDialogState(width = 520.dp, height = 760.dp)
+            state = rememberDialogState(width = fitW(520.dp), height = fitH(760.dp))
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 EntryEditor(
@@ -1163,7 +1191,7 @@ private fun Book(
             onCloseRequest = { editing = null },
             onPreviewKeyEvent = escCloses { editing = null },
             title = word(W.edit),
-            state = rememberDialogState(width = 520.dp, height = 760.dp)
+            state = rememberDialogState(width = fitW(520.dp), height = fitH(760.dp))
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 EntryEditor(
@@ -1176,6 +1204,7 @@ private fun Book(
                                 // The phone's edit: the entry and its goods lines, all or nothing.
                                 // Only the first line is on the form; any others the phone wrote stay.
                                 dao.updateEntryWithItems(d.entry, listOfNotNull(linked(dao, d.item)) + loaded.drop(1))
+                                dao.audit(AuditActs.ENTRY_EDITED, "transactions", d.entry.id, auditAmount(d.entry.amount))
                                 val sign = { x: LedgerEntry -> if (x.isGiven) x.amount else -x.amount }
                                 if (d.dueTouched) keepPromise(e.partyId, d, (forParty?.balance ?: 0.0) - sign(e) + sign(d.entry))
                             }
@@ -1228,7 +1257,7 @@ private fun Book(
                             if (pair != null) {
                                 halves = e to pair
                             } else {
-                                withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id) }
+                                withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", e.id, auditAmount(e.amount)) }
                                 reload++
                             }
                         }
@@ -1248,7 +1277,10 @@ private fun Book(
                 TextButton({
                     halves = null
                     scope.launch {
-                        withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id); dao.softDeleteEntry(pair.id) }
+                        withContext(Dispatchers.IO) {
+                            dao.softDeleteEntry(e.id); dao.softDeleteEntry(pair.id)
+                            dao.audit(AuditActs.ENTRY_DELETED, "transactions", e.id, auditAmount(e.amount)); dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id)
+                        }
                         reload++
                     }
                 }) { Text(word(W.delete_pair_both)) }
@@ -1257,7 +1289,7 @@ private fun Book(
                 TextButton({
                     halves = null
                     scope.launch {
-                        withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id) }
+                        withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", e.id, auditAmount(e.amount)) }
                         reload++
                     }
                 }) { Text(word(W.delete_pair_one)) }
@@ -1347,7 +1379,7 @@ private fun Book(
             onCloseRequest = { bin = false },
             onPreviewKeyEvent = escCloses { bin = false },
             title = word(W.recycle_bin),
-            state = rememberDialogState(width = 560.dp, height = 640.dp)
+            state = rememberDialogState(width = fitW(560.dp), height = fitH(640.dp))
         ) {
             val binParties by remember(reload) { dao.observeDeletedParties() }.collectAsState(emptyList())
             val binEntries by remember(reload) { dao.observeDeletedEntries() }.collectAsState(emptyList())
@@ -1400,7 +1432,7 @@ private fun Book(
             onCloseRequest = { addParty = false; editingParty = null },
             onPreviewKeyEvent = escCloses { addParty = false; editingParty = null },
             title = word(if (existing == null) W.add_party else W.edit_party),
-            state = rememberDialogState(width = 500.dp, height = 680.dp)
+            state = rememberDialogState(width = fitW(500.dp), height = fitH(680.dp))
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 PartyForm(
@@ -1485,7 +1517,7 @@ private fun Book(
             onCloseRequest = { choosingLanguage = false },
             onPreviewKeyEvent = escCloses { choosingLanguage = false },
             title = word(W.language),
-            state = rememberDialogState(width = 360.dp, height = 560.dp)
+            state = rememberDialogState(width = fitW(360.dp), height = fitH(560.dp))
         ) {
             Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
                 AppLanguages.ALL.forEach { lang ->
@@ -1512,7 +1544,7 @@ private fun Book(
             onCloseRequest = { if (!tradeMandatory) choosingTrade = false },
             onPreviewKeyEvent = escCloses { if (!tradeMandatory) choosingTrade = false },
             title = word(W.trade_pick_title),
-            state = rememberDialogState(width = 900.dp, height = 760.dp)
+            state = rememberDialogState(width = fitW(900.dp), height = fitH(760.dp))
         ) {
             TradePicker(
                 current = settings.tradeKey(), otherName = settings.otherTradeName(), otherItems = settings.otherTradeItems(),
@@ -1556,7 +1588,7 @@ private fun Book(
             onCloseRequest = { appPrefs.setTourSeen(); touring = false },
             onPreviewKeyEvent = escCloses { appPrefs.setTourSeen(); touring = false },
             title = word(W.app_name),
-            state = rememberDialogState(width = 620.dp, height = 420.dp)
+            state = rememberDialogState(width = fitW(620.dp), height = fitH(420.dp))
         ) {
             TourWindowContent { appPrefs.setTourSeen(); touring = false }
         }
@@ -1564,7 +1596,7 @@ private fun Book(
     // Every PDF / Statement / Print button opens its sheet here first (1.8.4).
     PreviewHost()
     if (lockSettings) {
-        DialogWindow(onCloseRequest = { lockSettings = false },onPreviewKeyEvent = escCloses { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = 520.dp, height = 460.dp)) {
+        DialogWindow(onCloseRequest = { lockSettings = false },onPreviewKeyEvent = escCloses { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = fitW(520.dp), height = fitH(460.dp))) {
             AppLockSettings(appPrefs) { lockSettings = false }
         }
     }
@@ -1573,7 +1605,7 @@ private fun Book(
             onCloseRequest = { showAlerts = false },
             onPreviewKeyEvent = escCloses { showAlerts = false },
             title = word(W.home_today),
-            state = rememberDialogState(width = 520.dp, height = 600.dp)
+            state = rememberDialogState(width = fitW(520.dp), height = fitH(600.dp))
         ) {
             AlertsList(alerts, extraAlerts) { s -> showAlerts = false; section = s }
         }
@@ -1583,7 +1615,7 @@ private fun Book(
             onCloseRequest = { choosingTextSize = false },
             onPreviewKeyEvent = escCloses { choosingTextSize = false },
             title = word(W.text_size),
-            state = rememberDialogState(width = 360.dp, height = 340.dp)
+            state = rememberDialogState(width = fitW(360.dp), height = fitH(340.dp))
         ) {
             Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
                 TEXT_SIZE_WORDS.forEachIndexed { level, name ->
@@ -1607,7 +1639,7 @@ private fun Book(
             onCloseRequest = { choosingTheme = false },
             onPreviewKeyEvent = escCloses { choosingTheme = false },
             title = word(W.theme),
-            state = rememberDialogState(width = 360.dp, height = 300.dp)
+            state = rememberDialogState(width = fitW(360.dp), height = fitH(300.dp))
         ) {
             Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
                 ThemeChoice.entries.forEach { t ->
@@ -1629,7 +1661,7 @@ private fun Book(
             onCloseRequest = { about = false },
             onPreviewKeyEvent = escCloses { about = false },
             title = word(W.about_us),
-            state = rememberDialogState(width = 520.dp, height = 680.dp)
+            state = rememberDialogState(width = fitW(520.dp), height = fitH(680.dp))
         ) {
             AboutScreen(
                 icon = painterResource("roshan_khata_icon.png"),

@@ -1,5 +1,9 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.audit
+import com.innovation313.roshankhata.data.auditAmount
+import com.innovation313.roshankhata.data.AuditAction as AuditActs
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -123,7 +127,7 @@ fun CashbookPane(dao: KhataDao) {
             onCloseRequest = { adding = null },
             onPreviewKeyEvent = escCloses { adding = null },
             title = word(if (way) W.cash_income else W.cash_expense),
-            state = rememberDialogState(width = 480.dp, height = 520.dp)
+            state = rememberDialogState(width = fitW(480.dp), height = fitH(520.dp))
         ) {
             Box(Modifier.fillMaxSize()) {
                 CashForm(
@@ -131,7 +135,7 @@ fun CashbookPane(dao: KhataDao) {
                     income = way,
                     onSave = { entry ->
                         scope.launch {
-                            withContext(Dispatchers.IO) { dao.insertCashEntry(entry) }
+                            withContext(Dispatchers.IO) { val id = dao.insertCashEntry(entry); dao.audit(AuditActs.CASH_ADDED, "cashbook", id, auditAmount(entry.amount)) }
                             adding = null
                         }
                     },
@@ -149,7 +153,7 @@ fun CashbookPane(dao: KhataDao) {
                 TextButton(
                     onClick = {
                         deleting = null
-                        scope.launch { withContext(Dispatchers.IO) { dao.softDeleteCashEntry(e.id) } }
+                        scope.launch { withContext(Dispatchers.IO) { dao.softDeleteCashEntry(e.id); dao.audit(AuditActs.CASH_DELETED, "cashbook", e.id, auditAmount(e.amount)) } }
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
                 ) { Text(word(W.delete)) }
@@ -290,7 +294,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                     note = note.trim().ifEmpty { null },
                     closedAt = f.now
                 )
-                scope.launch { withContext(Dispatchers.IO) { dao.saveDayClose(close) } }
+                scope.launch { withContext(Dispatchers.IO) { dao.saveDayClose(close); dao.audit(AuditActs.DAY_CLOSED, "day_close", null, auditAmount(close.counted)) } }
                 onClose()
             }) { Text(word(W.save)) }
         },
@@ -317,7 +321,7 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
     }
     val title = word(W.z_title)
     val dateLine = Format.dateOnly(com.innovation313.roshankhata.data.DayCloseMath.startOf(day) + 12L * 60 * 60 * 1000)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = 520.dp, height = 640.dp)) {
+    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
         DialogFrame(title, subtitle = dateLine, onClose = onClose, footerStart = {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 IconAction("ic_chevron_right", "‹", { day -= 1 })

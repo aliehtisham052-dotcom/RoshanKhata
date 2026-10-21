@@ -97,5 +97,15 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.SIGN_OUT -> word(W.audit_sign_out)
     AuditAction.SHIFT_OPENED -> word(W.audit_shift_opened)
     AuditAction.SHIFT_CLOSED -> word(W.audit_shift_closed)
+    AuditAction.TRANSFER_OUT -> word(W.audit_transfer_out)
+    AuditAction.TRANSFER_IN -> word(W.audit_transfer_in)
+    AuditAction.BOOK_MERGED -> word(W.audit_book_merged)
+    AuditAction.ENTRY_EDITED -> word(W.audit_entry_edited)
+    AuditAction.ENTRY_DELETED -> word(W.audit_entry_deleted)
+    AuditAction.CASH_ADDED -> word(W.audit_cash_added)
+    AuditAction.CASH_EDITED -> word(W.audit_cash_edited)
+    AuditAction.CASH_DELETED -> word(W.audit_cash_deleted)
+    AuditAction.PARTY_DELETED -> word(W.audit_party_deleted)
+    AuditAction.DAY_CLOSED -> word(W.audit_day_closed)
     else -> a.action
 }

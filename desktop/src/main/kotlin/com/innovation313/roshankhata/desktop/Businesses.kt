@@ -132,7 +132,7 @@ fun BusinessesDialog(businesses: Businesses, active: Long, onSwitch: (Long) -> U
     DialogWindow(
         onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose),
         title = word(W.businesses_title),
-        state = rememberDialogState(width = 520.dp, height = 640.dp)
+        state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))
     ) {
         Column(
             Modifier.fillMaxSize().background(c.surface).padding(16.dp),

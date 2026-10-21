@@ -3360,4 +3360,13 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="pos_err_payment_unread">Jumlah pembayaran tidak dapat dibaca.</string>
     <string name="pos_err_discount_unread">Diskon tidak dapat dibaca.</string>
     <string name="pos_price_needs_pin">Menjual dengan harga selain daftar harga</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">Catatan diubah</string>
+    <string name="audit_entry_deleted">Catatan dihapus</string>
+    <string name="audit_cash_added">Baris buku kas ditambah</string>
+    <string name="audit_cash_edited">Baris buku kas diubah</string>
+    <string name="audit_cash_deleted">Baris buku kas dihapus</string>
+    <string name="audit_party_deleted">Pelanggan dihapus</string>
+    <string name="audit_day_closed">Hari ditutup</string>
 </resources>

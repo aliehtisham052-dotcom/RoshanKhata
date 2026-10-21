@@ -99,7 +99,7 @@ fun ItemGridPane(products: List<Product>, onHand: Map<Long, Double?>, draft: Cou
     }
     choosing?.let { g ->
         val title = word(W.pos_choose_variant, g.main.name)
-        DialogWindow(onCloseRequest = { choosing = null }, onPreviewKeyEvent = escCloses { choosing = null }, title = title, state = rememberDialogState(width = 440.dp, height = 480.dp)) {
+        DialogWindow(onCloseRequest = { choosing = null }, onPreviewKeyEvent = escCloses { choosing = null }, title = title, state = rememberDialogState(width = fitW(440.dp), height = fitH(480.dp))) {
             DialogFrame(title, onClose = { choosing = null }, footer = { FluentButton(word(W.cancel), { choosing = null }, kind = ButtonKind.STANDARD) }) {
                 g.choices.forEachIndexed { i, p ->
                     Row(Modifier.fillMaxWidth().press { onPick(p); choosing = null }.padding(vertical = 10.dp, horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {

@@ -156,7 +156,7 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
             onCloseRequest = { adding = false; form = null },
             onPreviewKeyEvent = escCloses { adding = false; form = null },
             title = word(if (existing == null) W.schemes_add else W.scheme_edit),
-            state = rememberDialogState(width = 560.dp, height = 820.dp)
+            state = rememberDialogState(width = fitW(560.dp), height = fitH(820.dp))
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 SchemeForm(existing, suppliers, onSave = { s ->

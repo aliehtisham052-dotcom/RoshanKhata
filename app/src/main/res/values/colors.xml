@@ -303,7 +303,8 @@
     <color name="panel_bg">#F0EFEA</color>
     <color name="divider_grey">#E0E0E0</color>
     <color name="text_grey">#777777</color>
-    <color name="text_faint">#999999</color>
+    <!-- #767676: the faintest grey that still reads at 4.5:1 on white (#999 was 2.85:1, 21 Oct 2026). -->
+    <color name="text_faint">#767676</color>
 
     <!--
       Split out of ink / ink_soft / gold_accent, which are TEXT colours and

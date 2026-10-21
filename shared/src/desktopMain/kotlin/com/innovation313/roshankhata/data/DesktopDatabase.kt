@@ -72,6 +72,15 @@ object DesktopDatabase {
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .addMigrations(*MIGRATIONS)
+            // A larger page cache and temporary tables in memory (21 Oct 2026, the critical review):
+            // SQLite's default 2 MB cache made every balance list read the file again on a laptop's
+            // slow disk. Settings of this connection only; nothing in the file changes.
+            .addCallback(object : androidx.room.RoomDatabase.Callback() {
+                override fun onOpen(connection: androidx.sqlite.SQLiteConnection) {
+                    runCatching { connection.execSQL("PRAGMA cache_size = -16000") }
+                    runCatching { connection.execSQL("PRAGMA temp_store = MEMORY") }
+                }
+            })
             .build()
     }
 

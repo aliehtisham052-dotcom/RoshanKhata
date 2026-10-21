@@ -139,7 +139,7 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
         )
     }
     if (adding) {
-        DialogWindow(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_bill), state = rememberDialogState(width = 700.dp, height = 820.dp)) {
+        DialogWindow(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_bill), state = rememberDialogState(width = fitW(700.dp), height = fitH(820.dp))) {
             Box(Modifier.fillMaxSize()) {
                 BillForm(
                     parties = parties,
@@ -367,7 +367,7 @@ fun InvoicesPane(
     val invoices by remember { dao.observeInvoices() }.collectAsState(emptyList())
     var settingFields by remember { mutableStateOf(false) }
     if (settingFields) {
-        DialogWindow(onCloseRequest = { settingFields = false },onPreviewKeyEvent = escCloses { settingFields = false }, title = word(W.invoice_settings_title), state = rememberDialogState(width = 520.dp, height = 640.dp)) {
+        DialogWindow(onCloseRequest = { settingFields = false },onPreviewKeyEvent = escCloses { settingFields = false }, title = word(W.invoice_settings_title), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
             InvoiceFieldsSettings(fields, onFields)
         }
     }
@@ -403,7 +403,7 @@ fun InvoicesPane(
         }
     }
     if (adding) {
-        DialogWindow(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_invoice), state = rememberDialogState(width = 720.dp, height = 860.dp)) {
+        DialogWindow(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_invoice), state = rememberDialogState(width = fitW(720.dp), height = fitH(860.dp))) {
             Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
@@ -422,7 +422,7 @@ fun InvoicesPane(
         }
     }
     editingInvoice?.let { (inv, lines) ->
-        DialogWindow(onCloseRequest = { editingInvoice = null },onPreviewKeyEvent = escCloses { editingInvoice = null }, title = word(W.edit), state = rememberDialogState(width = 720.dp, height = 860.dp)) {
+        DialogWindow(onCloseRequest = { editingInvoice = null },onPreviewKeyEvent = escCloses { editingInvoice = null }, title = word(W.edit), state = rememberDialogState(width = fitW(720.dp), height = fitH(860.dp))) {
             Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
@@ -983,7 +983,7 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
     var problem by remember { mutableStateOf<String?>(null) }
     val needParty = word(W.select_party_first)
     val needAmount = word(W.enter_valid_amount)
-    DialogWindow(onCloseRequest = onCancel, onPreviewKeyEvent = escCloses(onCancel), title = word(W.add_plan), state = rememberDialogState(width = 520.dp, height = 680.dp)) {
+    DialogWindow(onCloseRequest = onCancel, onPreviewKeyEvent = escCloses(onCancel), title = word(W.add_plan), state = rememberDialogState(width = fitW(520.dp), height = fitH(680.dp))) {
         Column(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(word(W.plan_dialog_help), color = c.textMuted, fontSize = 12.sp)
             val chosen = parties.firstOrNull { it.id == partyId }

@@ -201,7 +201,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
             onCloseRequest = { form = null },
             onPreviewKeyEvent = escCloses { form = null },
             title = word(if (f.existing == null) W.add_cheque else W.edit_cheque),
-            state = rememberDialogState(width = 620.dp, height = 640.dp)
+            state = rememberDialogState(width = fitW(620.dp), height = fitH(640.dp))
         ) {
             Box(Modifier.fillMaxSize()) {
                 ChequeEditor(

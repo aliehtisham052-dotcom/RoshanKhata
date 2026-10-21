@@ -68,7 +68,7 @@ fun CounterSettingsDialog(
         loaded = true
     }
     val title = word(W.counter_settings)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = 600.dp, height = 720.dp)) {
+    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(600.dp), height = fitH(720.dp))) {
         DialogFrame(title, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {

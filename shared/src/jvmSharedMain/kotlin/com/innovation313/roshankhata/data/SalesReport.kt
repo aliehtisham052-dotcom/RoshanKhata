@@ -72,8 +72,13 @@ class SalesReport(val from: Long, val to: Long, val lines: List<SoldLine>, val e
     val saleCount: Int get() = lines.map { it.saleId }.distinct().size
     val costKnownRevenue: Double get() = LineMath.round(lines.filter { it.cost != null }.sumOf { it.revenue })
     val cost: Double get() = LineMath.round(lines.sumOf { it.cost ?: 0.0 })
-    /** Revenue less returns less the cost of what was sold (where known). */
-    val grossProfit: Double get() = LineMath.round(revenue - returnsTotal - cost)
+    /**
+     * The revenue whose cost is known, less that cost, less returns (21 Oct 2026:
+     * a line with no cost counted as costing nothing, so its whole price read as
+     * profit). The report says how much of the revenue this covers
+     * ([costKnownRevenue]); nothing is guessed for the rest.
+     */
+    val grossProfit: Double get() = LineMath.round(costKnownRevenue - returnsTotal - cost)
     /** Gross profit less the cashbook's expenses in the window (the walk-ins' refunds are not expenses — they are the returns). */
     val netProfit: Double get() = LineMath.round(grossProfit - expenses)
 

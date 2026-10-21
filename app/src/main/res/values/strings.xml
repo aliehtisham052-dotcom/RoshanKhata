@@ -3577,4 +3577,13 @@ You can change this any time from this screen.</string>
     <string name="pos_err_payment_unread">A payment amount could not be read.</string>
     <string name="pos_err_discount_unread">A discount could not be read.</string>
     <string name="pos_price_needs_pin">Selling at a rate other than the price list</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">Entry changed</string>
+    <string name="audit_entry_deleted">Entry deleted</string>
+    <string name="audit_cash_added">Cashbook row added</string>
+    <string name="audit_cash_edited">Cashbook row changed</string>
+    <string name="audit_cash_deleted">Cashbook row deleted</string>
+    <string name="audit_party_deleted">Customer deleted</string>
+    <string name="audit_day_closed">Day closed</string>
 </resources>

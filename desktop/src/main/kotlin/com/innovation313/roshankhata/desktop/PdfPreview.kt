@@ -191,7 +191,7 @@ fun PreviewHost() {
             onCloseRequest = { Preview.close() },
             onPreviewKeyEvent = escCloses { Preview.close() },
             title = req.title,
-            state = rememberDialogState(width = 860.dp, height = 900.dp)
+            state = rememberDialogState(width = fitW(860.dp), height = fitH(900.dp))
         ) {
             PreviewContent(req)
         }

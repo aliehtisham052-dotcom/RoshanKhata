@@ -96,7 +96,10 @@ fun List<PartyWithBalance>.shownBy(
     }
     val byType = byType(bySide, type)
     return if (q.isNotEmpty()) {
-        byType.sortedWith(compareBy<PartyWithBalance> { NameSearch.rank(it.name, q) }.thenBy { it.name.lowercase() })
+        // Each name ranked once, then sorted (the comparator ranked both names at every comparison).
+        byType.map { Triple(it, NameSearch.rank(it.name, q), it.name.lowercase()) }
+            .sortedWith(compareBy<Triple<PartyWithBalance, Int, String>> { it.second }.thenBy { it.third })
+            .map { it.first }
     } else when (sort) {
         PartySort.NAME_AZ -> byType.sortedBy { it.name.lowercase() }
         PartySort.NAME_ZA -> byType.sortedByDescending { it.name.lowercase() }

@@ -95,9 +95,9 @@ fun reportRows(r: SalesReport, view: ReportView): Pair<List<String>, List<List<S
             listOf(word(W.srep_revenue), Format.money(r.revenue)),
             listOf(word(W.srep_returns), "−" + Format.money(r.returnsTotal)),
             listOf(word(W.srep_cost) + " (" + word(W.srep_cost_known, Format.money(r.costKnownRevenue)) + ")", "−" + Format.money(r.cost)),
-            listOf(word(W.srep_gross), Format.money(r.grossProfit)),
+            listOf(word(W.srep_gross), Format.signedIfNegative(r.grossProfit)),
             listOf(word(W.srep_expenses), "−" + Format.money(r.expenses)),
-            listOf(word(W.srep_net), Format.money(r.netProfit))
+            listOf(word(W.srep_net), Format.signedIfNegative(r.netProfit))
         )
         ReportView.DEAD -> listOf(word(W.srep_dead_help, SalesReport.DEAD_DAYS.toString())) to r.deadStock.map { listOf(it) }
     }

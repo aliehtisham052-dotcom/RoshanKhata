@@ -160,7 +160,7 @@ private fun ProfilePictures(images: ProfileImages) {
             onCloseRequest = { cropping = null },
             onPreviewKeyEvent = escCloses { cropping = null },
             title = word(W.adjust_crop_title),
-            state = androidx.compose.ui.window.rememberDialogState(width = 760.dp, height = 720.dp)
+            state = androidx.compose.ui.window.rememberDialogState(width = fitW(760.dp), height = fitH(720.dp))
         ) {
             // A logo is kept whole to start; a signature, stamp or QR starts at its ink.
             val start = remember(img) { if (kind == ProfileImages.Kind.LOGO) java.awt.Rectangle(0, 0, img.width, img.height) else InkBounds.of(img) }

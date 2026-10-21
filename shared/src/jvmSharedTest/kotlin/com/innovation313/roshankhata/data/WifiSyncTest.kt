@@ -84,6 +84,8 @@ class WifiSyncTest {
         val got = WifiSync.pull(p)
         assertTrue(got is WifiSync.Pulled.Got)
         assertArrayEquals(pcBook, (got as WifiSync.Pulled.Got).book)
+        // Once per code shown: the same code does not hand the book out again (21 Oct 2026).
+        assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p))
         stop = true
         t.join(10_000)
         server.close()
