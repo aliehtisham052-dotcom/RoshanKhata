@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -51,16 +52,29 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var period by remember { mutableStateOf(ReportPeriod.TODAY) }
+    // The owner's own days (21 Oct 2026): the first and the last, whole days.
+    var first by remember { mutableStateOf<Long?>(null) }
+    var last by remember { mutableStateOf<Long?>(null) }
+    var picking by remember { mutableStateOf<Boolean?>(null) } // true: the first day, false: the last
+    val custom = first?.let { a -> a to (last ?: a) }
     var view by remember { mutableStateOf(ReportView.ITEM) }
     var report by remember { mutableStateOf<SalesReport?>(null) }
     var told by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(period, reload) {
-        val (from, to) = periodWindow(period)
+    LaunchedEffect(period, custom, reload) {
+        val (from, to) = periodWindow(period, custom = custom)
         report = withContext(Dispatchers.IO) { runCatching { SalesReport.compute(dao, from, to) }.getOrNull() }
+    }
+    picking?.let { start ->
+        DayPicker(if (start) first else last ?: first, onPick = { day ->
+            if (start) first = day else last = day
+            if (first == null) first = day
+            period = ReportPeriod.CUSTOM
+            picking = null
+        }, onDismiss = { picking = null })
     }
     val r = report
     val table = r?.let { reportRows(it, view) }
-    val heading = word(view.wordKey) + "  ·  " + word(period.wordKey)
+    val heading = word(view.wordKey) + "  ·  " + com.innovation313.roshankhata.screens.periodLabel(period, custom)
     FluentPage(word(W.sales_report_title), told ?: heading, scroll = false, actions = {
         FluentButton(word(W.export_excel), {
             if (!Access.can(Access.Permission.EXPORT)) { told = words.text(W.access_denied); return@FluentButton }
@@ -86,8 +100,14 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
             )
         }, kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = table != null)
     }) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ReportPeriod.values().forEach { p -> FluentPill(word(p.wordKey), period == p) { period = p } }
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ReportPeriod.values().forEach { p ->
+                FluentPill(word(p.wordKey), period == p) { if (p == ReportPeriod.CUSTOM && first == null) picking = true else period = p }
+            }
+            if (period == ReportPeriod.CUSTOM) {
+                DateBox(null, first?.let { Format.dateOnly(it) }, word(W.report_start_date), { picking = true }, Modifier.width(170.dp))
+                DateBox(null, (last ?: first)?.let { Format.dateOnly(it) }, word(W.report_end_date), { picking = false }, Modifier.width(170.dp))
+            }
         }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ReportView.values().forEach { v -> FluentPill(word(v.wordKey), view == v) { view = v } }
@@ -97,6 +117,10 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
             FigureCard(word(W.srep_col_count), r?.saleCount?.toString() ?: "…", c.inkSoft, Modifier.weight(1f))
             FigureCard(word(W.srep_net), r?.let { Format.money(it.netProfit) } ?: "…", if ((r?.netProfit ?: 0.0) < 0) c.owedToMe else Look.accent, Modifier.weight(1f),
                 under = r?.let { words.text(W.srep_cost_known, Format.money(it.costKnownRevenue)) })
+        }
+        // The chart (21 Oct 2026): a bar per hour, day or month of the window, from the same lines.
+        if (r != null && r.revenue > 0.0) {
+            com.innovation313.roshankhata.screens.SalesChart(r.bars(), Modifier.fillMaxWidth().card().padding(14.dp), height = 96.dp)
         }
         ListCard(Modifier.weight(1f)) {
             if (table == null || table.second.isEmpty()) Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { Text(word(W.srep_none), color = c.textMuted) }

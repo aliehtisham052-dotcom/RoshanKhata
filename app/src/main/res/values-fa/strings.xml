@@ -3312,4 +3312,18 @@
     <string name="printer_logo">لوگوی فروشگاه در بالا</string>
     <string name="printer_drawer">باز کردن کشوی پول در فروش نقدی</string>
     <string name="printer_drawer_help">برای کشوی پولی که به چاپگر رسید وصل است. چاپگری که کشو ندارد آن را نادیده می‌گیرد.</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">انتخاب تاریخ‌ها</string>
+    <string name="srep_chart">فروش در طول زمان</string>
+    <string name="srep_chart_top">بیشترین: %1$s</string>
+    <string name="aging_title">بدهی‌ها بر اساس مدت</string>
+    <string name="aging_help">آنچه هنوز مانده است، بر اساس اینکه چه مدت پیش داده شده. پرداخت اول قدیمی‌ترین را صاف می‌کند؛ هر مبلغی بیش از ۹۰ روز تماس می‌خواهد.</string>
+    <string name="aging_0_30">۰–۳۰ روز</string>
+    <string name="aging_31_60">۳۱–۶۰ روز</string>
+    <string name="aging_61_90">۶۱–۹۰ روز</string>
+    <string name="aging_90">بیش از ۹۰ روز</string>
+    <string name="aging_none">هیچ مبلغی باقی نیست</string>
+    <string name="aging_oldest">قدیمی‌ترین: %1$s</string>
+    <string name="aging_total">جمع</string>
 </resources>

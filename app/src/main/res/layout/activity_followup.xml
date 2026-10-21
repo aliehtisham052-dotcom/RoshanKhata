@@ -55,6 +55,19 @@
             android:visibility="gone"
             app:cornerRadius="12dp"
             app:strokeColor="@color/white" />
+
+        <!-- Dues by age (21 Oct 2026): the same people, split by how old the money is. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAging"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp"
+            android:text="@string/aging_title"
+            android:textColor="@color/white"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/white" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

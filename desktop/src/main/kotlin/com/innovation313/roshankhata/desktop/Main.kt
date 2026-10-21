@@ -577,6 +577,7 @@ private fun Book(
                     Section.RATES -> Box(Modifier.fillMaxSize()) { RateListPane(dao, words, rtl, shop) }
                     Section.STAFF -> Box(Modifier.fillMaxSize()) { StaffPane(dao) }
                     Section.FOLLOWUP -> Box(Modifier.fillMaxSize()) { FollowUpPane(dao, parties, words, shop) }
+                    Section.AGING -> Box(Modifier.fillMaxSize()) { AgingPane(dao, words, rtl, shop, reload) { id -> selected = id; section = Section.KHATA } }
                     Section.CALC -> Box(Modifier.fillMaxSize()) { CalculatorPane() }
                     Section.SCHEMES -> Box(Modifier.fillMaxSize()) { SchemesPane(dao, reload) }
                     Section.CASHFLOW -> Box(Modifier.fillMaxSize()) { CashFlowPane(dao, reload) }

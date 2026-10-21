@@ -3312,4 +3312,18 @@
     <string name="printer_logo">مٿي دڪان جو لوگو</string>
     <string name="printer_drawer">نقد وڪري تي ڪيش دراز کوليو</string>
     <string name="printer_drawer_help">رسيد پرنٽر ۾ لڳل ڪيش دراز لاءِ. جنهن پرنٽر سان دراز نه هجي اهو ان کي نظرانداز ڪري ٿو.</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">تاريخون چونڊيو</string>
+    <string name="srep_chart">وقت سان وڪرو</string>
+    <string name="srep_chart_top">سڀ کان وڌيڪ: %1$s</string>
+    <string name="aging_title">باقي رقم، مدت جي حساب سان</string>
+    <string name="aging_help">جيڪو اڃا باقي آهي، ان حساب سان ته ڪيترو عرصو اڳ ڏنو ويو. ادائگي پهريان پراڻو حساب صاف ڪري ٿي؛ 90 ڏينهن کان پراڻي رقم تي فون ضرور ڪريو.</string>
+    <string name="aging_0_30">0–30 ڏينهن</string>
+    <string name="aging_31_60">31–60 ڏينهن</string>
+    <string name="aging_61_90">61–90 ڏينهن</string>
+    <string name="aging_90">90 ڏينهن کان وڌيڪ</string>
+    <string name="aging_none">ڪا به رقم باقي ناهي</string>
+    <string name="aging_oldest">سڀ کان پراڻي: %1$s</string>
+    <string name="aging_total">ڪل</string>
 </resources>

@@ -220,7 +220,8 @@ object AccessUi {
         "ZakatActivity" to Access.Permission.REPORTS,
         "ReportActivity" to Access.Permission.REPORTS,
         "SupplierRatesActivity" to Access.Permission.REPORTS,
-        "AuditActivity" to Access.Permission.REPORTS
+        "AuditActivity" to Access.Permission.REPORTS,
+        "AgingActivity" to Access.Permission.REPORTS
     )
 
     /** What [screen] needs, or null when anyone signed in may open it. */

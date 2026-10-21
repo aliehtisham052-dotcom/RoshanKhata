@@ -66,7 +66,7 @@ fun Section.need(): Access.Permission? = when (this) {
     Section.DAILY -> Access.Permission.BACKUP
     Section.DUPLICATES -> Access.Permission.EDIT_BOOK
     Section.SALES, Section.INSIGHTS, Section.CASHFLOW, Section.ZAKAT, Section.REPORT,
-    Section.BUY_RATES, Section.AUDIT -> Access.Permission.REPORTS
+    Section.BUY_RATES, Section.AUDIT, Section.AGING -> Access.Permission.REPORTS
     else -> null
 }
 

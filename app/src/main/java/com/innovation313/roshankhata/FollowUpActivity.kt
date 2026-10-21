@@ -126,6 +126,9 @@ class FollowUpActivity : BaseActivity() {
         tvSummary = findViewById(R.id.tvFollowUpSummary)
         btnRemindAll = findViewById(R.id.btnRemindAll)
         btnRemindAll.setOnClickListener { startQueue() }
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnAging).setOnClickListener {
+            startActivity(android.content.Intent(this, AgingActivity::class.java))
+        }
         tvEmpty = findViewById(R.id.tvFollowUpEmpty)
 
         adapter = FollowUpAdapter(

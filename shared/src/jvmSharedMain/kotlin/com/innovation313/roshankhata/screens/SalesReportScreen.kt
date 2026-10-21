@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -44,13 +46,26 @@ enum class ReportView(val wordKey: String) {
     CASHIER(W.srep_by_cashier), HOUR(W.srep_by_hour), TAX(W.srep_tax), PROFIT(W.srep_profit), DEAD(W.srep_dead)
 }
 
-enum class ReportPeriod(val wordKey: String) { TODAY(W.srep_period_today), WEEK(W.srep_period_week), MONTH(W.srep_period_month) }
+enum class ReportPeriod(val wordKey: String) {
+    TODAY(W.srep_period_today), WEEK(W.srep_period_week), MONTH(W.srep_period_month),
+    /** The owner's own first and last day (21 Oct 2026). */
+    CUSTOM(W.srep_period_custom)
+}
 
-/** [from, to) for a period, ending now. */
-fun periodWindow(p: ReportPeriod, now: Long = System.currentTimeMillis()): Pair<Long, Long> {
+/**
+ * [from, to) for a period, ending now; for [ReportPeriod.CUSTOM] the chosen
+ * days ([custom]: the first day's start and the last day's start, both
+ * whole days), or today while none is chosen.
+ */
+fun periodWindow(p: ReportPeriod, now: Long = System.currentTimeMillis(), custom: Pair<Long, Long>? = null): Pair<Long, Long> {
     val day = DayCloseMath.dayOf(now)
+    if (p == ReportPeriod.CUSTOM && custom != null) {
+        val first = DayCloseMath.dayOf(minOf(custom.first, custom.second))
+        val last = DayCloseMath.dayOf(maxOf(custom.first, custom.second))
+        return DayCloseMath.startOf(first) to DayCloseMath.startOf(last + 1)
+    }
     val start = when (p) {
-        ReportPeriod.TODAY -> DayCloseMath.startOf(day)
+        ReportPeriod.TODAY, ReportPeriod.CUSTOM -> DayCloseMath.startOf(day)
         ReportPeriod.WEEK -> DayCloseMath.startOf(day - 6)
         ReportPeriod.MONTH -> java.util.Calendar.getInstance().apply {
             timeInMillis = now; set(java.util.Calendar.DAY_OF_MONTH, 1)
@@ -88,21 +103,43 @@ fun reportRows(r: SalesReport, view: ReportView): Pair<List<String>, List<List<S
     }
 }
 
-/** The report on the phone: period chips, view chips, the rows. */
+/** The words on a period's chip: the custom one wears its dates once they are chosen. */
 @Composable
-fun SalesReportScreen(dao: KhataDao, reload: Int = 0, modifier: Modifier = Modifier, onReport: ((SalesReport) -> Unit)? = null) {
+fun periodLabel(p: ReportPeriod, custom: Pair<Long, Long>?): String =
+    if (p == ReportPeriod.CUSTOM && custom != null) Format.dateOnly(minOf(custom.first, custom.second)) + " – " + Format.dateOnly(maxOf(custom.first, custom.second))
+    else word(p.wordKey)
+
+/**
+ * The report on the phone: period chips, view chips, the chart, the rows.
+ * [pickRange] asks the platform for the custom period's two days (the
+ * phone's date range picker), handing back the current choice to start from.
+ */
+@Composable
+fun SalesReportScreen(
+    dao: KhataDao, reload: Int = 0, modifier: Modifier = Modifier, onReport: ((SalesReport) -> Unit)? = null,
+    pickRange: ((current: Pair<Long, Long>?, onPicked: (Pair<Long, Long>) -> Unit) -> Unit)? = null
+) {
     val c = LocalRoshanColors.current
     var period by remember { mutableStateOf(ReportPeriod.TODAY) }
+    var custom by remember { mutableStateOf<Pair<Long, Long>?>(null) }
     var view by remember { mutableStateOf(ReportView.ITEM) }
     var report by remember { mutableStateOf<SalesReport?>(null) }
-    LaunchedEffect(period, reload) {
-        val (from, to) = periodWindow(period)
+    LaunchedEffect(period, custom, reload) {
+        val (from, to) = periodWindow(period, custom = custom)
         report = withContext(Dispatchers.IO) { runCatching { SalesReport.compute(dao, from, to) }.getOrNull() }
         report?.let { onReport?.invoke(it) }
     }
     Column(modifier.fillMaxSize().background(c.pageBg)) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            ReportPeriod.values().forEach { p -> FilterChip(selected = period == p, onClick = { period = p }, label = { Text(word(p.wordKey), fontSize = 12.sp) }) }
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            ReportPeriod.values().filter { it != ReportPeriod.CUSTOM || pickRange != null }.forEach { p ->
+                FilterChip(selected = period == p, onClick = {
+                    if (p == ReportPeriod.CUSTOM) {
+                        pickRange?.invoke(custom) { range -> custom = range; period = ReportPeriod.CUSTOM }
+                    } else {
+                        period = p
+                    }
+                }, label = { Text(periodLabel(p, custom), fontSize = 12.sp, maxLines = 1) })
+            }
         }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             ReportView.values().forEach { v -> FilterChip(selected = view == v, onClick = { view = v }, label = { Text(word(v.wordKey), fontSize = 12.sp) }) }
@@ -122,6 +159,9 @@ fun SalesReportScreen(dao: KhataDao, reload: Int = 0, modifier: Modifier = Modif
         val (head, rows) = reportRows(r, view)
         if (rows.isEmpty()) { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { Text(word(W.srep_none), color = c.textMuted) }; return }
         LazyColumn(Modifier.fillMaxSize(), contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 4.dp)) {
+            item(key = "chart") {
+                SalesChart(r.bars(), Modifier.fillMaxWidth().padding(bottom = 8.dp).background(c.surface, RoundedCornerShape(12.dp)).padding(12.dp))
+            }
             if (head.any { it.isNotEmpty() }) item {
                 Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                     head.forEachIndexed { i, h -> Text(h, Modifier.weight(if (i == 0) 2f else 1f), color = c.textMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold, maxLines = 1) }
@@ -136,6 +176,46 @@ fun SalesReportScreen(dao: KhataDao, reload: Int = 0, modifier: Modifier = Modif
                 }
                 HorizontalDivider(color = c.surface)
             }
+        }
+    }
+}
+
+/**
+ * The report's chart (21 Oct 2026): a bar per hour, day or month of the
+ * window ([SalesReport.bars]), the tallest the highest sale, the first,
+ * middle and last slices named under it. Time runs from the reading side:
+ * in Urdu or Arabic the first bar stands on the right, under its label.
+ */
+@Composable
+fun SalesChart(bars: List<SalesReport.Bar>, modifier: Modifier = Modifier, height: androidx.compose.ui.unit.Dp = 120.dp) {
+    val c = LocalRoshanColors.current
+    val rtl = androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl
+    val top = bars.maxOfOrNull { it.revenue } ?: 0.0
+    val fill = c.brandGreen
+    val empty = c.textMuted.copy(alpha = 0.35f)
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(word(W.srep_chart), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            if (top > 0.0) Text(word(W.srep_chart_top, Format.money(top)), color = c.textMuted, fontSize = 12.sp, maxLines = 1)
+        }
+        androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(height)) {
+            val n = bars.size
+            if (n == 0) return@Canvas
+            val slot = size.width / n
+            val w = (slot * 0.72f).coerceAtLeast(1f)
+            bars.forEachIndexed { i, b ->
+                val h = if (top > 0.0) (b.revenue / top * size.height).toFloat().coerceAtLeast(if (b.revenue > 0.0) 2f else 0f) else 0f
+                val bar = if (h > 0f) h else 2f
+                val x = if (rtl) size.width - (i + 1) * slot + (slot - w) / 2 else i * slot + (slot - w) / 2
+                drawRect(if (h > 0f) fill else empty, topLeft = androidx.compose.ui.geometry.Offset(x, size.height - bar), size = androidx.compose.ui.geometry.Size(w, bar))
+            }
+        }
+        if (bars.isNotEmpty()) Row(Modifier.fillMaxWidth()) {
+            Text(bars.first().label, color = c.textMuted, fontSize = 11.sp, maxLines = 1)
+            Spacer(Modifier.weight(1f))
+            if (bars.size > 2) Text(bars[bars.size / 2].label, color = c.textMuted, fontSize = 11.sp, maxLines = 1)
+            Spacer(Modifier.weight(1f))
+            if (bars.size > 1) Text(bars.last().label, color = c.textMuted, fontSize = 11.sp, maxLines = 1)
         }
     }
 }
