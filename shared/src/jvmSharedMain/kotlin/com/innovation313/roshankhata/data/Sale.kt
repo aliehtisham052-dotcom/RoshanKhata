@@ -418,4 +418,5 @@ object AuditAction {
     const val SHIFT_CLOSED = "shift_closed"
     const val TRANSFER_OUT = "transfer_out"
     const val TRANSFER_IN = "transfer_in"
+    const val BOOK_MERGED = "book_merged"
 }

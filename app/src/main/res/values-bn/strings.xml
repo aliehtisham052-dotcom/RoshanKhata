@@ -3377,4 +3377,18 @@
     <string name="audit_transfer_out">অন্য দোকানে স্টক পাঠানো হয়েছে</string>
     <string name="audit_transfer_in">অন্য দোকান থেকে স্টক এসেছে</string>
     <string name="transfer_none">আর কোনো দোকান নেই। ব্যবসায় একটি যোগ করুন।</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">শুধু নতুনটুকু যোগ করুন</string>
+    <string name="merge_title">শুধু নতুনটুকু যোগ করুন</string>
+    <string name="merge_help">এই খাতার সবকিছু থাকে, আর কপির যা এখানে নেই তা যোগ হয় — এন্ট্রি, ক্যাশবুক, বিল, ফেরত, সরবরাহকারীর বিল, চেক, ইনভয়েস — প্রতিটির নিজের ID মিলিয়ে, টাকার অঙ্ক দিয়ে কখনো নয়। এখানে কিছু বদলায় না বা মোছে না।</string>
+    <string name="merge_preview">যোগ হবে: %1$s খাতা এন্ট্রি, %2$s ক্যাশবুক সারি, %3$s কাউন্টার বিল, %4$s অন্যান্য রেকর্ড; %5$s নতুন গ্রাহক, %6$s নতুন পণ্য।</string>
+    <string name="merge_changed">%1$s সারি কপিতেও বদলানো বা মোছা হয়েছে: এই খাতা নিজেরটা রাখে।</string>
+    <string name="merge_other_shop">কপির নাম %1$s — দেখে নিন এটি এই দোকানেরই খাতা কি না।</string>
+    <string name="merge_done">কপি থেকে %1$s সারি যোগ হয়েছে (%2$s-এর নম্বর বদলেছে)।</string>
+    <string name="merge_nothing">কপিতে এমন কিছু নেই যা এই খাতায় নেই।</string>
+    <string name="merge_too_old">এই কপিটি পুরোনো সংস্করণের, এতে সারির ID নেই: এটি শুধু খাতার জায়গা নিতে পারে।</string>
+    <string name="merge_unrelated">এই কপির সাথে এই খাতার কিছুই মেলে না — এটি অন্য খাতা। এটি শুধু এর জায়গা নিতে পারে।</string>
+    <string name="merge_not_carried">যোগ হয় না: কিস্তির পরিকল্পনা, মৌসুম, স্কিম, হাজিরা আর দিনের হিসাব বন্ধ।</string>
+    <string name="audit_book_merged">কপি যোগ করা হয়েছে</string>
 </resources>

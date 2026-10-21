@@ -25,6 +25,7 @@ import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -69,4 +70,64 @@ fun LossNote(loss: RestoreCheck.Loss?, agreed: Boolean, onAgree: (Boolean) -> Un
             Text(word(W.restore_loss_agree), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
         }
     }
+}
+
+/**
+ * A copy merged in instead of replacing the book (21 Oct 2026, BookMerge):
+ * what it would add, in figures, before anything is written; [keepFirst]
+ * keeps this book as a daily copy; then only the rows it lacks come in, in
+ * one transaction. [onDone] gets the words to tell the owner.
+ */
+@Composable
+fun MergeDialog(
+    dao: KhataDao, data: BackupCodec.ParsedBackup, shopHere: String?,
+    keepFirst: suspend () -> Unit, onDone: (String) -> Unit, onClose: () -> Unit
+) {
+    val c = LocalRoshanColors.current
+    val words = LocalWords.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var plan by remember(data) { mutableStateOf<com.innovation313.roshankhata.data.BookMerge.Plan?>(null) }
+    var refused by remember(data) { mutableStateOf<String?>(null) }
+    var busy by remember { mutableStateOf(false) }
+    LaunchedEffect(data) {
+        withContext(Dispatchers.IO) {
+            runCatching { com.innovation313.roshankhata.data.BookMerge.plan(dao, data, shopHere) }
+                .onSuccess { plan = it }
+                .onFailure { e ->
+                    refused = if (e is com.innovation313.roshankhata.data.BookMerge.Refused) words.text(com.innovation313.roshankhata.data.BookMerge.refusalWord(e))
+                    else e.message ?: words.text(W.backup_failed)
+                }
+        }
+    }
+    val p = plan
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = { if (!busy) onClose() },
+        title = { Text(word(W.merge_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                when {
+                    refused != null -> Text(refused!!, color = c.owedToMe, fontSize = 14.sp)
+                    p == null -> Text(word(W.restore_loss_counting), color = c.textMuted, fontSize = 13.sp)
+                    p.none -> Text(word(W.merge_nothing), color = c.ink, fontSize = 14.sp)
+                    else -> {
+                        Text(word(W.merge_help), color = c.inkSoft, fontSize = 13.sp)
+                        com.innovation313.roshankhata.data.BookMerge.lines(p, words).forEach { Text("•  $it", color = c.ink, fontSize = 13.sp) }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            if (p != null && !p.none && refused == null) FluentButton(word(W.merge_button), {
+                busy = true
+                scope.launch {
+                    val result = withContext(Dispatchers.IO) { runCatching { keepFirst(); dao.mergeBook(data, shopHere) } }
+                    busy = false
+                    result.onSuccess { done -> onDone(words.text(W.merge_done, done.rows, done.renumbered)) }
+                        .onFailure { onDone(it.message ?: words.text(W.backup_failed)) }
+                    onClose()
+                }
+            }, kind = ButtonKind.ACCENT, enabled = !busy)
+        },
+        dismissButton = { FluentButton(word(W.cancel), { if (!busy) onClose() }, kind = ButtonKind.STANDARD) }
+    )
 }

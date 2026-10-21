@@ -3529,6 +3529,47 @@ interface KhataDao {
     )
     suspend fun purchasesOfProduct(productId: Long): List<Cost.Purchase>
 
+    // ---------- A copy merged in (BookMerge, 21 Oct 2026) ----------
+
+    @Query("SELECT id, uid FROM transactions") suspend fun entryUids(): List<IdUid>
+    @Query("SELECT id, uid FROM cashbook") suspend fun cashUids(): List<IdUid>
+    @Query("SELECT id, uid FROM cheques") suspend fun chequeUids(): List<IdUid>
+    @Query("SELECT id, uid FROM supplier_bills") suspend fun billUids(): List<IdUid>
+    @Query("SELECT id, uid FROM invoices") suspend fun invoiceUids(): List<IdUid>
+    @Query("SELECT id, uid FROM sales") suspend fun saleUids(): List<IdUid>
+    @Query("SELECT id, uid FROM sale_returns") suspend fun returnUids(): List<IdUid>
+    @Query("SELECT id, uid FROM stock_adjustments") suspend fun adjustmentUids(): List<IdUid>
+    @Query("SELECT id, uid FROM purchase_orders") suspend fun orderUids(): List<IdUid>
+    @Query("SELECT id, uid FROM staff_payments") suspend fun staffPaymentUids(): List<IdUid>
+    @Query("SELECT id, uid FROM loyalty") suspend fun loyaltyUids(): List<IdUid>
+    @Query("SELECT id, uid FROM shifts") suspend fun shiftUids(): List<IdUid>
+
+    @Insert
+    suspend fun insertSaleItem(item: SaleItem): Long
+
+    @Query("SELECT COUNT(*) FROM transactions WHERE entryNumber = :n") suspend fun entryNumberUsed(n: String): Int
+    @Query("SELECT COUNT(*) FROM sales WHERE saleNumber = :n") suspend fun saleNumberUsed(n: String): Int
+    @Query("SELECT COUNT(*) FROM sale_returns WHERE returnNumber = :n") suspend fun returnNumberUsed(n: String): Int
+    @Query("SELECT COUNT(*) FROM purchase_orders WHERE orderNumber = :n") suspend fun orderNumberUsed(n: String): Int
+    @Query("SELECT COUNT(*) FROM invoices WHERE invoiceNumber = :n") suspend fun invoiceNumberUsed(n: String): Int
+
+    /** The largest INV- number in the book (invoices are otherwise numbered by their count). */
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTR(invoiceNumber, 5) AS INTEGER)), 0) FROM invoices WHERE invoiceNumber LIKE 'INV-%'")
+    suspend fun highestInvoiceNumber(): Int
+
+    /**
+     * Another copy of this book merged in: only what this book does not have
+     * yet, in one transaction ([BookMerge]). Throws when the copy is too old
+     * to carry row ids, is another shop's, or shares nothing with this book.
+     */
+    @Transaction
+    suspend fun mergeBook(there: BackupCodec.ParsedBackup, shopHere: String?, user: String? = Access.userName): BookMerge.Plan {
+        val done = BookMerge.apply(this, there, shopHere)
+        // The merge's own row in who-did-what (and what marks this a write for the viewer's DAO).
+        if (!done.none) insertAudit(AuditLog(user = user ?: Access.OWNER, action = AuditAction.BOOK_MERGED, detail = BookMerge.detail(done)))
+        return done
+    }
+
     /** Every live khata entry as [Aging] needs it, newest first. */
     @Query("SELECT partyId, amount, isGiven, timestamp FROM transactions WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC")
     suspend fun agingMoves(): List<AgingMove>
