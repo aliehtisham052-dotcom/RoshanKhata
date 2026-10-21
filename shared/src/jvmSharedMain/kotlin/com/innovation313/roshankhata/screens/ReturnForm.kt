@@ -125,7 +125,7 @@ fun ReturnForm(draft: ReturnDraft, onPost: () -> Unit, onCancel: () -> Unit, mod
                     Text(l.item.itemName, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(word(W.pos_return_qty_help, Calc.trim(l.item.quantity), Calc.trim(l.item.quantity - l.left)) + " · " + Format.money(l.rate), color = c.textMuted, fontSize = 12.sp)
                 }
-                OutlinedTextField(l.qty, { l.qty = it }, Modifier.width(96.dp), label = { Text(word(W.pos_col_qty)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), enabled = l.left > 0.0)
+                CalcField(l.qty, { l.qty = it }, Modifier.width(112.dp), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty), enabled = l.left > 0.0)
             }
         }
         OutlinedTextField(draft.reason, { draft.reason = it }, Modifier.fillMaxWidth(), label = { Text(word(W.pos_return_reason)) }, singleLine = true)
@@ -137,7 +137,7 @@ fun ReturnForm(draft: ReturnDraft, onPost: () -> Unit, onCancel: () -> Unit, mod
             }
         }
         if (draft.refundMethod != SaleReturn.ACCOUNT) {
-            OutlinedTextField(draft.refundText, { draft.refundText = it }, Modifier.fillMaxWidth(), label = { Text(word(W.amount)) }, placeholder = { Text(Format.money(draft.total)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+            CalcField(draft.refundText, { draft.refundText = it }, Modifier.fillMaxWidth(), label = word(W.amount), placeholder = Format.money(draft.total))
         }
         message?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
         val problem = draft.problem

@@ -206,7 +206,7 @@ private fun AdjustDialog(dao: KhataDao, words: Words, onClose: () -> Unit, done:
                     Text(p.name, Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                     FluentButton(word(W.edit), { chosen = null }, kind = ButtonKind.SUBTLE)
                 }
-                FluentField(qty, { qty = it }, Modifier.fillMaxWidth().padding(top = 8.dp), label = word(W.adjust_qty_hint), big = true)
+                FluentField(qty, { qty = it }, Modifier.fillMaxWidth().padding(top = 8.dp), label = word(W.adjust_qty_hint), big = true, calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                 Text(word(W.adjust_reason), Modifier.padding(top = 8.dp), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     listOf(AdjustReason.DAMAGE, AdjustReason.EXPIRED, AdjustReason.THEFT, AdjustReason.OTHER).forEach { r ->

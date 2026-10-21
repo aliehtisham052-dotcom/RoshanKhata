@@ -78,7 +78,7 @@ fun BillEditDialog(dao: KhataDao, words: Words, billId: Long, supplierName: Stri
             Text(word(W.edit_bill), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(Format.name(supplierName), color = c.ink, fontSize = 15.sp)
             Outlined(number, { number = it }, label = { Text(word(W.bill_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            Outlined(total, { total = it }, label = { Text(word(W.bill_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Outlined(total, { total = it }, label = { Text(word(W.bill_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             Text(amount?.let { Format.money(it) } ?: word(W.enter_valid_amount), color = if (amount == null) c.owedToMe else c.textMuted, fontSize = 13.sp)
             TextButton({ picking = 0 }) { Text(word(W.bill_date_set, Format.dateOnly(billDate)), color = c.brandGreenText) }
             TextButton({ picking = 1 }) { Text(dueDate?.let { word(W.due_date_set, Format.dateOnly(it)) } ?: word(W.pick_due_date), color = c.brandGreenText) }

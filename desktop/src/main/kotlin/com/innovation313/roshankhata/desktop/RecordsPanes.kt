@@ -761,7 +761,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(word(W.record_payment_help, p.partyName), color = c.textMuted, fontSize = 13.sp)
-                    Outlined(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true)
+                    Outlined(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     Text(amount?.let { Format.money(it) } ?: "", color = c.textMuted)
                     Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, singleLine = true)
                     // More than is left: said before Save, still posted in full if the owner goes ahead.
@@ -1002,8 +1002,8 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
                     }
                 }
             }
-            Outlined(total, { total = it; problem = null }, label = { Text(word(W.plan_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            Outlined(each, { each = it }, label = { Text(word(W.plan_installment_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Outlined(total, { total = it; problem = null }, label = { Text(word(W.plan_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+            Outlined(each, { each = it }, label = { Text(word(W.plan_installment_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 FluentButton(word(W.plan_pick_next_due), { picking = true }, kind = ButtonKind.SUBTLE)
                 Text(due?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontWeight = FontWeight.Bold)

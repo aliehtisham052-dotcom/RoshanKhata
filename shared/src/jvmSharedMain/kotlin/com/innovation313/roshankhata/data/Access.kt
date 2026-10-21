@@ -128,6 +128,56 @@ object Access {
         ownerIn = on
     }
 
+    /** This device's own id, made once and kept in the device's settings; "" in tests without a store. */
+    fun deviceId(): String {
+        val s = store ?: return ""
+        s.get(KEY_DEVICE)?.takeIf { it.isNotBlank() }?.let { return it }
+        val id = Uid.next()
+        s.put(KEY_DEVICE, id)
+        return id
+    }
+
+    private suspend fun ownerDevices(dao: KhataDao): Set<String> =
+        dao.settingValue(BookSettings.OWNER_DEVICES).orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+
+    /**
+     * The switch written into the book too ([BookSettings.COUNTER_USED],
+     * [BookSettings.OWNER_DEVICES]): on, this device stops being one of the
+     * owner's; off, it becomes one. Called with [switchCounterMode] after the
+     * owner's PIN.
+     */
+    suspend fun recordCounterMode(dao: KhataDao, on: Boolean) {
+        val me = deviceId()
+        if (me.isEmpty()) return
+        if (on) dao.setSetting(BookSettings.COUNTER_USED, "1")
+        val owners = ownerDevices(dao)
+        val next = if (on) owners - me else owners + me
+        if (next != owners) dao.setSetting(BookSettings.OWNER_DEVICES, next.sorted().joinToString(",").ifEmpty { null })
+    }
+
+    /**
+     * The book's word on this device (the computer calls it when a book
+     * opens): a book that has had a counter makes this device a counter
+     * unless the owner has made it theirs — whatever the device's own
+     * settings file says. A counter this device already is, is told to the
+     * book. Returns true when this turned counter mode on.
+     */
+    suspend fun applyBook(dao: KhataDao): Boolean {
+        val me = deviceId()
+        if (me.isEmpty()) return false
+        val used = BookSettings.isOn(dao.settingValue(BookSettings.COUNTER_USED))
+        if (!used) {
+            if (counterMode) recordCounterMode(dao, true)
+            return false
+        }
+        if (counterMode || me in ownerDevices(dao)) return false
+        store?.put(KEY_COUNTER, "1")
+        counterMode = true
+        current = null
+        ownerIn = false
+        return true
+    }
+
     /**
      * Whether this discount needs a manager's PIN from whoever is signed in.
      * [gross] is the goods before any discount (21 Oct 2026): measured on
@@ -201,17 +251,30 @@ object Access {
     private const val FIRST_WAIT_MS = 30_000L
     private const val LONGEST_WAIT_MS = 15 * 60_000L
 
-    @Volatile private var memMisses = 0
-    @Volatile private var memWaitUntil = 0L
+    /**
+     * Whose PIN is being tried (21 Oct 2026, the critical review): each
+     * account keeps its own count and its own wait. With one count for all,
+     * a cashier's own right PIN cleared the misses made guessing the owner's,
+     * so the owner's PIN could be guessed without end, four at a time.
+     */
+    fun account(staff: Staff?): String = staff?.let { "staff:" + it.id } ?: OWNER
 
-    private fun misses(): Int = store?.get(KEY_MISSES)?.toIntOrNull() ?: memMisses
-    private fun waitUntil(): Long = store?.get(KEY_WAIT_UNTIL)?.toLongOrNull() ?: memWaitUntil
+    /** The account of a PIN typed where it is not known whose it is (the old single count). */
+    const val ANY = "any"
 
-    /** Milliseconds still to wait before another PIN may be tried; 0 when one may. */
-    fun waitMillis(now: Long = System.currentTimeMillis()): Long = (waitUntil() - now).coerceAtLeast(0L)
+    private val memMisses = java.util.concurrent.ConcurrentHashMap<String, Int>()
+    private val memWaitUntil = java.util.concurrent.ConcurrentHashMap<String, Long>()
+
+    private fun key(base: String, account: String) = if (account == ANY) base else "$base:$account"
+    private fun misses(account: String): Int = store?.get(key(KEY_MISSES, account))?.toIntOrNull() ?: memMisses[account] ?: 0
+    private fun waitUntil(account: String): Long = store?.get(key(KEY_WAIT_UNTIL, account))?.toLongOrNull() ?: memWaitUntil[account] ?: 0L
+
+    /** Milliseconds still to wait before another PIN of [account] may be tried; 0 when one may. */
+    fun waitMillis(now: Long = System.currentTimeMillis(), account: String = ANY): Long =
+        (maxOf(waitUntil(account), waitUntil(ANY)) - now).coerceAtLeast(0L)
 
     /** The same, in whole seconds rounded up, for the screen. */
-    fun waitSeconds(now: Long = System.currentTimeMillis()): Int = ((waitMillis(now) + 999) / 1000).toInt()
+    fun waitSeconds(now: Long = System.currentTimeMillis(), account: String = ANY): Int = ((waitMillis(now, account) + 999) / 1000).toInt()
 
     /**
      * A PIN was tried. A right one clears the count; a wrong one adds to it,
@@ -220,20 +283,21 @@ object Access {
      * caller writes the audit row).
      */
     @Synchronized
-    fun pinTried(right: Boolean, now: Long = System.currentTimeMillis()): Boolean {
+    fun pinTried(right: Boolean, now: Long = System.currentTimeMillis(), account: String = ANY): Boolean {
         if (right) {
-            memMisses = 0; memWaitUntil = 0L
-            store?.put(KEY_MISSES, null); store?.put(KEY_WAIT_UNTIL, null)
+            // Only this account's count is cleared: another's right PIN says nothing about this one.
+            memMisses.remove(account); memWaitUntil.remove(account)
+            store?.put(key(KEY_MISSES, account), null); store?.put(key(KEY_WAIT_UNTIL, account), null)
             return false
         }
-        val n = misses() + 1
-        memMisses = n
-        store?.put(KEY_MISSES, n.toString())
+        val n = misses(account) + 1
+        memMisses[account] = n
+        store?.put(key(KEY_MISSES, account), n.toString())
         if (n % MISSES_PER_WAIT != 0) return false
         val doublings = (n / MISSES_PER_WAIT - 1).coerceAtMost(10)
         val wait = (FIRST_WAIT_MS shl doublings).coerceAtMost(LONGEST_WAIT_MS)
-        memWaitUntil = now + wait
-        store?.put(KEY_WAIT_UNTIL, (now + wait).toString())
+        memWaitUntil[account] = now + wait
+        store?.put(key(KEY_WAIT_UNTIL, account), (now + wait).toString())
         return true
     }
 
@@ -242,22 +306,23 @@ object Access {
      * compared), else whether [check] accepted it — counted either way.
      * [onWait] is told when this miss started a wait, for the audit row.
      */
-    fun tryPin(pin: String, now: Long = System.currentTimeMillis(), onWait: () -> Unit = {}, check: (String) -> Boolean): Boolean? {
-        if (waitMillis(now) > 0L) return null
+    fun tryPin(pin: String, now: Long = System.currentTimeMillis(), onWait: () -> Unit = {}, account: String = ANY, check: (String) -> Boolean): Boolean? {
+        if (waitMillis(now, account) > 0L) return null
         val right = check(pin)
-        if (pinTried(right, now)) onWait()
+        if (pinTried(right, now, account)) onWait()
         return right
     }
 
     /** For tests: forget the device and every count. */
     fun resetForTest() {
         store = null
-        memMisses = 0; memWaitUntil = 0L
+        memMisses.clear(); memWaitUntil.clear()
         counterMode = false
         current = null; ownerIn = false
     }
 
     private const val KEY_COUNTER = "access_counter_mode"
+    private const val KEY_DEVICE = "access_device_id"
     private const val KEY_MISSES = "access_pin_misses"
     private const val KEY_WAIT_UNTIL = "access_pin_wait_until"
 }

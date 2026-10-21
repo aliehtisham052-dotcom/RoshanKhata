@@ -94,7 +94,7 @@ fun InvoiceForm(
     var problem by remember { mutableStateOf<String?>(null) }
     val needCustomer = word(W.invoice_customer_required)
     val needItem = word(W.invoice_needs_item)
-    val t = InvoiceMath.totals(lines, Calc.evalPad(discount), Calc.evalPad(tax), Calc.evalPad(charge), Calc.evalPad(received))
+    val t = InvoiceMath.totals(lines, Calc.evalPercent(discount), Calc.evalPercent(tax), Calc.evalPad(charge), Calc.evalPad(received))
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber } ?: word(W.add_invoice), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -135,8 +135,8 @@ fun InvoiceForm(
                 kotlinx.coroutines.delay(400)
                 val draft = (existing ?: Invoice(customerName = "")).copy(
                     templateId = templateId, customerName = customer.trim().ifEmpty { "\u2014" }, customerPhone = phone.trim().ifEmpty { null },
-                    invoiceDate = date, taxPercent = Calc.evalPad(tax)?.takeIf { it != 0.0 },
-                    discountPercent = Calc.evalPad(discount)?.takeIf { it != 0.0 },
+                    invoiceDate = date, taxPercent = Calc.evalPercent(tax)?.takeIf { it != 0.0 },
+                    discountPercent = Calc.evalPercent(discount)?.takeIf { it != 0.0 },
                     additionalChargeLabel = chargeLabel.trim().ifEmpty { null }, additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
                     receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 }, note = note.trim().ifEmpty { null },
                     dueDate = due,
@@ -166,14 +166,14 @@ fun InvoiceForm(
         InvoiceLineForm { lines = lines + it; problem = null }
 
         if (showDiscount || showTax) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (showDiscount) Outlined(discount, { discount = it }, label = { Text(word(W.invoice_discount_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f))
-            if (showTax) Outlined(tax, { tax = it }, label = { Text(word(W.invoice_tax_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f))
+            if (showDiscount) Outlined(discount, { discount = it }, label = { Text(word(W.invoice_discount_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
+            if (showTax) Outlined(tax, { tax = it }, label = { Text(word(W.invoice_tax_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
         }
         if (showCharge) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Outlined(chargeLabel, { chargeLabel = it }, label = { Text(word(W.invoice_feature_extra_charge)) }, singleLine = true, modifier = Modifier.weight(1f))
-            Outlined(charge, { charge = it }, label = { Text(word(W.invoice_charge_amount_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+            Outlined(charge, { charge = it }, label = { Text(word(W.invoice_charge_amount_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         }
-        if (showReceived) Outlined(received, { received = it }, label = { Text(word(W.invoice_received_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        if (showReceived) Outlined(received, { received = it }, label = { Text(word(W.invoice_received_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         if (showNote) Outlined(note, { note = it }, label = { Text(word(W.invoice_note_label)) }, modifier = Modifier.fillMaxWidth())
 
         Column(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(12.dp)) {
@@ -200,8 +200,8 @@ fun InvoiceForm(
                             customerName = customer.trim(),
                             customerPhone = phone.trim().ifEmpty { null },
                             invoiceDate = date,
-                            taxPercent = Calc.evalPad(tax)?.takeIf { it != 0.0 },
-                            discountPercent = Calc.evalPad(discount)?.takeIf { it != 0.0 },
+                            taxPercent = Calc.evalPercent(tax)?.takeIf { it != 0.0 },
+                            discountPercent = Calc.evalPercent(discount)?.takeIf { it != 0.0 },
                             additionalChargeLabel = chargeLabel.trim().ifEmpty { null },
                             additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
                             receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 },
@@ -262,9 +262,9 @@ private fun InvoiceLineForm(onAdd: (InvoiceItem) -> Unit) {
     var rate by remember { mutableStateOf("") }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
         Outlined(name, { name = it }, label = { Text(word(W.invoice_item_name_hint)) }, singleLine = true, modifier = Modifier.weight(2f))
-        Outlined(qty, { qty = it }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+        Outlined(qty, { qty = it }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
         Outlined(unit, { unit = it }, label = { Text(LocalTrade.current.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))
-        Outlined(rate, { rate = it }, label = { Text(word(W.invoice_item_rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+        Outlined(rate, { rate = it }, label = { Text(word(W.invoice_item_rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
     }
     val q = Calc.evalAmount(qty)
     val r = Calc.evalPad(rate)

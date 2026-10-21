@@ -73,8 +73,8 @@ private fun PinBox(value: String, onChange: (String) -> Unit, label: String, hel
 }
 
 /** The words for a PIN that was refused: wrong, or the wait still running. */
-private fun pinProblem(words: com.innovation313.roshankhata.words.Words, result: Boolean?): String? = when (result) {
-    null -> words.text(W.lock_pin_wait, Access.waitSeconds())
+private fun pinProblem(words: com.innovation313.roshankhata.words.Words, result: Boolean?, account: String = Access.ANY): String? = when (result) {
+    null -> words.text(W.lock_pin_wait, Access.waitSeconds(account = account))
     false -> words.text(W.access_wrong_pin)
     true -> null
 }
@@ -83,11 +83,12 @@ private fun pinProblem(words: com.innovation313.roshankhata.words.Words, result:
  * [pin] checked away from the window's thread (PBKDF2 takes a moment), the
  * wait after wrong PINs in force; a miss that starts a wait is logged.
  */
-private suspend fun checkPin(dao: KhataDao, pin: String, matches: (String) -> Boolean): Boolean? =
+private suspend fun checkPin(dao: KhataDao, pin: String, account: String, matches: (String) -> Boolean): Boolean? =
     withContext(Dispatchers.Default) {
         var waited = false
-        val r = Access.tryPin(pin, onWait = { waited = true }, check = matches)
-        if (waited) withContext(Dispatchers.IO) { dao.log(AuditAction.PIN_WAIT, Access.userName) }
+        // Each account its own count (21 Oct 2026): another's right PIN no longer clears this one's misses.
+        val r = Access.tryPin(pin, onWait = { waited = true }, account = account, check = matches)
+        if (waited) withContext(Dispatchers.IO) { dao.log(AuditAction.PIN_WAIT, Access.userName, detail = account) }
         r
     }
 
@@ -132,9 +133,9 @@ private fun SignInFrame(dao: KhataDao, gate: Boolean, onDone: () -> Unit, onClos
         }
         busy = true
         scope.launch {
-            val r = checkPin(dao, pin) { typed -> if (s == null) o!!.matches(typed) else Access.pinMatches(s, typed) }
+            val r = checkPin(dao, pin, Access.account(s)) { typed -> if (s == null) o!!.matches(typed) else Access.pinMatches(s, typed) }
             busy = false
-            problem = pinProblem(words, r)
+            problem = pinProblem(words, r, Access.account(s))
             if (r == true) {
                 if (s == null) Access.signInOwner() else Access.signIn(s)
                 withContext(Dispatchers.IO) { dao.log(AuditAction.SIGN_IN, s?.name ?: Access.OWNER) }
@@ -238,9 +239,9 @@ fun OverrideDialog(dao: KhataDao, what: String, ownerOnly: Boolean = false, onCl
         busy = true
         val o = owner
         scope.launch {
-            val r = checkPin(dao, pin) { typed -> Access.override(managers, chosen, typed, o?.let { p -> { t: String -> p.matches(t) } }) != null }
+            val r = checkPin(dao, pin, chosen?.let { "staff:$it" } ?: Access.OWNER) { typed -> Access.override(managers, chosen, typed, o?.let { p -> { t: String -> p.matches(t) } }) != null }
             busy = false
-            problem = pinProblem(words, r)
+            problem = pinProblem(words, r, chosen?.let { "staff:$it" } ?: Access.OWNER)
             if (r == true) {
                 val by = if (chosen == null) Access.OWNER else managers.first { it.id == chosen }.name
                 withContext(Dispatchers.IO) { dao.log(AuditAction.MANAGER_OVERRIDE, by, detail = what) }
@@ -302,19 +303,19 @@ private fun OwnerPinFrame(dao: KhataDao, start: OwnerPinStart, onClose: () -> Un
         busy = true
         scope.launch {
             val r: Boolean? = if (recover) {
-                if (Access.waitMillis() > 0L) null
+                if (Access.waitMillis(account = Access.OWNER) > 0L) null
                 else {
                     val right = withContext(Dispatchers.Default) { Access.recoveryMatches(dao, proof) }
-                    if (Access.pinTried(right)) withContext(Dispatchers.IO) { dao.log(AuditAction.PIN_WAIT, Access.userName) }
+                    if (Access.pinTried(right, account = Access.OWNER)) withContext(Dispatchers.IO) { dao.log(AuditAction.PIN_WAIT, Access.userName, detail = Access.OWNER) }
                     right
                 }
             } else {
                 val o = withContext(Dispatchers.IO) { Access.ownerPin(dao) }
-                if (o == null) true else checkPin(dao, proof) { o.matches(it) }
+                if (o == null) true else checkPin(dao, proof, Access.OWNER) { o.matches(it) }
             }
             busy = false
             problem = when (r) {
-                null -> words.text(W.lock_pin_wait, Access.waitSeconds())
+                null -> words.text(W.lock_pin_wait, Access.waitSeconds(account = Access.OWNER))
                 false -> words.text(if (recover) W.access_recovery_wrong else W.access_wrong_pin)
                 true -> null
             }
@@ -406,11 +407,13 @@ fun CounterModeDialog(dao: KhataDao, turnOn: Boolean, onClose: () -> Unit) {
             if (busy || pin.isEmpty()) return
             busy = true
             scope.launch {
-                val r = checkPin(dao, pin) { o.matches(it) }
+                val r = checkPin(dao, pin, Access.OWNER) { o.matches(it) }
                 busy = false
-                problem = pinProblem(words, r)
+                problem = pinProblem(words, r, Access.OWNER)
                 if (r == true) {
                     Access.switchCounterMode(turnOn)
+                    // Written into the book as well: the settings file alone no longer decides (21 Oct 2026).
+                    withContext(Dispatchers.IO) { runCatching { Access.recordCounterMode(dao, turnOn) } }
                     withContext(Dispatchers.IO) { dao.log(if (turnOn) AuditAction.COUNTER_ON else AuditAction.COUNTER_OFF, Access.OWNER) }
                     onClose()
                 } else pin = ""

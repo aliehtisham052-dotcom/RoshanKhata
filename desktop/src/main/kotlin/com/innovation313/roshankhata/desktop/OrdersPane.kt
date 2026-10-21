@@ -253,8 +253,8 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
             got.forEach { g ->
                 Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(g.item.itemName, Modifier.weight(3f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    FluentField(g.qty, { g.qty = it }, Modifier.weight(1f), label = word(W.pos_col_qty))
-                    FluentField(g.rate, { g.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
+                    FluentField(g.qty, { g.qty = it }, Modifier.weight(1f), label = word(W.pos_col_qty), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                    FluentField(g.rate, { g.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     FluentField(g.batch, { g.batch = it }, Modifier.weight(1f), label = word(W.pdf_reg_batch, ""))
                 }
             }

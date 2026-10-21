@@ -126,7 +126,7 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
         AlertDialog(
             onDismissRequest = { claiming = null },
             title = { Text(word(W.scheme_mark_claimed)) },
-            text = { Outlined(amount, { amount = it }, label = { Text(word(W.scheme_claim_hint)) }, singleLine = true) },
+            text = { Outlined(amount, { amount = it }, label = { Text(word(W.scheme_claim_hint)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY) },
             confirmButton = {
                 TextButton(enabled = Calc.evalAmount(amount) != null, onClick = {
                     val v = Calc.evalAmount(amount) ?: return@TextButton
@@ -280,9 +280,9 @@ private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Schem
         (0..2).forEach { i ->
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Outlined(targets.value[i], { v -> targets.value = targets.value.toMutableList().also { it[i] = v } },
-                    label = { Text(word(W.scheme_target_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+                    label = { Text(word(W.scheme_target_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                 Outlined(rewards.value[i], { v -> rewards.value = rewards.value.toMutableList().also { it[i] = v } },
-                    label = { Text(word(W.scheme_reward_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+                    label = { Text(word(W.scheme_reward_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
             }
         }
         Outlined(note, { note = it }, label = { Text(word(W.scheme_note_hint)) }, modifier = Modifier.fillMaxWidth())

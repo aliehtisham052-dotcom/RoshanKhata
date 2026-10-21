@@ -180,9 +180,9 @@ fun CounterSaleScreen(
                                 TextButton(onClick = { draft.remove(line) }) { Text("✕", color = c.textMuted) }
                             }
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedTextField(line.qty, { line.qty = it }, Modifier.weight(1f).testTag("posQty"), label = { Text(word(W.pos_col_qty) + (line.unit?.let { " ($it)" } ?: "")) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-                                OutlinedTextField(line.rate, { line.rate = it }, Modifier.weight(1f), label = { Text(word(W.pos_col_rate)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-                                OutlinedTextField(line.discount, { line.discount = it }, Modifier.weight(1f), label = { Text(word(W.pos_discount)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                                CalcField(line.qty, { line.qty = it }, Modifier.weight(1f).testTag("posQty"), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty) + (line.unit?.let { " ($it)" } ?: ""))
+                                CalcField(line.rate, { line.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
+                                CalcField(line.discount, { line.discount = it }, Modifier.weight(1f), label = word(W.pos_discount))
                             }
                         }
                     }
@@ -234,8 +234,8 @@ fun CounterSaleScreen(
                     }
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(draft.discount, { draft.discount = it }, Modifier.weight(1f), label = { Text(word(W.pos_discount)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-                    OutlinedTextField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = { Text(word(W.pos_tax)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                    CalcField(draft.discount, { draft.discount = it }, Modifier.weight(1f), label = word(W.pos_discount))
+                    CalcField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), kind = CalcKind.PERCENT, label = word(W.pos_tax))
                 }
                 Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Figure(word(W.pos_subtotal), Format.money(draft.totals.subtotal))
@@ -258,7 +258,7 @@ fun CounterSaleScreen(
                             }
                         }
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                            OutlinedTextField(p.amount, { p.amount = it }, Modifier.weight(1f).testTag("posPayAmount"), label = { Text(word(W.amount)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                            CalcField(p.amount, { p.amount = it }, Modifier.weight(1f).testTag("posPayAmount"), label = word(W.amount))
                             if (p.method != PaymentMethod.CASH) OutlinedTextField(p.reference, { p.reference = it }, Modifier.weight(1f), label = { Text(word(W.pos_reference_hint)) }, singleLine = true)
                             TextButton(onClick = { draft.removePayment(p) }) { Text("✕", color = c.textMuted) }
                         }

@@ -130,8 +130,7 @@ fun EntryEditor(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
             FluentField(
                 amountText, { amountText = it }, Modifier.weight(1.4f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true,
-                help = amount?.let { Format.money(it) } ?: " "
-            )
+                help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                 Text(word(W.date_label), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
                 Row(
@@ -152,9 +151,9 @@ fun EntryEditor(
         FluentField(item, { item = it }, Modifier.fillMaxWidth(), placeholder = trade.itemHint())
         if (item.isBlank()) SuggestionRow(trade.starters(), item) { item = it }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FluentField(qty, { qty = it }, Modifier.weight(1f), placeholder = word(W.quantity_hint))
+            FluentField(qty, { qty = it }, Modifier.weight(1f), placeholder = word(W.quantity_hint), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
             FluentField(unit, { unit = it }, Modifier.weight(1f), placeholder = trade.unitHint())
-            FluentField(rate, { rate = it }, Modifier.weight(1f), placeholder = word(W.entry_rate_hint))
+            FluentField(rate, { rate = it }, Modifier.weight(1f), placeholder = word(W.entry_rate_hint), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         }
         SuggestionRow(trade.units(), unit) { unit = it }
         // Quantity x rate is offered, never forced: a discount is the owner's to write.

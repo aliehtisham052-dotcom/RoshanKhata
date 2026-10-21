@@ -208,8 +208,8 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, on
                     TextButton(onClick = { draft.lines.remove(l) }) { Text("✕", color = c.textMuted) }
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(l.qty, { l.qty = it }, Modifier.weight(1f), label = { Text(word(W.pos_col_qty) + (l.unit?.let { " ($it)" } ?: "")) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-                    OutlinedTextField(l.rate, { l.rate = it }, Modifier.weight(1f), label = { Text(word(W.pos_col_rate)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                    CalcField(l.qty, { l.qty = it }, Modifier.weight(1f), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty) + (l.unit?.let { " ($it)" } ?: ""))
+                    CalcField(l.rate, { l.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
                 }
             }
         }
@@ -241,8 +241,8 @@ private fun ReceiveEditor(o: PurchaseOrderWithLines, onCancel: () -> Unit, onSav
             Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(g.item.itemName, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(g.qty, { g.qty = it }, Modifier.weight(1f), label = { Text(word(W.pos_col_qty)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-                    OutlinedTextField(g.rate, { g.rate = it }, Modifier.weight(1f), label = { Text(word(W.pos_col_rate)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                    CalcField(g.qty, { g.qty = it }, Modifier.weight(1f), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty))
+                    CalcField(g.rate, { g.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
                     OutlinedTextField(g.batch, { g.batch = it }, Modifier.weight(1f), label = { Text(word(W.pdf_reg_batch, "")) }, singleLine = true)
                 }
             }

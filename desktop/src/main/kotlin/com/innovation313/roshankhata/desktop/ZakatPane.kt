@@ -73,8 +73,7 @@ fun ZakatPane(dao: KhataDao) {
             Outlined(
                 value = priceText, onValueChange = { priceText = it }, singleLine = true,
                 label = { Text(word(if (gold) W.gold_price_hint else W.silver_price_hint)) },
-                modifier = Modifier.fillMaxWidth()
-            )
+                modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             Text(word(W.price_help), color = c.textMuted, fontSize = 12.sp)
             if (Zakat.priceLooksOff(price, gold = gold, perTola = perTola)) {
                 Text(word(W.price_looks_off), color = c.owedToMe, fontSize = 13.sp)
@@ -106,8 +105,7 @@ fun ZakatPane(dao: KhataDao) {
             ZakatHeading(word(W.cash_stock_section))
             Outlined(
                 value = stockText, onValueChange = { stockText = it }, singleLine = true,
-                label = { Text(word(W.cash_stock_hint)) }, modifier = Modifier.fillMaxWidth()
-            )
+                label = { Text(word(W.cash_stock_hint)) }, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             Text(word(W.cash_stock_help), color = c.textMuted, fontSize = 12.sp)
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {

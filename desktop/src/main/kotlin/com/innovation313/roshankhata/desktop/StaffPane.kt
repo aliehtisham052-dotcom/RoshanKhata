@@ -149,7 +149,7 @@ fun StaffPane(dao: KhataDao) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Outlined(name, { name = it }, label = { Text(word(W.staff_name)) }, singleLine = true)
                     Outlined(phone, { phone = it }, label = { Text(word(W.staff_phone)) }, singleLine = true)
-                    Outlined(salary, { salary = it }, label = { Text(word(W.staff_salary)) }, singleLine = true)
+                    Outlined(salary, { salary = it }, label = { Text(word(W.staff_salary)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     if (bad) Text(word(W.staff_invalid), color = c.owedToMe, fontSize = 13.sp)
                     if (mayEditLogin) {
                         Text(word(W.staff_role), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
@@ -206,7 +206,7 @@ fun StaffPane(dao: KhataDao) {
             title = { Text(person.name + " · " + word(if (kind == Payroll.ADVANCE) W.staff_advance else W.staff_pay)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Outlined(amount, { amount = it }, label = { Text(word(W.staff_amount)) }, singleLine = true)
+                    Outlined(amount, { amount = it }, label = { Text(word(W.staff_amount)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     Outlined(note, { note = it }, label = { Text(word(W.staff_note)) }, singleLine = true)
                     if (bad) Text(word(W.staff_invalid), color = c.owedToMe, fontSize = 13.sp)
                 }

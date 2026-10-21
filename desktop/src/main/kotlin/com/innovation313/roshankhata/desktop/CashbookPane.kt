@@ -197,7 +197,7 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
         }
     ) {
         TwoWay(word(W.cash_income), word(W.cash_expense), isIncome) { isIncome = it }
-        FluentField(amountText, { amountText = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ")
+        FluentField(amountText, { amountText = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         FluentField(category, { category = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.cash_category_hint))
         // The owner's own earlier categories, one click each, so they need not retype them.
         if (used.isNotEmpty()) {
@@ -254,11 +254,11 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
         title = { Text(word(W.dayclose_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FluentField(opening, { opening = it }, Modifier.fillMaxWidth(), label = word(W.dayclose_opening))
+                FluentField(opening, { opening = it }, Modifier.fillMaxWidth(), label = word(W.dayclose_opening), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                 Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.money(expected)),
                     color = c.inkSoft, fontSize = 13.sp)
                 Text(word(W.dayclose_help), color = c.textMuted, fontSize = 12.sp)
-                FluentField(counted, { counted = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.dayclose_counted), big = true)
+                FluentField(counted, { counted = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.dayclose_counted), big = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                 if (count != null) {
                     val d = com.innovation313.roshankhata.data.DayCloseMath.difference(count, expected)
                     Text(
