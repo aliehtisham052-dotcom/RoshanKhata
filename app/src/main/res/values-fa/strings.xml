@@ -3410,4 +3410,12 @@
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">رقم‌های بعد از ممیز در قیمت برچسب</string>
     <string name="scale_price_example">برچسبی که 01250 نشان می‌دهد %1$s خوانده می‌شود</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">آن را همان‌جا که ساخته شد تغییر دهید</string>
+    <string name="entry_linked_bill">این ثبت را فاکتور تأمین‌کننده نوشته است. فاکتور را تغییر دهید یا حذف کنید، دفتر هم همراه آن تغییر می‌کند.</string>
+    <string name="entry_linked_plan">این ثبت را قسط یک طرح پرداخت نوشته است. آن را از طرح‌های پرداخت تغییر دهید.</string>
+    <string name="entry_linked_cheque">این ثبت را چکی که وصول شده نوشته است. آن را از صفحهٔ چک‌ها تغییر دهید.</string>
+    <string name="entry_linked_sale">این ثبت را یک فروش صندوق نوشته است. فروش را باطل کنید یا برگشت ثبت کنید.</string>
+    <string name="entry_linked_return">این ثبت را یک برگشت نوشته است. به جای آن برگشت را باطل کنید.</string>
 </resources>

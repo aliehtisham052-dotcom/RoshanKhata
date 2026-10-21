@@ -273,6 +273,20 @@ object DriveBackup {
     private fun currentSignature(count: Int, lastActivity: Long): String =
         "$count:$lastActivity"
 
+    /**
+     * The backup's own content, hashed (21 Oct 2026, the critical review): the
+     * count-and-newest-entry signature above missed every change that was not
+     * a khata entry — the cashbook, the counter's walk-in sales, cheques,
+     * bills, plans, products, an edited amount — and such a day was never
+     * backed up. The file's own export time is left out, so an unchanged book
+     * hashes the same.
+     */
+    private fun contentSignature(file: java.io.File): String {
+        val text = file.readText(Charsets.UTF_8).replace(Regex("\"exportedAt\"\\s*:\\s*\\d+"), "")
+        val digest = java.security.MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8))
+        return "sha256:" + digest.joinToString("") { "%02x".format(it) }
+    }
+
     private fun lastSignature(context: Context): String? =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getString(key(context, KEY_LAST_SIG), null)
@@ -449,12 +463,12 @@ object DriveBackup {
         val dueByTime = last == 0L || System.currentTimeMillis() - last >= minIntervalMs
         if (!dueByTime) return@withContext AutoResult.Skipped
 
-        // Changed since last backup? If the fingerprint matches, skip.
-        val signature = currentSignature(count, dao.lastEntryActivity())
-        if (signature == lastSignature(context)) return@withContext AutoResult.Skipped
-
-        // All conditions met — take the backup.
+        // Changed since last backup? The copy is made here on the phone and its content compared;
+        // only a book that changed in any way goes up.
         val file = Backup.exportToCache(context, dao)
+        val signature = contentSignature(file)
+        if (signature == lastSignature(context)) { file.delete(); return@withContext AutoResult.Skipped }
+
         val result = backup(context, account, file)
         if (result.isFailure) {
             val cause = result.exceptionOrNull()

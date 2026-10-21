@@ -3382,4 +3382,12 @@
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">لیبل کی قیمت میں اعشاریہ کے بعد کے ہندسے</string>
     <string name="scale_price_example">01250 والا لیبل %1$s پڑھا جائے گا</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">جہاں بنا تھا وہیں بدلیں</string>
+    <string name="entry_linked_bill">یہ اندراج سپلائر بل نے لکھا ہے۔ بل بدلیں یا مٹائیں، کھاتہ خود ساتھ بدل جائے گا۔</string>
+    <string name="entry_linked_plan">یہ اندراج قسط پلان کی ادائیگی نے لکھا ہے۔ اسے قسط پلان سے بدلیں۔</string>
+    <string name="entry_linked_cheque">یہ اندراج کلیئر ہونے والے چیک نے لکھا ہے۔ اسے چیک والے صفحے سے بدلیں۔</string>
+    <string name="entry_linked_sale">یہ اندراج کاؤنٹر کی سیل نے لکھا ہے۔ سیل منسوخ کریں یا واپسی کریں۔</string>
+    <string name="entry_linked_return">یہ اندراج واپسی نے لکھا ہے۔ اس کے بجائے واپسی منسوخ کریں۔</string>
 </resources>

@@ -1185,9 +1185,22 @@ private fun Book(
     }
     editing?.let { e ->
         var items by remember(e.id) { mutableStateOf<List<com.innovation313.roshankhata.data.EntryItem>?>(null) }
-        LaunchedEffect(e.id) { items = withContext(Dispatchers.IO) { dao.itemsOfEntry(e.id) } }
+        // Which record wrote this entry, if any (21 Oct 2026): a bill's, a plan's, a cheque's or a
+        // ticket's entry is changed there, so the two never disagree. "" = its own entry.
+        var owner by remember(e.id) { mutableStateOf<String?>(null) }
+        LaunchedEffect(e.id) {
+            owner = withContext(Dispatchers.IO) { runCatching { dao.entryOwner(e.id) }.getOrNull() } ?: ""
+            items = withContext(Dispatchers.IO) { dao.itemsOfEntry(e.id) }
+        }
         val loaded = items
-        if (loaded != null) DialogWindow(
+        val by = owner
+        if (by != null && by.isNotEmpty()) AlertDialog(
+            onDismissRequest = { editing = null },
+            title = { Text(word(W.entry_linked_title)) },
+            text = { Text(word(com.innovation313.roshankhata.data.EntryOwner.wordFor(by))) },
+            confirmButton = { TextButton({ editing = null }) { Text(word(W.ok)) } }
+        )
+        else if (loaded != null && by != null) DialogWindow(
             onCloseRequest = { editing = null },
             onPreviewKeyEvent = escCloses { editing = null },
             title = word(W.edit),

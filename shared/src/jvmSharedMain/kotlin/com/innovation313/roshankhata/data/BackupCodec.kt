@@ -54,7 +54,10 @@ object BackupCodec {
      * book. The document is the same the owner's old backups are: an object
      * whose keys are the tables, restore reads it with the same parser.
      */
-    suspend fun exportTo(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer) {
+    suspend fun exportTo(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer) =
+        dao.readAsOne { exportInside(dao, businessName, profile, out) }
+
+    private suspend fun exportInside(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer) {
         val small = exportSmall(dao, businessName, profile).toString(2)
         // The small document ends in "\n}" — drop that brace and add the
         // three streamed tables before closing the object ourselves.

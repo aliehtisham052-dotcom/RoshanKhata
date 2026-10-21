@@ -3379,4 +3379,12 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">Digit setelah koma pada harga label</string>
     <string name="scale_price_example">Label bertuliskan 01250 dibaca %1$s</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">Ubah di tempat ia dibuat</string>
+    <string name="entry_linked_bill">Tagihan pemasok menulis catatan ini. Ubah atau hapus tagihannya, dan buku kas mengikuti.</string>
+    <string name="entry_linked_plan">Cicilan rencana pembayaran menulis catatan ini. Ubah dari Rencana pembayaran.</string>
+    <string name="entry_linked_cheque">Cek yang sudah cair menulis catatan ini. Ubah dari halaman Cek.</string>
+    <string name="entry_linked_sale">Penjualan kasir menulis catatan ini. Batalkan penjualan, atau buat retur.</string>
+    <string name="entry_linked_return">Retur menulis catatan ini. Batalkan returnya saja.</string>
 </resources>

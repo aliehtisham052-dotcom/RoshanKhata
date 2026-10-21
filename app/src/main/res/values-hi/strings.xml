@@ -3426,4 +3426,12 @@
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">लेबल की कीमत में दशमलव के बाद के अंक</string>
     <string name="scale_price_example">01250 वाला लेबल %1$s पढ़ा जाएगा</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">जहाँ बना था वहीं बदलें</string>
+    <string name="entry_linked_bill">यह एंट्री सप्लायर बिल ने लिखी है। बिल बदलें या मिटाएँ, खाता अपने आप साथ बदल जाएगा।</string>
+    <string name="entry_linked_plan">यह एंट्री किस्त प्लान की अदायगी ने लिखी है। इसे किस्त प्लान से बदलें।</string>
+    <string name="entry_linked_cheque">यह एंट्री क्लियर हुए चेक ने लिखी है। इसे चेक वाले पेज से बदलें।</string>
+    <string name="entry_linked_sale">यह एंट्री काउंटर की बिक्री ने लिखी है। बिक्री रद्द करें या वापसी करें।</string>
+    <string name="entry_linked_return">यह एंट्री वापसी ने लिखी है। इसकी जगह वापसी रद्द करें।</string>
 </resources>

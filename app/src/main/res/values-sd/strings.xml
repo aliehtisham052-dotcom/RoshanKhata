@@ -3410,4 +3410,12 @@
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">ليبل جي قيمت ۾ ڏهائي کان پوءِ انگ</string>
     <string name="scale_price_example">01250 وارو ليبل %1$s پڙهيو ويندو</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">جتي ٺهيو هو اتي ئي بدلايو</string>
+    <string name="entry_linked_bill">هي داخلا سپلائر بل لکي آهي. بل بدلايو يا ميٽيو، کاتو پاڻ ساڻ بدلجي ويندو.</string>
+    <string name="entry_linked_plan">هي داخلا قسط پلان جي ادائگي لکي آهي. ان کي قسط پلان مان بدلايو.</string>
+    <string name="entry_linked_cheque">هي داخلا ڪليئر ٿيل چيڪ لکي آهي. ان کي چيڪ واري صفحي مان بدلايو.</string>
+    <string name="entry_linked_sale">هي داخلا ڪائونٽر جي وڪري لکي آهي. وڪرو منسوخ ڪريو يا واپسي ڪريو.</string>
+    <string name="entry_linked_return">هي داخلا واپسي لکي آهي. ان بدران واپسي منسوخ ڪريو.</string>
 </resources>
