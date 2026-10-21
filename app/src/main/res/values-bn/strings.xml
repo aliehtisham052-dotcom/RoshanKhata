@@ -3458,4 +3458,8 @@
 
     <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
     <string name="action_failed_detail">সংরক্ষণ হয়নি। কিছুই বদলায়নি। (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">ছাপায় বাংলা অঙ্ক</string>
+    <string name="print_native_digits_help">চালান, বিবরণী ও রিপোর্ট 123-এর বদলে ১২৩ দিয়ে ছাপা হবে। স্ক্রিন ও আপনি যা লেখেন তা 0-9 থাকবে।</string>
 </resources>

@@ -3602,4 +3602,8 @@
 
     <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
     <string name="action_failed_detail">لم يُحفظ. لم يتغير شيء. (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">الأرقام العربية في المطبوعات</string>
+    <string name="print_native_digits_help">تُطبع الفواتير والكشوف والتقارير بالأرقام ١٢٣ بدل 123. تبقى الشاشة وما تكتبه بالأرقام 0-9.</string>
 </resources>

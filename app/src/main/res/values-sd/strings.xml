@@ -3442,4 +3442,8 @@
 
     <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
     <string name="action_failed_detail">محفوظ نه ٿيو. ڪجهه به تبديل نه ٿيو. (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">ڇپيل ڪاغذن تي عربي انگ</string>
+    <string name="print_native_digits_help">انوائس، اسٽيٽمينٽ ۽ رپورٽون 123 بدران ١٢٣ سان ڇپبيون. اسڪرين ۽ جيڪو توهان لکو ٿا اهو 0-9 رهندو.</string>
 </resources>

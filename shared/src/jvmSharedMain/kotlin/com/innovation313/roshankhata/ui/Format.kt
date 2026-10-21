@@ -79,12 +79,20 @@ object Format {
         val rounded = abs(value)
         // The sign is the shop's own choice (Profile → Currency); see [Currency].
         val sign = Currency.symbol
-        return if (rounded % 1.0 == 0.0) {
-            "$sign %,.0f".format(Digits.FIGURES, rounded)
-        } else {
-            "$sign %,.2f".format(Digits.FIGURES, rounded)
-        }
+        val figure = if (rounded % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, rounded) else "%,.2f".format(Digits.FIGURES, rounded)
+        return "$sign " + groupedForReader(figure)
     }
+
+    /**
+     * Indonesian groups thousands with a dot and marks the decimal with a
+     * comma (21 Oct 2026, the nine-language review): "Rp 1,500" reads there
+     * as one and a half. Every other language keeps 1,500.00. The digits
+     * stay 0-9 either way; only the two marks trade places.
+     */
+    private fun groupedForReader(figure: String, locale: Locale = Locale.getDefault()): String =
+        if (locale.language == "in" || locale.language == "id") {
+            figure.map { when (it) { ',' -> '.'; '.' -> ','; else -> it } }.joinToString("")
+        } else figure
 
     /**
      * A figure that carries a minus when it IS one, and nothing when it is not.

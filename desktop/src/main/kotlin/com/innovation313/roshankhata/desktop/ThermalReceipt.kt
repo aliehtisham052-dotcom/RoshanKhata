@@ -75,7 +75,7 @@ object ThermalReceipt {
         val laid = lines.flatMap { line ->
             if (line.text.isEmpty()) return@flatMap listOf<Pair<TextLayout?, Line>>(null to line)
             val font = Font(PrintFonts.family, if (line.bold) Font.BOLD else Font.PLAIN, 1).deriveFont(line.size)
-            val text = AttributedString(line.text).apply {
+            val text = AttributedString(com.innovation313.roshankhata.data.Digits.forPrint(line.text)).apply {
                 addAttribute(TextAttribute.FONT, font)
                 addAttribute(TextAttribute.RUN_DIRECTION, if (rtl) TextAttribute.RUN_DIRECTION_RTL else TextAttribute.RUN_DIRECTION_LTR)
             }

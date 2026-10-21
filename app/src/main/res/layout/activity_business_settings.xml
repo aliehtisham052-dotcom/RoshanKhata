@@ -937,6 +937,49 @@
                         android:contentDescription="@string/bp_pay_reminder"
                         android:minHeight="48dp" />
                 </LinearLayout>
+
+                <!-- Own digits on printed sheets (21 Oct 2026): shown only for Arabic, Sindhi, Farsi and Bengali. -->
+                <LinearLayout
+                    android:id="@+id/rowNativeDigits"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:labelFor="@+id/swNativeDigits"
+                            android:text="@string/print_native_digits"
+                            android:textColor="@color/ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/print_native_digits_help"
+                            android:textColor="@color/text_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/swNativeDigits"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="@string/print_native_digits"
+                        android:minHeight="48dp" />
+                </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

@@ -3411,4 +3411,8 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
 
     <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
     <string name="action_failed_detail">Tidak tersimpan. Tidak ada yang berubah. (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">Angka lokal pada cetakan</string>
+    <string name="print_native_digits_help">Faktur, laporan rekening, dan laporan dicetak dengan angka bahasa ini sendiri. Layar dan yang Anda ketik tetap 0-9.</string>
 </resources>

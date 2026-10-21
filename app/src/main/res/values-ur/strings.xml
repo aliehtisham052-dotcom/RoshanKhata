@@ -3414,4 +3414,8 @@
 
     <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
     <string name="action_failed_detail">محفوظ نہیں ہوا۔ کچھ بھی تبدیل نہیں ہوا۔ (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">چھپے کاغذ پر مقامی ہندسے</string>
+    <string name="print_native_digits_help">انوائس، اسٹیٹمنٹ اور رپورٹ اس زبان کے اپنے ہندسوں میں چھپیں گے۔ اسکرین اور جو آپ لکھیں وہ 0-9 ہی رہے گا۔</string>
 </resources>

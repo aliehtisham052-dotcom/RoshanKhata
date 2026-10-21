@@ -3458,4 +3458,8 @@
 
     <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
     <string name="action_failed_detail">सहेजा नहीं गया। कुछ भी नहीं बदला। (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">छपे काग़ज़ पर स्थानीय अंक</string>
+    <string name="print_native_digits_help">इनवॉइस, स्टेटमेंट और रिपोर्ट इस भाषा के अपने अंकों में छपेंगे। स्क्रीन और जो आप टाइप करें वह 0-9 ही रहेगा।</string>
 </resources>

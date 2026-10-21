@@ -40,6 +40,8 @@ class RoshanKhataApp : Application() {
     override fun onCreate() {
         super.onCreate()
         com.innovation313.roshankhata.data.ViewerMode.init(this)
+        // Printed sheets' digits, for PDFs a background job makes before any screen opens.
+        com.innovation313.roshankhata.data.PrintDigits.load(this)
         // Who may do what on this phone: counter mode and the wrong-PIN count live on the device.
         com.innovation313.roshankhata.ui.AccessUi.install(this)
         com.innovation313.roshankhata.data.Currency.refresh(this)
