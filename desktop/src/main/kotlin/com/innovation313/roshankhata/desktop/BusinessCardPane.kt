@@ -173,7 +173,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
         delay(250)
         val d = data()
         val t = CardTemplates.byId(template)
-        picture = withContext(Dispatchers.Default) { runCatching { CardDraw.image(t, d, 900, 525).toComposeImageBitmap() }.getOrNull() }
+        picture = withContext(Dispatchers.Default) { runCatching { CardDraw.image(t, d, 1800, 1050).toComposeImageBitmap() }.getOrNull() }
     }
 
     Row(Modifier.fillMaxSize()) {
@@ -210,7 +210,10 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
         }
         Column(Modifier.weight(0.58f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             picture?.let {
-                Image(it, contentDescription = word(W.biz_card), modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth().aspectRatio(CardTemplates.W.toFloat() / CardTemplates.H))
+                // Drawn at twice the size it is shown, and only ever scaled down (21 Oct 2026: 900 px stretched over a
+                // 760 dp card on a 125% screen looked soft).
+                Image(it, contentDescription = word(W.biz_card), modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth().aspectRatio(CardTemplates.W.toFloat() / CardTemplates.H),
+                    filterQuality = androidx.compose.ui.graphics.FilterQuality.High)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 val saveTitle = word(W.biz_card_send_picture)
@@ -239,7 +242,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
                     val t = CardTemplates.byId(template)
                     scope.launch {
                         // Drawn at print sharpness (1225 x 700 is 350 dots an inch at 3.5 x 2 inches).
-                        val card = withContext(Dispatchers.Default) { CardDraw.image(t, d, 1225, CardTemplates.H) }
+                        val card = withContext(Dispatchers.Default) { CardDraw.image(t, d, 2100, 1200) }
                         StatementPrint.show(CardSheet(card), words.text(W.biz_card))
                     }
                 }) { Text(word(W.print_short), color = c.brandGreenText) }

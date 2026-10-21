@@ -149,7 +149,8 @@ fun InvoiceForm(
             picture?.let {
                 androidx.compose.foundation.Image(
                     it, contentDescription = null,
-                    modifier = Modifier.fillMaxWidth().heightIn(max = 520.dp).background(Look.subtle, Look.ctl).padding(6.dp)
+                    modifier = Modifier.fillMaxWidth().heightIn(max = 520.dp).background(Look.subtle, Look.ctl).padding(6.dp),
+                    filterQuality = androidx.compose.ui.graphics.FilterQuality.High
                 )
             }
         }

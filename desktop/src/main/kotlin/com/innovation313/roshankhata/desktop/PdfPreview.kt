@@ -134,7 +134,8 @@ class Sheets private constructor(
  * the price is that its words cannot be selected (the owner's choice, 20 Oct).
  */
 object PdfFiles {
-    const val SCALE = 2.5f
+    /** 3.5 pixels a point, about 250 dots an inch on paper: crisp text and cards (it was 2.5, 180 dpi). */
+    const val SCALE = 3.5f
 
     /** Documents\Roshan Khata, made if missing; the home folder when Documents is not there. */
     fun folder(): File {
@@ -165,7 +166,7 @@ object PdfFiles {
                 val h = sheets.height(i)
                 val page = PDPage(PDRectangle(w, h))
                 pdf.addPage(page)
-                val image = JPEGFactory.createFromImage(pdf, sheets.picture(i, scale), 0.9f)
+                val image = JPEGFactory.createFromImage(pdf, sheets.picture(i, scale), 0.92f)
                 PDPageContentStream(pdf, page).use { it.drawImage(image, 0f, 0f, w, h) }
             }
             pdf.save(part)
