@@ -3400,4 +3400,14 @@
     <string name="audit_cash_deleted">ڪيش بڪ جي داخلا ميٽي</string>
     <string name="audit_party_deleted">گراهڪ ميٽيو ويو</string>
     <string name="audit_day_closed">ڏينهن بند ڪيو ويو</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">ايندڙ ادائگي جي تاريخ بدلايو</string>
+    <string name="plan_next_ask">%1$s جي ايندڙ ادائگي جي تاريخ</string>
+    <string name="plan_next_clear">تاريخ هٽايو</string>
+    <string name="plan_next_saved">ايندڙ ادائگي: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">ليبل جي قيمت ۾ ڏهائي کان پوءِ انگ</string>
+    <string name="scale_price_example">01250 وارو ليبل %1$s پڙهيو ويندو</string>
 </resources>

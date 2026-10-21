@@ -3400,4 +3400,14 @@
     <string name="audit_cash_deleted">ردیف دفتر نقدی حذف شد</string>
     <string name="audit_party_deleted">مشتری حذف شد</string>
     <string name="audit_day_closed">روز بسته شد</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">تغییر روز پرداخت بعدی</string>
+    <string name="plan_next_ask">روز پرداخت بعدی %1$s</string>
+    <string name="plan_next_clear">حذف تاریخ</string>
+    <string name="plan_next_saved">پرداخت بعدی: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">رقم‌های بعد از ممیز در قیمت برچسب</string>
+    <string name="scale_price_example">برچسبی که 01250 نشان می‌دهد %1$s خوانده می‌شود</string>
 </resources>

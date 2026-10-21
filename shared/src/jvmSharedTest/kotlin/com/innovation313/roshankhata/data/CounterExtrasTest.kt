@@ -52,6 +52,17 @@ class CounterExtrasTest {
         assertNull(ScaleCode.line(ean("21" + "00042" + "00000"), ScaleCode.Rule(), listOf(tomato)) { 1.0 })  // nothing weighed
         assertEquals(ScaleCode.Rule("21", false), ScaleCode.rule("9", null))
         assertEquals(ScaleCode.Rule("24", true), ScaleCode.rule("24", "1"))
+        assertEquals(ScaleCode.Rule("24", true, 0), ScaleCode.rule("24", "1", "0"))
+        assertEquals("a nonsense setting is the default", 2, ScaleCode.rule("24", "1", "7").decimals)
+    }
+
+    @Test
+    fun aPriceLabelReadsInTheShopsOwnCurrencyDigits() {
+        // 01250 on the label: 12.50 for a cents scale, 1,250 for a whole-rupee one, 1.250 for a dinar one.
+        val code = ean("21" + "00042" + "01250")
+        assertEquals(12.5, ScaleCode.read(code, ScaleCode.Rule(price = true))!!.price!!, 0.0)
+        assertEquals(1250.0, ScaleCode.read(code, ScaleCode.Rule(price = true, decimals = 0))!!.price!!, 0.0)
+        assertEquals(1.25, ScaleCode.read(code, ScaleCode.Rule(price = true, decimals = 3))!!.price!!, 0.0)
     }
 
     @Test

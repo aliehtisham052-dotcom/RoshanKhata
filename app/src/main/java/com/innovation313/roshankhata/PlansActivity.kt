@@ -25,6 +25,7 @@ import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Installment
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.PlanSchedule
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.PaymentPlan
 import com.innovation313.roshankhata.data.PlanProgress
@@ -209,20 +210,52 @@ class PlansActivity : BaseActivity() {
             return
         }
 
-        val options = listOf(
-            ChoiceSheet.Option(getString(R.string.record_payment), icon = R.drawable.ic_arrow_got,
-                iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg),
-            ChoiceSheet.done(getString(R.string.close_plan)),
-            ChoiceSheet.delete(getString(R.string.delete_plan))
-        )
-
-        ChoiceSheet.show(this, getString(R.string.plan_actions), options) { which ->
-            when (which) {
-                0 -> showRecordPaymentDialog(plan)
-                1 -> closePlan(plan)
-                2 -> confirmDeletePlan(plan)
-            }
+        // The next payment day can be changed or removed at any time (21 Oct 2026, the owner).
+        val actions = buildList<Pair<ChoiceSheet.Option, () -> Unit>> {
+            add(ChoiceSheet.Option(getString(R.string.record_payment), icon = R.drawable.ic_arrow_got,
+                iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg) to { showRecordPaymentDialog(plan) })
+            add(ChoiceSheet.Option(getString(R.string.plan_next_change), icon = R.drawable.ic_calendar,
+                iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg) to {
+                askNextDue(plan.id, plan.partyName, plan.nextDueDate ?: PlanSchedule.suggestNext(null))
+            })
+            if (plan.nextDueDate != null) add(ChoiceSheet.Option(getString(R.string.plan_next_clear)) to {
+                AppScope.launch { dao.setPlanNextDue(plan.id, null) }
+                Unit
+            })
+            add(ChoiceSheet.done(getString(R.string.close_plan)) to { closePlan(plan) })
+            add(ChoiceSheet.delete(getString(R.string.delete_plan)) to { confirmDeletePlan(plan) })
         }
+
+        ChoiceSheet.show(this, getString(R.string.plan_actions), actions.map { it.first }) { which ->
+            actions[which].second()
+        }
+    }
+
+    /**
+     * The plan's next payment day, picked by the owner: from the plan's actions, and
+     * after each payment with the suggested day already chosen (PlanSchedule). Cancel
+     * leaves the day as it was.
+     */
+    private fun askNextDue(planId: Long, partyName: String, start: Long) {
+        val cal = Calendar.getInstance().apply { timeInMillis = start }
+        BrandDatePickerDialog(
+            this,
+            { _, y, m, d ->
+                val picked = Calendar.getInstance().apply {
+                    set(y, m, d, 0, 0, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.timeInMillis
+                AppScope.launch {
+                    dao.setPlanNextDue(planId, picked)
+                    withContext(Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) Toast.makeText(
+                            this@PlansActivity, getString(R.string.plan_next_saved, Format.dateOnly(picked)), Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            },
+            cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
+        ).apply { setTitle(getString(R.string.plan_next_ask, partyName)) }.show()
     }
 
     private fun showRecordPaymentDialog(plan: PlanProgress) {
@@ -341,6 +374,11 @@ class PlansActivity : BaseActivity() {
                 entryNote = noteText,
                 note = note.ifEmpty { null }
             )
+            // Still open: the next payment day is asked, the suggestion already chosen (21 Oct 2026:
+            // the day never moved on, and a plan paid on time read as late for ever).
+            if (plan.paidSoFar + amount < plan.totalAmount) withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) askNextDue(plan.id, plan.partyName, PlanSchedule.suggestNext(plan.nextDueDate))
+            }
 
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {

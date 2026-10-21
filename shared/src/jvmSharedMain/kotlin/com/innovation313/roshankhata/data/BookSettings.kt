@@ -39,6 +39,8 @@ object BookSettings {
      */
     const val SCALE_PREFIX = "scale_prefix"
     const val SCALE_PRICE = "scale_price"
+    /** Digits after the decimal point in a price label: "0".."3" (2 when unset), see [ScaleCode.Rule]. */
+    const val SCALE_PRICE_DECIMALS = "scale_price_decimals"
 
     /** "1" when the counter refuses to sell more than the shelf holds (else it warns). */
     const val BLOCK_NEGATIVE_STOCK = "block_negative_stock"

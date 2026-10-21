@@ -332,7 +332,7 @@ fun PaneTitle(title: String, subtitle: String?) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DayPicker(initial: Long?, onPick: (startOfDay: Long) -> Unit, onDismiss: () -> Unit) {
+fun DayPicker(initial: Long?, onPick: (startOfDay: Long) -> Unit, onDismiss: () -> Unit, title: String? = null) {
     val zone = ZoneId.systemDefault()
     val state = rememberDatePickerState(
         initialSelectedDateMillis = (initial?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() } ?: LocalDate.now(zone))
@@ -348,5 +348,8 @@ fun DayPicker(initial: Long?, onPick: (startOfDay: Long) -> Unit, onDismiss: () 
             }) { Text(word(W.ok)) }
         },
         dismissButton = { TextButton(onDismiss) { Text(word(W.cancel)) } }
-    ) { DatePicker(state) }
+    ) {
+        if (title == null) DatePicker(state)
+        else DatePicker(state, title = { Text(title, Modifier.padding(start = 24.dp, end = 12.dp, top = 16.dp)) })
+    }
 }

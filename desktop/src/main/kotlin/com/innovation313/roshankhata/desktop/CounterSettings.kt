@@ -53,6 +53,7 @@ fun CounterSettingsDialog(
     var pointValue by remember { mutableStateOf("") }
     var prefix by remember { mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX) }
     var pricedLabel by remember { mutableStateOf(false) }
+    var decimals by remember { mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.DEFAULT_DECIMALS) }
     var loaded by remember { mutableStateOf(false) }
     var wide by remember { mutableStateOf(printer.wide) }
     var logo by remember { mutableStateOf(printer.logo) }
@@ -64,6 +65,7 @@ fun CounterSettingsDialog(
             pointValue = dao.settingValue(BookSettings.LOYALTY_POINT_VALUE).orEmpty()
             prefix = dao.settingValue(BookSettings.SCALE_PREFIX) ?: com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX
             pricedLabel = BookSettings.isOn(dao.settingValue(BookSettings.SCALE_PRICE))
+            decimals = com.innovation313.roshankhata.data.ScaleCode.decimalsOf(dao.settingValue(BookSettings.SCALE_PRICE_DECIMALS))
         }
         loaded = true
     }
@@ -82,6 +84,7 @@ fun CounterSettingsDialog(
                         val p = com.innovation313.roshankhata.data.Digits.toLatin(prefix.trim())
                         dao.setSetting(BookSettings.SCALE_PREFIX, p.takeIf { it.length == 2 && it.startsWith("2") && it.all(Char::isDigit) })
                         dao.setSetting(BookSettings.SCALE_PRICE, if (pricedLabel) "1" else null)
+                        dao.setSetting(BookSettings.SCALE_PRICE_DECIMALS, decimals.takeIf { it != com.innovation313.roshankhata.data.ScaleCode.DEFAULT_DECIMALS }?.toString())
                     }
                     onPrinter(ThermalReceipt.Settings(wide = wide, logo = logo, drawer = drawer))
                     onClose()
@@ -114,6 +117,14 @@ fun CounterSettingsDialog(
                 Text(word(W.scale_section), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 FluentField(prefix, { prefix = it.take(2) }, Modifier.width(220.dp), label = word(W.scale_prefix))
                 Tick(pricedLabel, word(W.scale_price)) { pricedLabel = it }
+                // The label's price in the shop's own currency digits (21 Oct 2026), with what 01250 then reads as.
+                if (pricedLabel) Column(Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(word(W.scale_price_decimals), color = c.ink, fontSize = 13.sp)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        (0..3).forEach { d -> FluentPill(d.toString(), d == decimals, onClick = { decimals = d }) }
+                    }
+                    Text(word(W.scale_price_example, com.innovation313.roshankhata.ui.Format.money(com.innovation313.roshankhata.data.ScaleCode.example(decimals))), color = c.textMuted, fontSize = 12.sp)
+                }
                 Text(word(W.scale_help), color = c.textMuted, fontSize = 12.sp)
             }
         }

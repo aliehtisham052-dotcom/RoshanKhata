@@ -14,8 +14,15 @@ import java.math.RoundingMode
  */
 object ScaleCode {
 
-    /** How this shop's scale prints: its prefix, and whether the five value digits are a price instead of grams. */
-    data class Rule(val prefix: String = DEFAULT_PREFIX, val price: Boolean = false)
+    /**
+     * How this shop's scale prints: its prefix, whether the five value digits
+     * are a price instead of grams, and how many of those digits come after
+     * the decimal point (21 Oct 2026, the owner: "for every country"). A scale
+     * in a cents/paisa currency prints 01250 for 12.50 (2); one set to whole
+     * rupees, riyals or rupiah prints 01250 for 1,250 (0); a dinar scale may
+     * print three. The owner picks what his labels show.
+     */
+    data class Rule(val prefix: String = DEFAULT_PREFIX, val price: Boolean = false, val decimals: Int = DEFAULT_DECIMALS)
 
     /** What a label says: the item's scale code, and its weight in kilograms or its price. */
     data class Label(val code: String, val kilograms: Double?, val price: Double?)
@@ -24,11 +31,19 @@ object ScaleCode {
     data class Line(val product: Product, val quantity: Double, val rate: Double)
 
     const val DEFAULT_PREFIX = "21"
+    const val DEFAULT_DECIMALS = 2
 
-    fun rule(prefix: String?, price: String?): Rule =
-        Rule(prefix?.trim()?.takeIf { it.length == 2 && it.all(Char::isDigit) && it.startsWith("2") } ?: DEFAULT_PREFIX, BookSettings.isOn(price))
+    /** The decimals a book's setting names: 0 to 3, else the default. */
+    fun decimalsOf(v: String?): Int = v?.trim()?.toIntOrNull()?.takeIf { it in 0..3 } ?: DEFAULT_DECIMALS
 
-    suspend fun rule(dao: KhataDao): Rule = rule(dao.settingValue(BookSettings.SCALE_PREFIX), dao.settingValue(BookSettings.SCALE_PRICE))
+    fun rule(prefix: String?, price: String?, decimals: String? = null): Rule =
+        Rule(prefix?.trim()?.takeIf { it.length == 2 && it.all(Char::isDigit) && it.startsWith("2") } ?: DEFAULT_PREFIX, BookSettings.isOn(price), decimalsOf(decimals))
+
+    suspend fun rule(dao: KhataDao): Rule =
+        rule(dao.settingValue(BookSettings.SCALE_PREFIX), dao.settingValue(BookSettings.SCALE_PRICE), dao.settingValue(BookSettings.SCALE_PRICE_DECIMALS))
+
+    /** What "01250" on a price label reads as with [decimals]: for the settings' example. */
+    fun example(decimals: Int): Double = 1250 / Math.pow(10.0, decimals.toDouble())
 
     /** The label, when [code] is one: 13 digits, this scale's prefix, its check digit right. */
     fun read(code: String, rule: Rule): Label? {
@@ -36,7 +51,7 @@ object ScaleCode {
         if (c.length != 13 || !c.all(Char::isDigit) || !c.startsWith(rule.prefix) || !Barcodes.isValidEan(c)) return null
         val item = c.substring(2, 7)
         val value = c.substring(7, 12).toInt()
-        return if (rule.price) Label(item, null, value / 100.0) else Label(item, value / 1000.0, null)
+        return if (rule.price) Label(item, null, value / Math.pow(10.0, rule.decimals.toDouble())) else Label(item, value / 1000.0, null)
     }
 
     /** The product whose barcode is the label's scale code, with or without its leading zeros. */
