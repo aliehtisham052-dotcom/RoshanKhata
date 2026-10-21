@@ -111,7 +111,23 @@ fun main() {
     // One Roshan Khata at a time on this computer (21 Oct 2026, SingleInstance).
     val lock = SingleInstance.acquire(home)
     if (lock == null) { SingleInstance.tellAlreadyOpen(); return }
+    clearOldNativeCopies()
     try { application { app(home) } } finally { lock.release() }
+}
+
+/**
+ * SQLite's library is unpacked into Windows' TEMP folder every time the app
+ * starts, and the old copies were never removed — some 3 MB a start, for ever
+ * (21 Oct 2026, the critical review). Copies older than a day are cleared on
+ * the way in; the one in use is locked by Windows and simply stays.
+ */
+private fun clearOldNativeCopies() {
+    runCatching {
+        val tmp = java.io.File(System.getProperty("java.io.tmpdir") ?: return)
+        val dayAgo = System.currentTimeMillis() - 24L * 60 * 60 * 1000
+        tmp.listFiles { f -> f.isFile && f.name.startsWith("sqliteJni", ignoreCase = true) && f.name.endsWith(".dll", ignoreCase = true) && f.lastModified() < dayAgo }
+            ?.forEach { runCatching { it.delete() } }
+    }
 }
 
 /** A small window while the book is checked and opened, or why it could not be (21 Oct 2026). */

@@ -74,7 +74,7 @@ object ShopSheet {
 
     /** The shop's own logo in a tile, or the storefront glyph until one is set. */
     fun paintLogo(activity: Activity, image: ImageView, glyphPaddingDp: Float) {
-        val logo = try { BusinessProfile.loadLogo(activity) } catch (e: Exception) { null }
+        val logo = try { BusinessProfile.headerLogo(activity) } catch (e: Exception) { null }
         val d = activity.resources.displayMetrics.density
         if (logo != null) {
             image.imageTintList = null

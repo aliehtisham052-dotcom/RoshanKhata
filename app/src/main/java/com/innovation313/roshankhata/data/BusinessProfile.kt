@@ -514,6 +514,23 @@ object BusinessProfile {
     fun hasLogo(context: Context): Boolean =
         prefs(context).getBoolean(KEY_LOGO_SAVED, false) && logoFile(context).exists()
 
+    /**
+     * The logo for the header tile, decoded once and kept while the file is the
+     * same (21 Oct 2026, the critical review: it was decoded from disk on the
+     * main thread every time a screen came back). Never recycled by its user.
+     */
+    @Volatile private var headerLogo: Triple<String, Long, Bitmap>? = null
+
+    fun headerLogo(context: Context): Bitmap? {
+        if (!hasLogo(context)) return null
+        val f = logoFile(context)
+        val cached = headerLogo
+        if (cached != null && cached.first == f.absolutePath && cached.second == f.lastModified()) return cached.third
+        val bmp = loadLogo(context) ?: return null
+        headerLogo = Triple(f.absolutePath, f.lastModified(), bmp)
+        return bmp
+    }
+
     fun loadLogo(context: Context): Bitmap? {
         if (!hasLogo(context)) return null
         return try {
