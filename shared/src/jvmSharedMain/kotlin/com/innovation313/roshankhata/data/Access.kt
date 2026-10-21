@@ -21,7 +21,7 @@ import androidx.compose.runtime.setValue
  */
 object Access {
 
-    enum class Permission { VOID, RETURN, DISCOUNT_ANY, PRICE_EDIT, EXPORT, STOCK_ADJUST, SETTINGS, BACKUP, STAFF }
+    enum class Permission { VOID, RETURN, DISCOUNT_ANY, PRICE_EDIT, EXPORT, STOCK_ADJUST, SETTINGS, BACKUP, STAFF, CREDIT_OVER }
 
     /** Of the subtotal: what a cashier may give off a ticket without asking. */
     const val CASHIER_DISCOUNT_CAP = 0.05

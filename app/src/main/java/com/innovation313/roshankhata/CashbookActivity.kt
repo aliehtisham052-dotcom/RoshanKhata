@@ -208,6 +208,7 @@ class CashbookActivity : BaseActivity() {
                     startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).setType("text/plain")
                         .putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.z_title) + "\n" + text), getString(R.string.z_title)))
                 }
+                .setNeutralButton(R.string.print_receipt) { _, _ -> com.innovation313.roshankhata.ui.TextReceipt.print(this@CashbookActivity, lifecycleScope, getString(R.string.z_title) + "\n" + text) }
                 .setNegativeButton(R.string.close, null)
                 .show()
         }

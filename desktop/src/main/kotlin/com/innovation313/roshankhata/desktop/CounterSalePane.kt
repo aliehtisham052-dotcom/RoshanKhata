@@ -175,6 +175,15 @@ fun CounterSalePane(
             override = words.text(W.pos_discount) to { by -> complete(print, by) }
             return
         }
+        // Past the customer's credit limit (POS Phase 9): a manager's PIN, and the log says so.
+        val party = parties.firstOrNull { it.id == draft.partyId }
+        val over = draft.creditOver(party?.balance, party?.creditLimit)
+        if (over != null && allowedBy == null && !com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER)) {
+            told = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second))
+            override = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second)) to { by -> complete(print, by) }
+            return
+        }
+        if (over != null && allowedBy == null) told = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second))
         scope.launch {
             if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = Format.money(draft.totals.discount + lineDiscounts)) }
             val result = withContext(Dispatchers.IO) {
