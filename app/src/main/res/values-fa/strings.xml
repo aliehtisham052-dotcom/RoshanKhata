@@ -3067,4 +3067,24 @@
     <string name="products_labels_assign">%1$d کالا بارکد ندارند — بارکد خود فروشگاه (EAN-13) بدهیم و چاپ کنیم؟</string>
     <string name="products_labels_none">کالایی برای چاپ برچسب نیست</string>
     <string name="label_sheet_title">برچسب بارکد</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">مرجوعی</string>
+    <string name="pos_return_title">کالای برگشتی</string>
+    <string name="pos_return_reason">دلیل مرجوعی</string>
+    <string name="pos_return_refund">بازپرداخت</string>
+    <string name="pos_refund_account">در حساب بماند</string>
+    <string name="pos_return_qty_help">فروخته %1$s · تاکنون برگشته %2$s</string>
+    <string name="pos_return_posted">مرجوعی %1$s ذخیره شد</string>
+    <string name="pos_returns">مرجوعی‌ها</string>
+    <string name="pos_err_over_sold">بیش از مقدار فروخته‌شده برمی‌گردد</string>
+    <string name="pos_err_walk_in_cash">به مشتری گذری کل مبلغ نقدی برگردانده می‌شود</string>
+    <string name="pos_err_reason">دلیل لازم است</string>
+    <string name="pos_err_refund">بازپرداخت بیش از ارزش کالاست</string>
+    <string name="pos_return_no_receipt">بدون رسید</string>
+    <string name="pos_exchange">تعویض: فروش دوباره</string>
+    <string name="pos_return_of">مرجوعی %1$s</string>
+    <string name="cash_category_return">مرجوعی</string>
+    <string name="pos_recent_sales">فروش‌های اخیر</string>
+    <string name="pos_void_return">ابطال مرجوعی</string>
 </resources>

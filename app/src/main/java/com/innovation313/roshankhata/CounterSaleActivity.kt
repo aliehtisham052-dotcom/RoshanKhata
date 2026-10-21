@@ -50,7 +50,11 @@ class CounterSaleActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_counter_sale)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
-        findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
+        findViewById<MaterialToolbar>(R.id.toolbar).apply {
+            setNavigationOnClickListener { finish() }
+            // Recent tickets: a return against one, or its void (POS Phase 3).
+            menu.add(R.string.pos_recent_sales).setOnMenuItemClickListener { showRecent(); true }
+        }
 
         val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
             android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -161,6 +165,85 @@ class CounterSaleActivity : BaseActivity() {
                 }
                 .setNegativeButton(R.string.cancel, null)
                 .show()
+        }
+    }
+
+    /** The last twenty tickets; one tapped offers a return (goods back) or a void. */
+    private fun showRecent() {
+        lifecycleScope.launch {
+            val now = System.currentTimeMillis()
+            val rows = withContext(Dispatchers.IO) { dao.salesBetween(now - 60L * 24 * 60 * 60 * 1000, now + 60_000).take(20) }
+            if (rows.isEmpty()) { toast(R.string.pos_lines_empty); return@launch }
+            val labels = rows.map { s ->
+                s.saleNumber + " · " + (s.customerName ?: getString(R.string.pos_walk_in)) + " · " + com.innovation313.roshankhata.ui.Format.money(s.grandTotal) +
+                    (if (s.status == com.innovation313.roshankhata.data.SaleStatus.VOID) " · " + getString(R.string.pos_status_void) else "")
+            }.toTypedArray()
+            MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                .setTitle(R.string.pos_recent_sales)
+                .setItems(labels) { _, i ->
+                    val s = rows[i]
+                    if (s.status != com.innovation313.roshankhata.data.SaleStatus.DONE) return@setItems
+                    MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                        .setTitle(s.saleNumber)
+                        .setItems(arrayOf(getString(R.string.pos_return), getString(R.string.pos_void))) { _, which ->
+                            if (which == 0) startReturn(s.id) else askVoid(s.id, s.saleNumber)
+                        }
+                        .setNegativeButton(R.string.cancel, null)
+                        .show()
+                }
+                .setNegativeButton(R.string.close, null)
+                .show()
+        }
+    }
+
+    private fun askVoid(saleId: Long, number: String) {
+        val input = android.widget.EditText(this).apply { hint = getString(R.string.pos_void_reason) }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.pos_void)
+            .setMessage(getString(R.string.pos_void_confirm, number))
+            .setView(input)
+            .setPositiveButton(R.string.pos_void) { _, _ ->
+                val reason = input.text.toString().trim()
+                if (reason.isEmpty()) { toast(R.string.pos_err_reason); return@setPositiveButton }
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) { runCatching { dao.voidSale(saleId, reason) } }
+                    message = getString(R.string.pos_voided) + " " + number
+                    reload()
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    /** Goods back against a ticket: the shared ReturnForm in a dialog, posted in one transaction. */
+    private fun startReturn(saleId: Long) {
+        lifecycleScope.launch {
+            val full = withContext(Dispatchers.IO) { dao.saleWithLines(saleId) } ?: return@launch
+            val back = withContext(Dispatchers.IO) { dao.returnedOfSale(saleId) }.associate { it.saleItemId to it.qty }
+            val draft = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
+            val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+            val words = AndroidWords(this@CounterSaleActivity)
+            var problem by mutableStateOf<String?>(null)
+            val view = ComposeView(this@CounterSaleActivity)
+            val dialog = MaterialAlertDialogBuilder(this@CounterSaleActivity).setTitle(R.string.pos_return_title).setView(view).create()
+            view.setContent {
+                RoshanTheme(dark = dark) {
+                    ProvideWords(words) {
+                        com.innovation313.roshankhata.screens.ReturnForm(draft, onCancel = { dialog.dismiss() }, message = problem, onPost = {
+                            lifecycleScope.launch {
+                                val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
+                                r.onSuccess { id ->
+                                    val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
+                                    message = getString(R.string.pos_return_posted, number)
+                                    dialog.dismiss(); reload()
+                                }.onFailure { problem = it.message }
+                            }
+                        })
+                    }
+                }
+            }
+            dialog.show()
         }
     }
 

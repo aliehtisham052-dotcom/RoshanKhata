@@ -3083,4 +3083,24 @@
     <string name="products_labels_assign">%1$d उत्पादों का बारकोड नहीं — उन्हें दुकान का अपना (EAN-13) देकर प्रिंट करें?</string>
     <string name="products_labels_none">लेबल प्रिंट करने के लिए कोई उत्पाद नहीं</string>
     <string name="label_sheet_title">बारकोड लेबल</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">वापसी</string>
+    <string name="pos_return_title">माल वापस</string>
+    <string name="pos_return_reason">वापसी का कारण</string>
+    <string name="pos_return_refund">रिफंड</string>
+    <string name="pos_refund_account">खाते में रखें</string>
+    <string name="pos_return_qty_help">बिका %1$s · अब तक वापस %2$s</string>
+    <string name="pos_return_posted">वापसी %1$s सहेजी गई</string>
+    <string name="pos_returns">वापसियाँ</string>
+    <string name="pos_err_over_sold">जितना बिका उससे ज़्यादा वापस आ रहा है</string>
+    <string name="pos_err_walk_in_cash">आम ग्राहक को पूरी रकम नकद वापस होती है</string>
+    <string name="pos_err_reason">कारण ज़रूरी है</string>
+    <string name="pos_err_refund">रिफंड माल की कीमत से ज़्यादा है</string>
+    <string name="pos_return_no_receipt">रसीद नहीं</string>
+    <string name="pos_exchange">बदली: फिर से बेचें</string>
+    <string name="pos_return_of">%1$s की वापसी</string>
+    <string name="cash_category_return">वापसी</string>
+    <string name="pos_recent_sales">हाल की बिक्री</string>
+    <string name="pos_void_return">वापसी रद्द</string>
 </resources>

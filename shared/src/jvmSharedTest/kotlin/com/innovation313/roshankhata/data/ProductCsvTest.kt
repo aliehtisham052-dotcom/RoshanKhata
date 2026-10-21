@@ -63,7 +63,8 @@ class ProductCsvTest {
         assertTrue(code.startsWith("2"))
         assertTrue(Barcodes.isValidEan(code))
         assertTrue(Barcodes.isValidEan("8901234567890".dropLast(1) + Barcodes.checkDigit("890123456789")))
-        assertEquals(0, Barcodes.checkDigit("400638133393")) // 4006381333931 is a known EAN-13
+        assertEquals(1, Barcodes.checkDigit("400638133393")) // 4006381333931, the standard's own example
+        assertTrue(Barcodes.isValidEan("4006381333931"))
         assertFalse(Barcodes.isValidEan("4006381333932"))
         assertTrue(Barcodes.internalEan13(42) != Barcodes.internalEan13(43))
     }

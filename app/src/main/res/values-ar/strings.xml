@@ -3227,4 +3227,24 @@
     <string name="products_labels_assign">%1$d منتجات بلا باركود — أعطها باركود المتجر (EAN-13) واطبع؟</string>
     <string name="products_labels_none">لا منتجات لطباعة ملصقاتها</string>
     <string name="label_sheet_title">ملصقات الباركود</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">إرجاع</string>
+    <string name="pos_return_title">بضاعة مرتجعة</string>
+    <string name="pos_return_reason">سبب الإرجاع</string>
+    <string name="pos_return_refund">المبلغ المسترد</string>
+    <string name="pos_refund_account">يبقى في الحساب</string>
+    <string name="pos_return_qty_help">بيع %1$s · أُرجع حتى الآن %2$s</string>
+    <string name="pos_return_posted">تم حفظ الإرجاع %1$s</string>
+    <string name="pos_returns">المرتجعات</string>
+    <string name="pos_err_over_sold">المرتجع أكثر مما بيع</string>
+    <string name="pos_err_walk_in_cash">الزبون العابر يُرد له المبلغ كاملًا نقدًا</string>
+    <string name="pos_err_reason">السبب مطلوب</string>
+    <string name="pos_err_refund">المبلغ المسترد أكبر من قيمة البضاعة</string>
+    <string name="pos_return_no_receipt">بدون إيصال</string>
+    <string name="pos_exchange">استبدال: بيع من جديد</string>
+    <string name="pos_return_of">إرجاع %1$s</string>
+    <string name="cash_category_return">إرجاع</string>
+    <string name="pos_recent_sales">آخر المبيعات</string>
+    <string name="pos_void_return">إلغاء الإرجاع</string>
 </resources>

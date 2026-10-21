@@ -3036,4 +3036,24 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="products_labels_assign">%1$d produk belum punya barcode — beri barcode toko (EAN-13) lalu cetak?</string>
     <string name="products_labels_none">Tidak ada produk untuk dicetak labelnya</string>
     <string name="label_sheet_title">Label barcode</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">Retur</string>
+    <string name="pos_return_title">Barang kembali</string>
+    <string name="pos_return_reason">Alasan retur</string>
+    <string name="pos_return_refund">Pengembalian uang</string>
+    <string name="pos_refund_account">Simpan di akun</string>
+    <string name="pos_return_qty_help">Terjual %1$s · sudah kembali %2$s</string>
+    <string name="pos_return_posted">Retur %1$s tersimpan</string>
+    <string name="pos_returns">Retur</string>
+    <string name="pos_err_over_sold">Yang kembali lebih banyak dari yang terjual</string>
+    <string name="pos_err_walk_in_cash">Pelanggan umum dikembalikan uangnya penuh, tunai</string>
+    <string name="pos_err_reason">Alasan diperlukan</string>
+    <string name="pos_err_refund">Pengembalian lebih besar dari nilai barang</string>
+    <string name="pos_return_no_receipt">Tanpa struk</string>
+    <string name="pos_exchange">Tukar: jual lagi</string>
+    <string name="pos_return_of">Retur %1$s</string>
+    <string name="cash_category_return">Retur</string>
+    <string name="pos_recent_sales">Penjualan terbaru</string>
+    <string name="pos_void_return">Batalkan retur</string>
 </resources>

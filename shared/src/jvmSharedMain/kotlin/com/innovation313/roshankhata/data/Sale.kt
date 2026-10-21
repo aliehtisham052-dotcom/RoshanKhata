@@ -331,6 +331,8 @@ object AuditAction {
     const val SALE_POSTED = "sale_posted"
     const val SALE_VOIDED = "sale_voided"
     const val SALE_HELD = "sale_held"
+    const val RETURN_POSTED = "return_posted"
+    const val RETURN_VOIDED = "return_voided"
     const val DISCOUNT_OVERRIDE = "discount_override"
     const val RESTORE = "restore"
 }

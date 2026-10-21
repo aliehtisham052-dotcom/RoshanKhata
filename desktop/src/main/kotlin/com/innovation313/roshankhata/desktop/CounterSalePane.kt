@@ -109,6 +109,9 @@ fun CounterSalePane(
     var told by remember { mutableStateOf<String?>(null) }
     var choosingParty by remember { mutableStateOf(false) }
     var voiding by remember { mutableStateOf<SaleSummary?>(null) }
+    var returning by remember { mutableStateOf<com.innovation313.roshankhata.screens.ReturnDraft?>(null) }
+    var voidingReturn by remember { mutableStateOf<com.innovation313.roshankhata.data.ReturnSummary?>(null) }
+    val returns by remember(tick) { dao.observeReturns() }.collectAsState(emptyList())
     var showHeld by remember { mutableStateOf(false) }
     val searchFocus = remember { FocusRequester() }
     val discountFocus = remember { FocusRequester() }
@@ -271,7 +274,14 @@ fun CounterSalePane(
                     }
                 }
             }
-            RecentSales(recent.take(8), words, onVoid = { voiding = it })
+            RecentSales(recent.take(8), words, onVoid = { voiding = it }, onReturn = { s ->
+                scope.launch {
+                    val full = withContext(Dispatchers.IO) { dao.saleWithLines(s.id) } ?: return@launch
+                    val back = withContext(Dispatchers.IO) { dao.returnedOfSale(s.id) }.associate { it.saleItemId to it.qty }
+                    returning = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
+                }
+            })
+            RecentReturns(returns.take(6), words, onVoid = { voidingReturn = it })
         }
 
         // ---- The end side: who, how much, how paid, the button ----
@@ -383,6 +393,39 @@ fun CounterSalePane(
             }
         }
     }
+    returning?.let { draft ->
+        var problem by remember { mutableStateOf<String?>(null) }
+        DialogWindow(onCloseRequest = { returning = null }, onPreviewKeyEvent = escCloses { returning = null }, title = word(W.pos_return_title), state = rememberDialogState(width = 620.dp, height = 720.dp)) {
+            DialogFrame(word(W.pos_return_title), subtitle = draft.sale.sale.saleNumber, onClose = { returning = null }, footer = {}) {
+                com.innovation313.roshankhata.screens.ReturnForm(draft, onCancel = { returning = null }, message = problem, onPost = {
+                    scope.launch {
+                        val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
+                        r.onSuccess { id ->
+                            val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
+                            told = words.text(W.pos_return_posted, number)
+                            returning = null; tick++; onChanged()
+                        }.onFailure { problem = it.message }
+                    }
+                })
+            }
+        }
+    }
+    voidingReturn?.let { r ->
+        var reason by remember(r.id) { mutableStateOf("") }
+        DialogWindow(onCloseRequest = { voidingReturn = null }, onPreviewKeyEvent = escCloses { voidingReturn = null }, title = word(W.pos_void_return), state = rememberDialogState(width = 480.dp, height = 300.dp)) {
+            DialogFrame(word(W.pos_void_return), subtitle = r.returnNumber, onClose = { voidingReturn = null }, footer = {
+                FluentButton(word(W.cancel), { voidingReturn = null }, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.pos_void_return), {
+                    scope.launch {
+                        withContext(Dispatchers.IO) { runCatching { dao.voidReturn(r.id, reason) } }
+                        voidingReturn = null; tick++; onChanged()
+                    }
+                }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())
+            }) {
+                FluentField(reason, { reason = it }, Modifier.fillMaxWidth(), label = word(W.pos_void_reason))
+            }
+        }
+    }
     voiding?.let { s ->
         var reason by remember(s.id) { mutableStateOf("") }
         DialogWindow(onCloseRequest = { voiding = null }, onPreviewKeyEvent = escCloses { voiding = null }, title = word(W.pos_void), state = rememberDialogState(width = 480.dp, height = 300.dp)) {
@@ -424,7 +467,7 @@ private fun methodWord(m: String): String = word(
 
 /** Today's last few tickets under the counter, with the void. */
 @Composable
-private fun RecentSales(rows: List<SaleSummary>, words: Words, onVoid: (SaleSummary) -> Unit) {
+private fun RecentSales(rows: List<SaleSummary>, words: Words, onVoid: (SaleSummary) -> Unit, onReturn: (SaleSummary) -> Unit) {
     val c = LocalRoshanColors.current
     if (rows.isEmpty()) return
     ListCard(Modifier.fillMaxWidth()) {
@@ -439,7 +482,31 @@ private fun RecentSales(rows: List<SaleSummary>, words: Words, onVoid: (SaleSumm
                     SaleStatus.VOID -> Tag(word(W.pos_status_void), c.owedToMe, Look.getTint)
                     else -> Tag(word(W.pos_status_done), Look.accent, Look.accentTint)
                 }
-                if (s.status == SaleStatus.DONE) FluentButton(word(W.pos_void), { onVoid(s) }, kind = ButtonKind.SUBTLE) else Spacer(Modifier.width(8.dp))
+                if (s.status == SaleStatus.DONE) {
+                    FluentButton(word(W.pos_return), { onReturn(s) }, kind = ButtonKind.SUBTLE)
+                    FluentButton(word(W.pos_void), { onVoid(s) }, kind = ButtonKind.SUBTLE)
+                } else Spacer(Modifier.width(8.dp))
+            }
+            if (i < rows.lastIndex) Rule()
+        }
+    }
+}
+
+/** The last few returns, with their void. */
+@Composable
+private fun RecentReturns(rows: List<com.innovation313.roshankhata.data.ReturnSummary>, words: Words, onVoid: (com.innovation313.roshankhata.data.ReturnSummary) -> Unit) {
+    val c = LocalRoshanColors.current
+    if (rows.isEmpty()) return
+    ListCard(Modifier.fillMaxWidth()) {
+        ListHead(word(W.pos_returns))
+        rows.forEachIndexed { i, r ->
+            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(Format.ltr(r.returnNumber), Modifier.width(96.dp), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                Text(listOfNotNull(r.saleNumber?.let { Format.ltr(it) }, r.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in)).joinToString(" · "), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(Format.dateTime(r.timestamp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+                Text(Format.money(r.total), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                if (r.status == SaleStatus.VOID) Tag(word(W.pos_status_void), c.owedToMe, Look.getTint)
+                else FluentButton(word(W.pos_void), { onVoid(r) }, kind = ButtonKind.SUBTLE)
             }
             if (i < rows.lastIndex) Rule()
         }

@@ -52,6 +52,8 @@ data class CashEntry(
  */
 object CashCategory {
     const val SALE = "Sale"
+    /** A walk-in's refund over the counter (POS Phase 3). */
+    const val RETURN = "Return"
 }
 
 /** Totals over a window, for the cashbook header. */
