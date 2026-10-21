@@ -310,10 +310,12 @@ class ScreenProofTest {
             dao.insertEntryNumbered(com.innovation313.roshankhata.data.LedgerEntry(partyId = b, amount = 18_900.0, isGiven = true, entryNumber = "", timestamp = now - 45 * day))
             dao.insertEntryNumbered(com.innovation313.roshankhata.data.LedgerEntry(partyId = b, amount = 4_000.0, isGiven = false, entryNumber = "", timestamp = now - 20 * day))
             dao.insertEntryNumbered(com.innovation313.roshankhata.data.LedgerEntry(partyId = c, amount = 3_200.0, isGiven = true, entryNumber = "", timestamp = now - 70 * day))
+            // Today's sales spread over the hours gone by so far (the runner's clock may be early in its day).
             val start = com.innovation313.roshankhata.data.DayCloseMath.startOf(com.innovation313.roshankhata.data.DayCloseMath.dayOf(now))
-            listOf(9 to 1_650.0, 9 to 450.0, 11 to 2_900.0, 13 to 780.0, 16 to 5_800.0, 17 to 120.0).forEach { (h, amount) ->
+            val span = (now - start).coerceAtLeast(60_000L)
+            listOf(0.08 to 1_650.0, 0.2 to 450.0, 0.35 to 2_900.0, 0.5 to 780.0, 0.7 to 5_800.0, 0.9 to 120.0, 0.9 to 2_400.0).forEach { (at, amount) ->
                 dao.postSale(
-                    com.innovation313.roshankhata.data.Sale(timestamp = minOf(now - 1, start + h * 3_600_000L), subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+                    com.innovation313.roshankhata.data.Sale(timestamp = start + (span * at).toLong(), subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
                     listOf(com.innovation313.roshankhata.data.SaleItem(saleId = 0, itemName = "Goods", quantity = 1.0, rate = amount)),
                     listOf(com.innovation313.roshankhata.data.SalePayment(saleId = 0, method = com.innovation313.roshankhata.data.PaymentMethod.CASH, amount = amount))
                 )
