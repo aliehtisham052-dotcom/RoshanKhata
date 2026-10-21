@@ -27,7 +27,8 @@ object BackupCodec {
      * restored book matches one that was migrated on the phone. 8 (21 Oct
      * 2026) added the counter: sales, saleItems, salePayments, auditLog, and
      * the saleId / paymentMethod / barcode columns on the old tables; 9 the
-     * returns (saleReturns, saleReturnItems).
+     * returns (saleReturns, saleReturnItems); 10 the staff logins (role and
+     * the PIN's hash on each staff row — never the PIN).
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -36,7 +37,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 9
+    const val FORMAT_VERSION = 10
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -109,6 +110,7 @@ object BackupCodec {
                 put(JSONObject().apply {
                     put("id", st.id); put("name", st.name); put("phone", st.phone ?: JSONObject.NULL)
                     put("monthlySalary", st.monthlySalary); put("isActive", st.isActive); put("createdAt", st.createdAt)
+                    put("role", st.role ?: JSONObject.NULL); put("pinHash", st.pinHash ?: JSONObject.NULL); put("pinSalt", st.pinSalt ?: JSONObject.NULL)
                 })
             }
         })
@@ -363,7 +365,9 @@ object BackupCodec {
                     val o = arr.getJSONObject(i)
                     Staff(id = o.getLong("id"), name = o.getString("name"), phone = o.optNullableString("phone"),
                         monthlySalary = o.getDouble("monthlySalary"), isActive = o.optBoolean("isActive", true),
-                        createdAt = o.optLong("createdAt", 0L))
+                        createdAt = o.optLong("createdAt", 0L),
+                        // Absent before format 10: no login.
+                        role = o.optNullableString("role"), pinHash = o.optNullableString("pinHash"), pinSalt = o.optNullableString("pinSalt"))
                 }
             } ?: emptyList()
             val attendance = root.optJSONArray("staffAttendance")?.let { arr ->
@@ -661,6 +665,8 @@ object BackupCodec {
             returns = data.returns,
             returnItems = data.returnItems
         )
+        // The restore itself is the first row of the restored log (POS Phase 5).
+        dao.log(AuditAction.RESTORE, Access.userName, detail = data.businessName)
     }
 
     // ---------- Mapping ----------

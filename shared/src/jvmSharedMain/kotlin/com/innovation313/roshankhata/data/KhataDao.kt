@@ -2689,7 +2689,7 @@ interface KhataDao {
         }
         insertAudit(
             AuditLog(
-                user = sale.createdBy, action = AuditAction.SALE_POSTED, refTable = "sales", refId = saleId,
+                user = sale.createdBy ?: Access.userName, action = AuditAction.SALE_POSTED, refTable = "sales", refId = saleId,
                 detail = "$number ${"%.2f".format(Digits.FIGURES, totals.grandTotal)}"
             )
         )
@@ -2705,7 +2705,7 @@ interface KhataDao {
      * is not a posted one.
      */
     @Transaction
-    suspend fun voidSale(saleId: Long, reason: String, user: String? = null): Boolean {
+    suspend fun voidSale(saleId: Long, reason: String, user: String? = Access.userName): Boolean {
         val sale = getSale(saleId) ?: return false
         if (sale.status != SaleStatus.DONE || sale.isDeleted) return false
         require(reason.isNotBlank()) { "a void needs its reason" }
@@ -2811,6 +2811,17 @@ interface KhataDao {
     @Query("SELECT * FROM audit_log ORDER BY timestamp DESC, id DESC LIMIT :limit")
     suspend fun latestAudit(limit: Int): List<AuditLog>
 
+    @Query("SELECT * FROM audit_log ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    fun observeAudit(limit: Int): Flow<List<AuditLog>>
+
+    /** Staff who can sign in: a role and a PIN set. */
+    @Query("SELECT * FROM staff WHERE isActive = 1 AND role IS NOT NULL AND pinHash IS NOT NULL ORDER BY name")
+    suspend fun loginStaffOnce(): List<Staff>
+
+    /** One row in the log, from anywhere a shopkeeper would want to answer for later. */
+    suspend fun log(action: String, user: String?, refTable: String? = null, refId: Long? = null, detail: String? = null): Long =
+        insertAudit(AuditLog(user = user, action = action, refTable = refTable, refId = refId, detail = detail))
+
     @Query("DELETE FROM sale_payments")
     suspend fun wipeSalePayments()
 
@@ -2872,7 +2883,7 @@ interface KhataDao {
 
     @Query(
         """
-        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.status
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.refundAmount, r.status
         FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
         WHERE r.isDeleted = 0 ORDER BY r.timestamp DESC, r.id DESC
         """
@@ -2881,7 +2892,7 @@ interface KhataDao {
 
     @Query(
         """
-        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.status
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.refundAmount, r.status
         FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
         WHERE r.isDeleted = 0 AND r.timestamp >= :from AND r.timestamp < :to ORDER BY r.timestamp DESC, r.id DESC
         """
@@ -2973,7 +2984,7 @@ interface KhataDao {
 
     /** A posted return taken back: its rows binned, its number kept. False unless it is a posted one. */
     @Transaction
-    suspend fun voidReturn(id: Long, reason: String, user: String? = null): Boolean {
+    suspend fun voidReturn(id: Long, reason: String, user: String? = Access.userName): Boolean {
         val r = getReturn(id) ?: return false
         if (r.status != SaleStatus.DONE || r.isDeleted) return false
         require(reason.isNotBlank()) { "a void needs its reason" }

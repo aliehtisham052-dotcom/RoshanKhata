@@ -242,10 +242,12 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     var importPlan by remember { mutableStateOf<com.innovation313.roshankhata.data.ProductCsv.Plan?>(null) }
     var assignCodes by remember { mutableStateOf<List<com.innovation313.roshankhata.data.Product>?>(null) }
     fun printLabels(list: List<com.innovation313.roshankhata.data.Product>) {
+        if (!com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.EXPORT)) { told = words.text(W.access_denied); return }
         if (list.isEmpty()) { told = words.text(W.products_labels_none); return }
         StatementPrint.show(LabelSheet(list), words.text(W.label_sheet_title))
     }
     fun exportCsv() {
+        if (!com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.EXPORT)) { told = words.text(W.access_denied); return }
         val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.products_export), java.awt.FileDialog.SAVE)
         startIn(dialog, "Documents")
         dialog.file = "RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv"
@@ -258,6 +260,7 @@ fun ProductsPane(dao: KhataDao, words: Words) {
         }
     }
     fun importCsv() {
+        if (!com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)) { told = words.text(W.access_denied); return }
         val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.products_import), java.awt.FileDialog.LOAD)
         startIn(dialog, "Downloads")
         dialog.isVisible = true
@@ -284,6 +287,7 @@ fun ProductsPane(dao: KhataDao, words: Words) {
                     importPlan = null
                     scope.launch {
                         val (added, updated) = withContext(Dispatchers.IO) { dao.importProducts(plan) }
+                        withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, detail = words.text(W.products_imported, added, updated)) }
                         told = words.text(W.products_imported, added, updated)
                     }
                 }, kind = ButtonKind.ACCENT)

@@ -121,6 +121,11 @@ fun StaffPane(dao: KhataDao) {
         var phone by remember(person) { mutableStateOf(person?.phone.orEmpty()) }
         var salary by remember(person) { mutableStateOf(person?.monthlySalary?.let { Calc.trim(it) }.orEmpty()) }
         var bad by remember(person) { mutableStateOf(false) }
+        // Counter login (POS Phase 5): a role and a PIN; only the owner sets them.
+        var role by remember(person) { mutableStateOf(person?.role) }
+        var pin by remember(person) { mutableStateOf("") }
+        var badPin by remember(person) { mutableStateOf(false) }
+        val mayEditLogin = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.STAFF)
         AlertDialog(
             onDismissRequest = { adding = false; editing = null },
             title = { Text(word(if (person == null) W.staff_add else W.staff_edit)) },
@@ -130,6 +135,20 @@ fun StaffPane(dao: KhataDao) {
                     Outlined(phone, { phone = it }, label = { Text(word(W.staff_phone)) }, singleLine = true)
                     Outlined(salary, { salary = it }, label = { Text(word(W.staff_salary)) }, singleLine = true)
                     if (bad) Text(word(W.staff_invalid), color = c.owedToMe, fontSize = 13.sp)
+                    if (mayEditLogin) {
+                        Text(word(W.staff_role), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FluentPill(word(W.staff_role_none), role == null) { role = null }
+                            FluentPill(word(W.staff_role_manager), role == com.innovation313.roshankhata.data.Role.MANAGER) { role = com.innovation313.roshankhata.data.Role.MANAGER }
+                            FluentPill(word(W.staff_role_cashier), role == com.innovation313.roshankhata.data.Role.CASHIER) { role = com.innovation313.roshankhata.data.Role.CASHIER }
+                        }
+                        if (role != null) {
+                            Outlined(pin, { pin = it.filter { ch -> ch.isDigit() }.take(8); badPin = false }, label = { Text(word(W.staff_pin)) }, singleLine = true,
+                                visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation())
+                            if (person?.pinHash != null) Text(word(W.staff_pin_keep), color = c.textMuted, fontSize = 12.sp)
+                            if (badPin) Text(word(W.staff_pin_invalid), color = c.owedToMe, fontSize = 13.sp)
+                        }
+                    }
                 }
             },
             confirmButton = {
@@ -138,10 +157,19 @@ fun StaffPane(dao: KhataDao) {
                     val s = Calc.evalAmount(salary)
                     if (n.isEmpty() || s == null) { bad = true; return@TextButton }
                     val p = phone.trim().ifEmpty { null }
+                    // A role needs a PIN the first time; a blank PIN later keeps the old one.
+                    val needsPin = mayEditLogin && role != null && (person?.pinHash == null || pin.isNotEmpty())
+                    if (needsPin && !com.innovation313.roshankhata.data.PinHash.valid(pin)) { badPin = true; return@TextButton }
+                    val login: (Staff) -> Staff = { st ->
+                        if (!mayEditLogin) st
+                        else if (role == null) st.copy(role = null, pinHash = null, pinSalt = null)
+                        else if (pin.isNotEmpty()) { val salt = com.innovation313.roshankhata.data.PinHash.salt(); st.copy(role = role, pinSalt = salt, pinHash = com.innovation313.roshankhata.data.PinHash.hash(pin, salt)) }
+                        else st.copy(role = role)
+                    }
                     scope.launch {
                         withContext(Dispatchers.IO) {
-                            if (person == null) dao.insertStaff(Staff(name = n, phone = p, monthlySalary = s))
-                            else dao.updateStaff(person.copy(name = n, phone = p, monthlySalary = s))
+                            if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
+                            else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
                         }
                     }
                     adding = false; editing = null

@@ -80,7 +80,7 @@ class ReturnDraft(val sale: SaleWithLines, returnedSoFar: Map<Long, Double>) {
     val problem: ReturnMath.Problem?
         get() = ReturnMath.check(toItems(), refundMethod, refund, total, hasParty, reason, lines.associate { it.item.id to it.left })
 
-    fun toReturn(createdBy: String? = null) = SaleReturn(
+    fun toReturn(createdBy: String? = com.innovation313.roshankhata.data.Access.userName) = SaleReturn(
         saleId = sale.sale.id, partyId = sale.sale.partyId, customerName = sale.sale.customerName,
         total = total, refundMethod = refundMethod, refundAmount = refund, reason = reason.trim(), createdBy = createdBy
     )

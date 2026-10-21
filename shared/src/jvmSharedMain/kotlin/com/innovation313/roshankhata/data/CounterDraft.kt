@@ -164,7 +164,7 @@ class CounterDraft {
     }
 
     /** The document [KhataDao.postSale] is given; its figures are recomputed there. */
-    fun toSale(createdBy: String? = null, timestamp: Long = System.currentTimeMillis()) = Sale(
+    fun toSale(createdBy: String? = Access.userName, timestamp: Long = System.currentTimeMillis()) = Sale(
         partyId = partyId, customerName = partyName?.trim()?.ifBlank { null },
         timestamp = timestamp, subtotal = totals.subtotal, discountAmount = Calc.evalAmount(discount) ?: 0.0,
         taxPercent = Calc.evalAmount(taxPercent)?.takeIf { it > 0.0 }, taxAmount = totals.tax,

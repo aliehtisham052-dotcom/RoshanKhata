@@ -3076,4 +3076,37 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="z_no_close">Din band nahi hua — farq dekhne ke liye galla ginein</string>
     <string name="z_variance_reason">Farq ki wajah likhein</string>
     <string name="z_yesterday_open">Kal ka galla nahi gina gaya</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">Counter login</string>
+    <string name="staff_role_none">Login nahi</string>
+    <string name="staff_role_manager">Manager</string>
+    <string name="staff_role_cashier">Cashier</string>
+    <string name="staff_pin">PIN (4–8 hindse)</string>
+    <string name="staff_pin_keep">PIN wahi rakhne ke liye khali chhorein</string>
+    <string name="staff_pin_invalid">PIN 4 se 8 hindson ka hota hai</string>
+    <string name="access_owner">Malik</string>
+    <string name="access_who">Counter par kaun hai?</string>
+    <string name="access_sign_in">Sign in</string>
+    <string name="access_sign_out">Sign out</string>
+    <string name="access_wrong_pin">Ghalat PIN</string>
+    <string name="access_override_title">Manager ka PIN darkar hai</string>
+    <string name="access_override_help">Cashier ye akele nahi kar sakta. Manager ya malik apna PIN daal kar ijazat de.</string>
+    <string name="access_denied">Cashier ke liye ijazat nahi</string>
+    <string name="access_discount_cap">Cashier manager ke baghair zyada se zyada %1$s riayat de sakta hai</string>
+    <string name="audit_title">Kis ne kya kiya</string>
+    <string name="audit_subtitle">Har sale, mansookhi, wapsi, qeemat ki tabdeeli, sign in aur bahali — taza pehle</string>
+    <string name="audit_empty">Log mein abhi kuch nahi</string>
+    <string name="audit_sale_posted">Sale</string>
+    <string name="audit_sale_voided">Sale mansookh</string>
+    <string name="audit_sale_held">Bill roka gaya</string>
+    <string name="audit_return_posted">Wapsi</string>
+    <string name="audit_return_voided">Wapsi mansookh</string>
+    <string name="audit_discount_override">Riayat ki ijazat</string>
+    <string name="audit_manager_override">Manager ne ijazat di</string>
+    <string name="audit_price_changed">Qeemat badli</string>
+    <string name="audit_sign_in">Sign in</string>
+    <string name="audit_restore">Kitab bahal</string>
+    <string name="audit_export">Export</string>
+    <string name="audit_by">%1$s ne</string>
 </resources>

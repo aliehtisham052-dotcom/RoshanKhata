@@ -3120,4 +3120,37 @@
     <string name="z_no_close">दिन बंद नहीं हुआ — अंतर देखने के लिए गल्ला गिनें</string>
     <string name="z_variance_reason">अंतर का कारण लिखें</string>
     <string name="z_yesterday_open">कल का गल्ला नहीं गिना गया</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">काउंटर लॉगिन</string>
+    <string name="staff_role_none">लॉगिन नहीं</string>
+    <string name="staff_role_manager">मैनेजर</string>
+    <string name="staff_role_cashier">कैशियर</string>
+    <string name="staff_pin">पिन (4–8 अंक)</string>
+    <string name="staff_pin_keep">पिन वही रखने के लिए खाली छोड़ें</string>
+    <string name="staff_pin_invalid">पिन 4 से 8 अंकों का होता है</string>
+    <string name="access_owner">मालिक</string>
+    <string name="access_who">काउंटर पर कौन है?</string>
+    <string name="access_sign_in">साइन इन</string>
+    <string name="access_sign_out">साइन आउट</string>
+    <string name="access_wrong_pin">गलत पिन</string>
+    <string name="access_override_title">मैनेजर का पिन चाहिए</string>
+    <string name="access_override_help">कैशियर यह अकेले नहीं कर सकता। मैनेजर या मालिक अपना पिन डालकर अनुमति दे।</string>
+    <string name="access_denied">कैशियर के लिए अनुमति नहीं</string>
+    <string name="access_discount_cap">कैशियर मैनेजर के बिना ज़्यादा से ज़्यादा %1$s छूट दे सकता है</string>
+    <string name="audit_title">किसने क्या किया</string>
+    <string name="audit_subtitle">हर बिक्री, रद्द, वापसी, दाम बदलाव, साइन इन और बहाली — नया पहले</string>
+    <string name="audit_empty">लॉग में अभी कुछ नहीं</string>
+    <string name="audit_sale_posted">बिक्री</string>
+    <string name="audit_sale_voided">बिक्री रद्द</string>
+    <string name="audit_sale_held">बिल रोका</string>
+    <string name="audit_return_posted">वापसी</string>
+    <string name="audit_return_voided">वापसी रद्द</string>
+    <string name="audit_discount_override">छूट की अनुमति</string>
+    <string name="audit_manager_override">मैनेजर ने अनुमति दी</string>
+    <string name="audit_price_changed">दाम बदला</string>
+    <string name="audit_sign_in">साइन इन</string>
+    <string name="audit_restore">बही बहाल</string>
+    <string name="audit_export">निर्यात</string>
+    <string name="audit_by">%1$s ने</string>
 </resources>

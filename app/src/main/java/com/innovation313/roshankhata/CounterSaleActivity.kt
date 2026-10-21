@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.string
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -54,6 +55,11 @@ class CounterSaleActivity : BaseActivity() {
             setNavigationOnClickListener { finish() }
             // Recent tickets: a return against one, or its void (POS Phase 3).
             menu.add(R.string.pos_recent_sales).setOnMenuItemClickListener { showRecent(); true }
+            // Who is at the counter (POS Phase 5).
+            menu.add(R.string.access_who).setOnMenuItemClickListener {
+                com.innovation313.roshankhata.ui.AccessUi.signIn(this@CounterSaleActivity, dao) { message = com.innovation313.roshankhata.data.Access.userName ?: getString(R.string.access_owner) }
+                true
+            }
         }
 
         val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
@@ -113,9 +119,17 @@ class CounterSaleActivity : BaseActivity() {
             .addOnFailureListener { toast(R.string.qr_scan_failed) }
     }
 
-    private fun complete() {
+    private fun complete(allowedBy: String? = null) {
         draft.problem?.let { message = getString(com.innovation313.roshankhata.data.WordIds.string(problemWord(it))); return }
+        // A cashier's discount past the cap waits for a manager's PIN (POS Phase 5).
+        val lineDiscounts = draft.lines.sumOf { it.discountValue }
+        if (allowedBy == null && com.innovation313.roshankhata.data.Access.discountNeedsOverride(draft.totals.discount + lineDiscounts, draft.totals.subtotal)) {
+            message = getString(R.string.access_discount_cap, com.innovation313.roshankhata.ui.Format.money(draft.totals.subtotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
+            com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.DISCOUNT_ANY, getString(R.string.pos_discount)) { by -> complete(by) }
+            return
+        }
         lifecycleScope.launch {
+            if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = com.innovation313.roshankhata.ui.Format.money(draft.totals.discount + lineDiscounts)) }
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     val id = Counter.post(dao, draft)
@@ -156,7 +170,7 @@ class CounterSaleActivity : BaseActivity() {
             if (held.isEmpty()) return@launch
             val labels = held.map { (it.customerName ?: getString(R.string.pos_walk_in)) + " · " + com.innovation313.roshankhata.ui.Format.money(it.grandTotal) }.toTypedArray()
             MaterialAlertDialogBuilder(this@CounterSaleActivity)
-                .setTitle(getString(R.string.pos_held_tickets, held.size))
+                .setTitle(com.innovation313.roshankhata.data.Digits.string(resources, R.string.pos_held_tickets, held.size))
                 .setItems(labels) { _, i ->
                     lifecycleScope.launch {
                         val full = withContext(Dispatchers.IO) { dao.saleWithLines(held[i].id) } ?: return@launch
@@ -186,7 +200,8 @@ class CounterSaleActivity : BaseActivity() {
                     MaterialAlertDialogBuilder(this@CounterSaleActivity)
                         .setTitle(s.saleNumber)
                         .setItems(arrayOf(getString(R.string.pos_return), getString(R.string.pos_void))) { _, which ->
-                            if (which == 0) startReturn(s.id) else askVoid(s.id, s.saleNumber)
+                            if (which == 0) com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.RETURN, getString(R.string.pos_return) + " " + s.saleNumber) { startReturn(s.id) }
+                            else com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { askVoid(s.id, s.saleNumber) }
                         }
                         .setNegativeButton(R.string.cancel, null)
                         .show()

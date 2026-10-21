@@ -3076,4 +3076,37 @@
     <string name="z_no_close">دن بند نہیں ہوا — فرق دیکھنے کے لیے گلا گنیں</string>
     <string name="z_variance_reason">فرق کی وجہ لکھیں</string>
     <string name="z_yesterday_open">کل کا گلا نہیں گنا گیا</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">کاؤنٹر لاگ ان</string>
+    <string name="staff_role_none">لاگ ان نہیں</string>
+    <string name="staff_role_manager">منیجر</string>
+    <string name="staff_role_cashier">کیشیئر</string>
+    <string name="staff_pin">پن (4–8 ہندسے)</string>
+    <string name="staff_pin_keep">پن وہی رکھنے کے لیے خالی چھوڑیں</string>
+    <string name="staff_pin_invalid">پن 4 سے 8 ہندسوں کا ہوتا ہے</string>
+    <string name="access_owner">مالک</string>
+    <string name="access_who">کاؤنٹر پر کون ہے؟</string>
+    <string name="access_sign_in">سائن ان</string>
+    <string name="access_sign_out">سائن آؤٹ</string>
+    <string name="access_wrong_pin">غلط پن</string>
+    <string name="access_override_title">منیجر کا پن درکار ہے</string>
+    <string name="access_override_help">کیشیئر یہ اکیلے نہیں کر سکتا۔ منیجر یا مالک اپنا پن ڈال کر اجازت دے۔</string>
+    <string name="access_denied">کیشیئر کے لیے اجازت نہیں</string>
+    <string name="access_discount_cap">کیشیئر منیجر کے بغیر زیادہ سے زیادہ %1$s رعایت دے سکتا ہے</string>
+    <string name="audit_title">کس نے کیا کیا</string>
+    <string name="audit_subtitle">ہر سیل، منسوخی، واپسی، قیمت کی تبدیلی، سائن ان اور بحالی — تازہ پہلے</string>
+    <string name="audit_empty">لاگ میں ابھی کچھ نہیں</string>
+    <string name="audit_sale_posted">سیل</string>
+    <string name="audit_sale_voided">سیل منسوخ</string>
+    <string name="audit_sale_held">بل روکا گیا</string>
+    <string name="audit_return_posted">واپسی</string>
+    <string name="audit_return_voided">واپسی منسوخ</string>
+    <string name="audit_discount_override">رعایت کی اجازت</string>
+    <string name="audit_manager_override">منیجر نے اجازت دی</string>
+    <string name="audit_price_changed">قیمت بدلی</string>
+    <string name="audit_sign_in">سائن ان</string>
+    <string name="audit_restore">کتاب بحال</string>
+    <string name="audit_export">ایکسپورٹ</string>
+    <string name="audit_by">%1$s نے</string>
 </resources>

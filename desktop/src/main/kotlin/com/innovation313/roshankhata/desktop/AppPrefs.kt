@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.PinHash
 import java.io.File
 import java.util.Properties
 

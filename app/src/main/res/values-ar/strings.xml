@@ -3264,4 +3264,37 @@
     <string name="z_no_close">لم يُغلق اليوم — عدّ الدرج لرؤية الفرق</string>
     <string name="z_variance_reason">اذكر سبب الفرق</string>
     <string name="z_yesterday_open">درج الأمس لم يُعدّ</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">تسجيل دخول الكاونتر</string>
+    <string name="staff_role_none">بلا تسجيل دخول</string>
+    <string name="staff_role_manager">مدير</string>
+    <string name="staff_role_cashier">كاشير</string>
+    <string name="staff_pin">رمز PIN (4–8 أرقام)</string>
+    <string name="staff_pin_keep">اتركه فارغًا للإبقاء على الرمز</string>
+    <string name="staff_pin_invalid">الرمز من 4 إلى 8 أرقام</string>
+    <string name="access_owner">المالك</string>
+    <string name="access_who">من على الكاونتر؟</string>
+    <string name="access_sign_in">تسجيل الدخول</string>
+    <string name="access_sign_out">تسجيل الخروج</string>
+    <string name="access_wrong_pin">رمز خاطئ</string>
+    <string name="access_override_title">مطلوب رمز المدير</string>
+    <string name="access_override_help">لا يستطيع الكاشير فعل هذا وحده. يكتب المدير أو المالك رمزه للسماح.</string>
+    <string name="access_denied">غير مسموح للكاشير</string>
+    <string name="access_discount_cap">يمكن للكاشير منح خصم حتى %1$s دون مدير</string>
+    <string name="audit_title">من فعل ماذا</string>
+    <string name="audit_subtitle">كل بيع وإلغاء وإرجاع وتغيير سعر وتسجيل دخول واستعادة — الأحدث أولًا</string>
+    <string name="audit_empty">لا شيء في السجل بعد</string>
+    <string name="audit_sale_posted">بيع</string>
+    <string name="audit_sale_voided">بيع ملغى</string>
+    <string name="audit_sale_held">فاتورة معلّقة</string>
+    <string name="audit_return_posted">إرجاع</string>
+    <string name="audit_return_voided">إرجاع ملغى</string>
+    <string name="audit_discount_override">سُمح بالخصم</string>
+    <string name="audit_manager_override">سمح به مدير</string>
+    <string name="audit_price_changed">تغيّر السعر</string>
+    <string name="audit_sign_in">تسجيل دخول</string>
+    <string name="audit_restore">استُعيد الدفتر</string>
+    <string name="audit_export">تصدير</string>
+    <string name="audit_by">بواسطة %1$s</string>
 </resources>

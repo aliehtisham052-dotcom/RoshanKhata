@@ -52,8 +52,16 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 33 (returns): its two tables. */
+    /** Undo version 34 (staff logins): three columns on staff. */
+    fun undo34(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for ((table, cols) in Schema34.newColumns) stripColumns(raw, table, cols)
+    }
+
+    /** Undo version 33 (returns): its two tables. Undoes 34 first. */
     fun undo33(raw: SQLiteDatabase) {
+        undo34(raw)
         raw.execSQL("PRAGMA foreign_keys = OFF")
         for (t in Schema33.newTables) raw.execSQL("DROP TABLE IF EXISTS $t")
     }

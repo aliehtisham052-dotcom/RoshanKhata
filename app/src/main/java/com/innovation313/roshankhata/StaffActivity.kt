@@ -50,6 +50,7 @@ class StaffActivity : BaseActivity() {
         findViewById<View>(R.id.btnPrevMonth).setOnClickListener { shiftMonth(-1) }
         findViewById<View>(R.id.btnNextMonth).setOnClickListener { shiftMonth(1) }
         findViewById<View>(R.id.btnAddStaff).setOnClickListener { editStaff(null) }
+        findViewById<View>(R.id.btnAudit).setOnClickListener { startActivity(android.content.Intent(this, AuditActivity::class.java)) }
         load()
     }
 
@@ -178,9 +179,21 @@ class StaffActivity : BaseActivity() {
         val phone = field(R.string.staff_phone, InputType.TYPE_CLASS_PHONE, person?.phone)
         val salary = field(R.string.staff_salary, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
             person?.monthlySalary?.let { Format.plain(it) })
+        // Counter login (POS Phase 5): a role and a PIN, set by the owner only.
+        val mayEditLogin = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.STAFF)
+        val roles = listOf(null, com.innovation313.roshankhata.data.Role.MANAGER, com.innovation313.roshankhata.data.Role.CASHIER)
+        val roleLabels = listOf(getString(R.string.staff_role_none), getString(R.string.staff_role_manager), getString(R.string.staff_role_cashier))
+        val roleBox = android.widget.Spinner(this).apply {
+            adapter = android.widget.ArrayAdapter(this@StaffActivity, android.R.layout.simple_spinner_dropdown_item, roleLabels)
+            setSelection(roles.indexOf(person?.role).coerceAtLeast(0))
+        }
+        val roleLabel = android.widget.TextView(this).apply { setText(R.string.staff_role); textSize = 12f }
+        val pin = field(R.string.staff_pin, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
+        val pinNote = android.widget.TextView(this).apply { setText(R.string.staff_pin_keep); textSize = 12f; visibility = if (person?.pinHash != null) View.VISIBLE else View.GONE }
+        val views = if (mayEditLogin) arrayOf<View>(name, phone, salary, roleLabel, roleBox, pin, pinNote) else arrayOf<View>(name, phone, salary)
         MaterialAlertDialogBuilder(this)
             .setTitle(if (person == null) R.string.staff_add else R.string.staff_edit)
-            .setView(box(name, phone, salary))
+            .setView(box(*views))
             .setPositiveButton(R.string.save) { _, _ ->
                 val n = name.text.toString().trim()
                 val s = salary.text.toString().replace(",", "").toDoubleOrNull()
@@ -188,9 +201,21 @@ class StaffActivity : BaseActivity() {
                     Toast.makeText(this, R.string.staff_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
                 }
                 val p = phone.text.toString().trim().ifEmpty { null }
+                val role = if (mayEditLogin) roles[roleBox.selectedItemPosition] else person?.role
+                val typedPin = pin.text.toString()
+                val needsPin = mayEditLogin && role != null && (person?.pinHash == null || typedPin.isNotEmpty())
+                if (needsPin && !com.innovation313.roshankhata.data.PinHash.valid(typedPin)) {
+                    Toast.makeText(this, R.string.staff_pin_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
+                }
+                val login: (Staff) -> Staff = { st ->
+                    if (!mayEditLogin) st
+                    else if (role == null) st.copy(role = null, pinHash = null, pinSalt = null)
+                    else if (typedPin.isNotEmpty()) { val salt = com.innovation313.roshankhata.data.PinHash.salt(); st.copy(role = role, pinSalt = salt, pinHash = com.innovation313.roshankhata.data.PinHash.hash(typedPin, salt)) }
+                    else st.copy(role = role)
+                }
                 lifecycleScope.launch {
-                    if (person == null) dao.insertStaff(Staff(name = n, phone = p, monthlySalary = s))
-                    else dao.updateStaff(person.copy(name = n, phone = p, monthlySalary = s))
+                    if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
+                    else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
                 }
             }
             .setNegativeButton(R.string.cancel, null)

@@ -3290,4 +3290,37 @@ You can change this any time from this screen.</string>
     <string name="z_no_close">The day was not closed — count the drawer to see the difference</string>
     <string name="z_variance_reason">Give a reason for the difference</string>
     <string name="z_yesterday_open">Yesterday’s drawer was not counted</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">Counter login</string>
+    <string name="staff_role_none">No login</string>
+    <string name="staff_role_manager">Manager</string>
+    <string name="staff_role_cashier">Cashier</string>
+    <string name="staff_pin">PIN (4–8 digits)</string>
+    <string name="staff_pin_keep">Leave blank to keep the PIN</string>
+    <string name="staff_pin_invalid">A PIN is 4 to 8 digits</string>
+    <string name="access_owner">Owner</string>
+    <string name="access_who">Who is at the counter?</string>
+    <string name="access_sign_in">Sign in</string>
+    <string name="access_sign_out">Sign out</string>
+    <string name="access_wrong_pin">Wrong PIN</string>
+    <string name="access_override_title">Manager’s PIN needed</string>
+    <string name="access_override_help">A cashier cannot do this alone. A manager or the owner types their PIN to allow it.</string>
+    <string name="access_denied">Not allowed for a cashier</string>
+    <string name="access_discount_cap">A cashier may give up to %1$s off without a manager</string>
+    <string name="audit_title">Who did what</string>
+    <string name="audit_subtitle">Every sale, void, return, price change, sign-in and restore — newest first</string>
+    <string name="audit_empty">Nothing in the log yet</string>
+    <string name="audit_sale_posted">Sale</string>
+    <string name="audit_sale_voided">Sale voided</string>
+    <string name="audit_sale_held">Ticket held</string>
+    <string name="audit_return_posted">Return</string>
+    <string name="audit_return_voided">Return voided</string>
+    <string name="audit_discount_override">Discount allowed</string>
+    <string name="audit_manager_override">Allowed by a manager</string>
+    <string name="audit_price_changed">Price changed</string>
+    <string name="audit_sign_in">Signed in</string>
+    <string name="audit_restore">Book restored</string>
+    <string name="audit_export">Exported</string>
+    <string name="audit_by">by %1$s</string>
 </resources>

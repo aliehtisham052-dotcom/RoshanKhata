@@ -109,6 +109,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
+
+            <!-- Who did what (POS Phase 5): the audit log, under the people who did it. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAudit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/audit_title"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -64,6 +64,8 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     var problem by remember { mutableStateOf<String?>(null) }
     val needName = word(W.enter_name)
     val words = com.innovation313.roshankhata.words.LocalWords.current
+    // Prices are the owner's and a manager's to change (POS Phase 5); a cashier sees them.
+    val mayPrice = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
 
     DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = 560.dp, height = 920.dp)) {
         Column(
@@ -76,15 +78,15 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             val trade = LocalTrade.current
             SuggestionRow(trade.units(), unit) { unit = it }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Outlined(cash, { cash = it }, label = { Text(word(W.sale_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-                Outlined(credit, { credit = it }, label = { Text(word(W.credit_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+                Outlined(cash, { cash = it }, label = { Text(word(W.sale_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
+                Outlined(credit, { credit = it }, label = { Text(word(W.credit_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
             }
             Text(word(W.product_price_help), color = c.textMuted, fontSize = 12.sp)
             // The counter (POS Phase 2): the pack's barcode (a USB scanner types it here), the
             // unit's cost to the shop, and the stock level that warns in the bell.
             Field(word(W.product_barcode_hint), barcode) { barcode = it; problem = null }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Outlined(cost, { cost = it }, label = { Text(word(W.product_cost_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+                Outlined(cost, { cost = it }, label = { Text(word(W.product_cost_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
                 Outlined(lowStock, { lowStock = it }, label = { Text(word(W.product_low_stock_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
             }
             Field(word(W.product_type_hint), type) { type = it }
@@ -131,7 +133,13 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                         } else if (codeClash != null && codeClash.id != product.id) {
                             problem = words.text(W.product_barcode_taken, codeClash.name)
                         } else {
-                            withContext(Dispatchers.IO) { dao.updateProduct(updated) }
+                            withContext(Dispatchers.IO) {
+                                dao.updateProduct(updated)
+                                if (updated.salePrice != product.salePrice || updated.creditPrice != product.creditPrice || updated.costPrice != product.costPrice) {
+                                    dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "products", product.id,
+                                        updated.name + ": " + listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " → " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/"))
+                                }
+                            }
                             onClose()
                         }
                     }

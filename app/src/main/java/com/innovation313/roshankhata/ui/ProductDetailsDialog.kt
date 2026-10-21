@@ -125,9 +125,12 @@ object ProductDetailsDialog {
         val etCreditPrice = field(R.id.etCreditPrice).apply {
             setText(product.creditPrice?.let { Format.plain(it) } ?: "")
         }
+        // Prices are the owner's and a manager's to change (POS Phase 5); a cashier sees them.
+        val mayPrice = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
+        etSalePrice.isEnabled = mayPrice; etCreditPrice.isEnabled = mayPrice
         // The counter (POS Phase 2): barcode (typed, or read by the camera), cost, warning level.
         val etBarcode = field(R.id.etBarcode).apply { setText(product.barcode ?: "") }
-        val etCostPrice = field(R.id.etCostPrice).apply { setText(product.costPrice?.let { Format.plain(it) } ?: "") }
+        val etCostPrice = field(R.id.etCostPrice).apply { setText(product.costPrice?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
         val etLowStock = field(R.id.etLowStock).apply { setText(product.lowStockLevel?.let { Format.plain(it) } ?: "") }
         view.findViewById<View>(R.id.btnScanBarcode).setOnClickListener {
             val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
@@ -237,6 +240,10 @@ object ProductDetailsDialog {
                         return@launch
                     }
                     dao.updateProduct(updated)
+                    if (updated.salePrice != product.salePrice || updated.creditPrice != product.creditPrice || updated.costPrice != product.costPrice) {
+                        dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "products", product.id,
+                            updated.name + ": " + listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " → " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/"))
+                    }
                     activity.runOnUiThread { if (!activity.isFinishing) onSaved() }
                 }
             }

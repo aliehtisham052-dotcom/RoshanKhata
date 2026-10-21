@@ -89,6 +89,7 @@ enum class Section(val word: String, val icon: String, val tile: String, val gro
     REGISTER(W.register_title, "ic_tile_price_list", "tile_invoice_bg", Group.MORE),
     DUPLICATES(W.duplicate_customers, "ic_tile_bin", "tile_bin_bg", Group.MORE),
     DAILY(W.snapshots_title, "ic_tile_backup", "tile_backup_bg", Group.MORE),
+    AUDIT(W.audit_title, "ic_tile_card", "tile_card_bg", Group.MORE),
     HELP(W.help_support, "ic_tile_insights", "tile_calc_bg", Group.MORE),
     SHOP(W.business_profile, "ic_tile_settings", "tile_settings_bg", Group.MORE)
 }
