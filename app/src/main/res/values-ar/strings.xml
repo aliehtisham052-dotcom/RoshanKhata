@@ -3570,4 +3570,12 @@
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">الأرقام بعد الفاصلة في سعر الملصق</string>
     <string name="scale_price_example">الملصق الذي يظهر 01250 يُقرأ %1$s</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">غيّره حيث أُنشئ</string>
+    <string name="entry_linked_bill">كتبت فاتورة مورّد هذا القيد. غيّر الفاتورة أو احذفها، ويتبعها الدفتر.</string>
+    <string name="entry_linked_plan">كتب قسطٌ من خطة سداد هذا القيد. غيّره من خطط السداد.</string>
+    <string name="entry_linked_cheque">كتب شيكٌ تمت تصفيته هذا القيد. غيّره من صفحة الشيكات.</string>
+    <string name="entry_linked_sale">كتب بيعٌ في نقطة البيع هذا القيد. ألغِ البيع أو سجّل مرتجعًا.</string>
+    <string name="entry_linked_return">كتب مرتجعٌ هذا القيد. ألغِ المرتجع بدلًا من ذلك.</string>
 </resources>

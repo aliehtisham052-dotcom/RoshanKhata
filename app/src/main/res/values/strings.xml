@@ -3596,4 +3596,12 @@ You can change this any time from this screen.</string>
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">Digits after the decimal point in the label\'s price</string>
     <string name="scale_price_example">A label showing 01250 is read as %1$s</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">Change it where it was made</string>
+    <string name="entry_linked_bill">A supplier bill wrote this entry. Change or delete the bill, and the khata follows.</string>
+    <string name="entry_linked_plan">A payment plan\'s instalment wrote this entry. Change it from Payment plans.</string>
+    <string name="entry_linked_cheque">A cleared cheque wrote this entry. Change it from Cheques.</string>
+    <string name="entry_linked_sale">A counter sale wrote this entry. Void the sale, or make a return.</string>
+    <string name="entry_linked_return">A return wrote this entry. Void the return instead.</string>
 </resources>

@@ -652,6 +652,11 @@ class PartyDetailActivity : BaseActivity() {
     /** Put an existing entry back on the full form. Its own customer only; never a binned one. */
     private fun openEditor(entryId: Long) {
         if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { openEditor(entryId) }) return
+        // An entry a bill, plan, cheque or ticket wrote is changed there (21 Oct 2026).
+        com.innovation313.roshankhata.ui.LinkedEntry.check(this, dao, entryId) { openEditorNow(entryId) }
+    }
+
+    private fun openEditorNow(entryId: Long) {
         lifecycleScope.launch {
             val e = dao.getEntry(entryId) ?: return@launch
             if (e.partyId != partyId || e.isDeleted) return@launch
@@ -2113,6 +2118,10 @@ class PartyDetailActivity : BaseActivity() {
     /** Deleting an entry is reversible — it moves to the Recycle Bin. */
     private fun confirmDeleteEntry(entry: LedgerEntry) {
         if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteEntry(entry) }) return
+        com.innovation313.roshankhata.ui.LinkedEntry.check(this, dao, entry.id) { confirmDeleteEntryNow(entry) }
+    }
+
+    private fun confirmDeleteEntryNow(entry: LedgerEntry) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_entry_title)
             .setMessage(R.string.delete_entry_confirm)

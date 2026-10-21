@@ -34,6 +34,8 @@ object Businesses {
     private const val PREFS = "businesses"
     private const val KEY_LIST = "list"
     private const val KEY_ACTIVE = "active"
+    /** The highest id ever given out, kept past deletes so an id is never handed out twice. */
+    private const val KEY_HIGHEST = "highest_id"
 
     data class Business(
         val id: Long,
@@ -129,7 +131,11 @@ object Businesses {
     @Synchronized
     fun create(context: Context, name: String): Business {
         val all = list(context)
-        val id = (all.maxOf { it.id }) + 1
+        // Past every id this phone ever gave out, not only the ones still listed (21 Oct 2026, the
+        // critical review): a deleted shop's number went to the next new shop, and with it the old
+        // shop's daily copies, signatures and Drive backup name.
+        val id = maxOf(all.maxOf { it.id }, prefs(context).getLong(KEY_HIGHEST, 0L)) + 1
+        prefs(context).edit().putLong(KEY_HIGHEST, id).commit()
         val fresh = Business(id, name.trim(), "roshan_khata_b$id.db")
         save(context, all + fresh)
         BusinessProfile.setNameOf(context, id, name)
@@ -275,6 +281,11 @@ object Businesses {
         // constants that only DriveBackup/BackupReminder truly own.
         DriveBackup.clearLocalState(context, id)
         BackupReminder.clear(context, id)
+        // Its daily copies too (21 Oct 2026): left behind, they were offered as "your copies" of
+        // whichever shop came next. Named khata-b<id>-…db (Snapshots.list's rule).
+        File(context.filesDir, "snapshots").listFiles { f -> f.name.startsWith("khata-b$id-") }?.forEach { it.delete() }
+        // The highest id stays remembered, so this one is never given out again.
+        prefs(context).edit().putLong(KEY_HIGHEST, maxOf(prefs(context).getLong(KEY_HIGHEST, 0L), id)).commit()
 
         // The registry row itself, last.
         save(context, list(context).filterNot { it.id == id })

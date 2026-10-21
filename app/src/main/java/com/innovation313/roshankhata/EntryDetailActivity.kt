@@ -91,8 +91,9 @@ class EntryDetailActivity : BaseActivity() {
                 ?.trim()?.ifEmpty { null } ?: getString(R.string.app_name)
 
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
-        findViewById<ImageButton>(R.id.btnDelete).setOnClickListener { confirmDelete() }
-        findViewById<MaterialButton>(R.id.btnEdit).setOnClickListener { showEditDialog() }
+        // An entry a bill, plan, cheque or ticket wrote is changed there, not here (21 Oct 2026).
+        findViewById<ImageButton>(R.id.btnDelete).setOnClickListener { com.innovation313.roshankhata.ui.LinkedEntry.check(this, com.innovation313.roshankhata.data.KhataDatabase.get(this).khataDao(), entryId) { confirmDelete() } }
+        findViewById<MaterialButton>(R.id.btnEdit).setOnClickListener { com.innovation313.roshankhata.ui.LinkedEntry.check(this, com.innovation313.roshankhata.data.KhataDatabase.get(this).khataDao(), entryId) { showEditDialog() } }
         findViewById<MaterialButton>(R.id.btnShare).setOnClickListener { shareReceipt() }
         findViewById<MaterialButton>(R.id.btnPrint).setOnClickListener { printReceipt() }
         // The customer's signature (6 Oct). A helper's phone shows it but cannot take one.

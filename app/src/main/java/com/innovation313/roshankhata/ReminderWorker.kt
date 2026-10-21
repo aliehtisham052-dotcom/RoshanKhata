@@ -57,11 +57,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // A helper's read-only phone holds a copy, not the book. Reminders
         // are the owner's to send, from the phone that keeps the book.
         if (com.innovation313.roshankhata.data.ViewerMode.isOn(ctx)) return Result.success()
-        if (!NotificationManagerCompat.from(ctx).areNotificationsEnabled()) {
-            // The owner said no (or hasn't said yes yet). Respect it silently.
-            return Result.success()
-        }
-        ensureChannel(ctx)
+        // Notifications off is the owner's "no" to being told things — not to the automatic backup
+        // (21 Oct 2026, the critical review: with notifications off, the Drive backup never ran).
+        val canNotify = NotificationManagerCompat.from(ctx).areNotificationsEnabled()
+        if (canNotify) ensureChannel(ctx)
 
         val dao = KhataDatabase.get(ctx).khataDao()
 
@@ -76,7 +75,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             is DriveBackup.AutoResult.Failed -> {
                 autoBackupFailed = true
                 AlertNotes.backupFailed(ctx)
-                notify(
+                if (canNotify) notify(
                     ctx, ID_BACKUP, AlertsActivity::class.java,
                     ctx.getString(R.string.notif_backup_failed_title),
                     ctx.getString(R.string.notif_backup_failed_body)
@@ -88,7 +87,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
                 // per occurrence; the backup screen explains and asks.
                 if (DriveBackup.firstNoticeOf(ctx, auto.conflict)) {
                     AlertNotes.otherPhone(ctx)
-                    notify(
+                    if (canNotify) notify(
                         ctx, ID_BACKUP, AlertsActivity::class.java,
                         ctx.getString(R.string.notif_backup_other_phone_title),
                         ctx.getString(R.string.notif_backup_other_phone_body)
@@ -101,6 +100,8 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             }
             else -> Unit // Skipped or BackedUp — stay silent.
         }
+        // The owner said no to notifications (or has not said yes yet): the rest are notifications.
+        if (!canNotify) return Result.success()
 
         val endOfToday = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59)

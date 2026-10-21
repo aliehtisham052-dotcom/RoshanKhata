@@ -761,6 +761,39 @@ interface KhataDao {
      * payment reaches its total — the phone's PlansActivity.recordPayment,
      * which wrote these one after another. Returns the entry's id.
      */
+    /**
+     * [block] as ONE transaction (21 Oct 2026, the critical review): a backup
+     * reads some thirty tables one after another, and a sale posted between
+     * two of those reads left a copy whose lines named an entry it did not
+     * hold — a copy that then refused to restore. Every read inside sees the
+     * same book; a write from elsewhere waits the moment it takes.
+     */
+    @Transaction
+    suspend fun readAsOne(block: suspend () -> Unit) {
+        block()
+    }
+
+    /**
+     * What a khata entry belongs to, when another record wrote it (21 Oct 2026,
+     * the critical review): "bill", "plan", "cheque", "sale" or "return"; null
+     * for an entry of its own. Such an entry is changed from its owner — editing
+     * or deleting it from the khata left the bill, plan, cheque or ticket
+     * saying something else.
+     */
+    @Query(
+        """
+        SELECT CASE
+          WHEN EXISTS (SELECT 1 FROM supplier_bills WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'bill'
+          WHEN EXISTS (SELECT 1 FROM installments WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'plan'
+          WHEN EXISTS (SELECT 1 FROM cheques WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'cheque'
+          WHEN EXISTS (SELECT 1 FROM sales WHERE ledgerEntryId = :entryId AND isDeleted = 0 AND status = 'done')
+            OR EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s ON s.id = sp.saleId WHERE sp.ledgerEntryId = :entryId AND s.isDeleted = 0 AND s.status = 'done') THEN 'sale'
+          WHEN EXISTS (SELECT 1 FROM sale_returns WHERE (ledgerEntryId = :entryId OR refundEntryId = :entryId) AND isDeleted = 0 AND status = 'done') THEN 'return'
+          ELSE NULL END
+        """
+    )
+    suspend fun entryOwner(entryId: Long): String?
+
     /** A plan's next payment day changed by the owner, or cleared with null (21 Oct 2026). */
     @Query("UPDATE payment_plans SET nextDueDate = :due WHERE id = :id")
     suspend fun setPlanNextDue(id: Long, due: Long?)

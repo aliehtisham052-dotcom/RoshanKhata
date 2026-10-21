@@ -3426,4 +3426,12 @@
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">লেবেলের দামে দশমিকের পরের অঙ্ক</string>
     <string name="scale_price_example">01250 লেখা লেবেল %1$s পড়া হবে</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">যেখানে তৈরি হয়েছিল সেখানেই বদলান</string>
+    <string name="entry_linked_bill">এই এন্ট্রি সরবরাহকারীর বিল লিখেছে। বিল বদলান বা মুছুন, খাতা নিজেই সাথে বদলাবে।</string>
+    <string name="entry_linked_plan">এই এন্ট্রি কিস্তি প্ল্যানের পেমেন্ট লিখেছে। কিস্তি প্ল্যান থেকে বদলান।</string>
+    <string name="entry_linked_cheque">এই এন্ট্রি ক্লিয়ার হওয়া চেক লিখেছে। চেকের পাতা থেকে বদলান।</string>
+    <string name="entry_linked_sale">এই এন্ট্রি কাউন্টারের বিক্রি লিখেছে। বিক্রি বাতিল করুন বা ফেরত নিন।</string>
+    <string name="entry_linked_return">এই এন্ট্রি একটি ফেরত লিখেছে। তার বদলে ফেরত বাতিল করুন।</string>
 </resources>
