@@ -3414,4 +3414,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
 
     <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
     <string name="action_failed_detail">Save nahi hua. Kuch bhi tabdeel nahi hua. (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">Chhape kaghaz par maqami hindse</string>
+    <string name="print_native_digits_help">Invoice, statement aur report is zuban ke apne hindson mein chhapenge. Screen aur jo aap likhen woh 0-9 hi rahega.</string>
 </resources>

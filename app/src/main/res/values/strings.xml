@@ -3628,4 +3628,8 @@ You can change this any time from this screen.</string>
 
     <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
     <string name="action_failed_detail">Not saved. Nothing was changed. (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">Local digits on printed sheets</string>
+    <string name="print_native_digits_help">Invoices, statements and reports print figures in this language\'s own digits. The screen and anything you type stay 0-9.</string>
 </resources>

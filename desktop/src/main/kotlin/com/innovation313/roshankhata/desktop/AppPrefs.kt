@@ -133,6 +133,16 @@ class AppPrefs(private val file: File) {
         save()
     }
 
+    /** Printed sheets in the language's own digits (Arabic, Sindhi, Farsi, Bengali; 21 Oct 2026). Off when never chosen. */
+    fun nativeDigits(): Boolean = props.getProperty(KEY_NATIVE_DIGITS) == "true"
+
+    @Synchronized
+    fun setNativeDigits(on: Boolean) {
+        props.setProperty(KEY_NATIVE_DIGITS, on.toString())
+        save()
+        com.innovation313.roshankhata.data.Digits.nativeOnPrint = on
+    }
+
     @Synchronized
     fun setTheme(choice: ThemeChoice) {
         props.setProperty(KEY_THEME, choice.name)
@@ -159,6 +169,7 @@ class AppPrefs(private val file: File) {
         const val KEY_BACKUP_FOLDER = "backup_folder"
         const val KEY_THEME = "theme"
         const val KEY_TEXT_SIZE = "text_size"
+        const val KEY_NATIVE_DIGITS = "print_native_digits"
         const val KEY_TOUR = "tour_seen"
         const val KEY_PIN_HASH = "app_lock_hash"
         const val KEY_PIN_SALT = "app_lock_salt"

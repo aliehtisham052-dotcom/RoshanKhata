@@ -43,6 +43,7 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.innovation313.roshankhata.data.PrintDigits.load(this)
         if (ViewerMode.isOn(this) && ViewerMode.ownerOnly(javaClass)) {
             Toast.makeText(this, R.string.viewer_refused, Toast.LENGTH_LONG).show()
             finish()

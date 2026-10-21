@@ -341,6 +341,13 @@ class BusinessSettingsActivity : BaseActivity() {
             isChecked = BusinessProfile.paymentOnReminder(this@BusinessSettingsActivity)
             setOnCheckedChangeListener { _, on -> BusinessProfile.setPaymentOnReminder(this@BusinessSettingsActivity, on) }
         }
+        // Own digits on printed sheets, offered only where the language has digits of its own (21 Oct 2026).
+        findViewById<android.view.View>(R.id.rowNativeDigits).visibility =
+            if (com.innovation313.roshankhata.data.Digits.hasOwnDigits()) android.view.View.VISIBLE else android.view.View.GONE
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.swNativeDigits).apply {
+            isChecked = com.innovation313.roshankhata.data.Digits.nativeOnPrint
+            setOnCheckedChangeListener { _, on -> com.innovation313.roshankhata.data.PrintDigits.set(this@BusinessSettingsActivity, on) }
+        }
 
         // The preview tracks every keystroke, so it always matches the
         // fields below it — a mistake is caught here, not on a document a

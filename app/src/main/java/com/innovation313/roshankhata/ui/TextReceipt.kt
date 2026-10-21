@@ -52,7 +52,9 @@ object TextReceipt {
     /** The logo's box at the top of the roll: at most this tall, and 60% of the roll across. */
     private const val LOGO_HEIGHT = 120
 
-    fun picture(text: String, widthPx: Int = EscPos.WIDTH_58MM, logo: Bitmap? = null): Bitmap {
+    fun picture(raw: String, widthPx: Int = EscPos.WIDTH_58MM, logo: Bitmap? = null): Bitmap {
+        // The language's own digits when the owner chose them for printed sheets (21 Oct 2026).
+        val text = com.innovation313.roshankhata.data.Digits.forPrint(raw)
         val paint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.BLACK; textSize = if (widthPx > EscPos.WIDTH_58MM) 26f else 22f; typeface = Typeface.MONOSPACE
         }

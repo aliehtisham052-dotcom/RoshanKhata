@@ -382,7 +382,8 @@ class LinesPrint(
     private fun pages(): Int = if (lines.size <= perFirst) 1 else 1 + (lines.size - perFirst + perNext - 1) / perNext
 
     /** [s] starting at [x] from the reading side, or ending there when [end]. */
-    private fun java.awt.Graphics2D.text(s: String, x: Double, y: Double, end: Boolean = false) {
+    private fun java.awt.Graphics2D.text(raw: String, x: Double, y: Double, end: Boolean = false) {
+        val s = com.innovation313.roshankhata.data.Digits.forPrint(raw)
         val w = fontMetrics.stringWidth(s)
         val at = when {
             !rtl && !end -> x

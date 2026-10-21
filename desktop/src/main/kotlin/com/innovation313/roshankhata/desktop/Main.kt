@@ -169,7 +169,14 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     val dailyDir = remember(active) { DailyCopies.dir(home, active) }
     // The app's language: the owner's choice (app.properties), else the computer's.
     // Counter mode and the wrong-PIN count belong to this computer: read before anything is shown.
-    val appPrefs = remember { AppPrefs(File(home, "app.properties")).also { com.innovation313.roshankhata.data.Access.store = it.accessStore } }
+    val appPrefs = remember {
+        AppPrefs(File(home, "app.properties")).also {
+            com.innovation313.roshankhata.data.Access.store = it.accessStore
+            com.innovation313.roshankhata.data.Digits.nativeOnPrint = it.nativeDigits()
+        }
+    }
+    // Printed sheets in the language's own digits, offered where it has its own (21 Oct 2026).
+    var nativeDigits by remember { mutableStateOf(appPrefs.nativeDigits()) }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
     val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
     val words = remember(locale) { desktopWords(locale) }
@@ -653,6 +660,12 @@ private fun Book(
                 MenuLine(word(W.language)) { choosingLanguage = true },
                 MenuLine(word(W.theme)) { choosingTheme = true },
                 MenuLine(word(W.text_size)) { choosingTextSize = true },
+                *(if (com.innovation313.roshankhata.data.Digits.hasOwnDigits())
+                    arrayOf(MenuLine(word(W.print_native_digits) + if (nativeDigits) "  \u2713" else "") {
+                        nativeDigits = !nativeDigits
+                        appPrefs.setNativeDigits(nativeDigits)
+                    })
+                else emptyArray<MenuLine>()),
                 MenuLine(word(W.business_profile)) { section = Section.SHOP },
                 MenuLine(word(W.trade_kicker_change)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingTrade = true } },
                 MenuLine(word(W.settings_group_security), null),

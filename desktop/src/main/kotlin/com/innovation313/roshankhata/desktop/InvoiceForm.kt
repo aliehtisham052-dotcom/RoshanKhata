@@ -291,7 +291,9 @@ class InvoicePrint(
     private val pageW = 595.0
     private val margin = 36.0
 
-    private fun Graphics2D.text(s: String, x: Double, y: Double, end: Boolean = false) {
+    private fun Graphics2D.text(raw: String, x: Double, y: Double, end: Boolean = false) {
+        // The language's own digits when the owner chose them for printed sheets (21 Oct 2026).
+        val s = com.innovation313.roshankhata.data.Digits.forPrint(raw)
         val w = fontMetrics.stringWidth(s)
         val left = when {
             !rtl && !end -> x
