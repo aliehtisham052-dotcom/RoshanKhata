@@ -507,7 +507,13 @@ class PartyDetailActivity : BaseActivity() {
         etSearchEntries.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
-            override fun afterTextChanged(s: Editable?) = renderEntries()
+            // Once typing pauses, not at every letter (21 Oct 2026: a customer with years of entries
+            // made each key wait for the whole list to be searched again).
+            private val later = Runnable { renderEntries() }
+            override fun afterTextChanged(s: Editable?) {
+                etSearchEntries.removeCallbacks(later)
+                etSearchEntries.postDelayed(later, 180)
+            }
         })
 
         val btnDateFilter = findViewById<MaterialButton>(R.id.btnFilterEntryDate)
