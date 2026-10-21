@@ -291,7 +291,7 @@ private fun QuickActions(onAddParty: () -> Unit, onGot: () -> Unit, onOpen: (Sec
         val tiles = listOf(
             Quick(word(W.add_party), "ic_tile_khata", Look.accent, Look.accentTint, onAddParty),
             Quick(word(W.you_got), "ic_arrow_got", c.owedToMe, Look.getTint, onGot),
-            Quick(word(W.nav_invoice), "ic_tile_invoice", Look.give, Look.giveTint) { onOpen(Section.INVOICES) },
+            Quick(word(W.pos_title), "ic_tile_invoice", Look.give, Look.giveTint) { onOpen(Section.COUNTER) },
             Quick(word(W.poster_title), "ic_tile_poster", Look.warn, Look.warnTint) { onOpen(Section.POSTER) },
             Quick(word(W.tile_backup), "ic_tile_backup", Look.accent, Look.accentTint) { onAction(HomeAction.BACKUP) },
             Quick(word(W.calculator), "ic_tile_calc", c.inkSoft, Look.subtle) { onOpen(Section.CALC) }

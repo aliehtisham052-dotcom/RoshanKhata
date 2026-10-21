@@ -273,6 +273,12 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".CounterSaleActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".HelpActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

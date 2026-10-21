@@ -2537,6 +2537,15 @@ interface KhataDao {
     @Query("SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'held'")
     fun observeHeldCount(): Flow<Int>
 
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status = 'held' ORDER BY s.timestamp ASC
+        """
+    )
+    suspend fun heldSalesOnce(): List<SaleSummary>
+
     /** Today's posted tickets: how many and what they came to, for the counter's head. */
     @Query("SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to")
     suspend fun doneSaleCount(from: Long, to: Long): Int

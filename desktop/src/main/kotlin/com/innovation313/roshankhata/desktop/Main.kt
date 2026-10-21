@@ -370,6 +370,7 @@ private fun Book(
     keys.newParty = { addParty = true }
     keys.statement = { parties.firstOrNull { it.id == selected }?.let { statementFor = it } }
     keys.khata = { section = Section.KHATA }
+    LaunchedEffect(section) { if (section != Section.COUNTER) keys.page = null }
     keys.search = { section = Section.KHATA; searchTick++ }
     statementFor?.let { party ->
         val partyEntries by remember(party.id, reload) { dao.observeEntries(party.id) }.collectAsState(emptyList())
@@ -523,6 +524,12 @@ private fun Book(
                             onAddParty = { addParty = true },
                             // You got: the Khata page with its F3 (the page fills keys.got in once it is open).
                             onGot = { section = Section.KHATA }
+                        )
+                    }
+                    Section.COUNTER -> Box(Modifier.fillMaxSize()) {
+                        CounterSalePane(
+                            dao, parties, words, rtl, shop, com.innovation313.roshankhata.data.Currency.symbol, reload,
+                            onChanged = { reload++ }, onReceipt = { receipt = it }, keys = keys
                         )
                     }
                     Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao) }
@@ -1571,9 +1578,12 @@ class KeyActions {
     var statement: () -> Unit = {}
     var khata: () -> Unit = {}
     var search: () -> Unit = {}
+    /** The open page's own keys (the counter's F-keys), asked first; null when the page has none. */
+    var page: ((androidx.compose.ui.input.key.KeyEvent) -> Boolean)? = null
 
     fun handle(e: androidx.compose.ui.input.key.KeyEvent): Boolean {
         if (e.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return false
+        if (page?.invoke(e) == true) return true
         val k = e.key
         val ctrl = e.isCtrlPressed
         val act: (() -> Unit)? = when {
