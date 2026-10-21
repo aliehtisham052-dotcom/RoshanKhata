@@ -382,6 +382,21 @@ class BackupActivity : BaseActivity() {
         data: BackupCodec.ParsedBackup,
         driveAccount: String? = null
     ) {
+        // What the restore would take away, worked out before the question is
+        // asked (21 Oct 2026): a phone's newer work must never vanish under an
+        // older copy without the owner being told, in figures.
+        lifecycleScope.launch {
+            val loss = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, data) }.getOrNull() }
+            if (!isFinishing) askRestore(counts, data, driveAccount, loss)
+        }
+    }
+
+    private fun askRestore(
+        counts: BackupCodec.ImportResult.Ok,
+        data: BackupCodec.ParsedBackup,
+        driveAccount: String?,
+        loss: com.innovation313.roshankhata.data.RestoreCheck.Loss?
+    ) {
         val body = Digits.string(resources, R.string.restore_warning_message,
             counts.parties,
             counts.entries,
@@ -401,17 +416,32 @@ class BackupActivity : BaseActivity() {
         val openShop = BusinessProfile.businessName(this)
         val mismatch = data.businessName != null && openShop != null &&
             !data.businessName.equals(openShop, ignoreCase = true)
-        val message =
-            if (mismatch) getString(R.string.restore_business_mismatch, data.businessName, openShop) +
-                "\n\n" + body
-            else body
+        val lost = loss?.takeIf { !it.none }?.let { l ->
+            getString(R.string.restore_loss_intro) + "\n" +
+                com.innovation313.roshankhata.data.RestoreCheck.lines(l, com.innovation313.roshankhata.data.AndroidWords(this)) { Format.dateTime(it) }
+                    .joinToString("\n") { "• $it" } +
+                "\n\n" + getString(R.string.restore_loss_kept)
+        }
+        val message = listOfNotNull(
+            lost,
+            if (mismatch) getString(R.string.restore_business_mismatch, data.businessName, openShop) else null,
+            body
+        ).joinToString("\n\n")
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.restore_warning_title)
+        val b = MaterialAlertDialogBuilder(this)
+            .setTitle(if (lost != null) R.string.restore_loss_title else R.string.restore_warning_title)
             .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data, driveAccount) }
-            .show()
+        if (lost == null) { b.show(); return }
+        // Work would be lost: the owner ticks that they understand before Replace works.
+        val agree = android.widget.CheckBox(this).apply { setText(R.string.restore_loss_agree) }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        b.setView(android.widget.FrameLayout(this).apply { setPadding(pad, 0, pad, 0); addView(agree) })
+        val dialog = b.show()
+        val replace = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+        replace.isEnabled = false
+        agree.setOnCheckedChangeListener { _, on -> replace.isEnabled = on }
     }
 
     private fun doRestore(data: BackupCodec.ParsedBackup, driveAccount: String? = null) {
@@ -419,6 +449,8 @@ class BackupActivity : BaseActivity() {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
+                // This book as it stands, kept first (Daily copies), so the restore can be undone.
+                com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
                 Backup.restore(this@BackupActivity, dao, data)
             }
 
@@ -1044,7 +1076,11 @@ class BackupActivity : BaseActivity() {
                 if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += label; continue }
 
                 val liveDao = KhataDatabase.get(this@BackupActivity).khataDao()
-                withContext(Dispatchers.IO) { Backup.restore(this@BackupActivity, liveDao, data) }
+                withContext(Dispatchers.IO) {
+                    // Each shop's own book kept first, as a single restore does.
+                    com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
+                    Backup.restore(this@BackupActivity, liveDao, data)
+                }
 
                 // Images for this shop, from this shop's own archive. A shop
                 // without one is restored without photos, not failed.

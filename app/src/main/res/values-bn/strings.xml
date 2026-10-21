@@ -523,7 +523,7 @@
     <string name="save_backup">ব্যাকআপ সেভ করুন</string>
 
     <string name="restore_warning_title">সবকিছু বদলে দেবেন?</string>
-    <string name="restore_warning_message">রিস্টোর করলে রোশন খাতায় এখন যা আছে সব এই ফাইলের তথ্য দিয়ে বদলে যাবে:\n\n%1$d গ্রাহক/সরবরাহকারী\n%2$d খাতার এন্ট্রি\n%3$d চেক\n%4$d ক্যাশবুক এন্ট্রি\n%5$d পেমেন্ট প্ল্যান\n%6$d সরবরাহকারীর বিল\n%7$d ইনভয়েস\n\nএই ফোনে এখন যা আছে তা চলে যাবে। এখানে এমন এন্ট্রি থাকলে যা ব্যাকআপে নেই, আগে এটির ব্যাকআপ নিন।\n\nএটি আর ফেরানো যাবে না।</string>
+    <string name="restore_warning_message">রিস্টোর করলে রোশন খাতায় এখন যা আছে সব এই ফাইলের তথ্য দিয়ে বদলে যাবে:\n\n%1$d গ্রাহক/সরবরাহকারী\n%2$d খাতার এন্ট্রি\n%3$d চেক\n%4$d ক্যাশবুক এন্ট্রি\n%5$d পেমেন্ট প্ল্যান\n%6$d সরবরাহকারীর বিল\n%7$d ইনভয়েস\n\nএই ফোনে এখন যা আছে তা চলে যাবে। এখানে এমন এন্ট্রি থাকলে যা ব্যাকআপে নেই, আগে এটির ব্যাকআপ নিন।\n\nএই খাতাটি আগে দৈনিক কপিতে রাখা হয়, তাই রিস্টোর সেখান থেকে ফেরানো যায়।</string>
     <string name="restore_replace">সবকিছু বদলে দিন</string>
     <string name="restore_done">রিস্টোর হয়েছে</string>
     <string name="restore_failed">রিস্টোর হয়নি: %1$s</string>
@@ -3265,4 +3265,22 @@
     <string name="audit_counter_off">কাউন্টার মোড বন্ধ</string>
     <string name="audit_pin_wait">অনেক বেশি ভুল PIN</string>
     <string name="audit_sign_out">সাইন আউট</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">এতে এখানে করা কাজ মুছে যাবে</string>
+    <string name="restore_loss_intro">এগুলো এই খাতায় আছে, কপিতে নেই। রিস্টোরের পর এগুলো মুছে যাবে:</string>
+    <string name="restore_loss_entries">এন্ট্রি: %1$d</string>
+    <string name="restore_loss_changed">কপির পর এখানে বদলানো বা মোছা এন্ট্রি: %1$d</string>
+    <string name="restore_loss_sales">কাউন্টার বিক্রি: %1$d</string>
+    <string name="restore_loss_returns">ফেরত: %1$d</string>
+    <string name="restore_loss_cash">ক্যাশবুকের সারি: %1$d</string>
+    <string name="restore_loss_cheques">চেক: %1$d</string>
+    <string name="restore_loss_bills">সাপ্লায়ার বিল: %1$d</string>
+    <string name="restore_loss_invoices">ইনভয়েস: %1$d</string>
+    <string name="restore_loss_parties">ক্রেতা ও সাপ্লায়ার: %1$d</string>
+    <string name="restore_loss_newest">এখানে সবচেয়ে নতুন: %1$s · কপিতে সবচেয়ে নতুন: %2$s</string>
+    <string name="restore_loss_kept">কিছু বদলানোর আগে এই খাতাটি দৈনিক কপিতে রাখা হয়, তাই রিস্টোর ফেরানো যায়।</string>
+    <string name="restore_loss_agree">আমি বুঝেছি যে এগুলো মুছে যাবে</string>
+    <string name="restore_loss_counting">এই খাতায় কী আছে যা কপিতে নেই, দেখা হচ্ছে…</string>
+    <string name="snapshot_before_restore">রিস্টোরের আগে রাখা · %1$s</string>
 </resources>

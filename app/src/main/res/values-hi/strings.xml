@@ -523,7 +523,7 @@
     <string name="save_backup">बैकअप सेव करें</string>
 
     <string name="restore_warning_title">सब कुछ बदल दें?</string>
-    <string name="restore_warning_message">रीस्टोर करने से रोशन खाता में अभी जो कुछ है वह इस फ़ाइल की चीज़ों से बदल जाएगा:\n\n%1$d ग्राहक/सप्लायर\n%2$d खाता एंट्रियाँ\n%3$d चेक\n%4$d कैशबुक एंट्रियाँ\n%5$d भुगतान प्लान\n%6$d सप्लायर बिल\n%7$d इनवॉइस\n\nइस फ़ोन में अभी जो है वह चला जाएगा। अगर यहाँ ऐसी एंट्रियाँ हैं जो बैकअप में नहीं, तो पहले इसका बैकअप लें।\n\nइसे वापस नहीं किया जा सकता।</string>
+    <string name="restore_warning_message">रीस्टोर करने से रोशन खाता में अभी जो कुछ है वह इस फ़ाइल की चीज़ों से बदल जाएगा:\n\n%1$d ग्राहक/सप्लायर\n%2$d खाता एंट्रियाँ\n%3$d चेक\n%4$d कैशबुक एंट्रियाँ\n%5$d भुगतान प्लान\n%6$d सप्लायर बिल\n%7$d इनवॉइस\n\nइस फ़ोन में अभी जो है वह चला जाएगा। अगर यहाँ ऐसी एंट्रियाँ हैं जो बैकअप में नहीं, तो पहले इसका बैकअप लें।\n\nयह खाता पहले रोज़ की कॉपियों में रख लिया जाता है, इसलिए रीस्टोर वहाँ से वापस हो सकता है।</string>
     <string name="restore_replace">सब कुछ बदल दें</string>
     <string name="restore_done">रीस्टोर हो गया</string>
     <string name="restore_failed">रीस्टोर नहीं हुआ: %1$s</string>
@@ -3265,4 +3265,22 @@
     <string name="audit_counter_off">काउंटर मोड बंद</string>
     <string name="audit_pin_wait">बहुत ज़्यादा ग़लत PIN</string>
     <string name="audit_sign_out">साइन आउट</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">इससे यहाँ किया गया काम मिट जाएगा</string>
+    <string name="restore_loss_intro">ये इस खाते में हैं और कॉपी में नहीं। रीस्टोर के बाद ये मिट जाएँगे:</string>
+    <string name="restore_loss_entries">एंट्रियाँ: %1$d</string>
+    <string name="restore_loss_changed">कॉपी के बाद यहाँ बदली या मिटाई गई एंट्रियाँ: %1$d</string>
+    <string name="restore_loss_sales">काउंटर बिक्री: %1$d</string>
+    <string name="restore_loss_returns">वापसियाँ: %1$d</string>
+    <string name="restore_loss_cash">कैशबुक की पंक्तियाँ: %1$d</string>
+    <string name="restore_loss_cheques">चेक: %1$d</string>
+    <string name="restore_loss_bills">सप्लायर बिल: %1$d</string>
+    <string name="restore_loss_invoices">इनवॉइस: %1$d</string>
+    <string name="restore_loss_parties">ग्राहक और सप्लायर: %1$d</string>
+    <string name="restore_loss_newest">यहाँ सबसे नया: %1$s · कॉपी में सबसे नया: %2$s</string>
+    <string name="restore_loss_kept">कुछ भी बदलने से पहले यह खाता रोज़ की कॉपियों में रख लिया जाता है, इसलिए रीस्टोर वापस हो सकता है।</string>
+    <string name="restore_loss_agree">मैं समझता हूँ कि ये मिट जाएँगे</string>
+    <string name="restore_loss_counting">जाँचा जा रहा है कि इस खाते में क्या है जो कॉपी में नहीं…</string>
+    <string name="snapshot_before_restore">रीस्टोर से पहले रखी गई · %1$s</string>
 </resources>

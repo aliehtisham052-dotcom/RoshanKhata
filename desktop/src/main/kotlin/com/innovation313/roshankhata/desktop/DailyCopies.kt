@@ -136,12 +136,25 @@ fun DailyCopiesPane(
     }
 
     asking?.let { f ->
+        // The copy is read before the question, so what it would take away can be said (21 Oct 2026).
+        var parsed by remember(f) { mutableStateOf<BackupCodec.ParsedBackup?>(null) }
+        LaunchedEffect(f) { parsed = withContext(Dispatchers.IO) { BackupCodec.parseFile(f).second } }
+        val data = parsed
+        val loss = if (data != null) rememberLoss(dao, data) else null
+        var agreed by remember(f) { mutableStateOf(false) }
         AlertDialog(
             onDismissRequest = { asking = null },
             title = { Text(word(W.snapshot_restore_title)) },
-            text = { Text(word(W.snapshot_restore_warning, Format.dateTime(f.lastModified()))) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (data != null) LossNote(loss, agreed) { agreed = it }
+                    Text(word(W.snapshot_restore_warning, Format.dateTime(f.lastModified())))
+                }
+            },
             confirmButton = {
                 TextButton(
+                    // A copy that does not read is still offered: the restore below says it is damaged.
+                    enabled = parsed == null || mayReplace(loss, agreed),
                     onClick = {
                         asking = null
                         scope.launch {

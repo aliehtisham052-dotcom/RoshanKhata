@@ -40,9 +40,11 @@ object Snapshots {
     /** One kept copy of the ledger. */
     data class Snapshot(
         val file: File,
-        /** Midnight of the day it was taken, from the file name — not the file's own clock. */
+        /** Midnight of the day it was taken, from the file name — not the file's own clock; the minute too for a copy kept before a restore. */
         val takenOn: Long,
-        val bytes: Long
+        val bytes: Long,
+        /** A copy kept just before a restore ([keepNow]): its name carries the time. */
+        val beforeRestore: Boolean = false
     )
 
     /**
@@ -55,21 +57,25 @@ object Snapshots {
     fun list(context: Context): List<Snapshot> {
         val business = Businesses.active(context)
         val prefix = if (business.id == 1L) "khata-" else "khata-b${business.id}-"
-        val pattern = Regex("^" + Regex.escape(prefix) + "(\\d{8})\\.db$")
+        val pattern = Regex("^" + Regex.escape(prefix) + "(\\d{8})(?:-(\\d{4}))?\\.db$")
         val dir = File(context.filesDir, "snapshots")
 
         return dir.listFiles().orEmpty().mapNotNull { f ->
-            val day = pattern.find(f.name)?.groupValues?.get(1) ?: return@mapNotNull null
+            val m = pattern.find(f.name) ?: return@mapNotNull null
+            val day = m.groupValues[1]
+            val time = m.groupValues[2]
             val cal = java.util.Calendar.getInstance().apply {
                 set(
                     day.substring(0, 4).toInt(),
                     day.substring(4, 6).toInt() - 1,
                     day.substring(6, 8).toInt(),
-                    0, 0, 0
+                    if (time.isEmpty()) 0 else time.substring(0, 2).toInt(),
+                    if (time.isEmpty()) 0 else time.substring(2, 4).toInt(),
+                    0
                 )
                 set(java.util.Calendar.MILLISECOND, 0)
             }
-            Snapshot(f, cal.timeInMillis, f.length())
+            Snapshot(f, cal.timeInMillis, f.length(), beforeRestore = time.isNotEmpty())
         }.sortedByDescending { it.takenOn }
     }
 
@@ -137,6 +143,45 @@ object Snapshots {
             RestoreResult.Ok
         } catch (e: Exception) {
             RestoreResult.Failed
+        }
+    }
+
+    /** Copies kept before a restore, per business; the oldest beyond this go. */
+    private const val KEEP_BEFORE_RESTORE = 3
+
+    /**
+     * The book as it stands, copied aside just before a restore replaces it
+     * (21 Oct 2026, the critical review): a restore of the wrong copy is then
+     * undone from this screen like any day's copy. Named with the minute
+     * ("khata-20261021-1432.db") so two restores in a day keep both; the last
+     * three are kept. Checked as the daily copy is: a sick book is not copied
+     * over good ones. Never throws — a restore is not stopped by its insurance.
+     */
+    fun keepNow(context: Context) {
+        try {
+            val business = Businesses.active(context)
+            val prefix = if (business.id == 1L) "khata-" else "khata-b${business.id}-"
+            val database = KhataDatabase.get(context)
+            val db = database.openHelper.writableDatabase
+            db.query("PRAGMA wal_checkpoint(TRUNCATE)").use { it.moveToFirst() }
+            val healthy = db.query("PRAGMA integrity_check").use {
+                it.moveToFirst() && it.getString(0).equals("ok", ignoreCase = true)
+            }
+            if (!healthy) return
+            val source = context.getDatabasePath(database.openHelper.databaseName ?: business.file)
+            if (!source.exists()) return
+            val dir = File(context.filesDir, "snapshots").apply { mkdirs() }
+            val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmm", java.util.Locale.ENGLISH).format(java.util.Date())
+            val target = File(dir, "$prefix$stamp.db")
+            val tmp = File(dir, "$prefix$stamp.db.tmp")
+            source.inputStream().use { input -> tmp.outputStream().use { output -> input.copyTo(output) } }
+            if (!tmp.renameTo(target)) { tmp.delete(); return }
+            val mine = Regex("^" + Regex.escape(prefix) + "\\d{8}-\\d{4}\\.db$")
+            dir.listFiles { f -> mine.matches(f.name) }
+                ?.sortedByDescending { it.name }
+                ?.drop(KEEP_BEFORE_RESTORE)
+                ?.forEach { it.delete() }
+        } catch (_: Exception) {
         }
     }
 

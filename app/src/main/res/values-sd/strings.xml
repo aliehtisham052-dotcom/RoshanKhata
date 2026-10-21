@@ -516,7 +516,7 @@
     <string name="save_backup">بيڪ اپ محفوظ ڪريو</string>
 
     <string name="restore_warning_title">سڀ ڪجهه مٽايو؟</string>
-    <string name="restore_warning_message">بحالي روشن کاتي ۾ موجود سڀ ڪجهه هن فائل واري مواد سان مٽائي ڇڏيندي:\n\n%1$d گراهڪ/سپلائر\n%2$d کاتي جون داخلائون\n%3$d چيڪ\n%4$d روڪڙ ڪتاب داخلائون\n%5$d ادائيگي رٿائون\n%6$d سپلائر بل\n%7$d رسيدون\n\nجيڪو هن وقت فون تي آهي سو ختم ٿي ويندو. جيڪڏهن هتي اهڙيون داخلائون آهن جيڪي بيڪ اپ ۾ ناهن، ته پهرين هن جو بيڪ اپ وٺو.\n\nاهو واپس نٿو ٿي سگهي.</string>
+    <string name="restore_warning_message">بحالي روشن کاتي ۾ موجود سڀ ڪجهه هن فائل واري مواد سان مٽائي ڇڏيندي:\n\n%1$d گراهڪ/سپلائر\n%2$d کاتي جون داخلائون\n%3$d چيڪ\n%4$d روڪڙ ڪتاب داخلائون\n%5$d ادائيگي رٿائون\n%6$d سپلائر بل\n%7$d رسيدون\n\nجيڪو هن وقت فون تي آهي سو ختم ٿي ويندو. جيڪڏهن هتي اهڙيون داخلائون آهن جيڪي بيڪ اپ ۾ ناهن، ته پهرين هن جو بيڪ اپ وٺو.\n\nهي کاتو پهريان روزاني ڪاپين ۾ محفوظ ٿئي ٿو، ان ڪري ريسٽور اتان واپس ٿي سگهي ٿو.</string>
     <string name="restore_replace">سڀ ڪجهه مٽايو</string>
     <string name="restore_done">بحال ٿيو</string>
     <string name="restore_failed">بحالي ناڪام: %1$s</string>
@@ -3249,4 +3249,22 @@
     <string name="audit_counter_off">ڪائونٽر موڊ بند</string>
     <string name="audit_pin_wait">تمام گهڻا غلط PIN</string>
     <string name="audit_sign_out">سائن آئوٽ</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">ان سان هتي ڪيل ڪم ختم ٿي ويندو</string>
+    <string name="restore_loss_intro">اهي هن کاتي ۾ آهن ۽ ڪاپي ۾ نه. ريسٽور کان پوءِ اهي ختم ٿي ويندا:</string>
+    <string name="restore_loss_entries">داخلائون: %1$d</string>
+    <string name="restore_loss_changed">ڪاپي کان پوءِ هتي بدليل يا ميٽيل داخلائون: %1$d</string>
+    <string name="restore_loss_sales">ڪائونٽر وڪرا: %1$d</string>
+    <string name="restore_loss_returns">واپسيون: %1$d</string>
+    <string name="restore_loss_cash">ڪيش بڪ جون قطارون: %1$d</string>
+    <string name="restore_loss_cheques">چيڪ: %1$d</string>
+    <string name="restore_loss_bills">سپلائر بل: %1$d</string>
+    <string name="restore_loss_invoices">انوائس: %1$d</string>
+    <string name="restore_loss_parties">گراهڪ ۽ سپلائر: %1$d</string>
+    <string name="restore_loss_newest">هتي سڀ کان نئون: %1$s · ڪاپي ۾ سڀ کان نئون: %2$s</string>
+    <string name="restore_loss_kept">ڪجهه بدلائڻ کان اڳ هي کاتو روزاني ڪاپين ۾ محفوظ ٿئي ٿو، ان ڪري ريسٽور واپس ٿي سگهي ٿو.</string>
+    <string name="restore_loss_agree">مان سمجهان ٿو ته اهي ختم ٿي ويندا</string>
+    <string name="restore_loss_counting">ڏٺو پيو وڃي ته هن کاتي ۾ ڇا آهي جيڪو ڪاپي ۾ ناهي…</string>
+    <string name="snapshot_before_restore">ريسٽور کان اڳ محفوظ · %1$s</string>
 </resources>

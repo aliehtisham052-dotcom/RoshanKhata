@@ -523,7 +523,7 @@ Add your first customer and start your khata.</string>
     <string name="save_backup">Save backup</string>
 
     <string name="restore_warning_title">Replace everything?</string>
-    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n%6$d supplier bills\n%7$d invoices\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
+    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n%6$d supplier bills\n%7$d invoices\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis book is copied to Daily copies first, so the restore can be undone from there.</string>
     <string name="restore_replace">Replace everything</string>
     <string name="restore_done">Restored</string>
     <string name="restore_failed">Restore failed: %1$s</string>
@@ -3435,4 +3435,22 @@ You can change this any time from this screen.</string>
     <string name="audit_counter_off">Counter mode off</string>
     <string name="audit_pin_wait">Too many wrong PINs</string>
     <string name="audit_sign_out">Signed out</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">This will take away work done here</string>
+    <string name="restore_loss_intro">These are in this book and not in the copy. After the restore they will be gone:</string>
+    <string name="restore_loss_entries">Entries: %1$d</string>
+    <string name="restore_loss_changed">Entries changed or deleted here since the copy: %1$d</string>
+    <string name="restore_loss_sales">Counter sales: %1$d</string>
+    <string name="restore_loss_returns">Returns: %1$d</string>
+    <string name="restore_loss_cash">Cashbook rows: %1$d</string>
+    <string name="restore_loss_cheques">Cheques: %1$d</string>
+    <string name="restore_loss_bills">Supplier bills: %1$d</string>
+    <string name="restore_loss_invoices">Invoices: %1$d</string>
+    <string name="restore_loss_parties">Customers and suppliers: %1$d</string>
+    <string name="restore_loss_newest">Newest here: %1$s · newest in the copy: %2$s</string>
+    <string name="restore_loss_kept">This book is copied to Daily copies before anything is replaced, so the restore can be undone.</string>
+    <string name="restore_loss_agree">I understand that these will be gone</string>
+    <string name="restore_loss_counting">Checking what this book has that the copy does not…</string>
+    <string name="snapshot_before_restore">Kept before a restore · %1$s</string>
 </resources>

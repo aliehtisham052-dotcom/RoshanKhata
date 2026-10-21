@@ -543,7 +543,7 @@
     <string name="save_backup">حفظ النسخة</string>
 
     <string name="restore_warning_title">استبدال كل شيء؟</string>
-    <string name="restore_warning_message">الاستعادة ستستبدل كل ما في روشن كهاتا بما في هذا الملف:\n\n%1$d عملاء/مورّدون\n%2$d قيود دفتر\n%3$d شيكات\n%4$d قيود نقد\n%5$d خطط سداد\n%6$d فواتير مورّدين\n%7$d فواتير بيع\n\nكل ما على هذا الهاتف الآن سيزول. إن كانت لديك قيود هنا ليست في النسخة، فخذ نسخة من هذا أولًا.\n\nلا يمكن التراجع.</string>
+    <string name="restore_warning_message">الاستعادة ستستبدل كل ما في روشن كهاتا بما في هذا الملف:\n\n%1$d عملاء/مورّدون\n%2$d قيود دفتر\n%3$d شيكات\n%4$d قيود نقد\n%5$d خطط سداد\n%6$d فواتير مورّدين\n%7$d فواتير بيع\n\nكل ما على هذا الهاتف الآن سيزول. إن كانت لديك قيود هنا ليست في النسخة، فخذ نسخة من هذا أولًا.\n\nيُحفظ هذا الدفتر أولًا في النسخ اليومية، فيمكن التراجع عن الاستعادة من هناك.</string>
     <string name="restore_replace">استبدال كل شيء</string>
     <string name="restore_done">تمت الاستعادة</string>
     <string name="restore_failed">فشلت الاستعادة: %1$s</string>
@@ -3409,4 +3409,22 @@
     <string name="audit_counter_off">إيقاف وضع الكاشير</string>
     <string name="audit_pin_wait">رموز خاطئة كثيرة</string>
     <string name="audit_sign_out">تسجيل الخروج</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">سيُزيل هذا عملًا تم هنا</string>
+    <string name="restore_loss_intro">هذه موجودة في هذا الدفتر وليست في النسخة. ستزول بعد الاستعادة:</string>
+    <string name="restore_loss_entries">القيود: %1$d</string>
+    <string name="restore_loss_changed">قيود عُدّلت أو حُذفت هنا بعد النسخة: %1$d</string>
+    <string name="restore_loss_sales">مبيعات الكاشير: %1$d</string>
+    <string name="restore_loss_returns">المرتجعات: %1$d</string>
+    <string name="restore_loss_cash">صفوف دفتر النقد: %1$d</string>
+    <string name="restore_loss_cheques">الشيكات: %1$d</string>
+    <string name="restore_loss_bills">فواتير الموردين: %1$d</string>
+    <string name="restore_loss_invoices">الفواتير: %1$d</string>
+    <string name="restore_loss_parties">العملاء والموردون: %1$d</string>
+    <string name="restore_loss_newest">الأحدث هنا: %1$s · الأحدث في النسخة: %2$s</string>
+    <string name="restore_loss_kept">يُحفظ هذا الدفتر في النسخ اليومية قبل استبدال أي شيء، فيمكن التراجع عن الاستعادة.</string>
+    <string name="restore_loss_agree">أفهم أن هذه ستزول</string>
+    <string name="restore_loss_counting">جارٍ فحص ما في هذا الدفتر وليس في النسخة…</string>
+    <string name="snapshot_before_restore">حُفظت قبل استعادة · %1$s</string>
 </resources>

@@ -65,7 +65,7 @@ class SnapshotsActivity : BaseActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.snapshot_restore_title)
             .setMessage(
-                getString(R.string.snapshot_restore_warning, Format.dateOnly(snapshot.takenOn))
+                getString(R.string.snapshot_restore_warning, if (snapshot.beforeRestore) Format.dateTime(snapshot.takenOn) else Format.dateOnly(snapshot.takenOn))
             )
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.snapshot_restore_action) { _, _ -> restore(snapshot) }
@@ -135,7 +135,8 @@ class SnapshotsActivity : BaseActivity() {
 
         override fun onBindViewHolder(holder: VH, position: Int) {
             val s = items[position]
-            holder.date.text = Format.dateOnly(s.takenOn)
+            // A copy kept before a restore says its minute and why it is there.
+            holder.date.text = if (s.beforeRestore) getString(R.string.snapshot_before_restore, Format.dateTime(s.takenOn)) else Format.dateOnly(s.takenOn)
             holder.size.text = Digits.string(resources, R.string.snapshot_size_kb, s.bytes / 1024)
             holder.itemView.setOnClickListener { confirm(s) }
         }
