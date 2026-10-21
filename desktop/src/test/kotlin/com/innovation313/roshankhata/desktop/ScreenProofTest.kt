@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.ImageComposeScene
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
@@ -269,6 +270,89 @@ class ScreenProofTest {
                 frame("dialog-shift-en") { com.innovation313.roshankhata.screens.ShiftScreen(dao, Modifier.fillMaxSize()) }
             )
             for (f in shots) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 6_000)
+        } finally {
+            db.close()
+            home.deleteRecursively()
+        }
+    }
+
+    /**
+     * The counter's extras and the new reports (21 Oct 2026), drawn from a small
+     * made-up book: the item grid with a product's variants, the customer's
+     * screen, dues by age and the sales report's chart.
+     */
+    @Test
+    fun `the item grid, the customer screen, dues by age and the report chart draw`() {
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
+        val dir = File("build/screen-proof").apply { mkdirs() }
+        val home = java.nio.file.Files.createTempDirectory("rk-proof-extras").toFile()
+        val db = com.innovation313.roshankhata.data.DesktopDatabase.open(home.resolve("khata.db"))
+        val dao = db.khataDao()
+        val draft = com.innovation313.roshankhata.data.CounterDraft()
+        val products = kotlinx.coroutines.runBlocking {
+            fun p(name: String, cat: String?, price: Double?, parent: Long? = null, variant: String? = null) =
+                com.innovation313.roshankhata.data.Product(name = name, nameKey = name.lowercase(), normalisedName = name.lowercase().replace(" ", ""),
+                    category = cat, defaultUnit = "piece", salePrice = price, parentId = parent, variant = variant)
+            val soap = dao.insertProduct(p("Soap", "Bath", null))
+            dao.insertProduct(p("Soap Rose", "Bath", 90.0, soap, "Rose"))
+            dao.insertProduct(p("Soap Lime", "Bath", 95.0, soap, "Lime"))
+            dao.insertProduct(p("Shampoo", "Bath", 450.0))
+            dao.insertProduct(p("Rice 5 kg", "Grocery", 1_650.0))
+            dao.insertProduct(p("Cooking Oil", "Grocery", 2_900.0))
+            dao.insertProduct(p("Tea 250 g", "Grocery", 780.0))
+            dao.insertProduct(p("Biscuits", "Snacks", 60.0))
+            // Dues of different ages, and today's sales for the chart.
+            val a = dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Muhammad Aslam", phone = "03000000001"))
+            val b = dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Ghulam Rasool", phone = "03000000002"))
+            val c = dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Allah Ditta", phone = "03000000005"))
+            dao.insertEntryNumbered(com.innovation313.roshankhata.data.LedgerEntry(partyId = a, amount = 12_000.0, isGiven = true, entryNumber = "", timestamp = now - 100 * day))
+            dao.insertEntryNumbered(com.innovation313.roshankhata.data.LedgerEntry(partyId = a, amount = 6_500.0, isGiven = true, entryNumber = "", timestamp = now - 12 * day))
+            dao.insertEntryNumbered(com.innovation313.roshankhata.data.LedgerEntry(partyId = b, amount = 18_900.0, isGiven = true, entryNumber = "", timestamp = now - 45 * day))
+            dao.insertEntryNumbered(com.innovation313.roshankhata.data.LedgerEntry(partyId = b, amount = 4_000.0, isGiven = false, entryNumber = "", timestamp = now - 20 * day))
+            dao.insertEntryNumbered(com.innovation313.roshankhata.data.LedgerEntry(partyId = c, amount = 3_200.0, isGiven = true, entryNumber = "", timestamp = now - 70 * day))
+            val start = com.innovation313.roshankhata.data.DayCloseMath.startOf(com.innovation313.roshankhata.data.DayCloseMath.dayOf(now))
+            listOf(9 to 1_650.0, 9 to 450.0, 11 to 2_900.0, 13 to 780.0, 16 to 5_800.0, 17 to 120.0).forEach { (h, amount) ->
+                dao.postSale(
+                    com.innovation313.roshankhata.data.Sale(timestamp = minOf(now - 1, start + h * 3_600_000L), subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+                    listOf(com.innovation313.roshankhata.data.SaleItem(saleId = 0, itemName = "Goods", quantity = 1.0, rate = amount)),
+                    listOf(com.innovation313.roshankhata.data.SalePayment(saleId = 0, method = com.innovation313.roshankhata.data.PaymentMethod.CASH, amount = amount))
+                )
+            }
+            dao.productsOnce()
+        }
+        draft.add(products.first { it.name == "Rice 5 kg" }, qty = 2.0)
+        draft.add(products.first { it.name == "Soap Rose" }, qty = 3.0)
+        draft.add(products.first { it.name == "Tea 250 g" })
+        draft.addPayment(com.innovation313.roshankhata.data.PaymentMethod.CASH, 5_000.0)
+        val qr = java.awt.image.BufferedImage(240, 240, java.awt.image.BufferedImage.TYPE_INT_RGB).apply {
+            val g = createGraphics(); g.color = java.awt.Color.WHITE; g.fillRect(0, 0, 240, 240); g.color = java.awt.Color.BLACK
+            for (y in 0 until 24) for (x in 0 until 24) if ((x * 7 + y * 13 + x * y) % 3 == 0) g.fillRect(x * 10, y * 10, 10, 10)
+            g.dispose()
+        }.toComposeImageBitmap()
+        val words = desktopWords(Locale.ENGLISH)
+        try {
+            val shots = listOf(
+                shoot("screen-counter-grid-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+                    Box(Modifier.fillMaxSize()) { ItemGridPane(products, emptyMap(), draft, onPick = {}, modifier = Modifier.fillMaxSize()) }
+                },
+                shoot("screen-aging-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+                    AgingPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) {}
+                },
+                shoot("screen-aging-ur-dark", ur = true, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+                    AgingPane(dao, desktopWords(Locale.forLanguageTag("ur")), rtl = true, shopName = "النور ایگری اسٹور", reload = 0) {}
+                },
+                shoot("screen-sales-chart-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+                    SalesReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0)
+                }
+            )
+            val scene = ImageComposeScene(width = 1280, height = 720, density = Density(1f)) {
+                RoshanTheme(dark = false) { ProvideWords(words) { CustomerScreen(draft, "Al-Noor Agri Store", qr) } }
+            }
+            val customer = try {
+                scene.render(0); scene.render(16_000_000)
+                File(dir, "screen-customer-display-en.png").also { it.writeBytes(scene.render(1_000_000_000).encodeToData(EncodedImageFormat.PNG)!!.bytes) }
+            } finally { scene.close() }
+            for (f in shots + customer) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
         } finally {
             db.close()
             home.deleteRecursively()
