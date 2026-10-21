@@ -18,6 +18,22 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 FONT_EN = os.path.join(ROOT, "app/src/main/res/font/manrope_bold.ttf")
 FONT_UR = os.path.join(ROOT, "store/fonts/NotoNaskhArabic.ttf")
+# Hindi and Bengali captions (21 Oct 2026): the runner's Noto fonts (fonts-noto-core,
+# installed by screenshots.yml). The first file that exists is used.
+FONT_HI = ["/usr/share/fonts/truetype/noto/NotoSansDevanagari-Bold.ttf", "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf"]
+FONT_BN = ["/usr/share/fonts/truetype/noto/NotoSansBengali-Bold.ttf", "/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf"]
+
+RTL = {"ur", "ar", "fa"}
+
+
+def font_for(lang):
+    if lang in RTL:
+        return FONT_UR
+    if lang == "hi":
+        return next((f for f in FONT_HI if os.path.exists(f)), FONT_EN)
+    if lang == "bn":
+        return next((f for f in FONT_BN if os.path.exists(f)), FONT_EN)
+    return FONT_EN
 
 W, H = 1080, 1920
 PAPER = (247, 246, 242)
@@ -42,6 +58,47 @@ CAPTIONS = {
         "05-insights": ("اپنا مہینہ جانیں", "بکری، وصولی اور کون دیر کرتا ہے"),
         "06-backup": ("آپ کا کھاتہ، محفوظ", "اپنی گوگل ڈرائیو پر بیک اپ"),
     },
+    # The other listing languages (21 Oct 2026): the same six benefits, each in its own words.
+    "ar": {
+        "01-home": ("كل حساب، بلمسة واحدة", "الدفتر والصندوق والشيكات والفواتير وأكثر"),
+        "02-khata": ("من عليه ماذا، بنظرة", "ابحث بالاسم أو الرقم، أو قُلها"),
+        "03-customer": ("أعطيت وأخذت، مع رصيد جارٍ", "أرسل كشف الحساب على واتساب"),
+        "04-cashbook": ("نقد اليوم، داخل وخارج", "وضع اليوم بلا آلة حاسبة"),
+        "05-insights": ("اعرف شهرك", "المبيعات والتحصيل ومن يتأخر"),
+        "06-backup": ("دفاترك في أمان", "نسخ احتياطي على Google Drive الخاص بك"),
+    },
+    "fa": {
+        "01-home": ("هر حساب، با یک لمس", "دفتر، صندوق، چک، فاکتور و بیشتر"),
+        "02-khata": ("چه کسی چقدر بدهکار است، در یک نگاه", "با نام یا شماره بگردید، یا بگویید"),
+        "03-customer": ("دادم و گرفتم، با ماندهٔ جاری", "صورت‌حساب را در واتس‌اپ بفرستید"),
+        "04-cashbook": ("نقد روز، ورودی و خروجی", "وضعیت امروز بدون ماشین‌حساب"),
+        "05-insights": ("ماه خود را بشناسید", "فروش، وصولی و چه کسی دیر می‌دهد"),
+        "06-backup": ("دفترهای شما، در امان", "پشتیبان در Google Drive خودتان"),
+    },
+    "hi": {
+        "01-home": ("हर खाता, एक टैप पर", "खाता, कैशबुक, चेक, बिल और बहुत कुछ"),
+        "02-khata": ("किसका कितना बाकी, एक नज़र में", "नाम या नंबर से ढूँढें, या बोलें"),
+        "03-customer": ("दिया और लिया, चालू बैलेंस के साथ", "स्टेटमेंट WhatsApp पर भेजें"),
+        "04-cashbook": ("रोज़ का कैश, आया और गया", "आज की स्थिति बिना कैलकुलेटर"),
+        "05-insights": ("अपना महीना जानें", "बिक्री, वसूली और कौन देर करता है"),
+        "06-backup": ("आपकी बही, सुरक्षित", "अपनी Google Drive पर बैकअप"),
+    },
+    "bn": {
+        "01-home": ("প্রতিটি হিসাব, এক ট্যাপে", "খাতা, ক্যাশবুক, চেক, বিল আর আরও"),
+        "02-khata": ("কার কাছে কত পাওনা, এক নজরে", "নাম বা নম্বরে খুঁজুন, বা বলুন"),
+        "03-customer": ("দিলাম আর পেলাম, চলতি ব্যালান্সসহ", "বিবরণী হোয়াটসঅ্যাপে পাঠান"),
+        "04-cashbook": ("দিনের নগদ, আয় ও ব্যয়", "আজকের অবস্থা ক্যালকুলেটর ছাড়া"),
+        "05-insights": ("আপনার মাস জানুন", "বিক্রি, আদায় আর কে দেরি করে"),
+        "06-backup": ("আপনার খাতা, নিরাপদ", "নিজের Google Drive-এ ব্যাকআপ"),
+    },
+    "in": {
+        "01-home": ("Setiap akun, satu ketukan", "Buku utang, kas, cek, tagihan, dan lainnya"),
+        "02-khata": ("Siapa berutang berapa, sekilas", "Cari nama atau nomor, atau ucapkan"),
+        "03-customer": ("Beri dan terima, dengan saldo berjalan", "Kirim laporan lewat WhatsApp"),
+        "04-cashbook": ("Kas harian, masuk dan keluar", "Posisi hari ini tanpa kalkulator"),
+        "05-insights": ("Kenali bulan Anda", "Penjualan, penagihan, dan siapa yang telat"),
+        "06-backup": ("Buku Anda, tetap aman", "Cadangan ke Google Drive Anda sendiri"),
+    },
 }
 
 
@@ -57,11 +114,13 @@ def frame(src, lang, key, dst):
     shot = Image.open(src).convert("RGB")
     canvas = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(canvas)
-    rtl = lang == "ur"
+    rtl = lang in RTL
     title, sub = CAPTIONS[lang].get(key, ("", ""))
-    f_title = ImageFont.truetype(FONT_UR if rtl else FONT_EN, 64 if rtl else 58)
-    f_sub = ImageFont.truetype(FONT_UR if rtl else FONT_EN, 40 if rtl else 34)
-    kw = dict(direction="rtl", language="ur") if rtl else dict(language="en")
+    face = font_for(lang)
+    f_title = ImageFont.truetype(face, 64 if rtl else 58)
+    f_sub = ImageFont.truetype(face, 40 if rtl else 34)
+    # Pillow shapes the text with Raqm when the script needs it (Arabic joins, Indic conjuncts).
+    kw = dict(direction="rtl", language=lang) if rtl else dict(language=lang if lang != "in" else "id")
     d.text((W / 2, 150), title, font=f_title, fill=INK, anchor="mm", **kw)
     d.text((W / 2, 235), sub, font=f_sub, fill=SOFT, anchor="mm", **kw)
     d.rounded_rectangle((W / 2 - 40, 288, W / 2 + 40, 294), 3, fill=GOLD)

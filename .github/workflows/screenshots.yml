@@ -1,5 +1,5 @@
 # Play Store screenshots (10 Oct): the real screens on a seeded DEMO book,
-# captured on the emulator in English and Urdu, then framed with a caption
+# captured on the emulator in the seven listing languages, then framed with a caption
 # (scripts/frame_screenshots.py). By hand only - Actions -> Store screenshots
 # -> Run workflow - and the result is an artifact to download, never a commit.
 name: Store screenshots
@@ -44,6 +44,9 @@ jobs:
           script: sh scripts/store-shots.sh
       - name: Frame with captions
         run: |
+          # Captions in nine scripts (21 Oct 2026): Noto's Devanagari and Bengali faces for
+          # the Hindi and Bengali listings, and Raqm so Pillow joins Arabic letters.
+          sudo apt-get install -y --no-install-recommends fonts-noto-core libraqm0 > /dev/null
           pip install --quiet pillow
           python3 scripts/frame_screenshots.py /tmp/store-shots /tmp/store-framed
           ls -R /tmp/store-framed
@@ -60,7 +63,7 @@ jobs:
           tag_name: store-screenshots
           name: "Roshan Khata — Store screenshots"
           body: |
-            Play Store screenshots on a demo book, English and Urdu, raw and
+            Play Store screenshots on a demo book in the seven listing languages, raw and
             framed with captions. Built by the Store screenshots workflow from
             ${{ github.sha }}. Not an app build.
           files: /tmp/store-screenshots.zip
