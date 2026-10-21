@@ -100,7 +100,9 @@ class Businesses(private val home: File) {
         home.mkdirs()
         val tmp = File(file.path + ".tmp")
         tmp.writer(Charsets.UTF_8).use { props.store(it, "Roshan Khata businesses") }
-        if (!tmp.renameTo(file)) { file.delete(); tmp.renameTo(file) }
+        // Swapped in one step (21 Oct 2026): Windows will not rename over a file, and the old way deleted
+        // the settings first — a power cut in between lost them all (App Lock, counter mode, the backup folder).
+        replaceAtomically(tmp, file)
     }
 
     private companion object {

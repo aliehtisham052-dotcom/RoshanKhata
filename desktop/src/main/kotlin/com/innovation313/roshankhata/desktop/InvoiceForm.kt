@@ -312,25 +312,25 @@ class InvoicePrint(
         g.color = navy
         g.fillRect(0, 0, pageW.toInt(), 84)
         g.color = Color.WHITE
-        g.font = Font(Font.DIALOG, Font.BOLD, 18)
+        g.font = Font(PrintFonts.family, Font.BOLD, 18)
         g.text(shopName, margin, 32.0)
-        g.font = Font(Font.DIALOG, Font.PLAIN, 10)
+        g.font = Font(PrintFonts.family, Font.PLAIN, 10)
         shopLine?.let { g.text(it, margin, 50.0) }
-        g.font = Font(Font.DIALOG, Font.BOLD, 12)
+        g.font = Font(PrintFonts.family, Font.BOLD, 12)
         g.text(invoice.invoiceNumber, pageW - margin, 32.0, end = true)
-        g.font = Font(Font.DIALOG, Font.PLAIN, 10)
+        g.font = Font(PrintFonts.family, Font.PLAIN, 10)
         g.text(Format.dateOnly(invoice.invoiceDate), pageW - margin, 50.0, end = true)
 
         var y = 110.0
         g.color = Color.BLACK
-        g.font = Font(Font.DIALOG, Font.BOLD, 13)
+        g.font = Font(PrintFonts.family, Font.BOLD, 13)
         g.text(invoice.customerName, margin, y)
-        invoice.customerPhone?.let { g.font = Font(Font.DIALOG, Font.PLAIN, 10); g.text(Format.ltr(it), margin, y + 15) }
+        invoice.customerPhone?.let { g.font = Font(PrintFonts.family, Font.PLAIN, 10); g.text(Format.ltr(it), margin, y + 15) }
         y += 40
         val xQty = pageW - margin - 190
         val xRate = pageW - margin - 95
         val xAmt = pageW - margin
-        g.font = Font(Font.DIALOG, Font.BOLD, 10)
+        g.font = Font(PrintFonts.family, Font.BOLD, 10)
         g.text(words.text(W.invoice_item_name_hint), margin, y)
         g.text(words.text(W.qty_hint), xQty, y, end = true)
         g.text(words.text(W.invoice_item_rate_hint), xRate, y, end = true)
@@ -341,11 +341,11 @@ class InvoicePrint(
         y += 16
         for (it in items.take(28)) {
             g.color = Color.BLACK
-            g.font = Font(Font.DIALOG, Font.PLAIN, 10)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 10)
             g.text(it.itemName, margin, y)
             g.text(Format.qty(it.quantity, it.unit), xQty, y, end = true)
             g.text(Format.money(it.rate), xRate, y, end = true)
-            g.font = Font(Font.DIALOG, Font.BOLD, 10)
+            g.font = Font(PrintFonts.family, Font.BOLD, 10)
             g.text(Format.money(it.lineTotal), xAmt, y, end = true)
             y += 18
         }
@@ -353,7 +353,7 @@ class InvoicePrint(
         y += 10
         fun sum(label: String, value: String, bold: Boolean = false) {
             g.color = Color.BLACK
-            g.font = Font(Font.DIALOG, if (bold) Font.BOLD else Font.PLAIN, if (bold) 12 else 10)
+            g.font = Font(PrintFonts.family, if (bold) Font.BOLD else Font.PLAIN, if (bold) 12 else 10)
             g.text(label, xRate - 60, y, end = true)
             g.text(value, xAmt, y, end = true)
             y += if (bold) 20 else 16
@@ -367,7 +367,7 @@ class InvoicePrint(
             sum(words.text(W.invoice_sum_received), Format.money(t.received))
             sum(words.text(W.invoice_sum_balance), Format.money(t.balanceDue), bold = true)
         }
-        invoice.note?.let { g.color = Color.DARK_GRAY; g.font = Font(Font.DIALOG, Font.PLAIN, 10); g.text(it, margin, y + 20) }
+        invoice.note?.let { g.color = Color.DARK_GRAY; g.font = Font(PrintFonts.family, Font.PLAIN, 10); g.text(it, margin, y + 20) }
         return Printable.PAGE_EXISTS
     }
 }

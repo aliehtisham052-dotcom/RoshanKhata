@@ -289,7 +289,10 @@ object Backup {
         // rolls back and the existing ledger is left untouched — rather than the
         // old behaviour, where a failure partway through wiped data and restored
         // nothing, losing the customer the owner was trying to bring back.
+        // The pictures kept by row id follow their rows to the copy's ids (ImageReattach).
+        val before = ImageReattach.before(dao)
         BackupCodec.restoreLedger(dao, data)
+        before?.let { ImageReattach.after(context, dao, it) }
 
         data.businessProfile?.let { restoreBusinessProfile(context, it) }
     }

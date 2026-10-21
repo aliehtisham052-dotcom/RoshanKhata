@@ -460,7 +460,9 @@ internal object Text {
         while (i < text.length) {
             val cp = text.codePointAt(i)
             val n = Character.charCount(cp)
-            val f = if (main.canDisplay(cp) || Character.isWhitespace(cp)) main else fallback
+            // Dialog first, then Nirmala UI for Hindi and Bengali, which Dialog cannot draw on a stock Windows.
+            val f = if (main.canDisplay(cp) || Character.isWhitespace(cp)) main
+                else com.innovation313.roshankhata.desktop.PrintFonts.forCodePoint(fallback, cp)
             s.addAttribute(TextAttribute.FONT, f, i, i + n)
             i += n
         }

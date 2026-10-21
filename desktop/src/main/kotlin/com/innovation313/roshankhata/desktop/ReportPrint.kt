@@ -77,14 +77,14 @@ class ReportPrint(
         g.color = navy
         g.fillRect(0, 0, pageW.toInt(), 70)
         g.color = Color.WHITE
-        g.font = Font(Font.DIALOG, Font.BOLD, 18)
+        g.font = Font(PrintFonts.family, Font.BOLD, 18)
         g.text(shopName, margin, 30.0)
-        g.font = Font(Font.DIALOG, Font.PLAIN, 11)
+        g.font = Font(PrintFonts.family, Font.PLAIN, 11)
         g.text(words.text(W.ledger_report_title) + "  ·  " + period, margin, 52.0)
 
         var y = 92.0
         g.color = muted
-        g.font = Font(Font.DIALOG, Font.PLAIN, 9)
+        g.font = Font(PrintFonts.family, Font.PLAIN, 9)
         g.text(words.plural(WP.pdf_stmt_entries, rows.size, rows.size), margin, y)
         if (pageCount() > 1) g.text(words.text(W.pdf_stmt_page, pageIndex + 1, pageCount()), pageW - margin, y, end = true)
         y += 18
@@ -95,7 +95,7 @@ class ReportPrint(
         val xGaveEnd = pageW - margin - 90
         val xGotEnd = pageW - margin
         g.color = Color.BLACK
-        g.font = Font(Font.DIALOG, Font.BOLD, 10)
+        g.font = Font(PrintFonts.family, Font.BOLD, 10)
         g.text(words.text(W.date_label), xDate, y)
         g.text(words.text(W.name), xName, y)
         g.text(words.text(W.i_gave), xGaveEnd, y, end = true)
@@ -107,13 +107,13 @@ class ReportPrint(
 
         val from = pageIndex * rowsPerPage
         for (e in rows.subList(minOf(from, rows.size), minOf(rows.size, from + rowsPerPage))) {
-            g.font = Font(Font.DIALOG, Font.PLAIN, 9)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 9)
             g.color = Color.BLACK
             g.text(Format.dateOnly(e.timestamp), xDate, y)
             val who = e.partyName + (e.note?.takeIf { it.isNotBlank() }?.let { "  ·  $it" } ?: "")
             g.text(g.fit(who, xGaveEnd - 80 - xName), xName, y)
             g.color = if (e.isGiven) red else green
-            g.font = Font(Font.DIALOG, Font.BOLD, 9)
+            g.font = Font(PrintFonts.family, Font.BOLD, 9)
             g.text(Format.money(e.amount), if (e.isGiven) xGaveEnd else xGotEnd, y, end = true)
             y += 7
             g.color = line
@@ -127,7 +127,7 @@ class ReportPrint(
             g.color = navy
             g.fillRect(margin.toInt(), y.toInt(), (pageW - 2 * margin).toInt(), 40)
             g.color = Color.WHITE
-            g.font = Font(Font.DIALOG, Font.BOLD, 11)
+            g.font = Font(PrintFonts.family, Font.BOLD, 11)
             g.text(words.text(W.i_gave) + ": " + Format.money(totalGave), margin + 14, y + 25)
             g.text(words.text(W.i_got) + ": " + Format.money(totalGot), pageW - margin - 14, y + 25, end = true)
         }

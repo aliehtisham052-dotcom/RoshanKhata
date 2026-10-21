@@ -22,7 +22,9 @@ class FileShopSettings(private val file: File) : ShopSettings {
         file.parentFile?.mkdirs()
         val tmp = File(file.path + ".tmp")
         tmp.writer(Charsets.UTF_8).use { props.store(it, "Roshan Khata shop settings") }
-        if (!tmp.renameTo(file)) { file.delete(); tmp.renameTo(file) }
+        // Swapped in one step (21 Oct 2026): Windows will not rename over a file, and the old way deleted
+        // the settings first — a power cut in between lost them all (App Lock, counter mode, the backup folder).
+        replaceAtomically(tmp, file)
     }
 
     private fun putText(key: String, value: String?) = put(key to value?.trim().orEmpty())
@@ -71,5 +73,14 @@ class FileShopSettings(private val file: File) : ShopSettings {
     override fun refreshDisplay() {
         ShopCalendar.current = calendar()
         Currency.symbol = currency()
+    }
+}
+
+/** [tmp] moved over [target] atomically where the disk allows, else replacing it in one move. */
+internal fun replaceAtomically(tmp: java.io.File, target: java.io.File) {
+    try {
+        java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE)
+    } catch (e: Exception) {
+        java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
     }
 }

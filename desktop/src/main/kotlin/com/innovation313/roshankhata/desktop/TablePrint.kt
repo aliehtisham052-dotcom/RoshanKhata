@@ -61,22 +61,22 @@ class TablePrint(
         g.color = navy
         g.fillRect(0, 0, pageW.toInt(), 70)
         g.color = Color.WHITE
-        g.font = Font(Font.DIALOG, Font.BOLD, 18)
+        g.font = Font(PrintFonts.family, Font.BOLD, 18)
         g.text(shopName, margin, 30.0)
-        g.font = Font(Font.DIALOG, Font.PLAIN, 11)
+        g.font = Font(PrintFonts.family, Font.PLAIN, 11)
         g.text(heading, margin, 52.0)
 
         var y = 92.0
         if (pages() > 1) {
             g.color = Color.GRAY
-            g.font = Font(Font.DIALOG, Font.PLAIN, 9)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 9)
             g.text(pageWord(pageIndex + 1, pages()), pageW - margin, y, end = true)
         }
         y += 18
         // Figure columns are 95 points wide each, ending at the far margin.
         val ends = headers.indices.drop(1).map { i -> pageW - margin - (headers.size - 1 - i) * 95.0 }
         g.color = Color.BLACK
-        g.font = Font(Font.DIALOG, Font.BOLD, 10)
+        g.font = Font(PrintFonts.family, Font.BOLD, 10)
         headers.forEachIndexed { i, h -> if (i == 0) g.text(h, margin, y) else g.text(h, ends[i - 1], y, end = true) }
         y += 6
         g.color = line
@@ -88,7 +88,7 @@ class TablePrint(
         for (r in rows.subList(minOf(from, rows.size), minOf(rows.size, from + rowsPerPage))) {
             g.color = Color.BLACK
             r.forEachIndexed { i, cell ->
-                g.font = Font(Font.DIALOG, if (i == 0) Font.PLAIN else Font.BOLD, 10)
+                g.font = Font(PrintFonts.family, if (i == 0) Font.PLAIN else Font.BOLD, 10)
                 if (i == 0) g.text(g.fit(cell, firstWidth), margin, y) else g.text(cell, ends[i - 1], y, end = true)
             }
             y += 7

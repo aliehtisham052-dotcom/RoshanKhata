@@ -2243,7 +2243,13 @@ class PartyDetailActivity : BaseActivity() {
             else -> getString(R.string.copy_balance_settled, partyName, Format.money(0.0))
         }
         val clip = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-        clip.setPrimaryClip(android.content.ClipData.newPlainText("balance", line))
+        // Marked sensitive (21 Oct 2026): Android 13+ then hides the customer's balance from the
+        // copy preview and the keyboard's clipboard suggestions.
+        clip.setPrimaryClip(android.content.ClipData.newPlainText("balance", line).apply {
+            description.extras = android.os.PersistableBundle().apply {
+                putBoolean(if (android.os.Build.VERSION.SDK_INT >= 33) android.content.ClipDescription.EXTRA_IS_SENSITIVE else "android.content.extra.IS_SENSITIVE", true)
+            }
+        })
         Toast.makeText(this, R.string.copied, Toast.LENGTH_SHORT).show()
     }
 

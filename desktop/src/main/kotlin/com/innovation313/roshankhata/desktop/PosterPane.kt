@@ -64,7 +64,9 @@ private class PosterPrefs(private val file: File) {
         file.parentFile?.mkdirs()
         val tmp = File(file.path + ".tmp")
         tmp.writer(Charsets.UTF_8).use { p.store(it, "Roshan Khata poster") }
-        if (!tmp.renameTo(file)) { file.delete(); tmp.renameTo(file) }
+        // Swapped in one step (21 Oct 2026): Windows will not rename over a file, and the old way deleted
+        // the old one first — a power cut in between left neither.
+        replaceAtomically(tmp, file)
     }
 }
 

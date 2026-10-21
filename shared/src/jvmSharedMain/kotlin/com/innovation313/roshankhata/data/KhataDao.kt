@@ -991,7 +991,9 @@ interface KhataDao {
     @Transaction
     suspend fun saveInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>): Long {
         val numbered = if (invoice.invoiceNumber.isBlank()) {
-            invoice.copy(invoiceNumber = InvoiceNumber.next(totalInvoiceCount()))
+            // From the highest number ever used, not the count (21 Oct 2026, the critical review): with
+            // one invoice deleted or merged in, the count gave a number already on another invoice.
+            invoice.copy(invoiceNumber = InvoiceNumber.next(maxOf(totalInvoiceCount(), highestInvoiceNumber())))
         } else {
             invoice
         }

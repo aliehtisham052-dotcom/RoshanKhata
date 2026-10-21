@@ -1122,33 +1122,20 @@ class BillsActivity : BaseActivity() {
         note: String?
     ) {
         AppScope.launch {
-            dao.updateBill(
+            // The bill and its khata entry in ONE transaction (21 Oct 2026, the critical review), the
+            // computer's own call: THE LEDGER IS THE MONEY, and a failure between the two writes left
+            // the bill and the khata saying different amounts. The entry's note is rebuilt as it was
+            // when the bill was first saved, so a corrected bill number shows in the ledger too.
+            dao.editSupplierBill(
                 existing.copy(
                     billNumber = billNumber,
                     totalAmount = total,
                     billDate = billDate,
                     dueDate = dueDate,
                     note = note
-                )
+                ),
+                billNumber?.let { getString(R.string.bill_entry_note, it) } ?: note
             )
-
-            // Keep the ledger entry in step — see this file's own THE LEDGER
-            // IS THE MONEY rule. A bill on credit points at one entry; if the
-            // amount here changes and that entry does not follow, there are
-            // two different answers to "what do I owe them?" and no way to
-            // tell which is true. The note is recomputed the same way it was
-            // built when the bill was first saved, so a corrected bill number
-            // is not left showing the old one in the ledger.
-            existing.ledgerEntryId?.let { entryId ->
-                dao.getEntry(entryId)?.let { entry ->
-                    dao.updateEntry(
-                        entry.copy(
-                            amount = total,
-                            note = billNumber?.let { getString(R.string.bill_entry_note, it) } ?: note
-                        )
-                    )
-                }
-            }
 
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {
