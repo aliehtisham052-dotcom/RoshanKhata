@@ -35,7 +35,7 @@ INVOICES AND PRODUCTS
 
 YOUR BOOKS, YOUR PHONE
 • No account, no sign-up, no ads — the app works fully offline
-• Nothing is collected or sent anywhere; your data stays on your phone
+• Your ledger is never collected or sent anywhere; it stays on your phone
 • Backup to your own Google Drive, automatic if you want it
 • App lock with your fingerprint or PIN; hide the balance when someone is looking
 • Several shops? Each business keeps its own separate book
