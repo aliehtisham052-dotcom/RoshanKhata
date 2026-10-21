@@ -197,6 +197,71 @@ No account, no server, no ads. Everything stays on the phone.
   (no free offline Urdu recognition), Google Drive sign-in (the backup
   folder can be a Google Drive for Desktop folder instead).
 
+### The counter (POS, 21 Oct 2026 — Phases 1–9, branch kmp-desktop-14)
+
+Built in one night to the owner's plan ("POS system ka plan do with all
+check and balance"), for every trade, both platforms, all nine languages.
+The rules every piece keeps: **money and stock are movements, never
+stored totals** (every figure is summed from rows); **delete nothing,
+reverse it** (a void bins what it posted, a return is a credit note); every
+document is **numbered from the highest ever used** (S-, R-, PO-) and
+**immutable once posted**; every write that a shopkeeper would answer for
+leaves an **audit row** with the signed-in name.
+
+- **Schema 32→35, backup format 8→11.** `Schema32`/`33`/`34`/`35` are the one
+  SQL list each the phone's `MIGRATION_n` and the computer's
+  (`DesktopDatabase.MIGRATIONS` — the laptop's 1.10.0 book must open, never
+  be rebuilt) both run. `SchemaRewind` (app tests) takes a file back a
+  version so `SalesMigrationTest`, `ReturnsDaoTest`, `InventoryDaoTest` and
+  the old `EntryItemsMigrationTest` open real older files through the chain.
+  **Any new column or table: add it to the newest Schema list, bump the
+  version, and extend SchemaRewind.** `app/schemas/35.json` is written by
+  CI's KSP run; the checked-in folder still holds 31 (no local Gradle).
+- **Sale** (`Sale.kt`): a document over the ledger. A customer's ticket is a
+  khata "I gave" with the goods as entry_items (stock and statements see it
+  as any sale) and an "I got" per payment (cash/bank/cheque/online — a
+  split is several); a walk-in's payments are cashbook income with their
+  method, and its lines are counted in stock by `walkInSoldPerProduct`
+  (`Stock.of` is the one call every stock figure makes). `postSale`
+  recomputes totals, runs `SaleMath.check` again and writes it all in one
+  transaction; `voidSale` bins exactly the rows the sale remembers.
+  `CounterDraft` is the ticket state both counters draw; `Counter.post`.
+- **Products** gained barcode (unique among live products, checked in the
+  DAO), costPrice, lowStockLevel. `ProductCsv` both ways (import never
+  deletes). `Barcodes.internalEan13` for labels; `LabelSheet` (Windows,
+  zxing) prints 50×25 mm labels. Low stock is a bell row (Kind.STOCK).
+- **Returns** (`SaleReturn.kt`): a customer's is a khata "I got" with goods
+  lines (+ an "I gave" refund in its method); a walk-in's a cashbook refund
+  (category Return) with its lines counted back. A line may not come back
+  more than it was sold (`returnedOfSale`). `ReturnForm` is shared Compose.
+- **Day report** (`ZReport`): sales by method, on account, discounts, tax,
+  voids, returns, cash in/out, the drawer (DayClose) and profit. Close the
+  day refuses an unexplained difference. Kind.DRAWER says when yesterday
+  was never counted. `DayCloseMath.dayOf/startOf` is the shared day rule.
+- **Access** (`Access.kt`): owner (null), manager, cashier — `Staff.role`,
+  PIN as PBKDF2 (`PinHash`, now shared with App Lock). A cashier's void,
+  return, discount past 5%, price change, export, import, stock adjustment
+  and credit-limit breach wait for a manager's PIN (`OverrideDialog` /
+  `AccessUi.allowed`), logged as MANAGER_OVERRIDE. Who did what: `AuditPane`
+  (Windows) and `AuditActivity` over the shared `AuditScreen`.
+- **Inventory** (`Inventory.kt`): `StockAdjustment` (signed, reason
+  required; counts write only the differences — `recordCount`),
+  `Valuation` (cost price, else last purchase rate, nothing guessed),
+  `PurchaseOrder` → `receiveOrder` makes a supplier bill through
+  `insertSupplierBill`. Windows: Stock on hand and Purchase orders pages;
+  phone: Count stock and Stock value from Products' more button (orders
+  not on the phone yet).
+- **Sales report** (`SalesReport`, `SoldLine`): by day/item/category/
+  customer/cashier/hour, tax, P&L (cost known for how much of revenue is
+  said), dead stock (90 days). `reportRows` gives both platforms the same
+  rows; Windows page + phone tile.
+- **Printing on the phone:** `TextReceipt` draws text as a 384 px picture for
+  the paired Bluetooth ESC/POS printer (the entry receipt's path).
+- **Not built:** live multi-device sync (whole-copy phone↔PC stays the
+  rule: one device at a time), country tax packs (FBR/ZATCA), weighing
+  scale, customer display, purchase orders on the phone, loyalty points.
+  Nothing above was tested on a real device or printer — CI only.
+
 ### The shared module (KMP)
 
 ```
