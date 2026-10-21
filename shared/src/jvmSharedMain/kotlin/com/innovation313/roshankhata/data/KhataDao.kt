@@ -1196,6 +1196,9 @@ interface KhataDao {
     @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
     suspend fun lastDayClose(): DayClose?
 
+    @Query("SELECT * FROM day_close WHERE day = :day LIMIT 1")
+    suspend fun dayCloseFor(day: Long): DayClose?
+
     @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
     fun observeLastDayClose(): Flow<DayClose?>
 
@@ -2875,6 +2878,15 @@ interface KhataDao {
         """
     )
     fun observeReturns(): Flow<List<ReturnSummary>>
+
+    @Query(
+        """
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.status
+        FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
+        WHERE r.isDeleted = 0 AND r.timestamp >= :from AND r.timestamp < :to ORDER BY r.timestamp DESC, r.id DESC
+        """
+    )
+    suspend fun returnsBetween(from: Long, to: Long): List<ReturnSummary>
 
     /** Goods that came back from WALK-INS on counter returns, per product (a customer's are on the khata "I got"). */
     @Query(

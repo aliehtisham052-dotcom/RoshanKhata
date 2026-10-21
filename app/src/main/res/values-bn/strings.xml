@@ -3103,4 +3103,21 @@
     <string name="cash_category_return">ফেরত</string>
     <string name="pos_recent_sales">সাম্প্রতিক বিক্রি</string>
     <string name="pos_void_return">ফেরত বাতিল</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">দিনের রিপোর্ট (Z)</string>
+    <string name="z_sales_count">বিক্রি</string>
+    <string name="z_sales_total">মোট বিক্রি</string>
+    <string name="z_voids">বাতিল (%1$s)</string>
+    <string name="z_returns">ফেরত (%1$s)</string>
+    <string name="z_cash_in">নগদ এসেছে (খাতা + ক্যাশবুক)</string>
+    <string name="z_cash_out">নগদ গেছে (খাতা + ক্যাশবুক)</string>
+    <string name="z_expected">ক্যাশে থাকার কথা</string>
+    <string name="z_variance">পার্থক্য</string>
+    <string name="z_profit">লাভ (বিক্রি − খরচ)</string>
+    <string name="dc_opening">শুরুর নগদ</string>
+    <string name="dc_counted">গণনা</string>
+    <string name="z_no_close">দিন বন্ধ হয়নি — পার্থক্য দেখতে ক্যাশ গুনুন</string>
+    <string name="z_variance_reason">পার্থক্যের কারণ লিখুন</string>
+    <string name="z_yesterday_open">গতকালের ক্যাশ গোনা হয়নি</string>
 </resources>

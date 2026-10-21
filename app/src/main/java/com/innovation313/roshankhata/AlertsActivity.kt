@@ -70,6 +70,7 @@ class AlertsActivity : BaseActivity() {
                     HomeAlerts.Kind.BILL -> Triple(R.drawable.ic_tile_bills, R.color.tile_bills_bg, BillsActivity::class.java)
                     HomeAlerts.Kind.EXPIRING -> Triple(R.drawable.ic_tile_expiring, R.color.tile_stock_bg, ExpiringActivity::class.java)
                     HomeAlerts.Kind.STOCK -> Triple(R.drawable.ic_tile_products, R.color.tile_bills_bg, ProductsActivity::class.java)
+                    HomeAlerts.Kind.DRAWER -> Triple(R.drawable.ic_tile_cashbook, R.color.tile_cashbook_bg, CashbookActivity::class.java)
                     HomeAlerts.Kind.BACKUP,
                     HomeAlerts.Kind.BACKUP_FAILED,
                     HomeAlerts.Kind.BACKUP_OTHER_PHONE -> Triple(R.drawable.ic_alert_backup, R.color.tile_backup_bg, BackupActivity::class.java)

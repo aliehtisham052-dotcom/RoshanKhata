@@ -82,6 +82,9 @@ class CashbookActivity : BaseActivity() {
         }
 
         findViewById<View>(R.id.btnCloseDay).setOnClickListener { showDayClose() }
+        // The day's figures (POS Phase 4): a long press on Close the day shows the Z report.
+        findViewById<View>(R.id.btnCloseDay).setOnLongClickListener { showDayReport(); true }
+        findViewById<View>(R.id.btnDayReport).setOnClickListener { showDayReport() }
         val tvLastClose = findViewById<TextView>(R.id.tvLastClose)
         lifecycleScope.launch {
             dao.observeLastDayClose().collectLatest { c ->
@@ -161,6 +164,14 @@ class CashbookActivity : BaseActivity() {
                         Toast.makeText(this@CashbookActivity, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
                         return@setPositiveButton
                     }
+                    // A drawer that does not match the books needs its reason written down (POS Phase 4):
+                    // a figure with no story is one nobody can answer for next week.
+                    val openingNow = Digits.parse(etOpening.text.toString()) ?: 0.0
+                    val expectedNow = DayCloseMath.expected(openingNow, cashIn, cashOut)
+                    if (kotlin.math.abs(DayCloseMath.difference(counted, expectedNow)) >= 0.005 && etNote.text.toString().isBlank()) {
+                        Toast.makeText(this@CashbookActivity, R.string.z_variance_reason, Toast.LENGTH_LONG).show()
+                        return@setPositiveButton
+                    }
                     val close = DayClose(
                         day = ReminderLog.dayOf(now),
                         opening = Digits.parse(etOpening.text.toString()) ?: 0.0,
@@ -173,6 +184,30 @@ class CashbookActivity : BaseActivity() {
                     AppScope.launch { dao.saveDayClose(close) }
                 }
                 .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+        }
+    }
+
+    /** The Z report for today: every figure summed from the rows, shown and shareable. */
+    private fun showDayReport() {
+        lifecycleScope.launch {
+            val now = System.currentTimeMillis()
+            val day = DayCloseMath.dayOf(now)
+            val from = DayCloseMath.startOf(day)
+            val report = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.ZReport.compute(dao, from, from + 24L * 60 * 60 * 1000) }
+            val words = com.innovation313.roshankhata.data.AndroidWords(this@CashbookActivity)
+            val lines = report.lines(words) { Format.money(it) }
+            val text = Format.dateOnly(now) + "\n" +
+                lines.joinToString("\n") { (k, v) -> "$k: $v" } +
+                (if (report.counted == null) "\n\n" + getString(R.string.z_no_close) else "")
+            MaterialAlertDialogBuilder(this@CashbookActivity)
+                .setTitle(R.string.z_title)
+                .setMessage(text)
+                .setPositiveButton(R.string.share) { _, _ ->
+                    startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).setType("text/plain")
+                        .putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.z_title) + "\n" + text), getString(R.string.z_title)))
+                }
+                .setNegativeButton(R.string.close, null)
+                .show()
         }
     }
 

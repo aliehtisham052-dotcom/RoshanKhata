@@ -3247,4 +3247,21 @@
     <string name="cash_category_return">إرجاع</string>
     <string name="pos_recent_sales">آخر المبيعات</string>
     <string name="pos_void_return">إلغاء الإرجاع</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">تقرير اليوم (Z)</string>
+    <string name="z_sales_count">المبيعات</string>
+    <string name="z_sales_total">إجمالي المبيعات</string>
+    <string name="z_voids">ملغاة (%1$s)</string>
+    <string name="z_returns">مرتجعات (%1$s)</string>
+    <string name="z_cash_in">نقد داخل (الدفتر + الصندوق)</string>
+    <string name="z_cash_out">نقد خارج (الدفتر + الصندوق)</string>
+    <string name="z_expected">المفترض في الدرج</string>
+    <string name="z_variance">الفرق</string>
+    <string name="z_profit">الربح (المبيعات − التكلفة)</string>
+    <string name="dc_opening">النقد الافتتاحي</string>
+    <string name="dc_counted">المعدود</string>
+    <string name="z_no_close">لم يُغلق اليوم — عدّ الدرج لرؤية الفرق</string>
+    <string name="z_variance_reason">اذكر سبب الفرق</string>
+    <string name="z_yesterday_open">درج الأمس لم يُعدّ</string>
 </resources>

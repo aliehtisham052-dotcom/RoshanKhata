@@ -33,6 +33,16 @@ data class DayClose(
 }
 
 object DayCloseMath {
+    /** The local calendar day of a moment, as [DayClose.day] keys it (the phone's ReminderLog.dayOf). */
+    fun dayOf(millis: Long, tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Long =
+        Math.floorDiv(millis + tz.getOffset(millis), 24L * 60 * 60 * 1000)
+
+    /** The first millisecond of a local day number. */
+    fun startOf(day: Long, tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Long {
+        val utc = day * 24L * 60 * 60 * 1000
+        return utc - tz.getOffset(utc)
+    }
+
     fun expected(opening: Double, cashIn: Double, cashOut: Double): Double =
         LineMath.round(opening + cashIn - cashOut)
 

@@ -113,6 +113,8 @@ fun CounterSalePane(
     var voidingReturn by remember { mutableStateOf<com.innovation313.roshankhata.data.ReturnSummary?>(null) }
     val returns by remember(tick) { dao.observeReturns() }.collectAsState(emptyList())
     var showHeld by remember { mutableStateOf(false) }
+    var reporting by remember { mutableStateOf(false) }
+    if (reporting) ZReportDialog(dao, onReceipt = onReceipt) { reporting = false }
     val searchFocus = remember { FocusRequester() }
     val discountFocus = remember { FocusRequester() }
     val qtyFocus = remember { FocusRequester() }
@@ -204,6 +206,7 @@ fun CounterSalePane(
                 if (held.isNotEmpty()) {
                     FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
                 }
+                FluentButton(word(W.z_title), { reporting = true }, kind = ButtonKind.SUBTLE)
                 FluentButton(word(W.pos_hold), { hold() }, kind = ButtonKind.STANDARD, enabled = draft.lines.isNotEmpty())
                 FluentButton(word(W.pos_clear), { draft.clear(); told = null }, kind = ButtonKind.SUBTLE, enabled = !draft.isEmpty)
             })

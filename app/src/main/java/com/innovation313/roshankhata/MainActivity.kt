@@ -481,6 +481,7 @@ class MainActivity : BaseActivity() {
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BILL to Chip(R.string.tile_bills, R.color.tile_stock_bg, R.color.fi_orange_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.EXPIRING to Chip(R.string.tile_expiry, R.color.tile_bin_bg, R.color.fi_red_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.STOCK to Chip(R.string.tile_products, R.color.tile_bills_bg, R.color.fi_gold_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.DRAWER to Chip(R.string.nav_cashbook, R.color.tile_cashbook_bg, R.color.fi_teal_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP to Chip(R.string.today_backup, R.color.tile_backup_bg, R.color.fi_teal_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP_FAILED to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP_OTHER_PHONE to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),

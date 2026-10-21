@@ -3273,4 +3273,21 @@ You can change this any time from this screen.</string>
     <string name="cash_category_return">Return</string>
     <string name="pos_recent_sales">Recent sales</string>
     <string name="pos_void_return">Void return</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">Day report (Z)</string>
+    <string name="z_sales_count">Sales</string>
+    <string name="z_sales_total">Sales total</string>
+    <string name="z_voids">Voided (%1$s)</string>
+    <string name="z_returns">Returns (%1$s)</string>
+    <string name="z_cash_in">Cash in (khata + cashbook)</string>
+    <string name="z_cash_out">Cash out (khata + cashbook)</string>
+    <string name="z_expected">Should be in drawer</string>
+    <string name="z_variance">Difference</string>
+    <string name="z_profit">Profit (sales − cost)</string>
+    <string name="dc_opening">Opening cash</string>
+    <string name="dc_counted">Counted</string>
+    <string name="z_no_close">The day was not closed — count the drawer to see the difference</string>
+    <string name="z_variance_reason">Give a reason for the difference</string>
+    <string name="z_yesterday_open">Yesterday’s drawer was not counted</string>
 </resources>

@@ -3059,4 +3059,21 @@
     <string name="cash_category_return">واپسی</string>
     <string name="pos_recent_sales">حالیہ سیلز</string>
     <string name="pos_void_return">واپسی منسوخ</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">دن کی رپورٹ (Z)</string>
+    <string name="z_sales_count">سیلز</string>
+    <string name="z_sales_total">کل سیلز</string>
+    <string name="z_voids">منسوخ (%1$s)</string>
+    <string name="z_returns">واپسیاں (%1$s)</string>
+    <string name="z_cash_in">نقد آمد (کھاتہ + کیش بک)</string>
+    <string name="z_cash_out">نقد اخراج (کھاتہ + کیش بک)</string>
+    <string name="z_expected">گلے میں ہونا چاہیے</string>
+    <string name="z_variance">فرق</string>
+    <string name="z_profit">منافع (سیل − لاگت)</string>
+    <string name="dc_opening">ابتدائی نقد</string>
+    <string name="dc_counted">گنا گیا</string>
+    <string name="z_no_close">دن بند نہیں ہوا — فرق دیکھنے کے لیے گلا گنیں</string>
+    <string name="z_variance_reason">فرق کی وجہ لکھیں</string>
+    <string name="z_yesterday_open">کل کا گلا نہیں گنا گیا</string>
 </resources>

@@ -3087,4 +3087,21 @@
     <string name="cash_category_return">واپسي</string>
     <string name="pos_recent_sales">تازا وڪرا</string>
     <string name="pos_void_return">واپسي منسوخ</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">ڏينهن جي رپورٽ (Z)</string>
+    <string name="z_sales_count">وڪرا</string>
+    <string name="z_sales_total">ڪل وڪرو</string>
+    <string name="z_voids">منسوخ (%1$s)</string>
+    <string name="z_returns">واپسيون (%1$s)</string>
+    <string name="z_cash_in">نقد آمد (کاتو + ڪيش بڪ)</string>
+    <string name="z_cash_out">نقد خرچ (کاتو + ڪيش بڪ)</string>
+    <string name="z_expected">گلي ۾ هجڻ گهرجي</string>
+    <string name="z_variance">فرق</string>
+    <string name="z_profit">نفعو (وڪرو − لاڳت)</string>
+    <string name="dc_opening">شروعاتي نقد</string>
+    <string name="dc_counted">ڳڻيو ويو</string>
+    <string name="z_no_close">ڏينهن بند نه ٿيو — فرق ڏسڻ لاءِ گلو ڳڻيو</string>
+    <string name="z_variance_reason">فرق جو سبب لکو</string>
+    <string name="z_yesterday_open">ڪالهه جو گلو نه ڳڻيو ويو</string>
 </resources>
