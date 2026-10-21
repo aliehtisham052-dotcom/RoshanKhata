@@ -60,6 +60,33 @@ object Fefo {
             }
             Lot(b.id, b.batchNumber, b.expiryDate, left)
         }.sortedWith(compareBy<Lot, Long?>(nullsLast()) { it.expiryDate }.thenBy { it.billItemId })
+            .let { capByShelf(it, onHand(dao, product)) }
+    }
+
+    /** What the shelf holds of [product] by the books (every movement, tagged or not); null when it cannot be said. */
+    private suspend fun onHand(dao: KhataDao, product: Product): Double? =
+        runCatching { Stock.of(dao).firstOrNull { it.productId == product.id }?.onHand }.getOrNull()
+
+    /**
+     * The batches never hold more than the shelf (21 Oct 2026, the critical
+     * review). A khata sale written without a batch takes stock but no batch,
+     * so the batches alone said more was left than there was: the counter
+     * "sold" from a lot that was gone, and writing an expired lot off took the
+     * stock below zero. What the batches hold beyond the shelf is taken from
+     * them soonest-expiry first — the order the shop sells in.
+     */
+    fun capByShelf(lots: List<Lot>, onHand: Double?): List<Lot> {
+        if (onHand == null) return lots
+        var excess = lots.sumOf { it.left.coerceAtLeast(0.0) } - onHand.coerceAtLeast(0.0)
+        if (excess <= EPS) return lots
+        return lots.map { l ->
+            if (excess <= EPS || l.left <= EPS) l
+            else {
+                val cut = minOf(excess, l.left)
+                excess -= cut
+                l.copy(left = l.left - cut)
+            }
+        }
     }
 
     /**

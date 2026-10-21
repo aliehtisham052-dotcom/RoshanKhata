@@ -23,10 +23,24 @@ data class SoldLine(
     /** The line's own tax (schema 36): rate, money, and whether the price held it. Null on older lines. */
     val taxRate: Double? = null,
     val taxAmount: Double? = null,
-    val taxIncluded: Boolean? = null
+    val taxIncluded: Boolean? = null,
+    /** The ticket's goods before its own discount, and that discount (21 Oct 2026). */
+    val saleSubtotal: Double? = null,
+    val saleDiscount: Double? = null
 ) {
-    /** What the line brought in, less any tax that was inside its price (that money is the government's). */
-    val revenue: Double get() = LineMath.round(SaleMath.lineTotal(quantity, rate, discount) - (if (taxIncluded == true) taxAmount ?: 0.0 else 0.0))
+    /**
+     * What the line brought in: less any tax that was inside its price (that
+     * money is the government's), and less its share of the ticket's own
+     * discount — a Rs 100 off a Rs 1,000 ticket is Rs 10 off each Rs 100 of
+     * goods (21 Oct 2026: the report counted the goods at full price).
+     */
+    val revenue: Double get() {
+        val gross = SaleMath.lineTotal(quantity, rate, discount) - (if (taxIncluded == true) taxAmount ?: 0.0 else 0.0)
+        val sub = saleSubtotal ?: 0.0
+        val off = (saleDiscount ?: 0.0).coerceAtLeast(0.0)
+        val share = if (sub > 0.0 && off > 0.0) (1.0 - off / sub).coerceIn(0.0, 1.0) else 1.0
+        return LineMath.round(gross * share)
+    }
     val cost: Double? get() = costRate?.let { LineMath.round(it * quantity) }
 }
 
@@ -38,7 +52,11 @@ data class SoldLine(
  * total. Profit is counted only where every line's cost is known; the
  * report says how much of the revenue that covers.
  */
-class SalesReport(val from: Long, val to: Long, val lines: List<SoldLine>, val expenses: Double, val returnsTotal: Double, val deadStock: List<String>) {
+class SalesReport(
+    val from: Long, val to: Long, val lines: List<SoldLine>, val expenses: Double, val returnsTotal: Double, val deadStock: List<String>,
+    /** What the returned goods had cost (where known): they are back on the shelf. */
+    val returnedCost: Double = 0.0
+) {
 
     data class Row(val key: String, val count: Int, val quantity: Double, val revenue: Double, val cost: Double?) {
         val profit: Double? get() = cost?.let { LineMath.round(revenue - it) }
@@ -78,7 +96,7 @@ class SalesReport(val from: Long, val to: Long, val lines: List<SoldLine>, val e
      * profit). The report says how much of the revenue this covers
      * ([costKnownRevenue]); nothing is guessed for the rest.
      */
-    val grossProfit: Double get() = LineMath.round(costKnownRevenue - returnsTotal - cost)
+    val grossProfit: Double get() = LineMath.round(costKnownRevenue - cost - (returnsTotal - returnedCost))
     /** Gross profit less the cashbook's expenses in the window (the walk-ins' refunds are not expenses — they are the returns). */
     val netProfit: Double get() = LineMath.round(grossProfit - expenses)
 
@@ -135,7 +153,8 @@ class SalesReport(val from: Long, val to: Long, val lines: List<SoldLine>, val e
             val since = to - DEAD_DAYS * 24L * 60 * 60 * 1000
             val recent = dao.productsSoldSince(since).toSet()
             val dead = Stock.of(dao).filter { (it.onHand ?: 0.0) > 0.0 && it.productId !in recent }.map { it.name }.sorted()
-            return SalesReport(from, to, lines, LineMath.round(expenses), LineMath.round(returns), dead)
+            val returnedCost = dao.returnedCostBetween(from, to)
+            return SalesReport(from, to, lines, LineMath.round(expenses), LineMath.round(returns), dead, LineMath.round(returnedCost))
         }
     }
 }

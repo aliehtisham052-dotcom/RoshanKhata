@@ -69,10 +69,17 @@ object BookMerge {
     private fun List<IdUid>.byUid(): Map<String, Long> = mapNotNull { r -> r.uid?.let { it to r.id } }.toMap()
 
     /** A customer of the copy, found here: the same id and name, else the same name and phone, else the one of that name when a phone is missing. */
-    fun matchParty(p: Party, here: List<Party>): Party? =
-        here.firstOrNull { it.id == p.id && norm(it.name) == norm(p.name) }
-            ?: here.firstOrNull { norm(it.name) == norm(p.name) && phone(it.phone) == phone(p.phone) }
-            ?: here.filter { norm(it.name) == norm(p.name) }.singleOrNull()?.takeIf { phone(it.phone).isEmpty() || phone(p.phone).isEmpty() }
+    // Only customers still in the book are matched, and two blank phones are not "the same phone"
+    // (21 Oct 2026, the critical review: two Aslams with no number became one, and a binned
+    // customer took the copy's entries and was then purged with them). A name that is not one
+    // person here is not guessed: the copy's customer comes in as their own.
+    fun matchParty(p: Party, hereAll: List<Party>): Party? {
+        val here = hereAll.filter { !it.isDeleted }
+        val named = here.filter { norm(it.name) == norm(p.name) }
+        return here.firstOrNull { it.id == p.id && norm(it.name) == norm(p.name) }
+            ?: named.firstOrNull { phone(p.phone).isNotEmpty() && phone(it.phone) == phone(p.phone) }
+            ?: named.singleOrNull()?.takeIf { phone(it.phone).isEmpty() || phone(p.phone).isEmpty() }
+    }
 
     private suspend fun partiesHere(dao: KhataDao): List<Party> {
         val out = ArrayList<Party>()

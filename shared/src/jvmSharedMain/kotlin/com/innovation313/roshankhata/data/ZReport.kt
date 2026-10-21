@@ -36,10 +36,16 @@ data class ZReport(
     val cashbookOut: Double,
     val opening: Double?,
     val counted: Double?,
-    val profit: Double?
+    val profit: Double?,
+    /**
+     * What the books said the drawer held WHEN the day was closed (21 Oct 2026):
+     * the close keeps its own figures, so a sale rung up after the count does
+     * not show as a shortage in the count. Null when the day was not closed.
+     */
+    val closeExpected: Double? = null
 ) {
-    /** Cash in the drawer by the books: opening + every cash in − every cash out. */
-    val expectedCash: Double? get() = opening?.let { LineMath.round(it + khataCashIn + cashbookIn - khataCashOut - cashbookOut) }
+    /** Cash in the drawer by the books: the close's own figure, else opening + every cash in − every cash out. */
+    val expectedCash: Double? get() = closeExpected ?: opening?.let { LineMath.round(it + khataCashIn + cashbookIn - khataCashOut - cashbookOut) }
     val variance: Double? get() = if (counted != null && expectedCash != null) LineMath.round(counted - expectedCash!!) else null
 
     companion object {
@@ -80,7 +86,8 @@ data class ZReport(
                 khataCashIn = dao.khataCashBetween(false, from - 1, to - 1), khataCashOut = dao.khataCashBetween(true, from - 1, to - 1),
                 cashbookIn = dao.cashbookCashBetween(true, from - 1, to - 1), cashbookOut = dao.cashbookCashBetween(false, from - 1, to - 1),
                 opening = close?.opening, counted = close?.counted,
-                profit = if (costKnown && done.isNotEmpty()) LineMath.round(salesTotal - tax - cost) else null
+                profit = if (costKnown && done.isNotEmpty()) LineMath.round(salesTotal - tax - cost) else null,
+                closeExpected = close?.expected?.let { LineMath.round(it) }
             )
         }
     }
@@ -113,7 +120,8 @@ data class ZReport(
         opening?.let { out += words.text(W.dc_opening) to money(it) }
         expectedCash?.let { out += words.text(W.z_expected) to money(it) }
         counted?.let { out += words.text(W.dc_counted) to money(it) }
-        variance?.let { out += words.text(W.z_variance) to money(it) }
+        // Short or over, said with its sign (the money format drops it).
+        variance?.let { out += words.text(W.z_variance) to (if (it < -0.005) "\u2212 " else if (it > 0.005) "+ " else "") + money(it) }
         profit?.let { out += words.text(W.z_profit) to money(it) }
         return out
     }
