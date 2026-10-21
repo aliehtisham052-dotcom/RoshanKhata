@@ -378,6 +378,35 @@ class EntryDetailActivity : BaseActivity() {
         }
 
         etAmount.setText(Format.plain(e.amount))
+
+        // The amount is written on the app's own calculator pad, the one the
+        // add-entry form has (21 Oct): a user found Edit brought up only the
+        // phone's number keyboard — no + − × ÷ %, no =. The pad shows while
+        // the amount is being written; the note and goods boxes get the
+        // phone's keyboard, and the room the pad took. A tap on the amount
+        // brings the pad back and puts the keyboard away.
+        etAmount.showSoftInputOnFocus = false
+        val pad = view.findViewById<View>(R.id.editKeypad)
+        val tvAmountResult = view.findViewById<TextView>(R.id.tvEditAmountResult)
+        com.innovation313.roshankhata.ui.CalcPad.bind(view, etAmount)
+        etAmount.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                com.innovation313.roshankhata.ui.CalcPad.showTotal(etAmount, tvAmountResult)
+            }
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        })
+        val keyboard = getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+            as android.view.inputmethod.InputMethodManager
+        fun showPad() {
+            pad.visibility = View.VISIBLE
+            keyboard.hideSoftInputFromWindow(etAmount.windowToken, 0)
+        }
+        view.viewTreeObserver.addOnGlobalFocusChangeListener { _, now ->
+            if (now === etAmount) showPad() else if (now is EditText) pad.visibility = View.GONE
+        }
+        etAmount.setOnClickListener { showPad() }
+
         etNote.setText(e.note.orEmpty())
         // Pre-fill without asking the adapter to match — see the same call in
         // BillsActivity. Harmless today because the products load after this,
