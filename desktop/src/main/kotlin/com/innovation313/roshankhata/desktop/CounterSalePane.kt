@@ -96,7 +96,9 @@ fun CounterSalePane(
     /** This computer's receipt printer (80 mm, logo, drawer), changed in the counter's settings. */
     printer: ThermalReceipt.Settings = ThermalReceipt.Settings(),
     hasLogo: Boolean = false,
-    onPrinter: (ThermalReceipt.Settings) -> Unit = {}
+    onPrinter: (ThermalReceipt.Settings) -> Unit = {},
+    /** The shop's payment QR picture (Business Profile), for the customer's screen. */
+    paymentQr: java.io.File? = null
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -105,6 +107,10 @@ fun CounterSalePane(
     var onHand by remember { mutableStateOf<Map<Long, Double?>>(emptyMap()) }
     var tick by remember { mutableStateOf(0) }
     var settingUp by remember { mutableStateOf(false) }
+    // The weighing scale's labels and the item grid (21 Oct 2026).
+    var scaleRule by remember { mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.Rule()) }
+    var grid by remember { mutableStateOf(false) }
+    var showingCustomer by remember { mutableStateOf(false) }
     LaunchedEffect(reload, tick, settingUp) {
         withContext(Dispatchers.IO) {
             products = dao.productsOnce()
@@ -113,8 +119,16 @@ fun CounterSalePane(
             draft.pricesIncludeTax = com.innovation313.roshankhata.data.BookSettings.isOn(
                 dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX)
             )
+            draft.loyalty = com.innovation313.roshankhata.data.Loyalty.rule(dao)
+            scaleRule = com.innovation313.roshankhata.data.ScaleCode.rule(dao)
         }
     }
+    // The chosen customer's loyalty points, read when they are chosen.
+    LaunchedEffect(draft.partyId, draft.loyalty, tick) {
+        val id = draft.partyId
+        draft.pointsBalance = if (id != null && draft.loyalty != null) withContext(Dispatchers.IO) { dao.loyaltyBalance(id) } else 0.0
+    }
+    if (showingCustomer) CustomerDisplay(draft, shopName ?: words.text(W.app_name), paymentQr) { showingCustomer = false }
     if (settingUp) CounterSettingsDialog(dao, printer, hasLogo, onPrinter) { settingUp = false }
     // Shifts (21 Oct 2026): the person at the counter opens theirs with the float and closes it counted.
     var shifting by remember { mutableStateOf(false) }
@@ -167,6 +181,14 @@ fun CounterSalePane(
         val q = query.trim()
         if (q.isEmpty()) return
         val exact = products.firstOrNull { it.barcode != null && it.barcode == q }
+        // A weighing scale's label: the item and its weight (or price) in one code, a line of its own.
+        val weighed = if (exact == null) com.innovation313.roshankhata.data.ScaleCode.line(q, scaleRule, products) { draft.unitRate(it) } else null
+        if (weighed != null) {
+            val line = draft.addWeighed(weighed, onHand[weighed.product.id])
+            query = ""
+            told = line.shortBy?.let { words.text(W.pos_stock_low, Calc.trim(onHand[weighed.product.id] ?: 0.0)) }
+            return
+        }
         when {
             exact != null -> ring(exact)
             matches.size == 1 -> ring(matches[0])
@@ -195,7 +217,7 @@ fun CounterSalePane(
         if (problem != null) { told = problemWords(problem); return }
         // A cashier's discount past the cap waits for a manager's PIN (POS Phase 5).
         val lineDiscounts = draft.lines.sumOf { it.discountValue }
-        if (allowedBy == null && com.innovation313.roshankhata.data.Access.discountNeedsOverride(draft.totals.discount + lineDiscounts, draft.totals.subtotal)) {
+        if (allowedBy == null && com.innovation313.roshankhata.data.Access.discountNeedsOverride(draft.handDiscount + lineDiscounts, draft.totals.subtotal)) {
             told = words.text(W.access_discount_cap, Format.money(draft.totals.subtotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
             override = words.text(W.pos_discount) to { by -> complete(print, by) }
             return
@@ -210,19 +232,20 @@ fun CounterSalePane(
         }
         if (over != null && allowedBy == null) told = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second))
         scope.launch {
-            if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = Format.money(draft.totals.discount + lineDiscounts)) }
+            if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = Format.money(draft.handDiscount + lineDiscounts)) }
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     val id = Counter.post(dao, draft)
                     val sale = dao.saleWithLines(id)!!
-                    sale to sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } }
+                    Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
+                        com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
                 }
             }
-            result.onSuccess { (sale, party) ->
+            result.onSuccess { (sale, party, points) ->
                 told = words.text(W.pos_posted, sale.sale.saleNumber)
                 // Cash in the drawer: the drawer opens with the receipt, or alone when none is printed.
                 val cash = sale.payments.any { it.method == PaymentMethod.CASH && it.amount > 0.0 }
-                if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, party), cash))
+                if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, party, points), cash))
                 else if (cash) onDrawer()
                 draft.clear()
                 tick++
@@ -276,6 +299,7 @@ fun CounterSalePane(
                     kind = if (myShift == null && com.innovation313.roshankhata.data.Access.counterMode) ButtonKind.STANDARD else ButtonKind.SUBTLE
                 )
                 FluentButton(word(W.counter_settings), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { settingUp = true } }, kind = ButtonKind.SUBTLE)
+                FluentButton(word(W.cd_title), { showingCustomer = !showingCustomer }, kind = if (showingCustomer) ButtonKind.STANDARD else ButtonKind.SUBTLE)
             }
             Column(Modifier.fillMaxWidth()) {
                 FluentField(
@@ -312,7 +336,13 @@ fun CounterSalePane(
                     }
                 }
             }
-            ListCard(Modifier.fillMaxWidth().weight(1f)) {
+            if (products.isNotEmpty()) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FluentPill(word(W.pos_ticket) + if (draft.lines.isNotEmpty()) " (" + draft.lines.size + ")" else "", !grid) { grid = false }
+                FluentPill(word(W.pos_items), grid) { grid = true }
+            }
+            // The item grid over the ticket: tiles to tap, the lines still in sight under them.
+            if (grid) ItemGridPane(products, onHand, draft, onPick = { ring(it) }, modifier = Modifier.fillMaxWidth().weight(0.55f))
+            ListCard(Modifier.fillMaxWidth().weight(if (grid) 0.45f else 1f)) {
                 WeightedHead(listOf(word(W.pos_col_item) to 5f, word(W.pos_col_qty) to 2f, word(W.pos_col_rate) to 2f, word(W.pos_discount) to 2f, word(W.pos_col_total) to 2f, "" to 1f), endAligned = setOf(4))
                 if (draft.lines.isEmpty()) {
                     Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
@@ -389,6 +419,12 @@ fun CounterSalePane(
                         Text(Format.customerBalance(p.balance), color = c.inkSoft, fontSize = 12.sp)
                     }
                     if (draft.remaining > 0.005) Text(words.text(W.pos_customer_pays_later, Format.name(name)), color = c.inkSoft, fontSize = 12.sp)
+                    // Loyalty (21 Oct 2026): the customer's points, and spending them on this ticket.
+                    val rule = draft.loyalty
+                    if (rule != null) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(words.text(W.loyalty_points, Calc.trim(draft.pointsBalance), Format.money(rule.value(draft.pointsBalance))), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp)
+                        if (draft.pointsUsed > 0.0 || draft.pointsMax > 0.0) FluentPill(word(W.loyalty_use), draft.pointsUsed > 0.0) { draft.usePoints(draft.pointsUsed <= 0.0) }
+                    }
                 }
             } }
             FluentCard { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -397,6 +433,7 @@ fun CounterSalePane(
                     FluentField(draft.discount, { draft.discount = it }, Modifier.weight(1f).focusRequester(discountFocus), label = word(W.pos_discount), prefix = currency, placeholder = "0", trailing = { KeyCap("F6") })
                     FluentField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = word(W.pos_tax), placeholder = "0")
                 }
+                if (draft.pointsValue > 0.0) FigureRow(words.text(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue), Look.accent)
                 if (draft.totals.tax > 0.0) FigureRow(word(W.pos_tax), Format.money(draft.totals.tax))
                 if (draft.totals.taxIncluded > 0.0) FigureRow(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -614,7 +651,8 @@ private fun RecentReturns(rows: List<com.innovation313.roshankhata.data.ReturnSu
 
 /** The thermal receipt for a ticket — the lines ThermalReceipt prints or saves as a picture. */
 object SaleReceipt {
-    fun lines(words: Words, shop: String, s: SaleWithLines, currency: String, party: PartyWithBalance?): List<ThermalReceipt.Line> {
+    fun lines(words: Words, shop: String, s: SaleWithLines, currency: String, party: PartyWithBalance?,
+              points: com.innovation313.roshankhata.data.Loyalty.OnReceipt? = null): List<ThermalReceipt.Line> {
         val sale = s.sale
         val out = ArrayList<ThermalReceipt.Line>()
         out += ThermalReceipt.Line(shop, 26f, bold = true, centre = true)
@@ -652,6 +690,11 @@ object SaleReceipt {
         }
         if (sale.creditAmount > 0.005) out += ThermalReceipt.Line(words.text(W.pos_to_account) + ": " + Format.money(sale.creditAmount), 20f, bold = true)
         party?.let { out += ThermalReceipt.Line(words.text(W.net_balance) + ": " + Format.money(it.balance), 18f) }
+        // Loyalty (21 Oct 2026): spent, earned, held now.
+        points?.let { pt ->
+            if (pt.used > 0.0) out += ThermalReceipt.Line(words.text(W.loyalty_used, Calc.trim(pt.used), Format.money(pt.usedValue)), 18f)
+            out += ThermalReceipt.Line(words.text(W.loyalty_earned, Calc.trim(pt.earned), Calc.trim(pt.balance)), 18f)
+        }
         out += ThermalReceipt.Line("")
         out += ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
         return out

@@ -46,6 +46,7 @@ class CounterSaleActivity : BaseActivity() {
     private var onHand by mutableStateOf<Map<Long, Double?>>(emptyMap())
     private var heldCount by mutableStateOf(0)
     private var message by mutableStateOf<String?>(null)
+    private var scaleRule by mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.Rule())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +84,9 @@ class CounterSaleActivity : BaseActivity() {
                         onScan = { scan() },
                         onHold = { hold() },
                         onShowHeld = { showHeld() },
-                        onComplete = { if (viewer) toast(R.string.viewer_on_note) else complete() }
+                        onComplete = { if (viewer) toast(R.string.viewer_on_note) else complete() },
+                        scaleRule = scaleRule,
+                        loyaltyBalanceOf = { id -> withContext(Dispatchers.IO) { dao.loyaltyBalance(id) } }
                     )
                 }
             }
@@ -98,11 +101,15 @@ class CounterSaleActivity : BaseActivity() {
                     dao.productsOnce(), dao.partiesWithBalanceOnce(),
                     runCatching { Counter.onHand(dao) }.getOrDefault(emptyMap()),
                     dao.heldSalesOnce().size,
-                    com.innovation313.roshankhata.data.BookSettings.isOn(dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX))
+                    com.innovation313.roshankhata.data.BookSettings.isOn(dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX)),
+                    com.innovation313.roshankhata.data.Loyalty.rule(dao),
+                    com.innovation313.roshankhata.data.ScaleCode.rule(dao)
                 )
             }
             products = loaded.products; parties = loaded.parties; onHand = loaded.onHand; heldCount = loaded.held
             draft.pricesIncludeTax = loaded.taxInside
+            draft.loyalty = loaded.loyalty
+            scaleRule = loaded.scale
         }
     }
 
@@ -116,6 +123,12 @@ class CounterSaleActivity : BaseActivity() {
         lifecycleScope.launch {
             val on = withContext(Dispatchers.IO) {
                 com.innovation313.roshankhata.data.BookSettings.isOn(dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX))
+            }
+            val book = withContext(Dispatchers.IO) {
+                listOf(
+                    com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINTS_PER_100, com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINT_VALUE,
+                    com.innovation313.roshankhata.data.BookSettings.SCALE_PREFIX, com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE
+                ).associateWith { dao.settingValue(it) }
             }
             val printer = com.innovation313.roshankhata.ui.TextReceipt.settings(this@CounterSaleActivity)
             val hasLogo = com.innovation313.roshankhata.data.BusinessProfile.hasLogo(this@CounterSaleActivity)
@@ -131,10 +144,32 @@ class CounterSaleActivity : BaseActivity() {
             }
             val drawer = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.printer_drawer); isChecked = printer.drawer }
             val drawerHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.printer_drawer_help); textSize = 13f }
+            fun heading(res: Int) = android.widget.TextView(this@CounterSaleActivity).apply {
+                setText(res); textSize = 15f; setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setPadding(0, (16 * resources.displayMetrics.density).toInt(), 0, 0)
+            }
+            fun number(hint: Int, value: String?) = android.widget.EditText(this@CounterSaleActivity).apply {
+                setHint(hint); setText(value.orEmpty()); inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+                textDirection = android.view.View.TEXT_DIRECTION_LTR
+            }
+            // Loyalty (the book's): points per 100 spent and a point's worth; an empty box keeps it off.
+            val perHundred = number(R.string.loyalty_per_100, book[com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINTS_PER_100])
+            val pointValue = number(R.string.loyalty_value, book[com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINT_VALUE])
+            val loyaltyHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.loyalty_help); textSize = 13f }
+            // The weighing scale's labels (the book's): their prefix, and whether they carry the price.
+            val prefix = number(R.string.scale_prefix, book[com.innovation313.roshankhata.data.BookSettings.SCALE_PREFIX] ?: com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX).apply {
+                inputType = android.text.InputType.TYPE_CLASS_NUMBER; filters = arrayOf(android.text.InputFilter.LengthFilter(2))
+            }
+            val pricedLabel = android.widget.CheckBox(this@CounterSaleActivity).apply {
+                setText(R.string.scale_price); isChecked = com.innovation313.roshankhata.data.BookSettings.isOn(book[com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE])
+            }
+            val scaleHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.scale_help); textSize = 13f }
             val pad = (20 * resources.displayMetrics.density).toInt()
             val view = android.widget.LinearLayout(this@CounterSaleActivity).apply {
-                orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, 0)
-                listOf(box, help, head, wide, logo, drawer, drawerHelp).forEach { addView(it) }
+                orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, pad / 2)
+                listOf(box, help, head, wide, logo, drawer, drawerHelp,
+                    heading(R.string.loyalty_section), perHundred, pointValue, loyaltyHelp,
+                    heading(R.string.scale_section), prefix, pricedLabel, scaleHelp).forEach { addView(it) }
             }
             val scroll = android.widget.ScrollView(this@CounterSaleActivity).apply { addView(view) }
             MaterialAlertDialogBuilder(this@CounterSaleActivity)
@@ -146,6 +181,12 @@ class CounterSaleActivity : BaseActivity() {
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX, if (box.isChecked) "1" else null)
+                            fun typed(e: android.widget.EditText) = e.text.toString().trim().takeIf { t -> (com.innovation313.roshankhata.data.Digits.parse(t) ?: 0.0) > 0.0 }
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINTS_PER_100, typed(perHundred))
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINT_VALUE, typed(pointValue))
+                            val p = com.innovation313.roshankhata.data.Digits.toLatin(prefix.text.toString().trim())
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PREFIX, p.takeIf { it.length == 2 && it.startsWith("2") && it.all(Char::isDigit) })
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE, if (pricedLabel.isChecked) "1" else null)
                         }
                         reload()
                     }
@@ -155,7 +196,10 @@ class CounterSaleActivity : BaseActivity() {
         }
     }
 
-    private class Loaded(val products: List<Product>, val parties: List<PartyWithBalance>, val onHand: Map<Long, Double?>, val held: Int, val taxInside: Boolean)
+    private class Loaded(
+        val products: List<Product>, val parties: List<PartyWithBalance>, val onHand: Map<Long, Double?>, val held: Int, val taxInside: Boolean,
+        val loyalty: com.innovation313.roshankhata.data.LoyaltyRule?, val scale: com.innovation313.roshankhata.data.ScaleCode.Rule
+    )
 
     /** The camera as a scanner: a pack's barcode rings its product up; an unknown code says so. */
     private fun scan() {
@@ -168,7 +212,12 @@ class CounterSaleActivity : BaseActivity() {
                 val code = barcode.rawValue?.trim().orEmpty()
                 if (code.isEmpty()) return@addOnSuccessListener
                 val product = products.firstOrNull { it.barcode == code }
-                if (product == null) {
+                // A weighing scale's label (21 Oct 2026): the item and its weight in one code.
+                val weighed = if (product == null) com.innovation313.roshankhata.data.ScaleCode.line(code, scaleRule, products) { draft.unitRate(it) } else null
+                if (weighed != null) {
+                    val line = draft.addWeighed(weighed, onHand[weighed.product.id])
+                    message = line.shortBy?.let { getString(R.string.pos_stock_low, com.innovation313.roshankhata.ui.Calc.trim(onHand[weighed.product.id] ?: 0.0)) }
+                } else if (product == null) {
                     message = getString(R.string.pos_barcode_unknown) + " (" + code + ")"
                 } else {
                     val line = draft.add(product, onHand[product.id])
@@ -182,7 +231,7 @@ class CounterSaleActivity : BaseActivity() {
         draft.problem?.let { message = getString(com.innovation313.roshankhata.data.WordIds.string(problemWord(it))); return }
         // A cashier's discount past the cap waits for a manager's PIN (POS Phase 5).
         val lineDiscounts = draft.lines.sumOf { it.discountValue }
-        if (allowedBy == null && com.innovation313.roshankhata.data.Access.discountNeedsOverride(draft.totals.discount + lineDiscounts, draft.totals.subtotal)) {
+        if (allowedBy == null && com.innovation313.roshankhata.data.Access.discountNeedsOverride(draft.handDiscount + lineDiscounts, draft.totals.subtotal)) {
             message = getString(R.string.access_discount_cap, com.innovation313.roshankhata.ui.Format.money(draft.totals.subtotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
             com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.DISCOUNT_ANY, getString(R.string.pos_discount)) { by -> complete(by) }
             return
@@ -198,18 +247,21 @@ class CounterSaleActivity : BaseActivity() {
         }
         if (over != null && allowedBy == null) message = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
         lifecycleScope.launch {
-            if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = com.innovation313.roshankhata.ui.Format.money(draft.totals.discount + lineDiscounts)) }
+            if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = com.innovation313.roshankhata.ui.Format.money(draft.handDiscount + lineDiscounts)) }
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     val id = Counter.post(dao, draft)
                     val sale = dao.saleWithLines(id)!!
-                    sale to sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } }
+                    Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
+                        com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
                 }
             }
-            result.onSuccess { (sale, party) ->
+            result.onSuccess { (sale, party, points) ->
+                // Today's copy of the book follows the sales (a minute after the last one).
+                com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
                 val words = AndroidWords(this@CounterSaleActivity)
                 val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
-                val text = SaleReceiptText.build(words, shop, sale, party?.balance)
+                val text = SaleReceiptText.build(words, shop, sale, party?.balance, points)
                 draft.clear()
                 message = null
                 reload()
@@ -314,6 +366,7 @@ class CounterSaleActivity : BaseActivity() {
                 if (reason.isEmpty()) { toast(R.string.pos_err_reason); return@setPositiveButton }
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO) { runCatching { dao.voidSale(saleId, reason) } }
+                    com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
                     message = getString(R.string.pos_voided) + " " + number
                     reload()
                 }
@@ -340,6 +393,7 @@ class CounterSaleActivity : BaseActivity() {
                         com.innovation313.roshankhata.screens.ReturnForm(draft, onCancel = { dialog.dismiss() }, message = problem, onPost = {
                             lifecycleScope.launch {
                                 val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
+                                com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
                                 r.onSuccess { id ->
                                     val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
                                     message = getString(R.string.pos_return_posted, number)

@@ -3486,4 +3486,39 @@
     <string name="aging_none">لا شيء مستحق</string>
     <string name="aging_oldest">الأقدم: %1$s</string>
     <string name="aging_total">الإجمالي</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">نقاط الولاء</string>
+    <string name="loyalty_per_100">نقاط لكل 100 تُنفق</string>
+    <string name="loyalty_value">قيمة النقطة الواحدة</string>
+    <string name="loyalty_help">العميل صاحب الحساب يكسب نقاطًا على كل فاتورة وينفقها لاحقًا كخصم. اترك أي خانة فارغة لإبقاء الولاء متوقفًا.</string>
+    <string name="loyalty_points">النقاط: %1$s (قيمتها %2$s)</string>
+    <string name="loyalty_use">استخدم النقاط</string>
+    <string name="loyalty_used">النقاط المستخدمة: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">النقاط المكتسبة: %1$s · الآن %2$s</string>
+    <string name="scale_section">ملصقات الميزان</string>
+    <string name="scale_prefix">بادئة الملصق (20–29)</string>
+    <string name="scale_price">الملصق يحمل السعر (لا الوزن)</string>
+    <string name="scale_help">ملصق الميزان 13 رقمًا: البادئة، ورمز الصنف في الميزان من 5 أرقام، والوزن بالغرام (أو السعر)، ورقم التحقق. ضع رمز الميزان في خانة الباركود للمنتج.</string>
+    <string name="pos_items">الأصناف</string>
+    <string name="pos_ticket">الفاتورة</string>
+    <string name="pos_all">الكل</string>
+    <string name="pos_choose_variant">%1$s: أيّها؟</string>
+    <string name="product_variant_of">نوع من (المنتج الرئيسي)</string>
+    <string name="product_variant">النوع (مقاس، لون، نكهة)</string>
+    <string name="product_variant_help">الأنواع منتجات مستقلة — لكلٍّ سعره وباركوده ومخزونه — تُعرض معًا تحت المنتج الرئيسي في شبكة أصناف الكاشير.</string>
+    <string name="cd_title">شاشة العميل</string>
+    <string name="cd_help">نافذة ثانية للعميل: الأصناف والإجمالي ورمز QR للدفع الخاص بالمتجر. اسحبها إلى الشاشة الثانية.</string>
+    <string name="cd_scan">امسح للدفع</string>
+    <string name="cd_qr_note">رمز QR لا يحمل المبلغ: تحقق منه على هاتفك قبل الدفع.</string>
+    <string name="cd_welcome">أهلًا وسهلًا</string>
+    <string name="cd_change">الباقي: %1$s</string>
+    <string name="transfer_title">إرسال مخزون إلى متجر آخر</string>
+    <string name="transfer_to">إلى أي متجر</string>
+    <string name="transfer_help">تخرج البضاعة من مخزون هذا المتجر وتدخل مخزون الآخر، بمطابقة الباركود وإلا بالاسم (ويُضاف المنتج إن لم يكن موجودًا). يحتفظ كل دفتر بسطر بالرقم نفسه.</string>
+    <string name="transfer_done">أُرسل %1$s إلى %2$s</string>
+    <string name="adjust_reason_transfer">تحويل</string>
+    <string name="audit_transfer_out">مخزون أُرسل إلى متجر آخر</string>
+    <string name="audit_transfer_in">مخزون وصل من متجر آخر</string>
+    <string name="transfer_none">لا يوجد متجر آخر. أضف واحدًا في الأعمال.</string>
 </resources>

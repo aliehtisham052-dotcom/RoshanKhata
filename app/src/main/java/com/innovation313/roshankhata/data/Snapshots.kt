@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.data
 
+import kotlinx.coroutines.launch
+
 import android.content.Context
 import java.io.File
 
@@ -197,6 +199,31 @@ object Snapshots {
         }
     } catch (e: Exception) {
         false
+    }
+
+    private var afterSaleJob: kotlinx.coroutines.Job? = null
+
+    /**
+     * After a sale, a return or a void (21 Oct 2026): today's copy written
+     * again a minute after the last of them — a burst of tickets is one copy,
+     * each new one restarting the minute. The same checks as the day's first
+     * copy ([maybeToday]): the book folded whole, checked, written beside.
+     */
+    fun afterSale(context: Context) {
+        val app = context.applicationContext
+        afterSaleJob?.cancel()
+        afterSaleJob = AppScope.launch {
+            kotlinx.coroutines.delay(60_000)
+            refreshToday(app)
+        }
+    }
+
+    /** Today's copy, written again whatever the day marker says. */
+    fun refreshToday(context: Context) {
+        val business = Businesses.active(context)
+        val dayKey = if (business.id == 1L) KEY_DAY else "${KEY_DAY}_b${business.id}"
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(dayKey).commit()
+        maybeToday(context)
     }
 
     /** Once per calendar day per business, from a background thread. Cheap every other call. */

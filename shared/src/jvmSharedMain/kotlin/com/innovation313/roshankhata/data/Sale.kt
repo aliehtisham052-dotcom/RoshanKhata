@@ -416,4 +416,6 @@ object AuditAction {
     const val SIGN_OUT = "sign_out"
     const val SHIFT_OPENED = "shift_opened"
     const val SHIFT_CLOSED = "shift_closed"
+    const val TRANSFER_OUT = "transfer_out"
+    const val TRANSFER_IN = "transfer_in"
 }

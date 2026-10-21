@@ -106,14 +106,40 @@ class CounterDraft {
     /** The book's setting (schema 36): products' prices already hold their tax. Read by the screen when it opens. */
     var pricesIncludeTax by mutableStateOf(false)
 
+    /**
+     * Loyalty (21 Oct 2026): the book's rule (null = off, read by the screen
+     * when it opens), the chosen customer's points (read when they are
+     * chosen), and how many this ticket spends. Spent points are a discount
+     * on the ticket, said apart on the screen and the receipt.
+     */
+    var loyalty by mutableStateOf<LoyaltyRule?>(null)
+    var pointsBalance by mutableStateOf(0.0)
+    var pointsUsed by mutableStateOf(0.0)
+    val pointsValue: Double get() = if (hasParty) loyalty?.value(pointsUsed) ?: 0.0 else 0.0
+
     val hasParty: Boolean get() = partyId != null
     val isEmpty: Boolean get() = lines.isEmpty() && payments.isEmpty() && !hasParty
 
     val totals: SaleMath.Totals
         get() = SaleMath.totals(
-            lines.map { it.toItem() }, Calc.evalAmount(discount) ?: 0.0,
+            lines.map { it.toItem() }, LineMath.round((Calc.evalAmount(discount) ?: 0.0) + pointsValue),
             Calc.evalAmount(taxPercent), roundToWhole
         )
+
+    /** The discount the cashier gave, without the points: what the cashier's cap is measured on. */
+    val handDiscount: Double get() = LineMath.round(totals.discount - pointsValue)
+
+    /** The most points this ticket may spend: never more than its goods come to after the hand discount. */
+    val pointsMax: Double
+        get() {
+            val rule = loyalty ?: return 0.0
+            if (!hasParty) return 0.0
+            val before = SaleMath.totals(lines.map { it.toItem() }, Calc.evalAmount(discount) ?: 0.0, Calc.evalAmount(taxPercent), roundToWhole)
+            return rule.maxSpend(pointsBalance, LineMath.round(before.subtotal - before.discount))
+        }
+
+    /** Spend the customer's points on this ticket (as many as it allows), or none. */
+    fun usePoints(on: Boolean) { pointsUsed = if (on) pointsMax else 0.0 }
 
     val paid: Double get() = SaleMath.paid(payments.map { it.toPayment() })
 
@@ -139,6 +165,7 @@ class CounterDraft {
     val short: List<Line> get() = lines.filter { it.shortBy != null }
 
     fun setParty(id: Long?, name: String?) {
+        if (id != partyId) { pointsUsed = 0.0; pointsBalance = 0.0 }
         partyId = id
         partyName = name
     }
@@ -158,6 +185,19 @@ class CounterDraft {
         val line = Line(
             product.id, product.name, Calc.trim(qty), product.defaultUnit, if (rate == 0.0) "" else Calc.trim(rate), onHand = onHand,
             product = product, taxRate = product.taxRate, taxIncluded = pricesIncludeTax
+        )
+        lines += line
+        return line
+    }
+
+    /**
+     * A weighed item from the scale's label ([ScaleCode]): always a line of
+     * its own — two bags of tomatoes are two lines, each its own weight.
+     */
+    fun addWeighed(w: ScaleCode.Line, onHand: Double? = null): Line {
+        val line = Line(
+            w.product.id, w.product.name, Calc.trim(w.quantity), w.product.defaultUnit, Calc.trim(w.rate), onHand = onHand,
+            product = w.product, taxRate = w.product.taxRate, taxIncluded = pricesIncludeTax
         )
         lines += line
         return line
@@ -197,6 +237,7 @@ class CounterDraft {
         partyId = null; partyName = null
         lines.clear(); payments.clear()
         discount = ""; taxPercent = ""; note = ""; heldId = null
+        pointsUsed = 0.0; pointsBalance = 0.0
     }
 
     /** A held ticket back on the counter. */
@@ -221,7 +262,8 @@ class CounterDraft {
     /** The document [KhataDao.postSale] is given; its figures are recomputed there. */
     fun toSale(createdBy: String? = Access.userName, timestamp: Long = System.currentTimeMillis()) = Sale(
         partyId = partyId, customerName = partyName?.trim()?.ifBlank { null },
-        timestamp = timestamp, subtotal = totals.subtotal, discountAmount = Calc.evalAmount(discount) ?: 0.0,
+        // The points spent are part of the ticket's discount (postSale checks them against the customer's points).
+        timestamp = timestamp, subtotal = totals.subtotal, discountAmount = LineMath.round((Calc.evalAmount(discount) ?: 0.0) + pointsValue),
         taxPercent = Calc.evalAmount(taxPercent)?.takeIf { it > 0.0 }, taxAmount = totals.tax,
         roundOff = totals.roundOff, grandTotal = totals.grandTotal, paidTotal = paid,
         note = note.trim().ifBlank { null }, createdBy = createdBy
@@ -304,13 +346,16 @@ object Counter {
                 is Fefo.Allocation.Ok -> takes += a.takes
             }
         }
-        val id = dao.postSale(draft.toSale(createdBy), items, draft.toPayments(), draft.roundToWhole, takes)
+        val id = dao.postSale(draft.toSale(createdBy), items, draft.toPayments(), draft.roundToWhole, takes,
+            pointsUsed = if (draft.hasParty) draft.pointsUsed else 0.0)
         draft.heldId?.let { dao.dropHeldSale(it) }
         return id
     }
 
     /** Park the draft; returns the held row's id. */
     suspend fun hold(dao: KhataDao, draft: CounterDraft, createdBy: String? = Access.userName): Long {
+        // Points are spent when the ticket is paid, not while it waits.
+        draft.usePoints(false)
         val id = dao.holdSale(draft.toSale(createdBy), draft.toItems())
         draft.heldId?.let { dao.dropHeldSale(it) }
         return id

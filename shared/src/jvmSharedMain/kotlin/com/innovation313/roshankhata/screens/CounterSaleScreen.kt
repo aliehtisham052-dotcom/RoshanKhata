@@ -30,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +49,7 @@ import com.innovation313.roshankhata.data.CounterDraft
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.Product
+import com.innovation313.roshankhata.data.ScaleCode
 import com.innovation313.roshankhata.data.SaleMath
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
@@ -77,13 +79,23 @@ fun CounterSaleScreen(
     onHold: () -> Unit,
     onShowHeld: () -> Unit,
     onComplete: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** How this shop's weighing scale prints its labels ([ScaleCode]). */
+    scaleRule: ScaleCode.Rule = ScaleCode.Rule(),
+    /** A customer's loyalty points, read when they are chosen (null = the screen shows none). */
+    loyaltyBalanceOf: (suspend (Long) -> Double)? = null
 ) {
     val c = LocalRoshanColors.current
     var paying by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
     var choosingParty by remember { mutableStateOf(false) }
+    // The item grid (21 Oct 2026): tiles to tap instead of the ticket's lines.
+    var grid by remember { mutableStateOf(false) }
     val matches = remember(query, products) { if (query.isBlank()) emptyList() else CounterDraft.search(products, query, 8) }
+    LaunchedEffect(draft.partyId) {
+        val id = draft.partyId
+        draft.pointsBalance = if (id != null && draft.loyalty != null) loyaltyBalanceOf?.invoke(id) ?: 0.0 else 0.0
+    }
 
     fun ring(p: Product) { draft.add(p, onHand[p.id]); query = "" }
 
@@ -98,8 +110,11 @@ fun CounterSaleScreen(
                     keyboardActions = KeyboardActions(onDone = {
                         val q = query.trim()
                         val exact = products.firstOrNull { it.barcode == q }
+                        // A weighing scale's label (21 Oct 2026): the item and its weight in one code.
+                        val weighed = if (exact == null) ScaleCode.line(q, scaleRule, products) { draft.unitRate(it) } else null
                         when {
                             exact != null -> ring(exact)
+                            weighed != null -> { draft.addWeighed(weighed, onHand[weighed.product.id]); query = "" }
                             matches.isNotEmpty() -> ring(matches[0])
                             q.isNotEmpty() -> { draft.addFree(q); query = "" }
                         }
@@ -128,7 +143,16 @@ fun CounterSaleScreen(
                     }
                 }
             }
-            if (draft.lines.isEmpty()) {
+            if (products.isNotEmpty()) Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                FilterChip(selected = !grid, onClick = { grid = false }, label = { Text(word(W.pos_ticket) + if (draft.lines.isNotEmpty()) " (" + draft.lines.size + ")" else "", fontSize = 12.sp) })
+                FilterChip(selected = grid, onClick = { grid = true }, label = { Text(word(W.pos_items), fontSize = 12.sp) })
+            }
+            if (grid) {
+                ItemGrid(
+                    products, onHand, onTicket = { id -> draft.lines.filter { it.productId == id }.sumOf { it.qtyValue } },
+                    hasParty = draft.hasParty, onPick = { ring(it) }, modifier = Modifier.fillMaxWidth().weight(1f)
+                )
+            } else if (draft.lines.isEmpty()) {
                 Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                     Text(word(W.pos_lines_empty), color = c.textMuted, fontSize = 14.sp, modifier = Modifier.padding(24.dp))
                 }
@@ -200,13 +224,23 @@ fun CounterSaleScreen(
                         }
                     }
                 }
+                // Loyalty (21 Oct 2026): the customer's points, and spending them on this ticket.
+                val rule = draft.loyalty
+                if (draft.hasParty && rule != null) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(word(W.loyalty_points, Calc.trim(draft.pointsBalance), Format.money(rule.value(draft.pointsBalance))), Modifier.weight(1f), color = c.inkSoft, fontSize = 13.sp)
+                        FilterChip(selected = draft.pointsUsed > 0.0, onClick = { draft.usePoints(draft.pointsUsed <= 0.0) }, enabled = draft.pointsUsed > 0.0 || draft.pointsMax > 0.0,
+                            label = { Text(word(W.loyalty_use), fontSize = 12.sp) })
+                    }
+                }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(draft.discount, { draft.discount = it }, Modifier.weight(1f), label = { Text(word(W.pos_discount)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
                     OutlinedTextField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = { Text(word(W.pos_tax)) }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
                 }
                 Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Figure(word(W.pos_subtotal), Format.money(draft.totals.subtotal))
-                    if (draft.totals.discount > 0.0) Figure(word(W.pos_discount), "−" + Format.money(draft.totals.discount))
+                    if (draft.handDiscount > 0.0) Figure(word(W.pos_discount), "−" + Format.money(draft.handDiscount))
+                    if (draft.pointsValue > 0.0) Figure(word(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue))
                     if (draft.totals.tax > 0.0) Figure(word(W.pos_tax), Format.money(draft.totals.tax))
                     if (draft.totals.taxIncluded > 0.0) Figure(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
                     HorizontalDivider(color = c.pageBg)

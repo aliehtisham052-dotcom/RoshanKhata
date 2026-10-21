@@ -137,6 +137,21 @@ object ProductDetailsDialog {
         val etPackSize = field(R.id.etPackSize).apply { setText(product.packSize?.let { Format.plain(it) } ?: "") }
         val etPackPrice = field(R.id.etPackPrice).apply { setText(product.packPrice?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
         val etTaxRate = field(R.id.etTaxRate).apply { setText(product.taxRate?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
+        // Variants (21 Oct 2026): the main product chosen by name from the book's own products —
+        // never this one, nor one of its own variants (a loop has no main product).
+        var mains: List<com.innovation313.roshankhata.data.Product> = emptyList()
+        val etVariantOf = view.findViewById<android.widget.AutoCompleteTextView>(R.id.etVariantOf)
+        val etVariant = field(R.id.etVariant).apply { setText(product.variant ?: "") }
+        AppScope.launch {
+            val all = dao.productsOnce()
+            val byId = all.associateBy { it.id }
+            val list = all.filter { it.id != product.id && !it.isDeleted && com.innovation313.roshankhata.data.ItemGroups.rootOf(it, byId).id != product.id }
+            activity.runOnUiThread {
+                mains = list
+                etVariantOf.setAdapter(android.widget.ArrayAdapter(activity, R.layout.item_dropdown_row, list.map { it.name }))
+                product.parentId?.let { pid -> list.firstOrNull { it.id == pid }?.let { etVariantOf.setText(it.name, false) } }
+            }
+        }
         view.findViewById<View>(R.id.btnScanBarcode).setOnClickListener {
             val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
                 .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_ALL_FORMATS)
@@ -210,7 +225,10 @@ object ProductDetailsDialog {
                     packUnit = typed(etPackUnit)?.takeIf { (Digits.parse(typed(etPackSize)) ?: 0.0) > 0.0 },
                     packSize = Digits.parse(typed(etPackSize))?.takeIf { it > 0.0 && typed(etPackUnit) != null },
                     packPrice = Digits.parse(typed(etPackPrice))?.takeIf { typed(etPackUnit) != null },
-                    taxRate = Digits.parse(typed(etTaxRate))?.takeIf { it > 0.0 }
+                    taxRate = Digits.parse(typed(etTaxRate))?.takeIf { it > 0.0 },
+                    // The main product by its exact name; a name that is no product here leaves it on its own.
+                    parentId = typed(etVariantOf)?.let { n -> mains.firstOrNull { it.name.equals(n, ignoreCase = true) }?.id },
+                    variant = typed(etVariant)?.takeIf { typed(etVariantOf) != null }
                 )
 
                 // AppScope for the write itself: leaving the screen right

@@ -32,6 +32,14 @@ object BookSettings {
     const val LOYALTY_POINTS_PER_100 = "loyalty_points_per_100"
     const val LOYALTY_POINT_VALUE = "loyalty_point_value"
 
+    /**
+     * A weighing scale's labels ([ScaleCode], 21 Oct 2026): their two-digit
+     * prefix ("21" when unset), and "1" when the scale prints the price
+     * instead of the weight.
+     */
+    const val SCALE_PREFIX = "scale_prefix"
+    const val SCALE_PRICE = "scale_price"
+
     /** "1" when the counter refuses to sell more than the shelf holds (else it warns). */
     const val BLOCK_NEGATIVE_STOCK = "block_negative_stock"
 

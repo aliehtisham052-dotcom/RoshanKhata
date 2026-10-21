@@ -3512,4 +3512,39 @@ You can change this any time from this screen.</string>
     <string name="aging_none">Nothing is owed</string>
     <string name="aging_oldest">Oldest: %1$s</string>
     <string name="aging_total">Total</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">Loyalty points</string>
+    <string name="loyalty_per_100">Points for every 100 spent</string>
+    <string name="loyalty_value">What one point is worth</string>
+    <string name="loyalty_help">A customer with an account earns points on every ticket and spends them later as a discount. Leave a box empty to keep loyalty off.</string>
+    <string name="loyalty_points">Points: %1$s (worth %2$s)</string>
+    <string name="loyalty_use">Use points</string>
+    <string name="loyalty_used">Points used: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">Points earned: %1$s · now %2$s</string>
+    <string name="scale_section">Weighing scale labels</string>
+    <string name="scale_prefix">Label prefix (20–29)</string>
+    <string name="scale_price">The label holds the price (not the weight)</string>
+    <string name="scale_help">A scale label is 13 digits: the prefix, the item\'s 5-digit scale code, the weight in grams (or the price) and a check digit. Put the scale code in the product\'s barcode box.</string>
+    <string name="pos_items">Items</string>
+    <string name="pos_ticket">Ticket</string>
+    <string name="pos_all">All</string>
+    <string name="pos_choose_variant">%1$s: which one?</string>
+    <string name="product_variant_of">Variant of (the main product)</string>
+    <string name="product_variant">Variant (size, colour, flavour)</string>
+    <string name="product_variant_help">Variants are their own products — own price, barcode and stock — shown together under the main product on the counter\'s item grid.</string>
+    <string name="cd_title">Customer screen</string>
+    <string name="cd_help">A second window for the customer: the items, the total and the shop\'s payment QR. Drag it to the second monitor.</string>
+    <string name="cd_scan">Scan to pay</string>
+    <string name="cd_qr_note">The QR does not carry the amount: check it on your phone before you pay.</string>
+    <string name="cd_welcome">Welcome</string>
+    <string name="cd_change">Change: %1$s</string>
+    <string name="transfer_title">Send stock to another shop</string>
+    <string name="transfer_to">To which shop</string>
+    <string name="transfer_help">The goods leave this shop\'s stock and arrive in the other shop\'s, matched by barcode, else by name (a product it does not have is added). Both books keep a row with the same number.</string>
+    <string name="transfer_done">%1$s sent to %2$s</string>
+    <string name="adjust_reason_transfer">Transfer</string>
+    <string name="audit_transfer_out">Stock sent to another shop</string>
+    <string name="audit_transfer_in">Stock received from another shop</string>
+    <string name="transfer_none">There is no other shop. Add one under Businesses.</string>
 </resources>

@@ -10,7 +10,7 @@ import com.innovation313.roshankhata.words.Words
  * and what any screen can show as the receipt without a printer.
  */
 object SaleReceiptText {
-    fun build(words: Words, shop: String, s: SaleWithLines, balanceAfter: Double?): String {
+    fun build(words: Words, shop: String, s: SaleWithLines, balanceAfter: Double?, points: Loyalty.OnReceipt? = null): String {
         val sale = s.sale
         val b = StringBuilder()
         b.append(shop).append('\n')
@@ -46,6 +46,11 @@ object SaleReceiptText {
         }
         if (sale.creditAmount > 0.005) b.append(words.text(W.pos_to_account)).append(": ").append(Format.money(sale.creditAmount)).append('\n')
         balanceAfter?.let { b.append(words.text(W.net_balance)).append(": ").append(Format.money(it)).append('\n') }
+        // Loyalty (21 Oct 2026): what was spent, what was earned, what the customer holds now.
+        points?.let { pt ->
+            if (pt.used > 0.0) b.append(words.text(W.loyalty_used, Calc.trim(pt.used), Format.money(pt.usedValue))).append('\n')
+            b.append(words.text(W.loyalty_earned, Calc.trim(pt.earned), Calc.trim(pt.balance))).append('\n')
+        }
         b.append('\n').append(words.text(W.app_name))
         return b.toString()
     }

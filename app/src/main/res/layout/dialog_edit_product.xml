@@ -266,6 +266,34 @@
                 android:inputType="numberDecimal" />
         </LinearLayout>
 
+        <!-- Variants (21 Oct 2026): this product as one size, colour or flavour of a main product. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/product_variant_help"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/etVariantOf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:dropDownVerticalOffset="4dp"
+            android:hint="@string/product_variant_of"
+            android:importantForAutofill="no"
+            android:inputType="textCapWords"
+            android:popupBackground="@drawable/bg_dropdown_popup" />
+
+        <EditText
+            android:id="@+id/etVariant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/product_variant"
+            android:importantForAutofill="no"
+            android:inputType="textCapWords" />
+
         <!-- The product type is every trade's (its list is the trade's own).
              The inspection details below are only for the trades an
              inspector visits - agriculture and medical - and
