@@ -384,7 +384,11 @@ fun CounterSalePane(
             val problem = draft.problem
             told?.let { Text(it, color = if (problem == null) c.inkSoft else c.owedToMe, fontSize = 13.sp) }
             if (problem != null && draft.lines.isNotEmpty()) Text(problemWords(problem), color = c.textMuted, fontSize = 12.sp)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Two wide buttons side by side on a desktop; one under the other on a laptop (1093 dp cut "Complete s").
+            if (narrow) Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FluentButton(word(W.pos_post), { complete(false) }, Modifier.fillMaxWidth(), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = problem == null, tall = true)
+                FluentButton(word(W.pos_post_and_print), { complete(true) }, Modifier.fillMaxWidth(), kind = ButtonKind.STANDARD, icon = "ic_print", enabled = problem == null, tall = true)
+            } else Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FluentButton(word(W.pos_post), { complete(false) }, Modifier.weight(1f), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = problem == null, tall = true)
                 FluentButton(word(W.pos_post_and_print), { complete(true) }, kind = ButtonKind.STANDARD, icon = "ic_print", enabled = problem == null, tall = true)
             }
