@@ -330,6 +330,16 @@ private fun Book(
     // A receipt waiting for the owner to pick the thermal printer (Phase 9e); a counter sale's
     // says whether it was paid in cash, for the drawer (21 Oct 2026).
     var receipt by remember { mutableStateOf<ThermalReceipt.Job?>(null) }
+    // Auto backup after a sale (21 Oct 2026): a minute after the last ticket, return or void,
+    // today's copy is written again — here and in the outside folder. A burst of sales is one copy
+    // (each new one restarts the minute); the hourly copy and the copy on closing stay as they were.
+    var saleCopyTick by remember { mutableIntStateOf(0) }
+    LaunchedEffect(saleCopyTick) {
+        if (saleCopyTick == 0) return@LaunchedEffect
+        kotlinx.coroutines.delay(60_000)
+        runCatching { DailyCopies.makeToday(dao, settings, dailyDir, refresh = true) }
+        outsideDir?.let { runCatching { DailyCopies.makeToday(dao, settings, it, refresh = true) } }
+    }
     var printer by remember { mutableStateOf(appPrefs.receipt()) }
     // The shop's logo for the receipt's top, read from this business's pictures when it is printed.
     fun receiptLogo(): java.awt.image.BufferedImage? = runCatching {
@@ -550,7 +560,7 @@ private fun Book(
                     Section.COUNTER -> Box(Modifier.fillMaxSize()) {
                         CounterSalePane(
                             dao, parties, words, rtl, shop, com.innovation313.roshankhata.data.Currency.symbol, reload,
-                            onChanged = { reload++ }, onReceipt = { receipt = it }, keys = keys,
+                            onChanged = { reload++; saleCopyTick++ }, onReceipt = { receipt = it }, keys = keys,
                             onInvoice = { id -> invoiceToOpen = id; section = Section.INVOICES },
                             // A cash sale rung up without a receipt still opens the drawer, through the printer used last.
                             onDrawer = {
@@ -558,11 +568,12 @@ private fun Book(
                                 if (printer.drawer && last != null) scope.launch(Dispatchers.IO) { ThermalReceipt.openDrawer(last) }
                             },
                             printer = printer, hasLogo = images.has(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO),
-                            onPrinter = { r -> appPrefs.setReceipt(r); printer = r }
+                            onPrinter = { r -> appPrefs.setReceipt(r); printer = r },
+                            paymentQr = images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.QR).takeIf { it.isFile }
                         )
                     }
                     Section.AUDIT -> Box(Modifier.fillMaxSize()) { AuditPane(dao) }
-                    Section.INVENTORY -> Box(Modifier.fillMaxSize()) { InventoryPane(dao, words, reload) { reload++ } }
+                    Section.INVENTORY -> Box(Modifier.fillMaxSize()) { InventoryPane(dao, words, reload, businesses = businesses, activeBusiness = activeBusiness) { reload++ } }
                     Section.SALES -> Box(Modifier.fillMaxSize()) { SalesReportPane(dao, words, rtl, shop, reload) }
                     Section.ORDERS -> Box(Modifier.fillMaxSize()) { OrdersPane(dao, parties, words, rtl, shop) { reload++ } }
                     Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao) }

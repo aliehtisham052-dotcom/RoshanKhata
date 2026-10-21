@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,21 +49,40 @@ fun CounterSettingsDialog(
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var taxInside by remember { mutableStateOf(false) }
+    var perHundred by remember { mutableStateOf("") }
+    var pointValue by remember { mutableStateOf("") }
+    var prefix by remember { mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX) }
+    var pricedLabel by remember { mutableStateOf(false) }
     var loaded by remember { mutableStateOf(false) }
     var wide by remember { mutableStateOf(printer.wide) }
     var logo by remember { mutableStateOf(printer.logo) }
     var drawer by remember { mutableStateOf(printer.drawer) }
     LaunchedEffect(Unit) {
-        taxInside = withContext(Dispatchers.IO) { BookSettings.isOn(dao.settingValue(BookSettings.PRICES_INCLUDE_TAX)) }
+        withContext(Dispatchers.IO) {
+            taxInside = BookSettings.isOn(dao.settingValue(BookSettings.PRICES_INCLUDE_TAX))
+            perHundred = dao.settingValue(BookSettings.LOYALTY_POINTS_PER_100).orEmpty()
+            pointValue = dao.settingValue(BookSettings.LOYALTY_POINT_VALUE).orEmpty()
+            prefix = dao.settingValue(BookSettings.SCALE_PREFIX) ?: com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX
+            pricedLabel = BookSettings.isOn(dao.settingValue(BookSettings.SCALE_PRICE))
+        }
         loaded = true
     }
     val title = word(W.counter_settings)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = 560.dp, height = 600.dp)) {
+    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = 600.dp, height = 720.dp)) {
         DialogFrame(title, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
                 scope.launch {
-                    withContext(Dispatchers.IO) { dao.setSetting(BookSettings.PRICES_INCLUDE_TAX, if (taxInside) "1" else null) }
+                    withContext(Dispatchers.IO) {
+                        dao.setSetting(BookSettings.PRICES_INCLUDE_TAX, if (taxInside) "1" else null)
+                        // An empty or nothing box keeps loyalty off; a prefix outside 20–29 falls back to 21.
+                        fun positive(t: String) = t.trim().takeIf { (com.innovation313.roshankhata.data.Digits.parse(it) ?: 0.0) > 0.0 }
+                        dao.setSetting(BookSettings.LOYALTY_POINTS_PER_100, positive(perHundred))
+                        dao.setSetting(BookSettings.LOYALTY_POINT_VALUE, positive(pointValue))
+                        val p = com.innovation313.roshankhata.data.Digits.toLatin(prefix.trim())
+                        dao.setSetting(BookSettings.SCALE_PREFIX, p.takeIf { it.length == 2 && it.startsWith("2") && it.all(Char::isDigit) })
+                        dao.setSetting(BookSettings.SCALE_PRICE, if (pricedLabel) "1" else null)
+                    }
                     onPrinter(ThermalReceipt.Settings(wide = wide, logo = logo, drawer = drawer))
                     onClose()
                 }
@@ -79,6 +99,22 @@ fun CounterSettingsDialog(
                 Tick(logo, word(if (hasLogo) W.printer_logo else W.biz_card_logo_none), enabled = hasLogo) { logo = it }
                 Tick(drawer, word(W.printer_drawer)) { drawer = it }
                 Text(word(W.printer_drawer_help), Modifier.padding(start = 12.dp), color = c.textMuted, fontSize = 12.sp)
+            }
+            Rule()
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(word(W.loyalty_section), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    FluentField(perHundred, { perHundred = it }, Modifier.weight(1f), label = word(W.loyalty_per_100), placeholder = "0")
+                    FluentField(pointValue, { pointValue = it }, Modifier.weight(1f), label = word(W.loyalty_value), placeholder = "0")
+                }
+                Text(word(W.loyalty_help), color = c.textMuted, fontSize = 12.sp)
+            }
+            Rule()
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(word(W.scale_section), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                FluentField(prefix, { prefix = it.take(2) }, Modifier.width(220.dp), label = word(W.scale_prefix))
+                Tick(pricedLabel, word(W.scale_price)) { pricedLabel = it }
+                Text(word(W.scale_help), color = c.textMuted, fontSize = 12.sp)
             }
         }
     }

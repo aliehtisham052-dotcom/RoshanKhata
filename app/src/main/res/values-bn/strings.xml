@@ -3342,4 +3342,39 @@
     <string name="aging_none">কিছুই বাকি নেই</string>
     <string name="aging_oldest">সবচেয়ে পুরোনো: %1$s</string>
     <string name="aging_total">মোট</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">লয়্যালটি পয়েন্ট</string>
+    <string name="loyalty_per_100">প্রতি ১০০ কেনায় পয়েন্ট</string>
+    <string name="loyalty_value">এক পয়েন্টের মূল্য</string>
+    <string name="loyalty_help">অ্যাকাউন্টধারী গ্রাহক প্রতিটি বিলে পয়েন্ট পান এবং পরে ছাড় হিসেবে খরচ করেন। কোনো ঘর খালি রাখলে লয়্যালটি বন্ধ থাকবে।</string>
+    <string name="loyalty_points">পয়েন্ট: %1$s (মূল্য %2$s)</string>
+    <string name="loyalty_use">পয়েন্ট ব্যবহার করুন</string>
+    <string name="loyalty_used">ব্যবহৃত পয়েন্ট: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">অর্জিত পয়েন্ট: %1$s · এখন %2$s</string>
+    <string name="scale_section">দাঁড়িপাল্লার লেবেল</string>
+    <string name="scale_prefix">লেবেলের শুরু (২০–২৯)</string>
+    <string name="scale_price">লেবেলে দাম আছে (ওজন নয়)</string>
+    <string name="scale_help">দাঁড়িপাল্লার লেবেল ১৩ অঙ্কের: শুরু, পণ্যের ৫ অঙ্কের স্কেল কোড, গ্রামে ওজন (বা দাম) আর একটি যাচাই অঙ্ক। স্কেল কোডটি পণ্যের বারকোডের ঘরে লিখুন।</string>
+    <string name="pos_items">পণ্য</string>
+    <string name="pos_ticket">বিল</string>
+    <string name="pos_all">সব</string>
+    <string name="pos_choose_variant">%1$s: কোনটি?</string>
+    <string name="product_variant_of">যে পণ্যের ধরন (মূল পণ্য)</string>
+    <string name="product_variant">ধরন (সাইজ, রং, স্বাদ)</string>
+    <string name="product_variant_help">ধরনগুলো আলাদা পণ্য — নিজের দাম, বারকোড ও স্টক — কাউন্টারের পণ্যের গ্রিডে মূল পণ্যের নিচে একসাথে দেখায়।</string>
+    <string name="cd_title">গ্রাহকের স্ক্রিন</string>
+    <string name="cd_help">গ্রাহকের জন্য দ্বিতীয় উইন্ডো: পণ্য, মোট আর দোকানের পেমেন্ট QR। এটি দ্বিতীয় মনিটরে টেনে নিন।</string>
+    <string name="cd_scan">পেমেন্টের জন্য স্ক্যান করুন</string>
+    <string name="cd_qr_note">QR-এ টাকার অঙ্ক নেই: পেমেন্টের আগে নিজের ফোনে অঙ্কটি দেখে নিন।</string>
+    <string name="cd_welcome">স্বাগতম</string>
+    <string name="cd_change">ফেরত: %1$s</string>
+    <string name="transfer_title">অন্য দোকানে স্টক পাঠান</string>
+    <string name="transfer_to">কোন দোকানে</string>
+    <string name="transfer_help">মাল এই দোকানের স্টক থেকে বেরিয়ে অন্য দোকানের স্টকে যায়, বারকোড মিলিয়ে, নইলে নাম দিয়ে (যে পণ্য সেখানে নেই তা যোগ করা হয়)। দুই খাতাতেই একই নম্বরের একটি করে সারি থাকে।</string>
+    <string name="transfer_done">%1$s পাঠানো হয়েছে %2$s-এ</string>
+    <string name="adjust_reason_transfer">স্থানান্তর</string>
+    <string name="audit_transfer_out">অন্য দোকানে স্টক পাঠানো হয়েছে</string>
+    <string name="audit_transfer_in">অন্য দোকান থেকে স্টক এসেছে</string>
+    <string name="transfer_none">আর কোনো দোকান নেই। ব্যবসায় একটি যোগ করুন।</string>
 </resources>

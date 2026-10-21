@@ -3342,4 +3342,39 @@
     <string name="aging_none">कोई रक़म बाक़ी नहीं</string>
     <string name="aging_oldest">सबसे पुरानी: %1$s</string>
     <string name="aging_total">कुल</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">लॉयल्टी पॉइंट्स</string>
+    <string name="loyalty_per_100">हर 100 की ख़रीद पर पॉइंट्स</string>
+    <string name="loyalty_value">एक पॉइंट की क़ीमत</string>
+    <string name="loyalty_help">खाते वाला ग्राहक हर बिल पर पॉइंट्स कमाता है और बाद में उन्हें छूट के रूप में ख़र्च करता है। कोई खाना ख़ाली छोड़ें तो लॉयल्टी बंद रहेगी।</string>
+    <string name="loyalty_points">पॉइंट्स: %1$s (क़ीमत %2$s)</string>
+    <string name="loyalty_use">पॉइंट्स इस्तेमाल करें</string>
+    <string name="loyalty_used">इस्तेमाल हुए पॉइंट्स: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">कमाए गए पॉइंट्स: %1$s · अब %2$s</string>
+    <string name="scale_section">तराज़ू के लेबल</string>
+    <string name="scale_prefix">लेबल का शुरुआती हिस्सा (20–29)</string>
+    <string name="scale_price">लेबल पर क़ीमत है (वज़न नहीं)</string>
+    <string name="scale_help">तराज़ू का लेबल 13 अंकों का होता है: शुरुआती हिस्सा, चीज़ का 5 अंकों का तराज़ू कोड, वज़न ग्राम में (या क़ीमत) और एक जाँच अंक। तराज़ू कोड प्रोडक्ट के बारकोड वाले खाने में लिखें।</string>
+    <string name="pos_items">चीज़ें</string>
+    <string name="pos_ticket">बिल</string>
+    <string name="pos_all">सब</string>
+    <string name="pos_choose_variant">%1$s: कौन सा?</string>
+    <string name="product_variant_of">किस प्रोडक्ट का प्रकार (मुख्य प्रोडक्ट)</string>
+    <string name="product_variant">प्रकार (साइज़, रंग, स्वाद)</string>
+    <string name="product_variant_help">प्रकार अपने अलग प्रोडक्ट हैं — अपनी क़ीमत, बारकोड और स्टॉक — जो काउंटर की चीज़ों वाली जाली में मुख्य प्रोडक्ट के नीचे एक साथ दिखते हैं।</string>
+    <string name="cd_title">ग्राहक की स्क्रीन</string>
+    <string name="cd_help">ग्राहक के लिए दूसरी विंडो: चीज़ें, कुल रक़म और दुकान का भुगतान QR। इसे दूसरे मॉनिटर पर खींच लें।</string>
+    <string name="cd_scan">भुगतान के लिए स्कैन करें</string>
+    <string name="cd_qr_note">QR में रक़म शामिल नहीं: भुगतान से पहले अपने फ़ोन पर रक़म देख लें।</string>
+    <string name="cd_welcome">स्वागत है</string>
+    <string name="cd_change">वापसी: %1$s</string>
+    <string name="transfer_title">स्टॉक दूसरी दुकान को भेजें</string>
+    <string name="transfer_to">किस दुकान को</string>
+    <string name="transfer_help">सामान इस दुकान के स्टॉक से निकलकर दूसरी दुकान के स्टॉक में आता है, बारकोड से मिलाकर, वरना नाम से (जो प्रोडक्ट वहाँ न हो वह बना दिया जाता है)। दोनों खातों में एक ही नंबर की एक-एक पंक्ति रहती है।</string>
+    <string name="transfer_done">%1$s, %2$s को भेज दिया</string>
+    <string name="adjust_reason_transfer">स्थानांतरण</string>
+    <string name="audit_transfer_out">स्टॉक दूसरी दुकान को भेजा</string>
+    <string name="audit_transfer_in">स्टॉक दूसरी दुकान से आया</string>
+    <string name="transfer_none">कोई दूसरी दुकान नहीं। कारोबार में एक जोड़ें।</string>
 </resources>

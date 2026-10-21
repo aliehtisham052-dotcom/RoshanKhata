@@ -3295,4 +3295,39 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="aging_none">Tidak ada yang terutang</string>
     <string name="aging_oldest">Terlama: %1$s</string>
     <string name="aging_total">Total</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">Poin loyalitas</string>
+    <string name="loyalty_per_100">Poin per 100 belanja</string>
+    <string name="loyalty_value">Nilai satu poin</string>
+    <string name="loyalty_help">Pelanggan yang punya akun mendapat poin di setiap struk dan memakainya nanti sebagai diskon. Kosongkan salah satu kotak agar loyalitas tetap mati.</string>
+    <string name="loyalty_points">Poin: %1$s (senilai %2$s)</string>
+    <string name="loyalty_use">Pakai poin</string>
+    <string name="loyalty_used">Poin dipakai: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">Poin didapat: %1$s · sekarang %2$s</string>
+    <string name="scale_section">Label timbangan</string>
+    <string name="scale_prefix">Awalan label (20–29)</string>
+    <string name="scale_price">Label berisi harga (bukan berat)</string>
+    <string name="scale_help">Label timbangan berisi 13 digit: awalan, kode timbangan barang 5 digit, berat dalam gram (atau harga) dan digit cek. Isi kode timbangan di kotak barcode produk.</string>
+    <string name="pos_items">Barang</string>
+    <string name="pos_ticket">Struk</string>
+    <string name="pos_all">Semua</string>
+    <string name="pos_choose_variant">%1$s: yang mana?</string>
+    <string name="product_variant_of">Varian dari (produk utama)</string>
+    <string name="product_variant">Varian (ukuran, warna, rasa)</string>
+    <string name="product_variant_help">Varian adalah produk tersendiri — harga, barcode dan stok sendiri — yang ditampilkan bersama di bawah produk utama pada grid barang di kasir.</string>
+    <string name="cd_title">Layar pelanggan</string>
+    <string name="cd_help">Jendela kedua untuk pelanggan: barang, total dan QR pembayaran toko. Seret ke monitor kedua.</string>
+    <string name="cd_scan">Pindai untuk bayar</string>
+    <string name="cd_qr_note">QR tidak memuat jumlah: periksa jumlahnya di ponsel Anda sebelum membayar.</string>
+    <string name="cd_welcome">Selamat datang</string>
+    <string name="cd_change">Kembalian: %1$s</string>
+    <string name="transfer_title">Kirim stok ke toko lain</string>
+    <string name="transfer_to">Ke toko mana</string>
+    <string name="transfer_help">Barang keluar dari stok toko ini dan masuk ke stok toko lain, dicocokkan dengan barcode, jika tidak dengan nama (produk yang belum ada akan ditambahkan). Kedua buku menyimpan satu baris dengan nomor yang sama.</string>
+    <string name="transfer_done">%1$s dikirim ke %2$s</string>
+    <string name="adjust_reason_transfer">Transfer</string>
+    <string name="audit_transfer_out">Stok dikirim ke toko lain</string>
+    <string name="audit_transfer_in">Stok diterima dari toko lain</string>
+    <string name="transfer_none">Tidak ada toko lain. Tambahkan di Bisnis.</string>
 </resources>

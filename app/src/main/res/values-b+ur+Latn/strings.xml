@@ -3298,4 +3298,39 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="aging_none">Koi raqam baqi nahi</string>
     <string name="aging_oldest">Sab se purani: %1$s</string>
     <string name="aging_total">Kul</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">Loyalty points</string>
+    <string name="loyalty_per_100">Har 100 ki kharidari par points</string>
+    <string name="loyalty_value">Ek point ki qeemat</string>
+    <string name="loyalty_help">Khate wala gahak har bill par points kamata hai aur baad mein unhein riayat ke taur par kharch karta hai. Koi khana khali chhorein to loyalty band rahegi.</string>
+    <string name="loyalty_points">Points: %1$s (qeemat %2$s)</string>
+    <string name="loyalty_use">Points istemal karein</string>
+    <string name="loyalty_used">Istemal shuda points: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">Kamaye gaye points: %1$s · ab %2$s</string>
+    <string name="scale_section">Tarazu ke label</string>
+    <string name="scale_prefix">Label ka ibtidaiya (20–29)</string>
+    <string name="scale_price">Label par qeemat hai (wazan nahi)</string>
+    <string name="scale_help">Tarazu ka label 13 hindson ka hota hai: ibtidaiya, cheez ka 5 hindson ka tarazu code, wazan gram mein (ya qeemat) aur ek jaanch hindsa. Tarazu code product ke barcode wale khane mein likhein.</string>
+    <string name="pos_items">Ashya</string>
+    <string name="pos_ticket">Bill</string>
+    <string name="pos_all">Sab</string>
+    <string name="pos_choose_variant">%1$s: kaun sa?</string>
+    <string name="product_variant_of">Kis product ki qism (markazi product)</string>
+    <string name="product_variant">Qism (size, rang, zaiqa)</string>
+    <string name="product_variant_help">Aqsam apni alag products hain — apni qeemat, barcode aur stock — jo counter ki ashya wali jaali mein markazi product ke neeche ikatthi dikhti hain.</string>
+    <string name="cd_title">Gahak ki screen</string>
+    <string name="cd_help">Gahak ke liye doosri window: ashya, kul raqam aur dukaan ka adaigi QR. Ise doosre monitor par ghaseet lein.</string>
+    <string name="cd_scan">Adaigi ke liye scan karein</string>
+    <string name="cd_qr_note">QR mein raqam shamil nahi: adaigi se pehle apne phone par raqam dekh lein.</string>
+    <string name="cd_welcome">Khush aamdeed</string>
+    <string name="cd_change">Wapsi: %1$s</string>
+    <string name="transfer_title">Stock doosri dukaan ko bhejein</string>
+    <string name="transfer_to">Kis dukaan ko</string>
+    <string name="transfer_help">Saaman is dukaan ke stock se nikal kar doosri dukaan ke stock mein aata hai, barcode se mila kar, warna naam se (jo product wahan na ho woh bana di jati hai). Dono khaton mein ek hi number ki ek ek qataar rehti hai.</string>
+    <string name="transfer_done">%1$s, %2$s ko bhej diya</string>
+    <string name="adjust_reason_transfer">Muntaqili</string>
+    <string name="audit_transfer_out">Stock doosri dukaan ko bheja</string>
+    <string name="audit_transfer_in">Stock doosri dukaan se aaya</string>
+    <string name="transfer_none">Koi doosri dukaan nahi. Karobar mein ek shamil karein.</string>
 </resources>

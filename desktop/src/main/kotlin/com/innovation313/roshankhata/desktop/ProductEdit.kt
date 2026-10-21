@@ -65,6 +65,19 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     var packSize by remember { mutableStateOf(product.packSize?.let { Calc.trim(it) }.orEmpty()) }
     var packPrice by remember { mutableStateOf(product.packPrice?.let { Calc.trim(it) }.orEmpty()) }
     var taxRate by remember { mutableStateOf(product.taxRate?.let { Calc.trim(it) }.orEmpty()) }
+    // Variants (21 Oct 2026): this product as one size, colour or flavour of a main product.
+    var parentId by remember { mutableStateOf(product.parentId) }
+    var variant by remember { mutableStateOf(product.variant.orEmpty()) }
+    var parentQuery by remember { mutableStateOf("") }
+    var others by remember { mutableStateOf<List<Product>>(emptyList()) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        others = withContext(Dispatchers.IO) {
+            val all = dao.productsOnce()
+            val byId = all.associateBy { it.id }
+            // Never itself, nor one of its own variants: a loop has no main product.
+            all.filter { it.id != product.id && !it.isDeleted && com.innovation313.roshankhata.data.ItemGroups.rootOf(it, byId).id != product.id }
+        }
+    }
     var problem by remember { mutableStateOf<String?>(null) }
     val needName = word(W.enter_name)
     val words = com.innovation313.roshankhata.words.LocalWords.current
@@ -102,6 +115,22 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Outlined(packPrice, { packPrice = it }, label = { Text(word(W.product_pack_price)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
                 Outlined(taxRate, { taxRate = it }, label = { Text(word(W.product_tax_rate)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
+            }
+            Text(word(W.product_variant_help), Modifier.padding(top = 4.dp), color = c.textMuted, fontSize = 12.sp)
+            val main = others.firstOrNull { it.id == parentId }
+            if (main != null) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(word(W.product_variant_of) + ": " + main.name, Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    IconAction("ic_close", word(W.delete), { parentId = null })
+                }
+                Field(word(W.product_variant), variant) { variant = it }
+            } else {
+                Field(word(W.product_variant_of), parentQuery) { parentQuery = it }
+                if (parentQuery.isNotBlank()) com.innovation313.roshankhata.data.CounterDraft.search(others, parentQuery, 5).forEach { p ->
+                    Row(Modifier.fillMaxWidth().press { parentId = p.id; parentQuery = "" }.padding(horizontal = 8.dp, vertical = 6.dp)) {
+                        Text(p.name, color = c.ink, fontSize = 14.sp)
+                    }
+                }
             }
             Field(word(W.product_type_hint), type) { type = it }
             SuggestionRow(trade.types(), type) { type = it }
@@ -142,7 +171,9 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                         packUnit = typed(packUnit)?.takeIf { (typed(packSize)?.let { Calc.evalPad(it) } ?: 0.0) > 0.0 },
                         packSize = typed(packSize)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 && typed(packUnit) != null },
                         packPrice = typed(packPrice)?.let { Calc.evalPad(it) }?.takeIf { typed(packUnit) != null },
-                        taxRate = typed(taxRate)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 }
+                        taxRate = typed(taxRate)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 },
+                        parentId = parentId,
+                        variant = if (parentId != null) typed(variant) else null
                     )
                     scope.launch {
                         val clash = withContext(Dispatchers.IO) { dao.productByKey(updated.nameKey) }

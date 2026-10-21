@@ -3326,4 +3326,39 @@
     <string name="aging_none">هیچ مبلغی باقی نیست</string>
     <string name="aging_oldest">قدیمی‌ترین: %1$s</string>
     <string name="aging_total">جمع</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">امتیاز وفاداری</string>
+    <string name="loyalty_per_100">امتیاز به ازای هر ۱۰۰ خرید</string>
+    <string name="loyalty_value">ارزش هر امتیاز</string>
+    <string name="loyalty_help">مشتری دارای حساب در هر فاکتور امتیاز می‌گیرد و بعداً آن را به‌عنوان تخفیف خرج می‌کند. یکی از خانه‌ها را خالی بگذارید تا وفاداری خاموش بماند.</string>
+    <string name="loyalty_points">امتیاز: %1$s (ارزش %2$s)</string>
+    <string name="loyalty_use">استفاده از امتیاز</string>
+    <string name="loyalty_used">امتیاز استفاده‌شده: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">امتیاز کسب‌شده: %1$s · اکنون %2$s</string>
+    <string name="scale_section">برچسب‌های ترازو</string>
+    <string name="scale_prefix">پیشوند برچسب (۲۰–۲۹)</string>
+    <string name="scale_price">برچسب قیمت را دارد (نه وزن را)</string>
+    <string name="scale_help">برچسب ترازو ۱۳ رقم است: پیشوند، کد ۵ رقمی کالا در ترازو، وزن به گرم (یا قیمت) و یک رقم کنترل. کد ترازو را در خانهٔ بارکد کالا بنویسید.</string>
+    <string name="pos_items">کالاها</string>
+    <string name="pos_ticket">فاکتور</string>
+    <string name="pos_all">همه</string>
+    <string name="pos_choose_variant">%1$s: کدام؟</string>
+    <string name="product_variant_of">گونه‌ای از (کالای اصلی)</string>
+    <string name="product_variant">گونه (اندازه، رنگ، طعم)</string>
+    <string name="product_variant_help">گونه‌ها کالاهای جداگانه‌اند — با قیمت، بارکد و موجودی خود — که در شبکهٔ کالاهای صندوق زیر کالای اصلی کنار هم نشان داده می‌شوند.</string>
+    <string name="cd_title">صفحهٔ مشتری</string>
+    <string name="cd_help">پنجرهٔ دوم برای مشتری: کالاها، جمع و QR پرداخت فروشگاه. آن را به نمایشگر دوم بکشید.</string>
+    <string name="cd_scan">برای پرداخت اسکن کنید</string>
+    <string name="cd_qr_note">QR مبلغ را ندارد: پیش از پرداخت، مبلغ را در گوشی خود بررسی کنید.</string>
+    <string name="cd_welcome">خوش آمدید</string>
+    <string name="cd_change">باقی‌مانده: %1$s</string>
+    <string name="transfer_title">ارسال موجودی به فروشگاه دیگر</string>
+    <string name="transfer_to">به کدام فروشگاه</string>
+    <string name="transfer_help">کالا از موجودی این فروشگاه خارج و به موجودی فروشگاه دیگر وارد می‌شود، با تطبیق بارکد و در غیر این صورت نام (کالایی که آنجا نیست افزوده می‌شود). هر دو دفتر یک ردیف با همان شماره نگه می‌دارند.</string>
+    <string name="transfer_done">%1$s به %2$s ارسال شد</string>
+    <string name="adjust_reason_transfer">انتقال</string>
+    <string name="audit_transfer_out">موجودی به فروشگاه دیگر ارسال شد</string>
+    <string name="audit_transfer_in">موجودی از فروشگاه دیگر رسید</string>
+    <string name="transfer_none">فروشگاه دیگری نیست. در کسب‌وکارها یکی اضافه کنید.</string>
 </resources>

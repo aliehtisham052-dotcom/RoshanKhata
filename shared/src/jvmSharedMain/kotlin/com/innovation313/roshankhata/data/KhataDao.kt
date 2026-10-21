@@ -2656,7 +2656,13 @@ interface KhataDao {
          * it is). The totals are worked out on the lines as rung up, then
          * each line is written once per batch, its money split to the paisa.
          */
-        batches: List<List<Fefo.Take>?>? = null
+        batches: List<List<Fefo.Take>?>? = null,
+        /**
+         * Loyalty points the customer spends on this ticket (21 Oct 2026):
+         * their worth is already inside [Sale.discountAmount]. Checked here
+         * against the customer's points and the book's rule.
+         */
+        pointsUsed: Double = 0.0
     ): Long {
         val lines = items.filter { !it.isDeleted }
         val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent, roundToWhole)
@@ -2736,6 +2742,20 @@ interface KhataDao {
                     ledgerEntryId = gotIds[i], cashEntryId = cashIds[i])
             )
         }
+        // Loyalty (21 Oct 2026): the points spent (already in the discount) and the points earned.
+        if (hasParty) {
+            val partyId = sale.partyId!!
+            val rule = Loyalty.rule(this)
+            if (pointsUsed > 0.0) {
+                require(rule != null) { "sale refused: loyalty is off" }
+                require(pointsUsed <= loyaltyBalance(partyId) + 0.005) { "sale refused: not enough points" }
+                require(rule.value(pointsUsed) <= totals.discount + 0.005) { "sale refused: the points are not in the discount" }
+                insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = saleId, points = -LineMath.round(pointsUsed), timestamp = sale.timestamp, note = number))
+            }
+            rule?.earned(totals.grandTotal)?.takeIf { it > 0.0 }?.let {
+                insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = saleId, points = it, timestamp = sale.timestamp + 1, note = number))
+            }
+        } else require(pointsUsed <= 0.0) { "sale refused: points need a customer" }
         insertAudit(
             AuditLog(
                 user = sale.createdBy ?: Access.userName, action = AuditAction.SALE_POSTED, refTable = "sales", refId = saleId,
@@ -2765,6 +2785,8 @@ interface KhataDao {
             p.cashEntryId?.let { softDeleteCashEntry(it, now) }
         }
         updateSale(sale.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
+        // The points it earned and spent go with it (21 Oct 2026).
+        dropLoyaltyOfSale(saleId)
         insertAudit(
             AuditLog(
                 user = user, action = AuditAction.SALE_VOIDED, refTable = "sales", refId = saleId,
@@ -3026,6 +3048,13 @@ interface KhataDao {
             )
         }
         updateReturn(getReturn(id)!!.copy(ledgerEntryId = ledgerId, refundEntryId = refundEntryId, refundCashId = refundCashId))
+        // Loyalty (21 Oct 2026): what the returned goods had earned is taken back — never below nothing.
+        ret.partyId?.let { partyId ->
+            Loyalty.rule(this)?.earned(total)?.takeIf { it > 0.0 }?.let { earned ->
+                val back = LineMath.round(minOf(earned, loyaltyBalance(partyId)))
+                if (back > 0.0) insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = ret.saleId, points = -back, timestamp = ret.timestamp, note = number))
+            }
+        }
         insertAudit(AuditLog(user = ret.createdBy, action = AuditAction.RETURN_POSTED, refTable = "sale_returns", refId = id,
             detail = "$number ${"%.2f".format(Digits.FIGURES, total)}"))
         return id
@@ -3042,6 +3071,8 @@ interface KhataDao {
         r.refundEntryId?.let { softDeleteEntry(it, now) }
         r.refundCashId?.let { softDeleteCashEntry(it, now) }
         updateReturn(r.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
+        // The points the return took back are given back.
+        r.partyId?.let { dropLoyaltyNoted(it, r.returnNumber) }
         insertAudit(AuditLog(user = user, action = AuditAction.RETURN_VOIDED, refTable = "sale_returns", refId = id, detail = "${r.returnNumber} ${reason.trim()}"))
         return true
     }
@@ -3115,6 +3146,37 @@ interface KhataDao {
         insertAudit(AuditLog(user = user, action = AuditAction.STOCK_ADJUSTED, refTable = "stock_adjustments", refId = id,
             detail = "$reason ${"%.2f".format(Digits.FIGURES, quantity)}"))
         return id
+    }
+
+    /**
+     * One side of a transfer between the owner's shops ([StockTransfer]):
+     * each line a stock row with the reason "transfer" and the transfer's
+     * number in its note, signed — out of this book when [out], into it
+     * otherwise — and one audit row naming the other shop.
+     */
+    @Transaction
+    suspend fun transferStock(number: String, lines: List<Pair<Long, Double>>, otherShop: String, out: Boolean, user: String? = Access.userName, now: Long = System.currentTimeMillis()) {
+        require(lines.isNotEmpty() && lines.all { it.second > 0.0 && !it.second.isNaN() }) { "nothing to transfer" }
+        for ((productId, qty) in lines) {
+            val p = productById(productId) ?: throw IllegalArgumentException("no such product")
+            insertAdjustment(StockAdjustment(productId = productId, quantity = if (out) -qty else qty, unit = p.defaultUnit, reason = AdjustReason.TRANSFER,
+                note = "$number · $otherShop", createdBy = user, timestamp = now))
+        }
+        insertAudit(AuditLog(user = user, action = if (out) AuditAction.TRANSFER_OUT else AuditAction.TRANSFER_IN, refTable = "stock_adjustments",
+            detail = "$number $otherShop ${lines.size}"))
+    }
+
+    /**
+     * The products a transfer brings, found in this book — the same barcode,
+     * else the same name — or added (prices and packs carried, no stock of
+     * their own). Their ids here, in the same order.
+     */
+    @Transaction
+    suspend fun productsForTransfer(incoming: List<Product>): List<Long> = incoming.map { p ->
+        // A name that matches a removed product brings it back, as findOrCreateProduct does.
+        p.barcode?.let { productByBarcode(it) }?.id
+            ?: productByKey(p.nameKey)?.let { found -> if (found.isDeleted) restoreProduct(found.id); found.id }
+            ?: insertProduct(p.copy(id = 0, barcode = p.barcode?.takeIf { productByBarcode(it) == null }, parentId = null, isDeleted = false, deletedAt = null))
     }
 
     @Insert
@@ -3302,6 +3364,18 @@ interface KhataDao {
     /** A voided sale's points, earned and spent, taken back. */
     @Query("UPDATE loyalty SET isDeleted = 1 WHERE saleId = :saleId")
     suspend fun dropLoyaltyOfSale(saleId: Long)
+
+    /** A return's points row, by the return's number (a voided return gives its points back). */
+    @Query("UPDATE loyalty SET isDeleted = 1 WHERE partyId = :partyId AND note = :note AND points < 0")
+    suspend fun dropLoyaltyNoted(partyId: Long, note: String)
+
+    /** The points a ticket wrote (spent and earned), for its receipt. */
+    @Query("SELECT * FROM loyalty WHERE saleId = :saleId AND isDeleted = 0 ORDER BY id")
+    suspend fun loyaltyOfSale(saleId: Long): List<LoyaltyEntry>
+
+    /** A customer's points, as the counter shows them. */
+    @Query("SELECT COALESCE(SUM(points), 0) FROM loyalty WHERE partyId = :partyId AND isDeleted = 0")
+    fun observeLoyaltyBalance(partyId: Long): Flow<Double>
 
     @Query("SELECT * FROM loyalty ORDER BY id")
     suspend fun allLoyaltyForBackup(): List<LoyaltyEntry>

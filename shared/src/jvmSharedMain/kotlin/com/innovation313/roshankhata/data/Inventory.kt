@@ -54,6 +54,8 @@ object AdjustReason {
     const val THEFT = "theft"
     const val OTHER = "other"
     val ALL = listOf(COUNT, DAMAGE, EXPIRED, THEFT, OTHER)
+    /** Goods sent to or received from another shop of the owner's ([StockTransfer]); never chosen by hand. */
+    const val TRANSFER = "transfer"
 }
 
 /**

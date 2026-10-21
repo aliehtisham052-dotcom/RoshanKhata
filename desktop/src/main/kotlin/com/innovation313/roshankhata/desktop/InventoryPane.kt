@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.desktop
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,9 +57,15 @@ import kotlinx.coroutines.withContext
  * inspectors stays on its own page.
  */
 @Composable
-fun InventoryPane(dao: KhataDao, words: Words, reload: Int, onChanged: () -> Unit) {
+fun InventoryPane(
+    dao: KhataDao, words: Words, reload: Int,
+    /** The owner's other shops (21 Oct 2026): stock can be sent to one of them. */
+    businesses: Businesses? = null, activeBusiness: Long = 1L,
+    onChanged: () -> Unit
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
+    var sending by remember { mutableStateOf(false) }
     var valuation by remember { mutableStateOf<Valuation?>(null) }
     var tick by remember { mutableStateOf(0) }
     LaunchedEffect(reload, tick) { valuation = withContext(Dispatchers.IO) { runCatching { Valuation.compute(dao) }.getOrNull() } }
@@ -82,6 +90,7 @@ fun InventoryPane(dao: KhataDao, words: Words, reload: Int, onChanged: () -> Uni
         }
     }
     if (adjusting) AdjustDialog(dao, words, onClose = { adjusting = false }) { told = it; tick++; onChanged() }
+    if (sending && businesses != null) TransferDialog(dao, words, businesses, activeBusiness, onClose = { sending = false }) { told = it; tick++; onChanged() }
 
     FluentPage(word(W.inventory_title), told ?: word(W.products_subtitle), scroll = false, actions = {
         FluentButton(word(W.stock_count_title), {
@@ -89,6 +98,13 @@ fun InventoryPane(dao: KhataDao, words: Words, reload: Int, onChanged: () -> Uni
             scope.launch { counting = CountDraft(withContext(Dispatchers.IO) { Stock.of(dao) }) }
         }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
         FluentButton(word(W.stock_adjust), { if (!may) told = words.text(W.access_denied) else adjusting = true }, kind = ButtonKind.STANDARD, icon = "ic_edit")
+        if (businesses != null) FluentButton(word(W.transfer_title), {
+            when {
+                !may -> told = words.text(W.access_denied)
+                businesses.list().none { it.id != activeBusiness } -> told = words.text(W.transfer_none)
+                else -> sending = true
+            }
+        }, kind = ButtonKind.STANDARD)
     }) {
         val v = valuation
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -143,6 +159,7 @@ fun reasonWord(r: String): String = word(
         AdjustReason.DAMAGE -> W.adjust_reason_damage
         AdjustReason.EXPIRED -> W.adjust_reason_expired
         AdjustReason.THEFT -> W.adjust_reason_theft
+        AdjustReason.TRANSFER -> W.adjust_reason_transfer
         else -> W.adjust_reason_other
     }
 )
@@ -195,6 +212,90 @@ private fun AdjustDialog(dao: KhataDao, words: Words, onClose: () -> Unit, done:
                     }
                 }
                 FluentField(note, { note = it }, Modifier.fillMaxWidth().padding(top = 8.dp), label = word(W.note_optional))
+            }
+        }
+    }
+}
+
+/**
+ * Goods to another of the owner's shops (21 Oct 2026): the shop, then the
+ * products and how many of each; Send writes both books ([StockTransfer]),
+ * the other one opened for the moment and closed again.
+ */
+@Composable
+private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, activeBusiness: Long, onClose: () -> Unit, done: (String) -> Unit) {
+    val c = LocalRoshanColors.current
+    val scope = rememberCoroutineScope()
+    val others = remember { businesses.list().filter { it.id != activeBusiness } }
+    fun nameOf(b: Businesses.Business) = b.name?.takeIf { it.isNotBlank() } ?: words.text(W.app_name) + " " + b.id
+    var to by remember { mutableStateOf(others.firstOrNull()) }
+    var products by remember { mutableStateOf<List<Product>>(emptyList()) }
+    var onHand by remember { mutableStateOf<Map<Long, Double?>>(emptyMap()) }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            products = dao.productsOnce()
+            onHand = runCatching { com.innovation313.roshankhata.data.Counter.onHand(dao) }.getOrDefault(emptyMap())
+        }
+    }
+    var query by remember { mutableStateOf("") }
+    val lines = remember { androidx.compose.runtime.mutableStateListOf<Pair<Product, androidx.compose.runtime.MutableState<String>>>() }
+    var problem by remember { mutableStateOf<String?>(null) }
+    var busy by remember { mutableStateOf(false) }
+    val ready = to != null && lines.isNotEmpty() && lines.all { (Calc.evalAmount(it.second.value) ?: 0.0) > 0.0 } && !busy
+    val title = word(W.transfer_title)
+    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = 620.dp, height = 680.dp)) {
+        DialogFrame(title, onClose = onClose, footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 12.sp) } }, footer = {
+            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            FluentButton(word(W.transfer_title), {
+                val target = to ?: return@FluentButton
+                busy = true
+                scope.launch {
+                    val shopHere = businesses.list().firstOrNull { it.id == activeBusiness }?.let { nameOf(it) } ?: words.text(W.app_name)
+                    val result = withContext(Dispatchers.IO) {
+                        runCatching {
+                            val other = com.innovation313.roshankhata.data.DesktopDatabase.open(businesses.dbFile(target.id))
+                            try {
+                                com.innovation313.roshankhata.data.StockTransfer.send(
+                                    dao, other.khataDao(),
+                                    lines.map { com.innovation313.roshankhata.data.StockTransfer.Line(it.first, Calc.evalAmount(it.second.value) ?: 0.0) },
+                                    fromShop = shopHere, toShop = nameOf(target)
+                                )
+                            } finally { other.close() }
+                        }
+                    }
+                    busy = false
+                    result.onSuccess { number -> onClose(); done(words.text(W.transfer_done, number, nameOf(target))) }
+                        .onFailure { problem = it.message ?: it.toString() }
+                }
+            }, kind = ButtonKind.ACCENT, enabled = ready)
+        }) {
+            Text(word(W.transfer_help), color = c.textMuted, fontSize = 12.sp)
+            Text(word(W.transfer_to), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                others.forEach { b -> FluentPill(nameOf(b), to?.id == b.id) { to = b } }
+            }
+            FluentField(query, { query = it }, Modifier.fillMaxWidth(), placeholder = word(W.pos_search_hint), leadingIcon = "ic_search")
+            if (query.isNotBlank()) Column(Modifier.fillMaxWidth()) {
+                com.innovation313.roshankhata.data.CounterDraft.search(products, query, 6).forEach { pr ->
+                    Row(Modifier.fillMaxWidth().press {
+                        if (lines.none { it.first.id == pr.id }) lines += pr to mutableStateOf("1")
+                        query = ""
+                    }.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(pr.name, Modifier.weight(1f), color = c.ink, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        onHand[pr.id]?.let { Text(Calc.trim(it) + (pr.defaultUnit?.let { u -> " $u" } ?: ""), color = c.textMuted, fontSize = 12.sp) }
+                    }
+                    Rule()
+                }
+            }
+            lines.toList().forEach { (p, qty) ->
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(Modifier.weight(1f)) {
+                        Text(p.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        onHand[p.id]?.let { Text(word(W.inspector_col_left) + ": " + Calc.trim(it) + (p.defaultUnit?.let { u -> " $u" } ?: ""), color = c.textMuted, fontSize = 12.sp) }
+                    }
+                    FluentField(qty.value, { qty.value = it }, Modifier.width(110.dp), placeholder = word(W.pos_col_qty))
+                    IconAction("ic_close", word(W.delete), { lines.removeAll { it.first.id == p.id } })
+                }
             }
         }
     }

@@ -3326,4 +3326,39 @@
     <string name="aging_none">ڪا به رقم باقي ناهي</string>
     <string name="aging_oldest">سڀ کان پراڻي: %1$s</string>
     <string name="aging_total">ڪل</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">لائلٽي پوائنٽس</string>
+    <string name="loyalty_per_100">هر 100 جي خريداري تي پوائنٽس</string>
+    <string name="loyalty_value">هڪ پوائنٽ جي قيمت</string>
+    <string name="loyalty_help">کاتي وارو گراهڪ هر بل تي پوائنٽس ڪمائي ٿو ۽ پوءِ انهن کي رعايت طور خرچ ڪري ٿو. ڪو خانو خالي ڇڏيو ته لائلٽي بند رهندي.</string>
+    <string name="loyalty_points">پوائنٽس: %1$s (قيمت %2$s)</string>
+    <string name="loyalty_use">پوائنٽس استعمال ڪريو</string>
+    <string name="loyalty_used">استعمال ٿيل پوائنٽس: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">ڪمايل پوائنٽس: %1$s · هاڻي %2$s</string>
+    <string name="scale_section">ترازي جا ليبل</string>
+    <string name="scale_prefix">ليبل جو شروعاتي حصو (20–29)</string>
+    <string name="scale_price">ليبل تي قيمت آهي (وزن نه)</string>
+    <string name="scale_help">ترازي جو ليبل 13 انگن جو ٿئي ٿو: شروعاتي حصو، شيءِ جو 5 انگن جو ترازي ڪوڊ، وزن گرام ۾ (يا قيمت) ۽ هڪ جانچ وارو انگ. ترازي ڪوڊ پراڊڪٽ جي بارڪوڊ واري خاني ۾ لکو.</string>
+    <string name="pos_items">شيون</string>
+    <string name="pos_ticket">بل</string>
+    <string name="pos_all">سڀ</string>
+    <string name="pos_choose_variant">%1$s: ڪهڙو؟</string>
+    <string name="product_variant_of">ڪهڙي پراڊڪٽ جو قسم (مکيه پراڊڪٽ)</string>
+    <string name="product_variant">قسم (سائيز، رنگ، ذائقو)</string>
+    <string name="product_variant_help">قسمون پنهنجيون الڳ پراڊڪٽس آهن — پنهنجي قيمت، بارڪوڊ ۽ اسٽاڪ — جيڪي ڪائونٽر جي شين واري جاري ۾ مکيه پراڊڪٽ هيٺ گڏ ڏسجن ٿيون.</string>
+    <string name="cd_title">گراهڪ جي اسڪرين</string>
+    <string name="cd_help">گراهڪ لاءِ ٻي ونڊو: شيون، ڪل رقم ۽ دڪان جو ادائگي QR. ان کي ٻئي مانيٽر تي ڇڪي وٺو.</string>
+    <string name="cd_scan">ادائگي لاءِ اسڪين ڪريو</string>
+    <string name="cd_qr_note">QR ۾ رقم شامل ناهي: ادائگي کان اڳ پنهنجي فون تي رقم ڏسي وٺو.</string>
+    <string name="cd_welcome">ڀلي ڪري آيا</string>
+    <string name="cd_change">واپسي: %1$s</string>
+    <string name="transfer_title">اسٽاڪ ٻئي دڪان ڏانهن موڪليو</string>
+    <string name="transfer_to">ڪهڙي دڪان ڏانهن</string>
+    <string name="transfer_help">سامان هن دڪان جي اسٽاڪ مان نڪري ٻئي دڪان جي اسٽاڪ ۾ اچي ٿو، بارڪوڊ سان ملائي، نه ته نالي سان (جيڪا پراڊڪٽ اتي نه هجي اها ٺاهي وڃي ٿي). ٻنهي کاتن ۾ هڪ ئي نمبر جي هڪ هڪ قطار رهي ٿي.</string>
+    <string name="transfer_done">%1$s، %2$s ڏانهن موڪليو ويو</string>
+    <string name="adjust_reason_transfer">منتقلي</string>
+    <string name="audit_transfer_out">اسٽاڪ ٻئي دڪان ڏانهن موڪليو ويو</string>
+    <string name="audit_transfer_in">اسٽاڪ ٻئي دڪان مان آيو</string>
+    <string name="transfer_none">ٻيو ڪو دڪان ناهي. ڪاروبار ۾ هڪ شامل ڪريو.</string>
 </resources>
