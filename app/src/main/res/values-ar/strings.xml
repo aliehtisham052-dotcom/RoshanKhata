@@ -3667,4 +3667,23 @@
         <item quantity="many">محاولات كثيرة. انتظر %d ثانية.</item>
         <item quantity="other">محاولات كثيرة. انتظر %d ثانية.</item>
     </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">مزامنة مباشرة مع الحاسوب</string>
+    <string name="live_explain">يحتفظ الهاتف والحاسوب بدفتر واحد يتجدّد كل بضع ثوانٍ ما دام الاثنان على شبكة واي فاي المتجر وروشن كهاتا مفتوح. لا شيء يذهب إلى الإنترنت.</string>
+    <string name="live_join">الربط بالحاسوب</string>
+    <string name="live_stop">إيقاف المزامنة المباشرة</string>
+    <string name="live_stop_confirm">إيقاف المزامنة المباشرة على هذا الجهاز؟ يبقى الدفتر كما هو تمامًا.</string>
+    <string name="live_status_off">المزامنة المباشرة متوقفة.</string>
+    <string name="live_status_not_paired">المزامنة المباشرة مفعّلة. لم يُربط أي حاسوب بعد.</string>
+    <string name="live_status_waiting">وصل الدفتر إلى الحاسوب. اضغط نعم هناك لإتمام الربط.</string>
+    <string name="live_status_live">مباشر مع %1$s. آخر تحديث: %2$s</string>
+    <string name="live_status_unreachable">الحاسوب لا يجيب. هل الجهازان على شبكة الواي فاي نفسها، وهل روشن كهاتا مفتوح عليه؟</string>
+    <string name="live_status_halted">المزامنة المباشرة متوقفة مؤقتًا. دفترك آمن ويعمل كالمعتاد.</string>
+    <string name="live_status_failed">توقفت المزامنة المباشرة: %1$s</string>
+    <string name="live_mismatch">الدفتران غير متطابقين. اربط من جديد لعمل نسخة جديدة.</string>
+    <string name="live_sent">أُرسل. اضغط نعم على الحاسوب ليُستبدل دفتره بدفتر هذا الهاتف.</string>
+    <string name="live_not_live_code">هذا ليس رمز مزامنة مباشرة. افتح المزامنة المباشرة على الحاسوب وامسح الرمز الذي يظهره.</string>
+    <string name="live_pc_steps">على الهاتف افتح النسخ الاحتياطي ← مزامنة مباشرة مع الحاسوب ← الربط بالحاسوب، وامسح هذا الرمز. بعد موافقتك يُستبدل دفتر الحاسوب بدفتر الهاتف، ومن بعدها يبقى الاثنان متطابقين.</string>
+    <string name="live_pc_none">لم يُربط أي هاتف بعد.</string>
+    <string name="live_conflicts">تغيّر على الجهازين معًا (أُبقي أحدهما وحُفظ الآخر): %1$d</string>
 </resources>

@@ -90,6 +90,10 @@ import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
 import androidx.compose.ui.focus.focusRequester
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
+import com.innovation313.roshankhata.data.LiveSync
+import com.innovation313.roshankhata.data.syncSql
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -209,6 +213,8 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // The shop's logo, signature, stamp and payment QR for its invoices, one set per business.
     val images = remember(active) { com.innovation313.roshankhata.desktop.invoice.ProfileImages.forBusiness(home, active) }
     LaunchedEffect(db) { runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir) } }
+    // Live sync with the phone (22 Oct 2026): listening while this book syncs.
+    LaunchedEffect(db) { withContext(Dispatchers.IO) { runCatching { LiveDesk.attach(db, home) } } }
     // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
     var theme by remember { mutableStateOf(appPrefs.theme()) }
     var textSize by remember { mutableStateOf(appPrefs.textSize()) }
@@ -295,6 +301,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                     else if (com.innovation313.roshankhata.data.Access.locked) key(active) { CounterGate(db.khataDao(), settings.businessName(), onClose = closeApp) }
                     else key(active) { GateHost(db.khataDao()) { CompositionLocalProvider(LocalTrade provides trade) { Book(
                         keys = keys,
+                        db = db,
                         dao = db.khataDao(),
                         load = { db.khataDao().partiesWithBalanceOnce() },
                         shopName = { settings.businessName() },
@@ -347,7 +354,13 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
 
 /** What a chosen file came to: a parsed book to confirm, or why it was refused. */
 private sealed interface Picked {
-    data class Ready(val file: File, val data: BackupCodec.ParsedBackup, val ok: BackupCodec.ImportResult.Ok) : Picked
+    /** [live]: the book came with a phone's live pairing; on yes, this computer also joins its live sync. */
+    data class Ready(
+        val file: File,
+        val data: BackupCodec.ParsedBackup,
+        val ok: BackupCodec.ImportResult.Ok,
+        val live: com.innovation313.roshankhata.data.LiveWire.Offer? = null
+    ) : Picked
     data class Refused(val why: String) : Picked
 }
 
@@ -389,6 +402,7 @@ private fun reasonOf(failed: BackupCodec.ImportResult.Failed, words: Words): Str
 @Composable
 private fun Book(
     keys: KeyActions,
+    db: com.innovation313.roshankhata.data.KhataDatabase,
     dao: KhataDao,
     load: suspend () -> List<PartyWithBalance>,
     shopName: () -> String?,
@@ -459,6 +473,27 @@ private fun Book(
     var bin by remember { mutableStateOf(false) }
     // The phone's book over WiFi (Backup → Send to computer on the phone): the QR window is open.
     var phoneSync by remember { mutableStateOf(false) }
+    // Live sync with the phone (22 Oct 2026): its window is open.
+    var liveSync by remember { mutableStateOf(false) }
+    // The phone's rows written in by a live round: every page reads again.
+    LaunchedEffect(Unit) { LiveSync.changes.drop(1).collect { reload++ } }
+    // A phone that scanned the live code: its book goes to the usual restore confirmation.
+    LaunchedEffect(Unit) {
+        LiveDesk.offers.filterNotNull().collect { offer ->
+            LiveDesk.offers.value = null
+            liveSync = false
+            val read = withContext(Dispatchers.IO) {
+                runCatching { val file = PhoneSync.saveIncoming(home, offer.backup); val (r, d) = BackupCodec.parseFile(file); Triple(file, r, d) }.getOrNull()
+            }
+            val result = read?.second
+            val data = read?.third
+            picked = when {
+                read != null && result is BackupCodec.ImportResult.Ok && data != null -> Picked.Ready(read.first, data, result, live = offer)
+                result is BackupCodec.ImportResult.Failed -> Picked.Refused(reasonOf(result, words))
+                else -> Picked.Refused(words.text(W.backup_err_unreadable))
+            }
+        }
+    }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
     // Home first, as the phone opens on its Home.
     var section by remember { mutableStateOf(Section.HOME) }
@@ -653,6 +688,7 @@ private fun Book(
             menu = listOf(
                 MenuLine(word(W.settings_group_data), null),
                 MenuLine(word(W.restore_from_file)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { restoreFromFile() } },
+                MenuLine(word(W.live_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { liveSync = true } },
                 MenuLine(word(W.businesses_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
                 MenuLine(word(W.recycle_bin)) { Gates.edit { bin = true } },
                 MenuLine(word(W.snapshots_title)) { section = Section.DAILY },
@@ -1089,7 +1125,8 @@ private fun Book(
             confirmButton = {
               Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 // Or keep this book and add only what the copy has that it lacks.
-                TextButton(enabled = !busy, onClick = { merging = p.data; picked = null }) { Text(word(W.merge_button)) }
+                // Not for a live pairing: the two devices must start from the very same book.
+                if (p.live == null) TextButton(enabled = !busy, onClick = { merging = p.data; picked = null }) { Text(word(W.merge_button)) }
                 TextButton(
                     enabled = !busy && mayReplace(loss, agreed),
                     onClick = {
@@ -1103,7 +1140,12 @@ private fun Book(
                                 if (kept == null) {
                                     told = words.text(W.restore_warning_title) to words.text(W.restore_keep_failed)
                                 } else {
+                                    // A replaced book is no longer the one any phone was syncing: live sync stops
+                                    // first (so the restore's own writes are not sent), and a live pairing then joins anew.
+                                    withContext(Dispatchers.IO) { LiveSync.disable(db.syncSql()) }
+                                    if (p.live == null) LiveDesk.stop()
                                     restore(p.data)
+                                    p.live?.let { offer -> withContext(Dispatchers.IO) { LiveDesk.join(db, home, offer) } }
                                     done = true
                                     shop = shopName()
                                     reload++
@@ -1393,6 +1435,7 @@ private fun Book(
             dismissButton = { TextButton({ deletingParty = null }) { Text(word(W.cancel)) } }
         )
     }
+    if (liveSync) LiveSyncDialog(db, onClose = { liveSync = false })
     if (phoneSync) {
         // The phone may also take this computer's book (Backup → Take the computer's book): the
         // same text a backup file holds, made fresh when asked.

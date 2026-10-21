@@ -79,12 +79,15 @@ class RoshanKhataApp : Application() {
 
         override fun onActivityStarted(activity: Activity) {
             started++
+            // Live sync with the computer runs only while the app is on the screen (22 Oct 2026).
+            if (started == 1) runCatching { com.innovation313.roshankhata.data.LiveRunner.start(app) }
         }
 
         override fun onActivityStopped(activity: Activity) {
             started--
             if (started <= 0) {
                 started = 0
+                runCatching { com.innovation313.roshankhata.data.LiveRunner.stop() }
                 runCatching { AutoBackup.onAppBackgrounded(app) }
             }
         }

@@ -3455,4 +3455,23 @@
         <item quantity="one">بہت زیادہ کوششیں۔ %d سیکنڈ انتظار کریں۔</item>
         <item quantity="other">بہت زیادہ کوششیں۔ %d سیکنڈ انتظار کریں۔</item>
     </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">کمپیوٹر کے ساتھ لائیو سنک</string>
+    <string name="live_explain">فون اور کمپیوٹر ایک ہی کھاتہ رکھتے ہیں، جو ہر چند سیکنڈ میں تازہ ہوتا ہے جب دونوں دکان کے وائی فائی پر ہوں اور روشن کھاتہ کھلا ہو۔ کچھ بھی انٹرنیٹ پر نہیں جاتا۔</string>
+    <string name="live_join">کمپیوٹر سے جوڑیں</string>
+    <string name="live_stop">لائیو سنک بند کریں</string>
+    <string name="live_stop_confirm">اس ڈیوائس پر لائیو سنک بند کریں؟ کھاتہ بالکل ویسا ہی رہے گا۔</string>
+    <string name="live_status_off">لائیو سنک بند ہے۔</string>
+    <string name="live_status_not_paired">لائیو سنک چالو ہے۔ ابھی کوئی کمپیوٹر نہیں جڑا۔</string>
+    <string name="live_status_waiting">کھاتہ کمپیوٹر تک پہنچ گیا۔ جوڑ مکمل کرنے کے لیے وہاں ہاں دبائیں۔</string>
+    <string name="live_status_live">%1$s کے ساتھ لائیو۔ آخری اپڈیٹ: %2$s</string>
+    <string name="live_status_unreachable">کمپیوٹر جواب نہیں دے رہا۔ کیا دونوں ایک ہی وائی فائی پر ہیں، اور کیا اس پر روشن کھاتہ کھلا ہے؟</string>
+    <string name="live_status_halted">لائیو سنک فی الحال رکا ہوا ہے۔ آپ کا کھاتہ محفوظ ہے اور ہمیشہ کی طرح چلتا ہے۔</string>
+    <string name="live_status_failed">لائیو سنک رک گیا: %1$s</string>
+    <string name="live_mismatch">دونوں کھاتے آپس میں نہیں ملتے۔ نئی کاپی کے لیے دوبارہ جوڑیں۔</string>
+    <string name="live_sent">بھیج دیا۔ کمپیوٹر پر ہاں دبائیں تاکہ اس کا کھاتہ اس فون کے کھاتے سے بدل جائے۔</string>
+    <string name="live_not_live_code">یہ لائیو سنک کا کوڈ نہیں۔ کمپیوٹر پر لائیو سنک کھولیں اور وہاں دکھنے والا کوڈ اسکین کریں۔</string>
+    <string name="live_pc_steps">فون پر بیک اپ ← کمپیوٹر کے ساتھ لائیو سنک ← کمپیوٹر سے جوڑیں کھولیں اور یہ کوڈ اسکین کریں۔ آپ کی ہاں کے بعد کمپیوٹر کا کھاتہ فون کے کھاتے سے بدل جائے گا، اور پھر دونوں ایک جیسے رہیں گے۔</string>
+    <string name="live_pc_none">ابھی کوئی فون نہیں جڑا۔</string>
+    <string name="live_conflicts">دونوں پر ایک ساتھ تبدیلی (ایک رکھی گئی، دوسری محفوظ کی گئی): %1$d</string>
 </resources>

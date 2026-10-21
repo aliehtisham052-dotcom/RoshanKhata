@@ -32,6 +32,11 @@ import com.innovation313.roshankhata.data.DriveFeature
 import com.innovation313.roshankhata.data.EraseAll
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.WifiSync
+import com.innovation313.roshankhata.data.LiveRound
+import com.innovation313.roshankhata.data.LiveRunner
+import com.innovation313.roshankhata.data.LiveSync
+import com.innovation313.roshankhata.data.LiveWire
+import com.innovation313.roshankhata.data.syncSql
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -111,6 +116,11 @@ class BackupActivity : BaseActivity() {
 
         findViewById<MaterialButton>(R.id.btnSendToComputer).setOnClickListener { scanComputer(take = false) }
         findViewById<MaterialButton>(R.id.btnTakeFromComputer).setOnClickListener { scanComputer(take = true) }
+
+        // Live sync with the computer (22 Oct 2026): join once, then the same book on both.
+        findViewById<MaterialButton>(R.id.btnLiveJoin).setOnClickListener { scanLive() }
+        findViewById<MaterialButton>(R.id.btnLiveStop).setOnClickListener { confirmLiveStop() }
+        lifecycleScope.launch { LiveRunner.status.collect { showLive(it) } }
 
         if (DriveFeature.ENABLED) {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
@@ -306,6 +316,110 @@ class BackupActivity : BaseActivity() {
                 WifiSync.Pulled.Unreachable -> tell(R.string.wifi_send_unreachable)
             }
         }
+    }
+
+    /** What live sync is doing, in a line; and whether it may be turned off. */
+    private fun showLive(s: LiveRunner.Status) {
+        val text = when (s) {
+            LiveRunner.Status.Off -> getString(R.string.live_status_off)
+            LiveRunner.Status.NotPaired -> getString(R.string.live_status_not_paired)
+            LiveRunner.Status.Waiting -> getString(R.string.live_status_waiting)
+            is LiveRunner.Status.Live -> getString(
+                R.string.live_status_live,
+                s.computer?.takeIf { it.isNotBlank() } ?: getString(R.string.live_title),
+                Digits.toLatin(java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(s.at)))
+            )
+            LiveRunner.Status.Unreachable -> getString(R.string.live_status_unreachable)
+            LiveRunner.Status.Halted -> getString(R.string.live_status_halted)
+            is LiveRunner.Status.Failed -> getString(R.string.live_status_failed, s.why)
+        }
+        findViewById<android.widget.TextView>(R.id.tvLiveStatus).text =
+            if (LiveRunner.mismatch.value) text + "\n" + getString(R.string.live_mismatch) else text
+        findViewById<MaterialButton>(R.id.btnLiveStop).visibility =
+            if (s == LiveRunner.Status.Off) android.view.View.GONE else android.view.View.VISIBLE
+    }
+
+    /** The computer's live code (More → Live sync on Windows), then this book sent there to join. */
+    private fun scanLive() {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+        GmsBarcodeScanning.getClient(this, options).startScan()
+            .addOnSuccessListener { barcode ->
+                val invite = LiveWire.parseInvite(barcode.rawValue)
+                if (invite == null) {
+                    Toast.makeText(this, R.string.live_not_live_code, Toast.LENGTH_LONG).show()
+                    return@addOnSuccessListener
+                }
+                joinComputer(invite)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    /**
+     * Turns live sync on for this book (if it was not), and sends the book
+     * with its sync identity to the computer. The computer shows its usual
+     * restore confirmation; once the owner says yes there, the rounds begin.
+     */
+    private fun joinComputer(invite: LiveWire.Invite) {
+        Toast.makeText(this, R.string.wifi_send_sending, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val sent = withContext(Dispatchers.IO) {
+                runCatching {
+                    val sql = KhataDatabase.get(this@BackupActivity).syncSql()
+                    val id = LiveSync.enable(sql, LiveRunner.install(this@BackupActivity), LiveRunner.deviceName())
+                    // The book is taken after this line: whatever changes after it is sent again
+                    // in the first rounds, and a row that lands twice lands as one.
+                    val seq = LiveSync.lastSeq(sql)
+                    val file = Backup.exportToCache(this@BackupActivity, dao)
+                    if (file.length() > LiveWire.MAX_BYTES) return@runCatching LiveWire.Sent.Refused
+                    val offer = LiveWire.Offer(id.book, id.key, id.device, id.name, seq, file.readBytes())
+                    val outcome = LiveWire.sendOffer(invite, offer)
+                    if (outcome is LiveWire.Sent.Taken) {
+                        // A new copy on the computer: what this phone knew of an earlier one no longer holds.
+                        for (p in LiveSync.state(sql).peers) LiveSync.removePeer(sql, p.device)
+                        val hosts = listOf(outcome.host) + invite.hosts.filter { it != outcome.host }
+                        LiveRound.setTarget(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer))
+                    }
+                    outcome
+                }.getOrNull()
+            }
+            if (isFinishing || isDestroyed) return@launch
+            val message = when (sent) {
+                null -> getString(R.string.backup_failed)
+                is LiveWire.Sent.Taken -> getString(R.string.live_sent)
+                LiveWire.Sent.Refused -> getString(R.string.wifi_send_refused)
+                LiveWire.Sent.Unreachable -> getString(R.string.wifi_send_unreachable)
+            }
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.live_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, null)
+                .show()
+        }
+    }
+
+    private fun confirmLiveStop() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.live_title)
+            .setMessage(R.string.live_stop_confirm)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.live_stop) { _, _ ->
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        runCatching {
+                            val sql = KhataDatabase.get(this@BackupActivity).syncSql()
+                            LiveRound.setTarget(sql, null)
+                            LiveSync.disable(sql)
+                        }
+                    }
+                    showLive(LiveRunner.Status.Off)
+                }
+            }
+            .show()
     }
 
     private fun tell(message: Int) {

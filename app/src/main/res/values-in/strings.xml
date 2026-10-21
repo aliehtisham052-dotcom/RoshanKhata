@@ -3446,4 +3446,23 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <plurals name="n_wait_seconds">
         <item quantity="other">Terlalu banyak percobaan. Tunggu %d detik.</item>
     </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">Sinkron langsung dengan komputer</string>
+    <string name="live_explain">Ponsel dan komputer memegang satu buku yang diperbarui setiap beberapa detik selama keduanya di WiFi toko dan Roshan Khata terbuka. Tidak ada yang dikirim ke internet.</string>
+    <string name="live_join">Hubungkan ke komputer</string>
+    <string name="live_stop">Matikan sinkron langsung</string>
+    <string name="live_stop_confirm">Matikan sinkron langsung di perangkat ini? Bukunya tetap persis seperti sekarang.</string>
+    <string name="live_status_off">Sinkron langsung mati.</string>
+    <string name="live_status_not_paired">Sinkron langsung aktif. Belum ada komputer yang terhubung.</string>
+    <string name="live_status_waiting">Buku sudah sampai di komputer. Tekan ya di sana untuk menyelesaikan.</string>
+    <string name="live_status_live">Langsung dengan %1$s. Pembaruan terakhir: %2$s</string>
+    <string name="live_status_unreachable">Komputer tidak menjawab. Apakah keduanya di WiFi yang sama, dan Roshan Khata terbuka di sana?</string>
+    <string name="live_status_halted">Sinkron langsung dijeda untuk sementara. Buku Anda aman dan tetap berjalan seperti biasa.</string>
+    <string name="live_status_failed">Sinkron langsung berhenti: %1$s</string>
+    <string name="live_mismatch">Kedua buku tidak cocok. Hubungkan lagi untuk membuat salinan baru.</string>
+    <string name="live_sent">Terkirim. Di komputer, tekan ya agar bukunya diganti dengan buku ponsel ini.</string>
+    <string name="live_not_live_code">Ini bukan kode sinkron langsung. Di komputer, buka Sinkron langsung dan pindai kode yang ditampilkan.</string>
+    <string name="live_pc_steps">Di ponsel buka Cadangan → Sinkron langsung dengan komputer → Hubungkan ke komputer, lalu pindai kode ini. Setelah Anda setuju, buku komputer diganti dengan buku ponsel, dan sejak itu keduanya tetap sama.</string>
+    <string name="live_pc_none">Belum ada ponsel yang terhubung.</string>
+    <string name="live_conflicts">Diubah di keduanya bersamaan (satu dipakai, yang lain disimpan): %1$d</string>
 </resources>

@@ -3499,4 +3499,23 @@
         <item quantity="one">बहुत ज़्यादा कोशिशें। %d सेकंड रुकें।</item>
         <item quantity="other">बहुत ज़्यादा कोशिशें। %d सेकंड रुकें।</item>
     </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">कंप्यूटर के साथ लाइव सिंक</string>
+    <string name="live_explain">फ़ोन और कंप्यूटर एक ही खाता रखते हैं, जो हर कुछ सेकंड में अपडेट होता है जब दोनों दुकान के वाई-फ़ाई पर हों और रोशन खाता खुला हो। कुछ भी इंटरनेट पर नहीं जाता।</string>
+    <string name="live_join">कंप्यूटर से जोड़ें</string>
+    <string name="live_stop">लाइव सिंक बंद करें</string>
+    <string name="live_stop_confirm">इस डिवाइस पर लाइव सिंक बंद करें? खाता बिल्कुल वैसा ही रहेगा।</string>
+    <string name="live_status_off">लाइव सिंक बंद है।</string>
+    <string name="live_status_not_paired">लाइव सिंक चालू है। अभी कोई कंप्यूटर नहीं जुड़ा।</string>
+    <string name="live_status_waiting">खाता कंप्यूटर तक पहुँच गया। जोड़ पूरा करने के लिए वहाँ हाँ दबाएँ।</string>
+    <string name="live_status_live">%1$s के साथ लाइव। आख़िरी अपडेट: %2$s</string>
+    <string name="live_status_unreachable">कंप्यूटर जवाब नहीं दे रहा। क्या दोनों एक ही वाई-फ़ाई पर हैं, और क्या उस पर रोशन खाता खुला है?</string>
+    <string name="live_status_halted">लाइव सिंक अभी रुका हुआ है। आपका खाता सुरक्षित है और हमेशा की तरह चलता है।</string>
+    <string name="live_status_failed">लाइव सिंक रुक गया: %1$s</string>
+    <string name="live_mismatch">दोनों खाते आपस में नहीं मिलते। नई कॉपी के लिए फिर से जोड़ें।</string>
+    <string name="live_sent">भेज दिया। कंप्यूटर पर हाँ दबाएँ ताकि उसका खाता इस फ़ोन के खाते से बदल जाए।</string>
+    <string name="live_not_live_code">यह लाइव सिंक का कोड नहीं है। कंप्यूटर पर लाइव सिंक खोलें और वहाँ दिखने वाला कोड स्कैन करें।</string>
+    <string name="live_pc_steps">फ़ोन पर बैकअप → कंप्यूटर के साथ लाइव सिंक → कंप्यूटर से जोड़ें खोलें और यह कोड स्कैन करें। आपकी हाँ के बाद कंप्यूटर का खाता फ़ोन के खाते से बदल जाएगा, और फिर दोनों एक जैसे रहेंगे।</string>
+    <string name="live_pc_none">अभी कोई फ़ोन नहीं जुड़ा।</string>
+    <string name="live_conflicts">दोनों पर एक साथ बदलाव (एक रखा गया, दूसरा सहेजा गया): %1$d</string>
 </resources>

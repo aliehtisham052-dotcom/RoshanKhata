@@ -3669,4 +3669,23 @@ You can change this any time from this screen.</string>
         <item quantity="one">Too many tries. Wait %d second.</item>
         <item quantity="other">Too many tries. Wait %d seconds.</item>
     </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">Live sync with the computer</string>
+    <string name="live_explain">The phone and the computer keep one book, updated every few seconds while both are on the shop’s WiFi and Roshan Khata is open. Nothing goes to the internet.</string>
+    <string name="live_join">Join the computer</string>
+    <string name="live_stop">Turn live sync off</string>
+    <string name="live_stop_confirm">Turn live sync off on this device? The book stays exactly as it is.</string>
+    <string name="live_status_off">Live sync is off.</string>
+    <string name="live_status_not_paired">Live sync is on. No computer has joined yet.</string>
+    <string name="live_status_waiting">The book reached the computer. Say yes there to finish joining.</string>
+    <string name="live_status_live">Live with %1$s. Last update: %2$s</string>
+    <string name="live_status_unreachable">The computer is not answering. Are both on the same WiFi, and is Roshan Khata open on it?</string>
+    <string name="live_status_halted">Live sync is paused for now. Your book is safe and works as always.</string>
+    <string name="live_status_failed">Live sync stopped: %1$s</string>
+    <string name="live_mismatch">The two books do not match. Join again to make a fresh copy.</string>
+    <string name="live_sent">Sent. On the computer, say yes to replace its book with this phone’s.</string>
+    <string name="live_not_live_code">This is not a live sync code. On the computer, open Live sync and scan the code it shows.</string>
+    <string name="live_pc_steps">On the phone open Backup → Live sync with the computer → Join the computer, and scan this code. After your yes, the computer’s book is replaced with the phone’s, and from then on both stay the same.</string>
+    <string name="live_pc_none">No phone has joined yet.</string>
+    <string name="live_conflicts">Changed on both at once (one was kept, the other saved): %1$d</string>
 </resources>

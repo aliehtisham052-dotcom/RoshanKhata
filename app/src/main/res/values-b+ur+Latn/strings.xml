@@ -3455,4 +3455,23 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">Bohat zyada koshishein. %d second intezar karein.</item>
         <item quantity="other">Bohat zyada koshishein. %d second intezar karein.</item>
     </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">Computer ke saath live sync</string>
+    <string name="live_explain">Phone aur computer ek hi khata rakhte hain, jo har chand second mein taaza hota hai jab dono dukan ke WiFi par hon aur Roshan Khata khula ho. Kuch bhi internet par nahi jaata.</string>
+    <string name="live_join">Computer se jorein</string>
+    <string name="live_stop">Live sync band karein</string>
+    <string name="live_stop_confirm">Is device par live sync band karein? Khata bilkul waisa hi rahega.</string>
+    <string name="live_status_off">Live sync band hai.</string>
+    <string name="live_status_not_paired">Live sync on hai. Abhi koi computer nahi jura.</string>
+    <string name="live_status_waiting">Khata computer tak pohanch gaya. Jorr mukammal karne ke liye wahan haan dabayein.</string>
+    <string name="live_status_live">%1$s ke saath live. Aakhri update: %2$s</string>
+    <string name="live_status_unreachable">Computer jawab nahi de raha. Kya dono ek hi WiFi par hain, aur kya us par Roshan Khata khula hai?</string>
+    <string name="live_status_halted">Live sync filhaal ruka hua hai. Aap ka khata mehfooz hai aur hamesha ki tarah chalta hai.</string>
+    <string name="live_status_failed">Live sync ruk gaya: %1$s</string>
+    <string name="live_mismatch">Dono khate aapas mein nahi milte. Nayi copy ke liye dobara jorein.</string>
+    <string name="live_sent">Bhej diya. Computer par haan dabayein taake us ka khata is phone ke khate se badal jaye.</string>
+    <string name="live_not_live_code">Yeh live sync ka code nahi. Computer par Live sync kholein aur wahan dikhne wala code scan karein.</string>
+    <string name="live_pc_steps">Phone par Backup → Computer ke saath live sync → Computer se jorein kholein aur yeh code scan karein. Aap ki haan ke baad computer ka khata phone ke khate se badal jayega, aur phir dono ek jaise rahenge.</string>
+    <string name="live_pc_none">Abhi koi phone nahi jura.</string>
+    <string name="live_conflicts">Dono par ek saath tabdeeli (ek rakhi gayi, doosri mehfooz ki gayi): %1$d</string>
 </resources>
