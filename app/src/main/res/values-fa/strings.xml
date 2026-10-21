@@ -516,7 +516,7 @@
     <string name="save_backup">ذخیره پشتیبان</string>
 
     <string name="restore_warning_title">همه‌چیز جایگزین شود؟</string>
-    <string name="restore_warning_message">بازگردانی، همه محتوای فعلی روشن خاتا را با محتوای این فایل جایگزین می‌کند:\n\n%1$d مشتری/تأمین‌کننده\n%2$d ثبت دفتر\n%3$d چک\n%4$d ثبت دفتر صندوق\n%5$d برنامه پرداخت\n%6$d فاکتور تأمین‌کننده\n%7$d فاکتور فروش\n\nهرچه اکنون روی این گوشی است از بین می‌رود. اگر ثبت‌هایی دارید که در پشتیبان نیست، اول از همین وضعیت پشتیبان بگیرید.\n\nاین کار قابل بازگشت نیست.</string>
+    <string name="restore_warning_message">بازگردانی، همه محتوای فعلی روشن خاتا را با محتوای این فایل جایگزین می‌کند:\n\n%1$d مشتری/تأمین‌کننده\n%2$d ثبت دفتر\n%3$d چک\n%4$d ثبت دفتر صندوق\n%5$d برنامه پرداخت\n%6$d فاکتور تأمین‌کننده\n%7$d فاکتور فروش\n\nهرچه اکنون روی این گوشی است از بین می‌رود. اگر ثبت‌هایی دارید که در پشتیبان نیست، اول از همین وضعیت پشتیبان بگیرید.\n\nاین دفتر اول در نسخه‌های روزانه نگه داشته می‌شود، پس بازگردانی از همان‌جا قابل برگشت است.</string>
     <string name="restore_replace">همه‌چیز جایگزین شود</string>
     <string name="restore_done">بازگردانی شد</string>
     <string name="restore_failed">بازگردانی ناموفق: %1$s</string>
@@ -3249,4 +3249,22 @@
     <string name="audit_counter_off">خاموش شدن حالت صندوق</string>
     <string name="audit_pin_wait">رمزهای اشتباه زیاد</string>
     <string name="audit_sign_out">خروج</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">این کار، کارهایی را که اینجا انجام شده از بین می‌برد</string>
+    <string name="restore_loss_intro">این‌ها در این دفتر هستند و در نسخه نیستند. پس از بازگردانی از بین می‌روند:</string>
+    <string name="restore_loss_entries">ثبت‌ها: %1$d</string>
+    <string name="restore_loss_changed">ثبت‌هایی که پس از نسخه اینجا تغییر کرده یا حذف شده‌اند: %1$d</string>
+    <string name="restore_loss_sales">فروش‌های صندوق: %1$d</string>
+    <string name="restore_loss_returns">مرجوعی‌ها: %1$d</string>
+    <string name="restore_loss_cash">ردیف‌های دفتر نقدی: %1$d</string>
+    <string name="restore_loss_cheques">چک‌ها: %1$d</string>
+    <string name="restore_loss_bills">فاکتورهای تأمین‌کننده: %1$d</string>
+    <string name="restore_loss_invoices">فاکتورها: %1$d</string>
+    <string name="restore_loss_parties">مشتریان و تأمین‌کنندگان: %1$d</string>
+    <string name="restore_loss_newest">جدیدترین اینجا: %1$s · جدیدترین در نسخه: %2$s</string>
+    <string name="restore_loss_kept">پیش از جایگزینی، این دفتر در نسخه‌های روزانه نگه داشته می‌شود، پس بازگردانی قابل برگشت است.</string>
+    <string name="restore_loss_agree">می‌دانم که این‌ها از بین می‌روند</string>
+    <string name="restore_loss_counting">در حال بررسی آنچه در این دفتر هست و در نسخه نیست…</string>
+    <string name="snapshot_before_restore">نگه‌داشته پیش از بازگردانی · %1$s</string>
 </resources>

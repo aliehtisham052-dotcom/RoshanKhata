@@ -512,7 +512,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="save_backup">Simpan cadangan</string>
 
     <string name="restore_warning_title">Ganti semuanya?</string>
-    <string name="restore_warning_message">Pemulihan akan MENGGANTI semua yang saat ini ada di Roshan Khata dengan isi berkas ini:\n\n%1$d pelanggan/pemasok\n%2$d catatan buku\n%3$d cek\n%4$d catatan buku kas\n%5$d rencana cicilan\n%6$d tagihan pemasok\n%7$d faktur\n\nApa pun yang ada di ponsel ini sekarang akan hilang. Jika ada catatan di sini yang tidak ada di cadangan, cadangkan dulu yang INI.\n\nTindakan ini tidak dapat dibatalkan.</string>
+    <string name="restore_warning_message">Pemulihan akan MENGGANTI semua yang saat ini ada di Roshan Khata dengan isi berkas ini:\n\n%1$d pelanggan/pemasok\n%2$d catatan buku\n%3$d cek\n%4$d catatan buku kas\n%5$d rencana cicilan\n%6$d tagihan pemasok\n%7$d faktur\n\nApa pun yang ada di ponsel ini sekarang akan hilang. Jika ada catatan di sini yang tidak ada di cadangan, cadangkan dulu yang INI.\n\nBuku ini disalin dulu ke Salinan harian, jadi pemulihan bisa dibatalkan dari sana.</string>
     <string name="restore_replace">Ganti semuanya</string>
     <string name="restore_done">Dipulihkan</string>
     <string name="restore_failed">Pemulihan gagal: %1$s</string>
@@ -3218,4 +3218,22 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="audit_counter_off">Mode kasir mati</string>
     <string name="audit_pin_wait">Terlalu banyak PIN salah</string>
     <string name="audit_sign_out">Keluar</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">Ini akan menghapus pekerjaan yang dibuat di sini</string>
+    <string name="restore_loss_intro">Ini ada di buku ini dan tidak ada di salinan. Setelah pemulihan semuanya akan hilang:</string>
+    <string name="restore_loss_entries">Catatan: %1$d</string>
+    <string name="restore_loss_changed">Catatan yang diubah atau dihapus di sini sejak salinan: %1$d</string>
+    <string name="restore_loss_sales">Penjualan kasir: %1$d</string>
+    <string name="restore_loss_returns">Retur: %1$d</string>
+    <string name="restore_loss_cash">Baris buku kas: %1$d</string>
+    <string name="restore_loss_cheques">Cek: %1$d</string>
+    <string name="restore_loss_bills">Tagihan pemasok: %1$d</string>
+    <string name="restore_loss_invoices">Faktur: %1$d</string>
+    <string name="restore_loss_parties">Pelanggan dan pemasok: %1$d</string>
+    <string name="restore_loss_newest">Terbaru di sini: %1$s · terbaru di salinan: %2$s</string>
+    <string name="restore_loss_kept">Buku ini disalin ke Salinan harian sebelum apa pun diganti, jadi pemulihan bisa dibatalkan.</string>
+    <string name="restore_loss_agree">Saya paham semua ini akan hilang</string>
+    <string name="restore_loss_counting">Memeriksa apa yang ada di buku ini dan tidak ada di salinan…</string>
+    <string name="snapshot_before_restore">Disimpan sebelum pemulihan · %1$s</string>
 </resources>

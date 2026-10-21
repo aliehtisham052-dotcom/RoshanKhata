@@ -868,23 +868,32 @@ private fun Book(
             confirmButton = { TextButton({ picked = null }) { Text(word(W.ok)) } },
             text = { Text(word(W.restore_failed, p.why)) }
         )
-        is Picked.Ready -> AlertDialog(
+        is Picked.Ready -> {
+          // What this restore would take away, in figures, and a tick before Replace (21 Oct 2026).
+          val loss = rememberLoss(dao, p.data)
+          var agreed by remember(p) { mutableStateOf(false) }
+          AlertDialog(
             onDismissRequest = { if (!busy) picked = null },
             title = { Text(word(W.restore_warning_title)) },
             text = {
-                Text(
-                    word(
-                        W.restore_warning_message,
-                        p.ok.parties, p.ok.entries, p.ok.cheques, p.ok.cash, p.ok.plans, p.ok.bills, p.ok.invoices
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    LossNote(loss, agreed) { agreed = it }
+                    Text(
+                        word(
+                            W.restore_warning_message,
+                            p.ok.parties, p.ok.entries, p.ok.cheques, p.ok.cash, p.ok.plans, p.ok.bills, p.ok.invoices
+                        )
                     )
-                )
+                }
             },
             confirmButton = {
                 TextButton(
-                    enabled = !busy,
+                    enabled = !busy && mayReplace(loss, agreed),
                     onClick = {
                         busy = true
                         scope.launch {
+                            // This book as it stands, kept first: the restore can be undone from Daily copies.
+                            runCatching { DailyCopies.makeToday(dao, settings, dailyDir, label = "before-restore-" + System.currentTimeMillis()) }
                             restore(p.data)
                             busy = false
                             picked = null
@@ -897,7 +906,8 @@ private fun Book(
                 ) { Text(word(W.restore_replace)) }
             },
             dismissButton = { TextButton(enabled = !busy, onClick = { picked = null }) { Text(word(W.cancel)) } }
-        )
+          )
+        }
         null -> {}
     }
     if (done) {

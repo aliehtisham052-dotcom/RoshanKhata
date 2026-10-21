@@ -602,7 +602,8 @@ object BackupCodec {
                 orderItems = orderItems,
                 settings = settings,
                 loyalty = loyalty,
-                shifts = shifts
+                shifts = shifts,
+                version = version
             )
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
@@ -651,7 +652,13 @@ object BackupCodec {
         /** The book's settings, loyalty points and shifts (format 12). */
         val settings: List<BookSetting> = emptyList(),
         val loyalty: List<LoyaltyEntry> = emptyList(),
-        val shifts: List<Shift> = emptyList()
+        val shifts: List<Shift> = emptyList(),
+        /**
+         * The file's format. From 12 its rows carry their uids, so a restore
+         * can say exactly what it would take away ([RestoreCheck]); an older
+         * file is matched by what its rows say.
+         */
+        val version: Int = FORMAT_VERSION
     )
 
     /**
