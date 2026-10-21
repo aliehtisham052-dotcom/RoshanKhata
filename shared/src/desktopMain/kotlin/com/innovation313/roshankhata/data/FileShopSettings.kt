@@ -56,6 +56,8 @@ class FileShopSettings(private val file: File) : ShopSettings {
     override fun setCurrency(value: String?) = put(ShopSettings.Keys.CURRENCY to Currency.clean(value))
     override fun calendar(): ShopCalendar.Kind = ShopCalendar.Kind.of(props.getProperty(ShopSettings.Keys.CALENDAR))
     override fun setCalendar(kind: ShopCalendar.Kind) = put(ShopSettings.Keys.CALENDAR to kind.key)
+    override fun country(): ShopCountry = ShopCountry.of(props.getProperty(ShopSettings.Keys.COUNTRY))
+    override fun setCountry(country: ShopCountry) = put(ShopSettings.Keys.COUNTRY to country.code)
 
     override fun tradeKey() = text(ShopSettings.Keys.TRADE)
     override fun setTradeKey(key: String) = put(ShopSettings.Keys.TRADE to key)
@@ -73,6 +75,7 @@ class FileShopSettings(private val file: File) : ShopSettings {
     override fun refreshDisplay() {
         ShopCalendar.current = calendar()
         Currency.symbol = currency()
+        ShopCountry.current = country()
     }
 }
 

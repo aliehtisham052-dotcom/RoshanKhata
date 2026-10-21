@@ -694,7 +694,9 @@ object BackupCodec {
         /** The shop's name in Urdu script for Urdu posters (11 Oct); absent before. */
         val businessNameUrdu: String? = null,
         /** The shop's email (12 Oct); absent before. */
-        val businessEmail: String? = null
+        val businessEmail: String? = null,
+        /** The shop's country code (21 Oct); absent before = Pakistan. */
+        val country: String? = null
     )
 
     /**
@@ -1226,6 +1228,7 @@ object BackupCodec {
         put("strn", s.strn() ?: JSONObject.NULL)
         put("currency", s.currency())
         put("calendar", s.calendar().key)
+        put("country", s.country().code)
         put("trade", s.tradeKey() ?: JSONObject.NULL)
         put("tradeOtherName", s.otherTradeName() ?: JSONObject.NULL)
         put("tradeOtherItems", s.otherTradeItems() ?: JSONObject.NULL)
@@ -1246,6 +1249,8 @@ object BackupCodec {
         s.setStrn(p.strn)
         s.setCurrency(p.currency)
         s.setCalendar(ShopCalendar.Kind.of(p.calendar))
+        // A copy from before the country existed keeps the shop's own choice (or Pakistan).
+        p.country?.let { s.setCountry(ShopCountry.of(it)) }
         s.refreshDisplay()
         p.trade?.let { s.setTradeKey(it) }
         s.setOtherTrade(p.tradeOtherName, p.tradeOtherItems)
@@ -1269,7 +1274,8 @@ object BackupCodec {
         tradeOtherName = o.optNullableString("tradeOtherName"),
         tradeOtherItems = o.optNullableString("tradeOtherItems"),
         businessNameUrdu = o.optNullableString("businessNameUrdu"),
-        businessEmail = o.optNullableString("businessEmail")
+        businessEmail = o.optNullableString("businessEmail"),
+        country = o.optNullableString("country")
     )
 
     private fun JSONObject.optNullableString(key: String): String? =

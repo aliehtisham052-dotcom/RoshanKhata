@@ -193,7 +193,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             Text(word(W.poster_lang_note), color = c.textMuted, fontSize = 12.sp)
             Text(word(W.poster_choose_design), color = c.ink, fontWeight = FontWeight.Bold)
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                PosterOccasion.entries.chunked(3).forEach { row ->
+                PosterOccasion.offered().chunked(3).forEach { row ->
                     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEach { o ->
                             val name = word(if (o.title.isEmpty()) W.poster_custom else o.title).trimEnd('!', '！', '۔')

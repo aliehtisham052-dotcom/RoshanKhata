@@ -64,7 +64,8 @@ enum class PartyWhen(val word: String) {
             ALL -> null
             TODAY -> start(c).let { it until it + day }
             YESTERDAY -> start(c.apply { add(java.util.Calendar.DAY_OF_MONTH, -1) }).let { it until it + day }
-            THIS_WEEK -> start(c.apply { set(java.util.Calendar.DAY_OF_WEEK, firstDayOfWeek) })..now
+            // The week starts where the shop's country starts it (21 Oct 2026): Saturday in Iran, Sunday in the Gulf.
+            THIS_WEEK -> start(c.apply { firstDayOfWeek = com.innovation313.roshankhata.data.ShopCountry.current.weekStart; set(java.util.Calendar.DAY_OF_WEEK, firstDayOfWeek) })..now
             THIS_MONTH -> start(c.apply { set(java.util.Calendar.DAY_OF_MONTH, 1) })..now
         }
     }

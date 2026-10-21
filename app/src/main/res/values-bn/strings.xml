@@ -3462,4 +3462,15 @@
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">ছাপায় বাংলা অঙ্ক</string>
     <string name="print_native_digits_help">চালান, বিবরণী ও রিপোর্ট 123-এর বদলে ১২৩ দিয়ে ছাপা হবে। স্ক্রিন ও আপনি যা লেখেন তা 0-9 থাকবে।</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">দেশ</string>
+    <string name="bp_country_help">হোয়াটসঅ্যাপের কান্ট্রি কোড, কর নম্বরের নাম, সপ্তাহের প্রথম দিন ও ক্যালেন্ডার এটি দিয়ে ঠিক হয়। অঙ্ক কখনো বদলায় না।</string>
+    <string name="country_other">অন্যান্য</string>
+    <string name="country_ask_title">আপনার দোকান কোন দেশে?</string>
+    <string name="country_ask_body">অ্যাপ এটি হোয়াটসঅ্যাপ নম্বর, কর নম্বরের নাম ও সপ্তাহের জন্য ব্যবহার করে। পরে ব্যবসার প্রোফাইল থেকে বদলাতে পারবেন।</string>
+    <string name="poster_national_day">জাতীয় দিবস</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">মোবাইল ওয়ালেট নম্বর (%1$s)</string>
 </resources>

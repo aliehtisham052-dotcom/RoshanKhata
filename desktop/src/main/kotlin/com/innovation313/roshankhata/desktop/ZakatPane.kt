@@ -47,7 +47,7 @@ fun ZakatPane(dao: KhataDao) {
     val rows by remember { dao.observeZakatBalancesByParty() }.collectAsState(emptyList())
     val inputs = remember(rows) { Zakat.fromParties(rows) }
     var gold by remember { mutableStateOf(false) }
-    var perTola by remember { mutableStateOf(true) }
+    var perTola by remember { mutableStateOf(com.innovation313.roshankhata.data.ShopCountry.current.tola) }
     var priceText by remember { mutableStateOf("") }
     var stockText by remember { mutableStateOf("") }
     var doubtful by remember { mutableStateOf(false) }

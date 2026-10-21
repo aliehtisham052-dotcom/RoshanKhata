@@ -3606,4 +3606,15 @@
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">الأرقام العربية في المطبوعات</string>
     <string name="print_native_digits_help">تُطبع الفواتير والكشوف والتقارير بالأرقام ١٢٣ بدل 123. تبقى الشاشة وما تكتبه بالأرقام 0-9.</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">الدولة</string>
+    <string name="bp_country_help">تحدد رمز الاتصال لواتساب واسم الرقم الضريبي وأول أيام الأسبوع والتقويم. الأرقام لا تتغير أبداً.</string>
+    <string name="country_other">أخرى</string>
+    <string name="country_ask_title">أين يقع محلك؟</string>
+    <string name="country_ask_body">يستخدم التطبيق هذا لأرقام واتساب واسم الرقم الضريبي والأسبوع. يمكنك تغييره لاحقاً من ملف المحل.</string>
+    <string name="poster_national_day">اليوم الوطني</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">رقم المحفظة الإلكترونية (%1$s)</string>
 </resources>

@@ -34,7 +34,7 @@ data class PosterFields(
     // Hours
     val opens: Int = 9 * 60,
     val closes: Int = 20 * 60,
-    val holidays: Set<Int> = setOf(Calendar.SUNDAY),
+    val holidays: Set<Int> = setOf(ShopCountry.current.weeklyOff),
     val prayerBreak: Boolean = true,
     val breakFrom: Int = 13 * 60,
     val breakTo: Int = 14 * 60 + 30,

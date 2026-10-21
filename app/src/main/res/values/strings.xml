@@ -3632,4 +3632,15 @@ You can change this any time from this screen.</string>
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">Local digits on printed sheets</string>
     <string name="print_native_digits_help">Invoices, statements and reports print figures in this language\'s own digits. The screen and anything you type stay 0-9.</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">Country</string>
+    <string name="bp_country_help">Sets the WhatsApp dialling code, the tax number\'s name, the week\'s first day and the calendar. Figures never change.</string>
+    <string name="country_other">Other</string>
+    <string name="country_ask_title">Where is your shop?</string>
+    <string name="country_ask_body">The app uses this for WhatsApp numbers, the tax number\'s name and the week. You can change it later in Business Profile.</string>
+    <string name="poster_national_day">National day</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">Mobile wallet number (%1$s)</string>
 </resources>

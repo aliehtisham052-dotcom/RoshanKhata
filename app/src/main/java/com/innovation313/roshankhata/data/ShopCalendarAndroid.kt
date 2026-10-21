@@ -19,6 +19,7 @@ fun ShopCalendar.set(context: Context, kind: ShopCalendar.Kind) {
 /** Re-read the active shop's choice. Cheap: SharedPreferences is in memory after first load. */
 fun Currency.refresh(context: Context) {
     symbol = BusinessProfile.currency(context)
+    ShopCountry.current = BusinessProfile.country(context)
 }
 
 /** Save the shop's choice and print with it from now on. */

@@ -50,7 +50,8 @@ class ZakatActivity : BaseActivity() {
      * first — and doing that arithmetic in his head is how 66 was entered for
      * silver.
      */
-    private var perTola = true
+    /** Tola where metal is quoted so (PK, IN, BD), else grams (21 Oct 2026). */
+    private var perTola = com.innovation313.roshankhata.data.ShopCountry.current.tola
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
@@ -86,7 +87,7 @@ class ZakatActivity : BaseActivity() {
 
         toggleUnit = findViewById(R.id.toggleUnit)
         tvPriceWarning = findViewById(R.id.tvPriceWarning)
-        toggleUnit.check(R.id.btnPerTola)
+        toggleUnit.check(if (perTola) R.id.btnPerTola else R.id.btnPerGram)
         toggleUnit.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             perTola = checkedId == R.id.btnPerTola

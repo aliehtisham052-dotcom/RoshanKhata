@@ -3418,4 +3418,15 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">Chhape kaghaz par maqami hindse</string>
     <string name="print_native_digits_help">Invoice, statement aur report is zuban ke apne hindson mein chhapenge. Screen aur jo aap likhen woh 0-9 hi rahega.</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">Mulk</string>
+    <string name="bp_country_help">WhatsApp ka country code, tax number ka naam, hafte ka pehla din aur calendar isi se tay hote hain. Raqmein kabhi nahi badalteen.</string>
+    <string name="country_other">Deegar</string>
+    <string name="country_ask_title">Aap ki dukan kis mulk mein hai?</string>
+    <string name="country_ask_body">App isay WhatsApp number, tax number ke naam aur hafte ke liye istemal karti hai. Baad mein Business Profile se badal sakte hain.</string>
+    <string name="poster_national_day">Qaumi din</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">Mobile wallet number (%1$s)</string>
 </resources>
