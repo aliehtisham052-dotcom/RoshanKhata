@@ -82,7 +82,16 @@ data class StaffPayment(
     val kind: Int,
     val timestamp: Long = System.currentTimeMillis(),
     val note: String? = null,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+
+    /**
+     * This row's identity across copies of the book (schema 36): a random id
+     * given once, kept by every backup and restore, the same on the phone and
+     * the computer for a row that came from one copy. What a restore compares
+     * to say what would be lost, and what a merge matches rows by. Null only
+     * for a moment on a row restored from an old file; restoreAll fills it.
+     */
+    val uid: String? = Uid.next()
 )
 
 /** The month's sums for one person. Plain Kotlin, unit-tested (PayrollTest). */

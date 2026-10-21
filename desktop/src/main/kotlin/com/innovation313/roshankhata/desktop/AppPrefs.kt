@@ -79,6 +79,21 @@ class AppPrefs(private val file: File) {
         props.setProperty(KEY_UPDATE_LATEST, version); props.setProperty(KEY_UPDATE_AT, at.toString()); save()
     }
 
+    /**
+     * Who may do what on this computer (21 Oct 2026): counter mode and the
+     * wrong-PIN count are this computer's, kept here; the owner's PIN is the
+     * book's.
+     */
+    val accessStore: com.innovation313.roshankhata.data.Access.DeviceStore = object : com.innovation313.roshankhata.data.Access.DeviceStore {
+        override fun get(key: String): String? = props.getProperty(key)
+        override fun put(key: String, value: String?) {
+            synchronized(this@AppPrefs) {
+                if (value == null) props.remove(key) else props.setProperty(key, value)
+                save()
+            }
+        }
+    }
+
     /** True when the owner has set an App Lock PIN on this computer. */
     fun hasPin(): Boolean = !props.getProperty(KEY_PIN_HASH).isNullOrBlank() && !props.getProperty(KEY_PIN_SALT).isNullOrBlank()
 

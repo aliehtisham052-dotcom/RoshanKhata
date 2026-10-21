@@ -29,7 +29,9 @@ object BackupCodec {
      * the saleId / paymentMethod / barcode columns on the old tables; 9 the
      * returns (saleReturns, saleReturnItems); 10 the staff logins (role and
      * the PIN's hash on each staff row — never the PIN); 11 stock adjustments
-     * and purchase orders.
+     * and purchase orders; 12 (schema 36) the book's settings (the owner's PIN
+     * as its hash), loyalty points, shifts, every counter row's uid, product
+     * packs/tax/variants, a sale line's tax and the audit log's seal.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -38,7 +40,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 11
+    const val FORMAT_VERSION = 12
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -125,6 +127,7 @@ object BackupCodec {
                 put(JSONObject().apply {
                     put("id", sp.id); put("staffId", sp.staffId); put("amount", sp.amount); put("kind", sp.kind)
                     put("timestamp", sp.timestamp); put("note", sp.note ?: JSONObject.NULL); put("isDeleted", sp.isDeleted)
+                    put("uid", sp.uid ?: JSONObject.NULL)
                 })
             }
         })
@@ -189,6 +192,12 @@ object BackupCodec {
         root.put("stockAdjustments", JSONArray().apply { dao.allAdjustmentsForBackup().forEach { put(adjustmentToJson(it)) } })
         root.put("purchaseOrders", JSONArray().apply { dao.allOrdersForBackup().forEach { put(orderToJson(it)) } })
         root.put("purchaseOrderItems", JSONArray().apply { dao.allOrderItemsForBackup().forEach { put(orderItemToJson(it)) } })
+        // Format 12: the book's own settings, loyalty points and shifts.
+        root.put("bookSettings", JSONArray().apply {
+            dao.allSettingsForBackup().forEach { put(JSONObject().apply { put("key", it.key); put("value", it.value ?: JSONObject.NULL) }) }
+        })
+        root.put("loyalty", JSONArray().apply { dao.allLoyaltyForBackup().forEach { put(loyaltyToJson(it)) } })
+        root.put("shifts", JSONArray().apply { dao.allShiftsForBackup().forEach { put(shiftToJson(it)) } })
 
         // The Business Profile — TEXT ONLY. The three image flags
         // (QR/signature/stamp saved) are deliberately excluded: restoring a
@@ -385,7 +394,7 @@ object BackupCodec {
                     val o = arr.getJSONObject(i)
                     StaffPayment(id = o.getLong("id"), staffId = o.getLong("staffId"), amount = o.getDouble("amount"),
                         kind = o.getInt("kind"), timestamp = o.getLong("timestamp"), note = o.optNullableString("note"),
-                        isDeleted = o.optBoolean("isDeleted", false))
+                        isDeleted = o.optBoolean("isDeleted", false), uid = o.uid())
                 }
             } ?: emptyList()
 
@@ -494,6 +503,17 @@ object BackupCodec {
                 (0 until arr.length()).map { jsonToOrderItem(arr.getJSONObject(it)) }
             } ?: emptyList()
 
+            // Format 12. Absent before: no settings, no points, no shifts.
+            val settings = root.optJSONArray("bookSettings")?.let { arr ->
+                (0 until arr.length()).map { i -> arr.getJSONObject(i).let { BookSetting(it.getString("key"), it.optNullableString("value")) } }
+            } ?: emptyList()
+            val loyalty = root.optJSONArray("loyalty")?.let { arr ->
+                (0 until arr.length()).map { jsonToLoyalty(arr.getJSONObject(it)) }
+            } ?: emptyList()
+            val shifts = root.optJSONArray("shifts")?.let { arr ->
+                (0 until arr.length()).map { jsonToShift(arr.getJSONObject(it)) }
+            } ?: emptyList()
+
             // Business Profile is a single optional object, not an array. Null
             // in an older file, or in one written before the owner set any
             // details — either way there is simply nothing to restore.
@@ -527,6 +547,7 @@ object BackupCodec {
             val returnIds = returns.map { it.id }.toSet()
             val orderIds = orders.map { it.id }.toSet()
             val orphans =
+                loyalty.count { it.partyId !in partyIds } +
                 orderItems.count { it.orderId !in orderIds } +
                 orders.count { it.partyId !in partyIds } +
                 adjustments.count { it.productId !in productIds } +
@@ -578,7 +599,10 @@ object BackupCodec {
                 returnItems = returnItems,
                 adjustments = adjustments,
                 orders = orders,
-                orderItems = orderItems
+                orderItems = orderItems,
+                settings = settings,
+                loyalty = loyalty,
+                shifts = shifts
             )
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
@@ -623,7 +647,11 @@ object BackupCodec {
         /** Stock adjustments and purchase orders (format 11). */
         val adjustments: List<StockAdjustment> = emptyList(),
         val orders: List<PurchaseOrder> = emptyList(),
-        val orderItems: List<PurchaseOrderItem> = emptyList()
+        val orderItems: List<PurchaseOrderItem> = emptyList(),
+        /** The book's settings, loyalty points and shifts (format 12). */
+        val settings: List<BookSetting> = emptyList(),
+        val loyalty: List<LoyaltyEntry> = emptyList(),
+        val shifts: List<Shift> = emptyList()
     )
 
     /**
@@ -690,7 +718,10 @@ object BackupCodec {
             returnItems = data.returnItems,
             adjustments = data.adjustments,
             orders = data.orders,
-            orderItems = data.orderItems
+            orderItems = data.orderItems,
+            settings = data.settings,
+            loyalty = data.loyalty,
+            shifts = data.shifts
         )
         // The restore itself is the first row of the restored log (POS Phase 5).
         dao.log(AuditAction.RESTORE, Access.userName, detail = data.businessName)
@@ -757,6 +788,7 @@ object BackupCodec {
         put("saleId", e.saleId ?: JSONObject.NULL)
         put("isDeleted", e.isDeleted)
         put("deletedAt", e.deletedAt ?: JSONObject.NULL)
+        put("uid", e.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToEntry(o: JSONObject) = LedgerEntry(
@@ -790,7 +822,9 @@ object BackupCodec {
         // Absent before format 8: written by hand.
         saleId = o.optNullableLong("saleId"),
         isDeleted = o.optBoolean("isDeleted", false),
-        deletedAt = o.optNullableLong("deletedAt")
+        deletedAt = o.optNullableLong("deletedAt"),
+        // Absent before format 12: a new identity, given once here.
+        uid = o.uid()
     )
 
     private fun entryItemToJson(i: EntryItem) = JSONObject().apply {
@@ -843,6 +877,7 @@ object BackupCodec {
         put("createdAt", c.createdAt)
         put("isDeleted", c.isDeleted)
         put("deletedAt", c.deletedAt ?: JSONObject.NULL)
+        put("uid", c.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToCheque(o: JSONObject) = Cheque(
@@ -859,7 +894,8 @@ object BackupCodec {
         note = o.optNullableString("note"),
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
-        deletedAt = o.optNullableLong("deletedAt")
+        deletedAt = o.optNullableLong("deletedAt"),
+        uid = o.uid()
     )
 
     private fun cashToJson(c: CashEntry) = JSONObject().apply {
@@ -873,6 +909,7 @@ object BackupCodec {
         put("deletedAt", c.deletedAt ?: JSONObject.NULL)
         put("paymentMethod", c.paymentMethod ?: JSONObject.NULL)
         put("saleId", c.saleId ?: JSONObject.NULL)
+        put("uid", c.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToCash(o: JSONObject) = CashEntry(
@@ -886,7 +923,8 @@ object BackupCodec {
         deletedAt = o.optNullableLong("deletedAt"),
         // Absent before format 8.
         paymentMethod = o.optNullableString("paymentMethod"),
-        saleId = o.optNullableLong("saleId")
+        saleId = o.optNullableLong("saleId"),
+        uid = o.uid()
     )
 
 
@@ -953,6 +991,7 @@ object BackupCodec {
         put("isDeleted", b.isDeleted)
         put("deletedAt", b.deletedAt ?: JSONObject.NULL)
         put("photoPath", b.photoPath ?: JSONObject.NULL)
+        put("uid", b.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToBill(o: JSONObject) = SupplierBill(
@@ -969,7 +1008,8 @@ object BackupCodec {
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt"),
         // Absent in every backup written before v21: no photo.
-        photoPath = o.optNullableString("photoPath")
+        photoPath = o.optNullableString("photoPath"),
+        uid = o.uid()
     )
 
     private fun billItemToJson(i: BillItem) = JSONObject().apply {
@@ -1020,6 +1060,12 @@ object BackupCodec {
         put("barcode", p.barcode ?: JSONObject.NULL)
         put("costPrice", p.costPrice ?: JSONObject.NULL)
         put("lowStockLevel", p.lowStockLevel ?: JSONObject.NULL)
+        put("packUnit", p.packUnit ?: JSONObject.NULL)
+        put("packSize", p.packSize ?: JSONObject.NULL)
+        put("packPrice", p.packPrice ?: JSONObject.NULL)
+        put("taxRate", p.taxRate ?: JSONObject.NULL)
+        put("parentId", p.parentId ?: JSONObject.NULL)
+        put("variant", p.variant ?: JSONObject.NULL)
         put("createdAt", p.createdAt)
         put("isDeleted", p.isDeleted)
         put("deletedAt", p.deletedAt ?: JSONObject.NULL)
@@ -1058,6 +1104,13 @@ object BackupCodec {
             barcode = o.optNullableString("barcode"),
             costPrice = o.optNullableDouble("costPrice"),
             lowStockLevel = o.optNullableDouble("lowStockLevel"),
+            // Absent before format 12.
+            packUnit = o.optNullableString("packUnit"),
+            packSize = o.optNullableDouble("packSize"),
+            packPrice = o.optNullableDouble("packPrice"),
+            taxRate = o.optNullableDouble("taxRate"),
+            parentId = o.optNullableLong("parentId"),
+            variant = o.optNullableString("variant"),
             createdAt = o.optLong("createdAt", System.currentTimeMillis()),
             isDeleted = o.optBoolean("isDeleted", false),
             deletedAt = o.optNullableLong("deletedAt")
@@ -1083,6 +1136,7 @@ object BackupCodec {
         put("createdAt", i.createdAt)
         put("isDeleted", i.isDeleted)
         put("deletedAt", i.deletedAt ?: JSONObject.NULL)
+        put("uid", i.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToInvoice(o: JSONObject) = Invoice(
@@ -1105,7 +1159,8 @@ object BackupCodec {
         sourceEntryId = o.optNullableLong("sourceEntryId"),
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
-        deletedAt = o.optNullableLong("deletedAt")
+        deletedAt = o.optNullableLong("deletedAt"),
+        uid = o.uid()
     )
 
     private fun invoiceItemToJson(i: InvoiceItem) = JSONObject().apply {
@@ -1204,6 +1259,9 @@ object BackupCodec {
     private fun JSONObject.optNullableString(key: String): String? =
         if (isNull(key)) null else optString(key).takeIf { it.isNotEmpty() }
 
+    /** A row's uid as the file carries it; a file from before format 12 has none, and the row is given one now. */
+    private fun JSONObject.uid(): String = optNullableString("uid") ?: Uid.next()
+
     private fun JSONObject.optNullableLong(key: String): Long? =
         if (isNull(key)) null else optLong(key)
 
@@ -1222,6 +1280,7 @@ object BackupCodec {
         put("invoiceId", s.invoiceId ?: JSONObject.NULL); put("createdBy", s.createdBy ?: JSONObject.NULL)
         put("voidReason", s.voidReason ?: JSONObject.NULL); put("voidedAt", s.voidedAt ?: JSONObject.NULL)
         put("isDeleted", s.isDeleted); put("deletedAt", s.deletedAt ?: JSONObject.NULL)
+        put("uid", s.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToSale(o: JSONObject) = Sale(
@@ -1235,7 +1294,7 @@ object BackupCodec {
         ledgerEntryId = o.optNullableLong("ledgerEntryId"), invoiceId = o.optNullableLong("invoiceId"),
         createdBy = o.optNullableString("createdBy"), voidReason = o.optNullableString("voidReason"),
         voidedAt = o.optNullableLong("voidedAt"), isDeleted = o.optBoolean("isDeleted", false),
-        deletedAt = o.optNullableLong("deletedAt")
+        deletedAt = o.optNullableLong("deletedAt"), uid = o.uid()
     )
 
     private fun saleItemToJson(i: SaleItem) = JSONObject().apply {
@@ -1244,6 +1303,8 @@ object BackupCodec {
         put("quantity", i.quantity); put("unit", i.unit ?: JSONObject.NULL); put("rate", i.rate)
         put("discount", i.discount); put("billItemId", i.billItemId ?: JSONObject.NULL)
         put("costRate", i.costRate ?: JSONObject.NULL); put("isDeleted", i.isDeleted)
+        put("taxRate", i.taxRate ?: JSONObject.NULL); put("taxAmount", i.taxAmount ?: JSONObject.NULL)
+        put("taxIncluded", i.taxIncluded ?: JSONObject.NULL)
     }
 
     private fun jsonToSaleItem(o: JSONObject) = SaleItem(
@@ -1251,7 +1312,10 @@ object BackupCodec {
         productId = o.optNullableLong("productId"), itemName = o.optString("itemName", ""),
         quantity = o.getDouble("quantity"), unit = o.optNullableString("unit"), rate = o.getDouble("rate"),
         discount = o.optDouble("discount", 0.0), billItemId = o.optNullableLong("billItemId"),
-        costRate = o.optNullableDouble("costRate"), isDeleted = o.optBoolean("isDeleted", false)
+        costRate = o.optNullableDouble("costRate"), isDeleted = o.optBoolean("isDeleted", false),
+        // Absent before format 12: no tax of its own.
+        taxRate = o.optNullableDouble("taxRate"), taxAmount = o.optNullableDouble("taxAmount"),
+        taxIncluded = if (o.isNull("taxIncluded")) null else o.optBoolean("taxIncluded")
     )
 
     private fun salePaymentToJson(p: SalePayment) = JSONObject().apply {
@@ -1270,12 +1334,15 @@ object BackupCodec {
         put("id", a.id); put("timestamp", a.timestamp); put("user", a.user ?: JSONObject.NULL)
         put("action", a.action); put("refTable", a.refTable ?: JSONObject.NULL)
         put("refId", a.refId ?: JSONObject.NULL); put("detail", a.detail ?: JSONObject.NULL)
+        put("hash", a.hash ?: JSONObject.NULL)
     }
 
     private fun jsonToAudit(o: JSONObject) = AuditLog(
         id = o.getLong("id"), timestamp = o.getLong("timestamp"), user = o.optNullableString("user"),
         action = o.optString("action", ""), refTable = o.optNullableString("refTable"),
-        refId = o.optNullableLong("refId"), detail = o.optNullableString("detail")
+        refId = o.optNullableLong("refId"), detail = o.optNullableString("detail"),
+        // Absent before format 12: written before the seal.
+        hash = o.optNullableString("hash")
     )
 
     // ---------- Returns (format 9) ----------
@@ -1289,6 +1356,7 @@ object BackupCodec {
         put("refundCashId", r.refundCashId ?: JSONObject.NULL); put("createdBy", r.createdBy ?: JSONObject.NULL)
         put("voidReason", r.voidReason ?: JSONObject.NULL); put("voidedAt", r.voidedAt ?: JSONObject.NULL)
         put("isDeleted", r.isDeleted); put("deletedAt", r.deletedAt ?: JSONObject.NULL)
+        put("uid", r.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToReturn(o: JSONObject) = SaleReturn(
@@ -1299,7 +1367,8 @@ object BackupCodec {
         status = o.optString("status", SaleStatus.DONE), ledgerEntryId = o.optNullableLong("ledgerEntryId"),
         refundEntryId = o.optNullableLong("refundEntryId"), refundCashId = o.optNullableLong("refundCashId"),
         createdBy = o.optNullableString("createdBy"), voidReason = o.optNullableString("voidReason"),
-        voidedAt = o.optNullableLong("voidedAt"), isDeleted = o.optBoolean("isDeleted", false), deletedAt = o.optNullableLong("deletedAt")
+        voidedAt = o.optNullableLong("voidedAt"), isDeleted = o.optBoolean("isDeleted", false), deletedAt = o.optNullableLong("deletedAt"),
+        uid = o.uid()
     )
 
     private fun returnItemToJson(i: SaleReturnItem) = JSONObject().apply {
@@ -1321,25 +1390,27 @@ object BackupCodec {
         put("unit", a.unit ?: JSONObject.NULL); put("reason", a.reason); put("note", a.note ?: JSONObject.NULL)
         put("bookQty", a.bookQty ?: JSONObject.NULL); put("countedQty", a.countedQty ?: JSONObject.NULL)
         put("createdBy", a.createdBy ?: JSONObject.NULL); put("isDeleted", a.isDeleted)
+        put("uid", a.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToAdjustment(o: JSONObject) = StockAdjustment(
         id = o.getLong("id"), productId = o.getLong("productId"), timestamp = o.getLong("timestamp"), quantity = o.getDouble("quantity"),
         unit = o.optNullableString("unit"), reason = o.optString("reason", AdjustReason.OTHER), note = o.optNullableString("note"),
         bookQty = o.optNullableDouble("bookQty"), countedQty = o.optNullableDouble("countedQty"),
-        createdBy = o.optNullableString("createdBy"), isDeleted = o.optBoolean("isDeleted", false)
+        createdBy = o.optNullableString("createdBy"), isDeleted = o.optBoolean("isDeleted", false), uid = o.uid()
     )
 
     private fun orderToJson(p: PurchaseOrder) = JSONObject().apply {
         put("id", p.id); put("orderNumber", p.orderNumber); put("partyId", p.partyId); put("timestamp", p.timestamp)
         put("status", p.status); put("note", p.note ?: JSONObject.NULL); put("billId", p.billId ?: JSONObject.NULL)
         put("createdBy", p.createdBy ?: JSONObject.NULL); put("isDeleted", p.isDeleted)
+        put("uid", p.uid ?: JSONObject.NULL)
     }
 
     private fun jsonToOrder(o: JSONObject) = PurchaseOrder(
         id = o.getLong("id"), orderNumber = o.optString("orderNumber", ""), partyId = o.getLong("partyId"), timestamp = o.getLong("timestamp"),
         status = o.optString("status", OrderStatus.DRAFT), note = o.optNullableString("note"), billId = o.optNullableLong("billId"),
-        createdBy = o.optNullableString("createdBy"), isDeleted = o.optBoolean("isDeleted", false)
+        createdBy = o.optNullableString("createdBy"), isDeleted = o.optBoolean("isDeleted", false), uid = o.uid()
     )
 
     private fun orderItemToJson(i: PurchaseOrderItem) = JSONObject().apply {
@@ -1352,5 +1423,32 @@ object BackupCodec {
         id = o.getLong("id"), orderId = o.getLong("orderId"), lineNo = o.optInt("lineNo", 0), productId = o.optNullableLong("productId"),
         itemName = o.optString("itemName", ""), quantity = o.getDouble("quantity"), unit = o.optNullableString("unit"),
         rate = o.optNullableDouble("rate"), isDeleted = o.optBoolean("isDeleted", false)
+    )
+
+    // ---------- Loyalty and shifts (format 12) ----------
+
+    private fun loyaltyToJson(l: LoyaltyEntry) = JSONObject().apply {
+        put("id", l.id); put("partyId", l.partyId); put("saleId", l.saleId ?: JSONObject.NULL); put("points", l.points)
+        put("timestamp", l.timestamp); put("note", l.note ?: JSONObject.NULL); put("isDeleted", l.isDeleted)
+        put("uid", l.uid ?: JSONObject.NULL)
+    }
+
+    private fun jsonToLoyalty(o: JSONObject) = LoyaltyEntry(
+        id = o.getLong("id"), partyId = o.getLong("partyId"), saleId = o.optNullableLong("saleId"), points = o.getDouble("points"),
+        timestamp = o.getLong("timestamp"), note = o.optNullableString("note"), isDeleted = o.optBoolean("isDeleted", false), uid = o.uid()
+    )
+
+    private fun shiftToJson(s: Shift) = JSONObject().apply {
+        put("id", s.id); put("user", s.user ?: JSONObject.NULL); put("device", s.device ?: JSONObject.NULL)
+        put("openedAt", s.openedAt); put("openingFloat", s.openingFloat); put("closedAt", s.closedAt ?: JSONObject.NULL)
+        put("counted", s.counted ?: JSONObject.NULL); put("expected", s.expected ?: JSONObject.NULL)
+        put("note", s.note ?: JSONObject.NULL); put("uid", s.uid ?: JSONObject.NULL)
+    }
+
+    private fun jsonToShift(o: JSONObject) = Shift(
+        id = o.getLong("id"), user = o.optNullableString("user"), device = o.optNullableString("device"),
+        openedAt = o.getLong("openedAt"), openingFloat = o.optDouble("openingFloat", 0.0), closedAt = o.optNullableLong("closedAt"),
+        counted = o.optNullableDouble("counted"), expected = o.optNullableDouble("expected"),
+        note = o.optNullableString("note"), uid = o.uid()
     )
 }

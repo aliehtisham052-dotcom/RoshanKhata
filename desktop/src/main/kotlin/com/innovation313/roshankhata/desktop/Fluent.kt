@@ -189,7 +189,9 @@ fun FluentField(
     big: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    /** Shown as dots (a PIN). */
+    password: Boolean = false
 ) {
     val c = LocalRoshanColors.current
     val source = remember { MutableInteractionSource() }
@@ -221,7 +223,9 @@ fun FluentField(
                         interactionSource = source,
                         keyboardOptions = keyboardOptions,
                         keyboardActions = keyboardActions,
-                        enabled = enabled
+                        enabled = enabled,
+                        visualTransformation = if (password) androidx.compose.ui.text.input.PasswordVisualTransformation()
+                            else androidx.compose.ui.text.input.VisualTransformation.None
                     )
                 }
                 trailing?.invoke()

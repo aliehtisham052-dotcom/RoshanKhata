@@ -89,7 +89,16 @@ data class Sale(
     val voidedAt: Long? = null,
 
     val isDeleted: Boolean = false,
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
+
+    /**
+     * This row's identity across copies of the book (schema 36): a random id
+     * given once, kept by every backup and restore, the same on the phone and
+     * the computer for a row that came from one copy. What a restore compares
+     * to say what would be lost, and what a merge matches rows by. Null only
+     * for a moment on a row restored from an old file; restoreAll fills it.
+     */
+    val uid: String? = Uid.next()
 ) {
     /** What went to the customer's account. Zero for a walk-in by construction. */
     val creditAmount: Double get() = LineMath.round(grandTotal - paidTotal)
@@ -145,7 +154,17 @@ data class SaleItem(
      * the profit on this ticket is fixed the day it was made.
      */
     val costRate: Double? = null,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+
+    /**
+     * The tax on this line (schema 36): its rate in percent, the money it came
+     * to, and whether the line's price already held it. A line with no rate
+     * carries no tax of its own (the ticket's own tax % may still apply).
+     * Fixed at the sale, never recalculated.
+     */
+    val taxRate: Double? = null,
+    val taxAmount: Double? = null,
+    val taxIncluded: Boolean? = null
 ) {
     /** quantity × rate − discount, to the paisa. */
     val lineTotal: Double get() = SaleMath.lineTotal(quantity, rate, discount)
@@ -324,7 +343,15 @@ data class AuditLog(
     val refTable: String? = null,
     val refId: Long? = null,
     /** A short, language-free note: "S-000123 12,450.00". */
-    val detail: String? = null
+    val detail: String? = null,
+
+    /**
+     * The chain (schema 36): SHA-256 of the previous row's hash and this
+     * row's own fields. An edited or removed row breaks every hash after it,
+     * which [AuditChain.verify] finds. It shows tampering; it does not stop a
+     * determined rewrite of the whole file, and says so.
+     */
+    val hash: String? = null
 )
 
 object AuditAction {
@@ -342,4 +369,11 @@ object AuditAction {
     const val STOCK_COUNT = "stock_count"
     const val STOCK_ADJUSTED = "stock_adjusted"
     const val ORDER_RECEIVED = "order_received"
+    // The owner's PIN and counter mode (21 Oct 2026, the critical review).
+    const val OWNER_PIN_SET = "owner_pin_set"
+    const val COUNTER_ON = "counter_on"
+    const val COUNTER_OFF = "counter_off"
+    /** Five wrong PINs in a row: the device waits. */
+    const val PIN_WAIT = "pin_wait"
+    const val SIGN_OUT = "sign_out"
 }

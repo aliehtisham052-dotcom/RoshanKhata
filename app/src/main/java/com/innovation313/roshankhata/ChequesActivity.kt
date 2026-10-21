@@ -279,7 +279,7 @@ class ChequesActivity : BaseActivity() {
             ChoiceSheet.show(this, cheque.partyName, settledOptions) { which ->
                 when {
                     canReopen && which == 0 -> reopen(cheque)
-                    else -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
+                    else -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() } }
                 }
             }
             return
@@ -301,11 +301,11 @@ class ChequesActivity : BaseActivity() {
 
         ChoiceSheet.show(this, getString(R.string.cheque_actions), options) { which ->
             when (which) {
-                0 -> showChequeDialog(cheque)
+                0 -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { showChequeDialog(cheque) }
                 1 -> confirmCleared(cheque)
                 2 -> confirmBounced(cheque)
                 3 -> settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled)
-                4 -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
+                4 -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() } }
             }
         }
     }

@@ -330,6 +330,7 @@ class CashbookActivity : BaseActivity() {
     }
 
     private fun confirmDelete(entry: CashEntry) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDelete(entry) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_cash_entry)
             .setMessage(R.string.delete_cash_confirm)

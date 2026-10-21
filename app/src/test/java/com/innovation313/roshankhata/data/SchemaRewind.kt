@@ -52,8 +52,27 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 35 (stock adjustments, purchase orders): three tables. */
+    /**
+     * Undo version 36: its three tables (book settings, loyalty, shifts), the
+     * products' packs/tax/variants, the sale lines' tax, the audit seal and
+     * every uid.
+     */
+    fun undo36(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for (t in Schema36.newTables) raw.execSQL("DROP TABLE IF EXISTS $t")
+        for ((table, cols) in Schema36.newColumns) stripColumns(raw, table, cols)
+        for ((table, cols) in Schema36.newColumns) {
+            val now = raw.rawQuery("PRAGMA table_info($table)", null).use { c ->
+                buildList { while (c.moveToNext()) add(c.getString(c.getColumnIndexOrThrow("name"))) }
+            }
+            assertTrue("rewind left ${cols.filter { it in now }} on $table", cols.none { it in now })
+        }
+    }
+
+    /** Undo version 35 (stock adjustments, purchase orders): three tables. Undoes 36 first. */
     fun undo35(raw: SQLiteDatabase) {
+        undo36(raw)
         raw.execSQL("PRAGMA foreign_keys = OFF")
         for (t in Schema35.newTables) raw.execSQL("DROP TABLE IF EXISTS $t")
     }

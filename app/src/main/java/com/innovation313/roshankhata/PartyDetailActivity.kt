@@ -647,6 +647,7 @@ class PartyDetailActivity : BaseActivity() {
 
     /** Put an existing entry back on the full form. Its own customer only; never a binned one. */
     private fun openEditor(entryId: Long) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { openEditor(entryId) }) return
         lifecycleScope.launch {
             val e = dao.getEntry(entryId) ?: return@launch
             if (e.partyId != partyId || e.isDeleted) return@launch
@@ -2145,6 +2146,7 @@ class PartyDetailActivity : BaseActivity() {
 
     /** Deleting an entry is reversible — it moves to the Recycle Bin. */
     private fun confirmDeleteEntry(entry: LedgerEntry) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteEntry(entry) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_entry_title)
             .setMessage(R.string.delete_entry_confirm)
@@ -2225,6 +2227,7 @@ class PartyDetailActivity : BaseActivity() {
      * every one of them lands in the Recycle Bin and can be restored.
      */
     private fun confirmDeleteSelectedEntries() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteSelectedEntries() }) return
         val ids = selectedEntryIds.toList()
         if (ids.isEmpty()) return
 
@@ -3133,6 +3136,7 @@ class PartyDetailActivity : BaseActivity() {
      * already has its own item in this menu.
      */
     private fun showEditPartyDialog() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { showEditPartyDialog() }) return
         lifecycleScope.launch {
             val party = dao.getParty(partyId) ?: return@launch
 
@@ -3190,6 +3194,7 @@ class PartyDetailActivity : BaseActivity() {
     }
 
     private fun showCreditLimitDialog() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { showCreditLimitDialog() }) return
         val view = layoutInflater.inflate(R.layout.dialog_credit_limit, null)
         val etLimit: EditText = view.findViewById(R.id.etCreditLimit)
         val tvOwed: TextView = view.findViewById(R.id.tvCurrentOwed)

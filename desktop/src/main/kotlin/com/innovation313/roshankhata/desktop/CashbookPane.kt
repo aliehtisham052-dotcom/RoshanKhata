@@ -109,7 +109,7 @@ fun CashbookPane(dao: KhataDao) {
                             color = if (e.isIncome) Look.accent else c.owedToMe,
                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
                         )
-                        IconAction("ic_close", word(W.delete), { deleting = e }, Modifier.width(32.dp))
+                        IconAction("ic_close", word(W.delete), { Gates.edit { deleting = e } }, Modifier.width(32.dp))
                     }
                     Rule()
                 }

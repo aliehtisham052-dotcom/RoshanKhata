@@ -798,6 +798,7 @@ class KhataActivity : BaseActivity() {
      * more serious of the two to forget — that one is somebody else's.
      */
     private fun confirmDeleteSelected() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteSelected() }) return
         val picked = allParties.filter { it.id in selectedIds }
         if (picked.isEmpty()) return
 

@@ -51,7 +51,23 @@ class StaffActivity : BaseActivity() {
         findViewById<View>(R.id.btnNextMonth).setOnClickListener { shiftMonth(1) }
         findViewById<View>(R.id.btnAddStaff).setOnClickListener { editStaff(null) }
         findViewById<View>(R.id.btnAudit).setOnClickListener { startActivity(android.content.Intent(this, AuditActivity::class.java)) }
+        findViewById<View>(R.id.btnOwnerPin).setOnClickListener { com.innovation313.roshankhata.ui.AccessUi.ownerPin(this) { refreshAccessButtons() } }
+        findViewById<View>(R.id.btnCounterMode).setOnClickListener {
+            com.innovation313.roshankhata.ui.AccessUi.counterMode(this, !com.innovation313.roshankhata.data.Access.counterMode) { refreshAccessButtons() }
+        }
+        refreshAccessButtons()
         load()
+    }
+
+    /** The owner's two buttons say what is set: the PIN (set or change) and counter mode (on or off). */
+    private fun refreshAccessButtons() {
+        lifecycleScope.launch {
+            val has = com.innovation313.roshankhata.data.Access.ownerPin(dao) != null
+            findViewById<android.widget.Button>(R.id.btnOwnerPin).setText(if (has) R.string.access_owner_pin_change else R.string.access_owner_pin_set)
+            findViewById<android.widget.Button>(R.id.btnCounterMode).setText(
+                if (com.innovation313.roshankhata.data.Access.counterMode) R.string.access_counter_on_label else R.string.access_counter_off_label
+            )
+        }
     }
 
     private fun shiftMonth(by: Int) {
@@ -213,10 +229,15 @@ class StaffActivity : BaseActivity() {
                     else if (typedPin.isNotEmpty()) { val salt = com.innovation313.roshankhata.data.PinHash.salt(); st.copy(role = role, pinSalt = salt, pinHash = com.innovation313.roshankhata.data.PinHash.hash(typedPin, salt)) }
                     else st.copy(role = role)
                 }
-                lifecycleScope.launch {
-                    if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
-                    else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
+                val save = {
+                    lifecycleScope.launch {
+                        if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
+                        else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
+                    }
+                    Unit
                 }
+                // A staff login without an owner PIN would let anyone sign in as the owner: set it first.
+                if (mayEditLogin && role != null) com.innovation313.roshankhata.ui.AccessUi.requireOwnerPin(this) { save() } else save()
             }
             .setNegativeButton(R.string.cancel, null)
             .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }

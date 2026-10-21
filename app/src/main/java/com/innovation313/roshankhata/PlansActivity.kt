@@ -359,6 +359,7 @@ class PlansActivity : BaseActivity() {
      * tidied away would be inventing a debt the customer already settled.
      */
     private fun confirmDeletePlan(plan: PlanProgress) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeletePlan(plan) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_plan)
             .setMessage(R.string.delete_plan_confirm)

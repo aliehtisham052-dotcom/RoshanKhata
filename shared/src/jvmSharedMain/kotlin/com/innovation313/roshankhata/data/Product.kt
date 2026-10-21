@@ -33,7 +33,8 @@ import com.innovation313.roshankhata.ui.NameSearch
     indices = [
         Index(value = ["nameKey"], unique = true),
         Index(value = ["normalisedName"]),
-        Index(value = ["barcode"])
+        Index(value = ["barcode"]),
+        Index(value = ["parentId"])
     ]
 )
 data class Product(
@@ -179,7 +180,37 @@ data class Product(
     val costPrice: Double? = null,
 
     /** Warn when stock falls to this or below. Null = never warn. */
-    val lowStockLevel: Double? = null
+    val lowStockLevel: Double? = null,
+
+    // ---- Packs, tax and variants (schema 36) ----
+
+    /**
+     * A bigger unit this product is also bought or sold in — carton, bori,
+     * dozen — and how many [defaultUnit] are in one. Stock counts in
+     * [defaultUnit]: a bill of 3 cartons of 12 is 36 pieces on the shelf.
+     * Both null for a product with one unit.
+     */
+    val packUnit: String? = null,
+    val packSize: Double? = null,
+
+    /** What one [packUnit] sells for, when it is not [salePrice] × [packSize] (a carton is often cheaper). */
+    val packPrice: Double? = null,
+
+    /**
+     * The sales tax on this product, in percent (17.0 = 17%). Null = no tax,
+     * or the tax the counter types on the whole ticket. Whether the price
+     * already holds it is the book's setting ([BookSettings.PRICES_INCLUDE_TAX]).
+     */
+    val taxRate: Double? = null,
+
+    /**
+     * A variant's parent (a size, a colour, a pack of the same product): the
+     * product it belongs to, and what tells it apart ("1 litre", "Red", "XL").
+     * Each variant is a product of its own — its own barcode, price and stock —
+     * so everything else in the app counts it as it counts any product.
+     */
+    val parentId: Long? = null,
+    val variant: String? = null
 )
 
 /**
