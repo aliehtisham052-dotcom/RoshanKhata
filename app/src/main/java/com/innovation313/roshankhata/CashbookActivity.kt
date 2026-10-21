@@ -24,7 +24,6 @@ import com.innovation313.roshankhata.data.CashEntry
 import com.innovation313.roshankhata.data.ReminderLog
 import com.innovation313.roshankhata.data.LineMath
 import com.innovation313.roshankhata.data.Money
-import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.DayCloseMath
 import com.innovation313.roshankhata.data.DayClose
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -125,16 +124,32 @@ class CashbookActivity : BaseActivity() {
             val etNote = view.findViewById<EditText>(R.id.etCloseNote)
             val tvBreak = view.findViewById<TextView>(R.id.tvBreakdown)
             val tvDiff = view.findViewById<TextView>(R.id.tvDifference)
+            com.innovation313.roshankhata.ui.TextFit.relax(view)
             last?.let { etOpening.setText(Format.plain(it.counted)) }
 
+            // Both figures on the app's calculator pad (21 Oct): it types
+            // into whichever of the two has the focus, so a drawer can be
+            // counted note by note — "50×12+100×7" — and the note box keeps
+            // the phone's keyboard. Read back with CalcPad.figure, which keeps
+            // a counted zero (an empty drawer is a real count).
+            com.innovation313.roshankhata.ui.CalcPad.bindAll(
+                root = view,
+                pad = view.findViewById(R.id.closeKeypad),
+                fields = listOf(etOpening, etCounted),
+                results = mapOf(
+                    etOpening to view.findViewById<TextView>(R.id.tvOpeningResult),
+                    etCounted to view.findViewById<TextView>(R.id.tvCountedResult)
+                )
+            )
+
             fun refresh() {
-                val opening = Digits.parse(etOpening.text.toString()) ?: 0.0
+                val opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
                 val expected = DayCloseMath.expected(opening, cashIn, cashOut)
                 tvBreak.text = getString(
                     R.string.dayclose_breakdown,
                     Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected)
                 )
-                val counted = Digits.parse(etCounted.text.toString())
+                val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
                 tvDiff.text = when {
                     counted == null -> ""
                     else -> {
@@ -161,14 +176,14 @@ class CashbookActivity : BaseActivity() {
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.save) { _, _ ->
-                    val counted = Digits.parse(etCounted.text.toString())
+                    val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
                     if (counted == null) {
                         Toast.makeText(this@CashbookActivity, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
                         return@setPositiveButton
                     }
                     // A drawer that does not match the books needs its reason written down (POS Phase 4):
                     // a figure with no story is one nobody can answer for next week.
-                    val openingNow = Digits.parse(etOpening.text.toString()) ?: 0.0
+                    val openingNow = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
                     val expectedNow = DayCloseMath.expected(openingNow, cashIn, cashOut)
                     if (kotlin.math.abs(DayCloseMath.difference(counted, expectedNow)) >= 0.005 && etNote.text.toString().isBlank()) {
                         Toast.makeText(this@CashbookActivity, R.string.z_variance_reason, Toast.LENGTH_LONG).show()
@@ -176,7 +191,7 @@ class CashbookActivity : BaseActivity() {
                     }
                     val close = DayClose(
                         day = ReminderLog.dayOf(now),
-                        opening = Digits.parse(etOpening.text.toString()) ?: 0.0,
+                        opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0,
                         cashIn = LineMath.round(cashIn),
                         cashOut = LineMath.round(cashOut),
                         counted = counted,
@@ -263,9 +278,19 @@ class CashbookActivity : BaseActivity() {
 
     private fun showAddDialog(isIncome: Boolean) {
         val view = layoutInflater.inflate(R.layout.dialog_add_cash, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etCashAmount)
         val etCategory: AutoCompleteTextView = view.findViewById(R.id.etCashCategory)
         val etNote: EditText = view.findViewById(R.id.etCashNote)
+
+        // The app's own calculator pad for the amount (21 Oct), as on the
+        // add-entry form; the category and note keep the phone's keyboard.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.cashKeypad),
+            fields = listOf(etAmount),
+            results = mapOf(etAmount to view.findViewById<TextView>(R.id.tvCashAmountResult))
+        )
 
         // The owner's own categories first, then our starting suggestions.
         // Their words for their business beat ours.

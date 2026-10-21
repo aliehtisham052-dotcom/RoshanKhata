@@ -115,10 +115,25 @@
                     android:id="@+id/etInvoiceDiscount"
                     style="@style/EditorField"
                     android:layout_marginTop="6dp"
+                    android:digits="0123456789.+−×÷*/-%"
                     android:hint="@string/invoice_discount_example"
-                    android:inputType="numberDecimal"
+                    android:inputType="phone"
                     android:textAlignment="viewStart"
                     android:textDirection="ltr" />
+
+                <TextView
+                    android:id="@+id/tvDiscountResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="1"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textDirection="ltr"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
@@ -176,11 +191,26 @@
                         android:layout_width="0dp"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
+                        android:digits="0123456789.+−×÷*/-%"
                         android:hint="@string/invoice_charge_amount_hint"
-                        android:inputType="numberDecimal"
+                        android:inputType="phone"
                         android:textAlignment="viewStart"
                         android:textDirection="ltr" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvChargeResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="1"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textDirection="ltr"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <!-- Blank means nothing recorded yet: a template then leaves the
@@ -221,10 +251,25 @@
                     android:id="@+id/etReceived"
                     style="@style/EditorField"
                     android:layout_marginTop="6dp"
+                    android:digits="0123456789.+−×÷*/-%"
                     android:hint="@string/invoice_charge_amount_hint"
-                    android:inputType="numberDecimal"
+                    android:inputType="phone"
                     android:textAlignment="viewStart"
                     android:textDirection="ltr" />
+
+                <TextView
+                    android:id="@+id/tvReceivedResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="1"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textDirection="ltr"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
@@ -301,6 +346,18 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- The app's calculator pad (21 Oct), pinned above Apply while a money
+         box has the focus — the discount in money, the extra charge, the
+         amount received — and typing into that box. Gone for the label,
+         the tax, the note, and the discount in %: a lone "10%" on the pad
+         would come out as 0.10 (InvoiceEditorActivity, CalcPad.bindAll). -->
+    <include
+        android:id="@+id/moreKeypad"
+        layout="@layout/view_calculator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"

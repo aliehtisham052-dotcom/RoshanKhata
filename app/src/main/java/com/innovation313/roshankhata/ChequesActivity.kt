@@ -146,6 +146,16 @@ class ChequesActivity : BaseActivity() {
         val etBank: EditText = view.findViewById(R.id.etBankName)
         val etNote: EditText = view.findViewById(R.id.etChequeNote)
 
+        // The app's own calculator pad for the amount (21 Oct), shown while
+        // the amount has the focus; party, number, bank and note keep the
+        // phone's keyboard.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.chequeKeypad),
+            fields = listOf(etAmount),
+            results = mapOf(etAmount to view.findViewById<TextView>(R.id.tvChequeAmountResult))
+        )
+
         etParty.setAdapter(
             ArrayAdapter(
                 this,
