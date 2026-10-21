@@ -142,7 +142,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
                     }
                     if (pending) {
                         // Edit only while pending: once cleared, the amount is also a ledger entry.
-                        Action(word(W.edit_cheque), c.ink) { form = ChequeForm(ch) }
+                        Action(word(W.edit_cheque), c.ink) { Gates.edit { form = ChequeForm(ch) } }
                         Action(word(W.mark_cleared), c.iOwe) { clearing = ch }
                         Action(word(W.mark_bounced), c.owedToMe) { bouncing = ch }
                         Action(word(W.mark_cancelled), c.ink) { settle(ch, ChequeStatus.CANCELLED) }
@@ -151,7 +151,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
                         Action(word(W.cheque_reopen), c.ink) { settle(ch, null) }
                     }
                     Action(word(W.delete_cheque), c.owedToMe) {
-                        scope.launch { withContext(Dispatchers.IO) { dao.softDeleteCheque(ch.id) } }
+                        Gates.edit { scope.launch { withContext(Dispatchers.IO) { dao.softDeleteCheque(ch.id) } } }
                     }
                 }
             },

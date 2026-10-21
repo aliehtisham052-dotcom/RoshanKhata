@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.DateWords
@@ -65,16 +66,31 @@ fun StaffPane(dao: KhataDao) {
     var marking by remember { mutableStateOf<Staff?>(null) }
     var handing by remember { mutableStateOf<Pair<Staff, Int>?>(null) }
     var removing by remember { mutableStateOf<Staff?>(null) }
+    // The owner's own controls (21 Oct 2026): the book's owner PIN and this computer's counter mode.
+    var ownerPinOpen by remember { mutableStateOf(false) }
+    var counterOpen by remember { mutableStateOf(false) }
+    var hasOwnerPin by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(ownerPinOpen, counterOpen) {
+        hasOwnerPin = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.Access.ownerPin(dao) != null }
+    }
+    if (ownerPinOpen) OwnerPinDialog(dao, hasOwnerPin == true) { ownerPinOpen = false }
+    if (counterOpen) CounterModeDialog(dao, !com.innovation313.roshankhata.data.Access.counterMode) { counterOpen = false }
 
     fun shift(by: Int) {
         monthAt = Calendar.getInstance().apply { timeInMillis = from; add(Calendar.MONTH, by) }.timeInMillis
     }
 
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.staff_title), word(W.staff_subtitle)) }
+            FluentButton(word(if (hasOwnerPin == true) W.access_owner_pin_change else W.access_owner_pin_set), { ownerPinOpen = true }, kind = ButtonKind.STANDARD)
+            FluentButton(
+                word(if (com.innovation313.roshankhata.data.Access.counterMode) W.access_counter_on_label else W.access_counter_off_label),
+                { counterOpen = true }, kind = ButtonKind.STANDARD
+            )
             FillButton(word(W.staff_add), c.brandGreen) { adding = true }
         }
+        Text(word(W.access_counter_mode_help), color = c.textMuted, fontSize = 12.sp)
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton({ shift(-1) }) { Text("‹ " + word(W.staff_prev_month), color = c.brandGreenText) }
             Text(DateWords.format("MMMM yyyy", from), Modifier.weight(1f), color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold,
@@ -158,6 +174,8 @@ fun StaffPane(dao: KhataDao) {
                     if (n.isEmpty() || s == null) { bad = true; return@TextButton }
                     val p = phone.trim().ifEmpty { null }
                     // A role needs a PIN the first time; a blank PIN later keeps the old one.
+                    // A staff login without an owner PIN would let anyone sign in as the owner: set it first.
+                    if (mayEditLogin && role != null && hasOwnerPin != true) { ownerPinOpen = true; return@TextButton }
                     val needsPin = mayEditLogin && role != null && (person?.pinHash == null || pin.isNotEmpty())
                     if (needsPin && !com.innovation313.roshankhata.data.PinHash.valid(pin)) { badPin = true; return@TextButton }
                     val login: (Staff) -> Staff = { st ->

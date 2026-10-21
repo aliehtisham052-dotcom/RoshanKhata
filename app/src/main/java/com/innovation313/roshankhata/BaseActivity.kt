@@ -68,7 +68,32 @@ abstract class BaseActivity : AppCompatActivity() {
         if (builtAtLevel >= 0 && builtAtLevel != TextSize.level(this)) {
             builtAtLevel = TextSize.level(this)
             recreate()
+            return
         }
+        // A counter phone with nobody signed in shows nothing but the sign-in
+        // sheet (21 Oct 2026). The doors before the book are left alone.
+        if (javaClass.simpleName !in BEFORE_THE_BOOK) com.innovation313.roshankhata.ui.AccessUi.lockGate(this)
+    }
+
+    /**
+     * A screen a cashier may not open alone (backups, settings, staff, the
+     * bin, the reports) stays hidden until a manager or the owner allows it,
+     * and closes if nobody does — checked here so there is no way in that
+     * forgot to ask.
+     */
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        if (!isFinishing) com.innovation313.roshankhata.ui.AccessUi.gateScreen(this)
+    }
+
+    override fun onDestroy() {
+        com.innovation313.roshankhata.ui.AccessUi.screenGone(this)
+        super.onDestroy()
+    }
+
+    private companion object {
+        /** Screens shown before the book opens: the splash's router, App Lock, and the first-run questions. */
+        val BEFORE_THE_BOOK = setOf("GateActivity", "LockActivity", "LanguageActivity", "ShopTypeActivity", "ShopNameActivity")
     }
 
     /** After setContentView: let fixed-height buttons grow if the text did. */

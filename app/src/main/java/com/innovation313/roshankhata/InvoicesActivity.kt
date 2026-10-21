@@ -299,6 +299,7 @@ class InvoicesActivity : BaseActivity() {
     }
 
     private fun confirmDeleteInvoice(invoice: InvoiceSummary) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteInvoice(invoice) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete)
             .setMessage(R.string.delete_invoice_confirm)

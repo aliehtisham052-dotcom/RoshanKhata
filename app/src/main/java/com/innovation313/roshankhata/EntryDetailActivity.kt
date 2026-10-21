@@ -301,6 +301,7 @@ class EntryDetailActivity : BaseActivity() {
      * far riskier operation than fixing what this entry actually says.
      */
     private fun showEditDialog() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, KhataDatabase.get(this).khataDao()) { showEditDialog() }) return
         val e = entry ?: return
         // An entry made with the item list — several items, a rate, or a free
         // item — is edited on the full form it was made on; this small dialog
@@ -609,6 +610,7 @@ class EntryDetailActivity : BaseActivity() {
     }
 
     private fun confirmDelete() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, KhataDatabase.get(this).khataDao()) { confirmDelete() }) return
         AlertDialog.Builder(this)
             .setTitle(R.string.delete_entry_title)
             .setMessage(R.string.delete_entry_message)

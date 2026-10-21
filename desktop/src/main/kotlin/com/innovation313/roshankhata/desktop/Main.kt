@@ -117,7 +117,8 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // Once a day, a checked copy of the open book (the phone's Snapshots); a failure never stops the app.
     val dailyDir = remember(active) { DailyCopies.dir(home, active) }
     // The app's language: the owner's choice (app.properties), else the computer's.
-    val appPrefs = remember { AppPrefs(File(home, "app.properties")) }
+    // Counter mode and the wrong-PIN count belong to this computer: read before anything is shown.
+    val appPrefs = remember { AppPrefs(File(home, "app.properties")).also { com.innovation313.roshankhata.data.Access.store = it.accessStore } }
     // The book, checked first (BookHealth): a damaged file is set aside and the newest good daily copy comes back.
     val opened = remember(active) {
         val outside = appPrefs.backupFolder()?.let { DailyCopies.outside(it, active) }
@@ -135,7 +136,8 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     var textSize by remember { mutableStateOf(appPrefs.textSize()) }
     var invoiceFields by remember { mutableStateOf(appPrefs.invoiceFields()) }
     // App Lock: with a PIN set, nothing of the book is composed until it is typed (LockScreen).
-    var unlocked by remember { mutableStateOf(!appPrefs.hasPin()) }
+    // A counter computer opens on its own sign-in (CounterGate), a PIN already: App Lock is not asked as well.
+    var unlocked by remember { mutableStateOf(!appPrefs.hasPin() || com.innovation313.roshankhata.data.Access.counterMode) }
     // The shop's trade (its words, units and which pages show), re-read when the owner changes it.
     var tradeTick by remember { mutableIntStateOf(0) }
     val trade = remember(active, tradeTick) { TradeKit.of(settings.tradeKey(), settings.otherTradeItems()) }
@@ -161,14 +163,15 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     val rtl = BidiPort.isRtlLocale(locale)
     // Keyboard shortcuts for the counter (Phase 9a): the open page fills these in.
     val keys = remember { KeyActions() }
+    val closeApp = {
+        Reminders.remove()
+        outsideDir?.let { dir ->
+            runCatching { kotlinx.coroutines.runBlocking { kotlinx.coroutines.withTimeoutOrNull(20_000) { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } } }
+        }
+        db.close(); exitApplication()
+    }
     Window(
-        onCloseRequest = {
-            Reminders.remove()
-            outsideDir?.let { dir ->
-                runCatching { kotlinx.coroutines.runBlocking { kotlinx.coroutines.withTimeoutOrNull(20_000) { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } } }
-            }
-            db.close(); exitApplication()
-        },
+        onCloseRequest = closeApp,
         onPreviewKeyEvent = { keys.handle(it) },
         title = words.text(W.app_name),
         icon = painterResource("roshan_khata_icon.png"),
@@ -185,7 +188,9 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                     androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(screen.density, screen.fontScale * TEXT_FACTORS[textSize])
                 ) {
                     if (!unlocked) LockScreen(appPrefs) { unlocked = true }
-                    else key(active) { CompositionLocalProvider(LocalTrade provides trade) { Book(
+                    // A counter with nobody signed in: nothing of the book until someone does (21 Oct 2026).
+                    else if (com.innovation313.roshankhata.data.Access.locked) key(active) { CounterGate(db.khataDao(), settings.businessName(), onClose = closeApp) }
+                    else key(active) { GateHost(db.khataDao()) { CompositionLocalProvider(LocalTrade provides trade) { Book(
                         keys = keys,
                         dao = db.khataDao(),
                         load = { db.khataDao().partiesWithBalanceOnce() },
@@ -213,7 +218,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         onBackupFolder = { f -> appPrefs.setBackupFolder(f); outsideFolder = f },
                         onTradeChanged = { tradeTick++ },
                         appPrefs = appPrefs
-                    ) } }
+                    ) } } }
                     if (!recoveryTold) {
                         // The book was damaged and rebuilt (or could not be): said once, before any work.
                         val from = opened.recoveredFrom
@@ -362,6 +367,9 @@ private fun Book(
         }
     }
     var choosingBusiness by remember { mutableStateOf(false) }
+    // Who is at this computer (More → Who is at the counter): sign in, change, or sign out.
+    var signingIn by remember { mutableStateOf(false) }
+    if (signingIn) SignInDialog(dao) { signingIn = false }
     var statementFor by remember { mutableStateOf<PartyWithBalance?>(null) }
     // F2 you gave, F3 you got (on the open customer), Ctrl+N new customer, Ctrl+P statement,
     // F1 the Khata page. Each does only what its button does.
@@ -473,27 +481,28 @@ private fun Book(
         AppHeader(
             shopName = shop ?: word(W.app_name),
             logo = Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
-            onShop = { choosingBusiness = true },
+            onShop = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
             backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.dateTime(it)) } ?: word(W.backup_now),
-            onBackup = { backupNow() },
-            onPhone = { phoneSync = true },
+            onBackup = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) { backupNow() } },
+            onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { phoneSync = true } },
             alerts = alerts.size + extraAlerts.size,
             onAlerts = { showAlerts = true },
             // The phone's More sheet, in its groups: Data, Display, Help.
             menu = listOf(
                 MenuLine(word(W.settings_group_data), null),
-                MenuLine(word(W.restore_from_file)) { restoreFromFile() },
-                MenuLine(word(W.businesses_title)) { choosingBusiness = true },
-                MenuLine(word(W.recycle_bin)) { bin = true },
+                MenuLine(word(W.restore_from_file)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { restoreFromFile() } },
+                MenuLine(word(W.businesses_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
+                MenuLine(word(W.recycle_bin)) { Gates.edit { bin = true } },
                 MenuLine(word(W.snapshots_title)) { section = Section.DAILY },
                 MenuLine(word(W.settings_group_display), null),
                 MenuLine(word(W.language)) { choosingLanguage = true },
                 MenuLine(word(W.theme)) { choosingTheme = true },
                 MenuLine(word(W.text_size)) { choosingTextSize = true },
                 MenuLine(word(W.business_profile)) { section = Section.SHOP },
-                MenuLine(word(W.trade_kicker_change)) { choosingTrade = true },
+                MenuLine(word(W.trade_kicker_change)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingTrade = true } },
                 MenuLine(word(W.settings_group_security), null),
-                MenuLine(word(W.app_lock)) { lockSettings = true },
+                MenuLine(word(W.app_lock)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { lockSettings = true } },
+                MenuLine(com.innovation313.roshankhata.data.Access.current?.let { word(W.access_signed_in_as, it.name) } ?: word(W.access_who)) { signingIn = true },
                 MenuLine(word(W.settings_group_help), null),
                 MenuLine(word(W.help_support)) { section = Section.HELP },
                 MenuLine(word(W.report_problem)) { reporting = true },
@@ -513,7 +522,11 @@ private fun Book(
                     .border(1.dp, Look.strokeCard, RoundedCornerShape(topStart = 8.dp)),
                 androidx.compose.animation.core.tween(Motion.PAGE), label = "page"
             ) { page ->
-                when (page) {
+                // A page a cashier may not open alone shows what it needs until a manager or the owner allows it.
+                val need = page.need()
+                var allowedHere by remember(page) { mutableStateOf(false) }
+                if (need != null && !allowedHere && !com.innovation313.roshankhata.data.Access.can(need)) LockedPage(need) { allowedHere = true }
+                else when (page) {
                     Section.HOME -> Box(Modifier.fillMaxSize()) {
                         HomePane(
                             parties = parties, late = late, alerts = alerts, extra = extraAlerts,
@@ -529,8 +542,7 @@ private fun Book(
                     Section.COUNTER -> Box(Modifier.fillMaxSize()) {
                         CounterSalePane(
                             dao, parties, words, rtl, shop, com.innovation313.roshankhata.data.Currency.symbol, reload,
-                            onChanged = { reload++ }, onReceipt = { receipt = it }, keys = keys,
-                            ownerPin = if (appPrefs.hasPin()) ({ pin: String -> appPrefs.pinMatches(pin) }) else null
+                            onChanged = { reload++ }, onReceipt = { receipt = it }, keys = keys
                         )
                     }
                     Section.AUDIT -> Box(Modifier.fillMaxSize()) { AuditPane(dao) }
@@ -633,7 +645,7 @@ private fun Book(
                                 ) {
                                     Text(word(W.selected_count, chosenIds.size), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                                     TextButton({ chosenIds = shown.map { it.id }.toSet() }) { Text(word(W.select_all), color = c.brandGreenText) }
-                                    TextButton({ deletingMany = true }, enabled = chosenIds.isNotEmpty()) { Text(word(W.delete), color = c.owedToMe) }
+                                    TextButton({ Gates.edit { deletingMany = true } }, enabled = chosenIds.isNotEmpty()) { Text(word(W.delete), color = c.owedToMe) }
                                 }
                             }
                             // One line however narrow the window: the count never wraps ("1209 custo mers"
@@ -834,9 +846,9 @@ private fun Book(
                                     onGave = { entryWay = true },
                                     onGot = { entryWay = false },
                                     onEntry = { editing = it },
-                                    onDeleteParty = { deletingParty = party },
+                                    onDeleteParty = { Gates.edit { deletingParty = party } },
                                     onEditParty = {
-                                        scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } }
+                                        Gates.edit { scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } } }
                                     },
                                     onStatement = { statementFor = party },
                                     modifier = Modifier.weight(1f)
@@ -990,7 +1002,7 @@ private fun Book(
                     partyId = e.partyId, partyName = forParty?.name.orEmpty(), isGiven = e.isGiven,
                     existing = e, existingItem = loaded.firstOrNull(),
                     isCustomer = partyRow?.isCustomer ?: true, batchesFor = batchesFor, promise = partyRow?.harvestPromise,
-                    onSave = { d ->
+                    onSave = { d -> Gates.edit {
                         scope.launch {
                             withContext(Dispatchers.IO) {
                                 // The phone's edit: the entry and its goods lines, all or nothing.
@@ -1002,9 +1014,9 @@ private fun Book(
                             editing = null
                             reload++
                         }
-                    },
+                    } },
                     onCancel = { editing = null },
-                    onDelete = { deleting = e; editing = null },
+                    onDelete = { Gates.edit { deleting = e; editing = null } },
                     onPrint = {
                         val item = loaded.firstOrNull()
                         receipt = listOfNotNull(

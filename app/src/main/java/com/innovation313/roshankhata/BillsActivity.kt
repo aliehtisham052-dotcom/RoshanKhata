@@ -1003,6 +1003,7 @@ class BillsActivity : BaseActivity() {
      * this is for.
      */
     private fun startEditBill(billSummary: BillSummary) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { startEditBill(billSummary) }) return
         lifecycleScope.launch {
             val existing = dao.getBill(billSummary.id) ?: return@launch
             showEditBillDialog(existing, billSummary.partyName)
@@ -1230,6 +1231,7 @@ class BillsActivity : BaseActivity() {
      * if the total should change too, that is done from Edit Bill, not here.
      */
     private fun confirmDeleteItem(billId: Long, item: BillItem) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteItem(billId, item) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_item)
             .setMessage(getString(R.string.delete_item_confirm, item.productName))
@@ -1254,6 +1256,7 @@ class BillsActivity : BaseActivity() {
      * the entry stayed, which the code had stopped doing).
      */
     private fun confirmDeleteBill(bill: BillSummary) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteBill(bill) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_bill)
             .setMessage(R.string.delete_bill_confirm)

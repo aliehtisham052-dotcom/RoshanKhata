@@ -173,7 +173,7 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
                 }
                 if (open == b.id) {
                     Row {
-                        FluentButton(word(W.edit_bill), { editingBill = b }, kind = ButtonKind.SUBTLE)
+                        FluentButton(word(W.edit_bill), { Gates.edit { editingBill = b } }, kind = ButtonKind.SUBTLE)
                         FluentButton(word(W.add_item), { lineFor = b.id to null }, kind = ButtonKind.SUBTLE)
                         FluentButton(word(W.delete_bill), { deletingBill = b }, kind = ButtonKind.DANGER)
                     }
@@ -199,7 +199,7 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
                                 }
                                 FluentButton(word(W.batch_buyers_action), { buyersOf = l.id }, kind = ButtonKind.SUBTLE)
                                 FluentButton(word(W.edit), { lineFor = b.id to l }, kind = ButtonKind.SUBTLE)
-                                FluentButton(word(W.delete), { deletingLine = l }, kind = ButtonKind.DANGER)
+                                FluentButton(word(W.delete), { Gates.edit { deletingLine = l } }, kind = ButtonKind.DANGER)
                             }
                         }
                     }
@@ -541,10 +541,10 @@ fun InvoicesPane(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         FluentButton(word(W.ledger_pdf_button), { print(open.id) }, kind = ButtonKind.ACCENT, icon = "ic_print")
                         FluentButton(word(W.edit), {
-                            scope.launch { editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } } }
+                            Gates.edit { scope.launch { editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } } } }
                         }, icon = "ic_edit")
                         androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
-                        FluentButton(word(W.delete), { deletingInvoice = open }, kind = ButtonKind.DANGER)
+                        FluentButton(word(W.delete), { Gates.edit { deletingInvoice = open } }, kind = ButtonKind.DANGER)
                     }
                     full?.let { saved ->
                         DesignStepper(
@@ -698,7 +698,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                                 scope.launch { withContext(Dispatchers.IO) { dao.getPlan(p.id)?.let { dao.updatePlan(it.copy(isClosed = true, closedAt = System.currentTimeMillis())) } } }
                             })
                         }
-                        add(word(W.delete_plan) to { deleting = p })
+                        add(word(W.delete_plan) to { Gates.edit { deleting = p } })
                     }
                     actions.forEach { (label, go) ->
                         Text(label, Modifier.fillMaxWidth().press { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)

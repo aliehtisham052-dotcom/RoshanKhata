@@ -1915,8 +1915,15 @@ interface KhataDao {
         // Stock adjustments and purchase orders (v35). Additive.
         adjustments: List<StockAdjustment> = emptyList(),
         orders: List<PurchaseOrder> = emptyList(),
-        orderItems: List<PurchaseOrderItem> = emptyList()
+        orderItems: List<PurchaseOrderItem> = emptyList(),
+        // Book settings, loyalty and shifts (v36). Additive.
+        settings: List<BookSetting> = emptyList(),
+        loyalty: List<LoyaltyEntry> = emptyList(),
+        shifts: List<Shift> = emptyList()
     ) {
+        wipeSettings()
+        wipeLoyalty()
+        wipeShifts()
         wipeOrderItems()
         wipeOrders()
         wipeAdjustments()
@@ -1983,6 +1990,9 @@ interface KhataDao {
         restoreAdjustments(adjustments)
         restoreOrders(orders)
         restoreOrderItems(orderItems)
+        restoreSettings(settings)
+        restoreLoyalty(loyalty)
+        restoreShifts(shifts)
     }
 
 
@@ -2498,7 +2508,22 @@ interface KhataDao {
     suspend fun updateSale(sale: Sale)
 
     @Insert
-    suspend fun insertAudit(row: AuditLog): Long
+    suspend fun insertAuditRow(row: AuditLog): Long
+
+    /** The seal of the newest row in the log (null for an empty log, or one whose newest row predates the seal). */
+    @Query("SELECT hash FROM audit_log ORDER BY id DESC LIMIT 1")
+    suspend fun lastAuditHash(): String?
+
+    /**
+     * One row in the log, sealed onto the row before it ([AuditChain],
+     * schema 36). Every audit write goes through here, so the chain has no
+     * gap a screen could open by writing around it.
+     */
+    @Transaction
+    suspend fun insertAudit(row: AuditLog): Long {
+        val fresh = row.copy(id = 0)
+        return insertAuditRow(fresh.copy(hash = AuditChain.hashOf(lastAuditHash(), fresh)))
+    }
 
     @Query("SELECT * FROM sales WHERE id = :id")
     suspend fun getSale(id: Long): Sale?
@@ -3214,4 +3239,104 @@ interface KhataDao {
         """
     )
     suspend fun productsSoldSince(since: Long): List<Long>
+
+    // ---------- Book settings, loyalty and shifts (schema 36) ----------
+
+    @Query("SELECT value FROM book_settings WHERE `key` = :key")
+    suspend fun settingValue(key: String): String?
+
+    @Query("SELECT value FROM book_settings WHERE `key` = :key")
+    fun observeSetting(key: String): Flow<String?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun putSetting(setting: BookSetting)
+
+    @Query("DELETE FROM book_settings WHERE `key` = :key")
+    suspend fun dropSetting(key: String)
+
+    /** A setting written, or removed when [value] is null. */
+    @Transaction
+    suspend fun setSetting(key: String, value: String?) {
+        if (value == null) dropSetting(key) else putSetting(BookSetting(key, value))
+    }
+
+    @Query("SELECT * FROM book_settings ORDER BY `key`")
+    suspend fun allSettingsForBackup(): List<BookSetting>
+
+    @Query("DELETE FROM book_settings")
+    suspend fun wipeSettings()
+
+    @Insert
+    suspend fun restoreSettings(items: List<BookSetting>)
+
+    @Insert
+    suspend fun insertLoyalty(row: LoyaltyEntry): Long
+
+    /** A customer's points: the sum of every live row, as every balance here is. */
+    @Query("SELECT COALESCE(SUM(points), 0) FROM loyalty WHERE partyId = :partyId AND isDeleted = 0")
+    suspend fun loyaltyBalance(partyId: Long): Double
+
+    @Query("SELECT * FROM loyalty WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC, id DESC")
+    suspend fun loyaltyOf(partyId: Long): List<LoyaltyEntry>
+
+    /** A voided sale's points, earned and spent, taken back. */
+    @Query("UPDATE loyalty SET isDeleted = 1 WHERE saleId = :saleId")
+    suspend fun dropLoyaltyOfSale(saleId: Long)
+
+    @Query("SELECT * FROM loyalty ORDER BY id")
+    suspend fun allLoyaltyForBackup(): List<LoyaltyEntry>
+
+    @Query("DELETE FROM loyalty")
+    suspend fun wipeLoyalty()
+
+    @Insert
+    suspend fun restoreLoyalty(items: List<LoyaltyEntry>)
+
+    @Insert
+    suspend fun insertShift(shift: Shift): Long
+
+    @Update
+    suspend fun updateShift(shift: Shift)
+
+    @Query("SELECT * FROM shifts WHERE id = :id")
+    suspend fun getShift(id: Long): Shift?
+
+    /** The shift [user] has open (null = the owner's), if any. */
+    @Query("SELECT * FROM shifts WHERE closedAt IS NULL AND ((:user IS NULL AND user IS NULL) OR user = :user) ORDER BY openedAt DESC LIMIT 1")
+    suspend fun openShiftOf(user: String?): Shift?
+
+    @Query("SELECT * FROM shifts WHERE closedAt IS NULL ORDER BY openedAt DESC")
+    fun observeOpenShifts(): Flow<List<Shift>>
+
+    @Query("SELECT * FROM shifts WHERE openedAt >= :from AND openedAt < :to ORDER BY openedAt DESC, id DESC")
+    suspend fun shiftsBetween(from: Long, to: Long): List<Shift>
+
+    @Query("SELECT * FROM shifts ORDER BY openedAt DESC, id DESC LIMIT :limit")
+    fun observeShifts(limit: Int): Flow<List<Shift>>
+
+    @Query("SELECT * FROM shifts ORDER BY id")
+    suspend fun allShiftsForBackup(): List<Shift>
+
+    @Query("DELETE FROM shifts")
+    suspend fun wipeShifts()
+
+    @Insert
+    suspend fun restoreShifts(items: List<Shift>)
+
+    /**
+     * The owner's PIN and recovery code, as hashes with their salts, in one
+     * transaction with its audit row ([Access.setOwnerPin] makes them).
+     */
+    @Transaction
+    suspend fun saveOwnerPin(pinHash: String, pinSalt: String, codeHash: String, codeSalt: String, user: String?) {
+        putSetting(BookSetting(BookSettings.OWNER_PIN_HASH, pinHash))
+        putSetting(BookSetting(BookSettings.OWNER_PIN_SALT, pinSalt))
+        putSetting(BookSetting(BookSettings.OWNER_RECOVERY_HASH, codeHash))
+        putSetting(BookSetting(BookSettings.OWNER_RECOVERY_SALT, codeSalt))
+        insertAudit(AuditLog(user = user ?: Access.OWNER, action = AuditAction.OWNER_PIN_SET))
+    }
+
+    /** Every row of the log in the order it was written, for [AuditChain.verify]. */
+    @Query("SELECT * FROM audit_log ORDER BY id")
+    suspend fun auditInOrder(): List<AuditLog>
 }

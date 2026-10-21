@@ -90,7 +90,6 @@ fun CounterSalePane(
     onReceipt: (List<ThermalReceipt.Line>) -> Unit,
     keys: KeyActions,
     /** The owner's App Lock PIN check, for a manager's override; null when none is set. */
-    ownerPin: ((String) -> Boolean)? = null
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -121,7 +120,7 @@ fun CounterSalePane(
     var signingIn by remember { mutableStateOf(false) }
     if (signingIn) SignInDialog(dao) { signingIn = false }
     var override by remember { mutableStateOf<Pair<String, (String) -> Unit>?>(null) }
-    override?.let { (what, then) -> OverrideDialog(dao, what, ownerPin, onClose = { override = null }) { by -> then(by) } }
+    override?.let { (what, then) -> OverrideDialog(dao, what, onClose = { override = null }) { by -> then(by) } }
     fun allowed(p: com.innovation313.roshankhata.data.Access.Permission, what: String, then: (String?) -> Unit) {
         if (com.innovation313.roshankhata.data.Access.can(p)) then(null) else override = what to { by -> then(by) }
     }
