@@ -40,7 +40,10 @@ import kotlinx.coroutines.withContext
 class CounterSaleActivity : BaseActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
-    private val draft = CounterDraft()
+    // The ticket outlives the screen being rebuilt (21 Oct 2026, the critical review: turning the phone
+    // or switching dark mode emptied a half-rung ticket). Held by the screen's ViewModel.
+    class TicketHolder : androidx.lifecycle.ViewModel() { val draft = CounterDraft() }
+    private val draft by lazy { androidx.lifecycle.ViewModelProvider(this)[TicketHolder::class.java].draft }
     private var products by mutableStateOf<List<Product>>(emptyList())
     private var parties by mutableStateOf<List<PartyWithBalance>>(emptyList())
     private var onHand by mutableStateOf<Map<Long, Double?>>(emptyMap())

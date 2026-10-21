@@ -3418,4 +3418,8 @@
     <string name="entry_linked_cheque">این ثبت را چکی که وصول شده نوشته است. آن را از صفحهٔ چک‌ها تغییر دهید.</string>
     <string name="entry_linked_sale">این ثبت را یک فروش صندوق نوشته است. فروش را باطل کنید یا برگشت ثبت کنید.</string>
     <string name="entry_linked_return">این ثبت را یک برگشت نوشته است. به جای آن برگشت را باطل کنید.</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">به شما پرداخت شد</string>
+    <string name="pdf_stmt_you_supplied">شما تحویل دادید</string>
 </resources>

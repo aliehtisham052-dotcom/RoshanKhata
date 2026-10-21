@@ -983,6 +983,9 @@ class InvoiceEditorActivity : BaseActivity() {
      * swipe. Cheap enough at today's two templates; if that stops being
      * true once more of the ten exist, this is the one place to revisit.
      */
+    /** The preview's scale: the screen's width over A4's 595 points, never more than 2, never below 1. */
+    private fun previewScale(): Float = (resources.displayMetrics.widthPixels / 595f).coerceIn(1f, 2f)
+
     private fun renderAllPreviews() {
         renderJob?.cancel()
         renderJob = lifecycleScope.launch {
@@ -991,8 +994,11 @@ class InvoiceEditorActivity : BaseActivity() {
             val items = validItems()
             val bitmaps = withContext(Dispatchers.IO) {
                 templateIds.map { id ->
+                    // Ten designs at once: drawn at the size a phone shows them, not twice A4's points
+                    // (21 Oct 2026, the critical review: ~80 MB of pictures closed the app on older phones).
                     InvoicePdfExport.renderPreviewBitmap(
-                        this@InvoiceEditorActivity, baseInvoice.copy(templateId = id), items
+                        this@InvoiceEditorActivity, baseInvoice.copy(templateId = id), items,
+                        scale = previewScale()
                     )
                 }
             }
@@ -1011,6 +1017,9 @@ class InvoiceEditorActivity : BaseActivity() {
     // ---------- Save ----------
 
     private fun save() {
+        // Changing an invoice already written is changing the book (21 Oct 2026, the critical review).
+        if (intent.getLongExtra(EXTRA_INVOICE_ID, -1L) > 0 &&
+            !com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { save() }) return
         val items = validItems()
         val invoice = draft()
 

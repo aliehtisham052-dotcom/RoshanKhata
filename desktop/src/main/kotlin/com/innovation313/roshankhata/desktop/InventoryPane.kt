@@ -295,7 +295,7 @@ private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, 
                         Text(p.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         onHand[p.id]?.let { Text(word(W.inspector_col_left) + ": " + Calc.trim(it) + (p.defaultUnit?.let { u -> " $u" } ?: ""), color = c.textMuted, fontSize = 12.sp) }
                     }
-                    FluentField(qty.value, { qty.value = it }, Modifier.width(110.dp), placeholder = word(W.pos_col_qty))
+                    FluentField(qty.value, { qty.value = it }, Modifier.width(110.dp), placeholder = word(W.pos_col_qty), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                     IconAction("ic_close", word(W.delete), { lines.removeAll { it.first.id == p.id } })
                 }
             }

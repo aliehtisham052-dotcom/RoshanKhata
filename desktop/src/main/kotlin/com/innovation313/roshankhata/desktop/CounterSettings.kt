@@ -108,7 +108,7 @@ fun CounterSettingsDialog(
                 Text(word(W.loyalty_section), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     FluentField(perHundred, { perHundred = it }, Modifier.weight(1f), label = word(W.loyalty_per_100), placeholder = "0")
-                    FluentField(pointValue, { pointValue = it }, Modifier.weight(1f), label = word(W.loyalty_value), placeholder = "0")
+                    FluentField(pointValue, { pointValue = it }, Modifier.weight(1f), label = word(W.loyalty_value), placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                 }
                 Text(word(W.loyalty_help), color = c.textMuted, fontSize = 12.sp)
             }

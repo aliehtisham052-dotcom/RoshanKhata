@@ -1165,7 +1165,10 @@ class PartyDetailActivity : BaseActivity() {
             val showUpdate = isSale() && product != null && rateWasTyped() &&
                 typedRate != null && typedRate > 0.0 && typedRate != offeredRate &&
                 result !is RateOffer.Result.UnitMismatch
-            if (showUpdate && product != null && typedRate != null) {
+            // Making a typed rate the product's price is a price change (21 Oct 2026): offered only
+            // to whoever may change prices, as at the counter.
+            if (showUpdate && product != null && typedRate != null &&
+                com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)) {
                 cbUpdateRate.text = getString(
                     R.string.update_product_rate,
                     product.name,
@@ -2379,6 +2382,7 @@ class PartyDetailActivity : BaseActivity() {
                         r.runningBalance - if (r.entry.isGiven) r.entry.amount else -r.entry.amount
                     } ?: 0.0,
                     closingBalance = currentBalance,
+                    isCustomer = partyIsCustomerAccount,
                     businessName = BusinessProfile.businessName(this@PartyDetailActivity),
                     paymentQr = BusinessProfile.loadQr(this@PartyDetailActivity),
                     // Only if the owner has turned it on. Off by default.

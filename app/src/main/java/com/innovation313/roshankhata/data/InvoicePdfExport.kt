@@ -110,7 +110,7 @@ object InvoicePdfExport {
      * @return null on any failure — a blank preview area is the correct
      *         result of nothing typed yet, not a crash.
      */
-    fun renderPreviewBitmap(context: Context, invoice: Invoice, items: List<InvoiceItem>): android.graphics.Bitmap? {
+    fun renderPreviewBitmap(context: Context, invoice: Invoice, items: List<InvoiceItem>, scale: Float = 2f): android.graphics.Bitmap? {
         val file = build(context, invoice, items) ?: return null
         return try {
             android.os.ParcelFileDescriptor.open(
@@ -123,7 +123,8 @@ object InvoicePdfExport {
                         // screen without rendering something absurdly large for
                         // what is, after all, just a preview.
                         val bmp = android.graphics.Bitmap.createBitmap(
-                            page.width * 2, page.height * 2, android.graphics.Bitmap.Config.ARGB_8888
+                            (page.width * scale).toInt().coerceAtLeast(1), (page.height * scale).toInt().coerceAtLeast(1),
+                            android.graphics.Bitmap.Config.ARGB_8888
                         )
                         bmp.eraseColor(Color.WHITE)
                         page.render(

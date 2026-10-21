@@ -225,7 +225,7 @@ object ProductDetailsDialog {
                     packUnit = typed(etPackUnit)?.takeIf { (Digits.parse(typed(etPackSize)) ?: 0.0) > 0.0 },
                     packSize = Digits.parse(typed(etPackSize))?.takeIf { it > 0.0 && typed(etPackUnit) != null },
                     packPrice = Digits.parse(typed(etPackPrice))?.takeIf { typed(etPackUnit) != null },
-                    taxRate = Digits.parse(typed(etTaxRate))?.takeIf { it > 0.0 },
+                    taxRate = typed(etTaxRate)?.let { com.innovation313.roshankhata.ui.Calc.evalPercent(it) }?.takeIf { it > 0.0 },
                     // The main product by its exact name; a name that is no product here leaves it on its own.
                     parentId = typed(etVariantOf)?.let { n -> mains.firstOrNull { it.name.equals(n, ignoreCase = true) }?.id },
                     variant = typed(etVariant)?.takeIf { typed(etVariantOf) != null }

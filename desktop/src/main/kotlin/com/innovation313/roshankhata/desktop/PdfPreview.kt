@@ -102,15 +102,20 @@ class Sheets private constructor(
 
         fun of(p: Printable): Sheets = if (p is DocumentPrint) of(p.doc) else {
             val format = StatementPrint.a4()
-            // Count by drawing each page once on a scrap: a Printable only says it has no more
-            // pages by being asked for one (Java's own printing finds the end the same way).
-            val scrap = BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB)
-            var n = 0
-            while (n < MOST) {
-                val g = scrap.createGraphics()
-                val r = try { p.print(g, format, n) } finally { g.dispose() }
-                if (r != Printable.PAGE_EXISTS) break
-                n++
+            // Statements know their own page count (21 Oct 2026); only other sheets are counted by drawing.
+            val known = when (p) { is StatementPrint -> p.pageCount(); is AllStatements -> p.pageCount(); else -> null }
+            // Others are counted by drawing each page once on a scrap: a Printable only says it has no
+            // more pages by being asked for one (Java's own printing finds the end the same way).
+            val n = known ?: run {
+                val scrap = BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB)
+                var c = 0
+                while (c < MOST) {
+                    val g = scrap.createGraphics()
+                    val r = try { p.print(g, format, c) } finally { g.dispose() }
+                    if (r != Printable.PAGE_EXISTS) break
+                    c++
+                }
+                c
             }
             Sheets(n, { format.width.toFloat() to format.height.toFloat() }) { i, g -> p.print(g, format, i) }
         }
@@ -152,7 +157,9 @@ object PdfFiles {
     /** Every page as a picture on a page of its own size; written whole or not at all. */
     fun write(sheets: Sheets, file: File, scale: Float = SCALE) {
         val part = File(file.parentFile, file.name + ".part")
-        PDDocument().use { pdf ->
+        // Pages kept in a temporary file, not in memory (21 Oct 2026): every customer's statement as one
+        // PDF ran out of memory on a 4 GB laptop.
+        PDDocument(org.apache.pdfbox.io.IOUtils.createTempFileOnlyStreamCache()).use { pdf ->
             for (i in 0 until sheets.count) {
                 val w = sheets.width(i)
                 val h = sheets.height(i)
