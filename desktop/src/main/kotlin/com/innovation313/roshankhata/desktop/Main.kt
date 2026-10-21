@@ -1604,18 +1604,37 @@ private fun Book(
     var namingShop by remember { mutableStateOf(shop.isNullOrBlank()) }
     if (namingShop && !choosingTrade) {
         var typed by remember { mutableStateOf("") }
+        // The shop's country, asked with its name (21 Oct 2026): the computer's own region when it is
+        // one we know, else what the language suggests. Business Profile changes it later.
+        val locale = java.util.Locale.getDefault()
+        var country by remember {
+            mutableStateOf(com.innovation313.roshankhata.data.ShopCountry.guess(locale.country.ifBlank { null }, settings.currency(), locale.toLanguageTag()))
+        }
         AlertDialog(
             onDismissRequest = { namingShop = false },
             title = { Text(word(W.shop_name_title)) },
             text = {
-                Outlined(
-                    typed, { typed = it }, singleLine = true,
-                    label = { Text(word(W.shop_name_field)) }, placeholder = { Text(word(W.shop_name_hint)) }
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Outlined(
+                        typed, { typed = it }, singleLine = true,
+                        label = { Text(word(W.shop_name_field)) }, placeholder = { Text(word(W.shop_name_hint)) }
+                    )
+                    Text(word(W.country_ask_title), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        com.innovation313.roshankhata.data.ShopCountry.choices(locale).forEach { ctry ->
+                            val name = if (ctry == com.innovation313.roshankhata.data.ShopCountry.OTHER) word(W.country_other) else ctry.displayName(locale)
+                            FluentPill(name, ctry == country) { country = ctry }
+                        }
+                    }
+                }
             },
             confirmButton = {
                 TextButton(enabled = typed.isNotBlank(), onClick = {
                     settings.setBusinessName(typed.trim())
+                    settings.setCountry(country)
+                    if (settings.currency() == com.innovation313.roshankhata.data.Currency.DEFAULT && country != com.innovation313.roshankhata.data.ShopCountry.OTHER) settings.setCurrency(country.currencySign)
+                    if (country.calendar != com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN && settings.calendar() == com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN) settings.setCalendar(country.calendar)
+                    settings.refreshDisplay()
                     shop = shopName()
                     namingShop = false
                 }) { Text(word(W.save)) }

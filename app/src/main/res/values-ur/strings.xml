@@ -3418,4 +3418,15 @@
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">چھپے کاغذ پر مقامی ہندسے</string>
     <string name="print_native_digits_help">انوائس، اسٹیٹمنٹ اور رپورٹ اس زبان کے اپنے ہندسوں میں چھپیں گے۔ اسکرین اور جو آپ لکھیں وہ 0-9 ہی رہے گا۔</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">ملک</string>
+    <string name="bp_country_help">واٹس ایپ کا کنٹری کوڈ، ٹیکس نمبر کا نام، ہفتے کا پہلا دن اور کیلنڈر اسی سے طے ہوتے ہیں۔ رقمیں کبھی نہیں بدلتیں۔</string>
+    <string name="country_other">دیگر</string>
+    <string name="country_ask_title">آپ کی دکان کس ملک میں ہے؟</string>
+    <string name="country_ask_body">ایپ اسے واٹس ایپ نمبر، ٹیکس نمبر کے نام اور ہفتے کے لیے استعمال کرتی ہے۔ بعد میں بزنس پروفائل سے بدل سکتے ہیں۔</string>
+    <string name="poster_national_day">قومی دن</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">موبائل والٹ نمبر (%1$s)</string>
 </resources>

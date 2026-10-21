@@ -3446,4 +3446,15 @@
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">ارقام فارسی در چاپ</string>
     <string name="print_native_digits_help">فاکتورها، صورت‌حساب‌ها و گزارش‌ها با ۱۲۳ به جای 123 چاپ می‌شوند. صفحه و آنچه تایپ می‌کنید 0-9 می‌ماند.</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">کشور</string>
+    <string name="bp_country_help">پیش‌شمارهٔ واتس‌اپ، نام شمارهٔ مالیاتی، اولین روز هفته و تقویم از روی آن تعیین می‌شود. مبالغ هرگز تغییر نمی‌کند.</string>
+    <string name="country_other">سایر</string>
+    <string name="country_ask_title">مغازهٔ شما در کدام کشور است؟</string>
+    <string name="country_ask_body">برنامه این را برای شماره‌های واتس‌اپ، نام شمارهٔ مالیاتی و هفته به کار می‌برد. بعداً می‌توانید آن را در نمایهٔ کسب‌وکار تغییر دهید.</string>
+    <string name="poster_national_day">روز ملی</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">شمارهٔ کیف پول موبایلی (%1$s)</string>
 </resources>

@@ -3415,4 +3415,15 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">Angka lokal pada cetakan</string>
     <string name="print_native_digits_help">Faktur, laporan rekening, dan laporan dicetak dengan angka bahasa ini sendiri. Layar dan yang Anda ketik tetap 0-9.</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">Negara</string>
+    <string name="bp_country_help">Menentukan kode negara WhatsApp, nama nomor pajak, hari pertama minggu, dan kalender. Angka tidak pernah berubah.</string>
+    <string name="country_other">Lainnya</string>
+    <string name="country_ask_title">Di mana toko Anda?</string>
+    <string name="country_ask_body">Aplikasi memakainya untuk nomor WhatsApp, nama nomor pajak, dan minggu. Bisa diubah nanti di Profil Usaha.</string>
+    <string name="poster_national_day">Hari nasional</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">Nomor dompet digital (%1$s)</string>
 </resources>

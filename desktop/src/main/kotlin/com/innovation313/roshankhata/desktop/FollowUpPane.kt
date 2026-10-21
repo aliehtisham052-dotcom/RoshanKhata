@@ -117,8 +117,10 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
  * payment-details block are not on the computer yet.
  */
 fun reminderText(words: Words, name: String, balance: Double, promised: Long?, shopName: String?): String {
-    val amount = Format.money(balance)
-    val body = if (promised != null) words.text(W.reminder_they_owe_by_date, name, amount, Format.dateOnly(promised))
-    else words.text(W.reminder_they_owe, name, amount)
-    return body + if (shopName.isNullOrBlank()) "" else "\n\n— $shopName"
+    // The figure and the names sealed in their own direction, as the phone's (21 Oct 2026).
+    val amount = Format.ltr(Format.money(balance))
+    val who = Format.isolate(name)
+    val body = if (promised != null) words.text(W.reminder_they_owe_by_date, who, amount, Format.dateOnly(promised))
+    else words.text(W.reminder_they_owe, who, amount)
+    return body + if (shopName.isNullOrBlank()) "" else "\n\n— " + Format.isolate(shopName)
 }

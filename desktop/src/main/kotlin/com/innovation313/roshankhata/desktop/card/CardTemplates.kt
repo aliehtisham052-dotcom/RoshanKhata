@@ -624,10 +624,9 @@ object CardTemplates {
 
     /** wa.me link for the WhatsApp number (or the phone, if that is all there is). */
     internal fun qrPayload(d: CardData): String? {
-        var n = d.whatsapp.ifEmpty { d.phone }.filter { it.isDigit() }
-        if (n.startsWith("00")) n = n.drop(2)
-        if (n.startsWith("0")) n = "92" + n.drop(1)
-        if (n.length < 11 || n.length > 15) return null
+        // The shop's own country's calling code, as every WhatsApp link (21 Oct 2026).
+        val n = com.innovation313.roshankhata.data.WhatsAppNumber.of(d.whatsapp.ifEmpty { d.phone }) ?: return null
+        if (n.length < 10 || n.length > 15) return null
         val msg = d.qrMessage.trim()
         // wa.me takes a pre-filled message as ?text= (URL-encoded, spaces as %20).
         val text = if (msg.isEmpty()) "" else

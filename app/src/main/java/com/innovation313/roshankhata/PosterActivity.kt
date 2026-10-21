@@ -367,7 +367,7 @@ class PosterActivity : BaseActivity() {
 
     private fun buildDesignRow() {
         designRow.removeAllViews()
-        for (o in PosterOccasion.values()) {
+        for (o in PosterOccasion.offered()) {
             val item = layoutInflater.inflate(R.layout.item_poster_design, designRow, false)
             item.tag = o.key
             item.findViewById<TextView>(R.id.designName).text =

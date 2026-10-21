@@ -112,8 +112,11 @@ object BusinessProfile {
     fun businessAddress(c: Context): String? = c.settings.businessAddress()?.takeIf { it.isNotBlank() }
     fun businessPhone(c: Context): String? = c.settings.businessPhone()?.takeIf { it.isNotBlank() }
     fun strn(c: Context): String? = c.settings.strn()?.takeIf { it.isNotBlank() }
-    fun taxLabel(c: Context): String =
-        if (c.settings.currency() == Currency.DEFAULT) "STRN" else c.getString(W.tax_number_label)
+    fun taxLabel(c: Context): String = when (val country = c.settings.country()) {
+        com.innovation313.roshankhata.data.ShopCountry.PAKISTAN -> "STRN"
+        com.innovation313.roshankhata.data.ShopCountry.OTHER -> c.getString(W.tax_number_label)
+        else -> country.taxIdName
+    }
     fun bankName(c: Context): String? = c.settings.bankName()?.takeIf { it.isNotBlank() }
     fun bankAccountTitle(c: Context): String? = c.settings.bankAccountTitle()?.takeIf { it.isNotBlank() }
     fun bankIban(c: Context): String? = c.settings.bankIban()?.takeIf { it.isNotBlank() }

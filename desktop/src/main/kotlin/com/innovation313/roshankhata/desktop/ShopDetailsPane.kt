@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -67,6 +68,7 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
     }
     val values = remember(version) { mutableStateOf(fields.mapValues { it.value.first }) }
     var currency by remember(version) { mutableStateOf(settings.currency()) }
+    var country by remember(version) { mutableStateOf(settings.country()) }
     var hijri by remember(version) { mutableStateOf(settings.calendar() == ShopCalendar.Kind.HIJRI) }
 
     fun save() {
@@ -83,6 +85,7 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
         settings.setStrn(v[W.bp_strn])
         settings.setTermsAndConditions(v[W.invoice_terms])
         settings.setCurrency(currency)
+        settings.setCountry(country)
         settings.setCalendar(if (hijri) ShopCalendar.Kind.HIJRI else ShopCalendar.Kind.GREGORIAN)
         // Money signs and dates on screen and on paper follow at once.
         settings.refreshDisplay()
@@ -93,9 +96,11 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
     @Composable
     fun field(label: String, modifier: Modifier, lines: Boolean = true) {
         val hint = fields[label]?.second
+        // The wallet field names the shop's country's services (21 Oct 2026).
+        val shown = if (label == W.invoice_bank_jazzcash_hint && country.wallets.isNotBlank()) word(W.wallet_hint_country, country.wallets) else word(label)
         FluentField(
             values.value[label].orEmpty(), { v -> values.value = values.value + (label to v); saved = false }, modifier,
-            label = word(label), placeholder = hint?.let { word(it) }, singleLine = lines
+            label = shown, placeholder = hint?.let { word(it) }, singleLine = lines
         )
     }
     // The Figma Settings screen: the profile as one card of paired fields, the bank and
@@ -115,6 +120,24 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
                 field(W.bp_email, Modifier.weight(1f))
             }
             field(W.business_address, Modifier.fillMaxWidth(), lines = false)
+            // The shop's country (21 Oct 2026): one pill per country in a row that scrolls; choosing one
+            // also offers its currency when the shop still prints the default sign.
+            Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text(word(W.bp_country), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                val locale = java.util.Locale.getDefault()
+                Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    com.innovation313.roshankhata.data.ShopCountry.choices(locale).forEach { ctry ->
+                        val name = if (ctry == com.innovation313.roshankhata.data.ShopCountry.OTHER) word(W.country_other) else ctry.displayName(locale)
+                        FluentPill(name, ctry == country) {
+                            if (ctry != country) {
+                                if (currency == com.innovation313.roshankhata.data.Currency.DEFAULT && ctry != com.innovation313.roshankhata.data.ShopCountry.OTHER) currency = ctry.currencySign
+                                country = ctry; saved = false
+                            }
+                        }
+                    }
+                }
+                Text(word(W.bp_country_help), color = c.textMuted, fontSize = 12.sp)
+            }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 FluentField(currency, { currency = it; saved = false }, Modifier.weight(1f), label = word(W.bp_currency), help = word(W.bp_currency_help))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {

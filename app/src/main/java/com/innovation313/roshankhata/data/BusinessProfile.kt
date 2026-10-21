@@ -234,18 +234,29 @@ object BusinessProfile {
      * always printed; a shop in any other currency reads its own language's
      * "Tax No." (Indonesian: NPWP) rather than a Pakistani acronym.
      */
-    fun taxLabel(context: Context): String =
-        if (currency(context) == Currency.DEFAULT) "STRN"
-        else context.getString(com.innovation313.roshankhata.R.string.tax_number_label)
+    fun taxLabel(context: Context): String = taxName(country(context), context.getString(com.innovation313.roshankhata.R.string.tax_number_label))
+
+    /**
+     * What the shop's country calls its tax registration (21 Oct 2026):
+     * STRN in Pakistan, GSTIN in India, NPWP in Indonesia; a country the
+     * table does not know reads its language's "Tax No.".
+     */
+    fun taxName(country: ShopCountry, generic: String): String = when (country) {
+        ShopCountry.PAKISTAN -> "STRN"
+        ShopCountry.OTHER -> generic
+        else -> country.taxIdName
+    }
 
     /**
      * The register and inspector reports' tax line. A rupee shop keeps the
      * report's own "NTN/STRN: …" wording ([pakistanRes]); any other currency
      * prints its language's tax-number label instead of Pakistan's two.
      */
-    fun taxLine(context: Context, number: String, pakistanRes: Int): String =
-        if (currency(context) == Currency.DEFAULT) context.getString(pakistanRes, number)
-        else context.getString(com.innovation313.roshankhata.R.string.tax_number_label) + ": " + number
+    fun taxLine(context: Context, number: String, pakistanRes: Int): String {
+        val country = country(context)
+        return if (country == ShopCountry.PAKISTAN) context.getString(pakistanRes, number)
+        else taxName(country, context.getString(com.innovation313.roshankhata.R.string.tax_number_label)) + ": " + number
+    }
 
     // ---------- Currency sign (4 Oct 2026) ----------
 
@@ -255,6 +266,22 @@ object BusinessProfile {
 
     fun setCurrency(context: Context, value: String?) {
         prefs(context).edit().putString(KEY_CURRENCY, Currency.clean(value)).apply()
+    }
+
+    // ---------- Country (21 Oct 2026): see ShopCountry ----------
+
+    private const val KEY_COUNTRY = "country"
+
+    /** The shop's country; Pakistan for a book from before the setting existed. */
+    fun country(context: Context): ShopCountry =
+        ShopCountry.of(prefs(context).getString(KEY_COUNTRY, null))
+
+    /** Whether the owner (or a restore) ever chose one: a new shop is asked. */
+    fun hasCountry(context: Context): Boolean = prefs(context).contains(KEY_COUNTRY)
+
+    fun setCountry(context: Context, country: ShopCountry) {
+        prefs(context).edit().putString(KEY_COUNTRY, country.code).apply()
+        ShopCountry.current = country
     }
 
     // ---------- Calendar (5 Oct 2026): display only, see ShopCalendar ----------

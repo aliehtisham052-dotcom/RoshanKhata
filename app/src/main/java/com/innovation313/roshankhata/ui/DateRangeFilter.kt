@@ -138,9 +138,10 @@ object DateRangeFilter {
         )
     }
 
-    /** From the first day of this week to now, per the phone's own calendar. */
+    /** From the first day of this week to now; the week starts where the shop's country starts it (21 Oct 2026). */
     private fun thisWeek(): Range {
         val c = Calendar.getInstance().apply {
+            firstDayOfWeek = com.innovation313.roshankhata.data.ShopCountry.current.weekStart
             set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
         }
         return Range(

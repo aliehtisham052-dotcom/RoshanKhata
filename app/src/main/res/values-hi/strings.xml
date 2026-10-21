@@ -3462,4 +3462,15 @@
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">छपे काग़ज़ पर स्थानीय अंक</string>
     <string name="print_native_digits_help">इनवॉइस, स्टेटमेंट और रिपोर्ट इस भाषा के अपने अंकों में छपेंगे। स्क्रीन और जो आप टाइप करें वह 0-9 ही रहेगा।</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">देश</string>
+    <string name="bp_country_help">WhatsApp का कंट्री कोड, टैक्स नंबर का नाम, हफ़्ते का पहला दिन और कैलेंडर इसी से तय होते हैं। रक़में कभी नहीं बदलतीं।</string>
+    <string name="country_other">अन्य</string>
+    <string name="country_ask_title">आपकी दुकान किस देश में है?</string>
+    <string name="country_ask_body">ऐप इसे WhatsApp नंबर, टैक्स नंबर के नाम और हफ़्ते के लिए इस्तेमाल करता है। बाद में बिज़नेस प्रोफ़ाइल से बदल सकते हैं।</string>
+    <string name="poster_national_day">राष्ट्रीय दिवस</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">मोबाइल वॉलेट नंबर (%1$s)</string>
 </resources>

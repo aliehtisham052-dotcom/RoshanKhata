@@ -144,8 +144,16 @@ object DateWords {
     fun formatter(pattern: String, locale: Locale = appLocale()): SimpleDateFormat {
         val key = keyOf(locale)
         val roman = locale.language == "ur" && locale.script.equals("Latn", ignoreCase = true)
-        return formatterFor(localPunctuation(pattern, key), key, roman)
+        return formatterFor(localPunctuation(clock(pattern), key), key, roman)
     }
+
+    /**
+     * The 24-hour clock where the shop's country writes it (Iran, Indonesia,
+     * Turkey, the UK; 21 Oct 2026): every "h:mm a" in the app becomes
+     * "HH:mm" there, in one place, so no screen or sheet has to know.
+     */
+    fun clock(pattern: String): String =
+        if (ShopCountry.current.clock24 && pattern.contains("h:mm a")) pattern.replace("h:mm a", "HH:mm") else pattern
 
     /**
      * Arabic-script languages write their own comma, "،" (U+060C). Every

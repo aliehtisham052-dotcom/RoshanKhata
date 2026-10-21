@@ -79,7 +79,9 @@ object Format {
         val rounded = abs(value)
         // The sign is the shop's own choice (Profile → Currency); see [Currency].
         val sign = Currency.symbol
-        val figure = if (rounded % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, rounded) else "%,.2f".format(Digits.FIGURES, rounded)
+        // A fraction is printed to the currency's own decimals (21 Oct 2026): 3 for KWD/BHD/OMR, none for IRR/Rp.
+        val figure = if (rounded % 1.0 == 0.0 || Currency.decimals(sign) == 0) "%,.0f".format(Digits.FIGURES, rounded)
+            else "%,.${Currency.decimals(sign)}f".format(Digits.FIGURES, rounded)
         return "$sign " + groupedForReader(figure)
     }
 

@@ -84,6 +84,8 @@ class DigitsTest {
         assertEquals(12.5, Digits.parse(" ١٢٫٥ ")!!, 0.0)       // Arabic decimal separator
         assertEquals(27628.0, Digits.parse("٢٧٬٦٢٨")!!, 0.0)     // Arabic thousands separator
         assertEquals(500.0, Digits.parse("500")!!, 0.0)           // 0-9 untouched
+        assertEquals(500.0, Digits.parse("५००")!!, 0.0)           // Hindi keyboard (21 Oct)
+        assertEquals(1250.5, Digits.parse("১২৫০.৫")!!, 0.0)       // Bengali keyboard
         assertNull(Digits.parse(""))
         assertNull(Digits.parse(null))
         assertNull(Digits.parse("abc"))

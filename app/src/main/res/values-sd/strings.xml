@@ -3446,4 +3446,15 @@
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">ڇپيل ڪاغذن تي عربي انگ</string>
     <string name="print_native_digits_help">انوائس، اسٽيٽمينٽ ۽ رپورٽون 123 بدران ١٢٣ سان ڇپبيون. اسڪرين ۽ جيڪو توهان لکو ٿا اهو 0-9 رهندو.</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">ملڪ</string>
+    <string name="bp_country_help">واٽس ايپ جو ملڪي ڪوڊ، ٽيڪس نمبر جو نالو، هفتي جو پهريون ڏينهن ۽ ڪئلينڊر ان سان طئي ٿين ٿا. رقمون ڪڏهن به نه بدلجن.</string>
+    <string name="country_other">ٻيو</string>
+    <string name="country_ask_title">توهان جو دڪان ڪهڙي ملڪ ۾ آهي؟</string>
+    <string name="country_ask_body">ايپ ان کي واٽس ايپ نمبر، ٽيڪس نمبر جي نالي ۽ هفتي لاءِ استعمال ڪري ٿي. پوءِ بزنس پروفائيل مان بدلائي سگهو ٿا.</string>
+    <string name="poster_national_day">قومي ڏينهن</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">موبائل والٽ نمبر (%1$s)</string>
 </resources>
