@@ -337,7 +337,7 @@ class BillsActivity : BaseActivity() {
 
         // Say what the bill is about to do to the ledger, before it does it.
         fun refreshEffect() {
-            val amount = Digits.parse(etTotal.text)
+            val amount = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString())
             val supplier = etSupplier.text.toString().trim()
 
             if (!cbPaidCash.isChecked && amount != null && amount > 0 && supplier.isNotEmpty()) {
@@ -357,6 +357,21 @@ class BillsActivity : BaseActivity() {
         etSupplier.setOnItemClickListener { _, _, _, _ -> refreshEffect() }
         if (restore != null) refreshEffect()
 
+        // The total on the app's own calculator pad (21 Oct). The pad keeps
+        // the focus in the box, so the ledger line also follows the typing
+        // rather than waiting for the focus to leave.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.billKeypad),
+            fields = listOf(etTotal),
+            results = mapOf(etTotal to view.findViewById<TextView>(R.id.tvBillTotalResult))
+        )
+        etTotal.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) = refreshEffect()
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        })
+
         val form = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.add_bill)
             .setView(view)
@@ -366,7 +381,7 @@ class BillsActivity : BaseActivity() {
                 collectItems(
                     supplierName = etSupplier.text.toString().trim(),
                     billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                    total = Digits.parse(etTotal.text),
+                    total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                     billDate = billDate,
                     dueDate = dueDate,
                     paidCash = cbPaidCash.isChecked,
@@ -377,7 +392,7 @@ class BillsActivity : BaseActivity() {
                 saveBill(
                     supplierName = etSupplier.text.toString().trim(),
                     billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                    total = Digits.parse(etTotal.text),
+                    total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                     billDate = billDate,
                     dueDate = dueDate,
                     paidCash = cbPaidCash.isChecked,
@@ -390,7 +405,7 @@ class BillsActivity : BaseActivity() {
             val draft = BillDraft(
                 supplierName = etSupplier.text.toString().trim(),
                 billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                total = Digits.parse(etTotal.text),
+                total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                 billDate = billDate,
                 dueDate = dueDate,
                 paidCash = cbPaidCash.isChecked,
@@ -1034,6 +1049,14 @@ class BillsActivity : BaseActivity() {
         etTotal.setText(Format.plain(existing.totalAmount))
         etNote.setText(existing.note ?: "")
 
+        // The corrected total on the app's own calculator pad (21 Oct).
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.billKeypad),
+            fields = listOf(etTotal),
+            results = mapOf(etTotal to view.findViewById<TextView>(R.id.tvBillTotalResult))
+        )
+
         var billDate = existing.billDate
         var dueDate = existing.dueDate
 
@@ -1069,7 +1092,7 @@ class BillsActivity : BaseActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                val total = Digits.parse(etTotal.text)
+                val total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString())
                 if (total == null || total <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton

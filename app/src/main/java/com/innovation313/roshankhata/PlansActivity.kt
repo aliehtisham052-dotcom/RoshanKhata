@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
-import com.innovation313.roshankhata.data.Digits
 
 /**
  * Payment plans: an arrangement for clearing a debt in instalments.
@@ -106,6 +105,18 @@ class PlansActivity : BaseActivity() {
         val btnDue: MaterialButton = view.findViewById(R.id.btnPlanDueDate)
         val etNote: EditText = view.findViewById(R.id.etPlanNote)
 
+        // Total and instalment on the app's own calculator pad (21 Oct): one
+        // pad, typing into whichever of the two has the focus.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.planKeypad),
+            fields = listOf(etTotal, etInstallment),
+            results = mapOf(
+                etTotal to view.findViewById<TextView>(R.id.tvPlanTotalResult),
+                etInstallment to view.findViewById<TextView>(R.id.tvPlanInstallmentResult)
+            )
+        )
+
         etParty.setAdapter(
             ArrayAdapter(
                 this,
@@ -164,7 +175,7 @@ class PlansActivity : BaseActivity() {
                     return@setPositiveButton
                 }
 
-                val total = Digits.parse(etTotal.text)
+                val total = Calc.evalAmount(etTotal.text.toString())
                 if (total == null || total <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
@@ -180,7 +191,7 @@ class PlansActivity : BaseActivity() {
                         PaymentPlan(
                             partyId = party.id,
                             totalAmount = total,
-                            installmentAmount = Digits.parse(etInstallment.text)?.takeIf { it > 0 },
+                            installmentAmount = Calc.evalAmount(etInstallment.text.toString()),
                             nextDueDate = nextDue,
                             note = etNote.text.toString().trim().ifEmpty { null }
                         )
@@ -241,6 +252,29 @@ class PlansActivity : BaseActivity() {
         view.findViewById<View>(R.id.btnEntryDate).visibility = View.GONE
 
         plan.installmentAmount?.let { etAmount.setText(Format.plain(it)) }
+
+        // The note sits in step two, which nothing on this dialog opens, so
+        // there was no way to write one (21 Oct). Step two is shown with the
+        // note alone: everything else in it is the ledger's (goods, rate,
+        // signature, qarz-e-hasna, recovery) and stays hidden here.
+        val stepTwo = view.findViewById<android.view.ViewGroup>(R.id.stepTwo)
+        for (i in 0 until stepTwo.childCount) {
+            val child = stepTwo.getChildAt(i)
+            child.visibility = if (child === etNote) View.VISIBLE else View.GONE
+        }
+        stepTwo.visibility = View.VISIBLE
+
+        // The layout has always carried the calculator pad (entryKeypad) and
+        // the backspace in the box, but nothing here bound them: the keys
+        // were dead and the phone's keyboard came up instead (21 Oct). Bound
+        // now as on the add-entry form; the note gets the phone's keyboard
+        // and the pad steps aside for it.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.entryKeypad),
+            fields = listOf(etAmount),
+            results = mapOf(etAmount to view.findViewById<TextView>(R.id.tvAmountResult))
+        )
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.record_payment_title)
