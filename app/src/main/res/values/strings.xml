@@ -3608,4 +3608,24 @@ You can change this any time from this screen.</string>
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">Paid to you</string>
     <string name="pdf_stmt_you_supplied">You supplied</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">Name</string>
+    <string name="csv_col_category">Category</string>
+    <string name="csv_col_company">Company</string>
+    <string name="csv_col_unit">Unit</string>
+    <string name="csv_col_sale">Sale price</string>
+    <string name="csv_col_credit">Credit price</string>
+    <string name="csv_col_cost">Cost price</string>
+    <string name="csv_col_barcode">Barcode</string>
+    <string name="csv_col_low">Low stock</string>
+    <string name="csv_col_type">Type</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">A–Z</string>
+    <string name="sort_glyph_za">Z–A</string>
+    <string name="text_size_glyph">Aa</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">Not saved. Nothing was changed. (%1$s)</string>
 </resources>

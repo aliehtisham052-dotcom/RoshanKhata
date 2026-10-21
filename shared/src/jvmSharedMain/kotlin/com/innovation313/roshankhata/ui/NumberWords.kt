@@ -123,15 +123,25 @@ object NumberWords {
      */
     fun rupeesInWords(lang: String, amount: Double): String =
         when (lang) {
-            "ur" -> spell(amount, urduOnes, "کروڑ", "لاکھ", "ہزار", "سو", "روپے") { urduOnes[it] }
-            "ur-Latn" -> spell(amount, romanUrduOnes, "Crore", "Lakh", "Hazar", "Sou", "Rupay") { romanUrduOnes[it] }
-            "hi" -> rupeesInWordsHindi(amount)
+            "ur", "ur-Latn", "hi" -> southAsian(lang, amount, null)!!
             "bn" -> inWordsBengali(amount, "রুপি")
             "id" -> inWordsIndonesian(amount, "rupee")
             "fa" -> inWordsPersian(amount, "روپیه")
             "ar" -> inWordsArabic(amount, "روبية")
             else -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Rupees") { englishBelow100(it) }
         }
+
+    /**
+     * Urdu, Roman Urdu and Hindi counted in lakh and crore, ending in [unit],
+     * or in the language's own word for rupees when [unit] is null; null for
+     * any other language.
+     */
+    private fun southAsian(lang: String, amount: Double, unit: String?): String? = when (lang) {
+        "ur" -> spell(amount, urduOnes, "کروڑ", "لاکھ", "ہزار", "سو", unit ?: "روپے") { urduOnes[it] }
+        "ur-Latn" -> spell(amount, romanUrduOnes, "Crore", "Lakh", "Hazar", "Sou", unit ?: "Rupay") { romanUrduOnes[it] }
+        "hi" -> spell(amount, hindiOnes, "करोड़", "लाख", "हज़ार", "सौ", unit ?: "रुपये") { hindiOnes[it] }
+        else -> null
+    }
 
     /**
      * The invoice's "amount in words" for whatever sign the shop chose (4 Oct 2026).
@@ -182,12 +192,19 @@ object NumberWords {
                 }
             )
         }
+        val code = Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign
+        // Urdu, Roman Urdu, Hindi and Bengali keep their own words for any
+        // currency too (21 Oct 2026, the nine-language review: an Urdu
+        // invoice in dirhams printed "Five Thousand Two Hundred AED"), counted
+        // the way their readers count, ending in the currency's code.
+        if (sign != "Rs" && sign != "₹") {
+            if (lang == "bn") return inWordsBengali(amount, if (sign == "৳") "টাকা" else code)
+            southAsian(lang, amount, code)?.let { return it }
+        }
         return when (sign) {
             "Rs", "₹" -> rupeesInWords(lang, amount)
-            "৳" ->
-                if (lang == "bn") inWordsBengali(amount, "টাকা")
-                else spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Taka") { englishBelow100(it) }
-            else -> spellWestern(amount, Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign)
+            "৳" -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Taka") { englishBelow100(it) }
+            else -> spellWestern(amount, code)
         }
     }
 

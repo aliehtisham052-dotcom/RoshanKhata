@@ -111,12 +111,9 @@ fun HomePane(
     // Home rises into place once as it opens (Motion.PAGE ms, a few dp): a welcome, not a show.
     val appear = remember { Animatable(0f) }
     LaunchedEffect(Unit) { appear.animateTo(1f, tween(Motion.PAGE + 100)) }
-    // The day as the title. The weekday's name comes from the JDK's locale, which has none of the
-    // app's Urdu/Sindhi month tables: in a right-to-left language the day and month alone.
-    val dayName = remember {
-        val rtl = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(java.util.Locale.getDefault())
-        DateWords.formatter(if (rtl) "d MMMM" else "EEEE, d MMMM").format(java.util.Date())
-    }
+    // The day as the title, weekday and month in the app's language (21 Oct 2026: DateWords has
+    // every language's weekdays now; it read "Wednesday" on a Hindi screen before).
+    val dayName = remember { DateWords.formatter("EEEE, d MMMM").format(java.util.Date()) }
     Column(
         Modifier.fillMaxSize().background(Look.layerAlt)
             .graphicsLayer { alpha = appear.value; translationY = (1f - appear.value) * 12.dp.toPx() }

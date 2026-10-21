@@ -96,7 +96,7 @@ fun MergeDialog(
                 .onSuccess { plan = it }
                 .onFailure { e ->
                     refused = if (e is com.innovation313.roshankhata.data.BookMerge.Refused) words.text(com.innovation313.roshankhata.data.BookMerge.refusalWord(e))
-                    else e.message ?: words.text(W.backup_failed)
+                    else failText(words, e)
                 }
         }
     }
@@ -124,7 +124,7 @@ fun MergeDialog(
                     val result = withContext(Dispatchers.IO) { runCatching { keepFirst(); dao.mergeBook(data, shopHere) } }
                     busy = false
                     result.onSuccess { done -> onDone(words.text(W.merge_done, done.rows, done.renumbered)) }
-                        .onFailure { onDone(it.message ?: words.text(W.backup_failed)) }
+                        .onFailure { onDone(failText(words, it)) }
                     onClose()
                 }
             }, kind = ButtonKind.ACCENT, enabled = !busy)

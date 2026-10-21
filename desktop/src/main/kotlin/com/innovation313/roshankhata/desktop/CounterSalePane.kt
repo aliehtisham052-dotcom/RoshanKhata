@@ -283,7 +283,7 @@ fun CounterSalePane(
                     onChanged()
                 }.onFailure { e ->
                     told = if (e is Counter.ExpiredStock) words.text(W.pos_expired_stock, e.item, Calc.trim(e.fresh))
-                        else e.message ?: words.text(W.backup_failed)
+                        else failText(words, e)
                 }
             } finally {
                 draft.posting = false
@@ -299,7 +299,7 @@ fun CounterSalePane(
             try {
                 val held = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, draft) } }
                 held.onSuccess { draft.clear(); tick++ }
-                    .onFailure { e -> told = e.message ?: words.text(W.backup_failed) }
+                    .onFailure { e -> told = failText(words, e) }
             } finally {
                 draft.posting = false
             }
@@ -593,7 +593,7 @@ fun CounterSalePane(
                                 val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
                                 told = words.text(W.pos_return_posted, number)
                                 returning = null; tick++; onChanged()
-                            }.onFailure { problem = it.message }
+                            }.onFailure { problem = failText(words, it) }
                         } finally { draft.posting = false }
                     }
                 })

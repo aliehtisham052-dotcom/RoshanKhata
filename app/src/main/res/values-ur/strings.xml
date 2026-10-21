@@ -823,8 +823,8 @@
 
     <string name="hide_balance">بیلنس چھپائیں</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">Innovation-313 کی پیشکش</string>
+    <string name="lock_tagline">Innovation-313 کی پیشکش</string>
     <string name="tap_to_start">جاری رکھنے کے لیے کہیں بھی چھوئیں</string>
 
     <string name="tap_to_continue">جاری رکھنے کے لیے چھوئیں</string>
@@ -3394,4 +3394,24 @@
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">آپ کو ادا کیا</string>
     <string name="pdf_stmt_you_supplied">آپ نے مال دیا</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">نام</string>
+    <string name="csv_col_category">کیٹیگری</string>
+    <string name="csv_col_company">کمپنی</string>
+    <string name="csv_col_unit">یونٹ</string>
+    <string name="csv_col_sale">قیمت فروخت</string>
+    <string name="csv_col_credit">ادھار قیمت</string>
+    <string name="csv_col_cost">لاگت</string>
+    <string name="csv_col_barcode">بارکوڈ</string>
+    <string name="csv_col_low">کم اسٹاک حد</string>
+    <string name="csv_col_type">قسم</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">ا–ے</string>
+    <string name="sort_glyph_za">ے–ا</string>
+    <string name="text_size_glyph">اب</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">محفوظ نہیں ہوا۔ کچھ بھی تبدیل نہیں ہوا۔ (%1$s)</string>
 </resources>

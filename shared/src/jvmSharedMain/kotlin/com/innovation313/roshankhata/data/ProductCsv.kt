@@ -3,8 +3,11 @@ package com.innovation313.roshankhata.data
 /**
  * The products list as a spreadsheet (POS Phase 2, 21 Oct 2026): out to
  * Excel to fix five hundred prices at once, and back in. The columns are
- * fixed and named in English on both legs, so a file written on an Urdu
- * phone opens on an English laptop and comes back the same.
+ * fixed. Since 21 Oct 2026 (the nine-language review) each is named in the
+ * app's language with its English name beside it - "नाम (name)" - so the
+ * owner reads his own words and a file written on a Hindi phone still comes
+ * back the same on an English laptop. Import also knows the column names a
+ * shop types itself in any of the nine languages.
  *
  * Importing never deletes: a row whose name matches a product (by
  * [ProductName.key]) updates the fields the row fills in and leaves blank
@@ -15,10 +18,25 @@ object ProductCsv {
 
     val HEADERS = listOf("name", "category", "company", "unit", "sale price", "credit price", "cost price", "barcode", "low stock", "type")
 
-    fun text(products: List<Product>): String {
+    /** The ten column names in the app's language, each with its English name beside it. */
+    fun headers(words: com.innovation313.roshankhata.words.Words): List<String> {
+        val own = listOf(
+            com.innovation313.roshankhata.words.W.csv_col_name, com.innovation313.roshankhata.words.W.csv_col_category,
+            com.innovation313.roshankhata.words.W.csv_col_company, com.innovation313.roshankhata.words.W.csv_col_unit,
+            com.innovation313.roshankhata.words.W.csv_col_sale, com.innovation313.roshankhata.words.W.csv_col_credit,
+            com.innovation313.roshankhata.words.W.csv_col_cost, com.innovation313.roshankhata.words.W.csv_col_barcode,
+            com.innovation313.roshankhata.words.W.csv_col_low, com.innovation313.roshankhata.words.W.csv_col_type
+        ).map { words.text(it) }
+        return HEADERS.zip(own) { english, local ->
+            if (local.isBlank() || local.trim().equals(english, ignoreCase = true)) english else "$local ($english)"
+        }
+    }
+
+    fun text(products: List<Product>, headers: List<String> = HEADERS): String {
+        require(headers.size == HEADERS.size)
         val sb = StringBuilder()
         sb.append('﻿')
-        row(sb, HEADERS)
+        row(sb, headers)
         products.sortedBy { it.name.lowercase() }.forEach { p ->
             row(
                 sb,
@@ -78,19 +96,30 @@ object ProductCsv {
         }
     }
 
+    /**
+     * What a column may be called, in English and in each of the app's other
+     * eight languages (21 Oct 2026): the words a shop types at the top of its
+     * own sheet, and the names [headers] writes. Matched as parts of a cell.
+     */
     private val HEADER_WORDS = linkedMapOf(
-        "name" to listOf("name", "product", "item"),
-        "category" to listOf("category"),
-        "company" to listOf("company", "brand", "manufacturer"),
-        "unit" to listOf("unit"),
-        "sale" to listOf("sale price", "price", "rate", "mrp"),
-        "credit" to listOf("credit price", "udhar", "credit"),
-        "cost" to listOf("cost", "purchase"),
-        "barcode" to listOf("barcode", "code", "ean", "sku"),
-        "low" to listOf("low stock", "min", "reorder"),
-        "type" to listOf("type")
+        "name" to listOf("name", "product", "item", "naam", "نام", "نالو", "اسم", "नाम", "নাম", "nama"),
+        "category" to listOf("category", "کیٹیگری", "زمرہ", "ڪيٽيگري", "فئة", "تصنيف", "دسته", "श्रेणी", "বিভাগ", "kategori"),
+        "company" to listOf("company", "brand", "manufacturer", "کمپنی", "ڪمپني", "شركة", "شرکت", "कंपनी", "কোম্পানি", "merek", "perusahaan"),
+        "unit" to listOf("unit", "یونٹ", "اکائی", "يونٽ", "وحدة", "واحد", "इकाई", "यूनिट", "একক", "satuan"),
+        "sale" to listOf("sale price", "price", "rate", "mrp", "qeemat", "قیمت", "قيمت", "ریٹ", "سعر", "मूल्य", "कीमत", "दाम", "रेट", "মূল্য", "দাম", "harga"),
+        "credit" to listOf("credit price", "udhar", "credit", "ادھار", "اڌار", "آجل", "نسیه", "उधार", "বাকি", "kredit"),
+        "cost" to listOf("cost", "purchase", "laagat", "لاگت", "خرید", "لاڳت", "تكلفة", "شراء", "هزینه", "लागत", "खरीद", "কেনা", "খরচ", "modal", "beli"),
+        "barcode" to listOf("barcode", "code", "ean", "sku", "بارکوڈ", "بارڪوڊ", "باركود", "بارکد", "बारकोड", "বারকোড", "kode"),
+        "low" to listOf("low stock", "min", "reorder", "کم اسٹاک", "گهٽ", "الحد الأدنى", "حداقل", "न्यूनतम", "সর্বনিম্ন"),
+        "type" to listOf("type", "qisam", "قسم", "نوع", "النوع", "प्रकार", "ধরন", "jenis", "tipe")
     )
-    private val EXCLUDE = mapOf("sale" to listOf("cost", "credit", "purchase"), "name" to listOf("company", "brand"), "unit" to listOf("price"))
+    private val EXCLUDE = mapOf(
+        // A price column that is the credit or the purchase price, in any of the languages.
+        "sale" to listOf("cost", "credit", "purchase", "udhar", "laagat", "ادھار", "اڌار", "آجل", "نسیه", "لاگت", "خرید", "لاڳت",
+            "تكلفة", "شراء", "उधार", "लागत", "खरीद", "বাকি", "কেনা", "খরচ", "kredit", "modal", "beli"),
+        "name" to listOf("company", "brand", "کمپنی", "ڪمپني", "شركة", "شرکت", "कंपनी", "কোম্পানি", "merek", "perusahaan"),
+        "unit" to listOf("price", "قیمت", "قيمت", "سعر", "मूल्य", "মূল্য", "harga")
+    )
     /**
      * A barcode written so Excel keeps it as text (21 Oct 2026, the critical
      * review): a bare 13-digit code opened in Excel became 8.96E+12, and saved

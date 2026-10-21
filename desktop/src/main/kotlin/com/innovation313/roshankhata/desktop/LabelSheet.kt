@@ -55,19 +55,23 @@ class LabelSheet(private val products: List<Product>, private val copies: Int = 
         g.color = Color(0xDDDDDD)
         g.drawRect(x.toInt(), y.toInt(), labelW.toInt(), labelH.toInt())
         g.color = Color.BLACK
-        // The name, one line, cut to the label.
-        g.font = Font(Font.SANS_SERIF, Font.BOLD, 8)
+        // The name, one line, cut to the label, on the reading side; the price at the far end. In the app's
+        // print face, which draws Hindi and Bengali on a stock Windows (21 Oct 2026: SANS_SERIF printed boxes).
+        val rtl = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(java.util.Locale.getDefault())
+        g.font = Font(PrintFonts.family, Font.BOLD, 8)
         val fm = g.fontMetrics
         var name = p.name
         while (fm.stringWidth(name) > labelW - 2 * pad && name.length > 2) name = name.dropLast(2) + "…"
-        g.drawString(name, (x + pad).toFloat(), (y + pad + fm.ascent).toFloat())
+        val nameX = if (rtl) x + labelW - pad - fm.stringWidth(name) else x + pad
+        g.drawString(name, nameX.toFloat(), (y + pad + fm.ascent).toFloat())
         // The price on the end side of the name line.
         p.salePrice?.let { price ->
-            g.font = Font(Font.SANS_SERIF, Font.BOLD, 8)
+            g.font = Font(PrintFonts.family, Font.BOLD, 8)
             val text = Format.money(price)
             val w = g.fontMetrics.stringWidth(text)
             if (fm.stringWidth(name) + w + 3 * pad < labelW) {
-                g.drawString(text, (x + labelW - pad - w).toFloat(), (y + pad + fm.ascent).toFloat())
+                val priceX = if (rtl) x + pad else x + labelW - pad - w
+                g.drawString(text, priceX.toFloat(), (y + pad + fm.ascent).toFloat())
             }
         }
         // The bars: as wide as the label allows, the code's digits under them.

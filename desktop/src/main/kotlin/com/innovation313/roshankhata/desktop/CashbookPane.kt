@@ -356,23 +356,69 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
     }
 }
 
-/** A sheet of label: figure lines, A4, for a report with no design of its own. */
-class LinesPrint(private val title: String, private val subtitle: String, private val lines: List<Pair<String, String>>) : java.awt.print.Printable {
+/**
+ * A sheet of label: figure lines, A4, for a report with no design of its own (the day report).
+ *
+ * In the app's print face (21 Oct 2026, the nine-language review: it was Java's SANS_SERIF, which
+ * stock Windows draws as boxes for Hindi and Bengali), mirrored for a right-to-left language (the
+ * label on the reading side, the figure at the far end), and on as many pages as the lines need
+ * (it stopped at the foot of the first page and dropped the rest).
+ */
+class LinesPrint(
+    private val title: String,
+    private val subtitle: String,
+    private val lines: List<Pair<String, String>>,
+    private val rtl: Boolean = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(java.util.Locale.getDefault())
+) : java.awt.print.Printable {
+    private val pageW = 595.0
+    private val left = 60.0
+    private val right = 535.0
+    private val firstTop = 134.0
+    private val step = 20.0
+    private val bottom = 790.0
+    private val perFirst = ((bottom - firstTop) / step).toInt() + 1
+    private val perNext = ((bottom - 80.0) / step).toInt() + 1
+
+    private fun pages(): Int = if (lines.size <= perFirst) 1 else 1 + (lines.size - perFirst + perNext - 1) / perNext
+
+    /** [s] starting at [x] from the reading side, or ending there when [end]. */
+    private fun java.awt.Graphics2D.text(s: String, x: Double, y: Double, end: Boolean = false) {
+        val w = fontMetrics.stringWidth(s)
+        val at = when {
+            !rtl && !end -> x
+            !rtl && end -> x - w
+            rtl && !end -> pageW - x - w
+            else -> pageW - x
+        }
+        drawString(s, at.toFloat(), y.toFloat())
+    }
+
     override fun print(g: java.awt.Graphics, pf: java.awt.print.PageFormat, pageIndex: Int): Int {
-        if (pageIndex > 0) return java.awt.print.Printable.NO_SUCH_PAGE
+        if (pageIndex >= pages()) return java.awt.print.Printable.NO_SUCH_PAGE
         val g2 = g as java.awt.Graphics2D
         g2.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
         g2.color = java.awt.Color.BLACK
-        var y = 80f
-        g2.font = java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.BOLD, 20); g2.drawString(title, 60f, y); y += 24
-        g2.font = java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.PLAIN, 12); g2.drawString(subtitle, 60f, y); y += 30
-        g2.font = java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.PLAIN, 12)
-        for ((k, v) in lines) {
-            g2.drawString(k, 60f, y)
-            val w = g2.fontMetrics.stringWidth(v)
-            g2.drawString(v, 535f - w, y)
-            y += 20
-            if (y > 800) break
+        val face = PrintFonts.family
+        var y: Double
+        val from: Int
+        val count: Int
+        if (pageIndex == 0) {
+            y = 80.0
+            g2.font = java.awt.Font(face, java.awt.Font.BOLD, 20); g2.text(title, left, y); y += 24
+            g2.font = java.awt.Font(face, java.awt.Font.PLAIN, 12); g2.text(subtitle, left, y)
+            y = firstTop
+            from = 0
+            count = perFirst
+        } else {
+            y = 80.0
+            from = perFirst + (pageIndex - 1) * perNext
+            count = perNext
+        }
+        g2.font = java.awt.Font(face, java.awt.Font.PLAIN, 12)
+        for ((k, v) in lines.subList(minOf(from, lines.size), minOf(lines.size, from + count))) {
+            g2.text(k, left, y)
+            g2.text(v, right, y, end = true)
+            y += step
         }
         return java.awt.print.Printable.PAGE_EXISTS
     }

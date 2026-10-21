@@ -853,8 +853,8 @@
 
     <string name="hide_balance">बैलेंस छुपाएँ</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">Innovation-313 द्वारा संचालित</string>
+    <string name="lock_tagline">Innovation-313 द्वारा संचालित</string>
     <string name="tap_to_start">जारी रखने के लिए कहीं भी टैप करें</string>
 
     <!-- Splash / branding -->
@@ -3438,4 +3438,24 @@
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">आपको अदा किया</string>
     <string name="pdf_stmt_you_supplied">आपने माल दिया</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">नाम</string>
+    <string name="csv_col_category">श्रेणी</string>
+    <string name="csv_col_company">कंपनी</string>
+    <string name="csv_col_unit">इकाई</string>
+    <string name="csv_col_sale">बिक्री मूल्य</string>
+    <string name="csv_col_credit">उधार मूल्य</string>
+    <string name="csv_col_cost">लागत मूल्य</string>
+    <string name="csv_col_barcode">बारकोड</string>
+    <string name="csv_col_low">न्यूनतम स्टॉक</string>
+    <string name="csv_col_type">प्रकार</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">अ–ह</string>
+    <string name="sort_glyph_za">ह–अ</string>
+    <string name="text_size_glyph">अक</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">सहेजा नहीं गया। कुछ भी नहीं बदला। (%1$s)</string>
 </resources>

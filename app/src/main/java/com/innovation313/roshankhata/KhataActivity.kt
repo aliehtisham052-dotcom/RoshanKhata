@@ -1117,8 +1117,8 @@ class KhataActivity : BaseActivity() {
         )
         val choices = options.mapIndexed { i, label ->
             when (i) {
-                0 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = "A\u2013Z", glyphSp = 13f)
-                1 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = "Z\u2013A", glyphSp = 13f)
+                0 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = getString(R.string.sort_glyph_az), glyphSp = 13f)
+                1 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = getString(R.string.sort_glyph_za), glyphSp = 13f)
                 2 -> ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_arrow_got,
                     iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg)
                 3 -> ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_arrow_gave,

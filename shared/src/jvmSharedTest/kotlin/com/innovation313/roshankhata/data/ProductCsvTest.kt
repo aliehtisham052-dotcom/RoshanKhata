@@ -76,4 +76,36 @@ class ProductCsvTest {
         assertEquals("123", ProductCsv.barcodeOf("123"))
         assertNull(ProductCsv.barcodeOf("8.90123E+12"))
     }
+
+    @Test
+    fun `column names in the app's language come back - 21 Oct`() {
+        // What headers() writes on a Hindi phone, and a sheet an Urdu shop typed itself.
+        val hindi = "\"नाम (name)\",\"श्रेणी (category)\",\"कंपनी (company)\",\"इकाई (unit)\",\"बिक्री मूल्य (sale price)\",\"उधार मूल्य (credit price)\",\"लागत मूल्य (cost price)\",\"बारकोड (barcode)\",\"न्यूनतम स्टॉक (low stock)\",\"प्रकार (type)\"\r\n" +
+            "\"Urea\",\"Khaad\",\"FFC\",\"bag\",\"4500\",\"4700\",\"4300\",\"\",\"5\",\"\"\r\n"
+        val h = ProductCsv.parse(hindi).single()
+        assertEquals("Urea", h.name)
+        assertEquals(4500.0, h.salePrice!!, 0.0)
+        assertEquals(4700.0, h.creditPrice!!, 0.0)
+        assertEquals(4300.0, h.costPrice!!, 0.0)
+        assertEquals("FFC", h.company)
+
+        val urdu = "نام,قیمت فروخت,ادھار قیمت,لاگت,بارکوڈ\nیوریا,4500,4700,4300,8964000000123\n"
+        val u = ProductCsv.parse(urdu).single()
+        assertEquals("یوریا", u.name)
+        assertEquals(4500.0, u.salePrice!!, 0.0)
+        assertEquals(4700.0, u.creditPrice!!, 0.0)
+        assertEquals(4300.0, u.costPrice!!, 0.0)
+        assertEquals("8964000000123", u.barcode)
+
+        val bengali = "নাম,বিক্রয় মূল্য,কেনা দাম\nচাল,60,50\n"
+        val b = ProductCsv.parse(bengali).single()
+        assertEquals(60.0, b.salePrice!!, 0.0)
+        assertEquals(50.0, b.costPrice!!, 0.0)
+
+        val indonesian = "Nama,Harga jual,Harga modal,Satuan\nBeras,15000,12000,kg\n"
+        val i = ProductCsv.parse(indonesian).single()
+        assertEquals(15000.0, i.salePrice!!, 0.0)
+        assertEquals(12000.0, i.costPrice!!, 0.0)
+        assertEquals("kg", i.unit)
+    }
 }

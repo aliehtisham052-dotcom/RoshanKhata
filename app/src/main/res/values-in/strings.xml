@@ -3391,4 +3391,24 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">Dibayar kepada Anda</string>
     <string name="pdf_stmt_you_supplied">Anda memasok</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">Nama</string>
+    <string name="csv_col_category">Kategori</string>
+    <string name="csv_col_company">Merek</string>
+    <string name="csv_col_unit">Satuan</string>
+    <string name="csv_col_sale">Harga jual</string>
+    <string name="csv_col_credit">Harga kredit</string>
+    <string name="csv_col_cost">Harga modal</string>
+    <string name="csv_col_barcode">Barcode</string>
+    <string name="csv_col_low">Stok minimum</string>
+    <string name="csv_col_type">Jenis</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">A–Z</string>
+    <string name="sort_glyph_za">Z–A</string>
+    <string name="text_size_glyph">Aa</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">Tidak tersimpan. Tidak ada yang berubah. (%1$s)</string>
 </resources>

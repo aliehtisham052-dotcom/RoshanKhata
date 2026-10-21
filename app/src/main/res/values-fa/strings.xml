@@ -849,8 +849,8 @@
 
     <string name="hide_balance">پنهان کردن مانده</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">قدرت گرفته از Innovation-313</string>
+    <string name="lock_tagline">قدرت گرفته از Innovation-313</string>
     <string name="tap_to_start">برای ادامه هر جا را لمس کنید</string>
 
     <!-- Splash / branding -->
@@ -3422,4 +3422,24 @@
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">به شما پرداخت شد</string>
     <string name="pdf_stmt_you_supplied">شما تحویل دادید</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">نام</string>
+    <string name="csv_col_category">دسته</string>
+    <string name="csv_col_company">شرکت</string>
+    <string name="csv_col_unit">واحد</string>
+    <string name="csv_col_sale">قیمت فروش</string>
+    <string name="csv_col_credit">قیمت نسیه</string>
+    <string name="csv_col_cost">قیمت خرید</string>
+    <string name="csv_col_barcode">بارکد</string>
+    <string name="csv_col_low">حداقل موجودی</string>
+    <string name="csv_col_type">نوع</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">آ–ی</string>
+    <string name="sort_glyph_za">ی–آ</string>
+    <string name="text_size_glyph">اب</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">ذخیره نشد. چیزی تغییر نکرد. (%1$s)</string>
 </resources>

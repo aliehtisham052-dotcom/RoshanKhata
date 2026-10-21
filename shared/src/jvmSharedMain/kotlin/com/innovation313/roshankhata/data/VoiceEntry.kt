@@ -129,8 +129,20 @@ object VoiceEntry {
         "مئة" to 100.0, "مائة" to 100.0,                               // Arabic
         "ألف" to 1000.0, "الف" to 1000.0, "آلاف" to 1000.0, "الاف" to 1000.0,
         "مليون" to 1_000_000.0, "ملايين" to 1_000_000.0,
-        "لک" to 100_000.0, "ڪروڙ" to 10_000_000.0                      // Sindhi
-    )
+        "لک" to 100_000.0, "ڪروڙ" to 10_000_000.0,                     // Sindhi
+        // Hindi, Bengali and Indonesian (21 Oct 2026, the nine-language
+        // review): "राम को 5 हज़ार दिए" was read as 5. Speech recognisers in
+        // these languages write the figure as digits and the scale as a word.
+        "सौ" to 100.0, "हज़ार" to 1000.0, "हजार" to 1000.0, "लाख" to 100_000.0,
+        "करोड़" to 10_000_000.0, "करोड" to 10_000_000.0,                // Hindi
+        "শ" to 100.0, "শো" to 100.0, "হাজার" to 1000.0, "লাখ" to 100_000.0,
+        "লক্ষ" to 100_000.0, "কোটি" to 10_000_000.0,                    // Bengali
+        "ratus" to 100.0, "ribu" to 1000.0, "rb" to 1000.0, "juta" to 1_000_000.0,
+        "jt" to 1_000_000.0, "miliar" to 1_000_000_000.0                // Indonesian
+    ).mapKeys { nfc(it.key) }
+
+    /** One spelling of a word: Hindi's ज़ and ड़ arrive both as one letter and as letter + dot. */
+    private fun nfc(s: String): String = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFC)
 
     /**
      * Persian number words (1 Oct), read ONLY when the microphone was set to
@@ -172,17 +184,28 @@ object VoiceEntry {
      */
     fun parse(spoken: String, knownNames: List<String>, language: String? = null): Parsed {
         val text = normalise(spoken)
-        val persian = language?.lowercase()?.startsWith("fa") == true
+        val lang = language?.lowercase().orEmpty()
+        val persian = lang.startsWith("fa")
+        // Indonesian writes thousands with a dot: "5.000" is five thousand (21 Oct).
+        val dotGroups = lang.startsWith("id") || lang.startsWith("in")
         return Parsed(
             partyName = findParty(text, knownNames),
-            amount = findAmount(text, persian),
+            amount = findAmount(text, persian, dotGroups),
             isGiven = findDirection(text)
         )
     }
 
     private fun normalise(s: String): String {
         val sb = StringBuilder()
-        for (ch in s.lowercase()) sb.append(EASTERN_DIGITS[ch] ?: ch)
+        for (ch in nfc(s).lowercase()) sb.append(
+            when (ch) {
+                // Arabic and Persian figures group with ٬ and take ٫ as the
+                // decimal point: "٥٬٠٠٠" was read as 5 (21 Oct).
+                '\u066C' -> ','
+                '\u066B' -> '.'
+                else -> EASTERN_DIGITS[ch] ?: ch
+            }
+        )
         return sb.toString()
     }
 
@@ -509,12 +532,14 @@ object VoiceEntry {
      * Digits win when present: someone who says "5000" means 5000, and no
      * word-reading can improve on that.
      */
-    private fun findAmount(text: String, persian: Boolean = false): Double? {
-        Regex("\\d[\\d,]*(\\.\\d+)?").find(text)?.let { m ->
-            val cleaned = m.value.replace(",", "")
+    private fun findAmount(text: String, persian: Boolean = false, dotGroups: Boolean = false): Double? {
+        val figure = if (dotGroups) Regex("\\d{1,3}(\\.\\d{3})+(,\\d+)?|\\d+(,\\d+)?") else Regex("\\d[\\d,]*(\\.\\d+)?")
+        figure.find(text)?.let { m ->
+            val cleaned = if (dotGroups) m.value.replace(".", "").replace(',', '.') else m.value.replace(",", "")
             cleaned.toDoubleOrNull()?.let { digits ->
                 // "5 hazaar" — a digit followed by a multiplier word.
                 val after = text.substring(m.range.last + 1).trim().split(" ").firstOrNull()
+                    ?.trimEnd('.', ',', '।', '؟', '?', '!', '،')
                 val mult = MULTIPLIERS[after] ?: DIGIT_MULTIPLIERS[after]
                 return if (mult != null) digits * mult else digits
             }

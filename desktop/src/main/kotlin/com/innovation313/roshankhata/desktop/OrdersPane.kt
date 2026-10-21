@@ -245,7 +245,7 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
                     val bill = SupplierBill(partyId = o.order.partyId, billNumber = billNumber.trim().ifBlank { null }, totalAmount = com.innovation313.roshankhata.data.LineMath.round(total), note = o.order.orderNumber)
                     val entry = if (total > 0.0) com.innovation313.roshankhata.data.LedgerEntry(partyId = o.order.partyId, amount = com.innovation313.roshankhata.data.LineMath.round(total), isGiven = false, note = o.order.orderNumber, entryNumber = "") else null
                     val r = withContext(Dispatchers.IO) { runCatching { dao.receiveOrder(o.order.id, bill, items, entry) } }
-                    r.onSuccess { done(words.text(W.po_status_received) + " " + o.order.orderNumber) }.onFailure { done(it.message ?: "") }
+                    r.onSuccess { done(words.text(W.po_status_received) + " " + o.order.orderNumber) }.onFailure { done(failText(words, it)) }
                 }
             }, kind = ButtonKind.ACCENT, enabled = got.any { (Calc.evalAmount(it.qty) ?: 0.0) > 0.0 })
         }) {

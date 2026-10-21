@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.innovation313.roshankhata.data.CardLanguage
 import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.desktop.invoice.Context
 import com.innovation313.roshankhata.desktop.invoice.ProfileImages
@@ -82,8 +83,8 @@ internal fun posterClock(minutes: Int): String = "%d:%02d".format(Locale.ROOT, m
 
 /**
  * The phone's Poster & Status on the computer: the same eleven designs
- * (generated from the phone's files, drawn on the gfx stand-in), in English
- * or Urdu, the shop's name, phone and logo from its profile. The heroes are
+ * (generated from the phone's files, drawn on the gfx stand-in), in any of
+ * the app's nine languages as on the phone (21 Oct 2026), the shop's name, phone and logo from its profile. The heroes are
  * drawn flat here (the phone's are 3D). Saved as a 1080 x 1920 picture to
  * put on WhatsApp Status. Drawn on this computer; nothing is uploaded.
  */
@@ -92,9 +93,11 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val prefs = remember(businessId) { PosterPrefs(File(home, "poster_b$businessId.properties")) }
-    var lang by remember(businessId) { mutableStateOf(prefs.get("lang") ?: "en") }
-    val ur = lang == "ur"
-    val posterWords = remember(lang) { desktopWords(Locale.forLanguageTag(lang)) }
+    // The poster's own language, the app's when none was chosen (the phone's rule).
+    var posterLang by remember(businessId) { mutableStateOf(CardLanguage.of(prefs.get("lang")) ?: CardLanguage.forApp(Locale.getDefault())) }
+    val lang = posterLang.code
+    val ur = posterLang == CardLanguage.URDU
+    val posterWords = remember(lang) { desktopWords(posterLang.locale) }
     var occasion by remember(businessId) { mutableStateOf(PosterOccasion.byKey(prefs.get("occasion"))) }
     fun k(key: String) = "${occasion.key}.$lang.$key"
     fun original(id: String, hint: String) = posterWords.text(id.ifEmpty { hint })
@@ -148,7 +151,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
         )
     }
 
-    fun context() = Context(posterWords, settings, images, ur, Locale.forLanguageTag(lang))
+    fun context() = Context(posterWords, settings, images, posterLang.rtl, posterLang.locale)
 
     fun save() {
         val o = original(occasion.title, W.poster_custom_title_hint)
@@ -181,7 +184,12 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
         Column(Modifier.weight(0.46f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             PaneTitle(word(W.poster_title), word(W.poster_subtitle))
             Text(word(W.poster_language), color = c.ink, fontWeight = FontWeight.Bold)
-            TwoWay("English", "اردو", !ur) { english -> save(); lang = if (english) "en" else "ur" }
+            // One pill per language, each in its own script, in a row that scrolls.
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                CardLanguage.entries.forEach { l ->
+                    FluentPill(l.native, l == posterLang) { if (l != posterLang) { save(); posterLang = l } }
+                }
+            }
             Text(word(W.poster_lang_note), color = c.textMuted, fontSize = 12.sp)
             Text(word(W.poster_choose_design), color = c.ink, fontWeight = FontWeight.Bold)
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
