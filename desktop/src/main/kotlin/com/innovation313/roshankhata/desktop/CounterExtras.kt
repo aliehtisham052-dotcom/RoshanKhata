@@ -133,45 +133,51 @@ fun CustomerDisplay(draft: CounterDraft, shopName: String, paymentQr: java.io.Fi
     )
     val qr = remember(paymentQr) { paymentQr?.takeIf { it.isFile }?.let { f -> runCatching { javax.imageio.ImageIO.read(f)?.toComposeImageBitmap() }.getOrNull() } }
     Window(onCloseRequest = onClose, state = state, title = word(W.cd_title), onPreviewKeyEvent = escCloses(onClose)) {
-        val c = LocalRoshanColors.current
-        Row(Modifier.fillMaxSize().background(Look.base).padding(28.dp), horizontalArrangement = Arrangement.spacedBy(28.dp)) {
-            Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Text(shopName, color = c.ink, fontSize = 30.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (draft.lines.isEmpty()) {
-                    Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                        Text(word(W.cd_welcome), color = c.inkSoft, fontSize = 40.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                } else {
-                    LazyColumn(Modifier.fillMaxWidth().weight(1f).clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card)) {
-                        itemsIndexed(draft.lines, key = { _, l -> System.identityHashCode(l) }) { i, line ->
-                            Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Column(Modifier.weight(1f)) {
-                                    Text(line.name, color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                    Text(Calc.trim(line.qtyValue) + (line.unit?.let { " $it" } ?: "") + " × " + Format.money(line.rateValue), color = c.inkSoft, fontSize = 17.sp, maxLines = 1)
-                                }
-                                Text(Format.money(line.total), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+        CustomerScreen(draft, shopName, qr)
+    }
+}
+
+/** What the customer's window shows — apart, so the proof pictures can draw it. */
+@Composable
+fun CustomerScreen(draft: CounterDraft, shopName: String, qr: androidx.compose.ui.graphics.ImageBitmap?) {
+    val c = LocalRoshanColors.current
+    Row(Modifier.fillMaxSize().background(Look.base).padding(28.dp), horizontalArrangement = Arrangement.spacedBy(28.dp)) {
+        Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Text(shopName, color = c.ink, fontSize = 30.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            if (draft.lines.isEmpty()) {
+                Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+                    Text(word(W.cd_welcome), color = c.inkSoft, fontSize = 40.sp, fontWeight = FontWeight.SemiBold)
+                }
+            } else {
+                LazyColumn(Modifier.fillMaxWidth().weight(1f).clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card)) {
+                    itemsIndexed(draft.lines, key = { _, l -> System.identityHashCode(l) }) { i, line ->
+                        Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(line.name, color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Text(Calc.trim(line.qtyValue) + (line.unit?.let { " $it" } ?: "") + " × " + Format.money(line.rateValue), color = c.inkSoft, fontSize = 17.sp, maxLines = 1)
                             }
-                            if (i < draft.lines.lastIndex) Rule()
+                            Text(Format.money(line.total), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                         }
+                        if (i < draft.lines.lastIndex) Rule()
                     }
                 }
-                val t = draft.totals
-                if (t.discount > 0.0) Row(Modifier.fillMaxWidth()) {
-                    Text(word(W.pos_discount), Modifier.weight(1f), color = c.inkSoft, fontSize = 20.sp)
-                    Text("−" + Format.money(t.discount), color = c.ink, fontSize = 20.sp)
-                }
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 28.sp, fontWeight = FontWeight.SemiBold)
-                    Text(Format.money(t.grandTotal), color = c.ink, fontSize = 48.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
-                }
-                val rest = draft.remaining
-                if (draft.paid > 0.0 && rest < -0.005) Text(word(W.cd_change, Format.money(-rest)), Modifier.fillMaxWidth(), color = Look.accent, fontSize = 30.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
             }
-            if (qr != null) Column(Modifier.width(300.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(word(W.cd_scan), color = c.ink, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-                Image(qr, word(W.cd_scan), Modifier.size(280.dp).clip(Look.card).background(androidx.compose.ui.graphics.Color.White).padding(10.dp))
-                Text(word(W.cd_qr_note), color = c.textMuted, fontSize = 14.sp, textAlign = TextAlign.Center)
+            val t = draft.totals
+            if (t.discount > 0.0) Row(Modifier.fillMaxWidth()) {
+                Text(word(W.pos_discount), Modifier.weight(1f), color = c.inkSoft, fontSize = 20.sp)
+                Text("−" + Format.money(t.discount), color = c.ink, fontSize = 20.sp)
             }
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 28.sp, fontWeight = FontWeight.SemiBold)
+                Text(Format.money(t.grandTotal), color = c.ink, fontSize = 48.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+            }
+            val rest = draft.remaining
+            if (draft.paid > 0.0 && rest < -0.005) Text(word(W.cd_change, Format.money(-rest)), Modifier.fillMaxWidth(), color = Look.accent, fontSize = 30.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
+        }
+        if (qr != null) Column(Modifier.width(300.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(word(W.cd_scan), color = c.ink, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+            Image(qr, word(W.cd_scan), Modifier.size(280.dp).clip(Look.card).background(androidx.compose.ui.graphics.Color.White).padding(10.dp))
+            Text(word(W.cd_qr_note), color = c.textMuted, fontSize = 14.sp, textAlign = TextAlign.Center)
         }
     }
 }
