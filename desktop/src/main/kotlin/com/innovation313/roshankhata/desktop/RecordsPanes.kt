@@ -358,7 +358,9 @@ fun InvoicesPane(
     designs: () -> com.innovation313.roshankhata.desktop.invoice.Context,
     /** The optional invoice fields the shop uses, and the switches to change them (Invoice settings). */
     fields: InvoiceFields = InvoiceFields(),
-    onFields: (InvoiceFields) -> Unit = {}
+    onFields: (InvoiceFields) -> Unit = {},
+    /** An invoice to open first (one just made from a counter sale). */
+    openId: Long? = null
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -443,7 +445,7 @@ fun InvoicesPane(
     }
     // List and page side by side (20 Oct redesign): a click opens the invoice in
     // its own design beside the list, with its actions; it no longer prints at once.
-    var chosen by remember { mutableStateOf<Long?>(null) }
+    var chosen by remember(openId) { mutableStateOf(openId) }
     var monthOnly by remember { mutableStateOf(false) }
     val monthStart = remember {
         java.util.Calendar.getInstance().apply {

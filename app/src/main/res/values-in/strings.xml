@@ -3254,4 +3254,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="product_pack_size">Isi per kemasan</string>
     <string name="product_pack_price">Harga kemasan</string>
     <string name="product_tax_rate">Pajak %</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">Faktur A4</string>
 </resources>

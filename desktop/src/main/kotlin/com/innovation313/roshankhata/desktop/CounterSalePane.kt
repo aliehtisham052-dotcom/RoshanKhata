@@ -88,7 +88,9 @@ fun CounterSalePane(
     reload: Int,
     onChanged: () -> Unit,
     onReceipt: (List<ThermalReceipt.Line>) -> Unit,
-    keys: KeyActions
+    keys: KeyActions,
+    /** A sale's A4 invoice was made (or found): open it on the Invoices page. */
+    onInvoice: (Long) -> Unit = {}
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -336,6 +338,13 @@ fun CounterSalePane(
                             returning = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
                         }
                     }
+                },
+                // The ticket as an A4 invoice for the customer's own books (21 Oct 2026).
+                onInvoice = { s ->
+                    scope.launch {
+                        val id = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.SaleInvoice.of(dao, s.id, words) }
+                        if (id != null) onInvoice(id)
+                    }
                 })
             RecentReturns(returns.take(6), words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { voidingReturn = r } })
         }
@@ -529,7 +538,7 @@ private fun methodWord(m: String): String = word(
 
 /** Today's last few tickets under the counter, with the void. */
 @Composable
-private fun RecentSales(rows: List<SaleSummary>, words: Words, onVoid: (SaleSummary) -> Unit, onReturn: (SaleSummary) -> Unit) {
+private fun RecentSales(rows: List<SaleSummary>, words: Words, onVoid: (SaleSummary) -> Unit, onReturn: (SaleSummary) -> Unit, onInvoice: (SaleSummary) -> Unit) {
     val c = LocalRoshanColors.current
     if (rows.isEmpty()) return
     ListCard(Modifier.fillMaxWidth()) {
@@ -545,6 +554,7 @@ private fun RecentSales(rows: List<SaleSummary>, words: Words, onVoid: (SaleSumm
                     else -> Tag(word(W.pos_status_done), Look.accent, Look.accentTint)
                 }
                 if (s.status == SaleStatus.DONE) {
+                    IconAction("ic_tile_invoice", word(W.pos_make_invoice), { onInvoice(s) })
                     IconAction("ic_arrow_got", word(W.pos_return), { onReturn(s) })
                     IconAction("ic_close", word(W.pos_void), { onVoid(s) })
                 } else Spacer(Modifier.width(8.dp))

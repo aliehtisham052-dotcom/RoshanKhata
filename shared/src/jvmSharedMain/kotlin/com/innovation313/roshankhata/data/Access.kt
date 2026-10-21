@@ -121,7 +121,7 @@ object Access {
      * on leaves the owner signed in — they just typed the PIN; turning it off
      * makes this the owner's device again.
      */
-    fun setCounterMode(on: Boolean) {
+    fun switchCounterMode(on: Boolean) {
         store?.put(KEY_COUNTER, if (on) "1" else null)
         counterMode = on
         current = null

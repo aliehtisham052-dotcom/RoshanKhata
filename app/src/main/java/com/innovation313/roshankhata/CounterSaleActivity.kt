@@ -250,15 +250,29 @@ class CounterSaleActivity : BaseActivity() {
                     if (s.status != com.innovation313.roshankhata.data.SaleStatus.DONE) return@setItems
                     MaterialAlertDialogBuilder(this@CounterSaleActivity)
                         .setTitle(s.saleNumber)
-                        .setItems(arrayOf(getString(R.string.pos_return), getString(R.string.pos_void))) { _, which ->
-                            if (which == 0) com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.RETURN, getString(R.string.pos_return) + " " + s.saleNumber) { startReturn(s.id) }
-                            else com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { askVoid(s.id, s.saleNumber) }
+                        .setItems(arrayOf(getString(R.string.pos_make_invoice), getString(R.string.pos_return), getString(R.string.pos_void))) { _, which ->
+                            when (which) {
+                                // The ticket as an A4 invoice (21 Oct 2026): made once, then opened to print or share.
+                                0 -> openInvoice(s.id)
+                                1 -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.RETURN, getString(R.string.pos_return) + " " + s.saleNumber) { startReturn(s.id) }
+                                else -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { askVoid(s.id, s.saleNumber) }
+                            }
                         }
                         .setNegativeButton(R.string.cancel, null)
                         .show()
                 }
                 .setNegativeButton(R.string.close, null)
                 .show()
+        }
+    }
+
+    /** The sale's A4 invoice ([com.innovation313.roshankhata.data.SaleInvoice]), opened in the invoice editor to print or share. */
+    private fun openInvoice(saleId: Long) {
+        lifecycleScope.launch {
+            val id = withContext(Dispatchers.IO) {
+                runCatching { com.innovation313.roshankhata.data.SaleInvoice.of(dao, saleId, AndroidWords(this@CounterSaleActivity)) }.getOrNull()
+            } ?: return@launch
+            startActivity(Intent(this@CounterSaleActivity, InvoiceEditorActivity::class.java).putExtra(InvoiceEditorActivity.EXTRA_INVOICE_ID, id))
         }
     }
 

@@ -410,7 +410,7 @@ fun CounterModeDialog(dao: KhataDao, turnOn: Boolean, onClose: () -> Unit) {
                 busy = false
                 problem = pinProblem(words, r)
                 if (r == true) {
-                    Access.setCounterMode(turnOn)
+                    Access.switchCounterMode(turnOn)
                     withContext(Dispatchers.IO) { dao.log(if (turnOn) AuditAction.COUNTER_ON else AuditAction.COUNTER_OFF, Access.OWNER) }
                     onClose()
                 } else pin = ""

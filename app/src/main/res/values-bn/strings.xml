@@ -3301,4 +3301,7 @@
     <string name="product_pack_size">এক প্যাকে কয়টি</string>
     <string name="product_pack_price">প্যাকের দাম</string>
     <string name="product_tax_rate">কর %</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">A4 ইনভয়েস</string>
 </resources>

@@ -205,4 +205,5 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun wipeShifts(): Unit = refused()
     override suspend fun restoreShifts(items: List<Shift>): Unit = refused()
     override suspend fun saveOwnerPin(pinHash: String, pinSalt: String, codeHash: String, codeSalt: String, user: String?): Unit = refused()
+    override suspend fun linkSaleInvoice(saleId: Long, invoice: Invoice, items: List<InvoiceItem>): Long = refused()
 }

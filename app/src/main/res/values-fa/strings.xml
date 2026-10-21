@@ -3285,4 +3285,7 @@
     <string name="product_pack_size">چند تا در یک بسته</string>
     <string name="product_pack_price">قیمت بسته</string>
     <string name="product_tax_rate">مالیات ٪</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">فاکتور A4</string>
 </resources>

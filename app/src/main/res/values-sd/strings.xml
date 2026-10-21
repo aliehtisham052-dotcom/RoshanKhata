@@ -3285,4 +3285,7 @@
     <string name="product_pack_size">هڪ پيڪ ۾ ڪيترا</string>
     <string name="product_pack_price">پيڪ جي قيمت</string>
     <string name="product_tax_rate">ٽيڪس %</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">A4 انوائس</string>
 </resources>

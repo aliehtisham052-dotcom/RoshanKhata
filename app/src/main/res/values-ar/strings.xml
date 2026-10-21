@@ -3445,4 +3445,7 @@
     <string name="product_pack_size">كم في العبوة</string>
     <string name="product_pack_price">سعر العبوة</string>
     <string name="product_tax_rate">الضريبة %</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">فاتورة A4</string>
 </resources>

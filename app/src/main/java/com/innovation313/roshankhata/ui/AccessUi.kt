@@ -417,7 +417,7 @@ object AccessUi {
         val dao = dao(activity)
         val flip = { pin: String, owner: Access.OwnerPin ->
             check(activity, dao, pin, { owner.matches(it) }) {
-                Access.setCounterMode(on)
+                Access.switchCounterMode(on)
                 log(dao, if (on) AuditAction.COUNTER_ON else AuditAction.COUNTER_OFF, Access.OWNER)
                 toast(activity, activity.getString(if (on) R.string.access_counter_now_on else R.string.access_counter_now_off))
                 done()
