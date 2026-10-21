@@ -238,9 +238,12 @@ object SaleMath {
         val subtotal: Double,
         val discount: Double,
         val taxable: Double,
+        /** Tax added on top of the prices (the ticket's tax %, and lines whose prices do not hold their tax). */
         val tax: Double,
         val roundOff: Double,
-        val grandTotal: Double
+        val grandTotal: Double,
+        /** Tax already inside prices that hold it (schema 36): part of [taxable], shown, never added again. */
+        val taxIncluded: Double = 0.0
     )
 
     /**
@@ -257,13 +260,47 @@ object SaleMath {
         taxPercent: Double? = null,
         roundToWhole: Boolean = false
     ): Totals {
-        val subtotal = LineMath.round(lines.filter { !it.isDeleted }.sumOf { it.lineTotal })
+        val live = lines.filter { !it.isDeleted }
+        val subtotal = LineMath.round(live.sumOf { it.lineTotal })
         val disc = LineMath.round(discount.coerceIn(0.0, subtotal.coerceAtLeast(0.0)))
         val taxable = LineMath.round(subtotal - disc)
-        val tax = taxPercent?.takeIf { it > 0.0 }?.let { LineMath.round(taxable * it / 100.0) } ?: 0.0
+        val ownRates = live.any { (it.taxRate ?: 0.0) > 0.0 }
+        val (tax, included) = if (!ownRates) {
+            // The ticket's tax % on the whole, as it always was.
+            (taxPercent?.takeIf { it > 0.0 }?.let { LineMath.round(taxable * it / 100.0) } ?: 0.0) to 0.0
+        } else {
+            val taxes = lineTaxes(live, disc, taxPercent)
+            var added = 0.0
+            var inside = 0.0
+            live.forEachIndexed { i, l -> if (l.taxIncluded == true && (l.taxRate ?: 0.0) > 0.0) inside += taxes[i] else added += taxes[i] }
+            LineMath.round(added) to LineMath.round(inside)
+        }
         val exact = LineMath.round(taxable + tax)
         val grand = if (roundToWhole) Math.rint(exact) else exact
-        return Totals(subtotal, disc, taxable, tax, LineMath.round(grand - exact), LineMath.round(grand))
+        return Totals(subtotal, disc, taxable, tax, LineMath.round(grand - exact), LineMath.round(grand), included)
+    }
+
+    /**
+     * Each live line's tax (schema 36), in line order: the bill discount is
+     * shared over the lines by their worth first. A line with its own rate:
+     * inside its price when [SaleItem.taxIncluded] (r / (100 + r) of it), else
+     * on top (r / 100). A line without one takes the ticket's [taxPercent], on
+     * top. Rounded to the paisa line by line.
+     */
+    fun lineTaxes(lines: List<SaleItem>, discount: Double, taxPercent: Double?): List<Double> {
+        val live = lines.filter { !it.isDeleted }
+        val subtotal = live.sumOf { it.lineTotal }
+        val share = if (subtotal > 0.0) ((subtotal - discount.coerceIn(0.0, subtotal)) / subtotal) else 0.0
+        return live.map { l ->
+            val base = l.lineTotal * share
+            val r = l.taxRate?.takeIf { it > 0.0 }
+            when {
+                r != null && l.taxIncluded == true -> LineMath.round(base * r / (100.0 + r))
+                r != null -> LineMath.round(base * r / 100.0)
+                taxPercent != null && taxPercent > 0.0 -> LineMath.round(base * taxPercent / 100.0)
+                else -> 0.0
+            }
+        }
     }
 
     /** Why a ticket cannot be posted; the screen words each one. */
@@ -312,7 +349,8 @@ object SaleMath {
             val c = i.costRate ?: return null
             cost = cost.add(BigDecimal.valueOf(c).multiply(BigDecimal.valueOf(i.quantity)))
         }
-        return LineMath.round(totals.taxable - cost.toDouble())
+        // Tax inside the prices is the government's, not the shop's.
+        return LineMath.round(totals.taxable - totals.taxIncluded - cost.toDouble())
     }
 }
 

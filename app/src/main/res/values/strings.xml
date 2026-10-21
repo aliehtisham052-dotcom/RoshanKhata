@@ -3453,4 +3453,22 @@ You can change this any time from this screen.</string>
     <string name="restore_loss_agree">I understand that these will be gone</string>
     <string name="restore_loss_counting">Checking what this book has that the copy does not…</string>
     <string name="snapshot_before_restore">Kept before a restore · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">Tax inside the prices</string>
+    <string name="pos_sell_by">Sell by %1$s</string>
+    <string name="pos_expired_stock">Only expired stock is left of %1$s (still good: %2$s). Write the old batch off in Expiry, or sell less.</string>
+    <string name="counter_settings">Counter settings</string>
+    <string name="counter_prices_include_tax">Prices already include tax</string>
+    <string name="counter_prices_include_tax_help">On: a product\'s tax is inside its price, and the receipt says how much. Off: it is added on top at the counter. Each product\'s tax % is set on the product.</string>
+    <string name="expiry_write_off">Write off</string>
+    <string name="expiry_write_off_confirm">Write off %1$s of %2$s as expired? The stock goes down by that much, and the log keeps who did it.</string>
+    <string name="expiry_written_off">Written off</string>
+    <string name="expiry_nothing_left">Nothing of this batch is left</string>
+    <string name="expiry_left">Left: %1$s</string>
+    <string name="product_pack_help">A pack (carton, bori…) the product is also bought or sold in, and how many of its own unit are in one. Stock is counted in its own unit.</string>
+    <string name="product_pack_unit">Pack name</string>
+    <string name="product_pack_size">How many in a pack</string>
+    <string name="product_pack_price">Pack price</string>
+    <string name="product_tax_rate">Tax %</string>
 </resources>

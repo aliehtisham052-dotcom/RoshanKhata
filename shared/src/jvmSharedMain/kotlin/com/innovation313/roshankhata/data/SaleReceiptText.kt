@@ -30,6 +30,9 @@ object SaleReceiptText {
             if (sale.roundOff != 0.0) b.append(words.text(W.pos_round_off)).append(": ").append(Format.money(sale.roundOff)).append('\n')
         }
         b.append(words.text(W.pos_grand_total)).append(": ").append(Format.money(sale.grandTotal)).append('\n')
+        // Tax that was inside the prices (schema 36): said, not added.
+        val inside = s.items.filter { it.taxIncluded == true }.sumOf { it.taxAmount ?: 0.0 }
+        if (inside > 0.004) b.append(words.text(W.pos_tax_included)).append(": ").append(Format.money(inside)).append('\n')
         for (p in s.payments) {
             val m = words.text(
                 when (p.method) {

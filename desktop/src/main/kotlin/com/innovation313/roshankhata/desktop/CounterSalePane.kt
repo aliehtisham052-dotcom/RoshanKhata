@@ -88,8 +88,7 @@ fun CounterSalePane(
     reload: Int,
     onChanged: () -> Unit,
     onReceipt: (List<ThermalReceipt.Line>) -> Unit,
-    keys: KeyActions,
-    /** The owner's App Lock PIN check, for a manager's override; null when none is set. */
+    keys: KeyActions
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -97,12 +96,18 @@ fun CounterSalePane(
     var products by remember { mutableStateOf<List<Product>>(emptyList()) }
     var onHand by remember { mutableStateOf<Map<Long, Double?>>(emptyMap()) }
     var tick by remember { mutableStateOf(0) }
-    LaunchedEffect(reload, tick) {
+    var settingUp by remember { mutableStateOf(false) }
+    LaunchedEffect(reload, tick, settingUp) {
         withContext(Dispatchers.IO) {
             products = dao.productsOnce()
             onHand = runCatching { Counter.onHand(dao) }.getOrDefault(emptyMap())
+            // The book's setting (schema 36): prices with their tax inside or not.
+            draft.pricesIncludeTax = com.innovation313.roshankhata.data.BookSettings.isOn(
+                dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX)
+            )
         }
     }
+    if (settingUp) CounterSettingsDialog(dao) { settingUp = false }
     val held by remember(tick) { dao.observeHeldSales() }.collectAsState(emptyList())
     val recent by remember(tick) { dao.observeSales() }.collectAsState(emptyList())
 
@@ -198,7 +203,10 @@ fun CounterSalePane(
                 draft.clear()
                 tick++
                 onChanged()
-            }.onFailure { told = it.message ?: words.text(W.backup_failed) }
+            }.onFailure { e ->
+                told = if (e is Counter.ExpiredStock) words.text(W.pos_expired_stock, e.item, Calc.trim(e.fresh))
+                    else e.message ?: words.text(W.backup_failed)
+            }
         }
     }
 
@@ -238,6 +246,7 @@ fun CounterSalePane(
                 FluentPill(com.innovation313.roshankhata.data.Access.current?.let { Format.name(it.name) } ?: word(W.access_owner), com.innovation313.roshankhata.data.Access.current != null) { signingIn = true }
                 if (held.isNotEmpty()) FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.z_title), { reporting = true }, kind = ButtonKind.SUBTLE)
+                FluentButton(word(W.counter_settings), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { settingUp = true } }, kind = ButtonKind.SUBTLE)
             }
             Column(Modifier.fillMaxWidth()) {
                 FluentField(
@@ -289,8 +298,19 @@ fun CounterSalePane(
                                         FluentField(line.name, { line.name = it }, Modifier.fillMaxWidth(), placeholder = word(W.item_name_hint))
                                     } else {
                                         Text(line.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                        val under = listOfNotNull(line.unit, line.shortBy?.let { words.text(W.pos_stock_low, Calc.trim(line.onHand ?: 0.0)) })
-                                        if (under.isNotEmpty()) Text(under.joinToString(" · "), color = if (line.shortBy != null) c.owedToMe else c.textMuted, fontSize = 12.sp, maxLines = 1)
+                                        val under = listOfNotNull(
+                                            line.unit, line.shortBy?.let { words.text(W.pos_stock_low, Calc.trim(line.onHand ?: 0.0)) },
+                                            line.taxRate?.takeIf { it > 0.0 }?.let { word(W.pos_tax) + " " + Calc.trim(it) + "%" }
+                                        )
+                                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            if (under.isNotEmpty()) Text(under.joinToString(" · "), color = if (line.shortBy != null) c.owedToMe else c.textMuted, fontSize = 12.sp, maxLines = 1)
+                                            // A product also sold by the pack (schema 36): the line switches between the two.
+                                            if (line.canSwitchUnit) Text(
+                                                "⇄ " + words.text(W.pos_sell_by, line.otherUnit.orEmpty()),
+                                                Modifier.press { line.product?.let { line.switchUnit(draft.unitRate(it)) } }.padding(horizontal = 4.dp),
+                                                color = Look.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1
+                                            )
+                                        }
                                     }
                                 }
                                 FluentField(line.qty, { line.qty = it }, Modifier.weight(2f).then(if (i == draft.lines.lastIndex) Modifier.focusRequester(qtyFocus) else Modifier))
@@ -342,6 +362,7 @@ fun CounterSalePane(
                     FluentField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = word(W.pos_tax), placeholder = "0")
                 }
                 if (draft.totals.tax > 0.0) FigureRow(word(W.pos_tax), Format.money(draft.totals.tax))
+                if (draft.totals.taxIncluded > 0.0) FigureRow(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text(word(W.pos_round_off), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp)
                     FluentPill(if (draft.totals.roundOff != 0.0) Format.money(draft.totals.roundOff) else "0", draft.roundToWhole) { draft.roundToWhole = !draft.roundToWhole }
@@ -423,7 +444,7 @@ fun CounterSalePane(
                         FluentButton(word(W.pos_resume), {
                             scope.launch {
                                 val full = withContext(Dispatchers.IO) { dao.saleWithLines(h.id) } ?: return@launch
-                                draft.load(full) { onHand[it] }
+                                draft.load(full, onHandOf = { onHand[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
                                 showHeld = false
                             }
                         }, kind = ButtonKind.ACCENT)
@@ -578,6 +599,9 @@ object SaleReceipt {
             if (sale.roundOff != 0.0) out += ThermalReceipt.Line(words.text(W.pos_round_off) + ": " + Format.money(sale.roundOff), 18f)
         }
         out += ThermalReceipt.Line(words.text(W.pos_grand_total) + "  " + Format.money(sale.grandTotal), 30f, bold = true, centre = true)
+        // Tax that was inside the prices (schema 36): said, not added.
+        val inside = s.items.filter { it.taxIncluded == true }.sumOf { it.taxAmount ?: 0.0 }
+        if (inside > 0.004) out += ThermalReceipt.Line(words.text(W.pos_tax_included) + ": " + Format.money(inside), 18f, centre = true)
         for (p in s.payments) {
             val m = words.text(
                 when (p.method) {

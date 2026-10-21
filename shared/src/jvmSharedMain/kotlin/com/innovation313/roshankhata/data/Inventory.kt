@@ -37,7 +37,14 @@ data class StockAdjustment(
      * to say what would be lost, and what a merge matches rows by. Null only
      * for a moment on a row restored from an old file; restoreAll fills it.
      */
-    val uid: String? = Uid.next()
+    val uid: String? = Uid.next(),
+
+    /**
+     * The batch this correction is of, when it is one batch's (schema 36): an
+     * expired lot written off, so the batch's own count ([Fefo]) goes down
+     * with the shelf's. Null for a correction of the product as a whole.
+     */
+    val billItemId: Long? = null
 )
 
 object AdjustReason {
@@ -138,7 +145,8 @@ data class Valuation(val rows: List<Row>) {
             val stock = Stock.of(dao)
             return Valuation(stock.map { s ->
                 val p = products[s.productId]
-                Row(s.productId, s.name, s.onHand, s.unit, p?.costPrice ?: dao.lastPurchaseRate(s.productId), p?.lowStockLevel)
+                // The owner's cost, else the weighted average purchase cost, else the last rate (Cost).
+                Row(s.productId, s.name, s.onHand, s.unit, Cost.perUnit(dao, p) ?: dao.lastPurchaseRate(s.productId), p?.lowStockLevel)
             }.sortedBy { it.name.lowercase() })
         }
     }

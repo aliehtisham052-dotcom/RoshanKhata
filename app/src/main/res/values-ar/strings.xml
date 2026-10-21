@@ -3427,4 +3427,22 @@
     <string name="restore_loss_agree">أفهم أن هذه ستزول</string>
     <string name="restore_loss_counting">جارٍ فحص ما في هذا الدفتر وليس في النسخة…</string>
     <string name="snapshot_before_restore">حُفظت قبل استعادة · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">الضريبة ضمن الأسعار</string>
+    <string name="pos_sell_by">البيع بـ %1$s</string>
+    <string name="pos_expired_stock">لم يبقَ من %1$s إلا مخزون منتهي الصلاحية (الصالح: %2$s). اشطب الدفعة القديمة من صفحة الصلاحية، أو بع كمية أقل.</string>
+    <string name="counter_settings">إعدادات الكاشير</string>
+    <string name="counter_prices_include_tax">الأسعار تشمل الضريبة</string>
+    <string name="counter_prices_include_tax_help">تشغيل: ضريبة المنتج داخل سعره، والإيصال يذكر قيمتها. إيقاف: تُضاف فوق السعر عند الكاشير. نسبة ضريبة كل منتج تُحدد في المنتج نفسه.</string>
+    <string name="expiry_write_off">شطب</string>
+    <string name="expiry_write_off_confirm">شطب %1$s من %2$s كمنتهي الصلاحية؟ ينقص المخزون بهذا القدر، ويحفظ السجل من فعل ذلك.</string>
+    <string name="expiry_written_off">تم الشطب</string>
+    <string name="expiry_nothing_left">لم يبقَ شيء من هذه الدفعة</string>
+    <string name="expiry_left">المتبقي: %1$s</string>
+    <string name="product_pack_help">عبوة (كرتونة، شوال…) يُشترى المنتج أو يُباع بها أيضًا، وكم من وحدته فيها. يُحسب المخزون بوحدته.</string>
+    <string name="product_pack_unit">اسم العبوة</string>
+    <string name="product_pack_size">كم في العبوة</string>
+    <string name="product_pack_price">سعر العبوة</string>
+    <string name="product_tax_rate">الضريبة %</string>
 </resources>

@@ -3267,4 +3267,22 @@
     <string name="restore_loss_agree">مان سمجهان ٿو ته اهي ختم ٿي ويندا</string>
     <string name="restore_loss_counting">ڏٺو پيو وڃي ته هن کاتي ۾ ڇا آهي جيڪو ڪاپي ۾ ناهي…</string>
     <string name="snapshot_before_restore">ريسٽور کان اڳ محفوظ · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">قيمتن ۾ شامل ٽيڪس</string>
+    <string name="pos_sell_by">%1$s جي حساب سان وڪرو</string>
+    <string name="pos_expired_stock">%1$s جو رڳو ايڪسپائر اسٽاڪ بچيو آهي (ٺيڪ: %2$s). پراڻو بيچ ايڪسپائري ۾ ختم ڪريو، يا گهٽ وڪرو.</string>
+    <string name="counter_settings">ڪائونٽر سيٽنگون</string>
+    <string name="counter_prices_include_tax">قيمتن ۾ ٽيڪس اڳ ۾ شامل آهي</string>
+    <string name="counter_prices_include_tax_help">چالو: پراڊڪٽ جو ٽيڪس ان جي قيمت اندر آهي، ۽ رسيد ٻڌائي ٿي ڪيترو. بند: ڪائونٽر تي مٿان جوڙيو وڃي ٿو. هر پراڊڪٽ جو ٽيڪس % پراڊڪٽ تي لکيو وڃي ٿو.</string>
+    <string name="expiry_write_off">ختم ڪريو</string>
+    <string name="expiry_write_off_confirm">%2$s جو %1$s ايڪسپائر طور ختم ڪريو؟ اسٽاڪ ايترو گهٽجي ويندو، ۽ لاگ ۾ لکيل رهندو ڪنهن ڪيو.</string>
+    <string name="expiry_written_off">ختم ڪيو ويو</string>
+    <string name="expiry_nothing_left">هن بيچ ۾ ڪجهه نه بچيو</string>
+    <string name="expiry_left">بچيو: %1$s</string>
+    <string name="product_pack_help">اهو پيڪ (ڪارٽن، ٻوري…) جنهن ۾ هي پراڊڪٽ خريد يا وڪرو به ٿئي ٿي، ۽ هڪ پيڪ ۾ ان جا پنهنجا يونٽ ڪيترا آهن. اسٽاڪ پنهنجي يونٽ ۾ ڳڻيو وڃي ٿو.</string>
+    <string name="product_pack_unit">پيڪ جو نالو</string>
+    <string name="product_pack_size">هڪ پيڪ ۾ ڪيترا</string>
+    <string name="product_pack_price">پيڪ جي قيمت</string>
+    <string name="product_tax_rate">ٽيڪس %</string>
 </resources>

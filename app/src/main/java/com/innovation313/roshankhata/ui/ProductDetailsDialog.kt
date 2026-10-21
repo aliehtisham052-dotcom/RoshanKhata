@@ -132,6 +132,11 @@ object ProductDetailsDialog {
         val etBarcode = field(R.id.etBarcode).apply { setText(product.barcode ?: "") }
         val etCostPrice = field(R.id.etCostPrice).apply { setText(product.costPrice?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
         val etLowStock = field(R.id.etLowStock).apply { setText(product.lowStockLevel?.let { Format.plain(it) } ?: "") }
+        // Packs and tax (schema 36). The pack price and the tax are prices: a cashier sees them, the owner sets them.
+        val etPackUnit = field(R.id.etPackUnit).apply { setText(product.packUnit ?: "") }
+        val etPackSize = field(R.id.etPackSize).apply { setText(product.packSize?.let { Format.plain(it) } ?: "") }
+        val etPackPrice = field(R.id.etPackPrice).apply { setText(product.packPrice?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
+        val etTaxRate = field(R.id.etTaxRate).apply { setText(product.taxRate?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
         view.findViewById<View>(R.id.btnScanBarcode).setOnClickListener {
             val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
                 .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_ALL_FORMATS)
@@ -200,7 +205,12 @@ object ProductDetailsDialog {
                     creditPrice = Digits.parse(typed(etCreditPrice)),
                     barcode = typed(etBarcode),
                     costPrice = Digits.parse(typed(etCostPrice)),
-                    lowStockLevel = Digits.parse(typed(etLowStock))
+                    lowStockLevel = Digits.parse(typed(etLowStock)),
+                    // A pack needs both its name and how many are in it; half of one is no pack.
+                    packUnit = typed(etPackUnit)?.takeIf { (Digits.parse(typed(etPackSize)) ?: 0.0) > 0.0 },
+                    packSize = Digits.parse(typed(etPackSize))?.takeIf { it > 0.0 && typed(etPackUnit) != null },
+                    packPrice = Digits.parse(typed(etPackPrice))?.takeIf { typed(etPackUnit) != null },
+                    taxRate = Digits.parse(typed(etTaxRate))?.takeIf { it > 0.0 }
                 )
 
                 // AppScope for the write itself: leaving the screen right
