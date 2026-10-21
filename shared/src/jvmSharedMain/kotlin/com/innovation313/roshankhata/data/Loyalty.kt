@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
  * is their sum, as every balance in this app is. A void bins the rows its
  * sale wrote.
  */
-@Entity(tableName = "loyalty", indices = [Index("partyId"), Index("saleId")])
+@Entity(tableName = "loyalty", indices = [Index("partyId"), Index("saleId"), Index("uid")])
 data class LoyaltyEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val partyId: Long,

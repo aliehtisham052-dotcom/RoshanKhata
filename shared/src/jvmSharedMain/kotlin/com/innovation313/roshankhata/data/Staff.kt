@@ -14,7 +14,7 @@ import java.util.Calendar
  * with money that is not a sale. No CNIC picture is kept (rejected earlier);
  * a name, an optional phone and the monthly salary are all this needs.
  */
-@Entity(tableName = "staff")
+@Entity(tableName = "staff", indices = [Index("uid")])
 data class Staff(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
@@ -34,7 +34,9 @@ data class Staff(
 
     /** The PIN they sign in with, as a salted hash ([PinHash]) — never the PIN. Null = no PIN set. */
     val pinHash: String? = null,
-    val pinSalt: String? = null
+    val pinSalt: String? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**
@@ -64,17 +66,19 @@ object Schema34 {
  * One marked day. A day with no row is a day present — the owner marks only
  * the exceptions, which is how a shop actually keeps a register.
  */
-@Entity(tableName = "staff_attendance", indices = [Index(value = ["staffId", "day"], unique = true)])
+@Entity(tableName = "staff_attendance", indices = [Index(value = ["staffId", "day"], unique = true), Index("uid")])
 data class StaffAttendance(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val staffId: Long,
     /** Local midnight of the day, epoch ms. */
     val day: Long,
-    val status: Int
+    val status: Int,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /** Money handed over: an advance, or salary paid. Never interest — an advance is returned as it was given. */
-@Entity(tableName = "staff_payments", indices = [Index(value = ["staffId"])])
+@Entity(tableName = "staff_payments", indices = [Index(value = ["staffId"]), Index("uid")])
 data class StaffPayment(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val staffId: Long,

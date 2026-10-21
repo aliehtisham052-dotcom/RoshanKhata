@@ -24,7 +24,7 @@ import androidx.room.PrimaryKey
  */
 @Entity(
     tableName = "sale_returns",
-    indices = [Index("saleId"), Index("partyId"), Index("timestamp")]
+    indices = [Index("saleId"), Index("partyId"), Index("timestamp"), Index("uid")]
 )
 data class SaleReturn(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -82,7 +82,7 @@ data class SaleReturn(
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("returnId"), Index("saleItemId"), Index("productId")]
+    indices = [Index("returnId"), Index("saleItemId"), Index("productId"), Index("uid")]
 )
 data class SaleReturnItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -97,7 +97,9 @@ data class SaleReturnItem(
     /** Per unit, as it was sold (the discount it carried is already in it). */
     val rate: Double,
     val billItemId: Long? = null,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 ) {
     val lineTotal: Double get() = SaleMath.lineTotal(quantity, rate)
 }

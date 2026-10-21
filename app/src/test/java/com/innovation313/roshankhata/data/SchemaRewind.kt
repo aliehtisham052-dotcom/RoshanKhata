@@ -52,8 +52,26 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 37: the batch on a stock adjustment. */
+    /**
+     * Undo version 38: the uid indices on all 27 tables, and the uid column on
+     * the 15 tables that gained it there.
+     */
+    fun undo38(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for (idx in Schema38.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")
+        for ((table, cols) in Schema38.newColumns) stripColumns(raw, table, cols)
+        for ((table, cols) in Schema38.newColumns) {
+            val now = raw.rawQuery("PRAGMA table_info($table)", null).use { c ->
+                buildList { while (c.moveToNext()) add(c.getString(c.getColumnIndexOrThrow("name"))) }
+            }
+            assertTrue("rewind left ${cols.filter { it in now }} on $table", cols.none { it in now })
+        }
+    }
+
+    /** Undo version 37: the batch on a stock adjustment. Undoes 38 first. */
     fun undo37(raw: SQLiteDatabase) {
+        undo38(raw)
         raw.execSQL("PRAGMA foreign_keys = OFF")
         raw.execSQL("PRAGMA legacy_alter_table = ON")
         for ((table, cols) in Schema37.newColumns) stripColumns(raw, table, cols)

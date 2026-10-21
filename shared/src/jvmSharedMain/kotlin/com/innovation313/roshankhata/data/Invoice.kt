@@ -22,7 +22,7 @@ import androidx.room.PrimaryKey
  * [KhataDao.saveInvoiceWithItems]) so two near-simultaneous invoices can
  * never collide on the same printed number.
  */
-@Entity(tableName = "invoices")
+@Entity(tableName = "invoices", indices = [Index("uid")])
 data class Invoice(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 
@@ -123,7 +123,7 @@ data class Invoice(
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("invoiceId")]
+    indices = [Index("invoiceId"), Index("uid")]
 )
 data class InvoiceItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -132,7 +132,9 @@ data class InvoiceItem(
     val quantity: Double,
     val unit: String? = null,
     val rate: Double,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**

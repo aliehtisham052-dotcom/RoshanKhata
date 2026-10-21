@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
  * bought − sold, so the figure on screen is the shelf as it was last found.
  * Append-only: a wrong adjustment is corrected by another, as a ledger is.
  */
-@Entity(tableName = "stock_adjustments", indices = [Index("productId"), Index("timestamp")])
+@Entity(tableName = "stock_adjustments", indices = [Index("productId"), Index("timestamp"), Index("uid")])
 data class StockAdjustment(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val productId: Long,
@@ -64,7 +64,7 @@ object AdjustReason {
  * becomes a supplier bill ([KhataDao.receiveOrder]) and is marked received.
  * Numbered PO-; a draft can be edited, a sent one only received or closed.
  */
-@Entity(tableName = "purchase_orders", indices = [Index("partyId"), Index("status"), Index("timestamp")])
+@Entity(tableName = "purchase_orders", indices = [Index("partyId"), Index("status"), Index("timestamp"), Index("uid")])
 data class PurchaseOrder(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val orderNumber: String = "",
@@ -98,7 +98,7 @@ object OrderStatus {
 @Entity(
     tableName = "purchase_order_items",
     foreignKeys = [ForeignKey(entity = PurchaseOrder::class, parentColumns = ["id"], childColumns = ["orderId"], onDelete = ForeignKey.CASCADE)],
-    indices = [Index("orderId"), Index("productId")]
+    indices = [Index("orderId"), Index("productId"), Index("uid")]
 )
 data class PurchaseOrderItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -110,7 +110,9 @@ data class PurchaseOrderItem(
     val unit: String? = null,
     /** The rate expected, where known. */
     val rate: Double? = null,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 ) {
     val lineTotal: Double? get() = rate?.let { SaleMath.lineTotal(quantity, it) }
 }
