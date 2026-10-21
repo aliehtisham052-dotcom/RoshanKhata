@@ -433,6 +433,8 @@ class BackupActivity : BaseActivity() {
             .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data, driveAccount) }
+            // Or keep this book and add only what the copy has that it lacks (21 Oct 2026).
+            .setNeutralButton(R.string.merge_button) { _, _ -> askMerge(data) }
         if (lost == null) { b.show(); return }
         // Work would be lost: the owner ticks that they understand before Replace works.
         val agree = android.widget.CheckBox(this).apply { setText(R.string.restore_loss_agree) }
@@ -442,6 +444,56 @@ class BackupActivity : BaseActivity() {
         val replace = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
         replace.isEnabled = false
         agree.setOnCheckedChangeListener { _, on -> replace.isEnabled = on }
+    }
+
+    /**
+     * A copy merged in instead of replacing the book (21 Oct 2026,
+     * BookMerge): what it would add is said first, in figures; this book is
+     * kept as a copy before anything is written; then only the rows it lacks
+     * come in, in one transaction.
+     */
+    private fun askMerge(data: BackupCodec.ParsedBackup) {
+        lifecycleScope.launch {
+            val shop = BusinessProfile.businessName(this@BackupActivity)
+            val plan = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.BookMerge.plan(dao, data, shop) } }
+            if (isFinishing) return@launch
+            val words = com.innovation313.roshankhata.data.AndroidWords(this@BackupActivity)
+            val p = plan.getOrElse { e ->
+                val msg = if (e is com.innovation313.roshankhata.data.BookMerge.Refused)
+                    getString(com.innovation313.roshankhata.data.WordIds.string(com.innovation313.roshankhata.data.BookMerge.refusalWord(e)))
+                else e.message ?: getString(R.string.backup_failed)
+                MaterialAlertDialogBuilder(this@BackupActivity).setTitle(R.string.merge_title).setMessage(msg).setPositiveButton(android.R.string.ok, null).show()
+                return@launch
+            }
+            if (p.none) {
+                MaterialAlertDialogBuilder(this@BackupActivity).setTitle(R.string.merge_title).setMessage(R.string.merge_nothing).setPositiveButton(android.R.string.ok, null).show()
+                return@launch
+            }
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.merge_title)
+                .setMessage(getString(R.string.merge_help) + "\n\n" + com.innovation313.roshankhata.data.BookMerge.lines(p, words).joinToString("\n") { "• $it" })
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.merge_button) { _, _ -> doMerge(data, shop) }
+                .show()
+        }
+    }
+
+    private fun doMerge(data: BackupCodec.ParsedBackup, shop: String?) {
+        lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    // This book as it stands, kept first (Daily copies), so the merge can be undone.
+                    com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
+                    dao.mergeBook(data, shop)
+                }
+            }
+            if (isFinishing) return@launch
+            result.onSuccess { done ->
+                Toast.makeText(this@BackupActivity, Digits.string(resources, R.string.merge_done, done.rows, done.renumbered), Toast.LENGTH_LONG).show()
+            }.onFailure { e ->
+                Toast.makeText(this@BackupActivity, e.message ?: getString(R.string.backup_failed), Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun doRestore(data: BackupCodec.ParsedBackup, driveAccount: String? = null) {

@@ -19,9 +19,10 @@ No account, no server, no ads. Everything stays on the phone.
     `:desktop`: sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- 2,038 strings × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
+- About 2,450 strings × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 35 (schema JSON checked in up to 31; CI writes the rest)
+- Room database, version 37 (schema JSON checked in up to 31; CI writes the rest);
+  backup format 13
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -256,12 +257,67 @@ leaves an **audit row** with the signed-in name.
   customer/cashier/hour, tax, P&L (cost known for how much of revenue is
   said), dead stock (90 days). `reportRows` gives both platforms the same
   rows; Windows page + phone tile.
-- **Printing on the phone:** `TextReceipt` draws text as a 384 px picture for
-  the paired Bluetooth ESC/POS printer (the entry receipt's path).
-- **Not built:** live multi-device sync (whole-copy phone↔PC stays the
-  rule: one device at a time), country tax packs (FBR/ZATCA), weighing
-  scale, customer display, loyalty points.
-  Nothing above was tested on a real device or printer — CI only.
+- **Printing on the phone:** `TextReceipt` draws text as a picture the
+  roll's width for the paired Bluetooth ESC/POS printer (the entry receipt's
+  path).
+
+### The counter's second night (21 Oct 2026 — the owner's critical review, "implement all these one by one")
+
+- **Schema 36/37, backup format 12/13.** Every money/stock row gained a
+  `uid` (random, kept by every backup and restore — `Uid.next()`; the
+  migration fills old rows with `randomblob`); `book_settings` (settings
+  that travel with the book: owner PIN hash, prices-include-tax, loyalty,
+  scale labels), `loyalty`, `shifts`; products' packs, tax rate, variant
+  (`parentId`, `variant`); sale lines' own tax; the audit log's seal;
+  stock_adjustments.billItemId (37). **A schema version once pushed — even
+  in a test build — never changes again: a fix is the next version.**
+- **Security** (`Access.kt`, `AccessUi` on the phone, `Gate.kt`/`Gates` on
+  Windows): the owner's counter PIN lives in the book as a PBKDF2 hash with
+  a recovery code (hash only); counter mode per device (a locked counter
+  can do nothing until someone signs in); PIN waits 30 s doubling to 15 min
+  after five misses, kept across restarts; screens and buttons gated by
+  permission (VOID, RETURN, DISCOUNT_ANY, PRICE_EDIT, EXPORT, STOCK_ADJUST,
+  SETTINGS, BACKUP, STAFF, CREDIT_OVER, EDIT_BOOK, REPORTS; owner-only:
+  SETTINGS, BACKUP, STAFF). The audit log is a SHA-256 chain (`AuditChain`)
+  — it shows an edited row; it cannot stop a whole file being rewritten.
+- **Restore safety** (`RestoreCheck`): before a copy replaces the book, what
+  would be lost is counted (by uid, else by content), said in figures and
+  ticked; the book is kept first (phone `Snapshots.keepNow`, Windows a
+  "before-restore" daily copy). **Merge** (`BookMerge`, "Add what is new"
+  beside Replace): only rows this book lacks, by uid, with what they point
+  at (customers by name+phone, products by name, lines, payments, a
+  ticket's khata/cashbook rows); a used number takes the next free one and
+  keeps the old in the note; rows both have stay as here (counted as
+  changed); the copy's bin and held tickets are left out; plans, seasons,
+  schemes, attendance and day closes are not merged; a copy with no shared
+  row or no uids is refused. One transaction (`mergeBook`).
+- **FEFO and packs** (`Fefo`, `Units`, `Cost`): a line is written once per
+  batch, soonest expiry first, money split exactly; an expired lot is
+  refused (`Counter.ExpiredStock`) until written off (Expiry page / batch
+  dialog). Packs convert to the product's own unit (mixed units → no figure
+  rather than a wrong one). Cost: cost price, else weighted average
+  purchase, else last rate. Line tax inside or on top (`SaleMath.lineTaxes`).
+- **Counter extras**: a ticket as an A4 invoice (`SaleInvoice`); shifts and
+  the time clock (`ShiftMath`, shared `ShiftScreen`); receipt printer per
+  device — 80 mm, logo dithered (`EscPos.dither`), cash drawer kick
+  (`EscPos.DRAWER_KICK`); loyalty points (`Loyalty`, spent as a discount,
+  checked in `postSale`, undone by void/return); weighing-scale labels
+  (`ScaleCode`, prefix 21 by default, weight or price); the item grid with
+  variants (`ItemGroups`); the customer's screen (Windows second window;
+  the shop's QR carries no amount — said on screen); stock between the
+  owner's shops (`StockTransfer`, Windows); today's copy rewritten a minute
+  after the last sale (both). **`Counter.post` now records the signed-in
+  name** (it passed null until 21 Oct: every ticket read as the owner's).
+- **Reports**: the sales report's own dates and a chart (`SalesReport.bars`:
+  hours / days ≤ 62 / months; time runs from the reading side in RTL);
+  dues by age (`Aging`: 0–30/31–60/61–90/90+, payments clear the oldest
+  first) — phone `AgingActivity` (Follow-up, report menu), Windows page.
+- **Not built:** live multi-device sync (merge is by copy, not live),
+  country tax packs (FBR/ZATCA e-invoicing), a dynamic payment QR with the
+  amount (needs the bank's merchant service), device-own number series
+  (merge renumbers instead), customer display and stock transfer on the
+  phone. Nothing above was tested on a real device, printer, drawer, scale
+  or second monitor — CI only.
 
 ### The shared module (KMP)
 
@@ -413,6 +469,21 @@ Each of these cost a build or a bug.
     `res/raw/keep.xml`, classes compared by name in `proguard-rules.pro`.
     Enum names stored in preferences are safe (R8 keeps `name()`), but check
     any new reflection before shipping.
+18. **A scrolling body never goes inside a scrolling frame.** Windows'
+    `DialogFrame` scrolls its body; a shared form with its own
+    `verticalScroll` (ReturnForm) throws there, and a weighted `LazyColumn`
+    (StockCountForm) gets no height. Pass `DialogFrame(scroll = false)`;
+    ScreenProofTest draws the shared forms in the frame.
+19. **A property's setter and a `setX` function clash on the JVM.** `var
+    counterMode` with a private setter generates `setCounterMode(Z)V`; a
+    `fun setCounterMode` beside it failed both builds. Name the function
+    otherwise (`switchCounterMode`).
+20. **A pushed schema version is frozen.** Anyone may have installed the test
+    build; changing what version N creates crashes their identity hash. Add
+    version N+1 instead (37 for billItemId).
+21. **Defaults that name "who" must be the signed-in user.** `Counter.post`
+    had `createdBy = null`, so every ticket read as the owner's; reports and
+    shifts silently lied. Default to `Access.userName`, and test it.
 
 ---
 

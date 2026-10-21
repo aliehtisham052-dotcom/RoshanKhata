@@ -3333,4 +3333,18 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="audit_transfer_out">Stock doosri dukaan ko bheja</string>
     <string name="audit_transfer_in">Stock doosri dukaan se aaya</string>
     <string name="transfer_none">Koi doosri dukaan nahi. Karobar mein ek shamil karein.</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">Sirf naya shamil karein</string>
+    <string name="merge_title">Sirf naya shamil karein</string>
+    <string name="merge_help">Is khate ki har cheez rehti hai aur copy ki woh cheezein shamil hoti hain jo yahan nahi — indiraajaat, cashbook, bill, wapsiyan, supplier bill, cheque, invoice — un ki apni ID se mila kar, raqam se kabhi nahi. Yahan kuch badla ya hataya nahi jata.</string>
+    <string name="merge_preview">Shamil honge: %1$s khata indiraajaat, %2$s cashbook, %3$s counter bill, %4$s deegar record; %5$s naye gahak, %6$s nayi products.</string>
+    <string name="merge_changed">%1$s qataarein copy mein bhi badli ya hatayi gayin: yeh khata apni rakhta hai.</string>
+    <string name="merge_other_shop">Copy ka naam %1$s hai — dekh lein ke yeh isi dukaan ka khata hai.</string>
+    <string name="merge_done">Copy se %1$s qataarein shamil huin (%2$s ke number badle).</string>
+    <string name="merge_nothing">Copy mein aisa kuch nahi jo is khate mein na ho.</string>
+    <string name="merge_too_old">Yeh copy purane version ki hai aur is mein qataaron ki ID nahi: yeh sirf khate ki jagah le sakti hai.</string>
+    <string name="merge_unrelated">Is copy mein is khate se kuch mushtarik nahi — yeh koi aur khata hai. Yeh sirf is ki jagah le sakti hai.</string>
+    <string name="merge_not_carried">Shamil nahi hote: qist plan, season, schemes, haazri aur din ki bandish.</string>
+    <string name="audit_book_merged">Copy shamil ki gayi</string>
 </resources>

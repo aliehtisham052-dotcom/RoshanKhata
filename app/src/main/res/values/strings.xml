@@ -3547,4 +3547,18 @@ You can change this any time from this screen.</string>
     <string name="audit_transfer_out">Stock sent to another shop</string>
     <string name="audit_transfer_in">Stock received from another shop</string>
     <string name="transfer_none">There is no other shop. Add one under Businesses.</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">Add what is new</string>
+    <string name="merge_title">Add only what is new</string>
+    <string name="merge_help">Keeps everything in this book and adds what the copy has that this book does not — entries, cashbook rows, tickets, returns, bills, cheques, invoices — matched by their own ID, never by amount. Nothing here is changed or removed.</string>
+    <string name="merge_preview">To add: %1$s khata entries, %2$s cashbook rows, %3$s counter tickets, %4$s other records; %5$s new customers, %6$s new products.</string>
+    <string name="merge_changed">%1$s rows were changed or deleted in the copy too: this book keeps its own.</string>
+    <string name="merge_other_shop">The copy is named %1$s — check it is this shop\'s book.</string>
+    <string name="merge_done">Added %1$s rows from the copy (%2$s renumbered).</string>
+    <string name="merge_nothing">The copy has nothing this book does not have.</string>
+    <string name="merge_too_old">This copy was made by an older version and carries no row IDs: it can only replace the book.</string>
+    <string name="merge_unrelated">This copy shares nothing with this book — it is another book. It can only replace this one.</string>
+    <string name="merge_not_carried">Not merged: payment plans, seasons, schemes, attendance and day closes.</string>
+    <string name="audit_book_merged">Copy merged in</string>
 </resources>

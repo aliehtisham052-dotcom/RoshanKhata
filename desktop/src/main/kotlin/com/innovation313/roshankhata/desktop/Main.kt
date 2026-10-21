@@ -890,6 +890,16 @@ private fun Book(
         }
     }
 
+    // A copy merged in instead of replacing the book (21 Oct 2026): opened from the restore question.
+    var merging by remember { mutableStateOf<BackupCodec.ParsedBackup?>(null) }
+    merging?.let { data ->
+        MergeDialog(
+            dao, data, shopName(),
+            keepFirst = { runCatching { DailyCopies.makeToday(dao, settings, dailyDir, label = "before-merge-" + System.currentTimeMillis()) } },
+            onDone = { said -> told = words.text(W.merge_title) to said; reload++ },
+            onClose = { merging = null }
+        )
+    }
     when (val p = picked) {
         is Picked.Refused -> AlertDialog(
             onDismissRequest = { picked = null },
@@ -915,6 +925,9 @@ private fun Book(
                 }
             },
             confirmButton = {
+              Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                // Or keep this book and add only what the copy has that it lacks.
+                TextButton(enabled = !busy, onClick = { merging = p.data; picked = null }) { Text(word(W.merge_button)) }
                 TextButton(
                     enabled = !busy && mayReplace(loss, agreed),
                     onClick = {
@@ -932,6 +945,7 @@ private fun Book(
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
                 ) { Text(word(W.restore_replace)) }
+              }
             },
             dismissButton = { TextButton(enabled = !busy, onClick = { picked = null }) { Text(word(W.cancel)) } }
           )

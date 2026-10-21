@@ -3521,4 +3521,18 @@
     <string name="audit_transfer_out">مخزون أُرسل إلى متجر آخر</string>
     <string name="audit_transfer_in">مخزون وصل من متجر آخر</string>
     <string name="transfer_none">لا يوجد متجر آخر. أضف واحدًا في الأعمال.</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">أضف الجديد فقط</string>
+    <string name="merge_title">أضف الجديد فقط</string>
+    <string name="merge_help">يبقى كل ما في هذا الدفتر، ويُضاف ما في النسخة وليس هنا — القيود والصندوق والفواتير والمرتجعات وفواتير الموردين والشيكات — بمطابقة معرّف كل سطر، لا بالمبلغ أبدًا. لا يُغيَّر هنا شيء ولا يُحذف.</string>
+    <string name="merge_preview">سيُضاف: %1$s قيود، %2$s سطور صندوق، %3$s فواتير كاشير، %4$s سجلات أخرى؛ %5$s عملاء جدد، %6$s منتجات جديدة.</string>
+    <string name="merge_changed">%1$s سطور غُيّرت أو حُذفت في النسخة أيضًا: يحتفظ هذا الدفتر بنسخته.</string>
+    <string name="merge_other_shop">اسم النسخة %1$s — تأكد أنها دفتر هذا المتجر.</string>
+    <string name="merge_done">أُضيف %1$s سطرًا من النسخة (أُعيد ترقيم %2$s).</string>
+    <string name="merge_nothing">لا تحوي النسخة شيئًا ليس في هذا الدفتر.</string>
+    <string name="merge_too_old">هذه النسخة من إصدار أقدم ولا تحمل معرّفات للسطور: يمكنها أن تحل محل الدفتر فقط.</string>
+    <string name="merge_unrelated">لا تشترك هذه النسخة مع هذا الدفتر في شيء — إنها دفتر آخر. يمكنها أن تحل محله فقط.</string>
+    <string name="merge_not_carried">لا تُدمج: خطط الأقساط والمواسم والعروض والحضور وإغلاقات الأيام.</string>
+    <string name="audit_book_merged">دُمجت نسخة</string>
 </resources>

@@ -3361,4 +3361,18 @@
     <string name="audit_transfer_out">موجودی به فروشگاه دیگر ارسال شد</string>
     <string name="audit_transfer_in">موجودی از فروشگاه دیگر رسید</string>
     <string name="transfer_none">فروشگاه دیگری نیست. در کسب‌وکارها یکی اضافه کنید.</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">فقط موارد تازه را اضافه کن</string>
+    <string name="merge_title">فقط موارد تازه را اضافه کن</string>
+    <string name="merge_help">همه‌چیز این دفتر می‌ماند و آنچه نسخه دارد و اینجا نیست افزوده می‌شود — ثبت‌ها، صندوق، فاکتورها، مرجوعی‌ها، فاکتورهای تأمین‌کننده، چک‌ها — با تطبیق شناسهٔ هر ردیف، هرگز با مبلغ. اینجا چیزی تغییر نمی‌کند یا حذف نمی‌شود.</string>
+    <string name="merge_preview">افزوده می‌شود: %1$s ثبت، %2$s ردیف صندوق، %3$s فاکتور صندوق، %4$s سابقهٔ دیگر؛ %5$s مشتری تازه، %6$s کالای تازه.</string>
+    <string name="merge_changed">%1$s ردیف در نسخه هم تغییر کرده یا حذف شده: این دفتر نسخهٔ خود را نگه می‌دارد.</string>
+    <string name="merge_other_shop">نام نسخه %1$s است — بررسی کنید که دفتر همین فروشگاه باشد.</string>
+    <string name="merge_done">%1$s ردیف از نسخه افزوده شد (%2$s شماره‌گذاری دوباره).</string>
+    <string name="merge_nothing">نسخه چیزی ندارد که این دفتر نداشته باشد.</string>
+    <string name="merge_too_old">این نسخه از نسخهٔ قدیمی‌تر برنامه است و شناسهٔ ردیف ندارد: فقط می‌تواند جای دفتر را بگیرد.</string>
+    <string name="merge_unrelated">این نسخه با این دفتر هیچ اشتراکی ندارد — دفتر دیگری است. فقط می‌تواند جای آن را بگیرد.</string>
+    <string name="merge_not_carried">ادغام نمی‌شوند: طرح‌های قسطی، فصل‌ها، طرح‌های تشویقی، حضور و بستن روزها.</string>
+    <string name="audit_book_merged">نسخه ادغام شد</string>
 </resources>
