@@ -141,7 +141,7 @@ fun AuditPane(dao: KhataDao) {
     FluentPage(word(W.audit_title), word(W.audit_subtitle), scroll = false) {
         if (rows.isEmpty()) EmptyState("ic_tile_insights", word(W.audit_empty), null, Modifier.weight(1f))
         else ListCard(Modifier.weight(1f)) {
-            TableHead(listOf(word(W.date_label) to 3, word(W.audit_title) to 3, word(W.staff_name) to 2, word(W.note_optional) to 4))
+            WeightedHead(listOf(word(W.date_label) to 3f, word(W.audit_title) to 3f, word(W.staff_name) to 2f, word(W.note_optional) to 4f))
             LazyColumn(Modifier.fillMaxWidth()) {
                 items(rows, key = { it.id }) { a ->
                     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {

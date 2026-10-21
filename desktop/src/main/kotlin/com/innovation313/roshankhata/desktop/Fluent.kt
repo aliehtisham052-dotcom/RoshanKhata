@@ -289,6 +289,20 @@ fun TableHead(columns: List<Pair<String, Int>>, endAligned: Set<Int> = emptySet(
     }
 }
 
+/** A table's header row whose columns share the width by weight, for rows laid out with Modifier.weight. */
+@Composable
+fun WeightedHead(columns: List<Pair<String, Float>>, endAligned: Set<Int> = emptySet()) {
+    val c = LocalRoshanColors.current
+    Row(Modifier.fillMaxWidth().background(Look.subtle).padding(horizontal = 12.dp, vertical = 7.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        columns.forEachIndexed { i, (label, w) ->
+            Text(
+                label, Modifier.weight(w), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                textAlign = if (i in endAligned) androidx.compose.ui.text.style.TextAlign.End else androidx.compose.ui.text.style.TextAlign.Start
+            )
+        }
+    }
+}
+
 /** The quiet line between rows and under a card's title. */
 @Composable
 fun Rule() { HorizontalDivider(color = Look.line) }

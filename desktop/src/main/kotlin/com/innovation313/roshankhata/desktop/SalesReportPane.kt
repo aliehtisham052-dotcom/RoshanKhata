@@ -103,7 +103,7 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
             else {
                 val (head, rows) = table
                 val widths = head.mapIndexed { i, _ -> if (i == 0) 4 else 2 }
-                if (head.any { it.isNotEmpty() }) TableHead(head.zip(widths), endAligned = head.indices.filter { it > 0 }.toSet())
+                if (head.any { it.isNotEmpty() }) WeightedHead(head.zip(widths.map { it.toFloat() }), endAligned = head.indices.filter { it > 0 }.toSet())
                 LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
                     items(rows) { cells ->
                         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {

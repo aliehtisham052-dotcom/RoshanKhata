@@ -102,7 +102,7 @@ fun InventoryPane(dao: KhataDao, words: Words, reload: Int, onChanged: () -> Uni
             FluentPill(word(W.stock_low_title), lowOnly) { lowOnly = true }
         }
         ListCard(Modifier.weight(1f)) {
-            TableHead(listOf(word(W.pos_col_item) to 5, word(W.inspector_col_left) to 2, word(W.product_cost_hint) to 2, word(W.stock_valuation) to 2), endAligned = setOf(1, 2, 3))
+            WeightedHead(listOf(word(W.pos_col_item) to 5f, word(W.inspector_col_left) to 2f, word(W.product_cost_hint) to 2f, word(W.stock_valuation) to 2f), endAligned = setOf(1, 2, 3))
             val rows = (v?.rows ?: emptyList()).let { r -> if (lowOnly) r.filter { it.isLow } else r }.sortedWith(compareBy({ !it.isLow }, { it.name.lowercase() }))
             if (rows.isEmpty()) Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { Text(word(W.no_products), color = c.textMuted) }
             else LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
