@@ -407,7 +407,7 @@ fun InvoicesPane(
             Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
-                    preview = { inv, lines -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.picture(0, 0.8f) },
+                    preview = { inv, lines -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.picture(0, SHARP) },
                     fields = fields,
                     onSave = { inv, lines ->
                         adding = false
@@ -426,7 +426,7 @@ fun InvoicesPane(
             Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
-                    preview = { i, l -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), i, l)?.picture(0, 0.8f) },
+                    preview = { i, l -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), i, l)?.picture(0, SHARP) },
                     existing = inv,
                     existingLines = lines,
                     fields = fields,
@@ -520,7 +520,9 @@ fun InvoicesPane(
                             picture = inv?.let { row ->
                                 runCatching {
                                     com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), row.copy(templateId = look ?: row.templateId), dao.invoiceItems(open.id))
-                                        ?.picture(0, 1f)?.toComposeImageBitmap()
+                                        // Drawn sharp for the screen (21 Oct 2026, the owner: "very blurry"): it was
+                                        // one pixel per point, 595 px across, stretched over a pane twice that wide.
+                                        ?.picture(0, SHARP)?.toComposeImageBitmap()
                                 }.getOrNull()
                             }
                         }
@@ -568,7 +570,8 @@ fun InvoicesPane(
                         androidx.compose.foundation.Image(
                             pic, contentDescription = open.invoiceNumber,
                             modifier = Modifier.fillMaxWidth().clip(Look.ctl).border(1.dp, Look.strokeCard, Look.ctl),
-                            contentScale = androidx.compose.ui.layout.ContentScale.FillWidth
+                            contentScale = androidx.compose.ui.layout.ContentScale.FillWidth,
+                            filterQuality = androidx.compose.ui.graphics.FilterQuality.High
                         )
                     }
                 }
@@ -1057,3 +1060,10 @@ private fun SumCard(label: String, amount: String, count: String, modifier: Modi
 /** A filter pill, filled when on. */
 @Composable
 private fun Chip(text: String, on: Boolean, onClick: () -> Unit) = FluentPill(text, on, onClick = onClick)
+
+/**
+ * Pixels per point an invoice is drawn at for the screen: 3, about 1,800 px
+ * across an A4 page, so it stays sharp on a 125-150% laptop screen and a wide
+ * pane, and is only ever scaled down (the phone draws its preview at 2).
+ */
+private const val SHARP = 3f
