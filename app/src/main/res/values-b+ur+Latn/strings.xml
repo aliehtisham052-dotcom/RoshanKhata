@@ -3059,4 +3059,21 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="cash_category_return">Wapsi</string>
     <string name="pos_recent_sales">Haliya sales</string>
     <string name="pos_void_return">Wapsi mansookh</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">Din ki report (Z)</string>
+    <string name="z_sales_count">Sales</string>
+    <string name="z_sales_total">Kul sales</string>
+    <string name="z_voids">Mansookh (%1$s)</string>
+    <string name="z_returns">Wapsiyan (%1$s)</string>
+    <string name="z_cash_in">Naqad aamad (khata + cashbook)</string>
+    <string name="z_cash_out">Naqad ikhraj (khata + cashbook)</string>
+    <string name="z_expected">Galle mein hona chahiye</string>
+    <string name="z_variance">Farq</string>
+    <string name="z_profit">Munafa (sale − lagat)</string>
+    <string name="dc_opening">Ibtidai naqad</string>
+    <string name="dc_counted">Gina gaya</string>
+    <string name="z_no_close">Din band nahi hua — farq dekhne ke liye galla ginein</string>
+    <string name="z_variance_reason">Farq ki wajah likhein</string>
+    <string name="z_yesterday_open">Kal ka galla nahi gina gaya</string>
 </resources>

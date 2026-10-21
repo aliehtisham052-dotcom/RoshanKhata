@@ -63,6 +63,8 @@ fun CashbookPane(dao: KhataDao) {
     var deleting by remember { mutableStateOf<CashEntry?>(null) }
     var closing by remember { mutableStateOf(false) }
     if (closing) DayCloseDialog(dao) { closing = false }
+    var reporting by remember { mutableStateOf(false) }
+    if (reporting) ZReportDialog(dao) { reporting = false }
 
     val last by remember { dao.observeLastDayClose() }.collectAsState(null)
     FluentPage(
@@ -70,6 +72,7 @@ fun CashbookPane(dao: KhataDao) {
         last?.let { word(W.dayclose_last, Format.dateOnly(it.closedAt), Format.signedTotal(it.difference)) } ?: word(W.cashbook_subtitle),
         scroll = false,
         actions = {
+            FluentButton(word(W.z_title), { reporting = true }, kind = ButtonKind.STANDARD, icon = "ic_print")
             FluentButton(word(W.dayclose_button), { closing = true }, icon = "ic_check_plain")
             FluentButton(word(W.cash_expense), { adding = false }, icon = "ic_arrow_gave", kind = ButtonKind.DANGER)
             FluentButton(word(W.cash_income), { adding = true }, icon = "ic_arrow_got", kind = ButtonKind.ACCENT)
@@ -222,6 +225,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
     var counted by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
     val needCount = word(W.dayclose_need_count)
+    val needReason = word(W.z_variance_reason)
     var problem by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) {
         val (fig, lastCounted) = withContext(Dispatchers.IO) {
@@ -272,6 +276,10 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
         confirmButton = {
             TextButton({
                 val n = count ?: run { problem = needCount; return@TextButton }
+                // A drawer that does not match the books needs its reason written down (POS Phase 4).
+                if (kotlin.math.abs(com.innovation313.roshankhata.data.DayCloseMath.difference(n, expected)) >= 0.005 && note.isBlank()) {
+                    problem = needReason; return@TextButton
+                }
                 val close = com.innovation313.roshankhata.data.DayClose(
                     day = Math.floorDiv(f.now + java.util.TimeZone.getDefault().getOffset(f.now), 24L * 60 * 60 * 1000),
                     opening = open,
@@ -290,3 +298,77 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
 }
 
 private class DayFigures(val now: Long, val cbIn: Double, val cbOut: Double, val kIn: Double, val kOut: Double)
+
+/**
+ * The day's figures (POS Phase 4, the Z report): a day picked with ‹ ›,
+ * every line summed from the rows (ZReport), printed as an A4 sheet through
+ * the app's preview or as a thermal receipt.
+ */
+@Composable
+fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit)? = null, onClose: () -> Unit) {
+    val c = LocalRoshanColors.current
+    val words = com.innovation313.roshankhata.words.LocalWords.current
+    var day by remember { mutableStateOf(com.innovation313.roshankhata.data.DayCloseMath.dayOf(System.currentTimeMillis())) }
+    var report by remember { mutableStateOf<com.innovation313.roshankhata.data.ZReport?>(null) }
+    LaunchedEffect(day) {
+        val from = com.innovation313.roshankhata.data.DayCloseMath.startOf(day)
+        report = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.ZReport.compute(dao, from, from + 24L * 60 * 60 * 1000) }.getOrNull() }
+    }
+    val title = word(W.z_title)
+    val dateLine = Format.dateOnly(com.innovation313.roshankhata.data.DayCloseMath.startOf(day) + 12L * 60 * 60 * 1000)
+    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = 520.dp, height = 640.dp)) {
+        DialogFrame(title, subtitle = dateLine, onClose = onClose, footerStart = {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                IconAction("ic_chevron_right", "‹", { day -= 1 })
+                IconAction("ic_chevron_right", "›", { if (day < com.innovation313.roshankhata.data.DayCloseMath.dayOf(System.currentTimeMillis())) day += 1 })
+            }
+        }, footer = {
+            val r = report
+            if (onReceipt != null && r != null) {
+                FluentButton(word(W.print_receipt), {
+                    onReceipt(listOf(ThermalReceipt.Line(title, 24f, bold = true, centre = true), ThermalReceipt.Line(dateLine, 18f, centre = true), ThermalReceipt.Line("")) +
+                        r.lines(words) { Format.money(it) }.map { (k, v) -> ThermalReceipt.Line("$k: $v", 18f) })
+                }, kind = ButtonKind.STANDARD)
+            }
+            FluentButton(word(W.pdf_preview), {
+                val r2 = report ?: return@FluentButton
+                StatementPrint.show(LinesPrint(title, dateLine, r2.lines(words) { Format.money(it) }), title)
+            }, kind = ButtonKind.ACCENT, icon = "ic_print", enabled = report != null)
+        }) {
+            val r = report
+            if (r == null) Text("…", color = c.textMuted)
+            else {
+                r.lines(words) { Format.money(it) }.forEach { (k, v) ->
+                    Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(k, Modifier.weight(1f), color = if (k.startsWith("  ")) c.inkSoft else c.ink, fontSize = 14.sp)
+                        Text(v, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                    }
+                    Rule()
+                }
+                if (r.counted == null) Text(word(W.z_no_close), Modifier.padding(top = 8.dp), color = c.textMuted, fontSize = 12.sp)
+            }
+        }
+    }
+}
+
+/** A sheet of label: figure lines, A4, for a report with no design of its own. */
+class LinesPrint(private val title: String, private val subtitle: String, private val lines: List<Pair<String, String>>) : java.awt.print.Printable {
+    override fun print(g: java.awt.Graphics, pf: java.awt.print.PageFormat, pageIndex: Int): Int {
+        if (pageIndex > 0) return java.awt.print.Printable.NO_SUCH_PAGE
+        val g2 = g as java.awt.Graphics2D
+        g2.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        g2.color = java.awt.Color.BLACK
+        var y = 80f
+        g2.font = java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.BOLD, 20); g2.drawString(title, 60f, y); y += 24
+        g2.font = java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.PLAIN, 12); g2.drawString(subtitle, 60f, y); y += 30
+        g2.font = java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.PLAIN, 12)
+        for ((k, v) in lines) {
+            g2.drawString(k, 60f, y)
+            val w = g2.fontMetrics.stringWidth(v)
+            g2.drawString(v, 535f - w, y)
+            y += 20
+            if (y > 800) break
+        }
+        return java.awt.print.Printable.PAGE_EXISTS
+    }
+}

@@ -3087,4 +3087,21 @@
     <string name="cash_category_return">مرجوعی</string>
     <string name="pos_recent_sales">فروش‌های اخیر</string>
     <string name="pos_void_return">ابطال مرجوعی</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">گزارش روز (Z)</string>
+    <string name="z_sales_count">فروش‌ها</string>
+    <string name="z_sales_total">جمع فروش</string>
+    <string name="z_voids">باطل‌شده (%1$s)</string>
+    <string name="z_returns">مرجوعی‌ها (%1$s)</string>
+    <string name="z_cash_in">نقد ورودی (دفتر + صندوق)</string>
+    <string name="z_cash_out">نقد خروجی (دفتر + صندوق)</string>
+    <string name="z_expected">باید در صندوق باشد</string>
+    <string name="z_variance">اختلاف</string>
+    <string name="z_profit">سود (فروش − هزینه)</string>
+    <string name="dc_opening">نقد ابتدایی</string>
+    <string name="dc_counted">شمرده‌شده</string>
+    <string name="z_no_close">روز بسته نشده — برای دیدن اختلاف صندوق را بشمارید</string>
+    <string name="z_variance_reason">دلیل اختلاف را بنویسید</string>
+    <string name="z_yesterday_open">صندوق دیروز شمرده نشد</string>
 </resources>

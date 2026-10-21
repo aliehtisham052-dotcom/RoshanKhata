@@ -322,6 +322,7 @@ fun alertSection(kind: LedgerAlerts.Kind): Section = when (kind) {
     LedgerAlerts.Kind.BILL -> Section.BILLS
     LedgerAlerts.Kind.EXPIRING -> Section.EXPIRY
     LedgerAlerts.Kind.STOCK -> Section.PRODUCTS
+    LedgerAlerts.Kind.DRAWER -> Section.CASHBOOK
     LedgerAlerts.Kind.CASHFLOW -> Section.CASHFLOW
 }
 

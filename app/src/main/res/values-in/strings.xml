@@ -3056,4 +3056,21 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="cash_category_return">Retur</string>
     <string name="pos_recent_sales">Penjualan terbaru</string>
     <string name="pos_void_return">Batalkan retur</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">Laporan harian (Z)</string>
+    <string name="z_sales_count">Penjualan</string>
+    <string name="z_sales_total">Total penjualan</string>
+    <string name="z_voids">Dibatalkan (%1$s)</string>
+    <string name="z_returns">Retur (%1$s)</string>
+    <string name="z_cash_in">Kas masuk (buku + kas)</string>
+    <string name="z_cash_out">Kas keluar (buku + kas)</string>
+    <string name="z_expected">Seharusnya di laci</string>
+    <string name="z_variance">Selisih</string>
+    <string name="z_profit">Laba (penjualan − biaya)</string>
+    <string name="dc_opening">Kas awal</string>
+    <string name="dc_counted">Dihitung</string>
+    <string name="z_no_close">Hari belum ditutup — hitung laci untuk melihat selisih</string>
+    <string name="z_variance_reason">Beri alasan selisihnya</string>
+    <string name="z_yesterday_open">Laci kemarin belum dihitung</string>
 </resources>
