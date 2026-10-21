@@ -63,8 +63,15 @@ object DesktopDatabase {
         }
     }
 
+    /** 37 → 38: a uid on every row a sync can carry, and an index on each (live sync, 22 Oct 2026). */
+    private val MIGRATION_37_38 = object : Migration(37, 38) {
+        override fun migrate(connection: SQLiteConnection) {
+            for (sql in Schema38.statements) connection.execSQL(sql)
+        }
+    }
+
     /** Every migration a computer's book may need, in order. */
-    val MIGRATIONS = arrayOf<Migration>(MIGRATION_31_32, MIGRATION_32_33, MIGRATION_33_34, MIGRATION_34_35, MIGRATION_35_36, MIGRATION_36_37)
+    val MIGRATIONS = arrayOf<Migration>(MIGRATION_31_32, MIGRATION_32_33, MIGRATION_33_34, MIGRATION_34_35, MIGRATION_35_36, MIGRATION_36_37, MIGRATION_37_38)
 
     fun open(file: File): KhataDatabase {
         file.parentFile?.mkdirs()

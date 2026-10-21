@@ -34,7 +34,8 @@ import com.innovation313.roshankhata.ui.NameSearch
         Index(value = ["nameKey"], unique = true),
         Index(value = ["normalisedName"]),
         Index(value = ["barcode"]),
-        Index(value = ["parentId"])
+        Index(value = ["parentId"]),
+        Index("uid")
     ]
 )
 data class Product(
@@ -210,7 +211,9 @@ data class Product(
      * so everything else in the app counts it as it counts any product.
      */
     val parentId: Long? = null,
-    val variant: String? = null
+    val variant: String? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**

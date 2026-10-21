@@ -32,7 +32,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("partyId")]
+    indices = [Index("partyId"), Index("uid")]
 )
 data class SupplierBill(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -115,7 +115,7 @@ data class SupplierBillPhoto(val id: Long, val photoPath: String?)
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("billId"), Index("productId")]
+    indices = [Index("billId"), Index("productId"), Index("uid")]
 )
 data class BillItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -157,7 +157,9 @@ data class BillItem(
      */
     val productId: Long? = null,
 
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**

@@ -34,7 +34,7 @@ object ChequeStatus {
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("partyId")]
+    indices = [Index("partyId"), Index("uid")]
 )
 data class Cheque(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

@@ -32,7 +32,9 @@ object BackupCodec {
      * and purchase orders; 12 (schema 36) the book's settings (the owner's PIN
      * as its hash), loyalty points, shifts, every counter row's uid, product
      * packs/tax/variants, a sale line's tax and the audit log's seal; 13
-     * (schema 37) the batch a stock adjustment is of.
+     * (schema 37) the batch a stock adjustment is of; 14 (schema 38, live
+     * sync) a uid on every remaining row a sync can carry — parties,
+     * products, every line table, plans, staff, schemes and day closes.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -41,7 +43,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 13
+    const val FORMAT_VERSION = 14
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -118,12 +120,13 @@ object BackupCodec {
                     put("id", st.id); put("name", st.name); put("phone", st.phone ?: JSONObject.NULL)
                     put("monthlySalary", st.monthlySalary); put("isActive", st.isActive); put("createdAt", st.createdAt)
                     put("role", st.role ?: JSONObject.NULL); put("pinHash", st.pinHash ?: JSONObject.NULL); put("pinSalt", st.pinSalt ?: JSONObject.NULL)
+                    put("uid", st.uid ?: JSONObject.NULL)
                 })
             }
         })
         root.put("staffAttendance", JSONArray().apply {
             dao.allAttendanceForBackup().forEach { m ->
-                put(JSONObject().apply { put("id", m.id); put("staffId", m.staffId); put("day", m.day); put("status", m.status) })
+                put(JSONObject().apply { put("id", m.id); put("staffId", m.staffId); put("day", m.day); put("status", m.status); put("uid", m.uid ?: JSONObject.NULL) })
             }
         })
         root.put("staffPayments", JSONArray().apply {
@@ -147,6 +150,7 @@ object BackupCodec {
                     put("target3", s.target3 ?: JSONObject.NULL); put("reward3", s.reward3 ?: JSONObject.NULL)
                     put("claimedAmount", s.claimedAmount ?: JSONObject.NULL); put("claimedAt", s.claimedAt ?: JSONObject.NULL)
                     put("note", s.note ?: JSONObject.NULL); put("isDeleted", s.isDeleted); put("createdAt", s.createdAt)
+                    put("uid", s.uid ?: JSONObject.NULL)
                 })
             }
         })
@@ -156,6 +160,7 @@ object BackupCodec {
                     put("id", c.id); put("day", c.day); put("opening", c.opening)
                     put("cashIn", c.cashIn); put("cashOut", c.cashOut); put("counted", c.counted)
                     put("note", c.note ?: JSONObject.NULL); put("closedAt", c.closedAt)
+                    put("uid", c.uid ?: JSONObject.NULL)
                 })
             }
         })
@@ -384,13 +389,14 @@ object BackupCodec {
                         monthlySalary = o.getDouble("monthlySalary"), isActive = o.optBoolean("isActive", true),
                         createdAt = o.optLong("createdAt", 0L),
                         // Absent before format 10: no login.
-                        role = o.optNullableString("role"), pinHash = o.optNullableString("pinHash"), pinSalt = o.optNullableString("pinSalt"))
+                        role = o.optNullableString("role"), pinHash = o.optNullableString("pinHash"), pinSalt = o.optNullableString("pinSalt"),
+                        uid = o.uid())
                 }
             } ?: emptyList()
             val attendance = root.optJSONArray("staffAttendance")?.let { arr ->
                 (0 until arr.length()).map { i ->
                     val o = arr.getJSONObject(i)
-                    StaffAttendance(id = o.getLong("id"), staffId = o.getLong("staffId"), day = o.getLong("day"), status = o.getInt("status"))
+                    StaffAttendance(id = o.getLong("id"), staffId = o.getLong("staffId"), day = o.getLong("day"), status = o.getInt("status"), uid = o.uid())
                 }
             } ?: emptyList()
             val staffPayments = root.optJSONArray("staffPayments")?.let { arr ->
@@ -417,7 +423,7 @@ object BackupCodec {
                         target3 = o.optNullableDouble("target3"), reward3 = o.optNullableDouble("reward3"),
                         claimedAmount = o.optNullableDouble("claimedAmount"), claimedAt = o.optNullableLong("claimedAt"),
                         note = o.optNullableString("note"), isDeleted = o.optBoolean("isDeleted", false),
-                        createdAt = o.optLong("createdAt", 0L)
+                        createdAt = o.optLong("createdAt", 0L), uid = o.uid()
                     )
                 }
             } ?: emptyList()
@@ -430,7 +436,7 @@ object BackupCodec {
                         id = o.getLong("id"), day = o.getLong("day"),
                         opening = o.getDouble("opening"), cashIn = o.getDouble("cashIn"),
                         cashOut = o.getDouble("cashOut"), counted = o.getDouble("counted"),
-                        note = o.optNullableString("note"), closedAt = o.optLong("closedAt", 0L)
+                        note = o.optNullableString("note"), closedAt = o.optLong("closedAt", 0L), uid = o.uid()
                     )
                 }
             } ?: emptyList()
@@ -748,6 +754,7 @@ object BackupCodec {
     // ---------- Mapping ----------
 
     private fun partyToJson(p: Party) = JSONObject().apply {
+        put("uid", p.uid ?: JSONObject.NULL)
         put("id", p.id)
         put("name", p.name)
         put("phone", p.phone ?: JSONObject.NULL)
@@ -764,6 +771,7 @@ object BackupCodec {
     }
 
     private fun jsonToParty(o: JSONObject) = Party(
+        uid = o.uid(),
         id = o.getLong("id"),
         name = o.getString("name"),
         phone = o.optNullableString("phone"),
@@ -846,6 +854,7 @@ object BackupCodec {
     )
 
     private fun entryItemToJson(i: EntryItem) = JSONObject().apply {
+        put("uid", i.uid ?: JSONObject.NULL)
         put("id", i.id)
         put("entryId", i.entryId)
         put("lineNo", i.lineNo)
@@ -864,6 +873,7 @@ object BackupCodec {
     // The real id is kept, like every other table: a line's identity must
     // survive a phone move exactly as its entry's does.
     private fun jsonToEntryItem(o: JSONObject) = EntryItem(
+        uid = o.uid(),
         id = o.getLong("id"),
         entryId = o.getLong("entryId"),
         lineNo = o.optInt("lineNo", 0),
@@ -947,6 +957,7 @@ object BackupCodec {
 
 
     private fun planToJson(p: PaymentPlan) = JSONObject().apply {
+        put("uid", p.uid ?: JSONObject.NULL)
         put("id", p.id)
         put("partyId", p.partyId)
         put("totalAmount", p.totalAmount)
@@ -961,6 +972,7 @@ object BackupCodec {
     }
 
     private fun jsonToPlan(o: JSONObject) = PaymentPlan(
+        uid = o.uid(),
         id = o.getLong("id"),
         partyId = o.getLong("partyId"),
         totalAmount = o.getDouble("totalAmount"),
@@ -975,6 +987,7 @@ object BackupCodec {
     )
 
     private fun installmentToJson(i: Installment) = JSONObject().apply {
+        put("uid", i.uid ?: JSONObject.NULL)
         put("id", i.id)
         put("planId", i.planId)
         put("amount", i.amount)
@@ -985,6 +998,7 @@ object BackupCodec {
     }
 
     private fun jsonToInstallment(o: JSONObject) = Installment(
+        uid = o.uid(),
         id = o.getLong("id"),
         planId = o.getLong("planId"),
         amount = o.getDouble("amount"),
@@ -1031,6 +1045,7 @@ object BackupCodec {
     )
 
     private fun billItemToJson(i: BillItem) = JSONObject().apply {
+        put("uid", i.uid ?: JSONObject.NULL)
         put("id", i.id)
         put("billId", i.billId)
         put("productName", i.productName)
@@ -1045,6 +1060,7 @@ object BackupCodec {
     }
 
     private fun jsonToBillItem(o: JSONObject) = BillItem(
+        uid = o.uid(),
         id = o.getLong("id"),
         billId = o.getLong("billId"),
         productName = o.optString("productName", ""),
@@ -1061,6 +1077,7 @@ object BackupCodec {
     // JSONObject.optString returns "" for null, which would turn an absent
     // phone number into an empty string rather than leaving it absent.
     private fun productToJson(p: Product) = JSONObject().apply {
+        put("uid", p.uid ?: JSONObject.NULL)
         put("id", p.id)
         put("name", p.name)
         put("nameKey", p.nameKey)
@@ -1101,6 +1118,7 @@ object BackupCodec {
     private fun jsonToProduct(o: JSONObject): Product {
         val name = o.optString("name", "")
         return Product(
+            uid = o.uid(),
             id = o.getLong("id"),
             name = name,
             nameKey = ProductName.key(name),
@@ -1182,6 +1200,7 @@ object BackupCodec {
     )
 
     private fun invoiceItemToJson(i: InvoiceItem) = JSONObject().apply {
+        put("uid", i.uid ?: JSONObject.NULL)
         put("id", i.id)
         put("invoiceId", i.invoiceId)
         put("itemName", i.itemName)
@@ -1192,6 +1211,7 @@ object BackupCodec {
     }
 
     private fun jsonToInvoiceItem(o: JSONObject) = InvoiceItem(
+        uid = o.uid(),
         id = o.getLong("id"),
         invoiceId = o.getLong("invoiceId"),
         itemName = o.optString("itemName", ""),
@@ -1320,6 +1340,7 @@ object BackupCodec {
     )
 
     private fun saleItemToJson(i: SaleItem) = JSONObject().apply {
+        put("uid", i.uid ?: JSONObject.NULL)
         put("id", i.id); put("saleId", i.saleId); put("lineNo", i.lineNo)
         put("productId", i.productId ?: JSONObject.NULL); put("itemName", i.itemName)
         put("quantity", i.quantity); put("unit", i.unit ?: JSONObject.NULL); put("rate", i.rate)
@@ -1330,6 +1351,7 @@ object BackupCodec {
     }
 
     private fun jsonToSaleItem(o: JSONObject) = SaleItem(
+        uid = o.uid(),
         id = o.getLong("id"), saleId = o.getLong("saleId"), lineNo = o.optInt("lineNo", 0),
         productId = o.optNullableLong("productId"), itemName = o.optString("itemName", ""),
         quantity = o.getDouble("quantity"), unit = o.optNullableString("unit"), rate = o.getDouble("rate"),
@@ -1341,12 +1363,14 @@ object BackupCodec {
     )
 
     private fun salePaymentToJson(p: SalePayment) = JSONObject().apply {
+        put("uid", p.uid ?: JSONObject.NULL)
         put("id", p.id); put("saleId", p.saleId); put("method", p.method); put("amount", p.amount)
         put("reference", p.reference ?: JSONObject.NULL)
         put("ledgerEntryId", p.ledgerEntryId ?: JSONObject.NULL); put("cashEntryId", p.cashEntryId ?: JSONObject.NULL)
     }
 
     private fun jsonToSalePayment(o: JSONObject) = SalePayment(
+        uid = o.uid(),
         id = o.getLong("id"), saleId = o.getLong("saleId"), method = o.optString("method", PaymentMethod.CASH),
         amount = o.getDouble("amount"), reference = o.optNullableString("reference"),
         ledgerEntryId = o.optNullableLong("ledgerEntryId"), cashEntryId = o.optNullableLong("cashEntryId")
@@ -1394,12 +1418,14 @@ object BackupCodec {
     )
 
     private fun returnItemToJson(i: SaleReturnItem) = JSONObject().apply {
+        put("uid", i.uid ?: JSONObject.NULL)
         put("id", i.id); put("returnId", i.returnId); put("lineNo", i.lineNo); put("saleItemId", i.saleItemId ?: JSONObject.NULL)
         put("productId", i.productId ?: JSONObject.NULL); put("itemName", i.itemName); put("quantity", i.quantity)
         put("unit", i.unit ?: JSONObject.NULL); put("rate", i.rate); put("billItemId", i.billItemId ?: JSONObject.NULL); put("isDeleted", i.isDeleted)
     }
 
     private fun jsonToReturnItem(o: JSONObject) = SaleReturnItem(
+        uid = o.uid(),
         id = o.getLong("id"), returnId = o.getLong("returnId"), lineNo = o.optInt("lineNo", 0), saleItemId = o.optNullableLong("saleItemId"),
         productId = o.optNullableLong("productId"), itemName = o.optString("itemName", ""), quantity = o.getDouble("quantity"),
         unit = o.optNullableString("unit"), rate = o.getDouble("rate"), billItemId = o.optNullableLong("billItemId"), isDeleted = o.optBoolean("isDeleted", false)
@@ -1437,12 +1463,14 @@ object BackupCodec {
     )
 
     private fun orderItemToJson(i: PurchaseOrderItem) = JSONObject().apply {
+        put("uid", i.uid ?: JSONObject.NULL)
         put("id", i.id); put("orderId", i.orderId); put("lineNo", i.lineNo); put("productId", i.productId ?: JSONObject.NULL)
         put("itemName", i.itemName); put("quantity", i.quantity); put("unit", i.unit ?: JSONObject.NULL)
         put("rate", i.rate ?: JSONObject.NULL); put("isDeleted", i.isDeleted)
     }
 
     private fun jsonToOrderItem(o: JSONObject) = PurchaseOrderItem(
+        uid = o.uid(),
         id = o.getLong("id"), orderId = o.getLong("orderId"), lineNo = o.optInt("lineNo", 0), productId = o.optNullableLong("productId"),
         itemName = o.optString("itemName", ""), quantity = o.getDouble("quantity"), unit = o.optNullableString("unit"),
         rate = o.optNullableDouble("rate"), isDeleted = o.optBoolean("isDeleted", false)

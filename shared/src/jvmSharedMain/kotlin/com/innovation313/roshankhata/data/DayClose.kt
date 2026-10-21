@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey
  * next week must not silently rewrite what the drawer was found to hold.
  * One row per calendar day; closing again the same day replaces it.
  */
-@Entity(tableName = "day_close", indices = [Index(value = ["day"], unique = true)])
+@Entity(tableName = "day_close", indices = [Index(value = ["day"], unique = true), Index("uid")])
 data class DayClose(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     /** Local calendar day number (days since 1970 in the phone's zone). */
@@ -26,7 +26,9 @@ data class DayClose(
     /** What the owner counted. */
     val counted: Double,
     val note: String? = null,
-    val closedAt: Long = System.currentTimeMillis()
+    val closedAt: Long = System.currentTimeMillis(),
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 ) {
     val expected: Double get() = DayCloseMath.expected(opening, cashIn, cashOut)
     val difference: Double get() = DayCloseMath.difference(counted, expected)

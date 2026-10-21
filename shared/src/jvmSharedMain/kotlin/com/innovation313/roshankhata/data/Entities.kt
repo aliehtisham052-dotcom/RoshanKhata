@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
     tableName = "parties",
     // (isDeleted, name): the Khata list reads every live party in name
     // order; with this the walk is the index, not a scan and a sort (P2, 7 Oct).
-    indices = [Index(value = ["qrToken"], unique = true), Index(value = ["isDeleted", "name"])]
+    indices = [Index(value = ["qrToken"], unique = true), Index(value = ["isDeleted", "name"]), Index("uid")]
 )
 data class Party(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -73,7 +73,9 @@ data class Party(
      * him up as late; on and after it, he comes first. Cleared when his
      * balance is settled from his own screen. Null = no such promise.
      */
-    val harvestPromise: Long? = null
+    val harvestPromise: Long? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**
@@ -127,7 +129,7 @@ object PaymentMethod {
     // the balance SUM per party, each read straight off the index (P2, 7 Oct).
     // The single partyId index stays: Room expects every declared index to
     // exist, and dropping it would be a migration of its own for no gain.
-    indices = [Index("partyId"), Index("productId"), Index("billItemId"), Index(value = ["partyId", "isDeleted", "timestamp"])]
+    indices = [Index("partyId"), Index("productId"), Index("billItemId"), Index(value = ["partyId", "isDeleted", "timestamp"]), Index("uid")]
 )
 data class LedgerEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

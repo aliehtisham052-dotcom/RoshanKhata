@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.data
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
@@ -12,7 +13,7 @@ import androidx.room.PrimaryKey
  * party ledger would either invent a phantom party or corrupt a real one's
  * balance. Keeping them apart is what lets both stay truthful.
  */
-@Entity(tableName = "cashbook")
+@Entity(tableName = "cashbook", indices = [Index("uid")])
 data class CashEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 

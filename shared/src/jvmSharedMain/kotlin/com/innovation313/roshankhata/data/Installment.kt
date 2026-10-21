@@ -26,7 +26,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("partyId")]
+    indices = [Index("partyId"), Index("uid")]
 )
 data class PaymentPlan(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -49,7 +49,9 @@ data class PaymentPlan(
     val closedAt: Long? = null,
 
     val isDeleted: Boolean = false,
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**
@@ -68,7 +70,7 @@ data class PaymentPlan(
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("planId")]
+    indices = [Index("planId"), Index("uid")]
 )
 data class Installment(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -82,7 +84,9 @@ data class Installment(
     val paidAt: Long = System.currentTimeMillis(),
     val note: String? = null,
 
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /** A plan with its progress, for display. */

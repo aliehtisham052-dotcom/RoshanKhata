@@ -36,7 +36,7 @@ import java.math.RoundingMode
  */
 @Entity(
     tableName = "sales",
-    indices = [Index("partyId"), Index("timestamp"), Index("status")]
+    indices = [Index("partyId"), Index("timestamp"), Index("status"), Index("uid")]
 )
 data class Sale(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -131,7 +131,7 @@ object SaleStatus {
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("saleId"), Index("productId"), Index("billItemId")]
+    indices = [Index("saleId"), Index("productId"), Index("billItemId"), Index("uid")]
 )
 data class SaleItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -164,7 +164,9 @@ data class SaleItem(
      */
     val taxRate: Double? = null,
     val taxAmount: Double? = null,
-    val taxIncluded: Boolean? = null
+    val taxIncluded: Boolean? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 ) {
     /** quantity × rate − discount, to the paisa. */
     val lineTotal: Double get() = SaleMath.lineTotal(quantity, rate, discount)
@@ -185,7 +187,7 @@ data class SaleItem(
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("saleId")]
+    indices = [Index("saleId"), Index("uid")]
 )
 data class SalePayment(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -198,7 +200,9 @@ data class SalePayment(
     /** The khata "I got" row this became (customer sales). */
     val ledgerEntryId: Long? = null,
     /** The cashbook row this became (walk-in sales). */
-    val cashEntryId: Long? = null
+    val cashEntryId: Long? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /** A sale with its lines and payments, as a screen or a receipt needs it. */

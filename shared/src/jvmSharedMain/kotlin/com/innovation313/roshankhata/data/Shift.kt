@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
  * ([ShiftMath]); the difference needs its reason, as the day's close does.
  * The open and close times are also the person's hours (the time clock).
  */
-@Entity(tableName = "shifts", indices = [Index("openedAt")])
+@Entity(tableName = "shifts", indices = [Index("openedAt"), Index("uid")])
 data class Shift(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     /** Who: the staff member's name, or null for the owner (as on every sale). */
