@@ -67,7 +67,7 @@ class AccessTest {
         val prefs = Prefs()
         Access.store = prefs
         assertTrue("the owner's own device: the owner", Access.isOwner)
-        Access.setCounterMode(true)
+        Access.switchCounterMode(true)
         assertTrue("turning it on leaves the owner in", Access.isOwner)
         Access.signOut()
         assertTrue(Access.locked)
@@ -82,7 +82,7 @@ class AccessTest {
         assertFalse(Access.can(Access.Permission.BACKUP))
         Access.signInOwner()
         Access.Permission.values().forEach { assertTrue(it.name, Access.can(it)) }
-        Access.setCounterMode(false)
+        Access.switchCounterMode(false)
         assertFalse(Access.counterMode); assertNull(prefs.get("access_counter_mode"))
         assertTrue(Access.isOwner)
     }

@@ -3455,6 +3455,14 @@ interface KhataDao {
     )
     suspend fun purchasesOfProduct(productId: Long): List<Cost.Purchase>
 
+    /** A sale's invoice ([SaleInvoice]) saved and remembered on the sale, in one transaction. */
+    @Transaction
+    suspend fun linkSaleInvoice(saleId: Long, invoice: Invoice, items: List<InvoiceItem>): Long {
+        val id = saveInvoiceWithItems(invoice, items)
+        getSale(saleId)?.let { updateSale(it.copy(invoiceId = id)) }
+        return id
+    }
+
     /** Every row of the log in the order it was written, for [AuditChain.verify]. */
     @Query("SELECT * FROM audit_log ORDER BY id")
     suspend fun auditInOrder(): List<AuditLog>

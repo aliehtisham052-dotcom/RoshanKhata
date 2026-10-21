@@ -367,6 +367,8 @@ private fun Book(
         }
     }
     var choosingBusiness by remember { mutableStateOf(false) }
+    // An invoice just made from a counter sale, opened on the Invoices page.
+    var invoiceToOpen by remember { mutableStateOf<Long?>(null) }
     // Who is at this computer (More → Who is at the counter): sign in, change, or sign out.
     var signingIn by remember { mutableStateOf(false) }
     if (signingIn) SignInDialog(dao) { signingIn = false }
@@ -542,7 +544,8 @@ private fun Book(
                     Section.COUNTER -> Box(Modifier.fillMaxSize()) {
                         CounterSalePane(
                             dao, parties, words, rtl, shop, com.innovation313.roshankhata.data.Currency.symbol, reload,
-                            onChanged = { reload++ }, onReceipt = { receipt = it }, keys = keys
+                            onChanged = { reload++ }, onReceipt = { receipt = it }, keys = keys,
+                            onInvoice = { id -> invoiceToOpen = id; section = Section.INVOICES }
                         )
                     }
                     Section.AUDIT -> Box(Modifier.fillMaxSize()) { AuditPane(dao) }
@@ -555,7 +558,7 @@ private fun Book(
                     Section.EXPIRY -> Box(Modifier.fillMaxSize()) { ExpiryPane(dao) }
                     Section.BILLS -> Box(Modifier.fillMaxSize()) { BillsPane(dao, parties, words, home) { reload++ } }
                     Section.PRODUCTS -> Box(Modifier.fillMaxSize()) { ProductsPane(dao, words) }
-                    Section.INVOICES -> Box(Modifier.fillMaxSize()) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }, fields = invoiceFields, onFields = onInvoiceFields) }
+                    Section.INVOICES -> Box(Modifier.fillMaxSize()) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }, fields = invoiceFields, onFields = onInvoiceFields, openId = invoiceToOpen) }
                     Section.INSIGHTS -> Box(Modifier.fillMaxSize()) { InsightsPane(dao, reload) }
                     Section.ZAKAT -> Box(Modifier.fillMaxSize()) { ZakatPane(dao) }
                     Section.RATES -> Box(Modifier.fillMaxSize()) { RateListPane(dao, words, rtl, shop) }
