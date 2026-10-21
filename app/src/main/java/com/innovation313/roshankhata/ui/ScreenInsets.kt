@@ -70,10 +70,8 @@ object ScreenInsets {
                     WindowInsetsCompat.Type.systemBars() or
                         WindowInsetsCompat.Type.displayCutout()
                 )
-                v.setPaddingRelative(
-                    base[0] + bars.startOf(v), base[1] + bars.top,
-                    base[2] + bars.endOf(v), base[3]
-                )
+                // The sides are the root's now (below), so they are not added twice here.
+                v.setPaddingRelative(base[0], base[1] + bars.top, base[2], base[3])
                 insets
             }
         }
@@ -95,8 +93,10 @@ object ScreenInsets {
             val ime = KeyboardFollow.imeBottom(insets)
             val top = if (header == null) rootBase[1] + bars.top else rootBase[1]
             val bottom = rootBase[3] + if (ownBottomBar == null) maxOf(bars.bottom, ime) else ime
-            val start = if (header == null) rootBase[0] + bars.startOf(v) else rootBase[0]
-            val end = if (header == null) rootBase[2] + bars.endOf(v) else rootBase[2]
+            // The side bars always (21 Oct 2026, the critical review): with a header the sides were
+            // left to it, and a phone turned on its side put the list under the navigation bar.
+            val start = rootBase[0] + bars.startOf(v)
+            val end = rootBase[2] + bars.endOf(v)
             v.setPaddingRelative(start, top, end, bottom)
             // Room alone leaves a low field under the new padding; scroll it
             // up once the smaller screen has been laid out.

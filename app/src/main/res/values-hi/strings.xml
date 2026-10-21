@@ -3434,4 +3434,8 @@
     <string name="entry_linked_cheque">यह एंट्री क्लियर हुए चेक ने लिखी है। इसे चेक वाले पेज से बदलें।</string>
     <string name="entry_linked_sale">यह एंट्री काउंटर की बिक्री ने लिखी है। बिक्री रद्द करें या वापसी करें।</string>
     <string name="entry_linked_return">यह एंट्री वापसी ने लिखी है। इसकी जगह वापसी रद्द करें।</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">आपको अदा किया</string>
+    <string name="pdf_stmt_you_supplied">आपने माल दिया</string>
 </resources>

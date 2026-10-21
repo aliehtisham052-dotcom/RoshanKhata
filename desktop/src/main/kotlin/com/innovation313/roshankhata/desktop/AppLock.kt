@@ -80,16 +80,29 @@ fun LockScreen(prefs: AppPrefs, onUnlocked: () -> Unit) {
     val c = LocalRoshanColors.current
     var pin by remember { mutableStateOf("") }
     var wrong by remember { mutableStateOf(false) }
-    var misses by remember { mutableIntStateOf(0) }
-    var waitUntil by remember { mutableLongStateOf(0L) }
+    // Wrong PINs counted in app.properties, not in memory (21 Oct 2026, the critical review): closing
+    // and reopening the app cleared the count, so five guesses could be tried again and again.
+    // Every fifth miss waits, each wait twice the last, up to fifteen minutes (the counter PIN's rule).
+    val store = prefs.accessStore
+    var misses by remember { mutableIntStateOf(store.get(KEY_LOCK_MISSES)?.toIntOrNull() ?: 0) }
+    var waitUntil by remember { mutableLongStateOf(store.get(KEY_LOCK_WAIT)?.toLongOrNull() ?: 0L) }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(waitUntil) { while (System.currentTimeMillis() < waitUntil) { now = System.currentTimeMillis(); delay(500) }; now = System.currentTimeMillis() }
     val waiting = now < waitUntil
     fun tryPin() {
         if (waiting || pin.isEmpty()) return
-        if (prefs.pinMatches(pin)) { onUnlocked(); return }
+        if (prefs.pinMatches(pin)) {
+            store.put(KEY_LOCK_MISSES, null); store.put(KEY_LOCK_WAIT, null)
+            onUnlocked(); return
+        }
         misses++; wrong = true; pin = ""
-        if (misses >= 5) { waitUntil = System.currentTimeMillis() + 30_000; now = System.currentTimeMillis() }
+        store.put(KEY_LOCK_MISSES, misses.toString())
+        if (misses % 5 == 0) {
+            val doublings = (misses / 5 - 1).coerceIn(0, 10)
+            waitUntil = System.currentTimeMillis() + (30_000L shl doublings).coerceAtMost(15 * 60_000L)
+            store.put(KEY_LOCK_WAIT, waitUntil.toString())
+            now = System.currentTimeMillis()
+        }
     }
     Box(Modifier.fillMaxSize().background(c.pageBg), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -147,3 +160,6 @@ fun AppLockSettings(prefs: AppPrefs, onDone: () -> Unit) {
         }
     }
 }
+
+private const val KEY_LOCK_MISSES = "app_lock_misses"
+private const val KEY_LOCK_WAIT = "app_lock_wait_until"

@@ -207,8 +207,8 @@ private fun OrderDialog(dao: KhataDao, draft: OrderDraft, suppliers: List<PartyW
                 Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (l.productId == null) FluentField(l.name, { l.name = it }, Modifier.weight(3f), placeholder = word(W.item_name_hint))
                     else Text(l.name, Modifier.weight(3f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    FluentField(l.qty, { l.qty = it }, Modifier.weight(1f), label = word(W.pos_col_qty) + (l.unit?.let { " ($it)" } ?: ""))
-                    FluentField(l.rate, { l.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate), placeholder = "–")
+                    FluentField(l.qty, { l.qty = it }, Modifier.weight(1f), label = word(W.pos_col_qty) + (l.unit?.let { " ($it)" } ?: ""), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                    FluentField(l.rate, { l.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate), placeholder = "–", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     IconAction("ic_close", word(W.delete), { draft.lines.remove(l) })
                 }
             }

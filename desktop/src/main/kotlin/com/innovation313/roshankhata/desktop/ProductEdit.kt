@@ -95,26 +95,26 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             val trade = LocalTrade.current
             SuggestionRow(trade.units(), unit) { unit = it }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Outlined(cash, { cash = it }, label = { Text(word(W.sale_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
-                Outlined(credit, { credit = it }, label = { Text(word(W.credit_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
+                Outlined(cash, { cash = it }, label = { Text(word(W.sale_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                Outlined(credit, { credit = it }, label = { Text(word(W.credit_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             }
             Text(word(W.product_price_help), color = c.textMuted, fontSize = 12.sp)
             // The counter (POS Phase 2): the pack's barcode (a USB scanner types it here), the
             // unit's cost to the shop, and the stock level that warns in the bell.
             Field(word(W.product_barcode_hint), barcode) { barcode = it; problem = null }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Outlined(cost, { cost = it }, label = { Text(word(W.product_cost_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
-                Outlined(lowStock, { lowStock = it }, label = { Text(word(W.product_low_stock_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+                Outlined(cost, { cost = it }, label = { Text(word(W.product_cost_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                Outlined(lowStock, { lowStock = it }, label = { Text(word(W.product_low_stock_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
             }
             // Packs and tax (schema 36): a bigger unit stock may come or go in, and this product's tax.
             Text(word(W.product_pack_help), Modifier.padding(top = 4.dp), color = c.textMuted, fontSize = 12.sp)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Outlined(packUnit, { packUnit = it }, label = { Text(word(W.product_pack_unit)) }, singleLine = true, modifier = Modifier.weight(1f))
-                Outlined(packSize, { packSize = it }, label = { Text(word(W.product_pack_size)) }, singleLine = true, modifier = Modifier.weight(1f))
+                Outlined(packSize, { packSize = it }, label = { Text(word(W.product_pack_size)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Outlined(packPrice, { packPrice = it }, label = { Text(word(W.product_pack_price)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
-                Outlined(taxRate, { taxRate = it }, label = { Text(word(W.product_tax_rate)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
+                Outlined(packPrice, { packPrice = it }, label = { Text(word(W.product_pack_price)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                Outlined(taxRate, { taxRate = it }, label = { Text(word(W.product_tax_rate)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice, calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
             }
             Text(word(W.product_variant_help), Modifier.padding(top = 4.dp), color = c.textMuted, fontSize = 12.sp)
             val main = others.firstOrNull { it.id == parentId }
@@ -171,7 +171,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                         packUnit = typed(packUnit)?.takeIf { (typed(packSize)?.let { Calc.evalPad(it) } ?: 0.0) > 0.0 },
                         packSize = typed(packSize)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 && typed(packUnit) != null },
                         packPrice = typed(packPrice)?.let { Calc.evalPad(it) }?.takeIf { typed(packUnit) != null },
-                        taxRate = typed(taxRate)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 },
+                        taxRate = typed(taxRate)?.let { Calc.evalPercent(it) }?.takeIf { it > 0.0 },
                         parentId = parentId,
                         variant = if (parentId != null) typed(variant) else null
                     )

@@ -3604,4 +3604,8 @@ You can change this any time from this screen.</string>
     <string name="entry_linked_cheque">A cleared cheque wrote this entry. Change it from Cheques.</string>
     <string name="entry_linked_sale">A counter sale wrote this entry. Void the sale, or make a return.</string>
     <string name="entry_linked_return">A return wrote this entry. Void the return instead.</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">Paid to you</string>
+    <string name="pdf_stmt_you_supplied">You supplied</string>
 </resources>

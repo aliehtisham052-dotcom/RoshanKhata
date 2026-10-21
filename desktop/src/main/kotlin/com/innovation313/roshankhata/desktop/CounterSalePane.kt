@@ -419,9 +419,9 @@ fun CounterSalePane(
                                         }
                                     }
                                 }
-                                FluentField(line.qty, { line.qty = it }, Modifier.weight(2f).then(if (i == draft.lines.lastIndex) Modifier.focusRequester(qtyFocus) else Modifier))
-                                FluentField(line.rate, { line.rate = it }, Modifier.weight(2f), placeholder = "0")
-                                FluentField(line.discount, { line.discount = it }, Modifier.weight(2f), placeholder = "0")
+                                FluentField(line.qty, { line.qty = it }, Modifier.weight(2f).then(if (i == draft.lines.lastIndex) Modifier.focusRequester(qtyFocus) else Modifier), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                                FluentField(line.rate, { line.rate = it }, Modifier.weight(2f), placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                                FluentField(line.discount, { line.discount = it }, Modifier.weight(2f), placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                                 Text(Format.money(line.total), Modifier.weight(2f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false, textAlign = androidx.compose.ui.text.style.TextAlign.End)
                                 Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
                                     IconAction("ic_close", word(W.delete), { draft.remove(line) })
@@ -432,6 +432,9 @@ fun CounterSalePane(
                     }
                 }
             }
+            // The day's tickets and returns in their own scrolling strip, so on a laptop they never
+            // squeeze the ticket being rung up (21 Oct 2026, the critical review).
+            Column(Modifier.fillMaxWidth().heightIn(max = if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             RecentSales(recent.take(8), words,
                 onVoid = { s -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void) + " " + s.saleNumber) { voiding = s } },
                 onReturn = { s ->
@@ -451,6 +454,7 @@ fun CounterSalePane(
                     }
                 })
             RecentReturns(returns.take(6), words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { voidingReturn = r } })
+            }
         }
 
         // ---- The end side: who, how much, how paid, the button ----
@@ -477,8 +481,8 @@ fun CounterSalePane(
             FluentCard { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 FigureRow(word(W.pos_subtotal), Format.money(draft.totals.subtotal))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FluentField(draft.discount, { draft.discount = it }, Modifier.weight(1f).focusRequester(discountFocus), label = word(W.pos_discount), prefix = currency, placeholder = "0", trailing = { KeyCap("F6") })
-                    FluentField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = word(W.pos_tax), placeholder = "0")
+                    FluentField(draft.discount, { draft.discount = it }, Modifier.weight(1f).focusRequester(discountFocus), label = word(W.pos_discount), prefix = currency, placeholder = "0", trailing = { KeyCap("F6") }, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                    FluentField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = word(W.pos_tax), placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
                 }
                 if (draft.pointsValue > 0.0) FigureRow(words.text(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue), Look.accent)
                 if (draft.totals.tax > 0.0) FigureRow(word(W.pos_tax), Format.money(draft.totals.tax))
@@ -503,7 +507,7 @@ fun CounterSalePane(
                             }
                         }
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                            FluentField(p.amount, { p.amount = it }, Modifier.weight(1f), prefix = currency, placeholder = "0")
+                            FluentField(p.amount, { p.amount = it }, Modifier.weight(1f), prefix = currency, placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                             if (p.method != PaymentMethod.CASH) FluentField(p.reference, { p.reference = it }, Modifier.weight(1f), placeholder = word(W.pos_reference_hint))
                             IconAction("ic_close", word(W.delete), { draft.removePayment(p) })
                         }

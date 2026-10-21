@@ -80,7 +80,10 @@ compose.desktop {
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
             // java.sql for Room's driver plumbing; jdk.unsupported for SQLite's native loader.
-            modules("java.sql", "jdk.unsupported", "java.logging")
+            // jdk.localedata (21 Oct 2026, the critical review): without it the MSI's Java knew only
+            // English, and Urdu, Arabic, Sindhi... month and day names, AM/PM and the date picker came out
+            // in English. CI's full JDK always had it, so every test already ran with it.
+            modules("java.sql", "jdk.unsupported", "java.logging", "jdk.localedata")
             windows {
                 menu = true
                 menuGroup = "Innovation 313"

@@ -3434,4 +3434,8 @@
     <string name="entry_linked_cheque">এই এন্ট্রি ক্লিয়ার হওয়া চেক লিখেছে। চেকের পাতা থেকে বদলান।</string>
     <string name="entry_linked_sale">এই এন্ট্রি কাউন্টারের বিক্রি লিখেছে। বিক্রি বাতিল করুন বা ফেরত নিন।</string>
     <string name="entry_linked_return">এই এন্ট্রি একটি ফেরত লিখেছে। তার বদলে ফেরত বাতিল করুন।</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">আপনাকে দেওয়া হয়েছে</string>
+    <string name="pdf_stmt_you_supplied">আপনি মাল দিয়েছেন</string>
 </resources>

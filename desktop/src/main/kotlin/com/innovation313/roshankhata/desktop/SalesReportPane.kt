@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,6 +74,7 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
         }, onDismiss = { picking = null })
     }
     val r = report
+    var roomy by remember { mutableStateOf(true) }
     val table = r?.let { reportRows(it, view) }
     val heading = word(view.wordKey) + "  ·  " + com.innovation313.roshankhata.screens.periodLabel(period, custom)
     FluentPage(word(W.sales_report_title), told ?: heading, scroll = false, actions = {
@@ -120,10 +122,13 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
                 under = r?.let { words.text(W.srep_cost_known, Format.money(it.costKnownRevenue)) })
         }
         // The chart (21 Oct 2026): a bar per hour, day or month of the window, from the same lines.
-        if (r != null && r.revenue > 0.0) {
+        // On a laptop's short window the chart steps aside once the table would get too little room
+        // (21 Oct 2026: at 1366x768 the table was squeezed to nothing). Once aside, it stays aside.
+        if (r != null && r.revenue > 0.0 && roomy) {
             com.innovation313.roshankhata.screens.SalesChart(r.bars(), Modifier.fillMaxWidth().card().padding(14.dp), height = 96.dp)
         }
-        ListCard(Modifier.weight(1f)) {
+        val density = androidx.compose.ui.platform.LocalDensity.current
+        ListCard(Modifier.weight(1f).onSizeChanged { if (roomy && with(density) { it.height.toDp() } < 220.dp) roomy = false }) {
             if (table == null || table.second.isEmpty()) Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { Text(word(W.srep_none), color = c.textMuted) }
             else {
                 val (head, rows) = table

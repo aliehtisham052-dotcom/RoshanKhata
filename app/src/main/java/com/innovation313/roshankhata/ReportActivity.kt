@@ -109,11 +109,14 @@ class ReportActivity : BaseActivity() {
         load()
     }
 
+    private var partyIsCustomer = true
+
     private fun load() {
         lifecycleScope.launch {
             dao.getParty(partyId)?.let { p ->
                 partyName = p.name
                 partyPhone = p.phone
+                partyIsCustomer = p.isCustomer
                 findViewById<TextView>(R.id.tvReportTitle).text =
                     getString(R.string.report_title, p.name)
             }
@@ -268,6 +271,7 @@ class ReportActivity : BaseActivity() {
                     // The whole account's balance, never the window's net —
                     // this PDF goes to the customer.
                     closingBalance = closingBalance,
+                    isCustomer = partyIsCustomer,
                     businessName = BusinessProfile.businessName(this@ReportActivity),
                     paymentQr = BusinessProfile.loadQr(this@ReportActivity),
                     // Only if the owner has turned it on. Off by default.

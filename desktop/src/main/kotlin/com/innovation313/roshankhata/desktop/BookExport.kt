@@ -35,6 +35,9 @@ object BookExport {
 class AllStatements(private val sheets: List<StatementPrint>) : Printable {
     private val starts: List<Int> = sheets.runningFold(0) { acc, s -> acc + s.pageCount() }
 
+    /** How many pages, without drawing any (21 Oct 2026: counting by drawing every page took minutes). */
+    fun pageCount(): Int = starts.last()
+
     override fun print(graphics: Graphics, format: PageFormat, pageIndex: Int): Int {
         val i = starts.indexOfLast { it <= pageIndex }.takeIf { it in sheets.indices } ?: return Printable.NO_SUCH_PAGE
         return sheets[i].print(graphics, format, pageIndex - starts[i])

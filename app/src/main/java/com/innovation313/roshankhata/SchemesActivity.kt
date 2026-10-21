@@ -146,7 +146,11 @@ class SchemesActivity : BaseActivity() {
                     .setTitle(R.string.scheme_delete)
                     .setMessage(getString(R.string.scheme_delete_confirm, s.name))
                     .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.scheme_delete) { _, _ -> AppScope.launch { dao.deleteScheme(s.id) } }
+                    // A scheme's delete is for whoever may change the book (21 Oct 2026, the critical review).
+                    .setPositiveButton(R.string.scheme_delete) { _, _ ->
+                        val gone = { AppScope.launch { dao.deleteScheme(s.id) }; Unit }
+                        if (com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { gone() }) gone()
+                    }
                     .show()
             }
         }

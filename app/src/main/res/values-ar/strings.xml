@@ -3578,4 +3578,8 @@
     <string name="entry_linked_cheque">كتب شيكٌ تمت تصفيته هذا القيد. غيّره من صفحة الشيكات.</string>
     <string name="entry_linked_sale">كتب بيعٌ في نقطة البيع هذا القيد. ألغِ البيع أو سجّل مرتجعًا.</string>
     <string name="entry_linked_return">كتب مرتجعٌ هذا القيد. ألغِ المرتجع بدلًا من ذلك.</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">دُفع لك</string>
+    <string name="pdf_stmt_you_supplied">ورّدتَ</string>
 </resources>

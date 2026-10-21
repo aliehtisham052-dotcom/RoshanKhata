@@ -3418,4 +3418,8 @@
     <string name="entry_linked_cheque">هي داخلا ڪليئر ٿيل چيڪ لکي آهي. ان کي چيڪ واري صفحي مان بدلايو.</string>
     <string name="entry_linked_sale">هي داخلا ڪائونٽر جي وڪري لکي آهي. وڪرو منسوخ ڪريو يا واپسي ڪريو.</string>
     <string name="entry_linked_return">هي داخلا واپسي لکي آهي. ان بدران واپسي منسوخ ڪريو.</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">توهان کي ادا ڪيو</string>
+    <string name="pdf_stmt_you_supplied">توهان مال ڏنو</string>
 </resources>

@@ -3390,4 +3390,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="entry_linked_cheque">Yeh indiraaj clear hone wale cheque ne likha hai. Isay cheque wale safhe se badlen.</string>
     <string name="entry_linked_sale">Yeh indiraaj counter ki sale ne likha hai. Sale mansookh karen ya wapsi karen.</string>
     <string name="entry_linked_return">Yeh indiraaj wapsi ne likha hai. Is ke bajaye wapsi mansookh karen.</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">Aap ko ada kiya</string>
+    <string name="pdf_stmt_you_supplied">Aap ne maal diya</string>
 </resources>

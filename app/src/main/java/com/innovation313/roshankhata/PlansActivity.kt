@@ -393,6 +393,7 @@ class PlansActivity : BaseActivity() {
     }
 
     private fun closePlan(plan: PlanProgress) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { closePlan(plan) }) return
         lifecycleScope.launch {
             AppScope.launch {
                 dao.getPlan(plan.id)?.let { existing ->

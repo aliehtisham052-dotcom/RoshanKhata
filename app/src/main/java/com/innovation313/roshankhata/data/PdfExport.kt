@@ -71,16 +71,24 @@ object PdfExport {
          * holding their photo — not to it travelling on to whoever the
          * statement is passed to next.
          */
-        partyPhoto: Bitmap? = null
+        partyPhoto: Bitmap? = null,
+        /** A supplier's statement is read by the supplier: the columns say it from their side (21 Oct 2026). */
+        isCustomer: Boolean = true
     ): File? {
+        // Oldest first, as every statement reads (21 Oct 2026, the critical review): the screen's
+        // newest-first list printed the period backwards and put the opening line above the newest
+        // entry. Each row keeps its own running balance, so the order changes nothing else.
+        val rows = rows.sortedWith(compareBy<StatementRow> { it.entry.timestamp }.thenBy { it.entry.id })
 
         // "You gave" / "You got" is the SHOPKEEPER's phrasing, and this sheet
         // is read by the CUSTOMER — who would take "You gave Rs 8,000" to mean
         // they had paid it. Same figures, told from the side of the person
         // holding the page. Read once here because the summary box and the
         // table header must say the same words, on every page.
-        val owedLabel = context.getString(R.string.pdf_stmt_you_owe)
-        val paidLabel = context.getString(R.string.pdf_stmt_you_paid)
+        // A supplier holding the page: what the shop gave them was paid TO them, and what came
+        // from them is what they supplied (the customer's words read backwards on their page).
+        val owedLabel = context.getString(if (isCustomer) R.string.pdf_stmt_you_owe else R.string.pdf_stmt_paid_to_you)
+        val paidLabel = context.getString(if (isCustomer) R.string.pdf_stmt_you_paid else R.string.pdf_stmt_you_supplied)
 
         val title = Paint().apply {
             color = Color.WHITE

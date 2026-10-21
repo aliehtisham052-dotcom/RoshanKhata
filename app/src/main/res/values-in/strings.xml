@@ -3387,4 +3387,8 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="entry_linked_cheque">Cek yang sudah cair menulis catatan ini. Ubah dari halaman Cek.</string>
     <string name="entry_linked_sale">Penjualan kasir menulis catatan ini. Batalkan penjualan, atau buat retur.</string>
     <string name="entry_linked_return">Retur menulis catatan ini. Batalkan returnya saja.</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">Dibayar kepada Anda</string>
+    <string name="pdf_stmt_you_supplied">Anda memasok</string>
 </resources>
