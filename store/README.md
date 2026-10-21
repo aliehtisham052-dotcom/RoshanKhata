@@ -2,8 +2,12 @@
 
 Everything here is free to make and free of real customer data.
 
-- `listing/en-US.md`, `listing/ur.md` — app name, short and full description,
-  release notes, within Play's limits (30 / 80 / 4000 / 500 characters).
+- `listing/en-US.md`, `listing/ur.md`, and since 21 Oct `ar.md`, `fa.md`,
+  `hi-IN.md`, `bn-BD.md`, `id.md` — app name, short and full description,
+  release notes, within Play's limits (30 / 80 / 4000 / 500 characters),
+  named by Play's own language codes. Play Console has no Sindhi or Roman
+  Urdu listing (checked 21 Oct 2026 on Play's "translations" help page);
+  those users see the Urdu or English listing.
 - `feature-graphic.png` — 1024 x 500, rendered from the brand logo and fonts
   (the HTML lives in the session scratchpad; re-render by hand if it changes).
 - `play-icon-512.png` — the store icon.

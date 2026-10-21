@@ -501,6 +501,19 @@ Each of these cost a build or a bug.
 26. **Counter mode is the book's word too** (`counter_used`,
     `owner_devices`, `Access.applyBook` on the computer): app.properties is a
     file anyone at the till can edit.
+27. **Nine languages means nine.** A picker of languages is `CardLanguage`
+    (shared: code, own-script name, RTL, Nastaliq only for Urdu), never an
+    English/Urdu toggle — cards, posters and both platforms use it. Printed
+    sheets on Windows use `PrintFonts.family` and mirror for RTL; new
+    number/scale words go in for every language (VoiceEntry, NumberWords,
+    DateWords' weekdays). A word not verified from a source is not shipped:
+    Sindhi's 0-99 came from the Sindhi Language Authority's grammar.
+28. **Digits: screens 0-9, printed sheets by choice.** Storage, typing, CSV,
+    codes and screens stay 0-9 (`Digits`). Arabic/Sindhi/Farsi/Bengali sheets
+    may print their own digits (`Digits.nativeOnPrint`, off by default),
+    applied only at the one text call each sheet uses (`Digits.forPrint` in
+    PdfRtl.drawText, the print helpers, receipts) so a sheet never mixes
+    two digit sets. Indonesian money is `Rp 1.250,50` (`Format.money`).
 
 ---
 

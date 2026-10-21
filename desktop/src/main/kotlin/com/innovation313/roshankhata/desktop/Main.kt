@@ -175,8 +175,6 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             com.innovation313.roshankhata.data.Digits.nativeOnPrint = it.nativeDigits()
         }
     }
-    // Printed sheets in the language's own digits, offered where it has its own (21 Oct 2026).
-    var nativeDigits by remember { mutableStateOf(appPrefs.nativeDigits()) }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
     val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
     val words = remember(locale) { desktopWords(locale) }
@@ -451,6 +449,8 @@ private fun Book(
         outsideDir?.let { runCatching { DailyCopies.makeToday(dao, settings, it, refresh = true) } }
     }
     var printer by remember { mutableStateOf(appPrefs.receipt()) }
+    // Printed sheets in the language's own digits, offered where it has its own (21 Oct 2026).
+    var nativeDigits by remember { mutableStateOf(appPrefs.nativeDigits()) }
     // The shop's logo for the receipt's top, read from this business's pictures when it is printed.
     fun receiptLogo(): java.awt.image.BufferedImage? = runCatching {
         images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).takeIf { it.isFile }?.let { javax.imageio.ImageIO.read(it) }

@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.ui
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class NumberWordsTest {
@@ -187,5 +188,16 @@ class NumberWordsTest {
         } finally {
             com.innovation313.roshankhata.data.Currency.symbol = before
         }
+    }
+
+    @Test
+    fun `sindhi amount in words - 21 Oct`() {
+        assertEquals("پنج هزار ٻه سؤ روپيا", NumberWords.rupeesInWords("sd", 5200.0))
+        assertEquals("ٻه لک پنجاهه هزار روپيا", NumberWords.rupeesInWords("sd", 250000.0))
+        assertEquals("هڪ ڪروڙ روپيا", NumberWords.rupeesInWords("sd", 10000000.0))
+        assertEquals("نوانوي روپيا", NumberWords.rupeesInWords("sd", 99.0))
+        assertEquals("ٻڙي روپيا", NumberWords.rupeesInWords("sd", 0.0))
+        // Sindhi letters, never Urdu's look-alikes.
+        assertTrue(NumberWords.rupeesInWords("sd", 98765.0).none { it in "کیہےٹ" })
     }
 }
