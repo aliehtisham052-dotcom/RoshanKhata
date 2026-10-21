@@ -21,7 +21,7 @@ No account, no server, no ads. Everything stays on the phone.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
 - 2,038 strings × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 31 (schema checked in at `app/schemas`)
+- Room database, version 35 (schema JSON checked in up to 31; CI writes the rest)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -249,8 +249,9 @@ leaves an **audit row** with the signed-in name.
   `Valuation` (cost price, else last purchase rate, nothing guessed),
   `PurchaseOrder` → `receiveOrder` makes a supplier bill through
   `insertSupplierBill`. Windows: Stock on hand and Purchase orders pages;
-  phone: Count stock and Stock value from Products' more button (orders
-  not on the phone yet).
+  phone: Count stock, Stock value, Adjust stock and Purchase orders
+  (`OrdersActivity` over the shared `OrdersScreen`; `OrderDraft` and
+  `orderText` are shared) from Products' more button.
 - **Sales report** (`SalesReport`, `SoldLine`): by day/item/category/
   customer/cashier/hour, tax, P&L (cost known for how much of revenue is
   said), dead stock (90 days). `reportRows` gives both platforms the same
@@ -259,7 +260,7 @@ leaves an **audit row** with the signed-in name.
   the paired Bluetooth ESC/POS printer (the entry receipt's path).
 - **Not built:** live multi-device sync (whole-copy phone↔PC stays the
   rule: one device at a time), country tax packs (FBR/ZATCA), weighing
-  scale, customer display, purchase orders on the phone, loyalty points.
+  scale, customer display, loyalty points.
   Nothing above was tested on a real device or printer — CI only.
 
 ### The shared module (KMP)
