@@ -3066,4 +3066,21 @@
     <string name="cash_category_sale">বিক্রি</string>
     <string name="pos_sales_title">বিক্রি</string>
     <string name="pos_keys_help">F2 আইটেম · F4 পরিমাণ · F6 ছাড় · F8 ক্রেতা · F9 পেমেন্ট · F12 সম্পন্ন</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">বারকোড (ঐচ্ছিক)</string>
+    <string name="product_cost_hint">ক্রয়মূল্য (ঐচ্ছিক)</string>
+    <string name="product_low_stock_hint">এই স্টকে সতর্ক করুন (ঐচ্ছিক)</string>
+    <string name="product_barcode_taken">এই বারকোড ইতিমধ্যে %1$s-এ আছে</string>
+    <string name="na_low_stock">%1$s আইটেমের স্টক কম</string>
+    <string name="products_export">CSV রপ্তানি</string>
+    <string name="products_import">CSV আমদানি</string>
+    <string name="products_labels">লেবেল প্রিন্ট</string>
+    <string name="products_import_plan">%1$d নতুন পণ্য, %2$d হালনাগাদ</string>
+    <string name="products_import_clash">%1$d সারির বারকোড অন্য পণ্যে আছে — সেই কোডগুলো বাদ যাবে</string>
+    <string name="products_import_none">এই ফাইলে কোনো পণ্য নেই</string>
+    <string name="products_imported">%1$d পণ্য যোগ, %2$d হালনাগাদ</string>
+    <string name="products_labels_assign">%1$d পণ্যের বারকোড নেই — দোকানের নিজস্ব (EAN-13) দিয়ে প্রিন্ট করবেন?</string>
+    <string name="products_labels_none">লেবেল প্রিন্টের জন্য কোনো পণ্য নেই</string>
+    <string name="label_sheet_title">বারকোড লেবেল</string>
 </resources>

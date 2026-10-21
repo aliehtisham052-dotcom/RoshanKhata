@@ -3,6 +3,8 @@ package com.innovation313.roshankhata.desktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.LedgerEntry
@@ -234,9 +236,91 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     buyersOf?.let { ProductBuyers(dao, words, it) { buyersOf = null } }
     var editing by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
     editing?.let { ProductEditDialog(dao, it) { editing = null } }
+    // The list as a spreadsheet and back, and the labels (POS Phase 2).
+    val scope = rememberCoroutineScope()
+    var told by remember { mutableStateOf<String?>(null) }
+    var importPlan by remember { mutableStateOf<com.innovation313.roshankhata.data.ProductCsv.Plan?>(null) }
+    var assignCodes by remember { mutableStateOf<List<com.innovation313.roshankhata.data.Product>?>(null) }
+    fun printLabels(list: List<com.innovation313.roshankhata.data.Product>) {
+        if (list.isEmpty()) { told = words.text(W.products_labels_none); return }
+        StatementPrint.show(LabelSheet(list), words.text(W.label_sheet_title))
+    }
+    fun exportCsv() {
+        val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.products_export), java.awt.FileDialog.SAVE)
+        startIn(dialog, "Documents")
+        dialog.file = "RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv"
+        dialog.isVisible = true
+        val name = dialog.file ?: return
+        val file = java.io.File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
+        scope.launch {
+            told = runCatching { withContext(Dispatchers.IO) { file.writeText(com.innovation313.roshankhata.data.ProductCsv.text(products), Charsets.UTF_8) } }
+                .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
+        }
+    }
+    fun importCsv() {
+        val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.products_import), java.awt.FileDialog.LOAD)
+        startIn(dialog, "Downloads")
+        dialog.isVisible = true
+        val name = dialog.file ?: return
+        val file = java.io.File(dialog.directory, name)
+        scope.launch {
+            val rows = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.ProductCsv.parse(file.readText(Charsets.UTF_8)) }.getOrDefault(emptyList()) }
+            if (rows.isEmpty()) told = words.text(W.products_import_none)
+            else importPlan = com.innovation313.roshankhata.data.ProductCsv.plan(rows, products)
+        }
+    }
+    importPlan?.let { plan ->
+        AlertDialog(
+            onDismissRequest = { importPlan = null },
+            title = { Text(word(W.products_import)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(words.text(W.products_import_plan, plan.toAdd.size, plan.toUpdate.size))
+                    if (plan.barcodeClashes > 0) Text(words.text(W.products_import_clash, plan.barcodeClashes), color = c.owedToMe, fontSize = 13.sp)
+                }
+            },
+            confirmButton = {
+                FluentButton(word(W.save), {
+                    importPlan = null
+                    scope.launch {
+                        val (added, updated) = withContext(Dispatchers.IO) { dao.importProducts(plan) }
+                        told = words.text(W.products_imported, added, updated)
+                    }
+                }, kind = ButtonKind.ACCENT)
+            },
+            dismissButton = { FluentButton(word(W.cancel), { importPlan = null }, kind = ButtonKind.STANDARD) }
+        )
+    }
+    assignCodes?.let { missing ->
+        AlertDialog(
+            onDismissRequest = { assignCodes = null },
+            title = { Text(word(W.products_labels)) },
+            text = { Text(words.text(W.products_labels_assign, missing.size)) },
+            confirmButton = {
+                FluentButton(word(W.products_labels), {
+                    assignCodes = null
+                    scope.launch {
+                        val coded = withContext(Dispatchers.IO) { dao.assignInternalBarcodes(missing.map { it.id }) }
+                        printLabels(shown.map { p -> coded.firstOrNull { it.id == p.id } ?: p })
+                    }
+                }, kind = ButtonKind.ACCENT)
+            },
+            dismissButton = { FluentButton(word(W.cancel), { assignCodes = null }, kind = ButtonKind.STANDARD) }
+        )
+    }
     Column(Modifier.fillMaxSize()) {
-        RecordList(word(W.tile_products), word(W.products_subtitle), shown.isEmpty() && q.isNotEmpty(), word(W.no_products), emptyIcon = "ic_tile_products",
-            head = { FluentField(query, { query = it }, Modifier.fillMaxWidth(0.5f), placeholder = word(W.tile_products), leadingIcon = "ic_search") }) {
+        RecordList(word(W.tile_products), told ?: word(W.products_subtitle), shown.isEmpty() && q.isNotEmpty(), word(W.no_products), emptyIcon = "ic_tile_products",
+            head = {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    FluentField(query, { query = it }, Modifier.weight(1f), placeholder = word(W.tile_products), leadingIcon = "ic_search")
+                    FluentButton(word(W.products_labels), {
+                        val missing = shown.filter { it.barcode.isNullOrBlank() }
+                        if (missing.isEmpty()) printLabels(shown) else assignCodes = missing
+                    }, kind = ButtonKind.STANDARD, icon = "ic_print", enabled = shown.isNotEmpty())
+                    FluentButton(word(W.products_export), { exportCsv() }, kind = ButtonKind.STANDARD, enabled = products.isNotEmpty())
+                    FluentButton(word(W.products_import), { importCsv() }, kind = ButtonKind.STANDARD)
+                }
+            }) {
             if (shown.isEmpty()) item(key = "none") { Text(word(W.no_products), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp) }
             items(shown, key = { it.id }) { p ->
                 Column(Modifier.fillMaxWidth().press { buyersOf = p }.padding(horizontal = 16.dp, vertical = 12.dp)) {
@@ -246,6 +330,8 @@ fun ProductsPane(dao: KhataDao, words: Words) {
                             val sub = listOfNotNull(p.company, p.category, p.defaultUnit).filter { it.isNotBlank() }
                             if (sub.isNotEmpty()) Text(sub.joinToString("  ·  "), color = c.textMuted, fontSize = 13.sp)
                         }
+                        p.barcode?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false) }
+                        Spacer(Modifier.width(12.dp))
                         p.salePrice?.let { Text(Format.money(it), color = c.ink, fontSize = 14.sp) }
                         FluentButton(word(W.edit), { editing = p }, kind = ButtonKind.SUBTLE)
                     }

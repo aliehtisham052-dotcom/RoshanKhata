@@ -16,7 +16,7 @@ import com.innovation313.roshankhata.R
  */
 object HomeAlerts {
 
-    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, BACKUP, BACKUP_FAILED, BACKUP_OTHER_PHONE, CASHFLOW, UPDATED }
+    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, STOCK, BACKUP, BACKUP_FAILED, BACKUP_OTHER_PHONE, CASHFLOW, UPDATED }
 
     /** One row of the bell: what kind, a title, a quieter line under it, and an optional short tag ("Today", "Late", "Failed"). */
     data class Alert(val kind: Kind, val title: String, val sub: String, val tag: String? = null)
@@ -34,6 +34,7 @@ object HomeAlerts {
                     LedgerAlerts.Kind.PLAN -> Kind.PLAN
                     LedgerAlerts.Kind.BILL -> Kind.BILL
                     LedgerAlerts.Kind.EXPIRING -> Kind.EXPIRING
+                    LedgerAlerts.Kind.STOCK -> Kind.STOCK
                     LedgerAlerts.Kind.CASHFLOW -> Kind.CASHFLOW
                 }
                 Alert(kind, a.title, a.sub, a.tag)

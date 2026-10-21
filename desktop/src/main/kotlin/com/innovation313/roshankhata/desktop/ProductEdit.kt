@@ -58,11 +58,14 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     var technical by remember { mutableStateOf(product.technicalName.orEmpty()) }
     var formulation by remember { mutableStateOf(product.formulation.orEmpty()) }
     var registration by remember { mutableStateOf(product.registrationNumber.orEmpty()) }
+    var barcode by remember { mutableStateOf(product.barcode.orEmpty()) }
+    var cost by remember { mutableStateOf(product.costPrice?.let { Calc.trim(it) }.orEmpty()) }
+    var lowStock by remember { mutableStateOf(product.lowStockLevel?.let { Calc.trim(it) }.orEmpty()) }
     var problem by remember { mutableStateOf<String?>(null) }
     val needName = word(W.enter_name)
     val words = com.innovation313.roshankhata.words.LocalWords.current
 
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = 560.dp, height = 820.dp)) {
+    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = 560.dp, height = 920.dp)) {
         Column(
             Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -77,6 +80,13 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                 Outlined(credit, { credit = it }, label = { Text(word(W.credit_price_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
             }
             Text(word(W.product_price_help), color = c.textMuted, fontSize = 12.sp)
+            // The counter (POS Phase 2): the pack's barcode (a USB scanner types it here), the
+            // unit's cost to the shop, and the stock level that warns in the bell.
+            Field(word(W.product_barcode_hint), barcode) { barcode = it; problem = null }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Outlined(cost, { cost = it }, label = { Text(word(W.product_cost_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+                Outlined(lowStock, { lowStock = it }, label = { Text(word(W.product_low_stock_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+            }
             Field(word(W.product_type_hint), type) { type = it }
             SuggestionRow(trade.types(), type) { type = it }
             // The inspector's details (technical name, formulation, registration) belong to the
@@ -108,12 +118,18 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                         registrationNumber = typed(registration),
                         // A cleared box is "no rate for this": null, not zero. Zero is a price.
                         salePrice = typed(cash)?.let { Calc.evalPad(it) },
-                        creditPrice = typed(credit)?.let { Calc.evalPad(it) }
+                        creditPrice = typed(credit)?.let { Calc.evalPad(it) },
+                        barcode = typed(barcode),
+                        costPrice = typed(cost)?.let { Calc.evalPad(it) },
+                        lowStockLevel = typed(lowStock)?.let { Calc.evalPad(it) }
                     )
                     scope.launch {
                         val clash = withContext(Dispatchers.IO) { dao.productByKey(updated.nameKey) }
+                        val codeClash = withContext(Dispatchers.IO) { updated.barcode?.let { dao.productByBarcode(it) } }
                         if (clash != null && clash.id != product.id) {
                             problem = words.text(W.product_name_taken, clash.name)
+                        } else if (codeClash != null && codeClash.id != product.id) {
+                            problem = words.text(W.product_barcode_taken, codeClash.name)
                         } else {
                             withContext(Dispatchers.IO) { dao.updateProduct(updated) }
                             onClose()

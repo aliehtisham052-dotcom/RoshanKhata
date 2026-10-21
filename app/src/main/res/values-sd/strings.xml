@@ -3050,4 +3050,21 @@
     <string name="cash_category_sale">وڪرو</string>
     <string name="pos_sales_title">وڪرا</string>
     <string name="pos_keys_help">F2 شيءِ · F4 مقدار · F6 رعايت · F8 گراهڪ · F9 ادائگي · F12 مڪمل</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">بارڪوڊ (اختياري)</string>
+    <string name="product_cost_hint">خريد قيمت (اختياري)</string>
+    <string name="product_low_stock_hint">اسٽاڪ هن تي خبردار ڪري (اختياري)</string>
+    <string name="product_barcode_taken">هي بارڪوڊ اڳ ۾ ئي %1$s تي آهي</string>
+    <string name="na_low_stock">%1$s شين جو اسٽاڪ گهٽ آهي</string>
+    <string name="products_export">CSV ايڪسپورٽ</string>
+    <string name="products_import">CSV امپورٽ</string>
+    <string name="products_labels">ليبل پرنٽ ڪريو</string>
+    <string name="products_import_plan">%1$d نيون پروڊڪٽس، %2$d اپڊيٽ</string>
+    <string name="products_import_clash">%1$d قطارن جو بارڪوڊ ڪنهن ٻي پروڊڪٽ تي اڳ ۾ آهي — اهي ڪوڊ ڇڏيا ويندا</string>
+    <string name="products_import_none">هن فائل ۾ ڪا پروڊڪٽ نه ملي</string>
+    <string name="products_imported">%1$d پروڊڪٽس شامل، %2$d اپڊيٽ</string>
+    <string name="products_labels_assign">%1$d پروڊڪٽس جو بارڪوڊ ناهي — انهن کي دڪان جو پنهنجو (EAN-13) ڏئي پرنٽ ڪريو؟</string>
+    <string name="products_labels_none">ليبل پرنٽ ڪرڻ لاءِ ڪا پروڊڪٽ ناهي</string>
+    <string name="label_sheet_title">بارڪوڊ ليبل</string>
 </resources>

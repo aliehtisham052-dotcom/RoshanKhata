@@ -52,6 +52,49 @@ class ProductsActivity : BaseActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
+    /** Export: the system's save sheet names the file, the list is written to it. */
+    private val saveCsv = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("text/csv")) { uri: android.net.Uri? ->
+        if (uri == null) return@registerForActivityResult
+        lifecycleScope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching {
+                    val text = com.innovation313.roshankhata.data.ProductCsv.text(dao.productsOnce())
+                    contentResolver.openOutputStream(uri)!!.use { it.write(text.toByteArray(Charsets.UTF_8)) }
+                }.isSuccess
+            }
+            Toast.makeText(this@ProductsActivity, if (ok) R.string.products_export else R.string.backup_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** Import: the rows are read and counted, the owner confirms, then one transaction writes them. */
+    private val pickCsv = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri: android.net.Uri? ->
+        if (uri == null) return@registerForActivityResult
+        lifecycleScope.launch {
+            val plan = withContext(Dispatchers.IO) {
+                runCatching {
+                    val text = contentResolver.openInputStream(uri)!!.use { it.readBytes().toString(Charsets.UTF_8) }
+                    val rows = com.innovation313.roshankhata.data.ProductCsv.parse(text)
+                    if (rows.isEmpty()) null else com.innovation313.roshankhata.data.ProductCsv.plan(rows, dao.productsOnce())
+                }.getOrNull()
+            }
+            if (plan == null) { Toast.makeText(this@ProductsActivity, R.string.products_import_none, Toast.LENGTH_LONG).show(); return@launch }
+            val lines = getString(R.string.products_import_plan, plan.toAdd.size, plan.toUpdate.size) +
+                (if (plan.barcodeClashes > 0) "\n\n" + getString(R.string.products_import_clash, plan.barcodeClashes) else "")
+            MaterialAlertDialogBuilder(this@ProductsActivity)
+                .setTitle(R.string.products_import)
+                .setMessage(lines)
+                .setPositiveButton(R.string.save) { _, _ ->
+                    lifecycleScope.launch {
+                        val (added, updated) = withContext(Dispatchers.IO) { dao.importProducts(plan) }
+                        Toast.makeText(this@ProductsActivity, getString(R.string.products_imported, added, updated), Toast.LENGTH_LONG).show()
+                        refresh()
+                    }
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_products)
@@ -90,6 +133,20 @@ class ProductsActivity : BaseActivity() {
         // opens on the helper's phone as well; every trade has prices to send.
         findViewById<View>(R.id.btnRateList).setOnClickListener {
             startActivity(Intent(this, RateListActivity::class.java))
+        }
+        // The list as a spreadsheet and back (POS Phase 2).
+        findViewById<View>(R.id.btnProductsMore).setOnClickListener { v ->
+            android.widget.PopupMenu(this, v).apply {
+                menu.add(0, 1, 0, R.string.products_export)
+                menu.add(0, 2, 1, R.string.products_import)
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        1 -> saveCsv.launch("RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv")
+                        2 -> pickCsv.launch(arrayOf("text/*", "text/csv", "text/comma-separated-values", "application/octet-stream", "*/*"))
+                    }
+                    true
+                }
+            }.show()
         }
         // An inspector visits agri and medical shops; the others keep the list only (4 Oct).
         if (!com.innovation313.roshankhata.data.TradeFeatures.inspectorReports(this)) {

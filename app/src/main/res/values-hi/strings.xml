@@ -3066,4 +3066,21 @@
     <string name="cash_category_sale">बिक्री</string>
     <string name="pos_sales_title">बिक्री</string>
     <string name="pos_keys_help">F2 आइटम · F4 मात्रा · F6 छूट · F8 ग्राहक · F9 भुगतान · F12 पूरा</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">बारकोड (वैकल्पिक)</string>
+    <string name="product_cost_hint">खरीद मूल्य (वैकल्पिक)</string>
+    <string name="product_low_stock_hint">इतने स्टॉक पर चेतावनी (वैकल्पिक)</string>
+    <string name="product_barcode_taken">यह बारकोड पहले से %1$s पर है</string>
+    <string name="na_low_stock">%1$s आइटम का स्टॉक कम है</string>
+    <string name="products_export">CSV निर्यात</string>
+    <string name="products_import">CSV आयात</string>
+    <string name="products_labels">लेबल प्रिंट करें</string>
+    <string name="products_import_plan">%1$d नए उत्पाद, %2$d अपडेट</string>
+    <string name="products_import_clash">%1$d पंक्तियों का बारकोड किसी और उत्पाद पर पहले से है — वे कोड छोड़ दिए जाएँगे</string>
+    <string name="products_import_none">इस फ़ाइल में कोई उत्पाद नहीं मिला</string>
+    <string name="products_imported">%1$d उत्पाद जोड़े, %2$d अपडेट</string>
+    <string name="products_labels_assign">%1$d उत्पादों का बारकोड नहीं — उन्हें दुकान का अपना (EAN-13) देकर प्रिंट करें?</string>
+    <string name="products_labels_none">लेबल प्रिंट करने के लिए कोई उत्पाद नहीं</string>
+    <string name="label_sheet_title">बारकोड लेबल</string>
 </resources>

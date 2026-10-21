@@ -14,7 +14,7 @@ import java.util.Calendar
  */
 object LedgerAlerts {
 
-    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, CASHFLOW }
+    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, STOCK, CASHFLOW }
 
     /** One row of the bell: what kind, a title, a quieter line under it, and an optional short tag ("Today", "Late"). */
     data class Alert(val kind: Kind, val title: String, val sub: String, val tag: String? = null)
@@ -52,6 +52,12 @@ object LedgerAlerts {
         }
         val expiring = dao.expiringBatchesOnce(t0 + 30 * DAY).size
         if (expiring > 0) out += Alert(Kind.EXPIRING, words.text(W.na_expiring, expiring.toString()), "")
+        // Low stock (POS Phase 2): products at or under the level the owner set, where the shelf is known.
+        val low = runCatching { Stock.of(dao) }.getOrDefault(emptyList())
+        val levels = dao.productsOnce().filter { it.lowStockLevel != null }.associate { it.id to it.lowStockLevel!! }
+        val lowRows = low.filter { s -> levels[s.productId]?.let { lvl -> s.onHand?.let { it <= lvl } } == true }
+        if (lowRows.isNotEmpty()) out += Alert(Kind.STOCK, words.text(W.na_low_stock, lowRows.size.toString()),
+            lowRows.take(3).joinToString(" · ") { it.name })
 
         val plans = dao.openPlansOnce().map { CashFlow.Plan(it.partyId, it.partyName, it.totalAmount - it.paidSoFar, it.installmentAmount, it.nextDueDate) }
         val cheques = dao.pendingChequesOnce().filter { it.status == ChequeStatus.PENDING && names.containsKey(it.partyId) }

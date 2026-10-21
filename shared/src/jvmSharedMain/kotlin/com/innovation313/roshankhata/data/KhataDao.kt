@@ -2741,6 +2741,50 @@ interface KhataDao {
     @Query("UPDATE sales SET isDeleted = 1, deletedAt = :now WHERE id = :id AND status = 'held'")
     suspend fun dropHeldSale(id: Long, now: Long = System.currentTimeMillis())
 
+    /**
+     * A spreadsheet of products brought in (POS Phase 2): new names become
+     * products, known names are updated field by field, a barcode another
+     * product already carries is left off the row. One transaction. Returns
+     * (added, updated).
+     */
+    @Transaction
+    suspend fun importProducts(plan: ProductCsv.Plan): Pair<Int, Int> {
+        var added = 0; var updated = 0
+        for (r in plan.toAdd) {
+            val p = ProductCsv.newProduct(r)
+            val code = p.barcode?.takeIf { productByBarcode(it) == null }
+            if (productByKey(p.nameKey) != null) continue
+            insertProduct(p.copy(barcode = code)); added++
+        }
+        for ((have, r) in plan.toUpdate) {
+            val p = ProductCsv.apply(have, r)
+            val owner = p.barcode?.let { productByBarcode(it) }
+            val code = if (owner != null && owner.id != have.id) have.barcode else p.barcode
+            updateProduct(p.copy(barcode = code)); updated++
+        }
+        return added to updated
+    }
+
+    /**
+     * The shop's own EAN-13 for products without a code (POS Phase 2,
+     * labels): built from each product's id ([Barcodes.internalEan13]),
+     * written once, never to a product that already has one. Returns the
+     * products as they now stand.
+     */
+    @Transaction
+    suspend fun assignInternalBarcodes(ids: List<Long>): List<Product> {
+        val out = ArrayList<Product>()
+        for (id in ids) {
+            val p = productById(id) ?: continue
+            if (!p.barcode.isNullOrBlank()) { out += p; continue }
+            val code = Barcodes.internalEan13(id)
+            val coded = if (productByBarcode(code) == null) p.copy(barcode = code) else p
+            if (coded !== p) updateProduct(coded)
+            out += coded
+        }
+        return out
+    }
+
     // Backup: a sale and its rows, and the audit trail, are the owner's record.
     @Query("SELECT * FROM sales ORDER BY id")
     suspend fun allSalesForBackup(): List<Sale>

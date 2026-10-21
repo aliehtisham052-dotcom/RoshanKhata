@@ -3210,4 +3210,21 @@
     <string name="cash_category_sale">بيع</string>
     <string name="pos_sales_title">المبيعات</string>
     <string name="pos_keys_help">F2 صنف · F4 كمية · F6 خصم · F8 زبون · F9 دفع · F12 إتمام</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">الباركود (اختياري)</string>
+    <string name="product_cost_hint">سعر التكلفة (اختياري)</string>
+    <string name="product_low_stock_hint">تنبيه عند مخزون (اختياري)</string>
+    <string name="product_barcode_taken">هذا الباركود موجود على %1$s</string>
+    <string name="na_low_stock">%1$s أصناف مخزونها منخفض</string>
+    <string name="products_export">تصدير CSV</string>
+    <string name="products_import">استيراد CSV</string>
+    <string name="products_labels">طباعة الملصقات</string>
+    <string name="products_import_plan">%1$d منتجات جديدة، %2$d محدّثة</string>
+    <string name="products_import_clash">%1$d صفوف تحمل باركودًا موجودًا على منتج آخر — تُتجاهل تلك الأكواد</string>
+    <string name="products_import_none">لا منتجات في هذا الملف</string>
+    <string name="products_imported">أُضيف %1$d منتجات، وحُدّث %2$d</string>
+    <string name="products_labels_assign">%1$d منتجات بلا باركود — أعطها باركود المتجر (EAN-13) واطبع؟</string>
+    <string name="products_labels_none">لا منتجات لطباعة ملصقاتها</string>
+    <string name="label_sheet_title">ملصقات الباركود</string>
 </resources>

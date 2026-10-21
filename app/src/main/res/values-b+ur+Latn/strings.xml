@@ -3022,4 +3022,21 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="cash_category_sale">Sale</string>
     <string name="pos_sales_title">Sales</string>
     <string name="pos_keys_help">F2 item · F4 miqdar · F6 riayat · F8 gahak · F9 payment · F12 mukammal</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">Barcode (ikhtiyari)</string>
+    <string name="product_cost_hint">Khareed qeemat (ikhtiyari)</string>
+    <string name="product_low_stock_hint">Stock is par khabardar kare (ikhtiyari)</string>
+    <string name="product_barcode_taken">Ye barcode pehle hi %1$s par hai</string>
+    <string name="na_low_stock">%1$s items ka stock kam hai</string>
+    <string name="products_export">CSV export</string>
+    <string name="products_import">CSV import</string>
+    <string name="products_labels">Label print karein</string>
+    <string name="products_import_plan">%1$d nayi products, %2$d update</string>
+    <string name="products_import_clash">%1$d qataron ka barcode kisi aur product par pehle se hai — wo code chhor diye jayenge</string>
+    <string name="products_import_none">Is file mein koi product nahi mili</string>
+    <string name="products_imported">%1$d products shamil, %2$d update</string>
+    <string name="products_labels_assign">%1$d products ka barcode nahi — unhein dukan ka apna (EAN-13) de kar print karein?</string>
+    <string name="products_labels_none">Label print karne ke liye koi product nahi</string>
+    <string name="label_sheet_title">Barcode label</string>
 </resources>
