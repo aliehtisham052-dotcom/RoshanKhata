@@ -37,7 +37,7 @@ object ProductCsv {
         val sb = StringBuilder()
         sb.append('﻿')
         row(sb, headers)
-        products.sortedBy { it.name.lowercase() }.forEach { p ->
+        NameOrder.sortedBy(products) { it.name }.forEach { p ->
             row(
                 sb,
                 listOf(

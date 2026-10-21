@@ -32,13 +32,13 @@ object ItemGroups {
         val grouped = live.groupBy { rootOf(it, byId).id }
         return grouped.map { (rootId, members) ->
             val main = byId.getValue(rootId)
-            Group(main, members.filter { it.id != rootId }.sortedBy { label(it).lowercase() })
+            Group(main, NameOrder.sortedBy(members.filter { it.id != rootId }) { label(it) })
         }.filter { g -> category == null || g.main.category == category || g.variants.any { it.category == category } }
-            .sortedBy { it.main.name.lowercase() }
+            .let { NameOrder.sortedBy(it) { g -> g.main.name } }
     }
 
     fun categories(products: List<Product>): List<String> =
-        products.filter { !it.isDeleted }.mapNotNull { it.category?.trim()?.ifBlank { null } }.distinct().sortedBy { it.lowercase() }
+        products.filter { !it.isDeleted }.mapNotNull { it.category?.trim()?.ifBlank { null } }.distinct().let { NameOrder.sortedBy(it) { c -> c } }
 
     /** A variant's own word (its size, colour, flavour), else the product's name. */
     fun label(p: Product): String = p.variant?.trim()?.takeIf { it.isNotEmpty() } ?: p.name

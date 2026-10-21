@@ -149,7 +149,7 @@ data class Valuation(val rows: List<Row>) {
                 val p = products[s.productId]
                 // The owner's cost, else the weighted average purchase cost, else the last rate (Cost).
                 Row(s.productId, s.name, s.onHand, s.unit, Cost.perUnit(dao, p) ?: dao.lastPurchaseRate(s.productId), p?.lowStockLevel)
-            }.sortedBy { it.name.lowercase() })
+            }.let { NameOrder.sortedBy(it) { r -> r.name } })
         }
     }
 }

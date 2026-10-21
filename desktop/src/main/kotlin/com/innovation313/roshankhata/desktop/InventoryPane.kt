@@ -119,7 +119,7 @@ fun InventoryPane(
         }
         ListCard(Modifier.weight(1f)) {
             WeightedHead(listOf(word(W.pos_col_item) to 5f, word(W.inspector_col_left) to 2f, word(W.product_cost_hint) to 2f, word(W.stock_valuation) to 2f), endAligned = setOf(1, 2, 3))
-            val rows = (v?.rows ?: emptyList()).let { r -> if (lowOnly) r.filter { it.isLow } else r }.sortedWith(compareBy({ !it.isLow }, { it.name.lowercase() }))
+            val rows = (v?.rows ?: emptyList()).let { r -> if (lowOnly) r.filter { it.isLow } else r }.sortedWith(compareBy<Valuation.Row> { !it.isLow }.thenBy(com.innovation313.roshankhata.data.NameOrder.byName) { it.name })
             if (rows.isEmpty()) Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { Text(word(W.no_products), color = c.textMuted) }
             else LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
                 items(rows, key = { it.productId }) { r ->

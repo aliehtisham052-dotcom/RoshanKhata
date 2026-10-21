@@ -49,7 +49,7 @@ class CountDraft(stock: List<Stock.ProductStock>) {
         // so an empty shelf was skipped and the book kept its old figure). Never below zero.
         val value: Double? get() = counted.takeIf { it.isNotBlank() }?.let { Calc.evalPad(it) }?.takeIf { it >= 0.0 }
     }
-    val lines = stock.sortedBy { it.name.lowercase() }.map { Line(it) }
+    val lines = com.innovation313.roshankhata.data.NameOrder.sortedBy(stock) { it.name }.map { Line(it) }
     var note by mutableStateOf("")
     fun counts(): Map<Long, Double> = lines.mapNotNull { l -> l.value?.let { l.stock.productId to it } }.toMap()
 }

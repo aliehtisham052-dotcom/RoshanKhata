@@ -3429,4 +3429,30 @@
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">موبائل والٹ نمبر (%1$s)</string>
+
+    <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
+    <plurals name="n_days_left">
+        <item quantity="one">%d دن باقی</item>
+        <item quantity="other">%d دن باقی</item>
+    </plurals>
+    <plurals name="n_selected">
+        <item quantity="one">%d منتخب</item>
+        <item quantity="other">%d منتخب</item>
+    </plurals>
+    <plurals name="n_expiring">
+        <item quantity="one">%d ایکسپائر ہونے والا</item>
+        <item quantity="other">%d ایکسپائر ہونے والے</item>
+    </plurals>
+    <plurals name="n_sales_today">
+        <item quantity="one">آج %d سیل</item>
+        <item quantity="other">آج %d سیلز</item>
+    </plurals>
+    <plurals name="n_designs">
+        <item quantity="one">%d ڈیزائن</item>
+        <item quantity="other">%d ڈیزائن</item>
+    </plurals>
+    <plurals name="n_wait_seconds">
+        <item quantity="one">بہت زیادہ کوششیں۔ %d سیکنڈ انتظار کریں۔</item>
+        <item quantity="other">بہت زیادہ کوششیں۔ %d سیکنڈ انتظار کریں۔</item>
+    </plurals>
 </resources>

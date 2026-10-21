@@ -388,4 +388,22 @@ class NameSearchTest {
         assertEquals(NameSearch.fold("مہر"), NameSearch.fold("مهر"))
         assertEquals(NameSearch.fold("ٽيپو"), NameSearch.fold("ٹیپو"))
     }
+
+    @Test
+    fun `hindi and bengali names meet the same name in latin or urdu - 21 Oct`() {
+        // Hindi, Bengali and Urdu leave the short vowel unwritten alike, so they fold the same.
+        assertEquals(NameSearch.fold("کریم"), NameSearch.fold("करीम"))
+        assertEquals(NameSearch.fold("کریم"), NameSearch.fold("করিম"))
+        assertEquals(NameSearch.fold("قمر"), NameSearch.fold("क़मर"))
+        // A Latin spelling writes that vowel; the one-letter slip the matcher allows covers it.
+        assertTrue(NameSearch.matches("करीम", null, "Karim"))
+        assertTrue(NameSearch.matches("Karim", null, "करीम"))
+        // A nukta typed as a separate mark, or the letter precomposed: one spelling.
+        assertEquals(NameSearch.fold("\u0915\u093C\u092E\u0930"), NameSearch.fold("\u0958\u092E\u0930"))
+        // Arabic vowel marks and the alif maqsura do not change the name.
+        assertEquals(NameSearch.fold("علی"), NameSearch.fold("عَلِی"))
+        assertEquals(NameSearch.fold("علي"), NameSearch.fold("على"))
+        // A one-letter slip in a Hindi name still finds it.
+        assertTrue(NameSearch.matches("रहीम ख़ान", null, "रहिम"))
+    }
 }

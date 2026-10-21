@@ -69,6 +69,8 @@ class ScreenProofTest {
     private fun shoot(
         name: String, ur: Boolean, dark: Boolean, dir: File,
         width: Int = 1440, height: Int = 900, scale: Float = 1f,
+        /** The language drawn, when not simply English or Urdu (21 Oct 2026: Arabic, Bengali, Indonesian proofs). */
+        lang: String = if (ur) "ur" else "en",
         page: @androidx.compose.runtime.Composable () -> Unit = {
             HomePane(
                 parties, late = 2, alerts = alerts(), extra = emptyList(),
@@ -81,7 +83,7 @@ class ScreenProofTest {
         // dates read their direction from. Without it the Urdu proof showed "Oct 2026 20" even
         // where the app itself is right (20 Oct): the picture must be drawn as the app draws it.
         val before = Locale.getDefault()
-        val locale = Locale.forLanguageTag(if (ur) "ur" else "en").also { Locale.setDefault(it) }
+        val locale = Locale.forLanguageTag(lang).also { Locale.setDefault(it) }
         val words = desktopWords(locale)
         val scene = ImageComposeScene(width = width, height = height, density = Density(scale)) {
             RoshanTheme(dark = dark) {
@@ -130,6 +132,27 @@ class ScreenProofTest {
             val name = "screen-home-${if (ur) "ur" else "en"}-${if (dark) "dark" else "light"}"
             val f = shoot(name, ur, dark, dir)
             // A blank window compresses to a few kilobytes; a drawn Home to far more.
+            if (f.length() < 15_000) small += "$name=${f.length()}"
+        }
+        assertTrue("screens that look empty: $small", small.isEmpty())
+    }
+
+    /**
+     * Home in the languages the proofs never showed (21 Oct 2026, the nine-language
+     * review): Arabic (right to left, Naskh), Bengali and Hindi (tall glyphs that
+     * Windows draws with Nirmala UI), Indonesian (the longest translations, 24-hour
+     * clock, Rp 1.250.000). Looked at, not only measured: a clipped Bengali line or a
+     * chevron pointing the wrong way in Arabic shows here first.
+     */
+    @Test
+    fun `home draws in Arabic, Hindi, Bengali and Indonesian`() {
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
+        val dir = File("build/screen-proof").apply { mkdirs() }
+        val small = ArrayList<String>()
+        for (lang in listOf("ar", "hi", "bn", "in")) {
+            val rtl = lang == "ar"
+            val name = "screen-home-$lang-light"
+            val f = shoot(name, ur = rtl, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, lang = lang)
             if (f.length() < 15_000) small += "$name=${f.length()}"
         }
         assertTrue("screens that look empty: $small", small.isEmpty())

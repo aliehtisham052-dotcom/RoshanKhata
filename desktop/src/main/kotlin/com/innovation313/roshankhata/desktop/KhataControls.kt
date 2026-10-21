@@ -102,8 +102,8 @@ fun List<PartyWithBalance>.shownBy(
             .sortedWith(compareBy<Triple<PartyWithBalance, Int, String>> { it.second }.thenBy { it.third })
             .map { it.first }
     } else when (sort) {
-        PartySort.NAME_AZ -> byType.sortedBy { it.name.lowercase() }
-        PartySort.NAME_ZA -> byType.sortedByDescending { it.name.lowercase() }
+        PartySort.NAME_AZ -> com.innovation313.roshankhata.data.NameOrder.sortedBy(byType) { it.name }
+        PartySort.NAME_ZA -> com.innovation313.roshankhata.data.NameOrder.sortedByDescending(byType) { it.name }
         PartySort.OWES_MOST -> byType.sortedByDescending { it.balance }
         PartySort.I_OWE_MOST -> byType.sortedBy { it.balance }
         PartySort.RECENT -> byType.sortedByDescending { it.lastActivity }

@@ -68,7 +68,7 @@ object Contacts {
                 inRecycleBin = key in binned
             )
         }
-        return result.sortedBy { it.name.lowercase() }
+        return NameOrder.sortedBy(result) { it.name }
     }
 
     /** The whole list, with READ_CONTACTS (Android 16 and older only — see the manifest). */

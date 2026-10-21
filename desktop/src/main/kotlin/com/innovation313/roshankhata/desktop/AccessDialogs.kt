@@ -46,6 +46,7 @@ import com.innovation313.roshankhata.screens.auditActionWord
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -74,7 +75,7 @@ private fun PinBox(value: String, onChange: (String) -> Unit, label: String, hel
 
 /** The words for a PIN that was refused: wrong, or the wait still running. */
 private fun pinProblem(words: com.innovation313.roshankhata.words.Words, result: Boolean?, account: String = Access.ANY): String? = when (result) {
-    null -> words.text(W.lock_pin_wait, Access.waitSeconds(account = account))
+    null -> Access.waitSeconds(account = account).let { words.plural(WP.n_wait_seconds, it, it) }
     false -> words.text(W.access_wrong_pin)
     true -> null
 }

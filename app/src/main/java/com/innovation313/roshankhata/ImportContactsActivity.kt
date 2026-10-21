@@ -289,7 +289,7 @@ class ImportContactsActivity : BaseActivity() {
     }
 
     private fun updateSelectedCount() {
-        tvSelectedCount.text = Digits.string(resources, R.string.selected_count, selected.size)
+        tvSelectedCount.text = Digits.quantity(resources, R.plurals.n_selected, selected.size, selected.size)
         btnImport.isEnabled = selected.isNotEmpty()
     }
 

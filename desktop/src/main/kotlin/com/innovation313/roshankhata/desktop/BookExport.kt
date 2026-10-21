@@ -25,7 +25,7 @@ object BookExport {
             sb.append("\r\n")
         }
         row(headers)
-        parties.sortedBy { it.name.lowercase() }.forEach { p ->
+        com.innovation313.roshankhata.data.NameOrder.sortedBy(parties) { it.name }.forEach { p ->
             row(listOf(p.name, p.phone.orEmpty(), LedgerCsv.plain(p.balance)))
         }
         return sb.toString()

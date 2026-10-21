@@ -435,19 +435,56 @@ object NameSearch {
         // (ه), used by all three, was missing, so "احمد" folded without its
         // h; Sindhi's own letters (ڪ ٽ ڏ ڻ ...) were dropped outright, so a
         // Sindhi-written name never met the same name typed in Urdu or Latin.
-        'ه' to "h", 'ى' to "a", 'ڪ' to "k", 'ٻ' to "b", 'ڀ' to "bh", 'ٽ' to "t",
+        'ه' to "h", 'ى' to "i", 'ڪ' to "k", 'ٻ' to "b", 'ڀ' to "bh", 'ٽ' to "t",
         'ٿ' to "th", 'ڊ' to "d", 'ڌ' to "dh", 'ڏ' to "d", 'ڍ' to "dh", 'ڙ' to "r",
         'ڻ' to "n", 'ڳ' to "g", 'ڱ' to "ng", 'ڄ' to "j", 'ڃ' to "n", 'ڇ' to "ch",
-        'ڦ' to "ph"
+        'ڦ' to "ph",
+        // Hindi and Bengali (21 Oct 2026, the nine-language review): until now
+        // these letters were dropped, so "कमर" never met "Qamar" and a one-letter
+        // slip in a Hindi name found nobody. Each letter as its nearest Latin
+        // spelling, the way the Arabic-script letters are; the inherent vowel
+        // is not written, and the vowel rules below treat what is.
+        'अ' to "a", 'आ' to "a", 'इ' to "i", 'ई' to "i", 'उ' to "u", 'ऊ' to "u", 'ए' to "e", 'ऐ' to "e", 'ओ' to "o", 'औ' to "o",
+        'ा' to "a", 'ि' to "i", 'ी' to "i", 'ु' to "u", 'ू' to "u", 'े' to "e", 'ै' to "e", 'ो' to "o", 'ौ' to "o", 'ं' to "n", 'ँ' to "n", 'ः' to "h",
+        'क' to "k", 'ख' to "kh", 'ग' to "g", 'घ' to "gh", 'ङ' to "n", 'च' to "ch", 'छ' to "chh", 'ज' to "j", 'झ' to "jh", 'ञ' to "n",
+        'ट' to "t", 'ठ' to "th", 'ड' to "d", 'ढ' to "dh", 'ण' to "n", 'त' to "t", 'थ' to "th", 'द' to "d", 'ध' to "dh", 'न' to "n",
+        'प' to "p", 'फ' to "f", 'ब' to "b", 'भ' to "bh", 'म' to "m", 'य' to "y", 'र' to "r", 'ल' to "l", 'व' to "v", 'श' to "sh", 'ष' to "sh", 'स' to "s", 'ह' to "h",
+        'অ' to "a", 'আ' to "a", 'ই' to "i", 'ঈ' to "i", 'উ' to "u", 'ঊ' to "u", 'এ' to "e", 'ঐ' to "e", 'ও' to "o", 'ঔ' to "o",
+        'া' to "a", 'ি' to "i", 'ী' to "i", 'ু' to "u", 'ূ' to "u", 'ে' to "e", 'ৈ' to "e", 'ো' to "o", 'ৌ' to "o", 'ং' to "n", 'ঁ' to "n", 'ঃ' to "h",
+        'ক' to "k", 'খ' to "kh", 'গ' to "g", 'ঘ' to "gh", 'ঙ' to "n", 'চ' to "ch", 'ছ' to "chh", 'জ' to "j", 'ঝ' to "jh", 'ঞ' to "n",
+        'ট' to "t", 'ঠ' to "th", 'ড' to "d", 'ঢ' to "dh", 'ণ' to "n", 'ত' to "t", 'থ' to "th", 'দ' to "d", 'ধ' to "dh", 'ন' to "n",
+        'প' to "p", 'ফ' to "f", 'ব' to "b", 'ভ' to "bh", 'ম' to "m", 'য' to "j", 'র' to "r", 'ল' to "l", 'শ' to "sh", 'ষ' to "sh", 'স' to "s", 'হ' to "h",
+        'ৎ' to "t"
     )
+
+    /** A Hindi or Bengali letter with a nukta under it (always two code points after NFC): its own sound. */
+    private val NUKTA = mapOf(
+        'क' to "q", 'ख' to "kh", 'ग' to "gh", 'ज' to "z", 'ड' to "r", 'ढ' to "rh", 'फ' to "f",
+        'ড' to "r", 'ঢ' to "rh", 'য' to "y"
+    )
+    private fun isNukta(c: Char) = c == '\u093C' || c == '\u09BC'
+
+    /**
+     * A name as one spelling before it is folded: Unicode's composed form (a
+     * Hindi क़ typed as क + nukta, or precomposed, is the same letter), with
+     * Arabic vowel marks and tatweel gone (علی and عَلی are one name).
+     */
+    private fun oneSpelling(word: String): String {
+        val s = java.text.Normalizer.normalize(word, java.text.Normalizer.Form.NFC)
+        if (s.none { it in '\u064B'..'\u0652' || it == '\u0670' || it == '\u0640' }) return s
+        return s.filterNot { it in '\u064B'..'\u0652' || it == '\u0670' || it == '\u0640' }
+    }
 
     /** Sounds a Pakistani ear treats as the same when spelling a name. */
     private val SAME_SOUND = mapOf('g' to 'j', 'q' to 'k', 'v' to 'b', 'c' to 'k')
 
     fun fold(word: String): String {
         val latin = StringBuilder()
-        for (c in word.lowercase()) {
+        val text = oneSpelling(word).lowercase()
+        for ((i, c) in text.withIndex()) {
+            val nukta = i + 1 < text.length && isNukta(text[i + 1])
             when {
+                nukta && NUKTA.containsKey(c) -> latin.append(NUKTA[c])
                 SCRIPT.containsKey(c) -> latin.append(SCRIPT[c])
                 c.isLetterOrDigit() && c.code < 128 -> latin.append(c)
                 // Anything else — punctuation, emoji, a script not listed —

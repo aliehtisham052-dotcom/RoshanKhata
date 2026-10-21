@@ -3473,4 +3473,30 @@
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">मोबाइल वॉलेट नंबर (%1$s)</string>
+
+    <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
+    <plurals name="n_days_left">
+        <item quantity="one">%d दिन बाकी</item>
+        <item quantity="other">%d दिन बाकी</item>
+    </plurals>
+    <plurals name="n_selected">
+        <item quantity="one">%d चुना गया</item>
+        <item quantity="other">%d चुने गए</item>
+    </plurals>
+    <plurals name="n_expiring">
+        <item quantity="one">%d एक्सपायर होने वाला</item>
+        <item quantity="other">%d एक्सपायर होने वाले</item>
+    </plurals>
+    <plurals name="n_sales_today">
+        <item quantity="one">आज %d बिक्री</item>
+        <item quantity="other">आज %d बिक्री</item>
+    </plurals>
+    <plurals name="n_designs">
+        <item quantity="one">%d डिज़ाइन</item>
+        <item quantity="other">%d डिज़ाइन</item>
+    </plurals>
+    <plurals name="n_wait_seconds">
+        <item quantity="one">बहुत ज़्यादा कोशिशें। %d सेकंड रुकें।</item>
+        <item quantity="other">बहुत ज़्यादा कोशिशें। %d सेकंड रुकें।</item>
+    </plurals>
 </resources>

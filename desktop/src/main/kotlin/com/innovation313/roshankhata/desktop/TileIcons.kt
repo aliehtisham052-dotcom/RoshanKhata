@@ -55,6 +55,18 @@ object TileIcons {
         ?.replace(Regex("@color/(\\w+)")) { m -> hex(m.groupValues[1], dark) ?: "#FF888888" }
 }
 
+/**
+ * The phone's icons that point along the reading direction (android:autoMirrored
+ * on the phone, which Compose's XML loader does not read): drawn flipped in a
+ * right-to-left window (21 Oct 2026), as the phone draws them.
+ */
+val MIRRORED_ICONS = setOf("ic_chevron_right", "ic_arrow_forward", "ic_arrow_back", "ic_undo")
+
+/** Whether [icon] is drawn flipped now: a direction icon in a right-to-left window. */
+@Composable
+fun iconFlipped(icon: String): Boolean =
+    icon in MIRRORED_ICONS && androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl
+
 /** The icon [icon] (ic_tile_khata ...) as a painter in the system's light or dark, or null when missing. */
 @Composable
 fun tileIcon(icon: String): Painter? {

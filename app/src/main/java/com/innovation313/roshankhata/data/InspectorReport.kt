@@ -179,7 +179,7 @@ object InspectorReport {
      */
     suspend fun gather(context: Context, dao: KhataDao, windowDays: Int): ReportData {
         val products = dao.productsOnce()
-        val stock = Stock.of(dao).sortedBy { it.name.lowercase() }
+        val stock = NameOrder.sortedBy(Stock.of(dao)) { it.name }
 
         // Sold-out batches are dropped: a register of stock should list what is
         // on the shelf. What was bought and sold over a period is a purchase
@@ -241,7 +241,7 @@ object InspectorReport {
                 { it.first == noCompany },
                 { it.first.lowercase() }
             ))
-            .map { (company, list) -> company to list.sortedBy { it.name.lowercase() } }
+            .map { (company, list) -> company to NameOrder.sortedBy(list) { it.name } }
 
         val typeCounts = typeCounts(
             stock.filter { !it.isUntouched }.map { productsById[it.productId]?.productType },
@@ -839,7 +839,7 @@ object InspectorReport {
                             ?: context.getString(R.string.pdf_insp_expired),
                         RED_FG, RED_BG
                     )
-                    isSoon -> Cell.Chip(Digits.string(context.resources, R.string.pdf_insp_days_left, b.daysLeft ?: 0), AMBER_FG, AMBER_BG)
+                    isSoon -> Cell.Chip((b.daysLeft ?: 0).let { Digits.quantity(context.resources, R.plurals.n_days_left, it, it) }, AMBER_FG, AMBER_BG)
                     exp == null -> Cell.Text(null, body)
                     else -> Cell.Chip(context.getString(R.string.pdf_insp_status_ok), OK_FG, OK_BG)
                 }

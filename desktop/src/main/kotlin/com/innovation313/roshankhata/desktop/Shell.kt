@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -179,7 +180,10 @@ fun OutlineAction(onClick: () -> Unit, content: @Composable () -> Unit) {
 /** One of the phone's white glyphs (ic_bell, ic_phone...) painted in [tint]. */
 @Composable
 fun Glyph(icon: String, tint: Color, size: Int) {
-    tileIcon(icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(size.dp), colorFilter = ColorFilter.tint(tint)) }
+    val flip = iconFlipped(icon)
+    tileIcon(icon)?.let {
+        Image(it, contentDescription = null, modifier = Modifier.size(size.dp).then(if (flip) Modifier.scale(-1f, 1f) else Modifier), colorFilter = ColorFilter.tint(tint))
+    }
 }
 
 /** A section's own tile picture, small, without its tint behind it. */

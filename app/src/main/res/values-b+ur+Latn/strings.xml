@@ -3429,4 +3429,30 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">Mobile wallet number (%1$s)</string>
+
+    <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
+    <plurals name="n_days_left">
+        <item quantity="one">%d din baqi</item>
+        <item quantity="other">%d din baqi</item>
+    </plurals>
+    <plurals name="n_selected">
+        <item quantity="one">%d chune gaye</item>
+        <item quantity="other">%d chune gaye</item>
+    </plurals>
+    <plurals name="n_expiring">
+        <item quantity="one">%d expire hone wala</item>
+        <item quantity="other">%d expire hone wale</item>
+    </plurals>
+    <plurals name="n_sales_today">
+        <item quantity="one">Aaj %d sale</item>
+        <item quantity="other">Aaj %d sales</item>
+    </plurals>
+    <plurals name="n_designs">
+        <item quantity="one">%d design</item>
+        <item quantity="other">%d designs</item>
+    </plurals>
+    <plurals name="n_wait_seconds">
+        <item quantity="one">Bohat zyada koshishein. %d second intezar karein.</item>
+        <item quantity="other">Bohat zyada koshishein. %d second intezar karein.</item>
+    </plurals>
 </resources>
