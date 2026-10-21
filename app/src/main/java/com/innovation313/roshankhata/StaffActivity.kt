@@ -168,15 +168,38 @@ class StaffActivity : BaseActivity() {
         views.forEach { addView(it) }
     }
 
+    /**
+     * A money box in a dialog built here gets the app's calculator pad
+     * (21 Oct), as the add-entry form has: its running total and the pad go
+     * in right under it, and the whole body scrolls — with the pad it is
+     * taller than a short phone's dialog. [padShown]: whether the pad starts
+     * out showing (the money box is the first box, so it has the focus).
+     */
+    private fun withPad(body: LinearLayout, money: EditText, padShown: Boolean): View {
+        com.innovation313.roshankhata.ui.CalcPad.moneyBox(money)
+        val at = body.indexOfChild(money)
+        val result = com.innovation313.roshankhata.ui.CalcPad.resultLine(this)
+        val pad = com.innovation313.roshankhata.ui.CalcPad.inflatePad(body)
+        pad.visibility = if (padShown) View.VISIBLE else View.GONE
+        body.addView(result, at + 1)
+        body.addView(pad, at + 2)
+        val scroll = android.widget.ScrollView(this)
+        scroll.addView(body)
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = scroll, pad = pad, fields = listOf(money), results = mapOf(money to result)
+        )
+        return scroll
+    }
+
     /** An advance or a salary payment, handed over now. */
     private fun handOver(person: Staff, kind: Int) {
         val amount = field(R.string.staff_amount, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
         val note = field(R.string.staff_note, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
         MaterialAlertDialogBuilder(this)
             .setTitle(person.name + " \u00b7 " + getString(if (kind == Payroll.ADVANCE) R.string.staff_advance else R.string.staff_pay))
-            .setView(box(amount, note))
+            .setView(withPad(box(amount, note), amount, padShown = true))
             .setPositiveButton(R.string.save) { _, _ ->
-                val v = amount.text.toString().replace(",", "").toDoubleOrNull()
+                val v = com.innovation313.roshankhata.ui.Calc.evalAmount(amount.text.toString())
                 if (v == null || v <= 0) {
                     Toast.makeText(this, R.string.staff_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
                 }
@@ -209,10 +232,10 @@ class StaffActivity : BaseActivity() {
         val views = if (mayEditLogin) arrayOf<View>(name, phone, salary, roleLabel, roleBox, pin, pinNote) else arrayOf<View>(name, phone, salary)
         MaterialAlertDialogBuilder(this)
             .setTitle(if (person == null) R.string.staff_add else R.string.staff_edit)
-            .setView(box(*views))
+            .setView(withPad(box(*views), salary, padShown = false))
             .setPositiveButton(R.string.save) { _, _ ->
                 val n = name.text.toString().trim()
-                val s = salary.text.toString().replace(",", "").toDoubleOrNull()
+                val s = com.innovation313.roshankhata.ui.Calc.evalAmount(salary.text.toString())
                 if (n.isEmpty() || s == null || s <= 0) {
                     Toast.makeText(this, R.string.staff_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
                 }
